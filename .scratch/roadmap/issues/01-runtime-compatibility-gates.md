@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Latest Closed Quality Slice - Dynamic PlayerPush Typed Collision Telemetry
+## Latest Closed Quality Slice - Dynamic PosFreeze Typed Bounds Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: static `PosFreeze` had typed `bounds:posfreeze` evidence and dynamic raw params could affect actor freeze flags, but the dynamic active-state route lacked required typed operation telemetry.
+- Target: keep bounded `PosFreeze x = var(0), y = var(1)` behavior, resolve owner-local vars through the runtime expression context, and record the resolved controller as typed `bounds:posfreeze` telemetry without claiming exact tick-order parity.
+- Reference: Elecbyte State Controller Reference treats state-controller numeric params as expression-capable unless otherwise specified and defines `PosFreeze` as a temporary position freeze with optional `value`.
+- Transformation layers: `RuntimeBoundsControllerWorld.applyPosFreezeController`, dynamic raw-param resolver fallback, `RuntimeControllerDispatchWorld.resolveDynamicRecordedOperation`, trace operation evidence, roadmap truth.
+- Adjacent audit: inspect static `PosFreeze` typed evidence, dynamic `PlayerPush` and `Width` typed fallback, bounds-controller raw fallback defaults, operation telemetry recording, actor-frame/final posFreeze trace requirements, support registry wording, and QA gate docs.
+- Accepted improvement ledger: add required `synthetic-imported-posfreeze-dynamic`, require `bounds:posfreeze`, keep actor-frame/final `posFreezeX = true`, `posFreezeY = false`, and update docs/roadmap around checksum `8de0c2e9` / final checksum `6c40bb79`.
+- Out of scope: exact PosFreeze tick order, pause/hitpause/helper/team ownership, dynamic `ScreenBound` params, score movement, and full MUGEN/IKEMEN constraint parity.
+- Completed proof: required `synthetic-imported-posfreeze-dynamic.json` checksum `8de0c2e9` / final checksum `6c40bb79`, focused PosFreeze bounds plus trace tests, `pnpm test` 153 files / 1479 tests, `pnpm qa:trace` 518/518 artifacts with 487 required and 31 optional, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm check:boundaries`, and `git diff --check` with CRLF-normalization warnings only.
+- STOP conditions: pause if the next constraint cut requires exact controller-loop timing, pause/hitpause freeze ordering, helper/team ownership, or camera/screen-edge parity that needs a broader constraint VM decision.
+
+## Previous Closed Quality Slice - Dynamic PlayerPush Typed Collision Telemetry
 
 Status: done
 Date: 2026-07-08

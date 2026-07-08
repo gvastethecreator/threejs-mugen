@@ -39,19 +39,31 @@ describe("BoundsControllerSystem", () => {
     const world = new RuntimeBoundsControllerWorld();
     const state = runtimeState();
 
-    world.applyPosFreezeController(state, source("PosFreeze", { value: "0" }), {
+    const typedResult = world.applyPosFreezeController(state, source("PosFreeze", { value: "0" }), {
       kind: "bounds",
       controllerType: "posfreeze",
       x: true,
       y: false,
     });
     expect(state.posFreeze).toEqual({ x: true, y: false });
+    expect(typedResult.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
 
-    world.applyPosFreezeController(state, source("PosFreeze", { x: "0", y: "1" }));
+    const rawResult = world.applyPosFreezeController(state, source("PosFreeze", { x: "0", y: "1" }));
     expect(state.posFreeze).toEqual({ x: false, y: true });
+    expect(rawResult.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: false, y: true });
 
     world.applyPosFreezeController(state, source("PosFreeze", {}));
     expect(state.posFreeze).toEqual({ x: true, y: true });
+  });
+
+  it("applies PosFreeze raw expression fallback", () => {
+    const world = new RuntimeBoundsControllerWorld();
+    const state = runtimeState({ vars: [1, 0] });
+
+    const result = world.applyPosFreezeController(state, source("PosFreeze", { x: "var(0)", y: "var(1)" }));
+
+    expect(state.posFreeze).toEqual({ x: true, y: false });
+    expect(result.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
   });
 
   it("applies ScreenBound typed operations and raw expression fallback", () => {

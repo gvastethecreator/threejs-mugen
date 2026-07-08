@@ -374,6 +374,7 @@ import {
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
   createSyntheticImportedDynamicPlayerPushTraceArtifact,
+  createSyntheticImportedDynamicPosFreezeTraceArtifact,
   createSyntheticImportedTurnTraceArtifact,
   createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedDynamicSprPriorityTraceArtifact,
@@ -10397,6 +10398,42 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors.some((actor) => actor.playerPush === false)).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic PosFreeze artifact with typed bounds evidence", () => {
+    const artifact = createSyntheticImportedDynamicPosFreezeTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-posfreeze-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosFreeze).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["bounds:posfreeze"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          posFreezeX: true,
+          posFreezeY: false,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.posFreeze?.x === true && actor.posFreeze.y === false)).toBe(true);
   });
 
   it("creates a synthetic imported Turn artifact with typed orientation evidence", () => {

@@ -27,14 +27,22 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required dynamic PosFreeze typed-bounds trace gate
+  -> synthetic-imported-posfreeze-dynamic.json checksum 8de0c2e9 / final checksum 6c40bb79 is required in qa:trace
+  -> imported active state seeds var(0)=1 and var(1)=0
+  -> active state executes PosFreeze x = var(0), y = var(1)
+  -> dynamic PosFreeze resolves through runtime expression fallback, records typed bounds:posfreeze evidence, and preserves posFreezeX = true / posFreezeY = false telemetry
+  -> actor-frame/final evidence requires posFreezeX = true and posFreezeY = false
+  -> pnpm qa:trace passes 518/518 artifacts, 487 required and 31 optional
+  -> official Elecbyte docs define PosFreeze value as the position-freeze flag/default and numeric controller params as expression-capable
+  -> no score movement; exact tick order, pause/hitpause behavior, helper/team ownership, exact screen/camera interaction, score movement, and full constraint parity remain blocked
+
 R1 required dynamic PlayerPush typed-collision trace gate
   -> synthetic-imported-playerpush-dynamic.json checksum b7775652 / final checksum 92aca1cd is required in qa:trace
   -> imported active state seeds var(0)=0
   -> active state executes PlayerPush value = var(0)
   -> dynamic PlayerPush resolves through runtime expression fallback, records typed collision:playerpush evidence, and preserves playerPush = false telemetry
   -> actor-frame/final evidence requires playerPush = false
-  -> pnpm qa:trace passes 517/517 artifacts, 486 required and 31 optional
-  -> official Elecbyte docs define PlayerPush value as a one-tick push-checking flag and numeric controller params as expression-capable
   -> no score movement; exact push overlap, team/helper ownership, exact tick order, score movement, and full constraint parity remain blocked
 
 R1 required dynamic Width typed-collision trace gate

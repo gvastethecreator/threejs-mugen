@@ -6067,6 +6067,47 @@ export function createSyntheticImportedDynamicPlayerPushTraceArtifact(
   );
 }
 
+export function createSyntheticImportedDynamicPosFreezeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-posfreeze-dynamic",
+      displayName: "Synthetic Imported Dynamic PosFreeze",
+      withDynamicPosFreeze: {
+        x: "var(0)",
+        y: "var(1)",
+        vars: [
+          { index: 0, value: 1 },
+          { index: 1, value: 0 },
+        ],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-posfreeze-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic PosFreeze route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "PosFreeze", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "bounds:posfreeze", "hitdef"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          animNo: 200,
+          posFreezeX: true,
+          posFreezeY: false,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic PosFreeze trace proves active x/y params can resolve through expression fallback, emit typed bounds:posfreeze telemetry, and expose bounded one-frame axis-freeze actor telemetry. It does not claim exact MUGEN/IKEMEN tick-order, pause/hitpause, helper/team ownership, or full constraint VM parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedTurnTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -38349,6 +38390,12 @@ export type SyntheticImportedTraceFighterOptions = {
     value: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withDynamicPosFreeze?: {
+    value?: string;
+    x?: string;
+    y?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withTurn?: boolean;
   withSprPriority?: number;
   withDynamicSprPriority?: {
@@ -38708,6 +38755,7 @@ ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(opti
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
+${options.withDynamicPosFreeze === undefined ? "" : dynamicPosFreezeControllerBlock(options.withDynamicPosFreeze)}
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.hitDefDynamicSoundVarSeed === undefined ? "" : dynamicHitDefSoundSeedBlock(options.hitDefDynamicSoundVarSeed)}
 ${options.superPauseSoundVarSeed === undefined ? "" : superPauseSoundVarSeedBlock(options.superPauseSoundVarSeed)}
@@ -40205,6 +40253,34 @@ value = ${seed.value}
 type = PlayerPush
 trigger1 = Time >= 0
 value = ${options.value}
+`;
+}
+
+function dynamicPosFreezeControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicPosFreeze"]>): string {
+  const vars =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic PosFreeze Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  const params = [
+    options.value === undefined ? "" : `value = ${options.value}`,
+    options.x === undefined ? "" : `x = ${options.x}`,
+    options.y === undefined ? "" : `y = ${options.y}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return `${vars}
+[State 200, Dynamic PosFreeze Probe]
+type = PosFreeze
+trigger1 = Time >= 0
+${params}
 `;
 }
 

@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic PosFreeze typed bounds telemetry
+
+Changed:
+
+- Added required `synthetic-imported-posfreeze-dynamic.json` for bounded active imported dynamic `PosFreeze x/y` typed bounds telemetry.
+- `RuntimeBoundsControllerWorld.applyPosFreezeController` now returns the resolved bounded `bounds:posfreeze` operation after applying typed or raw `value` / `x` / `y` params.
+- `RuntimeControllerDispatchWorld` now records dynamic `PosFreeze` operation telemetry through `resolveRuntimePosFreezeControllerOperation`.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `bounds:posfreeze`, and `hitdef` evidence plus actor-frame/final `posFreezeX = true`, `posFreezeY = false`.
+- `qa_traces` now treats `synthetic-imported-posfreeze-dynamic` as a required critical artifact.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, and the active R1 issue slice around checksum `8de0c2e9` / final checksum `6c40bb79`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents `PosFreeze value` as the temporary position-freeze flag.
+- Focused tests: `pnpm exec vitest run src/tests/BoundsControllerSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern PosFreeze` -> 2 files / 4 tests passed, 513 skipped.
+- Broad regression: `pnpm test` -> 153 files / 1479 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 518/518 artifacts, 487 required and 31 optional.
+- Trace artifact: `synthetic-imported-posfreeze-dynamic.json` checksum `8de0c2e9`, initial checksum `11ea7878`, final checksum `6c40bb79`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `PosFreeze x = var(0), y = var(1)` can resolve owner-local vars through runtime expression fallback, record typed `bounds:posfreeze` telemetry after resolution, and preserve actor-frame/final `posFreezeX = true`, `posFreezeY = false` telemetry.
+
+Claim blocked:
+
+- Exact PosFreeze tick order, pause/hitpause behavior, helper/team ownership, dynamic `ScreenBound` params, exact screen/camera interaction, score movement, and full MUGEN/IKEMEN constraint parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `PosFreeze` had typed bounds evidence and dynamic raw params could affect actor freeze flags, but the dynamic active-state route lacked required typed operation evidence.
+- Quality delta: the same bounded route now closes the operation-telemetry gap without broadening exact constraint timing or camera semantics.
+- Adjacent surface checked: static PosFreeze typed operation handling, dynamic PlayerPush and Width typed fallback, bounds-controller raw fallback defaults, generic active controller operation recording, actor-frame/final posFreeze trace requirements, QA coverage matrix, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 518/518 artifacts, 487 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap, likely dynamic `ScreenBound` or the next small constraint trace. Do not start exact PosFreeze tick-order, pause/hitpause, helper/team, or camera parity until the constraint VM ownership decision is explicit.
+
 ## 2026-07-08 - Dynamic PlayerPush typed collision telemetry
 
 Changed:

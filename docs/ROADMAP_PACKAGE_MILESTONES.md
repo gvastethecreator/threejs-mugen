@@ -35,6 +35,20 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic PosFreeze typed-bounds trace gate
+-> synthetic-imported-posfreeze-dynamic.json checksum 8de0c2e9 / final checksum 6c40bb79 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(0)=1 and var(1)=0, and executes PosFreeze x = var(0), y = var(1)
+-> gate requires ChangeState, VarSet, PosFreeze, HitDef, variable:varset, bounds:posfreeze, and hitdef evidence plus actor-frame/final posFreezeX true / posFreezeY false telemetry
+-> pnpm qa:trace passes 518/518 artifacts, 487 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosFreeze value as the position-freeze flag/default
+-> no score movement; exact tick order, pause/hitpause behavior, helper/team ownership, exact screen/camera interaction, score movement, and full constraint parity remain blocked
+
+R1 required dynamic PlayerPush typed-collision trace gate
+-> synthetic-imported-playerpush-dynamic.json checksum b7775652 / final checksum 92aca1cd remains required in qa:trace
+-> imported active state seeds var(0)=0 and executes PlayerPush value = var(0)
+-> gate requires typed collision:playerpush evidence and actor-frame/final playerPush false telemetry
+-> no score movement; exact push overlap, team/helper ownership, exact tick order, score movement, and full constraint parity remain blocked
+
 R1 required helper dynamic PosAdd typed-telemetry trace gate
 -> synthetic-imported-helper-dynamic-posadd.json checksum 97ec15d0 is required in qa:trace
 -> imported State -1 presses x, spawns a first-generation visual Helper, seeds helper position with PosSet, and executes helper-local PosAdd x = Parent,Life - 984, y = Root,StateNo - 220
@@ -494,23 +508,23 @@ Previous R1 required dynamic sound-pan trace gate
   -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
   -> no score movement; typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
-Current R1 required dynamic PlayerPush typed-collision trace gate
+Previous R1 required dynamic PlayerPush typed-collision trace gate
   -> synthetic-imported-playerpush-dynamic.json checksum b7775652 / final checksum 92aca1cd is required in qa:trace
   -> imported active state seeds var(0)=0
   -> active state executes PlayerPush value = var(0)
   -> dynamic PlayerPush resolves through runtime expression fallback and now records typed collision:playerpush evidence after resolution
   -> actor-frame/final evidence requires playerPush = false
-  -> current checkpoint passed 517/517 artifacts, 486 required and 31 optional
+  -> that checkpoint passed 517/517 artifacts, 486 required and 31 optional
   -> official Elecbyte docs define PlayerPush value as a one-tick push-checking flag and numeric controller params as expression-capable
   -> no score movement; exact overlap resolution, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
-Current R1 required dynamic Width typed-collision trace gate
+Previous R1 required dynamic Width typed-collision trace gate
   -> synthetic-imported-width-dynamic.json checksum 51554c91 / final checksum 84a85277 remains required in qa:trace
   -> imported active state seeds var(0)=21 and var(1)=43
   -> active state executes Width player = var(0),var(1)
   -> dynamic Width resolves through active controller expression fallback and now records typed collision:width evidence after resolution
   -> actor-frame/final evidence requires bodyWidth front 21 and back 43
-  -> current checkpoint passed 517/517 artifacts, 486 required and 31 optional
+  -> that checkpoint passed 517/517 artifacts, 486 required and 31 optional
   -> official Elecbyte docs define Width as a temporary width-bar change with player/value params and numeric controller params as expression-capable
   -> no score movement; edge width parity, exact push overlap, team/helper ownership, exact tick order, and full constraint parity remain blocked
 

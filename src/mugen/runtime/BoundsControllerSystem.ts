@@ -9,7 +9,7 @@ export type RuntimeBoundsControllerSource = Pick<ControllerIr, "params" | "type"
 export type RuntimeBoundsControllerResult = {
   applied: boolean;
   controllerType?: BoundsControllerOp["controllerType"] | Extract<CollisionControllerOp, { controllerType: "playerpush" }>["controllerType"];
-  operation?: Extract<CollisionControllerOp, { controllerType: "playerpush" }>;
+  operation?: BoundsControllerOp | Extract<CollisionControllerOp, { controllerType: "playerpush" }>;
 };
 
 export class RuntimeBoundsControllerWorld {
@@ -30,15 +30,12 @@ export class RuntimeBoundsControllerWorld {
     operation?: Extract<BoundsControllerOp, { controllerType: "posfreeze" }>,
     context: RuntimeControllerEvaluationContext = {},
   ): RuntimeBoundsControllerResult {
-    const value = operation ? undefined : numberParam(controller, state, context, "value");
-    const x = operation ? undefined : numberParam(controller, state, context, "x");
-    const y = operation ? undefined : numberParam(controller, state, context, "y");
-    const freeze = value !== undefined ? value !== 0 : x === undefined && y === undefined;
+    const appliedOperation = operation ?? resolveRuntimePosFreezeControllerOperation(controller, state, context);
     state.posFreeze = {
-      x: operation?.x ?? (value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze),
-      y: operation?.y ?? (value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze),
+      x: appliedOperation.x,
+      y: appliedOperation.y,
     };
-    return { applied: true, controllerType: "posfreeze" };
+    return { applied: true, controllerType: "posfreeze", operation: appliedOperation };
   }
 
   applyScreenBoundController(
@@ -66,6 +63,23 @@ export function resolveRuntimePlayerPushControllerOperation(
     kind: "collision",
     controllerType: "playerpush",
     enabled: (numberParam(controller, state, context, "value") ?? 1) !== 0,
+  };
+}
+
+export function resolveRuntimePosFreezeControllerOperation(
+  controller: RuntimeBoundsControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): Extract<BoundsControllerOp, { controllerType: "posfreeze" }> {
+  const value = numberParam(controller, state, context, "value");
+  const x = numberParam(controller, state, context, "x");
+  const y = numberParam(controller, state, context, "y");
+  const freeze = value !== undefined ? value !== 0 : x === undefined && y === undefined;
+  return {
+    kind: "bounds",
+    controllerType: "posfreeze",
+    x: value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze,
+    y: value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze,
   };
 }
 

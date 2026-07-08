@@ -856,6 +856,11 @@ async function main() {
       artifact: presets.createSyntheticImportedBoundsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-posfreeze-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicPosFreezeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-screenbound-camera",
       required: true,
       artifact: presets.createSyntheticImportedScreenBoundCameraTraceArtifact(),
@@ -3833,6 +3838,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitfall-recover-true",
     "synthetic-imported-default-fall-official-recovery-too-early",
     "synthetic-imported-bounds",
+    "synthetic-imported-posfreeze-dynamic",
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-gravity",
     "synthetic-imported-kinematic",
