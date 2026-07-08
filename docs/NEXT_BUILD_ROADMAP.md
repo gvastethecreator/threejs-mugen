@@ -27,14 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required ModifyProjectile dynamic params trace gate
-  -> synthetic-imported-modifyprojectile-dynamic-params.json checksum 6ffbef92 / final checksum 5665a98e is required in qa:trace
-  -> owner-side ModifyProjectile resolves dynamic projid, velocity, accel, velmul, projscale, projremovetime, sprpriority, projpriority, projhits, projmisstime, and projremove
-  -> payload/frame evidence requires removeTime = 42, spritePriority = 7, priority = 5, hitsRemaining = 6, scale = 3,1, removeOnHit = false, and observed projectile velocity after mutation
-  -> pnpm qa:trace passes 501/501 artifacts, 470 required and 31 optional
-  -> paired dynamic bounds gates remain helper synthetic-imported-helper-modifyprojectile-dynamic-bounds.json checksum f582153e / final checksum adc63407 and owner synthetic-imported-modifyprojectile-dynamic-bounds.json checksum e2f7a077 / final checksum aa78704a
+R1 required Helper ModifyProjectile dynamic params trace gate
+  -> synthetic-imported-helper-modifyprojectile-dynamic-params.json checksum 2d88a550 / final checksum edb6d2d2 is required in qa:trace
+  -> helper-local ModifyProjectile resolves Parent/Root dynamic projid, velocity, accel, velmul, projscale, projremovetime, sprpriority, projpriority, projhits, projmisstime, and projremove
+  -> payload/frame evidence requires removeTime = 46, spritePriority = 9, priority = 5, hitsRemaining = 6, scale = 3,1, removeOnHit = false, helper-parented Projectile lifecycle, and observed projectile velocity after mutation
+  -> pnpm qa:trace passes 502/502 artifacts, 471 required and 31 optional
+  -> paired owner/helper dynamic params and bounds gates remain owner synthetic-imported-modifyprojectile-dynamic-params.json checksum 6ffbef92 / final checksum 5665a98e, helper bounds f582153e / adc63407, and owner bounds e2f7a077 / aa78704a
   -> official Elecbyte docs define numeric controller-expression behavior and controller-param evaluation at trigger time
-  -> no score movement; required helper-local dynamic non-bound trace coverage, default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full Projectile parity remain blocked
+  -> no score movement; default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, team/simul helper selection, and full Projectile parity remain blocked
 
 Previous R1 required Projectile localcoord default bounds trace gates
   -> synthetic-imported-projectile-localcoord-default-bounds-terminal.json checksum af7ee80e / final checksum 3fcb4661 and synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json checksum 46b0164c / final checksum b1531c44 are required in qa:trace

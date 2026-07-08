@@ -30098,6 +30098,131 @@ export function createSyntheticImportedHelperProjHitTimeAnyTraceArtifact(options
   });
 }
 
+export function createSyntheticImportedHelperModifyProjectileDynamicParamsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-dynamic-params-attacker",
+    displayName: "Synthetic Imported Helper Dynamic ModifyProjectile Params Attacker",
+    withHelper: true,
+    helperModifyProjectileRoute: {
+      modifyStateNo: 1214,
+      modifyAnimNo: 934,
+      finalStateNo: 1215,
+      finalAnimNo: 935,
+      projectileAnimNo: 945,
+      projectileId: 8852,
+      ownerVarSeeds: [
+        { index: 0, value: 8852 },
+        { index: 1, value: 10 },
+        { index: 2, value: -3 },
+        { index: 3, value: 1 },
+        { index: 4, value: 0 },
+        { index: 5, value: 2 },
+        { index: 6, value: 1 },
+        { index: 7, value: 3 },
+        { index: 8, value: 1 },
+        { index: 9, value: 46 },
+        { index: 10, value: 9 },
+        { index: 11, value: 5 },
+        { index: 12, value: 6 },
+        { index: 13, value: 8 },
+        { index: 14, value: 0 },
+      ],
+      modifyProjectileId: "Parent,Var(0)",
+      velocity: ["Root,Var(1)", "Parent,Var(2)"],
+      accel: ["Root,Var(3)", "Parent,Var(4)"],
+      velocityMultiplier: ["Root,Var(5)", "Parent,Var(6)"],
+      scale: ["Root,Var(7)", "Parent,Var(8)"],
+      edgeBound: 28,
+      stageBound: 24,
+      heightBound: [-120, 60],
+      removeTime: "Root,Var(9)",
+      spritePriority: "Parent,Var(10)",
+      priority: "Root,Var(11)",
+      hits: "Parent,Var(12)",
+      missTime: "Root,Var(13)",
+      removeOnHit: "Parent,Var(14)",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-dynamic-params-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-dynamic-params-golden",
+      label: "Synthetic imported Helper dynamic ModifyProjectile params route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper dynamic ModifyProjectile params trace proves the bounded helper-local micro-VM can resolve Parent/Root redirected projectile selection, velocity, acceleration, velocity multiplier, projectile scale, remove time, sprite priority, projectile priority, hit budget, miss time, and remove-on-hit expressions while mutating a helper-parented owner-side Projectile payload. It does not claim helper-owned Projectile combat/contact presentation, default-bound reset semantics, exact namespace breadth, team/simul helper selection, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-modifyprojectile-dynamic-params-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "Helper"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935, minFrames: 1 },
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 945,
+            moveType: "A",
+            minFrames: 1,
+            observedVelXAtLeast: 9,
+            observedScaleXAtLeast: 3,
+            observedScaleXAtMost: 3,
+            observedScaleYAtLeast: 1,
+            observedScaleYAtMost: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 8852,
+            minAge: 3,
+            minRemoveTime: 46,
+            minSpritePriority: 9,
+            minPriority: 5,
+            minHitsRemaining: 6,
+            maxHitsRemaining: 6,
+            hasHit: false,
+            scaleX: 3,
+            scaleY: 1,
+            edgeBound: 28,
+            stageBound: 24,
+            heightBound: { low: -120, high: 60 },
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileHitOverrideP2StateNoTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -37085,20 +37210,21 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileId?: number;
     pos?: [number, number];
     modifyTriggerTime?: number;
-    velocity?: [number, number];
-    accel?: [number, number];
-    velocityMultiplier?: [number, number];
-    scale?: [number, number];
-    edgeBound?: number | string;
-    stageBound?: number | string;
-    heightBound?: [number | string, number | string];
+    modifyProjectileId?: SyntheticNumberExpression;
+    velocity?: SyntheticPairExpression;
+    accel?: SyntheticPairExpression;
+    velocityMultiplier?: SyntheticPairExpression;
+    scale?: SyntheticPairExpression;
+    edgeBound?: SyntheticNumberExpression;
+    stageBound?: SyntheticNumberExpression;
+    heightBound?: SyntheticPairExpression;
     ownerVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
-    removeTime?: number;
-    spritePriority?: number;
-    priority?: number;
-    hits?: number;
-    missTime?: number;
-    removeOnHit?: boolean;
+    removeTime?: SyntheticNumberExpression;
+    spritePriority?: SyntheticNumberExpression;
+    priority?: SyntheticNumberExpression;
+    hits?: SyntheticNumberExpression;
+    missTime?: SyntheticNumberExpression;
+    removeOnHit?: boolean | SyntheticNumberExpression;
   };
   helperProjHitRoute?: {
     waitStateNo: number;
@@ -42297,6 +42423,7 @@ function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTr
   const modifyAnimNo = route.modifyAnimNo ?? route.modifyStateNo;
   const finalAnimNo = route.finalAnimNo ?? route.finalStateNo;
   const projectileId = route.projectileId ?? 8852;
+  const modifyProjectileId = route.modifyProjectileId ?? projectileId;
   const pos = route.pos ?? [22, -20];
   const modifyTriggerTime = route.modifyTriggerTime ?? 2;
   const velocity = route.velocity ?? [9, -1];
@@ -42312,6 +42439,7 @@ function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTr
   const hits = route.hits ?? 3;
   const missTime = route.missTime ?? 5;
   const removeOnHit = route.removeOnHit ?? false;
+  const removeOnHitValue = typeof removeOnHit === "boolean" ? (removeOnHit ? 1 : 0) : removeOnHit;
   return `
 [Statedef 1200]
 type = S
@@ -42350,7 +42478,7 @@ ctrl = 0
 [State ${route.modifyStateNo}, Helper ModifyProjectile]
 type = ModifyProjectile
 trigger1 = Time = ${modifyTriggerTime}
-projid = ${projectileId}
+projid = ${modifyProjectileId}
 velocity = ${velocity[0]},${velocity[1]}
 accel = ${accel[0]},${accel[1]}
 velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}
@@ -42363,7 +42491,7 @@ sprpriority = ${spritePriority}
 projpriority = ${priority}
 projhits = ${hits}
 projmisstime = ${missTime}
-projremove = ${removeOnHit ? 1 : 0}
+projremove = ${removeOnHitValue}
 
 [State ${route.modifyStateNo}, Helper ModifyProjectile Final]
 type = ChangeState

@@ -1,5 +1,42 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Helper ModifyProjectile dynamic params trace gate
+
+Changed:
+
+- Added required trace artifact `synthetic-imported-helper-modifyprojectile-dynamic-params.json` and registered it in `pnpm qa:trace`.
+- Extended the synthetic helper `ModifyProjectile` route so the spawned Projectile id can stay static while the `ModifyProjectile` selection id resolves as an expression through `modifyProjectileId`.
+- Allowed helper `ModifyProjectile` route fields to emit `Parent` / `Root` expression-backed `projid`, `velocity`, `accel`, `velmul`, `projscale`, `projremovetime`, `sprpriority`, `projpriority`, `projhits`, `projmisstime`, and `projremove` values.
+- Preserved existing static helper routes by keeping defaults numeric and only converting boolean `projremove` values to `0` / `1` when the input is boolean.
+
+Evidence:
+
+- Official docs already checked for this R1 slice: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) states numeric controller parameters can generally be arithmetic expressions unless a parameter says otherwise; [Elecbyte CNS Format](https://www.elecbyte.com/mugendocs-11b1/cns.html) documents controller params evaluating when the controller triggers and comma-list evaluation order.
+- Focused preset test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper dynamic ModifyProjectile params"` -> 1 test passed.
+- Focused ModifyProjectile regression: `pnpm vitest run src/tests/ProjectileSystem.test.ts src/tests/EffectSpawnSystem.test.ts src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ModifyProjectile"` -> 4 files / 13 tests passed.
+- Full tests: `pnpm test` -> 151 files / 1451 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 502/502 artifacts, 471 required and 31 optional.
+- Diff hygiene: `git diff --check` passed with only existing CRLF-normalization warnings on touched files.
+- Trace artifact: `synthetic-imported-helper-modifyprojectile-dynamic-params.json` checksum `2d88a550`, final checksum `edb6d2d2`; previous owner dynamic params gate remains `synthetic-imported-modifyprojectile-dynamic-params.json` checksum `6ffbef92`, final checksum `5665a98e`.
+
+Claim allowed:
+
+- Bounded helper-local `ModifyProjectile` can resolve `Parent` / `Root` redirected dynamic projectile selection, motion, scale, remove time, sprite priority, projectile priority, hit budget, miss time, and remove-on-hit expressions and mutate a helper-parented live Projectile.
+
+Claim blocked:
+
+- Default-bound reset semantics through `ModifyProjectile`, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, team/simul helper selection, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 502/502 artifacts, 471 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Continue R1 with default-reset `ModifyProjectile` bounds semantics, exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal/cancel tick-order, team/simul breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-08 - ModifyProjectile dynamic params trace gate
 
 Changed:
