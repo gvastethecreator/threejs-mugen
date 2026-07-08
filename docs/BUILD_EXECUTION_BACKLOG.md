@@ -1,5 +1,49 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic Width typed collision telemetry
+
+Changed:
+
+- Upgraded required `synthetic-imported-width-dynamic.json` from body-width-only fallback evidence to runtime-resolved typed `collision:width` telemetry.
+- `RuntimeActorConstraintWorld.applyWidth` now returns the resolved bounded `collision:width` operation after applying `player` / `value` params.
+- `RuntimeActorConstraintControllerDispatchWorld` now records dynamic Width operation telemetry after expression fallback resolves owner-local vars.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `collision:width`, and `hitdef` evidence for the dynamic Width route.
+- Updated roadmap, support registry, QA gates, scorecard, progress tracker, supported features, architecture docs, workplan, continuity docs, and the active R1 issue slice around checksum `51554c91` / final checksum `84a85277`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents `Width` as a temporary width-bar change with `edge`, `player`, and alternate `value` params.
+- Focused tests: `pnpm exec vitest run src/tests/ActorConstraintSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "dynamic active Width|dynamic Width"` -> 2 files / 2 tests passed, 514 skipped.
+- Broad regression: `pnpm test` -> 153 files / 1477 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 517/517 artifacts, 486 required and 31 optional.
+- Trace artifact: `synthetic-imported-width-dynamic.json` checksum `51554c91`, final checksum `84a85277`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `Width player = var(0),var(1)` can resolve owner-local vars through active expression fallback, record typed `collision:width` telemetry after resolution, and preserve actor-frame/final body-width telemetry `front = 21`, `back = 43`.
+
+Claim blocked:
+
+- `edge` width parity, exact push overlap, team/helper ownership, exact tick order, score movement, and full MUGEN/IKEMEN constraint parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: dynamic Width already resolved into body-width telemetry, but lacked typed operation evidence.
+- Quality delta: the same required route now closes the operation-telemetry gap without broadening exact collision semantics.
+- Adjacent surface checked: static Width typed operation handling, dynamic PlayerPush fallback boundaries, actor constraint dispatch, operation telemetry recording, body-width trace requirements, QA coverage matrix, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 517/517 artifacts, 486 required and 31 optional. This adds no new trace count and does not move scores; it tightens an existing required artifact. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not start exact `Width edge` / push-overlap parity until the constraint VM ownership decision is explicit.
+
 ## 2026-07-08 - Helper dynamic PosAdd typed telemetry
 
 Changed:

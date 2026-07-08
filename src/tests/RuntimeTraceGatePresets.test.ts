@@ -10258,7 +10258,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors.some((actor) => actor.bodyWidth?.front === 18 && actor.bodyWidth.back === 44)).toBe(true);
   });
 
-  it("creates a synthetic imported dynamic Width artifact without typed collision evidence", () => {
+  it("creates a synthetic imported dynamic Width artifact with typed collision evidence", () => {
     const artifact = createSyntheticImportedDynamicWidthTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -10279,7 +10279,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
     expect(evidence?.executedControllers.Width).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
-    expect(evidence?.executedOperations["collision:width"]).toBeUndefined();
+    expect(evidence?.executedOperations["collision:width"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

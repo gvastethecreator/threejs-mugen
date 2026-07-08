@@ -40,7 +40,7 @@ export class RuntimeActorConstraintWorld {
     controller: MugenStateController,
     operation?: Extract<CollisionControllerOp, { controllerType: "width" }>,
     resolveWidth?: RuntimeWidthResolver,
-  ): void {
+  ): Extract<CollisionControllerOp, { controllerType: "width" }> | undefined {
     const pair = operation
       ? undefined
       : resolveWidth?.resolvePair("player") ??
@@ -48,12 +48,19 @@ export class RuntimeActorConstraintWorld {
         numberPair(findControllerParam(controller, "player") ?? findControllerParam(controller, "value"));
     const front = operation?.front ?? pair?.[0];
     if (front === undefined) {
-      return;
+      return undefined;
     }
-    state.bodyWidth = {
+    const appliedOperation: Extract<CollisionControllerOp, { controllerType: "width" }> = {
+      kind: "collision",
+      controllerType: "width",
       front: clampBodyWidth(front),
       back: clampBodyWidth(operation?.back ?? pair?.[1] ?? front),
     };
+    state.bodyWidth = {
+      front: appliedOperation.front,
+      back: appliedOperation.back,
+    };
+    return appliedOperation;
   }
 
   preserveFrozenPosition(state: RuntimeActorConstraintState, tickStartPos: { x: number; y: number }): void {
@@ -99,13 +106,18 @@ export class RuntimeActorConstraintControllerDispatchWorld {
         ? options.controller.operation
         : undefined;
     options.recordController?.(options.actor, options.controller.source);
-    if (operation) {
-      options.recordOperation?.(options.actor, operation);
+    const appliedOperation = options.actorConstraintWorld.applyWidth(
+      options.actor.runtime,
+      options.controller.source,
+      operation,
+      options.resolveWidth,
+    );
+    if (appliedOperation) {
+      options.recordOperation?.(options.actor, appliedOperation);
     }
-    options.actorConstraintWorld.applyWidth(options.actor.runtime, options.controller.source, operation, options.resolveWidth);
     return {
       recordedController: Boolean(options.recordController),
-      recordedOperation: Boolean(operation && options.recordOperation),
+      recordedOperation: Boolean(appliedOperation && options.recordOperation),
     };
   }
 }

@@ -5914,7 +5914,7 @@ export function createSyntheticImportedDynamicWidthTraceArtifact(options: Runtim
       targetLabel: "Synthetic imported dynamic Width route",
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "VarSet", "Width", "HitDef"],
-      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredExecutedOperations: ["variable:varset", "collision:width", "hitdef"],
       requiredActorFrames: [
         {
           actorId: "p1",
@@ -5927,7 +5927,7 @@ export function createSyntheticImportedDynamicWidthTraceArtifact(options: Runtim
         },
       ],
       notes: [
-        "Synthetic imported dynamic Width trace proves active Width player params can resolve through expression fallback and update bounded body-width telemetry without typed collision:width evidence. It does not claim dynamic typed-operation lowering, edge width parity, exact push overlap, helper/team ownership, or tick-order parity.",
+        "Synthetic imported dynamic Width trace proves active Width player params can resolve through expression fallback, emit typed collision:width telemetry with the resolved body-width pair, and update bounded body-width telemetry. It does not claim edge width parity, exact push overlap, helper/team ownership, or tick-order parity.",
       ],
     },
   );

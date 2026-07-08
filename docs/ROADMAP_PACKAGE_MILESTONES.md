@@ -504,15 +504,15 @@ Previous R1 required dynamic PlayerPush trace gate
   -> official Elecbyte docs define PlayerPush value as a one-tick push-checking flag and numeric controller params as expression-capable
   -> no score movement; dynamic typed-operation lowering for PlayerPush, exact overlap resolution, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
-Previous R1 required dynamic Width trace gate
-  -> synthetic-imported-width-dynamic.json checksum 79baa5de / final checksum 395b0b1a remains required in qa:trace
+Current R1 required dynamic Width typed-collision trace gate
+  -> synthetic-imported-width-dynamic.json checksum 51554c91 / final checksum 84a85277 remains required in qa:trace
   -> imported active state seeds var(0)=21 and var(1)=43
   -> active state executes Width player = var(0),var(1)
-  -> dynamic Width resolves through active controller expression fallback instead of typed collision:width evidence
+  -> dynamic Width resolves through active controller expression fallback and now records typed collision:width evidence after resolution
   -> actor-frame/final evidence requires bodyWidth front 21 and back 43
-  -> that checkpoint passed 452/452 artifacts, 422 required and 30 optional
+  -> current checkpoint passed 517/517 artifacts, 486 required and 31 optional
   -> official Elecbyte docs define Width as a temporary width-bar change with player/value params and numeric controller params as expression-capable
-  -> no score movement; dynamic typed-operation lowering for Width, edge width parity, exact push overlap, team/helper ownership, exact tick order, and full constraint parity remain blocked
+  -> no score movement; edge width parity, exact push overlap, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
 Previous R1 required dynamic EnvColor trace gate
   -> synthetic-imported-envcolor-dynamic.json checksum dbe548a7 / final checksum 2ff8dd42 is required in qa:trace
