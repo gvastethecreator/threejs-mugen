@@ -27,6 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required dynamic StateTypeSet typed-metadata trace gate
+  -> synthetic-imported-statetypeset-dynamic.json checksum 577404e4 / final checksum 083a76de is required in qa:trace
+  -> imported active state seeds var(0)=1, var(1)=1, and var(2)=1
+  -> active state executes StateTypeSet statetype = IfElse(var(0), C, S), movetype = IfElse(var(1), A, I), physics = IfElse(var(2), N, S)
+  -> dynamic StateTypeSet resolves through runtime expression fallback, records typed metadata:statetypeset evidence, and preserves stateType C / moveType A / physics N telemetry
+  -> actor-frame/final evidence requires C/A/N metadata
+  -> pnpm qa:trace passes 520/520 artifacts, 489 required and 31 optional
+  -> official Elecbyte docs define StateTypeSet statetype/movetype/physics metadata and IfElse branch-return semantics
+  -> no score movement; broad string-param parity, exact physics side effects, exact tick order, helper/team/redirect ownership, score movement, and full StateTypeSet parity remain blocked
+
 R1 required dynamic ScreenBound typed-bounds trace gate
   -> synthetic-imported-screenbound-dynamic.json checksum 9797bdfe / final checksum d76b641a is required in qa:trace
   -> imported active state seeds var(0)=0, var(1)=0, and var(2)=1
@@ -2502,7 +2512,7 @@ R2 RuntimeStateTypeWorld ownership extraction
   -> StateControllerExecutor delegates typed metadata operations and raw-param fallback mutations to the world
   -> executor still owns controller routing and broad runtime-controller execution
   -> focused StateTypeSystem coverage proves typed setup, raw case-normalized fallback, and invalid raw no-op behavior
-  -> no dynamic metadata expressions, helper/team/redirect ownership, exact physics/tick-order interactions, full StateTypeSet parity, or score movement claim
+  -> no broad dynamic metadata expressions beyond the bounded enum-expression gate, helper/team/redirect ownership, exact physics/tick-order interactions, full StateTypeSet parity, or score movement claim
 R2 RuntimeDamageScaleWorld ownership extraction
   -> RuntimeDamageScaleWorld now owns bounded passive AttackMulSet/DefenceMulSet multiplier setup
   -> StateControllerExecutor delegates typed damage-scale operations and raw-param fallback mutations to the world

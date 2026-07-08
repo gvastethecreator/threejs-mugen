@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { MetadataControllerOp } from "../mugen/compiler/ControllerOps";
-import { RuntimeStateTypeWorld, type RuntimeStateTypeControllerSource } from "../mugen/runtime/StateTypeSystem";
+import {
+  resolveRuntimeStateTypeSetControllerOperation,
+  RuntimeStateTypeWorld,
+  type RuntimeStateTypeControllerSource,
+} from "../mugen/runtime/StateTypeSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeStateTypeWorld", () => {
@@ -40,6 +44,33 @@ describe("RuntimeStateTypeWorld", () => {
     expect(state.stateType).toBe("A");
     expect(state.moveType).toBe("H");
     expect(state.physics).toBe("C");
+  });
+
+  it("resolves dynamic StateTypeSet metadata from bounded expression fallback", () => {
+    const world = new RuntimeStateTypeWorld();
+    const state = runtime({ vars: [1, 1, 1] });
+    const source = controller({
+      statetype: "IfElse(var(0), C, S)",
+      movetype: "IfElse(var(1), A, I)",
+      physics: "IfElse(var(2), N, S)",
+    });
+
+    expect(resolveRuntimeStateTypeSetControllerOperation(source, state)).toEqual({
+      kind: "metadata",
+      controllerType: "statetypeset",
+      stateType: "C",
+      moveType: "A",
+      physics: "N",
+    });
+    expect(world.applyController(state, source)).toEqual({
+      applied: true,
+      stateType: "C",
+      moveType: "A",
+      physics: "N",
+    });
+    expect(state.stateType).toBe("C");
+    expect(state.moveType).toBe("A");
+    expect(state.physics).toBe("N");
   });
 
   it("does not mutate invalid raw metadata", () => {

@@ -104,7 +104,7 @@ export function executeControllerIr(
       value: operation?.value ?? (numberParam(controller, next, context, "value") ?? 0) !== 0,
     });
   } else if (type === "statetypeset") {
-    stateTypeWorld.applyController(next, controller, metadataOperation(controller, "statetypeset"));
+    stateTypeWorld.applyController(next, controller, metadataOperation(controller, "statetypeset"), context);
   } else if (type === "lifeadd") {
     const operation = resourceOperation(controller, "lifeadd");
     const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;

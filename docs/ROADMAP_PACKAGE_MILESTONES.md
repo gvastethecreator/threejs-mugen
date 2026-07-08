@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic StateTypeSet typed-metadata trace gate
+-> synthetic-imported-statetypeset-dynamic.json checksum 577404e4 / final checksum 083a76de is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(0)=1, var(1)=1, and var(2)=1, then executes StateTypeSet statetype = IfElse(var(0), C, S), movetype = IfElse(var(1), A, I), physics = IfElse(var(2), N, S)
+-> gate requires ChangeState, VarSet, StateTypeSet, HitDef, variable:varset, metadata:statetypeset, and hitdef evidence plus actor-frame stateType C / moveType A / physics N telemetry
+-> pnpm qa:trace passes 520/520 artifacts, 489 required and 31 optional
+-> official Elecbyte State Controller Reference defines StateTypeSet statetype/movetype/physics metadata, and Elecbyte Trigger Reference defines IfElse branch-return semantics
+-> no score movement; broad string-param parity, exact physics side effects, exact tick order, helper/team/redirect ownership, score movement, and full StateTypeSet parity remain blocked
+
 R1 required dynamic ScreenBound typed-bounds trace gate
 -> synthetic-imported-screenbound-dynamic.json checksum 9797bdfe / final checksum d76b641a is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds var(0)=0, var(1)=0, and var(2)=1, executes ScreenBound value = var(0), movecamera = var(1),var(2), then PosAdd x = 65
@@ -2526,7 +2534,7 @@ R2 RuntimeStateTypeWorld ownership extraction
   -> StateControllerExecutor delegates typed metadata operations and raw-param fallback mutations to the world
   -> executor still owns controller routing and broad runtime-controller execution
   -> focused StateTypeSystem coverage proves typed setup, raw case-normalized fallback, and invalid raw no-op behavior
-  -> no dynamic metadata expressions, helper/team/redirect ownership, exact physics/tick-order interactions, full StateTypeSet parity, or score claim
+  -> no broad dynamic metadata expressions beyond the bounded enum-expression gate, helper/team/redirect ownership, exact physics/tick-order interactions, full StateTypeSet parity, or score claim
 R2 RuntimeDamageScaleWorld ownership extraction
   -> RuntimeDamageScaleWorld now owns bounded passive AttackMulSet/DefenceMulSet multiplier setup
   -> StateControllerExecutor delegates typed damage-scale operations and raw-param fallback mutations to the world

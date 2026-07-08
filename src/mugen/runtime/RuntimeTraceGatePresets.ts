@@ -6052,6 +6052,65 @@ export function createSyntheticImportedStateTypeSetTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedDynamicStateTypeSetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-statetypeset-dynamic",
+    displayName: "Synthetic Imported Dynamic StateTypeSet",
+    withDynamicStateTypeSet: {
+      vars: [
+        { index: 0, value: 1 },
+        { index: 1, value: 1 },
+        { index: 2, value: 1 },
+      ],
+      stateType: "IfElse(var(0), C, S)",
+      moveType: "IfElse(var(1), A, I)",
+      physics: "IfElse(var(2), N, S)",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-statetypeset-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-statetypeset-dynamic-golden",
+      label: "Synthetic imported dynamic StateTypeSet route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic StateTypeSet trace proves bounded enum expressions can resolve through runtime expression fallback, emit typed metadata:statetypeset telemetry, and update stateType/moveType/physics. It does not claim broad string-param parity, exact physics side effects, helper/team ownership, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-statetypeset-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "StateTypeSet", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "metadata:statetypeset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            stateType: "C",
+            moveType: "A",
+            physics: "N",
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedPlayerPushTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -38454,6 +38513,12 @@ export type SyntheticImportedTraceFighterOptions = {
     vars?: Array<{ index: number; value: number }>;
   };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
+  withDynamicStateTypeSet?: {
+    stateType?: string;
+    moveType?: string;
+    physics?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withPlayerPush?: boolean;
   withDynamicPlayerPush?: {
     value: string;
@@ -38828,6 +38893,7 @@ ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bott
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
+${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.withDynamicPosFreeze === undefined ? "" : dynamicPosFreezeControllerBlock(options.withDynamicPosFreeze)}
@@ -40294,6 +40360,29 @@ y = ${route.yExpression ?? "Parent,Vel Y"}
 function stateTypeSetControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withStateTypeSet"]>): string {
   return `
 [State 200, StateTypeSet Probe]
+type = StateTypeSet
+trigger1 = Time >= 0
+${config.stateType ? `statetype = ${config.stateType}` : ""}
+${config.moveType ? `movetype = ${config.moveType}` : ""}
+${config.physics ? `physics = ${config.physics}` : ""}
+`;
+}
+
+function dynamicStateTypeSetControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicStateTypeSet"]>): string {
+  const vars =
+    config.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic StateTypeSet Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `${vars}
+[State 200, Dynamic StateTypeSet Probe]
 type = StateTypeSet
 trigger1 = Time >= 0
 ${config.stateType ? `statetype = ${config.stateType}` : ""}

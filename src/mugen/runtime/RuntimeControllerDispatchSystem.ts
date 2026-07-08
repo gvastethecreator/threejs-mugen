@@ -8,6 +8,7 @@ import {
 } from "./BoundsControllerSystem";
 import { resolveRuntimeKinematicControllerOperation } from "./KinematicControllerSystem";
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
+import { resolveRuntimeStateTypeSetControllerOperation } from "./StateTypeSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerDispatchActor = {
@@ -84,6 +85,9 @@ function resolveDynamicRecordedOperation(
   }
   if (controller.normalizedType === "screenbound") {
     return resolveRuntimeScreenBoundControllerOperation(controller, runtime, context);
+  }
+  if (controller.normalizedType === "statetypeset") {
+    return resolveRuntimeStateTypeSetControllerOperation(controller, runtime, context);
   }
   return undefined;
 }

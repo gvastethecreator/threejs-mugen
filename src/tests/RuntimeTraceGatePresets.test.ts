@@ -373,6 +373,7 @@ import {
   createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedDynamicWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
+  createSyntheticImportedDynamicStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
   createSyntheticImportedDynamicPlayerPushTraceArtifact,
   createSyntheticImportedDynamicPosFreezeTraceArtifact,
@@ -10364,6 +10365,45 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          stateType: "C",
+          moveType: "A",
+          physics: "N",
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some((actor) => actor.stateType === "C" && actor.moveType === "A" && actor.physics === "N"),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic StateTypeSet artifact with resolved metadata evidence", () => {
+    const artifact = createSyntheticImportedDynamicStateTypeSetTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-statetypeset-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-statetypeset-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(3);
     expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
