@@ -6606,7 +6606,7 @@ export function createSyntheticImportedDynamicPalFxTraceArtifact(
       label: "Synthetic imported dynamic PalFX route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic PalFX trace proves time/add/mul/color/invertall expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded material telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, sinadd, exact palette math, RemapPal interaction, renderer parity, helper/redirect ownership, or timing parity.",
+        "Synthetic imported dynamic PalFX trace proves time/add/mul/color/invertall expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary, record typed sprite-effect operation evidence after resolution, and reach bounded material telemetry. It does not claim sinadd, exact palette math, RemapPal interaction, renderer parity, helper/redirect ownership, or timing parity.",
       ],
     },
     gates: [
@@ -6617,7 +6617,7 @@ export function createSyntheticImportedDynamicPalFxTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "PalFX", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredExecutedOperations: ["variable:varset", "sprite-effect:palfx", "hitdef"],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {

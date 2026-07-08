@@ -262,6 +262,7 @@ export function applyRuntimePaletteFxController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
   resolvePaletteFx?: RuntimePaletteFxResolver,
 ): void {
+  const resolvedOperation = operation ?? resolveRuntimePaletteFxControllerOperation(controller, resolvePaletteFx);
   const timeParam = findControllerParam(controller, "time");
   const addParam = findControllerParam(controller, "add");
   const mulParam = findControllerParam(controller, "mul");
@@ -269,7 +270,7 @@ export function applyRuntimePaletteFxController(
   const invertAllParam = findControllerParam(controller, "invertall");
   const invertParam = findControllerParam(controller, "invert");
   const time =
-    operation?.time ??
+    resolvedOperation?.time ??
     resolvePaletteFxNumber(timeParam, "time", resolvePaletteFx, clampFxTime) ??
     clampFxTime(firstNumber(timeParam) ?? 0);
   if (time <= 0) {
@@ -280,22 +281,58 @@ export function applyRuntimePaletteFxController(
     remaining: time,
     time,
     add:
-      operation?.add ??
+      resolvedOperation?.add ??
       clampColorTriplet(addParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("add"), -255, 255) ??
       colorTriplet(addParam, [0, 0, 0], -255, 255),
     mul:
-      operation?.mul ??
+      resolvedOperation?.mul ??
       clampColorTriplet(mulParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("mul"), 0, 512) ??
       colorTriplet(mulParam, [256, 256, 256], 0, 512),
     color:
-      operation?.color ??
+      resolvedOperation?.color ??
       resolvePaletteFxNumber(colorParam, "color", resolvePaletteFx, clampColorLevel) ??
       clampColorLevel(firstNumber(colorParam) ?? 256),
     invert:
-      operation?.invert ??
+      resolvedOperation?.invert ??
       (invertAllParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invertall"))) ??
       (invertParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invert"))) ??
       (firstNumber(invertAllParam) ?? firstNumber(invertParam)) === 1,
+  };
+}
+
+export function resolveRuntimePaletteFxControllerOperation(
+  controller: MugenStateController,
+  resolvePaletteFx?: RuntimePaletteFxResolver,
+): Extract<SpriteEffectControllerOp, { controllerType: "palfx" }> | undefined {
+  const timeParam = findControllerParam(controller, "time");
+  const addParam = findControllerParam(controller, "add");
+  const mulParam = findControllerParam(controller, "mul");
+  const colorParam = findControllerParam(controller, "color");
+  const invertAllParam = findControllerParam(controller, "invertall");
+  const invertParam = findControllerParam(controller, "invert");
+  const time =
+    resolvePaletteFxNumber(timeParam, "time", resolvePaletteFx, clampFxTime) ?? staticPaletteFxNumber(timeParam, clampFxTime);
+  const add = resolvePaletteFxTriplet(addParam, "add", resolvePaletteFx, [0, 0, 0], -255, 255);
+  const mul = resolvePaletteFxTriplet(mulParam, "mul", resolvePaletteFx, [256, 256, 256], 0, 512);
+  const color =
+    resolvePaletteFxNumber(colorParam, "color", resolvePaletteFx, clampColorLevel) ??
+    staticPaletteFxNumber(colorParam, clampColorLevel) ??
+    (colorParam === undefined ? 256 : undefined);
+  const invert =
+    resolvePaletteFxBoolean(invertAllParam, "invertall", resolvePaletteFx) ??
+    resolvePaletteFxBoolean(invertParam, "invert", resolvePaletteFx) ??
+    (invertAllParam === undefined && invertParam === undefined ? false : undefined);
+  if (time === undefined || add === undefined || mul === undefined || color === undefined || invert === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "palfx",
+    time,
+    add,
+    mul,
+    color,
+    invert,
   };
 }
 
@@ -624,6 +661,9 @@ function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectCont
   if (input.effect === "sprpriority") {
     return resolveRuntimeSpritePriorityControllerOperation(input.controller.source, input.resolveSpritePriority);
   }
+  if (input.effect === "palfx") {
+    return resolveRuntimePaletteFxControllerOperation(input.controller.source, input.resolvePaletteFx);
+  }
   if (input.effect === "remappal") {
     return resolveRuntimeRemapPalControllerOperation(input.controller.source, input.resolveRemapPalPair);
   }
@@ -703,6 +743,42 @@ function resolvePaletteFxNumber(
   }
   const value = resolver?.resolveNumber(key);
   return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
+}
+
+function resolvePaletteFxTriplet(
+  param: string | undefined,
+  key: "add" | "mul",
+  resolver: RuntimePaletteFxResolver | undefined,
+  fallback: [number, number, number],
+  min: number,
+  max: number,
+): [number, number, number] | undefined {
+  if (param === undefined) {
+    return fallback;
+  }
+  return (
+    clampColorTriplet(resolver?.resolveTriplet(key), min, max) ??
+    strictColorTriplet(param, min, max)
+  );
+}
+
+function resolvePaletteFxBoolean(
+  param: string | undefined,
+  key: "invertall" | "invert",
+  resolver: RuntimePaletteFxResolver | undefined,
+): boolean | undefined {
+  if (param === undefined) {
+    return undefined;
+  }
+  return legacyBoolean(resolver?.resolveNumber(key)) ?? legacyBoolean(firstNumber(param));
+}
+
+function staticPaletteFxNumber(
+  param: string | undefined,
+  clamp: (value: number) => number,
+): number | undefined {
+  const value = firstNumber(param);
+  return value === undefined ? undefined : clamp(value);
 }
 
 function legacyBoolean(value: number | undefined): boolean | undefined {
@@ -789,6 +865,18 @@ function colorTriplet(
   const numbers = value.split(",").map((part) => Number(part.trim()));
   if (numbers.length < 3 || numbers.some((numberValue) => !Number.isFinite(numberValue))) {
     return fallback;
+  }
+  return [
+    clampNumber(numbers[0]!, min, max),
+    clampNumber(numbers[1]!, min, max),
+    clampNumber(numbers[2]!, min, max),
+  ];
+}
+
+function strictColorTriplet(value: string, min: number, max: number): [number, number, number] | undefined {
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (numbers.length < 3 || numbers.some((numberValue) => !Number.isFinite(numberValue))) {
+    return undefined;
   }
   return [
     clampNumber(numbers[0]!, min, max),

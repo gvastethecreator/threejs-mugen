@@ -10877,7 +10877,7 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.PalFX).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:palfx"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:palfx"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -10907,6 +10907,11 @@ describe("RuntimeTraceGatePresets", () => {
           actor.paletteFx.invert,
       ),
     ).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "variable:varset",
+      "sprite-effect:palfx",
+      "hitdef",
+    ]);
   });
 
   it("creates a synthetic imported Trans artifact with typed sprite opacity evidence", () => {

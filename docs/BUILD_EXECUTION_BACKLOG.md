@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic PalFX typed sprite-effect telemetry
+
+Changed:
+
+- Upgraded required `synthetic-imported-palfx-dynamic.json` from palette-effect fallback evidence into typed `sprite-effect:palfx` telemetry.
+- `SpriteEffectSystem` now exposes `resolveRuntimePaletteFxControllerOperation`, resolving dynamic `time`, `add`, `mul`, `color`, and `invertall` through the active runtime palette resolver when compiled IR has no static operation.
+- `RuntimeSpriteEffectControllerWorld` now records the resolved dynamic PalFX typed operation while preserving bounded palette-effect mutation.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `sprite-effect:palfx`, and `hitdef` for the dynamic PalFX route.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, architecture notes, and the active R1 issue slice around checksum `36cdca15` / final checksum `7a1a4525`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and defines `PalFX time`, `add`, `mul`, `invertall`, and `color`.
+- Focused tests: `pnpm exec vitest run src\tests\SpriteEffectSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern "PalFX" --reporter json --outputFile .scratch\qa\dynamic-palfx-typed-vitest-focused.json` passed.
+- Full Vitest suite: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\full-vitest-dynamic-palfx-typed.json` passed: 311 suites, 1494 tests.
+- Standard test script: `pnpm test` passed: 153 files, 1494 tests.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 523/523 artifacts, 492 required and 31 optional.
+- Trace artifact: `synthetic-imported-palfx-dynamic.json` checksum `36cdca15`, final checksum `7a1a4525`; required operations are `variable:varset`, `sprite-effect:palfx`, and `hitdef`; executed ops include `variable:varset = 80`, `sprite-effect:palfx = 10`, `hitdef = 1`; final imported actor palette-effect telemetry stays `time = 12`, `add [64,-16,255]`, `mul [224,144,256]`, `color = 200`, `invert = true`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `PalFX time/add/mul/color/invertall` can resolve owner-local numeric expressions through runtime expression fallback, record typed `sprite-effect:palfx` telemetry after resolution, and preserve actor-frame/final palette-effect evidence.
+
+Claim blocked:
+
+- `sinadd`, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage` or `Angle*`, and full MUGEN/IKEMEN presentation parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `PalFX` already had typed `sprite-effect:palfx` evidence through `synthetic-imported-palfx.json`, while dynamic material params relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic PalFX route now closes the operation-telemetry gap without broadening exact palette/renderer semantics.
+- Adjacent surface checked: static PalFX gate, dynamic RemapPal/Trans/SprPriority/AfterImageTime typed paths, dynamic AfterImage/Angle fallback expectations, sprite-effect boundary recording, active-state resolver handoff, trace requirements, support registry wording, QA gates, scorecard, architecture docs, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port remains verified at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This upgrades one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim `sinadd`, dynamic typed lowering for `AfterImage` or `Angle*`, exact palette math/blend/remap order, renderer parity, or full presentation VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic AfterImageTime typed sprite-effect telemetry
 
 Changed:

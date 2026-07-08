@@ -10,6 +10,7 @@ import {
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
   resolveRuntimeAfterImageTimeControllerOperation,
+  resolveRuntimePaletteFxControllerOperation,
   resolveRuntimeRemapPalControllerOperation,
   resolveRuntimeSpritePriorityControllerOperation,
   resolveRuntimeTransControllerOperation,
@@ -102,6 +103,22 @@ describe("SpriteEffectSystem", () => {
 
   it("resolves dynamic PalFX material params from active expressions", () => {
     const state = runtimeState();
+    const resolver = {
+      resolveNumber: (key: "time" | "color" | "invertall" | "invert") =>
+        ({ time: 6, color: 200, invertall: 1, invert: undefined })[key],
+      resolveTriplet: (key: "add" | "mul"): [number, number, number] =>
+        key === "add" ? [64, -16, 300] : [224, 144, 256],
+    };
+    const operation = resolveRuntimePaletteFxControllerOperation(
+      controller("PalFX", {
+        time: "var(0)",
+        add: "var(1),-16,var(2)",
+        mul: "var(3),var(4),256",
+        color: "var(5)",
+        invertall: "var(6)",
+      }),
+      resolver,
+    );
 
     applyRuntimePaletteFxController(
       state,
@@ -113,13 +130,18 @@ describe("SpriteEffectSystem", () => {
         invertall: "var(6)",
       }),
       undefined,
-      {
-        resolveNumber: (key) =>
-          ({ time: 6, color: 200, invertall: 1, invert: undefined })[key],
-        resolveTriplet: (key) => (key === "add" ? [64, -16, 300] : [224, 144, 256]),
-      },
+      resolver,
     );
 
+    expect(operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 6,
+      add: [64, -16, 255],
+      mul: [224, 144, 256],
+      color: 200,
+      invert: true,
+    });
     expect(state.paletteFx).toMatchObject({
       remaining: 6,
       time: 6,
@@ -128,6 +150,16 @@ describe("SpriteEffectSystem", () => {
       color: 200,
       invert: true,
     });
+  });
+
+  it("does not record dynamic PalFX as typed evidence until all params resolve", () => {
+    expect(
+      resolveRuntimePaletteFxControllerOperation(controller("PalFX", { time: "var(0)", add: "1,2,var(1)" }), {
+        resolveNumber: (key) => (key === "time" ? 6 : undefined),
+        resolveTriplet: () => undefined,
+      }),
+    ).toBeUndefined();
+    expect(resolveRuntimePaletteFxControllerOperation(controller("PalFX", { time: "var(0)" }))).toBeUndefined();
   });
 
   it("clears PalFX when the controller time is zero", () => {
@@ -539,6 +571,11 @@ describe("SpriteEffectSystem", () => {
       }),
     );
     const recordedOperations: string[] = [];
+    const operation = resolveRuntimePaletteFxControllerOperation(ir.source, {
+      resolveNumber: (key) =>
+        ({ time: 6, color: 200, invertall: 1, invert: undefined })[key],
+      resolveTriplet: (key): [number, number, number] => (key === "add" ? [64, -16, 300] : [224, 144, 256]),
+    });
 
     const result = world.apply({
       actor,
@@ -555,6 +592,15 @@ describe("SpriteEffectSystem", () => {
     });
 
     expect(ir.operation).toBeUndefined();
+    expect(operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 6,
+      add: [64, -16, 255],
+      mul: [224, 144, 256],
+      color: 200,
+      invert: true,
+    });
     expect(actor.runtime.paletteFx).toMatchObject({
       remaining: 6,
       time: 6,
@@ -563,8 +609,8 @@ describe("SpriteEffectSystem", () => {
       color: 200,
       invert: true,
     });
-    expect(recordedOperations).toEqual([]);
-    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+    expect(recordedOperations).toEqual(["sprite-effect:palfx"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 
   it("dispatches Trans controllers through the active-state sprite boundary", () => {

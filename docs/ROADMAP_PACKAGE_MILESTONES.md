@@ -632,7 +632,17 @@ Previous R1 required dynamic Angle trace gate
   -> official Elecbyte docs define AngleSet value, AngleDraw value, and AngleDraw scale as floats; rotation/scaling does not affect collision boxes
   -> no score movement; typed-operation lowering for dynamic angle params, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-Current R1 required dynamic AfterImageTime typed trace gate
+Current R1 required dynamic PalFX typed trace gate
+  -> synthetic-imported-palfx-dynamic.json checksum 36cdca15 / final checksum 7a1a4525 is required in qa:trace
+  -> imported active state seeds var(0..7), then executes PalFX time/add/mul/color/invertall from expressions
+  -> RuntimeSpriteEffectControllerWorld resolves dynamic PalFX material params into typed sprite-effect telemetry before RuntimeSpriteEffectWorld.applyPaletteFx
+  -> PlayableMatchRuntime resolves PalFX scalar/triplet/bool params through the active controller expression context
+  -> final imported actor evidence requires paletteFx time 12, add [64,-16,255], mul [224,144,256], color 200, invert true, and typed sprite-effect:palfx operation evidence
+  -> pnpm qa:trace passed 523/523 artifacts, 492 required and 31 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define PalFX time/add/mul/invertall/color
+  -> no score movement; sinadd, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage/Angle*, and full presentation parity remain blocked
+
+Previous R1 required dynamic AfterImageTime typed trace gate
   -> synthetic-imported-afterimagetime-dynamic.json checksum c5ef6fff / final checksum 661a233d is required in qa:trace
   -> imported active state seeds var(0)=14, then executes static AfterImage plus AfterImageTime value = var(0)
   -> RuntimeSpriteEffectControllerWorld resolves dynamic AfterImageTime value/time into typed sprite-effect telemetry before RuntimeSpriteEffectWorld.applyAfterImageTime
@@ -640,7 +650,7 @@ Current R1 required dynamic AfterImageTime typed trace gate
   -> final imported actor evidence requires afterImageTime 14, length 4, timeGap 1, frameGap 1, at least one sample, opacity 0.34, and typed sprite-effect:afterimagetime operation evidence
   -> pnpm qa:trace passed 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define AfterImageTime time plus alternate value
-  -> no score movement; exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage/PalFX/Angle*, and full presentation parity remain blocked
+  -> no score movement; exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage/Angle*, and full presentation parity remain blocked
 
 Previous R1 required dynamic AfterImage trace gate
   -> synthetic-imported-afterimage-dynamic.json checksum 2342c3f1 is required in qa:trace
@@ -662,15 +672,15 @@ Superseded R1 required dynamic Trans trace gate
   -> official Elecbyte docs allow numeric controller params as expressions and define Trans alpha = source_alpha,dest_alpha for additive transparency
   -> no score movement; dynamic typed lowering for other sprite-effect params, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-Previous R1 required dynamic PalFX trace gate
-  -> synthetic-imported-palfx-dynamic.json checksum c56e955a is required in qa:trace
+Superseded R1 required dynamic PalFX trace gate
+  -> synthetic-imported-palfx-dynamic.json current checksum 36cdca15 / final checksum 7a1a4525 is required in qa:trace
   -> imported active state seeds var(0..7), then executes PalFX time/add/mul/color/invertall from expressions
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic palette resolver into RuntimeSpriteEffectWorld.applyPaletteFx
   -> PlayableMatchRuntime resolves scalar and triplet params through the active controller expression context
-  -> final imported actor evidence requires paletteFx time 12, add [64,-16,255], mul [224,144,256], color 200, invert true and no typed sprite-effect:palfx operation evidence
-  -> pnpm qa:trace passes 443/443 artifacts, 413 required and 30 optional
+  -> final imported actor evidence requires paletteFx time 12, add [64,-16,255], mul [224,144,256], color 200, invert true, and typed sprite-effect:palfx operation evidence after runtime expression resolution
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define PalFX time/add/mul/invertall/color
-  -> no score movement; typed-operation lowering for dynamic params, sinadd, exact palette math/blend/remap order, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> no score movement; sinadd, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
 Superseded R1 required dynamic SprPriority trace gate
   -> synthetic-imported-sprpriority-dynamic.json current checksum a9e0862d / final checksum 4919326d is required in qa:trace
