@@ -1343,6 +1343,82 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves helper-local dynamic ModifyProjectile bounds against Parent and Root redirects", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller(
+                "Projectile",
+                {
+                  projid: "8861",
+                  projanim: "930",
+                  velocity: "1,0",
+                  projremovetime: "24",
+                },
+                ["Time = 0"],
+              ),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller(
+                "ModifyProjectile",
+                {
+                  projid: "8861",
+                  projedgebound: "Parent,Var(0)",
+                  projstagebound: "Root,Var(1)",
+                  projheightbound: "Parent,Var(2),Root,Var(3)",
+                },
+                ["Time = 1"],
+              ),
+              controller("ChangeState", { value: "6002" }, ["Time = 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    const parentState = actor("p1", "Parent", {
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 0 ? 52 : index === 2 ? -144 : 0)),
+    }).runtime;
+    const rootState = actor("p1", "Root", {
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 1 ? 36 : index === 3 ? 72 : 0)),
+    }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      parentState,
+      rootState,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      parentState,
+      rootState,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId);
+    expect(executed).toEqual(["Projectile", "ChangeState", "ModifyProjectile", "ChangeState"]);
+    expect(helperProjectile).toMatchObject({
+      projectileId: 8861,
+      parentId: "p1-helper-0",
+      edgeBound: 52,
+      stageBound: 36,
+      heightBound: { low: -144, high: 72 },
+    });
+  });
+
   it("evaluates helper-local ProjHit against only helper-parented Projectile contact", () => {
     const store = createRuntimeEffectActorStore();
     const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8870", projanim: "930", projremove: "0" }));

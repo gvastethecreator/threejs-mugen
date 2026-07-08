@@ -746,6 +746,38 @@ describe("ProjectileSystem", () => {
     expect(terminal).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
   });
 
+  it("resolves dynamic ModifyProjectile bounds through the bounded runtime resolver", () => {
+    const matching = projectile({ projectileId: 77 });
+    const resolvedKeys: string[] = [];
+
+    const changed = modifyRuntimeProjectiles([matching], {
+      controller: controller({
+        projid: "77",
+        projedgebound: "var(0)",
+        projstagebound: "var(1)",
+        projheightbound: "var(2),var(3)",
+      }),
+      resolveModifyProjectile: {
+        resolveNumber: (key) => {
+          resolvedKeys.push(key);
+          return key === "projedgebound" ? 52 : 36;
+        },
+        resolvePair: (key) => {
+          resolvedKeys.push(key);
+          return [-144, 72];
+        },
+      },
+    });
+
+    expect(changed).toBe(1);
+    expect(resolvedKeys).toEqual(["projedgebound", "projstagebound", "projheightbound"]);
+    expect(matching).toMatchObject({
+      edgeBound: 52,
+      stageBound: 36,
+      heightBound: { low: -144, high: 72 },
+    });
+  });
+
   it("plays a bounded terminal animation when hit removal metadata resolves to an AIR action", () => {
     const shot = projectile({
       hitsRemaining: 1,

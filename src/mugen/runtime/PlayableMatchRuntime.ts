@@ -84,6 +84,7 @@ import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
 import {
   applyRuntimeControl,
   applyRuntimePowerDelta,
@@ -1083,13 +1084,22 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    effectSpawn: ({ controller, effect }) => {
+    effectSpawn: ({ controller, effect, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       effectSpawnControllerDispatchWorld.apply({
         actor: fighter,
         opponent,
         controller,
         effect,
         effectSpawnWorld,
+        resolveModifyProjectile:
+          effect === "modifyprojectile"
+            ? {
+                resolveNumber: (key) =>
+                  resolveModifyProjectileNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                resolvePair: (key) =>
+                  resolveModifyProjectilePairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              }
+            : undefined,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1665,6 +1675,98 @@ function resolveAnglePairParam(
     return undefined;
   }
   return [x, y];
+}
+
+function resolveModifyProjectileNumberParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileNumberParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveModifyProjectilePairParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePairParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number] | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveModifyProjectileExpressionPair(raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveModifyProjectileExpressionPair(
+  raw: string,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number] | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  if (splitIndices.length === 0) {
+    const value = resolveDispatchNumber(undefined, raw.trim(), fighter, opponent, owner, stageBounds, stageTime);
+    return value === undefined ? undefined : [value, value];
+  }
+  let best: { pair: [number, number]; maxCommaCount: number; balance: number; index: number } | undefined;
+  for (const index of splitIndices) {
+    const lowExpression = raw.slice(0, index).trim();
+    const highExpression = raw.slice(index + 1).trim();
+    if (!lowExpression || !highExpression) {
+      continue;
+    }
+    const low = resolveDispatchNumber(undefined, lowExpression, fighter, opponent, owner, stageBounds, stageTime);
+    const high = resolveDispatchNumber(undefined, highExpression, fighter, opponent, owner, stageBounds, stageTime);
+    if (low !== undefined && high !== undefined) {
+      const leftCommaCount = topLevelCommaIndices(lowExpression).length;
+      const rightCommaCount = topLevelCommaIndices(highExpression).length;
+      const candidate = {
+        pair: [low, high] as [number, number],
+        maxCommaCount: Math.max(leftCommaCount, rightCommaCount),
+        balance: Math.abs(leftCommaCount - rightCommaCount),
+        index,
+      };
+      if (
+        !best ||
+        candidate.maxCommaCount < best.maxCommaCount ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance < best.balance) ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance === best.balance && candidate.index > best.index)
+      ) {
+        best = candidate;
+      }
+    }
+  }
+  return best?.pair;
+}
+
+function topLevelCommaIndices(raw: string): number[] {
+  const indices: number[] = [];
+  let depth = 0;
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index];
+    if (char === "(") {
+      depth += 1;
+    } else if (char === ")") {
+      depth = Math.max(0, depth - 1);
+    } else if (char === "," && depth === 0) {
+      indices.push(index);
+    }
+  }
+  return indices;
 }
 
 function resolveEnvShakeNumberParam(

@@ -18,6 +18,7 @@ import type { DemoMove } from "./demoFighters";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
 import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
+import type { RuntimeProjectileModifyResolver } from "./ProjectileSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -128,7 +129,7 @@ export type RuntimeHelperAdvanceOptions = {
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
-  onModifyProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
+  onModifyProjectile?: (helper: RuntimeHelper, controller: ControllerIr, resolveModifyProjectile?: RuntimeProjectileModifyResolver) => boolean;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onOperation?: (helper: RuntimeHelper, operation: ControllerOp) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
@@ -406,7 +407,7 @@ export function runRuntimeHelperStateControllers(
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "modifyprojectile") {
-      if (options.onModifyProjectile?.(helper, controller)) {
+      if (options.onModifyProjectile?.(helper, controller, helperModifyProjectileResolver(helper, controller, options))) {
         options.onController?.(helper, controller);
         continue;
       }
@@ -416,6 +417,100 @@ export function runRuntimeHelperStateControllers(
     options.onUnsupportedController?.(helper, controller);
   }
   return "active";
+}
+
+function helperModifyProjectileResolver(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimeProjectileModifyResolver {
+  return {
+    resolveNumber: (key) => resolveHelperModifyProjectileNumberParam(helper, controller, key, options),
+    resolvePair: (key) => resolveHelperModifyProjectilePairParam(helper, controller, key, options),
+  };
+}
+
+function resolveHelperModifyProjectileNumberParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "projedgebound" | "projstagebound",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveHelperNumber(helper, undefined, raw.trim(), options);
+}
+
+function resolveHelperModifyProjectilePairParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "projheightbound",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number] | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveHelperExpressionPair(helper, raw, options);
+}
+
+function resolveHelperExpressionPair(
+  helper: RuntimeHelper,
+  raw: string,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number] | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  if (splitIndices.length === 0) {
+    const value = resolveHelperNumber(helper, undefined, raw.trim(), options);
+    return value === undefined ? undefined : [value, value];
+  }
+  let best: { pair: [number, number]; maxCommaCount: number; balance: number; index: number } | undefined;
+  for (const index of splitIndices) {
+    const lowExpression = raw.slice(0, index).trim();
+    const highExpression = raw.slice(index + 1).trim();
+    if (!lowExpression || !highExpression) {
+      continue;
+    }
+    const low = resolveHelperNumber(helper, undefined, lowExpression, options);
+    const high = resolveHelperNumber(helper, undefined, highExpression, options);
+    if (low !== undefined && high !== undefined) {
+      const leftCommaCount = topLevelCommaIndices(lowExpression).length;
+      const rightCommaCount = topLevelCommaIndices(highExpression).length;
+      const candidate = {
+        pair: [low, high] as [number, number],
+        maxCommaCount: Math.max(leftCommaCount, rightCommaCount),
+        balance: Math.abs(leftCommaCount - rightCommaCount),
+        index,
+      };
+      if (
+        !best ||
+        candidate.maxCommaCount < best.maxCommaCount ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance < best.balance) ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance === best.balance && candidate.index > best.index)
+      ) {
+        best = candidate;
+      }
+    }
+  }
+  return best?.pair;
+}
+
+function topLevelCommaIndices(raw: string): number[] {
+  const indices: number[] = [];
+  let depth = 0;
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index];
+    if (char === "(") {
+      depth += 1;
+    } else if (char === ")") {
+      depth = Math.max(0, depth - 1);
+    } else if (char === "," && depth === 0) {
+      indices.push(index);
+    }
+  }
+  return indices;
 }
 
 export function removeRuntimeHelpers(helpers: RuntimeHelper[], filter: RuntimeHelperRemovalFilter = {}): RuntimeHelper[] {

@@ -1947,6 +1947,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-bounds",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-contact",
       required: true,
       artifact: presets.createSyntheticImportedProjectileContactTraceArtifact(),
@@ -3563,6 +3568,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-motion",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",
+    "synthetic-imported-modifyprojectile-dynamic-bounds",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
     "synthetic-imported-projectile-cancel-remove-fallback-terminal",

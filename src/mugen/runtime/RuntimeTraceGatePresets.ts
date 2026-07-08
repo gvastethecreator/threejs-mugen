@@ -26478,6 +26478,73 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileMotionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-bounds-attacker",
+    displayName: "Synthetic Imported Dynamic ModifyProjectile Bounds Attacker",
+    withProjectile: true,
+    projectileOffset: [80, -45],
+    projectileVelocity: [1, 0],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: 52 },
+      { index: 1, value: 36 },
+      { index: 2, value: -144 },
+      { index: 3, value: 72 },
+    ],
+    modifyProjectileEdgeBound: "var(0)",
+    modifyProjectileStageBound: "var(1)",
+    modifyProjectileHeightBound: ["var(2)", "var(3)"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-bounds-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-bounds-golden",
+      label: "Synthetic imported dynamic ModifyProjectile bounds route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic ModifyProjectile bounds trace proves bounded owner-side ModifyProjectile can resolve projedgebound, projstagebound, and projheightbound expressions through active controller context and mutate a matching live Projectile payload. It does not claim typed-operation lowering for dynamic bound fields, default-bound reset semantics, exact camera/screen/stage split, helper/team namespace breadth, or full Projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-modifyprojectile-dynamic-bounds-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "Projectile", "ModifyProjectile"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "projectile", "modifyprojectile"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            minAge: 3,
+            edgeBound: 52,
+            stageBound: 36,
+            heightBound: { low: -144, high: 72 },
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedModifyExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedExplodScript();
@@ -36595,9 +36662,10 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileAccel?: [number, number];
   modifyProjectileVelocityMultiplier?: [number, number];
   modifyProjectileScale?: [number, number];
-  modifyProjectileEdgeBound?: number;
-  modifyProjectileStageBound?: number;
-  modifyProjectileHeightBound?: [number, number];
+  modifyProjectileEdgeBound?: number | string;
+  modifyProjectileStageBound?: number | string;
+  modifyProjectileHeightBound?: [number | string, number | string];
+  modifyProjectileVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   modifyProjectileRemoveTime?: number;
   modifyProjectilePriority?: number;
   modifyProjectileHits?: number;
@@ -37436,6 +37504,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   edgeBound: options.modifyProjectileEdgeBound,
   stageBound: options.modifyProjectileStageBound,
   heightBound: options.modifyProjectileHeightBound,
+  varSeeds: options.modifyProjectileVarSeeds,
   removeTime: options.modifyProjectileRemoveTime,
   priority: options.modifyProjectilePriority,
   hits: options.modifyProjectileHits,
@@ -40519,14 +40588,27 @@ function modifyProjectileControllerBlock(input: {
   accel?: [number, number];
   velocityMultiplier?: [number, number];
   scale?: [number, number];
-  edgeBound?: number;
-  stageBound?: number;
-  heightBound?: [number, number];
+  edgeBound?: number | string;
+  stageBound?: number | string;
+  heightBound?: [number | string, number | string];
+  varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   removeTime?: number;
   priority?: number;
   hits?: number;
   missTime?: number;
 }): string {
+  const varSeedLines =
+    input.varSeeds
+      ?.map(
+        (seed) => `
+[State 200, ModifyProjectile Dynamic Var ${seed.index}]
+type = VarSet
+trigger1 = ${seed.trigger ?? "Time >= 0"}
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
   const velocityLine = input.velocity === undefined ? "" : `velocity = ${input.velocity[0]},${input.velocity[1]}`;
   const accelLine = input.accel === undefined ? "" : `accel = ${input.accel[0]},${input.accel[1]}`;
   const velocityMultiplierLine =
@@ -40539,7 +40621,7 @@ function modifyProjectileControllerBlock(input: {
   const priorityLine = input.priority === undefined ? "" : `projpriority = ${input.priority}`;
   const hitsLine = input.hits === undefined ? "" : `projhits = ${input.hits}`;
   const missTimeLine = input.missTime === undefined ? "" : `projmisstime = ${input.missTime}`;
-  return `
+  return `${varSeedLines}
 [State 200, Modify Fast Projectile]
 type = ModifyProjectile
 trigger1 = Time = ${input.triggerTime ?? 3}

@@ -1,6 +1,6 @@
 # Roadmap Package Milestones
 
-Last updated: 2026-07-06
+Last updated: 2026-07-08
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -35,7 +35,16 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Projectile localcoord default bounds trace gates
+R1 required ModifyProjectile dynamic bounds trace gate
+-> synthetic-imported-modifyprojectile-dynamic-bounds.json checksum e2f7a077 / final checksum aa78704a is required in qa:trace
+-> owner-side active-state ModifyProjectile resolves projedgebound = var(0), projstagebound = var(1), and projheightbound = var(2),var(3) through active controller context
+-> payload evidence requires bounds edgeBound = 52, stageBound = 36, heightBound = -144,72 on matching live Projectile id 77
+-> pnpm qa:trace passes 499/499 artifacts, 468 required and 31 optional
+-> focused tests prove direct resolver fallback, owner-side dispatch, and helper-local Parent/Root dynamic bounds mutation for helper-parented Projectiles while same-id player-owned Projectiles stay excluded
+-> official Elecbyte docs define Projectile bound params and numeric controller-expression behavior
+-> no score movement; dynamic non-bound ModifyProjectile params, helper-local dynamic trace coverage, default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full Projectile parity remain blocked
+
+Previous R1 required Projectile localcoord default bounds trace gates
 -> synthetic-imported-projectile-localcoord-default-bounds-terminal.json checksum af7ee80e / final checksum 3fcb4661 and synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json checksum 46b0164c / final checksum b1531c44 are required in qa:trace
 -> parsed character [Info] localcoord = 640,480 is carried through imported runtime fighter definitions into player-owned and helper-parented/root-owned Projectile spawn paths
 -> omitted Projectile defaults derive projedgebound = 80, projstagebound = 80, and projheightbound = -480,2 from character localcoord width; explicit bounds stay authored

@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## 2026-07-08 - ModifyProjectile dynamic bounds trace gate
+
+Changed:
+
+- Added a bounded `RuntimeProjectileModifyResolver` path for `ModifyProjectile` `projedgebound`, `projstagebound`, and `projheightbound` dynamic params.
+- Routed the resolver through owner-side active-state `RuntimeEffectSpawnControllerDispatchWorld` / `RuntimeEffectSpawnWorld` and through helper-local `HelperSystem` / `RuntimeEffectActorWorld`.
+- Added top-level-comma candidate splitting for dynamic `projheightbound` expressions so redirect forms such as `Parent,Var(2),Root,Var(3)` do not split at redirect commas.
+- Added required trace artifact `synthetic-imported-modifyprojectile-dynamic-bounds.json` and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html#Projectile) defines Projectile `projedgebound`, `projstagebound`, and `projheightbound`, and the same reference states numeric controller parameters generally accept arithmetic expressions unless a parameter says otherwise.
+- Focused tests: `pnpm exec vitest run src/tests/ProjectileSystem.test.ts src/tests/EffectSpawnSystem.test.ts src/tests/EffectActorSystem.test.ts` -> 3 files / 84 tests passed.
+- Focused trace tests: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "ModifyProjectile"` -> 1 file / 3 matching tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 499/499 artifacts, 468 required and 31 optional.
+- Trace artifact: `synthetic-imported-modifyprojectile-dynamic-bounds.json` checksum `e2f7a077`, final checksum `aa78704a`; previous static gates remain `synthetic-imported-modifyprojectile.json` checksum `63a87da1` and `synthetic-imported-helper-modifyprojectile.json` checksum `09d3f7e4`.
+- Final verification: `pnpm test` -> 151 files / 1446 tests; `pnpm typecheck`; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 499/499 artifacts, 468 required and 31 optional; `git diff --check` passed with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- Bounded owner-side active-state `ModifyProjectile` can resolve dynamic Projectile removal-bound expressions from the active controller context and mutate matching live Projectiles. Focused tests also prove helper-local `Parent`/`Root` dynamic bound expressions can mutate helper-parented Projectiles while same-id player-owned Projectiles remain excluded by helper-local scope.
+
+Claim blocked:
+
+- Dynamic `ModifyProjectile` velocity/scale/timing/hit-count params, helper-local dynamic trace coverage, default-bound reset semantics through `ModifyProjectile`, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 499/499 artifacts, 468 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Continue R1 with default-reset `ModifyProjectile` bounds semantics, dynamic non-bound `ModifyProjectile` params, helper-local dynamic trace coverage, exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal/cancel tick-order, team/simul breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-08 - ModifyProjectile bounds mutation trace payload gate
 
 Changed:

@@ -12,7 +12,7 @@ import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { DemoFighterDefinition } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodSpawnInput } from "./ExplodSystem";
-import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
+import type { RuntimeProjectileModifyResolver, RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -53,6 +53,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   effectSpawnWorld: RuntimeEffectSpawnWorld;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: RuntimeEffectSpawnControllerDispatchOperation) => void;
+  resolveModifyProjectile?: RuntimeProjectileModifyResolver;
 };
 
 export type RuntimeEffectSpawnControllerDispatchResult = {
@@ -210,10 +211,12 @@ export class RuntimeEffectSpawnWorld {
     fighter: RuntimeEffectSpawnActor,
     controller: MugenStateController,
     operation?: ModifyProjectileControllerOp,
+    resolveModifyProjectile?: RuntimeProjectileModifyResolver,
   ): number {
     return fighter.effectActorWorld.modifyProjectiles(fighter.id, {
       controller,
       operation,
+      resolveModifyProjectile,
     });
   }
 }
@@ -403,6 +406,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         actor,
         controller.source,
         operation?.kind === "modifyprojectile" ? operation : undefined,
+        options.resolveModifyProjectile,
       );
   }
 }

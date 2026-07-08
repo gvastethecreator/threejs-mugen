@@ -42,6 +42,7 @@ import {
   type RuntimeProjectile,
   type RuntimeProjectileContactKind,
   type RuntimeProjectileModifyInput,
+  type RuntimeProjectileModifyResolver,
   type RuntimeProjectileSpawnInput,
 } from "./ProjectileSystem";
 import {
@@ -469,11 +470,11 @@ export function advanceRuntimeHelperActors(
       modifyRuntimeHelperExplodActors(store, helper, controller);
       return true;
     },
-    onModifyProjectile: (helper, controller) => {
+    onModifyProjectile: (helper, controller, resolveModifyProjectile) => {
       if (options?.onModifyProjectile) {
-        return options.onModifyProjectile(helper, controller);
+        return options.onModifyProjectile(helper, controller, resolveModifyProjectile);
       }
-      modifyRuntimeHelperProjectileActors(store, helper, controller);
+      modifyRuntimeHelperProjectileActors(store, helper, controller, resolveModifyProjectile);
       return true;
     },
   });
@@ -569,7 +570,12 @@ export function modifyRuntimeHelperExplodActors(store: RuntimeEffectActorStore, 
   });
 }
 
-export function modifyRuntimeHelperProjectileActors(store: RuntimeEffectActorStore, helper: RuntimeHelper, controller: ControllerIr): number {
+export function modifyRuntimeHelperProjectileActors(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  resolveModifyProjectile?: RuntimeProjectileModifyResolver,
+): number {
   const operation = modifyProjectileOperation(controller);
   const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(controller, "projid") ?? findControllerParam(controller, "id"));
   const helperProjectiles = store.projectiles.filter(
@@ -578,6 +584,7 @@ export function modifyRuntimeHelperProjectileActors(store: RuntimeEffectActorSto
   return modifyRuntimeProjectiles(helperProjectiles, {
     controller: controller.source,
     operation,
+    resolveModifyProjectile,
   });
 }
 

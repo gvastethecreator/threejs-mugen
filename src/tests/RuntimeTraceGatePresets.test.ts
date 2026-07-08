@@ -395,6 +395,7 @@ import {
   createSyntheticImportedProjectileDefaultTargetStateTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
   createSyntheticImportedModifyExplodTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedModifyProjectileTraceArtifact,
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileHitTimeAnyTraceArtifact,
@@ -23546,6 +23547,57 @@ describe("RuntimeTraceGatePresets", () => {
             edgeBound: 48,
             stageBound: 32,
             heightBound: { low: -96, high: 64 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic ModifyProjectile bounds artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyprojectile-dynamic-bounds-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-modifyprojectile-dynamic-bounds-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 77,
+        minAge: 3,
+        edgeBound: 52,
+        stageBound: 36,
+        heightBound: { low: -144, high: 72 },
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            edgeBound: 52,
+            stageBound: 36,
+            heightBound: { low: -144, high: 72 },
           }),
         }),
       ]),

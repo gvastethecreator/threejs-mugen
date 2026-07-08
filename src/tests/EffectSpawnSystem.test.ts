@@ -268,6 +268,39 @@ describe("EffectSpawnSystem", () => {
     expect(resolveEffectSpawnPosition(fighter, opponent, "left", [12, -3])).toEqual({ x: 12, y: -3 });
     expect(resolveEffectSpawnBind("back", [12, -3])).toEqual({ localOffset: { x: -36, y: -3 } });
   });
+
+  it("passes dynamic ModifyProjectile bound resolvers through owner-side dispatch", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld, {
+      pos: { x: 200, y: 0 },
+      facing: -1,
+    });
+
+    spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", { projanim: "910", projid: "7", velocity: "1,0" }));
+    const changed = spawnWorld.modifyProjectiles(
+      fighter,
+      controller("ModifyProjectile", {
+        projid: "7",
+        projedgebound: "var(0)",
+        projstagebound: "var(1)",
+        projheightbound: "var(2),var(3)",
+      }),
+      undefined,
+      {
+        resolveNumber: (key) => (key === "projedgebound" ? 52 : 36),
+        resolvePair: () => [-144, 72],
+      },
+    );
+
+    expect(changed).toBe(1);
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      edgeBound: 52,
+      stageBound: 36,
+      heightBound: { low: -144, high: 72 },
+    });
+  });
 });
 
 function actor(
