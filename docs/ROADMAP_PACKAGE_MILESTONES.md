@@ -35,11 +35,18 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic CtrlSet typed-resource trace gate
+-> synthetic-imported-control-dynamic.json checksum 885cc464 / final checksum ecf2bec6 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(0)=1, then executes CtrlSet value = IfElse(var(0), 1, 0)
+-> gate requires ChangeState, VarSet, CtrlSet, HitDef, variable:varset, resource:ctrlset, and hitdef evidence plus actor-frame state/action and final ctrl true telemetry
+-> pnpm qa:trace passes 521/521 artifacts, 490 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable with bottom-to-0 behavior, and Elecbyte Trigger Reference defines IfElse branch-return semantics
+-> no score movement; exact state-entry control timing, persistent-controller timing, helper/team/redirect ownership, broad dynamic resource lowering, score movement, and full control VM parity remain blocked
+
 R1 required dynamic StateTypeSet typed-metadata trace gate
 -> synthetic-imported-statetypeset-dynamic.json checksum 577404e4 / final checksum 083a76de is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds var(0)=1, var(1)=1, and var(2)=1, then executes StateTypeSet statetype = IfElse(var(0), C, S), movetype = IfElse(var(1), A, I), physics = IfElse(var(2), N, S)
 -> gate requires ChangeState, VarSet, StateTypeSet, HitDef, variable:varset, metadata:statetypeset, and hitdef evidence plus actor-frame stateType C / moveType A / physics N telemetry
--> pnpm qa:trace passes 520/520 artifacts, 489 required and 31 optional
 -> official Elecbyte State Controller Reference defines StateTypeSet statetype/movetype/physics metadata, and Elecbyte Trigger Reference defines IfElse branch-return semantics
 -> no score movement; broad string-param parity, exact physics side effects, exact tick order, helper/team/redirect ownership, score movement, and full StateTypeSet parity remain blocked
 

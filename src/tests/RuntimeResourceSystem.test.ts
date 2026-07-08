@@ -7,10 +7,12 @@ import {
   applyRuntimeStateDefControl,
   applyRuntimeVariableAssignment,
   applyRuntimeVariableRangeAssignment,
+  resolveRuntimeCtrlSetControllerOperation,
   RuntimeResourceWorld,
   runtimeLifeMaxFromConstants,
   runtimePowerMaxForState,
   runtimePowerMaxFromConstants,
+  type RuntimeResourceControllerSource,
 } from "../mugen/runtime/RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -107,6 +109,16 @@ describe("RuntimeResourceSystem", () => {
     expect(state.ctrl).toBe(false);
   });
 
+  it("resolves dynamic CtrlSet values from bounded expression fallback", () => {
+    const state = runtimeState({ ctrl: false, vars: [1] });
+    const operation = resolveRuntimeCtrlSetControllerOperation(controller({ value: "IfElse(var(0), 1, 0)" }), state);
+
+    expect(operation).toEqual({ kind: "resource", controllerType: "ctrlset", value: true });
+
+    applyRuntimeResourceController(state, operation!);
+    expect(state.ctrl).toBe(true);
+  });
+
   it("applies var, fvar, and sysvar assignments", () => {
     const state = runtimeState({ vars: [2], fvars: [0.5] });
 
@@ -131,6 +143,14 @@ describe("RuntimeResourceSystem", () => {
     expect(state.fvars[40]).toBeUndefined();
   });
 });
+
+function controller(params: Record<string, string> = {}): RuntimeResourceControllerSource {
+  return {
+    type: "CtrlSet",
+    normalizedType: "ctrlset",
+    params,
+  };
+}
 
 function runtimeState(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {
   return {

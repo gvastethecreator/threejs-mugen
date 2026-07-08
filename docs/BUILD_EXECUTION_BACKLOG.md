@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic CtrlSet typed resource telemetry
+
+Changed:
+
+- Added required `synthetic-imported-control-dynamic.json` for bounded active imported dynamic `CtrlSet value` typed resource telemetry.
+- `RuntimeResourceSystem.resolveRuntimeCtrlSetControllerOperation` now resolves `value` through the runtime controller expression context and produces bounded `resource:ctrlset` telemetry for dynamic fallback.
+- `RuntimeControllerDispatchWorld` now records dynamic `CtrlSet` operation telemetry through the resource-controller resolver.
+- `RuntimeTraceGatePresets` now seeds owner-local `var(0)=1`, executes `CtrlSet value = IfElse(var(0), 1, 0)`, requires `ChangeState`, `VarSet`, `CtrlSet`, `HitDef`, `variable:varset`, `resource:ctrlset`, `hitdef`, actor-frame state/action `200`, and final owner `ctrl = true`.
+- `qa_traces` now treats `synthetic-imported-control-dynamic` as a required critical artifact.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, and the active R1 issue slice around checksum `885cc464` / final checksum `ecf2bec6`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents bottom expressions as zero.
+- Official source checked: [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs/trigger.html) defines `IfElse(exp_cond, exp_true, exp_false)` branch-return behavior.
+- Full Vitest suite: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\full-vitest-dynamic-ctrlset-after-typefix.json` -> 311 suites / 1485 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 521/521 artifacts, 490 required and 31 optional.
+- Trace artifact: `synthetic-imported-control-dynamic.json` checksum `885cc464`, initial checksum `657bacbc`, final checksum `ecf2bec6`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `CtrlSet value = IfElse(var(0), 1, 0)` can resolve owner-local numeric expressions through runtime expression fallback, record typed `resource:ctrlset` telemetry after resolution, preserve actor-frame state/action evidence, and restore final owner control.
+
+Claim blocked:
+
+- Exact state-entry control timing, persistent-controller timing, helper/team ownership, redirect breadth, broad dynamic resource lowering, score movement, and full MUGEN/IKEMEN control parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `CtrlSet` already had typed `resource:ctrlset` evidence through `synthetic-imported-control.json`, while dynamic values relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic route now closes the operation-telemetry gap without broadening exact control timing semantics.
+- Adjacent surface checked: static `CtrlSet` typed evidence, resource controller mutation, dynamic controller dispatch recording, runtime expression fallback semantics, trace actor-frame vs final-actor requirement boundaries, critical `qa:trace` coverage, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 521/521 artifacts, 490 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim exact state-entry control timing, persistent-controller timing, helper/team/redirect control ownership, broad dynamic resource lowering, or full control VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic ScreenBound typed bounds telemetry
 
 Changed:

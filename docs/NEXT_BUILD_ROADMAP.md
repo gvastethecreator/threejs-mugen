@@ -27,13 +27,22 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required dynamic CtrlSet typed-resource trace gate
+  -> synthetic-imported-control-dynamic.json checksum 885cc464 / final checksum ecf2bec6 is required in qa:trace
+  -> imported active state seeds var(0)=1
+  -> active state executes CtrlSet value = IfElse(var(0), 1, 0)
+  -> dynamic CtrlSet resolves through runtime expression fallback, records typed resource:ctrlset evidence, and preserves ctrl = true telemetry
+  -> actor-frame/final evidence requires owner control restored
+  -> pnpm qa:trace passes 521/521 artifacts, 490 required and 31 optional
+  -> official Elecbyte docs define numeric state-controller params as expression-capable with bottom-to-0 behavior and IfElse branch-return semantics
+  -> no score movement; exact state-entry control timing, persistent-controller timing, helper/team/redirect ownership, broad dynamic resource lowering, score movement, and full control VM parity remain blocked
+
 R1 required dynamic StateTypeSet typed-metadata trace gate
   -> synthetic-imported-statetypeset-dynamic.json checksum 577404e4 / final checksum 083a76de is required in qa:trace
   -> imported active state seeds var(0)=1, var(1)=1, and var(2)=1
   -> active state executes StateTypeSet statetype = IfElse(var(0), C, S), movetype = IfElse(var(1), A, I), physics = IfElse(var(2), N, S)
   -> dynamic StateTypeSet resolves through runtime expression fallback, records typed metadata:statetypeset evidence, and preserves stateType C / moveType A / physics N telemetry
   -> actor-frame/final evidence requires C/A/N metadata
-  -> pnpm qa:trace passes 520/520 artifacts, 489 required and 31 optional
   -> official Elecbyte docs define StateTypeSet statetype/movetype/physics metadata and IfElse branch-return semantics
   -> no score movement; broad string-param parity, exact physics side effects, exact tick order, helper/team/redirect ownership, score movement, and full StateTypeSet parity remain blocked
 

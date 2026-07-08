@@ -520,6 +520,37 @@ export function createSyntheticImportedControlTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedDynamicControlTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-control-dynamic",
+      displayName: "Synthetic Imported Dynamic Control Ops",
+      action200Duration: 30,
+      withDynamicControlOps: {
+        value: "IfElse(var(0), 1, 0)",
+        vars: [{ index: 0, value: 1 }],
+      },
+    }),
+    {
+      ...options,
+      script: importedOneShotXScript(),
+      targetId: "synthetic-imported-control-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic CtrlSet route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "CtrlSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "resource:ctrlset", "hitdef"],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200, minFrames: 1 },
+      ],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200, ctrl: true }],
+      notes: [
+        "Synthetic imported dynamic control trace proves bounded CtrlSet value expressions can resolve through runtime expression fallback, emit typed resource:ctrlset telemetry, and restore owner control. It does not claim exact state-entry control timing, helper/team ownership, redirect breadth, persistent-controller timing, or full MUGEN/IKEMEN control semantics.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedAnimationTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -38119,6 +38150,10 @@ export type SyntheticImportedTraceFighterOptions = {
   withHitAdd?: number;
   hitAddStateNo?: number;
   withControlOps?: boolean;
+  withDynamicControlOps?: {
+    value: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withAnimationOps?: boolean;
   changeAnim2ElemProbe?: { animNo: number; elem: number; elemTime: number; triggerTime?: number; frameDurations: number[] };
   action200FrameDurations?: number[];
@@ -38983,6 +39018,7 @@ ${options.animTimeExit === undefined ? "" : animTimeExitControllerBlock(options.
 ${options.animElemExit === undefined ? "" : animElemExitControllerBlock(options.animElemExit)}
 ${options.animElemTimeExit === undefined ? "" : animElemTimeExitControllerBlock(options.animElemTimeExit)}
 ${options.withControlOps ? controlControllerBlock() : ""}
+${options.withDynamicControlOps === undefined ? "" : dynamicControlControllerBlock(options.withDynamicControlOps)}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
@@ -42648,6 +42684,27 @@ value = 0
 type = CtrlSet
 trigger1 = Time = 2
 value = 1
+`;
+}
+
+function dynamicControlControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicControlOps"]>): string {
+  const vars =
+    config.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic CtrlSet Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `${vars}
+[State 200, Dynamic CtrlSet Probe]
+type = CtrlSet
+trigger1 = Time >= 0
+value = ${config.value}
 `;
 }
 

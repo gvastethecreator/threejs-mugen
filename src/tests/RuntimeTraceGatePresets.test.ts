@@ -374,6 +374,7 @@ import {
   createSyntheticImportedDynamicWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedDynamicStateTypeSetTraceArtifact,
+  createSyntheticImportedDynamicControlTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
   createSyntheticImportedDynamicPlayerPushTraceArtifact,
   createSyntheticImportedDynamicPosFreezeTraceArtifact,
@@ -1231,6 +1232,49 @@ describe("RuntimeTraceGatePresets", () => {
         stateNo: 200,
         animNo: 200,
         ctrl: true,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported dynamic control artifact with resolved CtrlSet operation evidence", () => {
+    const artifact = createSyntheticImportedDynamicControlTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-control-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 200,
+      animNo: 200,
+      ctrl: true,
+    });
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "CtrlSet", "HitDef"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "resource:ctrlset", "hitdef"]);
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 200,
+        animNo: 200,
+        minFrames: 1,
       },
     ]);
   });

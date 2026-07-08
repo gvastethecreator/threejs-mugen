@@ -7,6 +7,7 @@ import {
   resolveRuntimeScreenBoundControllerOperation,
 } from "./BoundsControllerSystem";
 import { resolveRuntimeKinematicControllerOperation } from "./KinematicControllerSystem";
+import { resolveRuntimeCtrlSetControllerOperation } from "./RuntimeResourceSystem";
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import { resolveRuntimeStateTypeSetControllerOperation } from "./StateTypeSystem";
 import type { CharacterRuntimeState } from "./types";
@@ -88,6 +89,9 @@ function resolveDynamicRecordedOperation(
   }
   if (controller.normalizedType === "statetypeset") {
     return resolveRuntimeStateTypeSetControllerOperation(controller, runtime, context);
+  }
+  if (controller.normalizedType === "ctrlset") {
+    return resolveRuntimeCtrlSetControllerOperation(controller, runtime, context);
   }
   return undefined;
 }

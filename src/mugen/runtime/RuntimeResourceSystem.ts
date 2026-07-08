@@ -1,5 +1,8 @@
 import type { ResourceControllerOp, VariableControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
+import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
+import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeVariableType = "var" | "fvar" | "sysvar";
@@ -18,6 +21,8 @@ export type RuntimeVariableRangeAssignment = {
 };
 
 export type RuntimeResourceConstants = Record<string, number | undefined>;
+
+export type RuntimeResourceControllerSource = Pick<ControllerIr, "params" | "type" | "normalizedType">;
 
 export class RuntimeResourceWorld {
   lifeMaxFromConstants(constants?: RuntimeResourceConstants): number {
@@ -155,6 +160,22 @@ export function runtimeVariableTypeFromOperation(operation: VariableControllerOp
   return operation?.variableType;
 }
 
+export function resolveRuntimeCtrlSetControllerOperation(
+  controller: RuntimeResourceControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): Extract<ResourceControllerOp, { controllerType: "ctrlset" }> | undefined {
+  const raw = findParam(controller, "value");
+  if (raw === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "resource",
+    controllerType: "ctrlset",
+    value: (evaluateRuntimeControllerNumber(raw.trim(), state, context) ?? 0) !== 0,
+  };
+}
+
 function runtimeVariableTarget(state: CharacterRuntimeState, variableType: RuntimeVariableType): number[] {
   if (variableType === "sysvar") {
     return (state.sysvars ??= []);
@@ -163,6 +184,12 @@ function runtimeVariableTarget(state: CharacterRuntimeState, variableType: Runti
     return state.fvars;
   }
   return state.vars;
+}
+
+function findParam(controller: RuntimeResourceControllerSource, key: string): string | undefined {
+  const lower = key.toLowerCase();
+  const match = Object.entries(controller.params).find(([candidate]) => candidate.toLowerCase() === lower);
+  return match?.[1];
 }
 
 function clampIndex(value: number, max: number): number {
