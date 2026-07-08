@@ -1,5 +1,49 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Helper dynamic VelSet typed telemetry
+
+Changed:
+
+- Routed helper runtime controllers through `RuntimeControllerDispatchWorld` instead of directly calling the raw controller executor.
+- Extended helper telemetry from projectile-only evidence to bounded controller telemetry that records helper-local projectile and kinematic operations.
+- Upgraded required `synthetic-imported-helper-controller-param-parentroot.json` so the first-generation visual Helper route now requires `VelSet` controller evidence plus typed `kinematic:velset` operation evidence.
+- Updated helper binding to attach the broader controller telemetry bridge while keeping the projectile telemetry alias for compatibility.
+- Updated roadmap, support registry, QA gates, scorecard, progress tracker, continuity docs, and the active R1 issue slice around checksum `94919326`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents `VelSet` velocity params.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeHelperTelemetrySystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "RuntimeHelperTelemetryWorld|Helper controller-param Parent/Root"` -> 2 files / 4 tests passed, 505 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 513/513 artifacts, 482 required and 31 optional.
+- Trace artifact: `synthetic-imported-helper-controller-param-parentroot.json` checksum `94919326`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded first-generation helper-local `VelSet` controller params can resolve through `Parent,Life` and `Root,StateNo`, mutate helper velocity to `5,-3`, emit typed `kinematic:velset` telemetry, and route helper state/action `1401` / anim `941`.
+
+Claim blocked:
+
+- Nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, helper-local dynamic typed lowering beyond this `VelSet` route, recursive redirection, debug warning text, teams/simul, score movement, and full helper/controller expression parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: the helper controller-param trace had velocity evidence, but the helper micro-VM bypassed the runtime dispatcher and therefore did not expose typed dynamic controller operation evidence.
+- Quality delta: helper-local dynamic `VelSet` now uses the same dispatch path as active runtime controllers for operation recording, without broadening helper parity claims.
+- Adjacent surface checked: helper runtime controller execution, helper telemetry attachment, match helper binding, trace requirements, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 513/513 artifacts, 482 required and 31 optional, with the helper controller-param oracle intentionally strengthened rather than adding a new artifact. Studio/UI remains on its previous smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+- The previous active-state dynamic `PosAdd` gate `synthetic-imported-dynamic-posadd.json` checksum `8ac604b1` remains required.
+
+Next:
+
+- Continue R1 by extending helper-local dynamic typed telemetry to another narrow controller route, or by proving a nested helper ancestry route only after the root/parent ownership boundary is explicit.
+
 ## 2026-07-08 - Dynamic PosAdd typed telemetry
 
 Changed:

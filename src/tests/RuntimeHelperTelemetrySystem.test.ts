@@ -6,14 +6,16 @@ import type { RuntimeHelper } from "../mugen/runtime/HelperSystem";
 import { RuntimeHelperTelemetryWorld, type RuntimeHelperTelemetryOwner } from "../mugen/runtime/RuntimeHelperTelemetrySystem";
 
 describe("RuntimeHelperTelemetryWorld", () => {
-  it("records helper projectile controllers and typed operations against helper state", () => {
+  it("records helper projectile and kinematic telemetry against helper state", () => {
     const world = new RuntimeHelperTelemetryWorld();
     const owner = ownerState(200);
     const source = controllerSource("Projectile");
     const operation = projectileOperation();
+    const kinematicSource = controllerSource("VelSet");
+    const kinematicOperation = helperKinematicOperation();
     const records: string[] = [];
 
-    world.attachProjectileTelemetry([owner], {
+    world.attachControllerTelemetry([owner], {
       recordController: (recordOwner, controller, context) =>
         records.push(`${recordOwner.runtime.stateNo}:${controller.type}:${context.stateNo}`),
       recordOperation: (_recordOwner, recordOperation, context) => records.push(`${recordOperation.kind}:${context.stateNo}`),
@@ -21,8 +23,10 @@ describe("RuntimeHelperTelemetryWorld", () => {
 
     owner.onHelperController?.(helperState(1200), controllerIr(source, operation));
     owner.onHelperOperation?.(helperState(1200), operation);
+    owner.onHelperController?.(helperState(1201), controllerIr(kinematicSource, kinematicOperation));
+    owner.onHelperOperation?.(helperState(1201), kinematicOperation);
 
-    expect(records).toEqual(["200:Projectile:1200", "projectile:1200"]);
+    expect(records).toEqual(["200:Projectile:1200", "projectile:1200", "200:VelSet:1201", "kinematic:1201"]);
   });
 
   it("uses owner state when helper has no current state", () => {
@@ -30,7 +34,7 @@ describe("RuntimeHelperTelemetryWorld", () => {
     const owner = ownerState(300);
     const states: number[] = [];
 
-    world.attachProjectileTelemetry([owner], {
+    world.attachControllerTelemetry([owner], {
       recordController: (_owner, _controller, context) => states.push(context.stateNo),
       recordOperation: (_owner, _operation, context) => states.push(context.stateNo),
     });
@@ -48,7 +52,7 @@ describe("RuntimeHelperTelemetryWorld", () => {
     owner.onHelperController = () => records.push("stale-controller");
     owner.onHelperOperation = () => records.push("stale-operation");
 
-    world.attachProjectileTelemetry([owner], {
+    world.attachControllerTelemetry([owner], {
       recordController: (_owner, controller) => records.push(controller.type),
       recordOperation: (_owner, operation) => records.push(operation.kind),
     });
@@ -138,4 +142,8 @@ function projectileOperation(): ControllerOp {
 
 function helperOperation(): ControllerOp {
   return { kind: "helper" } as ControllerOp;
+}
+
+function helperKinematicOperation(): ControllerOp {
+  return { kind: "kinematic", controllerType: "velset" } as ControllerOp;
 }

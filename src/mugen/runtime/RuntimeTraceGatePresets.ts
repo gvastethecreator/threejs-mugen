@@ -29332,7 +29332,7 @@ export function createSyntheticImportedHelperControllerParamParentRootTraceArtif
       label: "Synthetic imported Helper controller-param Parent/Root redirect route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper controller-param Parent/Root trace proves a bounded helper-local VelSet can evaluate dynamic numeric parameters through Parent and Root redirects, then route on the resulting helper velocity. It does not claim nested helper ancestry where root differs from parent, helper-spawned helpers, player Parent controller-param redirects, dynamic-parameter typed lowering, recursive redirection, debug warning text, teams/simul, or full MUGEN/IKEMEN helper expression parity.",
+        "Synthetic imported Helper controller-param Parent/Root trace proves a bounded helper-local VelSet can evaluate dynamic numeric parameters through Parent and Root redirects, emit typed kinematic:velset telemetry through the helper runtime dispatcher, then route on the resulting helper velocity. It does not claim nested helper ancestry where root differs from parent, helper-spawned helpers, player Parent controller-param redirects, helper-local dynamic typed lowering beyond this VelSet route, recursive redirection, debug warning text, teams/simul, or full MUGEN/IKEMEN helper expression parity.",
       ],
     },
     gates: [
@@ -29343,8 +29343,8 @@ export function createSyntheticImportedHelperControllerParamParentRootTraceArtif
         requiredEffectKinds: ["helper"],
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
-        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
-        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "VelSet"],
+        requiredExecutedOperations: ["hitdef", "helper", "kinematic:velset"],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {

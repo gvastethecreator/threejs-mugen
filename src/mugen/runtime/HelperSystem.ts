@@ -24,7 +24,7 @@ import type {
   RuntimeModifyProjectilePairParam,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
-import { executeControllerIr } from "./StateControllerExecutor";
+import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import {
@@ -337,9 +337,9 @@ export function runRuntimeHelperStateControllers(
         continue;
       }
       const expressionContext = helperExpressionContext(helper, options);
-      applyRuntimeStateToHelper(
-        helper,
-        executeControllerIr(controller, helperRuntimeState(helper), () => undefined, {
+      const actor = { runtime: helperRuntimeState(helper) };
+      helperControllerDispatchWorld.apply(actor, controller, {
+        context: {
           stageBounds: options.stageBounds,
           stageTime: options.stageTime,
           opponent: expressionContext.opponent,
@@ -353,8 +353,11 @@ export function runRuntimeHelperStateControllers(
           isHelper: expressionContext.isHelper,
           helperId: expressionContext.helperId,
           stateTime: expressionContext.stateTime,
-        }),
-      );
+        },
+        recordController: () => options.onController?.(helper, controller),
+        recordOperation: (_actor, operation) => options.onOperation?.(helper, operation),
+      });
+      applyRuntimeStateToHelper(helper, actor.runtime);
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "sound") {
@@ -644,6 +647,7 @@ const helperRuntimeControllers = new Set([
 ]);
 
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
+const helperControllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const helperTargetWorld = new RuntimeTargetWorld();
 const helperTargetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const helperOpponentSelectionWorld = new RuntimeOpponentSelectionWorld();

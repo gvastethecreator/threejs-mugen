@@ -2730,6 +2730,8 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const gate = artifact.gates[0];
     const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -2757,6 +2759,8 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "Helper", "VelSet"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "kinematic:velset"]);
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1401, minAge: 1 },
     ]);

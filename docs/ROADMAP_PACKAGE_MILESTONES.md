@@ -41,7 +41,7 @@ R1 required dynamic PosAdd typed-telemetry trace gate
 -> gate requires ordered variable:varset, kinematic:posset, and kinematic:posadd operation evidence plus actor-frame position telemetry maxPos.x = 18 / minPos.y = -24
 -> pnpm qa:trace passes 513/513 artifacts, 482 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosAdd as optional x/y position offsets
--> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
 
 R1 required dynamic PosSet typed-telemetry trace gate
 -> synthetic-imported-dynamic-posset.json checksum aeb730fb is required in qa:trace
@@ -1414,12 +1414,12 @@ Previous R1 required AssertSpecial round-flow telemetry trace gate
   -> final imported actor assertSpecialGlobalFlags require intro and nokoslow, with runtime intro/noKoSlow telemetry
   -> pnpm qa:trace passes 310/310 artifacts, 280 required and 30 optional
   -> bounded official flag telemetry only; no exact intro state ownership, no KO slow-motion suppression, no winpose/round transitions, no helper/team/global ownership, no pause/layer behavior, no score movement, no full round-flow parity claim
-Previous R1 required helper controller-param Parent/Root trace gate
-  -> synthetic-imported-helper-controller-param-parentroot.json checksum 9ad71f4e is required in qa:trace
+Current R1 required helper controller-param Parent/Root trace gate
+  -> synthetic-imported-helper-controller-param-parentroot.json checksum 94919326 is required in qa:trace
   -> first-generation visual Helper executes dynamic VelSet x = Parent,Life - 995 and y = Root,StateNo - 203
-  -> actor-frame evidence proves helper velocity 5,-3 before routing to state 1401 / anim 941
-  -> pnpm qa:trace passes 309/309 artifacts, 279 required and 30 optional
-  -> bounded helper-local VelSet controller-param Parent/Root evidence only; no nested helper ancestry where root differs from parent, no helper-spawned helpers, no player Parent controller-param redirect support, no dynamic-parameter typed lowering, no recursive redirection, no debug warning text, no teams/simul, no score movement, no full helper/controller expression parity claim
+  -> typed kinematic:velset evidence plus actor-frame evidence proves helper velocity 5,-3 before routing to state 1401 / anim 941
+  -> pnpm qa:trace passes 513/513 artifacts, 482 required and 31 optional
+  -> bounded helper-local VelSet controller-param Parent/Root typed telemetry only; no nested helper ancestry where root differs from parent, no helper-spawned helpers, no player Parent controller-param redirect support, no helper-local dynamic typed lowering beyond this route, no recursive redirection, no debug warning text, no teams/simul, no score movement, no full helper/controller expression parity claim
 Previous R1 required AssertSpecial shadow presentation trace gate
   -> synthetic-imported-assertspecial-helper-explod-shadow.json trace checksum 83f61b48 is required in qa:trace
   -> synthetic-imported-assertspecial-shadow-telemetry.json trace checksum 2b9c8fac is required in qa:trace

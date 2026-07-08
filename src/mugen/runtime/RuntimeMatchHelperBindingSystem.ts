@@ -34,6 +34,6 @@ export class RuntimeMatchHelperBindingWorld {
   attach<TOwner extends RuntimeMatchHelperBindingOwner>(input: RuntimeMatchHelperBindingInput<TOwner>): void {
     const owners = [...input.owners];
     this.targetStateWorld.attachOwnerHandlers(owners, input.enterTargetState);
-    this.telemetryWorld.attachProjectileTelemetry(owners, input.telemetryRecorder);
+    this.telemetryWorld.attachControllerTelemetry(owners, input.telemetryRecorder);
   }
 }

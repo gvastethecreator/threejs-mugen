@@ -19,23 +19,40 @@ export type RuntimeHelperTelemetryRecorder<TOwner extends RuntimeHelperTelemetry
 };
 
 export class RuntimeHelperTelemetryWorld {
-  attachProjectileTelemetry<TOwner extends RuntimeHelperTelemetryOwner>(
+  attachControllerTelemetry<TOwner extends RuntimeHelperTelemetryOwner>(
     owners: TOwner[],
     recorder: RuntimeHelperTelemetryRecorder<TOwner>,
   ): void {
     for (const owner of owners) {
       owner.onHelperController = (helper, controller) => {
-        if (controller.operation?.kind !== "projectile") {
+        if (!recordsHelperController(controller)) {
           return;
         }
         recorder.recordController(owner, controller.source, { stateNo: helper.stateNo ?? owner.runtime.stateNo });
       };
       owner.onHelperOperation = (helper, operation) => {
-        if (operation.kind !== "projectile") {
+        if (!recordsHelperOperation(operation)) {
           return;
         }
         recorder.recordOperation(owner, operation, { stateNo: helper.stateNo ?? owner.runtime.stateNo });
       };
     }
   }
+
+  attachProjectileTelemetry<TOwner extends RuntimeHelperTelemetryOwner>(
+    owners: TOwner[],
+    recorder: RuntimeHelperTelemetryRecorder<TOwner>,
+  ): void {
+    this.attachControllerTelemetry(owners, recorder);
+  }
+}
+
+const helperKinematicControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "hitvelset"]);
+
+function recordsHelperController(controller: ControllerIr): boolean {
+  return controller.operation?.kind === "projectile" || helperKinematicControllers.has(controller.normalizedType);
+}
+
+function recordsHelperOperation(operation: ControllerOp): boolean {
+  return operation.kind === "projectile" || operation.kind === "kinematic";
 }
