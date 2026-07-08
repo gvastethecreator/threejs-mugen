@@ -1,5 +1,42 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Config GameWidth GameHeight trace gate
+
+Changed:
+
+- Added a bounded MUGEN/IKEMEN INI config parser for `[Config] GameWidth` / `GameHeight`, with diagnostics for invalid positive-number dimensions.
+- Added config discovery for `mugen.cfg` / `config.ini` style packages, attaching parsed game-space dimensions to imported stages and system assets.
+- Updated `RuntimeStageGameSpaceSystem` so parsed game config dimensions override stage `[StageInfo] localcoord` when evaluating `ScreenWidth` / `ScreenHeight` and inverse-zoom `GameWidth` / `GameHeight`.
+- Registered required trace artifact `synthetic-imported-config-gamespace.json`, which presses `x`, uses parsed-config-equivalent dimensions `1280x720` over a 640x480 stage localcoord, evaluates `ScreenWidth = 1280`, `ScreenHeight = 720`, `GameWidth = 2560`, and `GameHeight = 1440` at camera zoom `0.5`, and routes imported State -1 into state/action `9303`.
+
+Evidence:
+
+- Official source checked: [Elecbyte Coordinate Space Notes](https://www.elecbyte.com/mugendocs/coordspace.html) defines the game coordinate space as coming from `mugen.cfg` `[Config]` `GameWidth` / `GameHeight`; [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs-11b1/trigger.html) defines `GameWidth` / `GameHeight` zoom scaling and non-zooming `ScreenWidth` / `ScreenHeight`.
+- Ikemen-GO source snapshot checked locally: `.scratch/refs/Ikemen-GO/src/resources/defaultConfig.ini` uses `[Config] GameWidth = 1280` and `GameHeight = 720` as game native dimensions.
+- Focused tests: `pnpm exec vitest run src/tests/MugenConfigParser.test.ts src/tests/MugenSystemAssetsLoader.test.ts src/tests/StageDefParser.test.ts src/tests/RuntimeStageGameSpaceSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeControllerExpressionContextSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "MugenConfig|system assets|stage|game-space|GameWidth|GameHeight|ScreenWidth|ScreenHeight|config"` -> 6 files passed, 2 skipped; 21 tests passed and 525 skipped.
+- Full tests: `pnpm test` -> 153 files / 1462 tests passed.
+- Typecheck: `pnpm typecheck` passed after adding `config` to the shared diagnostic format union.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 507/507 artifacts, 476 required and 31 optional.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+- Trace artifact: `synthetic-imported-config-gamespace.json` checksum `2f3c0a63`.
+
+Claim allowed:
+
+- Bounded INI package config parsing can carry `[Config] GameWidth` / `GameHeight` into imported stage/system metadata and make current runtime trigger expressions prefer those dimensions over stage localcoord for screen-space and inverse-zoom game-space reads.
+
+Claim blocked:
+
+- Exact player-local coordinate translation, renderer/screenpack viewport ownership, camera animation parity, IKEMEN `config.json` execution, full viewport/camera/screenpack split, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN viewport parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 507/507 artifacts, 476 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1 with player-local coordinate translation, exact camera/screen/stage ownership, camera animation parity, another Common1/FightFX oracle, or continue R2 by moving one mutable helper/target/effect path behind a named runtime boundary with focused tests.
+
 ## 2026-07-08 - ScreenWidth ScreenHeight trace gate
 
 Changed:
@@ -24,7 +61,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact mugen.cfg/game-config negotiation, renderer/screenpack viewport ownership, camera animation parity, full viewport/camera/screenpack split, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN viewport parity remain blocked.
+- Exact mugen.cfg/game-config negotiation was narrowed by the later config gate; renderer/screenpack viewport ownership, camera animation parity, full viewport/camera/screenpack split, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN viewport parity remain blocked.
 
 Global port report:
 
@@ -32,7 +69,7 @@ Global port report:
 
 Next:
 
-- Continue R1 with exact mugen.cfg/game-config negotiation, exact camera/screen/stage ownership, camera animation parity, another Common1/FightFX oracle, or continue R2 by moving one mutable helper/target/effect path behind a named runtime boundary with focused tests.
+- Continue R1 with exact player-local coordinate translation, exact camera/screen/stage ownership, camera animation parity, another Common1/FightFX oracle, or continue R2 by moving one mutable helper/target/effect path behind a named runtime boundary with focused tests.
 
 ## 2026-07-08 - GameWidth GameHeight trace gate
 

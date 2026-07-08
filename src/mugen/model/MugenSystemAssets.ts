@@ -1,4 +1,5 @@
 import type { MugenAnimationAction, MugenDiagnostic } from "./MugenAnimation";
+import type { MugenGameConfig } from "./MugenConfig";
 import type { SndArchive } from "./MugenSound";
 import type { SffArchive } from "./MugenSprite";
 
@@ -19,6 +20,7 @@ export type MugenSystemHitSparkLibrary = {
 
 export type MugenSystemAssets = {
   fightDefPath?: string;
+  gameConfig?: MugenGameConfig;
   hitSparkLibraries: Partial<Record<MugenSystemHitSparkLibrarySource, MugenSystemHitSparkLibrary>>;
   fightFxLibraries?: Record<string, MugenSystemHitSparkLibrary>;
   diagnostics: MugenDiagnostic[];

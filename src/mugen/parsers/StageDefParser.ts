@@ -6,6 +6,7 @@ import type {
   MugenStageLayerClip,
   MugenStageLayerTrans,
 } from "../model/MugenStage";
+import type { MugenGameSpaceConfig } from "../model/MugenConfig";
 import type { MugenStageDef } from "../model/MugenStagePackage";
 import { parseAir } from "./AirParser";
 import { createDiagnostic, parseKeyValue, parseNumber, parseTextLines, unquote } from "./text";
@@ -72,7 +73,11 @@ export function parseStageDef(text: string, file = "stage.def"): MugenStageDef {
   };
 }
 
-export function stageDefToRuntime(definition: MugenStageDef, id: string): MugenStageDefinition {
+export function stageDefToRuntime(
+  definition: MugenStageDef,
+  id: string,
+  gameSpace?: MugenGameSpaceConfig,
+): MugenStageDefinition {
   const raw = definition.rawSections;
   const camera = getSection(raw, "Camera");
   const player = getSection(raw, "PlayerInfo");
@@ -89,6 +94,7 @@ export function stageDefToRuntime(definition: MugenStageDef, id: string): MugenS
   return {
     id,
     displayName: definition.info.displayName ?? definition.info.name ?? id,
+    ...(gameSpace ? { gameSpace } : {}),
     floorY,
     zOffset,
     localCoord: {

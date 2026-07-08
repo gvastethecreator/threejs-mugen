@@ -33,6 +33,7 @@ fightfx.air = fightfx.air
 fightfx.sff = fightfx.sff
 `),
     );
+    vfs.addFile("data/mugen.cfg", text("[Config]\nGameWidth = 1280\nGameHeight = 720\n"));
     vfs.addFile(
       "data/fightfx.air",
       text(`[Begin Action 7001]
@@ -52,6 +53,7 @@ fightfx.sff = fightfx.sff
     const character = await new MugenCharacterLoader().load("kfm.zip", vfs);
 
     expect(character.systemAssets?.fightDefPath).toBe("data/fight.def");
+    expect(character.systemAssets?.gameConfig?.gameSpace).toEqual({ width: 1280, height: 720, sourcePath: "data/mugen.cfg" });
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.airPath).toBe("data/fightfx.air");
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.sffPath).toBe("data/fightfx.sff");
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.sndPath).toBe("data/fightfx.snd");

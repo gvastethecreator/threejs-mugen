@@ -31,7 +31,7 @@ export type MugenDiagnosticSeverity = "info" | "warning" | "error";
 export type MugenDiagnostic = {
   severity: MugenDiagnosticSeverity;
   message: string;
-  format?: "def" | "air" | "cmd" | "cns" | "sff" | "snd" | "act" | "stage" | "loader";
+  format?: "def" | "air" | "cmd" | "cns" | "sff" | "snd" | "act" | "stage" | "config" | "loader";
   file?: string;
   line?: number;
   raw?: string;

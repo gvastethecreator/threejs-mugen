@@ -4,16 +4,18 @@ import type { MugenStagePackage } from "../model/MugenStagePackage";
 import { parseStageDef, stageDefToRuntime } from "../parsers/StageDefParser";
 import { SffParser } from "../parsers/SffParser";
 import { PathResolver, basename, dirname, normalizeVirtualPath } from "./PathResolver";
+import { loadMugenGameConfig } from "./MugenConfigLoader";
 import type { VirtualFileSystem } from "./VirtualFileSystem";
 
 export class MugenStageLoader {
   async loadAll(sourceName: string, vfs: VirtualFileSystem): Promise<MugenStagePackage[]> {
     const resolver = new PathResolver(vfs.listFiles());
+    const gameConfig = loadMugenGameConfig(vfs, resolver);
     const ids = new Map<string, number>();
     const stages = resolver
       .findByExtension(".def")
       .filter((path) => isStageDefPath(path))
-      .map((defPath) => withUniqueStageId(this.loadStage(sourceName, defPath, vfs, resolver), ids));
+      .map((defPath) => withUniqueStageId(this.loadStage(sourceName, defPath, vfs, resolver, gameConfig), ids));
 
     return Promise.all(stages.map((stage) => this.loadStageSprites(stage, vfs)));
   }
@@ -23,8 +25,9 @@ export class MugenStageLoader {
     defPath: string,
     vfs: VirtualFileSystem,
     resolver: PathResolver,
+    gameConfig: ReturnType<typeof loadMugenGameConfig>,
   ): MugenStagePackage {
-    const diagnostics: MugenDiagnostic[] = [];
+    const diagnostics: MugenDiagnostic[] = gameConfig?.diagnostics.slice() ?? [];
     const definition = parseStageDef(vfs.readText(defPath) ?? "", defPath);
     diagnostics.push(...definition.diagnostics);
     const missing: string[] = [];
@@ -47,7 +50,7 @@ export class MugenStageLoader {
       sourceName,
       defPath,
       definition,
-      stage: stageDefToRuntime(definition, id),
+      stage: stageDefToRuntime(definition, id, gameConfig?.gameSpace),
       files: {
         def: defPath,
         sprite: resolve(definition.files.sprite),

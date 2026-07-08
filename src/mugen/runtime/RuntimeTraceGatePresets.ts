@@ -1448,6 +1448,31 @@ export function createSyntheticImportedScreenSpaceTraceArtifact(options: Runtime
   );
 }
 
+export function createSyntheticImportedConfigGameSpaceTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? configGameSpaceTraceStage();
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-config-gamespace",
+      displayName: "Synthetic Imported Config Game Space",
+      screenSpaceEntry: { screenWidth: 1280, screenHeight: 720, gameWidth: 2560, gameHeight: 1440, stateNo: 9303 },
+    }),
+    {
+      ...options,
+      stage,
+      targetId: "synthetic-imported-config-gamespace-golden",
+      targetLabel: "Synthetic imported config GameWidth/GameHeight route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [9303],
+      requiredExecutedStates: [9303],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported config game-space trace proves bounded [Config] GameWidth/GameHeight dimensions can override stage localcoord for ScreenWidth/ScreenHeight and inverse-scaled GameWidth/GameHeight at camera zoom 0.5. It does not claim exact renderer screenpack ownership, player-local coordinate translation, camera animation, IKEMEN config JSON execution, or full viewport parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedStateContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -36337,6 +36362,19 @@ function screenSpaceZoomTraceStage(): MugenStageDefinition {
     camera: {
       ...trainingStage.camera,
       zoom: 0.5,
+    },
+  };
+}
+
+function configGameSpaceTraceStage(): MugenStageDefinition {
+  return {
+    ...screenSpaceZoomTraceStage(),
+    id: "trace-config-gamespace-grid",
+    displayName: "Trace Config Game Space Grid",
+    gameSpace: {
+      width: 1280,
+      height: 720,
+      sourcePath: "data/mugen.cfg",
     },
   };
 }

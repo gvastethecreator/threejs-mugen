@@ -1,4 +1,5 @@
 import type { MugenAnimationAction } from "./MugenAnimation";
+import type { MugenGameSpaceConfig } from "./MugenConfig";
 
 export type MugenStageLayer = {
   id: string;
@@ -90,6 +91,7 @@ export type MugenStageBgCtrlDef = {
 export type MugenStageDefinition = {
   id: string;
   displayName: string;
+  gameSpace?: MugenGameSpaceConfig;
   floorY: number;
   zOffset: number;
   localCoord: {

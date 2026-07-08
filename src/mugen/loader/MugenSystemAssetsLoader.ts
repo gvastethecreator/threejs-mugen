@@ -5,6 +5,7 @@ import { parseAir } from "../parsers/AirParser";
 import { parseDef } from "../parsers/DefParser";
 import { parseSnd } from "../parsers/SndParser";
 import { SffParser } from "../parsers/SffParser";
+import { loadMugenGameConfig } from "./MugenConfigLoader";
 import type { PathResolver } from "./PathResolver";
 import type { VirtualFileSystem } from "./VirtualFileSystem";
 
@@ -20,13 +21,17 @@ export async function loadMugenSystemAssets(
 ): Promise<MugenSystemAssets | undefined> {
   const diagnostics: MugenDiagnostic[] = [];
   const fightDefPath = findFightDefPath(resolver);
+  const gameConfig = loadMugenGameConfig(vfs, resolver);
+  if (gameConfig) {
+    diagnostics.push(...gameConfig.diagnostics);
+  }
   const explicit = fightDefPath ? readFightDefRefs(vfs, fightDefPath, resolver) : {};
   const airPath = explicit.airPath ?? findBestBasename(resolver, "fightfx.air");
   const sffPath = explicit.sffPath ?? findBestBasename(resolver, "fightfx.sff");
   const sndPath = explicit.sndPath ?? findBestBasename(resolver, "fightfx.snd") ?? findBestBasename(resolver, "fx.snd");
   const characterFxPaths = findCharacterFightFxPaths(options.characterDefinition, options.characterDefPath, resolver);
 
-  if (!fightDefPath && !airPath && !sffPath && characterFxPaths.length === 0) {
+  if (!fightDefPath && !airPath && !sffPath && characterFxPaths.length === 0 && !gameConfig) {
     return undefined;
   }
 
@@ -93,6 +98,7 @@ export async function loadMugenSystemAssets(
 
   return {
     fightDefPath,
+    ...(gameConfig ? { gameConfig } : {}),
     hitSparkLibraries,
     ...(Object.keys(fightFxLibraries).length > 0 ? { fightFxLibraries } : {}),
     diagnostics,

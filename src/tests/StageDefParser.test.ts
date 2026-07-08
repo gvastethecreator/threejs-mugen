@@ -139,6 +139,7 @@ describe("MugenStageLoader", () => {
   it("discovers stages and resolves stage sprite/music paths from a virtual package", async () => {
     const encoder = new TextEncoder();
     const vfs = new VirtualFileSystem();
+    vfs.addFile("mugen/data/mugen.cfg", encoder.encode("[Config]\nGameWidth = 1280\nGameHeight = 720\n"));
     vfs.addFile("mugen/stages/kfm.def", encoder.encode(kfmStageDef));
     vfs.addFile("mugen/stages/kfm.sff", new Uint8Array([0]));
     vfs.addFile("mugen/sound/kfm.mid", new Uint8Array([0]));
@@ -147,6 +148,7 @@ describe("MugenStageLoader", () => {
 
     expect(stage?.defPath).toBe("mugen/stages/kfm.def");
     expect(stage?.stage.displayName).toBe("Mountainside Temple");
+    expect(stage?.stage.gameSpace).toEqual({ width: 1280, height: 720, sourcePath: "mugen/data/mugen.cfg" });
     expect(stage?.files.sprite).toBe("mugen/stages/kfm.sff");
     expect(stage?.files.music).toBe("mugen/sound/kfm.mid");
     expect(stage?.files.missing).toEqual([]);
