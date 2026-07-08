@@ -1,5 +1,51 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Helper dynamic VelAdd typed telemetry
+
+Changed:
+
+- Added required trace artifact `synthetic-imported-helper-dynamic-veladd.json` for a bounded first-generation visual Helper route.
+- The helper route seeds velocity with `VelSet x = 1, y = 2`, resolves `VelAdd x = Parent,Life - 996` and `y = Root,StateNo - 205`, then routes on helper velocity `5,-3` into state/action `1402` / anim `942`.
+- `qa_traces` now registers the artifact as required and coverage-required.
+- Focused trace coverage now asserts helper actor-frame velocity, helper lifecycle/payload evidence, controller evidence, and typed `kinematic:velset` plus `kinematic:veladd` operation evidence.
+- Adjacent audit found helper runtime-controller callbacks were double-recorded after dispatcher routing; `HelperSystem` now records runtime controllers once through `RuntimeControllerDispatchWorld` while keeping typed operation telemetry intact.
+- Updated roadmap, support registry, QA gates, scorecard, progress tracker, fixture goldens, workplan, continuity docs, and the active R1 issue slice around checksum `fbb8bcae`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents `VelAdd` as adding optional `x` / `y` velocity amounts.
+- Regression audit: `pnpm exec vitest run src/tests/EffectActorSystem.test.ts --testNamePattern "bounded helper-local state program|metadata, control|life and power|parent and root redirects|does not satisfy helper parent and root redirects"` -> 1 file / 5 tests passed.
+- Broad regression: `pnpm test -- RuntimeTraceGatePresets` -> 153 files / 1474 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 514/514 artifacts, 483 required and 31 optional.
+- Trace artifact: `synthetic-imported-helper-dynamic-veladd.json` checksum `fbb8bcae`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded first-generation helper-local `VelAdd` controller params can resolve through `Parent,Life` and `Root,StateNo`, add to helper velocity from `1,2` to `5,-3`, emit typed `kinematic:veladd` telemetry, and route helper state/action `1402` / anim `942`.
+
+Claim blocked:
+
+- Nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, helper-local dynamic typed lowering beyond current `VelSet` / `VelAdd` routes, recursive redirection, debug warning text, teams/simul, score movement, and full helper/controller expression parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: helper-local dynamic `VelSet` had typed telemetry, but adjacent helper-local dynamic `VelAdd` had no required oracle.
+- Quality delta: a second helper-local dynamic kinematic route now uses the same dispatcher and typed-operation evidence path, without broadening helper VM parity claims.
+- Adjacent surface checked: helper runtime controller dispatch, duplicate controller telemetry callback behavior, helper Parent/Root read model, trace requirements, support registry wording, roadmap truth docs, and aggregate trace coverage.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 514/514 artifacts, 483 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+- Previous required `synthetic-imported-helper-controller-param-parentroot.json` checksum `94919326` remains required for helper-local dynamic `VelSet`; previous active-state dynamic kinematic gates also remain required.
+
+Next:
+
+- Continue R1 by extending helper-local dynamic typed telemetry only where the helper ownership boundary stays first-generation and explicit, or switch to nested helper/root ancestry once that architecture is ready.
+
 ## 2026-07-08 - Helper dynamic VelSet typed telemetry
 
 Changed:

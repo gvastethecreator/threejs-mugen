@@ -2142,6 +2142,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperControllerParamParentRootTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-dynamic-veladd",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperDynamicVelAddTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-explod",
       required: true,
       artifact: presets.createSyntheticImportedHelperExplodTraceArtifact(),
@@ -3655,6 +3660,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-ishelper",
     "synthetic-imported-helper-parentroot",
     "synthetic-imported-helper-controller-param-parentroot",
+    "synthetic-imported-helper-dynamic-veladd",
     "synthetic-imported-helper-modifyprojectile-dynamic-bounds",
     "synthetic-imported-helper-modifyprojectile-dynamic-params",
     "synthetic-imported-helper-projhit",

@@ -226,6 +226,7 @@ import {
   createSyntheticImportedHelperEnemyNearTraceArtifact,
   createSyntheticImportedHelperParentRootTraceArtifact,
   createSyntheticImportedHelperControllerParamParentRootTraceArtifact,
+  createSyntheticImportedHelperDynamicVelAddTraceArtifact,
   createSyntheticImportedHelperExplodTraceArtifact,
   createSyntheticImportedHelperProjectileTraceArtifact,
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
@@ -2763,6 +2764,70 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "kinematic:velset"]);
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1401, minAge: 1 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper dynamic VelAdd artifact with typed helper telemetry", () => {
+    const artifact = createSyntheticImportedHelperDynamicVelAddTraceArtifact({
+      generatedAt: "2026-07-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-dynamic-veladd-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-dynamic-veladd-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:veladd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "helper",
+          ownerId: "p1",
+          stateNo: 1402,
+          animNo: 942,
+          minVel: { x: 5, y: -3 },
+          maxVel: { x: 5, y: -3 },
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "helper",
+        ownerId: "p1",
+        stateNo: 1402,
+        animNo: 942,
+        observedVelXAtLeast: 5,
+        observedVelXAtMost: 5,
+        observedVelYAtLeast: -3,
+        observedVelYAtMost: -3,
+        minFrames: 1,
+      },
+    ]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "Helper", "VelSet", "VelAdd"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual([
+      "hitdef",
+      "helper",
+      "kinematic:velset",
+      "kinematic:veladd",
+    ]);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1402, minAge: 1 },
     ]);
   });
 

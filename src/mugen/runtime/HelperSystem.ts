@@ -331,7 +331,6 @@ export function runRuntimeHelperStateControllers(
         options.onUnsupportedController?.(helper, controller);
         continue;
       }
-      options.onController?.(helper, controller);
       if (controller.normalizedType === "playsnd" || controller.normalizedType === "stopsnd") {
         emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
         continue;

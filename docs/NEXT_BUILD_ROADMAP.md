@@ -27,13 +27,26 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required helper dynamic VelAdd typed-telemetry trace gate
+  -> synthetic-imported-helper-dynamic-veladd.json checksum fbb8bcae is required in qa:trace
+  -> imported State -1 presses x, spawns a first-generation visual Helper, seeds helper velocity with VelSet, and executes helper-local VelAdd x = Parent,Life - 996, y = Root,StateNo - 205
+  -> gate requires ChangeState, HitDef, Helper, VelSet, VelAdd, hitdef, helper, kinematic:velset, and kinematic:veladd evidence plus helper actor-frame velocity telemetry 5,-3 at state/action 1402 / anim 942
+  -> pnpm qa:trace passes 514/514 artifacts, 483 required and 31 optional
+  -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelAdd as optional x/y velocity additions
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
+
+R1 required helper dynamic VelSet typed-telemetry trace gate
+  -> synthetic-imported-helper-controller-param-parentroot.json checksum 94919326 remains required in qa:trace
+  -> first-generation visual Helper executes helper-local VelSet x = Parent,Life - 995, y = Root,StateNo - 203 and emits typed kinematic:velset evidence before routing to 1401 / anim 941
+  -> that checkpoint passed 513/513 artifacts, 482 required and 31 optional
+
 R1 required dynamic PosAdd typed-telemetry trace gate
   -> synthetic-imported-dynamic-posadd.json checksum 8ac604b1 is required in qa:trace
   -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static PosSet seed position, and executes PosAdd x = var(0) + 5, y = var(1) - 2
   -> gate requires ordered variable:varset, kinematic:posset, and kinematic:posadd operation evidence plus actor-frame position telemetry maxPos.x = 18 / minPos.y = -24
   -> pnpm qa:trace passes 513/513 artifacts, 482 required and 31 optional
   -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosAdd as optional x/y position offsets
-  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
 
 R1 required dynamic PosSet typed-telemetry trace gate
   -> synthetic-imported-dynamic-posset.json checksum aeb730fb is required in qa:trace
