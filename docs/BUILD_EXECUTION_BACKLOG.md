@@ -1,5 +1,45 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic LifeAdd typed resource telemetry
+
+Changed:
+
+- Added required `synthetic-imported-lifeadd-dynamic.json` for bounded active imported dynamic `LifeAdd value/kill` typed resource telemetry.
+- Added `RuntimeResourceSystem.resolveRuntimeResourceControllerOperation` so resource-family dynamic params can produce typed operation evidence when they resolve through runtime expression fallback.
+- `RuntimeControllerDispatchWorld` now records dynamic `LifeAdd` operation telemetry through the resource-controller resolver.
+- `RuntimeTraceGatePresets` now seeds owner-local `var(8)=1` and `var(9)=0`, executes `LifeAdd value = IfElse(var(8), -2000, 0), kill = var(9)`, requires `ChangeState`, `VarSet`, `HitDef`, `LifeAdd`, `variable:varset`, `hitdef`, `resource:lifeadd`, actor-frame state/action `290` with life `1`, and final owner life `1`.
+- `qa_traces` now treats `synthetic-imported-lifeadd-dynamic` as a required critical artifact.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, and the active R1 issue slice around checksum `8b0493f8` / final checksum `cbe4ab51`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `LifeAdd value` / `kill` and numeric state-controller params as arithmetic-expression capable unless otherwise specified, with bottom expressions set to zero.
+- Focused tests: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\dynamic-lifeadd-vitest-files.json src\tests\RuntimeResourceSystem.test.ts src\tests\RuntimeControllerDispatchSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts` passed.
+- Runtime trace gate: `pnpm qa:trace` -> 522/522 artifacts, 491 required and 31 optional.
+- Trace artifact: `synthetic-imported-lifeadd-dynamic.json` checksum `8b0493f8`, initial checksum `2702eddc`, final checksum `cbe4ab51`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `LifeAdd value = IfElse(var(8), -2000, 0), kill = var(9)` can resolve owner-local numeric expressions through runtime expression fallback, record typed `resource:lifeadd` telemetry after resolution, and preserve nonlethal owner life at `1`.
+
+Claim blocked:
+
+- Full dynamic `LifeSet` / `PowerAdd` / `PowerSet` lowering, exact KO/round flow, helper/team ownership, redirect breadth, exact resource scaling, score movement, and full MUGEN/IKEMEN resource parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `LifeAdd` already had typed `resource:lifeadd` evidence through `synthetic-imported-resource.json`, while dynamic values relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic route now closes the operation-telemetry gap without broadening exact KO or resource-family semantics.
+- Adjacent surface checked: static resource gate, dynamic CtrlSet resolver shape, resource mutation clamps, runtime dispatcher operation recording, trace actor-frame/final resource assertions, critical `qa:trace` coverage, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 522/522 artifacts, 491 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim full dynamic resource-family lowering, exact KO/round flow, helper/team/redirect ownership, exact resource scaling, or full resource VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic CtrlSet typed resource telemetry
 
 Changed:

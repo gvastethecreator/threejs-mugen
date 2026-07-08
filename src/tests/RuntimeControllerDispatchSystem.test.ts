@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { ControllerOp } from "../mugen/compiler/ControllerOps";
 import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import {
@@ -122,6 +123,21 @@ describe("RuntimeControllerDispatchSystem", () => {
 
     expect(actor.runtime.pos).toEqual({ x: 13, y: -14 });
     expect(recordedOperations).toEqual(["kinematic:posadd"]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
+  it("records bounded dynamic LifeAdd as typed resource telemetry after resolving params", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ life: 12, vars: [1, 0] });
+    const controller = compileControllerIr(controllerSource("LifeAdd", { value: "IfElse(var(0), -20, 0)", kill: "var(1)" }));
+    const recordedOperations: ControllerOp[] = [];
+
+    const result = world.apply(actor, controller, {
+      recordOperation: (_actor, operation) => recordedOperations.push(operation),
+    });
+
+    expect(actor.runtime.life).toBe(1);
+    expect(recordedOperations).toEqual([{ kind: "resource", controllerType: "lifeadd", value: -20, kill: false }]);
     expect(result.recordedOperation).toBe(true);
   });
 

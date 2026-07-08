@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic LifeAdd typed-resource trace gate
+-> synthetic-imported-lifeadd-dynamic.json checksum 8b0493f8 / final checksum cbe4ab51 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(8)=1 and var(9)=0, then executes LifeAdd value = IfElse(var(8), -2000, 0), kill = var(9)
+-> gate requires ChangeState, VarSet, HitDef, LifeAdd, variable:varset, hitdef, and resource:lifeadd evidence plus actor-frame/final owner life 1 telemetry in state/action 290
+-> pnpm qa:trace passes 522/522 artifacts, 491 required and 31 optional
+-> official Elecbyte State Controller Reference defines LifeAdd value/kill plus numeric controller params as expression-capable with bottom-to-0 behavior
+-> no score movement; full dynamic LifeSet/PowerAdd/PowerSet lowering, exact KO/round flow, helper/team/redirect ownership, exact resource scaling, score movement, and full resource VM parity remain blocked
+
 R1 required dynamic CtrlSet typed-resource trace gate
 -> synthetic-imported-control-dynamic.json checksum 885cc464 / final checksum ecf2bec6 is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds var(0)=1, then executes CtrlSet value = IfElse(var(0), 1, 0)

@@ -439,6 +439,7 @@ import {
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
+  createSyntheticImportedDynamicLifeAddTraceArtifact,
   createSyntheticImportedAnimationTraceArtifact,
   createSyntheticImportedChangeAnim2ElemTraceArtifact,
   createSyntheticImportedAnimElemOffsetTraceArtifact,
@@ -1274,6 +1275,65 @@ describe("RuntimeTraceGatePresets", () => {
         actorKind: "player",
         stateNo: 200,
         animNo: 200,
+        minFrames: 1,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported dynamic LifeAdd artifact with resolved resource operation evidence", () => {
+    const artifact = createSyntheticImportedDynamicLifeAddTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-lifeadd-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 290]));
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.LifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 290,
+          animNo: 290,
+          minLife: 1,
+          maxLife: 1,
+        }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 290,
+      animNo: 290,
+      life: 1,
+    });
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "LifeAdd"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef", "resource:lifeadd"]);
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 290,
+        animNo: 290,
+        observedLifeAtLeast: 1,
+        observedLifeAtMost: 1,
         minFrames: 1,
       },
     ]);

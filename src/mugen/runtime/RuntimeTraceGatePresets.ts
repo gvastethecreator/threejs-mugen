@@ -551,6 +551,50 @@ export function createSyntheticImportedDynamicControlTraceArtifact(options: Runt
   );
 }
 
+export function createSyntheticImportedDynamicLifeAddTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-lifeadd-dynamic",
+      displayName: "Synthetic Imported Dynamic LifeAdd Ops",
+      action200Duration: 30,
+      withDynamicLifeAddOps: {
+        stateNo: 290,
+        value: "IfElse(var(8), -2000, 0)",
+        kill: "var(9)",
+        vars: [
+          { index: 8, value: 1 },
+          { index: 9, value: 0 },
+        ],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-lifeadd-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic LifeAdd route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 290],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "LifeAdd"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "resource:lifeadd"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 290,
+          animNo: 290,
+          observedLifeAtLeast: 1,
+          observedLifeAtMost: 1,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 290, animNo: 290, life: 1 }],
+      notes: [
+        "Synthetic imported dynamic LifeAdd trace proves bounded LifeAdd value/kill expressions can resolve through runtime expression fallback, emit typed resource:lifeadd telemetry, and preserve NoKO-style nonlethal owner life at 1. It does not claim full resource-family dynamic lowering, exact KO/round flow, redirects, helpers, teams, or full MUGEN/IKEMEN resource semantics.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedAnimationTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -38154,6 +38198,12 @@ export type SyntheticImportedTraceFighterOptions = {
     value: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withDynamicLifeAddOps?: {
+    stateNo: number;
+    value: string;
+    kill?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withAnimationOps?: boolean;
   changeAnim2ElemProbe?: { animNo: number; elem: number; elemTime: number; triggerTime?: number; frameDurations: number[] };
   action200FrameDurations?: number[];
@@ -39019,6 +39069,7 @@ ${options.animElemExit === undefined ? "" : animElemExitControllerBlock(options.
 ${options.animElemTimeExit === undefined ? "" : animElemTimeExitControllerBlock(options.animElemTimeExit)}
 ${options.withControlOps ? controlControllerBlock() : ""}
 ${options.withDynamicControlOps === undefined ? "" : dynamicControlControllerBlock(options.withDynamicControlOps)}
+${options.withDynamicLifeAddOps === undefined ? "" : dynamicLifeAddControllerBlock(options.withDynamicLifeAddOps)}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
@@ -39141,6 +39192,7 @@ ${options.animElemExit ? simpleStateBlock(options.animElemExit.stateNo, "I") : "
 ${options.animElemTimeExit ? simpleStateBlock(options.animElemTimeExit.stateNo, "I") : ""}
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
+${options.withDynamicLifeAddOps ? simpleStateBlock(options.withDynamicLifeAddOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
 ${options.targetRedirectStateNo === undefined ? "" : simpleStateBlock(options.targetRedirectStateNo, "I")}
 ${options.targetRedirectBottomRoute === undefined ? "" : simpleStateBlock(options.targetRedirectBottomRoute.forbiddenStateNo, "I")}
@@ -39291,6 +39343,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
         : ([[options.edgeDistanceEntry.stateNo, traceAction(options.edgeDistanceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withDynamicLifeAddOps === undefined ? [] : ([[options.withDynamicLifeAddOps.stateNo, traceAction(options.withDynamicLifeAddOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.receivedDamageRoute === undefined
         ? []
         : ([
@@ -42705,6 +42758,34 @@ value = ${seed.value}
 type = CtrlSet
 trigger1 = Time >= 0
 value = ${config.value}
+`;
+}
+
+function dynamicLifeAddControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicLifeAddOps"]>): string {
+  const vars =
+    config.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic LifeAdd Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `${vars}
+[State 200, Dynamic LifeAdd Probe]
+type = LifeAdd
+trigger1 = MoveHit >= 1
+value = ${config.value}
+kill = ${config.kill ?? "1"}
+
+[State 200, Dynamic LifeAdd Branch]
+type = ChangeState
+trigger1 = Life = 1
+value = ${config.stateNo}
+ctrl = 0
 `;
 }
 

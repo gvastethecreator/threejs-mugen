@@ -8,6 +8,7 @@ import {
   applyRuntimeVariableAssignment,
   applyRuntimeVariableRangeAssignment,
   resolveRuntimeCtrlSetControllerOperation,
+  resolveRuntimeResourceControllerOperation,
   RuntimeResourceWorld,
   runtimeLifeMaxFromConstants,
   runtimePowerMaxForState,
@@ -119,6 +120,19 @@ describe("RuntimeResourceSystem", () => {
     expect(state.ctrl).toBe(true);
   });
 
+  it("resolves dynamic LifeAdd values and kill flags from bounded expression fallback", () => {
+    const state = runtimeState({ life: 12, vars: [1, 0] });
+    const operation = resolveRuntimeResourceControllerOperation(
+      controller({ value: "IfElse(var(0), -20, 0)", kill: "var(1)" }, "LifeAdd"),
+      state,
+    );
+
+    expect(operation).toEqual({ kind: "resource", controllerType: "lifeadd", value: -20, kill: false });
+
+    applyRuntimeResourceController(state, operation!);
+    expect(state.life).toBe(1);
+  });
+
   it("applies var, fvar, and sysvar assignments", () => {
     const state = runtimeState({ vars: [2], fvars: [0.5] });
 
@@ -144,10 +158,10 @@ describe("RuntimeResourceSystem", () => {
   });
 });
 
-function controller(params: Record<string, string> = {}): RuntimeResourceControllerSource {
+function controller(params: Record<string, string> = {}, type = "CtrlSet"): RuntimeResourceControllerSource {
   return {
-    type: "CtrlSet",
-    normalizedType: "ctrlset",
+    type,
+    normalizedType: type.toLowerCase(),
     params,
   };
 }

@@ -165,15 +165,39 @@ export function resolveRuntimeCtrlSetControllerOperation(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext = {},
 ): Extract<ResourceControllerOp, { controllerType: "ctrlset" }> | undefined {
-  const raw = findParam(controller, "value");
-  if (raw === undefined) {
+  const operation = resolveRuntimeResourceControllerOperation(controller, state, context);
+  return operation?.controllerType === "ctrlset" ? operation : undefined;
+}
+
+export function resolveRuntimeResourceControllerOperation(
+  controller: RuntimeResourceControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+  operation?: ResourceControllerOp,
+): ResourceControllerOp | undefined {
+  const controllerType = operation?.controllerType ?? resourceControllerType(controller);
+  if (!controllerType) {
     return undefined;
   }
-  return {
-    kind: "resource",
-    controllerType: "ctrlset",
-    value: (evaluateRuntimeControllerNumber(raw.trim(), state, context) ?? 0) !== 0,
-  };
+  if (controllerType === "ctrlset") {
+    const value = operation?.controllerType === "ctrlset" ? operation.value : numberParam(controller, state, context, "value");
+    return value === undefined ? undefined : { kind: "resource", controllerType: "ctrlset", value: value !== 0 };
+  }
+
+  const value = operation?.controllerType === controllerType ? operation.value : numberParam(controller, state, context, "value");
+  if (value === undefined) {
+    return undefined;
+  }
+  if (controllerType === "lifeadd") {
+    const staticLifeAdd = operation?.controllerType === "lifeadd" ? operation : undefined;
+    return {
+      kind: "resource",
+      controllerType: "lifeadd",
+      value,
+      kill: staticLifeAdd?.kill ?? (numberParam(controller, state, context, "kill") ?? 1) !== 0,
+    };
+  }
+  return { kind: "resource", controllerType, value };
 }
 
 function runtimeVariableTarget(state: CharacterRuntimeState, variableType: RuntimeVariableType): number[] {
@@ -190,6 +214,30 @@ function findParam(controller: RuntimeResourceControllerSource, key: string): st
   const lower = key.toLowerCase();
   const match = Object.entries(controller.params).find(([candidate]) => candidate.toLowerCase() === lower);
   return match?.[1];
+}
+
+function numberParam(
+  controller: RuntimeResourceControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+  ...keys: string[]
+): number | undefined {
+  for (const key of keys) {
+    const raw = findParam(controller, key);
+    if (raw === undefined) {
+      continue;
+    }
+    return evaluateRuntimeControllerNumber(raw.trim(), state, context);
+  }
+  return undefined;
+}
+
+function resourceControllerType(controller: RuntimeResourceControllerSource): ResourceControllerOp["controllerType"] | undefined {
+  const normalized = controller.normalizedType.toLowerCase();
+  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "poweradd" || normalized === "powerset") {
+    return normalized;
+  }
+  return undefined;
 }
 
 function clampIndex(value: number, max: number): number {
