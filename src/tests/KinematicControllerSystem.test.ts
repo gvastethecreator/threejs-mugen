@@ -68,6 +68,13 @@ describe("RuntimeKinematicControllerWorld", () => {
     });
     expect(state.pos).toEqual({ x: 16, y: -4 });
     expect(posSetResult.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 16, y: -4 });
+
+    const posAddResult = world.applyController(state, source("PosAdd", { x: "Parent,Vel X + 2", y: "Root,Vel Y" }), undefined, {
+      parent,
+      root,
+    });
+    expect(state.pos).toEqual({ x: 22, y: -11 });
+    expect(posAddResult.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 6, y: -7 });
   });
 
   it("applies HitVelSet flags only when hit velocity exists", () => {

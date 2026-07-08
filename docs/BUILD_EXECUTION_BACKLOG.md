@@ -1,5 +1,48 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic PosAdd typed telemetry
+
+Changed:
+
+- Extended bounded active runtime-controller typed telemetry from dynamic `VelSet` / `VelAdd` / `VelMul` / `PosSet` to dynamic `PosAdd`.
+- Active runtime-controller dispatch now resolves dynamic `PosAdd` params before execution and records `kinematic:posadd` when the controller has no static `ControllerOp`.
+- Added required trace artifact `synthetic-imported-dynamic-posadd.json` for a bounded imported active-state route with `VarSet` seeds, a static `PosSet` seed position, and dynamic `PosAdd x = var(0) + 5, y = var(1) - 2`.
+- Added focused dispatcher, kinematic-controller, and trace-preset tests so the direct runtime path proves resolved position addition and the trace gate proves ordered typed telemetry.
+- `qa_traces` now includes `synthetic-imported-dynamic-posadd` as a required artifact.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) states numeric state-controller parameters generally accept arithmetic expressions unless otherwise specified and defines `PosAdd` `x` / `y` params as optional position offsets.
+- Focused/full test: `pnpm test -- KinematicControllerSystem RuntimeControllerDispatchSystem RuntimeTraceGatePresets` -> 153 files / 1473 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 513/513 artifacts, 482 required and 31 optional.
+- Trace artifact: `synthetic-imported-dynamic-posadd.json` checksum `8ac604b1`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active-state `PosAdd` expression params can mutate current actor position through runtime expression fallback and emit typed `kinematic:posadd` telemetry in a facing-right owner route.
+
+Claim blocked:
+
+- Dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper ownership, broad coordinate translation, score movement, and full movement parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: dynamic `PosAdd` could mutate through fallback, but active-state traces did not carry typed `kinematic:posadd` evidence when params were expression-backed.
+- Quality delta: bounded dynamic position-add now joins dynamic `PosSet` and the dynamic velocity trio with replay-visible typed telemetry in an active-state route, while unsupported dynamic families remain blocked.
+- Adjacent surface checked: runtime controller dispatch, `RuntimeKinematicControllerWorld`, trace preset registration, far-stage isolation against body-push interference, `qa_traces` required artifact list, controller support wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 513/513 artifacts, 482 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+- Optional private KFM trace checksums did not need migration for this player-owned synthetic route; `synthetic-imported-dynamic-posset.json` remains required as the previous dynamic position-set gate.
+
+Next:
+
+- Continue R1 by extending typed dynamic telemetry to another bounded controller family only if it avoids broad compiler ownership; otherwise move a helper-local dynamic route behind a named ownership boundary before claiming helper parity.
+
 ## 2026-07-08 - Dynamic PosSet typed telemetry
 
 Changed:

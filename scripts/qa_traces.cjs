@@ -886,6 +886,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicPosSetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dynamic-posadd",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicPosAddTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-controller-param-bottom",
       required: true,
       artifact: presets.createSyntheticImportedControllerParamBottomTraceArtifact(),
@@ -3810,6 +3815,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-dynamic-veladd",
     "synthetic-imported-dynamic-velmul",
     "synthetic-imported-dynamic-posset",
+    "synthetic-imported-dynamic-posadd",
     "synthetic-imported-width",
     "synthetic-imported-width-dynamic",
     "synthetic-imported-statetypeset",

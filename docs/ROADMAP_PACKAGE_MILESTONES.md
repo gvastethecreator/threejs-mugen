@@ -35,13 +35,21 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic PosAdd typed-telemetry trace gate
+-> synthetic-imported-dynamic-posadd.json checksum 8ac604b1 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds vars, applies static PosSet seed position, and executes PosAdd x = var(0) + 5, y = var(1) - 2
+-> gate requires ordered variable:varset, kinematic:posset, and kinematic:posadd operation evidence plus actor-frame position telemetry maxPos.x = 18 / minPos.y = -24
+-> pnpm qa:trace passes 513/513 artifacts, 482 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosAdd as optional x/y position offsets
+-> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+
 R1 required dynamic PosSet typed-telemetry trace gate
 -> synthetic-imported-dynamic-posset.json checksum aeb730fb is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static PosSet seed position, and executes PosSet x = var(0) + 5, y = var(1) - 2
 -> gate requires ordered variable:varset and two kinematic:posset operation evidence events plus actor-frame position telemetry maxPos.x = 16 / minPos.y = -20
--> pnpm qa:trace passes 512/512 artifacts, 481 required and 31 optional
+-> that checkpoint passed 512/512 artifacts, 481 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosSet as optional x/y position coordinates
--> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+-> no score movement; it remains bounded active-state dynamic PosSet typed telemetry only
 
 R1 required dynamic VelMul typed-telemetry trace gate
 -> synthetic-imported-dynamic-velmul.json checksum 4d241401 is required in qa:trace

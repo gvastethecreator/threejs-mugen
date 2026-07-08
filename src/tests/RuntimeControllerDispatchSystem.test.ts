@@ -109,6 +109,22 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(true);
   });
 
+  it("records bounded dynamic PosAdd as typed kinematic telemetry after resolving params", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ pos: { x: -3, y: 6 }, vars: [11, -18] });
+    const controller = compileControllerIr(controllerSource("PosAdd", { x: "var(0) + 5", y: "var(1) - 2" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply(actor, controller, {
+      recordOperation: (_actor, operation) =>
+        recordedOperations.push(`${operation.kind}:${"controllerType" in operation ? operation.controllerType : "none"}`),
+    });
+
+    expect(actor.runtime.pos).toEqual({ x: 13, y: -14 });
+    expect(recordedOperations).toEqual(["kinematic:posadd"]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
   it("reports unsupported controllers without mutating runtime state", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 777 });

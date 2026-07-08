@@ -5616,6 +5616,66 @@ export function createSyntheticImportedDynamicPosSetTraceArtifact(options: Runti
   );
 }
 
+export function createSyntheticImportedDynamicPosAddTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-dynamic-posadd",
+      displayName: "Synthetic Imported Dynamic PosAdd",
+      action200Duration: 30,
+      withHitDef: false,
+      withDynamicPosAdd: {
+        seedPosition: [2, -4],
+        vars: [
+          { index: 0, value: 11 },
+          { index: 1, value: -18 },
+        ],
+        xExpression: "var(0) + 5",
+        yExpression: "var(1) - 2",
+      },
+    }),
+    {
+      ...options,
+      stage,
+      targetId: "synthetic-imported-dynamic-posadd-golden",
+      targetLabel: "Synthetic imported dynamic PosAdd route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "PosSet", "PosAdd"],
+      requiredExecutedOperations: ["variable:varset", "kinematic:posset", "kinematic:posadd"],
+      requiredControllerEventSequences: [
+        {
+          label: "200 dynamic PosAdd typed order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VarSet", name: "Dynamic PosAdd Var 0" },
+            { stateNo: 200, controller: "VarSet", name: "Dynamic PosAdd Var 1" },
+            { stateNo: 200, controller: "PosSet", name: "Dynamic PosAdd Seed Position" },
+            { stateNo: 200, operation: "kinematic:posset" },
+            { stateNo: 200, controller: "PosAdd", name: "Dynamic PosAdd Probe" },
+            { stateNo: 200, operation: "kinematic:posadd" },
+          ],
+        },
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          observedPosXAtLeast: 18,
+          observedPosYAtMost: -24,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic PosAdd trace proves bounded active-state PosAdd expression params resolve through the runtime controller dispatcher into typed kinematic:posadd telemetry while preserving position-add semantics for a facing-right owner route. It does not claim dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact coordinate/facing ownership, physics/tick order, floor snapping, team/simul ownership, or full MUGEN/IKEMEN movement parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedControllerParamBottomTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -38013,6 +38073,12 @@ export type SyntheticImportedTraceFighterOptions = {
     yExpression?: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withDynamicPosAdd?: {
+    seedPosition?: [number, number];
+    xExpression?: string;
+    yExpression?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   bottomParamVelSetRoute?: {
     seedVelocity?: [number, number];
     xExpression?: string;
@@ -38383,6 +38449,7 @@ ${options.withKinematicControllers ? kinematicControllerBlock() : ""}
 ${options.withDynamicVelAdd === undefined ? "" : dynamicVelAddControllerBlock(options.withDynamicVelAdd)}
 ${options.withDynamicVelMul === undefined ? "" : dynamicVelMulControllerBlock(options.withDynamicVelMul)}
 ${options.withDynamicPosSet === undefined ? "" : dynamicPosSetControllerBlock(options.withDynamicPosSet)}
+${options.withDynamicPosAdd === undefined ? "" : dynamicPosAddControllerBlock(options.withDynamicPosAdd)}
 ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bottomParamVelSetRoute) : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
@@ -39758,6 +39825,36 @@ y = ${seed[1]}
 
 [State 200, Dynamic PosSet Probe]
 type = PosSet
+trigger1 = Time = 2
+x = ${options.xExpression ?? "var(0)"}
+y = ${options.yExpression ?? "var(1)"}
+`;
+}
+
+function dynamicPosAddControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicPosAdd"]>): string {
+  const seed = options.seedPosition ?? [2, -4];
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic PosAdd Var ${item.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic PosAdd Seed Position]
+type = PosSet
+trigger1 = Time = 1
+x = ${seed[0]}
+y = ${seed[1]}
+
+[State 200, Dynamic PosAdd Probe]
+type = PosAdd
 trigger1 = Time = 2
 x = ${options.xExpression ?? "var(0)"}
 y = ${options.yExpression ?? "var(1)"}

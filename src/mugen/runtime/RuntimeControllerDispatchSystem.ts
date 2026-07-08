@@ -66,7 +66,8 @@ function resolveDynamicRecordedOperation(
     controller.normalizedType === "velset" ||
     controller.normalizedType === "veladd" ||
     controller.normalizedType === "velmul" ||
-    controller.normalizedType === "posset"
+    controller.normalizedType === "posset" ||
+    controller.normalizedType === "posadd"
   ) {
     return resolveRuntimeKinematicControllerOperation(controller, runtime, context);
   }
