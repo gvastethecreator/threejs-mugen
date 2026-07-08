@@ -603,15 +603,15 @@ Previous R1 required dynamic EnvShake trace gate
   -> official Elecbyte docs define EnvShake time as required duration, freq as shake speed, ampl as amplitude, and phase as phase offset
   -> no score movement; dynamic typed-operation lowering for EnvShake, mul, exact camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, and full presentation parity remain blocked
 
-Previous R1 required dynamic AngleMul trace gate
-  -> synthetic-imported-anglemul-dynamic.json checksum 418ed880 / final checksum 4a6a3045 is required in qa:trace
+Current R1 required dynamic AngleMul typed trace gate
+  -> synthetic-imported-anglemul-dynamic.json checksum 0bb54a1c / final checksum c9f2b557 is required in qa:trace
   -> imported active state seeds var(0)=30 and fvar(0)=1.5
   -> active state executes AngleSet value = var(0), AngleMul value = fvar(0), and static AngleDraw
-  -> dynamic AngleMul resolves through sprite-effect fallback instead of typed sprite-effect:anglemul evidence
+  -> dynamic AngleSet/AngleMul resolve through sprite-effect fallback and record typed sprite-effect:angleset/sprite-effect:anglemul evidence after runtime expression resolution
   -> final imported actor-frame evidence requires renderAngle 45 while static sprite-effect:angledraw evidence remains present
   -> pnpm qa:trace passes 449/449 artifacts, 419 required and 30 optional
   -> official Elecbyte docs define AngleMul value as an angle_multiplier float that multiplies the drawing angle used by AngleDraw
-  -> no score movement; dynamic typed-operation lowering for AngleMul, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> no score movement; exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage, and full presentation parity remain blocked
 
 Previous R1 required static AngleMul trace gate
   -> synthetic-imported-anglemul.json checksum e0dae072 / final checksum 5048aa5c is required in qa:trace
@@ -621,16 +621,16 @@ Previous R1 required static AngleMul trace gate
   -> pnpm qa:trace passed 448/448 artifacts, 418 required and 30 optional
   -> no score movement; exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-Previous R1 required dynamic Angle trace gate
-  -> synthetic-imported-angle-dynamic.json checksum 8f788bf8 is required in qa:trace
+Current R1 required dynamic Angle typed trace gate
+  -> synthetic-imported-angle-dynamic.json checksum 13560dcd / final checksum 4d7c4726 is required in qa:trace
   -> imported active state seeds var(0)=40, var(1)=-10, var(2)=35, var(3)=2, and fvar(0)=0.5
   -> active state executes AngleSet value = var(0), AngleAdd value = var(1), and AngleDraw value = var(2), scale = var(3),fvar(0)
-  -> RuntimeSpriteEffectControllerWorld forwards a dynamic Angle resolver into RuntimeSpriteEffectWorld.applyAngle
+  -> RuntimeSpriteEffectControllerWorld resolves dynamic Angle params into typed sprite-effect operations before RuntimeSpriteEffectWorld.applyAngle
   -> PlayableMatchRuntime resolves Angle value/scale through the active controller expression context and preserves fractional scale params
-  -> final imported actor evidence requires renderAngle 35, renderScale 2,0.5, and no typed sprite-effect:angle* operation evidence
-  -> pnpm qa:trace passed 447/447 artifacts, 417 required and 30 optional
+  -> final imported actor evidence requires renderAngle 35, renderScale 2,0.5, and typed sprite-effect:angleset/angleadd/angledraw operation evidence
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs define AngleSet value, AngleDraw value, and AngleDraw scale as floats; rotation/scaling does not affect collision boxes
-  -> no score movement; typed-operation lowering for dynamic angle params, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> no score movement; exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage, and full presentation parity remain blocked
 
 Current R1 required dynamic PalFX typed trace gate
   -> synthetic-imported-palfx-dynamic.json checksum 36cdca15 / final checksum 7a1a4525 is required in qa:trace
@@ -640,7 +640,7 @@ Current R1 required dynamic PalFX typed trace gate
   -> final imported actor evidence requires paletteFx time 12, add [64,-16,255], mul [224,144,256], color 200, invert true, and typed sprite-effect:palfx operation evidence
   -> pnpm qa:trace passed 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define PalFX time/add/mul/invertall/color
-  -> no score movement; sinadd, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage/Angle*, and full presentation parity remain blocked
+  -> no score movement; sinadd, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage, and full presentation parity remain blocked
 
 Previous R1 required dynamic AfterImageTime typed trace gate
   -> synthetic-imported-afterimagetime-dynamic.json checksum c5ef6fff / final checksum 661a233d is required in qa:trace
@@ -650,7 +650,7 @@ Previous R1 required dynamic AfterImageTime typed trace gate
   -> final imported actor evidence requires afterImageTime 14, length 4, timeGap 1, frameGap 1, at least one sample, opacity 0.34, and typed sprite-effect:afterimagetime operation evidence
   -> pnpm qa:trace passed 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define AfterImageTime time plus alternate value
-  -> no score movement; exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage/Angle*, and full presentation parity remain blocked
+  -> no score movement; exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage, and full presentation parity remain blocked
 
 Previous R1 required dynamic AfterImage trace gate
   -> synthetic-imported-afterimage-dynamic.json checksum 2342c3f1 is required in qa:trace

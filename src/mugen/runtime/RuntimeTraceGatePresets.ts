@@ -6882,7 +6882,7 @@ export function createSyntheticImportedDynamicAngleMulTraceArtifact(
       label: "Synthetic imported dynamic AngleMul route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic AngleMul trace proves AngleMul value expression fallback can resolve owner-local fvar(...) through the active sprite-effect boundary and multiply bounded static AngleDraw render-angle telemetry. It does not claim typed sprite-effect operation lowering for dynamic AngleSet or AngleMul params, exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or scale parity.",
+        "Synthetic imported dynamic AngleMul trace proves AngleSet and AngleMul value expressions can resolve owner-local var/fvar values through the active sprite-effect boundary, emit typed sprite-effect operation evidence, and multiply bounded static AngleDraw render-angle telemetry. It does not claim exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or scale parity.",
       ],
     },
     gates: [
@@ -6893,7 +6893,13 @@ export function createSyntheticImportedDynamicAngleMulTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "AngleSet", "AngleMul", "AngleDraw", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "sprite-effect:angledraw", "hitdef"],
+        requiredExecutedOperations: [
+          "variable:varset",
+          "sprite-effect:angleset",
+          "sprite-effect:anglemul",
+          "sprite-effect:angledraw",
+          "hitdef",
+        ],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {
@@ -6947,7 +6953,7 @@ export function createSyntheticImportedDynamicAngleTraceArtifact(
       label: "Synthetic imported dynamic AngleDraw route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic AngleDraw trace proves AngleSet, AngleAdd, and AngleDraw value/scale expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary into bounded render-angle and render-scale telemetry. It does not claim typed sprite-effect operation lowering for dynamic angle params, exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or scale parity.",
+        "Synthetic imported dynamic AngleDraw trace proves AngleSet, AngleAdd, and AngleDraw value/scale expressions can resolve owner-local var/fvar values through the active sprite-effect boundary, emit typed sprite-effect operation evidence, and reach bounded render-angle/render-scale telemetry. It does not claim exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or scale parity.",
       ],
     },
     gates: [
@@ -6958,7 +6964,13 @@ export function createSyntheticImportedDynamicAngleTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "AngleSet", "AngleAdd", "AngleDraw", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredExecutedOperations: [
+          "variable:varset",
+          "sprite-effect:angleset",
+          "sprite-effect:angleadd",
+          "sprite-effect:angledraw",
+          "hitdef",
+        ],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {

@@ -10,6 +10,7 @@ import {
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
   resolveRuntimeAfterImageTimeControllerOperation,
+  resolveRuntimeAngleControllerOperation,
   resolveRuntimePaletteFxControllerOperation,
   resolveRuntimeRemapPalControllerOperation,
   resolveRuntimeSpritePriorityControllerOperation,
@@ -435,6 +436,41 @@ describe("SpriteEffectSystem", () => {
     expect(state.angle).toBe(60);
     expect(state.renderAngle).toBe(35);
     expect(state.renderScale).toEqual({ x: 2, y: 0.5 });
+  });
+
+  it("resolves dynamic Angle operations for active-state typed telemetry", () => {
+    const resolver = {
+      resolveNumber: (key: "value") => (key === "value" ? 35 : undefined),
+      resolvePair: (key: "scale"): [number, number] | undefined => (key === "scale" ? [2, 0.5] : undefined),
+    };
+
+    expect(resolveRuntimeAngleControllerOperation(controller("AngleSet", { value: "var(0)" }), resolver)).toEqual({
+      kind: "sprite-effect",
+      controllerType: "angleset",
+      angle: 35,
+    });
+    expect(resolveRuntimeAngleControllerOperation(controller("AngleAdd", { value: "var(1)" }), resolver)).toEqual({
+      kind: "sprite-effect",
+      controllerType: "angleadd",
+      delta: 35,
+    });
+    expect(resolveRuntimeAngleControllerOperation(controller("AngleMul", { value: "fvar(0)" }), resolver)).toEqual({
+      kind: "sprite-effect",
+      controllerType: "anglemul",
+      multiplier: 35,
+    });
+    expect(
+      resolveRuntimeAngleControllerOperation(
+        controller("AngleDraw", { value: "var(2)", scale: "var(3),fvar(0)" }),
+        resolver,
+      ),
+    ).toEqual({
+      kind: "sprite-effect",
+      controllerType: "angledraw",
+      angle: 35,
+      scale: [2, 0.5],
+    });
+    expect(resolveRuntimeAngleControllerOperation(controller("AngleDraw", { scale: "var(3),fvar(0)" }))).toBeUndefined();
   });
 
   it("applies typed AfterImage and AfterImageTime operations before raw params", () => {

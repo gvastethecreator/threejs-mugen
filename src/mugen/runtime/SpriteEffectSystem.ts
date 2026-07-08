@@ -602,6 +602,72 @@ export function applyRuntimeAngleController(
   }
 }
 
+export function resolveRuntimeAngleControllerOperation(
+  controller: { type: string; params: Record<string, string> },
+  resolveAngle?: RuntimeAngleResolver,
+): RuntimeAngleSpriteEffectOp | undefined {
+  const type = controller.type.toLowerCase();
+  const valueParam = findControllerParam(controller, "value");
+
+  if (type === "angleset") {
+    const angle = resolveAngleNumber(valueParam, resolveAngle) ?? staticAngleNumber(valueParam);
+    return angle === undefined
+      ? undefined
+      : {
+          kind: "sprite-effect",
+          controllerType: "angleset",
+          angle,
+        };
+  }
+
+  if (type === "angleadd") {
+    const delta = resolveAngleNumber(valueParam, resolveAngle) ?? staticAngleNumber(valueParam);
+    return delta === undefined
+      ? undefined
+      : {
+          kind: "sprite-effect",
+          controllerType: "angleadd",
+          delta,
+        };
+  }
+
+  if (type === "anglemul") {
+    const multiplier = resolveAngleNumber(valueParam, resolveAngle) ?? staticFiniteNumber(valueParam);
+    return multiplier === undefined
+      ? undefined
+      : {
+          kind: "sprite-effect",
+          controllerType: "anglemul",
+          multiplier,
+        };
+  }
+
+  if (type !== "angledraw") {
+    return undefined;
+  }
+
+  const scaleParam = findControllerParam(controller, "scale");
+  const angle =
+    valueParam === undefined
+      ? undefined
+      : resolveAngleNumber(valueParam, resolveAngle) ?? staticAngleNumber(valueParam);
+  const scale =
+    scaleParam === undefined
+      ? undefined
+      : resolveAngleScale(scaleParam, resolveAngle) ?? staticRenderScalePair(scaleParam);
+
+  if ((valueParam !== undefined && angle === undefined) || (scaleParam !== undefined && scale === undefined)) {
+    return undefined;
+  }
+
+  return {
+    kind: "sprite-effect",
+    controllerType: "angledraw",
+    angle,
+    scale,
+  };
+}
+
 export function tickRuntimeAfterImage(
   state: CharacterRuntimeState,
   sampleFactory: RuntimeAfterImageSampleFactory,
@@ -672,6 +738,9 @@ function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectCont
   }
   if (input.effect === "afterimagetime") {
     return resolveRuntimeAfterImageTimeControllerOperation(input.controller.source, input.resolveAfterImageTime);
+  }
+  if (input.effect === "angle") {
+    return resolveRuntimeAngleControllerOperation(input.controller.source, input.resolveAngle);
   }
   return undefined;
 }
@@ -843,6 +912,21 @@ function resolveAngleScale(
     return undefined;
   }
   const value = resolver?.resolvePair("scale");
+  return value === undefined ? undefined : [clampRenderScale(value[0]), clampRenderScale(value[1])];
+}
+
+function staticAngleNumber(param: string | undefined): number | undefined {
+  const value = firstNumber(param);
+  return value === undefined ? undefined : clampRenderAngle(value);
+}
+
+function staticFiniteNumber(param: string | undefined): number | undefined {
+  const value = firstNumber(param);
+  return value === undefined || !Number.isFinite(value) ? undefined : value;
+}
+
+function staticRenderScalePair(param: string | undefined): [number, number] | undefined {
+  const value = numberPair(param);
   return value === undefined ? undefined : [clampRenderScale(value[0]), clampRenderScale(value[1])];
 }
 

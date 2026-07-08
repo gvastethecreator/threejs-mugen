@@ -11076,7 +11076,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
   });
 
-  it("creates a synthetic imported dynamic AngleMul artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic AngleMul artifact with typed sprite rotation evidence", () => {
     const artifact = createSyntheticImportedDynamicAngleMulTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -11098,8 +11098,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.AngleSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.AngleMul).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.AngleDraw).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:angleset"]).toBeUndefined();
-    expect(evidence?.executedOperations["sprite-effect:anglemul"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:angleset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:anglemul"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["sprite-effect:angledraw"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
@@ -11127,7 +11127,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.renderAngle === 45)).toBe(true);
   });
 
-  it("creates a synthetic imported dynamic AngleDraw artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic AngleDraw artifact with typed sprite rotation evidence", () => {
     const artifact = createSyntheticImportedDynamicAngleTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
     });
@@ -11151,9 +11151,9 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.AngleSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.AngleAdd).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.AngleDraw).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:angleset"]).toBeUndefined();
-    expect(evidence?.executedOperations["sprite-effect:angleadd"]).toBeUndefined();
-    expect(evidence?.executedOperations["sprite-effect:angledraw"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:angleset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:angleadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:angledraw"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

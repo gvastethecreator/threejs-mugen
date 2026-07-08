@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic Angle typed sprite-effect telemetry
+
+Summary:
+
+- Upgraded required `synthetic-imported-angle-dynamic.json` and `synthetic-imported-anglemul-dynamic.json` from render fallback evidence into typed Angle sprite-effect telemetry.
+- Added `resolveRuntimeAngleControllerOperation` and routed dynamic Angle operation resolution through `RuntimeSpriteEffectControllerWorld`.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, typed `sprite-effect:angleset`, `sprite-effect:angleadd`, `sprite-effect:anglemul`, `sprite-effect:angledraw`, and `hitdef` across the dynamic Angle and AngleMul routes.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `AngleSet`, `AngleAdd`, `AngleMul`, and optional `AngleDraw value/scale` params as floats and says rotation/scaling does not affect collision boxes.
+- Focused tests: `pnpm exec vitest run src\tests\SpriteEffectSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern Angle --reporter verbose` passed 7 matching tests.
+- Trace gate: `pnpm qa:trace` passed 523/523 artifacts, 492 required and 31 optional.
+
+Evidence:
+
+- `synthetic-imported-angle-dynamic.json` checksum `13560dcd`, final checksum `4d7c4726`; executed ops include `variable:varset = 5`, `sprite-effect:angleset = 10`, `sprite-effect:angleadd = 10`, `sprite-effect:angledraw = 10`, `hitdef = 1`; final imported actor render telemetry stays `renderAngle = 35`, `renderScale = 2,0.5`.
+- `synthetic-imported-anglemul-dynamic.json` checksum `0bb54a1c`, final checksum `c9f2b557`; executed ops include `variable:varset = 2`, `sprite-effect:angleset = 10`, `sprite-effect:anglemul = 10`, `sprite-effect:angledraw = 10`, `hitdef = 1`; imported actor render telemetry stays `renderAngle = 45`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `AngleSet value`, `AngleAdd value`, `AngleMul value`, and `AngleDraw value/scale` can resolve owner-local var/fvar expressions through runtime expression fallback, record typed sprite-effect telemetry after resolution, and preserve actor-frame/final render-angle/render-scale evidence.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN axis pivot, collision rotation/scale, draw-order/palette interaction, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, and full presentation VM parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: static Angle routes already had typed `sprite-effect:angle*` evidence, while dynamic routes only mutated presentation state through fallback.
+- Quality delta: dynamic Angle routes now close the operation-telemetry gap without broadening exact renderer/collision semantics.
+- Adjacent surface checked: static Angle/AngleMul gates, dynamic Angle and AngleMul traces, sprite-effect boundary recording, active-state resolver handoff, trace requirements, support registry wording, QA gates, scorecard, architecture docs, and roadmap truth docs.
+
+Next cut:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim dynamic typed lowering for `AfterImage`, exact axis pivot/collision rotation/scale, renderer parity, or full presentation VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic PalFX typed sprite-effect telemetry
 
 Changed:
@@ -29,7 +63,7 @@ Claim allowed:
 
 Claim blocked:
 
-- `sinadd`, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage` or `Angle*`, and full MUGEN/IKEMEN presentation parity remain blocked.
+- `sinadd`, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, and full MUGEN/IKEMEN presentation parity remain blocked.
 
 Quality contract and adjacent audit:
 
@@ -43,7 +77,7 @@ Global port report:
 
 Next:
 
-- Continue R1/R2 with another bounded runtime truth gap. Do not claim `sinadd`, dynamic typed lowering for `AfterImage` or `Angle*`, exact palette math/blend/remap order, renderer parity, or full presentation VM parity until those routes have their own gates.
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim `sinadd`, dynamic typed lowering for `AfterImage`, exact palette math/blend/remap order, renderer parity, or full presentation VM parity until those routes have their own gates.
 
 ## 2026-07-08 - Dynamic AfterImageTime typed sprite-effect telemetry
 
@@ -74,7 +108,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, `PalFX`, or `Angle*`, and full MUGEN/IKEMEN presentation parity remain blocked.
+- Exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, and full MUGEN/IKEMEN presentation parity remain blocked. Newer entries above later closed the dynamic typed telemetry gap for `PalFX` and `Angle*`.
 
 Quality contract and adjacent audit:
 
@@ -88,7 +122,7 @@ Global port report:
 
 Next:
 
-- Continue R1/R2 with another bounded runtime truth gap. Do not claim typed lowering for dynamic `PalFX`, `AfterImage`, or `Angle*`, exact trail cadence/blending, renderer parity, or full presentation VM parity until those routes have their own gates.
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim typed lowering for dynamic `AfterImage`, exact trail cadence/blending, renderer parity, or full presentation VM parity until those routes have their own gates. Newer entries above later closed dynamic typed telemetry for `PalFX` and `Angle*`.
 
 ## 2026-07-08 - Dynamic RemapPal typed sprite-effect telemetry
 
