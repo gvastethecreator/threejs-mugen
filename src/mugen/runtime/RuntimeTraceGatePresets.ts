@@ -29433,6 +29433,68 @@ export function createSyntheticImportedHelperDynamicVelAddTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHelperDynamicVelMulTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-dynamic-velmul-attacker",
+    displayName: "Synthetic Imported Helper Dynamic VelMul Attacker",
+    withHelper: true,
+    helperDynamicVelMulRoute: { stateNo: 1403, animNo: 943 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-dynamic-velmul-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-dynamic-velmul-golden",
+      label: "Synthetic imported Helper dynamic VelMul route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper dynamic VelMul trace proves a bounded first-generation helper-local VelMul can evaluate numeric expression params through Parent and Root redirects, emit typed kinematic:velmul telemetry through the helper runtime dispatcher, then route on the resulting helper velocity. It does not claim nested helper ancestry where root differs from parent, helper-spawned helpers, player Parent controller-param redirects, helper-local dynamic typed lowering beyond this VelMul route, recursive redirection, debug warning text, teams/simul, or full MUGEN/IKEMEN helper expression parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-dynamic-velmul-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "VelSet", "VelMul"],
+        requiredExecutedOperations: ["hitdef", "helper", "kinematic:velset", "kinematic:velmul"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1403,
+            animNo: 943,
+            observedVelXAtLeast: 4,
+            observedVelXAtMost: 4,
+            observedVelYAtLeast: -6,
+            observedVelYAtMost: -6,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1403, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -37832,6 +37894,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperParentRootRedirectRoute?: { stateNo: number; animNo?: number };
   helperControllerParamRedirectRoute?: { stateNo: number; animNo?: number };
   helperDynamicVelAddRoute?: { stateNo: number; animNo?: number };
+  helperDynamicVelMulRoute?: { stateNo: number; animNo?: number };
   helperExplodRoute?: { stateNo: number; animNo?: number; explodAnimNo: number; pos?: [number, number] };
   helperProjectileRoute?: {
     stateNo: number;
@@ -38699,6 +38762,7 @@ ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNe
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
 ${options.helperDynamicVelAddRoute ? helperDynamicVelAddRouteBlock(options.helperDynamicVelAddRoute) : ""}
+${options.helperDynamicVelMulRoute ? helperDynamicVelMulRouteBlock(options.helperDynamicVelMulRoute) : ""}
 ${options.helperExplodRoute ? helperExplodRouteBlock(options.helperExplodRoute) : ""}
 ${options.helperProjectileRoute ? helperProjectileRouteBlock(options.helperProjectileRoute) : ""}
 ${options.helperRemoveExplodRoute ? helperRemoveExplodRouteBlock(options.helperRemoveExplodRoute) : ""}
@@ -39054,6 +39118,14 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                   [
                     options.helperDynamicVelAddRoute.animNo ?? options.helperDynamicVelAddRoute.stateNo,
                     helperTraceAction(options.helperDynamicVelAddRoute.animNo ?? options.helperDynamicVelAddRoute.stateNo),
+                  ],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperDynamicVelMulRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperDynamicVelMulRoute.animNo ?? options.helperDynamicVelMulRoute.stateNo,
+                    helperTraceAction(options.helperDynamicVelMulRoute.animNo ?? options.helperDynamicVelMulRoute.stateNo),
                   ],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperExplodRoute?.animNo === undefined
@@ -43111,6 +43183,45 @@ type = ChangeState
 trigger1 = Time >= 1
 trigger1 = Vel X = 5
 trigger1 = Vel Y = -3
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperDynamicVelMulRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperDynamicVelMulRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper Dynamic VelMul Seed Velocity]
+type = VelSet
+trigger1 = Time = 0
+x = 2
+y = 3
+
+[State 1200, Helper Dynamic VelMul Probe]
+type = VelMul
+trigger1 = Time = 0
+x = Parent,Life - 998
+y = Root,StateNo - 202
+
+[State 1200, Helper Dynamic VelMul Route]
+type = ChangeState
+trigger1 = Time >= 1
+trigger1 = Vel X = 4
+trigger1 = Vel Y = -6
 value = ${route.stateNo}
 ctrl = 0
 

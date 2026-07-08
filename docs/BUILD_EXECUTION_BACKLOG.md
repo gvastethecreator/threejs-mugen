@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Helper dynamic VelMul typed telemetry
+
+Changed:
+
+- Added required trace artifact `synthetic-imported-helper-dynamic-velmul.json` for a bounded first-generation visual Helper route.
+- The helper route seeds velocity with `VelSet x = 2, y = 3`, resolves `VelMul x = Parent,Life - 998` and `y = Root,StateNo - 202`, then routes on helper velocity `4,-6` into state/action `1403` / anim `943`.
+- `qa_traces` now registers the artifact as required and coverage-required.
+- Focused trace coverage now asserts helper actor-frame velocity, helper lifecycle/payload evidence, controller evidence, and typed `kinematic:velset` plus `kinematic:velmul` operation evidence.
+- Updated roadmap, support registry, QA gates, scorecard, progress tracker, fixture goldens, workplan, continuity docs, and the active R1 issue slice around checksum `08220a98`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents `VelMul` as multiplying optional `x` / `y` velocity factors.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper dynamic VelMul|Helper dynamic VelAdd"` -> 1 file / 2 tests passed, 506 skipped.
+- Broad regression: `pnpm test -- RuntimeTraceGatePresets` -> 153 files / 1475 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 515/515 artifacts, 484 required and 31 optional.
+- Trace artifact: `synthetic-imported-helper-dynamic-velmul.json` checksum `08220a98`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded first-generation helper-local `VelMul` controller params can resolve through `Parent,Life` and `Root,StateNo`, multiply helper velocity from `2,3` to `4,-6`, emit typed `kinematic:velmul` telemetry, and route helper state/action `1403` / anim `943`.
+
+Claim blocked:
+
+- Nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, helper-local dynamic typed lowering beyond current `VelSet` / `VelAdd` / `VelMul` routes, recursive redirection, debug warning text, teams/simul, score movement, and full helper/controller expression parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: helper-local dynamic `VelSet` and `VelAdd` had typed telemetry, but adjacent helper-local dynamic `VelMul` had no required oracle.
+- Quality delta: a third helper-local dynamic kinematic route now uses the same dispatcher and typed-operation evidence path, without broadening helper VM parity claims.
+- Adjacent surface checked: helper runtime controller dispatch, helper Parent/Root read model, trace requirements, support registry wording, roadmap truth docs, and aggregate trace coverage.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 515/515 artifacts, 484 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+- Previous required `synthetic-imported-helper-dynamic-veladd.json` checksum `fbb8bcae` and `synthetic-imported-helper-controller-param-parentroot.json` checksum `94919326` remain required for helper-local dynamic `VelAdd` and `VelSet`.
+
+Next:
+
+- Continue R1 only where the helper ownership boundary stays first-generation and explicit; pause before nested helper/root ancestry or helper-owned custom-state table work.
+
 ## 2026-07-08 - Helper dynamic VelAdd typed telemetry
 
 Changed:

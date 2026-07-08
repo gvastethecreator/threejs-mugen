@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Active Quality Slice - Helper Dynamic VelAdd Typed Telemetry
+## Active Quality Slice - Helper Dynamic VelMul Typed Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: helper-local dynamic `VelSet` and `VelAdd` Parent/Root routes had typed telemetry, but helper-local dynamic `VelMul` still lacked its own required oracle.
+- Target: bounded first-generation helper-local `VelMul` resolves `Parent` / `Root` expression params through the shared helper runtime dispatcher, records `kinematic:velmul`, and keeps broader helper dynamic typed lowering honestly blocked.
+- Reference: Elecbyte State Controller Reference treats state-controller numeric params as expression-capable unless otherwise specified and defines `VelMul` as multiplying optional `x` / `y` velocity factors, with positive `x` in the facing direction and positive `y` downward.
+- Transformation layers: helper runtime-controller dispatch reuse, helper-local dynamic kinematic telemetry breadth, required trace evidence, roadmap truth.
+- Adjacent audit: inspect helper dynamic `VelSet` / `VelAdd` evidence, helper Parent/Root read model, `RuntimeTraceGatePresets`, `qa_traces`, support registry wording, and roadmap truth docs.
+- Accepted improvement ledger: add required `synthetic-imported-helper-dynamic-velmul`, seed helper velocity with `VelSet`, resolve `VelMul x = Parent,Life - 998` and `y = Root,StateNo - 202`, require `kinematic:velset` plus `kinematic:velmul`, and update docs/roadmap around checksum `08220a98`.
+- Out of scope: nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, helper-local dynamic typed lowering beyond current `VelSet` / `VelAdd` / `VelMul` routes, recursive redirection, debug warning text, teams/simul, and full helper/controller expression parity.
+- Completed proof: required `synthetic-imported-helper-dynamic-velmul.json` checksum `08220a98`, focused helper dynamic VelAdd plus VelMul trace tests, `pnpm test -- RuntimeTraceGatePresets` 153 files / 1475 tests, `pnpm qa:trace` 515/515 artifacts with 484 required and 31 optional, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm check:boundaries`, and `git diff --check` with CRLF-normalization warnings only.
+- STOP conditions: pause if the next helper dynamic typed controller requires nested helper ownership, helper-owned custom-state tables, or a broader helper VM architecture decision.
+
+## Previous Active Quality Slice - Helper Dynamic VelAdd Typed Telemetry
 
 Status: done
 Date: 2026-07-08
