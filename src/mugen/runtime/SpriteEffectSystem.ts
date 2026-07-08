@@ -140,7 +140,7 @@ export class RuntimeSpriteEffectControllerWorld {
   apply<TActor extends RuntimeSpriteEffectControllerActor>(
     input: RuntimeSpriteEffectControllerApplyInput<TActor>,
   ): RuntimeSpriteEffectControllerApplyResult {
-    const operation = spriteEffectOperationFor(input.effect, input.controller.operation);
+    const operation = spriteEffectOperationFor(input.effect, input.controller.operation) ?? resolvedSpriteEffectOperationFor(input);
     input.recordController?.(input.actor, input.controller.source);
     if (operation) {
       input.recordOperation?.(input.actor, operation);
@@ -229,17 +229,31 @@ export function applyRuntimeSpritePriorityController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
   resolvePriority?: RuntimeSpritePriorityResolver,
 ): void {
+  const priority = operation?.priority ?? resolveRuntimeSpritePriorityControllerOperation(controller, resolvePriority)?.priority;
+  if (priority === undefined) {
+    return;
+  }
+  state.spritePriority = clampSpritePriority(priority);
+}
+
+export function resolveRuntimeSpritePriorityControllerOperation(
+  controller: MugenStateController,
+  resolvePriority?: RuntimeSpritePriorityResolver,
+): Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }> | undefined {
   const valueParam = findControllerParam(controller, "value");
   const priorityParam = findControllerParam(controller, "priority");
   const priority =
-    operation?.priority ??
     (valueParam === undefined ? undefined : resolvePriority?.("value")) ??
     (priorityParam === undefined ? undefined : resolvePriority?.("priority")) ??
     firstNumber(valueParam ?? priorityParam);
   if (priority === undefined) {
-    return;
+    return undefined;
   }
-  state.spritePriority = Math.max(-5, Math.min(10, Math.round(priority)));
+  return {
+    kind: "sprite-effect",
+    controllerType: "sprpriority",
+    priority: clampSpritePriority(priority),
+  };
 }
 
 export function applyRuntimePaletteFxController(
@@ -533,6 +547,15 @@ function spriteEffectOperationFor(
   return operation.controllerType === effect ? operation : undefined;
 }
 
+function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectControllerActor>(
+  input: RuntimeSpriteEffectControllerApplyInput<TActor>,
+): SpriteEffectControllerOp | undefined {
+  if (input.effect === "sprpriority") {
+    return resolveRuntimeSpritePriorityControllerOperation(input.controller.source, input.resolveSpritePriority);
+  }
+  return undefined;
+}
+
 function firstNumber(value: string | undefined): number | undefined {
   const raw = value?.split(",")[0]?.trim();
   if (!raw) {
@@ -540,6 +563,10 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function clampSpritePriority(value: number): number {
+  return Math.max(-5, Math.min(10, Math.round(value)));
 }
 
 function palettePair(value: string | undefined): [number, number] | undefined {

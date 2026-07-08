@@ -27,7 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic LifeSet/PowerAdd/PowerSet typed-resource trace gate
+R1 required dynamic SprPriority typed sprite-effect trace gate
+  -> synthetic-imported-sprpriority-dynamic.json checksum a9e0862d / final checksum 4919326d is required in qa:trace
+  -> imported active state seeds var(0)=4, then executes SprPriority value = var(0)
+  -> dynamic SprPriority resolves through runtime expression fallback, records typed sprite-effect:sprpriority evidence, and preserves spritePriority 4 telemetry
+  -> actor-frame/final evidence requires spritePriority 4
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define SprPriority value as draw-priority semantics
+  -> no score movement; dynamic typed lowering for other sprite-effect params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, and full presentation VM parity remain blocked
+
+Previous R1 required dynamic LifeSet/PowerAdd/PowerSet typed-resource trace gate
   -> synthetic-imported-resourceset-dynamic.json checksum 1bd04945 / final checksum 35db4dcd is required in qa:trace
   -> imported active state seeds var(10)=1, var(11)=1, and var(12)=1
   -> active state executes LifeSet value = IfElse(var(10), 750, 0), PowerAdd value = IfElse(var(11), 350, 0), and PowerSet value = IfElse(var(12), 900, 0)
@@ -620,15 +629,15 @@ Previous R1 required dynamic PalFX trace gate
   -> official Elecbyte docs allow numeric controller params as expressions and define PalFX time/add/mul/invertall/color
   -> no score movement; typed-operation lowering for dynamic params, sinadd, exact palette math/blend/remap order, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-Previous R1 required dynamic SprPriority trace gate
-  -> synthetic-imported-sprpriority-dynamic.json checksum b57c1bfa is required in qa:trace
+Superseded R1 required dynamic SprPriority trace gate
+  -> synthetic-imported-sprpriority-dynamic.json current checksum a9e0862d / final checksum 4919326d is required in qa:trace
   -> imported active state seeds var(0)=4, then executes SprPriority value = var(0)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic priority resolver into RuntimeSpriteEffectWorld.applySpritePriority
   -> PlayableMatchRuntime resolves value expressions through the active controller expression context
-  -> final imported actor evidence requires spritePriority = 4 and no typed sprite-effect:sprpriority operation evidence
-  -> pnpm qa:trace passed 442/442 artifacts, 412 required and 30 optional
+  -> final imported actor evidence requires spritePriority = 4 and typed sprite-effect:sprpriority operation evidence after runtime expression resolution
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define SprPriority value as an int priority level
-  -> no score movement; typed-operation lowering for dynamic params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> no score movement; dynamic typed lowering for other sprite-effect params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
 R1 required dynamic RemapPal trace gate
   -> synthetic-imported-remappal-dynamic.json checksum a44ec542 is required in qa:trace

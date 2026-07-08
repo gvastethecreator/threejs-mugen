@@ -10793,7 +10793,7 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.SprPriority).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:sprpriority"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:sprpriority"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -10804,6 +10804,11 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "variable:varset",
+      "sprite-effect:sprpriority",
+      "hitdef",
+    ]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.spritePriority === 4)).toBe(true);
   });
 

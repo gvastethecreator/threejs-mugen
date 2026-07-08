@@ -6480,7 +6480,7 @@ export function createSyntheticImportedDynamicSprPriorityTraceArtifact(
       label: "Synthetic imported dynamic SprPriority route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic SprPriority trace proves value expression fallback can resolve owner-local var(...) through the active sprite-effect boundary and reaches bounded sprite-priority telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, or timing parity.",
+        "Synthetic imported dynamic SprPriority trace proves value expression fallback can resolve owner-local var(...) through the active sprite-effect boundary, emit typed sprite-effect operation evidence, and reach bounded sprite-priority telemetry. It does not claim exact layer/shadow/helper/Explod draw-order parity, renderer parity, or timing parity.",
       ],
     },
     gates: [
@@ -6491,7 +6491,7 @@ export function createSyntheticImportedDynamicSprPriorityTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "SprPriority", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredExecutedOperations: ["variable:varset", "sprite-effect:sprpriority", "hitdef"],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {

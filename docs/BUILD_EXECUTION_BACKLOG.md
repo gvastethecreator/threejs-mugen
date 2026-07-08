@@ -1,5 +1,48 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic SprPriority typed sprite-effect telemetry
+
+Changed:
+
+- Upgraded required `synthetic-imported-sprpriority-dynamic.json` from sprite-priority fallback evidence into typed `sprite-effect:sprpriority` telemetry.
+- `RuntimeSpriteEffectControllerWorld` now resolves dynamic `SprPriority value` through a bounded operation resolver when compiled IR has no static operation, records the resolved typed operation, and still applies the same runtime sprite-priority mutation.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `sprite-effect:sprpriority`, and `hitdef` for the dynamic SprPriority route.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, architecture notes, and the active R1 issue slice around checksum `a9e0862d` / final checksum `4919326d`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and defines `SprPriority value` draw-priority semantics.
+- Focused tests: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\dynamic-sprpriority-vitest-files.json src\tests\SpriteEffectSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern "SprPriority|dynamic PalFX"` passed: 4 suites, 8 matching tests.
+- Full Vitest suite: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\full-vitest-dynamic-sprpriority.json` passed: 311 suites, 1491 tests.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 523/523 artifacts, 492 required and 31 optional.
+- Trace artifact: `synthetic-imported-sprpriority-dynamic.json` checksum `a9e0862d`, initial checksum `520d1d7c`, final checksum `4919326d`; `sprite-effect:sprpriority` executed 10 times.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `SprPriority value = var(0)` can resolve owner-local numeric expressions through runtime expression fallback, record typed `sprite-effect:sprpriority` telemetry after resolution, and preserve actor-frame/final `spritePriority = 4`.
+
+Claim blocked:
+
+- Dynamic typed lowering for other sprite-effect params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `SprPriority` already had typed `sprite-effect:sprpriority` evidence through `synthetic-imported-sprpriority.json`, while dynamic `value` relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic SprPriority route now closes the operation-telemetry gap without broadening exact renderer draw-order semantics.
+- Adjacent surface checked: static SprPriority gate, dynamic PalFX fallback expectation, sprite-effect boundary recording, active-state resolver handoff, trace requirements, support registry wording, QA gates, scorecard, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This upgrades one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim dynamic typed lowering for other sprite-effect params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, or full presentation VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic LifeSet/PowerAdd/PowerSet typed resource telemetry
 
 Changed:

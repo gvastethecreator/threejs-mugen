@@ -9,6 +9,7 @@ import {
   applyRuntimeRemapPalController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
+  resolveRuntimeSpritePriorityControllerOperation,
   RuntimeSpriteEffectControllerWorld,
   RuntimeSpriteEffectWorld,
   tickRuntimeAfterImage,
@@ -35,6 +36,9 @@ describe("SpriteEffectSystem", () => {
 
   it("resolves dynamic sprite priority from SprPriority controllers", () => {
     const state = runtimeState();
+    const operation = resolveRuntimeSpritePriorityControllerOperation(controller("SprPriority", { value: "var(0)" }), (key) =>
+      key === "value" ? 7 : undefined,
+    );
 
     applyRuntimeSpritePriorityController(
       state,
@@ -43,6 +47,7 @@ describe("SpriteEffectSystem", () => {
       (key) => (key === "value" ? 7 : undefined),
     );
 
+    expect(operation).toEqual({ kind: "sprite-effect", controllerType: "sprpriority", priority: 7 });
     expect(state.spritePriority).toBe(7);
   });
 
@@ -715,8 +720,8 @@ describe("SpriteEffectSystem", () => {
 
     expect(ir.operation).toBeUndefined();
     expect(actor.runtime.spritePriority).toBe(7);
-    expect(recordedOperations).toEqual([]);
-    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+    expect(recordedOperations).toEqual(["sprite-effect:sprpriority"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 
   it("dispatches AfterImage controllers through the active-state sprite boundary", () => {
