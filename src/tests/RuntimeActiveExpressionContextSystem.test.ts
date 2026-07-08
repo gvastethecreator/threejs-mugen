@@ -18,6 +18,7 @@ describe("RuntimeActiveExpressionContextWorld", () => {
 
     const createContext = world.createFactory({
       stageBounds: { left: -160, right: 160 },
+      gameSpace: { width: 640, height: 480, zoom: 2 },
       nextRandom: (source) => {
         randomActors.push(source.id);
         return 0.456;
@@ -42,6 +43,7 @@ describe("RuntimeActiveExpressionContextWorld", () => {
     });
 
     expect(context.stageBounds).toEqual({ left: -160, right: 160 });
+    expect(context.gameSpace).toEqual({ width: 640, height: 480, zoom: 2 });
     expect(context.stageTime).toBe(77);
     expect(context.getConst?.("data.attack")).toBe(300);
     expect(context.random?.()).toBe(0.456);

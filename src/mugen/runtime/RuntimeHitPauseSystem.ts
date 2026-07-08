@@ -1,6 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { CommandBuffer } from "./CommandBuffer";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 
 export type RuntimeHitPauseActor = {
@@ -29,6 +30,7 @@ export type RuntimeHitPauseRuntimeWorldInput<TActor extends RuntimeHitPauseRunti
   p2Input: Set<string>;
   tick: number;
   stage: Pick<MugenStageDefinition, "bounds">;
+  gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   runtimeTick?: number;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advancePausedPresentation">;
@@ -91,6 +93,7 @@ export class RuntimeHitPauseWorld {
           return;
         }
         input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage, context.opponent, {
+          gameSpace: input.gameSpace,
           stageTime: input.stageTime ?? input.tick,
           runtimeTick: input.runtimeTick ?? input.tick,
           opponents: context.opponents,

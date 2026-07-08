@@ -2,6 +2,7 @@ import type { ControllerOp, HelperControllerOp } from "../compiler/ControllerOps
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
@@ -113,6 +114,7 @@ export type RuntimeHelperOpponentEntry = RuntimeOpponentRosterEntry<CharacterRun
 export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
   stageBounds?: MugenStageDefinition["bounds"];
+  gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   runtimeTick?: number;
   opponentId?: string;
@@ -261,6 +263,7 @@ export function runRuntimeHelperStateControllers(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageBounds"
+    | "gameSpace"
     | "stageTime"
     | "runtimeTick"
     | "parentState"
@@ -730,6 +733,7 @@ function helperTriggersPass(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageBounds"
+    | "gameSpace"
     | "stageTime"
     | "opponentId"
     | "parentState"
@@ -772,6 +776,7 @@ function resolveHelperNumber(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageBounds"
+    | "gameSpace"
     | "stageTime"
     | "opponentId"
     | "parentState"
@@ -913,6 +918,7 @@ function helperExpressionContext(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageBounds"
+    | "gameSpace"
     | "stageTime"
     | "opponentId"
     | "parentState"
@@ -942,6 +948,7 @@ function helperExpressionContext(
     isHelper: true,
     helperId: helper.helperId,
     stageBounds: options.stageBounds,
+    gameSpace: options.gameSpace,
     stageTime: options.stageTime,
     stateTime: helper.stateTime,
     target: (targetId?: number) => helperTargetRedirect(helper, options, targetId),

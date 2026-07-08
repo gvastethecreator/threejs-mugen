@@ -10,6 +10,7 @@ describe("RuntimeMatchPresentationSnapshotWorld", () => {
       displayName: "Dojo",
       floorY: 0,
       zOffset: 0,
+      localCoord: { width: 320, height: 240 },
       bounds: { left: -160, right: 160 },
       camera: { startX: 0, startY: 0, zoom: 1 },
       playerStart: {

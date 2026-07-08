@@ -88,7 +88,7 @@ describe("EffectLifecycleSystem", () => {
 
   it("forwards the current opponent as an id-bearing helper roster into active and paused contexts", () => {
     const lifecycle = new RuntimeEffectLifecycleWorld();
-    const stage = { bounds: { left: -160, right: 160 } };
+    const stage = { bounds: { left: -160, right: 160 }, localCoord: { width: 640, height: 480 }, camera: { zoom: 2 } };
     const activeOptions: RuntimeHelperAdvanceOptions[] = [];
     const presentationOptions: RuntimeEffectPresentationAdvanceOptions[] = [];
     const actor = lifecycleActorWithCapturedOptions(activeOptions, presentationOptions);
@@ -109,6 +109,7 @@ describe("EffectLifecycleSystem", () => {
     expect(activeOptions[0]?.opponentRoster?.[0]?.state).toBe(opponentRuntime);
     expect(activeOptions[0]?.stageTime).toBe(12);
     expect(activeOptions[0]?.runtimeTick).toBe(120);
+    expect(activeOptions[0]?.gameSpace).toEqual({ width: 640, height: 480, zoom: 2 });
 
     expect(presentationOptions[0]?.pauseKind).toBe("Pause");
     expect(presentationOptions[0]?.opponentId).toBe("p2");
@@ -117,6 +118,7 @@ describe("EffectLifecycleSystem", () => {
     expect(presentationOptions[0]?.opponentRoster?.[0]?.state).toBe(opponentRuntime);
     expect(presentationOptions[0]?.stageTime).toBe(13);
     expect(presentationOptions[0]?.runtimeTick).toBe(130);
+    expect(presentationOptions[0]?.gameSpace).toEqual({ width: 640, height: 480, zoom: 2 });
   });
 
   it("builds helper rosters from explicit lifecycle opponent lists before falling back to the current opponent", () => {

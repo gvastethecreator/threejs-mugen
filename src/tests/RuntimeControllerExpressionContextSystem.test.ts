@@ -18,6 +18,7 @@ describe("RuntimeControllerExpressionContextSystem", () => {
       hitPauseTime: () => 7,
       parent,
       root,
+      gameSpace: { width: 640, height: 480, zoom: 2 },
       stageTime: 42,
       target: (targetId?: number) =>
         targetId === 77 || targetId === undefined ? { self: target, opponent: self } : undefined,
@@ -28,6 +29,7 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     expect(evaluateRuntimeControllerNumber("Parent, Vel X", self, context)).toBe(4);
     expect(evaluateRuntimeControllerNumber("Root, Vel Y", self, context)).toBe(-7);
     expect(evaluateRuntimeControllerNumber("Const(data.attack) + HitPauseTime + StageTime", self, context)).toBe(139);
+    expect(evaluateRuntimeControllerNumber("GameWidth + GameHeight", self, context)).toBe(560);
     expect(evaluateRuntimeControllerNumber("GetHitVar(xvel)", self, context)).toBe(4);
   });
 

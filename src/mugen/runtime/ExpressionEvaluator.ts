@@ -8,6 +8,7 @@ export type ExpressionContext = {
   opponent?: CharacterRuntimeState;
   enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
   stageBounds?: { left: number; right: number };
+  gameSpace?: ExpressionGameSpace;
   parent?: CharacterRuntimeState;
   root?: CharacterRuntimeState;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
@@ -59,6 +60,12 @@ export type ExpressionContext = {
   stateTime?: number;
   uniqueHitCount?: () => number;
   animTimeRemaining?: number;
+};
+
+export type ExpressionGameSpace = {
+  width: number;
+  height: number;
+  zoom?: number;
 };
 
 export type ExpressionRedirectTarget = {
@@ -503,6 +510,12 @@ class ExpressionParser {
     if (lower === "stagetime" || lower === "gametime") {
       return this.context.stageTime ?? 0;
     }
+    if (lower === "gamewidth") {
+      return this.gameSpaceDimension("width");
+    }
+    if (lower === "gameheight") {
+      return this.gameSpaceDimension("height");
+    }
     if (lower === "stateno") {
       return this.context.self.stateNo;
     }
@@ -894,6 +907,15 @@ class ExpressionParser {
     const width = state.bodyWidth ?? { front: 39, back: 39 };
     const bodyWidth = direction === "front" ? width.front : width.back;
     return Math.max(0, axisDistance - bodyWidth);
+  }
+
+  private gameSpaceDimension(axis: "width" | "height"): number {
+    const gameSpace = this.context.gameSpace;
+    if (!gameSpace) {
+      return 0;
+    }
+    const zoom = Number.isFinite(gameSpace.zoom) && gameSpace.zoom !== undefined && gameSpace.zoom > 0 ? gameSpace.zoom : 1;
+    return gameSpace[axis] / zoom;
   }
 
   private numTarget(targetId?: number): number {

@@ -14,6 +14,7 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
       actor,
       owner,
       tick: 42,
+      gameSpace: { width: 640, height: 480, zoom: 2 },
       getConst: (stateOwner, name) => {
         constReads.push({ stateOwner, name });
         return stateOwner.consts[name as keyof typeof stateOwner.consts];
@@ -25,6 +26,7 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
     });
 
     expect(context.stageTime).toBe(42);
+    expect(context.gameSpace).toEqual({ width: 640, height: 480, zoom: 2 });
     expect(context.hitPauseTime?.()).toBe(7);
     expect(context.getConst?.("attack")).toBe(125);
     expect(context.random?.()).toBe(0.25);

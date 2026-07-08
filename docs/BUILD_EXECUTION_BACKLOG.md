@@ -1,5 +1,40 @@
 # Build Execution Backlog
 
+## 2026-07-08 - GameWidth GameHeight trace gate
+
+Changed:
+
+- Added bounded `GameWidth` / `GameHeight` trigger support through shared expression context data instead of a one-off evaluator branch.
+- Parsed stage `[StageInfo] localcoord` into runtime stage definitions and added a `runtimeStageGameSpace` helper that derives game-space width, height, and positive camera zoom with conservative defaults.
+- Threaded `gameSpace` through active player triggers, paused/hitpause paths, passive assert-special evaluation, helper-local effect actors, and controller-param fallback contexts.
+- Registered required trace artifact `synthetic-imported-gamespace.json`, which presses `x`, evaluates `GameWidth = 640` and `GameHeight = 480`, and routes imported State -1 into state/action `9301`.
+
+Evidence:
+
+- Official source checked: [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs-11b1/trigger.html) defines `GameWidth` / `GameHeight` as game-space dimensions in player local coordinates, inverse-scaled by camera zoom, and keeps `ScreenWidth` / `ScreenHeight` separate from camera zoom.
+- Focused tests: `pnpm exec vitest run src/tests/EffectLifecycleSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeActiveExpressionContextSystem.test.ts src/tests/RuntimeControllerEvaluationContextSystem.test.ts src/tests/RuntimeControllerExpressionContextSystem.test.ts src/tests/RuntimeStageGameSpaceSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "GameWidth|GameHeight|game-space|game space|localcoord|runtime compiler IR|runtime expression context|active expression contexts|executor context|raw controller numbers|opponent as an id-bearing"` -> 8 files passed, 1 skipped; 51 tests passed and 532 skipped.
+- Full tests: `pnpm test` -> 152 files / 1457 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 505/505 artifacts, 474 required and 31 optional.
+- Trace artifact: `synthetic-imported-gamespace.json` checksum `b6f248ab`.
+
+Claim allowed:
+
+- Bounded current runtime trigger expressions can read `GameWidth` / `GameHeight` from stage localcoord and camera zoom where stage game-space context is available, including imported State -1 routing and current helper/controller expression contexts.
+
+Claim blocked:
+
+- Exact mugen.cfg/game-config negotiation, screenpack ownership, `ScreenWidth` / `ScreenHeight`, camera animation parity, full viewport/camera/screenpack split, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN viewport parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 505/505 artifacts, 474 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Continue R1 with `ScreenWidth` / `ScreenHeight` semantics, exact camera/screen/stage negotiation, camera animation parity, another Common1/FightFX oracle, or continue R2 by moving one mutable helper/target/effect path behind a named runtime boundary with focused tests.
+
 ## 2026-07-08 - ModifyProjectile omitted bounds preservation trace gates
 
 Changed:

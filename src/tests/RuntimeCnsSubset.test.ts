@@ -25,6 +25,9 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("StageTime >= 7", { self: state, stageTime: 8 })).toBe(1);
     expect(evaluateExpression("GameTime = 8", { self: state, stageTime: 8 })).toBe(1);
     expect(evaluateExpression("StageTime > 0", { self: state })).toBe(0);
+    expect(evaluateExpression("GameWidth = 640", { self: state, gameSpace: { width: 640, height: 480, zoom: 1 } })).toBe(1);
+    expect(evaluateExpression("GameHeight = 960", { self: state, gameSpace: { width: 640, height: 480, zoom: 0.5 } })).toBe(1);
+    expect(evaluateExpression("GameWidth = 0 && GameHeight = 0", { self: state })).toBe(1);
     expect(evaluateExpression("TeamSide = 1", { self: state, teamSide: 1 })).toBe(1);
     expect(evaluateExpression("EnemyNear, TeamSide = 2", { self: state, opponent: runtimeState(), teamSide: 1, opponentTeamSide: 2 })).toBe(1);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);

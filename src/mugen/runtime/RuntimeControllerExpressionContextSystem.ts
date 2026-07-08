@@ -1,5 +1,5 @@
 import type { MugenAnimationAction } from "../model/MugenAnimation";
-import { evaluateExpression, type ExpressionContext, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
+import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { CharacterRuntimeState } from "./types";
 
@@ -9,6 +9,7 @@ export type RuntimeControllerEvaluationContext = {
   hitPauseTime?: () => number;
   random?: () => number;
   stageBounds?: { left: number; right: number };
+  gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   opponent?: CharacterRuntimeState;
   parent?: CharacterRuntimeState;
@@ -38,6 +39,7 @@ export function createRuntimeControllerExpressionContext(
     hitPauseTime: context.hitPauseTime,
     random: context.random,
     stageBounds: context.stageBounds,
+    gameSpace: context.gameSpace,
     stageTime: context.stageTime,
     stateTime: context.stateTime,
     teamSide: context.teamSide,

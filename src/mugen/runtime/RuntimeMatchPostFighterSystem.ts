@@ -1,6 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import { RuntimeMatchInteractionWorld, type RuntimeMatchInteractionRuntimeActor } from "./MatchInteractionSystem";
 import {
   RuntimeMatchCombatBridgeWorld,
@@ -17,6 +18,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   p1: TActor;
   p2: TActor;
   stage: Pick<MugenStageDefinition, "bounds">;
+  gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
@@ -38,6 +40,7 @@ export class RuntimeMatchPostFighterWorld {
       p1: input.p1,
       p2: input.p2,
       stage: input.stage,
+      gameSpace: input.gameSpace,
       stageTime: input.stageTime,
       runtimeTick: input.runtimeTick,
       actorConstraintWorld: input.actorConstraintWorld,

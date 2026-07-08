@@ -1,0 +1,18 @@
+import type { MugenStageDefinition } from "../model/MugenStage";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
+
+export type RuntimeStageGameSpaceSource = Pick<MugenStageDefinition, "bounds"> & {
+  camera?: Partial<Pick<MugenStageDefinition["camera"], "zoom">>;
+  localCoord?: Partial<MugenStageDefinition["localCoord"]>;
+};
+
+export function runtimeStageGameSpace(stage: RuntimeStageGameSpaceSource): ExpressionGameSpace {
+  const width = finitePositive(stage.localCoord?.width) ?? Math.max(0, stage.bounds.right - stage.bounds.left);
+  const height = finitePositive(stage.localCoord?.height) ?? 480;
+  const zoom = finitePositive(stage.camera?.zoom) ?? 1;
+  return { width, height, zoom };
+}
+
+function finitePositive(value: number | undefined): number | undefined {
+  return value !== undefined && Number.isFinite(value) && value > 0 ? value : undefined;
+}

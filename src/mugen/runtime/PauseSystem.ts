@@ -4,6 +4,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
@@ -71,6 +72,7 @@ export type RuntimePausedMatchRuntimeWorldInput<TActor extends RuntimePausedMatc
     RuntimeEffectLifecycleWorld,
     "advanceActive" | "advancePresentation" | "advancePausedPresentation"
   >;
+  gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   runtimeTick?: number;
   currentPause: () => RuntimeMatchPause | undefined;
@@ -315,6 +317,7 @@ export class RuntimePausedMatchWorld {
           return;
         }
         effectLifecycleWorld.advanceActive(actor, stage, context.opponent, {
+          gameSpace: input.gameSpace,
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
           opponents: context.opponents,
@@ -330,6 +333,7 @@ export class RuntimePausedMatchWorld {
           return;
         }
         effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage, context.opponent, {
+          gameSpace: input.gameSpace,
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
           opponents: context.opponents,

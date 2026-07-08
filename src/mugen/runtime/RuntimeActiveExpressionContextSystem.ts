@@ -1,4 +1,4 @@
-import type { ExpressionContext } from "./ExpressionEvaluator";
+import type { ExpressionContext, ExpressionGameSpace } from "./ExpressionEvaluator";
 import {
   RuntimeExpressionContextWorld,
   type RuntimeExpressionContextActor,
@@ -14,6 +14,7 @@ export type RuntimeActiveExpressionContextRequest<TActor extends RuntimeExpressi
 
 export type RuntimeActiveExpressionContextFactoryInput<TActor extends RuntimeExpressionContextActor> = {
   stageBounds?: { left: number; right: number };
+  gameSpace?: ExpressionGameSpace;
   nextRandom: (actor: TActor) => number;
   animTimeRemaining: (actor: TActor) => number;
   animElemTime: (actor: TActor, elementNumber: number) => number | undefined;
@@ -32,6 +33,7 @@ export class RuntimeActiveExpressionContextWorld {
       opponents: input.opponents,
       owner: input.owner,
       stageBounds: input.stageBounds,
+      gameSpace: input.gameSpace,
       stageTime: input.tick,
       random: () => input.nextRandom(input.actor),
       animTimeRemaining: input.animTimeRemaining(input.actor),

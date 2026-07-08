@@ -4,6 +4,7 @@ import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactM
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 
 export type RuntimeMatchInteractionFighterPair<TFighter> = {
@@ -41,6 +42,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     stage: Pick<MugenStageDefinition, "bounds">;
     actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
     effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation">;
+    gameSpace?: ExpressionGameSpace;
     stageTime?: number;
     runtimeTick?: number;
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
@@ -100,6 +102,7 @@ export class RuntimeMatchInteractionWorld {
           return;
         }
         effectLifecycleWorld.advanceActive(fighter, stage, context.opponent, {
+          gameSpace: input.gameSpace,
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
           opponents: context.opponents,

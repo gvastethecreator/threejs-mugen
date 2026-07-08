@@ -1,7 +1,7 @@
-import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import type { RuntimeHelper, RuntimeHelperAdvanceOptions } from "./HelperSystem";
+import { runtimeStageGameSpace, type RuntimeStageGameSpaceSource } from "./RuntimeStageGameSpaceSystem";
 import {
   RuntimeEffectHelperContextWorld,
   type RuntimeEffectHelperContextOptions,
@@ -50,13 +50,14 @@ export class RuntimeEffectLifecycleWorld {
 
   advanceActive(
     actor: RuntimeEffectLifecycleActor,
-    stage: Pick<MugenStageDefinition, "bounds">,
+    stage: RuntimeStageGameSpaceSource,
     opponent?: RuntimeEffectLifecycleActor,
     options: RuntimeEffectLifecycleAdvanceOptions = {},
   ): void {
     actor.effectActorWorld.advanceActiveEffects(actor.id, stage, {
       stageBounds: stage.bounds,
       ...this.helperContextWorld.create({ actor, opponent, options }),
+      gameSpace: options.gameSpace ?? runtimeStageGameSpace(stage),
     });
   }
 
@@ -67,7 +68,7 @@ export class RuntimeEffectLifecycleWorld {
   advancePausedPresentation(
     actor: RuntimeEffectLifecycleActor,
     pauseKind: RuntimeExplodPauseKind,
-    stage: Pick<MugenStageDefinition, "bounds">,
+    stage: RuntimeStageGameSpaceSource,
     opponent?: RuntimeEffectLifecycleActor,
     options: RuntimeEffectLifecycleAdvanceOptions = {},
   ): void {
@@ -76,6 +77,7 @@ export class RuntimeEffectLifecycleWorld {
       stage,
       stageBounds: stage.bounds,
       ...this.helperContextWorld.create({ actor, opponent, options }),
+      gameSpace: options.gameSpace ?? runtimeStageGameSpace(stage),
     });
   }
 

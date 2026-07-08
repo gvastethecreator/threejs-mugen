@@ -90,6 +90,27 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("FrontEdgeDist", { actor, opponent })).toBe(999);
   });
 
+  it("passes game-space dimensions into GameWidth/GameHeight expression reads", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+
+    expect(
+      world.evaluateNumber("GameWidth + GameHeight", {
+        actor,
+        opponent,
+        gameSpace: { width: 640, height: 480, zoom: 1 },
+      }),
+    ).toBe(1120);
+    expect(
+      world.evaluateNumber("GameWidth + GameHeight", {
+        actor,
+        opponent,
+        gameSpace: { width: 640, height: 480, zoom: 0.5 },
+      }),
+    ).toBe(2240);
+  });
+
   it("exposes bounded TeamSide values for players and first-generation helper ids", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

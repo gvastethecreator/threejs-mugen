@@ -4,7 +4,7 @@ import { hitAttributeMatches } from "./CombatResolver";
 import type { CommandBuffer } from "./CommandBuffer";
 import type { RuntimeContactKind, RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./EffectActorSystem";
-import { evaluateExpression, type ExpressionContext, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
+import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
@@ -51,6 +51,7 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   opponents?: readonly TActor[];
   owner?: TActor;
   stageBounds?: { left: number; right: number };
+  gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   random?: () => number;
   animTimeRemaining?: number;
@@ -78,6 +79,7 @@ export class RuntimeExpressionContextWorld {
       teamSide: runtimeActorTeamSide(actor),
       opponentTeamSide: runtimeActorTeamSide(opponent),
       stageBounds: input.stageBounds,
+      gameSpace: input.gameSpace,
       target: (targetId) => this.resolveTargetRedirect(actor, opponent, targetId),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),

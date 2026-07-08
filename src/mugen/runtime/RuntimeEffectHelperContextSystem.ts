@@ -21,7 +21,7 @@ export type RuntimeEffectHelperContextOpponent = {
 
 export type RuntimeEffectHelperContextOptions = Pick<
   RuntimeHelperAdvanceOptions,
-  "stageTime" | "runtimeTick" | "opponentRoster"
+  "gameSpace" | "stageTime" | "runtimeTick" | "opponentRoster"
 > & {
   opponents?: readonly RuntimeEffectHelperContextOpponent[];
 };
@@ -32,6 +32,7 @@ export type RuntimeEffectHelperContext = {
   opponentId?: string;
   opponentState?: CharacterRuntimeState;
   opponentRoster?: RuntimeHelperAdvanceOptions["opponentRoster"];
+  gameSpace?: RuntimeHelperAdvanceOptions["gameSpace"];
   stageTime?: number;
   runtimeTick?: number;
   targetCandidates?: RuntimeTargetWorldActor[];

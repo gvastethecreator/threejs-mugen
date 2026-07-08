@@ -116,6 +116,7 @@ import {
 import { RuntimeStateEntryRouteWorld } from "./RuntimeStateEntryRouteSystem";
 import { RuntimeStateEntrySetupWorld } from "./RuntimeStateEntrySetupSystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
+import { runtimeStageGameSpace } from "./RuntimeStageGameSpaceSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimeActiveControllerHookSetWorld } from "./RuntimeActiveControllerHookSetSystem";
 import {
@@ -145,6 +146,7 @@ import type {
   CharacterRuntimeState,
   MugenSnapshot,
 } from "./types";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
@@ -430,6 +432,7 @@ export class PlayableMatchRuntime {
 
     matchTickBranchWorld.advance({
       advanceHitPause: () => {
+        const gameSpace = runtimeStageGameSpace(this.stage);
         const result = matchHitPauseWorld.advanceRuntime<FighterMatchState>({
           hitPauseWorld: this.hitPauseWorld,
           p1: this.p1,
@@ -438,6 +441,7 @@ export class PlayableMatchRuntime {
           p2Input,
           tick: this.tick,
           stage: this.stage,
+          gameSpace,
           stageTime: this.tick,
           runtimeTick: this.tick,
           effectLifecycleWorld: this.effectLifecycleWorld,
@@ -450,6 +454,7 @@ export class PlayableMatchRuntime {
               this.reversalWorld,
               this.effectSpawnWorld,
               this.stage.bounds,
+              gameSpace,
               this.tick,
               (target, controller, operation, resolveSoundValue, resolveParams) =>
                 this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveParams),
@@ -466,6 +471,7 @@ export class PlayableMatchRuntime {
   }
 
   private advanceActiveMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
+    const gameSpace = runtimeStageGameSpace(this.stage);
     matchActiveWorld.advance({
       tickRoundTimer: () => matchRoundWorld.tickTimer(this.round, this.matchRoster().actors),
       pushNormalCommandBuffers: () =>
@@ -478,7 +484,7 @@ export class PlayableMatchRuntime {
           p2Input,
           p2Controlled: input.p2 !== undefined,
           handlePlayerInput: (fighter, fighterInput, opponent) =>
-            handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
+            handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, gameSpace, this.tick, this.inputControlWorld),
           handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
         }),
       advanceFighters: () =>
@@ -501,6 +507,7 @@ export class PlayableMatchRuntime {
               this.animationWorld,
               this.stunWorld,
               this.stage.bounds,
+              gameSpace,
               this.tick,
               (pauseActor, controller, operation, resolveSoundValue, resolveParams) =>
                 this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveParams),
@@ -530,6 +537,7 @@ export class PlayableMatchRuntime {
           targetWorld: this.targetWorld,
           runtimeTick: this.tick,
           stageBounds: this.stage.bounds,
+          gameSpace,
           getHurtBoxes: getRuntimeHurtBoxes,
           combatStateHooks: runtimeCombatStateHooks,
           helperStateHooks: runtimeHelperCombatStateHooks,
@@ -558,6 +566,7 @@ export class PlayableMatchRuntime {
   }
 
   private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
+    const gameSpace = runtimeStageGameSpace(this.stage);
     matchPausedBridgeWorld.advanceRuntime({
       pausedMatchWorld: this.pausedMatchWorld,
       pauseWorld: this.pauseWorld,
@@ -567,11 +576,12 @@ export class PlayableMatchRuntime {
       p2Input,
       p2Controlled: input.p2 !== undefined,
       stage: this.stage,
+      gameSpace,
       tick: this.tick,
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
       handlePlayerInput: (actor, actorInput, opponent) =>
-        handlePlayerInput(actor, actorInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
+        handlePlayerInput(actor, actorInput, opponent, this.stage.bounds, gameSpace, this.tick, this.inputControlWorld),
       handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
       advanceFighter: (actor, opponent) =>
         advanceFighter(
@@ -589,6 +599,7 @@ export class PlayableMatchRuntime {
           this.animationWorld,
           this.stunWorld,
           this.stage.bounds,
+          gameSpace,
           this.tick,
           (fighter, controller, operation, resolveSoundValue, resolveParams) =>
             this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue, resolveParams),
@@ -679,6 +690,7 @@ export class PlayableMatchRuntime {
       opponent,
       tick: this.tick,
       stageBounds: this.stage.bounds,
+      gameSpace: runtimeStageGameSpace(this.stage),
       assertSpecialWorld: this.assertSpecialWorld,
       controllerDispatchWorld,
       triggersPass,
@@ -785,14 +797,15 @@ function handlePlayerInput(
   input: Set<string>,
   opponent: FighterMatchState,
   stageBounds: MugenStageDefinition["bounds"],
+  gameSpace: ExpressionGameSpace,
   tick: number,
   inputControlWorld: RuntimeInputControlWorld,
 ): void {
   inputControlWorld.handlePlayerInput(fighter, input, {
     hasStun: hasRuntimeStun(fighter),
     preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
-    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, stageBounds, tick),
-    tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, tick),
+    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, stageBounds, gameSpace, tick),
+    tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, gameSpace, tick),
     startMove: (move) => startMove(fighter, move),
     changeAction: (actionId) => changeAction(fighter, actionId),
     setStateNo: (stateNo) => setRuntimeStateNo(fighter, stateNo),
@@ -830,6 +843,7 @@ function advanceFighter(
   animationWorld: RuntimeAnimationWorld,
   stunWorld: RuntimeStunWorld,
   stageBounds: MugenStageDefinition["bounds"],
+  gameSpace: ExpressionGameSpace,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -874,6 +888,7 @@ function advanceFighter(
         reversalWorld,
         effectSpawnWorld,
         stageBounds,
+        gameSpace,
         tick,
         onPauseController,
         onEnvColorController,
@@ -947,6 +962,7 @@ function runHitPauseIgnoredControllers(
   reversalWorld: RuntimeReversalWorld,
   effectSpawnWorld: RuntimeEffectSpawnWorld,
   stageBounds: MugenStageDefinition["bounds"],
+  gameSpace: ExpressionGameSpace,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -959,6 +975,7 @@ function runHitPauseIgnoredControllers(
     reversalWorld,
     effectSpawnWorld,
     stageBounds,
+    gameSpace,
     tick,
     onPauseController,
     onEnvColorController,
@@ -978,6 +995,7 @@ function runActiveStateControllers(
   reversalWorld: RuntimeReversalWorld,
   effectSpawnWorld: RuntimeEffectSpawnWorld,
   stageBounds: MugenStageDefinition["bounds"],
+  gameSpace: ExpressionGameSpace,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -985,9 +1003,9 @@ function runActiveStateControllers(
 ): void {
   const hookSet = activeControllerHookSetWorld.create<FighterMatchState>({
     resolveNumber: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
-      resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+      resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick, gameSpace),
     resolveBoolean: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
-      resolveDispatchBoolean(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+      resolveDispatchBoolean(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick, gameSpace),
     recordController: runtimeActiveControllerTelemetryHooks.recordController,
     enterState: (actor, stateId, stateOptions) => enterState(actor, stateId, undefined, stateOptions),
     applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
@@ -1211,7 +1229,7 @@ function runActiveStateControllers(
     },
     runtimeController: ({ dispatch, owner }) => {
       controllerDispatchWorld.apply(fighter, dispatch.controller, {
-        context: runtimeControllerContext(fighter, owner, tick, stageBounds, opponent),
+        context: runtimeControllerContext(fighter, owner, tick, stageBounds, opponent, gameSpace),
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1224,7 +1242,7 @@ function runActiveStateControllers(
     onlyIgnoreHitPause: options.onlyIgnoreHitPause,
     controllerIgnoresHitPause,
     triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
-      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
+      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds, gameSpace),
     dispatchController: dispatchStateProgramController,
     stateHooks: hookSet.stateHooks,
     sideEffectHooks: hookSet.sideEffectHooks,
@@ -1242,6 +1260,7 @@ function runtimeControllerContext(
   tick: number,
   stageBounds: MugenStageDefinition["bounds"],
   opponent?: FighterMatchState,
+  gameSpace?: ExpressionGameSpace,
 ) {
   return controllerEvaluationContextWorld.create({
     actor: fighter,
@@ -1250,6 +1269,7 @@ function runtimeControllerContext(
     root: fighter,
     target: opponent ? (targetId) => expressionContextWorld.resolveTargetRedirect(fighter, opponent, targetId) : undefined,
     stageBounds,
+    gameSpace,
     tick,
     getConst: (stateOwner, name) => runtimeDefinitionConst(stateOwner.definition, name),
     nextRandom: (actor) => nextRuntimeRandom(actor),
@@ -1342,13 +1362,14 @@ function tryApplyStateEntry(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   stageBounds: MugenStageDefinition["bounds"],
+  gameSpace: ExpressionGameSpace,
   tick: number,
 ): boolean {
   return stateEntryRouteWorld.apply(fighter, opponent, tick, {
     triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
-      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
+      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds, gameSpace),
     resolveStateId: (dispatch, _controller, actor, targetOpponent, stageTime) =>
-      resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, actor, targetOpponent, actor, stageBounds, stageTime),
+      resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, actor, targetOpponent, actor, stageBounds, stageTime, gameSpace),
     recordStateEntryRoute: (actor, controller, stateId) =>
       compatibilityTelemetryWorld.recordStateEntryRoute(actor, controller, stateId),
     startMove: (actor, move, label) => startMoveWithSpec(actor, move, label),
@@ -1360,6 +1381,7 @@ function runStateEntrySetupControllers(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   stageBounds: MugenStageDefinition["bounds"],
+  gameSpace: ExpressionGameSpace,
   tick: number,
 ): void {
   stateEntrySetupWorld.apply({
@@ -1367,10 +1389,10 @@ function runStateEntrySetupControllers(
     opponent,
     tick,
     triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
-      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
+      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds, gameSpace),
     executeController: (controller, actor, stageTime) => {
       controllerDispatchWorld.apply(actor, controller, {
-        context: runtimeControllerContext(actor, actor, stageTime, stageBounds, opponent),
+        context: runtimeControllerContext(actor, actor, stageTime, stageBounds, opponent, gameSpace),
         recordController: (target, recordedController) => compatibilityTelemetryWorld.recordController(target, recordedController),
       });
       return actor.runtime;
@@ -1385,6 +1407,7 @@ function triggersPass(
   owner: FighterMatchState = fighter,
   stageTime?: number,
   stageBounds?: MugenStageDefinition["bounds"],
+  gameSpace?: ExpressionGameSpace,
 ): boolean {
   return triggerGateWorld.passes({
     controller,
@@ -1393,7 +1416,7 @@ function triggersPass(
     owner,
     tick: stageTime,
     evaluateTrigger: (trigger, actor, targetOpponent, stateOwner, tick) =>
-      evaluateRuntimeTrigger(trigger, actor, targetOpponent, stateOwner, tick, stageBounds),
+      evaluateRuntimeTrigger(trigger, actor, targetOpponent, stateOwner, tick, stageBounds, gameSpace),
   });
 }
 
@@ -1405,8 +1428,9 @@ function resolveDispatchNumber(
   owner: FighterMatchState = fighter,
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
+  gameSpace?: ExpressionGameSpace,
 ): number | undefined {
-  const createContext = activeExpressionContextFactory(stageBounds);
+  const createContext = activeExpressionContextFactory(stageBounds, gameSpace);
   return dispatchEvaluationWorld.resolveNumber({
     value,
     expression,
@@ -1427,8 +1451,9 @@ function resolveDispatchFloat(
   owner: FighterMatchState = fighter,
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
+  gameSpace?: ExpressionGameSpace,
 ): number | undefined {
-  const createContext = activeExpressionContextFactory(stageBounds);
+  const createContext = activeExpressionContextFactory(stageBounds, gameSpace);
   return dispatchEvaluationWorld.resolveFloat({
     value,
     expression,
@@ -2019,8 +2044,9 @@ function resolveDispatchBoolean(
   owner: FighterMatchState = fighter,
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
+  gameSpace?: ExpressionGameSpace,
 ): boolean | undefined {
-  const createContext = activeExpressionContextFactory(stageBounds);
+  const createContext = activeExpressionContextFactory(stageBounds, gameSpace);
   return dispatchEvaluationWorld.resolveBoolean({
     value,
     expression,
@@ -2040,8 +2066,9 @@ function evaluateRuntimeTrigger(
   owner: FighterMatchState = fighter,
   stageTime?: number,
   stageBounds?: MugenStageDefinition["bounds"],
+  gameSpace?: ExpressionGameSpace,
 ): boolean {
-  const createContext = activeExpressionContextFactory(stageBounds);
+  const createContext = activeExpressionContextFactory(stageBounds, gameSpace);
   return triggerEvaluationWorld.passes({
     trigger,
     actor: fighter,
@@ -2053,14 +2080,22 @@ function evaluateRuntimeTrigger(
   });
 }
 
-function activeExpressionContextFactory(stageBounds?: MugenStageDefinition["bounds"]) {
+function activeExpressionContextFactory(stageBounds?: MugenStageDefinition["bounds"], gameSpace?: ExpressionGameSpace) {
   return activeExpressionContextWorld.createFactory<FighterMatchState>({
     stageBounds,
+    gameSpace: gameSpace ?? fallbackGameSpaceFromBounds(stageBounds),
     nextRandom: nextRuntimeRandom,
     animTimeRemaining: getAnimTimeRemaining,
     animElemTime: getAnimElemTime,
     inGuardDist: (actor, opponent) => evaluateRuntimeInGuardDist(actor, opponent),
   });
+}
+
+function fallbackGameSpaceFromBounds(stageBounds?: MugenStageDefinition["bounds"]): ExpressionGameSpace | undefined {
+  if (!stageBounds) {
+    return undefined;
+  }
+  return { width: Math.max(0, stageBounds.right - stageBounds.left), height: 480, zoom: 1 };
 }
 
 

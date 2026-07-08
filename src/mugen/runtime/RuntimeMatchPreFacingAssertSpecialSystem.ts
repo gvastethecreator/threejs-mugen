@@ -1,5 +1,6 @@
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import {
   type RuntimeAssertSpecialActor,
   type RuntimeAssertSpecialApplyResult,
@@ -20,6 +21,7 @@ export type RuntimeMatchPreFacingAssertSpecialInput<TActor extends RuntimeMatchP
   opponent: TActor;
   tick: number;
   stageBounds?: MugenStageDefinition["bounds"];
+  gameSpace?: ExpressionGameSpace;
   assertSpecialWorld: Pick<RuntimeAssertSpecialWorld, "applyPreFacing">;
   controllerDispatchWorld: Pick<RuntimeControllerDispatchWorld, "apply">;
   triggersPass: (
@@ -29,6 +31,7 @@ export type RuntimeMatchPreFacingAssertSpecialInput<TActor extends RuntimeMatchP
     owner: TActor,
     tick: number,
     stageBounds?: MugenStageDefinition["bounds"],
+    gameSpace?: ExpressionGameSpace,
   ) => boolean;
   getConst: (owner: TActor, name: string) => number | undefined;
   nextRandom: (actor: TActor) => number;
@@ -45,7 +48,7 @@ export class RuntimeMatchPreFacingAssertSpecialWorld {
       opponent: input.opponent,
       tick: input.tick,
       triggersPass: (controller, actor, opponent, owner, tick) =>
-        input.triggersPass(controller, actor, opponent, owner, tick, input.stageBounds),
+        input.triggersPass(controller, actor, opponent, owner, tick, input.stageBounds, input.gameSpace),
       executeController: (controller, actor, owner, tick) => {
         input.controllerDispatchWorld.apply(actor, controller, {
           context: this.contextWorld.create({
@@ -54,6 +57,7 @@ export class RuntimeMatchPreFacingAssertSpecialWorld {
             opponent: input.opponent,
             root: actor,
             stageBounds: input.stageBounds,
+            gameSpace: input.gameSpace,
             tick,
             getConst: input.getConst,
             nextRandom: input.nextRandom,

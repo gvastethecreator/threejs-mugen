@@ -1400,6 +1400,29 @@ export function createSyntheticImportedGameTimeTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedGameSpaceTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-gamespace",
+      displayName: "Synthetic Imported GameWidth GameHeight",
+      gameSpaceEntry: { gameWidth: 640, gameHeight: 480, stateNo: 9301 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-gamespace-golden",
+      targetLabel: "Synthetic imported GameWidth/GameHeight route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [9301],
+      requiredExecutedStates: [9301],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported GameWidth/GameHeight trace proves State -1 routing can branch on bounded Elecbyte game-space dimensions from stage localcoord at zoom 1. Exact mugen.cfg negotiation, screen-space triggers, camera animation, and full MUGEN/IKEMEN viewport parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedStateContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -37330,6 +37353,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfCommandEntry?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
+  gameSpaceEntry?: { gameWidth: number; gameHeight: number; stateNo: number };
   stateContextEntry?: { stateNo: number };
   aliveStateEntry?: { stateNo: number };
   roundStateEntry?: { roundNo: number; roundState: number; stateNo: number };
@@ -37950,6 +37974,7 @@ ${options.selfAnimExistEntry === undefined ? "" : selfAnimExistStateEntryBlock(o
 ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
 ${options.gameTimeEntry === undefined ? "" : gameTimeStateEntryBlock(options.gameTimeEntry)}
+${options.gameSpaceEntry === undefined ? "" : gameSpaceStateEntryBlock(options.gameSpaceEntry)}
 ${options.stateContextEntry === undefined ? "" : stateContextEntryBlock(options.stateContextEntry)}
 ${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
 ${options.roundStateEntry === undefined ? "" : roundStateEntryBlock(options.roundStateEntry)}
@@ -38164,6 +38189,7 @@ ${options.selfAnimExistEntry ? simpleStateBlock(options.selfAnimExistEntry.state
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo && !passiveControllerStateNos.has(options.selfCommandEntry.stateNo) ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
+${options.gameSpaceEntry ? simpleStateBlock(options.gameSpaceEntry.stateNo, "I") : ""}
 ${options.stateContextEntry ? simpleStateBlock(options.stateContextEntry.stateNo, "I") : ""}
 ${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
 ${options.roundStateEntry ? simpleStateBlock(options.roundStateEntry.stateNo, "I") : ""}
@@ -38460,6 +38486,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.gameTimeEntry === undefined
         ? []
         : ([[options.gameTimeEntry.stateNo, traceAction(options.gameTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.gameSpaceEntry === undefined
+        ? []
+        : ([[options.gameSpaceEntry.stateNo, traceAction(options.gameSpaceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.stateContextEntry === undefined
         ? []
         : ([[options.stateContextEntry.stateNo, traceAction(options.stateContextEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -42114,6 +42143,18 @@ value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = GameTime >= ${route.minGameTime}
+`;
+}
+
+function gameSpaceStateEntryBlock(route: { gameWidth: number; gameHeight: number; stateNo: number }): string {
+  return `
+[State -1, Game Space Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = GameWidth = ${route.gameWidth}
+trigger1 = GameHeight = ${route.gameHeight}
 `;
 }
 

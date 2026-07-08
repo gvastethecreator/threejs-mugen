@@ -5,6 +5,10 @@ export const rooftopDojoStage: MugenStageDefinition = {
   displayName: "Rooftop Dojo",
   floorY: 0,
   zOffset: 0,
+  localCoord: {
+    width: 640,
+    height: 480,
+  },
   bounds: {
     left: -420,
     right: 420,
@@ -38,6 +42,10 @@ export const trainingStage: MugenStageDefinition = {
   displayName: "Training Grid",
   floorY: 0,
   zOffset: 0,
+  localCoord: {
+    width: 640,
+    height: 480,
+  },
   bounds: {
     left: -320,
     right: 320,
@@ -63,6 +71,10 @@ export const bgCtrlLabStage: MugenStageDefinition = {
   displayName: "BGCtrl Lab",
   floorY: 0,
   zOffset: 0,
+  localCoord: {
+    width: 640,
+    height: 480,
+  },
   bounds: {
     left: -360,
     right: 360,

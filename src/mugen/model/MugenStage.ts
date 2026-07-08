@@ -92,6 +92,10 @@ export type MugenStageDefinition = {
   displayName: string;
   floorY: number;
   zOffset: number;
+  localCoord: {
+    width: number;
+    height: number;
+  };
   bounds: {
     left: number;
     right: number;

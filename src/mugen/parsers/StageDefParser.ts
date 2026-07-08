@@ -91,6 +91,10 @@ export function stageDefToRuntime(definition: MugenStageDef, id: string): MugenS
     displayName: definition.info.displayName ?? definition.info.name ?? id,
     floorY,
     zOffset,
+    localCoord: {
+      width: localcoord[0],
+      height: localcoord[1],
+    },
     bounds: {
       left: boundLeft,
       right: boundRight,

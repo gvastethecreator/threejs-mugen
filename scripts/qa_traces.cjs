@@ -246,6 +246,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGameTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-gamespace",
+      required: true,
+      artifact: presets.createSyntheticImportedGameSpaceTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-state-context",
       required: true,
       artifact: presets.createSyntheticImportedStateContextTraceArtifact(),

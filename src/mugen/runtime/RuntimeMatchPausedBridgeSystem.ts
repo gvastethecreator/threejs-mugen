@@ -1,6 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import {
   type RuntimePausedMatchAdvanceResult,
   type RuntimePausedMatchRuntimeActor,
@@ -24,6 +25,7 @@ export type RuntimeMatchPausedBridgeInput<TActor extends RuntimeMatchPausedBridg
   p2Input: Set<string>;
   p2Controlled: boolean;
   stage: Pick<MugenStageDefinition, "bounds">;
+  gameSpace?: ExpressionGameSpace;
   tick: number;
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "clampToStage">;
   effectLifecycleWorld: Pick<
@@ -46,6 +48,7 @@ export class RuntimeMatchPausedBridgeWorld {
       p2Input: input.p2Input,
       p2Controlled: input.p2Controlled,
       stage: input.stage,
+      gameSpace: input.gameSpace,
       stageTime: input.tick,
       runtimeTick: input.tick,
       actorConstraintWorld: input.actorConstraintWorld,

@@ -7,6 +7,7 @@ import type {
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import { runtimeStageGameSpace } from "./RuntimeStageGameSpaceSystem";
 import {
   advanceRuntimeExplods,
   createRuntimeExplod,
@@ -408,6 +409,7 @@ export function advanceRuntimeHelperActors(
   store.helpers = advanceRuntimeHelpers(store.helpers, stage, {
     ...options,
     stageBounds: options?.stageBounds ?? stage.bounds,
+    gameSpace: options?.gameSpace ?? runtimeStageGameSpace(stage),
     countExplods: (helper, explodId) => {
       if (options?.countExplods) {
         return options.countExplods(helper, explodId);
