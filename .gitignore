@@ -12,6 +12,8 @@ dist
 .scratch/*
 !.scratch/roadmap/
 !.scratch/roadmap/**
+!.scratch/wayfinder/
+!.scratch/wayfinder/**
 /output
 __pycache__/
 *.pyc
