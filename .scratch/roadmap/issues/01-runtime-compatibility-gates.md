@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Active Quality Slice - Dynamic VelAdd Typed Telemetry
+## Active Quality Slice - Dynamic VelMul Typed Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: dynamic active-state `VelMul` params could mutate velocity through the raw runtime-controller fallback, but no required trace gate proved typed `kinematic:velmul` telemetry when params were expression-backed.
+- Target: bounded active runtime-controller dispatch records dynamic `VelMul` as typed kinematic telemetry after resolving expression params, while keeping broader dynamic kinematic lowering and helper-local telemetry honestly blocked.
+- Reference: Elecbyte State Controller Reference treats state-controller numeric params as expression-capable unless otherwise specified and defines `VelMul` as multiplying optional `x` / `y` factors into player velocity.
+- Transformation layers: runtime controller resolution, kinematic operation reuse, trace evidence, required QA artifact registry, roadmap truth.
+- Adjacent audit: inspect `RuntimeKinematicControllerWorld`, active `RuntimeControllerDispatchWorld`, existing static kinematic gates, dynamic `VelSet` and `VelAdd` gates, helper controller-param routes, support docs, and QA trace registry.
+- Accepted improvement ledger: route dynamic active-state `VelMul` through the shared runtime kinematic resolver, record resolved `kinematic:velmul` telemetry, add required `synthetic-imported-dynamic-velmul`, prove direct velocity mutation in focused dispatch tests, update claim allowed/blocked docs, and run focused plus repo closeout gates.
+- Out of scope: dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry, broad controller-family lowering, exact physics/tick order, floor snapping, teams/simul, and full movement parity.
+- Completed proof: required `synthetic-imported-dynamic-velmul.json` checksum `4d241401`, focused runtime/controller/trace tests, `pnpm test -- KinematicControllerSystem RuntimeControllerDispatchSystem RuntimeTraceGatePresets` 153 files / 1469 tests, `pnpm qa:trace` 511/511 artifacts with 480 required and 31 optional, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, and `git diff --check` with CRLF-normalization warnings only.
+- STOP conditions: pause if the next dynamic typed controller family requires broader CNS compiler ownership, helper/team/simul semantics, or a durable architecture decision for shared controller lowering.
+
+## Previous Active Quality Slice - Dynamic VelAdd Typed Telemetry
 
 Status: done
 Date: 2026-07-08

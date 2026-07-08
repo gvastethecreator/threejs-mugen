@@ -77,6 +77,22 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(true);
   });
 
+  it("records bounded dynamic VelMul as typed kinematic telemetry after resolving params", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ vel: { x: 8, y: -6 }, vars: [2, 3] });
+    const controller = compileControllerIr(controllerSource("VelMul", { x: "var(0) * 0.5", y: "0 - var(1)" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply(actor, controller, {
+      recordOperation: (_actor, operation) =>
+        recordedOperations.push(`${operation.kind}:${"controllerType" in operation ? operation.controllerType : "none"}`),
+    });
+
+    expect(actor.runtime.vel).toEqual({ x: 8, y: 18 });
+    expect(recordedOperations).toEqual(["kinematic:velmul"]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
   it("reports unsupported controllers without mutating runtime state", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 777 });

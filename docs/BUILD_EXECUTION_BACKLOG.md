@@ -1,5 +1,48 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic VelMul typed telemetry
+
+Changed:
+
+- Extended bounded active runtime-controller typed telemetry from dynamic `VelSet` / `VelAdd` to dynamic `VelMul`.
+- Active runtime-controller dispatch now resolves dynamic `VelMul` params before execution and records `kinematic:velmul` when the controller has no static `ControllerOp`.
+- Added required trace artifact `synthetic-imported-dynamic-velmul.json` for a bounded imported active-state route with `VarSet` seeds, static `VelSet` seed velocity, and dynamic `VelMul x = var(0) * 0.5, y = 0 - var(1)`.
+- Added focused dispatcher, kinematic-controller, and trace-preset tests so the direct runtime path proves resolved velocity multiplication and the trace gate proves ordered typed telemetry.
+- `qa_traces` now includes `synthetic-imported-dynamic-velmul` as a required artifact.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) states numeric state-controller parameters generally accept arithmetic expressions unless otherwise specified and defines `VelMul` `x` / `y` params as optional velocity multipliers.
+- Focused/full test: `pnpm test -- KinematicControllerSystem RuntimeControllerDispatchSystem RuntimeTraceGatePresets` -> 153 files / 1469 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 511/511 artifacts, 480 required and 31 optional.
+- Trace artifact: `synthetic-imported-dynamic-velmul.json` checksum `4d241401`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active-state `VelMul` expression params can mutate current actor velocity through runtime expression fallback and emit typed `kinematic:velmul` telemetry.
+
+Claim blocked:
+
+- Dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, teams/simul/helper ownership, broad coordinate translation, score movement, and full movement parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: dynamic `VelMul` could mutate through fallback, but active-state traces did not carry typed `kinematic:velmul` evidence when params were expression-backed.
+- Quality delta: the core velocity setter/add/multiply trio now has replay-visible dynamic typed telemetry in bounded active-state routes, while unsupported dynamic families remain blocked.
+- Adjacent surface checked: runtime controller dispatch, `RuntimeKinematicControllerWorld`, trace preset registration, `qa_traces` required artifact list, controller support wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 511/511 artifacts, 480 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+- Optional private KFM trace checksums did not need migration for this player-owned synthetic route; `synthetic-imported-dynamic-veladd.json` remains required as the previous dynamic velocity-add gate.
+
+Next:
+
+- Continue R1 by extending active-state dynamic typed telemetry to `PosSet` or `PosAdd`; or move a helper-local dynamic route behind a named ownership boundary before claiming helper parity.
+
 ## 2026-07-08 - Dynamic VelAdd typed telemetry
 
 Changed:

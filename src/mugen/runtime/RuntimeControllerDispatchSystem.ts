@@ -62,7 +62,7 @@ function resolveDynamicRecordedOperation(
   runtime: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext,
 ): ControllerOp | undefined {
-  if (controller.normalizedType === "velset" || controller.normalizedType === "veladd") {
+  if (controller.normalizedType === "velset" || controller.normalizedType === "veladd" || controller.normalizedType === "velmul") {
     return resolveRuntimeKinematicControllerOperation(controller, runtime, context);
   }
   return undefined;

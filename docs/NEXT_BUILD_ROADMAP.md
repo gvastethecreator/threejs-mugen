@@ -27,13 +27,19 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic VelAdd typed-telemetry trace gate
-  -> synthetic-imported-dynamic-veladd.json checksum daf99fb4 is required in qa:trace
-  -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static VelSet seed velocity, and executes VelAdd x = var(0) + 1, y = var(1) - 1
-  -> gate requires ordered variable:varset, kinematic:velset, and kinematic:veladd operation evidence plus bounded actor-frame velocity telemetry
-  -> pnpm qa:trace passes 510/510 artifacts, 479 required and 31 optional
-  -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelAdd as optional x/y velocity additions
+R1 required dynamic VelMul typed-telemetry trace gate
+  -> synthetic-imported-dynamic-velmul.json checksum 4d241401 is required in qa:trace
+  -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static VelSet seed velocity, and executes VelMul x = var(0) * 0.5, y = 0 - var(1)
+  -> gate requires ordered variable:varset, kinematic:velset, and kinematic:velmul operation evidence plus bounded actor-frame velocity telemetry
+  -> pnpm qa:trace passes 511/511 artifacts, 480 required and 31 optional
+  -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelMul as optional x/y velocity multipliers
   -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+
+R1 required dynamic VelAdd typed-telemetry trace gate
+  -> synthetic-imported-dynamic-veladd.json checksum daf99fb4 remains required in qa:trace
+  -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static VelSet seed velocity, and executes VelAdd x = var(0) + 1, y = var(1) - 1
+  -> that checkpoint passed 510/510 artifacts, 479 required and 31 optional
+  -> no score movement; this remains bounded active-state dynamic VelAdd typed telemetry only
 
 R1 required Const240p/Const480p/Const720p controller-param trace gate
   -> synthetic-imported-const-controller-param.json checksum 2dad3a50 is required in qa:trace

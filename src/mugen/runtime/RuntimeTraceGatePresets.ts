@@ -5498,6 +5498,64 @@ export function createSyntheticImportedDynamicVelAddTraceArtifact(options: Runti
   );
 }
 
+export function createSyntheticImportedDynamicVelMulTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-dynamic-velmul",
+      displayName: "Synthetic Imported Dynamic VelMul",
+      action200Duration: 30,
+      withHitDef: false,
+      withDynamicVelMul: {
+        seedVelocity: [8, -6],
+        vars: [
+          { index: 0, value: 2 },
+          { index: 1, value: 3 },
+        ],
+        xExpression: "var(0) * 0.5",
+        yExpression: "0 - var(1)",
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-dynamic-velmul-golden",
+      targetLabel: "Synthetic imported dynamic VelMul route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "VelSet", "VelMul"],
+      requiredExecutedOperations: ["variable:varset", "kinematic:velset", "kinematic:velmul"],
+      requiredControllerEventSequences: [
+        {
+          label: "200 dynamic VelMul typed order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VarSet", name: "Dynamic VelMul Var 0" },
+            { stateNo: 200, controller: "VarSet", name: "Dynamic VelMul Var 1" },
+            { stateNo: 200, controller: "VelSet", name: "Dynamic VelMul Seed Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
+            { stateNo: 200, controller: "VelMul", name: "Dynamic VelMul Probe" },
+            { stateNo: 200, operation: "kinematic:velmul" },
+          ],
+        },
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          observedVelXAtLeast: 8,
+          observedVelYAtLeast: 18,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic VelMul trace proves bounded active-state VelMul expression params resolve through the runtime controller dispatcher into typed kinematic:velmul telemetry while preserving velocity-multiply semantics. It does not claim dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, team/simul ownership, or full MUGEN/IKEMEN movement parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedControllerParamBottomTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -37883,6 +37941,12 @@ export type SyntheticImportedTraceFighterOptions = {
     yExpression?: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withDynamicVelMul?: {
+    seedVelocity?: [number, number];
+    xExpression?: string;
+    yExpression?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   bottomParamVelSetRoute?: {
     seedVelocity?: [number, number];
     xExpression?: string;
@@ -38251,6 +38315,7 @@ ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withGravity ? gravityControllerBlock() : ""}
 ${options.withKinematicControllers ? kinematicControllerBlock() : ""}
 ${options.withDynamicVelAdd === undefined ? "" : dynamicVelAddControllerBlock(options.withDynamicVelAdd)}
+${options.withDynamicVelMul === undefined ? "" : dynamicVelMulControllerBlock(options.withDynamicVelMul)}
 ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bottomParamVelSetRoute) : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
@@ -39566,6 +39631,36 @@ y = ${seed[1]}
 
 [State 200, Dynamic VelAdd Probe]
 type = VelAdd
+trigger1 = Time = 2
+x = ${options.xExpression ?? "var(0)"}
+y = ${options.yExpression ?? "var(1)"}
+`;
+}
+
+function dynamicVelMulControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicVelMul"]>): string {
+  const seed = options.seedVelocity ?? [8, -6];
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic VelMul Var ${item.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic VelMul Seed Velocity]
+type = VelSet
+trigger1 = Time = 1
+x = ${seed[0]}
+y = ${seed[1]}
+
+[State 200, Dynamic VelMul Probe]
+type = VelMul
 trigger1 = Time = 2
 x = ${options.xExpression ?? "var(0)"}
 y = ${options.yExpression ?? "var(1)"}

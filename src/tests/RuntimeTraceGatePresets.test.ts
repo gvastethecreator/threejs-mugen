@@ -359,6 +359,7 @@ import {
   createSyntheticImportedGravityTraceArtifact,
   createSyntheticImportedKinematicTraceArtifact,
   createSyntheticImportedDynamicVelAddTraceArtifact,
+  createSyntheticImportedDynamicVelMulTraceArtifact,
   createSyntheticImportedControllerParamBottomTraceArtifact,
   createSyntheticImportedControllerParamTargetRedirectTraceArtifact,
   createSyntheticImportedControllerParamRootRedirectTraceArtifact,
@@ -9582,6 +9583,62 @@ describe("RuntimeTraceGatePresets", () => {
           animNo: 200,
           maxVel: expect.objectContaining({ x: 4 }),
           minVel: expect.objectContaining({ y: -6 }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic VelMul artifact with typed kinematic evidence", () => {
+    const artifact = createSyntheticImportedDynamicVelMulTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dynamic-velmul-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "VelSet", "VelMul"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "kinematic:velset", "kinematic:velmul"]);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "200 dynamic VelMul typed order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "VarSet", name: "Dynamic VelMul Var 0" },
+          { stateNo: 200, controller: "VarSet", name: "Dynamic VelMul Var 1" },
+          { stateNo: 200, controller: "VelSet", name: "Dynamic VelMul Seed Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
+          { stateNo: 200, controller: "VelMul", name: "Dynamic VelMul Probe" },
+          { stateNo: 200, operation: "kinematic:velmul" },
+        ],
+      },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelMul).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velmul"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          maxVel: expect.objectContaining({ x: 8, y: 18 }),
         }),
       ]),
     );
