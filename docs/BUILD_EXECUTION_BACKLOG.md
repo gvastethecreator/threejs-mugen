@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-08 - ModifyProjectile bounds mutation unit gate
+
+Changed:
+
+- Extended typed `ModifyProjectile` operations with `projedgebound`, `projstagebound`, and `projheightbound`.
+- Runtime `modifyRuntimeProjectiles(...)` now mutates live matching Projectiles' `edgeBound`, `stageBound`, and `heightBound` when those params are explicitly authored.
+- Covered owner-side `RuntimeEffectSpawnWorld` dispatch and helper-local micro-VM mutation so same-id player-owned Projectiles remain unchanged while helper-parented Projectiles mutate.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html#Projectile) defines Projectile `projedgebound`, `projstagebound`, and `projheightbound` removal bounds plus 240p/480p/720p defaults. Elecbyte does not list a separate 1.1 `ModifyProjectile` page, so this slice follows the repo's existing bounded `ModifyProjectile` contract: static mutation of a documented Projectile param subset.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/ProjectileSystem.test.ts src/tests/EffectSpawnSystem.test.ts src/tests/EffectActorSystem.test.ts` -> 4 files / 121 tests passed.
+- Final verification: `pnpm typecheck`; `pnpm test` -> 151 files / 1442 tests; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 498/498 artifacts, 467 required and 31 optional; `git diff --check` passed with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- Bounded static `ModifyProjectile` can compile and execute explicit Projectile removal-bound mutations for matching live owner-side and helper-parented Projectiles, while helper-local scope still excludes same-id player-owned Projectiles.
+
+Claim blocked:
+
+- No new required trace artifact yet; dynamic bound params, default-bound reset semantics through ModifyProjectile, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full MUGEN/IKEMEN Projectile parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 498/498 artifacts, 467 required and 31 optional; no new required trace gate was added for this mutation surface. This slice is unit/focused runtime evidence only and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Add required imported player/helper `ModifyProjectile` bounds trace gates, or continue R1 with exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Projectile localcoord default bounds trace gates
 
 Changed:

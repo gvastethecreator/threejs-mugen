@@ -199,6 +199,9 @@ export type ModifyProjectileControllerOp = {
   acceleration?: [number, number];
   velocityMultiplier?: [number, number];
   scale?: [number, number];
+  edgeBound?: number;
+  stageBound?: number;
+  heightBound?: { low: number; high: number };
   removeTime?: number;
   spritePriority?: number;
   priority?: number;
@@ -1488,6 +1491,9 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
     velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
     scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
+    edgeBound: firstNumber(findParam(controller, "projedgebound")),
+    stageBound: firstNumber(findParam(controller, "projstagebound")),
+    heightBound: projectileHeightBound(numberPair(findParam(controller, "projheightbound"))),
     removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")),
     spritePriority: firstNumber(findParam(controller, "sprpriority")),
     priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")),

@@ -245,12 +245,25 @@ describe("EffectSpawnSystem", () => {
     });
 
     spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", { projanim: "910", projid: "7", velocity: "1,0" }));
-    const changed = spawnWorld.modifyProjectiles(fighter, controller("ModifyProjectile", { projid: "7", velocity: "4,-2", projscale: "2,.5" }));
+    const changed = spawnWorld.modifyProjectiles(
+      fighter,
+      controller("ModifyProjectile", {
+        projid: "7",
+        velocity: "4,-2",
+        projscale: "2,.5",
+        projedgebound: "28",
+        projstagebound: "24",
+        projheightbound: "-120,60",
+      }),
+    );
 
     expect(changed).toBe(1);
     expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
       vel: { x: 4, y: -2 },
       scale: { x: 2, y: 0.5 },
+      edgeBound: 28,
+      stageBound: 24,
+      heightBound: { low: -120, high: 60 },
     });
     expect(resolveEffectSpawnPosition(fighter, opponent, "left", [12, -3])).toEqual({ x: 12, y: -3 });
     expect(resolveEffectSpawnBind("back", [12, -3])).toEqual({ localOffset: { x: -36, y: -3 } });

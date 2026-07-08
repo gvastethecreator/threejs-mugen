@@ -275,6 +275,9 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const acceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel"));
   const velocityMultiplier = operation?.velocityMultiplier ?? scalePair(findControllerParam(input.controller, "velmul"));
   const scale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale"));
+  const edgeBound = operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound"));
+  const stageBound = operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound"));
+  const heightBound = operation?.heightBound ?? projectileHeightBound(numberPair(findControllerParam(input.controller, "projheightbound")));
   const removeTime = operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime"));
   const spritePriority = operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority"));
   const priority = operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority"));
@@ -301,6 +304,15 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     }
     if (scale) {
       projectile.scale = pairToScale(scale);
+    }
+    if (edgeBound !== undefined) {
+      projectile.edgeBound = clampProjectileStageBound(edgeBound);
+    }
+    if (stageBound !== undefined) {
+      projectile.stageBound = clampProjectileStageBound(stageBound);
+    }
+    if (heightBound !== undefined) {
+      projectile.heightBound = optionalProjectileHeightBound(heightBound);
     }
     if (removeTime !== undefined) {
       projectile.removeTime = clampProjectileTime(removeTime);
