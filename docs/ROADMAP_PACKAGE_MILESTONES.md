@@ -35,14 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required helper ModifyProjectile dynamic bounds trace gate
--> synthetic-imported-helper-modifyprojectile-dynamic-bounds.json checksum f582153e / final checksum adc63407 is required in qa:trace
--> helper-local ModifyProjectile resolves projedgebound = Parent,Var(0), projstagebound = Root,Var(1), and projheightbound = Parent,Var(2),Root,Var(3)
--> payload evidence requires bounds edgeBound = 52, stageBound = 36, heightBound = -144,72 on helper-parented live Projectile id 8852
--> pnpm qa:trace passes 500/500 artifacts, 469 required and 31 optional
--> paired owner-side dynamic gate remains synthetic-imported-modifyprojectile-dynamic-bounds.json checksum e2f7a077 / final checksum aa78704a
--> official Elecbyte docs define helper-created Projectiles as root-owned, Projectile bound params, and numeric controller-expression behavior
--> no score movement; dynamic non-bound ModifyProjectile params, default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full Projectile parity remain blocked
+R1 required ModifyProjectile dynamic params trace gate
+-> synthetic-imported-modifyprojectile-dynamic-params.json checksum 6ffbef92 / final checksum 5665a98e is required in qa:trace
+-> owner-side ModifyProjectile resolves dynamic projid, velocity, accel, velmul, projscale, projremovetime, sprpriority, projpriority, projhits, projmisstime, and projremove
+-> payload/frame evidence requires removeTime = 42, spritePriority = 7, priority = 5, hitsRemaining = 6, scale = 3,1, removeOnHit = false, and observed projectile velocity after mutation
+-> pnpm qa:trace passes 501/501 artifacts, 470 required and 31 optional
+-> paired dynamic bounds gates remain helper synthetic-imported-helper-modifyprojectile-dynamic-bounds.json checksum f582153e / final checksum adc63407 and owner synthetic-imported-modifyprojectile-dynamic-bounds.json checksum e2f7a077 / final checksum aa78704a
+-> official Elecbyte docs define numeric controller-expression behavior and controller-param evaluation at trigger time
+-> no score movement; required helper-local dynamic non-bound trace coverage, default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full Projectile parity remain blocked
 
 Previous R1 required Projectile localcoord default bounds trace gates
 -> synthetic-imported-projectile-localcoord-default-bounds-terminal.json checksum af7ee80e / final checksum 3fcb4661 and synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json checksum 46b0164c / final checksum b1531c44 are required in qa:trace

@@ -397,6 +397,7 @@ import {
   createSyntheticImportedProjectileMotionTraceArtifact,
   createSyntheticImportedModifyExplodTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact,
   createSyntheticImportedModifyProjectileTraceArtifact,
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileHitTimeAnyTraceArtifact,
@@ -23666,6 +23667,89 @@ describe("RuntimeTraceGatePresets", () => {
             edgeBound: 52,
             stageBound: 36,
             heightBound: { low: -144, high: 72 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic ModifyProjectile params artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyprojectile-dynamic-params-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-modifyprojectile-dynamic-params-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(15);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(15);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "VarSet",
+      "HitDef",
+      "Projectile",
+      "ModifyProjectile",
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "variable:varset",
+      "hitdef",
+      "projectile",
+      "modifyprojectile",
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 77,
+        minAge: 3,
+        minRemoveTime: 42,
+        minSpritePriority: 7,
+        minPriority: 5,
+        minHitsRemaining: 6,
+        scaleX: 3,
+        scaleY: 1,
+      },
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "projectile",
+          ownerId: "p1",
+          animNo: 910,
+          maxVel: expect.objectContaining({ x: expect.any(Number) }),
+          maxScale: expect.objectContaining({ x: 3 }),
+          minScale: expect.objectContaining({ y: 1 }),
+        }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            removeTime: 42,
+            spritePriority: 7,
+            priority: 5,
+            hitsRemaining: 6,
+            removeOnHit: false,
+            scale: { x: 3, y: 1 },
           }),
         }),
       ]),

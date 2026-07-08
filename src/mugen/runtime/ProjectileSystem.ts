@@ -135,8 +135,17 @@ export type RuntimeProjectileModifyInput = {
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
 };
 
-export type RuntimeModifyProjectileNumberParam = "projedgebound" | "projstagebound";
-export type RuntimeModifyProjectilePairParam = "projheightbound";
+export type RuntimeModifyProjectileNumberParam =
+  | "projid"
+  | "projedgebound"
+  | "projstagebound"
+  | "projremovetime"
+  | "sprpriority"
+  | "projpriority"
+  | "projhits"
+  | "projmisstime"
+  | "projremove";
+export type RuntimeModifyProjectilePairParam = "velocity" | "accel" | "velmul" | "projscale" | "projheightbound";
 
 export type RuntimeProjectileModifyResolver = {
   resolveNumber?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
@@ -279,20 +288,21 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
 
 export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input: RuntimeProjectileModifyInput): number {
   const operation = input.operation;
-  const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(input.controller, "projid") ?? findControllerParam(input.controller, "id"));
-  const velocity = operation?.velocity ?? numberPair(findControllerParam(input.controller, "velocity") ?? findControllerParam(input.controller, "vel"));
-  const acceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel"));
-  const velocityMultiplier = operation?.velocityMultiplier ?? scalePair(findControllerParam(input.controller, "velmul"));
-  const scale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale"));
+  const projectileId = operation?.projectileId ?? resolveModifyProjectileNumberParam(input, "projid");
+  const velocity = operation?.velocity ?? resolveModifyProjectilePairParam(input, "velocity", numberPair);
+  const acceleration = operation?.acceleration ?? resolveModifyProjectilePairParam(input, "accel", numberPair);
+  const velocityMultiplier = operation?.velocityMultiplier ?? resolveModifyProjectilePairParam(input, "velmul", scalePair);
+  const scale = operation?.scale ?? resolveModifyProjectilePairParam(input, "projscale", scalePair);
   const edgeBound = operation?.edgeBound ?? resolveModifyProjectileNumberParam(input, "projedgebound");
   const stageBound = operation?.stageBound ?? resolveModifyProjectileNumberParam(input, "projstagebound");
   const heightBound = operation?.heightBound ?? resolveModifyProjectileHeightBoundParam(input);
-  const removeTime = operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime"));
-  const spritePriority = operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority"));
-  const priority = operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority"));
-  const hitCount = operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits"));
-  const missTime = operation?.missTime ?? firstNumber(findControllerParam(input.controller, "projmisstime"));
-  const removeOnHit = operation?.removeOnHit ?? booleanNumber(findControllerParam(input.controller, "projremove"));
+  const removeTime = operation?.removeTime ?? resolveModifyProjectileNumberParam(input, "projremovetime");
+  const spritePriority = operation?.spritePriority ?? resolveModifyProjectileNumberParam(input, "sprpriority");
+  const priority = operation?.priority ?? resolveModifyProjectileNumberParam(input, "projpriority");
+  const hitCount = operation?.hitCount ?? resolveModifyProjectileNumberParam(input, "projhits");
+  const missTime = operation?.missTime ?? resolveModifyProjectileNumberParam(input, "projmisstime");
+  const removeOnHitParam = operation?.removeOnHit === undefined ? resolveModifyProjectileNumberParam(input, "projremove") : undefined;
+  const removeOnHit = operation?.removeOnHit ?? (removeOnHitParam === undefined ? undefined : removeOnHitParam !== 0);
   let changed = 0;
 
   for (const projectile of projectiles) {
@@ -353,19 +363,60 @@ function resolveModifyProjectileNumberParam(
   input: RuntimeProjectileModifyInput,
   key: RuntimeModifyProjectileNumberParam,
 ): number | undefined {
-  const raw = findControllerParam(input.controller, key);
+  const raw = findModifyProjectileNumberParam(input.controller, key);
   if (raw === undefined) {
     return undefined;
   }
-  return input.resolveModifyProjectile?.resolveNumber?.(key) ?? firstNumber(raw);
+  const staticValue = firstNumber(raw);
+  return staticValue ?? input.resolveModifyProjectile?.resolveNumber?.(key);
+}
+
+function resolveModifyProjectilePairParam(
+  input: RuntimeProjectileModifyInput,
+  key: RuntimeModifyProjectilePairParam,
+  parseStatic: (raw: string | undefined) => [number, number] | undefined,
+): [number, number] | undefined {
+  const raw = findModifyProjectilePairParam(input.controller, key);
+  if (raw === undefined) {
+    return undefined;
+  }
+  return isStaticNumericList(raw) ? parseStatic(raw) : input.resolveModifyProjectile?.resolvePair?.(key);
 }
 
 function resolveModifyProjectileHeightBoundParam(input: RuntimeProjectileModifyInput): { low: number; high: number } | undefined {
-  const raw = findControllerParam(input.controller, "projheightbound");
-  if (raw === undefined) {
-    return undefined;
+  return projectileHeightBound(resolveModifyProjectilePairParam(input, "projheightbound", numberPair));
+}
+
+function findModifyProjectileNumberParam(
+  controller: MugenStateController,
+  key: RuntimeModifyProjectileNumberParam,
+): string | undefined {
+  switch (key) {
+    case "projid":
+      return findControllerParam(controller, "projid") ?? findControllerParam(controller, "id");
+    case "projremovetime":
+      return findControllerParam(controller, "projremovetime") ?? findControllerParam(controller, "removetime");
+    case "sprpriority":
+      return findControllerParam(controller, "sprpriority") ?? findControllerParam(controller, "projsprpriority");
+    case "projpriority":
+      return findControllerParam(controller, "projpriority") ?? findControllerParam(controller, "priority");
+    default:
+      return findControllerParam(controller, key);
   }
-  return projectileHeightBound(input.resolveModifyProjectile?.resolvePair?.("projheightbound") ?? numberPair(raw));
+}
+
+function findModifyProjectilePairParam(
+  controller: MugenStateController,
+  key: RuntimeModifyProjectilePairParam,
+): string | undefined {
+  switch (key) {
+    case "velocity":
+      return findControllerParam(controller, "velocity") ?? findControllerParam(controller, "vel");
+    case "projscale":
+      return findControllerParam(controller, "projscale") ?? findControllerParam(controller, "scale");
+    default:
+      return findControllerParam(controller, key);
+  }
 }
 
 export function advanceRuntimeProjectiles(
@@ -714,6 +765,11 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function isStaticNumericList(value: string): boolean {
+  const parts = value.split(",").map((part) => part.trim());
+  return parts.length > 0 && parts.every((part) => part.length > 0 && Number.isFinite(Number(part)));
 }
 
 function secondNumber(value: string | undefined): number | undefined {

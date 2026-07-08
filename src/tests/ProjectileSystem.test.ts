@@ -778,6 +778,94 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("resolves dynamic ModifyProjectile selection and non-bound params through the bounded runtime resolver", () => {
+    const matching = projectile({ projectileId: 77, facing: -1, removeOnHit: true });
+    const other = projectile({ serialId: "other-dynamic", projectileId: 88, vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
+    const resolvedKeys: string[] = [];
+    const numberValues: Partial<Record<string, number>> = {
+      projid: 77,
+      projedgebound: 52,
+      projstagebound: 36,
+      projremovetime: 42,
+      sprpriority: 7,
+      projpriority: 5,
+      projhits: 6,
+      projmisstime: 8,
+      projremove: 0,
+    };
+    const pairValues: Partial<Record<string, [number, number]>> = {
+      velocity: [11, -2],
+      accel: [1, 0],
+      velmul: [2, 1],
+      projscale: [3, 1],
+      projheightbound: [-144, 72],
+    };
+
+    const changed = modifyRuntimeProjectiles([matching, other], {
+      controller: controller({
+        projid: "var(0)",
+        velocity: "var(1),var(2)",
+        accel: "var(3),var(4)",
+        velmul: "var(5),var(6)",
+        projscale: "var(7),var(8)",
+        projedgebound: "var(9)",
+        projstagebound: "var(10)",
+        projheightbound: "var(11),var(12)",
+        projremovetime: "var(13)",
+        sprpriority: "var(14)",
+        projpriority: "var(15)",
+        projhits: "var(16)",
+        projmisstime: "var(17)",
+        projremove: "var(18)",
+      }),
+      resolveModifyProjectile: {
+        resolveNumber: (key) => {
+          resolvedKeys.push(key);
+          return numberValues[key];
+        },
+        resolvePair: (key) => {
+          resolvedKeys.push(key);
+          return pairValues[key];
+        },
+      },
+    });
+
+    expect(changed).toBe(1);
+    expect(resolvedKeys).toEqual([
+      "projid",
+      "velocity",
+      "accel",
+      "velmul",
+      "projscale",
+      "projedgebound",
+      "projstagebound",
+      "projheightbound",
+      "projremovetime",
+      "sprpriority",
+      "projpriority",
+      "projhits",
+      "projmisstime",
+      "projremove",
+    ]);
+    expect(matching).toMatchObject({
+      vel: { x: -11, y: -2 },
+      accel: { x: -1, y: 0 },
+      velMul: { x: 2, y: 1 },
+      scale: { x: 3, y: 1 },
+      edgeBound: 52,
+      stageBound: 36,
+      heightBound: { low: -144, high: 72 },
+      removeTime: 42,
+      spritePriority: 7,
+      priority: 5,
+      hitsRemaining: 6,
+      missTime: 8,
+      removeOnHit: false,
+      hasHit: false,
+    });
+    expect(other).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
+  });
+
   it("plays a bounded terminal animation when hit removal metadata resolves to an AIR action", () => {
     const shot = projectile({
       hitsRemaining: 1,

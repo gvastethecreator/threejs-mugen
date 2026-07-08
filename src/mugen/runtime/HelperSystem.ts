@@ -18,7 +18,11 @@ import type { DemoMove } from "./demoFighters";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
 import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
-import type { RuntimeProjectileModifyResolver } from "./ProjectileSystem";
+import type {
+  RuntimeModifyProjectileNumberParam,
+  RuntimeModifyProjectilePairParam,
+  RuntimeProjectileModifyResolver,
+} from "./ProjectileSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -433,11 +437,11 @@ function helperModifyProjectileResolver(
 function resolveHelperModifyProjectileNumberParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "projedgebound" | "projstagebound",
+  key: RuntimeModifyProjectileNumberParam,
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
-  const raw = findControllerParam(controller.source, key);
-  if (!raw) {
+  const raw = findHelperModifyProjectileNumberParam(controller, key);
+  if (raw === undefined) {
     return undefined;
   }
   return resolveHelperNumber(helper, undefined, raw.trim(), options);
@@ -446,14 +450,46 @@ function resolveHelperModifyProjectileNumberParam(
 function resolveHelperModifyProjectilePairParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "projheightbound",
+  key: RuntimeModifyProjectilePairParam,
   options: Parameters<typeof resolveHelperNumber>[3],
 ): [number, number] | undefined {
-  const raw = findControllerParam(controller.source, key);
-  if (!raw) {
+  const raw = findHelperModifyProjectilePairParam(controller, key);
+  if (raw === undefined) {
     return undefined;
   }
   return resolveHelperExpressionPair(helper, raw, options);
+}
+
+function findHelperModifyProjectileNumberParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileNumberParam,
+): string | undefined {
+  switch (key) {
+    case "projid":
+      return findControllerParam(controller.source, "projid") ?? findControllerParam(controller.source, "id");
+    case "projremovetime":
+      return findControllerParam(controller.source, "projremovetime") ?? findControllerParam(controller.source, "removetime");
+    case "sprpriority":
+      return findControllerParam(controller.source, "sprpriority") ?? findControllerParam(controller.source, "projsprpriority");
+    case "projpriority":
+      return findControllerParam(controller.source, "projpriority") ?? findControllerParam(controller.source, "priority");
+    default:
+      return findControllerParam(controller.source, key);
+  }
+}
+
+function findHelperModifyProjectilePairParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePairParam,
+): string | undefined {
+  switch (key) {
+    case "velocity":
+      return findControllerParam(controller.source, "velocity") ?? findControllerParam(controller.source, "vel");
+    case "projscale":
+      return findControllerParam(controller.source, "projscale") ?? findControllerParam(controller.source, "scale");
+    default:
+      return findControllerParam(controller.source, key);
+  }
 }
 
 function resolveHelperExpressionPair(

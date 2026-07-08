@@ -1952,6 +1952,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-params",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-contact",
       required: true,
       artifact: presets.createSyntheticImportedProjectileContactTraceArtifact(),

@@ -1451,7 +1451,7 @@ function resolveWidthPairParam(
   stageTime?: number,
 ): ReturnType<RuntimeWidthResolver["resolvePair"]> {
   const raw = findParam(controller, key);
-  if (!raw) {
+  if (raw === undefined) {
     return undefined;
   }
   const [frontExpression, backExpression] = raw.split(",").map((part) => part.trim());
@@ -1507,7 +1507,7 @@ function resolveSpritePriorityParam(
   stageTime?: number,
 ): number | undefined {
   const raw = findParam(controller, key);
-  if (!raw) {
+  if (raw === undefined) {
     return undefined;
   }
   return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
@@ -1523,7 +1523,7 @@ function resolveTransAlphaParam(
   stageTime?: number,
 ): [number, number] | undefined {
   const raw = findParam(controller, key);
-  if (!raw) {
+  if (raw === undefined) {
     return undefined;
   }
   const [sourceExpression, destExpression] = raw.split(",").map((part) => part.trim());
@@ -1686,8 +1686,8 @@ function resolveModifyProjectileNumberParam(
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): number | undefined {
-  const raw = findParam(controller, key);
-  if (!raw) {
+  const raw = findModifyProjectileNumberRawParam(controller, key);
+  if (raw === undefined) {
     return undefined;
   }
   return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
@@ -1702,11 +1702,43 @@ function resolveModifyProjectilePairParam(
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): [number, number] | undefined {
-  const raw = findParam(controller, key);
-  if (!raw) {
+  const raw = findModifyProjectilePairRawParam(controller, key);
+  if (raw === undefined) {
     return undefined;
   }
   return resolveModifyProjectileExpressionPair(raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function findModifyProjectileNumberRawParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileNumberParam,
+): string | undefined {
+  switch (key) {
+    case "projid":
+      return findParam(controller, "projid") ?? findParam(controller, "id");
+    case "projremovetime":
+      return findParam(controller, "projremovetime") ?? findParam(controller, "removetime");
+    case "sprpriority":
+      return findParam(controller, "sprpriority") ?? findParam(controller, "projsprpriority");
+    case "projpriority":
+      return findParam(controller, "projpriority") ?? findParam(controller, "priority");
+    default:
+      return findParam(controller, key);
+  }
+}
+
+function findModifyProjectilePairRawParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePairParam,
+): string | undefined {
+  switch (key) {
+    case "velocity":
+      return findParam(controller, "velocity") ?? findParam(controller, "vel");
+    case "projscale":
+      return findParam(controller, "projscale") ?? findParam(controller, "scale");
+    default:
+      return findParam(controller, key);
+  }
 }
 
 function resolveModifyProjectileExpressionPair(

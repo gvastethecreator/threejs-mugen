@@ -1369,10 +1369,20 @@ describe("EffectActorSystem", () => {
               controller(
                 "ModifyProjectile",
                 {
-                  projid: "8861",
+                  projid: "Parent,Var(4)",
+                  velocity: "Parent,Var(5),Root,Var(6)",
+                  accel: "Parent,Var(7),Root,Var(8)",
+                  velmul: "Parent,Var(9),Root,Var(10)",
+                  projscale: "Parent,Var(11),Root,Var(12)",
                   projedgebound: "Parent,Var(0)",
                   projstagebound: "Root,Var(1)",
                   projheightbound: "Parent,Var(2),Root,Var(3)",
+                  projremovetime: "Parent,Var(13)",
+                  sprpriority: "Root,Var(14)",
+                  projpriority: "Parent,Var(15)",
+                  projhits: "Root,Var(16)",
+                  projmisstime: "Parent,Var(17)",
+                  projremove: "Root,Var(18)",
                 },
                 ["Time = 1"],
               ),
@@ -1389,12 +1399,29 @@ describe("EffectActorSystem", () => {
         [930, action(930, 4)],
       ]),
     });
-    const parentState = actor("p1", "Parent", {
-      vars: Array.from({ length: 60 }, (_value, index) => (index === 0 ? 52 : index === 2 ? -144 : 0)),
-    }).runtime;
-    const rootState = actor("p1", "Root", {
-      vars: Array.from({ length: 60 }, (_value, index) => (index === 1 ? 36 : index === 3 ? 72 : 0)),
-    }).runtime;
+    const parentVars = Array.from({ length: 60 }, () => 0);
+    parentVars[0] = 52;
+    parentVars[2] = -144;
+    parentVars[4] = 8861;
+    parentVars[5] = 8;
+    parentVars[7] = 1;
+    parentVars[9] = 2;
+    parentVars[11] = 3;
+    parentVars[13] = 44;
+    parentVars[15] = 5;
+    parentVars[17] = 6;
+    const rootVars = Array.from({ length: 60 }, () => 0);
+    rootVars[1] = 36;
+    rootVars[3] = 72;
+    rootVars[6] = -2;
+    rootVars[8] = 0;
+    rootVars[10] = 1;
+    rootVars[12] = 1;
+    rootVars[14] = 7;
+    rootVars[16] = 6;
+    rootVars[18] = 0;
+    const parentState = actor("p1", "Parent", { vars: parentVars }).runtime;
+    const rootState = actor("p1", "Root", { vars: rootVars }).runtime;
     const executed: string[] = [];
 
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
@@ -1413,9 +1440,19 @@ describe("EffectActorSystem", () => {
     expect(helperProjectile).toMatchObject({
       projectileId: 8861,
       parentId: "p1-helper-0",
+      vel: { x: 8, y: -2 },
+      accel: { x: 1, y: 0 },
+      velMul: { x: 2, y: 1 },
+      scale: { x: 3, y: 1 },
       edgeBound: 52,
       stageBound: 36,
       heightBound: { low: -144, high: 72 },
+      removeTime: 44,
+      spritePriority: 7,
+      priority: 5,
+      hitsRemaining: 6,
+      missTime: 6,
+      removeOnHit: false,
     });
   });
 

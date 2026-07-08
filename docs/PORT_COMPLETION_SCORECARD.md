@@ -1,6 +1,6 @@
 # Port Completion Scorecard
 
-Last updated: 2026-07-06
+Last updated: 2026-07-08
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
@@ -59,7 +59,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 | Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
 | Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
 
-Combat/Common1 latest evidence addendum: required `synthetic-imported-helper-modifyprojectile-dynamic-bounds.json` checksum `f582153e` / final checksum `adc63407` proves bounded helper-local `ModifyProjectile` dynamic removal-bound expressions can mutate helper-parented live Projectile payload bounds `52` / `36` / `-144,72` through `Parent` / `Root` redirects without score movement. `pnpm qa:trace` now passes 500/500 artifacts, 469 required and 31 optional. Remaining blockers are dynamic non-bound `ModifyProjectile` params, default reset semantics, exact GameWidth/GameHeight negotiation, exact camera/screen/stage split, full localcoord scaling across all Projectile params/controllers, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile parity. Previous owner-side dynamic, static owner/helper `ModifyProjectile`, paired 640x480 localcoord default-bound gates (`af7ee80e` / `46b0164c`), 240p player/helper default bounds, helper/player explicit bound gates, terminal fallback/cancel, and guard gates also remain required.
+Combat/Common1 latest evidence addendum: required `synthetic-imported-modifyprojectile-dynamic-params.json` checksum `6ffbef92` / final checksum `5665a98e` proves bounded owner-side dynamic `ModifyProjectile` non-bound expressions can mutate matching live Projectile motion/payload fields without score movement. `pnpm qa:trace` now passes 501/501 artifacts, 470 required and 31 optional. Remaining blockers are required helper-local dynamic non-bound `ModifyProjectile` trace coverage, default reset semantics, exact GameWidth/GameHeight negotiation, exact camera/screen/stage split, full localcoord scaling across all Projectile params/controllers, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile parity. Previous helper/owner dynamic bounds, static owner/helper `ModifyProjectile`, paired 640x480 localcoord default-bound gates (`af7ee80e` / `46b0164c`), 240p player/helper default bounds, helper/player explicit bound gates, terminal fallback/cancel, and guard gates also remain required.
 
 Combat/Common1 previous evidence addendum: required `synthetic-imported-helper-projectile-default-bounds-terminal.json` checksum `e85d7bbf` / final checksum `bea653fa` proves bounded helper-parented/root-owned Projectile official 240p omitted bounds defaults and remains required.
 

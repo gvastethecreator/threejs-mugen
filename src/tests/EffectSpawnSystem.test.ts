@@ -301,6 +301,68 @@ describe("EffectSpawnSystem", () => {
       heightBound: { low: -144, high: 72 },
     });
   });
+
+  it("passes dynamic ModifyProjectile selection and non-bound resolvers through owner-side dispatch", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld, {
+      pos: { x: 200, y: 0 },
+      facing: -1,
+    });
+    const numberValues: Partial<Record<string, number>> = {
+      projid: 7,
+      projremovetime: 42,
+      sprpriority: 8,
+      projpriority: 5,
+      projhits: 6,
+      projmisstime: 4,
+      projremove: 0,
+    };
+    const pairValues: Partial<Record<string, [number, number]>> = {
+      velocity: [9, -2],
+      accel: [1, 0],
+      velmul: [2, 1],
+      projscale: [3, 1],
+    };
+
+    spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", { projanim: "910", projid: "7", velocity: "1,0", projremove: "1" }));
+    const changed = spawnWorld.modifyProjectiles(
+      fighter,
+      controller("ModifyProjectile", {
+        projid: "var(0)",
+        velocity: "var(1),var(2)",
+        accel: "var(3),var(4)",
+        velmul: "var(5),var(6)",
+        projscale: "var(7),var(8)",
+        projremovetime: "var(9)",
+        sprpriority: "var(10)",
+        projpriority: "var(11)",
+        projhits: "var(12)",
+        projmisstime: "var(13)",
+        projremove: "var(14)",
+      }),
+      undefined,
+      {
+        resolveNumber: (key) => numberValues[key],
+        resolvePair: (key) => pairValues[key],
+      },
+    );
+
+    expect(changed).toBe(1);
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      vel: { x: 9, y: -2 },
+      accel: { x: 1, y: 0 },
+      velMul: { x: 2, y: 1 },
+      scale: { x: 3, y: 1 },
+      removeTime: 42,
+      spritePriority: 8,
+      priority: 5,
+      hitsRemaining: 6,
+      missTime: 4,
+      removeOnHit: false,
+    });
+  });
 });
 
 function actor(
