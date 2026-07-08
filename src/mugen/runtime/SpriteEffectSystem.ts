@@ -398,6 +398,7 @@ export function applyRuntimeAfterImageController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }>,
   resolveAfterImage?: RuntimeAfterImageResolver,
 ): void {
+  const resolvedOperation = operation ?? resolveRuntimeAfterImageControllerOperation(controller, resolveAfterImage);
   const timeParam = findControllerParam(controller, "time");
   const lengthParam = findControllerParam(controller, "length");
   const timeGapParam = findControllerParam(controller, "timegap");
@@ -405,7 +406,7 @@ export function applyRuntimeAfterImageController(
   const palAddParam = findControllerParam(controller, "paladd") ?? findControllerParam(controller, "add");
   const palMulParam = findControllerParam(controller, "palmul") ?? findControllerParam(controller, "mul");
   const time =
-    operation?.time ??
+    resolvedOperation?.time ??
     resolveAfterImageNumber(timeParam, "time", resolveAfterImage, clampAfterImageTime) ??
     clampAfterImageTime(firstNumber(timeParam) ?? 20);
   if (time <= 0) {
@@ -416,19 +417,19 @@ export function applyRuntimeAfterImageController(
     remaining: time,
     time,
     length:
-      operation?.length ??
+      resolvedOperation?.length ??
       resolveAfterImageNumber(lengthParam, "length", resolveAfterImage, clampAfterImageLength) ??
       clampAfterImageLength(firstNumber(lengthParam) ?? 6),
     timeGap:
-      operation?.timeGap ??
+      resolvedOperation?.timeGap ??
       resolveAfterImageNumber(timeGapParam, "timegap", resolveAfterImage, clampAfterImageGap) ??
       clampAfterImageGap(firstNumber(timeGapParam) ?? 1),
     frameGap:
-      operation?.frameGap ??
+      resolvedOperation?.frameGap ??
       resolveAfterImageNumber(frameGapParam, "framegap", resolveAfterImage, clampAfterImageGap) ??
       clampAfterImageGap(firstNumber(frameGapParam) ?? 1),
     palAdd:
-      operation?.palAdd ??
+      resolvedOperation?.palAdd ??
       clampColorTriplet(
         palAddParam === undefined
           ? undefined
@@ -438,7 +439,7 @@ export function applyRuntimeAfterImageController(
       ) ??
       colorTriplet(palAddParam, [0, 0, 0], -255, 255),
     palMul:
-      operation?.palMul ??
+      resolvedOperation?.palMul ??
       clampColorTriplet(
         palMulParam === undefined
           ? undefined
@@ -447,11 +448,70 @@ export function applyRuntimeAfterImageController(
         512,
       ) ??
       colorTriplet(palMulParam, [192, 192, 192], 0, 512),
-    opacity: operation?.opacity ?? parseAfterImageOpacity(findControllerParam(controller, "trans")),
+    opacity: resolvedOperation?.opacity ?? parseAfterImageOpacity(findControllerParam(controller, "trans")),
     elapsed: 0,
     samples: [],
   };
   captureRuntimeAfterImageSample(state, sampleFactory);
+}
+
+export function resolveRuntimeAfterImageControllerOperation(
+  controller: MugenStateController,
+  resolveAfterImage?: RuntimeAfterImageResolver,
+): Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }> | undefined {
+  const timeParam = findControllerParam(controller, "time");
+  const lengthParam = findControllerParam(controller, "length");
+  const timeGapParam = findControllerParam(controller, "timegap");
+  const frameGapParam = findControllerParam(controller, "framegap");
+  const rawPalAddParam = findControllerParam(controller, "paladd");
+  const rawAddParam = findControllerParam(controller, "add");
+  const rawPalMulParam = findControllerParam(controller, "palmul");
+  const rawMulParam = findControllerParam(controller, "mul");
+  const palAddParam = rawPalAddParam ?? rawAddParam;
+  const palMulParam = rawPalMulParam ?? rawMulParam;
+  const palAddKey: "paladd" | "add" = rawPalAddParam === undefined ? "add" : "paladd";
+  const palMulKey: "palmul" | "mul" = rawPalMulParam === undefined ? "mul" : "palmul";
+  const time =
+    resolveAfterImageNumber(timeParam, "time", resolveAfterImage, clampAfterImageTime) ??
+    staticAfterImageNumber(timeParam, clampAfterImageTime) ??
+    (timeParam === undefined ? 20 : undefined);
+  const length =
+    resolveAfterImageNumber(lengthParam, "length", resolveAfterImage, clampAfterImageLength) ??
+    staticAfterImageNumber(lengthParam, clampAfterImageLength) ??
+    (lengthParam === undefined ? 6 : undefined);
+  const timeGap =
+    resolveAfterImageNumber(timeGapParam, "timegap", resolveAfterImage, clampAfterImageGap) ??
+    staticAfterImageNumber(timeGapParam, clampAfterImageGap) ??
+    (timeGapParam === undefined ? 1 : undefined);
+  const frameGap =
+    resolveAfterImageNumber(frameGapParam, "framegap", resolveAfterImage, clampAfterImageGap) ??
+    staticAfterImageNumber(frameGapParam, clampAfterImageGap) ??
+    (frameGapParam === undefined ? 1 : undefined);
+  const palAdd = resolveAfterImageTriplet(palAddParam, palAddKey, resolveAfterImage, [0, 0, 0], -255, 255);
+  const palMul = resolveAfterImageTriplet(palMulParam, palMulKey, resolveAfterImage, [192, 192, 192], 0, 512);
+
+  if (
+    time === undefined ||
+    length === undefined ||
+    timeGap === undefined ||
+    frameGap === undefined ||
+    palAdd === undefined ||
+    palMul === undefined
+  ) {
+    return undefined;
+  }
+
+  return {
+    kind: "sprite-effect",
+    controllerType: "afterimage",
+    time,
+    length,
+    timeGap,
+    frameGap,
+    palAdd,
+    palMul,
+    opacity: parseAfterImageOpacity(findControllerParam(controller, "trans")),
+  };
 }
 
 export function applyRuntimeAfterImageTimeController(
@@ -733,6 +793,9 @@ function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectCont
   if (input.effect === "remappal") {
     return resolveRuntimeRemapPalControllerOperation(input.controller.source, input.resolveRemapPalPair);
   }
+  if (input.effect === "afterimage") {
+    return resolveRuntimeAfterImageControllerOperation(input.controller.source, input.resolveAfterImage);
+  }
   if (input.effect === "trans") {
     return resolveRuntimeTransControllerOperation(input.controller.source, input.resolveTransAlpha);
   }
@@ -859,8 +922,12 @@ function clampAfterImageTime(value: number): number {
 }
 
 function staticAfterImageTimeNumber(param: string | undefined): number | undefined {
+  return staticAfterImageNumber(param, clampAfterImageTime);
+}
+
+function staticAfterImageNumber(param: string | undefined, clamp: (value: number) => number): number | undefined {
   const value = firstNumber(param);
-  return value === undefined ? undefined : clampAfterImageTime(value);
+  return value === undefined ? undefined : clamp(value);
 }
 
 function clampAfterImageLength(value: number): number {
@@ -882,6 +949,20 @@ function resolveAfterImageNumber(
   }
   const value = resolver?.resolveNumber(key);
   return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
+}
+
+function resolveAfterImageTriplet(
+  param: string | undefined,
+  key: "paladd" | "palmul" | "add" | "mul",
+  resolver: RuntimeAfterImageResolver | undefined,
+  fallback: [number, number, number],
+  min: number,
+  max: number,
+): [number, number, number] | undefined {
+  if (param === undefined) {
+    return fallback;
+  }
+  return clampColorTriplet(resolver?.resolveTriplet(key), min, max) ?? strictColorTriplet(param, min, max);
 }
 
 function resolveAfterImageTimeNumber(

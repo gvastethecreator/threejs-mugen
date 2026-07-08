@@ -1,5 +1,43 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic AfterImage typed sprite-effect telemetry
+
+Summary:
+
+- Upgraded required `synthetic-imported-afterimage-dynamic.json` from ghost-trail fallback evidence into typed `sprite-effect:afterimage` telemetry.
+- Added `resolveRuntimeAfterImageControllerOperation` and routed dynamic `AfterImage time/length/timegap/framegap/paladd/palmul` operation resolution through `RuntimeSpriteEffectControllerWorld`.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `sprite-effect:afterimage`, and `hitdef` for the dynamic AfterImage route.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and defines `AfterImage time`, `length`, `timegap`, `framegap`, `paladd`, `palmul`, and `trans`.
+- Focused tests: `pnpm exec vitest run src\tests\SpriteEffectSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern "AfterImage" --reporter verbose` passed 11 matching tests.
+- Trace gate: `pnpm qa:trace` passed 523/523 artifacts, 492 required and 31 optional.
+
+Evidence:
+
+- `synthetic-imported-afterimage-dynamic.json` trace checksum `e7299ac5`, final checksum `b946d805`; executed ops include `variable:varset = 80`, `sprite-effect:afterimage = 10`, and `hitdef = 1`.
+- Final imported actor ghost-trail telemetry stays `afterImageTime = 18`, `afterImageLength = 5`, `afterImageTimeGap = 2`, `afterImageFrameGap = 3`, `palAdd [-20,40,90]`, `palMul [180,160,280]`, `sampleCount = 1`, and opacity `0.34`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `AfterImage time/length/timegap/framegap/paladd/palmul` params can resolve owner-local expressions through runtime expression fallback, record typed `sprite-effect:afterimage` telemetry after resolution, and preserve actor-frame/final ghost-trail evidence.
+
+Claim blocked:
+
+- Exact trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation VM parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: the required dynamic route already proved bounded ghost-trail mutation, but intentionally had no `sprite-effect:afterimage` operation evidence because params were dynamic.
+- Quality delta: dynamic AfterImage now matches the surrounding sprite-effect telemetry posture for PalFX, AfterImageTime, RemapPal, Trans, SprPriority, and Angle without broadening exact renderer/trail semantics.
+- Adjacent surface checked: static AfterImage gate, dynamic AfterImageTime typed path, dynamic PalFX/RemapPal/Trans/SprPriority/Angle typed paths, sprite-effect boundary recording, active-state resolver handoff, trace requirements, support registry wording, QA gates, scorecard/report wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port remains verified at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This upgrades one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Good next candidates are helper/redirect ownership, exact presentation timing, renderer parity proof, or a simple parser-only controller that can become a typed no-crash runtime operation.
+
 ## 2026-07-08 - TypeScript 7 toolchain upgrade
 
 Summary:
@@ -46,7 +84,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact MUGEN/IKEMEN axis pivot, collision rotation/scale, draw-order/palette interaction, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, and full presentation VM parity remain blocked.
+- Exact MUGEN/IKEMEN axis pivot, collision rotation/scale, draw-order/palette interaction, renderer parity, helper/redirect ownership, score movement, and full presentation VM parity remain blocked.
 
 Quality notes:
 
@@ -56,7 +94,7 @@ Quality notes:
 
 Next cut:
 
-- Continue R1/R2 with another bounded runtime truth gap. Do not claim dynamic typed lowering for `AfterImage`, exact axis pivot/collision rotation/scale, renderer parity, or full presentation VM parity until those routes have their own gates.
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim exact axis pivot/collision rotation/scale, renderer parity, or full presentation VM parity until those routes have their own gates.
 
 ## 2026-07-08 - Dynamic PalFX typed sprite-effect telemetry
 
@@ -87,7 +125,7 @@ Claim allowed:
 
 Claim blocked:
 
-- `sinadd`, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, and full MUGEN/IKEMEN presentation parity remain blocked.
+- `sinadd`, exact palette math/blend/remap order, ACT/SFF pixel parity beyond existing bounded handoff, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity remain blocked.
 
 Quality contract and adjacent audit:
 
@@ -101,7 +139,7 @@ Global port report:
 
 Next:
 
-- Continue R1/R2 with another bounded runtime truth gap. Do not claim `sinadd`, dynamic typed lowering for `AfterImage`, exact palette math/blend/remap order, renderer parity, or full presentation VM parity until those routes have their own gates.
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim `sinadd`, exact palette math/blend/remap order, renderer parity, or full presentation VM parity until those routes have their own gates.
 
 ## 2026-07-08 - Dynamic AfterImageTime typed sprite-effect telemetry
 
@@ -132,7 +170,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, and full MUGEN/IKEMEN presentation parity remain blocked. Newer entries above later closed the dynamic typed telemetry gap for `PalFX` and `Angle*`.
+- Exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity remain blocked. Newer entries above later closed the dynamic typed telemetry gap for `PalFX`, `Angle*`, and `AfterImage`.
 
 Quality contract and adjacent audit:
 
@@ -146,7 +184,7 @@ Global port report:
 
 Next:
 
-- Continue R1/R2 with another bounded runtime truth gap. Do not claim typed lowering for dynamic `AfterImage`, exact trail cadence/blending, renderer parity, or full presentation VM parity until those routes have their own gates. Newer entries above later closed dynamic typed telemetry for `PalFX` and `Angle*`.
+- Continue R1/R2 with another bounded runtime truth gap. Dynamic `AfterImage` typed telemetry is now gate-backed; do not claim exact trail cadence/blending, renderer parity, helper/redirect ownership, or full presentation VM parity until those routes have their own gates.
 
 ## 2026-07-08 - Dynamic RemapPal typed sprite-effect telemetry
 

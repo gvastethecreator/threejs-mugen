@@ -9,6 +9,7 @@ import {
   applyRuntimeRemapPalController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
+  resolveRuntimeAfterImageControllerOperation,
   resolveRuntimeAfterImageTimeControllerOperation,
   resolveRuntimeAngleControllerOperation,
   resolveRuntimePaletteFxControllerOperation,
@@ -236,6 +237,24 @@ describe("SpriteEffectSystem", () => {
 
   it("resolves dynamic AfterImage params from active expressions", () => {
     const state = runtimeState();
+    const resolver = {
+      resolveNumber: (key: "time" | "length" | "timegap" | "framegap") =>
+        ({ time: 18, length: 5, timegap: 2, framegap: 3 })[key],
+      resolveTriplet: (key: "paladd" | "palmul" | "add" | "mul"): [number, number, number] =>
+        key === "paladd" ? [-20, 40, 90] : [180, 160, 280],
+    };
+    const operation = resolveRuntimeAfterImageControllerOperation(
+      controller("AfterImage", {
+        time: "var(0)",
+        length: "var(1)",
+        timegap: "var(2)",
+        framegap: "var(3)",
+        paladd: "var(4),40,var(5)",
+        palmul: "var(6),160,var(7)",
+        trans: "add",
+      }),
+      resolver,
+    );
 
     applyRuntimeAfterImageController(
       state,
@@ -250,12 +269,20 @@ describe("SpriteEffectSystem", () => {
       }),
       () => sample(0),
       undefined,
-      {
-        resolveNumber: (key) => ({ time: 18, length: 5, timegap: 2, framegap: 3 })[key],
-        resolveTriplet: (key) => (key === "paladd" ? [-20, 40, 90] : [180, 160, 280]),
-      },
+      resolver,
     );
 
+    expect(operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "afterimage",
+      time: 18,
+      length: 5,
+      timeGap: 2,
+      frameGap: 3,
+      palAdd: [-20, 40, 90],
+      palMul: [180, 160, 280],
+      opacity: 0.34,
+    });
     expect(state.afterImage).toMatchObject({
       remaining: 18,
       time: 18,
@@ -267,6 +294,7 @@ describe("SpriteEffectSystem", () => {
       opacity: 0.34,
     });
     expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([0]);
+    expect(resolveRuntimeAfterImageControllerOperation(controller("AfterImage", { time: "var(0)" }))).toBeUndefined();
   });
 
   it("applies AfterImageTime as a default lightweight effect and can clear it", () => {
@@ -740,8 +768,8 @@ describe("SpriteEffectSystem", () => {
       palMul: [180, 160, 280],
     });
     expect(actor.runtime.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([7]);
-    expect(recordedOperations).toEqual([]);
-    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+    expect(recordedOperations).toEqual(["sprite-effect:afterimage"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 
   it("resolves dynamic AfterImageTime through the active-state sprite boundary", () => {

@@ -11600,7 +11600,7 @@ describe("RuntimeTraceGatePresets", () => {
     ).toBe(true);
   });
 
-  it("creates a synthetic imported dynamic AfterImage artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic AfterImage artifact with typed expression evidence", () => {
     const artifact = createSyntheticImportedDynamicAfterImageTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
     });
@@ -11622,7 +11622,7 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.AfterImage).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:afterimage"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:afterimage"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
