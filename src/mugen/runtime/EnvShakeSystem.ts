@@ -86,6 +86,26 @@ export function createRuntimeEnvShakeEvent(
   };
 }
 
+export function resolveRuntimeEnvShakeControllerOperation(
+  controller: MugenStateController,
+  resolveEnvShake?: RuntimeEnvShakeResolver,
+): EnvShakeControllerOp | undefined {
+  const time = resolveEnvShakeNumberParam(controller, "time", resolveEnvShake, clampShakeTime, 0);
+  const freq = resolveEnvShakeFloatParam(controller, "freq", resolveEnvShake, clampShakeFrequency, 60);
+  const ampl = resolveEnvShakeNumberParam(controller, "ampl", resolveEnvShake, clampShakeAmplitude, -4);
+  const phase = resolveEnvShakeFloatParam(controller, "phase", resolveEnvShake, (value) => value, 0);
+  if (time === undefined || freq === undefined || ampl === undefined || phase === undefined || time <= 0) {
+    return undefined;
+  }
+  return {
+    kind: "envshake",
+    time,
+    freq,
+    ampl,
+    phase,
+  };
+}
+
 export function createRuntimeFallEnvShakeEvent(
   actor: RuntimeEnvShakeActor,
   runtimeTick: number,
@@ -148,7 +168,10 @@ export class RuntimeEnvShakeControllerDispatchWorld {
   apply<TActor extends RuntimeEnvShakeWorldActor>(
     options: RuntimeEnvShakeControllerDispatchOptions<TActor>,
   ): RuntimeEnvShakeControllerDispatchResult {
-    const operation = options.controller.operation?.kind === "envshake" ? options.controller.operation : undefined;
+    const operation =
+      options.controller.operation?.kind === "envshake"
+        ? options.controller.operation
+        : resolveRuntimeEnvShakeControllerOperation(options.controller.source, options.resolveEnvShake);
     options.recordController?.(options.actor, options.controller.source);
     if (operation) {
       options.recordOperation?.(options.actor, operation);
@@ -234,6 +257,36 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function resolveEnvShakeNumberParam(
+  controller: MugenStateController,
+  key: "time" | "ampl",
+  resolver: RuntimeEnvShakeResolver | undefined,
+  clamp: (value: number) => number,
+  defaultValue: number,
+): number | undefined {
+  const param = findControllerParam(controller, key);
+  if (param === undefined) {
+    return clamp(defaultValue);
+  }
+  const value = resolver?.resolveNumber(key) ?? firstNumber(param);
+  return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
+}
+
+function resolveEnvShakeFloatParam(
+  controller: MugenStateController,
+  key: "freq" | "phase",
+  resolver: RuntimeEnvShakeResolver | undefined,
+  clamp: (value: number) => number,
+  defaultValue: number,
+): number | undefined {
+  const param = findControllerParam(controller, key);
+  if (param === undefined) {
+    return clamp(defaultValue);
+  }
+  const value = resolver?.resolveFloat(key) ?? firstNumber(param);
+  return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
 }
 
 function clampShakeTime(value: number): number {

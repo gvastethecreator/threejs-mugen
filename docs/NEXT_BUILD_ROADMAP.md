@@ -577,15 +577,15 @@ Previous R1 required dynamic EnvColor trace gate
   -> official Elecbyte docs define EnvColor value/time/under and numeric controller params as expression-capable
   -> no score movement; dynamic typed-operation lowering for EnvColor, exact blend math, layer/window behavior, pause timing, renderer parity, and full presentation parity remain blocked
 
-Previous R1 required dynamic EnvShake trace gate
-  -> synthetic-imported-envshake-dynamic.json checksum 90955e75 / final checksum 1af5fbf6 is required in qa:trace
+Superseded R1 required dynamic EnvShake typed trace gate
+  -> synthetic-imported-envshake-dynamic.json checksum e1bf593f / final checksum 8f52f1f4 is required in qa:trace
   -> imported active state seeds var(0)=18, var(1)=45, var(2)=-9, and fvar(0)=0.25
   -> active state executes EnvShake time = var(0), freq = var(1), ampl = var(2), and phase = fvar(0)
-  -> dynamic EnvShake resolves through active controller expression fallback instead of typed envshake evidence
+  -> dynamic EnvShake resolves through active controller expression fallback and records typed envshake evidence after resolution
   -> final imported actor evidence requires env-shake telemetry time 18, freq 45, ampl -9, phase 0.25
-  -> pnpm qa:trace passes 450/450 artifacts, 420 required and 30 optional
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs define EnvShake time as required duration, freq as shake speed, ampl as amplitude, and phase as phase offset
-  -> no score movement; dynamic typed-operation lowering for EnvShake, mul, exact camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, and full presentation parity remain blocked
+  -> no score movement; mul, exact camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, and full presentation parity remain blocked
 
 Superseded R1 required dynamic AngleMul trace gate
   -> synthetic-imported-anglemul-dynamic.json current checksum 0bb54a1c / final checksum c9f2b557 is required in qa:trace

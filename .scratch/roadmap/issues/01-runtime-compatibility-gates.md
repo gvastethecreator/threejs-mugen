@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Latest Closed Quality Slice - Dynamic AfterImage Typed Sprite-Effect Telemetry
+## Latest Closed Quality Slice - Dynamic EnvShake Typed Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: required `synthetic-imported-envshake-dynamic.json` already proved bounded camera-shake event telemetry from owner-local dynamic expressions, but intentionally lacked typed `envshake` operation evidence.
+- Target: keep bounded owner-local dynamic `EnvShake time/freq/ampl/phase` behavior, resolve params through the active controller expression context, and record typed `envshake` telemetry without claiming `mul`, exact waveform, pause/stage/layer, helper, screenpack, or full presentation parity.
+- Reference: Elecbyte State Controller Reference treats numeric state-controller params as expression-capable unless otherwise specified and defines `EnvShake time`, `freq`, `ampl`, and `phase`.
+- Transformation layers: `RuntimeEnvShakeControllerDispatchWorld`, `resolveRuntimeEnvShakeControllerOperation`, synthetic imported trace preset requirements, runtime env-shake event evidence, roadmap truth.
+- Adjacent audit: inspect static EnvShake evidence, FallEnvShake dispatch, dynamic EnvColor fallback, dynamic sprite-effect typed paths, sound dynamic raw fallback, trace operation recording, support registry wording, QA gate docs, scorecard/report wording, architecture docs, and roadmap latest-runtime truth.
+- Accepted improvement ledger: upgrade required `synthetic-imported-envshake-dynamic`, require `envshake`, keep runtime shake telemetry `time = 18`, `freq = 45`, `ampl = -9`, `phase = 0.25`, and update docs/roadmap around trace checksum `e1bf593f` / final checksum `8f52f1f4`.
+- Out of scope: `mul`, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, score movement, and full presentation parity.
+- Completed proof: required `synthetic-imported-envshake-dynamic.json` trace checksum `e1bf593f` / final checksum `8f52f1f4`, focused EnvShake tests, and `pnpm qa:trace` 523/523 artifacts with 492 required and 31 optional.
+- STOP conditions: pause if the next presentation cut requires exact camera waveform, layer/stage pause interaction, screenpack camera ownership, helper-owned camera shake, or broad dynamic lowering that needs a wider presentation VM decision.
+
+## Previous Closed Quality Slice - Dynamic AfterImage Typed Sprite-Effect Telemetry
 
 Status: done
 Date: 2026-07-08

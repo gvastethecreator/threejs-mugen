@@ -1047,7 +1047,7 @@ export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
       requireHitEvent: true,
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "VarSet", "EnvShake", "HitDef"],
-      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredExecutedOperations: ["variable:varset", "envshake", "hitdef"],
       requiredEnvShakeEvents: [
         {
           actorId: "p1",
@@ -1061,7 +1061,7 @@ export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
         },
       ],
       notes: [
-        "Synthetic imported dynamic EnvShake trace proves EnvShake time/freq/ampl/phase expressions can resolve owner-local var/fvar values through active controller fallback and emit bounded runtime camera-shake telemetry. It does not claim typed envshake operation lowering for dynamic params, mul support, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, or screenpack parity.",
+        "Synthetic imported dynamic EnvShake trace proves EnvShake time/freq/ampl/phase expressions can resolve owner-local var/fvar values through active controller fallback, record typed envshake operation evidence after resolution, and emit bounded runtime camera-shake telemetry. It does not claim mul support, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, or screenpack parity.",
       ],
     },
   );

@@ -15,6 +15,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 ## Decisions So Far
 
 - [TypeScript 7 upgrade posture](tickets/001-typescript-7-upgrade-posture.md) - upgrade directly to `typescript@~7.0.2`; no TS6 compatibility alias unless a future API-importing tool fails.
+- [Choose next runtime compatibility gap](tickets/002-next-runtime-compatibility-gap.md) - dynamic `EnvShake time/freq/ampl/phase` now records typed `envshake` telemetry after expression resolution; no camera-parity score movement.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 

@@ -11369,7 +11369,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a synthetic imported dynamic EnvShake artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic EnvShake artifact with typed expression evidence", () => {
     const artifact = createSyntheticImportedDynamicEnvShakeTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -11388,7 +11388,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "EnvShake", "HitDef"]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "envshake", "hitdef"]);
     expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([
       {
         actorId: "p1",
@@ -11403,7 +11403,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.EnvShake).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations.envshake).toBeUndefined();
+    expect(evidence?.executedOperations.envshake).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.envShakeEvents).toEqual(
       expect.arrayContaining([
