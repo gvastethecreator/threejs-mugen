@@ -26407,6 +26407,9 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
     modifyProjectileAccel: [0, 0.25],
     modifyProjectileVelocityMultiplier: [0.75, 1],
     modifyProjectileScale: [2, 0.5],
+    modifyProjectileEdgeBound: 48,
+    modifyProjectileStageBound: 32,
+    modifyProjectileHeightBound: [-96, 64],
     modifyProjectileRemoveTime: 18,
     modifyProjectilePriority: 3,
     modifyProjectileHits: 4,
@@ -26424,7 +26427,7 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
       label: "Synthetic imported ModifyProjectile route",
       source: "mixed",
       notes: [
-        "Synthetic imported ModifyProjectile trace proves a bounded owner-side ModifyProjectile controller can mutate a live projectile's static velocity, acceleration, velocity multiplier, scale, priority, hit budget, miss time, and remove time through the shared effect actor world. It does not claim exact MUGEN/IKEMEN tick order, dynamic expressions, helper-owned projectiles, redirects, multi-projectile selection parity, or full projectile lifecycle parity.",
+        "Synthetic imported ModifyProjectile trace proves a bounded owner-side ModifyProjectile controller can mutate a live projectile's static velocity, acceleration, velocity multiplier, scale, explicit removal bounds, priority, hit budget, miss time, and remove time through the shared effect actor world. It does not claim exact MUGEN/IKEMEN tick order, dynamic bound expressions, default-bound reset semantics, helper-owned projectiles, redirects, multi-projectile selection parity, or full projectile lifecycle parity.",
       ],
     },
     gates: [
@@ -26441,7 +26444,19 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
         requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
         requiredEffectPayloads: [
-          { kind: "projectile", ownerId: "p1", effectId: 77, minAge: 3, minPriority: 3, minHitsRemaining: 4, scaleX: 2, scaleY: 0.5 },
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            minAge: 3,
+            minPriority: 3,
+            minHitsRemaining: 4,
+            scaleX: 2,
+            scaleY: 0.5,
+            edgeBound: 48,
+            stageBound: 32,
+            heightBound: { low: -96, high: 64 },
+          },
         ],
         requiredActorFrames: [
           {
@@ -29462,6 +29477,9 @@ export function createSyntheticImportedHelperModifyProjectileTraceArtifact(optio
       accel: [0.25, 0.25],
       velocityMultiplier: [0.75, 1],
       scale: [2, 0.5],
+      edgeBound: 28,
+      stageBound: 24,
+      heightBound: [-120, 60],
       removeTime: 52,
       spritePriority: 8,
       priority: 4,
@@ -29482,7 +29500,7 @@ export function createSyntheticImportedHelperModifyProjectileTraceArtifact(optio
       label: "Synthetic imported Helper ModifyProjectile route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper ModifyProjectile trace proves the bounded helper-local micro-VM can mutate a helper-parented owner-side Projectile actor by static id after spawning it. It does not claim helper-owned Projectile combat/contact presentation, helper-owned target memory, dynamic projectile params, exact namespace scopes, ProjContact timing, or full MUGEN/IKEMEN helper projectile parity.",
+        "Synthetic imported Helper ModifyProjectile trace proves the bounded helper-local micro-VM can mutate a helper-parented owner-side Projectile actor by static id after spawning it, including explicit removal bounds. It does not claim helper-owned Projectile combat/contact presentation, helper-owned target memory, dynamic projectile params, default-bound reset semantics, exact namespace scopes, ProjContact timing, or full MUGEN/IKEMEN helper projectile parity.",
       ],
     },
     gates: [
@@ -29536,6 +29554,9 @@ export function createSyntheticImportedHelperModifyProjectileTraceArtifact(optio
             hasHit: false,
             scaleX: 2,
             scaleY: 0.5,
+            edgeBound: 28,
+            stageBound: 24,
+            heightBound: { low: -120, high: 60 },
           },
         ],
       },
@@ -36574,6 +36595,9 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileAccel?: [number, number];
   modifyProjectileVelocityMultiplier?: [number, number];
   modifyProjectileScale?: [number, number];
+  modifyProjectileEdgeBound?: number;
+  modifyProjectileStageBound?: number;
+  modifyProjectileHeightBound?: [number, number];
   modifyProjectileRemoveTime?: number;
   modifyProjectilePriority?: number;
   modifyProjectileHits?: number;
@@ -36773,6 +36797,9 @@ export type SyntheticImportedTraceFighterOptions = {
     accel?: [number, number];
     velocityMultiplier?: [number, number];
     scale?: [number, number];
+    edgeBound?: number;
+    stageBound?: number;
+    heightBound?: [number, number];
     removeTime?: number;
     spritePriority?: number;
     priority?: number;
@@ -37406,6 +37433,9 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   accel: options.modifyProjectileAccel,
   velocityMultiplier: options.modifyProjectileVelocityMultiplier,
   scale: options.modifyProjectileScale,
+  edgeBound: options.modifyProjectileEdgeBound,
+  stageBound: options.modifyProjectileStageBound,
+  heightBound: options.modifyProjectileHeightBound,
   removeTime: options.modifyProjectileRemoveTime,
   priority: options.modifyProjectilePriority,
   hits: options.modifyProjectileHits,
@@ -40489,6 +40519,9 @@ function modifyProjectileControllerBlock(input: {
   accel?: [number, number];
   velocityMultiplier?: [number, number];
   scale?: [number, number];
+  edgeBound?: number;
+  stageBound?: number;
+  heightBound?: [number, number];
   removeTime?: number;
   priority?: number;
   hits?: number;
@@ -40499,6 +40532,9 @@ function modifyProjectileControllerBlock(input: {
   const velocityMultiplierLine =
     input.velocityMultiplier === undefined ? "" : `velmul = ${input.velocityMultiplier[0]},${input.velocityMultiplier[1]}`;
   const scaleLine = input.scale === undefined ? "" : `projscale = ${input.scale[0]},${input.scale[1]}`;
+  const edgeBoundLine = input.edgeBound === undefined ? "" : `projedgebound = ${input.edgeBound}`;
+  const stageBoundLine = input.stageBound === undefined ? "" : `projstagebound = ${input.stageBound}`;
+  const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const removeTimeLine = input.removeTime === undefined ? "" : `projremovetime = ${input.removeTime}`;
   const priorityLine = input.priority === undefined ? "" : `projpriority = ${input.priority}`;
   const hitsLine = input.hits === undefined ? "" : `projhits = ${input.hits}`;
@@ -40512,6 +40548,9 @@ ${velocityLine}
 ${accelLine}
 ${velocityMultiplierLine}
 ${scaleLine}
+${edgeBoundLine}
+${stageBoundLine}
+${heightBoundLine}
 ${removeTimeLine}
 ${priorityLine}
 ${hitsLine}
@@ -41932,6 +41971,9 @@ function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTr
   const accel = route.accel ?? [0.25, 0.25];
   const velocityMultiplier = route.velocityMultiplier ?? [0.75, 1];
   const scale = route.scale ?? [2, 0.5];
+  const edgeBound = route.edgeBound ?? 28;
+  const stageBound = route.stageBound ?? 24;
+  const heightBound = route.heightBound ?? [-120, 60];
   const removeTime = route.removeTime ?? 52;
   const spritePriority = route.spritePriority ?? 8;
   const priority = route.priority ?? 4;
@@ -41981,6 +42023,9 @@ velocity = ${velocity[0]},${velocity[1]}
 accel = ${accel[0]},${accel[1]}
 velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}
 projscale = ${scale[0]},${scale[1]}
+projedgebound = ${edgeBound}
+projstagebound = ${stageBound}
+projheightbound = ${heightBound[0]},${heightBound[1]}
 projremovetime = ${removeTime}
 sprpriority = ${spritePriority}
 projpriority = ${priority}

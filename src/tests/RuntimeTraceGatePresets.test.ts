@@ -3282,6 +3282,9 @@ describe("RuntimeTraceGatePresets", () => {
         hasHit: false,
         scaleX: 2,
         scaleY: 0.5,
+        edgeBound: 28,
+        stageBound: 24,
+        heightBound: { low: -120, high: 60 },
       },
     ]);
     expect(evidence?.effectPayloads).toEqual(
@@ -3289,7 +3292,15 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({
           actorId: "p1-projectile-0",
           parentId: "p1-helper-0",
-          effect: expect.objectContaining({ kind: "projectile", id: 8852, priority: 4, hitsRemaining: 3 }),
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8852,
+            priority: 4,
+            hitsRemaining: 3,
+            edgeBound: 28,
+            stageBound: 24,
+            heightBound: { low: -120, high: 60 },
+          }),
         }),
       ]),
     );
@@ -23510,6 +23521,35 @@ describe("RuntimeTraceGatePresets", () => {
       "projectile",
       "modifyprojectile",
     ]);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 77,
+        minAge: 3,
+        minPriority: 3,
+        minHitsRemaining: 4,
+        scaleX: 2,
+        scaleY: 0.5,
+        edgeBound: 48,
+        stageBound: 32,
+        heightBound: { low: -96, high: 64 },
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            edgeBound: 48,
+            stageBound: 32,
+            heightBound: { low: -96, high: 64 },
+          }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported ModifyExplod artifact with live visual explod mutation evidence", () => {
