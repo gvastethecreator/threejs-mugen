@@ -90,7 +90,7 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("FrontEdgeDist", { actor, opponent })).toBe(999);
   });
 
-  it("passes game-space dimensions into GameWidth/GameHeight expression reads", () => {
+  it("passes game-space and screen-space dimensions into viewport expression reads", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");
     const opponent = runtimeActor("p2", "Rival");
@@ -109,6 +109,13 @@ describe("RuntimeExpressionContextWorld", () => {
         gameSpace: { width: 640, height: 480, zoom: 0.5 },
       }),
     ).toBe(2240);
+    expect(
+      world.evaluateNumber("ScreenWidth + ScreenHeight", {
+        actor,
+        opponent,
+        gameSpace: { width: 640, height: 480, zoom: 0.5 },
+      }),
+    ).toBe(1120);
   });
 
   it("exposes bounded TeamSide values for players and first-generation helper ids", () => {

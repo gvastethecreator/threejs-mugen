@@ -35,7 +35,7 @@ time = 20
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
     const clean = compileExpression(
-      'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
+      'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     const contact = compileExpression(
       "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjContactTime(0) >= 0 || ProjHitTime(0) >= 0 || ProjHitTime(77) >= 0 || ProjGuardedTime(0) >= 0 || ProjCancelTime(0) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1 || HitPauseTime > 0",
@@ -64,7 +64,7 @@ time = 20
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
 
     expect(clean.normalized).toBe(
-      'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
+      'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     expect(clean.supportLevel).toBe("executable");
     expect(clean.functions).toEqual(["SelfAnimExist", "SelfStateNoExist"]);
@@ -72,6 +72,8 @@ time = 20
     expect(clean.identifiers).toContain("StageTime");
     expect(clean.identifiers).toContain("GameWidth");
     expect(clean.identifiers).toContain("GameHeight");
+    expect(clean.identifiers).toContain("ScreenWidth");
+    expect(clean.identifiers).toContain("ScreenHeight");
     expect(clean.identifiers).toContain("Alive");
     expect(clean.identifiers).toContain("RoundNo");
     expect(clean.identifiers).toContain("RoundState");

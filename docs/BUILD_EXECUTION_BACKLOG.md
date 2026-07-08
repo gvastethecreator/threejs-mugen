@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## 2026-07-08 - ScreenWidth ScreenHeight trace gate
+
+Changed:
+
+- Added bounded `ScreenWidth` / `ScreenHeight` trigger support through the shared expression `gameSpace` context, preserving the existing inverse-zoom `GameWidth` / `GameHeight` behavior.
+- Extended compiler support so `ScreenWidth` and `ScreenHeight` classify as executable trigger identifiers instead of unsupported expressions.
+- Registered required trace artifact `synthetic-imported-screenspace.json`, which presses `x`, evaluates `ScreenWidth = 640`, `ScreenHeight = 480`, `GameWidth = 1280`, and `GameHeight = 960` at camera zoom `0.5`, and routes imported State -1 into state/action `9302`.
+
+Evidence:
+
+- Official source checked: [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs-11b1/trigger.html) defines `GameWidth` / `GameHeight` as game-space dimensions in player local coordinates that inverse-scale with camera zoom and defines `ScreenWidth` / `ScreenHeight` as equivalent triggers not affected by camera zoom.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeControllerExpressionContextSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ScreenWidth|ScreenHeight|GameWidth|GameHeight|runtime compiler IR|runtime expression context|raw controller numbers"` -> 4 files passed, 1 skipped; 44 tests passed and 531 skipped.
+- Full tests: `pnpm test` -> 152 files / 1458 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 506/506 artifacts, 475 required and 31 optional.
+- Trace artifact: `synthetic-imported-screenspace.json` checksum `5330bacd`.
+
+Claim allowed:
+
+- Bounded current runtime trigger expressions can read zoom-stable `ScreenWidth` / `ScreenHeight` from stage localcoord-derived screen-space context while `GameWidth` / `GameHeight` inverse-scale by camera zoom where stage game-space context is available.
+
+Claim blocked:
+
+- Exact mugen.cfg/game-config negotiation, renderer/screenpack viewport ownership, camera animation parity, full viewport/camera/screenpack split, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN viewport parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 506/506 artifacts, 475 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Continue R1 with exact mugen.cfg/game-config negotiation, exact camera/screen/stage ownership, camera animation parity, another Common1/FightFX oracle, or continue R2 by moving one mutable helper/target/effect path behind a named runtime boundary with focused tests.
+
 ## 2026-07-08 - GameWidth GameHeight trace gate
 
 Changed:

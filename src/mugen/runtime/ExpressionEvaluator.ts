@@ -516,6 +516,12 @@ class ExpressionParser {
     if (lower === "gameheight") {
       return this.gameSpaceDimension("height");
     }
+    if (lower === "screenwidth") {
+      return this.screenSpaceDimension("width");
+    }
+    if (lower === "screenheight") {
+      return this.screenSpaceDimension("height");
+    }
     if (lower === "stateno") {
       return this.context.self.stateNo;
     }
@@ -916,6 +922,14 @@ class ExpressionParser {
     }
     const zoom = Number.isFinite(gameSpace.zoom) && gameSpace.zoom !== undefined && gameSpace.zoom > 0 ? gameSpace.zoom : 1;
     return gameSpace[axis] / zoom;
+  }
+
+  private screenSpaceDimension(axis: "width" | "height"): number {
+    const gameSpace = this.context.gameSpace;
+    if (!gameSpace) {
+      return 0;
+    }
+    return gameSpace[axis];
   }
 
   private numTarget(targetId?: number): number {

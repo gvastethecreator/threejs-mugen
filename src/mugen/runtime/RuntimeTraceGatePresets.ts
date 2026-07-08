@@ -1423,6 +1423,31 @@ export function createSyntheticImportedGameSpaceTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedScreenSpaceTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? screenSpaceZoomTraceStage();
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-screenspace",
+      displayName: "Synthetic Imported ScreenWidth ScreenHeight",
+      screenSpaceEntry: { screenWidth: 640, screenHeight: 480, gameWidth: 1280, gameHeight: 960, stateNo: 9302 },
+    }),
+    {
+      ...options,
+      stage,
+      targetId: "synthetic-imported-screenspace-golden",
+      targetLabel: "Synthetic imported ScreenWidth/ScreenHeight route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [9302],
+      requiredExecutedStates: [9302],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported ScreenWidth/ScreenHeight trace proves State -1 routing can branch on bounded Elecbyte screen-space dimensions that remain unscaled while GameWidth/GameHeight inverse-scale at camera zoom 0.5. Exact mugen.cfg negotiation, renderer screenpack ownership, camera animation, and full MUGEN/IKEMEN viewport parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedStateContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -36304,6 +36329,18 @@ export function screenBoundCameraStage(): MugenStageDefinition {
   };
 }
 
+function screenSpaceZoomTraceStage(): MugenStageDefinition {
+  return {
+    ...trainingStage,
+    id: "trace-screenspace-zoom-grid",
+    displayName: "Trace Screen Space Zoom Grid",
+    camera: {
+      ...trainingStage.camera,
+      zoom: 0.5,
+    },
+  };
+}
+
 export function farCombatStage(): MugenStageDefinition {
   return {
     ...trainingStage,
@@ -37354,6 +37391,7 @@ export type SyntheticImportedTraceFighterOptions = {
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
   gameSpaceEntry?: { gameWidth: number; gameHeight: number; stateNo: number };
+  screenSpaceEntry?: { screenWidth: number; screenHeight: number; gameWidth: number; gameHeight: number; stateNo: number };
   stateContextEntry?: { stateNo: number };
   aliveStateEntry?: { stateNo: number };
   roundStateEntry?: { roundNo: number; roundState: number; stateNo: number };
@@ -37975,6 +38013,7 @@ ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(optio
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
 ${options.gameTimeEntry === undefined ? "" : gameTimeStateEntryBlock(options.gameTimeEntry)}
 ${options.gameSpaceEntry === undefined ? "" : gameSpaceStateEntryBlock(options.gameSpaceEntry)}
+${options.screenSpaceEntry === undefined ? "" : screenSpaceStateEntryBlock(options.screenSpaceEntry)}
 ${options.stateContextEntry === undefined ? "" : stateContextEntryBlock(options.stateContextEntry)}
 ${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
 ${options.roundStateEntry === undefined ? "" : roundStateEntryBlock(options.roundStateEntry)}
@@ -38190,6 +38229,7 @@ ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.asser
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
 ${options.gameSpaceEntry ? simpleStateBlock(options.gameSpaceEntry.stateNo, "I") : ""}
+${options.screenSpaceEntry ? simpleStateBlock(options.screenSpaceEntry.stateNo, "I") : ""}
 ${options.stateContextEntry ? simpleStateBlock(options.stateContextEntry.stateNo, "I") : ""}
 ${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
 ${options.roundStateEntry ? simpleStateBlock(options.roundStateEntry.stateNo, "I") : ""}
@@ -38489,6 +38529,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.gameSpaceEntry === undefined
         ? []
         : ([[options.gameSpaceEntry.stateNo, traceAction(options.gameSpaceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.screenSpaceEntry === undefined
+        ? []
+        : ([[options.screenSpaceEntry.stateNo, traceAction(options.screenSpaceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.stateContextEntry === undefined
         ? []
         : ([[options.stateContextEntry.stateNo, traceAction(options.stateContextEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -42153,6 +42196,26 @@ type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = ctrl
+trigger1 = GameWidth = ${route.gameWidth}
+trigger1 = GameHeight = ${route.gameHeight}
+`;
+}
+
+function screenSpaceStateEntryBlock(route: {
+  screenWidth: number;
+  screenHeight: number;
+  gameWidth: number;
+  gameHeight: number;
+  stateNo: number;
+}): string {
+  return `
+[State -1, Screen Space Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = ScreenWidth = ${route.screenWidth}
+trigger1 = ScreenHeight = ${route.screenHeight}
 trigger1 = GameWidth = ${route.gameWidth}
 trigger1 = GameHeight = ${route.gameHeight}
 `;

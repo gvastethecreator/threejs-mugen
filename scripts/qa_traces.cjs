@@ -251,6 +251,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGameSpaceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-screenspace",
+      required: true,
+      artifact: presets.createSyntheticImportedScreenSpaceTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-state-context",
       required: true,
       artifact: presets.createSyntheticImportedStateContextTraceArtifact(),

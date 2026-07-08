@@ -30,6 +30,7 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     expect(evaluateRuntimeControllerNumber("Root, Vel Y", self, context)).toBe(-7);
     expect(evaluateRuntimeControllerNumber("Const(data.attack) + HitPauseTime + StageTime", self, context)).toBe(139);
     expect(evaluateRuntimeControllerNumber("GameWidth + GameHeight", self, context)).toBe(560);
+    expect(evaluateRuntimeControllerNumber("ScreenWidth + ScreenHeight", self, context)).toBe(1120);
     expect(evaluateRuntimeControllerNumber("GetHitVar(xvel)", self, context)).toBe(4);
   });
 

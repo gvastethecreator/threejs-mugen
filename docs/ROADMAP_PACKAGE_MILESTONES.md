@@ -35,13 +35,17 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required GameWidth/GameHeight trace gate
--> synthetic-imported-gamespace.json checksum b6f248ab is required in qa:trace
+R1 required ScreenWidth/ScreenHeight trace gate
+-> synthetic-imported-screenspace.json checksum 5330bacd is required in qa:trace
+-> imported State -1 presses x, evaluates ScreenWidth = 640 and ScreenHeight = 480, validates GameWidth = 1280 and GameHeight = 960 at camera zoom 0.5, and routes into state/action 9302
+-> stage [StageInfo] localcoord is carried into runtime stage game-space context; screen-space reads stay unscaled while game-space reads inverse-scale by camera zoom
+-> pnpm qa:trace passes 506/506 artifacts, 475 required and 31 optional
+-> official Elecbyte Trigger Reference defines GameWidth/GameHeight as game-space dimensions in player local coordinates that scale inversely with camera zoom, while ScreenWidth/ScreenHeight are equivalent non-zooming screen-space triggers
+-> no score movement; exact mugen.cfg/game-config negotiation, renderer/screenpack viewport ownership, camera animation parity, helper/team/simul namespace breadth, and full viewport parity remain blocked
+
+Previous R1 required GameWidth/GameHeight trace gate
+-> synthetic-imported-gamespace.json checksum b6f248ab remains required in qa:trace
 -> imported State -1 presses x, evaluates GameWidth = 640 and GameHeight = 480, and routes into state/action 9301
--> stage [StageInfo] localcoord is carried into runtime stage game-space context, with camera zoom applied as inverse game-space scaling
--> pnpm qa:trace passes 505/505 artifacts, 474 required and 31 optional
--> official Elecbyte Trigger Reference defines GameWidth/GameHeight as game-space dimensions in player local coordinates that scale inversely with camera zoom, while ScreenWidth/ScreenHeight are separate non-zooming screen-space triggers
--> no score movement; exact mugen.cfg/game-config negotiation, screenpack ownership, ScreenWidth/ScreenHeight, camera animation parity, helper/team/simul namespace breadth, and full viewport parity remain blocked
 
 Previous R1 required ModifyProjectile omitted bounds preservation trace gates
 -> synthetic-imported-modifyprojectile-omitted-bounds.json checksum 24cbb1dc / final checksum e94d1480 and synthetic-imported-helper-modifyprojectile-omitted-bounds.json checksum 9db04bbc / final checksum 555d744b remain required in qa:trace
