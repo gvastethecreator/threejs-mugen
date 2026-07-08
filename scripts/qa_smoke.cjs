@@ -361,16 +361,35 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     const bodyText = document.body.innerText;
     const bodyTextLower = bodyText.toLowerCase();
     const shell = document.querySelector(".app-shell")?.getBoundingClientRect();
+    const rectFor = (selector) => {
+      const element = document.querySelector(selector);
+      if (!element) {
+        return undefined;
+      }
+      const rect = element.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    };
+    const stageDeck = rectFor("#studio-stage-deck");
+    const navigator = rectFor("#navigator");
+    const consoleRect = rectFor("#console");
+    const canvas = rectFor(".stage-canvas");
+    const rightInspector = rectFor(".studio-pro-inspector");
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
-      bodyHasWorkbenchCommand: bodyTextLower.includes("mission control"),
-      bodyHasOperatorPriority: bodyTextLower.includes("next gate"),
-      bodyHasLoadMugenZip: bodyText.includes("Load MUGEN ZIP"),
-      bodyHasSurfaceJumps: bodyText.includes("Assets") && bodyText.includes("Evidence") && bodyText.includes("Build") && bodyText.includes("Debug"),
-      laneCount: document.querySelectorAll(".workbench-lane-strip > span").length,
-      surfaceJumpCount: document.querySelectorAll(".surface-jump-button, .workbench-route-button").length,
-      actionCount: document.querySelectorAll(".workbench-action-bar button").length,
+      bodyHasNextDesk: Boolean(document.querySelector(".studio-command-deck")),
+      bodyHasPipeline: Boolean(document.querySelector(".studio-mission-strip")),
+      bodyHasHealthLanguage: bodyTextLower.includes("project health") && bodyTextLower.includes("readiness"),
+      stageDeckVisible: Boolean(stageDeck && stageDeck.width > 0 && stageDeck.height > 0),
+      chromeFieldCount: document.querySelectorAll(".studio-chrome-field").length,
+      primaryActionCount: document.querySelectorAll(".deck-primary-action").length,
+      pipelineStepCount: document.querySelectorAll(".studio-mission-node").length,
+      rightInspectorVisible: Boolean(rightInspector && rightInspector.width > 0 && rightInspector.height > 0),
+      activeIssueRows: document.querySelectorAll(".pro-warning-row").length,
+      navigatorVisible: Boolean(navigator && navigator.width > 0 && navigator.height > 0),
+      consoleCollapsed: Boolean(consoleRect && consoleRect.height <= 44),
+      consoleHeight: consoleRect?.height ?? 0,
+      canvasArea: canvas ? Math.round(canvas.width * canvas.height) : 0,
       selectedRosterAtlasStatuses:
         bridge?.runtimeRoster
           ?.filter((entry) => entry.selected)
@@ -531,7 +550,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     await studioTabLocator(page, "build").click();
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "build");
   }
-  await page.locator('[data-action="compile-project"]').first().click();
+  await page.locator('button[data-action="compile-project"]:visible').first().click();
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
   const exportTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').filter({ hasText: /trace/i }).first();
   const download = await downloadFromButton(page, exportTraceButton, "trace artifact", { timeout: 90000, attempts: 2 });
@@ -615,7 +634,7 @@ async function captureStudioModules(page, outDir) {
     .then(() => true)
     .catch(() => false);
   if (!hasCompiledProject) {
-    await page.locator('[data-action="compile-project"]').first().click();
+    await page.locator('button[data-action="compile-project"]:visible').first().click();
     await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
   }
   await page.waitForTimeout(150);
@@ -1518,16 +1537,22 @@ function assertSmoke(diagnostics) {
   if (
     studioWorkbench.mode !== "studio" ||
     studioWorkbench.studioTab !== "workbench" ||
-    !studioWorkbench.bodyHasWorkbenchCommand ||
-    !studioWorkbench.bodyHasOperatorPriority ||
-    !studioWorkbench.bodyHasLoadMugenZip ||
-    !studioWorkbench.bodyHasSurfaceJumps ||
-    studioWorkbench.laneCount < 4 ||
-    studioWorkbench.surfaceJumpCount < 4 ||
-    studioWorkbench.actionCount < 4 ||
+    !studioWorkbench.bodyHasNextDesk ||
+    !studioWorkbench.bodyHasPipeline ||
+    !studioWorkbench.bodyHasHealthLanguage ||
+    !studioWorkbench.stageDeckVisible ||
+    studioWorkbench.chromeFieldCount < 4 ||
+    studioWorkbench.primaryActionCount !== 1 ||
+    studioWorkbench.pipelineStepCount < 7 ||
+    !studioWorkbench.rightInspectorVisible ||
+    studioWorkbench.activeIssueRows < 1 ||
+    studioWorkbench.navigatorVisible ||
+    studioWorkbench.consoleCollapsed ||
+    studioWorkbench.consoleHeight < 100 ||
+    studioWorkbench.canvasArea < 300000 ||
     studioWorkbench.overflowX
   ) {
-    failures.push("studio-workbench: Workbench command center was missing, incomplete, or horizontally overflowing");
+    failures.push("studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield");
   }
   const workbenchUnreadyAtlases = studioWorkbench.selectedRosterAtlasStatuses.filter(
     (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
@@ -2012,9 +2037,14 @@ function summarizeDiagnostics(diagnostics) {
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,
-      lanes: diagnostics.checks.studioWorkbench.laneCount,
-      surfaceJumps: diagnostics.checks.studioWorkbench.surfaceJumpCount,
-      actions: diagnostics.checks.studioWorkbench.actionCount,
+      chromeFields: diagnostics.checks.studioWorkbench.chromeFieldCount,
+      primaryActions: diagnostics.checks.studioWorkbench.primaryActionCount,
+      pipelineSteps: diagnostics.checks.studioWorkbench.pipelineStepCount,
+      activeIssues: diagnostics.checks.studioWorkbench.activeIssueRows,
+      canvasArea: diagnostics.checks.studioWorkbench.canvasArea,
+      consoleCollapsed: diagnostics.checks.studioWorkbench.consoleCollapsed,
+      consoleHeight: diagnostics.checks.studioWorkbench.consoleHeight,
+      navigatorVisible: diagnostics.checks.studioWorkbench.navigatorVisible,
       overflowX: diagnostics.checks.studioWorkbench.overflowX,
     },
     studioWorkbenchTablet: {

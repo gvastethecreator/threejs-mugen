@@ -767,6 +767,7 @@ export class App {
           </div>
           <div class="round-hud" id="round-hud"></div>
           <div class="stage-status" id="stage-status" aria-live="polite"></div>
+          <div class="studio-stage-deck" id="studio-stage-deck"></div>
           <div class="touch-controls" aria-label="Touch controls">
             <div class="touch-cluster touch-cluster-move">
               <button type="button" aria-label="Move left" data-touch="B">L</button>
@@ -1744,6 +1745,7 @@ export class App {
     this.setHtml("#console", this.renderConsole());
     this.setHtml("#stage-status", this.renderStageStatus());
     this.setHtml("#round-hud", this.renderRoundHud());
+    this.setHtml("#studio-stage-deck", this.renderStudioStageDeck());
     this.syncRuntimeControls();
   }
 
@@ -1759,12 +1761,26 @@ export class App {
     this.setHtml("#console", this.renderConsole());
     this.setHtml("#stage-status", this.renderStageStatus());
     this.setHtml("#round-hud", this.renderRoundHud());
+    this.setHtml("#studio-stage-deck", this.renderStudioStageDeck());
     const commandPaletteMounted = Boolean(this.root.querySelector(".command-palette-panel"));
     if (!this.commandPaletteOpen || !commandPaletteMounted) {
       this.setHtml("#command-palette-root", this.renderCommandPalette());
     }
     this.installDiagnosticsBridge();
     this.syncRuntimeControls();
+    this.refreshRendererLayout();
+  }
+
+  private refreshRendererLayout(): void {
+    const refresh = (): void => {
+      this.renderer.resize();
+      void this.renderer.render(this.getRenderableSnapshot());
+    };
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(refresh);
+      return;
+    }
+    window.setTimeout(refresh, 0);
   }
 
   private syncRuntimeControls(): void {
@@ -1810,14 +1826,12 @@ export class App {
     const stage = this.findStage(this.selectedStageId);
     const runtimeLabel = this.snapshot.playing ? "Live" : "Paused";
     const buildLabel = this.lastCompiledProject ? "Manifest ready" : "Manifest pending";
-    const leftDockPressed = !this.studioFocusMode && this.studioLeftDockOpen;
-    const rightDockPressed = !this.studioFocusMode && this.studioRightDockOpen;
     return `
       <div class="studio-chrome-brand">
         <span class="studio-chrome-brand-mark">${tablerIcon("studio", "ui-icon studio-chrome-icon")}</span>
         <span class="studio-chrome-title">
-          <strong>Studio Workbench</strong>
-          <small>MUGEN / Ikemen Workbench</small>
+          <strong>MUGEN Workbench</strong>
+          <small>Ikemen Engine</small>
         </span>
       </div>
       <div class="studio-chrome-context" aria-label="Active studio context">
@@ -1836,7 +1850,6 @@ export class App {
           <span class="studio-chrome-value">
             ${tablerIcon("stage", "ui-icon")}
             <b>${escapeHtml(stage?.displayName ?? "Stage")}</b>
-            <em>${summary.stats.stages} stages</em>
           </span>
         </div>
         <div class="studio-chrome-field ${this.snapshot.playing ? "is-ok" : "is-warn"}">
@@ -1858,23 +1871,11 @@ export class App {
       <div class="studio-chrome-actions" aria-label="Studio command shortcuts">
         <button type="button" class="studio-chrome-command" data-action="open-command-palette" aria-label="Open command palette">
           <span class="studio-chrome-command-prefix" aria-hidden="true">&gt;_</span>
-          <span>Command</span>
+          <span>Terminal</span>
         </button>
         <button type="button" class="studio-chrome-playtest" data-mode="match" aria-label="Open playable runtime">
           ${tablerIcon("play", "ui-icon")}
           <span>Playtest</span>
-        </button>
-        <button type="button" class="studio-chrome-utility" data-action="compile-project" aria-label="Compile runtime manifest" title="Compile runtime manifest">
-          ${tablerIcon("build", "ui-icon")}
-          <span>Build</span>
-        </button>
-        <button type="button" class="studio-chrome-utility ${leftDockPressed ? "is-active" : ""}" data-action="toggle-left-dock" aria-pressed="${leftDockPressed}" aria-label="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}" title="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}">
-          ${tablerIcon("route", "ui-icon")}
-          <span>Nav</span>
-        </button>
-        <button type="button" class="studio-chrome-utility ${rightDockPressed ? "is-active" : ""}" data-action="toggle-right-dock" aria-pressed="${rightDockPressed}" aria-label="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}" title="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}">
-          ${tablerIcon("data", "ui-icon")}
-          <span>Inspect</span>
         </button>
         <button type="button" class="studio-chrome-utility ${this.studioFocusMode ? "is-active" : ""}" data-action="toggle-focus-mode" aria-pressed="${this.studioFocusMode}" aria-label="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}" title="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}">
           ${tablerIcon("tools", "ui-icon")}
@@ -2869,16 +2870,7 @@ export class App {
   private renderWorkspaceSummary(): string {
     const diagnostics = (this.character?.diagnostics.length ?? 0) + this.importedStages.reduce((total, stage) => total + stage.diagnostics.length, 0);
     if (this.mode === "studio") {
-      const summary = this.getStudioProjectSummary();
-      const attentionGates = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
-      return `
-        <div class="workspace-summary" aria-label="Studio workspace status">
-          <span><b>${summary.stats.characters}</b><small>chars</small></span>
-          <span><b>${summary.stats.stages}</b><small>stages</small></span>
-          <span><b>${summary.stats.generatedAtlases}</b><small>atlases</small></span>
-          <span class="${attentionGates ? "is-warn" : "is-ok"}"><b>${attentionGates}</b><small>gates</small></span>
-        </div>
-      `;
+      return "";
     }
     if (this.mode === "inspect") {
       const actions = this.character?.animations.size ?? 0;
@@ -2911,21 +2903,6 @@ export class App {
       const primaryGate = this.getPrimaryStudioGate(summary);
       const issueCount = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
       const compiled = this.lastCompiledProject;
-      const focusAction = primaryGate
-        ? { label: primaryGate.nextAction.label, attribute: this.studioNextActionAttribute(primaryGate.nextAction) }
-        : this.getStudioFocusPrimaryAction();
-      const actionButtons = [
-        {
-          label: focusAction.label,
-          detail: primaryGate ? "Resolve active gate" : "Primary studio action",
-          attribute: focusAction.attribute,
-          primary: true,
-        },
-        { label: "Playtest", detail: "Run roster", attribute: 'data-mode="match"', primary: false },
-        { label: "Evidence", detail: "Trace gates", attribute: 'data-studio-tab="evidence"', primary: false },
-        { label: "Compile", detail: "Manifest", attribute: 'data-action="compile-project"', primary: false },
-        { label: "Build", detail: "Package", attribute: 'data-studio-tab="build"', primary: false },
-      ].filter((candidate, index, candidates) => candidates.findIndex((item) => item.label === candidate.label) === index);
       return `
         <div class="workspace-actions" aria-label="Studio quick actions">
           <div class="workspace-actions-head">
@@ -2933,8 +2910,14 @@ export class App {
             <b>${summary.gates.length - issueCount}/${summary.gates.length} Gates</b>
           </div>
           ${this.renderStudioMissionStrip(summary, primaryGate, issueCount, compiled)}
-          <div class="workspace-action-grid">
-            ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}
+          <div class="studio-project-open">
+            <button type="button" data-action="open-project">
+              ${tablerIcon("folder", "ui-icon action-icon")}
+              <span>Open Project</span>
+            </button>
+            <button type="button" data-action="save-project-local" aria-label="Save current project locally" title="Save current project locally">
+              <span aria-hidden="true">...</span>
+            </button>
           </div>
         </div>
       `;
@@ -3032,6 +3015,7 @@ export class App {
     const evidenceStatus: StudioStatus = traceCount ? "ok" : "pending";
     const buildStatus: StudioStatus = compiled ? (compiled.diagnostics.errors.length ? "fail" : compiled.diagnostics.warnings.length ? "warn" : "ok") : "pending";
     const assembleStatus: StudioStatus = issueCount ? primaryGate?.status ?? "warn" : "ok";
+    const packageStatus: StudioStatus = this.lastProjectBundle ? "ok" : compiled ? "pending" : "pending";
     const missionSteps: Array<{
       step: string;
       icon: StudioIconName;
@@ -3054,17 +3038,17 @@ export class App {
         step: "02",
         icon: "shield",
         label: "Validate",
-        value: "validate roster and files",
-        detail: `${summary.stats.characters} fighters / ${summary.stats.stages} stages / ${summary.stats.generatedAtlases} atlases`,
+        value: "validate files",
+        detail: `${summary.stats.characters} fighters / ${summary.stats.stages} stages`,
         status: assembleStatus,
         attribute: 'data-studio-tab="workbench"',
       },
       {
         step: "03",
         icon: "route",
-        label: "Map Assets",
-        value: "resolve asset links",
-        detail: issueCount ? `${issueCount} gates need review` : "project gates clear",
+        label: "Assets",
+        value: "map links",
+        detail: issueCount ? `${issueCount} gates to review` : "gates clear",
         status: assembleStatus,
         attribute: 'data-studio-tab="assets"',
       },
@@ -3079,12 +3063,30 @@ export class App {
       },
       {
         step: "05",
-        icon: "package",
-        label: "Package",
+        icon: "build",
+        label: "Compile",
         value: compiled ? "manifest ready" : "compile needed",
-        detail: compiled ? `${compiled.modules.active.length} modules active` : "runtime-manifest/v0",
+        detail: compiled ? `${compiled.modules.active.length} modules active` : "manifest v0",
         status: buildStatus,
         attribute: compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"',
+      },
+      {
+        step: "06",
+        icon: "package",
+        label: "Package",
+        value: this.lastProjectBundle ? "exported build" : "package project",
+        detail: this.lastProjectBundle ? `${this.lastProjectBundle.manifest.files.length} files bundled` : "build distributable",
+        status: packageStatus,
+        attribute: compiled ? 'data-action="export-package"' : 'data-action="compile-project"',
+      },
+      {
+        step: "07",
+        icon: "export",
+        label: "Publish",
+        value: "publish build",
+        detail: this.lastProjectBundle ? "share or export" : "package first",
+        status: this.lastProjectBundle ? "partial" : "planned",
+        attribute: 'data-studio-tab="build"',
       },
     ];
     const nextMissionIndex = missionSteps.findIndex((mission) => mission.status !== "ok");
@@ -4053,215 +4055,80 @@ export class App {
     return this.renderStudioWorkbenchRightPane();
   }
 
-  private getStudioFocusPrimaryAction(): { label: string; attribute: string } {
-    if (this.studioTab === "assets") {
-      const library = this.getStudioAssetLibrarySummary();
-      return library.stats.attention
-        ? { label: "Review Attention", attribute: 'data-asset-filter="attention"' }
-        : { label: "Review Assets", attribute: 'data-studio-tab="assets"' };
-    }
-    if (this.studioTab === "inspector") {
-      return { label: this.character ? "Open Inspector" : "Load Package", attribute: this.character ? 'data-mode="inspect"' : 'data-action="load-zip"' };
-    }
-    if (this.studioTab === "stage") {
-      return { label: "Open Stage Assets", attribute: 'data-studio-tab="assets" data-asset-filter="stages"' };
-    }
-    if (this.studioTab === "debug") {
-      return { label: "Reset Round", attribute: 'data-action="reset-round"' };
-    }
-    if (this.studioTab === "evidence") {
-      return { label: "Export Trace", attribute: 'data-action="export-trace-artifact"' };
-    }
-    if (this.studioTab === "modules") {
-      return { label: "Compile Runtime", attribute: 'data-action="compile-project"' };
-    }
-    if (this.studioTab === "build") {
-      return this.lastCompiledProject
-        ? { label: "Export Package", attribute: 'data-action="export-package"' }
-        : { label: "Compile Runtime", attribute: 'data-action="compile-project"' };
-    }
-    return { label: "Playtest", attribute: 'data-mode="match"' };
-  }
-
   private renderStudioWorkbenchRightPane(): string {
     const summary = this.getStudioProjectSummary();
-    return `
-      ${this.renderWorkbenchCommandInspector(summary)}
-      ${this.renderWorkbenchWarningQueue(summary)}
-      ${this.renderWorkbenchActionBank(summary)}
-      ${this.renderWorkbenchOutputLedger(summary)}
-    `;
-  }
-
-  private renderWorkbenchCommandInspector(summary: StudioProjectSummary): string {
+    const primaryGate = this.getPrimaryStudioGate(summary);
+    const warnings = this.getWorkbenchWarningRows(summary);
+    const nextActionAttribute = primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-studio-tab="workbench"';
     const score = this.getWorkbenchHealthScore(summary);
     const healthBand = this.getWorkbenchHealthBand(score);
-    const statusCounts = countBy(summary.gates, (gate) => this.statusClassName(gate.status));
-    const primaryGate = this.getPrimaryStudioGate(summary);
     const selectedAsset = this.getWorkbenchSelectedAsset(summary);
+    const healthCopy =
+      primaryGate?.nextAction.kind === "relink-source"
+        ? "Import real source files before compatibility claims are trusted."
+        : primaryGate?.impact ?? "Review the next issue before packaging this session.";
     const selectedAssetAttribute = selectedAsset
       ? `data-studio-tab="assets" data-studio-asset-id="${escapeHtml(selectedAsset.id)}" data-asset-filter="selected"`
       : 'data-studio-tab="assets"';
     return `
-      <section class="workbench-ledger-panel workbench-inspector-panel">
-        <div class="section-heading-row">
-          <div>
-            <span class="panel-kicker">Command inspector</span>
-            <h2>Project Health</h2>
+      <section class="studio-pro-inspector" aria-label="Studio project health">
+        <header class="studio-pro-inspector-head">
+          <span class="panel-kicker">Project Health</span>
+          <h2>Readiness</h2>
+          <span class="pro-health-badge is-${healthBand.tone}">${score} / 100</span>
+        </header>
+
+        <div class="pro-health-card is-${healthBand.tone}" style="--health-score: ${score}%">
+          <small>Readiness</small>
+          <strong>${escapeHtml(healthBand.label)}</strong>
+          <span class="pro-health-track" aria-hidden="true"><i></i></span>
+          <p>${escapeHtml(healthCopy)}</p>
+          <button type="button" class="pro-primary-action" ${nextActionAttribute}>
+            ${tablerIcon(primaryGate ? iconForAction(primaryGate.nextAction.label, nextActionAttribute) : "workbench", "ui-icon action-icon")}
+            <span>Review Issues</span>
+          </button>
+        </div>
+
+        <div class="pro-inspector-section" aria-label="Active issues">
+          <div class="pro-section-head">
+            <span>Active Issues</span>
+            <b>${Math.min(warnings.length, 3)}</b>
           </div>
-          <span class="badge ${score >= 82 ? "ok" : score >= 58 ? "warn" : "error"}">${score}/100</span>
+          ${
+            warnings.length
+              ? `<div class="pro-warning-list">${warnings.slice(0, 3)
+                  .map(
+                    (row, index) => `
+                      <button type="button" class="pro-warning-row${index === 0 ? " is-priority" : ""} is-${this.statusClassName(row.status)}" ${row.attribute}>
+                        ${tablerIcon(row.icon, "ui-icon")}
+                        <span>
+                          <strong>${escapeHtml(row.label)}</strong>
+                          <small>${escapeHtml(row.detail)}</small>
+                        </span>
+                        <em>${escapeHtml(this.formatWorkbenchIssueMeta(row.meta))}</em>
+                      </button>
+                    `,
+                  )
+                  .join("")}</div>`
+              : `<div class="pro-empty-note">No active Studio issue is blocking this workbench state.</div>`
+          }
         </div>
-        <div class="workbench-health-meter" style="--health-score: ${score}%">
-          <span class="workbench-health-score"><b>${score}</b><small>/ 100</small></span>
-          <span class="workbench-health-track" aria-hidden="true"><i></i></span>
-          <span class="workbench-health-band is-${healthBand.tone}">
-            <small>Readiness</small>
-            <b>${escapeHtml(healthBand.label)}</b>
-          </span>
-          <span class="workbench-health-next">
-            <small>Next</small>
-            <b>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</b>
-          </span>
-        </div>
-        <button type="button" class="workbench-active-asset is-${this.statusClassName(selectedAsset?.status ?? "unknown")}" ${selectedAssetAttribute}>
-          <span class="asset-row-icon">${tablerIcon(selectedAsset ? iconForAssetRecord(selectedAsset) : "assets", "ui-icon")}</span>
-          <span class="workbench-active-asset-main">
-            <small>Selected asset</small>
-            <strong>${escapeHtml(selectedAsset?.label ?? "No selected asset")}</strong>
-            <span>${escapeHtml(selectedAsset ? `${selectedAsset.kind} / ${selectedAsset.source}` : "Open the asset desk")}</span>
-          </span>
-          ${this.statusBadge(selectedAsset?.status ?? "unknown")}
-        </button>
-        <div class="workbench-health-counts" aria-label="Workbench health counts">
-          <span class="is-ok"><b>${statusCounts.get("ok") ?? 0}</b><small>ok</small></span>
-          <span class="${statusCounts.get("warn") ? "is-warn" : ""}"><b>${statusCounts.get("warn") ?? 0}</b><small>warn</small></span>
-          <span class="${statusCounts.get("error") ? "is-error" : ""}"><b>${statusCounts.get("error") ?? 0}</b><small>blocked</small></span>
-          <span class="${summary.assets.some((asset) => isAttentionStatus(asset.status)) ? "is-warn" : "is-ok"}"><b>${summary.assets.length}</b><small>assets</small></span>
+
+        <div class="pro-inspector-section" aria-label="Selected asset">
+          <div class="pro-section-head">
+            <span>Selected Asset</span>
+            ${selectedAsset ? this.statusBadge(selectedAsset.status) : "<b>none</b>"}
+          </div>
+          <button type="button" class="pro-selected-asset is-${this.statusClassName(selectedAsset?.status ?? "unknown")}" ${selectedAssetAttribute}>
+            <span class="pro-asset-thumb">${tablerIcon(selectedAsset ? iconForAssetRecord(selectedAsset) : "assets", "ui-icon")}</span>
+            <span>
+              <strong>${escapeHtml(selectedAsset?.label ?? "No selected asset")}</strong>
+              <small>${escapeHtml(selectedAsset ? `${selectedAsset.kind} / ${selectedAsset.source}` : "Open the asset desk")}</small>
+              <em>${escapeHtml(selectedAsset?.detail ?? "Select an asset to inspect source, runtime, and QA state.")}</em>
+            </span>
+          </button>
         </div>
       </section>
-    `;
-  }
-
-  private renderWorkbenchWarningQueue(summary: StudioProjectSummary): string {
-    const rows = this.getWorkbenchWarningRows(summary).slice(0, 4);
-    return `
-      <section class="workbench-ledger-panel workbench-warning-panel">
-        <div class="section-heading-row">
-          <div>
-            <span class="panel-kicker">Attention queue</span>
-            <h2>Warnings</h2>
-          </div>
-          <span class="badge ${rows.length ? "warn" : "ok"}">${rows.length ? `${rows.length} active` : "clear"}</span>
-        </div>
-        ${
-          rows.length
-            ? `<div class="workbench-warning-list">${rows
-                .map(
-                  (row) => `
-                    <button type="button" class="workbench-warning-row is-${this.statusClassName(row.status)}" ${row.attribute}>
-                      <span class="workbench-warning-icon">${tablerIcon(row.icon, "ui-icon")}</span>
-                      <span class="workbench-warning-main">
-                        <strong>${escapeHtml(row.label)}</strong>
-                        <small>${escapeHtml(row.detail)}</small>
-                      </span>
-                      <span class="workbench-warning-meta">${escapeHtml(row.meta)}</span>
-                    </button>
-                  `,
-                )
-                .join("")}</div>`
-            : `<div class="empty-state compact">No gate, asset, trace, or build warnings are active for the current project.</div>`
-        }
-      </section>
-    `;
-  }
-
-  private renderWorkbenchActionBank(summary: StudioProjectSummary): string {
-    const compiled = this.lastCompiledProject;
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
-    return `
-      <section class="workbench-ledger-panel workbench-action-panel">
-        <div class="section-heading-row">
-          <div>
-            <span class="panel-kicker">Action bank</span>
-            <h2>Commands</h2>
-          </div>
-          <span class="badge">4 lanes</span>
-        </div>
-        <div class="workbench-action-grid">
-          ${this.renderWorkbenchActionTile(compiled ? "Export Package" : "Compile Runtime", compiled ? "runtime package ready" : "create runtime-manifest/v0", "build", compiled ? 'data-action="export-package"' : 'data-action="compile-project"', compiled ? "ok" : "pending", true)}
-          ${this.renderWorkbenchActionTile(attentionAssets ? "Review Assets" : "Asset Desk", attentionAssets ? `${attentionAssets} records need attention` : `${summary.assets.length} mapped records`, "assets", `data-studio-tab="assets" data-asset-filter="${attentionAssets ? "attention" : "all"}"`, attentionAssets ? "warn" : "ok")}
-          ${this.renderWorkbenchActionTile("Export Trace", this.lastTraceArtifact ? "refresh runtime evidence" : "capture smoke evidence", "evidence", 'data-action="export-trace-artifact"', this.lastTraceArtifact ? "ok" : "pending")}
-          ${this.renderWorkbenchActionTile("Module Graph", `${summary.modules.length} engine contracts`, "modules", 'data-studio-tab="modules"', "ok")}
-        </div>
-      </section>
-    `;
-  }
-
-  private renderWorkbenchOutputLedger(summary: StudioProjectSummary): string {
-    const compiled = this.lastCompiledProject;
-    const bundle = this.lastProjectBundle;
-    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
-    const activeModules = compiled?.modules.active.length ?? summary.modules.filter((module) => module.status === "active" || module.status === "ok").length;
-    const moduleStatus: StudioStatus = summary.modules.some((module) => this.statusClassName(module.status) === "error")
-      ? "fail"
-      : summary.modules.some((module) => isAttentionStatus(module.status))
-        ? "warn"
-        : "ok";
-    return `
-      <section class="workbench-ledger-panel workbench-output-panel">
-        <div class="section-heading-row">
-          <div>
-            <span class="panel-kicker">Files and outputs</span>
-            <h2>Build Ledger</h2>
-          </div>
-          <span class="badge ${bundle ? "ok" : compiled ? "warn" : ""}">${bundle ? "exported" : compiled ? "ready" : "pending"}</span>
-        </div>
-        <div class="workbench-output-list">
-          ${this.renderWorkbenchOutputRow("Runtime Manifest", compiled ? `${compiled.projectId}-runtime-manifest.json` : "runtime-manifest/v0 pending", "build", compiled ? "ok" : "pending", compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"')}
-          ${this.renderWorkbenchOutputRow("Engine Modules", `${activeModules}/${summary.modules.length} active contracts`, "modules", moduleStatus, 'data-studio-tab="modules"')}
-          ${this.renderWorkbenchOutputRow("Generated Atlases", `${summary.stats.generatedAtlases} sprite atlas records`, "assetAtlas", summary.stats.generatedAtlases ? "ok" : "pending", 'data-studio-tab="assets" data-asset-filter="generated"')}
-          ${this.renderWorkbenchOutputRow("Trace Evidence", traceCount ? `${traceCount} stored/current artifact(s)` : "no trace artifact exported", "evidence", traceCount ? "ok" : "pending", traceCount ? 'data-studio-tab="evidence"' : 'data-action="export-trace-artifact"')}
-          ${this.renderWorkbenchOutputRow("Project Package", bundle ? `${bundle.manifest.files.length} files / ${formatBytes(bundle.manifest.assets.binaryBytes)}` : "package ZIP not exported", "package", bundle ? "ok" : compiled ? "partial" : "pending", compiled ? 'data-action="export-package"' : 'data-action="compile-project"')}
-        </div>
-      </section>
-    `;
-  }
-
-  private renderWorkbenchActionTile(
-    label: string,
-    detail: string,
-    icon: StudioIconName,
-    attribute: string,
-    status: StudioStatus,
-    primary = false,
-  ): string {
-    return `
-      <button type="button" class="workbench-action-tile is-${this.statusClassName(status)}${primary ? " is-primary" : ""}" ${attribute}>
-        ${tablerIcon(icon, "ui-icon action-icon")}
-        <span>
-          <strong>${escapeHtml(label)}</strong>
-          <small>${escapeHtml(detail)}</small>
-        </span>
-      </button>
-    `;
-  }
-
-  private renderWorkbenchOutputRow(
-    label: string,
-    detail: string,
-    icon: StudioIconName,
-    status: StudioStatus,
-    attribute: string,
-  ): string {
-    return `
-      <button type="button" class="workbench-output-row is-${this.statusClassName(status)}" ${attribute}>
-        <span class="workbench-output-icon">${tablerIcon(icon, "ui-icon")}</span>
-        <span class="workbench-output-main">
-          <strong>${escapeHtml(label)}</strong>
-          <small>${escapeHtml(detail)}</small>
-        </span>
-        ${this.statusBadge(status)}
-      </button>
     `;
   }
 
@@ -4283,6 +4150,33 @@ export class App {
       return { label: "Review", tone: "warn" };
     }
     return { label: "Critical", tone: "error" };
+  }
+
+  private getWorkbenchHealthScore(summary: StudioProjectSummary): number {
+    const gatePenalty = summary.gates.reduce((total, gate) => total + this.healthPenaltyForStatus(gate.status, 14), 0);
+    const assetPenalty = Math.min(
+      24,
+      summary.assets.reduce((total, asset) => total + this.healthPenaltyForStatus(asset.status, 4), 0),
+    );
+    const compiled = this.lastCompiledProject;
+    const buildPenalty = compiled
+      ? compiled.diagnostics.errors.length * 18 + compiled.modules.missing.length * 12 + compiled.diagnostics.warnings.length * 4
+      : 8;
+    const tracePenalty = this.lastTraceArtifact ? 0 : 4;
+    return Math.max(0, Math.min(100, Math.round(100 - gatePenalty - assetPenalty - buildPenalty - tracePenalty)));
+  }
+
+  private healthPenaltyForStatus(status: StudioStatus, maxPenalty: number): number {
+    if (status === "ok" || status === "active") {
+      return 0;
+    }
+    if (status === "fail" || status === "blocked" || status === "unsupported") {
+      return maxPenalty;
+    }
+    if (status === "pending" || status === "planned" || status === "unknown") {
+      return Math.ceil(maxPenalty * 0.58);
+    }
+    return Math.ceil(maxPenalty * 0.42);
   }
 
   private getWorkbenchWarningRows(summary: StudioProjectSummary): Array<{
@@ -4354,31 +4248,27 @@ export class App {
     return rows;
   }
 
-  private getWorkbenchHealthScore(summary: StudioProjectSummary): number {
-    const gatePenalty = summary.gates.reduce((total, gate) => total + this.healthPenaltyForStatus(gate.status, 14), 0);
-    const assetPenalty = Math.min(
-      24,
-      summary.assets.reduce((total, asset) => total + this.healthPenaltyForStatus(asset.status, 4), 0),
-    );
-    const compiled = this.lastCompiledProject;
-    const buildPenalty = compiled
-      ? compiled.diagnostics.errors.length * 18 + compiled.modules.missing.length * 12 + compiled.diagnostics.warnings.length * 4
-      : 8;
-    const tracePenalty = this.lastTraceArtifact ? 0 : 4;
-    return Math.max(0, Math.min(100, Math.round(100 - gatePenalty - assetPenalty - buildPenalty - tracePenalty)));
-  }
-
-  private healthPenaltyForStatus(status: StudioStatus, maxPenalty: number): number {
-    if (status === "ok" || status === "active") {
-      return 0;
+  private formatWorkbenchIssueMeta(label: string): string {
+    const normalized = label.toLowerCase();
+    if (normalized.includes("load") || normalized.includes("import")) {
+      return "Load";
     }
-    if (status === "fail" || status === "blocked" || status === "unsupported") {
-      return maxPenalty;
+    if (normalized.includes("review") || normalized.includes("qa") || normalized.includes("decode")) {
+      return "Review";
     }
-    if (status === "pending" || status === "planned" || status === "unknown") {
-      return Math.ceil(maxPenalty * 0.58);
+    if (normalized.includes("compile") || normalized.includes("manifest")) {
+      return "Compile";
     }
-    return Math.ceil(maxPenalty * 0.42);
+    if (normalized.includes("trace")) {
+      return "Trace";
+    }
+    if (normalized.includes("export") || normalized.includes("package")) {
+      return "Export";
+    }
+    if (normalized.includes("open")) {
+      return "Open";
+    }
+    return label.split(/\s+/)[0] ?? label;
   }
 
   private renderRuntimeManifestPanel(): string {
@@ -10458,6 +10348,69 @@ export class App {
       ...this.snapshot,
       logs: this.snapshot.logs,
     };
+  }
+
+  private renderStudioStageDeck(): string {
+    if (this.mode !== "studio" || this.studioTab !== "workbench") {
+      return "";
+    }
+    const summary = this.getStudioProjectSummary();
+    const primaryGate = this.getPrimaryStudioGate(summary);
+    const warnings = this.getWorkbenchWarningRows(summary);
+    const score = this.getWorkbenchHealthScore(summary);
+    const healthBand = this.getWorkbenchHealthBand(score);
+    const attentionGates = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
+    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
+    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
+    const nextActionAttribute = primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-mode="match"';
+    const nextActionKind = primaryGate?.nextAction.kind;
+    const nextTitle = nextActionKind === "relink-source" ? "Import Source" : primaryGate?.nextAction.label ?? "Playtest Roster";
+    const nextButtonLabel = nextActionKind === "relink-source" ? "Import" : primaryGate?.nextAction.label ?? "Playtest";
+    const nextCopy =
+      primaryGate?.impact ??
+      "Use the current roster, inspect a source package, or build the next local proof when you need it.";
+    return `
+      <div class="studio-command-deck" aria-label="Studio production controls">
+        <section class="studio-command-deck-main">
+          <span class="deck-kicker">Next Production Move</span>
+          <h2>${escapeHtml(nextTitle)}</h2>
+          <p>${escapeHtml(nextCopy)}</p>
+          <div class="deck-action-row">
+            <button type="button" class="deck-primary-action" ${nextActionAttribute}>
+              ${tablerIcon(primaryGate ? iconForAction(primaryGate.nextAction.label, nextActionAttribute) : "folder", "ui-icon action-icon")}
+              <span>${escapeHtml(nextButtonLabel)}</span>
+            </button>
+            <button type="button" data-mode="match">${tablerIcon("play", "ui-icon action-icon")}<span>Play</span></button>
+            <button type="button" data-action="compile-project">${tablerIcon("build", "ui-icon action-icon")}<span>Build</span></button>
+            <button type="button" data-action="export-trace-artifact">${tablerIcon("evidence", "ui-icon action-icon")}<span>Trace</span></button>
+          </div>
+        </section>
+
+        <section class="studio-command-deck-status is-${healthBand.tone}">
+          <span class="deck-kicker">Readiness</span>
+          <div class="studio-readiness-panel" style="--health-score: ${score}%">
+            <span class="studio-health-orb" aria-hidden="true">
+              <b>${score}</b>
+              <small>/100</small>
+            </span>
+            <div class="studio-health-stats">
+              <span><b>${summary.gates.length - attentionGates} / ${summary.gates.length}</b><small>Gates Clear</small></span>
+              <span class="${attentionAssets ? "is-warn" : "is-ok"}"><b>${attentionAssets}</b><small>Asset Issues</small></span>
+              <span><b>${traceCount}</b><small>Trace Artifacts</small></span>
+              <span class="is-${healthBand.tone}"><b>${escapeHtml(healthBand.label)}</b><small>Runtime Build</small></span>
+            </div>
+          </div>
+          ${
+            warnings.length
+              ? `<button type="button" class="deck-review-link" ${warnings[0]!.attribute}>
+                  ${tablerIcon(warnings[0]!.icon, "ui-icon")}
+                  <span>${escapeHtml(warnings[0]!.label)}</span>
+                </button>`
+              : ""
+          }
+        </section>
+      </div>
+    `;
   }
 
   private renderStageStatus(): string {

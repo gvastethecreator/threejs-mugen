@@ -10,7 +10,7 @@ import { TextureStore } from "./TextureStore";
 import type { MugenRenderer } from "./types";
 
 export class ThreeMugenRenderer implements MugenRenderer {
-  private static readonly minimumWorldHeight = 888;
+  private static readonly minimumWorldHeight = 420;
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.OrthographicCamera(-320, 320, 180, -180, -100, 100);
   private readonly renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
@@ -117,7 +117,9 @@ export class ThreeMugenRenderer implements MugenRenderer {
     if (!this.target) {
       return;
     }
-    const rect = this.target.getBoundingClientRect();
+    const canvasRect = this.renderer.domElement.getBoundingClientRect();
+    const targetRect = this.target.getBoundingClientRect();
+    const rect = canvasRect.width > 0 && canvasRect.height > 0 ? canvasRect : targetRect;
     this.size = {
       width: Math.max(1, rect.width),
       height: Math.max(1, rect.height),

@@ -1,0 +1,1654 @@
+/* Desktop Studio premium cockpit.
+   Reference direction: fighting workbench first, production tools around the match. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --studio-top-height: 74px;
+    --studio-console-height: 140px;
+    --studio-left-width: 320px;
+    --studio-right-width: 336px;
+    --studio-bg: #05080c;
+    --studio-bg-2: #091018;
+    --studio-rail: #0a1118;
+    --studio-panel: #0d151e;
+    --studio-panel-2: #111b25;
+    --studio-panel-3: #152231;
+    --studio-field: #070b10;
+    --studio-line: rgba(210, 226, 238, 0.12);
+    --studio-line-soft: rgba(210, 226, 238, 0.075);
+    --studio-line-strong: rgba(218, 232, 244, 0.2);
+    --studio-text: #f4f7fb;
+    --studio-muted: #aeb9c6;
+    --studio-dim: #6f7e8e;
+    --studio-green: #61e983;
+    --studio-green-soft: rgba(97, 233, 131, 0.13);
+    --studio-coral: #ff5f81;
+    --studio-coral-soft: rgba(255, 95, 129, 0.14);
+    --studio-amber: #ffb24a;
+    --studio-amber-soft: rgba(255, 178, 74, 0.13);
+    --studio-blue: #76a7ff;
+    --studio-blue-soft: rgba(118, 167, 255, 0.13);
+    --studio-control-gap: 10px;
+    --studio-control-icon: 16px;
+    --text: var(--studio-text);
+    --muted: var(--studio-muted);
+    --subtle: var(--studio-dim);
+    --ok: var(--studio-green);
+    --warn: var(--studio-amber);
+    --danger: var(--studio-coral);
+    --pending: var(--studio-muted);
+    --workbench: var(--studio-green);
+    --asset: var(--studio-blue);
+    --inspect: var(--studio-blue);
+    --stage-accent: var(--studio-amber);
+    --debug-accent: var(--studio-blue);
+    --trace-accent: var(--studio-green);
+    --module-accent: var(--studio-blue);
+    --build-accent: var(--studio-amber);
+    --section-accent: var(--studio-green);
+    --surface-accent: var(--studio-green);
+    --accent: var(--studio-green);
+    grid-template-columns: var(--studio-left-width) minmax(0, 1fr) var(--studio-right-width);
+    grid-template-rows: var(--studio-top-height) minmax(0, 1fr) var(--studio-console-height);
+    gap: 0;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, #0a1118 0, #06090e 42%, #030507 100%);
+    color: var(--studio-text);
+    font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app-shell.mode-studio[data-left-dock="closed"],
+  .app-shell.mode-studio[data-right-dock="closed"],
+  .app-shell.mode-studio[data-studio-tab] {
+    grid-template-columns: var(--studio-left-width) minmax(0, 1fr) var(--studio-right-width);
+    grid-template-rows: var(--studio-top-height) minmax(0, 1fr) var(--studio-console-height);
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] {
+    --studio-left-width: 0px;
+    --studio-right-width: 0px;
+  }
+
+  .app-shell.mode-studio *,
+  .app-shell.mode-studio *::before,
+  .app-shell.mode-studio *::after {
+    box-sizing: border-box;
+    letter-spacing: 0;
+  }
+
+  .app-shell.mode-studio button,
+  .app-shell.mode-studio input,
+  .app-shell.mode-studio select,
+  .app-shell.mode-studio textarea {
+    font-family: inherit;
+  }
+
+  .app-shell.mode-studio input {
+    min-width: 40px;
+  }
+
+  .app-shell.mode-studio button {
+    cursor: pointer;
+  }
+
+  .app-shell.mode-studio :focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--studio-green) 72%, #ffffff);
+    outline-offset: 2px;
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: var(--studio-left-width) minmax(0, 1fr) var(--studio-right-width);
+    width: 100%;
+    min-height: var(--studio-top-height);
+    margin: 0 !important;
+    padding: 0 !important;
+    border-bottom: 1px solid var(--studio-line-strong);
+    background:
+      linear-gradient(180deg, rgba(8, 13, 19, 0.98), rgba(5, 8, 12, 0.98));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.055),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.92);
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand,
+  .app-shell.mode-studio .studio-chrome-context,
+  .app-shell.mode-studio .studio-chrome-actions {
+    min-width: 0;
+    min-height: var(--studio-top-height);
+    margin: 0 !important;
+    background: transparent;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 0 18px;
+    border-right: 1px solid var(--studio-line);
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand-mark {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border: 1px solid rgba(244, 247, 251, 0.48);
+    border-radius: 8px;
+    background: linear-gradient(180deg, #101821, #070b10);
+    color: var(--studio-text);
+  }
+
+  .app-shell.mode-studio .studio-chrome-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-title strong {
+    display: block;
+    overflow: hidden;
+    color: var(--studio-text);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-chrome-title small {
+    display: block;
+    margin-top: 5px;
+    overflow: hidden;
+    color: var(--studio-muted);
+    font-size: 12px;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-chrome-context {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.35fr) minmax(132px, 0.8fr) minmax(104px, 0.58fr) minmax(164px, 0.95fr);
+    align-items: stretch;
+    border-right: 1px solid var(--studio-line);
+  }
+
+  .app-shell.mode-studio .studio-chrome-field {
+    display: grid;
+    min-width: 0;
+    align-content: center;
+    gap: 8px;
+    padding: 0 26px;
+    border-right: 1px solid var(--studio-line);
+  }
+
+  .app-shell.mode-studio .studio-chrome-field:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-kicker,
+  .app-shell.mode-studio .workspace-actions-head span,
+  .app-shell.mode-studio .panel-kicker,
+  .app-shell.mode-studio .deck-kicker,
+  .app-shell.mode-studio .pro-section-head,
+  .app-shell.mode-studio .gate-kicker,
+  .app-shell.mode-studio .record-kicker {
+    color: var(--studio-dim);
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-chrome-value {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    color: var(--studio-muted);
+    font-size: 12px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio .studio-chrome-value b,
+  .app-shell.mode-studio .studio-chrome-value em {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-chrome-value b {
+    color: var(--studio-text);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-chrome-value em {
+    color: var(--studio-dim);
+    font-style: normal;
+  }
+
+  .app-shell.mode-studio .studio-chrome-value .ui-icon {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+    color: var(--studio-dim);
+  }
+
+  .app-shell.mode-studio .studio-chrome-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: var(--studio-dim);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome-dot.is-live,
+  .app-shell.mode-studio .studio-chrome-dot.is-p1 {
+    background: var(--studio-green);
+    color: var(--studio-green);
+  }
+
+  .app-shell.mode-studio .studio-chrome-dot.is-p2 {
+    background: var(--studio-coral);
+    color: var(--studio-coral);
+  }
+
+  .app-shell.mode-studio .studio-chrome-dot.is-paused {
+    background: var(--studio-amber);
+    color: var(--studio-amber);
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions {
+    display: grid;
+    grid-template-columns: minmax(104px, 1fr) minmax(104px, 1fr) 44px;
+    gap: 14px;
+    align-items: center;
+    padding: 0 22px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button,
+  .app-shell.mode-studio .studio-next-primary,
+  .app-shell.mode-studio .pro-primary-action,
+  .app-shell.mode-studio .pro-action-bank button,
+  .app-shell.mode-studio .deck-action-row button,
+  .app-shell.mode-studio .deck-review-link,
+  .app-shell.mode-studio .studio-project-open button {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: var(--studio-control-gap);
+    padding: 0 14px;
+    border: 1px solid var(--studio-line-strong);
+    border-radius: 7px;
+    background: linear-gradient(180deg, rgba(22, 32, 43, 0.98), rgba(10, 15, 22, 0.98));
+    color: var(--studio-text);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      0 8px 18px rgba(0, 0, 0, 0.12);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease,
+      transform 120ms ease;
+  }
+
+  .app-shell.mode-studio button:hover,
+  .app-shell.mode-studio button:focus-visible {
+    border-color: color-mix(in srgb, var(--studio-green) 52%, var(--studio-line-strong));
+    background: linear-gradient(180deg, rgba(29, 42, 55, 0.98), rgba(13, 20, 29, 0.98));
+  }
+
+  .app-shell.mode-studio button:active {
+    transform: translateY(1px);
+  }
+
+  .app-shell.mode-studio .studio-chrome-command,
+  .app-shell.mode-studio .studio-chrome-playtest {
+    gap: 9px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-command-prefix {
+    display: inline-grid;
+    width: 18px;
+    min-width: 18px;
+    place-items: center;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    color: var(--studio-text);
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .studio-chrome-playtest {
+    border-color: rgba(97, 233, 131, 0.36);
+  }
+
+  .app-shell.mode-studio .studio-chrome-playtest .ui-icon {
+    color: var(--studio-green);
+  }
+
+  .app-shell.mode-studio .studio-chrome-utility {
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-utility span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio #left-pane,
+  .app-shell.mode-studio #right-pane,
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right {
+    grid-row: 2 / 3 !important;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    padding: 0;
+    overflow: hidden;
+    border-color: var(--studio-line-strong);
+    background:
+      linear-gradient(180deg, rgba(10, 18, 27, 0.96), rgba(7, 12, 18, 0.98));
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio #left-pane,
+  .app-shell.mode-studio .pane {
+    border-right: 1px solid var(--studio-line-strong);
+  }
+
+  .app-shell.mode-studio #right-pane,
+  .app-shell.mode-studio .pane-right {
+    border-left: 1px solid var(--studio-line-strong);
+    overflow-y: auto;
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] .pane,
+  .app-shell.mode-studio[data-focus-mode="true"] .pane-right {
+    display: none;
+  }
+
+  .app-shell.mode-studio .workspace-header,
+  .app-shell.mode-studio[data-studio-tab="workbench"] #navigator,
+  .app-shell.mode-studio .file-loader-section {
+    display: none;
+  }
+
+  .app-shell.mode-studio #workspace-actions {
+    height: 100%;
+  }
+
+  .app-shell.mode-studio .workspace-actions {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 18px 14px 14px 18px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-actions-head {
+    display: flex;
+    min-height: 24px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .app-shell.mode-studio .workspace-actions-head b {
+    color: var(--studio-muted);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio .studio-mission-strip {
+    position: relative;
+    display: grid;
+    gap: 0;
+    padding-left: 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-strip::before {
+    position: absolute;
+    top: 38px;
+    bottom: 38px;
+    left: 34px;
+    width: 1px;
+    background: rgba(210, 226, 238, 0.14);
+    content: "";
+  }
+
+  .app-shell.mode-studio .studio-mission-node {
+    position: relative;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 44px;
+    gap: 10px;
+    min-height: 76px;
+    align-items: center;
+    padding: 9px 12px 9px 13px;
+    border: 0;
+    border-bottom: 1px solid var(--studio-line-soft);
+    border-left: 1px solid transparent;
+    border-radius: 0;
+    background: transparent !important;
+    color: var(--studio-muted);
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .studio-mission-node:first-child {
+    border-radius: 7px 7px 0 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-node:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.state-next,
+  .app-shell.mode-studio .studio-mission-node.is-active {
+    border-left-color: var(--studio-green) !important;
+    background: rgba(255, 255, 255, 0.018) !important;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-ok {
+    border-left-color: rgba(97, 233, 131, 0.26);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn,
+  .app-shell.mode-studio .studio-mission-node.is-partial {
+    border-left-color: rgba(255, 176, 64, 0.18);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-pending,
+  .app-shell.mode-studio .studio-mission-node.is-planned {
+    border-left-color: rgba(174, 185, 198, 0.42);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-fail,
+  .app-shell.mode-studio .studio-mission-node.is-blocked,
+  .app-shell.mode-studio .studio-mission-node.is-unsupported {
+    border-left-color: rgba(255, 95, 129, 0.3);
+  }
+
+  .app-shell.mode-studio .studio-mission-step {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid var(--studio-line-strong);
+    border-radius: 7px;
+    background: linear-gradient(180deg, #111b25, #070b10);
+    color: var(--studio-muted);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.state-next .studio-mission-step,
+  .app-shell.mode-studio .studio-mission-node.is-ok .studio-mission-step {
+    border-color: rgba(97, 233, 131, 0.44);
+    color: var(--studio-green);
+  }
+
+  .app-shell.mode-studio .mission-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .app-shell.mode-studio .studio-mission-main {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+  }
+
+  .app-shell.mode-studio .studio-mission-main strong {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 7px;
+    color: var(--studio-text);
+    font-size: 11.8px;
+    font-weight: 850;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-mission-main em {
+    color: var(--studio-muted);
+    font-style: normal;
+  }
+
+  .app-shell.mode-studio .studio-mission-main small,
+  .app-shell.mode-studio .studio-mission-detail {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-dim);
+    font-size: 10.6px;
+    line-height: 1.34;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-mission-detail {
+    grid-column: 2 / -1;
+    margin-top: -4px;
+    font-size: 10.2px;
+  }
+
+  .app-shell.mode-studio .studio-mission-state {
+    display: grid;
+    min-width: 44px;
+    min-height: 24px;
+    place-items: center;
+    border: 1px solid var(--studio-line);
+    border-radius: 6px;
+    background: var(--studio-field);
+    color: var(--studio-muted);
+    font-size: 10.5px;
+    font-weight: 850;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.state-next .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.is-ok .studio-mission-state {
+    border-color: rgba(97, 233, 131, 0.34);
+    color: var(--studio-green);
+  }
+
+  .app-shell.mode-studio .studio-project-open {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 48px;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .app-shell.mode-studio .studio-project-open button {
+    min-height: 40px;
+  }
+
+  .app-shell.mode-studio .stage {
+    grid-row: 2 / 3 !important;
+    position: relative;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 80px minmax(0, 1fr) 168px;
+    gap: 16px;
+    min-width: 0;
+    min-height: 0;
+    padding: 14px;
+    overflow: hidden;
+    border-inline: 1px solid rgba(0, 0, 0, 0.82);
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      #030608;
+    background-size: 32px 32px, 32px 32px, auto;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.92);
+  }
+
+  .app-shell.mode-studio .stage-canvas {
+    position: relative;
+    z-index: 1;
+    grid-row: 2;
+    grid-column: 1;
+    width: min(100%, 1040px);
+    height: 100%;
+    min-height: 0;
+    justify-self: center;
+    align-self: stretch;
+    border: 1px solid rgba(218, 232, 244, 0.18);
+    border-radius: 7px;
+    background: #020303;
+    box-shadow:
+      0 18px 42px rgba(0, 0, 0, 0.38),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.72);
+    filter: brightness(1.08) contrast(1.04) saturate(1.06);
+  }
+
+  .app-shell.mode-studio .round-hud {
+    position: relative !important;
+    inset: auto !important;
+    z-index: 4;
+    grid-row: 1;
+    grid-column: 1;
+    width: min(100%, 1040px);
+    justify-self: center;
+    transform: none;
+    pointer-events: none;
+  }
+
+  .app-shell.mode-studio .round-hud-panel {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) 78px minmax(180px, 1fr);
+    gap: 16px;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 10px 14px 8px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.mode-studio .hud-fighter {
+    gap: 7px;
+  }
+
+  .app-shell.mode-studio .hud-fighter-top {
+    align-items: center;
+    gap: 12px;
+    color: var(--studio-text);
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .hud-fighter-name {
+    font-weight: 850;
+  }
+
+  .app-shell.mode-studio .hud-fighter-role,
+  .app-shell.mode-studio .hud-fighter-top .mono {
+    color: var(--studio-muted);
+    font-size: 10.5px;
+  }
+
+  .app-shell.mode-studio .hud-meter {
+    height: 14px;
+    border: 1px solid rgba(244, 247, 251, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.62),
+      0 0 0 1px rgba(0, 0, 0, 0.36);
+  }
+
+  .app-shell.mode-studio .hud-meter span {
+    border-radius: inherit;
+  }
+
+  .app-shell.mode-studio .hud-fighter.left .hud-life span {
+    background: linear-gradient(90deg, #5fe082, #d4f477) !important;
+  }
+
+  .app-shell.mode-studio .hud-fighter.right .hud-life span {
+    background: linear-gradient(90deg, #ff5f81, #ff7f9b) !important;
+  }
+
+  .app-shell.mode-studio .hud-power {
+    height: 4px;
+    margin-inline: 22%;
+    border-color: rgba(118, 167, 255, 0.24);
+  }
+
+  .app-shell.mode-studio .hud-power span {
+    background: var(--studio-blue) !important;
+  }
+
+  .app-shell.mode-studio .round-center {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 2px;
+    border-inline: 0 !important;
+    color: var(--studio-muted);
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .round-center strong {
+    color: var(--studio-text);
+    font-size: 31px;
+    font-weight: 850;
+    line-height: 0.9;
+  }
+
+  .app-shell.mode-studio .round-state,
+  .app-shell.mode-studio .round-stage {
+    color: var(--studio-muted);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio .stage-toolbar {
+    --stage-toolbar-cell-size: 40px;
+    --stage-toolbar-label-width: 0px;
+    --stage-toolbar-speed-width: 72px;
+    --stage-toolbar-icon-size: 17px;
+    --stage-toolbar-edge: rgba(218, 232, 244, 0.18);
+    --stage-toolbar-line: rgba(218, 232, 244, 0.12);
+    --stage-toolbar-bg: rgba(13, 20, 28, 0.92);
+    --stage-toolbar-cell-bg: rgba(14, 22, 31, 0.96);
+    --stage-toolbar-label-bg: rgba(7, 11, 16, 0.95);
+    --stage-toolbar-hover-bg: rgba(26, 40, 54, 0.98);
+    --stage-toolbar-text: var(--studio-text);
+    --stage-toolbar-muted: var(--studio-dim);
+    --stage-toolbar-icon: var(--studio-muted);
+    --stage-toolbar-select-bg: rgba(7, 11, 16, 0.98);
+    right: auto;
+    bottom: 188px;
+    left: 50%;
+    z-index: 5;
+    width: max-content;
+    min-width: 0;
+    max-width: min(760px, calc(100% - 84px));
+    border-radius: 8px;
+    transform: translateX(-50%);
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-label {
+    display: none;
+  }
+
+  .app-shell.mode-studio .stage-status,
+  .app-shell.mode-studio .touch-controls {
+    display: none;
+  }
+
+  .app-shell.mode-studio .studio-stage-deck {
+    position: relative;
+    z-index: 4;
+    grid-row: 3;
+    grid-column: 1;
+    width: min(100%, 1040px);
+    justify-self: center;
+    pointer-events: auto;
+  }
+
+  .app-shell.mode-studio .studio-stage-deck:empty {
+    display: none;
+  }
+
+  .app-shell.mode-studio .studio-command-deck {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.9fr);
+    gap: 10px;
+    height: 100%;
+    align-items: stretch;
+  }
+
+  .app-shell.mode-studio .studio-command-deck-main,
+  .app-shell.mode-studio .studio-command-deck-status,
+  .app-shell.mode-studio .pro-health-card,
+  .app-shell.mode-studio .pro-inspector-section,
+  .app-shell.mode-studio .pro-selected-asset {
+    min-width: 0;
+    border: 1px solid var(--studio-line-strong);
+    border-radius: 7px;
+    background:
+      linear-gradient(180deg, rgba(15, 25, 35, 0.96), rgba(7, 12, 18, 0.96)) !important;
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  }
+
+  .app-shell.mode-studio .studio-command-deck-main {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 17px 12px 15px;
+  }
+
+  .app-shell.mode-studio .studio-command-deck h2 {
+    margin: 0;
+    color: var(--studio-text);
+    font-size: 21px;
+    font-weight: 850;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .studio-command-deck p {
+    max-width: 56ch;
+    margin: 0;
+    color: var(--studio-muted);
+    font-size: 12.3px;
+    line-height: 1.42;
+  }
+
+  .app-shell.mode-studio .deck-action-row {
+    display: grid;
+    grid-template-columns: minmax(168px, 1.45fr) repeat(3, minmax(76px, 0.64fr));
+    gap: 6px;
+    align-items: end;
+  }
+
+  .app-shell.mode-studio .deck-action-row button,
+  .app-shell.mode-studio .pro-action-bank button,
+  .app-shell.mode-studio .pro-primary-action,
+  .app-shell.mode-studio .deck-review-link {
+    gap: 9px;
+    padding: 0 12px;
+  }
+
+  .app-shell.mode-studio .deck-action-row button:not(.deck-primary-action) {
+    gap: 7px;
+    padding: 0 8px;
+  }
+
+  .app-shell.mode-studio .deck-action-row .deck-primary-action {
+    border-color: rgba(97, 233, 131, 0.5);
+    background: linear-gradient(180deg, #72f08c, #39d965) !important;
+    color: #04100a !important;
+    box-shadow:
+      0 8px 18px rgba(57, 217, 101, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  }
+
+  .app-shell.mode-studio .deck-action-row .deck-primary-action:hover,
+  .app-shell.mode-studio .deck-action-row .deck-primary-action:focus-visible {
+    background: linear-gradient(180deg, #8af59f, #45df70);
+    color: #031006;
+  }
+
+  .app-shell.mode-studio .studio-command-deck-status {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 15px 16px;
+  }
+
+  .app-shell.mode-studio .studio-readiness-panel {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+  }
+
+  .app-shell.mode-studio .studio-health-orb {
+    display: grid;
+    width: 92px;
+    height: 92px;
+    place-items: center;
+    align-content: center;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at center, #0b1118 0%, #0b1118 45%, transparent 46%, transparent 100%),
+      conic-gradient(from -90deg, #ff5f81 0%, #ff5f81 var(--health-score), rgba(255, 255, 255, 0.12) var(--health-score), rgba(255, 255, 255, 0.12) 100%) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.2);
+    color: var(--studio-text);
+  }
+
+  .app-shell.mode-studio .studio-health-orb b {
+    display: block;
+    font-size: 25px;
+    font-weight: 820;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio .studio-health-orb small {
+    display: block;
+    color: var(--studio-muted);
+    font-size: 11px;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio .studio-health-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 12px;
+  }
+
+  .app-shell.mode-studio .studio-health-stats span {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio .studio-health-stats b {
+    color: var(--studio-text);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .studio-health-stats small {
+    color: var(--studio-muted);
+    font-size: 10.5px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio .studio-health-stats .is-warn b,
+  .app-shell.mode-studio .studio-command-deck-status.is-warn .studio-health-stats span:last-child b {
+    color: var(--studio-amber);
+  }
+
+  .app-shell.mode-studio .studio-health-stats .is-error b,
+  .app-shell.mode-studio .studio-command-deck-status.is-error .studio-health-stats span:last-child b {
+    color: var(--studio-coral);
+  }
+
+  .app-shell.mode-studio .deck-review-link {
+    min-height: 40px;
+    justify-content: flex-start;
+    color: var(--studio-muted);
+  }
+
+  .app-shell.mode-studio #right-pane,
+  .app-shell.mode-studio .pane-right {
+    padding: 20px 14px 18px !important;
+  }
+
+  .app-shell.mode-studio .studio-pro-inspector {
+    display: grid;
+    gap: 18px;
+  }
+
+  .app-shell.mode-studio .studio-pro-inspector-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 8px 12px;
+    align-items: start;
+  }
+
+  .app-shell.mode-studio .studio-pro-inspector-head .panel-kicker {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell.mode-studio .studio-pro-inspector-head h2 {
+    margin: 0;
+    color: var(--studio-text);
+    font-size: 14px;
+    font-weight: 820;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .pro-health-badge {
+    min-width: 72px;
+    padding: 5px 8px;
+    border: 1px solid var(--studio-line);
+    border-radius: 999px;
+    background: var(--studio-field);
+    color: var(--studio-muted);
+    font-size: 11px;
+    font-weight: 850;
+    text-align: center;
+  }
+
+  .app-shell.mode-studio .pro-health-badge.is-error,
+  .app-shell.mode-studio .pro-health-card.is-error strong {
+    color: var(--studio-coral);
+  }
+
+  .app-shell.mode-studio .pro-health-badge.is-warn,
+  .app-shell.mode-studio .pro-health-card.is-warn strong {
+    color: var(--studio-amber);
+  }
+
+  .app-shell.mode-studio .pro-health-card {
+    display: grid;
+    gap: 12px;
+    padding: 17px 16px;
+    border-left: 1px solid var(--studio-green);
+  }
+
+  .app-shell.mode-studio .pro-health-card.is-warn {
+    border-left-color: var(--studio-amber);
+  }
+
+  .app-shell.mode-studio .pro-health-card.is-error {
+    border-left-color: var(--studio-coral);
+  }
+
+  .app-shell.mode-studio .pro-health-card small,
+  .app-shell.mode-studio .pro-warning-row small,
+  .app-shell.mode-studio .pro-selected-asset small,
+  .app-shell.mode-studio .pro-selected-asset em {
+    color: var(--studio-muted);
+    font-size: 11.5px;
+    line-height: 1.28;
+  }
+
+  .app-shell.mode-studio .pro-health-card strong {
+    color: var(--studio-text);
+    font-size: 28px;
+    font-weight: 850;
+    line-height: 1.12;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .pro-health-track {
+    display: block;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .app-shell.mode-studio .pro-health-track i {
+    display: block;
+    width: var(--health-score);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--studio-coral), #ff7d5f) !important;
+  }
+
+  .app-shell.mode-studio .pro-health-card p {
+    margin: 0;
+    color: var(--studio-muted);
+    font-size: 12.4px;
+    line-height: 1.45;
+  }
+
+  .app-shell.mode-studio .pro-primary-action {
+    justify-content: flex-start;
+    min-height: 42px;
+  }
+
+  .app-shell.mode-studio .pro-inspector-section {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .app-shell.mode-studio .pro-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-shell.mode-studio .pro-section-head b {
+    color: var(--studio-muted);
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .pro-warning-list {
+    display: grid;
+    border: 1px solid var(--studio-line-soft);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio .pro-warning-row {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) minmax(50px, max-content);
+    gap: 11px;
+    align-items: center;
+    min-height: 62px;
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 1px solid var(--studio-line-soft);
+    border-left: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--studio-text);
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .pro-warning-row.is-priority {
+    border-left-color: rgba(255, 176, 64, 0.9);
+    background: rgba(255, 176, 64, 0.025);
+  }
+
+  .app-shell.mode-studio .pro-warning-row:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .pro-warning-row.is-fail,
+  .app-shell.mode-studio .pro-warning-row.is-blocked,
+  .app-shell.mode-studio .pro-warning-row.is-unsupported {
+    border-left-color: rgba(255, 95, 129, 0.72);
+  }
+
+  .app-shell.mode-studio .pro-warning-row > .ui-icon {
+    justify-self: center;
+    color: rgba(255, 176, 64, 0.86);
+  }
+
+  .app-shell.mode-studio .pro-warning-row:not(.is-priority) > .ui-icon {
+    opacity: 0.78;
+  }
+
+  .app-shell.mode-studio .pro-warning-row span,
+  .app-shell.mode-studio .pro-selected-asset span:not(.pro-asset-thumb) {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio .pro-warning-row strong,
+  .app-shell.mode-studio .pro-selected-asset strong {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-text);
+    font-size: 12px;
+    font-weight: 820;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio .pro-warning-row small,
+  .app-shell.mode-studio .pro-selected-asset em {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio .pro-selected-asset strong,
+  .app-shell.mode-studio .pro-selected-asset small,
+  .app-shell.mode-studio .pro-selected-asset em {
+    overflow: hidden;
+    line-height: 1.18;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .pro-warning-row em {
+    align-self: center;
+    color: var(--studio-muted);
+    font-size: 11px;
+    font-style: normal;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .pro-empty-note {
+    min-height: 48px;
+    padding: 12px;
+    border: 1px solid var(--studio-line-soft);
+    border-radius: 7px;
+    color: var(--studio-muted);
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .pro-selected-asset {
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 12px;
+    min-height: 76px;
+    align-items: center;
+    padding: 12px;
+    color: var(--studio-text);
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .pro-asset-thumb {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border: 1px solid var(--studio-line);
+    border-radius: 7px;
+    background: linear-gradient(180deg, #132235, #07101a);
+    color: var(--studio-blue);
+  }
+
+  .app-shell.mode-studio .pro-asset-thumb .ui-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .app-shell.mode-studio :is(
+    .studio-chrome-actions button,
+    .studio-project-open button,
+    .deck-action-row button,
+    .pro-primary-action,
+    .deck-review-link,
+    .pro-warning-row,
+    .pro-selected-asset
+  ) .ui-icon {
+    display: block;
+    width: var(--studio-control-icon);
+    height: var(--studio-control-icon);
+    flex: 0 0 var(--studio-control-icon);
+  }
+
+  .app-shell.mode-studio :is(
+    .studio-chrome-actions button,
+    .studio-project-open button,
+    .deck-action-row button,
+    .pro-primary-action,
+    .deck-review-link
+  ) > span:not(.studio-chrome-command-prefix) {
+    display: inline-flex;
+    min-width: 0;
+    min-height: var(--studio-control-icon);
+    align-items: center;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .pro-action-bank {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .app-shell.mode-studio .badge,
+  .app-shell.mode-studio .chip,
+  .app-shell.mode-studio .status-pill,
+  .app-shell.mode-studio .status-badge {
+    border: 1px solid var(--studio-line);
+    border-radius: 999px;
+    background: var(--studio-field);
+    color: var(--studio-muted);
+    font-size: 10.5px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio .status-badge.ok,
+  .app-shell.mode-studio .badge.ok,
+  .app-shell.mode-studio .is-ok b {
+    color: var(--studio-green);
+  }
+
+  .app-shell.mode-studio .status-badge.warn,
+  .app-shell.mode-studio .badge.warn {
+    color: var(--studio-amber);
+  }
+
+  .app-shell.mode-studio .status-badge.error,
+  .app-shell.mode-studio .badge.error {
+    color: var(--studio-coral);
+  }
+
+  .app-shell.mode-studio .ui-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+
+  .app-shell.mode-studio .console {
+    grid-column: 1 / -1;
+    grid-row: 3 / 4 !important;
+    display: grid;
+    grid-template-rows: 40px minmax(0, 1fr);
+    min-height: var(--studio-console-height);
+    overflow: hidden;
+    border-top: 1px solid rgba(210, 226, 238, 0.12);
+    background: #04080c;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  }
+
+  .app-shell.mode-studio .console,
+  .app-shell.mode-studio .console * {
+    font-family: "Cascadia Mono", Consolas, monospace;
+  }
+
+  .app-shell.mode-studio .console-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 40px;
+    align-items: stretch;
+    border-bottom: 1px solid rgba(210, 226, 238, 0.09);
+    background: #050a0f;
+  }
+
+  .app-shell.mode-studio .console-title {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+  }
+
+  .app-shell.mode-studio .console-title strong {
+    display: inline-grid;
+    min-width: 92px;
+    height: 40px;
+    align-items: center;
+    padding: 0 16px 0 18px;
+    border-right: 1px solid rgba(210, 226, 238, 0.08);
+    color: var(--studio-text);
+    font-size: 11px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .console-title span {
+    min-width: 0;
+    overflow: hidden;
+    padding-inline: 14px;
+    color: color-mix(in srgb, var(--studio-muted) 82%, transparent);
+    font-size: 11.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .console-metrics {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-inline: 14px;
+  }
+
+  .app-shell.mode-studio .console-metrics .badge {
+    min-height: 21px;
+    padding: 0 8px;
+    border-color: rgba(210, 226, 238, 0.12);
+    background: rgba(255, 255, 255, 0.025);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .console-list {
+    display: block;
+    min-height: 0;
+    max-height: none;
+    overflow: auto;
+    padding: 0 0 8px;
+    background: #04080c;
+  }
+
+  .app-shell.mode-studio .console-list > .log-line {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr) minmax(112px, 180px);
+    min-height: 24px;
+    align-items: center;
+    padding: 2px 18px;
+    border-bottom: 1px solid rgba(210, 226, 238, 0.06);
+    color: var(--studio-muted);
+    font-size: 11.5px;
+  }
+
+  .app-shell.mode-studio .console-list > .log-line span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .console-list > .log-line span:first-child {
+    display: inline-grid;
+    min-height: 18px;
+    max-width: 48px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, currentColor 26%, var(--studio-line));
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.018);
+    font-size: 9.5px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .console-list > .log-line span:last-child {
+    color: var(--studio-dim);
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .log-level-error {
+    color: var(--studio-coral);
+  }
+
+  .app-shell.mode-studio .log-level-warning {
+    color: var(--studio-amber);
+  }
+
+  .app-shell.mode-studio .log-level-info {
+    color: var(--studio-blue);
+  }
+
+  .app-shell.mode-studio .studio-tab-section,
+  .app-shell.mode-studio .section,
+  .app-shell.mode-studio .section-emphasis,
+  .app-shell.mode-studio .studio-command-center,
+  .app-shell.mode-studio .asset-command-center,
+  .app-shell.mode-studio .build-command-center,
+  .app-shell.mode-studio .evidence-command-center,
+  .app-shell.mode-studio .workbench-ops-section,
+  .app-shell.mode-studio .workbench-ledger-panel,
+  .app-shell.mode-studio .studio-workbench-details,
+  .app-shell.mode-studio .acceptance-gates-section {
+    border: 1px solid var(--studio-line);
+    border-radius: 8px;
+    background: var(--studio-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .pane::-webkit-scrollbar,
+  .app-shell.mode-studio .pane-right::-webkit-scrollbar,
+  .app-shell.mode-studio .console-list::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .app-shell.mode-studio .pane::-webkit-scrollbar-track,
+  .app-shell.mode-studio .pane-right::-webkit-scrollbar-track,
+  .app-shell.mode-studio .console-list::-webkit-scrollbar-track {
+    background: #05080c;
+  }
+
+  .app-shell.mode-studio .pane::-webkit-scrollbar-thumb,
+  .app-shell.mode-studio .pane-right::-webkit-scrollbar-thumb,
+  .app-shell.mode-studio .console-list::-webkit-scrollbar-thumb {
+    border: 2px solid #05080c;
+    border-radius: 999px;
+    background: rgba(174, 185, 198, 0.36);
+  }
+
+  @media (max-width: 1360px) {
+    .app-shell.mode-studio {
+      --studio-left-width: 292px;
+      --studio-right-width: 310px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-brand {
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 10px;
+      padding: 0 14px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-brand-mark {
+      width: 38px;
+      height: 38px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-context {
+      grid-template-columns: minmax(180px, 1.08fr) minmax(124px, 0.76fr) minmax(82px, 0.48fr) minmax(150px, 0.9fr);
+    }
+
+    .app-shell.mode-studio .studio-chrome-field {
+      gap: 7px;
+      padding: 0 14px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-value {
+      gap: 6px;
+      font-size: 11.5px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-value b {
+      font-size: 12px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-actions {
+      grid-template-columns: minmax(96px, 1fr) minmax(96px, 1fr) 42px;
+      gap: 8px;
+      padding: 0 14px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-actions button {
+      min-height: 40px;
+      padding-inline: 11px;
+    }
+
+    .app-shell.mode-studio .studio-chrome-utility {
+      width: 42px;
+      min-width: 42px;
+      padding: 0;
+    }
+
+    .app-shell.mode-studio .studio-command-deck {
+      grid-template-columns: minmax(0, 1fr) minmax(238px, 0.62fr);
+    }
+
+    .app-shell.mode-studio .deck-action-row {
+      grid-template-columns: minmax(132px, 1.1fr) repeat(3, minmax(70px, 0.62fr));
+      gap: 5px;
+    }
+
+    .app-shell.mode-studio .deck-action-row button:not(.deck-primary-action) {
+      gap: 5px;
+      padding: 0 7px;
+    }
+
+    .app-shell.mode-studio .studio-readiness-panel {
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .app-shell.mode-studio .studio-health-orb {
+      width: 84px;
+      height: 84px;
+    }
+
+    .app-shell.mode-studio .studio-health-stats {
+      gap: 5px 8px;
+    }
+  }
+
+  @media (max-height: 860px) {
+    .app-shell.mode-studio {
+      --studio-console-height: 128px;
+    }
+
+    .app-shell.mode-studio .workspace-actions {
+      gap: 8px;
+      padding: 14px 10px 12px 14px;
+    }
+
+    .app-shell.mode-studio .workspace-actions-head {
+      min-height: 22px;
+    }
+
+    .app-shell.mode-studio .studio-mission-strip::before {
+      top: 32px;
+      bottom: 32px;
+      left: 30px;
+    }
+
+    .app-shell.mode-studio .studio-mission-node {
+      grid-template-columns: 36px minmax(0, 1fr) 42px;
+      gap: 8px;
+      min-height: 62px;
+      padding: 6px 10px 6px 11px;
+    }
+
+    .app-shell.mode-studio .studio-mission-step {
+      width: 31px;
+      height: 31px;
+    }
+
+    .app-shell.mode-studio .mission-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .app-shell.mode-studio .studio-mission-main {
+      gap: 3px;
+    }
+
+    .app-shell.mode-studio .studio-mission-main strong {
+      gap: 5px;
+      font-size: 11.2px;
+      line-height: 1.02;
+    }
+
+    .app-shell.mode-studio .studio-mission-main small {
+      font-size: 10.2px;
+      line-height: 1.2;
+    }
+
+    .app-shell.mode-studio .studio-mission-detail {
+      margin-top: -4px;
+      font-size: 9.8px;
+      line-height: 1.2;
+    }
+
+    .app-shell.mode-studio .studio-mission-state {
+      min-width: 40px;
+      min-height: 22px;
+      font-size: 10px;
+    }
+
+    .app-shell.mode-studio .stage {
+      grid-template-rows: 76px minmax(0, 1fr) 168px;
+      gap: 14px;
+    }
+
+    .app-shell.mode-studio #right-pane,
+    .app-shell.mode-studio .pane-right {
+      padding: 12px 10px 10px !important;
+    }
+
+    .app-shell.mode-studio .studio-pro-inspector {
+      gap: 8px;
+    }
+
+    .app-shell.mode-studio .studio-pro-inspector-head {
+      gap: 6px 10px;
+    }
+
+    .app-shell.mode-studio .pro-health-card {
+      gap: 7px;
+      padding: 11px 14px;
+    }
+
+    .app-shell.mode-studio .pro-health-card strong {
+      font-size: 25px;
+    }
+
+    .app-shell.mode-studio .pro-health-card p {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .app-shell.mode-studio .pro-inspector-section {
+      gap: 7px;
+      padding: 10px 12px;
+    }
+
+    .app-shell.mode-studio .pro-warning-row {
+      min-height: 48px;
+      padding: 7px 10px;
+    }
+
+    .app-shell.mode-studio .pro-selected-asset {
+      min-height: 64px;
+      padding: 9px 10px;
+    }
+
+    .app-shell.mode-studio .console-list > .log-line {
+      min-height: 22px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .app-shell.mode-studio *,
+    .app-shell.mode-studio *::before,
+    .app-shell.mode-studio *::after {
+      animation: none !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+    }
+
+    .app-shell.mode-studio button:active {
+      transform: none;
+    }
+  }
+}

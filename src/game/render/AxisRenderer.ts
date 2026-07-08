@@ -100,10 +100,12 @@ export class AxisRenderer {
       this.group.add(createRect(0, 64, stageWidth, 110, this.materials.farWall, -9));
       this.group.add(createRect(0, -42, stageWidth, 84, this.materials.floorFill, -8));
     }
-    const left = options.stage.bounds?.left ?? -320;
-    const right = options.stage.bounds?.right ?? 320;
-    this.group.add(createRect(left, -42, 3, 84, this.materials.stageLimit, -2));
-    this.group.add(createRect(right, -42, 3, 84, this.materials.stageLimit, -2));
+    if (options.showAxis) {
+      const left = options.stage.bounds?.left ?? -320;
+      const right = options.stage.bounds?.right ?? 320;
+      this.group.add(createRect(left, -42, 3, 84, this.materials.stageLimit, -2));
+      this.group.add(createRect(right, -42, 3, 84, this.materials.stageLimit, -2));
+    }
     if (options.showGrid) {
       for (let x = -options.width; x <= options.width; x += 50) {
         this.group.add(createRect(x, 0, 1, options.height * 2, this.materials.grid, -1));
