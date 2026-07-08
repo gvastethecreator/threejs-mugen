@@ -9,6 +9,7 @@ export type RuntimeBoundsControllerSource = Pick<ControllerIr, "params" | "type"
 export type RuntimeBoundsControllerResult = {
   applied: boolean;
   controllerType?: BoundsControllerOp["controllerType"] | Extract<CollisionControllerOp, { controllerType: "playerpush" }>["controllerType"];
+  operation?: Extract<CollisionControllerOp, { controllerType: "playerpush" }>;
 };
 
 export class RuntimeBoundsControllerWorld {
@@ -18,8 +19,9 @@ export class RuntimeBoundsControllerWorld {
     operation?: Extract<CollisionControllerOp, { controllerType: "playerpush" }>,
     context: RuntimeControllerEvaluationContext = {},
   ): RuntimeBoundsControllerResult {
-    state.playerPush = operation?.enabled ?? (numberParam(controller, state, context, "value") ?? 1) !== 0;
-    return { applied: true, controllerType: "playerpush" };
+    const appliedOperation = operation ?? resolveRuntimePlayerPushControllerOperation(controller, state, context);
+    state.playerPush = appliedOperation.enabled;
+    return { applied: true, controllerType: "playerpush", operation: appliedOperation };
   }
 
   applyPosFreezeController(
@@ -53,6 +55,18 @@ export class RuntimeBoundsControllerWorld {
     };
     return { applied: true, controllerType: "screenbound" };
   }
+}
+
+export function resolveRuntimePlayerPushControllerOperation(
+  controller: RuntimeBoundsControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): Extract<CollisionControllerOp, { controllerType: "playerpush" }> {
+  return {
+    kind: "collision",
+    controllerType: "playerpush",
+    enabled: (numberParam(controller, state, context, "value") ?? 1) !== 0,
+  };
 }
 
 function numberParam(

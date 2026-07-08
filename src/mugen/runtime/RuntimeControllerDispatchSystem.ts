@@ -1,6 +1,7 @@
 import type { ControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
+import { resolveRuntimePlayerPushControllerOperation } from "./BoundsControllerSystem";
 import { resolveRuntimeKinematicControllerOperation } from "./KinematicControllerSystem";
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
@@ -70,6 +71,9 @@ function resolveDynamicRecordedOperation(
     controller.normalizedType === "posadd"
   ) {
     return resolveRuntimeKinematicControllerOperation(controller, runtime, context);
+  }
+  if (controller.normalizedType === "playerpush") {
+    return resolveRuntimePlayerPushControllerOperation(controller, runtime, context);
   }
   return undefined;
 }

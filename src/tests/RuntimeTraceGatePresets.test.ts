@@ -10364,7 +10364,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors.some((actor) => actor.playerPush === false)).toBe(true);
   });
 
-  it("creates a synthetic imported dynamic PlayerPush artifact without typed collision evidence", () => {
+  it("creates a synthetic imported dynamic PlayerPush artifact with typed collision evidence", () => {
     const artifact = createSyntheticImportedDynamicPlayerPushTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -10385,7 +10385,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.PlayerPush).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["collision:playerpush"]).toBeUndefined();
+    expect(evidence?.executedOperations["collision:playerpush"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

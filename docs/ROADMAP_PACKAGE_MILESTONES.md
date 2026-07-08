@@ -494,15 +494,15 @@ Previous R1 required dynamic sound-pan trace gate
   -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
   -> no score movement; typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
-Previous R1 required dynamic PlayerPush trace gate
-  -> synthetic-imported-playerpush-dynamic.json checksum 13c5f954 / final checksum 0627d0e5 is required in qa:trace
+Current R1 required dynamic PlayerPush typed-collision trace gate
+  -> synthetic-imported-playerpush-dynamic.json checksum b7775652 / final checksum 92aca1cd is required in qa:trace
   -> imported active state seeds var(0)=0
   -> active state executes PlayerPush value = var(0)
-  -> dynamic PlayerPush resolves through runtime expression fallback instead of typed collision:playerpush evidence
+  -> dynamic PlayerPush resolves through runtime expression fallback and now records typed collision:playerpush evidence after resolution
   -> actor-frame/final evidence requires playerPush = false
-  -> that checkpoint passed 453/453 artifacts, 423 required and 30 optional
+  -> current checkpoint passed 517/517 artifacts, 486 required and 31 optional
   -> official Elecbyte docs define PlayerPush value as a one-tick push-checking flag and numeric controller params as expression-capable
-  -> no score movement; dynamic typed-operation lowering for PlayerPush, exact overlap resolution, team/helper ownership, exact tick order, and full constraint parity remain blocked
+  -> no score movement; exact overlap resolution, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
 Current R1 required dynamic Width typed-collision trace gate
   -> synthetic-imported-width-dynamic.json checksum 51554c91 / final checksum 84a85277 remains required in qa:trace

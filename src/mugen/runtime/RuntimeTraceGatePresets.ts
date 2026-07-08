@@ -6049,7 +6049,7 @@ export function createSyntheticImportedDynamicPlayerPushTraceArtifact(
       targetLabel: "Synthetic imported dynamic PlayerPush route",
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "VarSet", "PlayerPush", "HitDef"],
-      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredExecutedOperations: ["variable:varset", "collision:playerpush", "hitdef"],
       requiredActorFrames: [
         {
           actorId: "p1",
@@ -6061,7 +6061,7 @@ export function createSyntheticImportedDynamicPlayerPushTraceArtifact(
         },
       ],
       notes: [
-        "Synthetic imported dynamic PlayerPush trace proves active PlayerPush value can resolve through expression fallback and disable bounded body-push telemetry without typed collision:playerpush evidence. It does not claim dynamic typed-operation lowering, exact push overlap, helper/team ownership, or tick-order parity.",
+        "Synthetic imported dynamic PlayerPush trace proves active PlayerPush value can resolve through expression fallback, emit typed collision:playerpush telemetry, and disable bounded body-push telemetry. It does not claim exact push overlap, helper/team ownership, or tick-order parity.",
       ],
     },
   );
