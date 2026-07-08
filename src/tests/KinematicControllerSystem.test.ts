@@ -11,16 +11,18 @@ describe("RuntimeKinematicControllerWorld", () => {
     const world = new RuntimeKinematicControllerWorld();
     const state = runtimeState({ vel: { x: 3, y: 4 } });
 
-    world.applyController(
+    const typedResult = world.applyController(
       state,
       source("VelSet", { y: "Const(movement.y)" }),
       { kind: "kinematic", controllerType: "velset", x: -2 },
       { getConst: (name) => (name === "movement.y" ? 7 : undefined) },
     );
     expect(state.vel).toEqual({ x: -2, y: 7 });
+    expect(typedResult.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: -2, y: 7 });
 
-    world.applyController(state, source("VelSet", { value: "1 + 1, 9 - 4" }));
+    const dynamicResult = world.applyController(state, source("VelSet", { value: "1 + 1, 9 - 4" }));
     expect(state.vel).toEqual({ x: 2, y: 5 });
+    expect(dynamicResult.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: 2, y: 5 });
   });
 
   it("applies VelAdd and VelMul defaults without requiring both axes", () => {

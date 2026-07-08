@@ -1530,6 +1530,7 @@ export function createSyntheticImportedConstControllerParamTraceArtifact(
             { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
             { stateNo: 200, operation: "kinematic:velset" },
             { stateNo: 200, controller: "VelSet", name: "Const Controller Param Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
           ],
         },
       ],
@@ -1546,7 +1547,7 @@ export function createSyntheticImportedConstControllerParamTraceArtifact(
         },
       ],
       notes: [
-        "Synthetic imported Const controller-param trace proves bounded Const240p/Const480p/Const720p coordinate conversion can execute inside an active-state VelSet numeric parameter against a 640x480 player localcoord. The static seed VelSet provides typed kinematic evidence; the dynamic Const expression is proven through controller order and actor velocity telemetry. It does not claim broad coordinate translation across every controller param, exact renderer/screenpack viewport ownership, camera animation, helper/team namespaces, dynamic typed-operation lowering, score movement, or full MUGEN/IKEMEN coordinate parity.",
+        "Synthetic imported Const controller-param trace proves bounded Const240p/Const480p/Const720p coordinate conversion can execute inside an active-state VelSet numeric parameter against a 640x480 player localcoord and emit typed kinematic operation evidence after dynamic param resolution. It does not claim broad coordinate translation across every controller param, exact renderer/screenpack viewport ownership, camera animation, helper/team namespaces, dynamic typed-operation lowering beyond active-state VelSet, score movement, or full MUGEN/IKEMEN coordinate parity.",
       ],
     },
   );
@@ -5468,6 +5469,7 @@ export function createSyntheticImportedControllerParamBottomTraceArtifact(option
             { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
             { stateNo: 200, operation: "kinematic:velset" },
             { stateNo: 200, controller: "VelSet", name: "Bottom Controller Param Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
           ],
         },
       ],
@@ -5486,7 +5488,7 @@ export function createSyntheticImportedControllerParamBottomTraceArtifact(option
         },
       ],
       notes: [
-        "Synthetic imported controller-param bottom trace proves a bounded dynamic VelSet parameter that evaluates through a missing redirect is treated as 0 for current controller execution, matching Elecbyte's documented bottom-parameter fallback. The static seed VelSet provides typed kinematic evidence; the dynamic fallback is proven through controller order and actor velocity telemetry. It does not claim target/parent/root controller-param redirect support, dynamic-parameter typed lowering, recursive redirection, warning text, helper/team ownership, or full MUGEN/IKEMEN expression parity.",
+        "Synthetic imported controller-param bottom trace proves a bounded dynamic VelSet parameter that evaluates through a missing redirect is treated as 0 for current controller execution, matching Elecbyte's documented bottom-parameter fallback, and emits typed kinematic evidence after dynamic param resolution. It does not claim target/parent/root controller-param redirect support, dynamic-parameter typed lowering beyond active-state VelSet, recursive redirection, warning text, helper/team ownership, or full MUGEN/IKEMEN expression parity.",
       ],
     },
   );
@@ -5525,6 +5527,7 @@ export function createSyntheticImportedControllerParamTargetRedirectTraceArtifac
             { stateNo: 200, operation: "kinematic:velset" },
             { stateNo: 200, controller: "HitDef" },
             { stateNo: 200, controller: "VelSet", name: "Target Controller Param Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
           ],
         },
       ],
@@ -5544,7 +5547,7 @@ export function createSyntheticImportedControllerParamTargetRedirectTraceArtifac
         },
       ],
       notes: [
-        "Synthetic imported controller-param Target redirect trace proves a bounded dynamic VelSet parameter can read the current explicit HitDef target through Target(77), then use redirected Life data in current controller execution. The static seed VelSet provides typed kinematic evidence; the dynamic redirect is proven through target-link, controller order, and actor velocity telemetry. It does not claim parent/root controller-param redirects for players, dynamic-parameter typed lowering, recursive redirection, debug warning text, helper/team ownership, or full MUGEN/IKEMEN expression parity.",
+        "Synthetic imported controller-param Target redirect trace proves a bounded dynamic VelSet parameter can read the current explicit HitDef target through Target(77), then use redirected Life data in current controller execution and emit typed kinematic evidence after dynamic param resolution. It does not claim parent/root controller-param redirects for players, dynamic-parameter typed lowering beyond active-state VelSet, recursive redirection, debug warning text, helper/team ownership, or full MUGEN/IKEMEN expression parity.",
       ],
     },
   );
@@ -5582,6 +5585,7 @@ export function createSyntheticImportedControllerParamRootRedirectTraceArtifact(
             { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
             { stateNo: 200, operation: "kinematic:velset" },
             { stateNo: 200, controller: "VelSet", name: "Root Controller Param Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
           ],
         },
       ],
@@ -5600,7 +5604,7 @@ export function createSyntheticImportedControllerParamRootRedirectTraceArtifact(
         },
       ],
       notes: [
-        "Synthetic imported controller-param Root redirect trace proves a bounded dynamic VelSet parameter can read the current player's root context in current controller execution. The static seed VelSet provides typed kinematic evidence; the dynamic redirect is proven through controller order and actor velocity telemetry. It does not claim player Parent controller-param redirects, nested helper ancestry where root differs from parent, helper-spawned helpers, dynamic-parameter typed lowering, recursive redirection, debug warning text, team ownership, or full MUGEN/IKEMEN expression parity.",
+        "Synthetic imported controller-param Root redirect trace proves a bounded dynamic VelSet parameter can read the current player's root context in current controller execution and emit typed kinematic evidence after dynamic param resolution. It does not claim player Parent controller-param redirects, nested helper ancestry where root differs from parent, helper-spawned helpers, dynamic-parameter typed lowering beyond active-state VelSet, recursive redirection, debug warning text, team ownership, or full MUGEN/IKEMEN expression parity.",
       ],
     },
   );

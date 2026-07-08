@@ -2253,7 +2253,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.routedStates).toContain(200);
     expect(evidence?.executedStates).toContain(200);
     expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(2);
-    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(2);
     expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VelSet"]);
     expect(gate?.requirements.requiredExecutedOperations).toEqual(["kinematic:velset"]);
     expect(gate?.requirements.requiredControllerEventSequences).toEqual([
@@ -2265,6 +2265,7 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
           { stateNo: 200, operation: "kinematic:velset" },
           { stateNo: 200, controller: "VelSet", name: "Const Controller Param Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
         ],
       },
     ]);
@@ -9558,6 +9559,7 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
           { stateNo: 200, operation: "kinematic:velset" },
           { stateNo: 200, controller: "VelSet", name: "Bottom Controller Param Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
         ],
       },
     ]);
@@ -9577,7 +9579,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([200]));
     expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(2);
-    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(2);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -9627,6 +9629,7 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 200, operation: "kinematic:velset" },
           { stateNo: 200, controller: "HitDef" },
           { stateNo: 200, controller: "VelSet", name: "Target Controller Param Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
         ],
       },
     ]);
@@ -9648,7 +9651,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(2);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(2);
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
@@ -9699,6 +9702,7 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
           { stateNo: 200, operation: "kinematic:velset" },
           { stateNo: 200, controller: "VelSet", name: "Root Controller Param Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
         ],
       },
     ]);
@@ -9718,7 +9722,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([200]));
     expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(2);
-    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(2);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

@@ -1,6 +1,7 @@
 import type { ControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
+import { resolveRuntimeKinematicControllerOperation } from "./KinematicControllerSystem";
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -41,16 +42,28 @@ export class RuntimeControllerDispatchWorld {
     };
 
     hooks.recordController?.(actor, controller.source);
+    const resolvedOperation = controller.operation ?? resolveDynamicRecordedOperation(controller, actor.runtime, context);
     actor.runtime = (hooks.executeController ?? executeControllerIr)(controller, actor.runtime, reportUnsupported, context);
 
-    if (controller.operation) {
-      hooks.recordOperation?.(actor, controller.operation);
+    if (resolvedOperation) {
+      hooks.recordOperation?.(actor, resolvedOperation);
     }
 
     return {
       unsupported,
       recordedController: Boolean(hooks.recordController),
-      recordedOperation: Boolean(controller.operation && hooks.recordOperation),
+      recordedOperation: Boolean(resolvedOperation && hooks.recordOperation),
     };
   }
+}
+
+function resolveDynamicRecordedOperation(
+  controller: ControllerIr,
+  runtime: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+): ControllerOp | undefined {
+  if (controller.normalizedType === "velset") {
+    return resolveRuntimeKinematicControllerOperation(controller, runtime, context);
+  }
+  return undefined;
 }

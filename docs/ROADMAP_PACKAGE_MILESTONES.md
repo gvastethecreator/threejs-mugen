@@ -36,12 +36,12 @@ Latest runtime checkpoint:
 
 ```txt
 R1 required Const240p/Const480p/Const720p controller-param trace gate
--> synthetic-imported-const-controller-param.json checksum 7539c572 / final checksum e6a9395f is required in qa:trace
+-> synthetic-imported-const-controller-param.json checksum 2dad3a50 is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, and executes VelSet x = Const240p(3) + Const480p(6), y = 0 - Const720p(12)
--> player localCoord 640x480 converts the dynamic params to velocity x = 12 and y = -6, with controller order and actor-frame telemetry required
+-> player localCoord 640x480 converts the dynamic params to velocity x = 12 and y = -6, with controller order, actor-frame telemetry, and static plus dynamic kinematic:velset operation evidence required
 -> pnpm qa:trace passes 509/509 artifacts, 478 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified; Elecbyte Trigger Reference defines Const240p/480p/720p as player-coordinate width-ratio conversions
--> no score movement; broad coordinate translation across all controller params, dynamic typed-operation lowering, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
+-> no score movement; broad coordinate translation across all controller params, dynamic typed-operation lowering beyond active-state VelSet, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
 
 Previous R1 required Const240p/Const480p/Const720p trace gate
 -> synthetic-imported-const-coordinate.json checksum ea879c1b is required in qa:trace

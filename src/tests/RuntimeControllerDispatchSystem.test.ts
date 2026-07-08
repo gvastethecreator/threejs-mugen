@@ -42,6 +42,25 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(false);
   });
 
+  it("records bounded dynamic VelSet as typed kinematic telemetry after resolving params", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ vel: { x: 2, y: -1 } });
+    const controller = compileControllerIr(controllerSource("VelSet", { x: "Const240p(3)", y: "0 - Const720p(12)" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply(actor, controller, {
+      context: {
+        localCoord: [640, 480],
+      },
+      recordOperation: (_actor, operation) =>
+        recordedOperations.push(`${operation.kind}:${"controllerType" in operation ? operation.controllerType : "none"}`),
+    });
+
+    expect(actor.runtime.vel).toEqual({ x: 6, y: -6 });
+    expect(recordedOperations).toEqual(["kinematic:velset"]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
   it("reports unsupported controllers without mutating runtime state", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 777 });
