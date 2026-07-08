@@ -9,6 +9,7 @@ import {
   applyRuntimeRemapPalController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
+  resolveRuntimeAfterImageTimeControllerOperation,
   resolveRuntimeRemapPalControllerOperation,
   resolveRuntimeSpritePriorityControllerOperation,
   resolveRuntimeTransControllerOperation,
@@ -252,6 +253,16 @@ describe("SpriteEffectSystem", () => {
 
   it("resolves dynamic AfterImageTime params from active expressions", () => {
     const state = runtimeState();
+    const operation = resolveRuntimeAfterImageTimeControllerOperation(
+      controller("AfterImageTime", { value: "var(0)" }),
+      (key) => (key === "value" ? 14 : undefined),
+    );
+
+    expect(operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "afterimagetime",
+      time: 14,
+    });
 
     applyRuntimeAfterImageTimeController(state, controller("AfterImageTime", { value: "var(0)" }), undefined, (key) =>
       key === "value" ? 14 : undefined,
@@ -272,6 +283,11 @@ describe("SpriteEffectSystem", () => {
       remaining: 3,
       time: 14,
     });
+
+    expect(resolveRuntimeAfterImageTimeControllerOperation(controller("AfterImageTime", { value: "var(0)" }))).toBeUndefined();
+    expect(
+      resolveRuntimeAfterImageTimeControllerOperation(controller("AfterImageTime", {}), () => 14),
+    ).toBeUndefined();
   });
 
   it("applies bounded Trans opacity from raw and typed params", () => {
@@ -667,8 +683,8 @@ describe("SpriteEffectSystem", () => {
       remaining: 14,
       time: 14,
     });
-    expect(recordedOperations).toEqual([]);
-    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+    expect(recordedOperations).toEqual(["sprite-effect:afterimagetime"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 
   it("dispatches RemapPal controllers through the active-state sprite boundary", () => {

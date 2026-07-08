@@ -11640,7 +11640,7 @@ describe("RuntimeTraceGatePresets", () => {
     ).toBe(true);
   });
 
-  it("creates a synthetic imported dynamic AfterImageTime artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic AfterImageTime artifact with typed expression evidence", () => {
     const artifact = createSyntheticImportedDynamicAfterImageTimeTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
     });
@@ -11664,7 +11664,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.AfterImage).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.AfterImageTime).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["sprite-effect:afterimage"]).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:afterimagetime"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:afterimagetime"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

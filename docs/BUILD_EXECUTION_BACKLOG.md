@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic AfterImageTime typed sprite-effect telemetry
+
+Changed:
+
+- Upgraded required `synthetic-imported-afterimagetime-dynamic.json` from ghost-trail fallback evidence into typed `sprite-effect:afterimagetime` telemetry.
+- `SpriteEffectSystem` now exposes `resolveRuntimeAfterImageTimeControllerOperation`, resolving dynamic `time` / alternate `value` through the active runtime expression resolver when compiled IR has no static operation.
+- `RuntimeSpriteEffectControllerWorld` now records the resolved dynamic AfterImageTime typed operation while preserving bounded `afterImageTime = 14` ghost-trail mutation.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `sprite-effect:afterimage`, `sprite-effect:afterimagetime`, and `hitdef` for the dynamic AfterImageTime route.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, architecture notes, and the active R1 issue slice around checksum `c5ef6fff` / final checksum `661a233d`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and defines `AfterImageTime time` plus alternate `value`.
+- Focused tests: `pnpm exec vitest run src\tests\SpriteEffectSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern "AfterImageTime" --reporter json --outputFile .scratch\qa\dynamic-afterimagetime-vitest-focused.json` passed.
+- Full Vitest suite: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\full-vitest-dynamic-afterimagetime.json` passed: 311 suites, 1493 tests.
+- Standard test script: `pnpm test` passed: 153 files, 1493 tests.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 523/523 artifacts, 492 required and 31 optional.
+- Trace artifact: `synthetic-imported-afterimagetime-dynamic.json` checksum `c5ef6fff`, final checksum `661a233d`; final imported actor ghost-trail telemetry stays `afterImageTime = 14`, `afterImageLength = 4`, `afterImageTimeGap = 1`, `afterImageFrameGap = 1`, sample count >= 1, opacity `0.34`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `AfterImageTime value = var(0)` can resolve owner-local numeric expressions through runtime expression fallback, record typed `sprite-effect:afterimagetime` telemetry after resolution, and preserve actor-frame/final ghost-trail duration evidence.
+
+Claim blocked:
+
+- Exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, dynamic typed lowering for `AfterImage`, `PalFX`, or `Angle*`, and full MUGEN/IKEMEN presentation parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `AfterImageTime` already had typed `sprite-effect:afterimagetime` evidence through `synthetic-imported-afterimage.json`, while dynamic `value/time` relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic AfterImageTime route now closes the operation-telemetry gap without broadening exact renderer/trail semantics.
+- Adjacent surface checked: static AfterImageTime gate, dynamic AfterImage fallback expectation, dynamic RemapPal/Trans/SprPriority typed paths, sprite-effect boundary recording, active-state resolver handoff, trace requirements, support registry wording, QA gates, scorecard, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port remains verified at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This upgrades one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim typed lowering for dynamic `PalFX`, `AfterImage`, or `Angle*`, exact trail cadence/blending, renderer parity, or full presentation VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic RemapPal typed sprite-effect telemetry
 
 Changed:

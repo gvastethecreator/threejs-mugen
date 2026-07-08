@@ -7476,7 +7476,7 @@ export function createSyntheticImportedDynamicAfterImageTimeTraceArtifact(
       label: "Synthetic imported dynamic AfterImageTime route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic AfterImageTime trace proves value/time expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and extend bounded ghost-trail duration telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, or timing parity.",
+        "Synthetic imported dynamic AfterImageTime trace proves value/time expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary, record typed sprite-effect telemetry after resolution, and extend bounded ghost-trail duration telemetry. It does not claim exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, or timing parity.",
       ],
     },
     gates: [
@@ -7487,7 +7487,7 @@ export function createSyntheticImportedDynamicAfterImageTimeTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "AfterImage", "AfterImageTime", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "sprite-effect:afterimage", "hitdef"],
+        requiredExecutedOperations: ["variable:varset", "sprite-effect:afterimage", "sprite-effect:afterimagetime", "hitdef"],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {

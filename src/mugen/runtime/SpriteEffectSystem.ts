@@ -423,10 +423,12 @@ export function applyRuntimeAfterImageTimeController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
   resolveAfterImageTime?: RuntimeAfterImageTimeResolver,
 ): void {
+  const resolvedOperation =
+    operation ?? resolveRuntimeAfterImageTimeControllerOperation(controller, resolveAfterImageTime);
   const timeParam = findControllerParam(controller, "time");
   const valueParam = findControllerParam(controller, "value");
   const time =
-    operation?.time ??
+    resolvedOperation?.time ??
     resolveAfterImageTimeNumber(
       timeParam === undefined ? valueParam : timeParam,
       timeParam === undefined ? "value" : "time",
@@ -453,6 +455,25 @@ export function applyRuntimeAfterImageTimeController(
   }
   state.afterImage.remaining = time;
   state.afterImage.time = Math.max(state.afterImage.time, time);
+}
+
+export function resolveRuntimeAfterImageTimeControllerOperation(
+  controller: MugenStateController,
+  resolveAfterImageTime?: RuntimeAfterImageTimeResolver,
+): Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }> | undefined {
+  const timeParam = findControllerParam(controller, "time");
+  const valueParam = findControllerParam(controller, "value");
+  const param = timeParam === undefined ? valueParam : timeParam;
+  const key = timeParam === undefined ? "value" : "time";
+  const time = resolveAfterImageTimeNumber(param, key, resolveAfterImageTime) ?? staticAfterImageTimeNumber(param);
+  if (time === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "afterimagetime",
+    time,
+  };
 }
 
 export function applyRuntimeTransController(
@@ -609,6 +630,9 @@ function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectCont
   if (input.effect === "trans") {
     return resolveRuntimeTransControllerOperation(input.controller.source, input.resolveTransAlpha);
   }
+  if (input.effect === "afterimagetime") {
+    return resolveRuntimeAfterImageTimeControllerOperation(input.controller.source, input.resolveAfterImageTime);
+  }
   return undefined;
 }
 
@@ -687,6 +711,11 @@ function legacyBoolean(value: number | undefined): boolean | undefined {
 
 function clampAfterImageTime(value: number): number {
   return Math.max(0, Math.min(600, Math.round(value)));
+}
+
+function staticAfterImageTimeNumber(param: string | undefined): number | undefined {
+  const value = firstNumber(param);
+  return value === undefined ? undefined : clampAfterImageTime(value);
 }
 
 function clampAfterImageLength(value: number): number {

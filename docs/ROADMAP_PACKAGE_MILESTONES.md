@@ -632,15 +632,15 @@ Previous R1 required dynamic Angle trace gate
   -> official Elecbyte docs define AngleSet value, AngleDraw value, and AngleDraw scale as floats; rotation/scaling does not affect collision boxes
   -> no score movement; typed-operation lowering for dynamic angle params, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-Previous R1 required dynamic AfterImageTime trace gate
-  -> synthetic-imported-afterimagetime-dynamic.json checksum 16edc106 is required in qa:trace
+Current R1 required dynamic AfterImageTime typed trace gate
+  -> synthetic-imported-afterimagetime-dynamic.json checksum c5ef6fff / final checksum 661a233d is required in qa:trace
   -> imported active state seeds var(0)=14, then executes static AfterImage plus AfterImageTime value = var(0)
-  -> RuntimeSpriteEffectControllerWorld forwards a dynamic AfterImageTime resolver into RuntimeSpriteEffectWorld.applyAfterImageTime
+  -> RuntimeSpriteEffectControllerWorld resolves dynamic AfterImageTime value/time into typed sprite-effect telemetry before RuntimeSpriteEffectWorld.applyAfterImageTime
   -> PlayableMatchRuntime resolves AfterImageTime time/value params through the active controller expression context
-  -> final imported actor evidence requires afterImageTime 14, length 4, timeGap 1, frameGap 1, at least one sample, opacity 0.34, and no typed sprite-effect:afterimagetime operation evidence
-  -> pnpm qa:trace passed 446/446 artifacts, 416 required and 30 optional
+  -> final imported actor evidence requires afterImageTime 14, length 4, timeGap 1, frameGap 1, at least one sample, opacity 0.34, and typed sprite-effect:afterimagetime operation evidence
+  -> pnpm qa:trace passed 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define AfterImageTime time plus alternate value
-  -> no score movement; typed-operation lowering for dynamic AfterImageTime params, exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> no score movement; exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, dynamic typed lowering for AfterImage/PalFX/Angle*, and full presentation parity remain blocked
 
 Previous R1 required dynamic AfterImage trace gate
   -> synthetic-imported-afterimage-dynamic.json checksum 2342c3f1 is required in qa:trace
