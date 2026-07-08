@@ -70,7 +70,7 @@ describe("BoundsControllerSystem", () => {
     const world = new RuntimeBoundsControllerWorld();
     const state = runtimeState();
 
-    world.applyScreenBoundController(state, source("ScreenBound", { value: "1" }), {
+    const typedResult = world.applyScreenBoundController(state, source("ScreenBound", { value: "1" }), {
       kind: "bounds",
       controllerType: "screenbound",
       bound: false,
@@ -78,9 +78,39 @@ describe("BoundsControllerSystem", () => {
       moveCameraY: false,
     });
     expect(state.screenBound).toEqual({ bound: false, moveCameraX: true, moveCameraY: false });
+    expect(typedResult.operation).toEqual({
+      kind: "bounds",
+      controllerType: "screenbound",
+      bound: false,
+      moveCameraX: true,
+      moveCameraY: false,
+    });
 
-    world.applyScreenBoundController(state, source("ScreenBound", { value: "1 - 1", movecamera: "0, 1 + 0" }));
+    const rawResult = world.applyScreenBoundController(state, source("ScreenBound", { value: "1 - 1", movecamera: "0, 1 + 0" }));
     expect(state.screenBound).toEqual({ bound: false, moveCameraX: false, moveCameraY: true });
+    expect(rawResult.operation).toEqual({
+      kind: "bounds",
+      controllerType: "screenbound",
+      bound: false,
+      moveCameraX: false,
+      moveCameraY: true,
+    });
+  });
+
+  it("applies ScreenBound raw expression fallback from vars", () => {
+    const world = new RuntimeBoundsControllerWorld();
+    const state = runtimeState({ vars: [0, 0, 1] });
+
+    const result = world.applyScreenBoundController(state, source("ScreenBound", { value: "var(0)", movecamera: "var(1), var(2)" }));
+
+    expect(state.screenBound).toEqual({ bound: false, moveCameraX: false, moveCameraY: true });
+    expect(result.operation).toEqual({
+      kind: "bounds",
+      controllerType: "screenbound",
+      bound: false,
+      moveCameraX: false,
+      moveCameraY: true,
+    });
   });
 
   it("keeps StateControllerExecutor as router for bounds controllers", () => {

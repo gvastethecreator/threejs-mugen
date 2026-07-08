@@ -5362,6 +5362,75 @@ export function createSyntheticImportedScreenBoundCameraTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedDynamicScreenBoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? screenBoundCameraStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-screenbound-dynamic",
+    displayName: "Synthetic Imported Dynamic ScreenBound",
+    withDynamicScreenBound: {
+      value: "var(0)",
+      movecamera: "var(1),var(2)",
+      vars: [
+        { index: 0, value: 0 },
+        { index: 1, value: 0 },
+        { index: 2, value: 1 },
+      ],
+      posAdd: [65, 0],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-screenbound-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-screenbound-dynamic-golden",
+      label: "Synthetic imported dynamic ScreenBound route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic ScreenBound trace proves value/movecamera params can resolve through expression fallback, emit typed bounds:screenbound telemetry, skip the X stage clamp, and exclude the actor from X camera centering for the same bounded tick. It does not claim exact MUGEN/IKEMEN camera, screen-edge, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-screenbound-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "ScreenBound", "PosAdd"],
+        requiredExecutedOperations: ["variable:varset", "bounds:screenbound", "kinematic:posadd"],
+        requiredActiveCommands: ["x"],
+        requiredStageFrames: [
+          {
+            stageId: "trace-screenbound-camera-grid",
+            boundRight: 320,
+            observedCameraXAtLeast: 150,
+            observedCameraXAtMost: 0,
+            minFrames: 3,
+          },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedPosXAtLeast: 321,
+            screenBound: false,
+            moveCameraX: false,
+            moveCameraY: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedGravityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -38396,6 +38465,12 @@ export type SyntheticImportedTraceFighterOptions = {
     y?: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withDynamicScreenBound?: {
+    value?: string;
+    movecamera?: string;
+    vars?: Array<{ index: number; value: number }>;
+    posAdd?: [number, number];
+  };
   withTurn?: boolean;
   withSprPriority?: number;
   withDynamicSprPriority?: {
@@ -38756,6 +38831,7 @@ ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSe
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.withDynamicPosFreeze === undefined ? "" : dynamicPosFreezeControllerBlock(options.withDynamicPosFreeze)}
+${options.withDynamicScreenBound === undefined ? "" : dynamicScreenBoundControllerBlock(options.withDynamicScreenBound)}
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.hitDefDynamicSoundVarSeed === undefined ? "" : dynamicHitDefSoundSeedBlock(options.hitDefDynamicSoundVarSeed)}
 ${options.superPauseSoundVarSeed === undefined ? "" : superPauseSoundVarSeedBlock(options.superPauseSoundVarSeed)}
@@ -40282,6 +40358,38 @@ type = PosFreeze
 trigger1 = Time >= 0
 ${params}
 `;
+}
+
+function dynamicScreenBoundControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicScreenBound"]>): string {
+  const vars =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic ScreenBound Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  const posAdd =
+    options.posAdd === undefined
+      ? ""
+      : `
+[State 200, Dynamic ScreenBound Offstage Probe]
+type = PosAdd
+trigger1 = Time = 0
+x = ${options.posAdd[0]}
+y = ${options.posAdd[1]}
+`;
+  return `${vars}
+[State 200, Dynamic ScreenBound Probe]
+type = ScreenBound
+trigger1 = Time >= 0
+value = ${options.value ?? "var(0)"}
+movecamera = ${options.movecamera ?? "var(1),var(2)"}
+${posAdd}`;
 }
 
 function turnControllerBlock(): string {

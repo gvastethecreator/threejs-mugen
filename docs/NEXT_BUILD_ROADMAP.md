@@ -27,6 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required dynamic ScreenBound typed-bounds trace gate
+  -> synthetic-imported-screenbound-dynamic.json checksum 9797bdfe / final checksum d76b641a is required in qa:trace
+  -> imported active state seeds var(0)=0, var(1)=0, and var(2)=1
+  -> active state executes ScreenBound value = var(0), movecamera = var(1),var(2), then PosAdd x = 65
+  -> dynamic ScreenBound resolves through runtime expression fallback, records typed bounds:screenbound evidence, skips the X stage clamp, and excludes the actor from X camera centering for the same bounded tick
+  -> actor-frame evidence requires screenBound = false, moveCameraX = false, moveCameraY = true, and off-bound X position; stage-frame evidence requires the camera fallback/clamp observation
+  -> pnpm qa:trace passes 519/519 artifacts, 488 required and 31 optional
+  -> official Elecbyte docs define ScreenBound as one-tick screen/camera constraint control, value/movecamera defaults, and numeric controller params as expression-capable
+  -> no score movement; exact camera/screen-edge behavior, exact tick order, pause/hitpause behavior, helper/team ownership, score movement, and full constraint parity remain blocked
+
 R1 required dynamic PosFreeze typed-bounds trace gate
   -> synthetic-imported-posfreeze-dynamic.json checksum 8de0c2e9 / final checksum 6c40bb79 is required in qa:trace
   -> imported active state seeds var(0)=1 and var(1)=0

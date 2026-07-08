@@ -866,6 +866,11 @@ async function main() {
       artifact: presets.createSyntheticImportedScreenBoundCameraTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-screenbound-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicScreenBoundTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-gravity",
       required: true,
       artifact: presets.createSyntheticImportedGravityTraceArtifact(),
@@ -3840,6 +3845,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-bounds",
     "synthetic-imported-posfreeze-dynamic",
     "synthetic-imported-screenbound-camera",
+    "synthetic-imported-screenbound-dynamic",
     "synthetic-imported-gravity",
     "synthetic-imported-kinematic",
     "synthetic-imported-dynamic-veladd",

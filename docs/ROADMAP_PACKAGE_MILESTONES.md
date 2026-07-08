@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic ScreenBound typed-bounds trace gate
+-> synthetic-imported-screenbound-dynamic.json checksum 9797bdfe / final checksum d76b641a is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(0)=0, var(1)=0, and var(2)=1, executes ScreenBound value = var(0), movecamera = var(1),var(2), then PosAdd x = 65
+-> gate requires ChangeState, VarSet, ScreenBound, PosAdd, variable:varset, bounds:screenbound, and kinematic:posadd evidence plus actor-frame screenBound false / moveCameraX false / moveCameraY true and stage-frame camera/clamp telemetry
+-> pnpm qa:trace passes 519/519 artifacts, 488 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and ScreenBound as one-tick screen/camera constraint control
+-> no score movement; exact camera/screen-edge behavior, exact tick order, pause/hitpause behavior, helper/team ownership, score movement, and full constraint parity remain blocked
+
 R1 required dynamic PosFreeze typed-bounds trace gate
 -> synthetic-imported-posfreeze-dynamic.json checksum 8de0c2e9 / final checksum 6c40bb79 is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds var(0)=1 and var(1)=0, and executes PosFreeze x = var(0), y = var(1)

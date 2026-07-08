@@ -360,6 +360,7 @@ import {
   createSyntheticImportedDataDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
+  createSyntheticImportedDynamicScreenBoundTraceArtifact,
   createSyntheticImportedGravityTraceArtifact,
   createSyntheticImportedKinematicTraceArtifact,
   createSyntheticImportedDynamicVelAddTraceArtifact,
@@ -9683,6 +9684,55 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.frames.some((frame) => frame.stage?.camera.x === 0)).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic ScreenBound artifact with typed bounds evidence", () => {
+    const artifact = createSyntheticImportedDynamicScreenBoundTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-screenbound-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-screenbound-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ScreenBound).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["bounds:screenbound"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.stageFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          stageId: "trace-screenbound-camera-grid",
+          bounds: { left: -320, right: 320 },
+          minCamera: expect.objectContaining({ x: 0 }),
+          maxCamera: expect.objectContaining({ x: 155 }),
+        }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          screenBound: false,
+          moveCameraX: false,
+          moveCameraY: true,
+          maxPos: expect.objectContaining({ x: 375 }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Gravity artifact with typed vertical velocity evidence", () => {

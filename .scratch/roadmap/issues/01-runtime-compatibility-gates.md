@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Latest Closed Quality Slice - Dynamic PosFreeze Typed Bounds Telemetry
+## Latest Closed Quality Slice - Dynamic ScreenBound Typed Bounds Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: static `ScreenBound` had typed `bounds:screenbound` evidence and the static camera gate proved clamp/camera projection, but the dynamic active-state `value/movecamera` route lacked resolved typed operation telemetry.
+- Target: keep bounded `ScreenBound value = var(0), movecamera = var(1),var(2)` behavior, resolve owner-local vars through the runtime expression context, and record the resolved controller as typed `bounds:screenbound` telemetry without claiming exact camera/screen-edge parity.
+- Reference: Elecbyte State Controller Reference treats state-controller numeric params as expression-capable unless otherwise specified and defines `ScreenBound` as a one-tick screen/camera constraint controller with optional `value` and `movecamera`.
+- Transformation layers: `RuntimeBoundsControllerWorld.applyScreenBoundController`, dynamic raw-param resolver fallback, `RuntimeControllerDispatchWorld.resolveDynamicRecordedOperation`, trace operation evidence, stage/actor-frame clamp-camera evidence, roadmap truth.
+- Adjacent audit: inspect static `ScreenBound` typed evidence, static screen-bound camera gate, dynamic `PosFreeze` and `PlayerPush` typed fallback, bounds-controller raw fallback defaults, operation telemetry recording, stage-frame/actor-frame screen-bound trace requirements, support registry wording, and QA gate docs.
+- Accepted improvement ledger: add required `synthetic-imported-screenbound-dynamic`, require `bounds:screenbound`, keep actor-frame `screenBound = false`, `moveCameraX = false`, `moveCameraY = true`, keep stage-frame right-bound/camera evidence, and update docs/roadmap around checksum `9797bdfe` / final checksum `d76b641a`.
+- Out of scope: exact camera/screen-edge behavior, exact controller tick order, pause/hitpause/helper/team ownership, score movement, and full MUGEN/IKEMEN constraint parity.
+- Completed proof: required `synthetic-imported-screenbound-dynamic.json` checksum `9797bdfe` / final checksum `d76b641a`, focused ScreenBound bounds plus trace tests, `pnpm test` 153 files / 1481 tests, `pnpm qa:trace` 519/519 artifacts with 488 required and 31 optional, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm check:boundaries`, and `git diff --check` with CRLF-normalization warnings only.
+- STOP conditions: pause if the next constraint cut requires exact camera/screen-edge ownership, controller-loop timing, pause/hitpause freeze ordering, or helper/team ownership that needs a broader constraint VM decision.
+
+## Previous Closed Quality Slice - Dynamic PosFreeze Typed Bounds Telemetry
 
 Status: done
 Date: 2026-07-08

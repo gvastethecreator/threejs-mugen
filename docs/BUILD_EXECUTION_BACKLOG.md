@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic ScreenBound typed bounds telemetry
+
+Changed:
+
+- Added required `synthetic-imported-screenbound-dynamic.json` for bounded active imported dynamic `ScreenBound value/movecamera` typed bounds telemetry.
+- `RuntimeBoundsControllerWorld.applyScreenBoundController` now returns the resolved bounded `bounds:screenbound` operation after applying typed or raw `value` / `movecamera` params.
+- `RuntimeControllerDispatchWorld` now records dynamic `ScreenBound` operation telemetry through `resolveRuntimeScreenBoundControllerOperation`.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `bounds:screenbound`, and `kinematic:posadd` evidence plus actor-frame `screenBound = false`, `moveCameraX = false`, `moveCameraY = true`, and stage-frame bound/camera evidence.
+- `qa_traces` now treats `synthetic-imported-screenbound-dynamic` as a required critical artifact.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, and the active R1 issue slice around checksum `9797bdfe` / final checksum `d76b641a`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents one-tick `ScreenBound value` / `movecamera` semantics and defaults.
+- Focused tests: `pnpm exec vitest run src/tests/BoundsControllerSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern ScreenBound` -> 2 files / 5 tests passed, 514 skipped.
+- Broad regression: `pnpm test` -> 153 files / 1481 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 519/519 artifacts, 488 required and 31 optional.
+- Trace artifact: `synthetic-imported-screenbound-dynamic.json` checksum `9797bdfe`, initial checksum `b20e1c71`, final checksum `d76b641a`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `ScreenBound value = var(0), movecamera = var(1),var(2)` can resolve owner-local vars through runtime expression fallback, record typed `bounds:screenbound` telemetry after resolution, skip the X stage clamp, and exclude the actor from X camera centering for the same bounded tick.
+
+Claim blocked:
+
+- Exact camera/screen-edge behavior, exact tick order, pause/hitpause behavior, helper/team ownership, score movement, and full MUGEN/IKEMEN constraint parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `ScreenBound` had typed operation evidence and the static camera gate proved clamp/camera projection, but the dynamic active-state route lacked resolved typed operation evidence.
+- Quality delta: the same bounded route now closes the operation-telemetry gap without broadening exact camera or screen-edge semantics.
+- Adjacent surface checked: static ScreenBound typed operation handling, static screen-bound camera gate, dynamic PosFreeze and PlayerPush typed fallback, bounds-controller raw fallback defaults, generic active controller operation recording, stage-frame/actor-frame trace requirements, QA coverage matrix, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 519/519 artifacts, 488 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not start exact ScreenBound camera/screen-edge parity, exact PosFreeze tick order, pause/hitpause, or helper/team constraint parity until the constraint/camera VM ownership decision is explicit.
+
 ## 2026-07-08 - Dynamic PosFreeze typed bounds telemetry
 
 Changed:

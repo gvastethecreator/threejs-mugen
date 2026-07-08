@@ -44,13 +44,13 @@ export class RuntimeBoundsControllerWorld {
     operation?: Extract<BoundsControllerOp, { controllerType: "screenbound" }>,
     context: RuntimeControllerEvaluationContext = {},
   ): RuntimeBoundsControllerResult {
-    const camera = operation ? undefined : pairParam(controller, state, context, "movecamera");
+    const appliedOperation = operation ?? resolveRuntimeScreenBoundControllerOperation(controller, state, context);
     state.screenBound = {
-      bound: operation?.bound ?? ((numberParam(controller, state, context, "value") ?? 0) !== 0),
-      moveCameraX: operation?.moveCameraX ?? ((camera?.[0] ?? 0) !== 0),
-      moveCameraY: operation?.moveCameraY ?? ((camera?.[1] ?? 0) !== 0),
+      bound: appliedOperation.bound,
+      moveCameraX: appliedOperation.moveCameraX,
+      moveCameraY: appliedOperation.moveCameraY,
     };
-    return { applied: true, controllerType: "screenbound" };
+    return { applied: true, controllerType: "screenbound", operation: appliedOperation };
   }
 }
 
@@ -80,6 +80,21 @@ export function resolveRuntimePosFreezeControllerOperation(
     controllerType: "posfreeze",
     x: value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze,
     y: value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze,
+  };
+}
+
+export function resolveRuntimeScreenBoundControllerOperation(
+  controller: RuntimeBoundsControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): Extract<BoundsControllerOp, { controllerType: "screenbound" }> {
+  const camera = pairParam(controller, state, context, "movecamera");
+  return {
+    kind: "bounds",
+    controllerType: "screenbound",
+    bound: (numberParam(controller, state, context, "value") ?? 0) !== 0,
+    moveCameraX: (camera?.[0] ?? 0) !== 0,
+    moveCameraY: (camera?.[1] ?? 0) !== 0,
   };
 }
 
