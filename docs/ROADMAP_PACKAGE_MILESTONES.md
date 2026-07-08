@@ -35,13 +35,21 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required helper dynamic PosAdd typed-telemetry trace gate
+-> synthetic-imported-helper-dynamic-posadd.json checksum 97ec15d0 is required in qa:trace
+-> imported State -1 presses x, spawns a first-generation visual Helper, seeds helper position with PosSet, and executes helper-local PosAdd x = Parent,Life - 984, y = Root,StateNo - 220
+-> gate requires ChangeState, HitDef, Helper, PosSet, PosAdd, hitdef, helper, kinematic:posset, and kinematic:posadd evidence plus helper actor-frame position telemetry 18,-17 at state/action 1405 / anim 945
+-> pnpm qa:trace passes 517/517 artifacts, 486 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosAdd as optional x/y position offsets
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet/PosAdd, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
+
 R1 required helper dynamic PosSet typed-telemetry trace gate
 -> synthetic-imported-helper-dynamic-posset.json checksum 50596bc2 is required in qa:trace
 -> imported State -1 presses x, spawns a first-generation visual Helper, seeds helper position with PosSet, and executes helper-local PosSet x = Parent,Life - 984, y = Root,StateNo - 220
 -> gate requires ChangeState, HitDef, Helper, PosSet, hitdef, helper, and kinematic:posset evidence plus helper actor-frame position telemetry 16,-20 at state/action 1404 / anim 944
 -> pnpm qa:trace passes 516/516 artifacts, 485 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosSet as optional x/y position coordinates
-  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet/PosAdd, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
 
 R1 required helper dynamic VelMul typed-telemetry trace gate
 -> synthetic-imported-helper-dynamic-velmul.json checksum 08220a98 is required in qa:trace
@@ -49,7 +57,7 @@ R1 required helper dynamic VelMul typed-telemetry trace gate
 -> gate requires ChangeState, HitDef, Helper, VelSet, VelMul, hitdef, helper, kinematic:velset, and kinematic:velmul evidence plus helper actor-frame velocity telemetry 4,-6 at state/action 1403 / anim 943
 -> pnpm qa:trace passes 515/515 artifacts, 484 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelMul as optional x/y velocity multipliers
-  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet/PosAdd, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
 
 R1 required helper dynamic VelAdd typed-telemetry trace gate
 -> synthetic-imported-helper-dynamic-veladd.json checksum fbb8bcae is required in qa:trace
@@ -57,7 +65,7 @@ R1 required helper dynamic VelAdd typed-telemetry trace gate
 -> gate requires ChangeState, HitDef, Helper, VelSet, VelAdd, hitdef, helper, kinematic:velset, and kinematic:veladd evidence plus helper actor-frame velocity telemetry 5,-3 at state/action 1402 / anim 942
 -> pnpm qa:trace passes 514/514 artifacts, 483 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelAdd as optional x/y velocity additions
-  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet/PosAdd, nested helper ancestry, helper-spawned helpers, player Parent controller-param redirects, teams/simul/helper breadth, score movement, and full helper/controller parity remain blocked
 
 R1 required helper dynamic VelSet typed-telemetry trace gate
 -> synthetic-imported-helper-controller-param-parentroot.json checksum 94919326 remains required in qa:trace
@@ -70,7 +78,7 @@ R1 required dynamic PosAdd typed-telemetry trace gate
 -> gate requires ordered variable:varset, kinematic:posset, and kinematic:posadd operation evidence plus actor-frame position telemetry maxPos.x = 18 / minPos.y = -24
 -> pnpm qa:trace passes 513/513 artifacts, 482 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosAdd as optional x/y position offsets
-  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry beyond current helper VelSet/VelAdd/VelMul/PosSet/PosAdd, exact coordinate/facing ownership, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
 
 R1 required dynamic PosSet typed-telemetry trace gate
 -> synthetic-imported-dynamic-posset.json checksum aeb730fb is required in qa:trace

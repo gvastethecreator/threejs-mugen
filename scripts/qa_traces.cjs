@@ -2157,6 +2157,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperDynamicPosSetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-dynamic-posadd",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperDynamicPosAddTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-explod",
       required: true,
       artifact: presets.createSyntheticImportedHelperExplodTraceArtifact(),
@@ -3673,6 +3678,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-dynamic-veladd",
     "synthetic-imported-helper-dynamic-velmul",
     "synthetic-imported-helper-dynamic-posset",
+    "synthetic-imported-helper-dynamic-posadd",
     "synthetic-imported-helper-modifyprojectile-dynamic-bounds",
     "synthetic-imported-helper-modifyprojectile-dynamic-params",
     "synthetic-imported-helper-projhit",

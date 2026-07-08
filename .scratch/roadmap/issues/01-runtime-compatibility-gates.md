@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Active Quality Slice - Helper Dynamic PosSet Typed Telemetry
+## Latest Closed Quality Slice - Helper Dynamic PosAdd Typed Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: helper-local dynamic `VelSet`, `VelAdd`, `VelMul`, and `PosSet` Parent/Root routes had typed telemetry, but helper-local dynamic `PosAdd` still lacked its own required position-offset oracle.
+- Target: bounded first-generation helper-local `PosAdd` resolves `Parent` / `Root` expression params through the shared helper runtime dispatcher, records `kinematic:posadd`, and keeps broader helper dynamic typed lowering honestly blocked.
+- Reference: Elecbyte State Controller Reference treats state-controller numeric params as expression-capable unless otherwise specified and defines `PosAdd` as offsetting optional `x` / `y` player position amounts, with x relative to facing direction and negative y moving up.
+- Transformation layers: helper runtime-controller dispatch reuse, helper-local dynamic kinematic telemetry breadth, actor-frame position-offset evidence, required trace evidence, roadmap truth.
+- Adjacent audit: inspect helper dynamic `VelSet` / `VelAdd` / `VelMul` / `PosSet` evidence, active-state dynamic `PosAdd` evidence, helper Parent/Root read model, `RuntimeTraceGatePresets`, `qa_traces`, support registry wording, and roadmap truth docs.
+- Accepted improvement ledger: add required `synthetic-imported-helper-dynamic-posadd`, seed helper position with static `PosSet`, resolve dynamic `PosAdd x = Parent,Life - 984` and `y = Root,StateNo - 220`, require `kinematic:posset` plus `kinematic:posadd`, and update docs/roadmap around checksum `97ec15d0`.
+- Out of scope: nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, helper-local dynamic typed lowering beyond current `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` routes, recursive redirection, debug warning text, teams/simul, and full helper/controller expression parity.
+- Completed proof: required `synthetic-imported-helper-dynamic-posadd.json` checksum `97ec15d0`, focused helper dynamic PosSet plus PosAdd trace tests, `pnpm test -- RuntimeTraceGatePresets` 153 files / 1477 tests, `pnpm qa:trace` 517/517 artifacts with 486 required and 31 optional, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm check:boundaries`, and `git diff --check` with CRLF-normalization warnings only.
+- STOP conditions: pause if the next helper dynamic typed controller requires nested helper ownership, helper-owned custom-state tables, or a broader helper VM architecture decision.
+
+## Previous Active Quality Slice - Helper Dynamic PosSet Typed Telemetry
 
 Status: done
 Date: 2026-07-08
