@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Active Quality Slice - Dynamic VelMul Typed Telemetry
+## Active Quality Slice - Dynamic PosSet Typed Telemetry
+
+Status: done
+Date: 2026-07-08
+
+Quality contract:
+
+- Baseline to beat: dynamic active-state `PosSet` params could mutate position through the raw runtime-controller fallback, but no required trace gate proved typed `kinematic:posset` telemetry when params were expression-backed.
+- Target: bounded active runtime-controller dispatch records dynamic `PosSet` as typed kinematic telemetry after resolving expression params, while keeping broader dynamic kinematic lowering and helper-local telemetry honestly blocked.
+- Reference: Elecbyte State Controller Reference treats state-controller numeric params as expression-capable unless otherwise specified and defines `PosSet` as setting optional player `x` / `y` coordinates.
+- Transformation layers: runtime controller resolution, kinematic operation reuse, trace evidence, required QA artifact registry, roadmap truth.
+- Adjacent audit: inspect `RuntimeKinematicControllerWorld`, active `RuntimeControllerDispatchWorld`, existing static kinematic gates, dynamic `VelSet` / `VelAdd` / `VelMul` gates, helper controller-param routes, support docs, and QA trace registry.
+- Accepted improvement ledger: route dynamic active-state `PosSet` through the shared runtime kinematic resolver, record resolved `kinematic:posset` telemetry, add required `synthetic-imported-dynamic-posset`, prove direct position mutation in focused dispatch tests, update claim allowed/blocked docs, and run focused plus repo closeout gates.
+- Out of scope: dynamic typed lowering for every kinematic controller, helper-local dynamic typed telemetry, broad controller-family lowering, exact physics/tick order, floor snapping, teams/simul, and full movement parity.
+- Completed proof: required `synthetic-imported-dynamic-posset.json` checksum `aeb730fb`, focused runtime/controller/trace tests, `pnpm test -- KinematicControllerSystem RuntimeControllerDispatchSystem RuntimeTraceGatePresets` 153 files / 1471 tests, `pnpm qa:trace` 512/512 artifacts with 481 required and 31 optional, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, and `git diff --check` with CRLF-normalization warnings only.
+- STOP conditions: pause if the next dynamic typed controller family requires broader CNS compiler ownership, helper/team/simul semantics, or a durable architecture decision for shared controller lowering.
+
+## Previous Active Quality Slice - Dynamic VelMul Typed Telemetry
 
 Status: done
 Date: 2026-07-08

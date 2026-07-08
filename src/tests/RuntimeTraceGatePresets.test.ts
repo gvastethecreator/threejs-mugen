@@ -360,6 +360,7 @@ import {
   createSyntheticImportedKinematicTraceArtifact,
   createSyntheticImportedDynamicVelAddTraceArtifact,
   createSyntheticImportedDynamicVelMulTraceArtifact,
+  createSyntheticImportedDynamicPosSetTraceArtifact,
   createSyntheticImportedControllerParamBottomTraceArtifact,
   createSyntheticImportedControllerParamTargetRedirectTraceArtifact,
   createSyntheticImportedControllerParamRootRedirectTraceArtifact,
@@ -9639,6 +9640,61 @@ describe("RuntimeTraceGatePresets", () => {
           stateNo: 200,
           animNo: 200,
           maxVel: expect.objectContaining({ x: 8, y: 18 }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic PosSet artifact with typed kinematic evidence", () => {
+    const artifact = createSyntheticImportedDynamicPosSetTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dynamic-posset-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "PosSet"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "kinematic:posset"]);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "200 dynamic PosSet typed order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "VarSet", name: "Dynamic PosSet Var 0" },
+          { stateNo: 200, controller: "VarSet", name: "Dynamic PosSet Var 1" },
+          { stateNo: 200, controller: "PosSet", name: "Dynamic PosSet Seed Position" },
+          { stateNo: 200, operation: "kinematic:posset" },
+          { stateNo: 200, controller: "PosSet", name: "Dynamic PosSet Probe" },
+          { stateNo: 200, operation: "kinematic:posset" },
+        ],
+      },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedControllers.PosSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(2);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          maxPos: expect.objectContaining({ x: 16 }),
+          minPos: expect.objectContaining({ y: -20 }),
         }),
       ]),
     );

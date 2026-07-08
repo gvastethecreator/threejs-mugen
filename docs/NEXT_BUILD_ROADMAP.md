@@ -27,13 +27,21 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required dynamic PosSet typed-telemetry trace gate
+  -> synthetic-imported-dynamic-posset.json checksum aeb730fb is required in qa:trace
+  -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static PosSet seed position, and executes PosSet x = var(0) + 5, y = var(1) - 2
+  -> gate requires ordered variable:varset and two kinematic:posset operation evidence events plus actor-frame position telemetry maxPos.x = 16 / minPos.y = -20
+  -> pnpm qa:trace passes 512/512 artifacts, 481 required and 31 optional
+  -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and PosSet as optional x/y position coordinates
+  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+
 R1 required dynamic VelMul typed-telemetry trace gate
   -> synthetic-imported-dynamic-velmul.json checksum 4d241401 is required in qa:trace
   -> imported State -1 presses x, enters active state/action 200, seeds vars, applies static VelSet seed velocity, and executes VelMul x = var(0) * 0.5, y = 0 - var(1)
   -> gate requires ordered variable:varset, kinematic:velset, and kinematic:velmul operation evidence plus bounded actor-frame velocity telemetry
-  -> pnpm qa:trace passes 511/511 artifacts, 480 required and 31 optional
+  -> that checkpoint passed 511/511 artifacts, 480 required and 31 optional
   -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelMul as optional x/y velocity multipliers
-  -> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+  -> no score movement; it remains bounded active-state dynamic VelMul typed telemetry only
 
 R1 required dynamic VelAdd typed-telemetry trace gate
   -> synthetic-imported-dynamic-veladd.json checksum daf99fb4 remains required in qa:trace
