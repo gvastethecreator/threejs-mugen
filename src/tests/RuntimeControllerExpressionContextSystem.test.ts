@@ -19,6 +19,7 @@ describe("RuntimeControllerExpressionContextSystem", () => {
       parent,
       root,
       gameSpace: { width: 640, height: 480, zoom: 2 },
+      localCoord: [640, 480] as [number, number],
       stageTime: 42,
       target: (targetId?: number) =>
         targetId === 77 || targetId === undefined ? { self: target, opponent: self } : undefined,
@@ -31,6 +32,7 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     expect(evaluateRuntimeControllerNumber("Const(data.attack) + HitPauseTime + StageTime", self, context)).toBe(139);
     expect(evaluateRuntimeControllerNumber("GameWidth + GameHeight", self, context)).toBe(560);
     expect(evaluateRuntimeControllerNumber("ScreenWidth + ScreenHeight", self, context)).toBe(1120);
+    expect(evaluateRuntimeControllerNumber("Const240p(3)+Const480p(6)+Const720p(12)", self, context)).toBe(18);
     expect(evaluateRuntimeControllerNumber("GetHitVar(xvel)", self, context)).toBe(4);
   });
 

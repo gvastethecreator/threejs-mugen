@@ -9,6 +9,10 @@ export type ExpressionContext = {
   enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
+  localCoord?: [number, number];
+  opponentLocalCoord?: [number, number];
+  parentLocalCoord?: [number, number];
+  rootLocalCoord?: [number, number];
   parent?: CharacterRuntimeState;
   root?: CharacterRuntimeState;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
@@ -71,6 +75,8 @@ export type ExpressionGameSpace = {
 export type ExpressionRedirectTarget = {
   self: CharacterRuntimeState;
   opponent?: CharacterRuntimeState;
+  localCoord?: [number, number];
+  opponentLocalCoord?: [number, number];
   name?: string;
   authorName?: string;
   opponentName?: string;
@@ -206,6 +212,8 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
       ...context,
       self: redirected.self,
       opponent: redirected.opponent ?? context.self,
+      localCoord: redirected.localCoord ?? context.localCoord,
+      opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
       name: redirected.name,
       authorName: redirected.authorName,
       opponentName: redirected.opponentName ?? context.name,
@@ -226,6 +234,7 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
   return evaluateExpression(expressionBody, {
     ...context,
     self: redirectedSelf,
+    localCoord: target === "parent" ? context.parentLocalCoord ?? context.localCoord : context.rootLocalCoord ?? context.localCoord,
     teamSide: target === "parent" ? context.parentTeamSide : context.rootTeamSide,
   });
 }
@@ -439,6 +448,8 @@ class ExpressionParser {
         ...this.context,
         self: redirected.self,
         opponent: redirected.opponent ?? this.context.self,
+        localCoord: redirected.localCoord ?? this.context.localCoord,
+        opponentLocalCoord: redirected.opponentLocalCoord ?? this.context.localCoord,
         name: redirected.name,
         authorName: redirected.authorName,
         opponentName: redirected.opponentName ?? this.context.name,
@@ -459,6 +470,7 @@ class ExpressionParser {
     return {
       ...this.context,
       self: redirectedSelf,
+      localCoord: target === "parent" ? this.context.parentLocalCoord ?? this.context.localCoord : this.context.rootLocalCoord ?? this.context.localCoord,
       teamSide: target === "parent" ? this.context.parentTeamSide : this.context.rootTeamSide,
     };
   }
@@ -754,8 +766,17 @@ class ExpressionParser {
     if (lower === "command" || lower === "selfcommand") {
       return this.context.commandActive?.(String(args[0] ?? "")) ? 1 : 0;
     }
-    if (lower === "const" || lower === "const720p") {
+    if (lower === "const") {
       return this.constValue(String(args[0] ?? ""));
+    }
+    if (lower === "const240p") {
+      return this.constCoordinateValue(args[0] ?? 0, 320);
+    }
+    if (lower === "const480p") {
+      return this.constCoordinateValue(args[0] ?? 0, 640);
+    }
+    if (lower === "const720p") {
+      return this.constCoordinateValue(args[0] ?? 0, 1280);
     }
     if (lower === "gethitvar") {
       return this.context.getHitVar?.(String(args[0] ?? "")) ?? defaultHitVar(String(args[0] ?? ""));
@@ -932,6 +953,15 @@ class ExpressionParser {
     return gameSpace[axis];
   }
 
+  private constCoordinateValue(value: ExpressionValue, sourceWidth: number): number {
+    return (numeric(value) * this.localCoordWidth()) / sourceWidth;
+  }
+
+  private localCoordWidth(): number {
+    const width = this.context.localCoord?.[0];
+    return Number.isFinite(width) && width !== undefined && width > 0 ? width : 320;
+  }
+
   private numTarget(targetId?: number): number {
     const runtimeValue = this.context.numTarget?.(targetId);
     if (runtimeValue !== undefined) {
@@ -1064,7 +1094,7 @@ function tokenize(expression: string): Token[] {
   return tokens;
 }
 
-const rawArgumentFunctions = new Set(["cond", "const", "const720p", "gethitvar", "hitdefattr"]);
+const rawArgumentFunctions = new Set(["cond", "const", "gethitvar", "hitdefattr"]);
 
 function pushRawArg(args: string[], tokens: Token[]): void {
   if (tokens.length === 0 && args.length === 0) {
@@ -1227,6 +1257,8 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
       ...context,
       self: redirected.self,
       opponent: redirected.opponent ?? context.self,
+      localCoord: redirected.localCoord ?? context.localCoord,
+      opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
       name: redirected.name,
       authorName: redirected.authorName,
       opponentName: redirected.opponentName ?? context.name,
@@ -1246,6 +1278,8 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     ...context,
     self: context.opponent,
     opponent: context.self,
+    localCoord: context.opponentLocalCoord ?? context.localCoord,
+    opponentLocalCoord: context.localCoord,
     name: context.opponentName,
     authorName: context.opponentAuthorName,
     opponentName: context.name,

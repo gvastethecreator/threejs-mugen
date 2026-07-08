@@ -10,6 +10,10 @@ export type RuntimeControllerEvaluationContext = {
   random?: () => number;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
+  localCoord?: [number, number];
+  opponentLocalCoord?: [number, number];
+  parentLocalCoord?: [number, number];
+  rootLocalCoord?: [number, number];
   stageTime?: number;
   opponent?: CharacterRuntimeState;
   parent?: CharacterRuntimeState;
@@ -40,6 +44,10 @@ export function createRuntimeControllerExpressionContext(
     random: context.random,
     stageBounds: context.stageBounds,
     gameSpace: context.gameSpace,
+    localCoord: context.localCoord,
+    opponentLocalCoord: context.opponentLocalCoord,
+    parentLocalCoord: context.parentLocalCoord,
+    rootLocalCoord: context.rootLocalCoord,
     stageTime: context.stageTime,
     stateTime: context.stateTime,
     teamSide: context.teamSide,

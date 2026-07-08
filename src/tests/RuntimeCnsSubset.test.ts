@@ -34,6 +34,18 @@ describe("ExpressionEvaluator", () => {
       }),
     ).toBe(1);
     expect(evaluateExpression("GameWidth = 0 && GameHeight = 0 && ScreenWidth = 0 && ScreenHeight = 0", { self: state })).toBe(1);
+    expect(
+      evaluateExpression("Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6", {
+        self: state,
+        localCoord: [640, 480],
+      }),
+    ).toBe(1);
+    expect(evaluateExpression("Const720p(var(0)) = 6", { self: runtimeState({ vars: [12] }), localCoord: [640, 480] })).toBe(1);
+    expect(
+      evaluateExpression("Const240p(3) = 3 && Const480p(6) = 3 && Const720p(12) = 3", {
+        self: state,
+      }),
+    ).toBe(1);
     expect(evaluateExpression("TeamSide = 1", { self: state, teamSide: 1 })).toBe(1);
     expect(evaluateExpression("EnemyNear, TeamSide = 2", { self: state, opponent: runtimeState(), teamSide: 1, opponentTeamSide: 2 })).toBe(1);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);

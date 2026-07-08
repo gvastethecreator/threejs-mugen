@@ -1,5 +1,41 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Const coordinate conversion trace gate
+
+Changed:
+
+- Added bounded `Const240p`, `Const480p`, and `Const720p` runtime expression support, converting numeric args from official 240p/480p/720p coordinate widths into the current player `localCoord` width.
+- Stopped treating `Const720p(...)` as a raw `Const(...)` lookup, so expressions such as `Const720p(var(0))` are evaluated before conversion.
+- Threaded player/opponent `localCoord` through runtime expression contexts, controller-param contexts, and bounded redirect targets where localcoord metadata exists.
+- Registered required trace artifact `synthetic-imported-const-coordinate.json`, which presses `x`, evaluates `Const240p(3) = 6`, `Const480p(6) = 6`, and `Const720p(12) = 6` for a 640x480 player localcoord, and routes imported State -1 into state/action `9304`.
+
+Evidence:
+
+- Official source checked: [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs/trigger.html) defines `Const240p`, `Const480p`, and `Const720p` as coordinate conversion functions into the player's coordinate space using width ratios.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeControllerExpressionContextSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Const240p|Const480p|Const720p|supported and unsupported trigger expressions|raw controller numbers|config game-space|GameWidth/GameHeight"` -> 3 files passed, 1 skipped; 5 tests passed and 561 skipped.
+- Full tests: `pnpm test` -> 153 files / 1463 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 508/508 artifacts, 477 required and 31 optional.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+- Trace artifact: `synthetic-imported-const-coordinate.json` checksum `ea879c1b`.
+
+Claim allowed:
+
+- Bounded current runtime trigger and controller-param expressions can evaluate `Const240p`, `Const480p`, and `Const720p` against current player localcoord width, including nested numeric args.
+
+Claim blocked:
+
+- Broad coordinate translation across all controller params, renderer/screenpack viewport ownership, camera animation parity, IKEMEN `config.json` execution, full viewport/camera/screenpack split, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN viewport parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 508/508 artifacts, 477 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1 with broader player-local coordinate translation, exact camera/screen/stage ownership, another Common1/FightFX oracle, or continue R2 by moving one mutable helper/target/effect path behind a named runtime boundary with focused tests.
+
 ## 2026-07-08 - Config GameWidth GameHeight trace gate
 
 Changed:

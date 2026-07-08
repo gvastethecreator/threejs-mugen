@@ -92,7 +92,7 @@ export function expressionSupportLevel(expression: string): CompileSupportLevel 
 }
 
 function stripRawFunctionArguments(expression: string): string {
-  return expression.replace(/\b(const|const720p|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
+  return expression.replace(/\b(const|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
 }
 
 function stripRedirectContextsForSupportScan(expression: string, unsupportedFeatures: Set<string>): string {
@@ -281,6 +281,8 @@ const supportedExpressionFunctions = new Set([
   "animelemtime",
   "command",
   "const",
+  "const240p",
+  "const480p",
   "const720p",
   "fvar",
   "gethitvar",

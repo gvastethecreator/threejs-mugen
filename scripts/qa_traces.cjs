@@ -261,6 +261,11 @@ async function main() {
       artifact: presets.createSyntheticImportedConfigGameSpaceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-const-coordinate",
+      required: true,
+      artifact: presets.createSyntheticImportedConstCoordinateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-state-context",
       required: true,
       artifact: presets.createSyntheticImportedStateContextTraceArtifact(),

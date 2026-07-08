@@ -35,8 +35,9 @@ time = 20
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
     const clean = compileExpression(
-      'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
+      'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
+    const constCoordinateArgs = compileExpression("Const720p(var(0) + 12) = 12");
     const contact = compileExpression(
       "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjContactTime(0) >= 0 || ProjHitTime(0) >= 0 || ProjHitTime(77) >= 0 || ProjGuardedTime(0) >= 0 || ProjCancelTime(0) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1 || HitPauseTime > 0",
     );
@@ -64,10 +65,12 @@ time = 20
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
 
     expect(clean.normalized).toBe(
-      'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
+      'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     expect(clean.supportLevel).toBe("executable");
-    expect(clean.functions).toEqual(["SelfAnimExist", "SelfStateNoExist"]);
+    expect(clean.functions).toEqual(["Const240p", "Const480p", "Const720p", "SelfAnimExist", "SelfStateNoExist"]);
+    expect(constCoordinateArgs.supportLevel).toBe("executable");
+    expect(constCoordinateArgs.functions).toEqual(["Const720p", "var"]);
     expect(clean.identifiers).toContain("SelfCommand");
     expect(clean.identifiers).toContain("StageTime");
     expect(clean.identifiers).toContain("GameWidth");

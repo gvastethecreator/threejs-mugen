@@ -19,6 +19,10 @@ export type RuntimeControllerEvaluationContextInput<TActor extends RuntimeContro
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
+  localCoord?: [number, number];
+  opponentLocalCoord?: [number, number];
+  parentLocalCoord?: [number, number];
+  rootLocalCoord?: [number, number];
   tick: number;
   getConst: (owner: TOwner, name: string) => number | undefined;
   nextRandom: (actor: TActor) => number;
@@ -34,6 +38,10 @@ export class RuntimeControllerEvaluationContextWorld {
       random: () => input.nextRandom(input.actor),
       stageBounds: input.stageBounds,
       gameSpace: input.gameSpace,
+      localCoord: input.localCoord,
+      opponentLocalCoord: input.opponentLocalCoord,
+      parentLocalCoord: input.parentLocalCoord,
+      rootLocalCoord: input.rootLocalCoord,
       stageTime: input.tick,
       opponent: input.opponent?.runtime,
       parent: input.parent?.runtime,

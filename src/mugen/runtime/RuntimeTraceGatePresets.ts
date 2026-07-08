@@ -1473,6 +1473,30 @@ export function createSyntheticImportedConfigGameSpaceTraceArtifact(options: Run
   );
 }
 
+export function createSyntheticImportedConstCoordinateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-const-coordinate",
+      displayName: "Synthetic Imported Const Coordinate",
+      localCoord: [640, 480],
+      constCoordinateEntry: { const240p: 6, const480p: 6, const720p: 6, stateNo: 9304 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-const-coordinate-golden",
+      targetLabel: "Synthetic imported Const coordinate route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [9304],
+      requiredExecutedStates: [9304],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported Const240p/Const480p/Const720p trace proves bounded Elecbyte width-ratio coordinate conversion into a 640x480 player localcoord. It does not claim exact coordinate ownership across renderer/screenpack viewport, camera animation, helper/team namespaces, or full player-local translation parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedStateContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -37430,6 +37454,7 @@ export type SyntheticImportedTraceFighterOptions = {
   gameTimeEntry?: { minGameTime: number; stateNo: number };
   gameSpaceEntry?: { gameWidth: number; gameHeight: number; stateNo: number };
   screenSpaceEntry?: { screenWidth: number; screenHeight: number; gameWidth: number; gameHeight: number; stateNo: number };
+  constCoordinateEntry?: { const240p: number; const480p: number; const720p: number; stateNo: number };
   stateContextEntry?: { stateNo: number };
   aliveStateEntry?: { stateNo: number };
   roundStateEntry?: { roundNo: number; roundState: number; stateNo: number };
@@ -38052,6 +38077,7 @@ ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.s
 ${options.gameTimeEntry === undefined ? "" : gameTimeStateEntryBlock(options.gameTimeEntry)}
 ${options.gameSpaceEntry === undefined ? "" : gameSpaceStateEntryBlock(options.gameSpaceEntry)}
 ${options.screenSpaceEntry === undefined ? "" : screenSpaceStateEntryBlock(options.screenSpaceEntry)}
+${options.constCoordinateEntry === undefined ? "" : constCoordinateStateEntryBlock(options.constCoordinateEntry)}
 ${options.stateContextEntry === undefined ? "" : stateContextEntryBlock(options.stateContextEntry)}
 ${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
 ${options.roundStateEntry === undefined ? "" : roundStateEntryBlock(options.roundStateEntry)}
@@ -38268,6 +38294,7 @@ ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I")
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
 ${options.gameSpaceEntry ? simpleStateBlock(options.gameSpaceEntry.stateNo, "I") : ""}
 ${options.screenSpaceEntry ? simpleStateBlock(options.screenSpaceEntry.stateNo, "I") : ""}
+${options.constCoordinateEntry ? simpleStateBlock(options.constCoordinateEntry.stateNo, "I") : ""}
 ${options.stateContextEntry ? simpleStateBlock(options.stateContextEntry.stateNo, "I") : ""}
 ${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
 ${options.roundStateEntry ? simpleStateBlock(options.roundStateEntry.stateNo, "I") : ""}
@@ -38570,6 +38597,11 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.screenSpaceEntry === undefined
         ? []
         : ([[options.screenSpaceEntry.stateNo, traceAction(options.screenSpaceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.constCoordinateEntry === undefined
+        ? []
+        : ([[options.constCoordinateEntry.stateNo, traceAction(options.constCoordinateEntry.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.stateContextEntry === undefined
         ? []
         : ([[options.stateContextEntry.stateNo, traceAction(options.stateContextEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -42256,6 +42288,19 @@ trigger1 = ScreenWidth = ${route.screenWidth}
 trigger1 = ScreenHeight = ${route.screenHeight}
 trigger1 = GameWidth = ${route.gameWidth}
 trigger1 = GameHeight = ${route.gameHeight}
+`;
+}
+
+function constCoordinateStateEntryBlock(route: { const240p: number; const480p: number; const720p: number; stateNo: number }): string {
+  return `
+[State -1, Const Coordinate Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = Const240p(3) = ${route.const240p}
+trigger1 = Const480p(6) = ${route.const480p}
+trigger1 = Const720p(12) = ${route.const720p}
 `;
 }
 

@@ -15,6 +15,7 @@ export { runtimeHitVar, type RuntimeHitVarTiming } from "./RuntimeHitVarSystem";
 export type RuntimeExpressionContextDefinition = {
   displayName: string;
   authorName?: string;
+  localCoord?: [number, number];
   constants?: Record<string, number>;
   commands?: MugenCommand[];
   animations: Pick<Map<number, unknown>, "has">;
@@ -80,6 +81,10 @@ export class RuntimeExpressionContextWorld {
       opponentTeamSide: runtimeActorTeamSide(opponent),
       stageBounds: input.stageBounds,
       gameSpace: input.gameSpace,
+      localCoord: actor.definition.localCoord,
+      opponentLocalCoord: opponent.definition.localCoord,
+      parentLocalCoord: owner.definition.localCoord,
+      rootLocalCoord: actor.definition.localCoord,
       target: (targetId) => this.resolveTargetRedirect(actor, opponent, targetId),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
@@ -147,6 +152,8 @@ export class RuntimeExpressionContextWorld {
     return {
       self: opponent.runtime,
       opponent: actor.runtime,
+      localCoord: opponent.definition.localCoord,
+      opponentLocalCoord: actor.definition.localCoord,
       name: opponent.definition.displayName,
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,
@@ -168,6 +175,8 @@ export class RuntimeExpressionContextWorld {
     return {
       self: opponent.runtime,
       opponent: actor.runtime,
+      localCoord: opponent.definition.localCoord,
+      opponentLocalCoord: actor.definition.localCoord,
       name: opponent.definition.displayName,
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,

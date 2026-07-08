@@ -544,6 +544,7 @@ import {
   createSyntheticImportedSelfCommandTraceArtifact,
   createSyntheticImportedSelfStateNoExistTraceArtifact,
   createSyntheticImportedConfigGameSpaceTraceArtifact,
+  createSyntheticImportedConstCoordinateTraceArtifact,
   createSyntheticImportedGameSpaceTraceArtifact,
   createSyntheticImportedScreenSpaceTraceArtifact,
   createSyntheticImportedGameTimeTraceArtifact,
@@ -2199,6 +2200,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([9303]);
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState"]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 9303)).toBe(true);
+  });
+
+  it("creates a synthetic imported Const240p/Const480p/Const720p artifact with localcoord branch evidence", () => {
+    const artifact = createSyntheticImportedConstCoordinateTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-const-coordinate-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(9304);
+    expect(evidence?.executedStates).toContain(9304);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([9304]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([9304]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState"]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 9304)).toBe(true);
   });
 
   it("creates a synthetic imported state-context artifact with ctrl and metadata branch evidence", () => {

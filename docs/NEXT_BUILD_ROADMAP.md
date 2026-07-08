@@ -27,13 +27,21 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required config GameWidth/GameHeight trace gate
+R1 required Const240p/Const480p/Const720p trace gate
+  -> synthetic-imported-const-coordinate.json checksum ea879c1b is required in qa:trace
+  -> imported State -1 presses x, uses player localCoord 640x480, evaluates Const240p(3) = 6, Const480p(6) = 6, Const720p(12) = 6, and routes into state/action 9304
+  -> evaluator/compiler/controller contexts now treat Const240p/480p/720p as numeric coordinate conversions, not raw Const lookups, and support evaluated args such as Const720p(var(0))
+  -> pnpm qa:trace passes 508/508 artifacts, 477 required and 31 optional
+  -> official Elecbyte Trigger Reference defines these as player-coordinate width-ratio conversions
+  -> no score movement; broad coordinate translation across all controller params, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
+
+Previous R1 required config GameWidth/GameHeight trace gate
   -> synthetic-imported-config-gamespace.json checksum 2f3c0a63 is required in qa:trace
   -> imported State -1 presses x, uses parsed-config-equivalent 1280x720 game-space dimensions over 640x480 stage localcoord, evaluates ScreenWidth = 1280 and ScreenHeight = 720, validates GameWidth = 2560 and GameHeight = 1440 at camera zoom 0.5, and routes into state/action 9303
   -> package config discovery parses INI-style mugen.cfg/config.ini [Config] GameWidth/GameHeight, carries dimensions into imported stage/system metadata, and runtimeStageGameSpace prefers those dimensions over stage localcoord when present
   -> pnpm qa:trace passes 507/507 artifacts, 476 required and 31 optional
   -> official Elecbyte Coordinate Space docs define mugen.cfg [Config] GameWidth/GameHeight as the game coordinate space; Elecbyte Trigger Reference defines GameWidth/GameHeight inverse zoom scaling and non-zooming ScreenWidth/ScreenHeight
-  -> no score movement; exact player-local coordinate translation, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
+  -> no score movement; broader player-local coordinate translation, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
 
 Previous R1 required ScreenWidth/ScreenHeight trace gate
   -> synthetic-imported-screenspace.json checksum 5330bacd remains required in qa:trace
