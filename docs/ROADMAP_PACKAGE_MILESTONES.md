@@ -35,11 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic VelAdd typed-telemetry trace gate
+-> synthetic-imported-dynamic-veladd.json checksum daf99fb4 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds vars, applies static VelSet seed velocity, and executes VelAdd x = var(0) + 1, y = var(1) - 1
+-> gate requires ordered variable:varset, kinematic:velset, and kinematic:veladd operation evidence plus bounded actor-frame velocity telemetry
+-> pnpm qa:trace passes 510/510 artifacts, 479 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified and VelAdd as optional x/y velocity additions
+-> no score movement; dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, teams/simul/helper breadth, score movement, and full movement parity remain blocked
+
 R1 required Const240p/Const480p/Const720p controller-param trace gate
 -> synthetic-imported-const-controller-param.json checksum 2dad3a50 is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, and executes VelSet x = Const240p(3) + Const480p(6), y = 0 - Const720p(12)
 -> player localCoord 640x480 converts the dynamic params to velocity x = 12 and y = -6, with controller order, actor-frame telemetry, and static plus dynamic kinematic:velset operation evidence required
--> pnpm qa:trace passes 509/509 artifacts, 478 required and 31 optional
+-> that checkpoint passed 509/509 artifacts, 478 required and 31 optional
 -> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified; Elecbyte Trigger Reference defines Const240p/480p/720p as player-coordinate width-ratio conversions
 -> no score movement; broad coordinate translation across all controller params, dynamic typed-operation lowering beyond active-state VelSet, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
 
@@ -1494,7 +1502,7 @@ R1 required synthetic air guard landing walk-control trace gate
   -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
   -> portable synthetic evidence only; no score movement, no exact MUGEN/IKEMEN air physics/landing/state-52/proximity/effects/visual/full parity claim
 R1 optional official KFM air guard landing walk-control trace tightening
-  -> kfm-official-default-air-guard-state.json checksum f4378971 passes when .scratch/fixtures/kfm-official.zip exists
+  -> kfm-official-default-air-guard-state.json checksum 62367dac passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back
   -> active-command evidence requires holdback and x
   -> required order preserves 154/155/52 controller/typed-operation landing order and actor-frame sequence
@@ -1532,7 +1540,7 @@ R1 optional official KFM stand guard-hold walk-control trace gate
   -> preserves the stricter stand slide-stop controller/typed-operation order from kfm-official-default-guard-slide-stop.json
   -> private-fixture confidence only; no public KFM support, exact guard-hold duration, guard timing/proximity/effects, crouch/air guard-hold parity, visual/audio parity, or score movement
 R1 optional official KFM ground-recovery priority trace gate
-  -> kfm-official-default-fall-ground-recovery-priority.json checksum 6d361534 passes when .scratch/fixtures/kfm-official.zip exists
+  -> kfm-official-default-fall-ground-recovery-priority.json checksum 6079c8c9 passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM mirrors the required near-ground recovery route 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0
   -> generic air-recovery state 5210 and lie-down chain states stay forbidden
   -> private-fixture confidence only; no public KFM support, exact thresholds, velocity math, tick-order parity, or score movement
@@ -1663,7 +1671,7 @@ R1 Common1 ground-recovery priority trace gate
   -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery" while generic air recovery state 5210 is forbidden
   -> required evidence includes positive-to-zero fall.recovertime, named ground-recovery controller/typed-operation order, final idle/control, and forbidden lie-down chain states
-  -> current pnpm qa:trace passes 296/296 artifacts, 266 required and 30 optional after optional kfm-official-default-air-guard-state.json checksum f4378971
+  -> current pnpm qa:trace passes 296/296 artifacts, 266 required and 30 optional after optional kfm-official-default-air-guard-state.json checksum 62367dac
   -> bounded ground-over-air recovery selection evidence only; no score movement, exact recovery threshold tables, ground/air arbitration constants, velocity math, visual/audio parity, or full recovery parity claim
 R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-default-fall-recovery-input-priority.json checksum f5e72e07 is required in qa:trace
@@ -1814,7 +1822,7 @@ Optional R1 KFM/Common1 crouch get-hit progression fixture gate
   -> KFM-specific evidence pins 5010 anim 5010, 5011 anim 5020, Clsn2 = 2/3, body width 39/39, crouch slide HitVelSet / VelMul / VelSet / DefenceMulSet typed-operation order, final checksum f469a942, and final idle/control
   -> private-fixture confidence only; no public KFM support, no score movement, no exact tick/table/fall/custom-state/team/visual/audio/full parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates
-  -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass when .scratch/fixtures/kfm-official.zip exists
+  -> kfm-official-default-air-fall-recovery-input.json checksum a431028a and kfm-official-default-air-fall-recovery-too-early.json checksum a1db1589 pass when .scratch/fixtures/kfm-official.zip exists
   -> real KFM air-entry recovery route includes 5020 -> 5030 -> 5035 -> 5050; valid recovery enters 5210, lands through 52, and returns to 0/control, while the early route stays in 5050 and forbids recovery/landing/ground-impact branches
   -> pnpm qa:trace passes 266/266 artifacts, 244 required and 22 optional
   -> private-fixture confidence only; no public KFM support, no score movement, no exact threshold/velocity/tick-order/full parity claim
@@ -2544,11 +2552,11 @@ R1 resource actor-frame evidence gate
   -> no exact resource scaling, helper/team/redirect resource ownership, round/KO flow, dynamic lowering, full controller VM parity, or score claim
 R1 Common1 too-early recovery-input positive-window gate
   -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.recoverTime minimum-positive windows
-  -> required synthetic-imported-default-fall-recovery-too-early.json checksum 050e7e3c and optional kfm-official-default-fall-recovery-too-early.json checksum d2edbde4 now require P2 5050 actor-frame evidence with min recoverTime >= 1, first-to-last drop >= 1, and at least 2 summarized frames while recovery command is active and recovery states stay forbidden
+  -> required synthetic-imported-default-fall-recovery-too-early.json checksum 050e7e3c and optional kfm-official-default-fall-recovery-too-early.json checksum 0ad7ae02 now require P2 5050 actor-frame evidence with min recoverTime >= 1, first-to-last drop >= 1, and at least 2 summarized frames while recovery command is active and recovery states stay forbidden
   -> focused RuntimeTraceArtifact and RuntimeTraceGatePresets coverage proves the field and presets
   -> no exact fall.recovertime tables, exact controller-loop tick order, velocity math, public bundled KFM support, full Common1 recovery parity, or score claim
 R1 optional KFM recovery-threshold drop gate
-  -> optional kfm-official-default-fall-recovery-threshold.json checksum bf7b058a now requires real KFM P2 state 5050 actor-frame evidence with positive hitFall.recoverTime, first-to-last recoverTime drop >= 1, and at least 2 summarized frames before 5200 with recoverTime 0
+  -> optional kfm-official-default-fall-recovery-threshold.json checksum 19ec5148 now requires real KFM P2 state 5050 actor-frame evidence with positive hitFall.recoverTime, first-to-last recoverTime drop >= 1, and at least 2 summarized frames before 5200 with recoverTime 0
   -> focused RuntimeTraceGatePresets coverage proves the official-style preset requirement
   -> no exact fall.recovertime tables, exact controller-loop tick order, velocity math, public bundled KFM support, full Common1 recovery parity, or score claim
 R2 RuntimeStateEntryWorld ownership
@@ -2724,11 +2732,11 @@ R2 RuntimeSnapshotWorld effect snapshot aggregation
   -> no effect VM semantics, exact tick order, renderer parity, compatibility-session ownership, or score claim
 R1 required Common1 fall get-hit entry trace strengthening
   -> synthetic-imported-default-fall-gethit.json checksum 6af73a91 now gates ordered 5000 -> 5030 -> 5050 controller/frame evidence
-  -> optional kfm-official-default-fall-gethit.json checksum a19f43db applies bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation and actor-frame order when the private fixture exists
+  -> optional kfm-official-default-fall-gethit.json checksum 517bc059 applies bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation and actor-frame order when the private fixture exists
   -> no exact fall/bounce/liedown tick order, velocity math, recovery branching, guard-state parity, public bundled KFM, or full fall get-hit parity claim
 R1 required Common1 full-chain recovery trace strengthening
   -> synthetic-imported-default-fall-recovery.json checksum d83797d9 gates ordered 5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120 controller/frame evidence plus bounded hitFall.downRecoverTime countdown-range / first-to-last-drop evidence in 5110
-  -> optional kfm-official-default-fall-recovery.json checksum 26a2aae9 applies bounded official KFM 5110/5120 controller/typed-operation and actor-frame order when the private fixture exists
+  -> optional kfm-official-default-fall-recovery.json checksum 2743c2c9 applies bounded official KFM 5110/5120 controller/typed-operation and actor-frame order when the private fixture exists
   -> no exact controller-loop tick order, threshold/down-recovery table, velocity/bounce math, recovery-input breadth, or full fall recovery parity claim
 R1 required Common1 stand get-hit progression trace strengthening
   -> synthetic-imported-default-gethit-progression.json checksum ef2a67f8 gates ordered 5000 ChangeState before 5001 ChangeState

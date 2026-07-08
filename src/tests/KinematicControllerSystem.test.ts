@@ -51,8 +51,9 @@ describe("RuntimeKinematicControllerWorld", () => {
     });
     expect(state.vel).toEqual({ x: 3, y: -5 });
 
-    world.applyController(state, source("VelAdd", { x: "Parent,Vel X", y: "Root,Vel Y" }), undefined, { parent, root });
+    const velAddResult = world.applyController(state, source("VelAdd", { x: "Parent,Vel X", y: "Root,Vel Y" }), undefined, { parent, root });
     expect(state.vel).toEqual({ x: 7, y: -12 });
+    expect(velAddResult.operation).toEqual({ kind: "kinematic", controllerType: "veladd", x: 4, y: -7 });
   });
 
   it("applies HitVelSet flags only when hit velocity exists", () => {

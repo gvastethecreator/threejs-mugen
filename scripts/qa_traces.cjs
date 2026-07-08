@@ -871,6 +871,11 @@ async function main() {
       artifact: presets.createSyntheticImportedKinematicTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dynamic-veladd",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicVelAddTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-controller-param-bottom",
       required: true,
       artifact: presets.createSyntheticImportedControllerParamBottomTraceArtifact(),
@@ -3792,6 +3797,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-gravity",
     "synthetic-imported-kinematic",
+    "synthetic-imported-dynamic-veladd",
     "synthetic-imported-width",
     "synthetic-imported-width-dynamic",
     "synthetic-imported-statetypeset",

@@ -61,6 +61,22 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(true);
   });
 
+  it("records bounded dynamic VelAdd as typed kinematic telemetry after resolving params", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ vel: { x: 2, y: 4 }, vars: [3, -5] });
+    const controller = compileControllerIr(controllerSource("VelAdd", { x: "var(0) + 1", y: "var(1) - 1" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply(actor, controller, {
+      recordOperation: (_actor, operation) =>
+        recordedOperations.push(`${operation.kind}:${"controllerType" in operation ? operation.controllerType : "none"}`),
+    });
+
+    expect(actor.runtime.vel).toEqual({ x: 6, y: -2 });
+    expect(recordedOperations).toEqual(["kinematic:veladd"]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
   it("reports unsupported controllers without mutating runtime state", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 777 });

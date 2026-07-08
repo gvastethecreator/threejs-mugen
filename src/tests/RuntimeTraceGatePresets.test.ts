@@ -358,6 +358,7 @@ import {
   createSyntheticImportedScreenBoundCameraTraceArtifact,
   createSyntheticImportedGravityTraceArtifact,
   createSyntheticImportedKinematicTraceArtifact,
+  createSyntheticImportedDynamicVelAddTraceArtifact,
   createSyntheticImportedControllerParamBottomTraceArtifact,
   createSyntheticImportedControllerParamTargetRedirectTraceArtifact,
   createSyntheticImportedControllerParamRootRedirectTraceArtifact,
@@ -9527,6 +9528,63 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+  });
+
+  it("creates a synthetic imported dynamic VelAdd artifact with typed kinematic evidence", () => {
+    const artifact = createSyntheticImportedDynamicVelAddTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dynamic-veladd-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "VelSet", "VelAdd"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "kinematic:velset", "kinematic:veladd"]);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "200 dynamic VelAdd typed order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "VarSet", name: "Dynamic VelAdd Var 0" },
+          { stateNo: 200, controller: "VarSet", name: "Dynamic VelAdd Var 1" },
+          { stateNo: 200, controller: "VelSet", name: "Dynamic VelAdd Seed Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
+          { stateNo: 200, controller: "VelAdd", name: "Dynamic VelAdd Probe" },
+          { stateNo: 200, operation: "kinematic:veladd" },
+        ],
+      },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:veladd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          maxVel: expect.objectContaining({ x: 4 }),
+          minVel: expect.objectContaining({ y: -6 }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported controller-param bottom artifact with zero fallback evidence", () => {

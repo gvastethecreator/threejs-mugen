@@ -5440,6 +5440,64 @@ export function createSyntheticImportedKinematicTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedDynamicVelAddTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-dynamic-veladd",
+      displayName: "Synthetic Imported Dynamic VelAdd",
+      action200Duration: 30,
+      withHitDef: false,
+      withDynamicVelAdd: {
+        seedVelocity: [2, 4],
+        vars: [
+          { index: 0, value: 3 },
+          { index: 1, value: -5 },
+        ],
+        xExpression: "var(0) + 1",
+        yExpression: "var(1) - 1",
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-dynamic-veladd-golden",
+      targetLabel: "Synthetic imported dynamic VelAdd route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "VelSet", "VelAdd"],
+      requiredExecutedOperations: ["variable:varset", "kinematic:velset", "kinematic:veladd"],
+      requiredControllerEventSequences: [
+        {
+          label: "200 dynamic VelAdd typed order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VarSet", name: "Dynamic VelAdd Var 0" },
+            { stateNo: 200, controller: "VarSet", name: "Dynamic VelAdd Var 1" },
+            { stateNo: 200, controller: "VelSet", name: "Dynamic VelAdd Seed Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
+            { stateNo: 200, controller: "VelAdd", name: "Dynamic VelAdd Probe" },
+            { stateNo: 200, operation: "kinematic:veladd" },
+          ],
+        },
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          observedVelXAtLeast: 4,
+          observedVelYAtMost: -6,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic VelAdd trace proves bounded active-state VelAdd expression params resolve through the runtime controller dispatcher into typed kinematic:veladd telemetry while preserving velocity-add semantics. It does not claim dynamic typed lowering for every kinematic controller, helper-local dynamic telemetry, exact physics/tick order, floor snapping, team/simul ownership, or full MUGEN/IKEMEN movement parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedControllerParamBottomTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -37819,6 +37877,12 @@ export type SyntheticImportedTraceFighterOptions = {
   withScreenBoundCameraProbe?: boolean;
   withGravity?: boolean;
   withKinematicControllers?: boolean;
+  withDynamicVelAdd?: {
+    seedVelocity?: [number, number];
+    xExpression?: string;
+    yExpression?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   bottomParamVelSetRoute?: {
     seedVelocity?: [number, number];
     xExpression?: string;
@@ -38186,6 +38250,7 @@ ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withGravity ? gravityControllerBlock() : ""}
 ${options.withKinematicControllers ? kinematicControllerBlock() : ""}
+${options.withDynamicVelAdd === undefined ? "" : dynamicVelAddControllerBlock(options.withDynamicVelAdd)}
 ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bottomParamVelSetRoute) : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
@@ -39474,6 +39539,36 @@ type = PosAdd
 trigger1 = Time = 0
 x = 6
 y = -2
+`;
+}
+
+function dynamicVelAddControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicVelAdd"]>): string {
+  const seed = options.seedVelocity ?? [2, 4];
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic VelAdd Var ${item.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic VelAdd Seed Velocity]
+type = VelSet
+trigger1 = Time = 1
+x = ${seed[0]}
+y = ${seed[1]}
+
+[State 200, Dynamic VelAdd Probe]
+type = VelAdd
+trigger1 = Time = 2
+x = ${options.xExpression ?? "var(0)"}
+y = ${options.yExpression ?? "var(1)"}
 `;
 }
 
