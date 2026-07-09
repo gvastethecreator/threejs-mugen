@@ -27,7 +27,18 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required helper Projectile guard sound typed audio trace gates
+R1 required helper Projectile normal-hit GetHitVar sound typed audio trace gates
+  -> synthetic-imported-helper-projectile-gethitvar-hit-metadata.json trace checksum 28afbcea / final checksum c960b1cf is required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json trace checksum 616e0b2c / final checksum 0aebcc73 is required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hitcount.json trace checksum 40ec4f4b / final checksum 6f15ff30 is required in qa:trace
+  -> imported first-generation helper-parented/root-owned Projectile normal-hit GetHitVar routes preserve owner/helper target links, Common1-style defender states 5000 -> 336/338/340, helper-local S5,40/41/42 sound telemetry, and FightFX F7002 package metadata
+  -> helper Projectile normal-hit GetHitVar contact sounds now record typed audio:playsnd evidence while preserving existing package telemetry
+  -> gate requires Helper, Projectile, helper, projectile, audio:playsnd, and hit sound/effect telemetry
+  -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+  -> official Elecbyte docs define Projectile as taking HitDef parameters, helper-created Projectiles as immediately root-owned, numeric controller params as expression-capable, and HitDef hitsound/guardsound sound group/index params
+  -> no score movement; broader helper Projectile normal-hit sound breadth, exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
+
+Previous R1 required helper Projectile guard sound typed audio trace gates
   -> synthetic-imported-helper-projectile-guard-ko.json trace checksum 05dbcded / final checksum 98b8bf17 is required in qa:trace
   -> synthetic-imported-helper-projectile-guard-kill.json trace checksum 33930a00 / final checksum 8412e638 is required in qa:trace
   -> synthetic-imported-helper-projectile-guard-terminal.json trace checksum c6937f42 / final checksum e0835e33 is required in qa:trace
@@ -36,7 +47,7 @@ R1 required helper Projectile guard sound typed audio trace gates
   -> gate requires Helper, Projectile, helper, projectile, audio:playsnd, and guard sound telemetry
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define Projectile as taking HitDef parameters, helper-created Projectiles as immediately root-owned, numeric controller params as expression-capable, and HitDef hitsound/guardsound sound group/index params
-  -> no score movement; helper Projectile normal-hit contact sound operation telemetry, exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
+  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
 
 Previous R1 required Projectile contact sound typed audio trace gates
   -> synthetic-imported-projectile-contact.json trace checksum 57b3b556 / final checksum e0f3e41c is required in qa:trace
@@ -46,7 +57,7 @@ Previous R1 required Projectile contact sound typed audio trace gates
   -> gate requires HitDef, Projectile, hitdef, projectile, audio:playsnd, and hit/guard sound telemetry
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define Projectile as taking HitDef parameters, numeric controller params as expression-capable, and HitDef hitsound/guardsound sound group/index params
-  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper Projectile normal-hit contact sound operation telemetry, broader helper/redirect/team ownership, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
+  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
 
 Previous R1 required dynamic HitDef contact sound typed audio trace gates
   -> synthetic-imported-hitdef-dynamic-hitsound.json trace checksum fe3c0f3d / final checksum 855df386 remains required in qa:trace
@@ -547,7 +558,7 @@ Previous R1 required dynamic HitDef hitsound trace gate, superseded by typed con
   -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1), soundPrefix kfm, and audio:playsnd evidence for F5,4
   -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
-  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, helper Projectile normal-hit contact sound operation telemetry, and full audio parity remain blocked
+  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, broader helper Projectile normal-hit sound breadth beyond the three GetHitVar oracles, and full audio parity remain blocked
 
 Previous R1 required dynamic sound-value trace gate, superseded by typed telemetry cut
   -> synthetic-imported-sound-dynamic-value.json checksum bcdafe32 / final checksum 31b8a7b3 remains required in qa:trace
@@ -879,30 +890,33 @@ Previous R1 required Projectile/helper normal-hit HitCount trace gates
 
 Previous R1 required Projectile/helper normal-hit GetHitVar hitcount trace gates
   -> synthetic-imported-projectile-gethitvar-hitcount.json trace checksum fa445b05 / final checksum 0c2197f7 remains required in qa:trace
-  -> synthetic-imported-helper-projectile-gethitvar-hitcount.json trace checksum ded0c9b3 / final checksum bba71972 remains required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hitcount.json trace checksum 40ec4f4b / final checksum 6f15ff30 remains required in qa:trace
   -> player/helper routes preserve HitDef numhits separately from Projectile projhits and prove GetHitVar(hitcount) from defender-owned Common1-style states 339/340
-  -> pnpm qa:trace passed 411/411 artifacts, 381 required and 30 optional
-  -> remains required; exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
+  -> helper route now also requires audio:playsnd, helper-local S5,42, FightFX F7002, and shared contact package telemetry
+  -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+  -> remains required; exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, broader helper Projectile normal-hit sound breadth, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit GetHitVar hitid/chainid trace gates
   -> synthetic-imported-projectile-gethitvar-hitid-chainid.json trace checksum 80392a85 / final checksum 514a6803 is required in qa:trace
-  -> synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json trace checksum 24df4416 / final checksum f84c36ad is required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json trace checksum 616e0b2c / final checksum 0aebcc73 is required in qa:trace
   -> player-owned Projectile effect id 77 preserves separate HitDef id 78 and chainID 44, routes P2 through defender-owned Common1-style 5000 -> 337, and proves GetHitVar(hitid) = 78, GetHitVar(chainid) = 44, and !GetHitVar(guarded)
   -> helper-parented/root-owned Projectile effect id 8891 preserves the same HitDef id 78 and chainID 44, routes P2 through 5000 -> 338, and proves GetHitVar(hitid) = 78, GetHitVar(chainid) = 44, and !GetHitVar(guarded)
   -> player route keeps projectile lifecycle plus target link p1 -> p2 / 78 while effect id stays 77
   -> helper route keeps owner/helper target links p1 -> p2 / 78 and p1-helper-0 -> p2 / 78 plus helper/projectile lifecycle payload evidence while effect id stays 8891
-  -> pnpm qa:trace passes 409/409 artifacts, 379 required and 30 optional
-  -> no score movement; exact chain-hit eligibility arbitration, combo accumulation, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
+  -> helper route now also requires audio:playsnd, helper-local S5,41, FightFX F7002, and shared contact package telemetry
+  -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+  -> no score movement; exact chain-hit eligibility arbitration, combo accumulation, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, broader helper Projectile normal-hit sound breadth, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit GetHitVar damage/hittime/xvel/yvel metadata trace gates
   -> synthetic-imported-projectile-gethitvar-hit-metadata.json trace checksum 6b7ad6e5 / final checksum 36365083 is required in qa:trace
-  -> synthetic-imported-helper-projectile-gethitvar-hit-metadata.json trace checksum 4a65158a / final checksum dfbc9fe9 is required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hit-metadata.json trace checksum 28afbcea / final checksum c960b1cf is required in qa:trace
   -> player-owned Projectile id 77 routes P2 through defender-owned Common1-style 5000 -> 335 and proves GetHitVar(damage) = 31, GetHitVar(hittime) = 13, GetHitVar(xvel) = 4, GetHitVar(yvel) = -2, and !GetHitVar(guarded)
   -> helper-parented/root-owned Projectile id 8890 routes P2 through 5000 -> 336 and proves GetHitVar(damage) = 37, GetHitVar(hittime) = 14, GetHitVar(xvel) = 4, GetHitVar(yvel) = -2, and !GetHitVar(guarded)
   -> player route keeps projectile lifecycle plus target link p1 -> p2 / 77
   -> helper route keeps owner/helper target links p1 -> p2 / 8890 and p1-helper-0 -> p2 / 8890 plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passed 407/407 artifacts, 377 required and 30 optional
-  -> remains required; exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, multi-hit arbitration, broader combo/chain/id breadth, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
+  -> helper route now also requires audio:playsnd, helper-local S5,40, FightFX F7002, and shared contact package telemetry
+  -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+  -> remains required; exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, multi-hit arbitration, broader combo/chain/id breadth, custom-state inheritance, throws, teams/simul, broader helper Projectile normal-hit sound breadth, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
 Previous R1 required Projectile/helper guard slide-stop trace gates
   -> synthetic-imported-projectile-guard-slide-stop.json trace checksum 965c2d12 / final checksum 0973a73c is required in qa:trace

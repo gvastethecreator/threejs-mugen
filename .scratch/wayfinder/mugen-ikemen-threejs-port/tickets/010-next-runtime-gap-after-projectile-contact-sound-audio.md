@@ -22,4 +22,4 @@ Result:
 - Required executed operations now include `helper`, `projectile`, and `audio:playsnd`.
 - Focused tests and `pnpm qa:trace` 524/524 passed.
 
-Still open: helper Projectile normal-hit contact sound operation telemetry, broader helper/redirect/team ownership, exact SND lookup/channel/timing/mixing/panning, renderer parity, and full audio/Projectile parity.
+Still open after this ticket: helper Projectile normal-hit sound telemetry, broader helper/redirect/team ownership, exact SND lookup/channel/timing/mixing/panning, renderer parity, and full audio/Projectile parity. Ticket 011 later closed the first bounded helper Projectile normal-hit GetHitVar sound typed telemetry oracles; broader normal-hit sound breadth remains open.

@@ -15331,7 +15331,11 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
+      hitSound: "S5,40",
+      hitSpark: "F7002",
+      sparkXy: [18, -68],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? farCombatStage();
   const script = expandRuntimeTraceScript([
@@ -15350,7 +15354,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
       label: "Synthetic imported Helper Projectile GetHitVar hit metadata route",
       source: "imported",
       notes: [
-        "Synthetic imported Helper Projectile GetHitVar hit metadata trace proves bounded helper-parented owner-side Projectile normal-hit damage, hittime, xvel, and yvel values can route defender-owned Common1-style get-hit CNS from state 5000 while retaining root-owned Projectile target links. It does not claim helper-owned custom states, exact helper Projectile target lifetime/tick order, hitpause lifetime, multi-hit arbitration, or full MUGEN/IKEMEN helper Projectile parity.",
+        "Synthetic imported Helper Projectile GetHitVar hit metadata trace proves bounded helper-parented owner-side Projectile normal-hit damage, hittime, xvel, and yvel values can route defender-owned Common1-style get-hit CNS from state 5000, record typed audio:playsnd telemetry from helper-local hitsound, and retain root-owned Projectile target links. It does not claim helper-owned custom states, exact helper Projectile target lifetime/tick order, hitpause lifetime, exact SND playback/mixing, multi-hit arbitration, or full MUGEN/IKEMEN helper Projectile parity.",
       ],
     },
     gates: [
@@ -15362,7 +15366,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 5000, 336],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredControllerEventSequences: [
           {
             label: "helper-local Projectile spawn telemetry",
@@ -15406,6 +15410,42 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 40,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              offsetX: 18,
+              offsetY: -68,
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -15478,7 +15518,11 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
+      hitSound: "S5,41",
+      hitSpark: "F7002",
+      sparkXy: [18, -68],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? farCombatStage();
   const script = expandRuntimeTraceScript([
@@ -15497,7 +15541,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
       label: "Synthetic imported Helper Projectile GetHitVar hitid/chainid route",
       source: "imported",
       notes: [
-        "Synthetic imported Helper Projectile GetHitVar hitid/chainid trace proves bounded helper-parented/root-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving separate owner/helper target links. It does not claim exact chain-hit eligibility arbitration, combo accumulation, helper-owned custom states, custom-state inheritance, or full MUGEN/IKEMEN helper Projectile parity.",
+        "Synthetic imported Helper Projectile GetHitVar hitid/chainid trace proves bounded helper-parented/root-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000, record typed audio:playsnd telemetry from helper-local hitsound, and preserve separate owner/helper target links. It does not claim exact chain-hit eligibility arbitration, combo accumulation, helper-owned custom states, custom-state inheritance, exact SND playback/mixing, or full MUGEN/IKEMEN helper Projectile parity.",
       ],
     },
     gates: [
@@ -15509,7 +15553,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 5000, 338],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredControllerEventSequences: [
           {
             label: "helper-local Projectile spawn telemetry",
@@ -15553,6 +15597,42 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 41,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              offsetX: 18,
+              offsetY: -68,
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -15624,7 +15704,11 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArt
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
+      hitSound: "S5,42",
+      hitSpark: "F7002",
+      sparkXy: [18, -68],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? farCombatStage();
   const script = expandRuntimeTraceScript([
@@ -15643,7 +15727,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArt
       label: "Synthetic imported Helper Projectile GetHitVar hitcount route",
       source: "imported",
       notes: [
-        "Synthetic imported Helper Projectile GetHitVar hitcount trace proves bounded helper-parented/root-owned Projectile normal-hit HitDef numhits metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving owner/helper target links and keeping projhits as Projectile lifetime data. It does not claim exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, helper-owned custom states, custom-state inheritance, or full MUGEN/IKEMEN helper Projectile parity.",
+        "Synthetic imported Helper Projectile GetHitVar hitcount trace proves bounded helper-parented/root-owned Projectile normal-hit HitDef numhits metadata can route defender-owned Common1-style get-hit CNS from state 5000, record typed audio:playsnd telemetry from helper-local hitsound, preserve owner/helper target links, and keep projhits as Projectile lifetime data. It does not claim exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, helper-owned custom states, custom-state inheritance, exact SND playback/mixing, or full MUGEN/IKEMEN helper Projectile parity.",
       ],
     },
     gates: [
@@ -15655,7 +15739,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArt
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 5000, 340],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredControllerEventSequences: [
           {
             label: "helper-local Projectile spawn telemetry",
@@ -15699,6 +15783,42 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArt
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 42,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              offsetX: 18,
+              offsetY: -68,
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },

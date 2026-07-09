@@ -32,8 +32,8 @@ Yes, for the current player-owned Projectile contact routes. The repo can resolv
 
 ## Uncertainty
 
-- This does not prove exact SND archive lookup, channel priority, panning, timing, mixing, helper Projectile normal-hit contact sound operation telemetry, helper/redirect/team ownership, or renderer/audio parity.
+- This does not prove exact SND archive lookup, channel priority, panning, timing, mixing, broader helper Projectile normal-hit contact sound breadth, helper/redirect/team ownership, or renderer/audio parity.
 
 ## Decision Impact
 
-Treat player-owned Projectile hit/guard contact sound typed telemetry as closed. A later follow-up closed bounded helper Projectile guard sound typed telemetry; keep helper Projectile normal-hit contact sound operation telemetry and exact audio/presentation parity as future tickets.
+Treat player-owned Projectile hit/guard contact sound typed telemetry as closed. Later follow-ups closed bounded helper Projectile guard sound typed telemetry and the first helper Projectile normal-hit GetHitVar sound typed telemetry oracles; keep broader helper Projectile normal-hit sound breadth and exact audio/presentation parity as future tickets.
