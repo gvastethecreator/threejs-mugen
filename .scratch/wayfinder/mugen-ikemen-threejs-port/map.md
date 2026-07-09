@@ -10,11 +10,11 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - Implementation remains feature-sliced, evidence-gated, and committed per completed feature.
 - Use primary-source research for external/toolchain/compatibility claims.
 - Use trace gates for runtime compatibility claims; use smoke/browser evidence for visible Studio/runtime UI claims.
-- Current verified toolchain: TypeScript 7.0.2.
+- Current verified toolchain: TypeScript 7.0.2 with explicit `rootDir: "src"` and no TS6 compatibility alias.
 
 ## Decisions So Far
 
-- [TypeScript 7 upgrade posture](tickets/001-typescript-7-upgrade-posture.md) - upgrade directly to `typescript@~7.0.2`; no TS6 compatibility alias unless a future API-importing tool fails.
+- [TypeScript 7 upgrade posture](tickets/001-typescript-7-upgrade-posture.md) - upgrade directly to `typescript@~7.0.2`; keep `rootDir: "src"` explicit; no TS6 compatibility alias unless a future API-importing tool fails.
 - [Choose next runtime compatibility gap](tickets/002-next-runtime-compatibility-gap.md) - dynamic `EnvShake` and dynamic `EnvColor value/time/under` now record typed telemetry after expression resolution; no camera/presentation-parity score movement.
 - [Choose next runtime gap after EnvColor](tickets/005-next-runtime-gap-after-envcolor.md) - open frontier for the next bounded R1/R2 trace or ownership slice.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.

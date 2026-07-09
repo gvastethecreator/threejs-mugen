@@ -38,5 +38,7 @@ Upgrade the repo's direct `typescript` dev dependency to `~7.0.2` and do not add
 ## Implementation Verification (2026-07-09)
 
 - Workspace-level TS toolchain in `package.json` remains `typescript: "~7.0.2"` and lockfile entries are pinned at `7.0.2` across npm platform packages.
-- End-to-end project checks were executed after the Studio matchup-control edit: `pnpm typecheck`, `pnpm build`, `pnpm test`, and `pnpm qa:smoke` all passed.
+- Post-upgrade audit on 2026-07-09 found no TS7 blockers. The only initial warning was an implicit `rootDir`; `tsconfig.json` now sets `rootDir: "src"` so TS7's new `./` default cannot change future emit layout if `noEmit` is relaxed later, and the follow-up audit passed with 0 errors and 0 warnings.
+- `types` remains explicit as `["vite/client"]`; no TypeScript compiler API imports were found in the repo search, and `pnpm why typescript` still resolves only `typescript@7.0.2`.
+- End-to-end project checks after `rootDir` hardening: `pnpm typecheck`, `pnpm build`, `pnpm test`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check` passed; `pnpm test` reported 153 files / 1495 tests and `pnpm qa:trace` reported 523/523 artifacts, 492 required and 31 optional.
 - No runtime-facing JS/JSDoc behavior changes were required by this repo slice; no `@typescript/typescript6` compatibility alias was added because CLI-only `tsc` usage remains.

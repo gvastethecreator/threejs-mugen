@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-09 - TypeScript 7 rootDir audit hardening
+
+Summary:
+
+- Re-ran the TypeScript 7 upgrade audit against the current tree after the initial 7.0.2 upgrade.
+- Added explicit `rootDir: "src"` to `tsconfig.json` so TS7's new `./` default cannot silently affect future emit layout if the project later enables declaration or JS output.
+- Kept the direct TS7 route: no `@typescript/typescript6` alias is present because current repo usage remains CLI `tsc` only and no local TypeScript compiler API imports were found.
+
+Evidence:
+
+- Official TypeScript 7 blog: TS7 adopts new defaults, including `rootDir` defaulting to `./`, and projects with inner source directories should set `rootDir` when layout matters.
+- Current package facts: `npm view typescript version dist-tags --json` reports latest `7.0.2`; `npm view @typescript/typescript6 version dist-tags --json` reports latest `6.0.2`; `pnpm exec tsc --version` reports `Version 7.0.2`; `pnpm why typescript` reports only `typescript@7.0.2`.
+- Local audit before the config hardening had 0 errors and 1 warning for implicit `rootDir`; after the config change, the TypeScript 7 upgrade audit passed with 0 errors and 0 warnings.
+- Gates after hardening: `pnpm typecheck` passed, `pnpm build` passed with the known Vite large-chunk warning, `pnpm test` passed 153 files / 1495 tests, `pnpm qa:trace` passed 523/523 artifacts, 492 required and 31 optional, `pnpm check:boundaries` passed, and `git diff --check` passed with the existing CRLF warning for `docs/PROGRESS_TRACKER.md`.
+
+Claim allowed:
+
+- The TS7 upgrade posture is now explicit about `src` as the TypeScript root while preserving the current direct `typescript@~7.0.2` route.
+
+Claim blocked:
+
+- This does not prove future compiler-API tools are TS7-compatible; add `@typescript/typescript6` only with failing-output evidence from a concrete tool.
+
 ## 2026-07-09 - Dynamic EnvColor typed telemetry
 
 Summary:
