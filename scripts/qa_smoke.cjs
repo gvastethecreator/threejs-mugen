@@ -563,15 +563,39 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   await packageDownload.saveAs(packagePath);
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.projectBundle));
   await page.screenshot({ path: path.join(outDir, "studio-build.png"), fullPage: true });
+  let sourceFocusAfterClick = null;
+  const sourceTrustRow = page.locator('.studio-trust-contract-row[data-trust-row-id="source-packages"]').first();
+  const sourceTrustHasPath = (await sourceTrustRow.isVisible()) && (await sourceTrustRow.evaluate((row) => Boolean(row.dataset.sourcePath)));
+  if (sourceTrustHasPath) {
+    await sourceTrustRow.click();
+    await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.studioFocusedSourcePath));
+    await page.waitForTimeout(150);
+    sourceFocusAfterClick = await page.evaluate(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const sourcePathRow = document.querySelector(".source-package-path-row.is-linked-focus");
+      const sourcePathRect = sourcePathRow?.getBoundingClientRect();
+      return {
+        trustFocusedRow: bridge?.studioFocusedTrustRowId ?? null,
+        sourcePackageId: bridge?.studioFocusedSourcePackageId ?? null,
+        sourcePath: bridge?.studioFocusedSourcePath ?? null,
+        sourcePackageRowClass: document.querySelector(".source-package-row.is-linked-focus")?.dataset.sourcePackageId ?? null,
+        sourcePathRowClass: sourcePathRow?.dataset.sourcePath ?? null,
+        sourcePathRowVisible: Boolean(sourcePathRect && sourcePathRect.top >= 0 && sourcePathRect.bottom <= window.innerHeight),
+      };
+    });
+    await page.screenshot({ path: path.join(outDir, "studio-build-source-file-focus.png"), fullPage: true });
+  }
   const packageTrustRow = page.locator('.studio-trust-contract-row[data-trust-row-id="package-bundle"]').first();
   if (await packageTrustRow.isVisible()) {
     await packageTrustRow.click();
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioFocusedTrustRowId === "package-bundle");
+    await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.studioFocusedPackageFilePath));
+    await page.waitForTimeout(150);
     await page.screenshot({ path: path.join(outDir, "studio-build-trust-focus.png"), fullPage: true });
   }
   const downloadedArtifact = JSON.parse(fs.readFileSync(tracePath, "utf8"));
   const downloadedPackage = await inspectPackageZip(packagePath);
-  return page.evaluate((downloadedArtifact) => {
+  return page.evaluate(({ downloadedArtifact, sourceFocusAfterClick }) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     return {
       title: document.title,
@@ -585,11 +609,28 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
       trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
+      trustChainTargetDetails: bridge?.studioTrustChain?.map((row) => ({
+        id: row.id,
+        kind: row.targetKind,
+        targetId: row.targetId,
+        targetPackageId: row.targetPackageId,
+        targetPath: row.targetPath,
+      })) ?? [],
       trustChainDeltas: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.freshness}:${row.delta}`) ?? [],
       trustChainNextActions: bridge?.studioTrustChain?.map((row) => row.nextLabel).filter(Boolean) ?? [],
       trustChainBlocked: bridge?.studioTrustChain?.filter((row) => row.state === "blocked").map((row) => row.id) ?? [],
       trustFocusedRow: bridge?.studioFocusedTrustRowId ?? null,
       trustFocusedRowClass: document.querySelector(".studio-trust-contract-row.is-linked-focus")?.dataset.trustRowId ?? null,
+      focusedPackageFilePath: bridge?.studioFocusedPackageFilePath ?? null,
+      focusedPackageFileRow: document.querySelector(".package-file-row.is-linked-focus")?.dataset.packageFilePath ?? null,
+      focusedPackageFileRowVisible: (() => {
+        const row = document.querySelector(".package-file-row.is-linked-focus");
+        const rect = row?.getBoundingClientRect();
+        return Boolean(rect && rect.top >= 0 && rect.bottom <= window.innerHeight);
+      })(),
+      sourceFocusAfterClick,
+      packageFileRows: document.querySelectorAll(".package-file-row[data-package-file-path]").length,
+      sourcePathRows: document.querySelectorAll(".source-package-path-row[data-source-path]").length,
       trustChainButtonBindings: [...document.querySelectorAll(".studio-trust-contract-row")].map((row) => ({
         action: row.dataset.action,
         studioTab: row.dataset.studioTab,
@@ -597,6 +638,8 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
         assetFilter: row.dataset.assetFilter,
         traceFrameIndex: row.dataset.traceFrameIndex,
         sourcePackageId: row.dataset.sourcePackageId,
+        sourcePath: row.dataset.sourcePath,
+        packageFilePath: row.dataset.packageFilePath,
         studioAssetId: row.dataset.studioAssetId,
       })),
       bodyHasArchitectureBoundaries: document.body.innerText.includes("Architecture boundaries") || document.body.innerText.includes("Architecture Boundaries"),
@@ -623,7 +666,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       },
       downloadedPackage: window.__DOWNLOADED_PACKAGE__,
     };
-  }, downloadedArtifact).then((result) => ({ ...result, downloadedPackage, importedFixtureLoaded, importedFixtureName }));
+  }, { downloadedArtifact, sourceFocusAfterClick }).then((result) => ({ ...result, downloadedPackage, importedFixtureLoaded, importedFixtureName }));
 }
 
 async function captureStudioModules(page, outDir) {
@@ -1608,6 +1651,7 @@ function assertSmoke(diagnostics) {
     const index = check.trustChainIds?.indexOf(id) ?? -1;
     return index >= 0 ? check.trustChainButtonBindings?.[index] : undefined;
   };
+  const trustTargetAt = (check, id) => check.trustChainTargetDetails?.find((target) => target.id === id);
   if (trustBindingAt(studioBuild, "runtime-manifest")?.evidenceFilter !== "compile") {
     failures.push("studio-build: runtime manifest Trust Chain row did not target compile evidence");
   }
@@ -1619,6 +1663,35 @@ function assertSmoke(diagnostics) {
   }
   if (trustBindingAt(studioBuild, "compatibility-gates")?.evidenceFilter !== "gate") {
     failures.push("studio-build: compatibility Trust Chain row did not target gate evidence");
+  }
+  if (
+    trustTargetAt(studioBuild, "package-bundle")?.kind !== "package-file" ||
+    !trustBindingAt(studioBuild, "package-bundle")?.packageFilePath ||
+    (studioBuild.packageFileRows ?? 0) <= 0
+  ) {
+    failures.push("studio-build: package Trust Chain row did not drill down to a concrete package file");
+  }
+  if (!studioBuild.focusedPackageFilePath || studioBuild.focusedPackageFileRow !== studioBuild.focusedPackageFilePath || !studioBuild.focusedPackageFileRowVisible) {
+    failures.push("studio-build: package Trust Chain click did not focus the concrete package file row");
+  }
+  if (
+    studioBuild.importedFixtureLoaded &&
+    (trustTargetAt(studioBuild, "source-packages")?.kind !== "source-file" ||
+      !trustBindingAt(studioBuild, "source-packages")?.sourcePackageId ||
+      !trustBindingAt(studioBuild, "source-packages")?.sourcePath ||
+      (studioBuild.sourcePathRows ?? 0) <= 0)
+  ) {
+    failures.push("studio-build: source Trust Chain row did not drill down to a concrete required source path");
+  }
+  if (
+    studioBuild.importedFixtureLoaded &&
+    (studioBuild.sourceFocusAfterClick?.trustFocusedRow !== "source-packages" ||
+      !studioBuild.sourceFocusAfterClick?.sourcePackageId ||
+      !studioBuild.sourceFocusAfterClick?.sourcePath ||
+      studioBuild.sourceFocusAfterClick?.sourcePathRowClass !== studioBuild.sourceFocusAfterClick?.sourcePath ||
+      !studioBuild.sourceFocusAfterClick?.sourcePathRowVisible)
+  ) {
+    failures.push("studio-build: source Trust Chain click did not focus the concrete source path row");
   }
   if (studioBuild.trustFocusedRow !== "package-bundle" || studioBuild.trustFocusedRowClass !== "package-bundle") {
     failures.push("studio-build: Trust Chain click did not leave a visible package-bundle focus row");

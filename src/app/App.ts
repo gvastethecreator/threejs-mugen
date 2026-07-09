@@ -534,7 +534,13 @@ type BuildReadinessBaseRecord = {
 };
 type BuildReadinessRecord = BuildReadinessBaseRecord & StudioActionableFields;
 type StudioTrustLane = "runtime" | "source" | "assets" | "qa" | "build" | "compat" | "architecture";
-type StudioTrustTargetKind = "compile" | "trace" | "package" | "asset" | "source-package" | "gate" | "contract";
+type StudioTrustTargetKind = "compile" | "trace" | "package" | "package-file" | "asset" | "source-package" | "source-file" | "gate" | "contract";
+type StudioTrustTarget = {
+  kind: StudioTrustTargetKind;
+  id: string;
+  targetPackageId?: string;
+  targetPath?: string;
+};
 type StudioTrustContractRow = {
   id: string;
   lane: StudioTrustLane;
@@ -548,6 +554,8 @@ type StudioTrustContractRow = {
   delta: string;
   targetKind: StudioTrustTargetKind;
   targetId: string;
+  targetPackageId?: string;
+  targetPath?: string;
   nextLabel: string;
   nextAction: StudioNextAction;
   blockedBy: string[];
@@ -679,6 +687,9 @@ export class App {
   private storedTraceEvidence: StoredTraceEvidenceEntry[] = [];
   private selectedTraceFrameIndex = 0;
   private studioFocusedTrustRowId?: string;
+  private studioFocusedPackageFilePath?: string;
+  private studioFocusedSourcePackageId?: string;
+  private studioFocusedSourcePath?: string;
   private commandPaletteOpen = false;
   private commandPaletteQuery = "";
   private commandPaletteActiveIndex = 0;
@@ -892,6 +903,30 @@ export class App {
         this.root.querySelector<HTMLInputElement>("#zip-input")?.click();
       } else if (action === "load-folder") {
         this.root.querySelector<HTMLInputElement>("#folder-input")?.click();
+      }
+
+      const packageFilePath = target.closest<HTMLElement>("[data-package-file-path]")?.dataset.packageFilePath;
+      if (packageFilePath) {
+        this.studioFocusedPackageFilePath = packageFilePath;
+        this.mode = "studio";
+        this.studioTab = "build";
+        this.writeUrlState();
+        this.updateUi();
+        this.scrollPackageFilePathIntoView(packageFilePath);
+        return;
+      }
+
+      const sourcePathNode = target.closest<HTMLElement>("[data-source-path]");
+      const sourcePath = sourcePathNode?.dataset.sourcePath;
+      if (sourcePath) {
+        this.studioFocusedSourcePackageId = sourcePathNode?.dataset.sourcePackageId;
+        this.studioFocusedSourcePath = sourcePath;
+        this.mode = "studio";
+        this.studioTab = "build";
+        this.writeUrlState();
+        this.updateUi();
+        this.scrollSourcePathIntoView(sourcePath, this.studioFocusedSourcePackageId);
+        return;
       }
 
       const mode = target.closest<HTMLElement>("[data-mode]")?.dataset.mode as AppMode | undefined;
@@ -2190,6 +2225,22 @@ export class App {
   private scrollRightPaneToTop(): void {
     window.requestAnimationFrame(() => {
       this.root.querySelector<HTMLElement>("#right-pane")?.scrollTo({ top: 0 });
+    });
+  }
+
+  private scrollPackageFilePathIntoView(path: string): void {
+    window.requestAnimationFrame(() => {
+      const target = [...this.root.querySelectorAll<HTMLElement>(".package-file-row[data-package-file-path]")]
+        .find((element) => element.dataset.packageFilePath === path);
+      target?.scrollIntoView({ block: "center", inline: "nearest" });
+    });
+  }
+
+  private scrollSourcePathIntoView(path: string, sourcePackageId?: string): void {
+    window.requestAnimationFrame(() => {
+      const target = [...this.root.querySelectorAll<HTMLElement>(".source-package-path-row[data-source-path]")]
+        .find((element) => element.dataset.sourcePath === path && (!sourcePackageId || element.dataset.sourcePackageId === sourcePackageId));
+      target?.scrollIntoView({ block: "center", inline: "nearest" });
     });
   }
 
@@ -6332,37 +6383,61 @@ export class App {
           sourcePackages.length
             ? `<div class="list compact-list">
                 ${sourcePackages
-                  .map(
-                    (sourcePackage) => `
-                      <div class="list-item source-package-row" data-source-package-id="${escapeHtml(sourcePackage.id)}">
-                        <span>
-                          <span class="list-title">${escapeHtml(sourcePackage.name)}</span>
-                          <span class="list-meta">${escapeHtml(sourcePackage.kind)} / ${sourcePackage.fileCount} files / ${sourcePackage.requiredPaths.length} required paths / ${escapeHtml(sourcePackage.id)}</span>
-                          ${
-                            sourcePackage.status === "linked"
-                              ? `<span class="list-meta">Source files are available for package export in this browser session.</span>`
-                              : `<span class="list-meta">Reload the original ZIP or folder so imported DEF/SFF/AIR/CNS files can be embedded again.</span>`
-                          }
-                        </span>
-                        <span class="row-actions">
-                          ${this.statusBadge(sourcePackage.status === "linked" ? "ok" : "warn")}
-                          ${
-                            sourcePackage.status === "linked"
-                              ? ""
-                              : `
-                                <button type="button" data-action="relink-source">ZIP</button>
-                                <button type="button" data-action="relink-source-folder">Folder</button>
-                              `
-                          }
-                        </span>
-                      </div>
-                    `,
-                  )
+                  .map((sourcePackage) => this.renderSourcePackageRow(sourcePackage))
                   .join("")}
               </div>`
             : `<div class="empty-state">No imported source package is required for the current local/generated project.</div>`
         }
       </div>
+    `;
+  }
+
+  private renderSourcePackageRow(sourcePackage: GameProjectSourcePackage): string {
+    const packageFocused = this.studioFocusedSourcePackageId === sourcePackage.id;
+    const focusClass = packageFocused ? " is-linked-focus" : "";
+    const pathRows = sourcePackage.requiredPaths
+      .slice(0, 12)
+      .map((sourcePath) => this.renderSourcePackageRequiredPath(sourcePackage, sourcePath))
+      .join("");
+    const hiddenPathCount = Math.max(0, sourcePackage.requiredPaths.length - 12);
+    return `
+      <div class="list-item source-package-row${focusClass}" data-source-package-id="${escapeHtml(sourcePackage.id)}">
+        <span>
+          <span class="list-title">${escapeHtml(sourcePackage.name)}</span>
+          <span class="list-meta">${escapeHtml(sourcePackage.kind)} / ${sourcePackage.fileCount} files / ${sourcePackage.requiredPaths.length} required paths / ${escapeHtml(sourcePackage.id)}</span>
+          ${
+            sourcePackage.status === "linked"
+              ? `<span class="list-meta">Source files are available for package export in this browser session.</span>`
+              : `<span class="list-meta">Reload the original ZIP or folder so imported DEF/SFF/AIR/CNS files can be embedded again.</span>`
+          }
+          ${
+            pathRows
+              ? `<span class="source-package-path-list" aria-label="Required source paths">${pathRows}${hiddenPathCount ? `<span class="list-meta">+${hiddenPathCount} more required source path(s)</span>` : ""}</span>`
+              : ""
+          }
+        </span>
+        <span class="row-actions">
+          ${this.statusBadge(sourcePackage.status === "linked" ? "ok" : "warn")}
+          ${
+            sourcePackage.status === "linked"
+              ? ""
+              : `
+                <button type="button" data-action="relink-source">ZIP</button>
+                <button type="button" data-action="relink-source-folder">Folder</button>
+              `
+          }
+        </span>
+      </div>
+    `;
+  }
+
+  private renderSourcePackageRequiredPath(sourcePackage: GameProjectSourcePackage, sourcePath: string): string {
+    const focused = this.studioFocusedSourcePackageId === sourcePackage.id && this.studioFocusedSourcePath === sourcePath;
+    return `
+      <button type="button" class="source-package-path-row${focused ? " is-linked-focus" : ""}" data-source-package-id="${escapeHtml(sourcePackage.id)}" data-source-path="${escapeHtml(sourcePath)}">
+        <span class="mono">${escapeHtml(sourcePath)}</span>
+        <small>${sourcePackage.status === "linked" ? "linked" : "required"}</small>
+      </button>
     `;
   }
 
@@ -6385,6 +6460,7 @@ export class App {
                 <dt>Binary assets</dt><dd>${this.statusBadge(assetBadgeStatus)} ${bundle.manifest.assets.binaryBundled} bundled / ${bundle.manifest.assets.binarySkipped} skipped / ${bundle.manifest.assets.binaryFailed} failed</dd>
                 <dt>Binary size</dt><dd class="mono">${escapeHtml(formatBytes(bundle.manifest.assets.binaryBytes))}</dd>
               </dl>
+              ${this.renderProjectPackageFiles(bundle.manifest.files)}
               <div class="list compact-list">
                 ${bundledAssets.length > 0 ? bundledAssets
                   .slice(0, 8)
@@ -6404,6 +6480,32 @@ export class App {
             : `<div class="empty-state">Export a project package to snapshot project.json, runtime-manifest, Studio maps, QA evidence, and reports.</div>`
         }
       </div>
+    `;
+  }
+
+  private renderProjectPackageFiles(files: ProjectExportBundleManifest["files"]): string {
+    return `
+      <div class="studio-package-file-list" aria-label="Project package files">
+        ${files
+          .slice(0, 16)
+          .map((file) => this.renderProjectPackageFile(file))
+          .join("")}
+        ${files.length > 16 ? `<span class="list-meta">+${files.length - 16} more package file(s)</span>` : ""}
+      </div>
+    `;
+  }
+
+  private renderProjectPackageFile(file: ProjectExportBundleManifest["files"][number]): string {
+    const focused = this.studioFocusedPackageFilePath === file.path;
+    const status: StudioStatus = file.required ? "ok" : "partial";
+    return `
+      <button type="button" class="list-item package-file-row is-${this.statusClassName(status)}${focused ? " is-linked-focus" : ""}" data-package-file-path="${escapeHtml(file.path)}">
+        <span>
+          <span class="list-title">${escapeHtml(file.path)}</span>
+          <span class="list-meta">${escapeHtml(file.kind)} / ${file.required ? "required" : "optional"}</span>
+        </span>
+        ${this.statusBadge(status)}
+      </button>
     `;
   }
 
@@ -6675,6 +6777,9 @@ export class App {
       return 'data-evidence-filter="compile"';
     }
     if (row.id === "package-bundle") {
+      if (row.targetKind === "package-file" && row.targetPath) {
+        return `data-studio-tab="build" data-package-file-path="${escapeHtml(row.targetPath)}"`;
+      }
       if (!this.lastCompiledProject) {
         return 'data-action="compile-project"';
       }
@@ -6692,6 +6797,10 @@ export class App {
     if (row.id === "asset-validation") {
       const assetAttribute = row.targetId && row.targetId !== row.id ? ` data-studio-asset-id="${escapeHtml(row.targetId)}"` : "";
       return `data-studio-tab="assets" data-asset-filter="${row.status === "ok" ? "all" : "attention"}"${assetAttribute}`;
+    }
+    if (row.id === "source-packages" && row.targetKind === "source-file" && row.targetPath) {
+      const sourcePackageAttribute = row.targetPackageId ? ` data-source-package-id="${escapeHtml(row.targetPackageId)}"` : "";
+      return `data-studio-tab="build"${sourcePackageAttribute} data-source-path="${escapeHtml(row.targetPath)}"`;
     }
     if (row.id === "source-packages" && row.blockedBy.length) {
       return `data-action="relink-source" data-source-package-id="${escapeHtml(row.targetId)}"`;
@@ -8321,6 +8430,8 @@ export class App {
           delta: freshness.delta,
           targetKind: target.kind,
           targetId: target.id,
+          targetPackageId: target.targetPackageId,
+          targetPath: target.targetPath,
           nextLabel: record.nextAction.label,
           nextAction: record.nextAction,
           blockedBy: record.blockedBy,
@@ -8329,7 +8440,7 @@ export class App {
     });
   }
 
-  private getStudioTrustTarget(record: BuildReadinessRecord, summary: StudioProjectSummary): { kind: StudioTrustTargetKind; id: string } {
+  private getStudioTrustTarget(record: BuildReadinessRecord, summary: StudioProjectSummary): StudioTrustTarget {
     if (record.id === "runtime-manifest") {
       return { kind: "compile", id: "compile:runtime-manifest" };
     }
@@ -8337,16 +8448,20 @@ export class App {
       return { kind: "trace", id: this.lastTraceArtifact?.trace.checksum ?? this.storedTraceEvidence[0]?.artifact.trace.checksum ?? "trace:smoke" };
     }
     if (record.id === "package-bundle") {
-      return { kind: "package", id: this.lastProjectBundle?.filename ?? "project-package" };
+      const packageFile = this.getStudioTrustPackageFileTarget();
+      return packageFile
+        ? { kind: "package-file", id: packageFile.path, targetPath: packageFile.path }
+        : { kind: "package", id: this.lastProjectBundle?.filename ?? "project-package" };
     }
     if (record.id === "asset-validation") {
       const attentionAsset = summary.assets.find((asset) => isAttentionStatus(asset.status)) ?? summary.assets[0];
       return { kind: "asset", id: attentionAsset?.id ?? "asset-validation" };
     }
     if (record.id === "source-packages") {
-      const sourcePackages = this.getProjectSourcePackages();
-      const target = sourcePackages.find((sourcePackage) => sourcePackage.status !== "linked") ?? sourcePackages[0];
-      return { kind: "source-package", id: target?.id ?? "source-packages" };
+      const target = this.getStudioTrustSourceFileTarget();
+      return target?.sourcePath
+        ? { kind: "source-file", id: target.sourcePath, targetPackageId: target.sourcePackage.id, targetPath: target.sourcePath }
+        : { kind: "source-package", id: target?.sourcePackage.id ?? "source-packages", targetPackageId: target?.sourcePackage.id };
     }
     if (record.id === "compatibility-gates") {
       const target = summary.gates.find((gate) => isAttentionStatus(gate.status)) ?? summary.gates[0];
@@ -8356,6 +8471,29 @@ export class App {
       return { kind: "contract", id: "test:architecture-boundaries" };
     }
     return { kind: "gate", id: record.id };
+  }
+
+  private getStudioTrustPackageFileTarget(): ProjectExportBundleManifest["files"][number] | undefined {
+    const files = this.lastProjectBundle?.manifest.files ?? [];
+    return (
+      files.find((file) => file.path === "package-manifest.json") ??
+      files.find((file) => file.path === "runtime/runtime-manifest.json") ??
+      files.find((file) => file.required) ??
+      files[0]
+    );
+  }
+
+  private getStudioTrustSourceFileTarget(): { sourcePackage: GameProjectSourcePackage; sourcePath?: string } | undefined {
+    const sourcePackages = this.getProjectSourcePackages();
+    const sourcePackage =
+      sourcePackages.find((candidate) => candidate.status !== "linked" && candidate.requiredPaths.length > 0) ??
+      sourcePackages.find((candidate) => candidate.requiredPaths.length > 0) ??
+      sourcePackages.find((candidate) => candidate.status !== "linked") ??
+      sourcePackages[0];
+    if (!sourcePackage) {
+      return undefined;
+    }
+    return { sourcePackage, sourcePath: sourcePackage.requiredPaths[0] };
   }
 
   private getStudioTrustFreshness(record: BuildReadinessRecord, summary: StudioProjectSummary): { label: string; delta: string } {
@@ -10332,6 +10470,9 @@ export class App {
         studioEvidence: StudioEvidenceSummary;
         studioTrustChain: StudioTrustContractRow[];
         studioFocusedTrustRowId?: string;
+        studioFocusedPackageFilePath?: string;
+        studioFocusedSourcePackageId?: string;
+        studioFocusedSourcePath?: string;
         traceFrameScrubber: StudioTraceFrameScrubberSummary;
         studioTab: StudioTab;
         project: GameProjectManifest;
@@ -10365,6 +10506,9 @@ export class App {
       studioEvidence: this.getStudioEvidenceSummary(),
       studioTrustChain: this.getStudioTrustContractRows(studio),
       studioFocusedTrustRowId: this.studioFocusedTrustRowId,
+      studioFocusedPackageFilePath: this.studioFocusedPackageFilePath,
+      studioFocusedSourcePackageId: this.studioFocusedSourcePackageId,
+      studioFocusedSourcePath: this.studioFocusedSourcePath,
       traceFrameScrubber: this.getTraceFrameScrubberSummary(),
       studioTab: this.studioTab,
       project: this.getGameProjectManifest(studio),

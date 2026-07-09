@@ -436,7 +436,9 @@
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .compat-row,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-button,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-delta-row,
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-row {
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-row,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .package-file-row,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row {
     min-height: 36px;
     margin: 0;
     padding: 6px 8px;
@@ -445,6 +447,45 @@
     border-radius: 0;
     background: var(--trust-row);
     box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .studio-package-file-list,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-list {
+    display: grid;
+    min-width: 0;
+    margin: 6px 0 8px;
+    overflow: hidden;
+    border: 1px solid var(--trust-edge);
+    background: var(--trust-bg);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .package-file-row,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row {
+    min-height: 30px;
+    border-bottom: 1px solid var(--trust-edge);
+    background: var(--trust-cell);
+    color: var(--trust-text);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row:last-child,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .package-file-row:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row span,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row small {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 12px;
+    line-height: 1.15;
   }
 
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-strip {
@@ -562,7 +603,10 @@
     outline-offset: -1px;
   }
 
-  .studio-trust-contract-row.is-linked-focus {
+  .studio-trust-contract-row.is-linked-focus,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-row.is-linked-focus,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .package-file-row.is-linked-focus,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-path-row.is-linked-focus {
     background: var(--trust-row-hot);
     outline: 1px solid color-mix(in srgb, var(--trust-accent) 62%, var(--trust-edge-strong));
     outline-offset: -1px;
