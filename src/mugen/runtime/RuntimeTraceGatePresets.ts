@@ -33574,7 +33574,7 @@ export function createSyntheticImportedHelperProjectileGuardKoTraceArtifact(opti
       label: "Synthetic imported Helper Projectile guard chip KO route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper Projectile guard chip KO trace proves bounded helper-parented/root-owned Projectile default guard.kill behavior can let lethal guard chip damage reach 0 life and emit RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill, and helper-created Projectiles as root-owned. It does not claim exact MUGEN/IKEMEN KO slowdown, lifebar, guard-finish timing, helper-owned custom states, teams, or full helper Projectile guard round-flow parity.",
+        "Synthetic imported Helper Projectile guard chip KO trace proves bounded helper-parented/root-owned Projectile default guard.kill behavior can let lethal guard chip damage reach 0 life, record typed audio:playsnd telemetry from helper-local guardsound, and emit RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill, and helper-created Projectiles as root-owned. It does not claim exact MUGEN/IKEMEN KO slowdown, lifebar, guard-finish timing, helper-owned custom states, exact SND playback/mixing, teams, or full helper Projectile guard round-flow parity.",
       ],
     },
     gates: [
@@ -33586,11 +33586,27 @@ export function createSyntheticImportedHelperProjectileGuardKoTraceArtifact(opti
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
         requiredEventSubstrings: ["guarded Synthetic Imported Helper Projectile Guard KO projectile for 2000"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 0,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredRoundFrames: [
           { state: "ko", winner: "Synthetic Imported Helper Projectile Guard KO", message: "Synthetic Imported Helper Projectile Guard KO wins" },
         ],
@@ -33669,7 +33685,7 @@ export function createSyntheticImportedHelperProjectileGuardKillTraceArtifact(op
       label: "Synthetic imported Helper Projectile guard.kill no-KO route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper Projectile guard.kill no-KO trace proves bounded helper-parented/root-owned Projectile guard.kill = 0 behavior clamps lethal guarded chip damage to 1 life without RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill, and helper-created Projectiles as root-owned. It does not claim exact MUGEN/IKEMEN guard-finish timing, lifebar behavior, helper-owned custom states, teams, or full helper Projectile guard round-flow parity.",
+        "Synthetic imported Helper Projectile guard.kill no-KO trace proves bounded helper-parented/root-owned Projectile guard.kill = 0 behavior clamps lethal guarded chip damage to 1 life, records typed audio:playsnd telemetry from helper-local guardsound, and avoids RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill, and helper-created Projectiles as root-owned. It does not claim exact MUGEN/IKEMEN guard-finish timing, lifebar behavior, helper-owned custom states, exact SND playback/mixing, teams, or full helper Projectile guard round-flow parity.",
       ],
     },
     gates: [
@@ -33681,11 +33697,27 @@ export function createSyntheticImportedHelperProjectileGuardKillTraceArtifact(op
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
         requiredEventSubstrings: ["guarded Synthetic Imported Helper Projectile Guard Kill projectile for 2000"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 0,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1312, animNo: 1103, minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1313, animNo: 1104, minFrames: 1 },
@@ -33767,7 +33799,7 @@ export function createSyntheticImportedHelperProjectileGuardTerminalTraceArtifac
       label: "Synthetic imported Helper Projectile guard terminal route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper Projectile guard terminal trace proves bounded helper-parented/root-owned Projectile guard contact can resolve authored projhitanim metadata into hit removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve root plus helper target links through terminal payload evidence. Elecbyte documents Projectile-specific projhitanim/projremanim/projcancelanim removal animation parameters and helper-created Projectiles as root-owned. It does not claim exact terminal timing, exact sprite/layer/palette parity, helper-owned custom-state terminal parity, teams, or full helper Projectile guard round-flow parity.",
+        "Synthetic imported Helper Projectile guard terminal trace proves bounded helper-parented/root-owned Projectile guard contact can resolve authored projhitanim metadata into hit removal evidence, record typed audio:playsnd telemetry from helper-local guardsound, play a visible terminal projectile action when that AIR action exists, and preserve root plus helper target links through terminal payload evidence. Elecbyte documents Projectile-specific projhitanim/projremanim/projcancelanim removal animation parameters and helper-created Projectiles as root-owned. It does not claim exact terminal timing, exact SND playback/mixing, exact sprite/layer/palette parity, helper-owned custom-state terminal parity, teams, or full helper Projectile guard round-flow parity.",
       ],
     },
     gates: [
@@ -33779,13 +33811,29 @@ export function createSyntheticImportedHelperProjectileGuardTerminalTraceArtifac
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
         requiredEventSubstrings: [
           "guarded Synthetic Imported Helper Projectile Guard Terminal projectile",
           "hit removal anim 1109",
+        ],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 0,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
         ],
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1314, animNo: 1107, minFrames: 1 },

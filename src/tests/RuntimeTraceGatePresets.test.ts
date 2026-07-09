@@ -5876,6 +5876,17 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["helper", "projectile", "audio:playsnd"]);
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+        }),
+      ]),
+    );
     expect(evidence?.activeCommands).toContain("x");
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
@@ -5933,6 +5944,17 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["helper", "projectile", "audio:playsnd"]);
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+        }),
+      ]),
+    );
     expect(evidence?.activeCommands).toContain("x");
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
@@ -5999,6 +6021,17 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeUndefined();
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["helper", "projectile", "audio:playsnd"]);
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+        }),
+      ]),
+    );
     expect(evidence?.activeCommands).toContain("x");
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");

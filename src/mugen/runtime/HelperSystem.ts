@@ -5,7 +5,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
-import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
+import { createRuntimeSoundEvent, pushRuntimeSoundEvent, type RuntimeResolvedSoundValue } from "./AudioEventSystem";
 import {
   advanceRuntimeContactTimers,
   createRuntimeContactMemory,
@@ -688,6 +688,45 @@ export function rememberRuntimeHelperTarget(
   const actor = runtimeHelperTargetActor(helper);
   targetWorld.remember(actor, targetActorId, targetId);
   syncRuntimeHelperTargetActor(helper, actor);
+}
+
+export function resolveRuntimeHelperSoundValueParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "hitsound" | "guardsound",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimeResolvedSoundValue | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) {
+    return undefined;
+  }
+  const valueExpressions = splitHelperSoundValueExpressions(raw);
+  if (!valueExpressions) {
+    return undefined;
+  }
+  const [groupExpressionWithPrefix, indexExpression] = valueExpressions;
+  const prefixMatch = /^([FS])\s*(.+)$/.exec(groupExpressionWithPrefix);
+  const rawPrefix = prefixMatch?.[1]?.toUpperCase() as "F" | "S" | undefined;
+  const groupExpression = prefixMatch?.[2]?.trim() ?? groupExpressionWithPrefix;
+  if (!groupExpression) {
+    return undefined;
+  }
+  const group = resolveHelperNumber(helper, undefined, groupExpression, options);
+  const index = resolveHelperNumber(helper, undefined, indexExpression, options);
+  if (group === undefined || index === undefined) {
+    return undefined;
+  }
+  return { ...(rawPrefix ? { rawPrefix } : {}), group, index };
+}
+
+function splitHelperSoundValueExpressions(raw: string): [string, string] | undefined {
+  const [index] = topLevelCommaIndices(raw);
+  if (index === undefined) {
+    return undefined;
+  }
+  const groupExpression = raw.slice(0, index).trim();
+  const indexExpression = raw.slice(index + 1).trim();
+  return groupExpression && indexExpression ? [groupExpression, indexExpression] : undefined;
 }
 
 function applyRuntimeHelperTargetController(

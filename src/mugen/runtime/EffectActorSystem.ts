@@ -26,6 +26,7 @@ import {
   advanceRuntimeHelpers,
   createRuntimeHelper,
   removeRuntimeHelpers,
+  resolveRuntimeHelperSoundValueParam,
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
   type RuntimeHelperAdvanceOptions,
@@ -486,7 +487,7 @@ export function spawnRuntimeHelperProjectileActor(
   store: RuntimeEffectActorStore,
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Pick<RuntimeHelperAdvanceOptions, "opponentState"> = {},
+  options: RuntimeHelperAdvanceOptions = {},
 ): RuntimeProjectile | undefined {
   const operation = projectileOperation(controller);
   const animNo = operation?.projAnim ?? firstNumber(findControllerParam(controller, "projanim") ?? findControllerParam(controller, "anim")) ?? 0;
@@ -514,6 +515,7 @@ export function spawnRuntimeHelperProjectileActor(
     terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),
     pos,
     fallbackFacing: helper.facing,
+    resolveSoundValue: (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options),
   });
 }
 

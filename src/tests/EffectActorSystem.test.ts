@@ -1193,6 +1193,8 @@ describe("EffectActorSystem", () => {
                   velocity: "5,0",
                   projremovetime: "24",
                   damage: "20,3",
+                  hitsound: "Svar(0),var(1)",
+                  guardsound: "S6,0",
                   sprpriority: "6",
                 },
                 ["Time = 0"],
@@ -1207,6 +1209,8 @@ describe("EffectActorSystem", () => {
         [931, action(931, 4)],
       ]),
     });
+    store.helpers[0]!.vars[0] = 5;
+    store.helpers[0]!.vars[1] = 4;
     const executed: string[] = [];
 
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
@@ -1227,7 +1231,44 @@ describe("EffectActorSystem", () => {
       vel: { x: 5, y: 0 },
       removeTime: 24,
       spritePriority: 6,
+      hitSoundValue: { rawPrefix: "S", group: 5, index: 4 },
+      guardSoundValue: { rawPrefix: "S", group: 6, index: 0 },
     });
+  });
+
+  it("keeps lowercase helper fvar sound expressions distinct from F-prefixed sound refs", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller(
+                "Projectile",
+                {
+                  projid: "8851",
+                  projanim: "930",
+                  hitsound: "fvar(0),var(1)",
+                },
+                ["Time = 0"],
+              ),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    store.helpers[0]!.fvars[0] = 7;
+    store.helpers[0]!.vars[1] = 2;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(store.projectiles).toHaveLength(1);
+    expect(store.projectiles[0]?.hitSoundValue).toEqual({ group: 7, index: 2 });
   });
 
   it("modifies only helper-parented Projectile actors by id from the helper-local micro-VM", () => {

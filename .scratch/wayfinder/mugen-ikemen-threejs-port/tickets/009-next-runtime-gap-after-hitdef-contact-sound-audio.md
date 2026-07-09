@@ -26,4 +26,4 @@ Resolved evidence:
 
 Claim allowed: bounded player-owned Projectile hit/guard contacts can carry resolved `hitsound` / `guardsound` refs into typed `audio:playsnd` telemetry while preserving existing sound-event and FightFX package metadata.
 
-Claim blocked: exact SND archive lookup, Web Audio timing/mixing, channel priority/panning, helper-owned Projectile contact sound operation telemetry, helper/redirect/team ownership, exact presentation ordering, renderer parity, score movement, and full audio/Projectile parity.
+Claim blocked: exact SND archive lookup, Web Audio timing/mixing, channel priority/panning, helper Projectile normal-hit contact sound operation telemetry, helper/redirect/team ownership, exact presentation ordering, renderer parity, score movement, and full audio/Projectile parity. Bounded helper Projectile guard sound typed telemetry was closed later by ticket 010.

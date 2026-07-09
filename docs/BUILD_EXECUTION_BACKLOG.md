@@ -1,5 +1,45 @@
 # Build Execution Backlog
 
+## 2026-07-09 - Helper Projectile guard sound typed audio
+
+Summary:
+
+- Added typed audio-operation recording for bounded helper-parented/root-owned `Projectile guardsound` refs after guard contact resolution.
+- `HelperSystem` now resolves helper-local `hitsound` / `guardsound` params through the helper micro-VM expression context, and `EffectActorSystem` passes that resolver into helper Projectile spawning so existing contact presentation can record typed `audio:playsnd` telemetry.
+- Upgraded required `synthetic-imported-helper-projectile-guard-ko.json`, `synthetic-imported-helper-projectile-guard-kill.json`, and `synthetic-imported-helper-projectile-guard-terminal.json` from sound-event/package evidence into typed audio-operation evidence.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `Projectile` as taking HitDef parameters, helper-created Projectiles as immediately root-owned, expression-capable numeric controller params, and `HitDef hitsound` / `guardsound` sound group/index params.
+
+Evidence:
+
+- `synthetic-imported-helper-projectile-guard-ko.json` trace checksum `05dbcded`, final checksum `98b8bf17`; required executed ops now include `helper`, `projectile`, and `audio:playsnd`.
+- `synthetic-imported-helper-projectile-guard-kill.json` trace checksum `33930a00`, final checksum `8412e638`; required executed ops now include `helper`, `projectile`, and `audio:playsnd`.
+- `synthetic-imported-helper-projectile-guard-terminal.json` trace checksum `c6937f42`, final checksum `e0835e33`; required executed ops now include `helper`, `projectile`, and `audio:playsnd`.
+- Contact package telemetry still preserves helper-parented/root-owned guard contact metadata: actor `p1`, source `imported`, actor kind `player`, guard contact kind, `S6,0` sound package, and shared contact id.
+- Focused tests: `pnpm vitest run src/tests/EffectActorSystem.test.ts -t "helper-local micro-VM"` passed 1 file / 4 selected tests; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile guard"` passed 1 file / 4 selected tests.
+- Trace/type gates: `pnpm typecheck` passed; `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional. The known non-fatal Vite websocket port warning for port `24678` was still emitted after the JSON pass output.
+
+Claim allowed:
+
+- Bounded first-generation helper-parented/root-owned Projectile guard contacts can resolve helper-local `guardsound = S6,0` into typed `audio:playsnd` operation evidence while preserving existing sound-event and FightFX package telemetry.
+
+Claim blocked:
+
+- Helper Projectile normal-hit contact sound operation telemetry, exact SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper/redirect/team ownership beyond the current visual-helper route, exact presentation ordering, renderer parity, score movement, and full MUGEN/IKEMEN audio/Projectile parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: the three helper Projectile guard routes already proved guard KO/no-KO/terminal behavior and package telemetry, but explicitly lacked typed `audio:*` operation evidence.
+- Quality delta: helper Projectile guarded contacts now follow the resolved-operation posture used by direct HitDef, SuperPause, active-state audio, and player-owned Projectile contacts without expanding playback parity claims.
+- Adjacent surface checked: player-owned Projectile sound gates, dynamic/direct HitDef sound gates, helper Projectile guard KO/kill/terminal routes, helper contact-package gates, audio runtime boundary docs, support registry wording, QA gate docs, Wayfinder frontier, and research notes.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 524/524 artifacts, 493 required and 31 optional. This strengthens three existing required helper Projectile guard traces and does not move scores. Studio/UI remains on the latest smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/011-next-runtime-gap-after-helper-projectile-guard-sound-audio.md`. Good candidates include helper Projectile normal-hit contact sound typed telemetry, helper/redirect ownership breadth, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+
 ## 2026-07-09 - Projectile contact sound typed audio
 
 Summary:
@@ -23,7 +63,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper-owned Projectile contact sound operation telemetry, helper/redirect/team ownership, exact presentation ordering, renderer parity, score movement, and full MUGEN/IKEMEN audio/Projectile parity remain blocked.
+- Helper Projectile normal-hit contact sound operation telemetry, exact SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper/redirect/team ownership beyond the current visual-helper route, exact presentation ordering, renderer parity, score movement, and full MUGEN/IKEMEN audio/Projectile parity remain blocked.
 
 Quality notes:
 
@@ -37,7 +77,7 @@ Global port report:
 
 Next:
 
-- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/010-next-runtime-gap-after-projectile-contact-sound-audio.md`. Good candidates remain helper-owned helper-owned Projectile contact sound operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+- Ticket 010 led to the helper Projectile guard-sound slice and is now resolved; continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/011-next-runtime-gap-after-helper-projectile-guard-sound-audio.md`. Good candidates remain helper Projectile normal-hit contact sound operation telemetry, helper/redirect ownership breadth, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
 
 ## 2026-07-09 - Dynamic HitDef contact sound typed audio
 
@@ -62,7 +102,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper/redirect ownership, helper-owned Projectile contact sound operation telemetry, super-background audio, score movement, and full MUGEN/IKEMEN audio parity remain blocked.
+- Exact SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper/redirect ownership, helper Projectile normal-hit contact sound operation telemetry, super-background audio, score movement, and full MUGEN/IKEMEN audio parity remain blocked.
 
 Quality notes:
 
@@ -76,7 +116,7 @@ Global port report:
 
 Next:
 
-- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/009-next-runtime-gap-after-hitdef-contact-sound-audio.md`. Good candidates remain helper-owned Projectile contact sound operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+- Ticket 009 led to player-owned Projectile contact sound typed telemetry, and ticket 010 led to helper Projectile guard sound typed telemetry. Good candidates remain helper Projectile normal-hit contact sound operation telemetry, helper/redirect ownership breadth, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
 
 ## 2026-07-09 - SuperPause sound typed audio
 
@@ -114,7 +154,7 @@ Global port report:
 
 Next:
 
-- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/008-next-runtime-gap-after-superpause-sound.md` for the next entry. Direct HitDef audio operation telemetry was resolved by that follow-up; remaining candidates include helper-owned Projectile contact sound operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+- Ticket 008 resolved direct HitDef audio operation telemetry, ticket 009 resolved player-owned Projectile contact sound typed telemetry, and ticket 010 resolved helper Projectile guard sound typed telemetry; remaining candidates include helper Projectile normal-hit contact sound operation telemetry, helper/redirect ownership breadth, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
 
 ## 2026-07-09 - Dynamic audio typed telemetry
 

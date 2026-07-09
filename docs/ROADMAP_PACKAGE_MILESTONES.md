@@ -1,4 +1,4 @@
-# Roadmap Package Milestones
+﻿# Roadmap Package Milestones
 
 Last updated: 2026-07-09
 
@@ -35,14 +35,24 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Projectile contact sound typed audio trace gates
+R1 required helper Projectile guard sound typed audio trace gates
+-> synthetic-imported-helper-projectile-guard-ko.json trace checksum 05dbcded / final checksum 98b8bf17 is required in qa:trace
+-> synthetic-imported-helper-projectile-guard-kill.json trace checksum 33930a00 / final checksum 8412e638 is required in qa:trace
+-> synthetic-imported-helper-projectile-guard-terminal.json trace checksum c6937f42 / final checksum e0835e33 is required in qa:trace
+-> imported first-generation helper-parented/root-owned Projectile guard routes preserve helper-local S6,0 sound telemetry, FightFX F7004 package metadata, and shared guard contact package ids
+-> gates require Helper, Projectile, helper, projectile, audio:playsnd, and guard contact sound telemetry for helper Projectile guard refs
+-> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+-> official Elecbyte State Controller Reference defines Projectile as taking HitDef parameters, helper-created Projectiles as immediately root-owned, expression-capable numeric controller params, and HitDef hitsound/guardsound sound group/index params
+-> no score movement; helper Projectile normal-hit contact sound operation telemetry, exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect/team ownership beyond the current visual-helper route, exact presentation ordering, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
+
+Previous R1 required Projectile contact sound typed audio trace gates
 -> synthetic-imported-projectile-contact.json trace checksum 57b3b556 / final checksum e0f3e41c is required in qa:trace
 -> synthetic-imported-projectile-guard.json trace checksum eb9c2e58 / final checksum b1c74e5e is required in qa:trace
 -> imported player-owned Projectile contact routes preserve attacker-side S5,0 / S6,0 sound telemetry, FightFX F7002 / F7004 package metadata, and shared projectile contact package ids
 -> gates require HitDef, Projectile, hitdef, projectile, audio:playsnd, and contact sound telemetry for hit/guard refs
 -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
 -> official Elecbyte State Controller Reference defines Projectile as taking HitDef parameters, expression-capable numeric controller params, and HitDef hitsound/guardsound sound group/index params
--> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper-owned Projectile contact sound operation telemetry, helper/redirect/team ownership, exact presentation ordering, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
+-> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper Projectile normal-hit contact sound operation telemetry, broader helper/redirect/team ownership, exact presentation ordering, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
 
 Previous R1 required dynamic HitDef contact sound typed audio trace gates
 -> synthetic-imported-hitdef-dynamic-hitsound.json trace checksum fe3c0f3d / final checksum 855df386 is required in qa:trace
@@ -59,7 +69,7 @@ Previous R1 required dynamic audio typed telemetry trace gates
 -> value gate requires PlaySnd, variable:varset, audio:playsnd, hitdef, group 5, index 3, channel 4, raw Fvar(0),var(1), and soundPrefix kfm telemetry
 -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
 -> official Elecbyte State Controller Reference defines expression-capable numeric controller params, PlaySnd, SndPan, StopSnd, and F sound prefix behavior
--> no score movement; exact SND lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, helper-owned Projectile contact sound operation telemetry, super-background audio, and full audio parity remain blocked
+-> no score movement; exact SND lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, helper Projectile normal-hit contact sound operation telemetry, super-background audio, and full audio parity remain blocked
 
 Previous R1 required dynamic damage-scale typed telemetry trace gate
 -> synthetic-imported-damage-scale-dynamic.json trace checksum 3433b369 / final checksum e3db6dd9 remains required in qa:trace
@@ -390,7 +400,7 @@ R1 required player Projectile remove terminal trace gate
 -> no score movement; exact terminal timing, bounds-removal parity, fallback breadth beyond existing projhitanim/projcancelanim gates, exact sprite/layer/palette parity, helper-owned remove terminal parity, team/simul breadth, score movement, and full Projectile terminal parity remain blocked
 
 Previous R1 required Helper Projectile guard terminal trace gate
--> synthetic-imported-helper-projectile-guard-terminal.json checksum 4e6644f4 / final checksum ef2e177d is required in qa:trace
+-> synthetic-imported-helper-projectile-guard-terminal.json checksum c6937f42 / final checksum e0835e33 is required in qa:trace
 -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, id 8922, and authored projhitanim = 1109 on a guarded contact
 -> evidence requires typed helper/projectile ops, helper state evidence 1314 -> 1315, Projectile spawn/remove lifecycle evidence, owner/helper target-link evidence, guard event/reason evidence, active x command evidence, event text "hit removal anim 1109", actor-frame evidence for terminal anim 1109, and terminal payload evidence with removalReason/terminalReason = hit
 -> pnpm qa:trace passes 481/481 artifacts, 451 required and 30 optional
@@ -409,12 +419,12 @@ Previous R1 required player Projectile guard.kill no-KO trace gate
 -> pnpm qa:trace passed 479/479 artifacts, 449 required and 30 optional
 
 Previous R1 required Helper Projectile guard.kill no-KO trace gate
--> synthetic-imported-helper-projectile-guard-kill.json checksum 2c09049f / final checksum 653039f6 remains required in qa:trace
+-> synthetic-imported-helper-projectile-guard-kill.json checksum 33930a00 / final checksum 8412e638 remains required in qa:trace
 -> bounded helper-parented/root-owned Projectile guard.kill = 0 no-KO clamp evidence, final P2 life 1
 -> pnpm qa:trace passed 478/478 artifacts, 448 required and 30 optional
 
 Previous R1 required Helper Projectile guard chip KO trace gate
-  -> synthetic-imported-helper-projectile-guard-ko.json checksum 49c99564 / final checksum 560dc839 remains required in qa:trace
+  -> synthetic-imported-helper-projectile-guard-ko.json checksum 05dbcded / final checksum 98b8bf17 remains required in qa:trace
   -> bounded helper-parented/root-owned Projectile default lethal guard-chip KO evidence, final P2 life 0, and round KO winner/message
   -> pnpm qa:trace passed 477/477 artifacts, 447 required and 30 optional
 
@@ -577,7 +587,7 @@ Previous R1 required dynamic HitDef hitsound trace gate, superseded by typed con
   -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1), soundPrefix kfm, and audio:playsnd evidence for F5,4
   -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
-  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, helper-owned Projectile contact sound operation telemetry, and full audio parity remain blocked
+  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, helper Projectile normal-hit contact sound operation telemetry, and full audio parity remain blocked
 
 Previous R1 required dynamic sound-value trace gate
   -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd remains required in qa:trace
