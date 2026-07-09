@@ -15879,7 +15879,11 @@ export function createSyntheticImportedHelperProjectileHitCountTraceArtifact(
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
+      hitSound: "S5,43",
+      hitSpark: "F7002",
+      sparkXy: [18, -68],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? farCombatStage();
   const script = expandRuntimeTraceScript([
@@ -15898,7 +15902,7 @@ export function createSyntheticImportedHelperProjectileHitCountTraceArtifact(
       label: "Synthetic imported Helper Projectile HitCount route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper Projectile HitCount trace proves bounded helper-local micro-VM HitCount and UniqHitCount can branch after a helper-parented/root-owned Projectile normal hit records owner and helper target links. This is grounded in Projectile HitDef params plus HitCount current-attack docs, but still does not claim exact combo accumulation, target lifetime/tick order, helper-owned custom-state tables, teams/simul, or full MUGEN/IKEMEN helper Projectile parity.",
+        "Synthetic imported Helper Projectile HitCount trace proves bounded helper-local micro-VM HitCount and UniqHitCount can branch after a helper-parented/root-owned Projectile normal hit records owner/helper target links, typed audio:playsnd telemetry from helper-local hitsound, and FightFX hit-spark package metadata. This is grounded in Projectile HitDef params plus HitCount current-attack docs, but still does not claim exact combo accumulation, target lifetime/tick order, helper-owned custom-state tables, exact SND playback/mixing, teams/simul, or full MUGEN/IKEMEN helper Projectile parity.",
       ],
     },
     gates: [
@@ -15910,7 +15914,7 @@ export function createSyntheticImportedHelperProjectileHitCountTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
-        requiredExecutedOperations: ["helper", "projectile"],
+        requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
         requiredControllerEventSequences: [
           {
             label: "helper-local Projectile HitCount spawn telemetry",
@@ -15930,6 +15934,42 @@ export function createSyntheticImportedHelperProjectileHitCountTraceArtifact(
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 43,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              offsetX: 18,
+              offsetY: -68,
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
