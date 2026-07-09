@@ -1,5 +1,43 @@
 # Build Execution Backlog
 
+## 2026-07-09 - SuperPause sound typed audio
+
+Summary:
+
+- Added typed audio-operation recording for bounded dynamic `SuperPause sound` refs.
+- `RuntimeMatchPauseControllerWorld` now resolves the SuperPause sound ref once, emits the existing pause-start `RuntimeSoundEvent`, and records typed `audio:playsnd` telemetry through the match runtime compatibility telemetry bridge.
+- Upgraded required `synthetic-imported-superpause-sound.json` from event-only fallback evidence into typed audio-operation evidence.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines expression-capable numeric controller params and `SuperPause sound = snd_grp, snd_no`, with `S` selecting the player's own SND data.
+
+Evidence:
+
+- `synthetic-imported-superpause-sound.json` trace checksum `3e19cb86`, final checksum `c5fb9428`; executed ops include `variable:varset = 2`, `hitdef = 1`, `pause:superpause = 1`, and `audio:playsnd = 1`.
+- Sound telemetry preserves raw `Svar(0),var(1)` and resolves group `10`, index `0`; typed operation records resolved `S10,0`.
+- Focused tests: `pnpm exec vitest run src/tests/PauseSystem.test.ts --reporter verbose` passed 25 tests; `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts` passed 517 tests.
+- Trace gate: `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional. The known non-fatal Vite websocket port warning for port `24678` was still emitted after the JSON pass output.
+
+Claim allowed:
+
+- Bounded imported dynamic `SuperPause sound = Svar(0),var(1)` can resolve at pause start into typed `audio:playsnd` operation evidence while preserving existing pause-start sound-event debug metadata.
+
+Claim blocked:
+
+- Exact common/player SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper/redirect ownership, direct `HitDef` audio operation telemetry, super-background audio, score movement, and full MUGEN/IKEMEN audio parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: the SuperPause sound route already proved pause-start sound-event telemetry, but explicitly lacked typed `audio:*` operation evidence.
+- Quality delta: SuperPause sound now follows the active audio telemetry posture while staying honest that this is not full PlaySnd playback parity.
+- Adjacent surface checked: dynamic active-state audio gates, direct HitDef sound gates, SuperPause pause/anim/p2defmul gates, audio runtime boundary docs, support registry wording, QA gate docs, Wayfinder frontier, and research notes.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 524/524 artifacts, 493 required and 31 optional. This strengthens one existing required SuperPause/audio trace and does not move scores. Studio/UI remains on the latest smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/008-next-runtime-gap-after-superpause-sound.md`. Good candidates remain direct HitDef audio operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+
 ## 2026-07-09 - Dynamic audio typed telemetry
 
 Summary:

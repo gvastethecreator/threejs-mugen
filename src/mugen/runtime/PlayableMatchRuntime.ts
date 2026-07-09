@@ -1,4 +1,5 @@
 import type {
+  AudioControllerOp,
   EnvColorControllerOp,
   PauseControllerOp,
 } from "../compiler/ControllerOps";
@@ -625,6 +626,8 @@ export class PlayableMatchRuntime {
       applyTargetDefenseMultiplier: (actor, multiplier) => this.applyTargetDefenseMultiplier(actor, multiplier),
       emitSound: (actor, sound, runtimeTick, resolvedSound) =>
         actor.audioWorld.emitSuperPauseSound(actor, sound, runtimeTick, resolvedSound),
+      recordAudioOperation: (actor, audioOperation: AudioControllerOp) =>
+        compatibilityTelemetryWorld.recordOperation(actor, audioOperation),
       resolveSoundValue,
       resolveParams,
       log: (message) => this.logs.unshift(message),

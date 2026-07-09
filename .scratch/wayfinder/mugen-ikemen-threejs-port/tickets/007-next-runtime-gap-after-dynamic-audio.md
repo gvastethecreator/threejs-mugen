@@ -1,7 +1,7 @@
 # Choose next runtime gap after dynamic audio
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -10,4 +10,13 @@ Which bounded R1/R2 runtime gap should be implemented after dynamic `PlaySnd` / 
 
 ## Answer
 
-Open. Candidate inputs: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`, `docs/WORKPLAN.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, current `pnpm qa:trace` coverage, and blocked claims around helper/redirect ownership, exact presentation timing, renderer parity, dynamic direct-contact audio operation telemetry, dynamic SuperPause sound operation posture, target ownership, projectile/helper damage scaling, and parser-only controllers that can become typed no-crash runtime operations.
+Selected and implemented the bounded dynamic `SuperPause sound` telemetry gap. The required `synthetic-imported-superpause-sound.json` gate now requires typed `audio:playsnd` operation evidence while preserving the authored raw pause-start sound ref `Svar(0),var(1)` in `RuntimeSoundEvent` telemetry.
+
+Proof:
+
+- Official source checked: Elecbyte State Controller Reference defines expression-capable numeric controller params and `SuperPause sound = snd_grp, snd_no`.
+- Runtime route: `RuntimeMatchPauseControllerWorld` resolves the SuperPause sound once, emits the existing sound event, and records typed `audio:playsnd` telemetry through `PlayableMatchRuntime`.
+- Trace gate: required `synthetic-imported-superpause-sound.json` trace checksum `3e19cb86` / final checksum `c5fb9428`; executed operations include `variable:varset`, `hitdef`, `pause:superpause`, and `audio:playsnd`.
+- Focused tests: `PauseSystem.test.ts` and `RuntimeTraceGatePresets.test.ts`.
+
+Still blocked: exact common/player SND archive lookup, channel priority, timing, mixing, panning semantics, super-background audio, helper/redirect ownership, direct HitDef audio operation telemetry, score movement, and full audio parity.

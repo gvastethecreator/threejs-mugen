@@ -23508,7 +23508,7 @@ export function createSyntheticImportedSuperPauseSoundTraceArtifact(
       label: "Synthetic imported SuperPause sound route",
       source: "mixed",
       notes: [
-        "Synthetic imported SuperPause sound trace proves a dynamic S-prefixed SuperPause sound ref resolves through the active expression context into bounded PlaySnd telemetry when the pause starts. It does not claim exact common.snd/player SND archive lookup, channel priority, timing, mixing, super-background audio, or full MUGEN/IKEMEN audio parity.",
+        "Synthetic imported SuperPause sound trace proves a dynamic S-prefixed SuperPause sound ref resolves through the active expression context into bounded PlaySnd telemetry plus typed audio operation evidence when the pause starts. It does not claim exact common.snd/player SND archive lookup, channel priority, timing, mixing, super-background audio, or full MUGEN/IKEMEN audio parity.",
       ],
     },
     gates: [
@@ -23519,7 +23519,7 @@ export function createSyntheticImportedSuperPauseSoundTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "SuperPause"],
-        requiredExecutedOperations: ["variable:varset", "hitdef", "pause:superpause"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "pause:superpause", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
         requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],

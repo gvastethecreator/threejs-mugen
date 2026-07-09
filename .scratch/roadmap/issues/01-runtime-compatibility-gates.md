@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Latest Closed Quality Slice - Dynamic Audio Typed Telemetry
+## Latest Closed Quality Slice - SuperPause Sound Typed Audio
+
+Status: done
+Date: 2026-07-09
+
+Quality contract:
+
+- Baseline to beat: required `synthetic-imported-superpause-sound.json` already proved bounded pause-start sound-event telemetry from dynamic `SuperPause sound = Svar(0),var(1)`, but it lacked resolved typed `audio:*` operation telemetry.
+- Target: keep bounded dynamic SuperPause sound-event behavior, resolve the sound ref once through the pause controller expression context, record typed `audio:playsnd` telemetry for the resolved ref, and preserve authored raw sound refs for debug/trace evidence without claiming exact playback/channel/mix parity.
+- Reference: Elecbyte State Controller Reference defines expression-capable numeric controller params and `SuperPause sound = snd_grp, snd_no`, with `S` prefix selecting the player's SND data.
+- Transformation layers: `RuntimeMatchPauseControllerWorld`, `RuntimeAudioWorld`, `PlayableMatchRuntime` compatibility telemetry bridge, synthetic imported trace preset requirements, sound-event evidence, roadmap truth.
+- Adjacent audit: inspect active-state dynamic audio evidence, direct HitDef dynamic sound traces, existing SuperPause sound trace, SuperPause pause/anim/p2defmul gates, operation telemetry recording, support registry wording, QA gate docs, architecture docs, Wayfinder frontier, and roadmap latest-runtime truth.
+- Accepted improvement ledger: upgrade required `synthetic-imported-superpause-sound` to require `audio:playsnd`; preserve `Svar(0),var(1)` raw telemetry while recording resolved `S10,0`; update docs/roadmap around trace checksum `3e19cb86` and final checksum `c5fb9428`.
+- Out of scope: exact common/player SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, direct HitDef audio operation telemetry, helper/redirect ownership, score movement, super-background audio, and full audio parity.
+- Completed proof: required `synthetic-imported-superpause-sound.json` trace checksum `3e19cb86` / final checksum `c5fb9428`, focused PauseSystem and RuntimeTraceGatePresets tests, and `pnpm qa:trace` 524/524 artifacts with 493 required and 31 optional.
+- STOP conditions: pause if the next audio cut requires exact Web Audio mixing/channel priority, SND archive lookup rules, SuperPause background audio timing, direct contact-sound operation claims, helper/team audio ownership, or broad playback parity decisions.
+
+## Previous Closed Quality Slice - Dynamic Audio Typed Telemetry
 
 Status: done
 Date: 2026-07-09
@@ -20,7 +37,7 @@ Quality contract:
 - Transformation layers: `resolveRuntimeAudioControllerOperation`, `RuntimeAudioControllerDispatchWorld`, `RuntimeAudioWorld`, synthetic imported trace preset requirements, sound-event evidence, roadmap truth.
 - Adjacent audit: inspect static audio evidence, dynamic sound pan/value traces, direct HitDef dynamic sound traces, SuperPause sound trace, operation telemetry recording, support registry wording, QA gate docs, architecture docs, Wayfinder frontier, and roadmap latest-runtime truth.
 - Accepted improvement ledger: upgrade required `synthetic-imported-sound-dynamic-pan` to require `audio:playsnd`, `audio:sndpan`, and `audio:stopsnd`; upgrade required `synthetic-imported-sound-dynamic-value` to require `audio:playsnd`; preserve `Fvar(0),var(1)` raw telemetry and `soundPrefix = kfm`; update docs/roadmap around trace checksums `879afcf4` / `bcdafe32` and final checksums `b780e5e9` / `31b8a7b3`.
-- Out of scope: exact SND lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, direct HitDef audio operation telemetry, dynamic SuperPause sound typed audio operation telemetry, helper/redirect ownership, score movement, super-background audio, and full audio parity.
+- Out of scope: exact SND lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, direct HitDef audio operation telemetry, helper/redirect ownership, score movement, super-background audio, and full audio parity.
 - Completed proof: required `synthetic-imported-sound-dynamic-pan.json` trace checksum `879afcf4` / final checksum `b780e5e9`, required `synthetic-imported-sound-dynamic-value.json` trace checksum `bcdafe32` / final checksum `31b8a7b3`, focused AudioEventSystem and RuntimeTraceGatePresets tests, and `pnpm qa:trace` 524/524 artifacts with 493 required and 31 optional.
 - STOP conditions: pause if the next audio cut requires exact Web Audio mixing/channel priority, SND archive lookup rules, SuperPause background audio timing, direct contact-sound operation claims, helper/team audio ownership, or broad playback parity decisions.
 

@@ -1,4 +1,4 @@
-import type { PauseControllerOp } from "../compiler/ControllerOps";
+import type { AudioControllerOp, PauseControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
@@ -125,6 +125,7 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
     resolvedSound?: RuntimeResolvedSoundRef,
   ) => RuntimeSoundEvent | undefined;
   resolveSoundValue?: () => RuntimeResolvedSoundRef | undefined;
+  recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   resolveParams?: RuntimePauseControllerParamResolvers;
   applyTargetDefenseMultiplier?: (actor: TActor, multiplier: number) => number;
   log: (message: string) => void;
@@ -213,10 +214,16 @@ export class RuntimeMatchPauseControllerWorld {
         ? input.applyTargetDefenseMultiplier?.(input.actor, targetDefenseMultiplier) ?? 0
         : 0;
     const sound = superPauseSoundParam(input.controller, input.operation);
+    const resolvedSound = result.pause.type === "SuperPause" && sound ? input.resolveSoundValue?.() : undefined;
     const soundEvent =
       result.pause.type === "SuperPause" && sound
-        ? input.emitSound?.(input.actor, sound, input.runtimeTick, input.resolveSoundValue?.())
+        ? input.emitSound?.(input.actor, sound, input.runtimeTick, resolvedSound)
         : undefined;
+    const audioOperation =
+      result.pause.type === "SuperPause" && sound ? superPauseSoundAudioOperation(sound, resolvedSound) : undefined;
+    if (audioOperation) {
+      input.recordAudioOperation?.(input.actor, audioOperation);
+    }
     input.log(
       `${input.actor.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
     );
@@ -459,6 +466,30 @@ function superPauseSoundParam(controller: MugenStateController, operation?: Paus
     return undefined;
   }
   return sound;
+}
+
+function superPauseSoundAudioOperation(sound: string, resolvedSound?: RuntimeResolvedSoundRef): AudioControllerOp | undefined {
+  const value = resolvedSound ? soundRefToString(resolvedSound) : normalizedStaticSoundRef(sound);
+  if (!value) {
+    return undefined;
+  }
+  return {
+    kind: "audio",
+    controllerType: "playsnd",
+    value,
+  };
+}
+
+function normalizedStaticSoundRef(sound: string): string | undefined {
+  const match = /^\s*([FS])?\s*(-?\d+)\s*,\s*(-?\d+)/i.exec(sound);
+  if (!match) {
+    return undefined;
+  }
+  return `${match[1]?.toUpperCase() ?? ""}${Number(match[2])},${Number(match[3])}`;
+}
+
+function soundRefToString(ref: RuntimeResolvedSoundRef): string {
+  return `${ref.rawPrefix ?? ""}${ref.group},${ref.index}`;
 }
 
 function superPauseTargetDefenseMultiplierParam(

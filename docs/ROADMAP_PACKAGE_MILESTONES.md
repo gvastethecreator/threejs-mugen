@@ -35,7 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic audio typed telemetry trace gates
+R1 required SuperPause sound typed audio trace gate
+-> synthetic-imported-superpause-sound.json trace checksum 3e19cb86 / final checksum c5fb9428 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(0)=10 and var(1)=0, then executes SuperPause sound = Svar(0),var(1)
+-> gate requires ChangeState, VarSet, HitDef, SuperPause, variable:varset, hitdef, pause:superpause, audio:playsnd, match-pause/freeze evidence, and sound-event telemetry for group 10, index 0, raw Svar(0),var(1)
+-> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+-> official Elecbyte State Controller Reference defines expression-capable numeric controller params and SuperPause sound = snd_grp, snd_no with S player-SND prefix support
+-> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, direct HitDef audio operation telemetry, super-background audio, and full audio parity remain blocked
+
+Previous R1 required dynamic audio typed telemetry trace gates
 -> synthetic-imported-sound-dynamic-pan.json trace checksum 879afcf4 / final checksum b780e5e9 is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds var(0)=-24, var(1)=2, and var(2)=64, then executes PlaySnd value = S5,2, channel = var(1), pan = var(0); SndPan channel = var(1), abspan = var(2); and StopSnd channel = var(1)
 -> pan gate requires ChangeState, VarSet, HitDef, PlaySnd, SndPan, StopSnd, variable:varset, audio:playsnd, audio:sndpan, audio:stopsnd, and hitdef evidence plus sound-event telemetry for channel/pan/abspan resolution
@@ -43,7 +51,7 @@ R1 required dynamic audio typed telemetry trace gates
 -> value gate requires PlaySnd, variable:varset, audio:playsnd, hitdef, group 5, index 3, channel 4, raw Fvar(0),var(1), and soundPrefix kfm telemetry
 -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
 -> official Elecbyte State Controller Reference defines expression-capable numeric controller params, PlaySnd, SndPan, StopSnd, and F sound prefix behavior
--> no score movement; exact SND lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, direct HitDef audio operation telemetry, dynamic SuperPause sound typed audio operation telemetry, super-background audio, and full audio parity remain blocked
+-> no score movement; exact SND lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, direct HitDef audio operation telemetry, super-background audio, and full audio parity remain blocked
 
 Previous R1 required dynamic damage-scale typed telemetry trace gate
 -> synthetic-imported-damage-scale-dynamic.json trace checksum 3433b369 / final checksum e3db6dd9 remains required in qa:trace
@@ -533,11 +541,11 @@ Previous R1 required SuperPause p2defmul trace gate
   -> that checkpoint passed 459/459 artifacts, 429 required and 30 optional
   -> no score movement; p2defmul = 0 / Super.TargetDefenceMul, exact recovery lifetime, stacking, helper/redirect/multi-target ownership, and full super damage-scaling parity remain blocked
 
-Previous R1 required SuperPause sound trace gate
-  -> synthetic-imported-superpause-sound.json current checksum de3ac4b2 / final checksum 6e227fe6 is required in qa:trace after default superAnim metadata drift
+Previous R1 required SuperPause sound trace gate, superseded by typed audio cut
+  -> synthetic-imported-superpause-sound.json current checksum 3e19cb86 / final checksum c5fb9428 is required in qa:trace
   -> imported active state seeds var(0)=10 and var(1)=0
   -> SuperPause executes sound = Svar(0),var(1)
-  -> dynamic SuperPause sound group/index resolves through runtime expression fallback at pause start
+  -> dynamic SuperPause sound group/index resolves through runtime expression fallback at pause start and records typed audio:playsnd evidence for S10,0
   -> sound-event evidence requires attacker PlaySnd group 10 index 0 raw Svar(0),var(1)
   -> that checkpoint passed 458/458 artifacts, 428 required and 30 optional
   -> official Elecbyte docs define SuperPause sound = snd_grp, snd_no and numeric controller params as expression-capable

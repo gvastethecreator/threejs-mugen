@@ -322,6 +322,7 @@ describe("PauseSystem", () => {
         return { type: "PlaySnd", group: resolvedSound?.group, index: resolvedSound?.index, raw: sound, stateNo: 3000, tick: 0, runtimeTick };
       },
       resolveSoundValue: () => ({ rawPrefix: "S", group: 10, index: 0 }),
+      recordAudioOperation: (_activeActor, operation) => calls.push(`op:${operation.controllerType}:${operation.value}`),
       log: (message) => calls.push(`log:${message}`),
     });
 
@@ -330,6 +331,7 @@ describe("PauseSystem", () => {
     expect(calls).toEqual([
       "apply:p1:SuperPause:44:raw",
       "sound:Svar(0),var(1):10:0:44",
+      "op:playsnd:S10,0",
       "log:P1 triggered SuperPause for 7f (1f movetime)",
     ]);
   });
