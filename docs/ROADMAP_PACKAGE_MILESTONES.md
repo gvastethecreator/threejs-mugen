@@ -1,6 +1,6 @@
 # Roadmap Package Milestones
 
-Last updated: 2026-07-08
+Last updated: 2026-07-09
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -35,6 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic damage-scale typed telemetry trace gate
+-> synthetic-imported-damage-scale-dynamic.json trace checksum 3433b369 / final checksum e3db6dd9 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds attacker var(0)=2 and fvar(0)=0.75, seeds defender fvar(0)=0.5, then executes AttackMulSet value = var(0) * fvar(0) and DefenceMulSet value = fvar(0)
+-> gate requires ChangeState, VarSet, AttackMulSet, DefenceMulSet, HitDef, variable:varset, damage-scale:attackmulset, damage-scale:defencemulset, and hitdef evidence plus event text for 30 and final P2 life 970
+-> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+-> official Elecbyte State Controller Reference defines AttackMulSet and DefenceMulSet damage multiplier semantics; Elecbyte CNS docs define expression-capable controller params and evaluation timing
+-> no score movement; exact scaling stack/order, helper/projectile/custom-state/guard/target edge cases, redirect ownership, rounding, controller-loop timing, score movement, and full damage-scaling parity remain blocked
+
+Previous R1 required dynamic EnvColor typed telemetry trace gate
+-> synthetic-imported-envcolor-dynamic.json trace checksum 845c3d5e / final checksum 282fc77f remains required in qa:trace
+-> gate requires dynamic EnvColor typed operation evidence plus bounded stage-frame color 32,128,240 / under true telemetry
+-> no score movement; exact blend math, layer/window behavior, pause timing, renderer parity, helper/redirect ownership, score movement, and full presentation parity remain blocked
+
 R1 required dynamic RemapPal typed sprite-effect trace gate
 -> synthetic-imported-remappal-dynamic.json checksum 5f04f2d4 / final checksum 71ad06f0 is required in qa:trace
 -> imported State -1 presses x, enters active state/action 200, seeds var(0)=5 and var(1)=7, then executes RemapPal source = 1,var(0) with dest = 2,var(1)

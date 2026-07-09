@@ -551,6 +551,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDamageScaleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-damage-scale-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicDamageScaleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-data-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),
@@ -3762,6 +3767,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitby-allow",
     "synthetic-imported-hitby-reject",
     "synthetic-imported-damage-scale",
+    "synthetic-imported-damage-scale-dynamic",
     "synthetic-imported-data-damage-scale",
     "synthetic-imported-fall-defence-up",
     "synthetic-imported-gethitvar-fall-defence-up",

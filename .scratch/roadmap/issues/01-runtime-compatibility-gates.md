@@ -7,7 +7,24 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## Latest Closed Quality Slice - Dynamic EnvColor Typed Telemetry
+## Latest Closed Quality Slice - Dynamic Damage-Scale Typed Telemetry
+
+Status: done
+Date: 2026-07-09
+
+Quality contract:
+
+- Baseline to beat: static `AttackMulSet` / `DefenceMulSet` already had typed `damage-scale:*` evidence, and dynamic raw fallback could mutate multipliers, but dynamic `value` routes lacked resolved typed operation telemetry.
+- Target: keep bounded owner-local dynamic `AttackMulSet value` and `DefenceMulSet value` behavior, resolve params through the runtime expression context, and record typed `damage-scale:*` telemetry without claiming exact scaling stack/order, helper/projectile/custom-state/guard/target edge cases, redirects, rounding, or full damage-scaling parity.
+- Reference: Elecbyte State Controller Reference defines `AttackMulSet` and `DefenceMulSet`; Elecbyte CNS docs support expression-capable controller params and evaluation timing.
+- Transformation layers: `resolveRuntimeDamageScaleControllerOperation`, `RuntimeControllerDispatchWorld.resolveDynamicRecordedOperation`, `RuntimeDamageScaleWorld`, synthetic imported trace preset requirements, direct HitDef event/final-life evidence, roadmap truth.
+- Adjacent audit: inspect static damage-scale evidence, CNS `[Data] attack` / `defence` scaling evidence, SuperPause `p2defmul` route, dynamic resource/kinematic dispatch patterns, trace operation recording, support registry wording, QA gate docs, scorecard/report wording, architecture docs, Wayfinder frontier, and roadmap latest-runtime truth.
+- Accepted improvement ledger: add required `synthetic-imported-damage-scale-dynamic`, require `damage-scale:attackmulset` and `damage-scale:defencemulset`, keep direct HitDef event `for 30` and final P2 life `970`, and update docs/roadmap around trace checksum `3433b369` / final checksum `e3db6dd9`.
+- Out of scope: exact MUGEN/IKEMEN scaling stack/order, helper/projectile/custom-state/guard/target edge cases, redirect ownership, rounding, score movement, controller-loop timing, and full damage-scaling parity.
+- Completed proof: required `synthetic-imported-damage-scale-dynamic.json` trace checksum `3433b369` / final checksum `e3db6dd9`, focused damage-scale/dispatch/trace-preset tests, and `pnpm qa:trace` 524/524 artifacts with 493 required and 31 optional.
+- STOP conditions: pause if the next damage-scale cut requires broad formula parity, projectile/helper/custom-state ownership changes, target redirect scaling, exact rounding, or combat timing decisions larger than one trace oracle.
+
+## Previous Closed Quality Slice - Dynamic EnvColor Typed Telemetry
 
 Status: done
 Date: 2026-07-09

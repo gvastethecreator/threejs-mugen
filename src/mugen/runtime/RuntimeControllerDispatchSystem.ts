@@ -6,6 +6,7 @@ import {
   resolveRuntimePosFreezeControllerOperation,
   resolveRuntimeScreenBoundControllerOperation,
 } from "./BoundsControllerSystem";
+import { resolveRuntimeDamageScaleControllerOperation } from "./DamageScaleSystem";
 import { resolveRuntimeKinematicControllerOperation } from "./KinematicControllerSystem";
 import { resolveRuntimeResourceControllerOperation } from "./RuntimeResourceSystem";
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
@@ -89,6 +90,9 @@ function resolveDynamicRecordedOperation(
   }
   if (controller.normalizedType === "statetypeset") {
     return resolveRuntimeStateTypeSetControllerOperation(controller, runtime, context);
+  }
+  if (controller.normalizedType === "attackmulset" || controller.normalizedType === "defencemulset") {
+    return resolveRuntimeDamageScaleControllerOperation(controller, runtime, controller.normalizedType, context);
   }
   const resourceOperation = resolveRuntimeResourceControllerOperation(controller, runtime, context);
   if (resourceOperation) {

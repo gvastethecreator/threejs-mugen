@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { DamageScaleControllerOp } from "../mugen/compiler/ControllerOps";
 import {
   RuntimeDamageScaleWorld,
+  resolveRuntimeDamageScaleControllerOperation,
   type RuntimeDamageScaleControllerSource,
 } from "../mugen/runtime/DamageScaleSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -52,6 +53,29 @@ describe("RuntimeDamageScaleWorld", () => {
 
     expect(state.attackMultiplier).toBe(1.25);
     expect(state.defenseMultiplier).toBe(0.75);
+  });
+
+  it("resolves dynamic controller values into typed telemetry operations", () => {
+    const state = runtime({ vars: [2], fvars: [0.75] });
+
+    expect(
+      resolveRuntimeDamageScaleControllerOperation(
+        controller({ value: "var(0) * fvar(0)" }),
+        state,
+        "attackmulset",
+      ),
+    ).toEqual({
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      multiplier: 1.5,
+    });
+
+    expect(resolveRuntimeDamageScaleControllerOperation(controller({ value: "-2" }), state, "defencemulset")).toEqual({
+      kind: "damage-scale",
+      controllerType: "defencemulset",
+      multiplier: 0,
+    });
+    expect(resolveRuntimeDamageScaleControllerOperation(controller(), state, "attackmulset")).toBeUndefined();
   });
 });
 

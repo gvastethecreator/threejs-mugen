@@ -126,6 +126,31 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(true);
   });
 
+  it("records bounded dynamic AttackMulSet and DefenceMulSet as typed damage-scale telemetry", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ vars: [2, -3], fvars: [0.75] });
+    const recordedOperations: ControllerOp[] = [];
+    const controllers = [
+      compileControllerIr(controllerSource("AttackMulSet", { value: "var(0) * fvar(0)" })),
+      compileControllerIr(controllerSource("DefenceMulSet", { value: "0 - var(1)" })),
+    ];
+
+    expect(controllers.map((controller) => controller.operation)).toEqual([undefined, undefined]);
+    const results = controllers.map((controller) =>
+      world.apply(actor, controller, {
+        recordOperation: (_actor, operation) => recordedOperations.push(operation),
+      }),
+    );
+
+    expect(actor.runtime.attackMultiplier).toBe(1.5);
+    expect(actor.runtime.defenseMultiplier).toBe(3);
+    expect(recordedOperations).toEqual([
+      { kind: "damage-scale", controllerType: "attackmulset", multiplier: 1.5 },
+      { kind: "damage-scale", controllerType: "defencemulset", multiplier: 3 },
+    ]);
+    expect(results.every((result) => result.recordedOperation)).toBe(true);
+  });
+
   it("records bounded dynamic LifeAdd as typed resource telemetry after resolving params", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 12, vars: [1, 0] });

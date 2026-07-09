@@ -1,5 +1,44 @@
 # Build Execution Backlog
 
+## 2026-07-09 - Dynamic damage-scale typed telemetry
+
+Summary:
+
+- Added runtime typed-operation resolution for dynamic `AttackMulSet value` and `DefenceMulSet value` params.
+- Registered `damage-scale:*` dynamic operation recording in `RuntimeControllerDispatchWorld`, preserving the existing raw execution fallback for actual multiplier mutation.
+- Added required `synthetic-imported-damage-scale-dynamic.json` to `qa:trace`, with VarSet-seeded owner-local `var`/`fvar` expressions for both attacker and defender.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `AttackMulSet`, `DefenceMulSet`, and expression-capable numeric controller params; [Elecbyte CNS format docs](https://www.elecbyte.com/mugendocs/cns.html) define controller-param evaluation timing.
+
+Evidence:
+
+- `synthetic-imported-damage-scale-dynamic.json` trace checksum `3433b369`, final checksum `e3db6dd9`; executed ops include `variable:varset = 10`, `damage-scale:attackmulset = 1`, `damage-scale:defencemulset = 10`, and `hitdef = 1`.
+- The dynamic route records `for 30` damage and final P2 life `970`, matching `40 * 1.5 * 0.5`.
+- Focused tests: `pnpm exec vitest run src/tests/DamageScaleSystem.test.ts src/tests/RuntimeControllerDispatchSystem.test.ts --reporter verbose` passed 15 tests; `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern damage-scale --reporter verbose` passed 4 matching tests.
+- Closeout gates: `pnpm typecheck` passed; `pnpm build` passed with the known Vite large-chunk warning; `pnpm test` passed 153 files / 1498 tests; `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional; `pnpm check:boundaries` passed; `git diff --check` passed with CRLF-normalization warnings only.
+- Trace gate note: the known non-fatal Vite websocket port warning for port `24678` was still emitted after `pnpm qa:trace`.
+
+Claim allowed:
+
+- Bounded imported dynamic `AttackMulSet value` and `DefenceMulSet value` expressions can resolve owner-local `var`/`fvar` values at controller trigger time, record typed `damage-scale:*` telemetry, and feed the current direct HitDef damage math.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN damage-scaling order for helpers, projectiles, custom states, guards, target-side systems, stacking, rounding, score movement, and full damage VM parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: static `AttackMulSet` / `DefenceMulSet` already had typed evidence, and dynamic raw fallback could mutate multipliers, but dynamic routes had no resolved `damage-scale:*` telemetry.
+- Quality delta: damage-scale now matches the nearby dynamic runtime-controller telemetry posture without broadening damage parity claims.
+- Adjacent surface checked: static damage-scale gate, CNS Data attack/defence scaling gate, SuperPause `p2defmul` damage-scale route, dynamic resource/kinematic dispatch patterns, support registry wording, roadmap truth, Wayfinder map, and research notes.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 524/524 artifacts, 493 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its latest smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Good next candidates remain helper/redirect ownership, exact presentation timing, renderer parity proof, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+
 ## 2026-07-09 - TypeScript 7 rootDir audit hardening
 
 Summary:

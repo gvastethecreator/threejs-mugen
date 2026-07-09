@@ -357,6 +357,7 @@ import {
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
+  createSyntheticImportedDynamicDamageScaleTraceArtifact,
   createSyntheticImportedDataDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
@@ -9747,6 +9748,44 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic damage-scale artifact with typed multiplier evidence", () => {
+    const artifact = createSyntheticImportedDynamicDamageScaleTraceArtifact({ generatedAt: "2026-07-09T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-damage-scale-dynamic-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-damage-scale-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedControllers.AttackMulSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.DefenceMulSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedOperations["damage-scale:attackmulset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["damage-scale:defencemulset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: "dynamic AttackMulSet resolution order", actorId: "p1", allowSameTick: true }),
+        expect.objectContaining({ label: "dynamic DefenceMulSet resolution order", actorId: "p2", allowSameTick: true }),
+      ]),
     );
   });
 

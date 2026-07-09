@@ -11,6 +11,23 @@ export type RuntimeDamageScaleControllerResult = {
   multiplier?: number;
 };
 
+export function resolveRuntimeDamageScaleControllerOperation(
+  controller: RuntimeDamageScaleControllerSource,
+  state: CharacterRuntimeState,
+  controllerType: DamageScaleControllerOp["controllerType"],
+  context: RuntimeControllerEvaluationContext = {},
+): DamageScaleControllerOp | undefined {
+  const value = numberParam(controller, state, context, "value");
+  if (value === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "damage-scale",
+    controllerType,
+    multiplier: clampDamageScaleMultiplier(value),
+  };
+}
+
 export class RuntimeDamageScaleWorld {
   applyController(
     state: CharacterRuntimeState,
@@ -24,7 +41,7 @@ export class RuntimeDamageScaleWorld {
       return { applied: false };
     }
 
-    const multiplier = Math.max(0, Math.min(10, value));
+    const multiplier = clampDamageScaleMultiplier(value);
     if (controllerType === "attackmulset") {
       state.attackMultiplier = multiplier;
     } else {
@@ -48,6 +65,10 @@ function numberParam(
     return evaluateNumber(raw.trim(), state, context);
   }
   return undefined;
+}
+
+function clampDamageScaleMultiplier(value: number): number {
+  return Math.max(0, Math.min(10, value));
 }
 
 function findParam(controller: RuntimeDamageScaleControllerSource, key: string): string | undefined {

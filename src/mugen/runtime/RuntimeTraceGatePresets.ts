@@ -5317,6 +5317,95 @@ export function createSyntheticImportedDamageScaleTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedDynamicDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-damage-scale-dynamic-attacker",
+    displayName: "Synthetic Imported Dynamic Damage Scale Attacker",
+    hitDefDamage: 40,
+    dynamicAttackMultiplier: {
+      value: "var(0) * fvar(0)",
+      vars: [{ index: 0, value: 2 }],
+      fvars: [{ index: 0, value: 0.75 }],
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-damage-scale-dynamic-defender",
+    displayName: "Synthetic Imported Dynamic Damage Scale Defender",
+    dynamicDefenseMultiplier: {
+      value: "fvar(0)",
+      fvars: [{ index: 0, value: 0.5 }],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-damage-scale-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-damage-scale-dynamic-golden",
+      label: "Synthetic imported dynamic AttackMulSet/DefenceMulSet route",
+      source: "imported",
+      notes: [
+        "Synthetic imported dynamic damage-scale trace proves AttackMulSet and DefenceMulSet value expressions resolve owner-local var/fvar seeds at controller trigger time, record typed damage-scale operations, and feed bounded outgoing and incoming HitDef damage scaling. It does not claim exact MUGEN/IKEMEN scaling order for helpers, projectiles, custom states, guards, or round edge cases.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-damage-scale-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "AttackMulSet", "DefenceMulSet", "HitDef"],
+        requiredExecutedOperations: [
+          "variable:varset",
+          "damage-scale:attackmulset",
+          "damage-scale:defencemulset",
+          "hitdef",
+        ],
+        requiredControllerEventSequences: [
+          {
+            label: "dynamic AttackMulSet resolution order",
+            actorId: "p1",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 200, controller: "VarSet", name: "Dynamic Attack Scale Var 0" },
+              { stateNo: 200, controller: "VarSet", name: "Dynamic Attack Scale FVar 0" },
+              { stateNo: 200, controller: "AttackMulSet", name: "Dynamic Attack Scale" },
+            ],
+          },
+          {
+            label: "dynamic DefenceMulSet resolution order",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 0, controller: "VarSet", name: "Dynamic Defence Scale FVar 0" },
+              { stateNo: 0, controller: "DefenceMulSet", name: "Dynamic Defence Scale" },
+            ],
+          },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEventSubstrings: ["for 30"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 970,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDataDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -37960,6 +38049,12 @@ type SyntheticImportedPassiveHitOverride = {
 
 type SyntheticNumberExpression = number | string;
 type SyntheticPairExpression = [SyntheticNumberExpression, SyntheticNumberExpression];
+type SyntheticRuntimeVarSeed = { index: number; value: number };
+type SyntheticDynamicDamageScale = {
+  value: string;
+  vars?: SyntheticRuntimeVarSeed[];
+  fvars?: SyntheticRuntimeVarSeed[];
+};
 
 export type SyntheticImportedTraceFighterOptions = {
   id?: string;
@@ -37997,6 +38092,8 @@ export type SyntheticImportedTraceFighterOptions = {
   }>;
   defenseMultiplier?: number;
   attackMultiplier?: number;
+  dynamicDefenseMultiplier?: SyntheticDynamicDamageScale;
+  dynamicAttackMultiplier?: SyntheticDynamicDamageScale;
   guardDamage?: number;
   guardKill?: boolean;
   guardFlag?: string;
@@ -39022,6 +39119,7 @@ ${passiveHitOverrideControllers(options.passiveHitOverrides)}
 ${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger) : ""}
 ${options.passiveAssertSpecialFlagGroups?.map((flags, index) => passiveAssertSpecialController(flags, options.passiveAssertSpecialTrigger, ` ${index + 2}`)).join("") ?? ""}
 ${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}
+${options.dynamicDefenseMultiplier !== undefined ? dynamicDefenseMultiplierController(options.dynamicDefenseMultiplier) : ""}
 ${options.passiveRemoveOnGetHitExplod ? passiveRemoveOnGetHitExplodControllerBlock() : ""}
 
 [Statedef 200]
@@ -39033,6 +39131,7 @@ ctrl = 0
 
 ${assertSpecialLine}
 ${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
+${options.dynamicAttackMultiplier !== undefined ? dynamicAttackMultiplierController(options.dynamicAttackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withGravity ? gravityControllerBlock() : ""}
@@ -40272,6 +40371,54 @@ type = AttackMulSet
 trigger1 = Time = 0
 value = ${value}
 `;
+}
+
+function dynamicDefenseMultiplierController(options: SyntheticDynamicDamageScale): string {
+  return `
+${dynamicDamageScaleSeedBlock(0, "Dynamic Defence Scale", options, "1")}
+[State 0, Dynamic Defence Scale]
+type = DefenceMulSet
+trigger1 = 1
+value = ${options.value}
+`;
+}
+
+function dynamicAttackMultiplierController(options: SyntheticDynamicDamageScale): string {
+  return `
+${dynamicDamageScaleSeedBlock(200, "Dynamic Attack Scale", options, "Time = 0")}
+[State 200, Dynamic Attack Scale]
+type = AttackMulSet
+trigger1 = Time = 0
+value = ${options.value}
+`;
+}
+
+function dynamicDamageScaleSeedBlock(stateNo: number, label: string, options: SyntheticDynamicDamageScale, trigger: string): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (seed) => `
+[State ${stateNo}, ${label} Var ${seed.index}]
+type = VarSet
+trigger1 = ${trigger}
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  const fvarSeeds =
+    options.fvars
+      ?.map(
+        (seed) => `
+[State ${stateNo}, ${label} FVar ${seed.index}]
+type = VarSet
+trigger1 = ${trigger}
+fv = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `${varSeeds}${fvarSeeds}`;
 }
 
 function boundsControllerBlock(): string {
