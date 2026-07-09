@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-09 - TypeScript 7 follow-up audit
+
+Summary:
+
+- Re-audited the current repo after the runtime helper Projectile guard-audio feature to confirm the project is still on the direct TypeScript 7 route.
+- No package changes were required: `package.json` remains `typescript: "~7.0.2"` and `pnpm-lock.yaml` resolves `typescript@7.0.2`.
+- Official source checked: [Announcing TypeScript 7.0](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) confirms TS7 is available from the standard `typescript` npm package and reserves TypeScript 6 side-by-side usage for tools needing compiler API compatibility.
+
+Evidence:
+
+- `npm view typescript version dist-tags --json` -> `latest = 7.0.2`; `npm view @typescript/typescript6 version dist-tags --json` -> `latest = 6.0.2`.
+- `pnpm exec tsc --version` -> `Version 7.0.2`; `pnpm list typescript` -> only `typescript@7.0.2`.
+- `node D:\DEV\agents-matrix\skills\typescript-7-upgrade\scripts\audit-typescript-7-upgrade.mjs . --json` -> 0 errors, 0 warnings, 3 infos.
+- `tsconfig.json` keeps TS7-sensitive defaults explicit: `rootDir: "src"` and `types: ["vite/client"]`.
+- Gates under TS7 passed after the latest runtime slice: `pnpm typecheck`, `pnpm build`, `pnpm test` (153 files / 1503 tests), `pnpm qa:trace` (524/524 artifacts, 493 required and 31 optional), `pnpm check:boundaries`, and `git diff --check`.
+
+Decision:
+
+- Keep direct `typescript@~7.0.2`; do not add `@typescript/typescript6` until a real compiler-API consumer or gate failure requires it.
+
 ## 2026-07-09 - Helper Projectile guard sound typed audio
 
 Summary:

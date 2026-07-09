@@ -42,3 +42,13 @@ Upgrade the repo's direct `typescript` dev dependency to `~7.0.2` and do not add
 - `types` remains explicit as `["vite/client"]`; no TypeScript compiler API imports were found in the repo search, and `pnpm why typescript` still resolves only `typescript@7.0.2`.
 - End-to-end project checks after `rootDir` hardening: `pnpm typecheck`, `pnpm build`, `pnpm test`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check` passed; `pnpm test` reported 153 files / 1495 tests and `pnpm qa:trace` reported 523/523 artifacts, 492 required and 31 optional.
 - No runtime-facing JS/JSDoc behavior changes were required by this repo slice; no `@typescript/typescript6` compatibility alias was added because CLI-only `tsc` usage remains.
+
+## Follow-up Audit (2026-07-09)
+
+- Official TypeScript 7 blog still identifies TypeScript 7 as available through the standard `typescript` npm package and notes the TypeScript 6 side-by-side package only for tools that need compiler API access.
+- Registry checks: `npm view typescript version dist-tags --json` reports `latest = 7.0.2`; `npm view @typescript/typescript6 version dist-tags --json` reports `latest = 6.0.2`.
+- Local proof: `pnpm exec tsc --version` reports `Version 7.0.2`; `pnpm list typescript` resolves only `typescript@7.0.2`.
+- The TS7 upgrade audit script reports 0 errors, 0 warnings, and 3 informational checks: keep `types` explicit, and verify `build` / `typecheck` scripts resolve to TS7. `tsconfig.json` already sets `types: ["vite/client"]`, and both scripts use the local TS7 `tsc`.
+- Latest project gates under TS7 after the helper Projectile guard-audio runtime slice: `pnpm typecheck`, `pnpm build`, `pnpm test` (153 files / 1503 tests), `pnpm qa:trace` (524/524 artifacts, 493 required and 31 optional), `pnpm check:boundaries`, and `git diff --check` passed.
+
+Decision: no package change required; keep the direct `typescript@~7.0.2` route and do not add `@typescript/typescript6` until a real compiler-API consumer fails with evidence.
