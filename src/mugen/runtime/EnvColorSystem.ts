@@ -54,6 +54,24 @@ export function createRuntimeEnvColorEvent(
   };
 }
 
+export function resolveRuntimeEnvColorControllerOperation(
+  controller: MugenStateController,
+  resolveEnvColor?: RuntimeEnvColorResolver,
+): EnvColorControllerOp | undefined {
+  const color = resolveEnvColorTripletParam(controller, "value", resolveEnvColor, [255, 255, 255]);
+  const time = resolveEnvColorNumberParam(controller, "time", resolveEnvColor, clampFlashTime, 1);
+  const under = resolveEnvColorNumberParam(controller, "under", resolveEnvColor, (value) => value, 0);
+  if (color === undefined || time === undefined || under === undefined || time <= 0) {
+    return undefined;
+  }
+  return {
+    kind: "envcolor",
+    color,
+    time,
+    under: under !== 0,
+  };
+}
+
 export function pushRuntimeEnvColorEvent(events: RuntimeEnvColorEvent[], event: RuntimeEnvColorEvent, maxEvents = 8): void {
   events.unshift(event);
   events.splice(maxEvents);
@@ -87,7 +105,10 @@ export class RuntimeEnvColorWorld {
 
 export class RuntimeEnvColorControllerDispatchWorld {
   apply<TActor>(options: RuntimeEnvColorControllerDispatchOptions<TActor>): RuntimeEnvColorControllerDispatchResult {
-    const operation = options.controller.operation?.kind === "envcolor" ? options.controller.operation : undefined;
+    const operation =
+      options.controller.operation?.kind === "envcolor"
+        ? options.controller.operation
+        : resolveRuntimeEnvColorControllerOperation(options.controller.source, options.resolveEnvColor);
     options.recordController?.(options.actor, options.controller.source);
     if (operation) {
       options.recordOperation?.(options.actor, operation);
@@ -143,6 +164,42 @@ function clampColorTriplet(value: [number, number, number] | undefined): [number
     return undefined;
   }
   return [clampColor(value[0]), clampColor(value[1]), clampColor(value[2])];
+}
+
+function resolveEnvColorNumberParam(
+  controller: MugenStateController,
+  key: "time" | "under",
+  resolver: RuntimeEnvColorResolver | undefined,
+  clamp: (value: number) => number,
+  defaultValue: number,
+): number | undefined {
+  const param = findControllerParam(controller, key);
+  if (param === undefined) {
+    return clamp(defaultValue);
+  }
+  const value = resolver?.resolveNumber(key) ?? firstNumber(param);
+  return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
+}
+
+function resolveEnvColorTripletParam(
+  controller: MugenStateController,
+  key: "value",
+  resolver: RuntimeEnvColorResolver | undefined,
+  fallback: [number, number, number],
+): [number, number, number] | undefined {
+  const param = findControllerParam(controller, key);
+  if (param === undefined) {
+    return fallback;
+  }
+  const resolved = clampColorTriplet(resolver?.resolveTriplet(key));
+  if (resolved) {
+    return resolved;
+  }
+  const numbers = param.split(",").map((part) => Number(part.trim()));
+  if (numbers.length < 3 || numbers.some((numberValue) => !Number.isFinite(numberValue))) {
+    return undefined;
+  }
+  return [clampColor(numbers[0]!), clampColor(numbers[1]!), clampColor(numbers[2]!)];
 }
 
 function clampColor(value: number): number {

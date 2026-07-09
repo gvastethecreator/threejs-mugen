@@ -11278,7 +11278,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a synthetic imported dynamic EnvColor artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic EnvColor artifact with typed expression evidence", () => {
     const artifact = createSyntheticImportedDynamicEnvColorTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -11297,7 +11297,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "EnvColor", "HitDef"]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "envcolor", "hitdef"]);
     expect(artifact.gates[0]?.requirements.requiredStageFrames).toEqual([
       {
         stageId: "trace-close-training-grid",
@@ -11311,7 +11311,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.EnvColor).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations.envcolor).toBeUndefined();
+    expect(evidence?.executedOperations.envcolor).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.stageFrames).toEqual(
       expect.arrayContaining([

@@ -583,15 +583,15 @@ Previous R1 required dynamic Width typed-collision trace gate
   -> official Elecbyte docs define Width as a temporary width-bar change with player/value params and numeric controller params as expression-capable
   -> no score movement; edge width parity, exact push overlap, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
-Previous R1 required dynamic EnvColor trace gate
-  -> synthetic-imported-envcolor-dynamic.json checksum dbe548a7 / final checksum 2ff8dd42 is required in qa:trace
+Current R1 required dynamic EnvColor typed trace gate
+  -> synthetic-imported-envcolor-dynamic.json checksum 845c3d5e / final checksum 282fc77f is required in qa:trace
   -> imported active state seeds var(0)=32, var(1)=128, var(2)=240, var(3)=14, and var(4)=1
   -> active state executes EnvColor value = var(0),var(1),var(2), time = var(3), and under = var(4)
-  -> dynamic EnvColor resolves through active controller expression fallback instead of typed envcolor evidence
+  -> dynamic EnvColor resolves through active controller expression fallback and records typed envcolor evidence after resolution
   -> stage-frame evidence requires envColor 32,128,240 with under = true
-  -> pnpm qa:trace passed 451/451 artifacts, 421 required and 30 optional
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs define EnvColor value/time/under and numeric controller params as expression-capable
-  -> no score movement; dynamic typed-operation lowering for EnvColor, exact blend math, layer/window behavior, pause timing, renderer parity, and full presentation parity remain blocked
+  -> no score movement; exact blend math, layer/window behavior, pause timing, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
 Superseded R1 required dynamic EnvShake typed trace gate
   -> synthetic-imported-envshake-dynamic.json checksum e1bf593f / final checksum 8f52f1f4 is required in qa:trace

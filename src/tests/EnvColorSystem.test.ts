@@ -6,6 +6,7 @@ import {
   calculateRuntimeStageFlash,
   createRuntimeEnvColorEvent,
   pushRuntimeEnvColorEvent,
+  resolveRuntimeEnvColorControllerOperation,
   RuntimeEnvColorControllerDispatchWorld,
   RuntimeEnvColorWorld,
 } from "../mugen/runtime/EnvColorSystem";
@@ -41,13 +42,18 @@ describe("EnvColorSystem", () => {
     });
   });
 
-  it("resolves dynamic EnvColor params without typed operation evidence", () => {
+  it("resolves dynamic EnvColor params into typed operation evidence", () => {
     const dispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
     const envColorWorld = new RuntimeEnvColorWorld();
     const actor = { id: "p1" };
-    const ir = compileControllerIr(controller("EnvColor", { value: "var(0),var(1),var(2)", time: "var(3)", under: "var(4)" }));
+    const source = controller("EnvColor", { value: "var(0),var(1),var(2)", time: "var(3)", under: "var(4)" });
+    const ir = compileControllerIr(source);
     const recordedControllers: string[] = [];
     const recordedOperations: string[] = [];
+    const resolver = {
+      resolveNumber: (key: "time" | "under") => ({ time: 14, under: 1 })[key],
+      resolveTriplet: () => [32, 128, 240] as [number, number, number],
+    };
 
     const result = dispatchWorld.apply({
       actor,
@@ -55,15 +61,19 @@ describe("EnvColorSystem", () => {
       runtimeTick: 24,
       emitController: (source, runtimeTick, operation, resolveEnvColor) =>
         envColorWorld.emitController(source, runtimeTick, operation, resolveEnvColor),
-      resolveEnvColor: {
-        resolveNumber: (key) => ({ time: 14, under: 1 })[key],
-        resolveTriplet: () => [32, 128, 240],
-      },
+      resolveEnvColor: resolver,
       recordController: (_actor, source) => recordedControllers.push(source.type),
       recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.time}`),
     });
 
     expect(ir.operation).toBeUndefined();
+    expect(resolveRuntimeEnvColorControllerOperation(source, resolver)).toEqual({
+      kind: "envcolor",
+      color: [32, 128, 240],
+      time: 14,
+      under: true,
+    });
+    expect(resolveRuntimeEnvColorControllerOperation(controller("EnvColor", { value: "var(0),var(1),var(2)" }))).toBeUndefined();
     expect(result.event).toEqual({
       type: "EnvColor",
       color: [32, 128, 240],
@@ -73,8 +83,8 @@ describe("EnvColorSystem", () => {
     });
     expect(envColorWorld.snapshotStageFlash(25)).toMatchObject({ color: [32, 128, 240], remaining: 13, under: true });
     expect(recordedControllers).toEqual(["EnvColor"]);
-    expect(recordedOperations).toEqual([]);
-    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
+    expect(recordedOperations).toEqual(["envcolor:14"]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 
   it("ignores zero-length EnvColor controllers", () => {

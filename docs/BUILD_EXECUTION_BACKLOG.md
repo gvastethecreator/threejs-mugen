@@ -1,5 +1,43 @@
 # Build Execution Backlog
 
+## 2026-07-09 - Dynamic EnvColor typed telemetry
+
+Summary:
+
+- Upgraded required `synthetic-imported-envcolor-dynamic.json` from fallback-only stage-flash evidence into typed `envcolor` telemetry.
+- Added `resolveRuntimeEnvColorControllerOperation` and routed dynamic `EnvColor value/time/under` operation resolution through `RuntimeEnvColorControllerDispatchWorld`.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `envcolor`, and `hitdef` for the dynamic EnvColor route.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `EnvColor value`, `time`, and `under`; [Elecbyte CNS format docs](https://www.elecbyte.com/mugendocs/cns.html) cover expression-capable controller params.
+- Focused tests: `pnpm exec vitest run src/tests/EnvColorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern EnvColor` passed 12 matching tests.
+- Trace gate: `pnpm qa:trace` passed 523/523 artifacts, 492 required and 31 optional.
+
+Evidence:
+
+- `synthetic-imported-envcolor-dynamic.json` trace checksum `845c3d5e`, final checksum `282fc77f`; executed ops include `variable:varset = 5`, `envcolor = 1`, and `hitdef = 1`.
+- Stage-frame telemetry stays `color = 32,128,240`, `under = true`, opacity at least `0.2`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `EnvColor value/time/under` params can resolve owner-local expressions through runtime expression fallback, record typed `envcolor` telemetry after resolution, and preserve stage-frame flash evidence.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN blend math, layer/window behavior, pause timing, renderer parity, helper/redirect ownership, score movement, and full presentation parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: the required dynamic route already proved bounded stage-flash mutation, but intentionally had no `envcolor` operation evidence because params were dynamic.
+- Quality delta: dynamic EnvColor now matches the nearby dynamic EnvShake and sprite-effect telemetry posture without broadening exact renderer/presentation claims.
+- Adjacent surface checked: static EnvColor evidence, under-layer evidence, previous dynamic fallback route, EnvShake typed path, trace operation recording, support registry wording, QA gates, scorecard/report wording, roadmap docs, Wayfinder map, and research notes.
+
+Global port report:
+
+- Runtime/port remains verified at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This upgrades one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Good next candidates remain helper/redirect ownership, exact presentation timing, renderer parity proof, or a simple parser-only controller that can become a typed no-crash runtime operation.
+
 ## 2026-07-08 - Dynamic AfterImage typed sprite-effect telemetry
 
 Summary:
@@ -15504,3 +15542,5 @@ These are future horizons, not blockers for the private usable MVP.
 330. Done dynamic `EnvShake` typed telemetry gate: `synthetic-imported-envshake-dynamic.json` checksum `e1bf593f` / final checksum `8f52f1f4` is now a required `pnpm qa:trace` artifact with typed `envshake` operation evidence. Official Elecbyte State Controller Reference was checked for numeric controller-param expression behavior and `EnvShake time/freq/ampl/phase`. `RuntimeEnvShakeControllerDispatchWorld` now resolves bounded active-state dynamic EnvShake params through the runtime controller expression context when no compiled static op exists, records the resolved typed `envshake` operation, and preserves bounded runtime camera-shake event telemetry. The synthetic imported route seeds `var(0)=18`, `var(1)=45`, `var(2)=-9`, and `fvar(0)=0.25`, executes `EnvShake time = var(0), freq = var(1), ampl = var(2), phase = fvar(0)`, and requires `variable:varset`, `envshake`, `hitdef`, plus event evidence `time = 18`, `freq = 45`, `ampl = -9`, `phase = 0.25`. Focused verification passed: `pnpm exec vitest run src\tests\EnvShakeSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern "EnvShake|dynamic Sound" --reporter verbose` -> 2 files / 13 tests. `pnpm qa:trace` passed 523/523 artifacts with 492 required and 31 optional. No `pnpm qa:smoke` was run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded active imported dynamic `EnvShake time/freq/ampl/phase` params can resolve into typed `envshake` operation evidence plus camera-shake telemetry. Claim blocked: `mul`, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, score movement, and full presentation parity.
 
 331. Done Studio Trust Chain package/source file drilldown cut: Studio Build/Evidence Trust Chain rows now carry bounded `package-file` and `source-file` target metadata, click through from the package/source Trust Chain actions, and land on visible destination rows inside the Build panel. `ProjectExportBundleManifest.files` now renders inspectable package-file rows, `GameProjectSourcePackage.requiredPaths` renders required source-path rows, and the Studio diagnostics bridge exposes the focused package/source path state so QA can prove the click landed on the actual destination data rather than only changing a summary row. The smoke harness now clicks `source-packages` and `package-bundle`, captures `.scratch/qa/qa-smoke/studio-build-source-file-focus.png` and `.scratch/qa/qa-smoke/studio-build-trust-focus.png`, and asserts `package-bundle:package-file:package-manifest.json`, `source-packages:source-file:chars/kfm/kfm.def`, matching focused DOM rows, visible destination rows, 16 package-file rows, and 9 source-path rows for the imported fixture route. Roadmap, progress tracker, interface contract, Wayfinder ticket, and local research notes now document the new drilldown contract and the remaining deeper trace/asset/gate/report jumps. Verification passed: `pnpm typecheck`; `pnpm test` 153 files / 1495 tests; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:smoke` with visually inspected Studio Build source/package focus screenshots; and `pnpm qa:css` as an audit. `pnpm qa:css:budget` is intentionally recorded red against the older ceilings at 581,084 CSS bytes, 2,576 scanned rules, 1 duplicate selector key, 126 repeated declaration groups, 155 cross-file overlaps, and 17 fully shadowed cross-file rules; this cut scoped its CSS to `src/styles/workflows/studio-trust-ledgers.css` and leaves budget recovery as a separate cleanup task. Claim allowed: Studio Trust Chain package/source rows can drill down to concrete export manifest and source required-path evidence with smoke-proven focused destinations. Claim blocked: persistent browser source handles, full package file browser, deeper trace/asset/gate/report target jumps, CSS budget recovery, runtime score movement, and full Studio authoring/editor parity.
+
+332. Done dynamic `EnvColor` typed telemetry gate: `synthetic-imported-envcolor-dynamic.json` checksum `845c3d5e` / final checksum `282fc77f` is now a required `pnpm qa:trace` artifact with typed `envcolor` operation evidence. Official Elecbyte State Controller and CNS docs were checked for `EnvColor value/time/under` and expression-capable controller params. `RuntimeEnvColorControllerDispatchWorld` now resolves bounded active-state dynamic EnvColor params through the runtime controller expression context when no compiled static op exists, records the resolved typed `envcolor` operation, and preserves bounded stage-flash telemetry. The synthetic imported route seeds `var(0)=32`, `var(1)=128`, `var(2)=240`, `var(3)=14`, and `var(4)=1`, executes `EnvColor value = var(0),var(1),var(2), time = var(3), under = var(4)`, and requires `variable:varset`, `envcolor`, `hitdef`, plus stage-frame evidence `color = 32,128,240`, `under = true`. Focused verification passed: `pnpm exec vitest run src/tests/EnvColorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern EnvColor` -> 2 files / 12 tests. `pnpm qa:trace` passed 523/523 artifacts with 492 required and 31 optional. No `pnpm qa:smoke` was run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation visuals, or visible gameplay output. Claim allowed: bounded active imported dynamic `EnvColor value/time/under` params can resolve into typed `envcolor` operation evidence plus stage-flash telemetry. Claim blocked: exact blend math, layer/window behavior, pause timing, renderer parity, helper/redirect ownership, score movement, and full presentation parity.

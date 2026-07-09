@@ -7046,7 +7046,7 @@ export function createSyntheticImportedDynamicEnvColorTraceArtifact(
       label: "Synthetic imported dynamic EnvColor route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic EnvColor trace proves value/time/under expressions can resolve owner-local var values through active controller fallback and reach bounded stage-flash telemetry. It does not claim typed envcolor operation lowering for dynamic params, exact MUGEN/IKEMEN blend, layer/window behavior, pause timing, renderer parity, or full presentation parity.",
+        "Synthetic imported dynamic EnvColor trace proves value/time/under expressions can resolve owner-local var values through active controller fallback, record typed envcolor operation evidence after resolution, and reach bounded stage-flash telemetry. It does not claim exact MUGEN/IKEMEN blend, layer/window behavior, pause timing, renderer parity, or full presentation parity.",
       ],
     },
     gates: [
@@ -7057,7 +7057,7 @@ export function createSyntheticImportedDynamicEnvColorTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "EnvColor", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredExecutedOperations: ["variable:varset", "envcolor", "hitdef"],
         requiredActiveCommands: ["x"],
         requiredStageFrames: [
           {
