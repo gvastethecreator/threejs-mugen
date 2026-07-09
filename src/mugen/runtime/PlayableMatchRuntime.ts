@@ -542,6 +542,8 @@ export class PlayableMatchRuntime {
           getHurtBoxes: getRuntimeHurtBoxes,
           combatStateHooks: runtimeCombatStateHooks,
           helperStateHooks: runtimeHelperCombatStateHooks,
+          recordAudioOperation: (actor, audioOperation: AudioControllerOp) =>
+            compatibilityTelemetryWorld.recordOperation(actor, audioOperation),
           defaultHurtBoxes: defaultRuntimeHurtBoxes,
           canActorBeHit: (actorId) => this.pauseWorld.canActorBeHit(actorId),
           rememberProjectileTarget: (source, target, projectile) =>

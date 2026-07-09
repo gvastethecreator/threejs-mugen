@@ -1,5 +1,44 @@
 # Build Execution Backlog
 
+## 2026-07-09 - Dynamic HitDef contact sound typed audio
+
+Summary:
+
+- Added typed audio-operation recording for bounded dynamic direct `HitDef hitsound` / `guardsound` refs after contact sound resolution.
+- `RuntimeContactPresentationWorld` now records typed `audio:playsnd` telemetry for resolved direct contact sound refs while preserving the existing authored raw `RuntimeSoundEvent` metadata.
+- Upgraded required `synthetic-imported-hitdef-dynamic-hitsound.json` and `synthetic-imported-hitdef-dynamic-guardsound.json` from event-only fallback evidence into typed audio-operation evidence.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines expression-capable numeric controller params and `HitDef hitsound` / `guardsound` as sound group/index pairs.
+
+Evidence:
+
+- `synthetic-imported-hitdef-dynamic-hitsound.json` trace checksum `fe3c0f3d`, final checksum `855df386`; executed ops include `variable:varset = 2`, `hitdef = 1`, and `audio:playsnd = 1`.
+- `synthetic-imported-hitdef-dynamic-guardsound.json` trace checksum `bb38362a`, final checksum `3e0ddeb0`; executed ops include `variable:varset = 2`, `hitdef = 1`, and `audio:playsnd = 1`.
+- Sound telemetry preserves raw `Fvar(0),var(1)` and `soundPrefix = kfm`; typed operations record resolved `F5,4` for hit contact and `F6,4` for guard contact.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeContactPresentationSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "direct HitDef contact sounds|dynamic hitsound|dynamic guardsound"` passed 3 selected tests.
+- Trace gate: `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional. The known non-fatal Vite websocket port warning for port `24678` was still emitted after the JSON pass output.
+
+Claim allowed:
+
+- Bounded imported direct `HitDef hitsound = Fvar(0),var(1)` and guarded `HitDef guardsound = Fvar(0),var(1)` can resolve at contact presentation into typed `audio:playsnd` operation evidence while preserving existing contact sound-event debug metadata.
+
+Claim blocked:
+
+- Exact SND archive lookup, Web Audio timing/mixing, channel priority classes, exact panning semantics, helper/redirect ownership, projectile contact sound operation telemetry, super-background audio, score movement, and full MUGEN/IKEMEN audio parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: both dynamic direct HitDef sound routes already proved contact sound-event telemetry, but explicitly lacked typed `audio:*` operation evidence.
+- Quality delta: direct HitDef contact sounds now follow the resolved-operation posture used by active-state and SuperPause audio without expanding playback parity claims.
+- Adjacent surface checked: dynamic active-state audio gates, SuperPause sound gate, direct HitDef sound gates, audio runtime boundary docs, support registry wording, QA gate docs, Wayfinder frontier, and research notes.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 524/524 artifacts, 493 required and 31 optional. This strengthens two existing required HitDef/audio traces and does not move scores. Studio/UI remains on the latest smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/009-next-runtime-gap-after-hitdef-contact-sound-audio.md`. Good candidates remain projectile contact sound operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+
 ## 2026-07-09 - SuperPause sound typed audio
 
 Summary:
@@ -36,7 +75,7 @@ Global port report:
 
 Next:
 
-- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/008-next-runtime-gap-after-superpause-sound.md`. Good candidates remain direct HitDef audio operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/008-next-runtime-gap-after-superpause-sound.md` for the next entry. Direct HitDef audio operation telemetry was resolved by that follow-up; remaining candidates include projectile contact sound operation telemetry, helper/redirect ownership, exact presentation timing, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
 
 ## 2026-07-09 - Dynamic audio typed telemetry
 

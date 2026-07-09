@@ -19,19 +19,19 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next runtime gap after EnvColor](tickets/005-next-runtime-gap-after-envcolor.md) - selected dynamic `AttackMulSet` / `DefenceMulSet` typed telemetry; required `synthetic-imported-damage-scale-dynamic.json` is green.
 - [Choose next runtime gap after dynamic damage-scale](tickets/006-next-runtime-gap-after-damage-scale.md) - selected dynamic active-state audio typed telemetry; required dynamic sound pan/value traces now record `audio:*` operations.
 - [Choose next runtime gap after dynamic audio](tickets/007-next-runtime-gap-after-dynamic-audio.md) - selected and resolved bounded dynamic `SuperPause sound` typed `audio:playsnd` telemetry.
-- [Choose next runtime gap after SuperPause sound typed audio](tickets/008-next-runtime-gap-after-superpause-sound.md) - open frontier for the next bounded R1/R2 trace or ownership slice.
+- [Choose next runtime gap after SuperPause sound typed audio](tickets/008-next-runtime-gap-after-superpause-sound.md) - selected and resolved bounded direct `HitDef hitsound` / `guardsound` typed `audio:playsnd` telemetry.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
-- [Choose next runtime gap after SuperPause sound typed audio](tickets/008-next-runtime-gap-after-superpause-sound.md)
+- [Choose next runtime gap after HitDef contact sound typed audio](tickets/009-next-runtime-gap-after-hitdef-contact-sound-audio.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Define renderer parity proof ladder](tickets/004-renderer-parity-proof-ladder.md)
 
 ## Not Yet Specified
 
-- Exact next runtime gap after SuperPause sound typed audio telemetry.
+- Exact next runtime gap after direct `HitDef` contact sound typed audio telemetry.
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
 - Visual parity acceptance ladder for axis pivot, draw order, palettes, afterimages, effects, and screenpack/lifebar composition.
 - IKEMEN transition point from scanner/reporting into executable IKEMEN-specific behavior.

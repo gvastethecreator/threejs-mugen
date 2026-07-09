@@ -1,3 +1,4 @@
+import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { CollisionBox } from "../model/CollisionBox";
 import type { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
@@ -45,6 +46,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   getHurtBoxes: (actor: TActor) => CollisionBox[] | undefined;
   combatStateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   helperStateHooks: RuntimeHelperCombatStateHooks<TActor>;
+  recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   defaultHurtBoxes: CollisionBox[];
   canActorBeHit?: (actorId: string) => boolean;
   rememberProjectileTarget?: (source: TActor, target: TActor, projectile: RuntimeProjectile) => void;
@@ -84,6 +86,7 @@ export class RuntimeMatchCombatBridgeWorld {
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
+          recordAudioOperation: input.recordAudioOperation,
           stateHooks: input.combatStateHooks,
           log: input.log,
         });

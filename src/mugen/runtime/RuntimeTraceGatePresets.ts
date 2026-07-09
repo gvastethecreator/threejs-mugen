@@ -8296,7 +8296,7 @@ export function createSyntheticImportedHitDefDynamicGuardSoundTraceArtifact(opti
     targetLabel: "Synthetic imported HitDef dynamic guardsound route",
     requiredExecutedStates: [200, 260],
     requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
-    requiredExecutedOperations: ["variable:varset", "hitdef"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "audio:playsnd"],
     requiredSoundEvents: [
       {
         actorId: "p1",
@@ -8312,7 +8312,7 @@ export function createSyntheticImportedHitDefDynamicGuardSoundTraceArtifact(opti
       },
     ],
     notes: [
-      "Synthetic imported HitDef dynamic guardsound trace proves guarded direct-contact HitDef guardsound group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, when the HitDef activates. It does not claim SuperPause sound refs, exact SND playback, channel priority, timing/mixing parity, helper/redirect ownership, or full MUGEN/IKEMEN guard-effect audio parity.",
+      "Synthetic imported HitDef dynamic guardsound trace proves guarded direct-contact HitDef guardsound group/index params can resolve through expression fallback, record typed audio:playsnd telemetry, and preserve F-prefixed FightFX sound metadata when the HitDef activates. It does not claim SuperPause sound refs, exact SND playback, channel priority, timing/mixing parity, helper/redirect ownership, or full MUGEN/IKEMEN guard-effect audio parity.",
     ],
   });
 }
@@ -8361,7 +8361,7 @@ export function createSyntheticImportedHitDefDynamicHitSoundTraceArtifact(option
     requireHitEvent: true,
     requiredExecutedStates: [200],
     requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
-    requiredExecutedOperations: ["variable:varset", "hitdef"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "audio:playsnd"],
     requiredSoundEvents: [
       {
         actorId: "p1",
@@ -8376,7 +8376,7 @@ export function createSyntheticImportedHitDefDynamicHitSoundTraceArtifact(option
       },
     ],
     notes: [
-      "Synthetic imported HitDef dynamic hitsound trace proves direct-contact HitDef hitsound group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, when the HitDef activates. It does not claim dynamic guardsound refs, SuperPause sound refs, exact SND playback, channel priority, timing/mixing parity, helper/redirect ownership, or full MUGEN/IKEMEN hit-effect audio parity.",
+      "Synthetic imported HitDef dynamic hitsound trace proves direct-contact HitDef hitsound group/index params can resolve through expression fallback, record typed audio:playsnd telemetry, and preserve F-prefixed FightFX sound metadata when the HitDef activates. It does not claim dynamic guardsound refs, SuperPause sound refs, exact SND playback, channel priority, timing/mixing parity, helper/redirect ownership, or full MUGEN/IKEMEN hit-effect audio parity.",
     ],
   });
 }

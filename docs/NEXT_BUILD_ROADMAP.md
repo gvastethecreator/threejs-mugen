@@ -27,14 +27,15 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required SuperPause sound typed audio trace gate
-  -> synthetic-imported-superpause-sound.json trace checksum 3e19cb86 / final checksum c5fb9428 is required in qa:trace
-  -> imported active state seeds var(0)=10 and var(1)=0, then executes SuperPause sound = Svar(0),var(1)
-  -> dynamic SuperPause sound resolves through the pause controller expression context, records typed audio:playsnd evidence for S10,0, and preserves pause-start sound-event raw Svar(0),var(1)
-  -> gate requires ChangeState, VarSet, HitDef, SuperPause, variable:varset, hitdef, pause:superpause, audio:playsnd, match-pause/freeze evidence, and group 10 / index 0 sound telemetry
+R1 required dynamic HitDef contact sound typed audio trace gates
+  -> synthetic-imported-hitdef-dynamic-hitsound.json trace checksum fe3c0f3d / final checksum 855df386 is required in qa:trace
+  -> synthetic-imported-hitdef-dynamic-guardsound.json trace checksum bb38362a / final checksum 3e0ddeb0 is required in qa:trace
+  -> imported active state seeds var(0)=5 or 6 and var(1)=4, then executes HitDef hitsound/guardsound = Fvar(0),var(1)
+  -> dynamic direct HitDef contact sounds resolve through contact presentation, record typed audio:playsnd evidence for F5,4 / F6,4, and preserve contact sound-event raw Fvar(0),var(1)
+  -> gate requires ChangeState, VarSet, HitDef, variable:varset, hitdef, audio:playsnd, and group 5/6 index 4 sound telemetry
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
-  -> official Elecbyte docs define numeric controller params as expression-capable and define SuperPause sound = snd_grp, snd_no with S player-SND prefix support
-  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, direct HitDef audio operation telemetry, helper/redirect ownership, super-background audio, and full audio parity remain blocked
+  -> official Elecbyte docs define numeric controller params as expression-capable and define HitDef hitsound/guardsound sound group/index params
+  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, projectile contact sound operation telemetry, super-background audio, and full audio parity remain blocked
 
 Previous R1 required dynamic audio typed telemetry trace gates
   -> synthetic-imported-sound-dynamic-pan.json trace checksum 879afcf4 / final checksum b780e5e9 remains required in qa:trace
@@ -512,25 +513,25 @@ Previous R1 required SuperPause sound trace gate, superseded by typed audio cut
   -> official Elecbyte docs define SuperPause sound = snd_grp, snd_no and numeric controller params as expression-capable
   -> no score movement; exact common/player SND archive lookup/channel priority/timing/mixing, super-background audio, helper/redirect ownership, and full audio parity remain blocked
 
-Previous R1 required dynamic HitDef guardsound trace gate
-  -> synthetic-imported-hitdef-dynamic-guardsound.json checksum cb061b1c / final checksum 8d25e54e is required in qa:trace
+Previous R1 required dynamic HitDef guardsound trace gate, superseded by typed contact-audio cut
+  -> synthetic-imported-hitdef-dynamic-guardsound.json checksum bb38362a / final checksum 3e0ddeb0 is required in qa:trace
   -> imported active state seeds var(0)=6 and var(1)=4
   -> guarded direct HitDef executes guardsound = Fvar(0),var(1)
   -> dynamic HitDef guardsound group/index resolves through runtime expression fallback at HitDef activation
-  -> sound-event evidence requires attacker guard-contact PlaySnd group 6 index 4 raw Fvar(0),var(1), contactKind guard, and soundPrefix kfm
-  -> that checkpoint passed 457/457 artifacts, 427 required and 30 optional
+  -> sound-event evidence requires attacker guard-contact PlaySnd group 6 index 4 raw Fvar(0),var(1), contactKind guard, soundPrefix kfm, and audio:playsnd evidence for F6,4
+  -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
   -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
-Previous R1 required dynamic HitDef hitsound trace gate
-  -> synthetic-imported-hitdef-dynamic-hitsound.json checksum c891e888 / final checksum a0d1bbfc remains required in qa:trace
+Previous R1 required dynamic HitDef hitsound trace gate, superseded by typed contact-audio cut
+  -> synthetic-imported-hitdef-dynamic-hitsound.json checksum fe3c0f3d / final checksum 855df386 remains required in qa:trace
   -> imported active state seeds var(0)=5 and var(1)=4
   -> direct HitDef executes hitsound = Fvar(0),var(1)
   -> dynamic HitDef hitsound group/index resolves through runtime expression fallback at HitDef activation
-  -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1) with soundPrefix kfm
-  -> that checkpoint passed 456/456 artifacts, 426 required and 30 optional
+  -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1), soundPrefix kfm, and audio:playsnd evidence for F5,4
+  -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
-  -> no score movement; SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, projectile contact sound operation telemetry, and full audio parity remain blocked
 
 Previous R1 required dynamic sound-value trace gate, superseded by typed telemetry cut
   -> synthetic-imported-sound-dynamic-value.json checksum bcdafe32 / final checksum 31b8a7b3 remains required in qa:trace
@@ -550,7 +551,7 @@ Previous R1 required dynamic sound-pan trace gate, superseded by typed telemetry
   -> sound-event evidence requires PlaySnd channel 2 pan -24, SndPan channel 2 absPan 64, and StopSnd channel 2
   -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
-  -> no score movement; exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, direct contact-sound operation telemetry, and full audio parity remain blocked
+  -> no score movement; exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, projectile contact-sound operation telemetry, and full audio parity remain blocked
 
 Previous R1 required dynamic PlayerPush trace gate, superseded by typed telemetry cut
   -> synthetic-imported-playerpush-dynamic.json checksum b7775652 / final checksum 92aca1cd is required in qa:trace

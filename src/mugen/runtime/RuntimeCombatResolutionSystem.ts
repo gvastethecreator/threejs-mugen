@@ -1,3 +1,4 @@
+import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { CollisionBox } from "../model/CollisionBox";
 import {
   canRuntimeBeHitBy,
@@ -69,6 +70,7 @@ export type RuntimeCombatResolutionDirectInput<TActor extends RuntimeCombatResol
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TActor) => boolean;
+  recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   log: (line: string) => void;
 };
@@ -239,6 +241,7 @@ export class RuntimeCombatResolutionWorld {
       kind: outcome.kind,
       move,
       runtimeTick: input.runtimeTick,
+      recordAudioOperation: input.recordAudioOperation,
     });
     input.log(outcome.message);
     return outcome;

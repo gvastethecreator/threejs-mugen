@@ -1,3 +1,4 @@
+import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { DemoMove } from "./demoFighters";
 import { resolveRuntimeHitSparkAssetFrames, type RuntimeHitSparkAssetActor } from "./HitSparkAssetSystem";
 import type { RuntimeAudioWorld, RuntimeAudioWorldActor } from "./AudioEventSystem";
@@ -7,6 +8,7 @@ import type {
   RuntimeHitDefContactKind,
   RuntimeHitDefContactMetadata,
   RuntimeHitEffectEvent,
+  RuntimeResolvedSoundRef,
   RuntimeSoundEvent,
 } from "./types";
 
@@ -25,18 +27,23 @@ export type RuntimeContactPresentationResult = {
 };
 
 export class RuntimeContactPresentationWorld {
-  emitHitDefContact(input: {
-    attacker: RuntimeContactPresentationActor;
+  emitHitDefContact<TActor extends RuntimeContactPresentationActor>(input: {
+    attacker: TActor;
     defender: { id: string };
     move: Pick<DemoMove, "guardSound" | "hitSound" | "guardSoundValue" | "hitSoundValue" | "guardSpark" | "hitSpark" | "sparkXy">;
     kind: RuntimeHitDefContactKind;
     runtimeTick: number;
+    recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   }): RuntimeContactPresentationResult {
     const contact = this.createHitDefContactMetadata(input.attacker, input.defender, input.kind, input.runtimeTick);
     const sound = input.kind === "guard" ? input.move.guardSound : input.move.hitSound;
     const soundValue = input.kind === "guard" ? input.move.guardSoundValue : input.move.hitSoundValue;
     const spark = input.kind === "guard" ? input.move.guardSpark : input.move.hitSpark;
     const assetFrames = resolveRuntimeHitSparkAssetFrames(input.attacker, spark);
+    const soundOperation = hitDefSoundAudioOperation(soundValue);
+    if (soundOperation) {
+      input.recordAudioOperation?.(input.attacker, soundOperation);
+    }
     return {
       contact,
       sound: input.attacker.audioWorld.emitHitDefSound(input.attacker, sound, input.runtimeTick, contact, soundValue),
@@ -104,4 +111,15 @@ export class RuntimeContactPresentationWorld {
       contactKind: kind,
     };
   }
+}
+
+function hitDefSoundAudioOperation(resolvedSound: RuntimeResolvedSoundRef | undefined): AudioControllerOp | undefined {
+  if (!resolvedSound) {
+    return undefined;
+  }
+  return {
+    kind: "audio",
+    controllerType: "playsnd",
+    value: `${resolvedSound.rawPrefix ?? ""}${resolvedSound.group},${resolvedSound.index}`,
+  };
 }

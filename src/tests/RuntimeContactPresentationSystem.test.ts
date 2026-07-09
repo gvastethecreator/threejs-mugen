@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { AudioControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import { RuntimeAudioWorld } from "../mugen/runtime/AudioEventSystem";
@@ -56,6 +57,34 @@ describe("RuntimeContactPresentationSystem", () => {
     });
     expect(result.sound).toBe(attacker.soundEvents[0]);
     expect(result.effect).toBe(attacker.hitEffectEvents[0]);
+  });
+
+  it("records typed audio telemetry for resolved direct HitDef contact sounds", () => {
+    const world = new RuntimeContactPresentationWorld();
+    const attacker = actor("p1", 200, 6, { fightFxPrefix: "kfm" });
+    const recordedOperations: AudioControllerOp[] = [];
+
+    world.emitHitDefContact({
+      attacker,
+      defender: { id: "p2" },
+      kind: "hit",
+      runtimeTick: 140,
+      move: {
+        hitSound: "Fvar(0),var(1)",
+        hitSoundValue: { rawPrefix: "F", group: 5, index: 4 },
+      },
+      recordAudioOperation: (_actor, operation) => recordedOperations.push(operation),
+    });
+
+    expect(recordedOperations).toEqual([{ kind: "audio", controllerType: "playsnd", value: "F5,4" }]);
+    expect(attacker.soundEvents[0]).toMatchObject({
+      type: "PlaySnd",
+      group: 5,
+      index: 4,
+      raw: "Fvar(0),var(1)",
+      soundPrefix: "kfm",
+      contactKind: "hit",
+    });
   });
 
   it("owns projectile contact package metadata across guard sound and spark telemetry", () => {
