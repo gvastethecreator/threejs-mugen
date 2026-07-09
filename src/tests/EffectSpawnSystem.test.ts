@@ -203,7 +203,10 @@ describe("EffectSpawnSystem", () => {
           velocity: "3,0",
           projid: "44",
           damage: "20",
+          hitsound: "Fvar(0),var(1)",
         }),
+        undefined,
+        (key) => (key === "hitsound" ? { rawPrefix: "F", group: 5, index: 4 } : undefined),
       ),
     ).toBe(true);
     expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
@@ -213,6 +216,8 @@ describe("EffectSpawnSystem", () => {
       damage: 30,
       spriteOwnerId: "owner",
       pos: { x: 58, y: -8 },
+      hitSound: "Fvar(0),var(1)",
+      hitSoundValue: { rawPrefix: "F", group: 5, index: 4 },
     });
   });
 

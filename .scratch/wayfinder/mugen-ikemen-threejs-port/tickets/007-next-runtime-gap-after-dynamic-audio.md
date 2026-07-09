@@ -19,4 +19,4 @@ Proof:
 - Trace gate: required `synthetic-imported-superpause-sound.json` trace checksum `3e19cb86` / final checksum `c5fb9428`; executed operations include `variable:varset`, `hitdef`, `pause:superpause`, and `audio:playsnd`.
 - Focused tests: `PauseSystem.test.ts` and `RuntimeTraceGatePresets.test.ts`.
 
-Still blocked: exact common/player SND archive lookup, channel priority, timing, mixing, panning semantics, super-background audio, helper/redirect ownership, projectile contact sound operation telemetry, score movement, and full audio parity. Bounded direct HitDef contact sound operation telemetry was closed later by ticket 008.
+Still blocked: exact common/player SND archive lookup, channel priority, timing, mixing, panning semantics, super-background audio, helper/redirect ownership, helper-owned Projectile contact sound operation telemetry, score movement, and full audio parity. Bounded direct HitDef contact sound operation telemetry was closed later by ticket 008.

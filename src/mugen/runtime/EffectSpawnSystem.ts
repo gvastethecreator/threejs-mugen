@@ -53,6 +53,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   effectSpawnWorld: RuntimeEffectSpawnWorld;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: RuntimeEffectSpawnControllerDispatchOperation) => void;
+  resolveProjectileSound?: RuntimeProjectileSpawnInput["resolveSoundValue"];
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
 };
 
@@ -179,6 +180,7 @@ export class RuntimeEffectSpawnWorld {
     opponent: RuntimeEffectSpawnActor,
     controller: MugenStateController,
     operation?: ProjectileControllerOp,
+    resolveSoundValue?: RuntimeProjectileSpawnInput["resolveSoundValue"],
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const animNo = operation?.projAnim ?? firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")) ?? 0;
@@ -203,6 +205,7 @@ export class RuntimeEffectSpawnWorld {
       fallbackFacing: fighter.runtime.facing,
       localCoord: owner.definition.localCoord,
       damageScale: fighter.runtime.attackMultiplier,
+      resolveSoundValue,
     });
     return true;
   }
@@ -398,6 +401,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         opponent,
         controller.source,
         operation?.kind === "projectile" ? operation : undefined,
+        options.resolveProjectileSound,
       )
         ? 1
         : 0;

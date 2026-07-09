@@ -136,6 +136,44 @@ describe("RuntimeContactPresentationSystem", () => {
     });
   });
 
+  it("records typed audio telemetry for resolved projectile contact sounds", () => {
+    const world = new RuntimeContactPresentationWorld();
+    const attacker = actor("p1", 1000, 3, { fightFxPrefix: "kfm" });
+    const recordedOperations: AudioControllerOp[] = [];
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-0",
+      controller: controller("Projectile", {
+        hitsound: "Fvar(0),var(1)",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "test-fighter",
+      spriteOwnerLabel: "Test Fighter",
+      action: action(900, 1),
+      animNo: 900,
+      pos: { x: 20, y: 0 },
+      fallbackFacing: 1,
+      resolveSoundValue: (key) => (key === "hitsound" ? { rawPrefix: "F", group: 5, index: 4 } : undefined),
+    });
+
+    world.emitProjectileContact({
+      actor: attacker,
+      projectile,
+      kind: "hit",
+      runtimeTick: 155,
+      recordAudioOperation: (_actor, operation) => recordedOperations.push(operation),
+    });
+
+    expect(recordedOperations).toEqual([{ kind: "audio", controllerType: "playsnd", value: "F5,4" }]);
+    expect(attacker.soundEvents[0]).toMatchObject({
+      type: "PlaySnd",
+      group: 5,
+      index: 4,
+      raw: "Fvar(0),var(1)",
+      soundPrefix: "kfm",
+      contactKind: "hit",
+    });
+  });
+
   it("preserves FightFX prefix metadata on F-prefixed contact spark events", () => {
     const world = new RuntimeContactPresentationWorld();
     const attacker = actor("p1", 200, 6, {

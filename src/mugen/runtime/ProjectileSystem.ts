@@ -7,7 +7,7 @@ import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
-import type { ActorSnapshot } from "./types";
+import type { ActorSnapshot, RuntimeResolvedSoundRef } from "./types";
 
 const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
 const DEFAULT_PROJECTILE_STAGE_BOUND = 40;
@@ -83,7 +83,9 @@ export type RuntimeProjectile = {
   guardCornerPush?: number;
   airGuardCornerPush?: number;
   hitSound?: string;
+  hitSoundValue?: RuntimeResolvedSoundRef;
   guardSound?: string;
+  guardSoundValue?: RuntimeResolvedSoundRef;
   hitSpark?: string;
   guardSpark?: string;
   sparkXy?: [number, number];
@@ -127,6 +129,7 @@ export type RuntimeProjectileSpawnInput = {
   fallbackFacing: 1 | -1;
   localCoord?: [number, number];
   damageScale?: number;
+  resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
 };
 
 export type RuntimeProjectileModifyInput = {
@@ -207,6 +210,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   });
   const hitSound = operation?.hitSound ?? stripMugenString(findControllerParam(input.controller, "hitsound"));
   const guardSound = operation?.guardSound ?? stripMugenString(findControllerParam(input.controller, "guardsound"));
+  const hitSoundValue = input.resolveSoundValue?.("hitsound");
+  const guardSoundValue = input.resolveSoundValue?.("guardsound");
   const hitSpark = operation?.hitSpark ?? stripMugenString(findControllerParam(input.controller, "sparkno"));
   const guardSpark = operation?.guardSpark ?? stripMugenString(findControllerParam(input.controller, "guard.sparkno"));
   const sparkXy = operation?.sparkXy ?? numberPair(findControllerParam(input.controller, "sparkxy"));
@@ -276,7 +281,9 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardCornerPush: cornerPush.guardCornerPush,
     airGuardCornerPush: cornerPush.airGuardCornerPush,
     hitSound,
+    hitSoundValue,
     guardSound,
+    guardSoundValue,
     hitSpark,
     guardSpark,
     sparkXy,

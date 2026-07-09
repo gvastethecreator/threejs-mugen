@@ -27,15 +27,20 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic HitDef contact sound typed audio trace gates
-  -> synthetic-imported-hitdef-dynamic-hitsound.json trace checksum fe3c0f3d / final checksum 855df386 is required in qa:trace
-  -> synthetic-imported-hitdef-dynamic-guardsound.json trace checksum bb38362a / final checksum 3e0ddeb0 is required in qa:trace
-  -> imported active state seeds var(0)=5 or 6 and var(1)=4, then executes HitDef hitsound/guardsound = Fvar(0),var(1)
-  -> dynamic direct HitDef contact sounds resolve through contact presentation, record typed audio:playsnd evidence for F5,4 / F6,4, and preserve contact sound-event raw Fvar(0),var(1)
-  -> gate requires ChangeState, VarSet, HitDef, variable:varset, hitdef, audio:playsnd, and group 5/6 index 4 sound telemetry
+R1 required Projectile contact sound typed audio trace gates
+  -> synthetic-imported-projectile-contact.json trace checksum 57b3b556 / final checksum e0f3e41c is required in qa:trace
+  -> synthetic-imported-projectile-guard.json trace checksum eb9c2e58 / final checksum b1c74e5e is required in qa:trace
+  -> imported player-owned Projectile hit/guard contacts preserve attacker-side S5,0 / S6,0 sound telemetry and FightFX F7002 / F7004 package metadata
+  -> player-owned Projectile contact sounds now record typed audio:playsnd evidence while preserving existing package telemetry
+  -> gate requires HitDef, Projectile, hitdef, projectile, audio:playsnd, and hit/guard sound telemetry
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
-  -> official Elecbyte docs define numeric controller params as expression-capable and define HitDef hitsound/guardsound sound group/index params
-  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, projectile contact sound operation telemetry, super-background audio, and full audio parity remain blocked
+  -> official Elecbyte docs define Projectile as taking HitDef parameters, numeric controller params as expression-capable, and HitDef hitsound/guardsound sound group/index params
+  -> no score movement; exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, helper-owned Projectile contact sound operation telemetry, helper/redirect/team ownership, renderer parity, super-background audio, and full audio/Projectile parity remain blocked
+
+Previous R1 required dynamic HitDef contact sound typed audio trace gates
+  -> synthetic-imported-hitdef-dynamic-hitsound.json trace checksum fe3c0f3d / final checksum 855df386 remains required in qa:trace
+  -> synthetic-imported-hitdef-dynamic-guardsound.json trace checksum bb38362a / final checksum 3e0ddeb0 remains required in qa:trace
+  -> dynamic direct HitDef contact sounds resolve through contact presentation, record typed audio:playsnd evidence for F5,4 / F6,4, and preserve contact sound-event raw Fvar(0),var(1)
 
 Previous R1 required dynamic audio typed telemetry trace gates
   -> synthetic-imported-sound-dynamic-pan.json trace checksum 879afcf4 / final checksum b780e5e9 remains required in qa:trace
@@ -531,7 +536,7 @@ Previous R1 required dynamic HitDef hitsound trace gate, superseded by typed con
   -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1), soundPrefix kfm, and audio:playsnd evidence for F5,4
   -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
-  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, projectile contact sound operation telemetry, and full audio parity remain blocked
+  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, helper-owned Projectile contact sound operation telemetry, and full audio parity remain blocked
 
 Previous R1 required dynamic sound-value trace gate, superseded by typed telemetry cut
   -> synthetic-imported-sound-dynamic-value.json checksum bcdafe32 / final checksum 31b8a7b3 remains required in qa:trace

@@ -60,19 +60,25 @@ export class RuntimeContactPresentationWorld {
     };
   }
 
-  emitProjectileContact(input: {
-    actor: RuntimeContactPresentationActor;
+  emitProjectileContact<TActor extends RuntimeContactPresentationActor>(input: {
+    actor: TActor;
     projectile: RuntimeProjectile;
     kind: RuntimeHitDefContactKind;
     runtimeTick: number;
+    recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   }): RuntimeContactPresentationResult {
     const contact = this.createProjectileContactMetadata(input.actor, input.projectile, input.kind, input.runtimeTick);
     const sound = input.kind === "guard" ? input.projectile.guardSound : input.projectile.hitSound;
+    const soundValue = input.kind === "guard" ? input.projectile.guardSoundValue : input.projectile.hitSoundValue;
     const spark = input.kind === "guard" ? input.projectile.guardSpark : input.projectile.hitSpark;
     const assetFrames = resolveRuntimeHitSparkAssetFrames(input.actor, spark);
+    const soundOperation = hitDefSoundAudioOperation(soundValue);
+    if (soundOperation) {
+      input.recordAudioOperation?.(input.actor, soundOperation);
+    }
     return {
       contact,
-      sound: input.actor.audioWorld.emitHitDefSound(input.actor, sound, input.runtimeTick, contact),
+      sound: input.actor.audioWorld.emitHitDefSound(input.actor, sound, input.runtimeTick, contact, soundValue),
       effect: input.actor.hitEffectWorld.emitHitDefEffect(
         input.actor,
         input.kind,

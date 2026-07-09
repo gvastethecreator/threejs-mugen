@@ -106,6 +106,7 @@ export class RuntimeMatchCombatBridgeWorld {
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
+          recordAudioOperation: input.recordAudioOperation,
           stateHooks: input.combatStateHooks,
           rememberProjectileTarget: input.rememberProjectileTarget,
           log: input.log,

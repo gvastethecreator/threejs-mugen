@@ -390,7 +390,13 @@ describe("RuntimeCombatResolutionSystem", () => {
 
   it("routes projectile callbacks through target, contact, presentation, and damage ownership hooks", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
-    const projectile = projectileActor({ projectileId: 88, serialId: "p1-projectile-0", hitSound: "S6,0", hitSpark: "S7001" });
+    const projectile = projectileActor({
+      projectileId: 88,
+      serialId: "p1-projectile-0",
+      hitSound: "S6,0",
+      hitSoundValue: { rawPrefix: "S", group: 6, index: 0 },
+      hitSpark: "S7001",
+    });
     const calls: string[] = [];
     const resolver: ProjectileResolver = (ownerId, input) => {
       calls.push(`owner:${ownerId}`);
@@ -416,10 +422,11 @@ describe("RuntimeCombatResolutionSystem", () => {
       getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
       stateHooks: hooks(),
       rememberProjectileTarget: (_source, _target, entry) => calls.push(`projectile-target:${entry.serialId}`),
+      recordAudioOperation: (actor, operation) => calls.push(`audio:${actor.id}:${operation.value}`),
       log: (line) => calls.push(`log:${line}`),
     });
 
-    expect(calls).toEqual(["owner:p1", "projectile-target:p1-projectile-0"]);
+    expect(calls).toEqual(["owner:p1", "projectile-target:p1-projectile-0", "audio:p1:S6,0"]);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 88, age: 0 }]);
     expect(contactWorld.hasProjectileContact(attacker.contact, 300, "hit", 88)).toBe(true);
     expect(runtimeMoveHitCountValue(attacker.contact, 300, false)).toBe(1);

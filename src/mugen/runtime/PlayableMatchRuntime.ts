@@ -1114,6 +1114,10 @@ function runActiveStateControllers(
         controller,
         effect,
         effectSpawnWorld,
+        resolveProjectileSound:
+          effect === "projectile"
+            ? (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+            : undefined,
         resolveModifyProjectile:
           effect === "modifyprojectile"
             ? {

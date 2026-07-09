@@ -25046,8 +25046,10 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedStates).toContain(272);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 272]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "projectile", "audio:playsnd"]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
     expect(evidence?.contactEffectPackages).toEqual(
@@ -25147,8 +25149,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.effectKinds).toContain("projectile");
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedStates).toContain(271);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 271]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "projectile", "audio:playsnd"]);
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.contactEffectPackages).toEqual(

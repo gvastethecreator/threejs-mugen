@@ -27633,7 +27633,7 @@ export function createSyntheticImportedProjectileContactTraceArtifact(options: R
       label: "Synthetic imported Projectile contact route",
       source: "mixed",
       notes: [
-        "Synthetic imported Projectile contact trace proves a bounded Projectile contact can evaluate a ProjContact(77) branch back in the owner state and emit attacker-side hitsound plus FightFX hit-spark package metadata tied to the same projectile contact. Exact trigger timing, multi-target lifetime, helper ownership, audio playback, spark layering, and IKEMEN projectile parity remain future work.",
+        "Synthetic imported Projectile contact trace proves a bounded Projectile contact can evaluate a ProjContact(77) branch back in the owner state, record typed audio:playsnd telemetry from attacker-side hitsound, and emit FightFX hit-spark package metadata tied to the same projectile contact. Exact trigger timing, multi-target lifetime, helper ownership, SND playback/mixing, spark layering, and IKEMEN projectile parity remain future work.",
       ],
     },
     gates: [
@@ -27645,7 +27645,7 @@ export function createSyntheticImportedProjectileContactTraceArtifact(options: R
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 272],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
-        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -27776,7 +27776,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
       label: "Synthetic imported Projectile guard route",
       source: "mixed",
       notes: [
-        "Synthetic imported Projectile guard trace verifies that Projectile controllers can carry typed guard params, resolve a held-back projectile block through the shared partial hit/guard combat path, evaluate a bounded ProjGuarded(77) branch back in the owner state, and emit attacker-side guardsound plus FightFX guard-spark package metadata tied to the same projectile contact. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact trigger timing, guard-state timing, audio playback, spark layering, cancel animations, remove animations, and IKEMEN projectile parity remain future work.",
+        "Synthetic imported Projectile guard trace verifies that Projectile controllers can carry typed guard params, resolve a held-back projectile block through the shared partial hit/guard combat path, evaluate a bounded ProjGuarded(77) branch back in the owner state, record typed audio:playsnd telemetry from attacker-side guardsound, and emit FightFX guard-spark package metadata tied to the same projectile contact. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact trigger timing, guard-state timing, SND playback/mixing, spark layering, cancel animations, remove animations, and IKEMEN projectile parity remain future work.",
       ],
     },
     gates: [
@@ -27788,7 +27788,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 271],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
-        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],

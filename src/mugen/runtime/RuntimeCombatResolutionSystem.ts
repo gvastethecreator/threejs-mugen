@@ -89,6 +89,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TActor) => boolean;
+  recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   rememberProjectileTarget?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   log: (line: string) => void;
@@ -315,7 +316,13 @@ export class RuntimeCombatResolutionWorld {
         }
       },
       emitProjectileContactEffects: (source, _target, projectile, kind) => {
-        input.contactPresentationWorld.emitProjectileContact({ actor: source, projectile, kind, runtimeTick: input.runtimeTick });
+        input.contactPresentationWorld.emitProjectileContact({
+          actor: source,
+          projectile,
+          kind,
+          runtimeTick: input.runtimeTick,
+          recordAudioOperation: input.recordAudioOperation,
+        });
       },
       recordReceivedDamage: (target, damage) => {
         target.contactWorld.markReceivedDamage(target.contact, target.runtime.stateNo, damage);
