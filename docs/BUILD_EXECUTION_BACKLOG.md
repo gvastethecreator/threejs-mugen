@@ -1,5 +1,43 @@
 # Build Execution Backlog
 
+## 2026-07-09 - Dynamic audio typed telemetry
+
+Summary:
+
+- Added runtime typed-operation resolution for dynamic active-state `PlaySnd`, `SndPan`, and `StopSnd` params.
+- `RuntimeAudioControllerDispatchWorld` now records resolved `audio:*` operations when compiled static lowering is unavailable, while `RuntimeSoundEvent.raw` preserves authored dynamic sound expressions for debug/trace evidence.
+- Upgraded required `synthetic-imported-sound-dynamic-pan.json` and `synthetic-imported-sound-dynamic-value.json` from event-only fallback gates into typed audio-operation gates.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines expression-capable numeric controller params, `PlaySnd value/channel/pan/abspan`, `F` sound prefix behavior, `SndPan channel/pan/abspan`, and `StopSnd channel`.
+
+Evidence:
+
+- `synthetic-imported-sound-dynamic-pan.json` trace checksum `879afcf4`, final checksum `b780e5e9`; executed ops include `variable:varset = 3`, `hitdef = 1`, `audio:playsnd = 1`, `audio:sndpan = 1`, and `audio:stopsnd = 1`.
+- `synthetic-imported-sound-dynamic-value.json` trace checksum `bcdafe32`, final checksum `31b8a7b3`; executed ops include `variable:varset = 2`, `hitdef = 1`, and `audio:playsnd = 1`, while final sound telemetry keeps raw `Fvar(0),var(1)` plus `soundPrefix = kfm`.
+- Focused tests: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts --reporter verbose` passed 21 tests; `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --reporter verbose` passed 517 tests.
+- Trace gate: `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional. The known non-fatal Vite websocket port warning for port `24678` was still emitted after the JSON pass output.
+
+Claim allowed:
+
+- Bounded imported active-state dynamic `PlaySnd value/channel/pan`, `SndPan channel/abspan`, and `StopSnd channel` expressions can resolve through the runtime expression context, record typed `audio:*` telemetry, and preserve existing sound-event debug metadata.
+
+Claim blocked:
+
+- Exact Web Audio archive lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, direct `HitDef` audio operation telemetry, dynamic `SuperPause sound` typed audio operation telemetry, super-background audio, and full MUGEN/IKEMEN audio parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: both dynamic audio traces already proved bounded sound-event telemetry, but explicitly lacked typed `audio:*` operation evidence.
+- Quality delta: active-state dynamic audio now follows the same resolved-operation posture as other dynamic runtime controller families without changing playback parity claims.
+- Adjacent surface checked: static audio trace, dynamic PlaySnd value/pan traces, direct HitDef sound traces, SuperPause sound trace, audio runtime boundary docs, support registry wording, QA gate docs, Wayfinder frontier, and research notes.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 524/524 artifacts, 493 required and 31 optional. This strengthens two existing required runtime traces and does not move scores. Studio/UI remains on the latest smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue with the next bounded runtime frontier or run the queued TypeScript 7 follow-up audit if toolchain drift appears. Good runtime candidates remain helper/redirect ownership, exact presentation timing, renderer parity proof, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+
 ## 2026-07-09 - Dynamic damage-scale typed telemetry
 
 Summary:

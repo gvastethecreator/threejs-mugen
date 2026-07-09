@@ -5,6 +5,7 @@ import {
   createRuntimeSoundEvent,
   parseMugenSoundValue,
   pushRuntimeSoundEvent,
+  resolveRuntimeAudioControllerOperation,
   RuntimeAudioControllerDispatchWorld,
   RuntimeAudioWorld,
 } from "../mugen/runtime/AudioEventSystem";
@@ -116,6 +117,47 @@ describe("AudioEventSystem", () => {
       stateNo: 200,
       tick: 5,
       runtimeTick: 122,
+    });
+  });
+
+  it("resolves dynamic audio fallback params into typed operations", () => {
+    const operation = resolveRuntimeAudioControllerOperation(
+      controller("PlaySnd", { value: "Fvar(0),var(1)", channel: "var(2)", pan: "var(3)", loop: "var(4)" }),
+      {
+        resolveNumber: (key) => {
+          if (key === "channel") return 4;
+          if (key === "pan") return -24;
+          if (key === "loop") return 1;
+          return undefined;
+        },
+        resolveSoundValue: () => ({ rawPrefix: "F", group: 5, index: 3 }),
+      },
+    );
+
+    expect(operation).toEqual({
+      kind: "audio",
+      controllerType: "playsnd",
+      value: "F5,3",
+      channel: 4,
+      loop: true,
+      pan: -24,
+    });
+  });
+
+  it("does not resolve audio params that are absent from the controller", () => {
+    const operation = resolveRuntimeAudioControllerOperation(controller("SndPan", { channel: "var(0)" }), {
+      resolveNumber: (key) => {
+        if (key === "channel") return 2;
+        if (key === "pan") return -36;
+        return undefined;
+      },
+      resolveSoundValue: () => undefined,
+    });
+
+    expect(operation).toEqual({
+      kind: "audio",
+      controllerType: "sndpan",
+      channel: 2,
     });
   });
 
@@ -242,7 +284,7 @@ describe("AudioEventSystem", () => {
     expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 
-  it("dispatches dynamic audio params without typed operation telemetry", () => {
+  it("dispatches dynamic audio params with typed operation telemetry", () => {
     const dispatchWorld = new RuntimeAudioControllerDispatchWorld();
     const audioWorld = new RuntimeAudioWorld();
     const fighter = { ...actor(200, 4), soundEvents: [] as RuntimeSoundEvent[] };
@@ -263,11 +305,11 @@ describe("AudioEventSystem", () => {
     expect(result.event).toMatchObject({ type: "SndPan", channel: 2, pan: -36, stateNo: 200, runtimeTick: 120 });
     expect(fighter.soundEvents).toEqual([result.event]);
     expect(recordedControllers).toEqual(["SndPan"]);
-    expect(recordedOperations).toEqual([]);
-    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
+    expect(recordedOperations).toEqual(["audio:sndpan"]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 
-  it("dispatches dynamic PlaySnd value refs without typed operation telemetry", () => {
+  it("dispatches dynamic PlaySnd value refs with typed operation telemetry", () => {
     const dispatchWorld = new RuntimeAudioControllerDispatchWorld();
     const audioWorld = new RuntimeAudioWorld();
     const fighter = { ...actor(200, 4), soundEvents: [] as RuntimeSoundEvent[] };
@@ -289,10 +331,11 @@ describe("AudioEventSystem", () => {
     });
 
     expect(result.event).toMatchObject({ type: "PlaySnd", group: 5, index: 4, channel: 2, stateNo: 200, runtimeTick: 120 });
+    expect(result.event.raw).toBe("var(0),var(1)");
     expect(fighter.soundEvents).toEqual([result.event]);
     expect(recordedControllers).toEqual(["PlaySnd"]);
-    expect(recordedOperations).toEqual([]);
-    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
+    expect(recordedOperations).toEqual(["audio:playsnd"]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 
   it("wraps SuperPause sound telemetry behind RuntimeAudioWorld", () => {

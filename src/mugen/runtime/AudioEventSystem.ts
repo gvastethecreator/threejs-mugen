@@ -48,8 +48,15 @@ export function createRuntimeSoundEvent(
   operation?: AudioControllerOp,
   resolveAudio?: RuntimeAudioParamResolver,
 ): RuntimeSoundEvent {
-  const rawValue = operation?.value ?? findControllerParam(controller, "value");
-  const parsed = parseMugenSoundRef(rawValue) ?? resolveAudio?.resolveSoundValue?.("value");
+  const sourceRawValue = findControllerParam(controller, "value");
+  const operationRawValue = operation?.value;
+  const parsedOperationRaw = parseMugenSoundRef(operationRawValue);
+  const parsedSourceRaw = parseMugenSoundRef(sourceRawValue);
+  const rawValue =
+    sourceRawValue !== undefined && parsedSourceRaw === undefined && parsedOperationRaw !== undefined
+      ? sourceRawValue
+      : operationRawValue ?? sourceRawValue;
+  const parsed = parsedOperationRaw ?? parsedSourceRaw ?? resolveAudio?.resolveSoundValue?.("value");
   const lowPriority = operation?.lowPriority ?? booleanParam(controller, resolveAudio, "lowpriority");
   const volumeScale = operation?.volumeScale ?? numberParam(controller, resolveAudio, "volumescale");
   const legacyVolume = operation?.legacyVolume ?? numberParam(controller, resolveAudio, "volume");
@@ -150,7 +157,10 @@ export class RuntimeAudioControllerDispatchWorld {
   apply<TActor extends RuntimeAudioWorldActor>(
     options: RuntimeAudioControllerDispatchOptions<TActor>,
   ): RuntimeAudioControllerDispatchResult {
-    const operation = options.controller.operation?.kind === "audio" ? options.controller.operation : undefined;
+    const operation =
+      options.controller.operation?.kind === "audio"
+        ? options.controller.operation
+        : resolveRuntimeAudioControllerOperation(options.controller.source, options.resolveAudio);
     options.recordController?.(options.actor, options.controller.source);
     if (operation) {
       options.recordOperation?.(options.actor, operation);
@@ -170,9 +180,80 @@ export class RuntimeAudioControllerDispatchWorld {
   }
 }
 
+export function resolveRuntimeAudioControllerOperation(
+  controller: MugenStateController,
+  resolveAudio?: RuntimeAudioParamResolver,
+): AudioControllerOp | undefined {
+  const controllerType = audioControllerType(controller);
+  if (!controllerType) {
+    return undefined;
+  }
+
+  const operation: AudioControllerOp = {
+    kind: "audio",
+    controllerType,
+  };
+  const value = controllerType === "playsnd" ? resolvedSoundValueParam(controller, resolveAudio) : undefined;
+  const channel = numberParam(controller, resolveAudio, "channel");
+  const lowPriority = controllerType === "playsnd" ? booleanParam(controller, resolveAudio, "lowpriority") : undefined;
+  const volumeScale = controllerType === "playsnd" ? numberParam(controller, resolveAudio, "volumescale") : undefined;
+  const legacyVolume = controllerType === "playsnd" ? numberParam(controller, resolveAudio, "volume") : undefined;
+  const freqMul = controllerType === "playsnd" ? numberParam(controller, resolveAudio, "freqmul") : undefined;
+  const loop = controllerType === "playsnd" ? booleanParam(controller, resolveAudio, "loop") : undefined;
+  const pan = controllerType === "playsnd" || controllerType === "sndpan" ? numberParam(controller, resolveAudio, "pan") : undefined;
+  const absPan =
+    controllerType === "playsnd" || controllerType === "sndpan" ? numberParam(controller, resolveAudio, "abspan") : undefined;
+
+  if (value !== undefined) operation.value = value;
+  if (channel !== undefined) operation.channel = channel;
+  if (lowPriority !== undefined) operation.lowPriority = lowPriority;
+  if (volumeScale !== undefined) operation.volumeScale = volumeScale;
+  if (legacyVolume !== undefined) operation.legacyVolume = legacyVolume;
+  if (freqMul !== undefined) operation.freqMul = freqMul;
+  if (loop !== undefined) operation.loop = loop;
+  if (pan !== undefined) operation.pan = pan;
+  if (absPan !== undefined) operation.absPan = absPan;
+
+  if (controllerType === "playsnd" && value === undefined) {
+    return undefined;
+  }
+  if (controllerType === "sndpan" && channel === undefined && pan === undefined && absPan === undefined) {
+    return undefined;
+  }
+  if (controllerType === "stopsnd" && channel === undefined) {
+    return undefined;
+  }
+  return operation;
+}
+
 export function parseMugenSoundValue(value: string | undefined): { group: number; index: number } | undefined {
   const parsed = parseMugenSoundRef(value);
   return parsed ? { group: parsed.group, index: parsed.index } : undefined;
+}
+
+function audioControllerType(controller: MugenStateController): AudioControllerOp["controllerType"] | undefined {
+  const type = controller.type.toLowerCase();
+  if (type === "playsnd" || type === "stopsnd" || type === "sndpan") {
+    return type;
+  }
+  return undefined;
+}
+
+function resolvedSoundValueParam(
+  controller: MugenStateController,
+  resolveAudio: RuntimeAudioParamResolver | undefined,
+): string | undefined {
+  const rawValue = findControllerParam(controller, "value");
+  const parsed = parseMugenSoundRef(rawValue);
+  if (parsed) {
+    return soundRefToString(parsed);
+  }
+  const resolved = resolveAudio?.resolveSoundValue?.("value");
+  return resolved ? soundRefToString(resolved) : undefined;
+}
+
+function soundRefToString(ref: RuntimeResolvedSoundRef): string {
+  return `${ref.rawPrefix ?? ""}${ref.group},${ref.index}`;
 }
 
 function parseMugenSoundRef(value: string | undefined): { rawPrefix?: "F" | "S"; group: number; index: number } | undefined {
@@ -232,7 +313,11 @@ function numberParam(
   resolveAudio: RuntimeAudioParamResolver | undefined,
   key: Parameters<RuntimeAudioParamResolver["resolveNumber"]>[0],
 ): number | undefined {
-  return firstNumber(findControllerParam(controller, key)) ?? resolveAudio?.resolveNumber(key);
+  const rawValue = findControllerParam(controller, key);
+  if (rawValue === undefined) {
+    return undefined;
+  }
+  return firstNumber(rawValue) ?? resolveAudio?.resolveNumber(key);
 }
 
 function booleanParam(

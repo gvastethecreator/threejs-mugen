@@ -527,25 +527,25 @@ Previous R1 required dynamic HitDef hitsound trace gate
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
   -> no score movement; SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
-Previous R1 required dynamic sound-value trace gate
-  -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd remains required in qa:trace
+Previous R1 required dynamic sound-value trace gate, superseded by typed telemetry cut
+  -> synthetic-imported-sound-dynamic-value.json checksum bcdafe32 / final checksum 31b8a7b3 remains required in qa:trace
   -> imported active state seeds var(0)=5 and var(1)=3
   -> active state executes PlaySnd value = Fvar(0),var(1), channel = 4
-  -> dynamic PlaySnd value group/index resolves through runtime expression fallback instead of typed audio:* evidence
-  -> sound-event evidence requires PlaySnd group 5 index 3 channel 4 with soundPrefix kfm
-  -> that checkpoint passed 455/455 artifacts, 425 required and 30 optional
+  -> dynamic PlaySnd value group/index resolves through runtime expression fallback and now records typed audio:playsnd evidence after resolution
+  -> sound-event evidence requires PlaySnd group 5 index 3 channel 4 raw Fvar(0),var(1) with soundPrefix kfm
+  -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define PlaySnd value = group_no, sound_no, F-prefixed common/fight sound refs, and numeric controller params as expression-capable
-  -> no score movement; SuperPause sound refs, typed-operation lowering for dynamic audio params, exact Web Audio archive lookup/panning/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; SuperPause sound typed operation telemetry, exact Web Audio archive lookup/panning/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
-Previous R1 required dynamic sound-pan trace gate
-  -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 remains required in qa:trace
+Previous R1 required dynamic sound-pan trace gate, superseded by typed telemetry cut
+  -> synthetic-imported-sound-dynamic-pan.json checksum 879afcf4 / final checksum b780e5e9 remains required in qa:trace
   -> imported active state seeds var(0)=-24, var(1)=2, and var(2)=64
   -> active state executes PlaySnd value = S5,2, channel = var(1), pan = var(0); SndPan channel = var(1), abspan = var(2); StopSnd channel = var(1)
-  -> dynamic audio numeric params resolve through runtime expression fallback instead of typed audio:* evidence
+  -> dynamic audio numeric params resolve through runtime expression fallback and now record typed audio:playsnd, audio:sndpan, and audio:stopsnd evidence after resolution
   -> sound-event evidence requires PlaySnd channel 2 pan -24, SndPan channel 2 absPan 64, and StopSnd channel 2
-  -> that checkpoint passed 454/454 artifacts, 424 required and 30 optional
+  -> current checkpoint passes 524/524 artifacts, 493 required and 31 optional
   -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
-  -> no score movement; typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, direct contact-sound operation telemetry, dynamic SuperPause sound typed audio operation telemetry, and full audio parity remain blocked
 
 Previous R1 required dynamic PlayerPush trace gate, superseded by typed telemetry cut
   -> synthetic-imported-playerpush-dynamic.json checksum b7775652 / final checksum 92aca1cd is required in qa:trace

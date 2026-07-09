@@ -1720,7 +1720,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a synthetic imported dynamic sound-pan artifact without typed audio evidence", () => {
+  it("creates a synthetic imported dynamic sound-pan artifact with typed audio evidence", () => {
     const artifact = createSyntheticImportedDynamicSoundPanTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -1739,7 +1739,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "PlaySnd", "SndPan", "StopSnd"]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef", "audio:playsnd", "audio:sndpan", "audio:stopsnd"]);
     expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
       { actorId: "p1", type: "PlaySnd", group: 5, index: 2, channel: 2, pan: -24, stateNo: 200 },
       { actorId: "p1", type: "SndPan", channel: 2, absPan: 64, stateNo: 200 },
@@ -1750,9 +1750,9 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.SndPan).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.StopSnd).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["audio:playsnd"]).toBeUndefined();
-    expect(evidence?.executedOperations["audio:sndpan"]).toBeUndefined();
-    expect(evidence?.executedOperations["audio:stopsnd"]).toBeUndefined();
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:sndpan"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:stopsnd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 5, index: 2, channel: 2, pan: -24, stateNo: 200 }),
@@ -1762,7 +1762,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a synthetic imported dynamic sound-value artifact without typed audio evidence", () => {
+  it("creates a synthetic imported dynamic sound-value artifact with typed audio evidence", () => {
     const artifact = createSyntheticImportedDynamicSoundValueTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -1781,14 +1781,14 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "PlaySnd"]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef", "audio:playsnd"]);
     expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
       { actorId: "p1", type: "PlaySnd", group: 5, index: 3, channel: 4, soundPrefix: "kfm", stateNo: 200 },
     ]);
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.PlaySnd).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["audio:playsnd"]).toBeUndefined();
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 5, index: 3, channel: 4, soundPrefix: "kfm", stateNo: 200 }),

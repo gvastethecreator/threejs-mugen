@@ -895,14 +895,14 @@ export function createSyntheticImportedDynamicSoundPanTraceArtifact(options: Run
       requireHitEvent: true,
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "PlaySnd", "SndPan", "StopSnd"],
-      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "audio:playsnd", "audio:sndpan", "audio:stopsnd"],
       requiredSoundEvents: [
         { actorId: "p1", type: "PlaySnd", group: 5, index: 2, channel: 2, pan: -24, stateNo: 200 },
         { actorId: "p1", type: "SndPan", channel: 2, absPan: 64, stateNo: 200 },
         { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
       ],
       notes: [
-        "Synthetic imported dynamic sound-pan trace proves active PlaySnd, SndPan, and StopSnd numeric params can resolve through expression fallback into bounded sound-event telemetry without typed audio operation evidence. It does not claim dynamic sound refs, exact Web Audio panning, channel priority, timing, mixing, helper/redirect ownership, or full MUGEN/IKEMEN audio parity.",
+        "Synthetic imported dynamic sound-pan trace proves active PlaySnd, SndPan, and StopSnd numeric params can resolve through expression fallback into bounded sound-event telemetry plus typed audio operation evidence. It does not claim dynamic sound refs, exact Web Audio panning, channel priority, timing, mixing, helper/redirect ownership, or full MUGEN/IKEMEN audio parity.",
       ],
     },
   );
@@ -924,12 +924,12 @@ export function createSyntheticImportedDynamicSoundValueTraceArtifact(options: R
       requireHitEvent: true,
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "PlaySnd"],
-      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "audio:playsnd"],
       requiredSoundEvents: [
         { actorId: "p1", type: "PlaySnd", group: 5, index: 3, channel: 4, soundPrefix: "kfm", stateNo: 200 },
       ],
       notes: [
-        "Synthetic imported dynamic sound-value trace proves active PlaySnd value group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, without typed audio operation evidence. It does not claim exact Web Audio archive lookup, channel priority, timing, mixing, helper/redirect ownership, or full MUGEN/IKEMEN audio parity.",
+        "Synthetic imported dynamic sound-value trace proves active PlaySnd value group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, with typed audio operation evidence. It does not claim exact Web Audio archive lookup, channel priority, timing, mixing, helper/redirect ownership, or full MUGEN/IKEMEN audio parity.",
       ],
     },
   );

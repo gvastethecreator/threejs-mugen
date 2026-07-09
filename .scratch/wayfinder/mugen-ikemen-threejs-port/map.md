@@ -17,19 +17,20 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [TypeScript 7 upgrade posture](tickets/001-typescript-7-upgrade-posture.md) - upgrade directly to `typescript@~7.0.2`; keep `rootDir: "src"` explicit; no TS6 compatibility alias unless a future API-importing tool fails.
 - [Choose next runtime compatibility gap](tickets/002-next-runtime-compatibility-gap.md) - dynamic `EnvShake` and dynamic `EnvColor value/time/under` now record typed telemetry after expression resolution; no camera/presentation-parity score movement.
 - [Choose next runtime gap after EnvColor](tickets/005-next-runtime-gap-after-envcolor.md) - selected dynamic `AttackMulSet` / `DefenceMulSet` typed telemetry; required `synthetic-imported-damage-scale-dynamic.json` is green.
-- [Choose next runtime gap after dynamic damage-scale](tickets/006-next-runtime-gap-after-damage-scale.md) - open frontier for the next bounded R1/R2 trace or ownership slice.
+- [Choose next runtime gap after dynamic damage-scale](tickets/006-next-runtime-gap-after-damage-scale.md) - selected dynamic active-state audio typed telemetry; required dynamic sound pan/value traces now record `audio:*` operations.
+- [Choose next runtime gap after dynamic audio](tickets/007-next-runtime-gap-after-dynamic-audio.md) - open frontier for the next bounded R1/R2 trace or ownership slice.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
-- [Choose next runtime gap after dynamic damage-scale](tickets/006-next-runtime-gap-after-damage-scale.md)
+- [Choose next runtime gap after dynamic audio](tickets/007-next-runtime-gap-after-dynamic-audio.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Define renderer parity proof ladder](tickets/004-renderer-parity-proof-ladder.md)
 
 ## Not Yet Specified
 
-- Exact next runtime gap after dynamic damage-scale typed telemetry.
+- Exact next runtime gap after dynamic audio typed telemetry.
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
 - Visual parity acceptance ladder for axis pivot, draw order, palettes, afterimages, effects, and screenpack/lifebar composition.
 - IKEMEN transition point from scanner/reporting into executable IKEMEN-specific behavior.

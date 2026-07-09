@@ -35,12 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic damage-scale typed telemetry trace gate
--> synthetic-imported-damage-scale-dynamic.json trace checksum 3433b369 / final checksum e3db6dd9 is required in qa:trace
--> imported State -1 presses x, enters active state/action 200, seeds attacker var(0)=2 and fvar(0)=0.75, seeds defender fvar(0)=0.5, then executes AttackMulSet value = var(0) * fvar(0) and DefenceMulSet value = fvar(0)
--> gate requires ChangeState, VarSet, AttackMulSet, DefenceMulSet, HitDef, variable:varset, damage-scale:attackmulset, damage-scale:defencemulset, and hitdef evidence plus event text for 30 and final P2 life 970
+R1 required dynamic audio typed telemetry trace gates
+-> synthetic-imported-sound-dynamic-pan.json trace checksum 879afcf4 / final checksum b780e5e9 is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, seeds var(0)=-24, var(1)=2, and var(2)=64, then executes PlaySnd value = S5,2, channel = var(1), pan = var(0); SndPan channel = var(1), abspan = var(2); and StopSnd channel = var(1)
+-> pan gate requires ChangeState, VarSet, HitDef, PlaySnd, SndPan, StopSnd, variable:varset, audio:playsnd, audio:sndpan, audio:stopsnd, and hitdef evidence plus sound-event telemetry for channel/pan/abspan resolution
+-> synthetic-imported-sound-dynamic-value.json trace checksum bcdafe32 / final checksum 31b8a7b3 is required in qa:trace
+-> value gate requires PlaySnd, variable:varset, audio:playsnd, hitdef, group 5, index 3, channel 4, raw Fvar(0),var(1), and soundPrefix kfm telemetry
 -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
--> official Elecbyte State Controller Reference defines AttackMulSet and DefenceMulSet damage multiplier semantics; Elecbyte CNS docs define expression-capable controller params and evaluation timing
+-> official Elecbyte State Controller Reference defines expression-capable numeric controller params, PlaySnd, SndPan, StopSnd, and F sound prefix behavior
+-> no score movement; exact SND lookup, channel priority classes, timing, mixing, panning semantics, helper/redirect ownership, direct HitDef audio operation telemetry, dynamic SuperPause sound typed audio operation telemetry, super-background audio, and full audio parity remain blocked
+
+Previous R1 required dynamic damage-scale typed telemetry trace gate
+-> synthetic-imported-damage-scale-dynamic.json trace checksum 3433b369 / final checksum e3db6dd9 remains required in qa:trace
+-> gate requires dynamic AttackMulSet/DefenceMulSet typed operation evidence plus direct HitDef damage for 30 and final P2 life 970
 -> no score movement; exact scaling stack/order, helper/projectile/custom-state/guard/target edge cases, redirect ownership, rounding, controller-loop timing, score movement, and full damage-scaling parity remain blocked
 
 Previous R1 required dynamic EnvColor typed telemetry trace gate
