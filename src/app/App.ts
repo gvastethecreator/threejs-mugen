@@ -1073,11 +1073,34 @@ export class App {
         this.writeUrlState();
         this.updateUi();
       }
+      const studioFighterSelect = target.dataset.studioFighterSelect;
+      if (target instanceof HTMLSelectElement && studioFighterSelect) {
+        if (studioFighterSelect === "p1") {
+          this.selectedP1 = target.value;
+        } else {
+          this.selectedP2 = target.value;
+        }
+        this.invalidateBuildOutputs();
+        this.rebuildMatchRuntime();
+        this.mode = "studio";
+        this.snapshot = this.matchRuntime.getSnapshot();
+        this.writeUrlState();
+        this.updateUi();
+      }
       if (target instanceof HTMLSelectElement && target.dataset.stageSelect) {
         this.selectedStageId = target.value;
         this.invalidateBuildOutputs();
         this.rebuildMatchRuntime();
         this.mode = "match";
+        this.snapshot = this.matchRuntime.getSnapshot();
+        this.writeUrlState();
+        this.updateUi();
+      }
+      if (target instanceof HTMLSelectElement && target.dataset.studioStageSelect) {
+        this.selectedStageId = target.value;
+        this.invalidateBuildOutputs();
+        this.rebuildMatchRuntime();
+        this.mode = "studio";
         this.snapshot = this.matchRuntime.getSnapshot();
         this.writeUrlState();
         this.updateUi();
@@ -3440,6 +3463,20 @@ export class App {
           <p>${escapeHtml(summary.entry.p1)} vs ${escapeHtml(summary.entry.p2)} on ${escapeHtml(summary.entry.stage)}</p>
           <span class="badge ${this.statusClassName(gateStatus)}">${attentionGates.length ? `${attentionGates.length} issues` : "steady"}</span>
         </header>
+        <div class="match-select-grid" aria-label="Studio matchup controls">
+          <label class="field">
+            <span class="list-meta">P1</span>
+            <select data-studio-fighter-select="p1">${this.renderFighterOptions(this.selectedP1)}</select>
+          </label>
+          <label class="field">
+            <span class="list-meta">CPU</span>
+            <select data-studio-fighter-select="p2">${this.renderFighterOptions(this.selectedP2)}</select>
+          </label>
+          <label class="field field-wide">
+            <span class="list-meta">Stage</span>
+            <select data-studio-stage-select="stage">${this.renderStageOptions()}</select>
+          </label>
+        </div>
         <button type="button" class="workbench-directive is-${this.statusClassName(primaryGate?.status ?? "unknown")}" ${directiveAction}>
           <span class="gate-kicker">Next gate</span>
           <strong>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</strong>

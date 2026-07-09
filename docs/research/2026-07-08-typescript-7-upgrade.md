@@ -34,3 +34,9 @@ Upgrade the repo's direct `typescript` dev dependency to `~7.0.2` and do not add
 - Use `pnpm add -D typescript@~7.0.2`.
 - Run the normal project gates after install: `pnpm typecheck`, `pnpm build`, `pnpm test`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check`.
 - If a gate fails because a dependency imports the TypeScript API, add the TypeScript 6 compatibility package only with failing-output evidence.
+
+## Implementation Verification (2026-07-09)
+
+- Workspace-level TS toolchain in `package.json` remains `typescript: "~7.0.2"` and lockfile entries are pinned at `7.0.2` across npm platform packages.
+- End-to-end project checks were executed after the Studio matchup-control edit: `pnpm typecheck`, `pnpm build`, `pnpm test`, and `pnpm qa:smoke` all passed.
+- No runtime-facing JS/JSDoc behavior changes were required by this repo slice; no `@typescript/typescript6` compatibility alias was added because CLI-only `tsc` usage remains.
