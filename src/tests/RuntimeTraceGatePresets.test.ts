@@ -22990,8 +22990,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 341]));
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["projectile", "audio:playsnd"]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 44, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7002,
+            raw: "F7002",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7002,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 18, y: -68 },
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        contactKind: "hit",
+        sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 44, contactKind: "hit" }),
+        hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7002, offsetX: 18, offsetY: -68 }),
+      }),
+    ]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I" }),

@@ -1,5 +1,44 @@
 # Build Execution Backlog
 
+## 2026-07-09 - Player Projectile HitCount sound typed audio
+
+Summary:
+
+- Upgraded required `synthetic-imported-projectile-hitcount.json` so the player-owned Projectile normal-hit attacker-side `HitCount` / `UniqHitCount` route now requires typed contact audio and FightFX package evidence.
+- The owner route still branches P1 `200 -> 341` through `HitCount >= 1 && UniqHitCount >= 1`, preserves target link `p1 -> p2 / 77`, and keeps projectile lifecycle payload evidence.
+- New contact presentation requirements add attacker-side `hitsound = S5,44`, FightFX `F7002`, shared contact package metadata, and required `audio:playsnd` operation telemetry.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `Projectile` as taking HitDef parameters. [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs/trigger.html) defines `HitCount` / `UniqHitCount` as current-attack hit counters.
+
+Evidence:
+
+- `synthetic-imported-projectile-hitcount.json` trace checksum `ee8f4e19`, final checksum `0fd4adf8`; required executed ops now include `projectile` and `audio:playsnd`, with contact package sound `S5,44` and FightFX `F7002`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile HitCount artifact"` passed 1 file / 2 selected tests.
+- Trace gate: `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional.
+- Full regression: `pnpm test` passed 153 files / 1503 tests; `pnpm typecheck`, `pnpm build`, and `pnpm check:boundaries` passed.
+- TypeScript 7 closeout: `pnpm exec tsc --version` reports 7.0.2; the dedicated upgrade audit reports 0 errors and 0 warnings.
+
+Claim allowed:
+
+- The bounded player-owned Projectile attacker-side HitCount route can feed owner `HitCount` / `UniqHitCount`, preserve target/lifecycle evidence, and resolve attacker-side `hitsound = S5,44` into typed `audio:playsnd` evidence plus FightFX contact package telemetry.
+
+Claim blocked:
+
+- Broader helper Projectile normal-hit sound breadth beyond current helper routes, Projectile/helper `hitcountpersist` breadth, exact SND archive lookup/playback, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, renderer parity, score movement, and full Projectile/HitCount or audio parity remain blocked.
+
+Quality notes:
+
+- Baseline beat: `synthetic-imported-projectile-hitcount.json` already proved owner attacker-side hit-count memory after player-owned Projectile contact, but it did not require typed audio operation or shared contact-effect package assertions.
+- Quality delta: the same required gate now asserts contact sound/effect package evidence and typed `audio:playsnd` without broadening playback or renderer claims.
+- Adjacent surface checked: helper Projectile HitCount sound gate, prior player-owned Projectile contact sound gates, support registry wording, QA gate docs, scorecard/report wording, Wayfinder frontier, and research notes.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 524/524 artifacts, 493 required and 31 optional. This strengthens one existing required player-owned Projectile attacker-side HitCount trace and does not move scores. Studio/UI remains on the latest smoke-verified surfaces; no new smoke was required for this runtime-only trace slice. IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/014-next-runtime-gap-after-player-projectile-hitcount-sound-audio.md`. Good candidates include broader helper Projectile normal-hit sound breadth, exact SND lookup/playback, channel priority/timing/mixing/panning, helper/redirect/team ownership, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+
 ## 2026-07-09 - Helper Projectile HitCount sound typed audio
 
 Summary:
@@ -35,7 +74,7 @@ Global port report:
 
 Next:
 
-- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/013-next-runtime-gap-after-helper-projectile-hitcount-sound-audio.md`. Good candidates include player-owned Projectile HitCount sound parity, broader helper Projectile normal-hit sound breadth, exact SND lookup/playback, channel priority/timing/mixing/panning, helper/redirect/team ownership, renderer parity proof, target ownership, or another raw-fallback controller family that can safely emit typed telemetry after expression resolution.
+- Superseded by `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/014-next-runtime-gap-after-player-projectile-hitcount-sound-audio.md` after the player-owned Projectile HitCount sound typed-audio gate closed the symmetric owner route.
 
 ## 2026-07-09 - Helper Projectile normal-hit GetHitVar sound typed audio
 

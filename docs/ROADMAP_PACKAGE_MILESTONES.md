@@ -41,7 +41,7 @@ R1 required helper Projectile attacker-side HitCount sound typed audio trace gat
 -> gate requires Helper, Projectile, helper, projectile, audio:playsnd, and hit contact sound/effect telemetry for the helper Projectile HitCount oracle
 -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
 -> official Elecbyte State Controller Reference defines Projectile as taking HitDef parameters and helper-created Projectiles as immediately root-owned; Elecbyte Trigger Reference defines HitCount/UniqHitCount as current-attack counters
--> no score movement; player-owned Projectile HitCount sound, broader helper Projectile normal-hit contact sound breadth beyond this route and the three GetHitVar routes, Projectile/helper hitcountpersist breadth, exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, exact presentation ordering, renderer parity, super-background audio, and full audio/Projectile/HitCount parity remain blocked
+-> no score movement; broader helper Projectile normal-hit contact sound breadth beyond the gated routes, Projectile/helper hitcountpersist breadth, exact common/player SND archive lookup, channel priority classes, timing, mixing, panning semantics, broader helper/redirect/team ownership, exact presentation ordering, renderer parity, super-background audio, and full audio/Projectile/HitCount parity remain blocked
 
 Previous R1 required helper Projectile normal-hit GetHitVar sound typed audio trace gates
 -> synthetic-imported-helper-projectile-gethitvar-hit-metadata.json trace checksum 28afbcea / final checksum c960b1cf is required in qa:trace
@@ -963,10 +963,10 @@ Previous R1 required Projectile/helper normal-hit HitCount trace gates
   -> RuntimeTraceGatePresets builds synthetic-imported-projectile-hitcount.json and synthetic-imported-helper-projectile-hitcount.json
   -> player-owned Projectile contact feeds owner MoveContact / MoveHit / HitCount, routes P1 to state 341 through HitCount >= 1 && UniqHitCount >= 1, and keeps projectile lifecycle plus target link p1 -> p2 / 77
   -> helper-parented/root-owned Projectile contact mirrors hit-count memory into the visual helper, exposes helper-local HitCount / UniqHitCount, routes helper 1257 -> 1258, keeps target links p1 -> p2 / 8893 and p1-helper-0 -> p2 / 8893 plus helper/projectile lifecycle payload evidence, and now requires audio:playsnd with helper-local S5,43 plus FightFX F7002 package telemetry
-  -> synthetic-imported-projectile-hitcount.json checksum 97a1b671 remains required in qa:trace
+  -> synthetic-imported-projectile-hitcount.json trace checksum ee8f4e19 / final checksum 0fd4adf8 remains required in qa:trace
   -> synthetic-imported-helper-projectile-hitcount.json trace checksum c8f5dc55 / final checksum e1569fab remains required in qa:trace
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
-  -> remains required; exact combo accumulation, Projectile/helper hitcountpersist breadth, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, player-owned Projectile HitCount sound, broader visual/audio parity, and full Projectile/HitCount parity remain blocked
+  -> remains required; exact combo accumulation, Projectile/helper hitcountpersist breadth, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, broader visual/audio parity, and full Projectile/HitCount parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit GetHitVar hitcount trace gates
   -> RuntimeTraceGatePresets builds synthetic-imported-projectile-gethitvar-hitcount.json and synthetic-imported-helper-projectile-gethitvar-hitcount.json
