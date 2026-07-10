@@ -30,7 +30,7 @@ import type { RuntimeReversalWorld } from "./ReversalSystem";
 
 type RuntimeHelperCombatDefinition = Pick<
   DemoFighterDefinition,
-  "source" | "constants" | "animations" | "hitSparkLibraries"
+  "source" | "constants" | "animations" | "hitSparkLibraries" | "hitDefPriorityProfile"
 >;
 
 export type RuntimeHelperCombatOwner = {
@@ -144,7 +144,10 @@ export class RuntimeHelperCombatWorld {
           applyHitStateTransitions: () => {},
           applyDefaultGetHit: () => applyDefaultHelperGetHitState(input.defender, input.getHitStateWorld, input.stateHooks),
         },
-        { stageBounds: input.stageBounds },
+        {
+          stageBounds: input.stageBounds,
+          hitDefPriorityProfile: input.owner.definition.hitDefPriorityProfile,
+        },
       );
       if (move.targetId !== undefined) {
         rememberRuntimeHelperTarget(helper, input.defender.id, move.targetId, input.targetWorld);

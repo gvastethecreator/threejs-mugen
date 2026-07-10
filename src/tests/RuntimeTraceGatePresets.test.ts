@@ -293,6 +293,7 @@ import {
   createSyntheticImportedHelperProjCancelTimeIdTraceArtifact,
   createSyntheticImportedHelperProjCancelTimeDynamicTraceArtifact,
   createSyntheticImportedHelperHitDefTraceArtifact,
+  createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact,
   createSyntheticImportedHelperHitDefPersistTraceArtifact,
   createSyntheticImportedHelperHitCountPersistTraceArtifact,
   createSyntheticImportedHelperMoveHitPersistTraceArtifact,
@@ -402,6 +403,7 @@ import {
   createSyntheticImportedDynamicAfterImageTraceArtifact,
   createSyntheticImportedDynamicAfterImageTimeTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
+  createSyntheticImportedHitDefSpritePriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKoTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -9791,6 +9793,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),
+    );
+  });
+
+  it("creates a synthetic imported helper HitDef sprite-priority artifact with contact provenance", () => {
+    const artifact = createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-hitdef-sprite-priority-golden" },
+      gates: [{ label: "synthetic-imported-helper-hitdef-sprite-priority-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          spritePriority: 5,
+          hitDefSpritePriorityPreviousValue: 8,
+          hitDefSpritePrioritySource: "authored",
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          spritePriority: -3,
+          hitDefSpritePriorityPreviousValue: 1,
+          hitDefSpritePrioritySource: "authored",
+        }),
+      ]),
     );
   });
 
@@ -25077,6 +25107,34 @@ describe("RuntimeTraceGatePresets", () => {
             stageBound: 32,
             heightBound: { low: -96, high: 64 },
           }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef sprite-priority defaults artifact with contact provenance", () => {
+    const artifact = createSyntheticImportedHitDefSpritePriorityTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-sprite-priority-golden" },
+      gates: [{ label: "synthetic-imported-hitdef-sprite-priority-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          spritePriority: 1,
+          hitDefSpritePriorityPreviousValue: 2,
+          hitDefSpritePrioritySource: "mugen-1.1-default",
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          spritePriority: 0,
+          hitDefSpritePriorityPreviousValue: 1,
+          hitDefSpritePrioritySource: "mugen-1.1-default",
         }),
       ]),
     );

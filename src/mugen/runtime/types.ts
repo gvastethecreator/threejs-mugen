@@ -2,6 +2,10 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { CommandInputHistorySample } from "./CommandBuffer";
+import type {
+  RuntimeHitDefPriorityProfile,
+  RuntimeHitDefSpritePrioritySource,
+} from "./HitDefPriorityPolicy";
 
 export type CharacterRuntimeState = {
   pos: { x: number; y: number };
@@ -29,6 +33,15 @@ export type CharacterRuntimeState = {
   attackMultiplier?: number;
   paletteRemap?: RuntimePaletteRemap;
   spritePriority?: number;
+  hitDefSpritePriority?: {
+    profile: RuntimeHitDefPriorityProfile;
+    role: "p1" | "p2";
+    contactKind: RuntimeHitDefContactKind;
+    previousValue?: number;
+    value: number;
+    source: RuntimeHitDefSpritePrioritySource;
+    supported: boolean;
+  };
   paletteFx?: {
     remaining: number;
     time: number;

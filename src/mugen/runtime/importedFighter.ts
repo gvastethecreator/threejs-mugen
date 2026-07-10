@@ -42,6 +42,7 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
   return {
     id: `imported-${slugify(displayName)}`,
     source: "imported",
+    hitDefPriorityProfile: runtimeHitDefPriorityProfile(character),
     displayName,
     authorName: character.definition.info.author,
     localCoord: character.definition.info.localCoord,
@@ -72,6 +73,16 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     fightFxPrefix: fightFxPrefix(character),
     hitSparkLibraries: normalizeHitSparkLibraries(character),
   };
+}
+
+function runtimeHitDefPriorityProfile(character: MugenCharacter): DemoFighterDefinition["hitDefPriorityProfile"] {
+  if (character.compatibility.profiles.primary === "mugen-1.1") {
+    return "mugen-1.1";
+  }
+  if (character.compatibility.profiles.primary === "ikemen-go-scan") {
+    return "ikemen-go";
+  }
+  return "unknown";
 }
 
 function fightFxPrefix(character: MugenCharacter): string | undefined {

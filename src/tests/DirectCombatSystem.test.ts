@@ -82,7 +82,7 @@ describe("DirectCombatSystem", () => {
   it("applies bounded guard results and guard.kill hit vars behind RuntimeDirectCombatWorld", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeDirectCombatWorld(contactWorld);
-    const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200 });
+    const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200, spritePriority: 8 });
     const defender = actor("p2", "Defender", {
       life: 8,
       receivedHitSequence: 4,
@@ -92,9 +92,10 @@ describe("DirectCombatSystem", () => {
       guardStun: 99,
       guarding: false,
       stateNo: 130,
+      spritePriority: 7,
     });
     let guardHookCount = 0;
-    const guardMove = move({ kill: true, guardKill: false });
+    const guardMove = move({ kill: true, guardKill: false, p1SpritePriority: 4, p2SpritePriority: -2 });
 
     const outcome = world.applyResolvedHit(attacker, defender, guardMove, {
       kind: "guard",
@@ -107,12 +108,22 @@ describe("DirectCombatSystem", () => {
       push: 3,
       hitVelocityY: -1,
       powerGain: 12,
-    }, hooks({ applyGuardHit: () => { guardHookCount += 1; } }));
+    }, hooks({ applyGuardHit: () => { guardHookCount += 1; } }), { hitDefPriorityProfile: "mugen-1.1" });
 
     expect(outcome).toEqual({ kind: "guard", damage: 11, message: "Defender guarded Attacker for 11" });
     expect(attacker.hasHit).toBe(true);
     expect(attacker.hitPause).toBe(4);
     expect(attacker.runtime.power).toBe(24);
+    expect(attacker.runtime.spritePriority).toBe(4);
+    expect(attacker.runtime.hitDefSpritePriority).toEqual({
+      profile: "mugen-1.1",
+      role: "p1",
+      contactKind: "guard",
+      previousValue: 8,
+      value: 4,
+      source: "authored",
+      supported: true,
+    });
     expect(defender.hitPause).toBe(4);
     expect(defender.currentMove).toBeUndefined();
     expect(defender.moveTick).toBe(0);
@@ -124,6 +135,16 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guarding).toBe(true);
     expect(defender.runtime.receivedHitSequence).toBe(4);
     expect(defender.runtime.ctrl).toBe(false);
+    expect(defender.runtime.spritePriority).toBe(-2);
+    expect(defender.runtime.hitDefSpritePriority).toEqual({
+      profile: "mugen-1.1",
+      role: "p2",
+      contactKind: "guard",
+      previousValue: 7,
+      value: -2,
+      source: "authored",
+      supported: true,
+    });
     expect(defender.runtime.vel).toEqual({ x: 3, y: -1 });
     expect(defender.runtime.hitVelocity).toEqual({ x: 3, y: -1 });
     expect(defender.runtime.hitVars).toEqual({
@@ -150,7 +171,13 @@ describe("DirectCombatSystem", () => {
   it("applies bounded hit results, hitFall metadata, and received damage", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeDirectCombatWorld(contactWorld);
-    const attacker = actor("p1", "Attacker", { power: 20, facing: -1, stateNo: 210, pos: { x: 40, y: -10 } });
+    const attacker = actor("p1", "Attacker", {
+      power: 20,
+      facing: -1,
+      stateNo: 210,
+      pos: { x: 40, y: -10 },
+      spritePriority: 8,
+    });
     const defender = actor("p2", "Defender", {
       life: 80,
       receivedHitSequence: 4,
@@ -160,6 +187,7 @@ describe("DirectCombatSystem", () => {
       guardControlTime: 6,
       guarding: true,
       stateNo: 5000,
+      spritePriority: 7,
     });
     const transitions: string[] = [];
     const combatMove = move({
@@ -188,12 +216,22 @@ describe("DirectCombatSystem", () => {
     }, hooks({
       applyHitStateTransitions: () => transitions.push("state-transition"),
       applyDefaultGetHit: () => transitions.push("default-gethit"),
-    }));
+    }), { hitDefPriorityProfile: "mugen-1.1" });
 
     expect(outcome).toEqual({ kind: "hit", damage: 30, message: "Attacker hit Defender for 30" });
     expect(attacker.hasHit).toBe(true);
     expect(attacker.hitPause).toBe(6);
     expect(attacker.runtime.power).toBe(55);
+    expect(attacker.runtime.spritePriority).toBe(1);
+    expect(attacker.runtime.hitDefSpritePriority).toMatchObject({
+      profile: "mugen-1.1",
+      role: "p1",
+      contactKind: "hit",
+      previousValue: 8,
+      value: 1,
+      source: "mugen-1.1-default",
+      supported: true,
+    });
     expect(defender.hitPause).toBe(6);
     expect(defender.hitStun).toBe(13);
     expect(defender.runtime.life).toBe(50);
@@ -202,6 +240,16 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guardControlTime).toBe(0);
     expect(defender.runtime.guarding).toBe(false);
     expect(defender.runtime.receivedHitSequence).toBe(5);
+    expect(defender.runtime.spritePriority).toBe(0);
+    expect(defender.runtime.hitDefSpritePriority).toMatchObject({
+      profile: "mugen-1.1",
+      role: "p2",
+      contactKind: "hit",
+      previousValue: 7,
+      value: 0,
+      source: "mugen-1.1-default",
+      supported: true,
+    });
     expect(defender.runtime.vel).toEqual({ x: -4, y: -2 });
     expect(defender.runtime.pos).toEqual({ x: 24, y: -34 });
     expect(defender.runtime.hitVelocity).toEqual({ x: -4, y: -2 });

@@ -9,6 +9,11 @@ import {
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
 import {
+  resolveRuntimeHitDefSpritePriorities,
+  type RuntimeHitDefPriorityProfile,
+  type RuntimeResolvedHitDefSpritePriority,
+} from "./HitDefPriorityPolicy";
+import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
@@ -18,7 +23,7 @@ import type { CharacterRuntimeState } from "./types";
 export type RuntimeDirectCombatActor = {
   id: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "constants">;
+  definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile">;
   runtime: CharacterRuntimeState;
   currentMove?: DemoMove;
   currentMoveLabel?: string;
@@ -44,6 +49,7 @@ export type RuntimeDirectCombatOutcome = {
 
 export type RuntimeDirectCombatOptions = {
   stageBounds?: RuntimeStageBounds;
+  hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
 };
 
 export type RuntimeDirectPriorityHooks = {
@@ -108,6 +114,7 @@ export class RuntimeDirectCombatWorld {
     options: RuntimeDirectCombatOptions = {},
   ): RuntimeDirectCombatOutcome {
     attacker.hasHit = true;
+    applyRuntimeHitDefSpritePriorityContact(attacker, defender, move, result.kind, options.hitDefPriorityProfile ?? "unknown");
     if (result.kind === "guard") {
       return this.applyGuard(attacker, defender, move, result, hooks, options);
     }
@@ -197,6 +204,49 @@ export class RuntimeDirectCombatWorld {
       message: `${attacker.label} hit ${defender.label} for ${result.damage}`,
     };
   }
+}
+
+function applyRuntimeHitDefSpritePriorityContact<TActor extends RuntimeDirectCombatActor>(
+  attacker: TActor,
+  defender: TActor,
+  move: DemoMove,
+  contactKind: RuntimeCombatHitResult["kind"],
+  profile: RuntimeHitDefPriorityProfile,
+): void {
+  const priorities = resolveRuntimeHitDefSpritePriorities({
+    profile,
+    authored: {
+      p1: move.p1SpritePriority,
+      p2: move.p2SpritePriority,
+    },
+    current: {
+      p1: attacker.runtime.spritePriority ?? 0,
+      p2: defender.runtime.spritePriority ?? 0,
+    },
+  });
+  applyResolvedSpritePriority(attacker.runtime, profile, "p1", contactKind, priorities.p1);
+  applyResolvedSpritePriority(defender.runtime, profile, "p2", contactKind, priorities.p2);
+}
+
+function applyResolvedSpritePriority(
+  runtime: CharacterRuntimeState,
+  profile: RuntimeHitDefPriorityProfile,
+  role: "p1" | "p2",
+  contactKind: RuntimeCombatHitResult["kind"],
+  resolved: RuntimeResolvedHitDefSpritePriority,
+): void {
+  if (resolved.source === "preserve-current" && runtime.spritePriority === undefined) {
+    return;
+  }
+  const previousValue = runtime.spritePriority;
+  runtime.spritePriority = resolved.value;
+  runtime.hitDefSpritePriority = {
+    profile,
+    role,
+    contactKind,
+    ...(previousValue !== undefined ? { previousValue } : {}),
+    ...resolved,
+  };
 }
 
 function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<RuntimeDirectPriorityHooks, "isMoveActive">): DemoMove | undefined {

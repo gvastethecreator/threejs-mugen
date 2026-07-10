@@ -31,3 +31,14 @@ Legacy `sprpriority` aliasing, dynamic expressions, Projectile inheritance, exac
 ## Implementation Decision
 
 Add optional `p1SpritePriority` / `p2SpritePriority` fields to typed HitDef operations and active move data. Add a pure `HitDefPriorityPolicy` returning resolved value, provenance, and support state. Contact mutation and trace provenance are the next vertical slice.
+
+## Implementation Outcome
+
+- Package assessment now maps MUGEN 1.1, observed Ikemen, and unknown profiles into the policy seam.
+- Shared direct-combat contact applies resolved priorities to player and first-generation helper routes only after accepted hit or guard.
+- Runtime diagnostics retain profile, role, contact kind, previous value, final value, source, and support state outside the legacy behavior checksum projection.
+- Required player trace checksum `4dafe2f3` / final `f30f3c78` proves omitted MUGEN 1.1 defaults for both actors.
+- Required helper trace checksum `53833d9e` / final `8b1b11a1` proves authored values for helper P1 and player P2.
+- `pnpm qa:trace` passes 526/526 artifacts: 495 required and 31 optional.
+
+Next decision: define the smallest renderer-independent semantic order record and controlled player/effect/stage overlap gate. Dynamic HitDef values, Projectile inheritance, exact Ikemen defaults, equal ties, and full visual parity remain blocked.

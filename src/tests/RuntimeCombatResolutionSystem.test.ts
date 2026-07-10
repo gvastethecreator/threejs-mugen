@@ -264,12 +264,13 @@ describe("RuntimeCombatResolutionSystem", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();
     const attacker = actor("p2", "P2", contactWorld, {
-      runtime: runtimeState({ stateNo: 200 }),
-      currentMove: move({ attr: "S,NA" }),
+      runtime: runtimeState({ stateNo: 200, spritePriority: 8 }),
+      currentMove: move({ attr: "S,NA", p1SpritePriority: 5, p2SpritePriority: -4 }),
       moveTick: 2,
     });
+    attacker.definition.hitDefPriorityProfile = "mugen-1.1";
     const defender = actor("p1", "P1", contactWorld, {
-      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100, spritePriority: 7 }),
     });
     const logs: string[] = [];
 
@@ -294,6 +295,10 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(attacker.hasHit).toBe(false);
     expect(defender.runtime.life).toBe(100);
     expect(defender.runtime.moveType).toBe("I");
+    expect(attacker.runtime.spritePriority).toBe(8);
+    expect(defender.runtime.spritePriority).toBe(7);
+    expect(attacker.runtime.hitDefSpritePriority).toBeUndefined();
+    expect(defender.runtime.hitDefSpritePriority).toBeUndefined();
     expect(logs).toEqual(["P1 rejected P2 S,NA via SuperPause unhittable"]);
   });
 

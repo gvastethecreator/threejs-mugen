@@ -42,7 +42,10 @@ export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
     hitPause: number;
     hasHit: boolean;
     contact: RuntimeContactMemory;
-    definition: Pick<DemoFighterDefinition, "source" | "constants" | "animations" | "hitSparkLibraries">;
+    definition: Pick<
+      DemoFighterDefinition,
+      "source" | "constants" | "animations" | "hitSparkLibraries" | "hitDefPriorityProfile"
+    >;
     contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileContact" | "markReceivedDamage">;
     currentInput: Iterable<string>;
     targetWorld: Pick<RuntimeTargetWorld, "remember">;
@@ -235,7 +238,10 @@ export class RuntimeCombatResolutionWorld {
         ),
       applyDefaultGetHit: (target, moveArg) =>
         this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
-    }, { stageBounds: input.stageBounds });
+    }, {
+      stageBounds: input.stageBounds,
+      hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
+    });
     input.contactPresentationWorld.emitHitDefContact({
       attacker,
       defender,

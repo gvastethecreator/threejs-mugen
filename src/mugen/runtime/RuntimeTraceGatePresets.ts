@@ -4,6 +4,7 @@ import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import { MatchWorld } from "./MatchWorld";
 import type {
   RuntimeTraceActorFrameRequirement,
@@ -7706,6 +7707,74 @@ export function createSyntheticImportedHitDefPriorityTraceArtifact(options: Runt
             actorKind: "player",
             life: 969,
             moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefSpritePriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-sprite-priority-attacker",
+    displayName: "Synthetic Imported HitDef Sprite Priority Attacker",
+    hitDefPriorityProfile: "mugen-1.1",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-sprite-priority-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-sprite-priority-golden",
+      label: "Synthetic imported HitDef sprite-priority defaults route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported direct HitDef trace proves an explicit MUGEN 1.1 profile resolves omitted p1sprpriority/p2sprpriority only on accepted hit, records previous/final values plus default provenance, and updates both player sprite priorities. It does not claim dynamic, Projectile, IKEMEN, equal-tie, stage/effect, or renderer parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-sprite-priority-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            spritePriority: 1,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p1",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 2,
+            hitDefSpritePrioritySource: "mugen-1.1-default",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            actorKind: "player",
+            spritePriority: 0,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p2",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 1,
+            hitDefSpritePrioritySource: "mugen-1.1-default",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
           },
         ],
       },
@@ -35146,6 +35215,106 @@ export function createSyntheticImportedHelperHitDefTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperHitDefScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-hitdef-sprite-priority-attacker",
+    displayName: "Synthetic Imported Helper HitDef Sprite Priority Attacker",
+    hitDefPriorityProfile: "mugen-1.1",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 2,
+    helperIgnoreHitPause: true,
+    helperHitDefRoute: {
+      branchStateNo: 1230,
+      branchAnimNo: 970,
+      damage: 29,
+      p1SpritePriority: 5,
+      p2SpritePriority: -3,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-hitdef-sprite-priority-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-hitdef-sprite-priority-golden",
+      label: "Synthetic imported helper HitDef sprite-priority route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported helper direct HitDef trace proves authored p1sprpriority/p2sprpriority values flow through the shared accepted-contact policy, record helper/player previous and final values with provenance, and sync the helper runtime. It does not claim nested helpers, Projectile inheritance, dynamic expressions, IKEMEN defaults, or renderer parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-hitdef-sprite-priority-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            spritePriority: 5,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p1",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 8,
+            hitDefSpritePrioritySource: "authored",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            actorKind: "player",
+            spritePriority: -3,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p2",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 1,
+            hitDefSpritePrioritySource: "authored",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 971 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-helper-0",
+            kind: "helper",
+            ownerId: "p1",
+            effectId: 42,
+            name: "Buddy",
+            helperStateNo: 1230,
+            minSpritePriority: 5,
+            minAge: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperHitDefPersistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperHitDefScript();
@@ -38364,6 +38533,7 @@ export type SyntheticImportedTraceFighterOptions = {
   displayName?: string;
   authorName?: string;
   localCoord?: [number, number];
+  hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   hitDefAttr?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
@@ -38375,6 +38545,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefMissOnOverride?: boolean;
   omitHitDefId?: boolean;
   hitDefPriority?: number;
+  hitDefP1SpritePriority?: number;
+  hitDefP2SpritePriority?: number;
   hitAnimType?: string;
   hitGroundType?: string;
   hitAirType?: string;
@@ -38948,6 +39120,8 @@ export type SyntheticImportedTraceFighterOptions = {
     branchStateNo: number;
     branchAnimNo?: number;
     damage?: number;
+    p1SpritePriority?: number;
+    p2SpritePriority?: number;
     targetId?: number;
     branchTrigger?: string;
     hitSound?: string;
@@ -39335,6 +39509,8 @@ ${hitDefIdLine}
 ${hitDefChainIdLine}
 ${hitDefHitCountLine}
 priority = ${options.hitDefPriority ?? 4}, Hit
+${options.hitDefP1SpritePriority === undefined ? "" : `p1sprpriority = ${options.hitDefP1SpritePriority}`}
+${options.hitDefP2SpritePriority === undefined ? "" : `p2sprpriority = ${options.hitDefP2SpritePriority}`}
 ${options.hitDefMissOnOverride === undefined ? "" : `missonoverride = ${options.hitDefMissOnOverride ? 1 : 0}`}
 ${guardLine}
 ${guardDistanceLine}
@@ -39704,6 +39880,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
   return {
     id: options.id ?? "synthetic-imported-trace",
     source: "imported",
+    hitDefPriorityProfile: options.hitDefPriorityProfile,
     displayName: options.displayName ?? "Synthetic Imported Trace",
     authorName: options.authorName,
     localCoord: options.localCoord,
@@ -45263,6 +45440,8 @@ function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighter
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const damage = route.damage ?? 29;
   const targetIdLine = route.targetId === undefined ? "" : `id = ${route.targetId}`;
+  const p1SpritePriorityLine = route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`;
+  const p2SpritePriorityLine = route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`;
   const branchTrigger = route.branchTrigger ?? `EnemyNear, Life <= ${1000 - damage}`;
   const hitSoundLine = route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`;
   const guardSoundLine = route.guardSound === undefined ? "" : `guardsound = ${route.guardSound}`;
@@ -45325,6 +45504,8 @@ ${hitSparkLine}
 ${guardSparkLine}
 ${sparkXyLine}
 priority = 4, Hit
+${p1SpritePriorityLine}
+${p2SpritePriorityLine}
 ${branchLines}
 `;
 }

@@ -1081,6 +1081,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-sprite-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefSpritePriorityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-kill",
       required: true,
       artifact: presets.createSyntheticImportedHitDefKillTraceArtifact(),
@@ -2447,6 +2452,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperHitDefTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-hitdef-sprite-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-hitdefpersist",
       required: true,
       artifact: presets.createSyntheticImportedHelperHitDefPersistTraceArtifact(),
@@ -3741,6 +3751,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projcontact",
     "synthetic-imported-helper-projcontactpersist",
     "synthetic-imported-helper-hitdef",
+    "synthetic-imported-helper-hitdef-sprite-priority",
     "synthetic-imported-helper-hitdefpersist",
     "synthetic-imported-helper-hitcountpersist",
     "synthetic-imported-helper-movehitpersist",
@@ -3938,6 +3949,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-resource-max",
     "synthetic-imported-hitdefattr",
     "synthetic-imported-hitdef-priority",
+    "synthetic-imported-hitdef-sprite-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",
     "synthetic-imported-hitdef-guard-sound",

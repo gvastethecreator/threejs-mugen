@@ -4,6 +4,7 @@ import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
+import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 
 export type HitSparkLibrarySource = "common" | "fightfx";
 
@@ -88,6 +89,7 @@ export type DemoMove = {
 export type DemoFighterDefinition = {
   id: string;
   source?: "demo" | "imported";
+  hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   displayName: string;
   authorName?: string;
   localCoord?: [number, number];

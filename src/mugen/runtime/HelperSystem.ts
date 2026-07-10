@@ -95,6 +95,7 @@ export type RuntimeHelper = {
   pauseMoveTime: number;
   superMoveTime: number;
   spritePriority: number;
+  hitDefSpritePriority?: CharacterRuntimeState["hitDefSpritePriority"];
   soundEvents: RuntimeSoundEvent[];
   hitEffectEvents: RuntimeHitEffectEvent[];
   ownerBind?: RuntimeHelperOwnerBind;
@@ -1027,6 +1028,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     vel: { ...helper.vel },
     facing: helper.facing,
     spritePriority: helper.spritePriority,
+    hitDefSpritePriority: helper.hitDefSpritePriority ? { ...helper.hitDefSpritePriority } : undefined,
     stateNo: helper.stateNo ?? 0,
     animNo: helper.animNo,
     animTime: helper.stateTime,
@@ -1083,6 +1085,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.stateNo = runtime.stateNo;
   helper.animNo = runtime.animNo;
   helper.spritePriority = runtime.spritePriority ?? helper.spritePriority;
+  helper.hitDefSpritePriority = runtime.hitDefSpritePriority ? { ...runtime.hitDefSpritePriority } : undefined;
   helper.lifeMax = runtime.lifeMax ?? helper.lifeMax;
   helper.life = runtime.life;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;

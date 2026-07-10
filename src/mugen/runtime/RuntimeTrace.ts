@@ -8,6 +8,7 @@ import type {
 import type {
   ActorCompatibilitySession,
   ActorSnapshot,
+  CharacterRuntimeState,
   CompatibilitySessionSnapshot,
   MugenSnapshot,
   RuntimeActorKind,
@@ -31,6 +32,7 @@ export type RuntimeTraceScriptSegment = RuntimeTraceInputFrame & {
 
 export type RuntimeTraceEffectSummary = NonNullable<ActorSnapshot["effect"]>;
 export type RuntimeTraceHitEffectEvent = NonNullable<ActorSnapshot["hitEffectEvents"]>[number];
+export type RuntimeTraceHitDefSpritePriority = NonNullable<CharacterRuntimeState["hitDefSpritePriority"]>;
 
 export type RuntimeTraceActor = {
   id: string;
@@ -63,6 +65,7 @@ export type RuntimeTraceActor = {
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
   spritePriority?: number;
+  hitDefSpritePriority?: RuntimeTraceHitDefSpritePriority;
   paletteFx?: {
     time: number;
     add: [number, number, number];
@@ -524,6 +527,12 @@ export type RuntimeTraceActorFrameRequirement = {
   bodyWidthBack?: number;
   playerPush?: boolean;
   spritePriority?: number;
+  hitDefSpritePriorityProfile?: RuntimeTraceHitDefSpritePriority["profile"];
+  hitDefSpritePriorityRole?: RuntimeTraceHitDefSpritePriority["role"];
+  hitDefSpritePriorityContactKind?: RuntimeTraceHitDefSpritePriority["contactKind"];
+  hitDefSpritePriorityPreviousValue?: number;
+  hitDefSpritePrioritySource?: RuntimeTraceHitDefSpritePriority["source"];
+  hitDefSpritePrioritySupported?: boolean;
   paletteFxTime?: number;
   paletteFxAddR?: number;
   paletteFxAddG?: number;
@@ -599,6 +608,12 @@ export type RuntimeTraceGateActorFrameEvidence = {
   bodyWidthBack?: number;
   playerPush?: boolean;
   spritePriority?: number;
+  hitDefSpritePriorityProfile?: RuntimeTraceHitDefSpritePriority["profile"];
+  hitDefSpritePriorityRole?: RuntimeTraceHitDefSpritePriority["role"];
+  hitDefSpritePriorityContactKind?: RuntimeTraceHitDefSpritePriority["contactKind"];
+  hitDefSpritePriorityPreviousValue?: number;
+  hitDefSpritePrioritySource?: RuntimeTraceHitDefSpritePriority["source"];
+  hitDefSpritePrioritySupported?: boolean;
   paletteFxTime?: number;
   paletteFxAddR?: number;
   paletteFxAddG?: number;
@@ -1575,6 +1590,16 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 frame.tick < existing.firstTick ? actor.hitFall?.downRecoverTime : existing.firstHitFallDownRecoverTime,
               lastHitFallDownRecoverTime:
                 frame.tick >= existing.lastTick ? actor.hitFall?.downRecoverTime : existing.lastHitFallDownRecoverTime,
+              hitDefSpritePriorityProfile:
+                actor.hitDefSpritePriority?.profile ?? existing.hitDefSpritePriorityProfile,
+              hitDefSpritePriorityRole: actor.hitDefSpritePriority?.role ?? existing.hitDefSpritePriorityRole,
+              hitDefSpritePriorityContactKind:
+                actor.hitDefSpritePriority?.contactKind ?? existing.hitDefSpritePriorityContactKind,
+              hitDefSpritePriorityPreviousValue:
+                actor.hitDefSpritePriority?.previousValue ?? existing.hitDefSpritePriorityPreviousValue,
+              hitDefSpritePrioritySource: actor.hitDefSpritePriority?.source ?? existing.hitDefSpritePrioritySource,
+              hitDefSpritePrioritySupported:
+                actor.hitDefSpritePriority?.supported ?? existing.hitDefSpritePrioritySupported,
               guardingFrames: existing.guardingFrames + (actor.guarding ? 1 : 0),
             }
           : {
@@ -1620,6 +1645,12 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               bodyWidthBack: actor.bodyWidth?.back,
               playerPush: actor.playerPush,
               spritePriority: actor.spritePriority,
+              hitDefSpritePriorityProfile: actor.hitDefSpritePriority?.profile,
+              hitDefSpritePriorityRole: actor.hitDefSpritePriority?.role,
+              hitDefSpritePriorityContactKind: actor.hitDefSpritePriority?.contactKind,
+              hitDefSpritePriorityPreviousValue: actor.hitDefSpritePriority?.previousValue,
+              hitDefSpritePrioritySource: actor.hitDefSpritePriority?.source,
+              hitDefSpritePrioritySupported: actor.hitDefSpritePriority?.supported,
               paletteFxTime: actor.paletteFx?.time,
               paletteFxAddR: actor.paletteFx?.add[0],
               paletteFxAddG: actor.paletteFx?.add[1],
@@ -2954,6 +2985,9 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
+    actor.hitDefSpritePriorityProfile === undefined
+      ? "hdsp*"
+      : `hdsp${actor.hitDefSpritePriorityProfile}:${actor.hitDefSpritePriorityRole}:${actor.hitDefSpritePriorityContactKind}:${actor.hitDefSpritePriorityPreviousValue ?? "*"}:${actor.hitDefSpritePrioritySource}:${actor.hitDefSpritePrioritySupported ? 1 : 0}`,
     `op${actor.minOpacity}:${actor.maxOpacity}`,
     actor.shadowVisible === false ? "sh0" : "sh1",
     `ang${actor.minAngle}:${actor.maxAngle}`,
@@ -3048,6 +3082,16 @@ function matchesActorFrameRequirement(
     (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.playerPush === undefined || actor.playerPush === requirement.playerPush) &&
     (requirement.spritePriority === undefined || actor.spritePriority === requirement.spritePriority) &&
+    (requirement.hitDefSpritePriorityProfile === undefined ||
+      actor.hitDefSpritePriorityProfile === requirement.hitDefSpritePriorityProfile) &&
+    (requirement.hitDefSpritePriorityRole === undefined || actor.hitDefSpritePriorityRole === requirement.hitDefSpritePriorityRole) &&
+    (requirement.hitDefSpritePriorityContactKind === undefined ||
+      actor.hitDefSpritePriorityContactKind === requirement.hitDefSpritePriorityContactKind) &&
+    (requirement.hitDefSpritePriorityPreviousValue === undefined ||
+      actor.hitDefSpritePriorityPreviousValue === requirement.hitDefSpritePriorityPreviousValue) &&
+    (requirement.hitDefSpritePrioritySource === undefined || actor.hitDefSpritePrioritySource === requirement.hitDefSpritePrioritySource) &&
+    (requirement.hitDefSpritePrioritySupported === undefined ||
+      actor.hitDefSpritePrioritySupported === requirement.hitDefSpritePrioritySupported) &&
     (requirement.paletteFxTime === undefined || actor.paletteFxTime === requirement.paletteFxTime) &&
     (requirement.paletteFxAddR === undefined || actor.paletteFxAddR === requirement.paletteFxAddR) &&
     (requirement.paletteFxAddG === undefined || actor.paletteFxAddG === requirement.paletteFxAddG) &&
@@ -3394,6 +3438,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       : undefined,
     playerPush: actor.runtime.playerPush,
     spritePriority: actor.runtime.spritePriority,
+    hitDefSpritePriority: actor.runtime.hitDefSpritePriority ? { ...actor.runtime.hitDefSpritePriority } : undefined,
     paletteFx: actor.runtime.paletteFx
       ? {
           time: actor.runtime.paletteFx.time,
@@ -3481,6 +3526,7 @@ function summarizeActorForChecksum(
   | "bodyWidth"
   | "playerPush"
   | "spritePriority"
+  | "hitDefSpritePriority"
   | "paletteFx"
   | "paletteRemap"
   | "afterImage"
@@ -3504,6 +3550,7 @@ function summarizeActorForChecksum(
     bodyWidth: _bodyWidth,
     playerPush: _playerPush,
     spritePriority: _spritePriority,
+    hitDefSpritePriority: _hitDefSpritePriority,
     paletteFx: _paletteFx,
     paletteRemap: _paletteRemap,
     afterImage: _afterImage,

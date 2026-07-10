@@ -34,6 +34,8 @@ describe("RuntimeHelperCombatSystem", () => {
     helper.stateNo = 6000;
     helper.currentMove = move({
       targetId: 7,
+      p1SpritePriority: 5,
+      p2SpritePriority: -3,
       hitSound: "S5,1",
       hitSoundValue: { rawPrefix: "S", group: 5, index: 1 },
       hitSpark: "S7000",
@@ -46,7 +48,7 @@ describe("RuntimeHelperCombatSystem", () => {
     const logs: string[] = [];
     const stateEntries: string[] = [];
     const audioOperations: string[] = [];
-    const combatOwner = owner("p1", effectActorWorld, fighterDefinition("imported"));
+    const combatOwner = owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1"));
 
     new RuntimeHelperCombatWorld().resolveDirect({
       owner: combatOwner,
@@ -67,6 +69,8 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(logs).toEqual(["Helper Assist hit P2 for 25"]);
     expect(helper.hasHit).toBe(true);
     expect(helper.power).toBe(35);
+    expect(helper.spritePriority).toBe(5);
+    expect(helper.hitDefSpritePriority).toMatchObject({ role: "p1", contactKind: "hit", source: "authored" });
     expect(helper.targets).toEqual([{ actorId: "p2", targetId: 7, age: 0 }]);
     expect(helper.soundEvents[0]).toMatchObject({
       type: "PlaySnd",
@@ -84,6 +88,8 @@ describe("RuntimeHelperCombatSystem", () => {
     });
     expect(defender.runtime.life).toBe(75);
     expect(defender.runtime.receivedHitSequence).toBe(1);
+    expect(defender.runtime.spritePriority).toBe(-3);
+    expect(defender.runtime.hitDefSpritePriority).toMatchObject({ role: "p2", contactKind: "hit", source: "authored" });
     expect(defender.runtime.stateNo).toBe(5000);
     expect(stateEntries).toEqual(["p2:5000:clear"]);
     expect(runtimeMoveContactValue(helper.contact, 6000, "hit")).toBe(0);
@@ -115,7 +121,7 @@ describe("RuntimeHelperCombatSystem", () => {
     const audioOperations: string[] = [];
 
     new RuntimeHelperCombatWorld().resolveDirect({
-      owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
       defender,
       directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
       reversalWorld: new RuntimeReversalWorld(contactWorld),
@@ -130,11 +136,15 @@ describe("RuntimeHelperCombatSystem", () => {
     });
 
     expect(helper.hasHit).toBe(true);
+    expect(helper.spritePriority).toBe(1);
+    expect(helper.hitDefSpritePriority).toMatchObject({ role: "p1", contactKind: "guard", source: "mugen-1.1-default" });
     expect(helper.soundEvents[0]).toMatchObject({ type: "PlaySnd", group: 6, index: 2, contactKind: "guard" });
     expect(helper.hitEffectEvents[0]).toMatchObject({ type: "HitSpark", sparkNo: 7001, contactKind: "guard" });
     expect(defender.runtime.life).toBe(95);
     expect(defender.runtime.guardStun).toBe(6);
     expect(defender.runtime.guarding).toBe(true);
+    expect(defender.runtime.spritePriority).toBe(0);
+    expect(defender.runtime.hitDefSpritePriority).toMatchObject({ role: "p2", contactKind: "guard", source: "mugen-1.1-default" });
     expect(defender.runtime.stateNo).toBe(150);
     expect(stateEntries).toEqual(["p2:150:clear"]);
     expect(runtimeMoveContactValue(helper.contact, 6100, "guard")).toBe(0);
@@ -162,7 +172,7 @@ describe("RuntimeHelperCombatSystem", () => {
     const audioOperations: string[] = [];
 
     new RuntimeHelperCombatWorld().resolveDirect({
-      owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
       defender,
       directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
       reversalWorld: new RuntimeReversalWorld(contactWorld),
@@ -184,6 +194,9 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(helper.hitEffectEvents).toEqual([]);
     expect(audioOperations).toEqual([]);
     expect(defender.runtime.life).toBe(100);
+    expect(helper.spritePriority).toBe(3);
+    expect(helper.hitDefSpritePriority).toBeUndefined();
+    expect(defender.runtime.hitDefSpritePriority).toBeUndefined();
   });
 
   it("rejects helper direct HitDef while SuperPause unhittable protects the defender", () => {
@@ -420,9 +433,13 @@ function move(overrides: Partial<DemoMove> = {}): DemoMove {
   };
 }
 
-function fighterDefinition(source: RuntimeHelperCombatOwner["definition"]["source"]): RuntimeHelperCombatOwner["definition"] {
+function fighterDefinition(
+  source: RuntimeHelperCombatOwner["definition"]["source"],
+  hitDefPriorityProfile?: RuntimeHelperCombatOwner["definition"]["hitDefPriorityProfile"],
+): RuntimeHelperCombatOwner["definition"] {
   return {
     source,
+    hitDefPriorityProfile,
     constants: {},
     animations: new Map([
       [7000, action(7000)],

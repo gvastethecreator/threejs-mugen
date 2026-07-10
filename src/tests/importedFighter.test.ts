@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createCompatibilityProfiles, createEmptyCompileReport, type CompatibilityReport } from "../mugen/compatibility/CompatibilityReport";
+import { createEmptyIkemenScanReport } from "../mugen/compatibility/IkemenFeatureScanner";
 import { compileRuntimeProgram } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenCharacter } from "../mugen/model/MugenCharacter";
@@ -40,6 +41,23 @@ describe("createImportedFighterDefinition", () => {
     const fighter = createImportedFighterDefinition(character);
 
     expect(fighter?.localCoord).toEqual([640, 480]);
+  });
+
+  it("maps assessed package profiles into the HitDef priority policy seam", () => {
+    const animations = new Map<number, MugenAnimationAction>([[0, action(0, [[0, 0, 0]])]]);
+    const mugen11 = fakeCharacter(animations);
+    mugen11.compatibility.profiles = createCompatibilityProfiles({ mugenVersion: "1.1" });
+    const ikemen = fakeCharacter(animations);
+    ikemen.compatibility.profiles = createCompatibilityProfiles({
+      ikemen: {
+        ...createEmptyIkemenScanReport(),
+        detected: true,
+      },
+    });
+
+    expect(createImportedFighterDefinition(mugen11)?.hitDefPriorityProfile).toBe("mugen-1.1");
+    expect(createImportedFighterDefinition(ikemen)?.hitDefPriorityProfile).toBe("ikemen-go");
+    expect(createImportedFighterDefinition(fakeCharacter(animations))?.hitDefPriorityProfile).toBe("unknown");
   });
 
   it("does not create a runtime fighter without decoded sprites", () => {
