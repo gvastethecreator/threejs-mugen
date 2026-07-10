@@ -5,7 +5,7 @@ import type { MugenCommand, MugenCommandFile } from "./MugenCommand";
 import type { MugenPalette } from "./MugenPalette";
 import type { SndArchive } from "./MugenSound";
 import type { SffArchive } from "./MugenSprite";
-import type { MugenStateController, MugenStateDef } from "./MugenState";
+import type { MugenStateController, MugenStateDef, MugenStateSourceSelection } from "./MugenState";
 import type { MugenSystemAssets } from "./MugenSystemAssets";
 
 export type MugenCharacterDef = {
@@ -55,6 +55,7 @@ export type MugenCharacter = {
   commandDefaults?: MugenCommandFile["defaults"];
   commandRemap?: MugenCommandFile["remap"];
   states: MugenStateDef[];
+  stateSources: MugenStateSourceSelection[];
   stateEntryControllers: MugenStateController[];
   constants: Record<string, number>;
   runtimeProgram?: RuntimeProgramIr;

@@ -984,6 +984,9 @@ export type RuntimeTraceControllerEventRequirement = {
   controller?: string;
   name?: string;
   operation?: string;
+  sourceKind?: import("../model/MugenState").MugenStateSourceKind;
+  sourcePath?: string;
+  sourceFingerprint?: string;
 };
 
 export type RuntimeTraceControllerEventSequenceRequirement = {
@@ -3758,7 +3761,10 @@ function matchesControllerEventRequirement(
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
     (requirement.controller === undefined || event.controller === requirement.controller) &&
     (requirement.name === undefined || event.name === requirement.name) &&
-    (requirement.operation === undefined || event.operation === requirement.operation)
+    (requirement.operation === undefined || event.operation === requirement.operation) &&
+    (requirement.sourceKind === undefined || event.stateSource?.kind === requirement.sourceKind) &&
+    (requirement.sourcePath === undefined || event.stateSource?.path === requirement.sourcePath) &&
+    (requirement.sourceFingerprint === undefined || event.stateSource?.fingerprint === requirement.sourceFingerprint)
   );
 }
 

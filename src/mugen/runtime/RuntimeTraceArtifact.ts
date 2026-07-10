@@ -181,7 +181,10 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
         executedStates: [...gate.evidence.executedStates],
         executedControllers: { ...gate.evidence.executedControllers },
         executedOperations: { ...gate.evidence.executedOperations },
-        controllerEvents: gate.evidence.controllerEvents.map((event) => ({ ...event })),
+        controllerEvents: gate.evidence.controllerEvents.map((event) => ({
+          ...event,
+          ...(event.stateSource ? { stateSource: { ...event.stateSource } } : {}),
+        })),
         activeCommands: [...gate.evidence.activeCommands],
         eventCategories: [...gate.evidence.eventCategories],
         eventLines: [...gate.evidence.eventLines],

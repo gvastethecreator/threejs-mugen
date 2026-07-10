@@ -1395,6 +1395,16 @@ async function main() {
       artifact: presets.createSyntheticImportedAutoGuardStartTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-common1-state-source-override",
+      required: true,
+      artifact: presets.createSyntheticImportedCommon1StateOverrideTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-common1-state-source-fallback",
+      required: true,
+      artifact: presets.createSyntheticImportedCommon1StateFallbackTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-auto-guard-end",
       required: true,
       artifact: presets.createSyntheticImportedAutoGuardEndTraceArtifact(),

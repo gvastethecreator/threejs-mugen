@@ -155,6 +155,8 @@ import {
   syntheticStandGuardHitPhysicsFrames,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
+  createSyntheticImportedCommon1StateFallbackTraceArtifact,
+  createSyntheticImportedCommon1StateOverrideTraceArtifact,
   createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialControlTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
@@ -15783,6 +15785,46 @@ describe("RuntimeTraceGatePresets", () => {
     expect(startFrame?.lastTick).toBeLessThan(holdFrame?.firstTick ?? 0);
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([syntheticAutoGuardStartControllerSequence()]);
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([syntheticAutoGuardStartActorFrameSequence()]);
+  });
+
+  it("proves character override and Common1 fallback provenance without changing guard-start timing", () => {
+    const override = createSyntheticImportedCommon1StateOverrideTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+    const fallback = createSyntheticImportedCommon1StateFallbackTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(override.status).toBe("passed");
+    expect(fallback.status).toBe("passed");
+    expect(override.gates[0]?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 120,
+          name: "Character Guard Start Done",
+          stateSource: expect.objectContaining({
+            kind: "character",
+            path: "chars/source-probe/source-probe.cns",
+          }),
+        }),
+      ]),
+    );
+    expect(fallback.gates[0]?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 120,
+          name: "Common Guard Start Done",
+          stateSource: expect.objectContaining({ kind: "common", path: "data/common1.cns" }),
+        }),
+      ]),
+    );
+    for (const artifact of [override, fallback]) {
+      const start = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 120);
+      const hold = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 130);
+      expect(start?.lastTick).toBeLessThan(hold?.firstTick ?? 0);
+    }
   });
 
   it("creates a synthetic imported automatic guard-end artifact without contact", () => {

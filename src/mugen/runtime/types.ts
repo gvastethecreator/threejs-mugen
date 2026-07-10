@@ -441,6 +441,7 @@ export type RuntimeControllerTraceEvent = {
   name?: string;
   line?: number;
   operation?: string;
+  stateSource?: import("../model/MugenState").MugenStateSourceRef;
 };
 
 export type CompatibilitySessionSnapshot = {

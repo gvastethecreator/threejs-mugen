@@ -5,6 +5,21 @@ export type MugenTrigger = {
   line: number;
 };
 
+export type MugenStateSourceKind = "character" | "common";
+
+export type MugenStateSourceRef = {
+  kind: MugenStateSourceKind;
+  path: string;
+  fingerprint: string;
+};
+
+export type MugenStateSourceSelection = {
+  stateId: number;
+  selected: MugenStateSourceRef;
+  shadowed: MugenStateSourceRef[];
+  reason: "character-override" | "character-only" | "common-fallback";
+};
+
 export type MugenStateController = {
   stateId: number;
   name?: string;
@@ -13,6 +28,7 @@ export type MugenStateController = {
   params: Record<string, string>;
   line: number;
   rawHeader: string;
+  source?: MugenStateSourceRef;
 };
 
 export type MugenStateDef = {
@@ -29,6 +45,7 @@ export type MugenStateDef = {
   rawParams: Record<string, string>;
   controllers: MugenStateController[];
   line: number;
+  source?: MugenStateSourceRef;
 };
 
 export type MugenStateFile = {

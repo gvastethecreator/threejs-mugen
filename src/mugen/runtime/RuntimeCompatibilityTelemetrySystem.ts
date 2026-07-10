@@ -205,6 +205,7 @@ export class RuntimeCompatibilityTelemetryWorld {
       controller: key,
       ...(controller?.name ? { name: controller.name } : {}),
       ...(controller?.line !== undefined ? { line: controller.line } : {}),
+      ...(controller?.source ? { stateSource: { ...controller.source } } : {}),
       ...(operation ? { operation } : {}),
     });
     while (actor.controllerEvents.length > 160) {

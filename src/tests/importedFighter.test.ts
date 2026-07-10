@@ -292,6 +292,7 @@ function fakeCharacter(animations: Map<number, MugenAnimationAction>, withSprite
     animations,
     commands: [],
     states,
+    stateSources: [],
     stateEntryControllers: [],
     constants: {},
     runtimeProgram,

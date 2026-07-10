@@ -1,7 +1,7 @@
 # Choose next gap after MatchTickSchedule v0
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,6 @@ What is the smallest source-provenance package that can prove character state ov
 
 ## Answer
 
-Pending primary-source, loader/compiler, and existing fixture review.
+Implement an explicit `StateSourceResolver` that selects character state data before `stcommon`, deduplicates the compiled state number, and retains selected/shadowed kind, path, and whole-file fingerprint. Attach the selected source to controllers so required guard-start artifacts can prove character override and Common1 fallback without changing the existing state 120 timing.
+
+Primary-source basis and blocked scope are recorded in `docs/research/2026-07-10-common1-state-source-precedence.md`.

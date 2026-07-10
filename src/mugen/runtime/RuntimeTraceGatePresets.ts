@@ -1,5 +1,6 @@
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import { fingerprintMugenStateSource, resolveMugenStateSources } from "../compiler/StateSourceResolver";
 import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
@@ -13249,6 +13250,38 @@ export function createSyntheticImportedAutoGuardStartTraceArtifact(options: Runt
     targetLabel: "Synthetic imported automatic guard-start route",
     notes: [
       "Synthetic imported auto guard-start trace proves the runtime can enter defender-owned Common1-style guard start state 120 and settle into 130 from held-back input plus bounded InGuardDist before contact. It does not claim exact MUGEN/IKEMEN proximity guard, guard end, guard sparks/sounds, or air guard parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedCommon1StateOverrideTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const probe = createCommon1StateSourceProbe("override");
+  return createImportedAutoGuardStartTraceArtifact(probe.fighter, {
+    ...options,
+    requiredControllerEventSequences: [probe.requirement],
+    requiredActorFrameSequences: [syntheticAutoGuardStartActorFrameSequence()],
+    targetId: "synthetic-imported-common1-state-source-override-golden",
+    targetLabel: "Synthetic imported Common1 state 120 character override",
+    notes: [
+      "Synthetic imported guard-start trace proves a character-owned state 120 overrides the same Common1 state while preserving the existing one-tick 120-to-130 guard route. It does not claim complete Common1 loading or exact MUGEN/IKEMEN guard-phase ordering.",
+    ],
+  });
+}
+
+export function createSyntheticImportedCommon1StateFallbackTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const probe = createCommon1StateSourceProbe("fallback");
+  return createImportedAutoGuardStartTraceArtifact(probe.fighter, {
+    ...options,
+    requiredControllerEventSequences: [probe.requirement],
+    requiredActorFrameSequences: [syntheticAutoGuardStartActorFrameSequence()],
+    targetId: "synthetic-imported-common1-state-source-fallback-golden",
+    targetLabel: "Synthetic imported Common1 state 120 fallback",
+    notes: [
+      "Synthetic imported guard-start trace proves Common1 supplies state 120 when character state data omits it while preserving the existing one-tick 120-to-130 guard route. It does not claim complete Common1 loading or exact MUGEN/IKEMEN guard-phase ordering.",
     ],
   });
 }
@@ -42017,6 +42050,81 @@ type = ChangeState
 trigger1 = Time >= 1
 value = 0
 ctrl = 1
+`;
+}
+
+const COMMON1_SOURCE_PROBE_CHARACTER_PATH = "chars/source-probe/source-probe.cns";
+const COMMON1_SOURCE_PROBE_COMMON_PATH = "data/common1.cns";
+
+function createCommon1StateSourceProbe(mode: "override" | "fallback"): {
+  fighter: DemoFighterDefinition;
+  requirement: RuntimeTraceControllerEventSequenceRequirement;
+} {
+  const characterText = common1State120SourceBlock("Character Guard Start Done");
+  const commonText = common1State120SourceBlock("Common Guard Start Done");
+  const commonStateFile = parseCns(commonText, COMMON1_SOURCE_PROBE_COMMON_PATH);
+  const sources = [
+    ...(mode === "override"
+      ? [
+          {
+            kind: "character" as const,
+            path: COMMON1_SOURCE_PROBE_CHARACTER_PATH,
+            text: characterText,
+            states: parseCns(characterText, COMMON1_SOURCE_PROBE_CHARACTER_PATH).states,
+          },
+        ]
+      : []),
+    {
+      kind: "common" as const,
+      path: COMMON1_SOURCE_PROBE_COMMON_PATH,
+      text: commonText,
+      states: commonStateFile.states,
+    },
+  ];
+  const resolution = resolveMugenStateSources(sources);
+  const base = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-common1-state-source-${mode}-defender`,
+    displayName: `Synthetic Imported Common1 State Source ${mode} Defender`,
+    withAutoGuardStartStates: true,
+  });
+  const selectedText = mode === "override" ? characterText : commonText;
+  const selectedPath = mode === "override" ? COMMON1_SOURCE_PROBE_CHARACTER_PATH : COMMON1_SOURCE_PROBE_COMMON_PATH;
+  const selectedName = mode === "override" ? "Character Guard Start Done" : "Common Guard Start Done";
+
+  return {
+    fighter: {
+      ...base,
+      states: [...(base.states ?? []).filter((state) => state.id !== 120), ...resolution.states],
+    },
+    requirement: {
+      label: `Common1 state 120 ${mode} source provenance`,
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        {
+          stateNo: 120,
+          controller: "ChangeState",
+          name: selectedName,
+          sourceKind: mode === "override" ? "character" : "common",
+          sourcePath: selectedPath,
+          sourceFingerprint: fingerprintMugenStateSource(selectedText),
+        },
+      ],
+    },
+  };
+}
+
+function common1State120SourceBlock(controllerName: string): string {
+  return `[Statedef 120]
+type = U
+physics = U
+anim = 120
+ctrl = 0
+
+[State 120, ${controllerName}]
+type = ChangeState
+trigger1 = Time >= 1
+value = 130
 `;
 }
 

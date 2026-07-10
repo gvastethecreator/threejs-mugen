@@ -2,6 +2,7 @@ import { createCompatibilityReport } from "../compatibility/CompatibilityReport"
 import { scanIkemenFeatures } from "../compatibility/IkemenFeatureScanner";
 import { UnsupportedFeatureTracker } from "../compatibility/UnsupportedFeatureTracker";
 import { compileRuntimeProgram, isRuntimeExecutableController } from "../compiler/StateControllerCompiler";
+import { resolveMugenStateSources, type MugenStateSourceInput } from "../compiler/StateSourceResolver";
 import type { MugenCharacter, ResolvedCharacterFiles } from "../model/MugenCharacter";
 import type { MugenDiagnostic } from "../model/MugenAnimation";
 import type { MugenPalette } from "../model/MugenPalette";
@@ -56,6 +57,7 @@ export class MugenCharacterLoader {
         animations: new Map(),
         commands: [],
         states: [],
+        stateSources: [],
         stateEntryControllers: [],
         constants: {},
         diagnostics,
@@ -110,15 +112,23 @@ export class MugenCharacterLoader {
       diagnostics.push(...parsedCmdStateEntries.diagnostics);
     }
 
-    const states: MugenCharacter["states"] = [];
+    const stateSources: MugenStateSourceInput[] = [];
     const constants: MugenCharacter["constants"] = {};
-    const stateFiles = [files.cns, ...files.states, ...files.commonStates].filter((path): path is string => Boolean(path));
+    const stateFiles = [
+      ...[files.cns, ...files.states]
+        .filter((path): path is string => Boolean(path))
+        .map((path) => ({ kind: "character" as const, path })),
+      ...files.commonStates.map((path) => ({ kind: "common" as const, path })),
+    ];
     for (const stateFile of stateFiles) {
-      const parsedCns = parseCns(vfs.readText(stateFile) ?? "", stateFile);
-      states.push(...parsedCns.states);
+      const text = vfs.readText(stateFile.path) ?? "";
+      const parsedCns = parseCns(text, stateFile.path);
+      stateSources.push({ ...stateFile, text, states: parsedCns.states });
       Object.assign(constants, parsedCns.constants);
       diagnostics.push(...parsedCns.diagnostics);
     }
+    const stateResolution = resolveMugenStateSources(stateSources);
+    const states = stateResolution.states;
 
     let spriteArchive: MugenCharacter["spriteArchive"];
     if (files.sprite) {
@@ -236,6 +246,7 @@ export class MugenCharacterLoader {
       commandDefaults,
       commandRemap,
       states,
+      stateSources: stateResolution.selections,
       stateEntryControllers,
       constants,
       runtimeProgram,
