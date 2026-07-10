@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-10 - Actor-scoped Web Audio channels
+
+Summary:
+
+- Replaced the global `Map<number, source>` playback registry with `RuntimeAudioChannelStore`, keyed by runtime actor and channel.
+- `PlaySnd`, `SndPan`, numbered `StopSnd`, replacement, and `ended` cleanup now share actor-local channel identity; global stop behavior remains available through channel `-1` and `stopAll()`.
+- Added an AudioContext-backed integration test proving P1 and P2 can play channel `2` concurrently and a later P1 source stops only P1's prior source.
+- Added actor-channel request generations so an older WAV decode that finishes late is discarded instead of replacing the newest requested sound.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) for player-owned `PlaySnd channel`, one voice per player channel, free-channel default `-1`, `SndPan`, and global `StopSnd -1` semantics.
+
+Evidence:
+
+- Focused red: 2/7 tests failed because the actor-scoped channel store did not exist.
+- Focused green: `MugenAudioSystem.test.ts` passes 9/9, including store isolation/replacement, controlled AudioContext playback, and out-of-order decode rejection.
+- TypeScript 7 `pnpm typecheck` passes.
+- Full closeout: `pnpm test` passes 153 files / 1508 tests; `pnpm qa:trace` passes 524/524 artifacts, 493 required and 31 optional; `pnpm typecheck`; `pnpm build`; `pnpm check:boundaries`; `git diff --check`; and `pnpm qa:smoke` pass. Build retains the known Vite chunk-size warning above 500 kB.
+
+Claim allowed: matching numbered channels from different runtime actors no longer cross-interrupt, cross-block through `lowpriority`, cross-pan, or cross-stop in the bounded browser audio system.
+
+Claim blocked: exact free-channel allocation for omitted/`-1`, channel `0` cancellation on hit, priority classes beyond current `lowpriority`, common/system/BGM ownership, device/perceptual parity, score movement, and full MUGEN/IKEMEN audio parity.
+
 ## 2026-07-10 - Helper direct-HitDef persistence sound typed audio
 
 Summary:

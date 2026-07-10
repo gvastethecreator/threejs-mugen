@@ -14,6 +14,16 @@ Docs-only changes here do not move scores.
 ## Current Checkpoint
 
 ```txt
+R1/R2 actor-scoped Web Audio channel ownership
+  -> numbered PlaySnd/SndPan/StopSnd channels key by runtime actor plus channel
+  -> matching P1/P2 channel 2 sources coexist
+  -> later P1 playback replaces only P1's prior source
+  -> StopSnd -1 remains global
+  -> focused store and controlled AudioContext integration tests are green
+  -> Wayfinder 017 owns next selection; no score movement
+```
+
+```txt
 R1 required helper direct-HitDef persistence sound typed audio gates
   -> helper HitDef 99b55e47 / cd02ded0 with S5,0
   -> hitdefpersist 61b3ffbf / b005d52a with S5,1

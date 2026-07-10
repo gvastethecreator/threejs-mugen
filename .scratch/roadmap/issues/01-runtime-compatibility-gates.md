@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - Actor-Scoped Web Audio Channels
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: numbered browser playback channels were global, so matching P1/P2/helper channel numbers could cross-interrupt, cross-block, cross-pan, or cross-stop.
+- Target: scope numbered channels by runtime actor while preserving explicit global `StopSnd -1` behavior.
+- Reference: Elecbyte State Controller Reference defines `PlaySnd channel` as a player's sound channel and `StopSnd -1` as stopping all sounds including other players.
+- Result: `RuntimeAudioChannelStore` owns actor+channel identity; request generations reject stale asynchronous decodes; focused store and controlled AudioContext tests prove two-actor coexistence, actor-local replacement, and newest-request ordering.
+- Blocked: exact free-channel allocation, channel `0` hit cancellation, broader priority/mix semantics, common/system/BGM ownership, perceptual parity, score movement, and full audio parity.
+
 ## Latest Closed Quality Slice - Helper Direct-HitDef Persistence Sound Typed Audio
 
 Status: done

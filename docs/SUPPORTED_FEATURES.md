@@ -51,6 +51,7 @@
 
 ## SND
 
+- Browser playback scopes numbered `PlaySnd` / `SndPan` / `StopSnd` channels by runtime actor plus channel. Matching channel numbers from P1, P2, or helpers can coexist; replacement and numbered stop/pan affect only the emitting actor's channel. `StopSnd channel = -1` and explicit `stopAll()` remain global. Controlled AudioContext integration coverage proves two-actor coexistence and actor-local replacement. Exact free-channel allocation, channel `0` hit cancellation, common/system/BGM ownership, broader priority/mix semantics, and perceptual parity remain unsupported.
 - First-generation visual helpers can resolve direct `HitDef hitsound` / `guardsound` expressions through the helper-local expression context, emit helper-side contact sound/FightFX events, and attribute the resulting typed `audio:playsnd` operation to the root player trace. Required helper direct-HitDef/persistence gates cover `S5,0/1/2/3` and guarded `S6,4`; HitBy rejection proves the operation is not emitted without accepted contact. Exact archive playback, channel/mix/timing semantics, nested helper ancestry, redirects, teams, and full helper audio parity remain unsupported.
 
 - Header/version detection for `ElecbyteSnd\0` archives.

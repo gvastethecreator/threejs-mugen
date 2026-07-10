@@ -16,6 +16,10 @@ Authoritative horizon docs:
 Current focused R1 runtime checkpoint: five required first-generation helper-local direct HitDef/persistence gates now require owner-attributed typed `audio:playsnd` while preserving helper-side sound/FightFX events and StateDef persistence behavior. Trace/final checksums are `99b55e47` / `cd02ded0`, `61b3ffbf` / `b005d52a`, `ba2a19f4` / `e9ccdc9c`, `1e37fd5c` / `4d6e93b5`, and `4b48e97d` / `c7ce0ae6`. `pnpm qa:trace` passes 524/524 artifacts, 493 required and 31 optional. No score movement; exact SND playback, channel/mix/timing semantics, nested helper/redirect/team ownership, renderer parity, and full helper/audio parity remain blocked.
 
 Quality contract: the helper micro-VM already activated direct HitDefs and emitted helper-side contact presentation, but did not resolve authored helper-local `hitsound`/`guardsound` into the active move or forward typed audio operations to the root player trace. Focused red failed the helper hit/guard callback, bridge forwarding, and five trace requirements; focused green now covers accepted hit, guard, bridge ownership, five required traces, and fail-closed HitBy rejection.
+
+## 2026-07-10 Actor-Scoped Web Audio Channels Note
+
+Current focused R1/R2 audio checkpoint: numbered Web Audio channels are now keyed by runtime actor plus channel. P1 and P2 can play the same channel concurrently; replacing, panning, or stopping a numbered channel affects only that actor, while `StopSnd -1` remains global. Focused red failed actor-channel contracts and an out-of-order decode race; focused green passes actor isolation, local replacement/deletion, AudioContext-backed two-actor playback, and stale asynchronous decode rejection. No score movement; exact free-channel allocation, hit cancellation of voice channel `0`, broader priority/mix semantics, common/system/BGM ownership, perceptual parity, and full audio parity remain blocked.
 - `ROADMAP_RELEASE_TARGETS.md`: release-train targets, usable milestone gates, and score-movement rules.
 - `ROADMAP_EXECUTION_BOARD.md`: current queue, package acceptance, and handoff checklist.
 - `WORKPLAN.md`: current execution ledger.

@@ -1,14 +1,101 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   MugenAudioSystem,
+  RuntimeAudioChannelStore,
   resolveRuntimeAudioEventAction,
   resolveRuntimeSoundGain,
   resolveRuntimeSoundPlaybackRate,
   resolveRuntimeSoundStereoPan,
 } from "../game/audio/MugenAudioSystem";
 import type { SndArchive } from "../mugen/model/MugenSound";
+import type { MugenSnapshot } from "../mugen/runtime/types";
 
 describe("MugenAudioSystem", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("isolates numbered sound channels by runtime actor", () => {
+    const channels = new RuntimeAudioChannelStore<string>();
+
+    channels.set("p1", 2, "p1-voice");
+    channels.set("p2", 2, "p2-voice");
+
+    expect(channels.has("p1", 2)).toBe(true);
+    expect(channels.has("p2", 2)).toBe(true);
+    expect(channels.get("p1", 2)).toBe("p1-voice");
+    expect(channels.get("p2", 2)).toBe("p2-voice");
+    expect(channels.values()).toEqual(["p1-voice", "p2-voice"]);
+
+    expect(channels.delete("p1", 2)).toBe("p1-voice");
+    expect(channels.has("p1", 2)).toBe(false);
+    expect(channels.get("p2", 2)).toBe("p2-voice");
+  });
+
+  it("replaces only the selected actor channel", () => {
+    const channels = new RuntimeAudioChannelStore<string>();
+    channels.set("p1", 0, "p1-first");
+    channels.set("p2", 0, "p2-first");
+
+    expect(channels.set("p1", 0, "p1-second")).toBe("p1-first");
+    expect(channels.get("p1", 0)).toBe("p1-second");
+    expect(channels.get("p2", 0)).toBe("p2-first");
+    expect(channels.clear()).toEqual(["p1-second", "p2-first"]);
+    expect(channels.values()).toEqual([]);
+  });
+
+  it("plays matching numbered channels independently across actors", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(archive(1));
+    await system.unlock();
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1), soundActor("p2", 1)]));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(2));
+
+    expect(audioContext.sources).toHaveLength(2);
+    expect(audioContext.sources.map((source) => source.stopped)).toEqual([false, false]);
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 2), soundActor("p2", 1)]));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(3));
+
+    expect(audioContext.sources.map((source) => source.stopped)).toEqual([true, false, false]);
+
+    system.processSnapshot(audioSnapshot([stopSoundActor("p1", 3)]));
+
+    expect(audioContext.sources.map((source) => source.stopped)).toEqual([true, false, true]);
+  });
+
+  it("keeps the newest actor-channel request when WAV decoding completes out of order", async () => {
+    const audioContext = deferredAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(archive(2));
+    await system.unlock();
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1, 0)]));
+    system.processSnapshot(audioSnapshot([soundActor("p1", 2, 1)]));
+    expect(audioContext.decodeResolvers).toHaveLength(2);
+
+    audioContext.decodeResolvers[1]!({} as AudioBuffer);
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(1));
+    audioContext.decodeResolvers[0]!({} as AudioBuffer);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(system.getDiagnostics()).toMatchObject({ played: 1, skipped: 1 });
+    expect(audioContext.sources).toHaveLength(1);
+    expect(audioContext.sources[0]?.stopped).toBe(false);
+  });
+
   it("tracks prefixed FightFX SND archives separately from the character SND archive", () => {
     const system = new MugenAudioSystem();
 
@@ -93,5 +180,97 @@ function archive(soundTotal: number): SndArchive {
       soundTotal,
       decodedTotal: soundTotal,
     },
+  };
+}
+
+function soundActor(id: string, runtimeTick: number, index = 0): MugenSnapshot["actors"][number] {
+  return {
+    id,
+    label: id,
+    source: "imported",
+    actorKind: "player",
+    runtime: {
+      stateNo: 200,
+      stateElapsed: 1,
+      actionId: 200,
+      frameIndex: 0,
+      frameElapsed: 0,
+      pos: { x: id === "p1" ? -40 : 40, y: 0 },
+      vel: { x: 0, y: 0 },
+      facing: id === "p1" ? 1 : -1,
+      ctrl: false,
+      life: 1000,
+      power: 0,
+    },
+    moveTick: 0,
+    hasHit: false,
+    soundEvents: [{ type: "PlaySnd", group: 5, index, channel: 2, stateNo: 200, tick: 1, runtimeTick }],
+  } as unknown as MugenSnapshot["actors"][number];
+}
+
+function stopSoundActor(id: string, runtimeTick: number): MugenSnapshot["actors"][number] {
+  const actor = soundActor(id, runtimeTick);
+  actor.soundEvents = [{ type: "StopSnd", channel: 2, stateNo: 200, tick: 1, runtimeTick }];
+  return actor;
+}
+
+function audioSnapshot(actors: MugenSnapshot["actors"]): MugenSnapshot {
+  return {
+    actors,
+    effects: [],
+    stage: { camera: { x: 0 } },
+  } as unknown as MugenSnapshot;
+}
+
+function fakeAudioContext(): {
+  state: AudioContextState;
+  destination: object;
+  sources: Array<{ stopped: boolean }>;
+  resume: () => Promise<void>;
+  decodeAudioData: () => Promise<AudioBuffer>;
+  createBufferSource: () => AudioBufferSourceNode;
+  createGain: () => GainNode;
+  createStereoPanner: () => StereoPannerNode;
+} {
+  const sources: Array<{ stopped: boolean }> = [];
+  return {
+    state: "running",
+    destination: {},
+    sources,
+    resume: async () => undefined,
+    decodeAudioData: async () => ({}) as AudioBuffer,
+    createBufferSource: () => {
+      const state = { stopped: false };
+      sources.push(state);
+      return {
+        playbackRate: { value: 1 },
+        loop: false,
+        connect: (target: AudioNode) => target,
+        addEventListener: () => undefined,
+        start: () => undefined,
+        stop: () => {
+          state.stopped = true;
+        },
+      } as unknown as AudioBufferSourceNode;
+    },
+    createGain: () =>
+      ({ gain: { value: 1 }, connect: (target: AudioNode) => target }) as unknown as GainNode,
+    createStereoPanner: () =>
+      ({ pan: { value: 0 }, connect: (target: AudioNode) => target }) as unknown as StereoPannerNode,
+  };
+}
+
+function deferredAudioContext(): ReturnType<typeof fakeAudioContext> & {
+  decodeResolvers: Array<(buffer: AudioBuffer) => void>;
+} {
+  const context = fakeAudioContext();
+  const decodeResolvers: Array<(buffer: AudioBuffer) => void> = [];
+  return {
+    ...context,
+    decodeResolvers,
+    decodeAudioData: () =>
+      new Promise<AudioBuffer>((resolve) => {
+        decodeResolvers.push(resolve);
+      }),
   };
 }

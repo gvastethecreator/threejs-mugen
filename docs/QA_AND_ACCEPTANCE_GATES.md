@@ -2,6 +2,8 @@
 
 This project has two kinds of quality gates: code gates and playable evidence gates. Both matter. Parser tests can prove data behavior; browser screenshots prove that the Three.js/runtime/UI path still works.
 
+Latest audio acceptance checkpoint: `MugenAudioSystem` must prove actor-local numbered-channel storage, controlled AudioContext playback where P1/P2 channel `2` sources coexist and a later P1 source stops only P1's previous source, plus stale-request rejection when older WAV decoding completes after a newer request. `StopSnd -1` remains the all-source route. Static trace gates do not prove audible playback ownership, so focused audio-system integration coverage is required for this claim.
+
 Latest runtime acceptance checkpoint: required helper direct-HitDef, `hitdefpersist`, `hitcountpersist`, `movehitpersist`, and `moveguardedpersist` traces require `helper`, `hitdef`, and owner-attributed `audio:playsnd`; checksums are `99b55e47`, `61b3ffbf`, `ba2a19f4`, `1e37fd5c`, and `4b48e97d`. Focused tests also require no typed audio operation after HitBy rejection. This runtime-only cut does not require browser smoke because it changes no visible frontend or renderer surface.
 
 ## Standard End-Of-Round Checks

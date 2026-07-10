@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1/R2 actor-scoped Web Audio channel ownership
+-> numbered channels key by runtime actor plus channel
+-> matching P1/P2 channel 2 sources coexist; later P1 replacement stops only P1's old source
+-> numbered SndPan/StopSnd use actor scope; StopSnd -1 remains global
+-> focused store + controlled AudioContext integration evidence is green
+-> no score movement; free-channel, voice-hit cancellation, common/system/BGM, perceptual, and full parity remain blocked
+
+Previous checkpoint:
 R1 required helper direct-HitDef persistence sound typed audio trace gates
 -> helper HitDef 99b55e47 / cd02ded0; hitdefpersist 61b3ffbf / b005d52a
 -> hitcountpersist ba2a19f4 / e9ccdc9c; movehitpersist 1e37fd5c / 4d6e93b5

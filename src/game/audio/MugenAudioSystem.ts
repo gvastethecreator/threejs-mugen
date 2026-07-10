@@ -36,12 +36,49 @@ export type RuntimeSoundPanContext = {
   halfWidth?: number;
 };
 
+export class RuntimeAudioChannelStore<THandle> {
+  private readonly entries = new Map<string, THandle>();
+
+  has(actorId: string, channel: number): boolean {
+    return this.entries.has(runtimeAudioChannelKey(actorId, channel));
+  }
+
+  get(actorId: string, channel: number): THandle | undefined {
+    return this.entries.get(runtimeAudioChannelKey(actorId, channel));
+  }
+
+  set(actorId: string, channel: number, handle: THandle): THandle | undefined {
+    const key = runtimeAudioChannelKey(actorId, channel);
+    const previous = this.entries.get(key);
+    this.entries.set(key, handle);
+    return previous;
+  }
+
+  delete(actorId: string, channel: number): THandle | undefined {
+    const key = runtimeAudioChannelKey(actorId, channel);
+    const previous = this.entries.get(key);
+    this.entries.delete(key);
+    return previous;
+  }
+
+  values(): THandle[] {
+    return [...this.entries.values()];
+  }
+
+  clear(): THandle[] {
+    const handles = this.values();
+    this.entries.clear();
+    return handles;
+  }
+}
+
 export class MugenAudioSystem {
   private context?: AudioContext;
   private archive?: SndArchive;
   private readonly prefixedArchives = new Map<string, SndArchive>();
   private readonly bufferPromises = new Map<string, Promise<AudioBuffer | undefined>>();
-  private readonly activeChannels = new Map<number, RuntimeAudioSourceHandle>();
+  private readonly activeChannels = new RuntimeAudioChannelStore<RuntimeAudioSourceHandle>();
+  private readonly pendingChannels = new RuntimeAudioChannelStore<number>();
   private readonly floatingSources = new Set<RuntimeAudioSourceHandle>();
   private readonly seenEvents = new Set<string>();
   private readonly errors: string[] = [];
@@ -49,6 +86,7 @@ export class MugenAudioSystem {
   private played = 0;
   private skipped = 0;
   private missing = 0;
+  private channelRequestSequence = 0;
 
   setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
     this.stopAll();
@@ -97,13 +135,13 @@ export class MugenAudioSystem {
             this.seenEvents.delete(oldest);
           }
         }
-        const action = resolveRuntimeAudioEventAction(event, this.hasActiveChannel(event.channel));
+        const action = resolveRuntimeAudioEventAction(event, this.hasActiveChannel(actor.id, event.channel));
         if (action.type === "play") {
           void this.play(event, action, actor, snapshot);
         } else if (action.type === "stop") {
-          this.stop(action.channel);
+          this.stop(actor.id, action.channel);
         } else if (action.type === "pan") {
-          this.pan(action.channel, event, actor, snapshot);
+          this.pan(actor.id, action.channel, event, actor, snapshot);
         } else {
           this.skipped += 1;
         }
@@ -126,10 +164,10 @@ export class MugenAudioSystem {
   }
 
   stopAll(): void {
-    for (const handle of this.activeChannels.values()) {
+    this.pendingChannels.clear();
+    for (const handle of this.activeChannels.clear()) {
       handle.source.stop();
     }
-    this.activeChannels.clear();
     for (const handle of this.floatingSources) {
       handle.source.stop();
     }
@@ -157,8 +195,19 @@ export class MugenAudioSystem {
     if (context.state !== "running") {
       return;
     }
+    const requestId = action.channel === undefined ? undefined : ++this.channelRequestSequence;
+    if (action.channel !== undefined && requestId !== undefined) {
+      this.pendingChannels.set(actor.id, action.channel, requestId);
+    }
     const buffer = await this.getAudioBuffer(event.soundPrefix, sound);
     if (!buffer) {
+      if (action.channel !== undefined && this.pendingChannels.get(actor.id, action.channel) === requestId) {
+        this.pendingChannels.delete(actor.id, action.channel);
+      }
+      return;
+    }
+    if (action.channel !== undefined && this.pendingChannels.get(actor.id, action.channel) !== requestId) {
+      this.skipped += 1;
       return;
     }
     const source = context.createBufferSource();
@@ -182,11 +231,14 @@ export class MugenAudioSystem {
     }
     const handle: RuntimeAudioSourceHandle = { source, ...(panner ? { panner } : {}) };
     if (action.channel !== undefined) {
-      this.stop(action.channel);
-      this.activeChannels.set(action.channel, handle);
+      this.stopActiveChannel(actor.id, action.channel);
+      this.activeChannels.set(actor.id, action.channel, handle);
       source.addEventListener("ended", () => {
-        if (this.activeChannels.get(action.channel!) === handle) {
-          this.activeChannels.delete(action.channel!);
+        if (this.activeChannels.get(actor.id, action.channel!) === handle) {
+          this.activeChannels.delete(actor.id, action.channel!);
+        }
+        if (this.pendingChannels.get(actor.id, action.channel!) === requestId) {
+          this.pendingChannels.delete(actor.id, action.channel!);
         }
       });
     } else {
@@ -199,21 +251,25 @@ export class MugenAudioSystem {
     this.played += 1;
   }
 
-  private stop(channel: number | undefined): void {
+  private stop(actorId: string, channel: number | undefined): void {
     if (channel === undefined || channel < 0) {
       this.stopAll();
       return;
     }
-    const handle = this.activeChannels.get(channel);
+    this.pendingChannels.delete(actorId, channel);
+    this.stopActiveChannel(actorId, channel);
+  }
+
+  private stopActiveChannel(actorId: string, channel: number): void {
+    const handle = this.activeChannels.delete(actorId, channel);
     if (!handle) {
       return;
     }
     handle.source.stop();
-    this.activeChannels.delete(channel);
   }
 
-  private pan(channel: number, event: RuntimeSoundEvent, actor: ActorSnapshot, snapshot: MugenSnapshot): void {
-    const handle = this.activeChannels.get(channel);
+  private pan(actorId: string, channel: number, event: RuntimeSoundEvent, actor: ActorSnapshot, snapshot: MugenSnapshot): void {
+    const handle = this.activeChannels.get(actorId, channel);
     if (!handle?.panner) {
       this.skipped += 1;
       return;
@@ -225,8 +281,8 @@ export class MugenAudioSystem {
     });
   }
 
-  private hasActiveChannel(channel: number | undefined): boolean {
-    return channel !== undefined && channel >= 0 && this.activeChannels.has(channel);
+  private hasActiveChannel(actorId: string, channel: number | undefined): boolean {
+    return channel !== undefined && channel >= 0 && this.activeChannels.has(actorId, channel);
   }
 
   private getAudioBuffer(prefix: string | undefined, sound: MugenSound): Promise<AudioBuffer | undefined> {
@@ -273,6 +329,10 @@ export class MugenAudioSystem {
     archives.push(...this.prefixedArchives.values());
     return archives;
   }
+}
+
+function runtimeAudioChannelKey(actorId: string, channel: number): string {
+  return `${actorId}:${channel}`;
 }
 
 export function resolveRuntimeAudioEventAction(event: Pick<RuntimeSoundEvent, "type" | "channel" | "lowPriority">, activeChannel: boolean): RuntimeAudioEventAction {
