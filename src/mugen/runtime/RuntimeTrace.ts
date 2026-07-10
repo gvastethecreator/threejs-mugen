@@ -48,6 +48,7 @@ export type RuntimeTraceActor = {
   prevAnimNo?: number;
   prevStateType?: string;
   prevMoveType?: string;
+  runOrder?: number;
   stateNo: number;
   animNo: number;
   animTime: number;
@@ -475,6 +476,7 @@ export type RuntimeTraceFinalActorRequirement = {
   ctrl?: boolean;
   stateType?: string;
   moveType?: string;
+  runOrder?: number;
   physics?: string;
   guarding?: boolean;
   assertSpecialFlags?: string[];
@@ -722,6 +724,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "ctrl"
   | "stateType"
   | "moveType"
+  | "runOrder"
   | "physics"
   | "guarding"
   | "assertSpecialFlags"
@@ -2720,6 +2723,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     ctrl: actor.ctrl,
     stateType: actor.stateType,
     moveType: actor.moveType,
+    runOrder: actor.runOrder,
     physics: actor.physics,
     guarding: actor.guarding,
     assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
@@ -3491,6 +3495,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     prevAnimNo: actor.runtime.prevAnimNo,
     prevStateType: actor.runtime.prevStateType,
     prevMoveType: actor.runtime.prevMoveType,
+    runOrder: actor.runtime.runOrder,
     stateNo: actor.runtime.stateNo,
     animNo: actor.runtime.animNo,
     animTime: roundTraceNumber(actor.runtime.animTime),
@@ -3609,6 +3614,7 @@ function summarizeActorForChecksum(
   | "prevAnimNo"
   | "prevStateType"
   | "prevMoveType"
+  | "runOrder"
   | "hitPause"
   | "targetCount"
   | "effect"
@@ -3633,6 +3639,7 @@ function summarizeActorForChecksum(
     prevAnimNo: _prevAnimNo,
     prevStateType: _prevStateType,
     prevMoveType: _prevMoveType,
+    runOrder: _runOrder,
     hitPause: _hitPause,
     targetCount: _targetCount,
     effect: _effect,

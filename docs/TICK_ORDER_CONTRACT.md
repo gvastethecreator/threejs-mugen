@@ -24,7 +24,7 @@ Any change to this order can affect compatibility. It needs a trace gate when be
 
 ## Root Player RunOrder
 
-The match profile is explicit. Before frame-start resets and current-tick command/input mutation, `ikemen-go` snapshots the two current roots' previous-tick `AssertSpecial` run flags and MoveType. Exclusive `RunFirst` / `RunLast` use priorities `100/-100`; both together fall through. Remaining roots order by attacking (`A`) before idle (`I`) before remaining (`H`), with lower runtime id breaking ties. `mugen-1.1` and `unknown` retain input pair order because equivalent MUGEN behavior is not established. This does not cover the `RunOrder` trigger, helpers, appended actors, or team modes.
+The match profile is explicit. Before frame-start resets and current-tick command/input mutation, `ikemen-go` snapshots the two current roots' previous-tick run flags and MoveType. Exclusive `RunFirst` / `RunLast` use priorities `100/-100`; both together fall through. Remaining roots order by `A > I > H`, then lower id. The scheduler stamps one-based `RunOrder` indices before frame-start/controller trigger evaluation. `mugen-1.1` and `unknown` retain pair order and clear this profile-specific value. This does not cover helpers, appended actors, redirects to unstamped actors, or team modes.
 
 ## Per-Frame Phases
 

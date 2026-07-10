@@ -437,7 +437,7 @@ export class PlayableMatchRuntime {
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
-    const preparedRunOrder = fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2);
+    const preparedRunOrder = fighterRunOrderWorld.stamp(fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2));
     schedule.record("tick:stamp-input");
     matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
 

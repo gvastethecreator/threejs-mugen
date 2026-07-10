@@ -75,6 +75,7 @@ export type CharacterRuntimeState = {
   prevAnimNo?: number;
   prevStateType?: "S" | "C" | "A" | "L";
   prevMoveType?: "I" | "A" | "H";
+  runOrder?: number;
   stateNo: number;
   animNo: number;
   animTime: number;

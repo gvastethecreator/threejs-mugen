@@ -1230,6 +1230,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRunFirstTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-runorder",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRunOrderTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-global-telemetry",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(),

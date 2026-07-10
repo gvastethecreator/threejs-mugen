@@ -607,6 +607,7 @@ const BOUNDED_SUPPORTED_TRIGGER_NAMES = new Set([
   "PrevStateType",
   "ReceivedDamage",
   "ReceivedHits",
+  "RunOrder",
   "SelfCommand",
   "StageTime",
 ]);

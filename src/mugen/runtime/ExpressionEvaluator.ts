@@ -642,6 +642,9 @@ class ExpressionParser {
     if (lower === "prevmovetype") {
       return this.context.self.prevMoveType ?? "I";
     }
+    if (lower === "runorder") {
+      return this.context.self.runOrder ?? -1;
+    }
     if (lower === "roundno") {
       return 1;
     }

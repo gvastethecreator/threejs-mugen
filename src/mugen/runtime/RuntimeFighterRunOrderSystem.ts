@@ -3,7 +3,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeRootRunOrderActor = {
   id: string;
-  runtime: Pick<CharacterRuntimeState, "moveType" | "assertSpecial">;
+  runtime: Pick<CharacterRuntimeState, "moveType" | "assertSpecial" | "runOrder">;
 };
 
 export type RuntimeRootRunOrderEntry<TActor> = {
@@ -39,6 +39,13 @@ export class RuntimeFighterRunOrderWorld {
     ];
     entries.sort((left, right) => right.priority - left.priority || compareRuntimeIds(left.actor.id, right.actor.id));
     return { profile, policy: "ikemen-go-root", supported: true, entries };
+  }
+
+  stamp<TActor extends RuntimeRootRunOrderActor>(result: RuntimeRootRunOrderResult<TActor>): RuntimeRootRunOrderResult<TActor> {
+    for (const [index, { actor }] of result.entries.entries()) {
+      actor.runtime.runOrder = result.supported ? index + 1 : undefined;
+    }
+    return result;
   }
 }
 

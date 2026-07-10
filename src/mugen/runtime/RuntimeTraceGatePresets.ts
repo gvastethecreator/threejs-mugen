@@ -8113,6 +8113,68 @@ export function createSyntheticImportedIkemenRunFirstTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenRunOrderTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "assert RunFirst while P1 attacks", p1: ["x"], p2: [], frames: 1 },
+    { label: "branch on sorted RunOrder", p1: [], p2: [], frames: 1 },
+  ]);
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-runorder",
+    displayName: "Synthetic Imported IKEMEN RunOrder",
+    passiveAssertSpecialFlags: ["RunFirst"],
+    passiveAssertSpecialTrigger: "GameTime = 1",
+    runOrderEntry: { expected: 1, minGameTime: 2, stateNo: 282 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: demoFighters[0]!, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-runorder-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-runorder-golden",
+      label: "Synthetic imported IKEMEN root RunOrder trigger route",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root can branch on its one-based index in the already sorted two-root list. Helpers, appended actors, redirects, teams, and full IKEMEN RunOrder parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-runorder-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [282],
+        requiredExecutedStates: [282],
+        requiredExecutedControllers: ["AssertSpecial", "ChangeState"],
+        requiredExecutedOperations: ["assertspecial"],
+        requiredControllerEventSequences: [
+          {
+            label: "RunFirst assertion before RunOrder branch",
+            actorId: "p2",
+            steps: [
+              { stateNo: 0, controller: "AssertSpecial", name: "Passive AssertSpecial" },
+              { stateNo: 0, controller: "ChangeState", name: "RunOrder Route" },
+            ],
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "demo", actorKind: "player", moveType: "A", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 282, minFrames: 1 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "RunOrder trigger frame", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p1"] },
+        ],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 282, runOrder: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39069,6 +39131,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
+  runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
   gameSpaceEntry?: { gameWidth: number; gameHeight: number; stateNo: number };
   screenSpaceEntry?: { screenWidth: number; screenHeight: number; gameWidth: number; gameHeight: number; stateNo: number };
@@ -39742,6 +39805,7 @@ ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryB
 ${options.selfAnimExistEntry === undefined ? "" : selfAnimExistStateEntryBlock(options.selfAnimExistEntry)}
 ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
+${options.runOrderEntry === undefined ? "" : runOrderStateEntryBlock(options.runOrderEntry)}
 ${options.gameTimeEntry === undefined ? "" : gameTimeStateEntryBlock(options.gameTimeEntry)}
 ${options.gameSpaceEntry === undefined ? "" : gameSpaceStateEntryBlock(options.gameSpaceEntry)}
 ${options.screenSpaceEntry === undefined ? "" : screenSpaceStateEntryBlock(options.screenSpaceEntry)}
@@ -39971,6 +40035,7 @@ ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry
 ${options.selfAnimExistEntry ? simpleStateBlock(options.selfAnimExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo && !passiveControllerStateNos.has(options.selfCommandEntry.stateNo) ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
+${options.runOrderEntry ? simpleStateBlock(options.runOrderEntry.stateNo, "I") : ""}
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
 ${options.gameSpaceEntry ? simpleStateBlock(options.gameSpaceEntry.stateNo, "I") : ""}
 ${options.screenSpaceEntry ? simpleStateBlock(options.screenSpaceEntry.stateNo, "I") : ""}
@@ -40279,6 +40344,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.stageTimeEntry === undefined
         ? []
         : ([[options.stageTimeEntry.stateNo, traceAction(options.stageTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.runOrderEntry === undefined
+        ? []
+        : ([[options.runOrderEntry.stateNo, traceAction(options.runOrderEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.gameTimeEntry === undefined
         ? []
         : ([[options.gameTimeEntry.stateNo, traceAction(options.gameTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -44381,6 +44449,17 @@ value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = StageTime >= ${route.minStageTime}
+`;
+}
+
+function runOrderStateEntryBlock(route: { expected: number; minGameTime: number; stateNo: number }): string {
+  return `
+[State -1, RunOrder Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = ctrl
+trigger1 = GameTime >= ${route.minGameTime}
+trigger1 = RunOrder = ${route.expected}
 `;
 }
 

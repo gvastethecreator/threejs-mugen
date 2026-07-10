@@ -160,6 +160,7 @@ import {
   createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialControlTraceArtifact,
   createSyntheticImportedIkemenRunFirstTraceArtifact,
+  createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
   createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact,
@@ -15860,6 +15861,23 @@ describe("RuntimeTraceGatePresets", () => {
         .filter((phase) => phase.id === "fighter:controllers")
         .map((phase) => phase.actorId),
     ).toEqual(["p2", "p1"]);
+  });
+
+  it("creates a required IKEMEN root RunOrder trigger artifact", () => {
+    const artifact = createSyntheticImportedIkemenRunOrderTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-runorder-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-runorder-golden", passed: true, failures: [] }],
+      trace: { finalActors: expect.arrayContaining([expect.objectContaining({ id: "p2", stateNo: 282, runOrder: 1 })]) },
+    });
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([282]);
+    expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
+      { label: "RunOrder trigger frame", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p1"] },
+    ]);
   });
 
   it("proves character override and Common1 fallback provenance without changing guard-start timing", () => {

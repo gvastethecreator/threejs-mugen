@@ -7,6 +7,16 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - IKEMEN Root RunOrder Trigger
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: the explicit IKEMEN scheduler ordered roots but CNS could not observe the sorted position.
+- Result: the scheduler stamps one-based root indices before frame triggers; expression evaluation exposes `RunOrder` and returns `-1` without a supported order; scanner no longer reports the bounded trigger unsupported.
+- Evidence: required `synthetic-imported-ikemen-runorder.json` checksum `04d433de` / final `390fb921`; 531/531 traces with 500 required; P2 routes through `RunOrder = 1` to state `282`; full 158 files / 1562 tests; TypeScript 7 build/typecheck; boundaries green.
+- Blocked: helpers/appended actors, teams/simul/tag, exact Pause/hitpause ordering, redirects beyond roots, rollback, score movement, full IKEMEN actor-list parity.
+
 ## Latest Closed Quality Slice - IKEMEN RunFirst / RunLast
 
 Status: done

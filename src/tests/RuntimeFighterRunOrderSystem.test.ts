@@ -27,6 +27,18 @@ describe("RuntimeFighterRunOrderWorld", () => {
     expect(ids(result)).toEqual(["p2", "p1"]);
     expect(result).toMatchObject({ profile, policy: "preserve-input", supported: false });
   });
+
+  it("stamps one-based IKEMEN root indices and clears unsupported profile values", () => {
+    const world = new RuntimeFighterRunOrderWorld();
+    const p1 = actor("p1", "I");
+    const p2 = actor("p2", "A");
+
+    world.stamp(world.orderPair("ikemen-go", p1, p2));
+    expect([p1.runtime.runOrder, p2.runtime.runOrder]).toEqual([2, 1]);
+
+    world.stamp(world.orderPair("unknown", p1, p2));
+    expect([p1.runtime.runOrder, p2.runtime.runOrder]).toEqual([undefined, undefined]);
+  });
 });
 
 function ids(result: ReturnType<RuntimeFighterRunOrderWorld["orderPair"]>): string[] {
@@ -37,5 +49,5 @@ function actor(id: string, moveType: "I" | "A" | "H", overrides: { runFirst?: bo
   const assertSpecial = Object.values(overrides).some(Boolean)
     ? { flags: [], globalFlags: [], ...overrides }
     : undefined;
-  return { id, runtime: { moveType, assertSpecial } };
+  return { id, runtime: { moveType, assertSpecial, runOrder: undefined as number | undefined } };
 }
