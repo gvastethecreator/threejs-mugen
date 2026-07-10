@@ -15,6 +15,8 @@ export type HitDefControllerOp = {
   kill?: boolean;
   guardKill?: boolean;
   priority?: number;
+  p1SpritePriority?: number;
+  p2SpritePriority?: number;
   pauseTime?: number;
   groundHitTime?: number;
   groundVelocity?: [number, number?];
@@ -1169,6 +1171,8 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     priority: firstNumber(findParam(controller, "priority")),
+    p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority")),
+    p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
     pauseTime: firstNumber(findParam(controller, "pausetime")),
     groundHitTime: firstNumber(findParam(controller, "ground.hittime")),
     groundVelocity,

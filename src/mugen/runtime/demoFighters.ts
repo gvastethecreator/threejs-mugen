@@ -22,6 +22,8 @@ export type DemoMove = {
   kill?: boolean;
   attr?: string;
   priority?: number;
+  p1SpritePriority?: number;
+  p2SpritePriority?: number;
   targetId?: number;
   requiresHitDef?: boolean;
   isReversal?: boolean;

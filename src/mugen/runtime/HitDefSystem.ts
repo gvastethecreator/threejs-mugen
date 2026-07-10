@@ -132,6 +132,8 @@ export class RuntimeHitDefControllerDispatchWorld {
     const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno"));
     const p2GetP1State = operation?.p2GetP1State ?? (p2StateNo !== undefined ? (firstNumber(findParam(source, "p2getp1state")) ?? 1) !== 0 : false);
     const missOnOverride = operation?.missOnOverride ?? booleanHitDefParam(source, "missonoverride") ?? existing?.missOnOverride;
+    const p1SpritePriority = operation?.p1SpritePriority ?? firstNumber(findParam(source, "p1sprpriority"));
+    const p2SpritePriority = operation?.p2SpritePriority ?? firstNumber(findParam(source, "p2sprpriority"));
     const hitSound = operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound;
     const guardSound = operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound;
     const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };
@@ -145,6 +147,8 @@ export class RuntimeHitDefControllerDispatchWorld {
       damage,
       kill,
       priority,
+      p1SpritePriority,
+      p2SpritePriority,
       requiresHitDef: false,
       attr,
       targetId,

@@ -285,6 +285,8 @@ time = 20
         kill: "0",
         "guard.kill": "0",
         priority: "6, Hit",
+        p1sprpriority: "3",
+        p2sprpriority: "-2",
         pausetime: "8,9",
         guardflag: "MA",
         "ground.hittime": "17",
@@ -331,6 +333,8 @@ time = 20
       kill: false,
       guardKill: false,
       priority: 6,
+      p1SpritePriority: 3,
+      p2SpritePriority: -2,
       pauseTime: 8,
       groundHitTime: 17,
       groundVelocity: [-4, -6],
@@ -367,6 +371,32 @@ time = 20
         downRecoverTime: 45,
       },
     });
+  });
+
+  it("preserves authored versus omitted static HitDef sprite priorities", () => {
+    const authored = compileControllerIr(
+      controller(200, "HitDef", [], {
+        p1sprpriority: "4",
+        p2sprpriority: "-3",
+      }),
+    );
+    const omitted = compileControllerIr(controller(200, "HitDef", [], {}));
+    const dynamic = compileControllerIr(
+      controller(200, "HitDef", [], {
+        p1sprpriority: "var(0)",
+        p2sprpriority: "fvar(1)",
+      }),
+    );
+
+    expect(authored.operation).toMatchObject({
+      kind: "hitdef",
+      p1SpritePriority: 4,
+      p2SpritePriority: -3,
+    });
+    expect(omitted.operation).not.toHaveProperty("p1SpritePriority");
+    expect(omitted.operation).not.toHaveProperty("p2SpritePriority");
+    expect(dynamic.operation).not.toHaveProperty("p1SpritePriority");
+    expect(dynamic.operation).not.toHaveProperty("p2SpritePriority");
   });
 
   it("compiles Target controllers into typed target operations", () => {

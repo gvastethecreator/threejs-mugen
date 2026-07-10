@@ -35,13 +35,13 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next cross-area gap after Studio project naming](tickets/021-next-gap-after-studio-project-naming.md) - selected and resolved persisted scene/matchup authoring with explicit dirty-state lifecycle.
 - [Choose next gap after persistent Studio scene authoring](tickets/022-next-gap-after-persistent-studio-scene.md) - selected and resolved the renderer L0-L5 proof ladder plus a desktop/mobile L2 player-axis oracle.
 - [Choose next gap after renderer axis oracle](tickets/023-next-gap-after-renderer-axis-oracle.md) - selected and resolved official player SprPriority clamping plus effective desktop/mobile depth-order oracle.
+- [Choose next gap after SprPriority draw order](tickets/024-next-gap-after-sprpriority-draw-order.md) - selected static direct HitDef P1/P2 priority policy, contact mutation, and trace evidence as the next R1 presentation-semantic package.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after SprPriority draw order](tickets/024-next-gap-after-sprpriority-draw-order.md)
 
 ## Not Yet Specified
 
