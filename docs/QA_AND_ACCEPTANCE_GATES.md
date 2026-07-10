@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## Renderer axis-parity L2 gate
+
+Acceptance requires actual CharacterRenderer mesh diagnostics to match an independently computed SFF-axis/AIR-offset/facing/scale oracle for two actors, both facing directions, and desktop/mobile browser runs, while existing nonblank/framing gates remain green.
+
 ## Studio scene dirty-state gate
 
 Acceptance requires authored name/P1/CPU/stage mutations to mark dirty, invalidate stale outputs, persist exact manifest entry, reopen clean, remain immediately playable, expose accessible status, and avoid desktop/tablet overflow.

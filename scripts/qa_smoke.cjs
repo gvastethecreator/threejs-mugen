@@ -288,6 +288,7 @@ async function captureRuntime(page, baseUrl, options) {
           hitEffects: actor.hitEffectEvents?.length ?? 0,
         })),
         renderer,
+        characterPresentations: renderer?.characters ?? [],
         activeHitSparks: hitSparks?.active ?? 0,
         hitSparkSources: hitSparks?.sources ?? {},
         hitSparkResolvedSprites: hitSparks?.resolvedSprites ?? 0,
@@ -1599,6 +1600,28 @@ function assertSmoke(diagnostics) {
     if ((runtime.hitSparkResolvedSprites ?? 0) < 1) {
       failures.push(`${runtime.label}: native hit spark renderer did not resolve a player AIR spark sprite`);
     }
+    const spriteAxisFailures = runtime.characterPresentations.filter((presentation) => {
+      const expectedX =
+        presentation.actorPosition.x +
+        presentation.facing *
+          (presentation.frameOffset.x + presentation.sprite.width / 2 - presentation.sprite.axisX) *
+          presentation.renderScale.x;
+      const expectedY =
+        -presentation.actorPosition.y +
+        (presentation.sprite.axisY - presentation.sprite.height / 2 - presentation.frameOffset.y) * presentation.renderScale.y;
+      const expectedScaleX = presentation.sprite.width * presentation.renderScale.x * presentation.facing;
+      const expectedScaleY = presentation.sprite.height * presentation.renderScale.y;
+      return (
+        Math.abs(presentation.meshPosition.x - expectedX) > 0.001 ||
+        Math.abs(presentation.meshPosition.y - expectedY) > 0.001 ||
+        Math.abs(presentation.meshScale.x - expectedScaleX) > 0.001 ||
+        Math.abs(presentation.meshScale.y - expectedScaleY) > 0.001
+      );
+    });
+    const presentationFacings = new Set(runtime.characterPresentations.map((presentation) => presentation.facing));
+    if (runtime.characterPresentations.length < 2 || !presentationFacings.has(1) || !presentationFacings.has(-1) || spriteAxisFailures.length) {
+      failures.push(`${runtime.label}: Three.js character sprite axis/facing presentation failed the independent projection oracle`);
+    }
     const resolvedPresentation = runtime.hitSparkPresentations.find(
       (presentation) =>
         presentation.lookupStatus === "resolved-sprite" &&
@@ -2154,6 +2177,7 @@ function summarizeDiagnostics(diagnostics) {
       hitSparks: diagnostics.checks.runtimeDesktop.activeHitSparks,
       hitSparkSources: diagnostics.checks.runtimeDesktop.hitSparkSources,
       hitSparkResolvedSprites: diagnostics.checks.runtimeDesktop.hitSparkResolvedSprites,
+      characterPresentations: diagnostics.checks.runtimeDesktop.characterPresentations.length,
     },
     runtimeMobile: {
       actors: diagnostics.checks.runtimeMobile.actorCount,
@@ -2161,6 +2185,7 @@ function summarizeDiagnostics(diagnostics) {
       hitSparks: diagnostics.checks.runtimeMobile.activeHitSparks,
       hitSparkSources: diagnostics.checks.runtimeMobile.hitSparkSources,
       hitSparkResolvedSprites: diagnostics.checks.runtimeMobile.hitSparkResolvedSprites,
+      characterPresentations: diagnostics.checks.runtimeMobile.characterPresentations.length,
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,

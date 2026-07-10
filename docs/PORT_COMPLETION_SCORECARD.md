@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-10 renderer evidence note
+
+Bounded player sprite axis placement reaches L2 adapter proof and general L3 visibility on desktop/mobile. Score unchanged pending flips, rotation, draw order, palettes, effects, screenpack composition, L4 baselines, and L5 reference captures.
+
 ## 2026-07-10 Studio scene-authoring evidence note
 
 Single-match name/P1/CPU/stage authoring now has dirty state and persistent save/reopen proof. Score unchanged because source-bound state/collision editing, multi-scene graphs, undo/redo, conflicts, and filesystem writes remain open.

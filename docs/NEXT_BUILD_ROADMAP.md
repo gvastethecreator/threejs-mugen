@@ -1,5 +1,9 @@
 ﻿# Next Build Roadmap
 
+## Current cursor - Renderer axis-parity oracle
+
+Player axis placement reaches L2. Wayfinder 023 compares flips/rotation, draw order, L4 baselines, source-bound Studio editing, IKEMEN ingestion, and post-KO runtime flow.
+
 ## Current cursor - Persistent Studio scene authoring
 
 Single-match scene persistence is closed. Wayfinder 022 compares dirty-navigation/undo, first collision/state editor, renderer proof, IKEMEN ingestion, and post-KO runtime flow.

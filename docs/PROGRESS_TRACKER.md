@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 renderer axis-parity oracle
+
+- Renderer/Three.js: advanced. Player sprite axis/facing/scale now reaches proof ladder L2 with effective mesh diagnostics and independent desktop/mobile oracle.
+- Runtime and Studio usability: retained; screenshots and canvas framing remain L3-visible.
+- Trace compatibility: unchanged at 524/524.
+- IKEMEN breadth: unchanged in this slice.
+- Overall score: unchanged because L4 deterministic baselines and L5 reference parity remain absent.
+
 ## Global report - 2026-07-10 persistent Studio scene authoring
 
 - Studio editor: advanced. A complete single-match scene identity (name/P1/CPU/stage) now has explicit dirty/save/reopen semantics.

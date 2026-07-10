@@ -33,20 +33,18 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next runtime gap after contextual SND banks](tickets/019-next-runtime-gap-after-contextual-snd-banks.md) - selected and resolved automatic KO sound plus tick-active global `NoKOSnd` suppression.
 - [Choose next gap after KO sound handoff](tickets/020-next-gap-after-ko-sound-handoff.md) - selected and resolved persistent Studio project-name authoring with browser save/reopen proof.
 - [Choose next cross-area gap after Studio project naming](tickets/021-next-gap-after-studio-project-naming.md) - selected and resolved persisted scene/matchup authoring with explicit dirty-state lifecycle.
+- [Choose next gap after persistent Studio scene authoring](tickets/022-next-gap-after-persistent-studio-scene.md) - selected and resolved the renderer L0-L5 proof ladder plus a desktop/mobile L2 player-axis oracle.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
-- [Choose next gap after persistent Studio scene authoring](tickets/022-next-gap-after-persistent-studio-scene.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Define renderer parity proof ladder](tickets/004-renderer-parity-proof-ladder.md)
+- [Choose next gap after renderer axis oracle](tickets/023-next-gap-after-renderer-axis-oracle.md)
 
 ## Not Yet Specified
 
-- Exact next runtime gap after actor-local channel `0` hit cancellation.
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Visual parity acceptance ladder for axis pivot, draw order, palettes, afterimages, effects, and screenpack/lifebar composition.
 - IKEMEN transition point from scanner/reporting into executable IKEMEN-specific behavior.
 
 ## Out Of Scope

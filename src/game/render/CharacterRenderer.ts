@@ -9,6 +9,7 @@ export class CharacterRenderer {
   private readonly meshes = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>();
   private readonly shadowMeshes = new Map<string, THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>>();
   private readonly afterimageMeshes = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[]>();
+  private readonly presentations = new Map<string, CharacterSpritePresentation>();
 
   constructor(
     private readonly spriteProvider: SpriteProvider,
@@ -23,6 +24,7 @@ export class CharacterRenderer {
         mesh.geometry.dispose();
         mesh.material.dispose();
         this.meshes.delete(id);
+        this.presentations.delete(id);
       }
     }
     for (const [id, mesh] of this.shadowMeshes) {
@@ -47,6 +49,7 @@ export class CharacterRenderer {
         ? await this.spriteProvider.getSprite(frame.spriteGroup, frame.spriteIndex, ownerContext)
         : await this.spriteProvider.getSprite(9000, actor.id === "p2" ? 2 : 1, ownerContext);
       if (!sprite) {
+        this.presentations.delete(actor.id);
         continue;
       }
 
@@ -71,7 +74,21 @@ export class CharacterRenderer {
       mesh.position.z = 1 + Math.max(-5, Math.min(10, priority)) * 0.05 + orderBias;
       mesh.rotation.z = THREE.MathUtils.degToRad(-(actor.runtime.renderAngle ?? 0));
       mesh.scale.set(projected.width * projected.scaleX, projected.height, 1);
+      this.presentations.set(actor.id, {
+        actorId: actor.id,
+        actorPosition: { ...actor.runtime.pos },
+        facing: actor.runtime.facing,
+        sprite: { width: sprite.width, height: sprite.height, axisX: sprite.axisX, axisY: sprite.axisY },
+        frameOffset: { x: frame?.offsetX ?? 0, y: frame?.offsetY ?? 0 },
+        renderScale: { ...(actor.runtime.renderScale ?? { x: 1, y: 1 }) },
+        meshPosition: { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z },
+        meshScale: { x: mesh.scale.x, y: mesh.scale.y },
+      });
     }
+  }
+
+  getDiagnostics(): CharacterSpritePresentation[] {
+    return [...this.presentations.values()].map((presentation) => structuredClone(presentation));
   }
 
   dispose(): void {
@@ -79,6 +96,7 @@ export class CharacterRenderer {
       disposeMesh(this.group, mesh);
     }
     this.meshes.clear();
+    this.presentations.clear();
     for (const mesh of this.shadowMeshes.values()) {
       disposeMesh(this.group, mesh);
     }
@@ -161,6 +179,17 @@ export class CharacterRenderer {
     }
   }
 }
+
+export type CharacterSpritePresentation = {
+  actorId: string;
+  actorPosition: { x: number; y: number };
+  facing: 1 | -1;
+  sprite: { width: number; height: number; axisX: number; axisY: number };
+  frameOffset: { x: number; y: number };
+  renderScale: { x: number; y: number };
+  meshPosition: { x: number; y: number; z: number };
+  meshScale: { x: number; y: number };
+};
 
 export type ActorShadowPresentation = {
   x: number;

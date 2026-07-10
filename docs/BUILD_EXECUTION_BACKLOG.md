@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Latest closed slice: renderer axis-parity oracle (2026-07-10)
+
+Effective Three.js character transforms are now checked against an independent SFF-axis/AIR-offset/facing/scale oracle in desktop/mobile smoke. Renderer ladder L2 reached for this bounded player-sprite route. Wayfinder 023 owns the next selection; no score movement.
+
 ## Latest closed slice: persistent Studio scene and dirty-state (2026-07-10)
 
 Name/matchup/stage edits now produce explicit `Unsaved` state, invalidate outputs, persist through manifest save, and reopen as `Saved` under browser proof. Wayfinder 022 owns the next selection; no score movement.

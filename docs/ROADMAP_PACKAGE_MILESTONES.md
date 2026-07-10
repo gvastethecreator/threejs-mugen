@@ -1,5 +1,9 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package closeout - Renderer axis-parity oracle
+
+Closed under projection units, effective adapter diagnostics, independent browser equations, both facings, desktop/mobile canvas, and screenshot gates. No renderer milestone promotion beyond bounded L2.
+
 ## Latest package closeout - Persistent Studio scene authoring
 
 Closed under exact manifest, dirty-state, reload/reopen, screenshot, and responsive gates. No milestone promotion; deeper source-bound editing remains required.

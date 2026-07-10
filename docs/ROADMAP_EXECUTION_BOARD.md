@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - Renderer axis-parity oracle (2026-07-10)
+
+Effective Three.js character mesh transforms now pass an independent SFF/AIR/facing/scale oracle on desktop/mobile. Renderer ladder L0-L5 is defined; this route reaches L2 plus general L3. Continue at Wayfinder 023.
+
 ## Latest closeout - Persistent Studio scene authoring (2026-07-10)
 
 Name/matchup/stage mutations now mark `Unsaved`, invalidate outputs, save exact manifest entry, and reopen as `Saved`. Browser and visual proof are green. Continue at Wayfinder 022 and authoring-spine ticket 003.

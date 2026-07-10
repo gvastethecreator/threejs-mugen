@@ -11,6 +11,10 @@ Authoritative horizon docs:
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 
+## 2026-07-10 Renderer Axis-Parity Oracle Note
+
+CharacterRenderer diagnostics now expose effective mesh transforms plus SFF/AIR inputs. Browser smoke independently requires official axis/offset/facing/scale equations for two actors and both facings on desktop/mobile; focused unit coverage proves asymmetric scale telemetry. Renderer proof ladder is now defined L0-L5 and this slice reaches L2 only. No score movement; flips, rotation pivots, draw order, palettes, trails, shadows, and screenpack composition remain blocked.
+
 ## 2026-07-10 Persistent Studio Scene and Dirty-State Note
 
 Workbench name/P1/CPU/stage edits and asset replacements now mark `Unsaved`, invalidate stale outputs, persist the current manifest entry on explicit save, and reopen clean. Browser proof recovers `Rook Apprentice` vs `Nova Boxer` on `Training Grid` with the authored name and `dirty = false`. No score movement; autosave, navigation guards, undo/redo, conflicts, multi-scene authoring, and source writes remain blocked.

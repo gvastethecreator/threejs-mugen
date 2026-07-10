@@ -25,6 +25,26 @@ describe("CharacterRenderer", () => {
     renderer.dispose();
   });
 
+  it("reports the effective Three.js sprite-axis presentation", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+
+    await renderer.update([actor({ pos: { x: 40, y: -12 }, facing: -1, renderScale: { x: 1.5, y: 0.75 } })]);
+
+    expect(renderer.getDiagnostics()).toEqual([
+      {
+        actorId: "p1",
+        actorPosition: { x: 40, y: -12 },
+        facing: -1,
+        sprite: { width: 12, height: 16, axisX: 6, axisY: 14 },
+        frameOffset: { x: 0, y: 0 },
+        renderScale: { x: 1.5, y: 0.75 },
+        meshPosition: { x: 40, y: 16.5, z: 1.12 },
+        meshScale: { x: -18, y: 12 },
+      },
+    ]);
+    renderer.dispose();
+  });
+
   it("renders supported actor shadows and removes them when suppressed", async () => {
     const provider = new RecordingSpriteProvider();
     const renderer = new CharacterRenderer(provider, fakeTextureStore());
