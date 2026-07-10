@@ -83,6 +83,7 @@ describe("RuntimeHelperCombatSystem", () => {
       contactTick: 33,
     });
     expect(defender.runtime.life).toBe(75);
+    expect(defender.runtime.receivedHitSequence).toBe(1);
     expect(defender.runtime.stateNo).toBe(5000);
     expect(stateEntries).toEqual(["p2:5000:clear"]);
     expect(runtimeMoveContactValue(helper.contact, 6000, "hit")).toBe(0);

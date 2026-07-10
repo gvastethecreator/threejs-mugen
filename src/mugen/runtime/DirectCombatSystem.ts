@@ -171,6 +171,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardSlideTime = 0;
     defender.runtime.guardControlTime = 0;
     defender.runtime.guarding = false;
+    defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };

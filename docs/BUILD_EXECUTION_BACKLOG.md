@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-10 - Voice channel zero hit cancellation
+
+Summary:
+
+- Added optional `receivedHitSequence` to runtime actor state and increment it only when `RuntimeDirectCombatWorld` applies an accepted normal hit; guarded contact leaves the sequence unchanged.
+- `MugenAudioSystem` tracks the last consumed sequence per actor and stops actor-local channel `0` once for each new hit after processing snapshot sound events, which also cancels a same-frame pending voice decode.
+- Added focused combat assertions and controlled AudioContext coverage proving P1 voice cancellation does not stop P2, does not repeat throughout the same hitstun, and permits later P1 voices.
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html), which reserves channel `0` for player voices and states those voices stop when the player is hit.
+
+Evidence:
+
+- Focused red: accepted hit left sequence `4` instead of `5`; P1 channel `0` remained active after sequence `0 -> 1`.
+- Focused green: 2 selected direct-combat tests, 2 Projectile hit/guard tests, 1 helper-hit test, 2 controlled/deferred AudioContext cancellation tests, and TypeScript 7 typecheck pass.
+- `pnpm qa:trace` passes 524/524 artifacts, 493 required and 31 optional, with the existing checksum projection stable.
+- Full closeout: `pnpm test` passes 153 files / 1510 tests; `pnpm typecheck`; `pnpm build`; `pnpm check:boundaries`; `git diff --check`; and `pnpm qa:smoke` pass. Build retains the known Vite chunk-size warning above 500 kB.
+
+Claim allowed: bounded accepted direct, Projectile, and helper attacks that share `RuntimeDirectCombatWorld` signal a player hit once, and browser audio cancels only that defender's channel `0` voice without continuous hitstun inference.
+
+Claim blocked: HitOverride/reversal voice policy, helper-as-defender breadth, exact simultaneous/multi-hit ordering, common/system/BGM ownership, KO voice policy, perceptual/device parity, score movement, and full MUGEN/IKEMEN audio parity.
+
 ## 2026-07-10 - Actor-scoped Web Audio channels
 
 Summary:

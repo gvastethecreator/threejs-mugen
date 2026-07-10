@@ -14,6 +14,15 @@ Docs-only changes here do not move scores.
 ## Current Checkpoint
 
 ```txt
+R1/R2 voice channel 0 hit cancellation
+  -> accepted normal hit increments defender receivedHitSequence; guard does not
+  -> Web Audio stops only the hit actor channel 0 once per sequence
+  -> pending same-frame voices cancel; other actors and later voices survive
+  -> qa:trace remains 524/524 without checksum drift
+  -> Wayfinder 018 owns next selection; no score movement
+```
+
+```txt
 R1/R2 actor-scoped Web Audio channel ownership
   -> numbered PlaySnd/SndPan/StopSnd channels key by runtime actor plus channel
   -> matching P1/P2 channel 2 sources coexist

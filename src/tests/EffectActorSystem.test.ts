@@ -2170,7 +2170,7 @@ describe("EffectActorSystem", () => {
   it("resolves projectile combat and cleanup through the runtime world contract", () => {
     const world = new RuntimeEffectActorWorld();
     const attacker = actor("p1", "Attacker");
-    const defender = actor("p2", "Defender", { life: 1000 });
+    const defender = actor("p2", "Defender", { life: 1000, receivedHitSequence: 4 });
     const logs: string[] = [];
     const targets: string[] = [];
 
@@ -2190,6 +2190,7 @@ describe("EffectActorSystem", () => {
     expect(defender.runtime.life).toBe(960);
     expect(defender.hitPause).toBe(6);
     expect(defender.hitStun).toBe(18);
+    expect(defender.runtime.receivedHitSequence).toBe(5);
     expect(defender.runtime.moveType).toBe("H");
     expect(attacker.runtime.power).toBe(35);
     expect(targets).toEqual(["p2:0"]);
@@ -2241,7 +2242,7 @@ describe("EffectActorSystem", () => {
   it("resolves projectile guard through the same combat contract", () => {
     const world = new RuntimeEffectActorWorld();
     const attacker = actor("p1", "Attacker");
-    const defender = actor("p2", "Defender", { life: 1000, stateType: "S" });
+    const defender = actor("p2", "Defender", { life: 1000, stateType: "S", receivedHitSequence: 4 });
     const logs: string[] = [];
     let guardHitApplied = false;
 
@@ -2276,6 +2277,7 @@ describe("EffectActorSystem", () => {
     expect(defender.hitStun).toBe(0);
     expect(defender.runtime.guardStun).toBe(8);
     expect(defender.runtime.guarding).toBe(true);
+    expect(defender.runtime.receivedHitSequence).toBe(4);
     expect(defender.runtime.vel).toEqual({ x: 4, y: -1 });
     expect(attacker.runtime.power).toBe(12);
     expect(guardHitApplied).toBe(true);

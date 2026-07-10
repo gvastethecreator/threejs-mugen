@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1/R2 voice channel 0 hit cancellation
+-> accepted hit increments defender receivedHitSequence; guard preserves it
+-> browser audio consumes each sequence once and stops only hit actor channel 0
+-> pending same-frame voice is cancelled; P2 and later same-sequence voices survive
+-> pnpm qa:trace remains 524/524 with stable checksum projection
+-> no score movement; broader defender/multi-hit/common-system/KO/perceptual parity remains blocked
+
+Previous checkpoint:
 R1/R2 actor-scoped Web Audio channel ownership
 -> numbered channels key by runtime actor plus channel
 -> matching P1/P2 channel 2 sources coexist; later P1 replacement stops only P1's old source

@@ -85,6 +85,7 @@ describe("DirectCombatSystem", () => {
     const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200 });
     const defender = actor("p2", "Defender", {
       life: 8,
+      receivedHitSequence: 4,
       currentMove: move(),
       moveTick: 9,
       hasHit: true,
@@ -121,6 +122,7 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guardSlideTime).toBe(5);
     expect(defender.runtime.guardControlTime).toBe(6);
     expect(defender.runtime.guarding).toBe(true);
+    expect(defender.runtime.receivedHitSequence).toBe(4);
     expect(defender.runtime.ctrl).toBe(false);
     expect(defender.runtime.vel).toEqual({ x: 3, y: -1 });
     expect(defender.runtime.hitVelocity).toEqual({ x: 3, y: -1 });
@@ -151,6 +153,7 @@ describe("DirectCombatSystem", () => {
     const attacker = actor("p1", "Attacker", { power: 20, facing: -1, stateNo: 210, pos: { x: 40, y: -10 } });
     const defender = actor("p2", "Defender", {
       life: 80,
+      receivedHitSequence: 4,
       currentMove: move(),
       guardStun: 9,
       guardSlideTime: 4,
@@ -198,6 +201,7 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guardSlideTime).toBe(0);
     expect(defender.runtime.guardControlTime).toBe(0);
     expect(defender.runtime.guarding).toBe(false);
+    expect(defender.runtime.receivedHitSequence).toBe(5);
     expect(defender.runtime.vel).toEqual({ x: -4, y: -2 });
     expect(defender.runtime.pos).toEqual({ x: 24, y: -34 });
     expect(defender.runtime.hitVelocity).toEqual({ x: -4, y: -2 });

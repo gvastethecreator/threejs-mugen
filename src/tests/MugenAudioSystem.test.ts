@@ -96,6 +96,50 @@ describe("MugenAudioSystem", () => {
     expect(audioContext.sources[0]?.stopped).toBe(false);
   });
 
+  it("stops only the hit actor voice channel once per received-hit sequence", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(archive(1));
+    await system.unlock();
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1, 0, 0, 0), soundActor("p2", 1, 0, 0, 0)]));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(2));
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1, 0, 0, 1), soundActor("p2", 1, 0, 0, 0)]));
+    expect(audioContext.sources.map((source) => source.stopped)).toEqual([true, false]);
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 2, 0, 0, 1), soundActor("p2", 1, 0, 0, 0)]));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(3));
+
+    expect(audioContext.sources.map((source) => source.stopped)).toEqual([true, false, false]);
+  });
+
+  it("cancels a pending voice decode when its actor is hit", async () => {
+    const audioContext = deferredAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(archive(1));
+    await system.unlock();
+
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1, 0, 0, 0)]));
+    expect(audioContext.decodeResolvers).toHaveLength(1);
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1, 0, 0, 1)]));
+    audioContext.decodeResolvers[0]!({} as AudioBuffer);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(system.getDiagnostics()).toMatchObject({ played: 0, skipped: 1 });
+    expect(audioContext.sources).toEqual([]);
+  });
+
   it("tracks prefixed FightFX SND archives separately from the character SND archive", () => {
     const system = new MugenAudioSystem();
 
@@ -183,7 +227,7 @@ function archive(soundTotal: number): SndArchive {
   };
 }
 
-function soundActor(id: string, runtimeTick: number, index = 0): MugenSnapshot["actors"][number] {
+function soundActor(id: string, runtimeTick: number, index = 0, channel = 2, receivedHitSequence = 0): MugenSnapshot["actors"][number] {
   return {
     id,
     label: id,
@@ -201,10 +245,11 @@ function soundActor(id: string, runtimeTick: number, index = 0): MugenSnapshot["
       ctrl: false,
       life: 1000,
       power: 0,
+      receivedHitSequence,
     },
     moveTick: 0,
     hasHit: false,
-    soundEvents: [{ type: "PlaySnd", group: 5, index, channel: 2, stateNo: 200, tick: 1, runtimeTick }],
+    soundEvents: [{ type: "PlaySnd", group: 5, index, channel, stateNo: 200, tick: 1, runtimeTick }],
   } as unknown as MugenSnapshot["actors"][number];
 }
 

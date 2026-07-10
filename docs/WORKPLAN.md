@@ -20,6 +20,10 @@ Quality contract: the helper micro-VM already activated direct HitDefs and emitt
 ## 2026-07-10 Actor-Scoped Web Audio Channels Note
 
 Current focused R1/R2 audio checkpoint: numbered Web Audio channels are now keyed by runtime actor plus channel. P1 and P2 can play the same channel concurrently; replacing, panning, or stopping a numbered channel affects only that actor, while `StopSnd -1` remains global. Focused red failed actor-channel contracts and an out-of-order decode race; focused green passes actor isolation, local replacement/deletion, AudioContext-backed two-actor playback, and stale asynchronous decode rejection. No score movement; exact free-channel allocation, hit cancellation of voice channel `0`, broader priority/mix semantics, common/system/BGM ownership, perceptual parity, and full audio parity remain blocked.
+
+## 2026-07-10 Voice Channel Zero Hit Cancellation Note
+
+Current focused R1/R2 audio checkpoint: accepted normal hit results increment defender `receivedHitSequence`; guard leaves it unchanged. Browser audio observes each new sequence once and cancels actor-local channel `0` after processing snapshot events, so a same-frame voice is cancelled, other actors survive, and later voices can play without repeated hitstun polling. Focused combat and controlled AudioContext tests are green; `pnpm qa:trace` remains 524/524 without checksum drift. No score movement; broader defender kinds, exact multi-hit ordering, common/system/BGM ownership, KO policy, perceptual parity, and full audio parity remain blocked.
 - `ROADMAP_RELEASE_TARGETS.md`: release-train targets, usable milestone gates, and score-movement rules.
 - `ROADMAP_EXECUTION_BOARD.md`: current queue, package acceptance, and handoff checklist.
 - `WORKPLAN.md`: current execution ledger.

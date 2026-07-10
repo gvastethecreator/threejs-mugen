@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - Voice Channel Zero Hit Cancellation
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: actor-local channels existed, but channel `0` voices continued after their owning actor was hit.
+- Target: emit an explicit accepted-hit signal from shared combat and consume it once in browser audio without hitstun inference or cross-actor cancellation.
+- Reference: Elecbyte State Controller Reference reserves channel `0` for player voices and states channel `0` voices stop when the player is hit.
+- Result: normal hit increments `receivedHitSequence`, guard preserves it, and controlled AudioContext coverage proves one-shot actor-local cancellation plus later voice recovery. Trace aggregate remains 524/524 without checksum drift.
+- Blocked: helper-as-defender breadth, exact multi-hit ordering, common/system/BGM ownership, KO policy, perceptual parity, score movement, and full audio parity.
+
 ## Latest Closed Quality Slice - Actor-Scoped Web Audio Channels
 
 Status: done

@@ -182,6 +182,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardSlideTime = 0;
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
+      defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
       defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill);
       input.applyHitState?.(attacker, defender, projectile);
       input.recordReceivedDamage?.(defender, result.damage);

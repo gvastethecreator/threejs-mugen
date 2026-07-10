@@ -81,6 +81,7 @@ export class MugenAudioSystem {
   private readonly pendingChannels = new RuntimeAudioChannelStore<number>();
   private readonly floatingSources = new Set<RuntimeAudioSourceHandle>();
   private readonly seenEvents = new Set<string>();
+  private readonly receivedHitSequences = new Map<string, number>();
   private readonly errors: string[] = [];
   private unlocked = false;
   private played = 0;
@@ -100,6 +101,7 @@ export class MugenAudioSystem {
     }
     this.bufferPromises.clear();
     this.seenEvents.clear();
+    this.receivedHitSequences.clear();
     this.errors.length = 0;
     this.played = 0;
     this.skipped = 0;
@@ -146,6 +148,7 @@ export class MugenAudioSystem {
           this.skipped += 1;
         }
       }
+      this.stopVoiceChannelOnNewHit(actor);
     }
   }
 
@@ -283,6 +286,15 @@ export class MugenAudioSystem {
 
   private hasActiveChannel(actorId: string, channel: number | undefined): boolean {
     return channel !== undefined && channel >= 0 && this.activeChannels.has(actorId, channel);
+  }
+
+  private stopVoiceChannelOnNewHit(actor: ActorSnapshot): void {
+    const sequence = actor.runtime.receivedHitSequence ?? 0;
+    const previous = this.receivedHitSequences.get(actor.id);
+    this.receivedHitSequences.set(actor.id, sequence);
+    if (sequence > 0 && sequence !== previous) {
+      this.stop(actor.id, 0);
+    }
   }
 
   private getAudioBuffer(prefix: string | undefined, sound: MugenSound): Promise<AudioBuffer | undefined> {

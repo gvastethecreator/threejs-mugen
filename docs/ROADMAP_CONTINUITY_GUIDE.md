@@ -43,6 +43,8 @@ The project is not currently trying to claim full MUGEN or IKEMEN parity. It is 
 
 ## Next Useful Runtime Gates
 
+Latest closed R1/R2 slice: shared combat emits an explicit received-hit sequence and browser audio uses it for one-shot actor-local channel `0` voice cancellation. Wayfinder ticket 018 owns the next bounded runtime gap.
+
 Latest closed R1/R2 slice: browser audio numbered channels are actor-local, preventing matching channel numbers from cross-interrupting between runtime actors while preserving global `StopSnd -1`. Wayfinder ticket 017 owns the next bounded runtime gap.
 
 Latest closed R1 slice: five required first-generation helper-local direct HitDef/persistence traces now resolve helper-local contact sound refs and record owner-attributed typed `audio:playsnd`, with fail-closed rejection coverage. Wayfinder ticket 016 owns selection of the next bounded runtime gap; exact playback, broader ownership, and renderer claims remain outside this slice.
