@@ -107,6 +107,23 @@ describe("MatchWorld", () => {
     expect(world.getEffectActorStores()).toEqual(resetRegistry.effectStores);
   });
 
+  it("forwards the IKEMEN runtime profile into root-player RunOrder", () => {
+    const world = new MatchWorld({
+      p1: demoFighters[0]!,
+      p2: demoFighters[1]!,
+      stage: trainingStage,
+      runtimeProfile: "ikemen-go",
+    });
+    world.step({ p1: new Set(), p2: new Set(["x"]) });
+
+    const snapshot = world.step({ p1: new Set(), p2: new Set() });
+    const controllerOrder = snapshot.tickSchedule?.phases
+      .filter((phase) => phase.id === "fighter:controllers")
+      .map((phase) => phase.actorId);
+
+    expect(controllerOrder).toEqual(["p2", "p1"]);
+  });
+
   it("exposes a player actor registry without changing match state", () => {
     const world = new MatchWorld({ p1: demoFighters[0]!, p2: demoFighters[1]!, stage: closeStage });
     const before = world.getSnapshot();

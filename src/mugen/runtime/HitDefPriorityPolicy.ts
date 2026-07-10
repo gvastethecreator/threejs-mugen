@@ -1,4 +1,6 @@
-export type RuntimeHitDefPriorityProfile = "mugen-1.1" | "ikemen-go" | "unknown";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+
+export type RuntimeHitDefPriorityProfile = RuntimeCompatibilityProfile;
 
 export type RuntimeHitDefSpritePrioritySource = "authored" | "mugen-1.1-default" | "preserve-current";
 

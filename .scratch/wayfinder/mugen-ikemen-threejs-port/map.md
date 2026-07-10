@@ -44,13 +44,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after automatic guard-start phase order](tickets/029-next-gap-after-auto-guard-phase-order.md) - selected and resolved direct/projectile `InGuardDist` latch lifecycle across active, Pause, and hitpause branches with required trace evidence.
 - [Choose next gap after InGuardDist latch lifecycle](tickets/030-next-gap-after-inguarddist-latch.md) - selected and resolved unbiased root-player pre-controller guard checks plus per-player post-controller checks while preserving the then-established P1-started Pause cutoff; ticket 031 supersedes that cutoff.
 - [Choose next gap after two-checkpoint automatic guard order](tickets/031-next-gap-after-two-checkpoint-auto-guard.md) - selected and resolved prepared same-tick P1/P2 execution so P1-started Pause no longer cancels P2 before the next paused branch.
+- [Choose next gap after same-tick Pause symmetry](tickets/032-next-gap-after-same-tick-pause-symmetry.md) - selected and resolved profile-gated IKEMEN root RunOrder by previous-tick MoveType and lower id while preserving non-IKEMEN order.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after same-tick Pause symmetry](tickets/032-next-gap-after-same-tick-pause-symmetry.md)
+- [Choose next gap after profile-gated root RunOrder](tickets/033-next-gap-after-root-run-order.md)
 
 ## Not Yet Specified
 

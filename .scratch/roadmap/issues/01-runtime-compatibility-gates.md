@@ -7,6 +7,16 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - IKEMEN Root RunOrder
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: root players always advanced P1 then P2 and no match-level runtime profile selected scheduler behavior.
+- Result: `RuntimeCompatibilityProfile` plus `RuntimeFighterRunOrderWorld` lets explicit `ikemen-go` matches prepare/run two roots by previous-tick `A > I > H`, then lower id; MUGEN/unknown preserve prior order.
+- Evidence: focused 4 files / 86 tests, full 158 files / 1556 tests, TypeScript 7 build/typecheck, 529/529 traces, and boundary check.
+- Blocked: MUGEN normative order, run flags/triggers, helpers/appended actors, teams/simul/tag, simultaneous Pause ownership, rollback, score movement, full IKEMEN actor-loop parity.
+
 ## Next Proposed Quality Sequence - HitDef Priority Policy And Contact
 
 Status: ready-for-agent

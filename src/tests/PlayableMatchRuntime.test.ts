@@ -78,6 +78,26 @@ describe("PlayableMatchRuntime", () => {
     ]);
   });
 
+  it("orders IKEMEN root prepare and run phases by previous-tick MoveType priority", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const fighterPhases = snapshot.tickSchedule?.phases.filter((phase) => phase.id.startsWith("fighter:")) ?? [];
+
+    expect(snapshot.actors.map(({ runtime: actorRuntime }) => actorRuntime.moveType)).toEqual(["I", "A"]);
+    expect(fighterPhases.filter((phase) => phase.id === "fighter:auto-guard-check:pre").map((phase) => phase.actorId)).toEqual([
+      "p2",
+      "p1",
+    ]);
+    expect(fighterPhases.filter((phase) => phase.id === "fighter:controllers").map((phase) => phase.actorId)).toEqual(["p2", "p1"]);
+    expect(fighterPhases.filter((phase) => phase.id === "fighter:auto-guard-check:post").map((phase) => phase.actorId)).toEqual([
+      "p2",
+      "p1",
+    ]);
+  });
+
   it("preserves configured round timer fixtures across reset", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, { roundTimerFrames: 1 });
 

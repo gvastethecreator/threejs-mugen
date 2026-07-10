@@ -74,6 +74,8 @@ import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { RuntimeFighterRunOrderWorld } from "./RuntimeFighterRunOrderSystem";
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { RuntimeMatchPresentationSnapshotWorld } from "./RuntimeMatchPresentationSnapshotSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
@@ -201,6 +203,7 @@ const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
+const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
 const matchCombatStateHooksWorld = new RuntimeMatchCombatStateHooksWorld();
 const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
@@ -236,6 +239,7 @@ export type PlayableMatchRuntimeOptions = {
   effectSpawnWorld?: RuntimeEffectSpawnWorld;
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
+  runtimeProfile?: RuntimeCompatibilityProfile;
 };
 
 type PauseControllerHandler = (
@@ -308,6 +312,7 @@ export class PlayableMatchRuntime {
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
   private lastTickSchedule = createIdleMatchTickSchedule();
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
+  private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
   private toggles = {
     showClsn1: true,
@@ -323,6 +328,7 @@ export class PlayableMatchRuntime {
     options: PlayableMatchRuntimeOptions = {},
   ) {
     this.stage = stage;
+    this.runtimeProfile = options.runtimeProfile ?? "unknown";
     this.roundTimerFrames = options.roundTimerFrames;
     this.round = new RuntimeRoundSystem(options.roundTimerFrames);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
@@ -503,6 +509,7 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
+    const preparedRunOrder = fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2);
     matchActiveWorld.advance({
       tickRoundTimer: () => {
         recordPhase("active:round-timer");
@@ -530,6 +537,8 @@ export class PlayableMatchRuntime {
         return matchFighterAdvanceWorld.advancePair({
           p1: this.p1,
           p2: this.p2,
+          runtimeProfile: this.runtimeProfile,
+          preparedRunOrder,
           advanceFighter: (fighter, opponent) =>
             advanceFighter(
               fighter,

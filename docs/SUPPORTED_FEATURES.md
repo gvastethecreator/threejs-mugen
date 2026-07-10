@@ -1,5 +1,7 @@
 ﻿# Supported Features
 
+- IKEMEN root-player RunOrder is `executed-partial` behind explicit match `runtimeProfile = "ikemen-go"`: two roots use previous-tick MoveType priority `A > I > H`, then deterministic lower runtime id. `mugen-1.1` and `unknown` preserve existing order. `RunFirst` / `RunLast`, `RunOrder`, helpers, teams, simul/tag, and full IKEMEN actor scheduling remain unsupported.
+
 - Player `SprPriority` is `rendered-partial` at L2: static/dynamic controller values clamp to official `-5..5` and effective Three.js z puts higher priorities in front. HitDef pair priorities, equal ties, Explod ontop, stage occlusion, and full draw-order parity remain unsupported.
 
 - Player sprite axis projection is `rendered-partial` at proof ladder L2: effective Three.js mesh position/scale matches SFF axis, AIR offset, facing, and runtime scale in desktop/mobile browser oracles. Flips, rotation pivots, draw order, full effects, and reference parity remain unsupported.
