@@ -47,6 +47,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     gameSpace?: ExpressionGameSpace;
     stageTime?: number;
     runtimeTick?: number;
+    helpersAdvancedInActorOrder?: boolean;
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
@@ -114,6 +115,7 @@ export class RuntimeMatchInteractionWorld {
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
           opponents: context.opponents,
+          skipHelpers: input.helpersAdvancedInActorOrder,
         });
       },
       resolveProjectileClashes: (left, right) =>

@@ -20,6 +20,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   stage: Pick<MugenStageDefinition, "bounds">;
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
+  helpersAdvancedInActorOrder?: boolean;
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
@@ -45,6 +46,7 @@ export class RuntimeMatchPostFighterWorld {
       gameSpace: input.gameSpace,
       stageTime: input.stageTime,
       runtimeTick: input.runtimeTick,
+      helpersAdvancedInActorOrder: input.helpersAdvancedInActorOrder,
       actorConstraintWorld: input.actorConstraintWorld,
       effectLifecycleWorld: input.effectLifecycleWorld,
       resolvePriorityClash: combatResolvers.resolvePriorityClash,

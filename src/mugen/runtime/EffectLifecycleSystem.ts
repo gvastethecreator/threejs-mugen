@@ -32,12 +32,12 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
     | "helperSnapshots"
     | "projectileSnapshots"
     | "removeExplodsOnGetHit"
-  >;
+  > & Partial<Pick<RuntimeEffectActorWorld, "advanceHelper">>;
 };
 
 export type RuntimeEffectLifecycleOpponent = RuntimeEffectHelperContextOpponent;
 
-export type RuntimeEffectLifecycleAdvanceOptions = RuntimeEffectHelperContextOptions;
+export type RuntimeEffectLifecycleAdvanceOptions = RuntimeEffectHelperContextOptions & { skipHelpers?: boolean };
 
 export type RuntimeEffectSnapshotGroups = {
   explods: ActorSnapshot[];
@@ -55,6 +55,22 @@ export class RuntimeEffectLifecycleWorld {
     options: RuntimeEffectLifecycleAdvanceOptions = {},
   ): void {
     actor.effectActorWorld.advanceActiveEffects(actor.id, stage, {
+      stageBounds: stage.bounds,
+      ...this.helperContextWorld.create({ actor, opponent, options }),
+      gameSpace: options.gameSpace ?? runtimeStageGameSpace(stage),
+      skipHelpers: options.skipHelpers,
+    });
+  }
+
+  advanceHelper(
+    actor: RuntimeEffectLifecycleActor,
+    helper: RuntimeHelper,
+    stage: RuntimeStageGameSpaceSource,
+    opponent?: RuntimeEffectLifecycleActor,
+    options: RuntimeEffectLifecycleAdvanceOptions = {},
+  ): boolean {
+    if (!actor.effectActorWorld.advanceHelper) return false;
+    return actor.effectActorWorld.advanceHelper(actor.id, helper, stage, {
       stageBounds: stage.bounds,
       ...this.helperContextWorld.create({ actor, opponent, options }),
       gameSpace: options.gameSpace ?? runtimeStageGameSpace(stage),

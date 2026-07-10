@@ -8175,6 +8175,71 @@ export function createSyntheticImportedIkemenRunOrderTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenHelperRunOrderTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([{ label: "spawn and advance appended helper", p1: ["x"], p2: [], frames: 1 }]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-runorder",
+    displayName: "Synthetic Imported IKEMEN Helper RunOrder",
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperRunOrderRoute: { expected: 3, stateNo: 1282 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-helper-runorder-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-helper-runorder-golden",
+      label: "Synthetic imported IKEMEN appended helper RunOrder route",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root-spawned helper is appended to the shared actor list, stamped RunOrder 3, and advanced later in the same tick. Teams, nested helper creation, exact Pause/hitpause order, and full IKEMEN actor-list parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-helper-runorder-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper"],
+        requiredExecutedOperations: ["helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1282,
+            animNo: 920,
+            runOrder: 3,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1282, minAge: 1 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "same-tick appended helper advance", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39152,6 +39217,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperPos?: [number, number];
   helperPostype?: string;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
+  helperRunOrderRoute?: { expected: number; stateNo: number };
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
   helperParentRootRedirectRoute?: { stateNo: number; animNo?: number };
   helperControllerParamRedirectRoute?: { stateNo: number; animNo?: number };
@@ -40054,6 +40120,7 @@ ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${passiveControllerStateBlocks(options)}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
+${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
@@ -44688,6 +44755,31 @@ type = S
 movetype = I
 physics = N
 anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperRunOrderRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperRunOrderRoute"]>): string {
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper RunOrder Route]
+type = ChangeState
+trigger1 = Time = 0
+trigger1 = RunOrder = ${route.expected}
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = 920
 ctrl = 0
 `;
 }

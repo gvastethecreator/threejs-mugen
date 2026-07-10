@@ -161,6 +161,7 @@ import {
   createSyntheticImportedAssertSpecialControlTraceArtifact,
   createSyntheticImportedIkemenRunFirstTraceArtifact,
   createSyntheticImportedIkemenRunOrderTraceArtifact,
+  createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
   createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact,
@@ -15877,6 +15878,24 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([282]);
     expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
       { label: "RunOrder trigger frame", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p1"] },
+    ]);
+  });
+
+  it("creates a required IKEMEN same-tick helper RunOrder artifact", () => {
+    const artifact = createSyntheticImportedIkemenHelperRunOrderTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-helper-runorder-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-helper-runorder-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      expect.objectContaining({ actorId: "p1-helper-0", actorKind: "helper", stateNo: 1282, runOrder: 3 }),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
+      { label: "same-tick appended helper advance", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
     ]);
   });
 

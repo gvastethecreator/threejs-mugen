@@ -8,6 +8,7 @@ import {
   advanceRuntimeHelperActors,
   countRuntimeHelperProjectileActors,
   createRuntimeEffectActorStore,
+  createRuntimeEffectActorStores,
   hasRuntimeHelperProjectileContact,
   removeRuntimeHelperActors,
   removeRuntimeExplodActors,
@@ -2165,6 +2166,32 @@ describe("EffectActorSystem", () => {
     world.advancePresentationEffects("p1");
 
     expect(world.getStore("p1").explods).toEqual([]);
+  });
+
+  it("advances one scheduled helper while the bulk active pass skips helpers", () => {
+    const world = new RuntimeEffectActorWorld();
+    const scheduled = world.spawnHelper("p1", helperInput({ id: "42" }));
+    const waiting = world.spawnHelper("p1", helperInput({ id: "43" }));
+    world.spawnProjectile("p1", projectileInput({ velocity: "3,0" }));
+
+    expect(world.advanceHelper("p1", scheduled, { bounds: { left: -160, right: 160 } })).toBe(true);
+    world.advanceActiveEffects("p1", { bounds: { left: -160, right: 160 } }, { skipHelpers: true });
+
+    expect(scheduled.age).toBe(1);
+    expect(waiting.age).toBe(0);
+    expect(world.projectiles("p1")[0]?.pos.x).toBe(3);
+  });
+
+  it("continues helper RunOrder ids after injected stores", () => {
+    const stores = createRuntimeEffectActorStores();
+    const restored = spawnRuntimeHelperActor(stores.p2, "p2", helperInput({ id: "42" }));
+    restored.runOrderId = 8;
+
+    const world = new RuntimeEffectActorWorld(stores);
+    const spawned = world.spawnHelper("p1", helperInput({ id: "43" }));
+
+    expect(restored.runOrderId).toBe(8);
+    expect(spawned.runOrderId).toBe(9);
   });
 
   it("resolves projectile combat and cleanup through the runtime world contract", () => {

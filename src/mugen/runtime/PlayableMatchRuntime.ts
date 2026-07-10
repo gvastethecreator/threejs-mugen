@@ -74,6 +74,12 @@ import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
+import {
+  RuntimeActorRunOrderWorld,
+  type RuntimeActorRunOrderCandidate,
+  type RuntimeActorRunOrderResult,
+} from "./RuntimeActorRunOrderSystem";
+import { RuntimeMatchActorAdvanceWorld } from "./RuntimeMatchActorAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import {
   RuntimeFighterRunOrderWorld,
@@ -207,6 +213,8 @@ const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
+const actorRunOrderWorld = new RuntimeActorRunOrderWorld();
+const matchActorAdvanceWorld = new RuntimeMatchActorAdvanceWorld(actorRunOrderWorld);
 const matchCombatStateHooksWorld = new RuntimeMatchCombatStateHooksWorld();
 const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
@@ -432,12 +440,54 @@ export class PlayableMatchRuntime {
     return result.snapshot;
   }
 
+  private actorRunOrderCandidates(): RuntimeActorRunOrderCandidate<FighterMatchState, RuntimeHelper>[] {
+    return [
+      this.rootRunOrderCandidate(this.p1, 1),
+      this.rootRunOrderCandidate(this.p2, 2),
+      ...this.helperRunOrderCandidates(),
+    ];
+  }
+
+  private rootRunOrderCandidate(
+    fighter: FighterMatchState,
+    runOrderId: number,
+  ): RuntimeActorRunOrderCandidate<FighterMatchState, RuntimeHelper> {
+    return {
+      kind: "root",
+      key: `root:${fighter.id}`,
+      runOrderId,
+      moveType: fighter.runtime.moveType,
+      assertSpecial: fighter.runtime.assertSpecial,
+      value: fighter,
+      stamp: (runOrder) => {
+        fighter.runtime.runOrder = runOrder;
+      },
+    };
+  }
+
+  private helperRunOrderCandidates(): RuntimeActorRunOrderCandidate<FighterMatchState, RuntimeHelper>[] {
+    return [this.p1, this.p2].flatMap((owner) =>
+      this.effectActorWorld.helpers(owner.id).map((helper) => ({
+        kind: "helper" as const,
+        key: `helper:${helper.serialId}`,
+        runOrderId: helper.runOrderId,
+        moveType: helper.moveType,
+        assertSpecial: helper.assertSpecial,
+        value: helper,
+        stamp: (runOrder: number | undefined) => {
+          helper.runOrder = runOrder;
+        },
+      })),
+    );
+  }
+
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
     const preparedRunOrder = fighterRunOrderWorld.stamp(fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2));
+    const preparedActorRunOrder = actorRunOrderWorld.order(this.runtimeProfile, this.actorRunOrderCandidates());
     schedule.record("tick:stamp-input");
     matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
 
@@ -493,7 +543,14 @@ export class PlayableMatchRuntime {
         return this.advancePausedMatch(input, p1Input, p2Input, (phase, actorId) => schedule.record(phase, actorId));
       },
       advanceActive: () =>
-        this.advanceActiveMatch(input, p1Input, p2Input, preparedRunOrder, (phase, actorId) => schedule.record(phase, actorId)),
+        this.advanceActiveMatch(
+          input,
+          p1Input,
+          p2Input,
+          preparedRunOrder,
+          preparedActorRunOrder,
+          (phase, actorId) => schedule.record(phase, actorId),
+        ),
     });
     if (branchResult.branch !== "active") {
       schedule.record("tick:guard-distance-latch", this.p1.id);
@@ -511,6 +568,7 @@ export class PlayableMatchRuntime {
     p1Input: Set<string>,
     p2Input: Set<string>,
     preparedRunOrder: RuntimeRootRunOrderResult<FighterMatchState>,
+    preparedActorRunOrder: RuntimeActorRunOrderResult<FighterMatchState, RuntimeHelper>,
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
@@ -538,6 +596,52 @@ export class PlayableMatchRuntime {
       },
       advanceFighters: () => {
         recordPhase("active:fighter-advance");
+        if (this.runtimeProfile === "ikemen-go") {
+          return matchActorAdvanceWorld.advance({
+            runOrder: preparedActorRunOrder,
+            opponentOf: (fighter) => (fighter === this.p1 ? this.p2 : this.p1),
+            advanceRoot: (fighter, opponent) =>
+              advanceFighter(
+                fighter,
+                opponent,
+                this.actorConstraintWorld,
+                this.spriteEffectWorld,
+                this.hitOverrideWorld,
+                this.reversalWorld,
+                this.effectSpawnWorld,
+                this.recoveryWorld,
+                this.hitEligibilityWorld,
+                this.moveLifecycleWorld,
+                this.kinematicsWorld,
+                this.animationWorld,
+                this.stunWorld,
+                this.stage.bounds,
+                gameSpace,
+                this.tick,
+                (pauseActor, controller, operation, resolveSoundValue, resolveParams) =>
+                  this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveParams),
+                (controller, operation, resolveEnvColor) =>
+                  this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
+                recordPhase,
+              ),
+            advanceHelper: (helper) => {
+              recordPhase("helper:controllers", helper.serialId);
+              const owner = helper.ownerId === this.p2.id ? this.p2 : this.p1;
+              const opponent = owner === this.p1 ? this.p2 : this.p1;
+              this.effectLifecycleWorld.advanceHelper(owner, helper, this.stage, opponent, {
+                gameSpace,
+                stageTime: this.tick,
+                runtimeTick: this.tick,
+                opponents: [opponent],
+              });
+            },
+            discoverHelpers: () => this.helperRunOrderCandidates(),
+            applyAutoGuardStart: (defender, attacker, checkpoint) => {
+              recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
+              applyAutoGuardStart(defender, attacker, this.guardWorld);
+            },
+          });
+        }
         return matchFighterAdvanceWorld.advancePair({
           p1: this.p1,
           p2: this.p2,
@@ -579,6 +683,7 @@ export class PlayableMatchRuntime {
           p2: this.p2,
           stage: this.stage,
           stageTime: this.tick,
+          helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
           actorConstraintWorld: this.actorConstraintWorld,
           effectLifecycleWorld: this.effectLifecycleWorld,
           combatResolutionWorld: this.combatResolutionWorld,

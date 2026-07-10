@@ -135,6 +135,7 @@ function activeMove(overrides: Partial<DemoMove> = {}): DemoMove {
 function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
   return {
     serialId: "p1-helper-0",
+    runOrderId: 3,
     helperId: 200,
     name: "Burst",
     actorKind: "helper",

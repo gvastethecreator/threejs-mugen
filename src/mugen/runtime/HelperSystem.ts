@@ -46,6 +46,8 @@ export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
 export type RuntimeHelper = {
   serialId: string;
+  runOrderId: number;
+  runOrder?: number;
   helperId?: number;
   name?: string;
   actorKind: "helper";
@@ -96,6 +98,7 @@ export type RuntimeHelper = {
   superMoveTime: number;
   spritePriority: number;
   hitDefSpritePriority?: CharacterRuntimeState["hitDefSpritePriority"];
+  assertSpecial?: CharacterRuntimeState["assertSpecial"];
   soundEvents: RuntimeSoundEvent[];
   hitEffectEvents: RuntimeHitEffectEvent[];
   ownerBind?: RuntimeHelperOwnerBind;
@@ -149,6 +152,7 @@ export type RuntimeHelperRemovalFilter = {
 
 export type RuntimeHelperSpawnInput = {
   serialId: string;
+  runOrderId?: number;
   controller: MugenStateController;
   operation?: HelperControllerOp;
   ownerId?: string;
@@ -174,6 +178,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
+    runOrderId: input.runOrderId ?? Number.MAX_SAFE_INTEGER,
     helperId: operation?.helperId ?? firstNumber(findControllerParam(input.controller, "id")),
     name: operation?.name ?? stripMugenString(findControllerParam(input.controller, "name")),
     ...identity,
@@ -229,32 +234,32 @@ export function advanceRuntimeHelpers(
   stage: Pick<MugenStageDefinition, "bounds">,
   options: RuntimeHelperAdvanceOptions = {},
 ): RuntimeHelper[] {
-  const destroyed = new Set<string>();
-  for (const helper of helpers) {
-    if (shouldAdvanceRuntimeHelper(helper, options.pauseKind)) {
-      if (runRuntimeHelperStateControllers(helper, options) === "destroyed") {
-        destroyed.add(helper.serialId);
-        continue;
-      }
-      advanceRuntimeHelper(helper, options);
-      consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
+  return helpers.filter((helper) => advanceRuntimeHelperActor(helper, stage, options));
+}
+
+export function advanceRuntimeHelperActor(
+  helper: RuntimeHelper,
+  stage: Pick<MugenStageDefinition, "bounds">,
+  options: RuntimeHelperAdvanceOptions = {},
+): boolean {
+  if (shouldAdvanceRuntimeHelper(helper, options.pauseKind)) {
+    helper.assertSpecial = undefined;
+    if (runRuntimeHelperStateControllers(helper, options) === "destroyed") {
+      return false;
     }
+    advanceRuntimeHelper(helper, options);
+    consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
   }
   const margin = 240;
-  return helpers.filter((helper) => {
-    if (destroyed.has(helper.serialId)) {
-      return false;
-    }
-    if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
-      return false;
-    }
-    return (
-      helper.pos.x >= stage.bounds.left - margin &&
-      helper.pos.x <= stage.bounds.right + margin &&
-      helper.pos.y >= -360 &&
-      helper.pos.y <= 180
-    );
-  });
+  if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
+    return false;
+  }
+  return (
+    helper.pos.x >= stage.bounds.left - margin &&
+    helper.pos.x <= stage.bounds.right + margin &&
+    helper.pos.y >= -360 &&
+    helper.pos.y <= 180
+  );
 }
 
 export type RuntimeHelperControllerResult = "active" | "destroyed";
@@ -639,6 +644,7 @@ const helperRuntimeControllers = new Set([
   "poweradd",
   "powerset",
   "statetypeset",
+  "assertspecial",
   "varset",
   "varadd",
   "varrandom",
@@ -1029,6 +1035,10 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     facing: helper.facing,
     spritePriority: helper.spritePriority,
     hitDefSpritePriority: helper.hitDefSpritePriority ? { ...helper.hitDefSpritePriority } : undefined,
+    assertSpecial: helper.assertSpecial
+      ? { ...helper.assertSpecial, flags: [...helper.assertSpecial.flags], globalFlags: [...helper.assertSpecial.globalFlags] }
+      : undefined,
+    runOrder: helper.runOrder,
     stateNo: helper.stateNo ?? 0,
     animNo: helper.animNo,
     animTime: helper.stateTime,
@@ -1094,6 +1104,10 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.stateType = runtime.stateType;
   helper.moveType = runtime.moveType;
   helper.physics = runtime.physics;
+  helper.assertSpecial = runtime.assertSpecial
+    ? { ...runtime.assertSpecial, flags: [...runtime.assertSpecial.flags], globalFlags: [...runtime.assertSpecial.globalFlags] }
+    : undefined;
+  helper.runOrder = runtime.runOrder;
   helper.vars = [...runtime.vars];
   helper.sysvars = [...(runtime.sysvars ?? [])];
   helper.fvars = [...runtime.fvars];

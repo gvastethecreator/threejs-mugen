@@ -12,6 +12,7 @@ export type RuntimeMatchTickPhaseId =
   | "active:command-buffer"
   | "active:input-control"
   | "active:fighter-advance"
+  | "helper:controllers"
   | "fighter:kinematics"
   | "fighter:animation"
   | "fighter:controllers"
@@ -113,9 +114,15 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
   ),
   "active:fighter-advance": phase(
     "active:fighter-advance",
-    "RuntimeMatchFighterAdvanceWorld",
-    ["fighter.runtime", "fighter.controllerState", "fighter.constraintState"],
-    ["P1 then P2 fighter simulation advanced", "auto-guard checks applied"],
+    "RuntimeMatchFighterAdvanceWorld / RuntimeMatchActorAdvanceWorld",
+    ["fighter.runtime", "fighter.controllerState", "fighter.constraintState", "helpers"],
+    ["profile-selected actor simulation advanced", "auto-guard checks applied"],
+  ),
+  "helper:controllers": phase(
+    "helper:controllers",
+    "RuntimeMatchActorAdvanceWorld",
+    ["helper.runtime", "helper effects", "targetWorld", "pauseWorld"],
+    ["helper controllers and clocks advanced in IKEMEN actor order"],
   ),
   "fighter:kinematics": phase(
     "fighter:kinematics",

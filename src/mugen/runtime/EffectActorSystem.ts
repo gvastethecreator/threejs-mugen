@@ -23,6 +23,7 @@ import {
   type RuntimeExplodSpawnInput,
 } from "./ExplodSystem";
 import {
+  advanceRuntimeHelperActor,
   advanceRuntimeHelpers,
   createRuntimeHelper,
   removeRuntimeHelpers,
@@ -120,6 +121,7 @@ export class RuntimeEffectActorAdvanceWorld {
 export class RuntimeEffectActorWorld {
   private readonly stores: RuntimeEffectActorStores;
   private readonly projectileCombatWorld: RuntimeProjectileCombatWorld;
+  private nextHelperRunOrderId = 3;
 
   constructor(
     stores: RuntimeEffectActorStores = createRuntimeEffectActorStores(),
@@ -128,6 +130,7 @@ export class RuntimeEffectActorWorld {
   ) {
     this.stores = stores;
     this.projectileCombatWorld = projectileCombatWorld;
+    this.nextHelperRunOrderId = normalizeRuntimeHelperRunOrderIds(stores);
   }
 
   getStores(): RuntimeEffectActorStores {
@@ -141,6 +144,7 @@ export class RuntimeEffectActorWorld {
   reset(): void {
     resetRuntimeEffectActorStore(this.stores.p1);
     resetRuntimeEffectActorStore(this.stores.p2);
+    this.nextHelperRunOrderId = 3;
   }
 
   summarize(ownerIds: Record<RuntimeEffectActorOwnerKey, string> = { p1: "p1", p2: "p2" }): RuntimeEffectActorStoreSummary[] {
@@ -170,9 +174,17 @@ export class RuntimeEffectActorWorld {
     advanceRuntimeExplodActors(this.getStore(ownerId), bindAnchor, options);
   }
 
-  advanceActiveEffects(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
+  advanceActiveEffects(
+    ownerId: string,
+    stage: Pick<MugenStageDefinition, "bounds">,
+    options?: RuntimeHelperAdvanceOptions & { skipHelpers?: boolean },
+  ): void {
     this.advanceWorld.advanceActive({
-      advanceHelpers: () => this.advanceHelpers(ownerId, stage, options),
+      advanceHelpers: () => {
+        if (!options?.skipHelpers) {
+          this.advanceHelpers(ownerId, stage, options);
+        }
+      },
       advanceProjectiles: () => this.advanceProjectiles(ownerId, stage),
     });
   }
@@ -209,7 +221,10 @@ export class RuntimeEffectActorWorld {
   }
 
   spawnHelper(ownerId: string, input: Omit<RuntimeHelperSpawnInput, "serialId">): RuntimeHelper {
-    return spawnRuntimeHelperActor(this.getStore(ownerId), ownerId, input);
+    return spawnRuntimeHelperActor(this.getStore(ownerId), ownerId, {
+      ...input,
+      runOrderId: this.nextHelperRunOrderId++,
+    });
   }
 
   removeHelpers(ownerId: string, helperId?: number): number {
@@ -222,6 +237,23 @@ export class RuntimeEffectActorWorld {
 
   advanceHelpers(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
     advanceRuntimeHelperActors(this.getStore(ownerId), stage, options);
+  }
+
+  advanceHelper(
+    ownerId: string,
+    helper: RuntimeHelper,
+    stage: Pick<MugenStageDefinition, "bounds">,
+    options?: RuntimeHelperAdvanceOptions,
+  ): boolean {
+    const store = this.getStore(ownerId);
+    if (!store.helpers.includes(helper)) {
+      return false;
+    }
+    if (!advanceRuntimeHelperActor(helper, stage, options)) {
+      store.helpers = store.helpers.filter((candidate) => candidate !== helper);
+      return false;
+    }
+    return true;
   }
 
   helperSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {
@@ -297,6 +329,20 @@ export class RuntimeEffectActorWorld {
   projectileSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {
     return runtimeProjectileActorsToSnapshots(this.getStore(ownerId), sourceStateNo);
   }
+}
+
+function normalizeRuntimeHelperRunOrderIds(stores: RuntimeEffectActorStores): number {
+  const helpers = [...stores.p1.helpers, ...stores.p2.helpers];
+  const assigned = helpers
+    .map((helper) => helper.runOrderId)
+    .filter((id) => Number.isSafeInteger(id) && id >= 3 && id < Number.MAX_SAFE_INTEGER);
+  let nextId = Math.max(2, ...assigned) + 1;
+  for (const helper of helpers) {
+    if (!Number.isSafeInteger(helper.runOrderId) || helper.runOrderId < 3 || helper.runOrderId === Number.MAX_SAFE_INTEGER) {
+      helper.runOrderId = nextId++;
+    }
+  }
+  return nextId;
 }
 
 export function createRuntimeEffectActorStore(): RuntimeEffectActorStore {

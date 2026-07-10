@@ -72,6 +72,7 @@ function ownerState(stateNo: number): RuntimeHelperTelemetryOwner {
 function helperState(stateNo: number | undefined): RuntimeHelper {
   return {
     serialId: "helper-0",
+    runOrderId: 3,
     actorKind: "helper",
     ownerId: "p1",
     rootId: "p1",

@@ -496,6 +496,7 @@ export type RuntimeTraceActorFrameRequirement = {
   facing?: 1 | -1;
   stateType?: string;
   moveType?: string;
+  runOrder?: number;
   physics?: string;
   guarding?: boolean;
   inGuardDistAttackerId?: string;
@@ -585,6 +586,7 @@ export type RuntimeTraceGateActorFrameEvidence = {
   facing: 1 | -1;
   stateType: string;
   moveType: string;
+  runOrder?: number;
   physics: string;
   guardingFrames: number;
   inGuardDistAttackerIds: string[];
@@ -1690,6 +1692,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               facing: actor.facing,
               stateType: actor.stateType,
               moveType: actor.moveType,
+              runOrder: actor.runOrder,
               physics: actor.physics,
               guardingFrames: actor.guarding ? 1 : 0,
               inGuardDistAttackerIds: actor.inGuardDist ? [actor.inGuardDist.attackerId] : [],
@@ -3024,6 +3027,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.facing,
     actor.stateType,
     actor.moveType,
+    actor.runOrder === undefined ? "ro*" : `ro${actor.runOrder}`,
     actor.physics,
     actor.clsn1Count,
     actor.clsn2Count,
@@ -3060,6 +3064,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.facing,
     actor.stateType,
     actor.moveType,
+    actor.runOrder === undefined ? "ro*" : `ro${actor.runOrder}`,
     actor.physics,
     actor.clsn1Count,
     actor.clsn2Count,
@@ -3126,6 +3131,7 @@ function matchesActorFrameRequirement(
     (requirement.facing === undefined || actor.facing === requirement.facing) &&
     (requirement.stateType === undefined || actor.stateType === requirement.stateType) &&
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
+    (requirement.runOrder === undefined || actor.runOrder === requirement.runOrder) &&
     (requirement.physics === undefined || actor.physics === requirement.physics) &&
     (requirement.guarding === undefined || matchingFrames > 0) &&
     (requirement.inGuardDistAttackerId === undefined || actor.inGuardDistAttackerIds.includes(requirement.inGuardDistAttackerId)) &&
