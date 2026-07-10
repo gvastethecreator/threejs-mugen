@@ -69,5 +69,5 @@ describe("RuntimeMatchFighterAdvanceWorld", () => {
 });
 
 function actor(id: string, moveType: "I" | "A" | "H") {
-  return { id, runtime: { moveType } };
+  return { id, runtime: { moveType, assertSpecial: undefined } };
 }

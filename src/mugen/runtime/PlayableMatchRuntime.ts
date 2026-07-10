@@ -75,7 +75,10 @@ import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
-import { RuntimeFighterRunOrderWorld } from "./RuntimeFighterRunOrderSystem";
+import {
+  RuntimeFighterRunOrderWorld,
+  type RuntimeRootRunOrderResult,
+} from "./RuntimeFighterRunOrderSystem";
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { RuntimeMatchPresentationSnapshotWorld } from "./RuntimeMatchPresentationSnapshotSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
@@ -434,6 +437,7 @@ export class PlayableMatchRuntime {
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
+    const preparedRunOrder = fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2);
     schedule.record("tick:stamp-input");
     matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
 
@@ -489,7 +493,7 @@ export class PlayableMatchRuntime {
         return this.advancePausedMatch(input, p1Input, p2Input, (phase, actorId) => schedule.record(phase, actorId));
       },
       advanceActive: () =>
-        this.advanceActiveMatch(input, p1Input, p2Input, (phase, actorId) => schedule.record(phase, actorId)),
+        this.advanceActiveMatch(input, p1Input, p2Input, preparedRunOrder, (phase, actorId) => schedule.record(phase, actorId)),
     });
     if (branchResult.branch !== "active") {
       schedule.record("tick:guard-distance-latch", this.p1.id);
@@ -506,10 +510,10 @@ export class PlayableMatchRuntime {
     input: MatchInput,
     p1Input: Set<string>,
     p2Input: Set<string>,
+    preparedRunOrder: RuntimeRootRunOrderResult<FighterMatchState>,
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
-    const preparedRunOrder = fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2);
     matchActiveWorld.advance({
       tickRoundTimer: () => {
         recordPhase("active:round-timer");

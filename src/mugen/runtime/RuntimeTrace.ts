@@ -18,7 +18,7 @@ import type {
   RoundSnapshot,
   StageSnapshot,
 } from "./types";
-import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
+import type { RuntimeMatchTickPhaseId, RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
 
 export type RuntimeTraceInputFrame = {
   label?: string;
@@ -926,6 +926,7 @@ export type RuntimeTraceGate = {
   requiredExecutedControllers?: Array<string | { type: string; minCount: number }>;
   requiredExecutedOperations?: Array<string | { operation: string; minCount: number }>;
   requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+  requiredTickSchedulePhaseSequences?: RuntimeTraceTickSchedulePhaseSequenceRequirement[];
   requiredActiveCommands?: string[];
   requiredEventCategories?: RuntimeTraceEvent["category"][];
   requiredEventSubstrings?: string[];
@@ -1002,6 +1003,13 @@ export type RuntimeTraceControllerEventSequenceRequirement = {
   actorId?: string;
   steps: RuntimeTraceControllerEventRequirement[];
   allowSameTick?: boolean;
+};
+
+export type RuntimeTraceTickSchedulePhaseSequenceRequirement = {
+  label?: string;
+  frameIndex?: number;
+  phase: RuntimeMatchTickPhaseId;
+  actorIds: string[];
 };
 
 export type RuntimeTraceRunner = {
@@ -1118,6 +1126,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
     const result = matchesControllerEventSequenceRequirement(evidence.controllerEvents, requirement);
     if (!result.passed) {
       failures.push(`Missing controller event sequence: ${describeControllerEventSequenceRequirement(requirement)} (${result.reason})`);
+    }
+  }
+  for (const requirement of gate.requiredTickSchedulePhaseSequences ?? []) {
+    if (!matchesTickSchedulePhaseSequenceRequirement(trace, requirement)) {
+      failures.push(`Missing tick schedule phase sequence: ${describeTickSchedulePhaseSequenceRequirement(requirement)}`);
     }
   }
   for (const command of gate.requiredActiveCommands ?? []) {
@@ -1274,6 +1287,36 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
     failures,
     evidence,
   };
+}
+
+function matchesTickSchedulePhaseSequenceRequirement(
+  trace: RuntimeTrace,
+  requirement: RuntimeTraceTickSchedulePhaseSequenceRequirement,
+): boolean {
+  if (requirement.actorIds.length === 0) {
+    return false;
+  }
+  return trace.frames.some((frame) => {
+    if (requirement.frameIndex !== undefined && frame.frameIndex !== requirement.frameIndex) {
+      return false;
+    }
+    if (!frame.tickSchedule) {
+      return false;
+    }
+    const actorIds = frame.tickSchedule.phases
+      .filter((phase) => phase.id === requirement.phase && phase.actorId !== undefined)
+      .map((phase) => phase.actorId!);
+    return (
+      actorIds.length === requirement.actorIds.length &&
+      actorIds.every((actorId, index) => actorId === requirement.actorIds[index])
+    );
+  });
+}
+
+function describeTickSchedulePhaseSequenceRequirement(requirement: RuntimeTraceTickSchedulePhaseSequenceRequirement): string {
+  const label = requirement.label ? `${requirement.label}: ` : "";
+  const frame = requirement.frameIndex === undefined ? "any frame" : `frame ${requirement.frameIndex}`;
+  return `${label}${frame} ${requirement.phase} = ${requirement.actorIds.join(" -> ")}`;
 }
 
 export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGateEvidence {

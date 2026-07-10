@@ -1,6 +1,6 @@
 ﻿# Supported Features
 
-- IKEMEN root-player RunOrder is `executed-partial` behind explicit match `runtimeProfile = "ikemen-go"`: two roots use previous-tick MoveType priority `A > I > H`, then deterministic lower runtime id. `mugen-1.1` and `unknown` preserve existing order. `RunFirst` / `RunLast`, `RunOrder`, helpers, teams, simul/tag, and full IKEMEN actor scheduling remain unsupported.
+- IKEMEN root-player RunOrder is `executed-partial` behind explicit match `runtimeProfile = "ikemen-go"`: two roots consume previous-tick exclusive `AssertSpecial` `RunFirst` / `RunLast` at priorities `100/-100` (both neutralize), then use MoveType `A > I > H` and deterministic lower runtime id. Required trace `synthetic-imported-ikemen-runfirst.json` gates the actor phase order. `mugen-1.1` and `unknown` preserve existing pair order. The `RunOrder` trigger, helpers, teams, simul/tag, and full IKEMEN actor scheduling remain unsupported.
 
 - Player `SprPriority` is `rendered-partial` at L2: static/dynamic controller values clamp to official `-5..5` and effective Three.js z puts higher priorities in front. HitDef pair priorities, equal ties, Explod ontop, stage occlusion, and full draw-order parity remain unsupported.
 

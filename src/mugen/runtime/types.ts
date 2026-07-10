@@ -211,6 +211,8 @@ export type RuntimeAssertSpecial = {
   noJuggleCheck?: boolean;
   noGetUpFromLieDown?: boolean;
   noFastRecoverFromLieDown?: boolean;
+  runFirst?: boolean;
+  runLast?: boolean;
 };
 
 export type RuntimeAfterImageSample = {

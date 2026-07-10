@@ -10,6 +10,17 @@ describe("RuntimeFighterRunOrderWorld", () => {
     expect(ids(world.orderPair("ikemen-go", actor("p2", "A"), actor("p1", "A")))).toEqual(["p1", "p2"]);
   });
 
+  it("applies IKEMEN RunFirst and RunLast overrides while neutralizing conflicting flags", () => {
+    const world = new RuntimeFighterRunOrderWorld();
+
+    expect(ids(world.orderPair("ikemen-go", actor("p1", "A"), actor("p2", "H", { runFirst: true })))).toEqual(["p2", "p1"]);
+    expect(ids(world.orderPair("ikemen-go", actor("p1", "I"), actor("p2", "A", { runLast: true })))).toEqual(["p1", "p2"]);
+    expect(ids(world.orderPair("ikemen-go", actor("p2", "A", { runFirst: true, runLast: true }), actor("p1", "A")))).toEqual([
+      "p1",
+      "p2",
+    ]);
+  });
+
   it.each(["mugen-1.1", "unknown"] as const)("preserves input order for unsupported %s scheduling", (profile) => {
     const result = new RuntimeFighterRunOrderWorld().orderPair(profile, actor("p2", "H"), actor("p1", "A"));
 
@@ -22,6 +33,9 @@ function ids(result: ReturnType<RuntimeFighterRunOrderWorld["orderPair"]>): stri
   return result.entries.map(({ actor: value }) => value.id);
 }
 
-function actor(id: string, moveType: "I" | "A" | "H") {
-  return { id, runtime: { moveType } };
+function actor(id: string, moveType: "I" | "A" | "H", overrides: { runFirst?: boolean; runLast?: boolean } = {}) {
+  const assertSpecial = Object.values(overrides).some(Boolean)
+    ? { flags: [], globalFlags: [], ...overrides }
+    : undefined;
+  return { id, runtime: { moveType, assertSpecial } };
 }

@@ -3,7 +3,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeRootRunOrderActor = {
   id: string;
-  runtime: Pick<CharacterRuntimeState, "moveType">;
+  runtime: Pick<CharacterRuntimeState, "moveType" | "assertSpecial">;
 };
 
 export type RuntimeRootRunOrderEntry<TActor> = {
@@ -34,8 +34,8 @@ export class RuntimeFighterRunOrderWorld {
     }
 
     const entries: [RuntimeRootRunOrderEntry<TActor>, RuntimeRootRunOrderEntry<TActor>] = [
-      entry(p1, ikemenRootPriority(p1.runtime.moveType)),
-      entry(p2, ikemenRootPriority(p2.runtime.moveType)),
+      entry(p1, ikemenRootPriority(p1.runtime)),
+      entry(p2, ikemenRootPriority(p2.runtime)),
     ];
     entries.sort((left, right) => right.priority - left.priority || compareRuntimeIds(left.actor.id, right.actor.id));
     return { profile, policy: "ikemen-go-root", supported: true, entries };
@@ -50,11 +50,19 @@ function entry<TActor>(actor: TActor, priority: number): RuntimeRootRunOrderEntr
   return { actor, priority };
 }
 
-function ikemenRootPriority(moveType: CharacterRuntimeState["moveType"]): number {
-  if (moveType === "A") {
+function ikemenRootPriority(runtime: Pick<CharacterRuntimeState, "moveType" | "assertSpecial">): number {
+  const runFirst = runtime.assertSpecial?.runFirst === true;
+  const runLast = runtime.assertSpecial?.runLast === true;
+  if (runFirst && !runLast) {
+    return 100;
+  }
+  if (runLast && !runFirst) {
+    return -100;
+  }
+  if (runtime.moveType === "A") {
     return 5;
   }
-  if (moveType === "I") {
+  if (runtime.moveType === "I") {
     return 4;
   }
   return 3;

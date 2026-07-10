@@ -94,6 +94,36 @@ describe("RuntimeTrace", () => {
     expect(diagnosticVariant.checksum).toBe(baseline.checksum);
   });
 
+  it("gates actor order for a named tick-schedule phase", () => {
+    const trace = runRuntimeTrace(
+      new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage, { runtimeProfile: "ikemen-go" }),
+      expandRuntimeTraceScript([
+        { label: "p2 attacks", frames: 1, p1: [], p2: ["x"] },
+        { label: "consume prior MoveType", frames: 1, p1: [], p2: [] },
+      ]),
+      { label: "schedule-phase-order" },
+    );
+
+    expect(
+      evaluateRuntimeTraceGate(trace, {
+        label: "expected-order",
+        requiredTickSchedulePhaseSequences: [{ frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p1"] }],
+      }),
+    ).toMatchObject({ passed: true, failures: [] });
+    expect(
+      evaluateRuntimeTraceGate(trace, {
+        label: "wrong-order",
+        requiredTickSchedulePhaseSequences: [{ frameIndex: 1, phase: "fighter:controllers", actorIds: ["p1", "p2"] }],
+      }),
+    ).toMatchObject({ passed: false, failures: [expect.stringContaining("fighter:controllers = p1 -> p2")] });
+    expect(
+      evaluateRuntimeTraceGate(trace, {
+        label: "empty-order",
+        requiredTickSchedulePhaseSequences: [{ frameIndex: 1, phase: "fighter:controllers", actorIds: [] }],
+      }),
+    ).toMatchObject({ passed: false });
+  });
+
   it("changes the trace checksum when the replay input path changes", () => {
     const kickTrace = runRuntimeTrace(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage), traceAttackScript(), {
       label: "native-close-kick",

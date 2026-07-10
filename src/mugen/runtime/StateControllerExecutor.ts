@@ -501,6 +501,8 @@ function applyAssertSpecialController(
     if (flag.name === "nojugglecheck") current.noJuggleCheck = true;
     if (flag.name === "nogetupfromliedown") current.noGetUpFromLieDown = true;
     if (flag.name === "nofastrecoverfromliedown") current.noFastRecoverFromLieDown = true;
+    if (flag.name === "runfirst") current.runFirst = true;
+    if (flag.name === "runlast") current.runLast = true;
   }
   state.assertSpecial = current.flags.length > 0 || current.globalFlags.length > 0 ? current : undefined;
   if (state.assertSpecial?.invisible) {

@@ -705,6 +705,10 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
       ...sequence,
       steps: sequence.steps.map((step) => ({ ...step })),
     })),
+    requiredTickSchedulePhaseSequences: gate.requiredTickSchedulePhaseSequences?.map((sequence) => ({
+      ...sequence,
+      actorIds: [...sequence.actorIds],
+    })),
     requiredActiveCommands: gate.requiredActiveCommands ? [...gate.requiredActiveCommands] : undefined,
     requiredEventCategories: gate.requiredEventCategories ? [...gate.requiredEventCategories] : undefined,
     requiredEventSubstrings: gate.requiredEventSubstrings ? [...gate.requiredEventSubstrings] : undefined,

@@ -8063,6 +8063,56 @@ export function createSyntheticImportedAssertSpecialControlTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenRunFirstTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "assert RunFirst while P1 attacks", p1: ["x"], p2: [], frames: 1 },
+    { label: "consume previous-tick RunFirst", p1: [], p2: [], frames: 1 },
+  ]);
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-runfirst",
+    displayName: "Synthetic Imported IKEMEN RunFirst",
+    passiveAssertSpecialFlags: ["RunFirst"],
+    passiveAssertSpecialTrigger: "GameTime = 1",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: demoFighters[0]!, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-runfirst-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-runfirst-golden",
+      label: "Synthetic imported IKEMEN previous-tick RunFirst route",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go profile trace proves a bounded root AssertSpecial RunFirst set only on tick 1 is consumed by tick 2 fighter scheduling ahead of an attacking root. It does not claim RunLast trace breadth, RunOrder trigger, helpers, teams, or full IKEMEN scheduling parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-runfirst-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["AssertSpecial"],
+        requiredExecutedOperations: ["assertspecial"],
+        requiredActorFrames: [{ actorId: "p1", source: "demo", actorKind: "player", moveType: "A", minFrames: 1 }],
+        requiredTickSchedulePhaseSequences: [
+          {
+            label: "previous-tick RunFirst root order",
+            frameIndex: 1,
+            phase: "fighter:controllers",
+            actorIds: ["p2", "p1"],
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

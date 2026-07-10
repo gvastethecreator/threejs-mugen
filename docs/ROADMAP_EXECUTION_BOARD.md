@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN root RunOrder (2026-07-10)
+## Latest closeout - IKEMEN root run flags (2026-07-10)
+
+Explicit `ikemen-go` now consumes previous-tick exclusive `RunFirst` / `RunLast` before MoveType/id order. Required trace `synthetic-imported-ikemen-runfirst.json` checksum `56e17803` passes inside 530/530 gates using the new named schedule-phase actor-order requirement. Continue at Wayfinder 034. No score movement.
+
+## Previous closeout - IKEMEN root RunOrder (2026-07-10)
 
 Explicit `ikemen-go` matches now prepare/run two roots by previous-tick MoveType priority and deterministic id tie-break; MUGEN/unknown preserve existing order. Full tests and 529/529 traces are green. Continue at Wayfinder 033. No score movement.
 
@@ -838,7 +842,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with many typed controller/trigger trace gates. | HitDef priority policy, direct player/helper contact traces, semantic renderer order, then schedule/Common1/guard evidence. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | Scanner/reporting for ZSS/Lua/config/screenpack/model-stage signals plus an explicit, source-backed two-root previous-tick `MoveType` RunOrder slice. | Decide the next isolated scheduling gap after root RunOrder while keeping package scanning versioned. | No `RunFirst`/`RunLast`, `RunOrder` trigger, helpers/teams, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
+| IKEMEN | Scanner/reporting for ZSS/Lua/config/screenpack/model-stage signals plus explicit, source-backed two-root previous-tick `RunFirst`/`RunLast`, MoveType, and id scheduling. | Resolve Wayfinder 034: `RunOrder` trigger versus helper actor-list integration versus simultaneous Pause ownership. | No `RunOrder`, helpers/appended actors, teams, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |

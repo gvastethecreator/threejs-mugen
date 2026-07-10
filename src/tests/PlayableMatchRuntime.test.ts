@@ -98,6 +98,28 @@ describe("PlayableMatchRuntime", () => {
     ]);
   });
 
+  it("applies previous-tick IKEMEN AssertSpecial RunFirst before attacking MoveType priority", () => {
+    const runFirst = createImportedFixture({
+      id: "runfirst-root",
+      displayName: "RunFirst Root",
+      passiveAssertSpecialFlags: ["RunFirst"],
+      passiveAssertSpecialTrigger: "GameTime = 1",
+    });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, runFirst, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const controllerOrder = snapshot.tickSchedule?.phases
+      .filter((phase) => phase.id === "fighter:controllers")
+      .map((phase) => phase.actorId);
+
+    expect(snapshot.actors[0]?.runtime.moveType).toBe("A");
+    expect(snapshot.actors[1]?.runtime.assertSpecial?.runFirst).toBeUndefined();
+    expect(controllerOrder).toEqual(["p2", "p1"]);
+  });
+
   it("preserves configured round timer fixtures across reset", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, { roundTimerFrames: 1 });
 
@@ -2127,6 +2149,7 @@ function createImportedFixture(
     passiveHitOverride?: { attr: string; stateNo: number; forceAir?: boolean };
     passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number };
     passiveAssertSpecialFlags?: string[];
+    passiveAssertSpecialTrigger?: string;
     defenseMultiplier?: number;
     attackMultiplier?: number;
     withPaletteUtilities?: boolean;
@@ -2361,7 +2384,7 @@ ${options.passiveReversalDef.p2StateNo !== undefined ? `p2stateno = ${options.pa
       ? `
 [State 0, Passive AssertSpecial]
 type = AssertSpecial
-trigger1 = 1
+trigger1 = ${options.passiveAssertSpecialTrigger ?? "1"}
 flag = ${options.passiveAssertSpecialFlags.join(", ")}
 `
       : "",

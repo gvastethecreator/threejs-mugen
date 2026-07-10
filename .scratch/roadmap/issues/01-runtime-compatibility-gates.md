@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - IKEMEN RunFirst / RunLast
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: explicit IKEMEN root order covered previous-tick MoveType/id only; run flags were compiled as generic AssertSpecial names but did not affect scheduling.
+- Result: previous-tick exclusive `RunFirst` / `RunLast` use source-backed priorities `100/-100`, both neutralize, and non-IKEMEN profiles preserve pair order.
+- Evidence: required `synthetic-imported-ikemen-runfirst.json` checksum `56e17803` / final `aabad0c5`; 530/530 traces with 499 required; focused 5 files / 651 tests; full 158 files / 1560 tests; TypeScript 7 build/typecheck; boundaries green.
+- Infrastructure: trace gates can now require exact actor order for a named `MatchTickSchedule/v0` phase.
+- Blocked: `RunOrder`, helpers/appended actors, teams/simul/tag, exact pause/hitpause lifetime, simultaneous Pause ownership, rollback, score movement, full IKEMEN actor-loop parity.
+
 ## Latest Closed Quality Slice - IKEMEN Root RunOrder
 
 Status: done
