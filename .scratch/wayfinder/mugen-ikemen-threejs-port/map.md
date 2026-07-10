@@ -37,13 +37,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after renderer axis oracle](tickets/023-next-gap-after-renderer-axis-oracle.md) - selected and resolved official player SprPriority clamping plus effective desktop/mobile depth-order oracle.
 - [Choose next gap after SprPriority draw order](tickets/024-next-gap-after-sprpriority-draw-order.md) - selected static direct HitDef P1/P2 priority policy, contact mutation, and trace evidence as the next R1 presentation-semantic package.
 - HitDef contact-priority implementation now passes required player/helper provenance traces inside 526/526 gates; renderer adaptation and score movement remain blocked.
+- [Choose next gap after HitDef contact priority](tickets/025-next-gap-after-hitdef-contact-priority.md) - selected and resolved runtime-owned `MugenPresentationOrder/v0`, a separate Three.js r184 adapter, and desktop/mobile stage-back < actor < effect < stage-front evidence.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after HitDef contact priority](tickets/025-next-gap-after-hitdef-contact-priority.md)
+- [Choose next gap after PresentationOrder v0](tickets/026-next-gap-after-presentation-order-v0.md)
 
 ## Not Yet Specified
 

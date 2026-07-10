@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import type { MugenPresentationOrder } from "./PresentationOrder";
 import type { CommandInputHistorySample } from "./CommandBuffer";
 import type {
   RuntimeHitDefPriorityProfile,
@@ -395,6 +396,7 @@ export type ActorEffectSnapshot =
 export type ActorSnapshot = RuntimeActorIdentity & {
   id: string;
   label: string;
+  presentationOrder?: MugenPresentationOrder;
   source?: "demo" | "imported" | "effect";
   shadowVisible?: false;
   spriteOwnerId?: string;

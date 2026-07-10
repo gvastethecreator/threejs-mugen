@@ -6,6 +6,11 @@ import { AxisRenderer } from "./AxisRenderer";
 import { CharacterRenderer } from "./CharacterRenderer";
 import { CollisionBoxRenderer } from "./CollisionBoxRenderer";
 import { HitSparkRenderer } from "./HitSparkRenderer";
+import {
+  applyThreePresentationOrder,
+  resolveOverlayPresentationOrder,
+  resolvePresentationOrder,
+} from "./PresentationOrder";
 import { TextureStore } from "./TextureStore";
 import type { MugenRenderer } from "./types";
 
@@ -49,10 +54,10 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.scene.add(this.hitSparks.group);
     this.scene.add(this.boxes.group);
     this.pauseOverlay.visible = false;
-    this.pauseOverlay.renderOrder = 1000;
+    applyThreePresentationOrder(this.pauseOverlay, this.pauseOverlayMaterial, resolveOverlayPresentationOrder(0));
     this.scene.add(this.pauseOverlay);
     this.envColorOverlay.visible = false;
-    this.envColorOverlay.renderOrder = 1001;
+    applyThreePresentationOrder(this.envColorOverlay, this.envColorOverlayMaterial, resolveOverlayPresentationOrder(1));
     this.scene.add(this.envColorOverlay);
   }
 
@@ -105,7 +110,18 @@ export class ThreeMugenRenderer implements MugenRenderer {
       const color = snapshot.stage.envColor.color;
       this.envColorOverlayMaterial.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
       this.envColorOverlayMaterial.opacity = snapshot.stage.envColor.opacity;
-      this.envColorOverlay.renderOrder = snapshot.stage.envColor.under ? 2 : 1002;
+      const envColorOrder = snapshot.stage.envColor.under
+        ? resolvePresentationOrder({
+            profile: "unknown",
+            phase: "stage-background",
+            sourceKind: "overlay",
+            blendPolicy: "alpha",
+            priority: 999,
+            tieBreaker: 0,
+            tiePolicy: "explicit",
+          })
+        : resolveOverlayPresentationOrder(2);
+      applyThreePresentationOrder(this.envColorOverlay, this.envColorOverlayMaterial, envColorOrder);
       this.envColorOverlay.position.set(this.camera.position.x, this.camera.position.y, snapshot.stage.envColor.under ? -1 : 9.5);
       this.envColorOverlay.scale.set(this.size.width / this.camera.zoom, this.size.height / this.camera.zoom, 1);
     }
@@ -144,6 +160,8 @@ export class ThreeMugenRenderer implements MugenRenderer {
     memory: { geometries: number; textures: number };
     hitSparks: ReturnType<HitSparkRenderer["getDiagnostics"]>;
     characters: ReturnType<CharacterRenderer["getDiagnostics"]>;
+    stage: ReturnType<AxisRenderer["getDiagnostics"]>;
+    presentationGroups: { stage: number; characters: number; hitSparks: number; collision: number };
   } {
     return {
       size: this.size,
@@ -160,6 +178,13 @@ export class ThreeMugenRenderer implements MugenRenderer {
       },
       hitSparks: this.hitSparks.getDiagnostics(),
       characters: this.characters.getDiagnostics(),
+      stage: this.axis.getDiagnostics(),
+      presentationGroups: {
+        stage: this.axis.group.renderOrder,
+        characters: this.characters.group.renderOrder,
+        hitSparks: this.hitSparks.group.renderOrder,
+        collision: this.boxes.group.renderOrder,
+      },
     };
   }
 

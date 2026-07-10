@@ -3,7 +3,8 @@ import * as THREE from "three";
 import type { MugenSprite } from "../mugen/model/MugenSprite";
 import type { MugenStageLayer } from "../mugen/model/MugenStage";
 import type { StageSnapshot } from "../mugen/runtime/types";
-import { stageLayerMaterialParameters } from "../game/render/AxisRenderer";
+import { AxisRenderer, stageLayerMaterialParameters } from "../game/render/AxisRenderer";
+import type { TextureStore } from "../game/render/TextureStore";
 import { clipStagePlacement, projectStageLayerClip, projectStageSpriteLayer, resolveStageLayerForTick } from "../game/render/stageProjection";
 import { bgCtrlLabStage } from "../mugen/runtime/demoStage";
 
@@ -258,6 +259,48 @@ describe("stage layer material params", () => {
     expect(addAlpha.depthWrite).toBe(false);
     expect(subtractive.blending).toBe(THREE.SubtractiveBlending);
     expect(normal.blending).toBe(THREE.NormalBlending);
-    expect(normal.transparent).toBe(false);
+    expect(normal.transparent).toBe(true);
+    expect(normal.depthTest).toBe(false);
+    expect(normal.depthWrite).toBe(false);
+  });
+
+  it("reports layerno and authored order through semantic and effective presentation diagnostics", () => {
+    const renderer = new AxisRenderer({} as TextureStore);
+    renderer.update({
+      width: 640,
+      height: 360,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        ...stage,
+        layers: [
+          { id: "back", color: "#001", y: 0, width: 640, height: 360, deltaX: 1, opacity: 1, layerNo: 0 },
+          { id: "front", color: "#fff", y: 0, width: 40, height: 80, deltaX: 1, opacity: 0.5, layerNo: 1 },
+        ],
+      },
+    });
+
+    expect(renderer.getDiagnostics()).toMatchObject([
+      {
+        id: "back",
+        layerNo: 0,
+        authoredOrder: 0,
+        presentationOrder: {
+          semantic: { phase: "stage-background", blendPolicy: "normal", tiePolicy: "authored-order" },
+          three: { renderOrder: 0, depthTest: false, depthWrite: false },
+        },
+      },
+      {
+        id: "front",
+        layerNo: 1,
+        authoredOrder: 1,
+        presentationOrder: {
+          semantic: { phase: "stage-foreground", blendPolicy: "alpha", tiePolicy: "authored-order" },
+          three: { renderOrder: 40_000_100, depthTest: false, depthWrite: false },
+        },
+      },
+    ]);
+    renderer.dispose();
   });
 });

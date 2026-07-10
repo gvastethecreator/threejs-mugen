@@ -2,12 +2,20 @@ import * as THREE from "three";
 import type { SpriteProvider } from "../../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../../mugen/runtime/types";
 import { TextureStore } from "./TextureStore";
+import {
+  applyThreePresentationOrder,
+  resolveActorPresentationOrder,
+  resolveActorUnderlayPresentationOrder,
+  resolveThreePresentationOrder,
+  type ResolvedPresentationOrder,
+} from "./PresentationOrder";
 import { projectSprite } from "./projection";
 
 export class CharacterRenderer {
   readonly group = new THREE.Group();
   private readonly meshes = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>();
   private readonly shadowMeshes = new Map<string, THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>>();
+  private readonly shadowPresentationOrders = new Map<string, ResolvedPresentationOrder>();
   private readonly afterimageMeshes = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[]>();
   private readonly presentations = new Map<string, CharacterSpritePresentation>();
 
@@ -31,6 +39,7 @@ export class CharacterRenderer {
       if (!activeIds.has(id)) {
         disposeMesh(this.group, mesh);
         this.shadowMeshes.delete(id);
+        this.shadowPresentationOrders.delete(id);
       }
     }
     for (const [id, meshes] of this.afterimageMeshes) {
@@ -69,6 +78,10 @@ export class CharacterRenderer {
       mesh.material.needsUpdate = true;
       const priority = actor.runtime.spritePriority ?? (actor.id === "p2" ? 1 : 2);
       const orderBias = actor.id === "p2" ? 0.01 : 0.02;
+      const presentationOrder = actor.presentationOrder
+        ? resolveThreePresentationOrder(actor.presentationOrder)
+        : resolveActorPresentationOrder(actor.actorKind, priority, Math.round(orderBias * 100));
+      applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
       mesh.position.x = projected.x;
       mesh.position.y = projected.y;
       mesh.position.z = resolveCharacterRenderDepth(priority, orderBias);
@@ -83,6 +96,14 @@ export class CharacterRenderer {
         renderScale: { ...(actor.runtime.renderScale ?? { x: 1, y: 1 }) },
         spritePriority: priority,
         orderBias,
+        presentationOrder,
+        meshRenderOrder: mesh.renderOrder,
+        material: {
+          transparent: mesh.material.transparent,
+          depthTest: mesh.material.depthTest,
+          depthWrite: mesh.material.depthWrite,
+        },
+        shadow: this.shadowDiagnostic(actor.id),
         meshPosition: { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z },
         meshScale: { x: mesh.scale.x, y: mesh.scale.y },
       });
@@ -103,6 +124,7 @@ export class CharacterRenderer {
       disposeMesh(this.group, mesh);
     }
     this.shadowMeshes.clear();
+    this.shadowPresentationOrders.clear();
     for (const meshes of this.afterimageMeshes.values()) {
       meshes.forEach((mesh) => disposeMesh(this.group, mesh));
     }
@@ -116,6 +138,7 @@ export class CharacterRenderer {
       if (existing) {
         disposeMesh(this.group, existing);
         this.shadowMeshes.delete(actor.id);
+        this.shadowPresentationOrders.delete(actor.id);
       }
       return;
     }
@@ -135,8 +158,31 @@ export class CharacterRenderer {
       this.group.add(mesh);
     }
     mesh.material.opacity = presentation.opacity;
+    const presentationOrder = resolveActorUnderlayPresentationOrder(
+      actor.id === "p2" ? 1 : 2,
+      actor.presentationOrder?.profile ?? "unknown",
+    );
+    applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
+    this.shadowPresentationOrders.set(actor.id, presentationOrder);
     mesh.position.set(presentation.x, presentation.y, presentation.z);
     mesh.scale.set(presentation.width, presentation.height, 1);
+  }
+
+  private shadowDiagnostic(actorId: string): CharacterShadowPresentation | undefined {
+    const mesh = this.shadowMeshes.get(actorId);
+    const presentationOrder = this.shadowPresentationOrders.get(actorId);
+    if (!mesh || !presentationOrder) {
+      return undefined;
+    }
+    return {
+      presentationOrder,
+      meshRenderOrder: mesh.renderOrder,
+      material: {
+        transparent: mesh.material.transparent,
+        depthTest: mesh.material.depthTest,
+        depthWrite: mesh.material.depthWrite,
+      },
+    };
   }
 
   private async updateAfterImages(actor: ActorSnapshot): Promise<void> {
@@ -173,6 +219,9 @@ export class CharacterRenderer {
       applyAfterImageMaterial(mesh.material, effect, index);
       mesh.material.needsUpdate = true;
       const priority = actor.runtime.spritePriority ?? (actor.id === "p2" ? 1 : 2);
+      const orderBias = actor.id === "p2" ? 1 : 2;
+      const presentationOrder = resolveActorPresentationOrder(actor.actorKind, priority, orderBias - index - 1);
+      applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
       mesh.position.x = projected.x;
       mesh.position.y = projected.y;
       mesh.position.z = 0.78 + Math.max(-5, Math.min(10, priority)) * 0.05 - index * 0.012;
@@ -191,8 +240,18 @@ export type CharacterSpritePresentation = {
   renderScale: { x: number; y: number };
   spritePriority: number;
   orderBias: number;
+  presentationOrder: ResolvedPresentationOrder;
+  meshRenderOrder: number;
+  material: { transparent: boolean; depthTest: boolean; depthWrite: boolean };
+  shadow?: CharacterShadowPresentation;
   meshPosition: { x: number; y: number; z: number };
   meshScale: { x: number; y: number };
+};
+
+export type CharacterShadowPresentation = {
+  presentationOrder: ResolvedPresentationOrder;
+  meshRenderOrder: number;
+  material: { transparent: boolean; depthTest: boolean; depthWrite: boolean };
 };
 
 export function resolveCharacterRenderDepth(priority: number, orderBias: number): number {

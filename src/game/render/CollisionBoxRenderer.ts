@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type { ActorSnapshot } from "../../mugen/runtime/types";
 import { projectCollisionBox } from "./projection";
 import { createRect } from "./AxisRenderer";
+import { applyThreePresentationOrder, resolvePresentationOrder } from "./PresentationOrder";
 
 export class CollisionBoxRenderer {
   readonly group = new THREE.Group();
@@ -25,6 +26,7 @@ export class CollisionBoxRenderer {
         for (const box of actor.clsn2) {
           const projected = projectCollisionBox(actor, box);
           const mesh = createRect(projected.x, projected.y, projected.width, projected.height, this.hurtMaterial);
+          applyThreePresentationOrder(mesh, this.hurtMaterial, debugPresentationOrder(1));
           mesh.position.z = 3;
           this.group.add(mesh);
         }
@@ -33,6 +35,7 @@ export class CollisionBoxRenderer {
         for (const box of actor.clsn1) {
           const projected = projectCollisionBox(actor, box);
           const mesh = createRect(projected.x, projected.y, projected.width, projected.height, this.hitMaterial);
+          applyThreePresentationOrder(mesh, this.hitMaterial, debugPresentationOrder(2));
           mesh.position.z = 4;
           this.group.add(mesh);
         }
@@ -54,4 +57,16 @@ export class CollisionBoxRenderer {
       }
     }
   }
+}
+
+function debugPresentationOrder(priority: number) {
+  return resolvePresentationOrder({
+    profile: "unknown",
+    phase: "debug",
+    sourceKind: "debug",
+    blendPolicy: "alpha",
+    priority,
+    tieBreaker: 0,
+    tiePolicy: "explicit",
+  });
 }

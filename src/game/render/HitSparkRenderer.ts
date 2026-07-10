@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
 import type { ActorSnapshot, RuntimeHitEffectAssetFrame, RuntimeHitEffectEvent } from "../../mugen/runtime/types";
+import { applyThreePresentationOrder, resolveHitSparkPresentationOrder, type ResolvedPresentationOrder } from "./PresentationOrder";
 import { projectHitSpark } from "./projection";
 import { TextureStore } from "./TextureStore";
 
@@ -34,6 +35,7 @@ export type HitSparkPresentation = {
   assetFrame?: RuntimeHitEffectAssetFrame;
   layer: HitSparkRenderLayer;
   renderOrder: number;
+  presentationOrder: ResolvedPresentationOrder;
   resolvedSprite?: HitSparkResolvedSpriteDiagnostic;
   spriteLocalPosition?: { x: number; y: number };
 };
@@ -119,6 +121,9 @@ export class HitSparkRenderer {
       lookupStatus: HitSparkLookupStatus;
       layer: HitSparkRenderLayer;
       renderOrder: number;
+      presentationOrder: ResolvedPresentationOrder;
+      groupRenderOrder: number;
+      meshRenderOrders: number[];
       assetFrame?: {
         source: HitSparkAssetSource;
         actionId: number;
@@ -151,6 +156,13 @@ export class HitSparkRenderer {
         lookupStatus: presentation.asset.lookupStatus,
         layer: presentation.layer,
         renderOrder: presentation.renderOrder,
+        presentationOrder: presentation.presentationOrder,
+        groupRenderOrder: this.sparks.get(presentation.key)?.group.renderOrder ?? 0,
+        meshRenderOrders:
+          this.sparks
+            .get(presentation.key)
+            ?.group.children.filter((child) => child instanceof THREE.Mesh)
+            .map((child) => child.renderOrder) ?? [],
         assetFrame: presentation.assetFrame
           ? {
               source: presentation.assetFrame.source,
@@ -185,12 +197,17 @@ export class HitSparkRenderer {
     spark.group.position.set(presentation.x, presentation.y, 6);
     spark.group.rotation.z = presentation.rotation;
     spark.group.scale.set(presentation.size, presentation.size, 1);
-    spark.group.renderOrder = presentation.renderOrder;
+    spark.group.renderOrder = 0;
+    applyThreePresentationOrder(spark.flare, spark.flare.material, presentation.presentationOrder);
+    applyThreePresentationOrder(spark.core, spark.core.material, presentation.presentationOrder);
+    spark.core.renderOrder += 1;
     spark.flare.material.color.setHex(presentation.color);
     spark.flare.material.opacity = presentation.opacity * (hasSprite ? 0.18 : 0.42);
     spark.core.material.opacity = Math.min(1, presentation.opacity * (hasSprite ? 0.34 : 1.12));
     if (sprite) {
       const spriteMesh = this.ensureSpriteMesh(spark);
+      applyThreePresentationOrder(spriteMesh, spriteMesh.material, presentation.presentationOrder);
+      spriteMesh.renderOrder += 2;
       spriteMesh.visible = true;
       spriteMesh.material.map = this.textures?.getTexture(sprite, hitSparkTextureNamespace(actor, presentation)) ?? null;
       spriteMesh.material.opacity = presentation.opacity;
@@ -254,7 +271,6 @@ export class HitSparkRenderer {
         depthTest: false,
       }),
     );
-    sprite.renderOrder = 1;
     spark.group.add(sprite);
     spark.sprite = sprite;
     return sprite;
@@ -311,6 +327,7 @@ export function resolveHitSparkPresentation(
   const asset = resolveHitSparkAssetRef(event);
   const assetFrame = resolveHitSparkPresentationFrame(asset, event, age);
   const layer = event.kind === "guard" ? "guard-spark" : "hit-spark";
+  const presentationOrder = resolveHitSparkPresentationOrder(event.kind);
   return {
     key: hitSparkKey(actor, event, eventIndex),
     x: projected.x,
@@ -322,7 +339,8 @@ export function resolveHitSparkPresentation(
     age,
     asset,
     layer,
-    renderOrder: event.kind === "guard" ? 710 : 720,
+    renderOrder: presentationOrder.three.renderOrder,
+    presentationOrder,
     assetFrame,
   };
 }

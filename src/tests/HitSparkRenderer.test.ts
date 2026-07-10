@@ -98,7 +98,27 @@ describe("HitSparkRenderer helpers", () => {
         spriteIndex: 0,
       },
       layer: "hit-spark",
-      renderOrder: 720,
+      renderOrder: 30_000_200,
+      presentationOrder: {
+        semantic: {
+          schema: "MugenPresentationOrder/v0",
+          profile: "unknown",
+          phase: "effect",
+          sourceKind: "hit-spark",
+          blendPolicy: "additive",
+          priority: 2,
+          tieBreaker: 0,
+          tiePolicy: "effect-kind",
+        },
+        three: {
+          renderOrder: 30_000_200,
+          boundedPriority: 2,
+          boundedTieBreaker: 0,
+          transparent: true,
+          depthTest: false,
+          depthWrite: false,
+        },
+      },
     });
     expect(presentation?.opacity).toBeGreaterThan(0);
     expect(presentation?.size).toBeGreaterThan(44);
@@ -523,7 +543,10 @@ describe("HitSparkRenderer helpers", () => {
     await renderer.update([sourceActor], 11);
 
     const sparkGroup = renderer.group.children[0] as THREE.Group;
-    const spriteMesh = sparkGroup.children.find((child) => child instanceof THREE.Mesh && child.renderOrder === 1) as THREE.Mesh;
+    const baseRenderOrder = renderer.getDiagnostics().presentations[0]?.renderOrder ?? 0;
+    const spriteMesh = sparkGroup.children.find(
+      (child) => child instanceof THREE.Mesh && child.renderOrder === baseRenderOrder + 2,
+    ) as THREE.Mesh;
     const expectedSize = 44 + Math.abs(7001 % 5);
 
     expect(spriteMesh.position.x).toBeLessThan(0);

@@ -5,6 +5,11 @@ import type { MugenStageLayerTrans } from "../../mugen/model/MugenStage";
 import type { StageSnapshot } from "../../mugen/runtime/types";
 import { TextureStore } from "./TextureStore";
 import {
+  applyThreePresentationOrder,
+  resolveStagePresentationOrder,
+  type ResolvedPresentationOrder,
+} from "./PresentationOrder";
+import {
   clipStagePlacement,
   projectStageLayerClip,
   projectStageSpriteLayer,
@@ -18,6 +23,7 @@ export class AxisRenderer {
   private readonly stageSprites = new Map<string, Map<string, MugenSprite>>();
   private readonly assetTextures = new Map<string, THREE.Texture>();
   private readonly assetLoader = new THREE.TextureLoader();
+  private presentations: StageLayerPresentation[] = [];
   private readonly materials = {
     backdrop: new THREE.MeshBasicMaterial({ color: "#111821", transparent: true, opacity: 1 }),
     farWall: new THREE.MeshBasicMaterial({ color: "#1b2530", transparent: true, opacity: 0.86 }),
@@ -46,6 +52,7 @@ export class AxisRenderer {
 
   update(options: { width: number; height: number; showAxis: boolean; showGrid: boolean; stage: StageSnapshot; tick: number }): void {
     this.clear();
+    this.presentations = [];
     const stageWidth = Math.max(900, options.width * 2.4);
     const layers = options.stage.layers;
     if (layers?.length) {
@@ -58,15 +65,25 @@ export class AxisRenderer {
         const renderLayer = animatedFrame ? layerWithFrame(controlledLayer, animatedFrame) : controlledLayer;
         const sprite = this.getLayerSprite(options.stage.id, renderLayer.spriteGroup, renderLayer.spriteIndex);
         if (sprite) {
-          for (const mesh of createStageSprites(renderLayer, sprite, options.stage, this.textures, index, stageWidth)) {
-            this.group.add(mesh);
-          }
+          this.addStageLayerMeshes(
+            renderLayer.id,
+            renderLayer.layerNo,
+            index,
+            stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
+            createStageSprites(renderLayer, sprite, options.stage, this.textures, index, stageWidth),
+          );
           return;
         }
         if (renderLayer.assetUrl) {
           const assetLayer = createAssetLayer(renderLayer, this.getAssetTexture(renderLayer.assetUrl), options.stage, index);
           if (assetLayer) {
-            this.group.add(assetLayer);
+            this.addStageLayerMeshes(
+              renderLayer.id,
+              renderLayer.layerNo,
+              index,
+              stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
+              [assetLayer],
+            );
           }
           return;
         }
@@ -83,8 +100,12 @@ export class AxisRenderer {
         if (!placement) {
           return;
         }
-        this.group.add(
-          createRect(
+        this.addStageLayerMeshes(
+          renderLayer.id,
+          renderLayer.layerNo,
+          index,
+          stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
+          [createRect(
             placement.x,
             placement.y,
             placement.width,
@@ -92,7 +113,7 @@ export class AxisRenderer {
             layerMaterial(renderLayer.color, renderLayer.opacity, renderLayer.trans),
             layerZ(renderLayer.layerNo, index),
             placement.uv,
-          ),
+          )],
         );
       });
     } else {
@@ -121,6 +142,10 @@ export class AxisRenderer {
     }
   }
 
+  getDiagnostics(): StageLayerPresentation[] {
+    return structuredClone(this.presentations);
+  }
+
   dispose(): void {
     this.clear();
     this.assetTextures.forEach((texture) => texture.dispose());
@@ -136,6 +161,31 @@ export class AxisRenderer {
         disposeTransientMaterial(child.material, Object.values(this.materials));
       }
     }
+  }
+
+  private addStageLayerMeshes(
+    id: string,
+    layerNo: number | undefined,
+    authoredOrder: number,
+    blendPolicy: "normal" | "alpha" | "additive" | "subtractive",
+    meshes: THREE.Mesh[],
+  ): void {
+    const presentationOrder = resolveStagePresentationOrder(layerNo, authoredOrder, { blendPolicy });
+    for (const mesh of meshes) {
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const material of materials) {
+        applyThreePresentationOrder(mesh, material, presentationOrder);
+      }
+      this.group.add(mesh);
+    }
+    this.presentations.push({
+      id,
+      layerNo: layerNo ?? 0,
+      authoredOrder,
+      meshCount: meshes.length,
+      meshRenderOrders: meshes.map((mesh) => mesh.renderOrder),
+      presentationOrder,
+    });
   }
 
   private getLayerSprite(stageId: string | undefined, group: number | undefined, index: number | undefined): MugenSprite | undefined {
@@ -226,12 +276,22 @@ export function stageLayerMaterialParameters(
   const materialOpacity = stageLayerOpacity(opacity, trans);
   return {
     color,
-    transparent: materialOpacity < 1 || blending !== THREE.NormalBlending,
+    transparent: true,
     opacity: materialOpacity,
     blending,
-    depthWrite: blending === THREE.NormalBlending,
+    depthTest: false,
+    depthWrite: false,
   };
 }
+
+export type StageLayerPresentation = {
+  id: string;
+  layerNo: number;
+  authoredOrder: number;
+  meshCount: number;
+  meshRenderOrders: number[];
+  presentationOrder: ResolvedPresentationOrder;
+};
 
 function createStageSprites(
   layer: NonNullable<StageSnapshot["layers"]>[number],
@@ -333,6 +393,19 @@ function stageLayerBlending(trans: MugenStageLayerTrans | undefined): THREE.Blen
     return THREE.SubtractiveBlending;
   }
   return THREE.AdditiveBlending;
+}
+
+function stagePresentationBlendPolicy(
+  trans: MugenStageLayerTrans | undefined,
+  opacity: number,
+): "normal" | "alpha" | "additive" | "subtractive" {
+  if (trans?.mode === "sub") {
+    return "subtractive";
+  }
+  if (trans && trans.mode !== "none") {
+    return "additive";
+  }
+  return opacity < 1 ? "alpha" : "normal";
 }
 
 function clamp01(value: number): number {

@@ -2,6 +2,8 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import { RuntimeFrameWorld } from "./RuntimeFrameSystem";
+import { createActorPresentationOrder } from "./PresentationOrder";
+import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import type {
   ActorSnapshot,
   CharacterRuntimeState,
@@ -30,6 +32,7 @@ export type RuntimePlayerSnapshotActor = {
   definition: {
     id: string;
     source?: "demo" | "imported";
+    hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   };
   stateOwner?: {
     id: string;
@@ -133,6 +136,15 @@ export class RuntimeSnapshotWorld {
     return {
       id: actor.id,
       label: actor.label,
+      presentationOrder: createActorPresentationOrder(
+        "player",
+        actor.runtime.spritePriority ?? (actor.id === "p2" ? 1 : 2),
+        actorPresentationBias(actor.id),
+        {
+          profile: presentationProfile(actor.definition.hitDefPriorityProfile ?? actor.runtime.hitDefSpritePriority?.profile),
+          blendPolicy: actor.runtime.paletteFx?.add.some((value) => value > 0) ? "additive" : "alpha",
+        },
+      ),
       actorKind: "player",
       ownerId: actor.id,
       rootId: actor.id,
@@ -181,8 +193,28 @@ export class RuntimeSnapshotWorld {
       ...input.p2.helpers,
       ...input.p1.projectiles,
       ...input.p2.projectiles,
-    ].map((snapshot) => structuredClone(snapshot));
+    ].map((snapshot) => {
+      const clone = structuredClone(snapshot);
+      clone.presentationOrder = createActorPresentationOrder(
+        clone.actorKind,
+        clone.runtime.spritePriority ?? 0,
+        actorPresentationBias(clone.id),
+        {
+          profile: "unknown",
+          blendPolicy: clone.runtime.paletteFx?.add.some((value) => value > 0) ? "additive" : "alpha",
+        },
+      );
+      return clone;
+    });
   }
+}
+
+function actorPresentationBias(actorId: string): number {
+  return actorId === "p2" ? 1 : 2;
+}
+
+function presentationProfile(profile: RuntimeHitDefPriorityProfile | undefined): "mugen-1.1" | "ikemen-go" | "unknown" {
+  return profile === "mugen-1.1" || profile === "ikemen-go" ? profile : "unknown";
 }
 
 export function cameraCenterX(actors: RuntimeSnapshotActor[]): number {

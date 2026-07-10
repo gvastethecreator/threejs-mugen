@@ -74,7 +74,7 @@ describe("RuntimeSnapshotWorld", () => {
     const actor: RuntimePlayerSnapshotActor = {
       id: "p1",
       label: "Imported KFM",
-      definition: { id: "kfm", source: "imported" },
+      definition: { id: "kfm", source: "imported", hitDefPriorityProfile: "mugen-1.1" },
       stateOwner: {
         id: "p2",
         label: "Target Owner",
@@ -158,6 +158,16 @@ describe("RuntimeSnapshotWorld", () => {
       rootId: "p1",
       parentId: "p1",
       source: "imported",
+      presentationOrder: {
+        schema: "MugenPresentationOrder/v0",
+        profile: "mugen-1.1",
+        phase: "actor",
+        sourceKind: "player",
+        blendPolicy: "alpha",
+        priority: 2,
+        tieBreaker: 2,
+        tiePolicy: "unknown-reference",
+      },
       spriteOwnerId: "p2",
       spriteOwnerDefinitionId: "target-def",
       spriteOwnerLabel: "Target Owner",
@@ -258,6 +268,14 @@ describe("RuntimeSnapshotWorld", () => {
     const p2Explod = effectSnapshot("p2-explod-1", "explod", "p2", { x: 2, y: 0 });
     const p1Helper = effectSnapshot("p1-helper-1", "helper", "p1", { x: 3, y: 0 });
     const p2Projectile = effectSnapshot("p2-projectile-1", "projectile", "p2", { x: 4, y: 0 });
+    p1Explod.runtime.hitDefSpritePriority = {
+      profile: "mugen-1.1",
+      role: "p1",
+      contactKind: "hit",
+      value: 4,
+      source: "authored",
+      supported: true,
+    };
 
     const snapshots = world.effects({
       p1: { explods: [p1Explod], helpers: [p1Helper], projectiles: [] },
@@ -274,6 +292,7 @@ describe("RuntimeSnapshotWorld", () => {
     ]);
     expect(snapshots[0]?.runtime.pos.x).toBe(1);
     expect(snapshots[0]?.clsn1).toEqual([{ x1: 0, y1: -10, x2: 8, y2: 0 }]);
+    expect(snapshots[0]?.presentationOrder).toMatchObject({ profile: "unknown", sourceKind: "explod", priority: 0 });
   });
 
   it("owns full match snapshot envelope assembly", () => {

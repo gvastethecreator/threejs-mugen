@@ -248,8 +248,9 @@ async function captureRuntime(page, baseUrl, options) {
   await page.screenshot({ path: options.screenshotPath, fullPage: true });
   const canvasPng = await page.locator("canvas").first().screenshot({ path: options.canvasPath });
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
+  const presentationOverlap = await capturePresentationOverlapOracle(page);
   return page.evaluate(
-    ({ canvasPixels, drivenHitSparks, label }) => {
+    ({ canvasPixels, drivenHitSparks, label, presentationOverlap }) => {
       const bridge = window.__MUGEN_WEB_SANDBOX__;
       const currentHitSparks = bridge?.renderer?.hitSparks;
       const hitSparks =
@@ -289,6 +290,7 @@ async function captureRuntime(page, baseUrl, options) {
         })),
         renderer,
         characterPresentations: renderer?.characters ?? [],
+        stagePresentations: renderer?.stage ?? [],
         activeHitSparks: hitSparks?.active ?? 0,
         hitSparkSources: hitSparks?.sources ?? {},
         hitSparkResolvedSprites: hitSparks?.resolvedSprites ?? 0,
@@ -310,10 +312,65 @@ async function captureRuntime(page, baseUrl, options) {
             .map((entry) => ({ id: entry.id, atlasStatus: entry.atlasStatus })) ?? [],
         atlasMotionQaCount: Object.keys(bridge?.atlasMotionQa ?? {}).length,
         canvasPixels,
+        presentationOverlap,
       };
     },
-    { canvasPixels, drivenHitSparks, label: options.label },
+    { canvasPixels, drivenHitSparks, label: options.label, presentationOverlap },
   );
+}
+
+async function capturePresentationOverlapOracle(page) {
+  return page.evaluate(async () => {
+    const loadedThreeUrl = performance
+      .getEntriesByType("resource")
+      .map((entry) => entry.name)
+      .find((url) => url.includes("/node_modules/.vite/deps/three.js"));
+    const THREE = await import(loadedThreeUrl ?? "/@id/three");
+    const presentation = await import("/src/game/render/PresentationOrder.ts");
+    const stageBack = presentation.resolveStagePresentationOrder(0, 0);
+    const actorUnderlay = presentation.resolveActorUnderlayPresentationOrder(1);
+    const actor = presentation.resolveActorPresentationOrder("player", 0, 1);
+    const effect = presentation.resolveHitSparkPresentationOrder("hit");
+    const stageFront = presentation.resolveStagePresentationOrder(1, 0);
+    const pairs = [
+      { name: "stage-back<actor-underlay", lower: stageBack, upper: actorUnderlay, lowerColor: 0xff0000, upperColor: 0xff00ff, expected: [255, 0, 255] },
+      { name: "actor-underlay<actor", lower: actorUnderlay, upper: actor, lowerColor: 0xff00ff, upperColor: 0x00ff00, expected: [0, 255, 0] },
+      { name: "actor<effect", lower: actor, upper: effect, lowerColor: 0x00ff00, upperColor: 0x0000ff, expected: [0, 0, 255] },
+      { name: "effect<stage-front", lower: effect, upper: stageFront, lowerColor: 0x0000ff, upperColor: 0xffff00, expected: [255, 255, 0] },
+    ];
+
+    const results = [];
+    for (const pair of pairs) {
+      const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(1);
+      renderer.setSize(4, 4, false);
+      renderer.setClearColor(0x000000, 1);
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 2);
+      camera.position.z = 1;
+      const rootGroups = [new THREE.Group(), new THREE.Group()];
+      const meshes = [
+        new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ color: pair.lowerColor })),
+        new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ color: pair.upperColor })),
+      ];
+      presentation.applyThreePresentationOrder(meshes[0], meshes[0].material, pair.lower);
+      presentation.applyThreePresentationOrder(meshes[1], meshes[1].material, pair.upper);
+      rootGroups[0].add(meshes[0]);
+      rootGroups[1].add(meshes[1]);
+      scene.add(...rootGroups);
+      renderer.render(scene, camera);
+      const pixel = new Uint8Array(4);
+      renderer.getContext().readPixels(2, 2, 1, 1, renderer.getContext().RGBA, renderer.getContext().UNSIGNED_BYTE, pixel);
+      results.push({ name: pair.name, pixel: [...pixel.slice(0, 3)], expected: pair.expected, rootGroupOrders: rootGroups.map((group) => group.renderOrder) });
+      meshes.forEach((mesh) => {
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+      });
+      renderer.dispose();
+      renderer.forceContextLoss();
+    }
+    return results;
+  });
 }
 
 async function warmRuntimeRenderer(page) {
@@ -1625,11 +1682,52 @@ function assertSmoke(diagnostics) {
     if (runtime.characterPresentations.length < 2 || !presentationFacings.has(1) || !presentationFacings.has(-1) || spriteAxisFailures.length) {
       failures.push(`${runtime.label}: Three.js character sprite axis/facing presentation failed the independent projection oracle`);
     }
+    const presentationOrderFailures = runtime.characterPresentations.filter((presentation) => {
+      const semantic = presentation.presentationOrder?.semantic;
+      const effective = presentation.presentationOrder?.three;
+      const expectedRenderOrder = expectedPresentationRenderOrder(semantic);
+      const shadowSemantic = presentation.shadow?.presentationOrder?.semantic;
+      const shadowEffective = presentation.shadow?.presentationOrder?.three;
+      const expectedShadowRenderOrder = expectedPresentationRenderOrder(shadowSemantic);
+      return (
+        semantic?.schema !== "MugenPresentationOrder/v0" ||
+        semantic.phase !== "actor" ||
+        effective?.renderOrder !== expectedRenderOrder ||
+        effective?.boundedPriority !== Math.max(-9_999, Math.min(9_999, semantic.priority)) ||
+        effective?.boundedTieBreaker !== Math.max(-49, Math.min(49, semantic.tieBreaker)) ||
+        presentation.meshRenderOrder !== expectedRenderOrder ||
+        presentation.material?.transparent !== true ||
+        presentation.material?.depthTest !== false ||
+        presentation.material?.depthWrite !== false ||
+        shadowSemantic?.phase !== "actor-underlay" ||
+        shadowEffective?.renderOrder !== expectedShadowRenderOrder ||
+        presentation.shadow?.meshRenderOrder !== expectedShadowRenderOrder ||
+        presentation.shadow?.material?.depthTest !== false ||
+        presentation.shadow?.material?.depthWrite !== false
+      );
+    });
+    const stageOrderFailures = runtime.stagePresentations.filter((presentation) => {
+      const semantic = presentation.presentationOrder?.semantic;
+      const expectedRenderOrder = expectedPresentationRenderOrder(semantic);
+      const expectedPhase = presentation.layerNo > 0 ? "stage-foreground" : "stage-background";
+      return (
+        semantic?.schema !== "MugenPresentationOrder/v0" ||
+        semantic.phase !== expectedPhase ||
+        semantic.priority !== presentation.authoredOrder ||
+        presentation.presentationOrder?.three?.renderOrder !== expectedRenderOrder ||
+        presentation.presentationOrder?.three?.boundedPriority !== Math.max(-9_999, Math.min(9_999, semantic.priority)) ||
+        presentation.presentationOrder?.three?.boundedTieBreaker !== Math.max(-49, Math.min(49, semantic.tieBreaker)) ||
+        presentation.meshRenderOrders?.some((renderOrder) => renderOrder !== expectedRenderOrder)
+      );
+    });
+    if (presentationOrderFailures.length || stageOrderFailures.length) {
+      failures.push(`${runtime.label}: semantic presentation order did not match effective Three.js adapter state`);
+    }
     const orderedPresentations = [...runtime.characterPresentations].sort((left, right) => left.spritePriority - right.spritePriority);
     if (
       orderedPresentations.length >= 2 &&
       orderedPresentations[0].spritePriority < orderedPresentations.at(-1).spritePriority &&
-      orderedPresentations[0].meshPosition.z >= orderedPresentations.at(-1).meshPosition.z
+      orderedPresentations[0].meshRenderOrder >= orderedPresentations.at(-1).meshRenderOrder
     ) {
       failures.push(`${runtime.label}: higher SprPriority character was not rendered in front`);
     }
@@ -1645,6 +1743,40 @@ function assertSmoke(diagnostics) {
     );
     if (!resolvedPresentation) {
       failures.push(`${runtime.label}: native hit spark renderer did not expose resolved sprite frame/axis diagnostics`);
+    } else {
+      const sparkRenderOrder = expectedPresentationRenderOrder(resolvedPresentation.presentationOrder?.semantic);
+      const stageBackOrders = runtime.stagePresentations
+        .filter((presentation) => presentation.presentationOrder?.semantic?.phase === "stage-background")
+        .map((presentation) => presentation.presentationOrder.three.renderOrder);
+      const actorOrders = runtime.characterPresentations.map((presentation) => presentation.meshRenderOrder);
+      const actorUnderlayOrders = runtime.characterPresentations.map((presentation) => presentation.shadow?.meshRenderOrder);
+      const stageFrontOrders = runtime.stagePresentations
+        .filter((presentation) => presentation.presentationOrder?.semantic?.phase === "stage-foreground")
+        .map((presentation) => presentation.presentationOrder.three.renderOrder);
+      const meshOrders = resolvedPresentation.meshRenderOrders ?? [];
+      if (
+        resolvedPresentation.presentationOrder?.semantic?.phase !== "effect" ||
+        resolvedPresentation.renderOrder !== sparkRenderOrder ||
+        resolvedPresentation.groupRenderOrder !== 0 ||
+        !meshOrders.includes(sparkRenderOrder) ||
+        stageBackOrders.length < 1 ||
+        actorUnderlayOrders.some((renderOrder) => !Number.isFinite(renderOrder)) ||
+        actorOrders.length < 2 ||
+        stageFrontOrders.length < 1 ||
+        Math.max(...stageBackOrders) >= Math.min(...actorUnderlayOrders) ||
+        Math.max(...actorUnderlayOrders) >= Math.min(...actorOrders) ||
+        Math.max(...actorOrders) >= sparkRenderOrder ||
+        sparkRenderOrder >= Math.min(...stageFrontOrders)
+      ) {
+        failures.push(`${runtime.label}: stage/player/effect presentation phases did not produce a strict effective order`);
+      }
+    }
+    const rootGroupOrders = Object.values(runtime.renderer?.presentationGroups ?? {});
+    const overlapFailures = (runtime.presentationOverlap ?? []).filter(
+      (result) => result.pixel.join(",") !== result.expected.join(",") || result.rootGroupOrders.some((order) => order !== 0),
+    );
+    if (rootGroupOrders.length !== 4 || rootGroupOrders.some((order) => order !== 0) || runtime.presentationOverlap?.length !== 4 || overlapFailures.length) {
+      failures.push(`${runtime.label}: controlled WebGL overlap oracle did not prove root-group-neutral phase composition`);
     }
     const unreadyVisibleAtlases = runtime.selectedRosterAtlasStatuses.filter(
       (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
@@ -2174,6 +2306,27 @@ function assertSmoke(diagnostics) {
   if (failures.length) {
     throw new Error(`QA smoke failed:\n${failures.join("\n")}`);
   }
+}
+
+function expectedPresentationRenderOrder(semantic) {
+  if (!semantic) {
+    return Number.NaN;
+  }
+  const phaseRank = {
+    "stage-background": 0,
+    "actor-underlay": 1,
+    actor: 2,
+    effect: 3,
+    "stage-foreground": 4,
+    debug: 5,
+    overlay: 6,
+  }[semantic.phase];
+  if (phaseRank === undefined) {
+    return Number.NaN;
+  }
+  const boundedPriority = Math.max(-9_999, Math.min(9_999, semantic.priority));
+  const boundedTieBreaker = Math.max(-49, Math.min(49, semantic.tieBreaker));
+  return phaseRank * 10_000_000 + boundedPriority * 100 + boundedTieBreaker;
 }
 
 function summarizeDiagnostics(diagnostics) {
