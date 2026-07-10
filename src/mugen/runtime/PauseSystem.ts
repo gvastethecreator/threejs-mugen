@@ -5,6 +5,7 @@ import type { MugenStateController } from "../model/MugenState";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
@@ -145,31 +146,46 @@ export type RuntimePauseControllerParamResolvers = {
 };
 
 export class RuntimePauseWorld {
-  private pause?: RuntimeMatchPause;
+  private legacyPause?: RuntimeMatchPause;
+  private ikemenPause?: RuntimeMatchPause;
+  private ikemenSuperPause?: RuntimeMatchPause;
+
+  constructor(private readonly profile: RuntimeCompatibilityProfile = "unknown") {}
 
   current(): RuntimeMatchPause | undefined {
-    return this.pause;
+    return this.profile === "ikemen-go" ? this.ikemenSuperPause ?? this.ikemenPause : this.legacyPause;
   }
 
   reset(): void {
-    this.pause = undefined;
+    this.legacyPause = undefined;
+    this.ikemenPause = undefined;
+    this.ikemenSuperPause = undefined;
   }
 
   snapshot(): RuntimeMatchPauseSnapshot | undefined {
-    return this.pause ? toMatchPauseSnapshot(this.pause) : undefined;
+    const pause = this.current();
+    return pause ? toMatchPauseSnapshot(pause) : undefined;
   }
 
   canActorMove(actorId: string): boolean {
-    return canActorMoveDuringPause(this.pause, actorId);
+    return canActorMoveDuringPause(this.current(), actorId);
   }
 
   canActorBeHit(actorId: string): boolean {
-    return canActorBeHitDuringPause(this.pause, actorId);
+    return canActorBeHitDuringPause(this.current(), actorId);
   }
 
   tick(): RuntimeMatchPause | undefined {
-    this.pause = this.pause ? tickMatchPause(this.pause) : undefined;
-    return this.pause;
+    if (this.profile !== "ikemen-go") {
+      this.legacyPause = this.legacyPause ? tickMatchPause(this.legacyPause) : undefined;
+      return this.legacyPause;
+    }
+    if (this.ikemenSuperPause) {
+      this.ikemenSuperPause = tickMatchPause(this.ikemenSuperPause);
+    } else if (this.ikemenPause) {
+      this.ikemenPause = tickMatchPause(this.ikemenPause);
+    }
+    return this.current();
   }
 
   applyController(
@@ -181,10 +197,28 @@ export class RuntimePauseWorld {
   ): MatchPauseControllerResult {
     const result = createMatchPauseFromController(actor, controller, tick, operation, resolveParams);
     if (result.pause) {
-      this.pause = result.pause;
+      if (this.profile !== "ikemen-go") {
+        this.legacyPause = result.pause;
+      } else if (result.pause.type === "SuperPause") {
+        this.ikemenSuperPause = selectIkemenPause(this.ikemenSuperPause, result.pause);
+      } else {
+        this.ikemenPause = selectIkemenPause(this.ikemenPause, result.pause);
+      }
     }
     return result;
   }
+}
+
+function selectIkemenPause(existing: RuntimeMatchPause | undefined, candidate: RuntimeMatchPause): RuntimeMatchPause {
+  if (
+    !existing ||
+    existing.startedAt !== candidate.startedAt ||
+    existing.actorId === candidate.actorId ||
+    candidate.remaining > existing.remaining
+  ) {
+    return candidate;
+  }
+  return existing;
 }
 
 export class RuntimeMatchPauseControllerWorld {

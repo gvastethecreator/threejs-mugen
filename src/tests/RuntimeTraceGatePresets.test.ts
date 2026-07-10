@@ -162,6 +162,7 @@ import {
   createSyntheticImportedIkemenRunFirstTraceArtifact,
   createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
+  createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
   createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact,
@@ -15896,6 +15897,24 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
       { label: "same-tick appended helper advance", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+    ]);
+  });
+
+  it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {
+    const artifact = createSyntheticImportedIkemenPauseBufferTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-pause-buffer-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-ikemen-pause-buffer-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.matchPauses).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: "Pause", actorId: "p1", maxRemaining: 9 })]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredMatchPauses).toEqual([
+      expect.objectContaining({ type: "SuperPause", actorId: "p2", minRemaining: 2 }),
+      expect.objectContaining({ type: "Pause", actorId: "p1", minRemaining: 9 }),
     ]);
   });
 

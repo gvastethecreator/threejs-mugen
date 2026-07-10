@@ -48,13 +48,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after profile-gated root RunOrder](tickets/033-next-gap-after-root-run-order.md) - selected and resolved previous-tick root `AssertSpecial` `RunFirst` / `RunLast`, mutual neutralization, and required schedule-phase trace evidence.
 - [Choose next gap after IKEMEN root run flags](tickets/034-next-gap-after-ikemen-root-run-flags.md) - selected and resolved one-based two-root `RunOrder` trigger stamping before frame triggers with required CNS branch evidence.
 - [Choose next gap after IKEMEN root RunOrder trigger](tickets/035-next-gap-after-ikemen-root-runorder-trigger.md) - selected and resolved shared root/helper priorities, one-based actor RunOrder, and same-tick appended-helper execution without a duplicate helper tick.
+- [Choose next gap after IKEMEN helper RunOrder](tickets/036-next-gap-after-ikemen-helper-runorder.md) - selected and resolved separate Pause/SuperPause buffers, same-frame duration/owner arbitration, and SuperPause-first progression; actor-local movetime remains ticket 037.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after IKEMEN helper RunOrder](tickets/036-next-gap-after-ikemen-helper-runorder.md)
+- [Choose next gap after IKEMEN Pause buffers](tickets/037-next-gap-after-ikemen-pause-buffer.md)
 
 ## Not Yet Specified
 

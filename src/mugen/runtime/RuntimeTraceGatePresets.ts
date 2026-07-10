@@ -8240,6 +8240,66 @@ export function createSyntheticImportedIkemenHelperRunOrderTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenPauseBufferTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "simultaneous Pause and SuperPause requests", p1: ["x"], p2: ["x"], frames: 1 },
+    { label: "SuperPause precedence", p1: [], p2: [], frames: 1 },
+    { label: "buffered Pause resumes", p1: [], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-pause-buffer-p1",
+    displayName: "Synthetic Imported IKEMEN Pause Buffer P1",
+    withPause: true,
+    pauseTiming: { time: 9, moveTime: 0, triggerTime: 0 },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-pause-buffer-p2",
+    displayName: "Synthetic Imported IKEMEN Pause Buffer P2",
+    withPause: true,
+    pauseTiming: { time: 4, moveTime: 0, triggerTime: 0 },
+    withSuperPause: true,
+    superPauseTiming: { time: 2, moveTime: 0, triggerTime: 0 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-pause-buffer-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-pause-buffer-golden",
+      label: "Synthetic imported IKEMEN simultaneous Pause buffer arbitration",
+      source: "imported",
+      notes: [
+        "Explicit ikemen-go trace proves same-tick root Pause arbitration keeps P1's longer request, P2 SuperPause takes precedence, and the retained Pause resumes at its full duration after SuperPause. Same-actor overwrite, helper/custom-state ownership, teams, hitpause interaction, and full IKEMEN pause parity remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-pause-buffer-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Pause", "SuperPause"],
+        requiredExecutedOperations: ["pause:pause", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredMatchPauses: [
+          { type: "SuperPause", actorId: "p2", sourceStateNo: 200, minFrames: 2, minRemaining: 2 },
+          { type: "Pause", actorId: "p1", sourceStateNo: 200, minFrames: 1, minRemaining: 9 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "prepared roots finish before buffered pause branch", frameIndex: 0, phase: "fighter:controllers", actorIds: ["p1", "p2"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39012,6 +39072,7 @@ export type SyntheticImportedTraceFighterOptions = {
   targetDropTriggerTime?: number;
   withPrePauseTargetBind?: boolean;
   withPause?: boolean;
+  pauseTiming?: { time: number; moveTime?: number; triggerTime?: number };
   withDelayedSuperPause?: boolean;
   superPauseSound?: string;
   superPauseSoundVarSeed?: { group: number; index: number };
@@ -39024,6 +39085,7 @@ export type SyntheticImportedTraceFighterOptions = {
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
   withSuperPause?: boolean;
+  superPauseTiming?: { time: number; moveTime?: number; triggerTime?: number };
   withProjectile?: boolean;
   omitProjectileId?: boolean;
   projectileTriggerTime?: number;
@@ -39972,8 +40034,8 @@ ${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.
 ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype) : ""}
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
-${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable) : ""}
+${options.withPause ? pauseControllerBlock(options.pauseTiming) : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable, options.superPauseTiming) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound) : ""}
@@ -43225,15 +43287,16 @@ function superPauseControllerBlock(
   dynamicAnim?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicAnim"]>,
   pauseBg?: number | string,
   unhittable?: number | string,
+  timing?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseTiming"]>,
 ): string {
   const anim = superAnim?.anim ?? (dynamicAnim === undefined ? undefined : "var(6)");
   const pos = superAnim?.pos ?? (dynamicAnim === undefined ? undefined : ["var(7)", "var(8)"] as const);
   return `
 [State 200, Super Pause]
 type = SuperPause
-trigger1 = Time = 2
-time = ${dynamicParams === undefined ? "7" : "var(2)"}
-movetime = ${dynamicParams === undefined ? "1" : "var(3)"}
+trigger1 = Time = ${timing?.triggerTime ?? 2}
+time = ${dynamicParams === undefined ? timing?.time ?? 7 : "var(2)"}
+movetime = ${dynamicParams === undefined ? timing?.moveTime ?? 1 : "var(3)"}
 darken = ${dynamicParams === undefined ? "1" : "var(4)"}
 poweradd = ${dynamicParams === undefined ? "100" : "var(5)"}
 ${pauseBg === undefined ? "" : `pausebg = ${pauseBg}`}
@@ -43245,13 +43308,13 @@ ${pos === undefined ? "" : `pos = ${pos[0]},${pos[1]}`}
 `;
 }
 
-function pauseControllerBlock(): string {
+function pauseControllerBlock(timing?: NonNullable<SyntheticImportedTraceFighterOptions["pauseTiming"]>): string {
   return `
 [State 200, Pause]
 type = Pause
-trigger1 = Time = 2
-time = 7
-movetime = 1
+trigger1 = Time = ${timing?.triggerTime ?? 2}
+time = ${timing?.time ?? 7}
+movetime = ${timing?.moveTime ?? 1}
 `;
 }
 

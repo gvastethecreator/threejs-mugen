@@ -294,7 +294,7 @@ export class PlayableMatchRuntime {
   private readonly envShakeWorld = new RuntimeEnvShakeWorld();
   private readonly hitEffectWorld = new RuntimeHitEffectWorld();
   private readonly envColorWorld = new RuntimeEnvColorWorld();
-  private readonly pauseWorld = new RuntimePauseWorld();
+  private readonly pauseWorld: RuntimePauseWorld;
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
   private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
   private readonly contactWorld = new RuntimeContactMemoryWorld();
@@ -340,6 +340,7 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
+    this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
     this.round = new RuntimeRoundSystem(options.roundTimerFrames);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);

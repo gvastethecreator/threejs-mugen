@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN root/helper actor RunOrder (2026-07-10)
+## Latest closeout - IKEMEN simultaneous Pause buffers (2026-07-10)
+
+Explicit `ikemen-go` now keeps separate Pause and SuperPause slots, arbitrates same-tick same-type requests by longer duration with stable first-owner ties and same-owner overwrite, and gives SuperPause precedence without decrementing the retained Pause. Required `synthetic-imported-ikemen-pause-buffer.json` checksum `5ea4a969` / final `04c85ed6` proves P2 SuperPause `2` precedes P1 Pause `9` while P2 Pause `4` is rejected. Aggregate: 533/533. Continue at Wayfinder 037 for actor-local movetime and simultaneous `p2defmul`. No score movement.
+
+## Previous closeout - IKEMEN root/helper actor RunOrder (2026-07-10)
 
 Explicit `ikemen-go` now prepares one shared root/helper actor list, applies source-backed RunFirst/RunLast and MoveType/root/helper priorities, and appends newly spawned helpers to the end for same-tick execution. Required `synthetic-imported-ikemen-helper-runorder.json` checksum `174f927d` / final `3906023d` proves P1 spawns `p1-helper-0`, the helper reads `RunOrder = 3`, routes state `1282`, and advances exactly once in frame 1. The aggregate is 532/532 gates. Continue at Wayfinder 036 for simultaneous Pause/SuperPause ownership. No score movement.
 
@@ -850,7 +854,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with many typed controller/trigger trace gates. | HitDef priority policy, direct player/helper contact traces, semantic renderer order, then schedule/Common1/guard evidence. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | Scanner/reporting plus explicit root/helper run flags, source priority, one-based `RunOrder`, and same-tick appended-helper execution with required CNS/schedule trace evidence. | Resolve Wayfinder 036: simultaneous root Pause/SuperPause ownership and overwrite semantics. | No teams/simul/tag, nested helper creation, exact Pause/hitpause order, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
+| IKEMEN | Scanner/reporting plus explicit root/helper RunOrder, same-tick appended helpers, and bounded separate Pause/SuperPause buffer arbitration. | Resolve Wayfinder 037: actor-local pause movetime and simultaneous SuperPause `p2defmul` stacking. | No multi-actor pause movement, teams/simul/tag, nested helper creation, exact Pause/hitpause order, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |

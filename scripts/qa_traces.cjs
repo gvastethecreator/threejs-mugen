@@ -1240,6 +1240,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenHelperRunOrderTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-pause-buffer",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenPauseBufferTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-global-telemetry",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(),

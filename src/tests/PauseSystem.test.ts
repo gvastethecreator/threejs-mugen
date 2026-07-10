@@ -243,6 +243,48 @@ describe("PauseSystem", () => {
     expect(world.snapshot()).toBeUndefined();
   });
 
+  it("keeps legacy last-controller-wins pause replacement", () => {
+    const world = new RuntimePauseWorld();
+
+    world.applyController(actor("p1", 200), controller("Pause", { time: "9" }), 5);
+    world.applyController(actor("p2", 200), controller("Pause", { time: "4" }), 5);
+
+    expect(world.current()).toMatchObject({ type: "Pause", actorId: "p2", remaining: 4 });
+  });
+
+  it("arbitrates same-tick IKEMEN pauses by duration, stable tie, and same actor override", () => {
+    const longest = new RuntimePauseWorld("ikemen-go");
+    longest.applyController(actor("p1", 200), controller("Pause", { time: "9" }), 5);
+    longest.applyController(actor("p2", 200), controller("Pause", { time: "4" }), 5);
+    expect(longest.current()).toMatchObject({ actorId: "p1", remaining: 9 });
+
+    const tie = new RuntimePauseWorld("ikemen-go");
+    tie.applyController(actor("p1", 200), controller("Pause", { time: "7" }), 5);
+    tie.applyController(actor("p2", 200), controller("Pause", { time: "7" }), 5);
+    expect(tie.current()).toMatchObject({ actorId: "p1", remaining: 7 });
+
+    const ownOverride = new RuntimePauseWorld("ikemen-go");
+    ownOverride.applyController(actor("p1", 200), controller("Pause", { time: "9" }), 5);
+    ownOverride.applyController(actor("p1", 201), controller("Pause", { time: "3" }), 5);
+    expect(ownOverride.current()).toMatchObject({ actorId: "p1", sourceStateNo: 201, remaining: 3 });
+
+    const laterTick = new RuntimePauseWorld("ikemen-go");
+    laterTick.applyController(actor("p1", 200), controller("Pause", { time: "9" }), 5);
+    laterTick.applyController(actor("p2", 200), controller("Pause", { time: "2" }), 6);
+    expect(laterTick.current()).toMatchObject({ actorId: "p2", remaining: 2, startedAt: 6 });
+  });
+
+  it("buffers IKEMEN Pause behind SuperPause without decrementing it", () => {
+    const world = new RuntimePauseWorld("ikemen-go");
+    world.applyController(actor("p1", 200), controller("Pause", { time: "4" }), 5);
+    world.applyController(actor("p2", 300), controller("SuperPause", { time: "2" }), 5);
+
+    expect(world.current()).toMatchObject({ type: "SuperPause", actorId: "p2", remaining: 2 });
+    expect(world.tick()).toMatchObject({ type: "SuperPause", remaining: 1 });
+    expect(world.tick()).toMatchObject({ type: "Pause", actorId: "p1", remaining: 4 });
+    expect(world.tick()).toMatchObject({ type: "Pause", remaining: 3 });
+  });
+
   it("owns match Pause/SuperPause result side effects", () => {
     const world = new RuntimeMatchPauseControllerWorld();
     const calls: string[] = [];
