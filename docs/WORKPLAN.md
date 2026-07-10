@@ -11,6 +11,10 @@ Authoritative horizon docs:
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 
+## 2026-07-10 Persistent Studio Scene and Dirty-State Note
+
+Workbench name/P1/CPU/stage edits and asset replacements now mark `Unsaved`, invalidate stale outputs, persist the current manifest entry on explicit save, and reopen clean. Browser proof recovers `Rook Apprentice` vs `Nova Boxer` on `Training Grid` with the authored name and `dirty = false`. No score movement; autosave, navigation guards, undo/redo, conflicts, multi-scene authoring, and source writes remain blocked.
+
 ## 2026-07-10 Persistent Studio Project Name Authoring Note
 
 Studio Workbench now edits, validates, saves, reloads, and reopens project names through the existing manifest/localStorage spine. Renames invalidate compiled/package outputs and survive into bridge manifest state. Unit/type/browser smoke evidence is green, including desktop screenshot and 1024px no-overflow gate. No score movement; deeper scene/state/collision editors and durable file-system persistence remain blocked.

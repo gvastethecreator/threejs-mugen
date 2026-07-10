@@ -1,7 +1,7 @@
 # Choose next cross-area gap after Studio project naming
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -15,3 +15,7 @@ Which package should follow persistent project naming while maximizing progress 
 - Renderer parity proof ladder and visual regression baselines.
 - IKEMEN screenpack/system asset ingestion beyond scanner-only reporting.
 - Post-KO round timeline or another high-impact runtime compatibility package.
+
+## Resolution
+
+Selected persisted matchup/scene authoring with explicit dirty state. Implemented mutation tracking across name, P1, CPU, stage, and asset replacement; stale-output invalidation; save/open baselines; bridge diagnostics; browser save/reload/reopen proof; and visual audit.

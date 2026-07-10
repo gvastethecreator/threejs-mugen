@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-10 Studio scene-authoring evidence note
+
+Single-match name/P1/CPU/stage authoring now has dirty state and persistent save/reopen proof. Score unchanged because source-bound state/collision editing, multi-scene graphs, undo/redo, conflicts, and filesystem writes remain open.
+
 ## 2026-07-10 Studio authoring evidence note
 
 Project-name editing now persists through manifest/local save and browser reopen. Score unchanged because practical editor completion still requires scene, state/controller, collision, source-write, migration, and conflict workflows.

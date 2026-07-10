@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## Studio scene dirty-state gate
+
+Acceptance requires authored name/P1/CPU/stage mutations to mark dirty, invalidate stale outputs, persist exact manifest entry, reopen clean, remain immediately playable, expose accessible status, and avoid desktop/tablet overflow.
+
 ## Studio project-name authoring gate
 
 Acceptance requires model normalization, empty rejection, 80-character cap, build-output invalidation, manifest propagation, local save, reload/reopen recovery, accessible labeling, and desktop/tablet no-overflow browser proof.

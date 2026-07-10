@@ -1,5 +1,9 @@
 ﻿# Next Build Roadmap
 
+## Current cursor - Persistent Studio scene authoring
+
+Single-match scene persistence is closed. Wayfinder 022 compares dirty-navigation/undo, first collision/state editor, renderer proof, IKEMEN ingestion, and post-KO runtime flow.
+
 ## Current cursor - Persistent Studio project naming
 
 Project identity authoring is closed. Wayfinder 021 must compare persisted matchup/scene edits, first source-bound state/collision editing, renderer proof, IKEMEN ingestion, and post-KO runtime flow.

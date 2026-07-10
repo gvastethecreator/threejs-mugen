@@ -1,5 +1,9 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package closeout - Persistent Studio scene authoring
+
+Closed under exact manifest, dirty-state, reload/reopen, screenshot, and responsive gates. No milestone promotion; deeper source-bound editing remains required.
+
 ## Latest package closeout - Persistent Studio project naming
 
 Closed under unit, type, browser persistence, screenshot, and responsive-overflow gates. No milestone promotion; this is the first persistent field inside the larger editor package.

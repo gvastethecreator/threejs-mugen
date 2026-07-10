@@ -405,20 +405,43 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   const nameInput = page.locator("[data-project-name]").first();
   await nameInput.fill(authoredName);
   await nameInput.press("Tab");
+  await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "rook-apprentice");
+  await changeHiddenSelect(page, '[data-studio-fighter-select="p2"]', "nova-boxer");
+  await changeHiddenSelect(page, "[data-studio-stage-select]", "training-grid");
+  const dirtyBeforeSave = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty);
   await page.locator('[data-action="save-project-local"]').first().click();
   const saved = await page.evaluate(({ key, authoredName }) => {
     const raw = localStorage.getItem(key);
     const entries = raw ? JSON.parse(raw).entries ?? [] : [];
-    return entries.some((entry) => entry.name === authoredName && entry.manifest?.name === authoredName);
+    return entries.some(
+      (entry) =>
+        entry.name === authoredName &&
+        entry.manifest?.name === authoredName &&
+        entry.manifest?.entry?.p1 === "rook-apprentice" &&
+        entry.manifest?.entry?.p2 === "nova-boxer" &&
+        entry.manifest?.entry?.stage === "training-grid",
+    );
   }, { key: "mugen-web-sandbox:projects:v0", authoredName });
   await page.reload({ waitUntil: "networkidle" });
   await waitForBridge(page);
   await page.locator('[data-stored-project-id="qa-authored-fight-project"]').first().evaluate((element) => element.click());
   await page.waitForTimeout(600);
   const reopenedName = await page.locator("[data-project-name]").first().inputValue();
-  const manifestName = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project?.name);
+  const reopened = await page.evaluate(() => ({
+    name: window.__MUGEN_WEB_SANDBOX__?.project?.name,
+    entry: window.__MUGEN_WEB_SANDBOX__?.project?.entry,
+    dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+  }));
   await page.screenshot({ path: path.join(outDir, "studio-project-authoring.png"), fullPage: true });
-  return { ...baseline, projectAuthoring: { authoredName, saved, reopenedName, manifestName } };
+  return { ...baseline, projectAuthoring: { authoredName, saved, dirtyBeforeSave, reopenedName, ...reopened } };
+}
+
+async function changeHiddenSelect(page, selector, value) {
+  await page.locator(selector).first().evaluate((element, nextValue) => {
+    element.value = nextValue;
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  }, value);
+  await page.waitForTimeout(40);
 }
 
 async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
@@ -1625,9 +1648,14 @@ function assertSmoke(diagnostics) {
   if (
     !studioWorkbench.projectAuthoring?.saved ||
     studioWorkbench.projectAuthoring.reopenedName !== studioWorkbench.projectAuthoring.authoredName ||
-    studioWorkbench.projectAuthoring.manifestName !== studioWorkbench.projectAuthoring.authoredName
+    studioWorkbench.projectAuthoring.name !== studioWorkbench.projectAuthoring.authoredName ||
+    studioWorkbench.projectAuthoring.entry?.p1 !== "rook-apprentice" ||
+    studioWorkbench.projectAuthoring.entry?.p2 !== "nova-boxer" ||
+    studioWorkbench.projectAuthoring.entry?.stage !== "training-grid" ||
+    studioWorkbench.projectAuthoring.dirtyBeforeSave !== true ||
+    studioWorkbench.projectAuthoring.dirty !== false
   ) {
-    failures.push("studio-workbench: authored project name did not survive local save and reopen");
+    failures.push("studio-workbench: authored project scene or dirty-state did not survive save/reopen correctly");
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||

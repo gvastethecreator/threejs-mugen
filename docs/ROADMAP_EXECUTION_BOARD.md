@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - Persistent Studio scene authoring (2026-07-10)
+
+Name/matchup/stage mutations now mark `Unsaved`, invalidate outputs, save exact manifest entry, and reopen as `Saved`. Browser and visual proof are green. Continue at Wayfinder 022 and authoring-spine ticket 003.
+
 ## Latest closeout - Persistent Studio project naming (2026-07-10)
 
 Validated project-name editing now propagates through manifests and survives local save/reload/reopen under browser smoke. Closed without score movement; continue at Wayfinder 021 and authoring-spine ticket 003.

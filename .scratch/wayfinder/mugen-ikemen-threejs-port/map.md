@@ -32,12 +32,13 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next runtime gap after voice channel hit cancellation](tickets/018-next-runtime-gap-after-voice-channel-hit-cancellation.md) - selected and resolved contextual player/common SND ownership with fail-closed common lookup.
 - [Choose next runtime gap after contextual SND banks](tickets/019-next-runtime-gap-after-contextual-snd-banks.md) - selected and resolved automatic KO sound plus tick-active global `NoKOSnd` suppression.
 - [Choose next gap after KO sound handoff](tickets/020-next-gap-after-ko-sound-handoff.md) - selected and resolved persistent Studio project-name authoring with browser save/reopen proof.
+- [Choose next cross-area gap after Studio project naming](tickets/021-next-gap-after-studio-project-naming.md) - selected and resolved persisted scene/matchup authoring with explicit dirty-state lifecycle.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
-- [Choose next cross-area gap after Studio project naming](tickets/021-next-gap-after-studio-project-naming.md)
+- [Choose next gap after persistent Studio scene authoring](tickets/022-next-gap-after-persistent-studio-scene.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Define renderer parity proof ladder](tickets/004-renderer-parity-proof-ladder.md)
 

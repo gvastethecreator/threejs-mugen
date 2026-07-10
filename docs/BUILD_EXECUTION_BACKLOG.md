@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Latest closed slice: persistent Studio scene and dirty-state (2026-07-10)
+
+Name/matchup/stage edits now produce explicit `Unsaved` state, invalidate outputs, persist through manifest save, and reopen as `Saved` under browser proof. Wayfinder 022 owns the next selection; no score movement.
+
 ## Latest closed slice: persistent Studio project-name authoring (2026-07-10)
 
 Workbench project names are validated, propagated into manifests, saved locally, and proven across reload/reopen by `qa:smoke`. Build outputs invalidate on rename. Wayfinder 021 owns the next selection; no score movement.

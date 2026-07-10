@@ -1,5 +1,7 @@
 ﻿# Supported Features
 
+- Studio single-match scene authoring is `executed-partial`: name, P1, CPU, and stage edits have explicit dirty state, output invalidation, local save, and reload/reopen persistence. Undo/redo, navigation guards, multi-scene graphs, conflicts, and source writes remain unsupported.
+
 - Studio project identity authoring is `executed-partial`: project names can be edited, validated, propagated to manifests, saved locally, and reopened after reload. Autosave, conflicts, migrations, file-system writes, and scene/state/collision editors remain unsupported.
 
 - Automatic KO sound is `executed-partial`: first KO transition emits common `f:11,0` per defeated player; time-over emits none; tick-active global `NoKOSnd` suppresses all KO emission. Post-KO echo timing, slowdown, teams, and full round/audio parity remain unsupported.

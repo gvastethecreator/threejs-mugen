@@ -684,6 +684,7 @@ export class App {
   );
   private importedProjectManifest?: GameProjectManifest;
   private projectNameOverride?: string;
+  private projectDirty = false;
   private projectImportWarnings: string[] = [];
   private storedProjects: StoredProjectEntry[] = [];
   private lastCompiledProject?: CompiledRuntimeManifest;
@@ -992,6 +993,7 @@ export class App {
       const studioStageId = target.closest<HTMLElement>("[data-studio-stage-id]")?.dataset.studioStageId;
       if (studioStageId) {
         this.selectedStageId = studioStageId;
+        this.markProjectDirty();
         this.studioSelectedAssetId = studioStageId;
         this.invalidateBuildOutputs();
         this.rebuildMatchRuntime();
@@ -1122,6 +1124,7 @@ export class App {
           this.selectedP2 = target.value;
         }
         this.invalidateBuildOutputs();
+        this.markProjectDirty();
         this.rebuildMatchRuntime();
         this.mode = "studio";
         this.snapshot = this.matchRuntime.getSnapshot();
@@ -1140,6 +1143,7 @@ export class App {
       if (target instanceof HTMLSelectElement && target.dataset.studioStageSelect) {
         this.selectedStageId = target.value;
         this.invalidateBuildOutputs();
+        this.markProjectDirty();
         this.rebuildMatchRuntime();
         this.mode = "studio";
         this.snapshot = this.matchRuntime.getSnapshot();
@@ -1479,6 +1483,7 @@ export class App {
     try {
       this.storedProjects = saveStoredProjectManifest(window.localStorage, manifest);
       this.importedProjectManifest = manifest;
+      this.projectDirty = false;
       this.log(`Saved local project ${manifest.id}`);
       this.updateUi();
     } catch (error) {
@@ -1509,6 +1514,10 @@ export class App {
     this.lastProjectBundle = undefined;
   }
 
+  private markProjectDirty(): void {
+    this.projectDirty = true;
+  }
+
   private applyProjectName(value: string): void {
     const name = normalizeProjectName(value);
     if (!name) {
@@ -1524,6 +1533,7 @@ export class App {
       this.importedProjectManifest = { ...this.importedProjectManifest, name };
     }
     this.invalidateBuildOutputs();
+    this.markProjectDirty();
     this.log(`Project renamed to ${name}`);
     this.updateUi();
   }
@@ -1558,6 +1568,7 @@ export class App {
 
     this.importedProjectManifest = manifest;
     this.projectNameOverride = manifest.name;
+    this.projectDirty = false;
     this.projectImportWarnings = nextWarnings;
     this.invalidateBuildOutputs();
     this.rebuildMatchRuntime();
@@ -3015,14 +3026,14 @@ export class App {
           ${this.renderStudioMissionStrip(summary, primaryGate, issueCount, compiled)}
           <div class="studio-project-open">
             <label class="studio-project-name">
-              <span>Project name</span>
+              <span>Project name <b class="studio-project-dirty ${this.projectDirty ? "is-dirty" : "is-clean"}" aria-live="polite">${this.projectDirty ? "Unsaved" : "Saved"}</b></span>
               <input type="text" data-project-name value="${escapeHtml(summary.name)}" maxlength="${MAX_PROJECT_NAME_LENGTH}" autocomplete="off" aria-label="Project name" />
             </label>
             <button type="button" data-action="open-project">
               ${tablerIcon("folder", "ui-icon action-icon")}
               <span>Open Project</span>
             </button>
-            <button type="button" data-action="save-project-local" aria-label="Save current project locally" title="Save current project locally">
+            <button type="button" class="${this.projectDirty ? "is-dirty" : ""}" data-action="save-project-local" aria-label="Save current project locally${this.projectDirty ? ", unsaved changes" : ""}" title="Save current project locally">
               ${tablerIcon("save", "ui-icon action-icon")}
             </button>
           </div>
@@ -7955,6 +7966,7 @@ export class App {
       this.selectedStageId = candidate.id;
     }
     this.invalidateBuildOutputs();
+    this.markProjectDirty();
     this.rebuildMatchRuntime();
     this.mode = "studio";
     this.studioTab = "assets";
@@ -10516,6 +10528,7 @@ export class App {
         storedTraceEvidence: StoredTraceEvidenceEntry[];
         projectImportWarnings: string[];
         storedProjects: StoredProjectEntry[];
+        projectDirty: boolean;
       };
     };
     const studio = this.getStudioProjectSummary();
@@ -10552,6 +10565,7 @@ export class App {
       storedTraceEvidence: this.storedTraceEvidence.map((entry) => structuredClone(entry)),
       projectImportWarnings: [...this.projectImportWarnings],
       storedProjects: this.storedProjects,
+      projectDirty: this.projectDirty,
     };
   }
 

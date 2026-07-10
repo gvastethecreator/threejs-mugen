@@ -14,6 +14,8 @@ Open. Candidate inputs: `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.
 
 ## Latest Progress (2026-07-09)
 
+- 2026-07-10: expanded persistent identity authoring into a bounded scene-authoring workflow. Name, P1, CPU, stage, stage-list selection, and asset replacement mark explicit dirty state, invalidate stale outputs, save the current manifest entry, and reopen clean under browser proof.
+- Remaining: autosave/navigation guards, undo/redo, multi-scene graphs, state/controller/collision authoring, filesystem persistence, conflicts, migrations, and source writes.
 - 2026-07-10: added the first directly editable persistent project field. Workbench project names normalize whitespace, cap at 80 characters, invalidate stale build outputs, flow into manifests, save to the local project index, and survive browser reload/reopen under smoke coverage.
 - Remaining: scene/state/collision authoring, autosave/conflicts, filesystem persistence, project-id rename policy, and migrations.
 

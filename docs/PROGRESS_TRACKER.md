@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 persistent Studio scene authoring
+
+- Studio editor: advanced. A complete single-match scene identity (name/P1/CPU/stage) now has explicit dirty/save/reopen semantics.
+- Runtime: authored scene rebuild remains immediate and playable.
+- Trace compatibility: unchanged at 524/524.
+- Renderer and IKEMEN breadth: unchanged in this slice.
+- Browser QA: dirty transition, exact stored entry, reload/reopen, saved baseline, screenshot, and responsive overflow are green.
+- Overall score: unchanged pending deeper source-bound editors and multi-scene workflows.
+
 ## Global report - 2026-07-10 persistent Studio project naming
 
 - Studio editor: advanced from selection-only controls to a validated persistent authored field with save/reload/reopen proof.
