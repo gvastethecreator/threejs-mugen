@@ -315,7 +315,8 @@ function summarizeTickScheduleDiagnostics(trace: RuntimeTrace): RuntimeTraceArti
             "fighter:kinematics",
             "fighter:animation",
             "fighter:controllers",
-            "fighter:auto-guard-check",
+            "fighter:auto-guard-check:pre",
+            "fighter:auto-guard-check:post",
             "tick:guard-distance-latch",
             "post-fighter:combat",
           ]

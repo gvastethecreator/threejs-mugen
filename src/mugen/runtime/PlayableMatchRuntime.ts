@@ -553,8 +553,8 @@ export class PlayableMatchRuntime {
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
               recordPhase,
             ),
-          applyAutoGuardStart: (defender, attacker) => {
-            recordPhase("fighter:auto-guard-check", defender.id);
+          applyAutoGuardStart: (defender, attacker, checkpoint) => {
+            recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
             applyAutoGuardStart(defender, attacker, this.guardWorld);
           },
           isPaused: () => this.pauseWorld.current() !== undefined,

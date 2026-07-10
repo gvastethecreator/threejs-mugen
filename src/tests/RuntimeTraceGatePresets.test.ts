@@ -15807,12 +15807,22 @@ describe("RuntimeTraceGatePresets", () => {
     const guardStartTick = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 120)?.firstTick;
     const guardStartFrame = artifact.trace.frames.find((frame) => frame.tick === guardStartTick);
     const phaseStamps = guardStartFrame?.tickSchedule?.phaseStamps ?? [];
+    const p1PreGuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check:pre" && phase.actorId === "p1");
+    const p2PreGuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check:pre" && phase.actorId === "p2");
     const p1ControllerIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:controllers" && phase.actorId === "p1");
-    const p2GuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check" && phase.actorId === "p2");
+    const p1PostGuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check:post" && phase.actorId === "p1");
     const p2ControllerIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:controllers" && phase.actorId === "p2");
-    const p1GuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check" && phase.actorId === "p1");
+    const p2PostGuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check:post" && phase.actorId === "p2");
     const combatIndex = phaseStamps.findIndex((phase) => phase.id === "post-fighter:combat");
-    const orderedIndices = [p1ControllerIndex, p2GuardIndex, p2ControllerIndex, p1GuardIndex, combatIndex];
+    const orderedIndices = [
+      p1PreGuardIndex,
+      p2PreGuardIndex,
+      p1ControllerIndex,
+      p1PostGuardIndex,
+      p2ControllerIndex,
+      p2PostGuardIndex,
+      combatIndex,
+    ];
     expect(orderedIndices.every((index) => index >= 0)).toBe(true);
     expect(orderedIndices).toEqual([...orderedIndices].sort((left, right) => left - right));
   });

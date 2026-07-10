@@ -42,13 +42,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after MatchTickSchedule v0](tickets/027-next-gap-after-match-tick-schedule-v0.md) - selected and resolved explicit character-over-Common1 state precedence with path/fingerprint diagnostics and two required state 120 provenance artifacts.
 - [Choose next gap after Common1 state source precedence](tickets/028-next-gap-after-common1-state-source-precedence.md) - selected and resolved owner-backed automatic guard-check schedule stamps with current P1/P2/controller/contact ordering and source-backed parity limits.
 - [Choose next gap after automatic guard-start phase order](tickets/029-next-gap-after-auto-guard-phase-order.md) - selected and resolved direct/projectile `InGuardDist` latch lifecycle across active, Pause, and hitpause branches with required trace evidence.
+- [Choose next gap after InGuardDist latch lifecycle](tickets/030-next-gap-after-inguarddist-latch.md) - selected and resolved unbiased root-player pre-controller guard checks plus per-player post-controller checks while preserving the established P1-started Pause cutoff.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after InGuardDist latch lifecycle](tickets/030-next-gap-after-inguarddist-latch.md)
+- [Choose next gap after two-checkpoint automatic guard order](tickets/031-next-gap-after-two-checkpoint-auto-guard.md)
 
 ## Not Yet Specified
 

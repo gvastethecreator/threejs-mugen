@@ -8,15 +8,22 @@ describe("RuntimeMatchFighterAdvanceWorld", () => {
       p1: actor("p1"),
       p2: actor("p2"),
       advanceFighter: (fighter, opponent) => calls.push(`advance:${fighter.id}:${opponent.id}`),
-      applyAutoGuardStart: (defender, attacker) => calls.push(`guard:${defender.id}:${attacker.id}`),
+      applyAutoGuardStart: (defender, attacker, checkpoint) => calls.push(`guard:${checkpoint}:${defender.id}:${attacker.id}`),
       isPaused: () => false,
     });
 
     expect(result).toEqual({ advancedP2: true });
-    expect(calls).toEqual(["advance:p1:p2", "guard:p2:p1", "advance:p2:p1", "guard:p1:p2"]);
+    expect(calls).toEqual([
+      "guard:pre:p1:p2",
+      "guard:pre:p2:p1",
+      "advance:p1:p2",
+      "guard:post:p1:p2",
+      "advance:p2:p1",
+      "guard:post:p2:p1",
+    ]);
   });
 
-  it("skips P2 advance and P1 auto-guard when P1 starts match pause", () => {
+  it("skips P2 advance and its post guard check when P1 starts match pause", () => {
     const calls: string[] = [];
     let paused = false;
     const result = new RuntimeMatchFighterAdvanceWorld().advancePair({
@@ -28,12 +35,17 @@ describe("RuntimeMatchFighterAdvanceWorld", () => {
           paused = true;
         }
       },
-      applyAutoGuardStart: (defender, attacker) => calls.push(`guard:${defender.id}:${attacker.id}`),
+      applyAutoGuardStart: (defender, attacker, checkpoint) => calls.push(`guard:${checkpoint}:${defender.id}:${attacker.id}`),
       isPaused: () => paused,
     });
 
     expect(result).toEqual({ advancedP2: false });
-    expect(calls).toEqual(["advance:p1:p2", "guard:p2:p1"]);
+    expect(calls).toEqual([
+      "guard:pre:p1:p2",
+      "guard:pre:p2:p1",
+      "advance:p1:p2",
+      "guard:post:p1:p2",
+    ]);
   });
 });
 
