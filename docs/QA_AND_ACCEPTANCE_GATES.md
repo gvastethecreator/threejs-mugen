@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## SprPriority L2 gate
+
+Acceptance requires official player clamp `-5..5`, unchanged broader effect depth support, effective mesh z matching an independent oracle, strict higher-priority-front ordering, both facings, and desktop/mobile smoke.
+
 ## Renderer axis-parity L2 gate
 
 Acceptance requires actual CharacterRenderer mesh diagnostics to match an independently computed SFF-axis/AIR-offset/facing/scale oracle for two actors, both facing directions, and desktop/mobile browser runs, while existing nonblank/framing gates remain green.

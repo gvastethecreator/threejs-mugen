@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - SprPriority draw order (2026-07-10)
+
+Player SprPriority now clamps `-5..5`; CharacterRenderer diagnostics and browser oracle prove effective z ordering while preserving effect ranges. Continue at Wayfinder 024.
+
 ## Latest closeout - Renderer axis-parity oracle (2026-07-10)
 
 Effective Three.js character mesh transforms now pass an independent SFF/AIR/facing/scale oracle on desktop/mobile. Renderer ladder L0-L5 is defined; this route reaches L2 plus general L3. Continue at Wayfinder 023.

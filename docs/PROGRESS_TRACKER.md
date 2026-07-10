@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 SprPriority draw order
+
+- Renderer/runtime presentation: advanced. Player SprPriority uses official range and effective z ordering is browser-gated desktop/mobile.
+- Effect actors: existing broader priority range preserved; no accidental collapse.
+- Studio and IKEMEN breadth: unchanged in this slice.
+- Trace compatibility: retained at 524/524.
+- Overall score: unchanged pending contact pair priorities, stage/effect ordering, overlap baselines, and L4/L5 evidence.
+
 ## Global report - 2026-07-10 renderer axis-parity oracle
 
 - Renderer/Three.js: advanced. Player sprite axis/facing/scale now reaches proof ladder L2 with effective mesh diagnostics and independent desktop/mobile oracle.

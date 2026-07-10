@@ -71,7 +71,7 @@ export class CharacterRenderer {
       const orderBias = actor.id === "p2" ? 0.01 : 0.02;
       mesh.position.x = projected.x;
       mesh.position.y = projected.y;
-      mesh.position.z = 1 + Math.max(-5, Math.min(10, priority)) * 0.05 + orderBias;
+      mesh.position.z = resolveCharacterRenderDepth(priority, orderBias);
       mesh.rotation.z = THREE.MathUtils.degToRad(-(actor.runtime.renderAngle ?? 0));
       mesh.scale.set(projected.width * projected.scaleX, projected.height, 1);
       this.presentations.set(actor.id, {
@@ -81,6 +81,8 @@ export class CharacterRenderer {
         sprite: { width: sprite.width, height: sprite.height, axisX: sprite.axisX, axisY: sprite.axisY },
         frameOffset: { x: frame?.offsetX ?? 0, y: frame?.offsetY ?? 0 },
         renderScale: { ...(actor.runtime.renderScale ?? { x: 1, y: 1 }) },
+        spritePriority: priority,
+        orderBias,
         meshPosition: { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z },
         meshScale: { x: mesh.scale.x, y: mesh.scale.y },
       });
@@ -187,9 +189,15 @@ export type CharacterSpritePresentation = {
   sprite: { width: number; height: number; axisX: number; axisY: number };
   frameOffset: { x: number; y: number };
   renderScale: { x: number; y: number };
+  spritePriority: number;
+  orderBias: number;
   meshPosition: { x: number; y: number; z: number };
   meshScale: { x: number; y: number };
 };
+
+export function resolveCharacterRenderDepth(priority: number, orderBias: number): number {
+  return 1 + Math.max(-5, Math.min(10, Math.round(priority))) * 0.05 + orderBias;
+}
 
 export type ActorShadowPresentation = {
   x: number;

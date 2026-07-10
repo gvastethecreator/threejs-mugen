@@ -1,5 +1,9 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package closeout - SprPriority draw order
+
+Closed under official-range units, dynamic controller tests, effective mesh diagnostics, ordering oracle, desktop/mobile screenshots, and full gates. No promotion beyond bounded player L2 ordering.
+
 ## Latest package closeout - Renderer axis-parity oracle
 
 Closed under projection units, effective adapter diagnostics, independent browser equations, both facings, desktop/mobile canvas, and screenshot gates. No renderer milestone promotion beyond bounded L2.

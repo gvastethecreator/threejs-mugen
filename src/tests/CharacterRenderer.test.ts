@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { CharacterRenderer, resolveActorShadowPresentation } from "../game/render/CharacterRenderer";
+import { CharacterRenderer, resolveActorShadowPresentation, resolveCharacterRenderDepth } from "../game/render/CharacterRenderer";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../mugen/runtime/types";
@@ -38,11 +38,20 @@ describe("CharacterRenderer", () => {
         sprite: { width: 12, height: 16, axisX: 6, axisY: 14 },
         frameOffset: { x: 0, y: 0 },
         renderScale: { x: 1.5, y: 0.75 },
+        spritePriority: 2,
+        orderBias: 0.02,
         meshPosition: { x: 40, y: 16.5, z: 1.12 },
         meshScale: { x: -18, y: 12 },
       },
     ]);
     renderer.dispose();
+  });
+
+  it("orders higher sprite priority in front while preserving effect-actor range", () => {
+    expect(resolveCharacterRenderDepth(-99, 0.01)).toBeCloseTo(0.76);
+    expect(resolveCharacterRenderDepth(0, 0.01)).toBeCloseTo(1.01);
+    expect(resolveCharacterRenderDepth(99, 0.01)).toBeCloseTo(1.51);
+    expect(resolveCharacterRenderDepth(3, 0.01)).toBeGreaterThan(resolveCharacterRenderDepth(2, 0.02));
   });
 
   it("renders supported actor shadows and removes them when suppressed", async () => {

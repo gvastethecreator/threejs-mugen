@@ -29,7 +29,7 @@ describe("SpriteEffectSystem", () => {
 
     applyRuntimeSpritePriorityController(state, controller("SprPriority", { value: "99" }));
 
-    expect(state.spritePriority).toBe(10);
+    expect(state.spritePriority).toBe(5);
 
     applyRuntimeSpritePriorityController(state, controller("SprPriority", { value: "0" }), {
       kind: "sprite-effect",
@@ -53,8 +53,8 @@ describe("SpriteEffectSystem", () => {
       (key) => (key === "value" ? 7 : undefined),
     );
 
-    expect(operation).toEqual({ kind: "sprite-effect", controllerType: "sprpriority", priority: 7 });
-    expect(state.spritePriority).toBe(7);
+    expect(operation).toEqual({ kind: "sprite-effect", controllerType: "sprpriority", priority: 5 });
+    expect(state.spritePriority).toBe(5);
   });
 
   it("applies and ticks PalFX material telemetry", () => {
@@ -871,7 +871,7 @@ describe("SpriteEffectSystem", () => {
     });
 
     expect(ir.operation).toBeUndefined();
-    expect(actor.runtime.spritePriority).toBe(7);
+    expect(actor.runtime.spritePriority).toBe(5);
     expect(recordedOperations).toEqual(["sprite-effect:sprpriority"]);
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });

@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Latest closed slice: player SprPriority draw-order oracle (2026-07-10)
+
+Player controller values clamp to official `-5..5`; effective CharacterRenderer z depth and higher-priority-front order are browser-gated on desktop/mobile without collapsing effect actor ranges. Wayfinder 024 owns the next selection; no score movement.
+
 ## Latest closed slice: renderer axis-parity oracle (2026-07-10)
 
 Effective Three.js character transforms are now checked against an independent SFF-axis/AIR-offset/facing/scale oracle in desktop/mobile smoke. Renderer ladder L2 reached for this bounded player-sprite route. Wayfinder 023 owns the next selection; no score movement.

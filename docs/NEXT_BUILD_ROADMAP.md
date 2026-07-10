@@ -1,5 +1,9 @@
 ﻿# Next Build Roadmap
 
+## Current cursor - SprPriority draw order
+
+Player priority range and effective z ordering are closed. Wayfinder 024 compares HitDef pair priorities, stage/effect overlap, flips/rotation, L4 baselines, source-bound Studio editing, IKEMEN ingestion, and post-KO flow.
+
 ## Current cursor - Renderer axis-parity oracle
 
 Player axis placement reaches L2. Wayfinder 023 compares flips/rotation, draw order, L4 baselines, source-bound Studio editing, IKEMEN ingestion, and post-KO runtime flow.

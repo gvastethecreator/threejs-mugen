@@ -1611,16 +1611,27 @@ function assertSmoke(diagnostics) {
         (presentation.sprite.axisY - presentation.sprite.height / 2 - presentation.frameOffset.y) * presentation.renderScale.y;
       const expectedScaleX = presentation.sprite.width * presentation.renderScale.x * presentation.facing;
       const expectedScaleY = presentation.sprite.height * presentation.renderScale.y;
+      const boundedPriority = Math.max(-5, Math.min(10, Math.round(presentation.spritePriority)));
+      const expectedZ = 1 + boundedPriority * 0.05 + presentation.orderBias;
       return (
         Math.abs(presentation.meshPosition.x - expectedX) > 0.001 ||
         Math.abs(presentation.meshPosition.y - expectedY) > 0.001 ||
         Math.abs(presentation.meshScale.x - expectedScaleX) > 0.001 ||
-        Math.abs(presentation.meshScale.y - expectedScaleY) > 0.001
+        Math.abs(presentation.meshScale.y - expectedScaleY) > 0.001 ||
+        Math.abs(presentation.meshPosition.z - expectedZ) > 0.001
       );
     });
     const presentationFacings = new Set(runtime.characterPresentations.map((presentation) => presentation.facing));
     if (runtime.characterPresentations.length < 2 || !presentationFacings.has(1) || !presentationFacings.has(-1) || spriteAxisFailures.length) {
       failures.push(`${runtime.label}: Three.js character sprite axis/facing presentation failed the independent projection oracle`);
+    }
+    const orderedPresentations = [...runtime.characterPresentations].sort((left, right) => left.spritePriority - right.spritePriority);
+    if (
+      orderedPresentations.length >= 2 &&
+      orderedPresentations[0].spritePriority < orderedPresentations.at(-1).spritePriority &&
+      orderedPresentations[0].meshPosition.z >= orderedPresentations.at(-1).meshPosition.z
+    ) {
+      failures.push(`${runtime.label}: higher SprPriority character was not rendered in front`);
     }
     const resolvedPresentation = runtime.hitSparkPresentations.find(
       (presentation) =>

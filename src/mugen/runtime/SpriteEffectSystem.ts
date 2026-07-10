@@ -818,7 +818,7 @@ function firstNumber(value: string | undefined): number | undefined {
 }
 
 function clampSpritePriority(value: number): number {
-  return Math.max(-5, Math.min(10, Math.round(value)));
+  return Math.max(-5, Math.min(5, Math.round(value)));
 }
 
 function palettePair(value: string | undefined): [number, number] | undefined {

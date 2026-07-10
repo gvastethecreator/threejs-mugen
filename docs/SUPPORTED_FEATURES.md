@@ -1,5 +1,7 @@
 ﻿# Supported Features
 
+- Player `SprPriority` is `rendered-partial` at L2: static/dynamic controller values clamp to official `-5..5` and effective Three.js z puts higher priorities in front. HitDef pair priorities, equal ties, Explod ontop, stage occlusion, and full draw-order parity remain unsupported.
+
 - Player sprite axis projection is `rendered-partial` at proof ladder L2: effective Three.js mesh position/scale matches SFF axis, AIR offset, facing, and runtime scale in desktop/mobile browser oracles. Flips, rotation pivots, draw order, full effects, and reference parity remain unsupported.
 
 - Studio single-match scene authoring is `executed-partial`: name, P1, CPU, and stage edits have explicit dirty state, output invalidation, local save, and reload/reopen persistence. Undo/redo, navigation guards, multi-scene graphs, conflicts, and source writes remain unsupported.

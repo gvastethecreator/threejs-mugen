@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-10 SprPriority evidence note
+
+Player controller range and effective higher-priority-front z ordering reach bounded L2 proof on desktop/mobile. Score unchanged pending HitDef pair priorities, equal ties, Explod ontop, stage occlusion, overlap baselines, and reference parity.
+
 ## 2026-07-10 renderer evidence note
 
 Bounded player sprite axis placement reaches L2 adapter proof and general L3 visibility on desktop/mobile. Score unchanged pending flips, rotation, draw order, palettes, effects, screenpack composition, L4 baselines, and L5 reference captures.
