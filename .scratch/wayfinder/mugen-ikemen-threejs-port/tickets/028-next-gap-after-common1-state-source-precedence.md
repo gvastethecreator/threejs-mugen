@@ -1,7 +1,7 @@
 # Choose next gap after Common1 state source precedence
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,6 @@ What is the smallest source-backed trace package that can prove automatic guard-
 
 ## Answer
 
-Pending primary-source and current runtime-order review.
+Instrument the current single active-branch checkpoint as owner-backed `fighter:auto-guard-check` schedule stamps, require it in active artifact diagnostics, and prove the existing P1/P2/controller/contact order without changing behavior. IKEMEN GO uses two checkpoints plus a guard-distance flag latched by hit detection, so behavior reordering remains a separate package.
+
+Research and blocked claims: `docs/research/2026-07-10-auto-guard-start-phase-order.md`.

@@ -15785,6 +15785,17 @@ describe("RuntimeTraceGatePresets", () => {
     expect(startFrame?.lastTick).toBeLessThan(holdFrame?.firstTick ?? 0);
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([syntheticAutoGuardStartControllerSequence()]);
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([syntheticAutoGuardStartActorFrameSequence()]);
+    const guardStartTick = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 120)?.firstTick;
+    const guardStartFrame = artifact.trace.frames.find((frame) => frame.tick === guardStartTick);
+    const phaseStamps = guardStartFrame?.tickSchedule?.phaseStamps ?? [];
+    const p1ControllerIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:controllers" && phase.actorId === "p1");
+    const p2GuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check" && phase.actorId === "p2");
+    const p2ControllerIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:controllers" && phase.actorId === "p2");
+    const p1GuardIndex = phaseStamps.findIndex((phase) => phase.id === "fighter:auto-guard-check" && phase.actorId === "p1");
+    const combatIndex = phaseStamps.findIndex((phase) => phase.id === "post-fighter:combat");
+    const orderedIndices = [p1ControllerIndex, p2GuardIndex, p2ControllerIndex, p1GuardIndex, combatIndex];
+    expect(orderedIndices.every((index) => index >= 0)).toBe(true);
+    expect(orderedIndices).toEqual([...orderedIndices].sort((left, right) => left - right));
   });
 
   it("proves character override and Common1 fallback provenance without changing guard-start timing", () => {

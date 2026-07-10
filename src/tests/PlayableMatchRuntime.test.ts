@@ -43,9 +43,11 @@ describe("PlayableMatchRuntime", () => {
       "fighter:kinematics",
       "fighter:animation",
       "fighter:controllers",
+      "fighter:auto-guard-check",
       "fighter:kinematics",
       "fighter:animation",
       "fighter:controllers",
+      "fighter:auto-guard-check",
       "active:post-fighter",
       "post-fighter:combat",
       "post-fighter:presentation-effects",
@@ -60,6 +62,8 @@ describe("PlayableMatchRuntime", () => {
       "p2",
       "p2",
       "p2",
+      "p2",
+      "p1",
     ]);
     expect(snapshot.tickSchedule?.architectureComparison.status).toBe("known-divergence");
     expect(snapshot.tickSchedule?.snapshotPhases.map(({ id, owner }) => ({ id, owner }))).toEqual([

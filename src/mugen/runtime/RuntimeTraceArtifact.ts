@@ -310,7 +310,14 @@ function summarizeTickScheduleDiagnostics(trace: RuntimeTrace): RuntimeTraceArti
     const phaseIds = new Set(schedule.phases.map((phase) => phase.id));
     const requiredBranchPhases =
       schedule.branch === "active"
-        ? ["active:fighter-advance", "fighter:kinematics", "fighter:animation", "fighter:controllers", "post-fighter:combat"]
+        ? [
+            "active:fighter-advance",
+            "fighter:kinematics",
+            "fighter:animation",
+            "fighter:controllers",
+            "fighter:auto-guard-check",
+            "post-fighter:combat",
+          ]
         : schedule.branch === "pause"
           ? ["pause:advance"]
           : schedule.branch === "hitpause"

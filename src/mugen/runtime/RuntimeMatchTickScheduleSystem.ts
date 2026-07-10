@@ -15,6 +15,7 @@ export type RuntimeMatchTickPhaseId =
   | "fighter:kinematics"
   | "fighter:animation"
   | "fighter:controllers"
+  | "fighter:auto-guard-check"
   | "active:post-fighter"
   | "post-fighter:combat"
   | "post-fighter:presentation-effects"
@@ -126,6 +127,12 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     "RuntimeActiveControllerRunWorld",
     ["fighter.runtime", "fighter.controllerState", "effects", "targetWorld", "pauseWorld"],
     ["authored active-state controllers evaluated in source order"],
+  ),
+  "fighter:auto-guard-check": phase(
+    "fighter:auto-guard-check",
+    "RuntimeAutoGuardStartWorld",
+    ["defender.runtime"],
+    ["automatic guard-start eligibility checked", "state 120 may be entered"],
   ),
   "active:post-fighter": phase(
     "active:post-fighter",

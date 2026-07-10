@@ -547,8 +547,10 @@ export class PlayableMatchRuntime {
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
               recordPhase,
             ),
-          applyAutoGuardStart: (defender, attacker) =>
-            applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
+          applyAutoGuardStart: (defender, attacker) => {
+            recordPhase("fighter:auto-guard-check", defender.id);
+            applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld);
+          },
           isPaused: () => this.pauseWorld.current() !== undefined,
         });
       },

@@ -40,13 +40,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after HitDef contact priority](tickets/025-next-gap-after-hitdef-contact-priority.md) - selected and resolved runtime-owned `MugenPresentationOrder/v0`, a separate Three.js r184 adapter, and desktop/mobile stage-back < actor < effect < stage-front evidence.
 - [Choose next gap after PresentationOrder v0](tickets/026-next-gap-after-presentation-order-v0.md) - selected and resolved owner-backed `MatchTickSchedule/v0` diagnostics, trace/artifact sidecars, checksum exclusion proof, and explicit current architecture-order divergences.
 - [Choose next gap after MatchTickSchedule v0](tickets/027-next-gap-after-match-tick-schedule-v0.md) - selected and resolved explicit character-over-Common1 state precedence with path/fingerprint diagnostics and two required state 120 provenance artifacts.
+- [Choose next gap after Common1 state source precedence](tickets/028-next-gap-after-common1-state-source-precedence.md) - selected and resolved owner-backed automatic guard-check schedule stamps with current P1/P2/controller/contact ordering and source-backed parity limits.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after Common1 state source precedence](tickets/028-next-gap-after-common1-state-source-precedence.md)
+- [Choose next gap after automatic guard-start phase order](tickets/029-next-gap-after-auto-guard-phase-order.md)
 
 ## Not Yet Specified
 
