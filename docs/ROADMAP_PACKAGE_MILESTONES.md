@@ -1,5 +1,9 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package closeout - Contextual SND banks
+
+Closed under focused tests and 524/524 trace gates. No milestone or score promotion; next selection is Wayfinder 019.
+
 Last updated: 2026-07-10
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.

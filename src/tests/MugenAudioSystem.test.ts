@@ -153,6 +153,30 @@ describe("MugenAudioSystem", () => {
     });
   });
 
+  it("plays common-bank events from f and never falls back to the player archive", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const commonActor = soundActor("p1", 1);
+    commonActor.soundEvents = [{ type: "PlaySnd", group: 5, index: 0, soundPrefix: "f", stateNo: 200, tick: 1, runtimeTick: 1 }];
+
+    const routed = new MugenAudioSystem();
+    routed.setArchive(archive(1, 9), { f: archive(1, 5) });
+    await routed.unlock();
+    routed.processSnapshot(audioSnapshot([commonActor]));
+    await vi.waitFor(() => expect(routed.getDiagnostics().played).toBe(1));
+
+    const missing = new MugenAudioSystem();
+    missing.setArchive(archive(1, 5));
+    await missing.unlock();
+    missing.processSnapshot(audioSnapshot([commonActor]));
+    await vi.waitFor(() => expect(missing.getDiagnostics().missing).toBe(1));
+    expect(missing.getDiagnostics().played).toBe(0);
+  });
+
   it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });
@@ -209,11 +233,11 @@ describe("MugenAudioSystem", () => {
   });
 });
 
-function archive(soundTotal: number): SndArchive {
+function archive(soundTotal: number, group = 5): SndArchive {
   return {
     version: "4.0",
     sounds: Array.from({ length: soundTotal }, (_, index) => ({
-      group: 5,
+      group,
       index,
       length: 1,
       format: "wav",

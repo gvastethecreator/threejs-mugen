@@ -118,7 +118,7 @@ export class RuntimeAudioWorld {
       group: parsed?.group,
       index: parsed?.index,
       raw: sound,
-      ...soundPrefixMetadata(actor, parsed?.rawPrefix),
+      ...soundPrefixMetadata(actor, parsed?.rawPrefix, "common"),
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,
@@ -143,7 +143,7 @@ export class RuntimeAudioWorld {
       group: parsed?.group,
       index: parsed?.index,
       raw: sound,
-      ...soundPrefixMetadata(actor, parsed?.rawPrefix),
+      ...soundPrefixMetadata(actor, parsed?.rawPrefix, "common"),
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,
@@ -271,11 +271,15 @@ function parseMugenSoundRef(value: string | undefined): { rawPrefix?: "F" | "S";
 function soundPrefixMetadata(
   actor: RuntimeSoundActor,
   rawPrefix: "F" | "S" | undefined,
+  unprefixedBank: "player" | "common" = "player",
 ): Pick<RuntimeSoundEvent, "soundPrefix"> {
-  if (rawPrefix !== "F") {
-    return {};
+  if (rawPrefix === "F") {
+    return { soundPrefix: actor.definition?.fightFxPrefix ?? "f" };
   }
-  return { soundPrefix: actor.definition?.fightFxPrefix ?? "f" };
+  if (rawPrefix === undefined && unprefixedBank === "common") {
+    return { soundPrefix: "f" };
+  }
+  return {};
 }
 
 function soundEventType(controller: MugenStateController): RuntimeSoundEvent["type"] {

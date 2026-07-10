@@ -1,7 +1,7 @@
 # Choose next runtime gap after voice channel hit cancellation
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -16,3 +16,7 @@ Which bounded R1/R2 gap should follow actor-local channel `0` hit cancellation w
 - HitOverride/reversal voice-channel cancellation policy.
 - Broader helper-as-defender or team/simul actor audio ownership.
 - A higher-leverage Common1, Studio, renderer, IKEMEN, or modular-boundary slice.
+
+## Resolution
+
+Selected contextual common/player SND ownership. Implemented official defaults for unprefixed `PlaySnd`, `HitDef`, and `SuperPause`, preserved explicit `S`/`F`, added fail-closed integration coverage, and kept 524/524 traces green.

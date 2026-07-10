@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 contextual SND banks
+
+- Runtime/audio: context-dependent player/common selection implemented and fail-closed.
+- Trace compatibility: 524/524, with 493 required and 31 optional artifacts.
+- Studio, renderer, and IKEMEN breadth: unchanged in this slice.
+- Toolchain: TypeScript 7.0.2 remains green.
+- Overall score: unchanged; this closes correctness debt inside partial audio scope.
+
 Last updated: 2026-07-10
 
 This document is the compact truth board for progress. It does not replace detailed docs; it points to the evidence that keeps claims honest.

@@ -1,5 +1,7 @@
 ﻿# Supported Features
 
+- Contextual SND selection is `executed-partial`: unprefixed `PlaySnd` uses player SND; unprefixed `HitDef`/`SuperPause` use common prefix `f`; explicit `S`/`F` remain stable; absent common archives fail closed. Full audio ownership/parity remains unsupported.
+
 ## Loader
 
 - ZIP packages.

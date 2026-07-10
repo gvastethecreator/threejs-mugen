@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## Contextual SND-bank gate
+
+Unprefixed `PlaySnd` must remain player-owned; unprefixed `HitDef`/`SuperPause` must use common prefix `f`; explicit prefixes must remain stable; absent common archives must not fall back to player SND.
+
 This project has two kinds of quality gates: code gates and playable evidence gates. Both matter. Parser tests can prove data behavior; browser screenshots prove that the Three.js/runtime/UI path still works.
 
 Latest voice-channel acceptance checkpoint: direct combat must increment `receivedHitSequence` for accepted hit and preserve it on guard. Controlled AudioContext integration must prove sequence change cancels only the hit actor's channel `0`, matching P2 voice survives, unchanged sequence does not repeatedly cancel, and a later P1 voice can play. Static trace gates remain required for regression but do not prove browser channel cancellation.

@@ -37,6 +37,13 @@ describe("AudioEventSystem", () => {
     });
   });
 
+  it("keeps unprefixed PlaySnd values on the player sound bank", () => {
+    const event = createRuntimeSoundEvent(actor(200, 4), controller("PlaySnd", { value: "5,0" }), 120);
+
+    expect(event).toMatchObject({ type: "PlaySnd", group: 5, index: 0, raw: "5,0" });
+    expect(event.soundPrefix).toBeUndefined();
+  });
+
   it("creates StopSnd events with channel targeting", () => {
     const event = createRuntimeSoundEvent(actor(300, 8), controller("StopSnd", { channel: "1" }), 140);
 
@@ -372,6 +379,24 @@ describe("AudioEventSystem", () => {
       runtimeTick: 140,
     });
     expect(fighter.soundEvents).toEqual([event]);
+  });
+
+  it("routes unprefixed HitDef sounds to the common sound bank", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 6), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitHitDefSound(fighter, "5,0", 140);
+
+    expect(event).toMatchObject({ type: "PlaySnd", group: 5, index: 0, raw: "5,0", soundPrefix: "f" });
+  });
+
+  it("routes unprefixed SuperPause sounds to the common sound bank", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(3000, 2), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitSuperPauseSound(fighter, "10,0", 44);
+
+    expect(event).toMatchObject({ type: "PlaySnd", group: 10, index: 0, raw: "10,0", soundPrefix: "f" });
   });
 
   it("tags direct HitDef sound telemetry with contact package metadata", () => {

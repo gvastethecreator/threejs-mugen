@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-10 evidence note
+
+Contextual player/common SND routing is green under focused tests and 524/524 traces. Score unchanged because broader ownership and full audio parity remain open.
+
 Last updated: 2026-07-10
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.

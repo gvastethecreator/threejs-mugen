@@ -7,6 +7,15 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - Contextual Player/Common SND Banks
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: every unprefixed runtime sound implicitly selected player SND.
+- Result: unprefixed `PlaySnd` stays player-owned; unprefixed `HitDef`/`SuperPause` use common prefix `f`; explicit prefixes stay stable; missing common archives fail closed. Focused tests and 524/524 traces pass.
+- Blocked: broader ownership, multi-roster topology, perceptual parity, score movement, and full audio parity.
+
 ## Latest Closed Quality Slice - Voice Channel Zero Hit Cancellation
 
 Status: done

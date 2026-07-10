@@ -1,5 +1,9 @@
 ﻿# Next Build Roadmap
 
+## Current cursor - 2026-07-10
+
+Contextual player/common SND banks are closed. Continue with Wayfinder 019 across runtime, Studio, renderer, and IKEMEN candidates.
+
 Last updated: 2026-07-10
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:

@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - Contextual SND banks (2026-07-10)
+
+`PlaySnd` defaults to player SND; `HitDef` and `SuperPause` default to common prefix `f`. Focused tests and 524/524 traces are green. Closed without score movement; continue at Wayfinder 019.
+
 Last updated: 2026-07-10
 
 This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.

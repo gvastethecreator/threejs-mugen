@@ -11,6 +11,10 @@ Authoritative horizon docs:
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 
+## 2026-07-10 Contextual Player/Common SND Bank Note
+
+Unprefixed `PlaySnd` uses player SND; unprefixed `HitDef` and `SuperPause` route to common prefix `f`. Explicit `S`/`F` remain stable. Focused tests prove fail-closed lookup and `pnpm qa:trace` passes 524/524. No score movement.
+
 ## 2026-07-10 Helper Direct-HitDef Persistence Sound Typed Audio Note
 
 Current focused R1 runtime checkpoint: five required first-generation helper-local direct HitDef/persistence gates now require owner-attributed typed `audio:playsnd` while preserving helper-side sound/FightFX events and StateDef persistence behavior. Trace/final checksums are `99b55e47` / `cd02ded0`, `61b3ffbf` / `b005d52a`, `ba2a19f4` / `e9ccdc9c`, `1e37fd5c` / `4d6e93b5`, and `4b48e97d` / `c7ce0ae6`. `pnpm qa:trace` passes 524/524 artifacts, 493 required and 31 optional. No score movement; exact SND playback, channel/mix/timing semantics, nested helper/redirect/team ownership, renderer parity, and full helper/audio parity remain blocked.

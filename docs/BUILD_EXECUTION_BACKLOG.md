@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Latest closed slice: contextual player/common SND banks (2026-07-10)
+
+Context-aware defaults are implemented for `PlaySnd`, `HitDef`, and `SuperPause`; focused tests and 524/524 traces pass. Wayfinder 019 owns the next selection. No score movement.
+
 ## 2026-07-10 - Voice channel zero hit cancellation
 
 Summary:
