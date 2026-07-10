@@ -10,6 +10,16 @@ Effective Three.js character mesh transforms now pass an independent SFF/AIR/fac
 
 ## Latest closeout - Persistent Studio scene authoring (2026-07-10)
 
+## Latest closeout - TypeScript 7 toolchain follow-up (2026-07-10)
+
+TypeScript remains on direct `typescript@~7.0.2` with explicit `rootDir: "src"`, no `@typescript/typescript6` compatibility alias, and current compiler evidence.
+
+- `pnpm exec tsc --version` reports `Version 7.0.2`.
+- `pnpm why typescript` and `pnpm list typescript` resolve only `typescript@7.0.2` in the workspace.
+- Toolchain audit remains clean against the official TS7 posture: no local TypeScript compiler API consumers were found and both `typecheck`/`build` paths still use local TS7.
+
+Continue at Wayfinder 024 for runtime/render next, with no score movement in this toolchain control cut.
+
 Name/matchup/stage mutations now mark `Unsaved`, invalidate outputs, save exact manifest entry, and reopen as `Saved`. Browser and visual proof are green. Continue at Wayfinder 022 and authoring-spine ticket 003.
 
 ## Latest closeout - Persistent Studio project naming (2026-07-10)

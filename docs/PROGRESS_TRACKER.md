@@ -8,6 +8,13 @@
 - Trace compatibility: retained at 524/524.
 - Overall score: unchanged pending contact pair priorities, stage/effect ordering, overlap baselines, and L4/L5 evidence.
 
+## Global report - 2026-07-10 TypeScript 7 control follow-up
+
+- Toolchain: TypeScript remains `7.0.2` (`typescript@~7.0.2`) and direct CLI `tsc` posture is preserved.
+- Evidence check: `pnpm exec tsc --version` returns `Version 7.0.2`; workspace dependency remains `typescript@7.0.2` only.
+- Constraint check: `rootDir` and `types` are explicit in `tsconfig.json`; no `@typescript/typescript6` alias is present because no compiler-API consumers were detected.
+- Score movement: none in this cut; this is a toolchain control checkpoint before continuing runtime or Studio feature slices.
+
 ## Global report - 2026-07-10 renderer axis-parity oracle
 
 - Renderer/Three.js: advanced. Player sprite axis/facing/scale now reaches proof ladder L2 with effective mesh diagnostics and independent desktop/mobile oracle.
