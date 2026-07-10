@@ -24144,7 +24144,7 @@ export function createSyntheticImportedSuperPauseP2DefMulTraceArtifact(
         requiredEventCategories: ["hit", "pause"],
         requiredCombatReasons: ["hit"],
         requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
-        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 5 }],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 4 }],
         requiredMatchPauseAdvances: [{ type: "SuperPause", actorId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 }],
         requiredFinalActors: [
           {

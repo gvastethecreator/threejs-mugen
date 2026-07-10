@@ -1442,7 +1442,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.ChangeState).toBe(1);
   });
 
-  it("executes imported Pause by freezing the opponent while honoring source movetime", () => {
+  it("finishes the prepared active tick before imported Pause freezes the opponent", () => {
     const imported = createImportedFixture({ withStateMove: false, withPause: true });
     const farStage = {
       ...trainingStage,
@@ -1452,6 +1452,7 @@ describe("PlayableMatchRuntime", () => {
       },
     };
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, farStage);
+    const initialP2AnimTime = runtime.getSnapshot().actors[1]!.runtime.animTime;
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
     const p1AnimTimeBefore = snapshot.actors[0]!.runtime.animTime;
@@ -1465,6 +1466,15 @@ describe("PlayableMatchRuntime", () => {
       darken: false,
       sourceStateNo: 200,
     });
+    expect(snapshot.actors[1]!.runtime.animTime).toBeGreaterThan(initialP2AnimTime);
+    expect(
+      snapshot.tickSchedule?.phases.some((phase) => phase.id === "fighter:controllers" && phase.actorId === "p2"),
+    ).toBe(true);
+    expect(
+      snapshot.tickSchedule?.phases.some(
+        (phase) => phase.id === "fighter:auto-guard-check:post" && phase.actorId === "p2",
+      ),
+    ).toBe(true);
 
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.matchPause).toMatchObject({ type: "Pause", remaining: 5, moveTime: 1 });
@@ -1496,6 +1506,7 @@ describe("PlayableMatchRuntime", () => {
   it("executes imported SuperPause with darken and poweradd telemetry", () => {
     const imported = createImportedFixture({ withStateMove: false, withSuperPause: true });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+    const initialP2AnimTime = runtime.getSnapshot().actors[1]!.runtime.animTime;
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
     const p1AnimTimeBefore = snapshot.actors[0]!.runtime.animTime;
@@ -1509,6 +1520,15 @@ describe("PlayableMatchRuntime", () => {
       darken: true,
       sourceStateNo: 200,
     });
+    expect(snapshot.actors[1]!.runtime.animTime).toBeGreaterThan(initialP2AnimTime);
+    expect(
+      snapshot.tickSchedule?.phases.some((phase) => phase.id === "fighter:controllers" && phase.actorId === "p2"),
+    ).toBe(true);
+    expect(
+      snapshot.tickSchedule?.phases.some(
+        (phase) => phase.id === "fighter:auto-guard-check:post" && phase.actorId === "p2",
+      ),
+    ).toBe(true);
     expect(snapshot.actors[0]?.runtime.power).toBe(100);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.SuperPause).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["pause:superpause"]).toBe(1);

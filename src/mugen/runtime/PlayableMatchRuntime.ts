@@ -557,7 +557,6 @@ export class PlayableMatchRuntime {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
             applyAutoGuardStart(defender, attacker, this.guardWorld);
           },
-          isPaused: () => this.pauseWorld.current() !== undefined,
         });
       },
       advancePostFighter: () => {

@@ -22806,7 +22806,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredFinalActors).toEqual([
       expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", life: 953 }),
     ]);
-    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([{ type: "SuperPause", actorId: "p2", minFrozenFrames: 5 }]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([{ type: "SuperPause", actorId: "p2", minFrozenFrames: 4 }]);
     expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);

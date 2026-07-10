@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 same-tick Pause symmetry
+
+- Runtime scheduling: advanced. P1-started Pause/SuperPause no longer cancels P2's prepared active pass on the creation tick; freeze begins on the next paused branch.
+- Automatic guard: both root players retain pre/post checks on active ticks; paused ticks remain free of automatic guard-state entry.
+- Trace compatibility: 529/529 artifacts pass, with 498 required and 31 optional; focused runtime coverage passes 2 files / 75 tests.
+- Studio, renderer, and IKEMEN executable breadth: unchanged in this slice.
+- Toolchain: TypeScript 7.0.2 direct route remains green.
+- Overall score: unchanged; dynamic RunOrder, helper/team/simul/tag scheduling, simultaneous Pause ownership, and rollback timing remain blocked.
+
 ## Global report - 2026-07-10 SprPriority draw order
 
 - Renderer/runtime presentation: advanced. Player SprPriority uses official range and effective z ordering is browser-gated desktop/mobile.

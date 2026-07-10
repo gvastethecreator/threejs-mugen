@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - Same-tick Pause symmetry (2026-07-10)
+
+`RuntimeMatchFighterAdvanceWorld` now lets both prepared root-player passes finish when P1 starts Pause/SuperPause; the paused branch begins next tick. Focused tests and 529/529 trace gates are green. Continue at Wayfinder 032 for the next source-backed actor-scheduling cut. No score movement.
+
 ## Latest closeout - SprPriority draw order (2026-07-10)
 
 Player SprPriority now clamps `-5..5`; CharacterRenderer diagnostics and browser oracle prove effective z ordering while preserving effect ranges. Continue at Wayfinder 024.

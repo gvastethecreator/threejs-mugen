@@ -1,7 +1,7 @@
 # Choose next gap after two-checkpoint automatic guard order
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,6 @@ What is the smallest source-backed scheduling package that removes the remaining
 
 ## Answer
 
-Pending source-order, pause snapshot, and compatibility-risk review.
+IKEMEN snapshots pause eligibility for every character in the all-character `actionPrepare` loop, then runs each prepared `actionRun` sequentially. Therefore a Pause/SuperPause started by P1 must not cancel P2's already-prepared same-tick pass. Remove the mid-pair `isPaused` cutoff and obsolete `advancedP2` result, preserve both players' pre/post automatic guard checks, and apply the paused branch on the next tick.
+
+Implemented in `RuntimeMatchFighterAdvanceWorld`, focused unit/integration coverage, and the source note `docs/research/2026-07-10-same-tick-pause-player-order.md`. `pnpm qa:trace` passes 529/529 after correcting one stale SuperPause freeze-window expectation from 5 to 4 frames.

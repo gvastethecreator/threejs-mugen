@@ -4,15 +4,13 @@ import { RuntimeMatchFighterAdvanceWorld } from "../mugen/runtime/RuntimeMatchFi
 describe("RuntimeMatchFighterAdvanceWorld", () => {
   it("owns the normal 1v1 fighter advance and auto-guard order", () => {
     const calls: string[] = [];
-    const result = new RuntimeMatchFighterAdvanceWorld().advancePair({
+    new RuntimeMatchFighterAdvanceWorld().advancePair({
       p1: actor("p1"),
       p2: actor("p2"),
       advanceFighter: (fighter, opponent) => calls.push(`advance:${fighter.id}:${opponent.id}`),
       applyAutoGuardStart: (defender, attacker, checkpoint) => calls.push(`guard:${checkpoint}:${defender.id}:${attacker.id}`),
-      isPaused: () => false,
     });
 
-    expect(result).toEqual({ advancedP2: true });
     expect(calls).toEqual([
       "guard:pre:p1:p2",
       "guard:pre:p2:p1",
@@ -23,28 +21,28 @@ describe("RuntimeMatchFighterAdvanceWorld", () => {
     ]);
   });
 
-  it("skips P2 advance and its post guard check when P1 starts match pause", () => {
+  it("lets P2 finish the prepared active tick when P1 starts match pause", () => {
     const calls: string[] = [];
-    let paused = false;
-    const result = new RuntimeMatchFighterAdvanceWorld().advancePair({
+    let pauseSource: string | undefined;
+    new RuntimeMatchFighterAdvanceWorld().advancePair({
       p1: actor("p1"),
       p2: actor("p2"),
       advanceFighter: (fighter, opponent) => {
-        calls.push(`advance:${fighter.id}:${opponent.id}`);
+        calls.push(`advance:${fighter.id}:${opponent.id}:pause=${pauseSource ?? "none"}`);
         if (fighter.id === "p1") {
-          paused = true;
+          pauseSource = fighter.id;
         }
       },
       applyAutoGuardStart: (defender, attacker, checkpoint) => calls.push(`guard:${checkpoint}:${defender.id}:${attacker.id}`),
-      isPaused: () => paused,
     });
 
-    expect(result).toEqual({ advancedP2: false });
     expect(calls).toEqual([
       "guard:pre:p1:p2",
       "guard:pre:p2:p1",
-      "advance:p1:p2",
+      "advance:p1:p2:pause=none",
       "guard:post:p1:p2",
+      "advance:p2:p1:pause=p1",
+      "guard:post:p2:p1",
     ]);
   });
 });
