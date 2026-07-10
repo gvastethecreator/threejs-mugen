@@ -10982,10 +10982,12 @@ export function officialKfmAirGuardLandingWalkReturnActorFrameSequence(): Runtim
         source: "imported",
         actorKind: "player",
         stateNo: 154,
-        animNo: 132,
+        animNo: 122,
         stateType: "A",
         moveType: "H",
         physics: "N",
+        inGuardDistAttackerId: "p1",
+        inGuardDistSource: "direct",
         minFrames: 1,
       },
       {
@@ -11081,8 +11083,16 @@ export function syntheticAutoGuardEndControllerSequence(): RuntimeTraceControlle
 
 export function syntheticAutoGuardStartActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
   return {
-    label: "Synthetic 120 before 130 auto guard-start actor-frame order",
+    label: "Synthetic latched InGuardDist before 120/130 auto guard-start actor-frame order",
     steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        inGuardDistAttackerId: "p1",
+        inGuardDistSource: "direct",
+        minFrames: 1,
+      },
       { actorId: "p2", source: "imported", actorKind: "player", stateNo: 120, animNo: 120, minFrames: 1 },
       { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, animNo: 130, minFrames: 1 },
     ],
@@ -11181,7 +11191,7 @@ export function officialKfmAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameReq
       source: "imported",
       actorKind: "player",
       stateNo: 154,
-      animNo: 132,
+      animNo: 122,
       stateType: "A",
       moveType: "H",
       physics: "N",
@@ -11190,6 +11200,16 @@ export function officialKfmAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameReq
       bodyWidthFront: 39,
       bodyWidthBack: 39,
       playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 154,
+      animNo: 122,
+      inGuardDistAttackerId: "p1",
+      inGuardDistSource: "direct",
+      minFrames: 1,
     },
     {
       actorId: "p2",
@@ -13071,7 +13091,7 @@ export function createSyntheticImportedInGuardDistTraceArtifact(options: Runtime
       label: "Synthetic imported InGuardDist guard-start route",
       source: "imported",
       notes: [
-        "Synthetic imported InGuardDist trace proves a near-but-not-contacting attack can satisfy InGuardDist and route a defender through an explicit guard-start ChangeState. It does not itself prove automatic guard start, proximity guard, or guard-end parity.",
+        "Synthetic imported InGuardDist trace proves a near-but-not-contacting attack can latch InGuardDist and route a defender through an explicit guard-start ChangeState on a later tick. It does not itself prove automatic guard start, exact MUGEN/IKEMEN proximity timing, or guard-end parity.",
       ],
     },
     gates: [
@@ -13085,6 +13105,23 @@ export function createSyntheticImportedInGuardDistTraceArtifact(options: Runtime
         requiredExecutedOperations: ["hitdef"],
         requiredActiveCommands: ["x"],
         requiredCombatReasons: ["whiff"],
+        forbiddenCombatReasons: ["hit", "guard"],
+        requiredActorFrameSequences: [
+          {
+            label: "latched direct InGuardDist before explicit guard state",
+            steps: [
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                inGuardDistAttackerId: "p1",
+                inGuardDistSource: "direct",
+                minFrames: 1,
+              },
+              { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, animNo: 130, minFrames: 1 },
+            ],
+          },
+        ],
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -13234,7 +13271,7 @@ export function createSyntheticImportedAutoGuardStartTraceArtifact(options: Runt
     displayName: "Synthetic Imported Auto Guard Start Attacker",
     guardDamage: 5,
     guardFlag: "MA",
-    guardDistance: 96,
+    guardDistance: 112,
   });
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-auto-guard-start-defender",
@@ -13292,7 +13329,7 @@ export function createSyntheticImportedAutoGuardEndTraceArtifact(options: Runtim
     displayName: "Synthetic Imported Auto Guard End Attacker",
     guardDamage: 5,
     guardFlag: "MA",
-    guardDistance: 96,
+    guardDistance: 112,
   });
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-auto-guard-end-defender",
@@ -22824,7 +22861,7 @@ export function createImportedAutoGuardStartTraceArtifact(
       displayName: `${imported.displayName} Auto Guard Start Probe`,
       guardDamage: 5,
       guardFlag: "MA",
-      guardDistance: 96,
+      guardDistance: 112,
     });
   const script = importedAutoGuardStartScript();
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: imported, stage }), script, {
@@ -22855,6 +22892,7 @@ export function createImportedAutoGuardStartTraceArtifact(
         requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredActiveCommands: ["holdback", "x"],
         requiredCombatReasons: ["whiff"],
+        forbiddenCombatReasons: ["hit", "guard"],
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -27472,6 +27510,67 @@ export function createSyntheticImportedProjectileMotionTraceArtifact(options: Ru
             observedScaleYAtMost: 0.5,
           },
         ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-guard-distance-latch-x", frames: 6, p1: ["x"], p2: [] },
+    { label: "projectile-guard-distance-latch-settle", frames: 2, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-distance-latch-attacker",
+    displayName: "Synthetic Imported Projectile Guard Distance Latch Attacker",
+    withProjectile: true,
+    guardDistance: 1,
+    projectileOffset: [40, -45],
+    projectileVelocity: [0, 0],
+    projectileRemoveTime: 8,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage: guardDistanceOnlyStage() }),
+    script,
+    { label: "synthetic-imported-projectile-guard-distance-latch-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-guard-distance-latch-golden",
+      label: "Synthetic imported Projectile guard-distance latch route",
+      source: "mixed",
+      notes: [
+        "Synthetic Projectile trace proves guard-distance eligibility is latched with projectile provenance before contact while the direct HitDef guard distance remains out of range. It does not claim automatic projectile guard-state entry or exact MUGEN/IKEMEN projectile collision timing.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-guard-distance-latch-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredCombatReasons: ["whiff"],
+        forbiddenCombatReasons: ["hit", "guard"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            actorKind: "player",
+            inGuardDistAttackerId: "p1",
+            inGuardDistSource: "projectile",
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
       },
     ],
   });

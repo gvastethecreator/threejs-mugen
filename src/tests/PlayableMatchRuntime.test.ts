@@ -49,6 +49,8 @@ describe("PlayableMatchRuntime", () => {
       "fighter:controllers",
       "fighter:auto-guard-check",
       "active:post-fighter",
+      "tick:guard-distance-latch",
+      "tick:guard-distance-latch",
       "post-fighter:combat",
       "post-fighter:presentation-effects",
       "active:round-finish",
@@ -1406,6 +1408,8 @@ describe("PlayableMatchRuntime", () => {
         { id: "tick:stamp-input" },
         { id: "frame:start" },
         { id: "branch:hitpause-advance" },
+        { id: "tick:guard-distance-latch", actorId: "p1" },
+        { id: "tick:guard-distance-latch", actorId: "p2" },
         { id: "tick:restore-superpause-defense" },
       ],
     });
@@ -1474,6 +1478,8 @@ describe("PlayableMatchRuntime", () => {
       "fighter:kinematics",
       "fighter:animation",
       "fighter:controllers",
+      "tick:guard-distance-latch",
+      "tick:guard-distance-latch",
       "tick:restore-superpause-defense",
     ]);
 

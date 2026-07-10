@@ -19,6 +19,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   separateActors: (left: TFighter, right: TFighter) => void;
   applyTargetBindings: (fighter: TFighter, opponent: TFighter) => void;
   applyBindToTarget: (fighter: TFighter, opponent: TFighter) => void;
+  refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
   resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
   resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
   resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
@@ -50,6 +51,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
+    refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
     recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
     log: (line: string) => void;
   };
@@ -70,6 +72,8 @@ export class RuntimeMatchInteractionWorld {
     input.applyTargetBindings(p2, p1);
     input.applyBindToTarget(p1, p2);
     input.applyBindToTarget(p2, p1);
+    input.refreshGuardDistance?.(p1, p2);
+    input.refreshGuardDistance?.(p2, p1);
 
     input.recordSchedulePhase?.("post-fighter:combat");
     const priorityMessage = input.resolvePriorityClash(p1, p2);
@@ -129,6 +133,7 @@ export class RuntimeMatchInteractionWorld {
       resolveDirectCombat: input.resolveDirectCombat,
       resolveProjectileCombat: input.resolveProjectileCombat,
       resolveHelperCombat: input.resolveHelperCombat,
+      refreshGuardDistance: input.refreshGuardDistance,
       recordSchedulePhase: input.recordSchedulePhase,
       clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage),
       advancePresentationEffects: (fighter) => effectLifecycleWorld.advancePresentation(fighter),

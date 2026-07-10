@@ -485,6 +485,12 @@ export class PlayableMatchRuntime {
       advanceActive: () =>
         this.advanceActiveMatch(input, p1Input, p2Input, (phase, actorId) => schedule.record(phase, actorId)),
     });
+    if (branchResult.branch !== "active") {
+      schedule.record("tick:guard-distance-latch", this.p1.id);
+      refreshRuntimeInGuardDist(this.p1, this.p2, this.guardDistanceWorld, this.tick);
+      schedule.record("tick:guard-distance-latch", this.p2.id);
+      refreshRuntimeInGuardDist(this.p2, this.p1, this.guardDistanceWorld, this.tick);
+    }
     schedule.record("tick:restore-superpause-defense");
     this.restoreExpiredSuperPauseTargetDefense();
     this.lastTickSchedule = schedule.complete(branchResult.branch);
@@ -549,7 +555,7 @@ export class PlayableMatchRuntime {
             ),
           applyAutoGuardStart: (defender, attacker) => {
             recordPhase("fighter:auto-guard-check", defender.id);
-            applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld);
+            applyAutoGuardStart(defender, attacker, this.guardWorld);
           },
           isPaused: () => this.pauseWorld.current() !== undefined,
         });
@@ -590,6 +596,10 @@ export class PlayableMatchRuntime {
               projectile,
               targetWorld: this.targetWorld,
             }),
+          refreshGuardDistance: (defender, attacker) => {
+            recordPhase("tick:guard-distance-latch", defender.id);
+            refreshRuntimeInGuardDist(defender, attacker, this.guardDistanceWorld, this.tick);
+          },
           log: (line) => this.logs.unshift(line),
           recordSchedulePhase: recordPhase,
         });
@@ -1380,7 +1390,6 @@ function applyAutoGuardStart(
   defender: FighterMatchState,
   attacker: FighterMatchState,
   guardWorld: RuntimeGuardWorld,
-  guardDistanceWorld: RuntimeGuardDistanceWorld,
 ): void {
   autoGuardStartWorld.apply({
     defender,
@@ -1388,7 +1397,7 @@ function applyAutoGuardStart(
     guardWorld,
     hooks: {
       isInGuardDistance: (candidateDefender, candidateAttacker) =>
-        evaluateRuntimeInGuardDist(candidateDefender, candidateAttacker, guardDistanceWorld),
+        isRuntimeInGuardDistLatched(candidateDefender, candidateAttacker),
       canEnterState: (candidateDefender, stateNo) => canEnterState(candidateDefender, stateNo),
       enterState: (candidateDefender, stateNo, options) => enterState(candidateDefender, stateNo, undefined, options),
     },
@@ -1409,18 +1418,40 @@ function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolea
 function evaluateRuntimeInGuardDist(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
-  guardDistanceWorld: RuntimeGuardDistanceWorld = defaultGuardDistanceWorld,
 ): boolean {
-  const hurtBoxes = frameWorld.currentHurtBoxes(fighter);
-  return guardDistanceWorld.isInGuardDistance(
-    { runtime: fighter.runtime, hurtBoxes },
-    {
-      runtime: opponent.runtime,
-      currentMove: opponent.currentMove,
-      moveTick: opponent.moveTick,
-      hasHit: opponent.hasHit,
+  return isRuntimeInGuardDistLatched(fighter, opponent);
+}
+
+function refreshRuntimeInGuardDist(
+  defender: FighterMatchState,
+  attacker: FighterMatchState,
+  guardDistanceWorld: RuntimeGuardDistanceWorld = defaultGuardDistanceWorld,
+  tick = 0,
+): void {
+  const latch = guardDistanceWorld.refreshLatch({
+    defender: {
+      runtime: defender.runtime,
+      hurtBoxes: frameWorld.currentHurtBoxes(defender),
     },
-  );
+    attacker: {
+      id: attacker.id,
+      runtime: attacker.runtime,
+      currentMove: attacker.currentMove,
+      moveTick: attacker.moveTick,
+      hasHit: attacker.hasHit,
+    },
+    projectiles: attacker.effectActorWorld.projectiles(attacker.id),
+    tick,
+  });
+  if (latch) {
+    defender.runtime.inGuardDist = latch;
+  } else {
+    delete defender.runtime.inGuardDist;
+  }
+}
+
+function isRuntimeInGuardDistLatched(defender: FighterMatchState, attacker: FighterMatchState): boolean {
+  return defender.runtime.inGuardDist?.attackerId === attacker.id;
 }
 
 function getCurrentFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {

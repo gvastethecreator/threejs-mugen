@@ -90,6 +90,44 @@ describe("RuntimeGuardDistanceSystem", () => {
       }),
     ).toBe(false);
   });
+
+  it("creates and clears a direct-attack latch with source and tick provenance", () => {
+    const world = new RuntimeGuardDistanceWorld();
+    const defender = { runtime: runtime({ pos: { x: 120, y: 0 }, facing: -1 }), hurtBoxes: [hurtBox()] };
+    const attacker = {
+      id: "p1",
+      runtime: runtime({ pos: { x: 0, y: 0 }, facing: 1 }),
+      currentMove: guardMove(),
+      moveTick: 2,
+      hasHit: false,
+    };
+
+    expect(world.refreshLatch({ defender, attacker, projectiles: [], tick: 7 })).toEqual({
+      attackerId: "p1",
+      source: "direct",
+      observedTick: 7,
+    });
+    expect(world.refreshLatch({ defender, attacker: { ...attacker, moveTick: 8 }, projectiles: [], tick: 8 })).toBeUndefined();
+  });
+
+  it("latches projectile guard distance and rejects spent projectiles", () => {
+    const world = new RuntimeGuardDistanceWorld();
+    const defender = { runtime: runtime({ pos: { x: 120, y: 0 }, facing: -1 }), hurtBoxes: [hurtBox()] };
+    const attacker = {
+      id: "p1",
+      runtime: runtime({ pos: { x: 0, y: 0 }, facing: 1 }),
+      moveTick: 0,
+      hasHit: false,
+    };
+    const activeProjectile = projectile();
+
+    expect(world.refreshLatch({ defender, attacker, projectiles: [activeProjectile], tick: 4 })).toEqual({
+      attackerId: "p1",
+      source: "projectile",
+      observedTick: 4,
+    });
+    expect(world.refreshLatch({ defender, attacker, projectiles: [{ ...activeProjectile, hasHit: true }], tick: 5 })).toBeUndefined();
+  });
 });
 
 function guardMove(overrides: Partial<RuntimeGuardDistanceMove> = {}): RuntimeGuardDistanceMove {
@@ -105,6 +143,21 @@ function guardMove(overrides: Partial<RuntimeGuardDistanceMove> = {}): RuntimeGu
 
 function hurtBox() {
   return { x1: -10, y1: -50, x2: 10, y2: 0 };
+}
+
+function projectile() {
+  return {
+    pos: { x: 40, y: 0 },
+    facing: 1 as const,
+    guardDistance: 72,
+    guardFlag: "MA",
+    hasHit: false,
+    hitsRemaining: 1,
+    missTimeRemaining: 0,
+    action: { frames: [{ clsn1: [{ x1: 0, y1: -60, x2: 20, y2: -20 }] }] },
+    frameIndex: 0,
+    hitbox: { x1: 0, y1: -60, x2: 20, y2: -20 },
+  };
 }
 
 function runtime(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {

@@ -88,12 +88,19 @@ export type CharacterRuntimeState = {
   guardSlideTime?: number;
   guardControlTime?: number;
   guarding?: boolean;
+  inGuardDist?: RuntimeInGuardDistanceLatch;
   stateType: "S" | "C" | "A" | "L";
   moveType: "I" | "A" | "H";
   physics: "S" | "C" | "A" | "N";
   vars: number[];
   sysvars?: number[];
   fvars: number[];
+};
+
+export type RuntimeInGuardDistanceLatch = {
+  attackerId: string;
+  source: "direct" | "projectile" | "direct+projectile";
+  observedTick: number;
 };
 
 export type RuntimeHitBySlot = {

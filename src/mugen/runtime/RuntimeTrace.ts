@@ -34,6 +34,7 @@ export type RuntimeTraceScriptSegment = RuntimeTraceInputFrame & {
 export type RuntimeTraceEffectSummary = NonNullable<ActorSnapshot["effect"]>;
 export type RuntimeTraceHitEffectEvent = NonNullable<ActorSnapshot["hitEffectEvents"]>[number];
 export type RuntimeTraceHitDefSpritePriority = NonNullable<CharacterRuntimeState["hitDefSpritePriority"]>;
+export type RuntimeTraceInGuardDistance = NonNullable<CharacterRuntimeState["inGuardDist"]>;
 
 export type RuntimeTraceActor = {
   id: string;
@@ -94,6 +95,7 @@ export type RuntimeTraceActor = {
   facing: 1 | -1;
   hitPause: number;
   guarding: boolean;
+  inGuardDist?: RuntimeTraceInGuardDistance;
   guardStun: number;
   guardSlideTime?: number;
   guardControlTime?: number;
@@ -494,6 +496,8 @@ export type RuntimeTraceActorFrameRequirement = {
   moveType?: string;
   physics?: string;
   guarding?: boolean;
+  inGuardDistAttackerId?: string;
+  inGuardDistSource?: RuntimeTraceInGuardDistance["source"];
   clsn1Count?: number;
   clsn2Count?: number;
   minFrames?: number;
@@ -581,6 +585,9 @@ export type RuntimeTraceGateActorFrameEvidence = {
   moveType: string;
   physics: string;
   guardingFrames: number;
+  inGuardDistAttackerIds: string[];
+  inGuardDistSources: RuntimeTraceInGuardDistance["source"][];
+  inGuardDistFrames: Record<RuntimeTraceInGuardDistance["source"], number>;
   clsn1Count: number;
   clsn2Count: number;
   minLife: number;
@@ -923,6 +930,7 @@ export type RuntimeTraceGate = {
   requiredEventCategories?: RuntimeTraceEvent["category"][];
   requiredEventSubstrings?: string[];
   requiredCombatReasons?: RuntimeTraceCombatReason["reason"][];
+  forbiddenCombatReasons?: RuntimeTraceCombatReason["reason"][];
   requiredWorldLifecycleEvents?: RuntimeTraceWorldLifecycleEventRequirement[];
   requiredEffectStores?: RuntimeTraceEffectStoreRequirement[];
   requiredEffectPayloads?: RuntimeTraceEffectPayloadRequirement[];
@@ -1131,6 +1139,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
   for (const reason of gate.requiredCombatReasons ?? []) {
     if (!evidence.combatReasons.includes(reason)) {
       failures.push(`Missing combat reason: ${reason}`);
+    }
+  }
+  for (const reason of gate.forbiddenCombatReasons ?? []) {
+    if (evidence.combatReasons.includes(reason)) {
+      failures.push(`Forbidden combat reason observed: ${reason}`);
     }
   }
   for (const requirement of gate.requiredWorldLifecycleEvents ?? []) {
@@ -1606,6 +1619,18 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               hitDefSpritePrioritySupported:
                 actor.hitDefSpritePriority?.supported ?? existing.hitDefSpritePrioritySupported,
               guardingFrames: existing.guardingFrames + (actor.guarding ? 1 : 0),
+              inGuardDistAttackerIds: actor.inGuardDist
+                ? [...new Set([...existing.inGuardDistAttackerIds, actor.inGuardDist.attackerId])].sort()
+                : existing.inGuardDistAttackerIds,
+              inGuardDistSources: actor.inGuardDist
+                ? [...new Set([...existing.inGuardDistSources, actor.inGuardDist.source])].sort()
+                : existing.inGuardDistSources,
+              inGuardDistFrames: actor.inGuardDist
+                ? {
+                    ...existing.inGuardDistFrames,
+                    [actor.inGuardDist.source]: existing.inGuardDistFrames[actor.inGuardDist.source] + 1,
+                  }
+                : existing.inGuardDistFrames,
             }
           : {
               actorId: actor.id,
@@ -1621,6 +1646,13 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               moveType: actor.moveType,
               physics: actor.physics,
               guardingFrames: actor.guarding ? 1 : 0,
+              inGuardDistAttackerIds: actor.inGuardDist ? [actor.inGuardDist.attackerId] : [],
+              inGuardDistSources: actor.inGuardDist ? [actor.inGuardDist.source] : [],
+              inGuardDistFrames: {
+                direct: actor.inGuardDist?.source === "direct" ? 1 : 0,
+                projectile: actor.inGuardDist?.source === "projectile" ? 1 : 0,
+                "direct+projectile": actor.inGuardDist?.source === "direct+projectile" ? 1 : 0,
+              },
               clsn1Count: actor.clsn1Count,
               clsn2Count: actor.clsn2Count,
               minLife: actor.life,
@@ -3021,8 +3053,13 @@ function matchesActorFrameRequirement(
   actor: RuntimeTraceGateActorFrameEvidence,
   requirement: RuntimeTraceActorFrameRequirement,
 ): boolean {
-  const matchingFrames =
-    requirement.guarding === true ? actor.guardingFrames : requirement.guarding === false ? actor.frames - actor.guardingFrames : actor.frames;
+  const matchingFrames = requirement.inGuardDistSource
+    ? actor.inGuardDistFrames[requirement.inGuardDistSource]
+    : requirement.guarding === true
+      ? actor.guardingFrames
+      : requirement.guarding === false
+        ? actor.frames - actor.guardingFrames
+        : actor.frames;
   const hitFallRecoverTimeDrop =
     actor.firstHitFallRecoverTime === undefined || actor.lastHitFallRecoverTime === undefined
       ? undefined
@@ -3044,6 +3081,8 @@ function matchesActorFrameRequirement(
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
     (requirement.physics === undefined || actor.physics === requirement.physics) &&
     (requirement.guarding === undefined || matchingFrames > 0) &&
+    (requirement.inGuardDistAttackerId === undefined || actor.inGuardDistAttackerIds.includes(requirement.inGuardDistAttackerId)) &&
+    (requirement.inGuardDistSource === undefined || actor.inGuardDistSources.includes(requirement.inGuardDistSource)) &&
     (requirement.clsn1Count === undefined || actor.clsn1Count === requirement.clsn1Count) &&
     (requirement.clsn2Count === undefined || actor.clsn2Count === requirement.clsn2Count) &&
     (requirement.minFrames === undefined || matchingFrames >= requirement.minFrames) &&
@@ -3478,6 +3517,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     facing: actor.runtime.facing,
     hitPause: actor.hitPause ?? 0,
     guarding: actor.runtime.guarding ?? false,
+    inGuardDist: actor.runtime.inGuardDist ? { ...actor.runtime.inGuardDist } : undefined,
     guardStun: actor.runtime.guardStun ?? 0,
     ...(actor.runtime.guardSlideTime ? { guardSlideTime: actor.runtime.guardSlideTime } : {}),
     ...(actor.runtime.guardControlTime ? { guardControlTime: actor.runtime.guardControlTime } : {}),

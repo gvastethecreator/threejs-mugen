@@ -316,12 +316,13 @@ function summarizeTickScheduleDiagnostics(trace: RuntimeTrace): RuntimeTraceArti
             "fighter:animation",
             "fighter:controllers",
             "fighter:auto-guard-check",
+            "tick:guard-distance-latch",
             "post-fighter:combat",
           ]
         : schedule.branch === "pause"
-          ? ["pause:advance"]
+          ? ["pause:advance", "tick:guard-distance-latch"]
           : schedule.branch === "hitpause"
-            ? ["branch:hitpause-advance"]
+            ? ["branch:hitpause-advance", "tick:guard-distance-latch"]
             : [];
     return [
       ...(schedule.schema === "MatchTickSchedule/v0" ? [] : [`${prefix}: schema mismatch`]),
@@ -497,6 +498,11 @@ function compareTraceActors(
   }
   if (current.guardStun !== previous.guardStun) {
     changes.push(`guardstun ${previous.guardStun}->${current.guardStun}`);
+  }
+  if (JSON.stringify(current.inGuardDist) !== JSON.stringify(previous.inGuardDist)) {
+    changes.push(
+      `inguarddist ${previous.inGuardDist ? `${previous.inGuardDist.source}@${previous.inGuardDist.observedTick}` : "off"}->${current.inGuardDist ? `${current.inGuardDist.source}@${current.inGuardDist.observedTick}` : "off"}`,
+    );
   }
   if (current.pos.x !== previous.pos.x || current.pos.y !== previous.pos.y) {
     changes.push(`pos ${formatPoint(previous.pos)}->${formatPoint(current.pos)}`);
@@ -702,6 +708,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredEventCategories: gate.requiredEventCategories ? [...gate.requiredEventCategories] : undefined,
     requiredEventSubstrings: gate.requiredEventSubstrings ? [...gate.requiredEventSubstrings] : undefined,
     requiredCombatReasons: gate.requiredCombatReasons ? [...gate.requiredCombatReasons] : undefined,
+    forbiddenCombatReasons: gate.forbiddenCombatReasons ? [...gate.forbiddenCombatReasons] : undefined,
     requiredWorldLifecycleEvents: gate.requiredWorldLifecycleEvents?.map((requirement) => ({ ...requirement })),
     requiredEffectStores: gate.requiredEffectStores?.map((requirement) => ({ ...requirement })),
     requiredEffectPayloads: gate.requiredEffectPayloads?.map((requirement) => ({ ...requirement })),
@@ -749,6 +756,7 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     pos: { ...actor.pos },
     vel: { ...actor.vel },
     bodyWidth: actor.bodyWidth ? { ...actor.bodyWidth } : undefined,
+    inGuardDist: actor.inGuardDist ? { ...actor.inGuardDist } : undefined,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
     assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,

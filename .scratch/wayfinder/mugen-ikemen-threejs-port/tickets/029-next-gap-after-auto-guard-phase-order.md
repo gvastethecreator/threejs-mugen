@@ -1,7 +1,7 @@
 # Choose next gap after automatic guard-start phase order
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,6 @@ What is the smallest behavior package that can add latched `InGuardDist` lifecyc
 
 ## Answer
 
-Pending source, fixture, and behavior-risk review.
+Implement an opponent-scoped runtime latch with direct/projectile/combined provenance, refresh it before active contact and at Pause/hitpause branch tails, and make authored plus automatic guard checks consume only the stored value. Keep the two IKEMEN action checkpoints separate.
+
+Research and checksum migration: `docs/research/2026-07-10-inguarddist-latch-lifecycle.md`.

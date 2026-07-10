@@ -414,6 +414,7 @@ import {
   createSyntheticImportedProjectileDefaultTargetControllersTraceArtifact,
   createSyntheticImportedProjectileDefaultTargetStateTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
+  createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact,
   createSyntheticImportedModifyExplodTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact,
@@ -14453,10 +14454,12 @@ describe("RuntimeTraceGatePresets", () => {
           source: "imported",
           actorKind: "player",
           stateNo: 154,
-          animNo: 132,
+          animNo: 122,
           stateType: "A",
           moveType: "H",
           physics: "N",
+          inGuardDistAttackerId: "p1",
+          inGuardDistSource: "direct",
           minFrames: 1,
         },
         {
@@ -14672,7 +14675,23 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ actorId: "p2", stateNo: 153, animNo: 151, stateType: "C", moveType: "H", physics: "C", minFrames: 8 }),
     ]);
     expect(officialKfmAirGuardHitPhysicsFrames()).toEqual([
-      expect.objectContaining({ actorId: "p2", stateNo: 154, animNo: 132, stateType: "A", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 154,
+        animNo: 122,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 5,
+      }),
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 154,
+        animNo: 122,
+        inGuardDistAttackerId: "p1",
+        inGuardDistSource: "direct",
+        minFrames: 1,
+      }),
       expect.objectContaining({
         actorId: "p2",
         stateNo: 155,
@@ -25163,6 +25182,26 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a projectile-only guard-distance latch without contact", () => {
+    const artifact = createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          inGuardDistAttackerIds: ["p1"],
+          inGuardDistSources: ["projectile"],
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("whiff");
+    expect(artifact.gates[0]?.evidence.combatReasons).not.toEqual(expect.arrayContaining(["hit", "guard"]));
+    expect(artifact.gates[0]?.evidence.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard"]));
   });
 
   it("creates a synthetic imported HitDef sprite-priority defaults artifact with contact provenance", () => {

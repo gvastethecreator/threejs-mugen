@@ -2051,6 +2051,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileMotionTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-guard-distance-latch",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-velmul",
       required: true,
       artifact: presets.createSyntheticImportedProjectileVelMulTraceArtifact(),
@@ -3778,6 +3783,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-guardedtime-any",
     "synthetic-imported-projectile-guardedtime-id",
     "synthetic-imported-projectile-motion",
+    "synthetic-imported-projectile-guard-distance-latch",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",
     "synthetic-imported-modifyprojectile-dynamic-bounds",

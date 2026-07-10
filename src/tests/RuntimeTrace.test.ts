@@ -169,8 +169,10 @@ describe("RuntimeTrace", () => {
     const forbiddenGate = evaluateRuntimeTraceGate(trace, {
       label: "imported-fixture-forbidden-state-gate",
       forbiddenExecutedStates: [200],
+      forbiddenCombatReasons: ["hit"],
     });
     expect(forbiddenGate.failures).toContain("Forbidden executed state: 200");
+    expect(forbiddenGate.failures).toContain("Forbidden combat reason observed: hit");
   });
 
   itWithKfmFixture("evaluates optional official KFM imported runtime trace when the local fixture is present", async () => {

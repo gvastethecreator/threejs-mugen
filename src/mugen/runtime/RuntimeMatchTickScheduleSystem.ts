@@ -20,6 +20,7 @@ export type RuntimeMatchTickPhaseId =
   | "post-fighter:combat"
   | "post-fighter:presentation-effects"
   | "active:round-finish"
+  | "tick:guard-distance-latch"
   | "tick:restore-superpause-defense";
 
 export type RuntimeMatchSnapshotPhaseId = "snapshot:presentation" | "snapshot:materialize";
@@ -157,6 +158,12 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     "RuntimeMatchRoundWorld",
     ["round", "audioWorld"],
     ["KO or time-over evaluated", "KO sound may emit"],
+  ),
+  "tick:guard-distance-latch": phase(
+    "tick:guard-distance-latch",
+    "RuntimeGuardDistanceWorld",
+    ["fighter.runtime.inGuardDist"],
+    ["direct and projectile guard-distance eligibility latched for the next tick"],
   ),
   "tick:restore-superpause-defense": {
     id: "tick:restore-superpause-defense",
