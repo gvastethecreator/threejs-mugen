@@ -50,13 +50,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after IKEMEN root RunOrder trigger](tickets/035-next-gap-after-ikemen-root-runorder-trigger.md) - selected and resolved shared root/helper priorities, one-based actor RunOrder, and same-tick appended-helper execution without a duplicate helper tick.
 - [Choose next gap after IKEMEN helper RunOrder](tickets/036-next-gap-after-ikemen-helper-runorder.md) - selected and resolved separate Pause/SuperPause buffers, same-frame duration/owner arbitration, and SuperPause-first progression; actor-local movetime remains ticket 037.
 - [Choose next gap after IKEMEN Pause buffers](tickets/037-next-gap-after-ikemen-pause-buffer.md) - selected and resolved actor-local root/helper pause movement plus bounded same-frame positive `p2defmul` stacking; deferred activation remains ticket 038.
+- [Choose next gap after IKEMEN actor-local pause movement](tickets/038-next-gap-after-ikemen-actor-pausemove.md) - selected and resolved deferred paused-pass replacement activation; helper-created pause ownership remains ticket 039.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Choose next gap after IKEMEN actor-local pause movement](tickets/038-next-gap-after-ikemen-actor-pausemove.md)
+- [Choose next gap after IKEMEN deferred pause activation](tickets/039-next-gap-after-ikemen-deferred-pause.md)
 
 ## Not Yet Specified
 

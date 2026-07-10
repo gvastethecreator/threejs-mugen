@@ -285,6 +285,48 @@ describe("PauseSystem", () => {
     expect(world.tick()).toMatchObject({ type: "Pause", remaining: 3 });
   });
 
+  it("defers IKEMEN pause activation until the paused actor pass commits", () => {
+    const world = new RuntimePauseWorld("ikemen-go");
+    world.applyController(actor("p1", 200), controller("Pause", { time: "4", movetime: "2" }), 5);
+    const activePause = world.current();
+
+    world.beginDeferredActivation();
+    world.applyController(actor("p1", 201), controller("Pause", { time: "3", movetime: "1" }), 6);
+    world.applyController(actor("p2", 202), controller("Pause", { time: "7", movetime: "2" }), 6);
+
+    expect(world.current()).toBe(activePause);
+    expect(world.tick()).toMatchObject({ actorId: "p1", remaining: 3, startedAt: 5 });
+    world.commitDeferredActivation();
+    expect(world.current()).toMatchObject({ actorId: "p2", remaining: 7, moveTime: 2, startedAt: 6 });
+    expect(world.canActorMove("p2")).toBe(true);
+  });
+
+  it("cancels deferred IKEMEN pause activation without replacing the active pause", () => {
+    const world = new RuntimePauseWorld("ikemen-go");
+    world.applyController(actor("p1", 200), controller("Pause", { time: "4", movetime: "2" }), 5);
+    const activePause = world.current();
+
+    world.beginDeferredActivation();
+    world.applyController(actor("p1", 202), controller("Pause", { time: "7", movetime: "0" }), 6);
+    world.cancelDeferredActivation();
+
+    expect(world.current()).toBe(activePause);
+    expect(world.canActorMove("p1")).toBe(true);
+  });
+
+  it("publishes a deferred IKEMEN SuperPause with precedence after the active Pause ticks", () => {
+    const world = new RuntimePauseWorld("ikemen-go");
+    world.applyController(actor("p1", 200), controller("Pause", { time: "4" }), 5);
+
+    world.beginDeferredActivation();
+    world.applyController(actor("p2", 202), controller("SuperPause", { time: "7", movetime: "2" }), 6);
+    expect(world.tick()).toMatchObject({ type: "Pause", remaining: 3, startedAt: 5 });
+    world.commitDeferredActivation();
+
+    expect(world.current()).toMatchObject({ type: "SuperPause", actorId: "p2", remaining: 7, moveTime: 2, startedAt: 6 });
+    expect(world.canActorMove("p2")).toBe(true);
+  });
+
   it("owns match Pause/SuperPause result side effects", () => {
     const world = new RuntimeMatchPauseControllerWorld();
     const calls: string[] = [];

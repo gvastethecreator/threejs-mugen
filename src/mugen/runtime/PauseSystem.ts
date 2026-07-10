@@ -128,7 +128,7 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
   resolveSoundValue?: () => RuntimeResolvedSoundRef | undefined;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   resolveParams?: RuntimePauseControllerParamResolvers;
-  applyTargetDefenseMultiplier?: (actor: TActor, multiplier: number) => number;
+  applyTargetDefenseMultiplier?: (actor: TActor, multiplier: number, pause: RuntimeMatchPause) => number;
   log: (message: string) => void;
 };
 
@@ -149,6 +149,10 @@ export class RuntimePauseWorld {
   private legacyPause?: RuntimeMatchPause;
   private ikemenPause?: RuntimeMatchPause;
   private ikemenSuperPause?: RuntimeMatchPause;
+  private deferredIkemenPause?: RuntimeMatchPause;
+  private deferredIkemenSuperPause?: RuntimeMatchPause;
+  private ikemenActivationDeferred = false;
+  private deferredIkemenMoveTimeSnapshot?: Record<RuntimeMatchPause["type"], Map<string, number>>;
   private readonly ikemenMoveTimes: Record<RuntimeMatchPause["type"], Map<string, number>> = {
     Pause: new Map(),
     SuperPause: new Map(),
@@ -164,6 +168,10 @@ export class RuntimePauseWorld {
     this.legacyPause = undefined;
     this.ikemenPause = undefined;
     this.ikemenSuperPause = undefined;
+    this.deferredIkemenPause = undefined;
+    this.deferredIkemenSuperPause = undefined;
+    this.ikemenActivationDeferred = false;
+    this.deferredIkemenMoveTimeSnapshot = undefined;
     this.ikemenMoveTimes.Pause.clear();
     this.ikemenMoveTimes.SuperPause.clear();
   }
@@ -195,6 +203,50 @@ export class RuntimePauseWorld {
     return canActorBeHitDuringPause(this.current(), actorId);
   }
 
+  beginDeferredActivation(): void {
+    if (this.profile !== "ikemen-go") return;
+    if (this.ikemenActivationDeferred) {
+      throw new Error("IKEMEN pause activation is already deferred");
+    }
+    this.deferredIkemenPause = undefined;
+    this.deferredIkemenSuperPause = undefined;
+    this.deferredIkemenMoveTimeSnapshot = {
+      Pause: new Map(this.ikemenMoveTimes.Pause),
+      SuperPause: new Map(this.ikemenMoveTimes.SuperPause),
+    };
+    this.ikemenActivationDeferred = true;
+  }
+
+  commitDeferredActivation(): void {
+    if (this.profile !== "ikemen-go" || !this.ikemenActivationDeferred) return;
+    this.ikemenActivationDeferred = false;
+    if (this.deferredIkemenPause) {
+      this.ikemenPause = selectIkemenPause(this.ikemenPause, this.deferredIkemenPause);
+    }
+    if (this.deferredIkemenSuperPause) {
+      this.ikemenSuperPause = selectIkemenPause(this.ikemenSuperPause, this.deferredIkemenSuperPause);
+    }
+    this.deferredIkemenPause = undefined;
+    this.deferredIkemenSuperPause = undefined;
+    this.deferredIkemenMoveTimeSnapshot = undefined;
+  }
+
+  cancelDeferredActivation(): void {
+    if (this.profile !== "ikemen-go") return;
+    if (this.deferredIkemenMoveTimeSnapshot) {
+      for (const type of ["Pause", "SuperPause"] as const) {
+        this.ikemenMoveTimes[type].clear();
+        for (const [actorId, moveTime] of this.deferredIkemenMoveTimeSnapshot[type]) {
+          this.ikemenMoveTimes[type].set(actorId, moveTime);
+        }
+      }
+    }
+    this.deferredIkemenPause = undefined;
+    this.deferredIkemenSuperPause = undefined;
+    this.deferredIkemenMoveTimeSnapshot = undefined;
+    this.ikemenActivationDeferred = false;
+  }
+
   tick(): RuntimeMatchPause | undefined {
     if (this.profile !== "ikemen-go") {
       this.legacyPause = this.legacyPause ? tickMatchPause(this.legacyPause) : undefined;
@@ -205,7 +257,7 @@ export class RuntimePauseWorld {
     } else if (this.ikemenPause) {
       this.ikemenPause = tickIkemenPause(this.ikemenPause);
     }
-    if (!this.ikemenPause && !this.ikemenSuperPause) {
+    if (!this.ikemenPause && !this.ikemenSuperPause && !this.hasDeferredIkemenPause()) {
       this.ikemenMoveTimes.Pause.clear();
       this.ikemenMoveTimes.SuperPause.clear();
     }
@@ -226,13 +278,25 @@ export class RuntimePauseWorld {
       } else {
         this.ikemenMoveTimes[result.pause.type].set(actor.id, result.pause.moveTime);
         if (result.pause.type === "SuperPause") {
-          this.ikemenSuperPause = selectIkemenPause(this.ikemenSuperPause, result.pause);
+          if (this.ikemenActivationDeferred) {
+            this.deferredIkemenSuperPause = selectIkemenPause(this.deferredIkemenSuperPause, result.pause);
+          } else {
+            this.ikemenSuperPause = selectIkemenPause(this.ikemenSuperPause, result.pause);
+          }
         } else {
-          this.ikemenPause = selectIkemenPause(this.ikemenPause, result.pause);
+          if (this.ikemenActivationDeferred) {
+            this.deferredIkemenPause = selectIkemenPause(this.deferredIkemenPause, result.pause);
+          } else {
+            this.ikemenPause = selectIkemenPause(this.ikemenPause, result.pause);
+          }
         }
       }
     }
     return result;
+  }
+
+  private hasDeferredIkemenPause(): boolean {
+    return this.deferredIkemenPause !== undefined || this.deferredIkemenSuperPause !== undefined;
   }
 }
 
@@ -277,7 +341,7 @@ export class RuntimeMatchPauseControllerWorld {
     );
     const targetDefenseTargets =
       result.pause.type === "SuperPause" && targetDefenseMultiplier !== undefined
-        ? input.applyTargetDefenseMultiplier?.(input.actor, targetDefenseMultiplier) ?? 0
+        ? input.applyTargetDefenseMultiplier?.(input.actor, targetDefenseMultiplier, result.pause) ?? 0
         : 0;
     const sound = superPauseSoundParam(input.controller, input.operation);
     const resolvedSound = result.pause.type === "SuperPause" && sound ? input.resolveSoundValue?.() : undefined;

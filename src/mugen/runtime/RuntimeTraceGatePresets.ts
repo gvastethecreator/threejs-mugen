@@ -8374,6 +8374,74 @@ export function createSyntheticImportedIkemenActorPauseMoveTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "start actor-local Pause", p1: ["x"], p2: ["x"], frames: 1 },
+    { label: "finish paused actor pass before replacement", p1: [], p2: [], frames: 3 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-deferred-pause-p1",
+    displayName: "Synthetic Imported IKEMEN Deferred Pause P1",
+    withPause: true,
+    pauseTiming: { time: 4, moveTime: 2, triggerTime: 0 },
+    extraPauseTiming: { time: 6, moveTime: 0, triggerTime: 2 },
+    pauseMovePosAdd: { x: 8, y: 0, time: 2 },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-deferred-pause-p2",
+    displayName: "Synthetic Imported IKEMEN Deferred Pause P2",
+    withPause: true,
+    pauseTiming: { time: 2, moveTime: 2, triggerTime: 0 },
+    pauseMovePosAdd: { x: -6, y: 0, time: 2 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-deferred-pause-activation-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-deferred-pause-activation-golden",
+      label: "Synthetic imported IKEMEN deferred Pause activation",
+      source: "imported",
+      notes: [
+        "Explicit ikemen-go trace proves a replacement Pause requested by P1 during an active paused actor pass does not cancel P2's already-earned movement later in the prepared actor order. Helper-owned Pause, SuperPause replacement, exact buffer visibility, hitpause, teams, and full IKEMEN pause parity remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-deferred-pause-activation-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Pause", "PosAdd"],
+        requiredExecutedOperations: [
+          { operation: "pause:pause", minCount: 2 },
+          "kinematic:posadd",
+        ],
+        requiredActiveCommands: ["x"],
+        requiredMatchPauses: [{ type: "Pause", actorId: "p1", sourceStateNo: 200, minFrames: 3, minRemaining: 6 }],
+        requiredMatchPauseAdvances: [
+          { type: "Pause", actorId: "p1", actorKind: "player", ownerId: "p1", minAdvancedFrames: 1 },
+          { type: "Pause", actorId: "p2", actorKind: "player", ownerId: "p2", minAdvancedFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, observedPosXAtLeast: -87, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, observedPosXAtMost: 89, minFrames: 1 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "replacement waits for remaining root", frameIndex: 2, phase: "fighter:controllers", actorIds: ["p1", "p2"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39204,6 +39272,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withPrePauseTargetBind?: boolean;
   withPause?: boolean;
   pauseTiming?: { time: number; moveTime?: number; triggerTime?: number };
+  extraPauseTiming?: { time: number; moveTime?: number; triggerTime?: number };
   withDelayedSuperPause?: boolean;
   superPauseSound?: string;
   superPauseSoundVarSeed?: { group: number; index: number };
@@ -40167,6 +40236,7 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock(options.pauseTiming) : ""}
+${options.extraPauseTiming === undefined ? "" : extraPauseControllerBlock(options.extraPauseTiming)}
 ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable, options.superPauseTiming) : ""}
 ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBlock(options.extraSuperPauseP2DefMul)}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
@@ -43448,6 +43518,18 @@ type = Pause
 trigger1 = Time = ${timing?.triggerTime ?? 2}
 time = ${timing?.time ?? 7}
 movetime = ${timing?.moveTime ?? 1}
+`;
+}
+
+function extraPauseControllerBlock(
+  timing: NonNullable<SyntheticImportedTraceFighterOptions["extraPauseTiming"]>,
+): string {
+  return `
+[State 200, Deferred Pause Replacement]
+type = Pause
+trigger1 = Time = ${timing.triggerTime ?? 1}
+time = ${timing.time}
+movetime = ${timing.moveTime ?? 0}
 `;
 }
 

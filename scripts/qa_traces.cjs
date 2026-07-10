@@ -1250,6 +1250,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActorPauseMoveTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-deferred-pause-activation",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-superpause-p2defmul-stack",
       required: true,
       artifact: presets.createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact(),

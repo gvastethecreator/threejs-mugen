@@ -164,6 +164,7 @@ import {
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
+  createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
   createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
@@ -15936,6 +15937,20 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
       expect.objectContaining({ actorId: "p1-helper-0", minAge: 3 }),
+    ]);
+  });
+
+  it("creates a required IKEMEN deferred Pause activation artifact", () => {
+    const artifact = createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-deferred-pause-activation-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-ikemen-deferred-pause-activation-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
+      expect.objectContaining({ frameIndex: 2, actorIds: ["p1", "p2"] }),
     ]);
   });
 
