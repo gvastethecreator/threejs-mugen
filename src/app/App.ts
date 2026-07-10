@@ -1928,8 +1928,8 @@ export class App {
       <div class="studio-chrome-brand">
         <span class="studio-chrome-brand-mark">${tablerIcon("studio", "ui-icon studio-chrome-icon")}</span>
         <span class="studio-chrome-title">
-          <strong>MUGEN Workbench</strong>
-          <small>Ikemen Engine</small>
+          <strong>Fight Lab</strong>
+          <small>MUGEN runtime + evidence</small>
         </span>
       </div>
       <div class="studio-chrome-context" aria-label="Active studio context">
@@ -1969,7 +1969,7 @@ export class App {
       <div class="studio-chrome-actions" aria-label="Studio command shortcuts">
         <button type="button" class="studio-chrome-command" data-action="open-command-palette" aria-label="Open command palette">
           <span class="studio-chrome-command-prefix" aria-hidden="true">&gt;_</span>
-          <span>Terminal</span>
+          <span>Commands</span>
         </button>
         <button type="button" class="studio-chrome-playtest" data-mode="match" aria-label="Open playable runtime">
           ${tablerIcon("play", "ui-icon")}

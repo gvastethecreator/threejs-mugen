@@ -9,6 +9,9 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Next Useful Cuts
 
+- Current 2026-07-10 daily roadmap/architecture audit: the newest global closeout is player `SprPriority` draw order with 524/524 retained; entry 332 is only the latest numbered backlog entry and its 523/523 count is slice-local history. Wayfinder 024 maps to issue 01's two-step HitDef priority policy/contact sequence. Shared Trust Chain creation/package-source drilldowns and `RuntimeEffectActorAdvanceWorld` remain closed and must not be replanned. Scores remain unchanged.
+- Current architecture decision: authored/omitted HitDef priority survives compilation and named-profile defaults resolve only at contact; semantic MUGEN order stays separate from Three.js queues; `MatchTickSchedule/v0` diagnostics stay outside legacy behavior checksums. Proposed ADR 0002 must be adopted or replaced before runtime mutation.
+- Open scope-bound G1 follow-up: root `AGENTS.md` Current Milestone Focus still names the pre-audit Common1/FightFX or generic MatchWorld choice. This automation may edit only `docs/` and `.scratch/roadmap/`, so it records but does not mutate that root rule file.
 - Current setup-project/continuity cut: `AGENTS.md`, `docs/agents/domain.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and `docs/PROGRESS_TRACKER.md` now separate lane checkpoints so the latest Studio/UI or docs-only closeout does not replace the latest runtime/port checkpoint. This is project-control work only; no score movement.
 - Current setup-project/roadmap pass: added `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board and linked it from AGENTS/setup/roadmap docs. This docs/control setup initially selected R2 random ownership after the latest `VarRandom` gate; that first slice is now implemented below, with no score movement.
 - Current setup-project/G1 refresh: `AGENTS.md`, `docs/agents/*`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, and `docs/PROGRESS_TRACKER.md` now make the local tracker, canonical labels, single-context docs, G1 health check, decision tree, and no-score rule explicit.
@@ -66,15 +69,15 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/ROADMAP_PACKAGE_MILESTONES.md` owns compact package selection, milestone exits, and the next recommended evidence-producing slice.
 - `docs/BUILD_EXECUTION_BACKLOG.md` records the latest closed gate, so future agents can avoid treating already-closed gates as next work.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` owns task-type execution checklists and closeout commands.
-- `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including deeper FightFX/common spark presentation after the current package loading/provider/source-metadata route.
-- Latest implementation truth after this refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `RuntimeStunWorld` owns bounded hitstun/guardstun timer advance, hitstun presentation-action requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration. Full final trace aggregate is recorded in that backlog entry.
+- `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, currently HitDef priority policy/contact, semantic renderer overlap, and `MatchTickSchedule/v0` before broader lane work.
+- The former `RuntimeStunWorld`-as-latest statement is retired. Current global truth is the newest prefixed closeout at the top of `docs/BUILD_EXECUTION_BACKLOG.md`; current numbered-history truth is the highest numbered entry at the bottom. The daily audit distinguishes those ledgers explicitly.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
 - Previous implementation truth before this docs refresh came from the then-current top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. Newer runtime and Studio/UI checkpoints are recorded above it in the backlog; the latest aggregate after optional KFM presentation gates is 159/159 artifacts, 139 required, and 20 optional.
 
 ## Claim Allowed
 
-Project-control setup is explicit enough for future agents to resume, pick the next roadmap issue, choose the next package, check the latest implementation checkpoint, and close work with the correct gates.
+Allowed-scope roadmap docs and local issues are explicit enough for future agents to resume, pick the next package, check the latest implementation checkpoint, and close work with the correct gates; root `AGENTS.md` milestone-focus wording remains a known G1 follow-up.
 
 ## Claim Blocked
 

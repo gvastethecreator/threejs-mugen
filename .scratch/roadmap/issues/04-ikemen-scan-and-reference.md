@@ -9,6 +9,7 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 
 ## Next Useful Cuts
 
+- 2026-07-10 next contract: introduce a versioned VFS/package scanner entry shared by character, stage, system and screenpack inputs, then add one stage-only and one system/screenpack-only source-mapped fixture. Findings require source location, dependency, upstream profile/version, and recognized/unsupported/unknown status; this changes no runtime claim.
 - Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: I1 IKEMEN reference expansion.
 - Keep full IKEMEN-GO-class port score separate from MUGEN MVP score in `docs/PORT_COMPLETION_SCORECARD.md`.
 - Expand scanner signals for ZSS, Lua hooks, screenpacks, select/system files, model stages, and IKEMEN-only controllers/triggers.
@@ -24,6 +25,7 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 ## Acceptance
 
 - Scanner tests prove each new signal.
+- Stage-only and system/screenpack-only package fixtures enter through the same VFS/package scanner contract and report source location, dependency, and pinned upstream profile/version.
 - Docs distinguish MUGEN 1.0, MUGEN 1.1, IKEMEN scan-only, and future IKEMEN runtime work.
 - `docs/IKEMEN_GO_REFERENCE.md`, `docs/COMPATIBILITY_PROFILES.md`, and `docs/SUPPORTED_FEATURES.md` stay aligned.
 
@@ -33,4 +35,5 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 - Lua execution.
 - Rollback/netplay.
 - IKEMEN screenpack/lifebar parity.
+- Complete package analysis from character-loader-only or regex-only coverage.
 - IKEMEN-specific runtime semantics without trace evidence.

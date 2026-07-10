@@ -1,28 +1,32 @@
 ﻿# Next Build Roadmap
 
+## Planning decision - HitDef priority policy and contact
+
+The 2026-07-10 daily architecture audit selects a two-step next sequence: first preserve authored-versus-omitted HitDef priority behind a minimal profile/default policy, then apply direct, non-projectile `HitDef p1sprpriority` / `p2sprpriority` on accepted hit and guard for player and current helper routes. Target MUGEN 1.1 defaults only through that policy, isolate the observed pinned-Ikemen divergence, and keep semantic priority separate from Three.js z/render-order/material policy. Follow with a deterministic player/effect/stage overlap gate, not a broad renderer rewrite. See `docs/research/2026-07-10-daily-roadmap-architecture-audit.md` and proposed ADR 0002.
+
 ## Current cursor - SprPriority draw order
 
 Player priority range and effective z ordering are closed. Wayfinder 024 compares HitDef pair priorities, stage/effect overlap, flips/rotation, L4 baselines, source-bound Studio editing, IKEMEN ingestion, and post-KO flow.
 
-## Current cursor - Renderer axis-parity oracle
+## Previous cursor - Renderer axis-parity oracle
 
 Player axis placement reaches L2. Wayfinder 023 compares flips/rotation, draw order, L4 baselines, source-bound Studio editing, IKEMEN ingestion, and post-KO runtime flow.
 
-## Current cursor - Persistent Studio scene authoring
+## Previous cursor - Persistent Studio scene authoring
 
 Single-match scene persistence is closed. Wayfinder 022 compares dirty-navigation/undo, first collision/state editor, renderer proof, IKEMEN ingestion, and post-KO runtime flow.
 
-## Current cursor - Persistent Studio project naming
+## Previous cursor - Persistent Studio project naming
 
 Project identity authoring is closed. Wayfinder 021 must compare persisted matchup/scene edits, first source-bound state/collision editing, renderer proof, IKEMEN ingestion, and post-KO runtime flow.
 
-## Current cursor - KO sound handoff
+## Previous cursor - KO sound handoff
 
-Automatic KO sound and tick-active `NoKOSnd` suppression are closed. Continue with Wayfinder 020, explicitly comparing post-KO round flow against Studio, renderer, IKEMEN, and modular-boundary leverage.
+Automatic KO sound and tick-active `NoKOSnd` suppression are closed. Historical Wayfinder 020 compared post-KO round flow against Studio, renderer, IKEMEN, and modular-boundary leverage; ticket 024 now owns selection.
 
-## Current cursor - 2026-07-10
+## Previous cursor - Contextual SND banks
 
-Contextual player/common SND banks are closed. Continue with Wayfinder 019 across runtime, Studio, renderer, and IKEMEN candidates.
+Contextual player/common SND banks are closed. Historical Wayfinder 019 compared runtime, Studio, renderer, and IKEMEN candidates; ticket 024 now owns selection.
 
 Last updated: 2026-07-10
 
@@ -38,12 +42,25 @@ Docs-only changes here do not move scores.
 ## Current Checkpoint
 
 ```txt
+R1/renderer direct HitDef contact sprite priority - selected, not implemented
+  -> preserve authored vs omitted p1sprpriority/p2sprpriority through compilation
+  -> resolve MUGEN 1.1 hit/guard defaults p1 = 1, p2 = 0 through a named policy
+  -> unknown/IKEMEN policy cannot silently receive MUGEN defaults
+  -> mutate player/helper contact actors only after accepted direct hit or guard
+  -> trace semantic priority before browser adapter proof
+  -> defer Projectile inheritance, IKEMEN defaults, equal ties, Explod ontop, and score movement
+  -> Wayfinder 024 and issue 01 own the next implementation cut
+```
+
+Historical checkpoint ledger (all older Wayfinder selectors below are superseded by current ticket 024):
+
+```txt
 R1/R2 voice channel 0 hit cancellation
   -> accepted normal hit increments defender receivedHitSequence; guard does not
   -> Web Audio stops only the hit actor channel 0 once per sequence
   -> pending same-frame voices cancel; other actors and later voices survive
   -> qa:trace remains 524/524 without checksum drift
-  -> Wayfinder 018 owns next selection; no score movement
+  -> closed without score movement
 ```
 
 ```txt
@@ -53,7 +70,7 @@ R1/R2 actor-scoped Web Audio channel ownership
   -> later P1 playback replaces only P1's prior source
   -> StopSnd -1 remains global
   -> focused store and controlled AudioContext integration tests are green
-  -> Wayfinder 017 owns next selection; no score movement
+  -> historical selector Wayfinder 017; superseded by 024; no score movement
 ```
 
 ```txt
@@ -65,7 +82,7 @@ R1 required helper direct-HitDef persistence sound typed audio gates
   -> moveguardedpersist 4b48e97d / c7ce0ae6 with S6,4
   -> all five require helper, hitdef, and owner-attributed audio:playsnd evidence
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
-  -> next selection is Wayfinder 016; no score movement or exact playback claim
+  -> historical selector Wayfinder 016; superseded by 024; no score movement or exact playback claim
 ```
 
 Latest project-control truth:
@@ -3125,16 +3142,16 @@ Do not reselect `RuntimeEffectActorAdvanceWorld` ownership as fresh next work; t
 
 | Order | Lane | Slice | Evidence | Score impact |
 | ---: | --- | --- | --- | --- |
-| 1 | R1 runtime | Deepen Common1 recovery/guard loop precision beyond current frame/order summaries. | Required trace or official KFM optional fixture gate. | Possible MUGEN-lite movement only if scorecard threshold is met. |
-| 2 | R1 presentation | Improve FightFX/common spark/dust/sound presentation evidence after current package-frame handoff and source-frame plus selected-frame/multi-frame trace metadata. | `pnpm qa:trace` if telemetry changes; `pnpm qa:smoke` plus screenshots if visible. | Possible playable/visual confidence, not full screenpack parity. |
-| 3 | R2 ownership | Move helper-owned combat/effect/target ordering or deeper helper/effect lifecycle into a tighter named world boundary. | Focused world tests; stable or documented trace checksum behavior. | Debt reduction; score movement only with behavior evidence. |
-| 4 | S1 Studio | Build one shared Evidence/Build status contract for stale, blocked, missing, partial, unsupported, and exportable states. | `pnpm qa:smoke` plus visual inspection using real rows. | Possible Studio score movement. |
-| 5 | A1 assets | Store generated asset source prompt, sheet, atlas, QA, collision, and playtest provenance as one record. | Asset QA record; visual QA if shown. | Generated/native pipeline confidence only. |
-| 6 | I1 IKEMEN | Add one scanner-only IKEMEN signal family from source/docs, classified recognized/unsupported/unknown. | Focused scanner tests. | Scanner-only movement, no IKEMEN execution claim. |
-| 7 | M1 modular | Prove one shared project/asset/input/snapshot/debug/build contract has no fighting-specific leakage. | `pnpm check:boundaries` or focused boundary test. | Modular readiness only. |
-| 8 | R1 fixtures | Add or tighten private official KFM fixture proof for a route already covered synthetically. | Optional fixture artifact when local fixture exists. | Compatibility confidence, no public asset claim. |
-| 9 | Runtime corpus | Add another private character/stage corpus package as local evidence only. | Local fixture report; no committed third-party assets. | Broad compatibility evidence only when reproducible locally. |
-| 10 | R2 trace order | Add trace evidence for effect/combat ordering if the next ownership boundary can affect checksums. | Required trace or documented stable checksum behavior. | Debt reduction unless behavior evidence moves score. |
+| 1 | R1 policy | Preserve authored/omitted HitDef p1/p2 values and add a minimal profile/default-source policy. | Focused compiler/policy tests; unknown profile fails closed. | Architecture truth only; no score movement. |
+| 2 | R1 runtime | Apply static direct player/helper HitDef p1/p2 priorities on accepted hit/guard through the MUGEN 1.1 policy. | Focused player/helper combat tests plus required before/after traces. | No score movement for this bounded contact gate. |
+| 3 | Renderer | Semantic presentation-order key plus controlled player/effect/stage overlap proof. | Focused order tests, `pnpm qa:smoke`, diagnostics, desktop/mobile screenshots, L4 baseline. | Visual confidence only; no tie or full parity claim. |
+| 4 | R2 schedule | `MatchTickSchedule/v0` diagnostics outside the legacy behavior checksum projection. | Focused schedule test, separate schedule assertion, stable behavior checksums. | Architecture debt reduction only. |
+| 5 | R1 Common1 | Character override vs `stcommon` source precedence for state 120. | Source-mapped focused resolver tests and two artifacts. | Source-resolution confidence only. |
+| 6 | R1 guard | Separate engine-owned guard-phase order after source resolution. | Focused guard tests and one ordered required trace. | Bounded guard confidence, not full parity. |
+| 7 | R1 round | One KO freeze/finish plus `NoKOSlow` timeline slice. | Focused round tests and required KO timeline trace. | Bounded round confidence, not motif/team parity. |
+| 8 | S1 Studio | Source identity/fingerprint, conflict, write/reimport, invalidation, and rollback; defer undo/migration. | Model/service tests and browser mutation/conflict/rollback smoke. | Possible Studio movement with real persistence evidence. |
+| 9 | A1 assets | Permission-aware, content-addressed `AssetProvenance/v0`. | Validator fixtures; Studio visual QA only if surfaced. | Generated/native confidence only. |
+| 10 | I1 IKEMEN | VFS/package scanner plus stage-only and system/screenpack-only signal families. | Focused scanner tests and report snapshot. | Scanner-only movement; no execution claim. |
 
 ## R1 Runtime Compatibility Plan
 
@@ -3142,11 +3159,11 @@ Goal: imported MUGEN-style packages execute more KFM/Common1-authored routes wit
 
 Build sequence:
 
-1. Tighten one Common1 guard/fall/recovery route with controller order, actor frame, velocity, and blocked-claim evidence.
-2. Promote one parser-only or no-crash controller only when semantics are small enough to type or safely no-op.
-3. Add required trace gates before broad claims.
-4. Mirror synthetic gates with private KFM fixture gates when local fixtures exist.
-5. Keep helpers, custom states, throws, teams, and screenpacks as explicit blocked scope until separate gates exist.
+1. Preserve authored-versus-omitted HitDef p1/p2 values and add a minimal profile/default-source policy before contact mutation.
+2. Apply static direct player/helper HitDef p1/p2 priorities through the MUGEN 1.1 policy with required trace evidence.
+3. Prove character override versus `stcommon` source precedence, then separately prove the hard guard phase.
+4. Tighten one remaining guard/fall/recovery or post-KO route only with exact controller/phase evidence.
+5. Keep Projectile p1/p2 inheritance, dynamic values, custom states, throws, teams, and screenpacks as explicit blocked scope until separate gates exist.
 
 Done evidence:
 
@@ -3160,10 +3177,10 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeContactPresentationWorld`, `RuntimeRandomSystem`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeControllerEvaluationContextWorld`, `RuntimeDispatchEvaluationWorld`, `RuntimeTriggerEvaluationWorld`, `RuntimeTriggerGateWorld`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
-2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
-3. Keep checksum drift stable unless the behavior intentionally changes.
-4. Prefer tests around ownership boundaries before adding new runtime features.
+1. Record the actual schedule as `MatchTickSchedule/v0`, including owner and phase diagnostics outside the legacy behavior-checksum projection, without reordering behavior.
+2. Inventory extracted seams by invariant/ownership/deletion test; merge transparent forwarding seams instead of adding more one-callback worlds.
+3. Deepen one cohesive owner only after schedule evidence identifies the mutable store and integration boundary.
+4. Keep checksum drift stable unless the behavior intentionally changes and is separately gated.
 
 Done evidence:
 
@@ -3177,10 +3194,10 @@ Goal: Studio becomes a real workbench, not a decorative dashboard.
 
 Build sequence:
 
-1. Define one shared status contract consumed by Evidence and Build.
-2. Give every blocked/stale/partial/exportable row one primary next action.
-3. Link rows to trace/report/runtime/project evidence.
-4. Keep visible states honest: no fake green exports.
+1. Keep the shared Build/Evidence Trust Chain and package/source drilldowns stable; they are closed gates.
+2. Add deeper trace/asset/gate/report destination focus without duplicating status rows.
+3. Define bounded source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback before the first source-bound state/collision editor; defer undo and migration.
+4. Keep blocked/stale/partial/exportable states and conflict/migration failures honest: no fake green exports.
 
 Done evidence:
 
@@ -3194,7 +3211,7 @@ Goal: generated/native fighters are usable test subjects and future authoring as
 
 Build sequence:
 
-1. Store prompt/source image/sheet path, atlas manifest, contact sheet/GIF, collision/action data, and QA report as one provenance record.
+1. Store origin, ownership/license, input digest, tool/version, prompt/config digest, ordered transforms, output hashes, atlas, collision/action, playtest, and QA as one provenance record.
 2. Surface motion, scale, baseline, and contact-box QA failures.
 3. Regenerate bad source sprites; do not disguise broken motion by atlas cropping.
 
@@ -3210,9 +3227,9 @@ Goal: Ikemen-GO source/docs knowledge improves reporting before runtime executio
 
 Build sequence:
 
-1. Add one recognized unsupported signal family at a time.
-2. Keep ZSS/Lua/rollback/netplay as scanner-only until execution gates exist.
-3. Document every scanner finding as recognized, unsupported, or unknown.
+1. Introduce a VFS/package entry shared by character, stage, system, and screenpack analysis.
+2. Add one stage-only and one system/screenpack-only source-mapped signal family with pinned upstream provenance.
+3. Keep ZSS/Lua/rollback/netplay scanner-only until executable IR and runtime gates exist; classify every finding as recognized, unsupported, or unknown.
 
 Done evidence:
 

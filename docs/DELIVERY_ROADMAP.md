@@ -149,13 +149,13 @@ Exit gate:
 
 | Step | Work package | Evidence that moves project |
 | --- | --- | --- |
-| 1 | R1 Common1 recovery/guard precision | Required trace with named controller/operation order. |
-| 2 | R2 MatchWorld ownership | Focused unit tests plus stable or documented trace checksums. |
-| 3 | R1 FightFX/common presentation | Renderer tests plus `pnpm qa:smoke` screenshots and diagnostics. |
-| 4 | S1 Studio trust chain | Shared status contract plus Studio smoke screenshots. |
-| 5 | A1 generated asset provenance | Prompt/source/atlas/QA/playtest record plus visible fail/pass state. |
-| 6 | I1 IKEMEN scanner expansion | Scanner tests plus explicit blocked-runtime docs. |
-| 7 | M1 shared contract | Boundary proof with no fighting leakage. |
+| 1 | R1 HitDef priority policy | Authored/omitted values survive compilation; named profile defaults are policy-tested. |
+| 2 | R1 direct contact priority | Player/helper hit/guard traces show resolved source and both actor priorities. |
+| 3 | Renderer semantic order | Controlled overlap tests plus `pnpm qa:smoke`, diagnostics and L4 baseline. |
+| 4 | R2 schedule contract | Separate schedule assertion with stable legacy behavior checksums. |
+| 5 | R1 Common1 then guard | Source resolver artifacts first; engine-owned guard-phase trace second. |
+| 6 | S1 source workflow | Identity/conflict/write-reimport/invalidation/rollback smoke; undo/migration deferred. |
+| 7 | A1/I1/M1 later | Permission-aware provenance, package scanner, then a real shared product contract with boundary proof. |
 
 ## Closeout Template
 

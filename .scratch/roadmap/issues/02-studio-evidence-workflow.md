@@ -9,6 +9,7 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 
 ## Next Useful Cuts
 
+- 2026-07-10 queue reconciliation: the shared Build/Evidence Trust Chain contract and package/source-file drilldowns are closed gates. The next Trust Chain work is deeper trace/asset/gate/report destination focus. The broader Studio architecture next is a bounded source identity/fingerprint, external-conflict, write/reimport, invalidation and rollback slice before source-bound state/collision editing; undo and migration are later tasks. `pnpm qa:css:budget` is currently red at the 581,084-byte checkpoint recorded in backlog entry 331; older green CSS metrics below are historical, not the current budget truth.
 - Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: S1 Studio Evidence/Build trust chain.
 - Current visual checkpoint: Studio Evidence desktop surface now uses dense audit-ledger styling for trace summary, QA evidence, persisted trace history, frame deltas, world deltas, and compatibility rows. `pnpm qa:smoke` passed, and `.scratch/qa/qa-smoke/studio-evidence.png` was visually inspected.
 - Current visual checkpoint: Studio Build and Modules desktop surfaces now use dense command-ledger styling for readiness, manifest, contract, and module rows. `pnpm qa:smoke` passed, and `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-modules.png`, and `.scratch/qa/qa-smoke/studio-modules-contracts.png` were visually inspected.

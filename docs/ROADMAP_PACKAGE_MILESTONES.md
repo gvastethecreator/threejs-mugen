@@ -35,12 +35,12 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 | Package | Status | Next proof | Required evidence | Blocked claim |
 | --- | --- | --- | --- | --- |
 | G1 Roadmap control | Active control layer | Keep setup-project, AGENTS, local issues, and roadmap docs synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | Any runtime, Studio, IKEMEN, or modular compatibility score movement. |
-| R1 Runtime compatibility | Active score-moving lane | Add one bounded imported runtime oracle or deepen one Common1/FightFX route. | Required `pnpm qa:trace` artifact or focused runtime test. | Full CNS VM, exact tick-order parity, helpers/custom states/teams, screenpacks. |
-| R2 Runtime ownership | Active debt-reduction lane | Move one mutable behavior behind a named world/system boundary with stable traces. | Focused system tests; trace stability or documented checksum drift. | Claiming parity from extraction alone. |
-| S1 Studio trust chain | Active product lane | Evidence and Build consume one shared status and next-action contract. | `pnpm qa:smoke` plus visual inspection using real evidence rows. | Decorative dashboard states, fake green exports, editing workflows without persistence. |
-| A1 Generated assets | Planned/active support lane | Store prompt/source/atlas/QA/collision/playtest provenance as one record. | Asset QA record plus visual QA when shown in runtime or Studio. | Imported MUGEN compatibility credit. |
-| I1 IKEMEN scanner | Active scanner-only lane | Classify one more Ikemen-GO signal as recognized, unsupported, or unknown. | Focused scanner tests and blocked runtime wording. | ZSS/Lua/runtime execution, rollback, netplay, IKEMEN system parity. |
-| M1 Modular boundary | Guarded architecture lane | Prove one shared contract has no fighting-specific leakage. | `pnpm check:boundaries` or focused boundary tests. | Platformer/runtime SDK claims before fighting contracts stay stable. |
+| R1 Runtime compatibility | Active evidence lane | Preserve HitDef p1/p2 authored presence/profile defaults, then gate static direct player/helper contact. | Focused policy/compiler/combat tests plus required traces. | Score movement from this bounded gate, Projectile/dynamic priority, full CNS VM, exact tick-order parity, teams/screenpacks. |
+| R2 Runtime ownership | Active debt-reduction lane | Add `MatchTickSchedule/v0` diagnostics outside legacy behavior checksums before changing order or extracting more seams. | Focused schedule test, separate schedule assertion, stable behavior checksums. | Claiming parity from schedule evidence alone. |
+| S1 Studio source workflow | Active product lane | Shared Trust Chain/package-source drilldowns stay stable while source identity/conflict/write-reimport/invalidation/rollback becomes the next bounded contract. | Model/service tests plus `pnpm qa:smoke` and visual inspection using real evidence rows. | Undo/migration, decorative dashboard states, fake green exports, editing workflows without persistence. |
+| A1 Generated assets | Planned/active support lane | Validate permission-aware, content-addressed origin/input/tool/transform/output provenance. | Asset validator proof plus visual QA when shown in runtime or Studio. | Imported MUGEN compatibility credit or third-party permission. |
+| I1 IKEMEN scanner | Active scanner-only lane | Add versioned package-level character/stage/system/screenpack analysis. | Focused scanner tests, report snapshot, blocked runtime wording. | ZSS/Lua/runtime execution, rollback, netplay, IKEMEN system parity. |
+| M1 Modular boundary | Guarded later architecture lane | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Focused contract/boundary tests plus stable fighting gates. | Platformer/runtime SDK claims before fighting contracts stay stable. |
 
 ## Milestone Exit Gates
 
@@ -3109,12 +3109,15 @@ R2 RuntimeGuardWorld ownership extraction
 Default next implementation slice after docs/setup work:
 
 ```txt
-R1 Common1/FightFX precision
-  -> move one guard/fall/recovery or FightFX/common route beyond current bounded source-frame plus selected-frame/multi-frame AIR evidence
-  -> prefer deeper VM loop order, broader fixture-backed confirmation, or exact visible package presentation evidence
+R1/renderer direct HitDef contact sprite priority
+  -> preserve authored vs omitted p1sprpriority/p2sprpriority in direct HitDef/current-move data
+  -> resolve defaults through a named policy; unknown/IKEMEN cannot inherit MUGEN silently
+  -> apply static player/helper values after accepted hit or guard through MUGEN 1.1 policy
+  -> trace resolved source and both actor priorities before adapting them to Three.js order
+  -> defer Projectile inheritance, dynamic values, IKEMEN normative behavior, equal ties, Explod ontop, and score movement
 ```
 
-Alternate next slice: R2 `MatchWorld` ownership around deeper helper VM boundaries, helper-owned combat/effect ordering, target ownership, or presentation effects if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
+Follow-up renderer slice: a semantic presentation-order key plus deterministic player/effect/stage overlap under a controlled transparency/depth policy. Alternate architecture slice: `MatchTickSchedule/v0` phase stamps with no behavior drift. See `docs/NEXT_BUILD_ROADMAP.md` for the ordered queue.
 
 ## Slice Selection Guardrails
 
@@ -3260,9 +3263,9 @@ Current closed gates that must not be reselected as "next":
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
-1. R1 Common1 recovery/guard controller-loop precision.
-2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus selected-frame/multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned combat/contact, helper-bound effect mutation/timing, effect/combat ordering, deeper target ownership, or the next non-`RuntimeContactPresentationWorld` mutable boundary with stable or documented trace behavior.
+1. R1 HitDef priority authored-presence/profile policy, then static direct player/helper contact semantics.
+2. Renderer semantic presentation order and controlled overlap proof.
+3. R2 `MatchTickSchedule/v0` diagnostics outside legacy behavior checksums before ownership or order changes.
 
 ## Package Closeout Contract
 

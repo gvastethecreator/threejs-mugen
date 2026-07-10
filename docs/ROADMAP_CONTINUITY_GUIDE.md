@@ -43,19 +43,24 @@ The project is not currently trying to claim full MUGEN or IKEMEN parity. It is 
 
 ## Next Useful Runtime Gates
 
-Latest closed R1/R2 slice: shared combat emits an explicit received-hit sequence and browser audio uses it for one-shot actor-local channel `0` voice cancellation. Wayfinder ticket 018 owns the next bounded runtime gap.
+Selected next R1/renderer sequence: first preserve authored-versus-omitted direct `HitDef p1sprpriority` / `p2sprpriority` behind a minimal profile/default-source policy; then apply static player/helper values on accepted hit and guard through the MUGEN 1.1 policy and trace resolved source before Three.js adaptation. Projectile inheritance, dynamic values, IKEMEN normative behavior, equal ties, stage/effect interleaving, `Explod ontop`, score movement, and parity remain blocked. Proposed ADR 0002 must be adopted or replaced before runtime mutation.
 
-Latest closed R1/R2 slice: browser audio numbered channels are actor-local, preventing matching channel numbers from cross-interrupting between runtime actors while preserving global `StopSnd -1`. Wayfinder ticket 017 owns the next bounded runtime gap.
+Selected next R2 architecture gate: version the actual controller/movement/animation/combat schedule as `MatchTickSchedule/v0`; keep diagnostics outside the legacy behavior-checksum projection and assert schedule separately. Do not continue extracting transparent callback wrappers without an ownership or deletion rationale.
 
-Latest closed R1 slice: five required first-generation helper-local direct HitDef/persistence traces now resolve helper-local contact sound refs and record owner-attributed typed `audio:playsnd`, with fail-closed rejection coverage. Wayfinder ticket 016 owns selection of the next bounded runtime gap; exact playback, broader ownership, and renderer claims remain outside this slice.
+Historical closed R1/R2 slice: shared combat emits an explicit received-hit sequence and browser audio uses it for one-shot actor-local channel `0` voice cancellation. Its Wayfinder 018 selector is superseded by current ticket 024.
+
+Historical closed R1/R2 slice: browser audio numbered channels are actor-local, preventing matching channel numbers from cross-interrupting between runtime actors while preserving global `StopSnd -1`. Its Wayfinder 017 selector is superseded by current ticket 024.
+
+Historical closed R1 slice: five required first-generation helper-local direct HitDef/persistence traces resolve helper-local contact sound refs and record owner-attributed typed `audio:playsnd`, with fail-closed rejection coverage. Its Wayfinder 016 selector is superseded by current ticket 024; exact playback, broader ownership, and renderer claims remain outside that slice.
 
 These are good next implementation slices because they can be proven without pretending to finish the full VM:
 
-- Add one missing Common1 guard/fall/recovery oracle that records exact controller/operation order.
-- Promote one currently parser-only or scanner-only controller into a typed no-crash runtime operation when semantics are simple.
-- Deepen `MatchWorld` ownership around helper lifecycle, target ownership, or presentation effects.
-- Add one trace gate for a controller family that currently has only unit-level proof.
-- Improve FightFX/common presentation only if the result can be seen in smoke diagnostics or trace metadata.
+- Preserve authored HitDef p1/p2 presence and profile default source before adding contact mutation.
+- Add static player/helper direct contact priority with required semantic traces.
+- Follow it with a controlled renderer overlap oracle, keeping tie and `ontop` behavior blocked.
+- Version the actual match schedule before changing or further splitting it.
+- Prove Common1 source precedence first, then hard guard order as a separate fact.
+- Close one post-KO timeline slice or one deeper Trust Chain destination only after its dependency above is green.
 
 Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack parity until the smaller routes above stay green.
 

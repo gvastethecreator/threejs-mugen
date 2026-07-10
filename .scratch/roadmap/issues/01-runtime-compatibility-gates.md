@@ -7,6 +7,25 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Next Proposed Quality Sequence - HitDef Priority Policy And Contact
+
+Status: ready-for-agent
+
+Date: 2026-07-10
+
+Quality contract:
+
+- Baseline: actor `spritePriority` already reaches runtime snapshots, traces, diagnostics, and player rendering, but direct HitDef compilation/current-move data has no `p1sprpriority` or `p2sprpriority`; the compile context is profile-blind and current helper combat reuses shared direct-combat mutation.
+- Dependency 1: preserve each static p1/p2 value as authored or omitted through compilation and add a minimal contact policy carrying compatibility profile plus resolved source. Do not materialize global defaults during compilation.
+- Target: through the explicit MUGEN 1.1 policy, resolve omitted P1 = 1 and P2 = 0 and mutate both contact actors only after accepted direct player or current first-generation helper hit/guard.
+- Architecture boundary: keep contact draw priority separate from `RuntimeDirectCombatWorld.resolvePriorityClash` attack collision priority and separate from Three.js z/render-order/material policy.
+- Profile boundary: the repo-pinned Ikemen GO snapshot shows sentinel initialization and explicit-only P1 application; intent is unknown. Unknown/IKEMEN policy must preserve current priority or report unsupported rather than silently receive MUGEN defaults. Record the observed divergence for the future parameter capability schema.
+- Likely systems: `src/mugen/compiler/ControllerOps.ts`, `src/mugen/runtime/demoFighters.ts`, `src/mugen/runtime/HitDefSystem.ts`, `src/mugen/runtime/DirectCombatSystem.ts`, current helper combat bridge, focused compiler/policy/player/helper-combat tests, and runtime trace presets.
+- Acceptance: explicit and omitted values remain distinguishable; resolved source is visible; hit and guard apply both actor priorities on player and helper direct routes; whiff, eligibility reject, reversal miss, and non-contact paths leave them unchanged.
+- Evidence: focused compiler/policy/direct/helper-combat tests plus one player and one helper required trace with resolved source and before/after actor priority. Renderer proof is a separate follow-up gate.
+- Out of scope: Projectile inheritance, legacy alias policy, dynamic expressions, IKEMEN normative default execution, semantic clamping without an oracle, equal ties, stage/effect ordering, `Explod ontop`, L4/L5 renderer parity, and score movement.
+- References: `docs/research/2026-07-10-daily-roadmap-architecture-audit.md` and proposed `docs/adr/0002-mugen-presentation-order-and-profile-boundaries.md`.
+
 ## Latest Closed Quality Slice - KO Sound and NoKOSnd Handoff
 
 Status: done
@@ -649,7 +668,7 @@ Quality contract:
 
 ## Next Useful Cuts
 
-- Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 KFM/Common1 get-hit/recovery precision, R1 Projectile/FightFX precision, R2 MatchWorld ownership deepening.
+- Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 HitDef authored-presence/profile policy, static direct player/helper contact priority, renderer semantic overlap proof, R2 `MatchTickSchedule/v0`, separate Common1 source and guard-phase oracles, and bounded post-KO flow.
 - Latest focused R1 runtime checkpoint: required `synthetic-imported-const-coordinate.json` checksum `ea879c1b` proves bounded imported State -1 routing can branch on `Const240p(3) = 6`, `Const480p(6) = 6`, and `Const720p(12) = 6` for a 640x480 player localcoord. `pnpm qa:trace` passes 508/508 artifacts, 477 required and 31 optional. Official source checked: Elecbyte Trigger Reference defines `Const240p` / `Const480p` / `Const720p` as player-coordinate width-ratio conversions. Claim allowed: bounded current trigger/controller expressions can evaluate these coordinate conversion functions and nested numeric args. Claim blocked: broad coordinate translation across all controller params, renderer/screenpack viewport ownership, camera animation parity, IKEMEN `config.json` execution, team/simul/helper namespace breadth, score movement, and full viewport parity.
 - Previous focused R1 runtime checkpoint: required `synthetic-imported-config-gamespace.json` checksum `2f3c0a63` proves bounded imported State -1 routing can branch on parsed-config game-space dimensions overriding stage localcoord: `ScreenWidth = 1280`, `ScreenHeight = 720`, `GameWidth = 2560`, and `GameHeight = 1440` at camera zoom `0.5`. `pnpm qa:trace` passes 507/507 artifacts, 476 required and 31 optional. Official source checked: Elecbyte Coordinate Space Notes define `mugen.cfg` `[Config] GameWidth` / `GameHeight` as the game coordinate space, and Elecbyte 1.1 Trigger Reference defines inverse zoom scaling plus non-zooming `ScreenWidth` / `ScreenHeight`. Claim allowed: bounded INI config parsing can carry `[Config] GameWidth` / `GameHeight` into imported stage/system metadata and make current runtime trigger expressions prefer those dimensions over stage localcoord. Claim blocked: broader player-local coordinate translation, renderer/screenpack viewport ownership, camera animation parity, IKEMEN `config.json` execution, team/simul/helper namespace breadth, score movement, and full viewport parity.
 - Previous focused R1 runtime checkpoint: required `synthetic-imported-screenspace.json` checksum `5330bacd` proves bounded imported State -1 routing can branch on `ScreenWidth = 640` and `ScreenHeight = 480` while the same zoom `0.5` route validates `GameWidth = 1280` and `GameHeight = 960`. `pnpm qa:trace` passes 506/506 artifacts, 475 required and 31 optional.

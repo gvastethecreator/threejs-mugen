@@ -45,10 +45,6 @@ button,
 }
 
 @media (hover: hover) and (pointer: fine) {
-  button:hover,
-  .button:hover {
-    border-color: var(--surface-accent);
-  }
 }
 
 button:active,
