@@ -81,6 +81,20 @@ describe("RuntimeTraceArtifact", () => {
     });
     expect(artifact.trace.frames[0]?.delta?.actorChanges.map((change) => change.changes)).toEqual([["spawned"], ["spawned"]]);
     expect(artifact.trace.frames.some((frame) => frame.eventCategories.includes("hit"))).toBe(true);
+    expect(artifact.trace.frames[0]?.tickSchedule).toMatchObject({
+      schema: "MatchTickSchedule/v0",
+      behaviorChecksumProjection: "excluded",
+    });
+    expect(artifact.trace.frames[0]?.tickSchedule?.phaseStamps.length).toBeGreaterThan(0);
+    expect(artifact.diagnostics?.matchTickSchedule).toMatchObject({
+      schema: "MatchTickSchedule/v0",
+      status: "passed",
+      frameCount: script.length,
+      observedBranches: expect.arrayContaining(["active"]),
+      architectureStatuses: expect.arrayContaining(["known-divergence"]),
+      failures: [],
+    });
+    expect(artifact.diagnostics?.matchTickSchedule.phaseCatalog.length).toBeGreaterThan(0);
     expect(artifact.trace.frames.find((frame) => frame.eventCategories.includes("hit"))?.delta?.eventCount).toBeGreaterThan(0);
     expect(artifact.trace.combatReasonCount).toBeGreaterThanOrEqual(1);
     expect(artifact.trace.combatReasons.map((reason) => reason.reason)).toContain("hit");
@@ -170,6 +184,43 @@ describe("RuntimeTraceArtifact", () => {
       "Missing target link: ownerId=p1, actorId=p2, targetId=77, hasBinding=true, minFrames=2, bindingOffsetX=36, bindingOffsetY=-12",
     ]);
     expect(artifact.trace.finalActors).toHaveLength(2);
+  });
+
+  it("fails schedule diagnostics when any trace frame omits its sidecar", () => {
+    const script = expandRuntimeTraceScript([{ label: "idle", frames: 2, p1: [], p2: [] }]);
+    const trace = runRuntimeTrace(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage), script);
+    trace.frames[1]!.tickSchedule = undefined;
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      target: { id: "partial-schedule", label: "Partial schedule", source: "native" },
+      gates: [],
+    });
+
+    expect(artifact.diagnostics?.matchTickSchedule).toMatchObject({
+      status: "failed",
+      frameCount: 1,
+      failures: ["frame 1: schedule missing"],
+    });
+    expect(artifact.status).toBe("failed");
+  });
+
+  it("fails schedule diagnostics when a recorded frame has no phases", () => {
+    const script = expandRuntimeTraceScript([{ label: "idle", frames: 1, p1: [], p2: [] }]);
+    const trace = runRuntimeTrace(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage), script);
+    trace.frames[0]!.tickSchedule!.phases = [];
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      target: { id: "empty-schedule", label: "Empty schedule", source: "native" },
+      gates: [],
+    });
+
+    expect(artifact.diagnostics?.matchTickSchedule.status).toBe("failed");
+    expect(artifact.status).toBe("failed");
+    expect(artifact.diagnostics?.matchTickSchedule.failures).toEqual(
+      expect.arrayContaining(["frame 0: phase inventory was incomplete", "frame 0: required active phases were missing"]),
+    );
   });
 
   it("gates ordered actor-frame sequences from summarized evidence", () => {

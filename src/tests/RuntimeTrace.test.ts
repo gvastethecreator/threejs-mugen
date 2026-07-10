@@ -75,6 +75,25 @@ describe("RuntimeTrace", () => {
     ).toMatchObject({ passed: true, failures: [] });
   });
 
+  it("carries schedule diagnostics without changing behavior checksums", () => {
+    const script = expandRuntimeTraceScript([{ label: "idle", frames: 2, p1: [], p2: [] }]);
+    const baseline = runRuntimeTrace(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage), script, {
+      label: "schedule-checksum-projection",
+    });
+    const diagnosticVariant = runRuntimeTrace(
+      runtimeWithoutRecordedSchedulePhases(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage)),
+      script,
+      { label: "schedule-checksum-projection" },
+    );
+
+    expect(baseline.frames[0]?.tickSchedule?.phases.length).toBeGreaterThan(0);
+    expect(diagnosticVariant.frames[0]?.tickSchedule?.phases).toEqual([]);
+    expect(diagnosticVariant.frames.map((frame) => frame.checksum)).toEqual(
+      baseline.frames.map((frame) => frame.checksum),
+    );
+    expect(diagnosticVariant.checksum).toBe(baseline.checksum);
+  });
+
   it("changes the trace checksum when the replay input path changes", () => {
     const kickTrace = runRuntimeTrace(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage), traceAttackScript(), {
       label: "native-close-kick",
@@ -247,6 +266,20 @@ describe("RuntimeTrace", () => {
 
 function traceAttackScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([{ label: "hold-kick", frames: 16, p1: ["a"], p2: [] }]);
+}
+
+function runtimeWithoutRecordedSchedulePhases(runtime: PlayableMatchRuntime) {
+  const withoutPhases = (snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>) => {
+    if (snapshot.tickSchedule) {
+      snapshot.tickSchedule.phases = [];
+    }
+    return snapshot;
+  };
+
+  return {
+    getSnapshot: () => withoutPhases(runtime.getSnapshot()),
+    step: (...args: Parameters<PlayableMatchRuntime["step"]>) => withoutPhases(runtime.step(...args)),
+  };
 }
 
 function kfmQcfXScript(): RuntimeTraceInputFrame[] {

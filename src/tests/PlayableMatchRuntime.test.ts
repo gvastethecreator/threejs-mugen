@@ -17,6 +17,55 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[1]?.label).toBe("Mira Volt");
     expect(snapshot.stage.floorY).toBe(0);
     expect(snapshot.playing).toBe(true);
+    expect(snapshot.tickSchedule).toMatchObject({
+      schema: "MatchTickSchedule/v0",
+      tick: 0,
+      branch: "idle",
+      phases: [],
+      behaviorChecksumProjection: "excluded",
+    });
+  });
+
+  it("exposes the exact active match phase order with an owner for every phase", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.tickSchedule?.branch).toBe("active");
+    expect(snapshot.tickSchedule?.phases.map((phase) => phase.id)).toEqual([
+      "tick:stamp-input",
+      "frame:start",
+      "branch:hitpause-advance",
+      "branch:pause-check",
+      "active:round-timer",
+      "active:command-buffer",
+      "active:input-control",
+      "active:fighter-advance",
+      "fighter:kinematics",
+      "fighter:animation",
+      "fighter:controllers",
+      "fighter:kinematics",
+      "fighter:animation",
+      "fighter:controllers",
+      "active:post-fighter",
+      "post-fighter:combat",
+      "post-fighter:presentation-effects",
+      "active:round-finish",
+      "tick:restore-superpause-defense",
+    ]);
+    expect(snapshot.tickSchedule?.phases.every((phase) => phase.owner.length > 0)).toBe(true);
+    expect(snapshot.tickSchedule?.phases.filter((phase) => phase.id.startsWith("fighter:")).map((phase) => phase.actorId)).toEqual([
+      "p1",
+      "p1",
+      "p1",
+      "p2",
+      "p2",
+      "p2",
+    ]);
+    expect(snapshot.tickSchedule?.architectureComparison.status).toBe("known-divergence");
+    expect(snapshot.tickSchedule?.snapshotPhases.map(({ id, owner }) => ({ id, owner }))).toEqual([
+      { id: "snapshot:presentation", owner: "RuntimeMatchPresentationSnapshotWorld" },
+      { id: "snapshot:materialize", owner: "RuntimeSnapshotWorld" },
+    ]);
   });
 
   it("preserves configured round timer fixtures across reset", () => {
@@ -1347,6 +1396,15 @@ describe("PlayableMatchRuntime", () => {
 
     expect(snapshot.actors[0]?.runtime.stateNo).toBe(220);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.ChangeState).toBe(2);
+    expect(snapshot.tickSchedule).toMatchObject({
+      branch: "hitpause",
+      phases: [
+        { id: "tick:stamp-input" },
+        { id: "frame:start" },
+        { id: "branch:hitpause-advance" },
+        { id: "tick:restore-superpause-defense" },
+      ],
+    });
   });
 
   it("keeps non-ignorehitpause imported controllers frozen during global hit pause", () => {
@@ -1402,6 +1460,18 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[1]!.runtime.animTime).toBe(p2AnimTimeBefore);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Pause).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["pause:pause"]).toBe(1);
+    expect(snapshot.tickSchedule?.branch).toBe("pause");
+    expect(snapshot.tickSchedule?.phases.map((phase) => phase.id)).toEqual([
+      "tick:stamp-input",
+      "frame:start",
+      "branch:hitpause-advance",
+      "branch:pause-check",
+      "pause:advance",
+      "fighter:kinematics",
+      "fighter:animation",
+      "fighter:controllers",
+      "tick:restore-superpause-defense",
+    ]);
 
     for (let frame = 0; frame < 5; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });

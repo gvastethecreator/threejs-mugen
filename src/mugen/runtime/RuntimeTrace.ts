@@ -18,6 +18,7 @@ import type {
   RoundSnapshot,
   StageSnapshot,
 } from "./types";
+import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
 
 export type RuntimeTraceInputFrame = {
   label?: string;
@@ -199,6 +200,7 @@ export type RuntimeTraceFrame = {
   compatibility?: RuntimeTraceCompatibilityActor[];
   events: RuntimeTraceEvent[];
   combatReasons: RuntimeTraceCombatReason[];
+  tickSchedule?: RuntimeMatchTickSchedule;
   world?: RuntimeTraceWorldSummary;
   checksum: string;
 };
@@ -3253,10 +3255,11 @@ function summarizeTraceSnapshot(
     compatibility: summarizeCompatibility(snapshot.compatibilitySession),
     events,
     combatReasons: summarizeCombatReasons(frameIndex, snapshot.tick, actors, events),
+    ...(snapshot.tickSchedule ? { tickSchedule: structuredClone(snapshot.tickSchedule) } : {}),
     world: summarizeWorld(actorRegistry),
     checksum: "",
   };
-  // World lifecycle evidence is excluded from behavior checksums until MatchWorld owns lifecycle simulation directly.
+  // World lifecycle and schedule diagnostics stay outside the behavior checksum projection.
   frame.checksum = hashStableJson({
     tick: frame.tick,
     input: frame.input,

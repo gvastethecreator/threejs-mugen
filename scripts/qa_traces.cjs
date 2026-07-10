@@ -1,5 +1,24 @@
 const fs = require("fs");
 const path = require("path");
+
+function mergeScheduleCatalog(entries) {
+  const byId = new Map();
+  const definitions = new Map();
+  const conflicts = [];
+  for (const entry of entries) {
+    const definition = JSON.stringify(entry);
+    const previous = definitions.get(entry.id);
+    if (previous !== undefined && previous !== definition) {
+      conflicts.push(`conflicting definition for ${entry.id}`);
+      continue;
+    }
+    definitions.set(entry.id, definition);
+    if (!byId.has(entry.id)) {
+      byId.set(entry.id, entry);
+    }
+  }
+  return { values: [...byId.values()], conflicts };
+}
 const { File } = require("node:buffer");
 
 const DEFAULT_OUT_DIR = ".scratch/qa/trace-gates";
@@ -3288,6 +3307,32 @@ async function main() {
       }
     }
 
+    const scheduleArtifacts = artifacts.map((entry) => {
+      const schedule = entry.artifact.diagnostics?.matchTickSchedule;
+      return {
+        name: entry.name,
+        required: entry.required,
+        status: schedule?.status ?? "unavailable",
+        observedBranches: schedule?.observedBranches ?? [],
+        architectureStatuses: schedule?.architectureStatuses ?? [],
+        frameCount: schedule?.frameCount ?? 0,
+        failures: schedule?.failures ?? ["Artifact omitted MatchTickSchedule/v0 diagnostics"],
+      };
+    });
+    const scheduleDiagnostics = artifacts.flatMap((entry) =>
+      entry.artifact.diagnostics?.matchTickSchedule ? [entry.artifact.diagnostics.matchTickSchedule] : [],
+    );
+    const phaseCatalog = mergeScheduleCatalog(scheduleDiagnostics.flatMap((schedule) => schedule.phaseCatalog));
+    const snapshotPhaseCatalog = mergeScheduleCatalog(
+      scheduleDiagnostics.flatMap((schedule) => schedule.snapshotPhaseCatalog),
+    );
+    const architectureChecks = mergeScheduleCatalog(
+      scheduleDiagnostics.flatMap((schedule) => schedule.architectureChecks),
+    );
+    const catalogConflicts = [...phaseCatalog.conflicts, ...snapshotPhaseCatalog.conflicts, ...architectureChecks.conflicts];
+    const requiredScheduleFailures = scheduleArtifacts.filter(
+      (entry) => entry.required && entry.status !== "passed",
+    );
     const diagnostics = {
       generatedAt: new Date().toISOString(),
       outDir,
@@ -3303,8 +3348,30 @@ async function main() {
         path: path.join(outDir, `${entry.name}.json`),
       })),
       coverage: createTraceCoverage(artifacts, skipped),
+      matchTickSchedule: {
+        schema: "MatchTickSchedule/v0",
+        status: requiredScheduleFailures.length || catalogConflicts.length ? "failed" : "passed",
+        requiredArtifacts: scheduleArtifacts.filter((entry) => entry.required).length,
+        observedBranches: [...new Set(scheduleArtifacts.flatMap((entry) => entry.observedBranches))],
+        architectureStatuses: [...new Set(scheduleArtifacts.flatMap((entry) => entry.architectureStatuses))],
+        phaseCatalog: phaseCatalog.values,
+        snapshotPhaseCatalog: snapshotPhaseCatalog.values,
+        architectureChecks: architectureChecks.values,
+        catalogConflicts,
+        artifacts: scheduleArtifacts,
+      },
       skipped,
     };
+    if (requiredScheduleFailures.length) {
+      failures.push(
+        ...requiredScheduleFailures.map(
+          (entry) => `${entry.name}: MatchTickSchedule/v0 ${entry.status} (${entry.failures.join("; ")})`,
+        ),
+      );
+    }
+    if (catalogConflicts.length) {
+      failures.push(...catalogConflicts.map((conflict) => `MatchTickSchedule/v0 catalog: ${conflict}`));
+    }
     const coverageFailures = validateTraceCoverage(diagnostics.coverage);
     if (coverageFailures.length) {
       diagnostics.coverage.failures = coverageFailures;

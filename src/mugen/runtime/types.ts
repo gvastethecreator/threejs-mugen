@@ -2,6 +2,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenPresentationOrder } from "./PresentationOrder";
+import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
 import type { CommandInputHistorySample } from "./CommandBuffer";
 import type {
   RuntimeHitDefPriorityProfile,
@@ -511,6 +512,7 @@ export type MugenSnapshot = {
   actors: ActorSnapshot[];
   effects?: ActorSnapshot[];
   compatibilitySession?: CompatibilitySessionSnapshot;
+  tickSchedule?: RuntimeMatchTickSchedule;
   logs: string[];
 };
 

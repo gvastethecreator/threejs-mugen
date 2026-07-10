@@ -6,6 +6,12 @@ import type {
   RuntimeTraceInputFrame,
 } from "./RuntimeTrace";
 import { evaluateRuntimeTraceGate } from "./RuntimeTrace";
+import type {
+  RuntimeMatchSnapshotPhase,
+  RuntimeMatchTickArchitectureComparison,
+  RuntimeMatchTickPhase,
+  RuntimeMatchTickSchedule,
+} from "./RuntimeMatchTickScheduleSystem";
 
 type RuntimeTraceArtifactActor = RuntimeTraceFrame["actors"][number];
 type RuntimeTraceArtifactEffect = NonNullable<RuntimeTraceArtifactActor["effect"]>;
@@ -42,6 +48,31 @@ export type RuntimeTraceArtifact = {
   };
   script?: RuntimeTraceInputFrame[];
   gates: RuntimeTraceArtifactGateResult[];
+  diagnostics?: {
+    matchTickSchedule: RuntimeTraceArtifactTickScheduleDiagnostics;
+  };
+};
+
+export type RuntimeTraceArtifactTickScheduleDiagnostics = {
+  schema: "MatchTickSchedule/v0";
+  status: "passed" | "failed" | "unavailable";
+  observedBranches: RuntimeMatchTickSchedule["branch"][];
+  architectureStatuses: RuntimeMatchTickSchedule["architectureComparison"]["status"][];
+  phaseCatalog: Omit<RuntimeMatchTickPhase, "actorId">[];
+  snapshotPhaseCatalog: RuntimeMatchSnapshotPhase[];
+  architectureChecks: RuntimeMatchTickArchitectureComparison["checks"];
+  frameCount: number;
+  failures: string[];
+};
+
+export type RuntimeTraceArtifactTickScheduleFrame = {
+  schema: "MatchTickSchedule/v0";
+  tick: number;
+  branch: RuntimeMatchTickSchedule["branch"];
+  phaseStamps: Pick<RuntimeMatchTickPhase, "id" | "actorId">[];
+  observationScope: RuntimeMatchTickSchedule["observationScope"];
+  architectureStatus: RuntimeMatchTickArchitectureComparison["status"];
+  behaviorChecksumProjection: RuntimeMatchTickSchedule["behaviorChecksumProjection"];
 };
 
 export type RuntimeTraceArtifactGateRequirements = Omit<RuntimeTraceGate, "label">;
@@ -61,6 +92,7 @@ export type RuntimeTraceArtifactFrameSummary = {
   stage?: RuntimeTraceFrame["stage"];
   round?: RuntimeTraceFrame["round"];
   world?: RuntimeTraceFrame["world"];
+  tickSchedule?: RuntimeTraceArtifactTickScheduleFrame;
   eventCategories: RuntimeTraceFrame["events"][number]["category"][];
   combatReasons: RuntimeTraceFrame["combatReasons"][number]["reason"][];
   delta?: RuntimeTraceArtifactFrameDelta;
@@ -106,7 +138,9 @@ export type CreateRuntimeTraceArtifactInput = {
 
 export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInput): RuntimeTraceArtifact {
   const gateResults = input.gates.map((gate) => evaluateRuntimeTraceGate(input.trace, gate));
-  const status: RuntimeTraceArtifactStatus = gateResults.every((gate) => gate.passed) ? "passed" : "failed";
+  const scheduleDiagnostics = summarizeTickScheduleDiagnostics(input.trace);
+  const status: RuntimeTraceArtifactStatus =
+    gateResults.every((gate) => gate.passed) && scheduleDiagnostics.status !== "failed" ? "passed" : "failed";
   return {
     schemaVersion: "runtime-trace-artifact/v0",
     generatedAt: input.generatedAt ?? new Date().toISOString(),
@@ -215,6 +249,9 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
       },
     })),
+    diagnostics: {
+      matchTickSchedule: scheduleDiagnostics,
+    },
   };
 }
 
@@ -238,10 +275,102 @@ function summarizeArtifactFrame(frame: RuntimeTraceFrame, previous: RuntimeTrace
     stage: frame.stage ? cloneTraceStage(frame.stage) : undefined,
     round: frame.round ? { ...frame.round } : undefined,
     world: frame.world ? cloneTraceWorld(frame.world) : undefined,
+    tickSchedule: frame.tickSchedule ? summarizeArtifactTickSchedule(frame.tickSchedule) : undefined,
     eventCategories: [...new Set(frame.events.map((event) => event.category))],
     combatReasons: [...new Set(frame.combatReasons.map((reason) => reason.reason))],
     delta: summarizeArtifactFrameDelta(frame, previous),
   };
+}
+
+function summarizeTickScheduleDiagnostics(trace: RuntimeTrace): RuntimeTraceArtifactTickScheduleDiagnostics {
+  const schedules = trace.frames.flatMap((frame) => (frame.tickSchedule ? [frame.tickSchedule] : []));
+  if (!schedules.length) {
+    return {
+      schema: "MatchTickSchedule/v0",
+      status: "unavailable",
+      observedBranches: [],
+      architectureStatuses: [],
+      phaseCatalog: [],
+      snapshotPhaseCatalog: [],
+      architectureChecks: [],
+      frameCount: 0,
+      failures: ["No MatchTickSchedule/v0 frame diagnostics were recorded"],
+    };
+  }
+
+  const failures = trace.frames.flatMap((frame, index) => {
+    const schedule = frame.tickSchedule;
+    const prefix = `frame ${index}`;
+    if (!schedule) {
+      return [`${prefix}: schedule missing`];
+    }
+    const phaseIds = new Set(schedule.phases.map((phase) => phase.id));
+    const requiredBranchPhases =
+      schedule.branch === "active"
+        ? ["active:fighter-advance", "fighter:kinematics", "fighter:animation", "fighter:controllers", "post-fighter:combat"]
+        : schedule.branch === "pause"
+          ? ["pause:advance"]
+          : schedule.branch === "hitpause"
+            ? ["branch:hitpause-advance"]
+            : [];
+    return [
+      ...(schedule.schema === "MatchTickSchedule/v0" ? [] : [`${prefix}: schema mismatch`]),
+      ...(schedule.tick === frame.tick ? [] : [`${prefix}: schedule tick did not match trace tick`]),
+      ...(schedule.behaviorChecksumProjection === "excluded" ? [] : [`${prefix}: checksum projection was not excluded`]),
+      ...(schedule.phases.length > 0 && schedule.phases.every(
+        (phase) => phase.owner.length > 0 && Array.isArray(phase.mutableStores) && phase.sideEffects.length > 0,
+      )
+        ? []
+        : [`${prefix}: phase inventory was incomplete`]),
+      ...(schedule.snapshotPhases.length > 0 && schedule.snapshotPhases.every(
+        (phase) => phase.owner.length > 0 && Array.isArray(phase.mutableStores) && phase.sideEffects.length > 0,
+      )
+        ? []
+        : [`${prefix}: snapshot phase inventory was incomplete`]),
+      ...(requiredBranchPhases.every((phase) => phaseIds.has(phase as RuntimeMatchTickPhase["id"]))
+        ? []
+        : [`${prefix}: required ${schedule.branch} phases were missing`]),
+    ];
+  });
+  const phaseCatalog = uniquePhaseCatalog(schedules);
+  return {
+    schema: "MatchTickSchedule/v0",
+    status: failures.length ? "failed" : "passed",
+    observedBranches: [...new Set(schedules.map((schedule) => schedule.branch))],
+    architectureStatuses: [...new Set(schedules.map((schedule) => schedule.architectureComparison.status))],
+    phaseCatalog,
+    snapshotPhaseCatalog: schedules[0]!.snapshotPhases.map((phase) => structuredClone(phase)),
+    architectureChecks:
+      schedules.find((schedule) => schedule.architectureComparison.checks.length)?.architectureComparison.checks.map((check) => ({
+        ...check,
+      })) ?? [],
+    frameCount: schedules.length,
+    failures,
+  };
+}
+
+function summarizeArtifactTickSchedule(schedule: RuntimeMatchTickSchedule): RuntimeTraceArtifactTickScheduleFrame {
+  return {
+    schema: schedule.schema,
+    tick: schedule.tick,
+    branch: schedule.branch,
+    phaseStamps: schedule.phases.map(({ id, actorId }) => ({ id, ...(actorId ? { actorId } : {}) })),
+    observationScope: schedule.observationScope,
+    architectureStatus: schedule.architectureComparison.status,
+    behaviorChecksumProjection: schedule.behaviorChecksumProjection,
+  };
+}
+
+function uniquePhaseCatalog(schedules: RuntimeMatchTickSchedule[]): Omit<RuntimeMatchTickPhase, "actorId">[] {
+  const catalog = new Map<RuntimeMatchTickPhase["id"], Omit<RuntimeMatchTickPhase, "actorId">>();
+  for (const schedule of schedules) {
+    for (const { actorId: _actorId, ...phase } of schedule.phases) {
+      if (!catalog.has(phase.id)) {
+        catalog.set(phase.id, structuredClone(phase));
+      }
+    }
+  }
+  return [...catalog.values()];
 }
 
 function summarizeArtifactFrameDelta(

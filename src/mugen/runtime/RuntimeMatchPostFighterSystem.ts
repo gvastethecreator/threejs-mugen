@@ -22,6 +22,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   stageTime?: number;
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
+  recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
 };
 
 export class RuntimeMatchPostFighterWorld {
@@ -49,6 +50,7 @@ export class RuntimeMatchPostFighterWorld {
       resolveDirectCombat: combatResolvers.resolveDirectCombat,
       resolveProjectileCombat: combatResolvers.resolveProjectileCombat,
       resolveHelperCombat: combatResolvers.resolveHelperCombat,
+      recordSchedulePhase: input.recordSchedulePhase,
       log: input.log,
     });
   }

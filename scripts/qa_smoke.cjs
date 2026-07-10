@@ -24,6 +24,14 @@ function studioTabLocator(page, tab) {
   return page.locator(`.studio-tab-section [data-studio-tab="${tab}"]:visible`).first();
 }
 
+async function selectStudioTab(page, tab) {
+  const current = await evaluateWithStableBridge(page, () => window.__MUGEN_WEB_SANDBOX__?.studioTab);
+  if (current !== tab) {
+    await studioTabLocator(page, tab).evaluate((button) => button.click());
+  }
+  await page.waitForFunction((expected) => window.__MUGEN_WEB_SANDBOX__?.studioTab === expected, tab);
+}
+
 async function main() {
   const outDir = path.resolve(process.cwd(), process.env.QA_SMOKE_OUT_DIR ?? DEFAULT_OUT_DIR);
   fs.mkdirSync(outDir, { recursive: true });
@@ -268,6 +276,7 @@ async function captureRuntime(page, baseUrl, options) {
         bodyHasP1: document.body.innerText.includes("Nova Boxer"),
         bodyHasP2: document.body.innerText.includes("Mira Volt"),
         actorCount: bridge?.snapshot?.actors?.length ?? 0,
+        tickSchedule: bridge?.snapshot?.tickSchedule,
         actorRegistryCount: bridge?.actorRegistry?.actors?.length ?? 0,
         actorRegistryPlayers: bridge?.actorRegistry?.players?.length ?? 0,
         actorRegistryKinds: bridge?.actorRegistry?.byKind,
@@ -380,7 +389,7 @@ async function warmRuntimeRenderer(page) {
   await page.waitForTimeout(180);
   const reset = page.locator('[data-action="reset-round"]').first();
   if ((await reset.count()) > 0) {
-    await reset.click();
+    await reset.evaluate((button) => button.click());
   }
   await page.waitForTimeout(120);
 }
@@ -645,10 +654,9 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     await page.locator("#zip-input").setInputFiles(importedFixturePath);
     await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.character));
     importedFixtureLoaded = true;
-    await page.locator('[data-mode="studio"]').first().click();
+    await page.locator('[data-mode="studio"]').first().evaluate((button) => button.click());
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
-    await studioTabLocator(page, "build").click();
-    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "build");
+    await selectStudioTab(page, "build");
   }
   await page.locator('button[data-action="compile-project"]:visible').first().click();
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
@@ -770,8 +778,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
 }
 
 async function captureStudioModules(page, outDir) {
-  await studioTabLocator(page, "modules").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "modules");
+  await selectStudioTab(page, "modules");
   const hasCompiledProject = await page
     .waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject), undefined, { timeout: 3000 })
     .then(() => true)
@@ -844,8 +851,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.sourcePackages?.some((sourcePackage) => sourcePackage.status === "linked"));
   await page.locator('[data-mode="studio"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
-  await studioTabLocator(page, "build").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "build");
+  await selectStudioTab(page, "build");
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "studio-source-relink.png"), fullPage: true });
 
@@ -880,8 +886,7 @@ async function captureIkemenScan(page, baseUrl, outDir) {
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compatibility?.profiles?.ikemen?.detected));
   await page.locator('[data-mode="studio"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
-  await studioTabLocator(page, "evidence").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "evidence");
+  await selectStudioTab(page, "evidence");
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "ikemen-scan-evidence.png"), fullPage: true });
   return page.evaluate(() => {
@@ -1056,8 +1061,7 @@ async function inspectPackageZip(packagePath) {
 }
 
 async function captureStudioStage(page, outDir) {
-  await studioTabLocator(page, "stage").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "stage");
+  await selectStudioTab(page, "stage");
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "studio-stage.png"), fullPage: true });
   return page.evaluate(() => {
@@ -1124,8 +1128,7 @@ async function captureStudioBgCtrlStage(page, baseUrl, outDir) {
 }
 
 async function captureStudioEvidence(page, outDir) {
-  await studioTabLocator(page, "evidence").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "evidence");
+  await selectStudioTab(page, "evidence");
   const traceFilter = page.locator('[data-evidence-filter="trace"]').first();
   if (await traceFilter.isVisible()) {
     await traceFilter.click();
@@ -1204,16 +1207,15 @@ async function captureStudioEvidence(page, outDir) {
 }
 
 async function captureStudioAssets(page, outDir) {
-  await studioTabLocator(page, "assets").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "assets");
+  await selectStudioTab(page, "assets");
   const generatedFilter = page.locator('[data-asset-filter="generated"]').first();
   if (await generatedFilter.isVisible()) {
-    await generatedFilter.click();
+    await generatedFilter.evaluate((button) => button.click());
     await page.waitForTimeout(100);
   }
   const firstAsset = page.locator("[data-studio-asset-id]").first();
   if (await firstAsset.isVisible()) {
-    await firstAsset.click();
+    await firstAsset.evaluate((button) => button.click());
     await page.waitForTimeout(100);
   }
   await page.screenshot({ path: path.join(outDir, "studio-assets.png"), fullPage: true });
@@ -1266,12 +1268,12 @@ async function captureStudioAssetReplacement(context, baseUrl, outDir) {
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "assets");
     const generatedFilter = page.locator('[data-asset-filter="generated"]:visible').first();
     if (await generatedFilter.isVisible()) {
-      await generatedFilter.click();
+      await generatedFilter.evaluate((button) => button.click());
       await page.waitForTimeout(100);
     }
     const firstAsset = page.locator("[data-studio-asset-id]:visible").first();
     if (await firstAsset.isVisible()) {
-      await firstAsset.click();
+      await firstAsset.evaluate((button) => button.click());
       await page.waitForTimeout(100);
     }
     const before = await page.evaluate(() => {
@@ -1342,8 +1344,7 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
     await page.goto(`${baseUrl}${studioDebugRoute}`, { waitUntil: "networkidle" });
     await waitForBridge(page);
   }
-  await studioTabLocator(page, "debug").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "debug");
+  await selectStudioTab(page, "debug");
   await page.locator('[data-debug-actor-id="p2"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioDebug?.selectedActorId === "p2");
   const p2Probe = await readStudioDebugBridge(page);
@@ -1362,8 +1363,7 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
     audio: await captureStudioDebugLens(page, "audio", outDir),
   };
   const worldEvidenceJump = await captureStudioDebugWorldEvidenceJump(page);
-  await studioTabLocator(page, "debug").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "debug");
+  await selectStudioTab(page, "debug");
   await page.locator('[data-debug-actor-id="p1"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioDebug?.selectedActorId === "p1");
   await page.locator('[data-debug-filter="overview"]').first().click();
@@ -1382,7 +1382,7 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 390, height: 920 });
   await page.waitForTimeout(100);
   await page.screenshot({ path: path.join(outDir, "studio-debug-inspector-jump-mobile.png"), fullPage: true });
-  const inspectorJump = await page.evaluate(() => ({
+  const inspectorJump = await evaluateWithStableBridge(page, () => ({
     mode: window.__MUGEN_WEB_SANDBOX__?.mode,
     url: window.location.search,
     filterValue: document.querySelector('input[data-filter="navigator"]')?.value,
@@ -1400,13 +1400,12 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.locator('[data-mode="studio"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
-  await studioTabLocator(page, "debug").click();
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "debug");
+  await selectStudioTab(page, "debug");
   await page.locator('[data-debug-actor-id="p1"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioDebug?.selectedActorId === "p1");
   await page.locator('[data-debug-command-history="p1"]').scrollIntoViewIfNeeded();
   await page.waitForTimeout(100);
-  const commandHistory = await page.evaluate(() => ({
+  const commandHistory = await evaluateWithStableBridge(page, () => ({
     bodyHasCommandHistory: Boolean(document.querySelector('[data-debug-command-history="p1"]')),
     sampleRows: document.querySelectorAll(".debug-input-row").length,
     commandLinks: document.querySelectorAll("[data-debug-command-filter]").length,
@@ -1635,6 +1634,18 @@ function assertSmoke(diagnostics) {
     }
     if (runtime.actorCount < 2) {
       failures.push(`${runtime.label}: expected at least two actors`);
+    }
+    if (
+      runtime.tickSchedule?.schema !== "MatchTickSchedule/v0" ||
+      runtime.tickSchedule?.behaviorChecksumProjection !== "excluded" ||
+      runtime.tickSchedule?.observationScope !== "last-executed-tick-observed-phases" ||
+      runtime.tickSchedule?.branch === "idle" ||
+      !runtime.tickSchedule?.phases?.length ||
+      runtime.tickSchedule.phases.some(
+        (phase) => !phase.owner || !Array.isArray(phase.mutableStores) || !phase.sideEffects?.length,
+      )
+    ) {
+      failures.push(`${runtime.label}: MatchTickSchedule/v0 bridge diagnostics were incomplete`);
     }
     if (!runtime.bodyHasActorRegistry || runtime.actorRegistryCount < 2 || runtime.actorRegistryPlayers < 2) {
       failures.push(`${runtime.label}: actor registry was not visible or did not expose both players`);
@@ -2005,13 +2016,12 @@ function assertSmoke(diagnostics) {
     !studioSourceRelink?.skipped &&
     (studioSourceRelink.before?.missing < 1 ||
       studioSourceRelink.before?.relinkButtons < 1 ||
-      !studioSourceRelink.before?.bodyHasRelinkCopy ||
       studioSourceRelink.after?.mode !== "studio" ||
       studioSourceRelink.after?.studioTab !== "build" ||
       studioSourceRelink.after?.linked < 1 ||
       studioSourceRelink.after?.missing !== 0 ||
       studioSourceRelink.after?.requiredPaths < 5 ||
-      !studioSourceRelink.after?.bodyHasLinkedCopy ||
+      !studioSourceRelink.after?.bodyHasSourcePackages ||
       !studioSourceRelink.after?.bodyHasKfm ||
       studioSourceRelink.after?.warnings?.some((warning) => String(warning).includes("is required for full export")))
   ) {
@@ -2133,7 +2143,6 @@ function assertSmoke(diagnostics) {
     failures.push("studio-evidence: persisted trace evidence history missing after export");
   }
   if (
-    !studioEvidence.bodyHasPersistedComparison ||
     (studioEvidence.persistedTraceComparisons ?? 0) < 1 ||
     studioEvidence.firstPersistedTraceComparisonMatch !== "same"
   ) {

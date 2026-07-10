@@ -63,6 +63,11 @@ import { RuntimeMatchPreFacingAssertSpecialWorld } from "./RuntimeMatchPreFacing
 import { RuntimeMatchStepWorld } from "./RuntimeMatchStepSystem";
 import { RuntimeMatchTickBranchWorld } from "./RuntimeMatchTickBranchSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
+import {
+  createIdleMatchTickSchedule,
+  RuntimeMatchTickScheduleRecorder,
+  type RuntimeMatchTickPhaseId,
+} from "./RuntimeMatchTickScheduleSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
@@ -301,6 +306,7 @@ export class PlayableMatchRuntime {
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
+  private lastTickSchedule = createIdleMatchTickSchedule();
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
   private toggles = {
@@ -419,10 +425,13 @@ export class PlayableMatchRuntime {
 
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
+    const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
+    schedule.record("tick:stamp-input");
     matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
 
+    schedule.record("frame:start");
     matchFrameStartWorld.advance({
       p1: this.p1,
       p2: this.p2,
@@ -431,8 +440,9 @@ export class PlayableMatchRuntime {
       updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
     });
 
-    matchTickBranchWorld.advance({
+    const branchResult = matchTickBranchWorld.advance({
       advanceHitPause: () => {
+        schedule.record("branch:hitpause-advance");
         const gameSpace = runtimeStageGameSpace(this.stage);
         const result = matchHitPauseWorld.advanceRuntime<FighterMatchState>({
           hitPauseWorld: this.hitPauseWorld,
@@ -464,21 +474,41 @@ export class PlayableMatchRuntime {
         });
         return { paused: result.paused, result };
       },
-      isMatchPaused: () => this.pauseWorld.current() !== undefined,
-      advancePaused: () => this.advancePausedMatch(input, p1Input, p2Input),
-      advanceActive: () => this.advanceActiveMatch(input, p1Input, p2Input),
+      isMatchPaused: () => {
+        schedule.record("branch:pause-check");
+        return this.pauseWorld.current() !== undefined;
+      },
+      advancePaused: () => {
+        schedule.record("pause:advance");
+        return this.advancePausedMatch(input, p1Input, p2Input, (phase, actorId) => schedule.record(phase, actorId));
+      },
+      advanceActive: () =>
+        this.advanceActiveMatch(input, p1Input, p2Input, (phase, actorId) => schedule.record(phase, actorId)),
     });
+    schedule.record("tick:restore-superpause-defense");
     this.restoreExpiredSuperPauseTargetDefense();
+    this.lastTickSchedule = schedule.complete(branchResult.branch);
   }
 
-  private advanceActiveMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
+  private advanceActiveMatch(
+    input: MatchInput,
+    p1Input: Set<string>,
+    p2Input: Set<string>,
+    recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+  ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
     matchActiveWorld.advance({
-      tickRoundTimer: () => matchRoundWorld.tickTimer(this.round, this.matchRoster().actors),
-      pushNormalCommandBuffers: () =>
-        matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input }),
-      applyInputControl: () =>
-        matchInputControlWorld.apply({
+      tickRoundTimer: () => {
+        recordPhase("active:round-timer");
+        return matchRoundWorld.tickTimer(this.round, this.matchRoster().actors);
+      },
+      pushNormalCommandBuffers: () => {
+        recordPhase("active:command-buffer");
+        return matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
+      },
+      applyInputControl: () => {
+        recordPhase("active:input-control");
+        return matchInputControlWorld.apply({
           p1: this.p1,
           p2: this.p2,
           p1Input,
@@ -487,9 +517,11 @@ export class PlayableMatchRuntime {
           handlePlayerInput: (fighter, fighterInput, opponent) =>
             handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, gameSpace, this.tick, this.inputControlWorld),
           handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
-        }),
-      advanceFighters: () =>
-        matchFighterAdvanceWorld.advancePair({
+        });
+      },
+      advanceFighters: () => {
+        recordPhase("active:fighter-advance");
+        return matchFighterAdvanceWorld.advancePair({
           p1: this.p1,
           p2: this.p2,
           advanceFighter: (fighter, opponent) =>
@@ -513,13 +545,16 @@ export class PlayableMatchRuntime {
               (pauseActor, controller, operation, resolveSoundValue, resolveParams) =>
                 this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
+              recordPhase,
             ),
           applyAutoGuardStart: (defender, attacker) =>
             applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
           isPaused: () => this.pauseWorld.current() !== undefined,
-        }),
-      advancePostFighter: () =>
-        matchPostFighterWorld.advanceRuntime({
+        });
+      },
+      advancePostFighter: () => {
+        recordPhase("active:post-fighter");
+        return matchPostFighterWorld.advanceRuntime({
           p1: this.p1,
           p2: this.p2,
           stage: this.stage,
@@ -554,9 +589,12 @@ export class PlayableMatchRuntime {
               targetWorld: this.targetWorld,
             }),
           log: (line) => this.logs.unshift(line),
-        }),
-      finishRoundIfNeeded: () =>
-        matchRoundWorld.finishIfNeeded({
+          recordSchedulePhase: recordPhase,
+        });
+      },
+      finishRoundIfNeeded: () => {
+        recordPhase("active:round-finish");
+        return matchRoundWorld.finishIfNeeded({
           round: this.round,
           p1: this.p1,
           p2: this.p2,
@@ -565,11 +603,17 @@ export class PlayableMatchRuntime {
           },
           log: (message) => this.logs.unshift(message),
           emitKoSound: (actor) => this.audioWorld.emitKoSound(actor, this.tick),
-        }),
+        });
+      },
     });
   }
 
-  private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
+  private advancePausedMatch(
+    input: MatchInput,
+    p1Input: Set<string>,
+    p2Input: Set<string>,
+    recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+  ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
     matchPausedBridgeWorld.advanceRuntime({
       pausedMatchWorld: this.pausedMatchWorld,
@@ -608,6 +652,7 @@ export class PlayableMatchRuntime {
           (fighter, controller, operation, resolveSoundValue, resolveParams) =>
             this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue, resolveParams),
           (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
+          recordPhase,
         ),
     });
   }
@@ -727,6 +772,7 @@ export class PlayableMatchRuntime {
       p2: this.p2,
       effects: presentationSnapshot.effects,
       compatibilitySession: compatibilityTelemetryWorld.buildSession([...this.matchRoster().actors]),
+      tickSchedule: this.lastTickSchedule,
       logs: this.logs,
     });
   }
@@ -769,6 +815,7 @@ export class PlayableMatchRuntime {
     this.tick = resetState.tick;
     this.frameClock = resetState.frameClock;
     this.playing = resetState.playing;
+    this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
   }
 
   private recordEnvColorEvent(
@@ -853,6 +900,7 @@ function advanceFighter(
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
+  recordSchedulePhase?: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -879,14 +927,19 @@ function advanceFighter(
       });
     },
     advanceKinematics: (actor, preserveImportedStateMoveType) => {
+      recordSchedulePhase?.("fighter:kinematics", actor.id);
       kinematicsWorld.advance(actor, {
         preserveImportedStateMoveType,
         changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
       });
     },
-    advanceAnimation: (actor) => animationWorld.advance(actor),
-    runActiveStateControllers: (actor) =>
-      runActiveStateControllers(
+    advanceAnimation: (actor) => {
+      recordSchedulePhase?.("fighter:animation", actor.id);
+      animationWorld.advance(actor);
+    },
+    runActiveStateControllers: (actor) => {
+      recordSchedulePhase?.("fighter:controllers", actor.id);
+      return runActiveStateControllers(
         actor,
         opponent,
         actorConstraintWorld,
@@ -898,7 +951,8 @@ function advanceFighter(
         tick,
         onPauseController,
         onEnvColorController,
-      ),
+      );
+    },
     advanceImportedGroundRecoveryLanding: (actor) => {
       recoveryWorld.advanceImportedGroundRecoveryLanding(actor, {
         canEnterState: (stateId) => canEnterState(actor, stateId),

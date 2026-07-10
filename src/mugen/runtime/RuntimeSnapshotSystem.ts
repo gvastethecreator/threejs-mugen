@@ -83,6 +83,7 @@ export type RuntimeMatchSnapshotInput = {
   p2: RuntimePlayerSnapshotActor;
   effects: RuntimeEffectSnapshotInput;
   compatibilitySession: MugenSnapshot["compatibilitySession"];
+  tickSchedule?: MugenSnapshot["tickSchedule"];
   logs: string[];
 };
 
@@ -104,6 +105,7 @@ export class RuntimeSnapshotWorld {
       actors: actors.map((actor) => applyShadowVisibility(actor, globalNoShadow)),
       effects: effects.map((effect) => applyShadowVisibility(effect, globalNoShadow)),
       compatibilitySession: input.compatibilitySession,
+      ...(input.tickSchedule ? { tickSchedule: structuredClone(input.tickSchedule) } : {}),
       logs: input.logs.slice(0, 80),
     };
   }

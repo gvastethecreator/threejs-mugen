@@ -25,6 +25,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
   clampToStage: (fighter: TFighter) => void;
   advancePresentationEffects: (fighter: TFighter) => void;
+  recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
   log: (line: string) => void;
 };
 
@@ -49,6 +50,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
+    recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
     log: (line: string) => void;
   };
 
@@ -69,6 +71,7 @@ export class RuntimeMatchInteractionWorld {
     input.applyBindToTarget(p1, p2);
     input.applyBindToTarget(p2, p1);
 
+    input.recordSchedulePhase?.("post-fighter:combat");
     const priorityMessage = input.resolvePriorityClash(p1, p2);
     if (priorityMessage) {
       input.log(priorityMessage);
@@ -82,6 +85,7 @@ export class RuntimeMatchInteractionWorld {
     input.resolveHelperCombat?.(p2, p1);
     input.clampToStage(p1);
     input.clampToStage(p2);
+    input.recordSchedulePhase?.("post-fighter:presentation-effects");
     input.advancePresentationEffects(p1);
     input.advancePresentationEffects(p2);
   }
@@ -125,6 +129,7 @@ export class RuntimeMatchInteractionWorld {
       resolveDirectCombat: input.resolveDirectCombat,
       resolveProjectileCombat: input.resolveProjectileCombat,
       resolveHelperCombat: input.resolveHelperCombat,
+      recordSchedulePhase: input.recordSchedulePhase,
       clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage),
       advancePresentationEffects: (fighter) => effectLifecycleWorld.advancePresentation(fighter),
       log: input.log,
