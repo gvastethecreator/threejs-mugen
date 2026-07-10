@@ -133,6 +133,7 @@ async function main() {
         runtimeDesktop: path.join(outDir, "runtime-desktop.png"),
         runtimeMobile: path.join(outDir, "runtime-mobile.png"),
         studioWorkbench: path.join(outDir, "studio-workbench.png"),
+        studioProjectAuthoring: path.join(outDir, "studio-project-authoring.png"),
         studioWorkbenchTablet: path.join(outDir, "studio-workbench-tablet.png"),
         commandPalette: path.join(outDir, "studio-command-palette.png"),
         studioBuild: path.join(outDir, "studio-build.png"),
@@ -356,7 +357,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   await waitForBridge(page);
   await page.waitForTimeout(500);
   await page.screenshot({ path: path.join(outDir, "studio-workbench.png"), fullPage: true });
-  return evaluateWithStableBridge(page, () => {
+  const baseline = await evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const bodyText = document.body.innerText;
     const bodyTextLower = bodyText.toLowerCase();
@@ -400,6 +401,24 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
       overflowX: document.body.scrollWidth > window.innerWidth + 1,
     };
   });
+  const authoredName = "QA Authored Fight Project";
+  const nameInput = page.locator("[data-project-name]").first();
+  await nameInput.fill(authoredName);
+  await nameInput.press("Tab");
+  await page.locator('[data-action="save-project-local"]').first().click();
+  const saved = await page.evaluate(({ key, authoredName }) => {
+    const raw = localStorage.getItem(key);
+    const entries = raw ? JSON.parse(raw).entries ?? [] : [];
+    return entries.some((entry) => entry.name === authoredName && entry.manifest?.name === authoredName);
+  }, { key: "mugen-web-sandbox:projects:v0", authoredName });
+  await page.reload({ waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await page.locator('[data-stored-project-id="qa-authored-fight-project"]').first().evaluate((element) => element.click());
+  await page.waitForTimeout(600);
+  const reopenedName = await page.locator("[data-project-name]").first().inputValue();
+  const manifestName = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project?.name);
+  await page.screenshot({ path: path.join(outDir, "studio-project-authoring.png"), fullPage: true });
+  return { ...baseline, projectAuthoring: { authoredName, saved, reopenedName, manifestName } };
 }
 
 async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
@@ -1604,6 +1623,13 @@ function assertSmoke(diagnostics) {
     failures.push(`studio-workbench: visible roster atlas was not ready (${workbenchUnreadyAtlases.map((entry) => `${entry.id}:${entry.atlasStatus}`).join(", ")})`);
   }
   if (
+    !studioWorkbench.projectAuthoring?.saved ||
+    studioWorkbench.projectAuthoring.reopenedName !== studioWorkbench.projectAuthoring.authoredName ||
+    studioWorkbench.projectAuthoring.manifestName !== studioWorkbench.projectAuthoring.authoredName
+  ) {
+    failures.push("studio-workbench: authored project name did not survive local save and reopen");
+  }
+  if (
     studioWorkbenchTablet.mode !== "studio" ||
     studioWorkbenchTablet.studioTab !== "workbench" ||
     studioWorkbenchTablet.overflowX ||
@@ -2119,6 +2145,7 @@ function summarizeDiagnostics(diagnostics) {
       consoleHeight: diagnostics.checks.studioWorkbench.consoleHeight,
       navigatorVisible: diagnostics.checks.studioWorkbench.navigatorVisible,
       overflowX: diagnostics.checks.studioWorkbench.overflowX,
+      projectAuthoring: diagnostics.checks.studioWorkbench.projectAuthoring,
     },
     studioWorkbenchTablet: {
       tab: diagnostics.checks.studioWorkbenchTablet.studioTab,

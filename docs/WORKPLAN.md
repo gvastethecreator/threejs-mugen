@@ -11,6 +11,10 @@ Authoritative horizon docs:
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 
+## 2026-07-10 Persistent Studio Project Name Authoring Note
+
+Studio Workbench now edits, validates, saves, reloads, and reopens project names through the existing manifest/localStorage spine. Renames invalidate compiled/package outputs and survive into bridge manifest state. Unit/type/browser smoke evidence is green, including desktop screenshot and 1024px no-overflow gate. No score movement; deeper scene/state/collision editors and durable file-system persistence remain blocked.
+
 ## 2026-07-10 KO Sound and NoKOSnd Handoff Note
 
 The first KO transition now emits common `f:11,0` for each defeated player; time-over emits none and tick-active global `NoKOSnd` suppresses all KO sound. Required trace/final checksums: `bfd5f073` / `33b91196`; aggregate 524/524. No score movement. Post-KO ticks/echoes, configurable motif ownership, `NoKOSlow`, teams, and full round/audio parity remain blocked.

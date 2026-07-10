@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-10 Studio authoring evidence note
+
+Project-name editing now persists through manifest/local save and browser reopen. Score unchanged because practical editor completion still requires scene, state/controller, collision, source-write, migration, and conflict workflows.
+
 ## 2026-07-10 KO sound evidence note
 
 Automatic common KO sound and tick-active `NoKOSnd` suppression are green under focused tests and required trace evidence. Score unchanged because post-KO timing, slowdown, motif ownership, teams, and full round/audio parity remain open.

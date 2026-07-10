@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Latest closed slice: persistent Studio project-name authoring (2026-07-10)
+
+Workbench project names are validated, propagated into manifests, saved locally, and proven across reload/reopen by `qa:smoke`. Build outputs invalidate on rename. Wayfinder 021 owns the next selection; no score movement.
+
 ## Latest closed slice: KO sound and NoKOSnd handoff (2026-07-10)
 
 KO emits common `f:11,0` per defeated player, time-over remains silent, and global `NoKOSnd` suppresses emission. Required trace `bfd5f073` / final `33b91196`; 524/524 green. Wayfinder 020 owns the next selection; no score movement.

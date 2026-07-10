@@ -585,6 +585,37 @@
     margin-top: auto;
   }
 
+  .app-shell.mode-studio .studio-project-name {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .studio-project-name span {
+    color: var(--studio-text-muted);
+    font-size: 10px;
+    font-weight: 750;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-project-name input {
+    width: 100%;
+    min-width: 0;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--studio-line);
+    border-radius: 4px;
+    color: var(--studio-text);
+    background: #080c0f;
+  }
+
+  .app-shell.mode-studio .studio-project-name input:focus-visible {
+    border-color: var(--studio-green);
+    outline: 2px solid rgba(97, 233, 131, 0.2);
+    outline-offset: 1px;
+  }
+
   .app-shell.mode-studio .studio-project-open button {
     min-height: 40px;
   }

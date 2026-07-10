@@ -1,5 +1,7 @@
 ﻿# Supported Features
 
+- Studio project identity authoring is `executed-partial`: project names can be edited, validated, propagated to manifests, saved locally, and reopened after reload. Autosave, conflicts, migrations, file-system writes, and scene/state/collision editors remain unsupported.
+
 - Automatic KO sound is `executed-partial`: first KO transition emits common `f:11,0` per defeated player; time-over emits none; tick-active global `NoKOSnd` suppresses all KO emission. Post-KO echo timing, slowdown, teams, and full round/audio parity remain unsupported.
 
 - Contextual SND selection is `executed-partial`: unprefixed `PlaySnd` uses player SND; unprefixed `HitDef`/`SuperPause` use common prefix `f`; explicit `S`/`F` remain stable; absent common archives fail closed. Full audio ownership/parity remains unsupported.

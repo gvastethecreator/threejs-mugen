@@ -1,5 +1,9 @@
 ﻿# Next Build Roadmap
 
+## Current cursor - Persistent Studio project naming
+
+Project identity authoring is closed. Wayfinder 021 must compare persisted matchup/scene edits, first source-bound state/collision editing, renderer proof, IKEMEN ingestion, and post-KO runtime flow.
+
 ## Current cursor - KO sound handoff
 
 Automatic KO sound and tick-active `NoKOSnd` suppression are closed. Continue with Wayfinder 020, explicitly comparing post-KO round flow against Studio, renderer, IKEMEN, and modular-boundary leverage.

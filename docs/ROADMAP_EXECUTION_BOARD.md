@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - Persistent Studio project naming (2026-07-10)
+
+Validated project-name editing now propagates through manifests and survives local save/reload/reopen under browser smoke. Closed without score movement; continue at Wayfinder 021 and authoring-spine ticket 003.
+
 ## Latest closeout - KO sound handoff (2026-07-10)
 
 Normal/double KO emit common `f:11,0`, time-over is silent, and global `NoKOSnd` suppresses emission. Focused tests and required trace `bfd5f073` are green. Closed without score movement; continue at Wayfinder 020.

@@ -165,6 +165,13 @@ export type StudioMotionQa = {
   errors: string[];
 };
 
+export const MAX_PROJECT_NAME_LENGTH = 80;
+
+export function normalizeProjectName(value: string): string | undefined {
+  const normalized = value.trim().replace(/\s+/g, " ").slice(0, MAX_PROJECT_NAME_LENGTH).trim();
+  return normalized || undefined;
+}
+
 export function buildStudioProjectSummary(input: {
   fighters: DemoFighterDefinition[];
   selectedP1: string;

@@ -5,6 +5,8 @@ import { rooftopDojoStage, trainingStage } from "../mugen/runtime/demoStage";
 import {
   buildGameProjectManifest,
   buildStudioProjectSummary,
+  MAX_PROJECT_NAME_LENGTH,
+  normalizeProjectName,
   parseGameProjectManifestJson,
   relinkGameProjectSourcePackages,
   type GameProjectSourcePackage,
@@ -12,6 +14,12 @@ import {
 } from "../app/StudioModel";
 
 describe("StudioModel", () => {
+  it("normalizes project names for persistent authoring", () => {
+    expect(normalizeProjectName("  My   MUGEN\nProject  ")).toBe("My MUGEN Project");
+    expect(normalizeProjectName("   ")).toBeUndefined();
+    expect(normalizeProjectName("x".repeat(MAX_PROJECT_NAME_LENGTH + 12))).toHaveLength(MAX_PROJECT_NAME_LENGTH);
+  });
+
   it("summarizes the current playable project as a modular studio workspace", () => {
     const summary = buildStudioProjectSummary({
       fighters: demoFighters,

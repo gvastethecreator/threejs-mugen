@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 persistent Studio project naming
+
+- Studio editor: advanced from selection-only controls to a validated persistent authored field with save/reload/reopen proof.
+- Runtime/audio and trace compatibility: unchanged; 524/524 trace baseline retained.
+- Renderer and IKEMEN breadth: unchanged in this slice.
+- Browser QA: desktop/1024px overflow, manifest propagation, local persistence, and reopen are green.
+- Overall score: unchanged; one identity field does not yet satisfy scene/state/collision authoring.
+
 ## Global report - 2026-07-10 KO sound handoff
 
 - Runtime/round/audio: advanced. KO now emits `f:11,0`; double KO and `NoKOSnd` are bounded; time-over stays silent.

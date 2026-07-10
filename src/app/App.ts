@@ -27,6 +27,7 @@ import iconPlayerTrackNext from "@tabler/icons/outline/player-track-next.svg?raw
 import iconRefresh from "@tabler/icons/outline/refresh.svg?raw";
 import iconRoute from "@tabler/icons/outline/route.svg?raw";
 import iconSearch from "@tabler/icons/outline/search.svg?raw";
+import iconDeviceFloppy from "@tabler/icons/outline/device-floppy.svg?raw";
 import iconServer from "@tabler/icons/outline/server.svg?raw";
 import iconShield from "@tabler/icons/outline/shield.svg?raw";
 import iconShieldHalf from "@tabler/icons/outline/shield-half.svg?raw";
@@ -80,6 +81,8 @@ import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
   buildStudioProjectSummary,
+  MAX_PROJECT_NAME_LENGTH,
+  normalizeProjectName,
   parseGameProjectManifestJson,
   relinkGameProjectSourcePackages,
   type GameProjectManifest,
@@ -132,6 +135,7 @@ type StudioIconName =
   | "play"
   | "pause"
   | "route"
+  | "save"
   | "search"
   | "server"
   | "shield"
@@ -174,6 +178,7 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
   play: iconPlayerPlay,
   pause: iconPlayerPause,
   route: iconRoute,
+  save: iconDeviceFloppy,
   search: iconSearch,
   server: iconServer,
   shield: iconShield,
@@ -678,6 +683,7 @@ export class App {
     demoFighters.map((fighter) => [fighter.id, { status: "loading", checkedStates: [], warnings: [], errors: [] }]),
   );
   private importedProjectManifest?: GameProjectManifest;
+  private projectNameOverride?: string;
   private projectImportWarnings: string[] = [];
   private storedProjects: StoredProjectEntry[] = [];
   private lastCompiledProject?: CompiledRuntimeManifest;
@@ -1155,6 +1161,9 @@ export class App {
           target.value = "";
         }
       }
+      if (target instanceof HTMLInputElement && target.dataset.projectName !== undefined) {
+        this.applyProjectName(target.value);
+      }
     });
 
     this.root.addEventListener("input", (event) => {
@@ -1500,6 +1509,25 @@ export class App {
     this.lastProjectBundle = undefined;
   }
 
+  private applyProjectName(value: string): void {
+    const name = normalizeProjectName(value);
+    if (!name) {
+      this.log("Project name must contain at least one visible character");
+      this.updateUi();
+      return;
+    }
+    if (name === this.getStudioProjectSummary().name) {
+      return;
+    }
+    this.projectNameOverride = name;
+    if (this.importedProjectManifest) {
+      this.importedProjectManifest = { ...this.importedProjectManifest, name };
+    }
+    this.invalidateBuildOutputs();
+    this.log(`Project renamed to ${name}`);
+    this.updateUi();
+  }
+
   private applyProjectManifest(manifest: GameProjectManifest, warnings: string[] = []): void {
     const nextWarnings = [...warnings];
     for (const sourcePackage of manifest.sourcePackages) {
@@ -1529,6 +1557,7 @@ export class App {
     }
 
     this.importedProjectManifest = manifest;
+    this.projectNameOverride = manifest.name;
     this.projectImportWarnings = nextWarnings;
     this.invalidateBuildOutputs();
     this.rebuildMatchRuntime();
@@ -2985,12 +3014,16 @@ export class App {
           </div>
           ${this.renderStudioMissionStrip(summary, primaryGate, issueCount, compiled)}
           <div class="studio-project-open">
+            <label class="studio-project-name">
+              <span>Project name</span>
+              <input type="text" data-project-name value="${escapeHtml(summary.name)}" maxlength="${MAX_PROJECT_NAME_LENGTH}" autocomplete="off" aria-label="Project name" />
+            </label>
             <button type="button" data-action="open-project">
               ${tablerIcon("folder", "ui-icon action-icon")}
               <span>Open Project</span>
             </button>
             <button type="button" data-action="save-project-local" aria-label="Save current project locally" title="Save current project locally">
-              <span aria-hidden="true">...</span>
+              ${tablerIcon("save", "ui-icon action-icon")}
             </button>
           </div>
         </div>
@@ -10795,7 +10828,7 @@ export class App {
       atlasStatusByFighter: Object.fromEntries(this.atlasStatusByFighter),
       atlasMotionQaByFighter: Object.fromEntries(this.atlasMotionQaByFighter),
     });
-    return this.importedProjectManifest ? { ...summary, name: this.importedProjectManifest.name } : summary;
+    return this.projectNameOverride ? { ...summary, name: this.projectNameOverride } : summary;
   }
 
   private getGameProjectManifest(summary = this.getStudioProjectSummary()): GameProjectManifest {

@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## Studio project-name authoring gate
+
+Acceptance requires model normalization, empty rejection, 80-character cap, build-output invalidation, manifest propagation, local save, reload/reopen recovery, accessible labeling, and desktop/tablet no-overflow browser proof.
+
 ## KO sound handoff gate
 
 Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.

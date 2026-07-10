@@ -1,5 +1,9 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package closeout - Persistent Studio project naming
+
+Closed under unit, type, browser persistence, screenshot, and responsive-overflow gates. No milestone promotion; this is the first persistent field inside the larger editor package.
+
 ## Latest package closeout - KO sound handoff
 
 Closed under focused contracts and 524/524 trace gates. No milestone promotion; Wayfinder 020 selects the next cross-area package.
