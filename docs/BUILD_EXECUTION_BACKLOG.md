@@ -1,5 +1,41 @@
 # Build Execution Backlog
 
+## 2026-07-10 - Player Projectile GetHitVar sound typed audio
+
+Summary:
+
+- Upgraded all three required player-owned Projectile normal-hit GetHitVar traces to require typed contact audio and FightFX package evidence.
+- Preserved defender Common1 branches `5000 -> 335/337/339`, target links, Projectile ids/lifecycle payloads, and `damage/hittime/xvel/yvel`, `hitid/chainid`, and `hitcount` semantics.
+- Added attacker-side `hitsound = S5,45/46/47`, FightFX `F7002`, shared contact package metadata, and required `audio:playsnd` telemetry through one typed package builder.
+- Official sources checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) for Projectile/HitDef and `hitsound`; [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs/trigger.html) for the gated GetHitVar fields.
+
+Evidence:
+
+- `synthetic-imported-projectile-gethitvar-hit-metadata.json`: trace `8e5df79b`, final `4d078c5d`, `S5,45`.
+- `synthetic-imported-projectile-gethitvar-hitid-chainid.json`: trace `4356b5cb`, final `4b270d45`, `S5,46`.
+- `synthetic-imported-projectile-gethitvar-hitcount.json`: trace `df2619f9`, final `5469bc69`, `S5,47`.
+- Focused red: 3/3 selected tests failed because `audio:playsnd` was absent.
+- Focused green: the same 3 selected tests passed after implementation.
+- `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional.
+- Full regression: `pnpm test` passed 153 files / 1503 tests; `pnpm typecheck`, `pnpm build`, and `pnpm check:boundaries` passed under TypeScript 7.0.2.
+- `git diff --check` passed with CRLF normalization warnings only. Build retains the known Vite chunk-size warning above 500 kB.
+
+Claim allowed:
+
+- Bounded player-owned Projectile normal-hit GetHitVar routes can preserve defender metadata/branch/lifecycle evidence while resolving player `hitsound` refs into typed `audio:playsnd` plus FightFX contact package telemetry.
+
+Claim blocked:
+
+- Exact SND lookup/playback, channel priority/timing/mixing/panning, exact combo/chain arbitration, Projectile/helper `hitcountpersist`, broader helper/redirect/team ownership, renderer parity, score movement, and full Projectile/GetHitVar or audio parity remain blocked.
+
+Global port report:
+
+- Runtime remains at 524/524 trace artifacts, 493 required and 31 optional. This strengthens three existing required R1 traces without score movement. Studio/UI was not touched; IKEMEN remains scanner-first outside bounded INI parsing.
+
+Next:
+
+- Continue with `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/015-next-runtime-gap-after-player-projectile-gethitvar-sound-audio.md`.
+
 ## 2026-07-09 - Player Projectile HitCount sound typed audio
 
 Summary:

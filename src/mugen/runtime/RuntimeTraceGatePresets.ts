@@ -42,6 +42,45 @@ const SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT = {
   "assetFrameOffsetX" | "assetFrameOffsetY" | "assetFrameDuration"
 >;
 
+function syntheticPlayerProjectileHitContactPackage(
+  soundIndex: number,
+): NonNullable<RuntimeTraceGate["requiredContactEffectPackages"]>[number] {
+  return {
+    actorId: "p1",
+    source: "imported",
+    actorKind: "player",
+    contactKind: "hit",
+    sound: {
+      type: "PlaySnd",
+      group: 5,
+      index: soundIndex,
+      stateNo: 200,
+      contactKind: "hit",
+      requireContactId: true,
+    },
+    hitEffect: {
+      kind: "hit",
+      sparkNo: 7002,
+      raw: "F7002",
+      rawPrefix: "F",
+      offsetX: 18,
+      offsetY: -68,
+      assetSource: "fightfx",
+      assetActionId: 7002,
+      assetFrameIndex: 0,
+      ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+      assetSpriteGroup: 8102,
+      assetSpriteIndex: 0,
+      minAssetFrameCount: 2,
+      minAssetTotalDuration: 11,
+      requiredAssetFrameIndices: [0, 1],
+      stateNo: 200,
+      contactKind: "hit",
+      requireContactId: true,
+    },
+  };
+}
+
 export function createNativeHitTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = nativeHitScript();
@@ -14281,6 +14320,10 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
     withProjectile: true,
     projectileGroundVelocity: [4, -2],
     projectileHitAnim: 911,
+    projectileHitSound: "S5,45",
+    projectileHitSpark: "F7002",
+    projectileSparkXy: [18, -68],
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? projectileCombatStage();
   const script = expandRuntimeTraceScript([
@@ -14299,7 +14342,7 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
       label: "Synthetic imported Projectile GetHitVar hit metadata route",
       source: "imported",
       notes: [
-        "Synthetic imported Projectile GetHitVar hit metadata trace proves bounded player-owned Projectile normal-hit damage, hittime, xvel, and yvel values can route defender-owned Common1-style get-hit CNS from state 5000. It does not claim helper-parented Projectile hit metadata, custom-state inheritance, exact hitpause lifetime, multi-hit arbitration, or full MUGEN/IKEMEN Projectile parity.",
+        "Synthetic imported Projectile GetHitVar hit metadata trace proves bounded player-owned Projectile normal-hit damage, hittime, xvel, and yvel values can route defender-owned Common1-style get-hit CNS from state 5000, record typed audio:playsnd telemetry from attacker-side hitsound, and retain FightFX hit-spark package metadata. It does not claim custom-state inheritance, exact hitpause lifetime, exact SND playback/mixing, multi-hit arbitration, or full MUGEN/IKEMEN Projectile parity.",
       ],
     },
     gates: [
@@ -14311,7 +14354,8 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 5000, 335],
         requiredExecutedControllers: ["ChangeState", "Projectile"],
-        requiredExecutedOperations: ["projectile"],
+        requiredExecutedOperations: ["projectile", "audio:playsnd"],
+        requiredContactEffectPackages: [syntheticPlayerProjectileHitContactPackage(45)],
         requiredControllerEventSequences: [
           {
             label: "5000 Projectile normal hit GetHitVar metadata branch order",
@@ -14399,6 +14443,10 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
     projectileChainId: 44,
     projectileGroundVelocity: [4, -2],
     projectileHitAnim: 911,
+    projectileHitSound: "S5,46",
+    projectileHitSpark: "F7002",
+    projectileSparkXy: [18, -68],
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? projectileCombatStage();
   const script = expandRuntimeTraceScript([
@@ -14417,7 +14465,7 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
       label: "Synthetic imported Projectile GetHitVar hitid/chainid route",
       source: "imported",
       notes: [
-        "Synthetic imported Projectile GetHitVar hitid/chainid trace proves bounded player-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving a separate Projectile id. It does not claim exact chain-hit eligibility arbitration, combo accumulation, helper-parented Projectile breadth, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
+        "Synthetic imported Projectile GetHitVar hitid/chainid trace proves bounded player-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving a separate Projectile id, typed audio:playsnd telemetry from attacker-side hitsound, and FightFX hit-spark package metadata. It does not claim exact chain-hit eligibility arbitration, combo accumulation, exact SND playback/mixing, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
       ],
     },
     gates: [
@@ -14429,7 +14477,8 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 5000, 337],
         requiredExecutedControllers: ["ChangeState", "Projectile"],
-        requiredExecutedOperations: ["projectile"],
+        requiredExecutedOperations: ["projectile", "audio:playsnd"],
+        requiredContactEffectPackages: [syntheticPlayerProjectileHitContactPackage(46)],
         requiredControllerEventSequences: [
           {
             label: "5000 Projectile normal hit GetHitVar(hitid/chainid) branch order",
@@ -14517,6 +14566,10 @@ export function createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact(
     projectileHits: 1,
     projectileGroundVelocity: [4, -2],
     projectileHitAnim: 911,
+    projectileHitSound: "S5,47",
+    projectileHitSpark: "F7002",
+    projectileSparkXy: [18, -68],
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? projectileCombatStage();
   const script = expandRuntimeTraceScript([
@@ -14535,7 +14588,7 @@ export function createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact(
       label: "Synthetic imported Projectile GetHitVar hitcount route",
       source: "imported",
       notes: [
-        "Synthetic imported Projectile GetHitVar hitcount trace proves bounded player-owned Projectile normal-hit HitDef numhits metadata can route defender-owned Common1-style get-hit CNS from state 5000 while keeping projhits as Projectile lifetime data. It does not claim exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, helper-parented Projectile breadth, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
+        "Synthetic imported Projectile GetHitVar hitcount trace proves bounded player-owned Projectile normal-hit HitDef numhits metadata can route defender-owned Common1-style get-hit CNS from state 5000 while keeping projhits as Projectile lifetime data, recording typed audio:playsnd telemetry from attacker-side hitsound, and retaining FightFX hit-spark package metadata. It does not claim exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact SND playback/mixing, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
       ],
     },
     gates: [
@@ -14547,7 +14600,8 @@ export function createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200, 5000, 339],
         requiredExecutedControllers: ["ChangeState", "Projectile"],
-        requiredExecutedOperations: ["projectile"],
+        requiredExecutedOperations: ["projectile", "audio:playsnd"],
+        requiredContactEffectPackages: [syntheticPlayerProjectileHitContactPackage(47)],
         requiredControllerEventSequences: [
           {
             label: "5000 Projectile normal hit GetHitVar(hitcount) branch order",

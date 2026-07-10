@@ -1,6 +1,6 @@
 ﻿# Roadmap Package Milestones
 
-Last updated: 2026-07-09
+Last updated: 2026-07-10
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -35,7 +35,16 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required helper Projectile attacker-side HitCount sound typed audio trace gate
+R1 required player Projectile normal-hit GetHitVar sound typed audio trace gates
+-> hit metadata trace/final 8e5df79b / 4d078c5d with S5,45
+-> hitid/chainid trace/final 4356b5cb / 4b270d45 with S5,46
+-> hitcount trace/final df2619f9 / 5469bc69 with S5,47
+-> routes preserve Common1 5000 -> 335/337/339, target links, Projectile lifecycle payloads, and exact gated metadata
+-> gates require Projectile, projectile, audio:playsnd, and FightFX F7002 package telemetry
+-> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+-> no score movement; exact SND playback/channel semantics, combo/chain arbitration, persistence breadth, broader ownership, renderer parity, and full parity remain blocked
+
+Previous R1 required helper Projectile attacker-side HitCount sound typed audio trace gate
 -> synthetic-imported-helper-projectile-hitcount.json trace checksum c8f5dc55 / final checksum e1569fab is required in qa:trace
 -> imported first-generation helper-parented/root-owned Projectile normal-hit attacker-side HitCount route preserves helper 1257 -> 1258 branch evidence, owner/helper target links for target id 8893, helper/projectile lifecycle payloads, helper-local S5,43 sound telemetry, FightFX F7002 package metadata, and shared hit contact package ids
 -> gate requires Helper, Projectile, helper, projectile, audio:playsnd, and hit contact sound/effect telemetry for the helper Projectile HitCount oracle
@@ -971,9 +980,9 @@ Previous R1 required Projectile/helper normal-hit HitCount trace gates
 Previous R1 required Projectile/helper normal-hit GetHitVar hitcount trace gates
   -> RuntimeTraceGatePresets builds synthetic-imported-projectile-gethitvar-hitcount.json and synthetic-imported-helper-projectile-gethitvar-hitcount.json
   -> player/helper routes preserve HitDef numhits separately from Projectile projhits and prove GetHitVar(hitcount) from defender-owned Common1-style states 339/340
-  -> synthetic-imported-projectile-gethitvar-hitcount.json trace checksum fa445b05 / final checksum 0c2197f7 remains required in qa:trace
+  -> synthetic-imported-projectile-gethitvar-hitcount.json trace checksum df2619f9 / final checksum 5469bc69 remains required in qa:trace
   -> synthetic-imported-helper-projectile-gethitvar-hitcount.json trace checksum 40ec4f4b / final checksum 6f15ff30 remains required in qa:trace
-  -> helper route now also requires audio:playsnd, helper-local S5,42, FightFX F7002, and shared contact package telemetry
+  -> both routes require audio:playsnd and FightFX F7002 packages, with player S5,47 and helper-local S5,42
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
   -> remains required; exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, broader helper Projectile normal-hit sound breadth, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
@@ -983,9 +992,9 @@ Previous R1 required Projectile/helper normal-hit GetHitVar hitid/chainid trace 
   -> helper-parented/root-owned Projectile effect id 8891 preserves the same HitDef id 78 and chainID 44, routes P2 through 5000 -> 338, and proves GetHitVar(hitid) = 78, GetHitVar(chainid) = 44, and !GetHitVar(guarded)
   -> player route keeps projectile lifecycle plus target link p1 -> p2 / 78 while effect id stays 77
   -> helper route records owner/helper target links p1 -> p2 / 78 and p1-helper-0 -> p2 / 78 plus helper/projectile lifecycle payload evidence while effect id stays 8891
-  -> synthetic-imported-projectile-gethitvar-hitid-chainid.json trace checksum 80392a85 / final checksum 514a6803 is required in qa:trace
+  -> synthetic-imported-projectile-gethitvar-hitid-chainid.json trace checksum 4356b5cb / final checksum 4b270d45 is required in qa:trace
   -> synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json trace checksum 616e0b2c / final checksum 0aebcc73 is required in qa:trace
-  -> helper route now also requires audio:playsnd, helper-local S5,41, FightFX F7002, and shared contact package telemetry
+  -> both routes require audio:playsnd and FightFX F7002 packages, with player S5,46 and helper-local S5,41
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
   -> no score movement; exact chain-hit eligibility arbitration, combo accumulation, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, broader helper Projectile normal-hit sound breadth, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
@@ -995,9 +1004,9 @@ Previous R1 required Projectile/helper normal-hit GetHitVar damage/hittime/xvel/
   -> helper-parented/root-owned Projectile id 8890 routes P2 through 5000 -> 336 and proves GetHitVar(damage) = 37, GetHitVar(hittime) = 14, GetHitVar(xvel) = 4, GetHitVar(yvel) = -2, and !GetHitVar(guarded)
   -> player route keeps projectile lifecycle plus target link p1 -> p2 / 77
   -> helper route records owner/helper target links p1 -> p2 / 8890 and p1-helper-0 -> p2 / 8890 plus helper/projectile lifecycle payload evidence
-  -> synthetic-imported-projectile-gethitvar-hit-metadata.json trace checksum 6b7ad6e5 / final checksum 36365083 is required in qa:trace
+  -> synthetic-imported-projectile-gethitvar-hit-metadata.json trace checksum 8e5df79b / final checksum 4d078c5d is required in qa:trace
   -> synthetic-imported-helper-projectile-gethitvar-hit-metadata.json trace checksum 28afbcea / final checksum c960b1cf is required in qa:trace
-  -> helper route now also requires audio:playsnd, helper-local S5,40, FightFX F7002, and shared contact package telemetry
+  -> both routes require audio:playsnd and FightFX F7002 packages, with player S5,45 and helper-local S5,40
   -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
   -> remains required; exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, multi-hit arbitration, broader combo/chain/id breadth, custom-state inheritance, throws, teams/simul, broader helper Projectile normal-hit sound breadth, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 

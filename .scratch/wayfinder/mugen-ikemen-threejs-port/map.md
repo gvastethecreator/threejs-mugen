@@ -25,18 +25,19 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next runtime gap after helper Projectile guard sound typed audio](tickets/011-next-runtime-gap-after-helper-projectile-guard-sound-audio.md) - selected and resolved bounded helper-parented/root-owned Projectile normal-hit GetHitVar `hitsound` typed `audio:playsnd` telemetry.
 - [Choose next runtime gap after helper Projectile normal-hit sound typed audio](tickets/012-next-runtime-gap-after-helper-projectile-normal-hit-sound-audio.md) - selected and resolved bounded helper-parented/root-owned Projectile attacker-side HitCount `hitsound` typed `audio:playsnd` telemetry.
 - [Choose next runtime gap after helper Projectile HitCount sound typed audio](tickets/013-next-runtime-gap-after-helper-projectile-hitcount-sound-audio.md) - selected and resolved bounded player-owned Projectile attacker-side HitCount `hitsound` typed `audio:playsnd` telemetry.
+- [Choose next runtime gap after player Projectile HitCount sound typed audio](tickets/014-next-runtime-gap-after-player-projectile-hitcount-sound-audio.md) - selected and resolved the three player-owned Projectile normal-hit GetHitVar sound typed-audio routes.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
-- [Choose next runtime gap after player Projectile HitCount sound typed audio](tickets/014-next-runtime-gap-after-player-projectile-hitcount-sound-audio.md)
+- [Choose next runtime gap after player Projectile GetHitVar sound typed audio](tickets/015-next-runtime-gap-after-player-projectile-gethitvar-sound-audio.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Define renderer parity proof ladder](tickets/004-renderer-parity-proof-ladder.md)
 
 ## Not Yet Specified
 
-- Exact next runtime gap after player-owned and helper-parented/root-owned `Projectile` attacker-side HitCount sound typed audio telemetry.
+- Exact next runtime gap after player-owned and helper-parented/root-owned `Projectile` normal-hit GetHitVar sound typed audio telemetry.
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
 - Visual parity acceptance ladder for axis pivot, draw order, palettes, afterimages, effects, and screenpack/lifebar composition.
 - IKEMEN transition point from scanner/reporting into executable IKEMEN-specific behavior.
