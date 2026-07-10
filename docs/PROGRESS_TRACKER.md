@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-10 KO sound handoff
+
+- Runtime/round/audio: advanced. KO now emits `f:11,0`; double KO and `NoKOSnd` are bounded; time-over stays silent.
+- Trace compatibility: 524/524, including required KO trace `bfd5f073` / final `33b91196`.
+- Studio, renderer, IKEMEN breadth: unchanged in this slice.
+- Toolchain: TypeScript 7.0.2 remains green.
+- Overall score: unchanged pending post-KO timeline and broader round/audio parity.
+
 ## Global report - 2026-07-10 contextual SND banks
 
 - Runtime/audio: context-dependent player/common selection implemented and fail-closed.

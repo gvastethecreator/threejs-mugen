@@ -1,5 +1,9 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package closeout - KO sound handoff
+
+Closed under focused contracts and 524/524 trace gates. No milestone promotion; Wayfinder 020 selects the next cross-area package.
+
 ## Latest package closeout - Contextual SND banks
 
 Closed under focused tests and 524/524 trace gates. No milestone or score promotion; next selection is Wayfinder 019.

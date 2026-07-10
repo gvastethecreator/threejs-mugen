@@ -7,6 +7,15 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - KO Sound and NoKOSnd Handoff
+
+Status: done
+Date: 2026-07-10
+
+- Baseline: KO snapshots existed and `NoKOSnd` was telemetry-only.
+- Result: KO emits common `f:11,0` for defeated players, time-over is silent, and global `NoKOSnd` suppresses emission. Required trace/final checksums are `bfd5f073` / `33b91196`; 524/524 traces pass.
+- Blocked: post-KO echo timeline, `NoKOSlow`, motif ownership, teams, perceptual parity, score movement, and full round/audio parity.
+
 ## Latest Closed Quality Slice - Contextual Player/Common SND Banks
 
 Status: done

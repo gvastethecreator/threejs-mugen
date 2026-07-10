@@ -399,6 +399,16 @@ describe("AudioEventSystem", () => {
     expect(event).toMatchObject({ type: "PlaySnd", group: 10, index: 0, raw: "10,0", soundPrefix: "f" });
   });
 
+  it("emits the common KO sound for the defeated actor", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(5000, 9), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitKoSound(fighter, 150);
+
+    expect(event).toMatchObject({ type: "PlaySnd", group: 11, index: 0, raw: "11,0", soundPrefix: "f", runtimeTick: 150 });
+    expect(fighter.soundEvents).toEqual([event]);
+  });
+
   it("tags direct HitDef sound telemetry with contact package metadata", () => {
     const world = new RuntimeAudioWorld();
     const fighter = { ...actor(200, 6), soundEvents: [] as RuntimeSoundEvent[] };

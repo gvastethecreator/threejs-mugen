@@ -1,5 +1,9 @@
 ﻿# Roadmap Execution Board
 
+## Latest closeout - KO sound handoff (2026-07-10)
+
+Normal/double KO emit common `f:11,0`, time-over is silent, and global `NoKOSnd` suppresses emission. Focused tests and required trace `bfd5f073` are green. Closed without score movement; continue at Wayfinder 020.
+
 ## Latest closeout - Contextual SND banks (2026-07-10)
 
 `PlaySnd` defaults to player SND; `HitDef` and `SuperPause` default to common prefix `f`. Focused tests and 524/524 traces are green. Closed without score movement; continue at Wayfinder 019.

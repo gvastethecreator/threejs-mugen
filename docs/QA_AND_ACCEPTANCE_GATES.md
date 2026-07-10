@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## KO sound handoff gate
+
+Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.
+
 ## Contextual SND-bank gate
 
 Unprefixed `PlaySnd` must remain player-owned; unprefixed `HitDef`/`SuperPause` must use common prefix `f`; explicit prefixes must remain stable; absent common archives must not fall back to player SND.

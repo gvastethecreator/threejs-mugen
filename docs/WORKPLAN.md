@@ -11,6 +11,10 @@ Authoritative horizon docs:
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 
+## 2026-07-10 KO Sound and NoKOSnd Handoff Note
+
+The first KO transition now emits common `f:11,0` for each defeated player; time-over emits none and tick-active global `NoKOSnd` suppresses all KO sound. Required trace/final checksums: `bfd5f073` / `33b91196`; aggregate 524/524. No score movement. Post-KO ticks/echoes, configurable motif ownership, `NoKOSlow`, teams, and full round/audio parity remain blocked.
+
 ## 2026-07-10 Contextual Player/Common SND Bank Note
 
 Unprefixed `PlaySnd` uses player SND; unprefixed `HitDef` and `SuperPause` route to common prefix `f`. Explicit `S`/`F` remain stable. Focused tests prove fail-closed lookup and `pnpm qa:trace` passes 524/524. No score movement.

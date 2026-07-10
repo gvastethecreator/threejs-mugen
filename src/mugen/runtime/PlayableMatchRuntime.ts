@@ -564,6 +564,7 @@ export class PlayableMatchRuntime {
             this.playing = false;
           },
           log: (message) => this.logs.unshift(message),
+          emitKoSound: (actor) => this.audioWorld.emitKoSound(actor, this.tick),
         }),
     });
   }

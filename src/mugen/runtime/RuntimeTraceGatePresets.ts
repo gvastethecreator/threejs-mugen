@@ -1800,10 +1800,11 @@ export function createSyntheticImportedRoundKoTraceArtifact(options: RuntimeTrac
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "HitDef"],
       requiredExecutedOperations: ["hitdef"],
+      requiredSoundEvents: [{ actorId: "p2", type: "PlaySnd", group: 11, index: 0, soundPrefix: "f" }],
       requiredRoundFrames: [{ state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins" }],
       requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 0 }],
       notes: [
-        "Synthetic imported round KO trace proves RuntimeTrace can gate bounded RoundSnapshot KO/winner/message evidence after a lethal imported HitDef. It does not claim exact MUGEN/IKEMEN KO slowdowns, lifebars, round transitions, intros/winposes, teams, or screenpack parity.",
+        "Synthetic imported round KO trace proves a lethal imported HitDef produces bounded RoundSnapshot KO/winner/message evidence and emits common-bank KO sound f:11,0 for the defeated actor. It does not claim echo timing, KO slowdowns, lifebars, round transitions, intros/winposes, teams, or full screenpack/audio parity.",
       ],
     },
   );

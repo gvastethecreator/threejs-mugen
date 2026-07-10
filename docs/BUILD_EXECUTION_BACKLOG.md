@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Latest closed slice: KO sound and NoKOSnd handoff (2026-07-10)
+
+KO emits common `f:11,0` per defeated player, time-over remains silent, and global `NoKOSnd` suppresses emission. Required trace `bfd5f073` / final `33b91196`; 524/524 green. Wayfinder 020 owns the next selection; no score movement.
+
 ## Latest closed slice: contextual player/common SND banks (2026-07-10)
 
 Context-aware defaults are implemented for `PlaySnd`, `HitDef`, and `SuperPause`; focused tests and 524/524 traces pass. Wayfinder 019 owns the next selection. No score movement.

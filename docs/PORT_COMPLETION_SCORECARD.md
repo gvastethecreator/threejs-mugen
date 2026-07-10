@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-10 KO sound evidence note
+
+Automatic common KO sound and tick-active `NoKOSnd` suppression are green under focused tests and required trace evidence. Score unchanged because post-KO timing, slowdown, motif ownership, teams, and full round/audio parity remain open.
+
 ## 2026-07-10 evidence note
 
 Contextual player/common SND routing is green under focused tests and 524/524 traces. Score unchanged because broader ownership and full audio parity remain open.

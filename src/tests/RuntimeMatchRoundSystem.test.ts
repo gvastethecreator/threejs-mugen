@@ -32,6 +32,7 @@ describe("RuntimeMatchRoundWorld", () => {
     const round = new RuntimeRoundSystem();
     const logs: string[] = [];
     let playing = true;
+    const koSounds: string[] = [];
 
     const finish = new RuntimeMatchRoundWorld().finishIfNeeded({
       round,
@@ -41,6 +42,7 @@ describe("RuntimeMatchRoundWorld", () => {
         playing = false;
       },
       log: (message) => logs.unshift(message),
+      emitKoSound: (target) => koSounds.push(target.label),
     });
 
     expect(finish).toEqual({
@@ -50,7 +52,53 @@ describe("RuntimeMatchRoundWorld", () => {
     });
     expect(playing).toBe(false);
     expect(logs).toEqual(["P1 wins - press Reset to fight again"]);
+    expect(koSounds).toEqual(["P2"]);
     expect(round.isOver).toBe(true);
+  });
+
+  it("emits KO sound for both defeated actors on a double KO", () => {
+    const koSounds: string[] = [];
+
+    new RuntimeMatchRoundWorld().finishIfNeeded({
+      round: new RuntimeRoundSystem(),
+      p1: actor("P1", 0),
+      p2: actor("P2", 0),
+      stopPlaying: () => undefined,
+      log: () => undefined,
+      emitKoSound: (target) => koSounds.push(target.label),
+    });
+
+    expect(koSounds).toEqual(["P1", "P2"]);
+  });
+
+  it("suppresses all KO sounds while NoKOSnd is asserted", () => {
+    const koSounds: string[] = [];
+
+    new RuntimeMatchRoundWorld().finishIfNeeded({
+      round: new RuntimeRoundSystem(),
+      p1: actor("P1", 700, { globalFlags: ["nokosnd"] }),
+      p2: actor("P2", 0),
+      stopPlaying: () => undefined,
+      log: () => undefined,
+      emitKoSound: (target) => koSounds.push(target.label),
+    });
+
+    expect(koSounds).toEqual([]);
+  });
+
+  it("does not emit KO sound when the round ends by time over", () => {
+    const koSounds: string[] = [];
+
+    new RuntimeMatchRoundWorld().finishIfNeeded({
+      round: new RuntimeRoundSystem(0),
+      p1: actor("P1", 700),
+      p2: actor("P2", 650),
+      stopPlaying: () => undefined,
+      log: () => undefined,
+      emitKoSound: (target) => koSounds.push(target.label),
+    });
+
+    expect(koSounds).toEqual([]);
   });
 
   it("keeps the round fighting while an actor asserts RoundNotOver", () => {

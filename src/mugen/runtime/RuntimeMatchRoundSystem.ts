@@ -23,6 +23,7 @@ export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor
   p2: TActor;
   stopPlaying: () => void;
   log: (message: string) => void;
+  emitKoSound?: (actor: TActor) => void;
 };
 
 export class RuntimeMatchRoundWorld {
@@ -47,10 +48,18 @@ export class RuntimeMatchRoundWorld {
     if (!finish) {
       return undefined;
     }
+    if (finish.state === "ko" && !hasNoKoSound(options.p1, options.p2)) {
+      if (options.p1.runtime.life <= 0) options.emitKoSound?.(options.p1);
+      if (options.p2.runtime.life <= 0) options.emitKoSound?.(options.p2);
+    }
     options.stopPlaying();
     options.log(finish.message);
     return finish;
   }
+}
+
+function hasNoKoSound(...actors: RuntimeMatchRoundActor[]): boolean {
+  return actors.some((actor) => actor.runtime.assertSpecial?.globalFlags.includes("nokosnd") === true);
 }
 
 function hasTimerFreeze(actor: RuntimeMatchRoundActor): boolean {

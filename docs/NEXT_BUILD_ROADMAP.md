@@ -1,5 +1,9 @@
 ﻿# Next Build Roadmap
 
+## Current cursor - KO sound handoff
+
+Automatic KO sound and tick-active `NoKOSnd` suppression are closed. Continue with Wayfinder 020, explicitly comparing post-KO round flow against Studio, renderer, IKEMEN, and modular-boundary leverage.
+
 ## Current cursor - 2026-07-10
 
 Contextual player/common SND banks are closed. Continue with Wayfinder 019 across runtime, Studio, renderer, and IKEMEN candidates.

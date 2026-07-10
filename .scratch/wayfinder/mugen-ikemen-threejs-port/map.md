@@ -30,12 +30,13 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next runtime gap after helper HitDef persistence sound typed audio](tickets/016-next-runtime-gap-after-helper-hitdef-persistence-sound-audio.md) - selected and resolved actor-scoped numbered Web Audio playback channels.
 - [Choose next runtime gap after actor-scoped audio channels](tickets/017-next-runtime-gap-after-actor-scoped-audio-channels.md) - selected and resolved one-shot actor-local channel `0` voice cancellation on accepted hit.
 - [Choose next runtime gap after voice channel hit cancellation](tickets/018-next-runtime-gap-after-voice-channel-hit-cancellation.md) - selected and resolved contextual player/common SND ownership with fail-closed common lookup.
+- [Choose next runtime gap after contextual SND banks](tickets/019-next-runtime-gap-after-contextual-snd-banks.md) - selected and resolved automatic KO sound plus tick-active global `NoKOSnd` suppression.
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
 ## Frontier
 
-- [Choose next runtime gap after contextual SND banks](tickets/019-next-runtime-gap-after-contextual-snd-banks.md)
+- [Choose next gap after KO sound handoff](tickets/020-next-gap-after-ko-sound-handoff.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Define renderer parity proof ladder](tickets/004-renderer-parity-proof-ladder.md)
 

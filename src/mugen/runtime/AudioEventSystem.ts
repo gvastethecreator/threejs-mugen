@@ -90,6 +90,21 @@ export function pushRuntimeSoundEvent(events: RuntimeSoundEvent[], event: Runtim
 }
 
 export class RuntimeAudioWorld {
+  emitKoSound(actor: RuntimeAudioWorldActor, runtimeTick: number): RuntimeSoundEvent {
+    const event: RuntimeSoundEvent = {
+      type: "PlaySnd",
+      group: 11,
+      index: 0,
+      raw: "11,0",
+      soundPrefix: "f",
+      stateNo: actor.runtime.stateNo,
+      tick: actor.stateElapsed,
+      runtimeTick,
+    };
+    pushRuntimeSoundEvent(actor.soundEvents, event);
+    return event;
+  }
+
   emitController(
     actor: RuntimeAudioWorldActor,
     controller: MugenStateController,
