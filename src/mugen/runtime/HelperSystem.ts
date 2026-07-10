@@ -365,7 +365,7 @@ export function runRuntimeHelperStateControllers(
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "hitdef") {
-      if (activateRuntimeHelperHitDef(helper, controller)) {
+      if (activateRuntimeHelperHitDef(helper, controller, helperHitDefWorld, options)) {
         options.onController?.(helper, controller);
         continue;
       }
@@ -655,6 +655,7 @@ export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
   controller: ControllerIr,
   hitDefWorld: RuntimeHitDefControllerDispatchWorld = helperHitDefWorld,
+  options?: Parameters<typeof resolveHelperNumber>[3],
 ): boolean {
   const runtime = helperRuntimeState(helper);
   const actor = {
@@ -670,6 +671,9 @@ export function activateRuntimeHelperHitDef(
     actor,
     controller,
     frame: helper.action.frames[helper.frameIndex],
+    resolveSoundValue: options
+      ? (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options)
+      : undefined,
   });
   helper.currentMove = actor.currentMove;
   helper.currentMoveLabel = actor.currentMoveLabel;

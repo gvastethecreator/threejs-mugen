@@ -35036,7 +35036,7 @@ export function createSyntheticImportedHelperHitDefTraceArtifact(options: Runtim
       label: "Synthetic imported helper-owned HitDef route",
       source: "mixed",
       notes: [
-        "Synthetic imported helper-owned HitDef trace proves a bounded helper-local micro-VM can activate a direct HitDef, hit P2 through MatchWorld helper combat resolution, emit helper-side contact sound/FightFX spark telemetry, and branch after observing EnemyNear life loss. It does not claim helper-owned target memory, custom-state targets, exact helper hitpause/tick order, teams, or full MUGEN/IKEMEN helper parity.",
+        "Synthetic imported helper-owned HitDef trace proves a bounded helper-local micro-VM can activate a direct HitDef, hit P2 through MatchWorld helper combat resolution, emit helper-side contact sound/FightFX spark telemetry plus owner-attributed typed audio:playsnd evidence, and branch after observing EnemyNear life loss. It does not claim exact SND playback/mixing, helper-owned target memory, custom-state targets, exact helper hitpause/tick order, teams, or full MUGEN/IKEMEN helper parity.",
       ],
     },
     gates: [
@@ -35048,7 +35048,7 @@ export function createSyntheticImportedHelperHitDefTraceArtifact(options: Runtim
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
-        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredExecutedOperations: ["hitdef", "helper", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -35185,7 +35185,7 @@ export function createSyntheticImportedHelperHitDefPersistTraceArtifact(options:
       label: "Synthetic imported helper-owned hitdefpersist route",
       source: "mixed",
       notes: [
-        "Synthetic imported helper-owned hitdefpersist trace proves a helper-local direct HitDef activated immediately before helper ChangeState can remain active in the helper destination StateDef when hitdefpersist = 1, then hit from that destination state. Exact helper hitpause/tick order, helper-owned custom states, target lifetime, teams, and full MUGEN/IKEMEN helper HitDef lifetime parity remain future work.",
+        "Synthetic imported helper-owned hitdefpersist trace proves a helper-local direct HitDef activated immediately before helper ChangeState can remain active in the helper destination StateDef when hitdefpersist = 1, then hit from that destination state with typed audio:playsnd contact evidence. Exact SND playback/mixing, helper hitpause/tick order, helper-owned custom states, target lifetime, teams, and full MUGEN/IKEMEN helper HitDef lifetime parity remain future work.",
       ],
     },
     gates: [
@@ -35197,7 +35197,7 @@ export function createSyntheticImportedHelperHitDefPersistTraceArtifact(options:
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
-        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredExecutedOperations: ["hitdef", "helper", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -35334,7 +35334,7 @@ export function createSyntheticImportedHelperHitCountPersistTraceArtifact(option
       label: "Synthetic imported helper-owned hitcountpersist route",
       source: "mixed",
       notes: [
-        "Synthetic imported helper-owned hitcountpersist trace proves helper-local HitCount and UniqHitCount can persist into the next helper StateDef when hitcountpersist = 1 while MoveHit remains reset. Exact combo UI, multi-target helper counting, projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper hit-count lifetime parity remain future work.",
+        "Synthetic imported helper-owned hitcountpersist trace proves helper-local HitCount and UniqHitCount can persist into the next helper StateDef when hitcountpersist = 1 while MoveHit remains reset and the direct contact records typed audio:playsnd evidence. Exact SND playback/mixing, combo UI, multi-target helper counting, projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper hit-count lifetime parity remain future work.",
       ],
     },
     gates: [
@@ -35346,7 +35346,7 @@ export function createSyntheticImportedHelperHitCountPersistTraceArtifact(option
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
-        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredExecutedOperations: ["hitdef", "helper", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -35483,7 +35483,7 @@ export function createSyntheticImportedHelperMoveHitPersistTraceArtifact(options
       label: "Synthetic imported helper-owned movehitpersist route",
       source: "mixed",
       notes: [
-        "Synthetic imported helper-owned movehitpersist trace proves helper-local MoveContact and MoveHit can persist into the next helper StateDef when movehitpersist = 1 while HitCount and UniqHitCount remain reset. Exact guarded/reversed helper breadth, projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper Move* lifetime parity remain future work.",
+        "Synthetic imported helper-owned movehitpersist trace proves helper-local MoveContact and MoveHit can persist into the next helper StateDef when movehitpersist = 1 while HitCount and UniqHitCount remain reset and the direct contact records typed audio:playsnd evidence. Exact SND playback/mixing, guarded/reversed helper breadth, projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper Move* lifetime parity remain future work.",
       ],
     },
     gates: [
@@ -35495,7 +35495,7 @@ export function createSyntheticImportedHelperMoveHitPersistTraceArtifact(options
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
-        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredExecutedOperations: ["hitdef", "helper", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -35634,7 +35634,7 @@ export function createSyntheticImportedHelperMoveGuardedPersistTraceArtifact(opt
       label: "Synthetic imported helper-owned guarded movehitpersist route",
       source: "mixed",
       notes: [
-        "Synthetic imported helper-owned guarded movehitpersist trace proves helper-local MoveContact and MoveGuarded can persist into the next helper StateDef when movehitpersist = 1 while MoveHit, HitCount, and UniqHitCount remain reset. Exact reversed helper breadth, helper projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper Move* lifetime parity remain future work.",
+        "Synthetic imported helper-owned guarded movehitpersist trace proves helper-local MoveContact and MoveGuarded can persist into the next helper StateDef when movehitpersist = 1 while MoveHit, HitCount, and UniqHitCount remain reset and the guard contact records typed audio:playsnd evidence. Exact SND playback/mixing, reversed helper breadth, helper projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper Move* lifetime parity remain future work.",
       ],
     },
     gates: [
@@ -35646,7 +35646,7 @@ export function createSyntheticImportedHelperMoveGuardedPersistTraceArtifact(opt
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
-        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredExecutedOperations: ["hitdef", "helper", "audio:playsnd"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],

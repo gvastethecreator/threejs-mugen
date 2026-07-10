@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-10 - Helper direct-HitDef persistence sound typed audio
+
+Summary:
+
+- Upgraded five required first-generation helper-local direct HitDef/persistence traces to require owner-attributed typed `audio:playsnd` while preserving helper-side contact sound/FightFX telemetry.
+- Reused the helper-local expression resolver so direct HitDef `hitsound` / `guardsound` values, including `Svar/var` expressions, populate active move metadata.
+- Forwarded accepted helper contact audio operations through `RuntimeHelperCombatWorld` and `RuntimeMatchCombatBridgeWorld`; HitBy rejection remains fail-closed with no sound, effect, or audio operation.
+- Official sources checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) for HitDef sound refs and [Elecbyte CNS Reference](https://www.elecbyte.com/mugendocs/cns.html) for StateDef persistence semantics.
+
+Evidence:
+
+- `synthetic-imported-helper-hitdef.json`: trace `99b55e47`, final `cd02ded0`, `S5,0`.
+- `synthetic-imported-helper-hitdefpersist.json`: trace `61b3ffbf`, final `b005d52a`, `S5,1`.
+- `synthetic-imported-helper-hitcountpersist.json`: trace `ba2a19f4`, final `e9ccdc9c`, `S5,2`.
+- `synthetic-imported-helper-movehitpersist.json`: trace `1e37fd5c`, final `4d6e93b5`, `S5,3`.
+- `synthetic-imported-helper-moveguardedpersist.json`: trace `4b48e97d`, final `c7ce0ae6`, `S6,4`.
+- Focused red failed helper hit/guard callbacks, bridge forwarding, and all five trace requirements; focused green passed 8 helper/bridge/dynamic-resolution tests and 5 selected trace tests.
+- `pnpm qa:trace` passed 524/524 artifacts, 493 required and 31 optional.
+- Full regression passed: `pnpm test` 153 files / 1504 tests; `pnpm typecheck`; `pnpm build`; `pnpm check:boundaries`; `git diff --check` with CRLF normalization warnings only. Build retains the known Vite chunk-size warning above 500 kB.
+
+Claim allowed: these five bounded first-generation helper routes resolve helper-local contact sound refs, retain direct-contact/StateDef persistence behavior, and record owner-attributed typed audio only after accepted hit or guard contact.
+
+Claim blocked: exact SND archive lookup/playback, channel priority, timing, mixing, panning, nested helper ancestry, redirect/team ownership, exact presentation ordering, renderer parity, score movement, and full MUGEN/IKEMEN helper/audio parity.
+
 ## 2026-07-10 - Player Projectile GetHitVar sound typed audio
 
 Summary:

@@ -1,3 +1,4 @@
+import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { CollisionBox } from "../model/CollisionBox";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeDirectCombatActor } from "./DirectCombatSystem";
@@ -69,6 +70,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   getHurtBoxes: (defender: TDefender) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TDefender) => boolean;
   stateHooks: RuntimeHelperCombatStateHooks<TDefender>;
+  recordAudioOperation?: (owner: RuntimeHelperCombatOwner, operation: AudioControllerOp) => void;
   defaultHurtBoxes?: CollisionBox[];
   log?: (line: string) => void;
 };
@@ -153,6 +155,7 @@ export class RuntimeHelperCombatWorld {
         kind: outcome.kind,
         move,
         runtimeTick: input.runtimeTick,
+        recordAudioOperation: (_helperActor, operation) => input.recordAudioOperation?.(input.owner, operation),
       });
       syncHelperFromDirectCombatActor(helper, attacker);
       input.log?.(outcome.message);

@@ -51,6 +51,8 @@
 
 ## SND
 
+- First-generation visual helpers can resolve direct `HitDef hitsound` / `guardsound` expressions through the helper-local expression context, emit helper-side contact sound/FightFX events, and attribute the resulting typed `audio:playsnd` operation to the root player trace. Required helper direct-HitDef/persistence gates cover `S5,0/1/2/3` and guarded `S6,4`; HitBy rejection proves the operation is not emitted without accepted contact. Exact archive playback, channel/mix/timing semantics, nested helper ancestry, redirects, teams, and full helper audio parity remain unsupported.
+
 - Header/version detection for `ElecbyteSnd\0` archives.
 - Linked subfile table parsing with group/index lookup.
 - Embedded RIFF/WAVE payload extraction.

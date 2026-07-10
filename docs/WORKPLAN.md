@@ -10,6 +10,12 @@ Authoritative horizon docs:
 - `CONSTRUCTION_WAVES.md`: practical wave plan with build packages, dependencies, acceptance gates, anti-claims, and next rounds.
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
+
+## 2026-07-10 Helper Direct-HitDef Persistence Sound Typed Audio Note
+
+Current focused R1 runtime checkpoint: five required first-generation helper-local direct HitDef/persistence gates now require owner-attributed typed `audio:playsnd` while preserving helper-side sound/FightFX events and StateDef persistence behavior. Trace/final checksums are `99b55e47` / `cd02ded0`, `61b3ffbf` / `b005d52a`, `ba2a19f4` / `e9ccdc9c`, `1e37fd5c` / `4d6e93b5`, and `4b48e97d` / `c7ce0ae6`. `pnpm qa:trace` passes 524/524 artifacts, 493 required and 31 optional. No score movement; exact SND playback, channel/mix/timing semantics, nested helper/redirect/team ownership, renderer parity, and full helper/audio parity remain blocked.
+
+Quality contract: the helper micro-VM already activated direct HitDefs and emitted helper-side contact presentation, but did not resolve authored helper-local `hitsound`/`guardsound` into the active move or forward typed audio operations to the root player trace. Focused red failed the helper hit/guard callback, bridge forwarding, and five trace requirements; focused green now covers accepted hit, guard, bridge ownership, five required traces, and fail-closed HitBy rejection.
 - `ROADMAP_RELEASE_TARGETS.md`: release-train targets, usable milestone gates, and score-movement rules.
 - `ROADMAP_EXECUTION_BOARD.md`: current queue, package acceptance, and handoff checklist.
 - `WORKPLAN.md`: current execution ledger.

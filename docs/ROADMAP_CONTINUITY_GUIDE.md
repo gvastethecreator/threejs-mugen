@@ -43,6 +43,8 @@ The project is not currently trying to claim full MUGEN or IKEMEN parity. It is 
 
 ## Next Useful Runtime Gates
 
+Latest closed R1 slice: five required first-generation helper-local direct HitDef/persistence traces now resolve helper-local contact sound refs and record owner-attributed typed `audio:playsnd`, with fail-closed rejection coverage. Wayfinder ticket 016 owns selection of the next bounded runtime gap; exact playback, broader ownership, and renderer claims remain outside this slice.
+
 These are good next implementation slices because they can be proven without pretending to finish the full VM:
 
 - Add one missing Common1 guard/fall/recovery oracle that records exact controller/operation order.

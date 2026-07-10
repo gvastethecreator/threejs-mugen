@@ -4,6 +4,8 @@ Last updated: 2026-07-10
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
+Latest evidence note: five required first-generation helper direct-HitDef/persistence routes now carry resolved contact sound refs into owner-attributed typed `audio:playsnd` telemetry while preserving helper-local contact and StateDef persistence evidence. `pnpm qa:trace` remains 524/524. This closes a bounded R1 evidence gap but does not justify score movement because exact SND playback, broader ownership, renderer parity, and corpus breadth remain open.
+
 ## Current Scores
 
 | Horizon | Score | Current truth |

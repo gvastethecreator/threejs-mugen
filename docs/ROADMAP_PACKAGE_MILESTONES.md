@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required helper direct-HitDef persistence sound typed audio trace gates
+-> helper HitDef 99b55e47 / cd02ded0; hitdefpersist 61b3ffbf / b005d52a
+-> hitcountpersist ba2a19f4 / e9ccdc9c; movehitpersist 1e37fd5c / 4d6e93b5
+-> moveguardedpersist 4b48e97d / c7ce0ae6
+-> all five preserve helper contact/persistence behavior and require helper, hitdef, audio:playsnd
+-> pnpm qa:trace passes 524/524; no score movement or exact SND playback claim
+
+Previous checkpoint:
 R1 required player Projectile normal-hit GetHitVar sound typed audio trace gates
 -> hit metadata trace/final 8e5df79b / 4d078c5d with S5,45
 -> hitid/chainid trace/final 4356b5cb / 4b270d45 with S5,46

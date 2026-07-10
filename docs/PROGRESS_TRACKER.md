@@ -28,6 +28,8 @@ Use these files together:
 
 Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SCORECARD.md`, add detailed implementation history to `docs/BUILD_EXECUTION_BACKLOG.md`, and use `.scratch/roadmap/issues/` for next-slice planning.
 
+Latest global report: Runtime/port remains at 524/524 trace artifacts, 493 required and 31 optional. The newest R1 slice upgrades five first-generation helper-local direct HitDef/persistence routes to resolve `S5,0/1/2/3` or `S6,4` and record owner-attributed typed `audio:playsnd`, including a fail-closed no-audio proof on HitBy rejection. TypeScript remains 7.0.2. Studio/UI, IKEMEN scanner, modular-engine boundaries, and published completion scores do not move in this runtime-only cut; no visual smoke is required because no renderer or UI surface changed.
+
 ## Lane Checkpoints
 
 Use this table to avoid mixing unrelated "latest" facts:

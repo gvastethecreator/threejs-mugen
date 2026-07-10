@@ -53,6 +53,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
             `helper:${input.owner.id}:${input.defender.id}:${tagOf(input.targetWorld)}:${tagOf(input.reversalWorld)}:${tagOf(input.stateHooks)}:${input.defaultHurtBoxes?.length ?? 0}`,
           );
           input.getHurtBoxes(input.defender);
+          input.recordAudioOperation?.(input.owner, { kind: "audio", controllerType: "playsnd", value: "S5,1" });
           input.log?.("helper-log");
         },
       } satisfies Pick<RuntimeHelperCombatWorld, "resolveDirect">,
@@ -94,6 +95,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       "log:projectile-log",
       "helper:p1:p2:target-world:reversal:helper-hooks:1",
       "hurt:p2",
+      "audio:p1:S5,1",
       "log:helper-log",
     ]);
   });

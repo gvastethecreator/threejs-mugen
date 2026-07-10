@@ -359,6 +359,33 @@ describe("HelperSystem", () => {
     expect(active.moveType).toBe("A");
   });
 
+  it("resolves helper-local dynamic HitDef sound values into the active move", () => {
+    const active = helper({
+      vars: [5, 7],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              hitsound: "Svar(0),var(1)",
+              guardsound: "S6,var(1)",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({
+      hitSound: "Svar(0),var(1)",
+      hitSoundValue: { rawPrefix: "S", group: 5, index: 7 },
+      guardSound: "S6,var(1)",
+      guardSoundValue: { rawPrefix: "S", group: 6, index: 7 },
+    });
+  });
+
   it("clears active helper reversal moves even when destination state declares hitdefpersist", () => {
     const active = helper({
       stateNo: 1200,

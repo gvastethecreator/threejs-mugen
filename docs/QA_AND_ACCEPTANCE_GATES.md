@@ -2,6 +2,8 @@
 
 This project has two kinds of quality gates: code gates and playable evidence gates. Both matter. Parser tests can prove data behavior; browser screenshots prove that the Three.js/runtime/UI path still works.
 
+Latest runtime acceptance checkpoint: required helper direct-HitDef, `hitdefpersist`, `hitcountpersist`, `movehitpersist`, and `moveguardedpersist` traces require `helper`, `hitdef`, and owner-attributed `audio:playsnd`; checksums are `99b55e47`, `61b3ffbf`, `ba2a19f4`, `1e37fd5c`, and `4b48e97d`. Focused tests also require no typed audio operation after HitBy rejection. This runtime-only cut does not require browser smoke because it changes no visible frontend or renderer surface.
+
 ## Standard End-Of-Round Checks
 
 Run these at the end of a focused implementation round:

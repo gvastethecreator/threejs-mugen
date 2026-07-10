@@ -7,6 +7,19 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - Helper Direct-HitDef Persistence Sound Typed Audio
+
+Status: done
+Date: 2026-07-10
+
+Quality contract:
+
+- Baseline: five required first-generation helper-local direct HitDef/persistence traces proved contact and StateDef persistence behavior but required only `helper` and `hitdef` operations.
+- Target: resolve helper-local `hitsound` / `guardsound`, preserve helper-side sound/FightFX telemetry, and record owner-attributed typed `audio:playsnd` only on accepted contact.
+- Reference: Elecbyte State Controller Reference for HitDef sound refs; CNS Reference for `hitdefpersist`, `hitcountpersist`, and `movehitpersist`.
+- Result: required trace/final checksums `99b55e47` / `cd02ded0`, `61b3ffbf` / `b005d52a`, `ba2a19f4` / `e9ccdc9c`, `1e37fd5c` / `4d6e93b5`, and `4b48e97d` / `c7ce0ae6`; focused accepted hit/guard, bridge ownership, five trace, and HitBy rejection coverage; `pnpm qa:trace` 524/524.
+- Out of scope: exact SND lookup/playback, channel/mix/timing semantics, nested helper/redirect/team ownership, renderer parity, score movement, and full helper/audio parity.
+
 ## Latest Closed Quality Slice - Helper Projectile Normal-Hit GetHitVar Sound Typed Audio
 
 Status: done

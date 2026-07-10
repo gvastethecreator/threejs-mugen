@@ -32,7 +32,12 @@ describe("RuntimeHelperCombatSystem", () => {
     const targetWorld = new RuntimeTargetWorld();
     const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "42", name: '"Assist"' }));
     helper.stateNo = 6000;
-    helper.currentMove = move({ targetId: 7, hitSound: "S5,1", hitSpark: "S7000" });
+    helper.currentMove = move({
+      targetId: 7,
+      hitSound: "S5,1",
+      hitSoundValue: { rawPrefix: "S", group: 5, index: 1 },
+      hitSpark: "S7000",
+    });
     helper.moveTick = 1;
     const defender = defenderActor("p2", "P2", contactWorld, {
       definition: fighterDefinition("imported"),
@@ -40,9 +45,11 @@ describe("RuntimeHelperCombatSystem", () => {
     });
     const logs: string[] = [];
     const stateEntries: string[] = [];
+    const audioOperations: string[] = [];
+    const combatOwner = owner("p1", effectActorWorld, fighterDefinition("imported"));
 
     new RuntimeHelperCombatWorld().resolveDirect({
-      owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
+      owner: combatOwner,
       defender,
       directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
       reversalWorld: new RuntimeReversalWorld(contactWorld),
@@ -53,6 +60,7 @@ describe("RuntimeHelperCombatSystem", () => {
       runtimeTick: 33,
       getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
       stateHooks: stateHooks(stateEntries, [5000]),
+      recordAudioOperation: (actor, operation) => audioOperations.push(`${actor.id}:${operation.value}`),
       log: (line) => logs.push(line),
     });
 
@@ -78,6 +86,7 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(defender.runtime.stateNo).toBe(5000);
     expect(stateEntries).toEqual(["p2:5000:clear"]);
     expect(runtimeMoveContactValue(helper.contact, 6000, "hit")).toBe(0);
+    expect(audioOperations).toEqual(["p1:S5,1"]);
   });
 
   it("routes helper guard hits through guard-state hooks and guard presentation", () => {
@@ -92,6 +101,7 @@ describe("RuntimeHelperCombatSystem", () => {
       guardStun: 6,
       guardPush: 2,
       guardSound: "S6,2",
+      guardSoundValue: { rawPrefix: "S", group: 6, index: 2 },
       guardSpark: "S7001",
     });
     helper.moveTick = 2;
@@ -101,6 +111,7 @@ describe("RuntimeHelperCombatSystem", () => {
       runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
     });
     const stateEntries: string[] = [];
+    const audioOperations: string[] = [];
 
     new RuntimeHelperCombatWorld().resolveDirect({
       owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
@@ -114,6 +125,7 @@ describe("RuntimeHelperCombatSystem", () => {
       runtimeTick: 44,
       getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
       stateHooks: stateHooks(stateEntries, [150]),
+      recordAudioOperation: (actor, operation) => audioOperations.push(`${actor.id}:${operation.value}`),
     });
 
     expect(helper.hasHit).toBe(true);
@@ -125,13 +137,18 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(defender.runtime.stateNo).toBe(150);
     expect(stateEntries).toEqual(["p2:150:clear"]);
     expect(runtimeMoveContactValue(helper.contact, 6100, "guard")).toBe(0);
+    expect(audioOperations).toEqual(["p1:S6,2"]);
   });
 
   it("keeps helper direct combat fail-closed on HitBy rejection", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();
     const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "44", name: '"Denied"' }));
-    helper.currentMove = move({ attr: "S,NA" });
+    helper.currentMove = move({
+      attr: "S,NA",
+      hitSound: "S5,3",
+      hitSoundValue: { rawPrefix: "S", group: 5, index: 3 },
+    });
     helper.moveTick = 1;
     const defender = defenderActor("p2", "P2", contactWorld, {
       runtime: runtimeState({
@@ -141,6 +158,7 @@ describe("RuntimeHelperCombatSystem", () => {
       }),
     });
     const logs: string[] = [];
+    const audioOperations: string[] = [];
 
     new RuntimeHelperCombatWorld().resolveDirect({
       owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
@@ -154,6 +172,7 @@ describe("RuntimeHelperCombatSystem", () => {
       runtimeTick: 55,
       getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
       stateHooks: stateHooks([], [5000]),
+      recordAudioOperation: (actor, operation) => audioOperations.push(`${actor.id}:${operation.value}`),
       log: (line) => logs.push(line),
     });
 
@@ -162,6 +181,7 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(helper.targets).toEqual([]);
     expect(helper.soundEvents).toEqual([]);
     expect(helper.hitEffectEvents).toEqual([]);
+    expect(audioOperations).toEqual([]);
     expect(defender.runtime.life).toBe(100);
   });
 

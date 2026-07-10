@@ -6726,6 +6726,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 971 })]),
     );
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "audio:playsnd"]);
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1222, minAge: 2 },
     ]);
@@ -6821,6 +6823,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 967 })]),
     );
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "audio:playsnd"]);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -6892,6 +6896,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 965 })]),
     );
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "audio:playsnd"]);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -6963,6 +6969,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 964 })]),
     );
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "audio:playsnd"]);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -7048,6 +7056,8 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "audio:playsnd"]);
     expect(evidence?.contactEffectPackages).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

@@ -13,6 +13,18 @@ Docs-only changes here do not move scores.
 
 ## Current Checkpoint
 
+```txt
+R1 required helper direct-HitDef persistence sound typed audio gates
+  -> helper HitDef 99b55e47 / cd02ded0 with S5,0
+  -> hitdefpersist 61b3ffbf / b005d52a with S5,1
+  -> hitcountpersist ba2a19f4 / e9ccdc9c with S5,2
+  -> movehitpersist 1e37fd5c / 4d6e93b5 with S5,3
+  -> moveguardedpersist 4b48e97d / c7ce0ae6 with S6,4
+  -> all five require helper, hitdef, and owner-attributed audio:playsnd evidence
+  -> pnpm qa:trace passes 524/524 artifacts, 493 required and 31 optional
+  -> next selection is Wayfinder 016; no score movement or exact playback claim
+```
+
 Latest project-control truth:
 
 ```txt

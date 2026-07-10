@@ -127,6 +127,7 @@ export class RuntimeMatchCombatBridgeWorld {
           getHurtBoxes: input.getHurtBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           stateHooks: input.helperStateHooks,
+          recordAudioOperation: (_owner, operation) => input.recordAudioOperation?.(attacker, operation),
           defaultHurtBoxes: input.defaultHurtBoxes,
           log: input.log,
         });
