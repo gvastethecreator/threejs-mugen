@@ -149,6 +149,10 @@ export class RuntimePauseWorld {
   private legacyPause?: RuntimeMatchPause;
   private ikemenPause?: RuntimeMatchPause;
   private ikemenSuperPause?: RuntimeMatchPause;
+  private readonly ikemenMoveTimes: Record<RuntimeMatchPause["type"], Map<string, number>> = {
+    Pause: new Map(),
+    SuperPause: new Map(),
+  };
 
   constructor(private readonly profile: RuntimeCompatibilityProfile = "unknown") {}
 
@@ -160,6 +164,8 @@ export class RuntimePauseWorld {
     this.legacyPause = undefined;
     this.ikemenPause = undefined;
     this.ikemenSuperPause = undefined;
+    this.ikemenMoveTimes.Pause.clear();
+    this.ikemenMoveTimes.SuperPause.clear();
   }
 
   snapshot(): RuntimeMatchPauseSnapshot | undefined {
@@ -168,7 +174,21 @@ export class RuntimePauseWorld {
   }
 
   canActorMove(actorId: string): boolean {
-    return canActorMoveDuringPause(this.current(), actorId);
+    const pause = this.current();
+    if (this.profile === "ikemen-go" && pause) {
+      return (this.ikemenMoveTimes[pause.type].get(actorId) ?? 0) > 0;
+    }
+    return canActorMoveDuringPause(pause, actorId);
+  }
+
+  consumeActorMoveTime(actorId: string): void {
+    if (this.profile !== "ikemen-go") return;
+    const pause = this.current();
+    if (!pause) return;
+    const moveTimes = this.ikemenMoveTimes[pause.type];
+    const remaining = Math.max(0, (moveTimes.get(actorId) ?? 0) - 1);
+    moveTimes.set(actorId, remaining);
+    if (pause.actorId === actorId) pause.moveTime = remaining;
   }
 
   canActorBeHit(actorId: string): boolean {
@@ -181,9 +201,13 @@ export class RuntimePauseWorld {
       return this.legacyPause;
     }
     if (this.ikemenSuperPause) {
-      this.ikemenSuperPause = tickMatchPause(this.ikemenSuperPause);
+      this.ikemenSuperPause = tickIkemenPause(this.ikemenSuperPause);
     } else if (this.ikemenPause) {
-      this.ikemenPause = tickMatchPause(this.ikemenPause);
+      this.ikemenPause = tickIkemenPause(this.ikemenPause);
+    }
+    if (!this.ikemenPause && !this.ikemenSuperPause) {
+      this.ikemenMoveTimes.Pause.clear();
+      this.ikemenMoveTimes.SuperPause.clear();
     }
     return this.current();
   }
@@ -199,14 +223,22 @@ export class RuntimePauseWorld {
     if (result.pause) {
       if (this.profile !== "ikemen-go") {
         this.legacyPause = result.pause;
-      } else if (result.pause.type === "SuperPause") {
-        this.ikemenSuperPause = selectIkemenPause(this.ikemenSuperPause, result.pause);
       } else {
-        this.ikemenPause = selectIkemenPause(this.ikemenPause, result.pause);
+        this.ikemenMoveTimes[result.pause.type].set(actor.id, result.pause.moveTime);
+        if (result.pause.type === "SuperPause") {
+          this.ikemenSuperPause = selectIkemenPause(this.ikemenSuperPause, result.pause);
+        } else {
+          this.ikemenPause = selectIkemenPause(this.ikemenPause, result.pause);
+        }
       }
     }
     return result;
   }
+}
+
+function tickIkemenPause(pause: RuntimeMatchPause): RuntimeMatchPause | undefined {
+  pause.remaining = Math.max(0, pause.remaining - 1);
+  return pause.remaining > 0 ? pause : undefined;
 }
 
 function selectIkemenPause(existing: RuntimeMatchPause | undefined, candidate: RuntimeMatchPause): RuntimeMatchPause {

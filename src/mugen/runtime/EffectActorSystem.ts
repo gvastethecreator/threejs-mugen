@@ -90,6 +90,7 @@ export type RuntimeEffectActorCountKind = "explod" | "helper" | "projectile";
 export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOptions &
   RuntimeHelperAdvanceOptions & {
   stage?: Pick<MugenStageDefinition, "bounds">;
+  skipHelpers?: boolean;
 };
 
 export type RuntimeEffectActorActiveAdvanceInput = {
@@ -194,7 +195,7 @@ export class RuntimeEffectActorWorld {
       pauseKind: options?.pauseKind,
       stage: options?.stage,
       advanceHelpers: () => {
-        if (options?.stage) {
+        if (options?.stage && !options.skipHelpers) {
           this.advanceHelpers(ownerId, options.stage, options);
         }
       },

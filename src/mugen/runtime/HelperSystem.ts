@@ -242,7 +242,7 @@ export function advanceRuntimeHelperActor(
   stage: Pick<MugenStageDefinition, "bounds">,
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
-  if (shouldAdvanceRuntimeHelper(helper, options.pauseKind)) {
+  if (canAdvanceRuntimeHelper(helper, options.pauseKind)) {
     helper.assertSpecial = undefined;
     if (runRuntimeHelperStateControllers(helper, options) === "destroyed") {
       return false;
@@ -1246,7 +1246,7 @@ function advanceRuntimeHelperMove(helper: RuntimeHelper): void {
   helper.moveType = "I";
 }
 
-function shouldAdvanceRuntimeHelper(helper: RuntimeHelper, pauseKind: RuntimeHelperPauseKind | undefined): boolean {
+export function canAdvanceRuntimeHelper(helper: RuntimeHelper, pauseKind: RuntimeHelperPauseKind | undefined): boolean {
   if (!pauseKind) {
     return true;
   }

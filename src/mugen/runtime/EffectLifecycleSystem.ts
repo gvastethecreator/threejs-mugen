@@ -94,6 +94,7 @@ export class RuntimeEffectLifecycleWorld {
       stageBounds: stage.bounds,
       ...this.helperContextWorld.create({ actor, opponent, options }),
       gameSpace: options.gameSpace ?? runtimeStageGameSpace(stage),
+      skipHelpers: options.skipHelpers,
     });
   }
 

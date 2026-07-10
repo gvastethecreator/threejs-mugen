@@ -163,6 +163,8 @@ import {
   createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
+  createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
+  createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
   createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact,
@@ -15916,6 +15918,41 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ type: "SuperPause", actorId: "p2", minRemaining: 2 }),
       expect.objectContaining({ type: "Pause", actorId: "p1", minRemaining: 9 }),
     ]);
+  });
+
+  it("creates a required IKEMEN actor-local Pause movetime artifact", () => {
+    const artifact = createSyntheticImportedIkemenActorPauseMoveTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-actor-pausemove-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-ikemen-actor-pausemove-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.requirements.requiredMatchPauseAdvances).toEqual([
+      expect.objectContaining({ actorId: "p1", minAdvancedFrames: 2 }),
+      expect.objectContaining({ actorId: "p2", minAdvancedFrames: 2 }),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      expect.objectContaining({ actorId: "p1-helper-0", minAge: 3 }),
+    ]);
+  });
+
+  it("creates a required IKEMEN SuperPause p2defmul stacking artifact", () => {
+    const artifact = createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-superpause-p2defmul-stack-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-ikemen-superpause-p2defmul-stack-golden", passed: true, failures: [] }],
+      trace: { finalActors: expect.arrayContaining([expect.objectContaining({ id: "p2", life: 958 })]) },
+    });
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(
+      expect.arrayContaining([{ operation: "pause:superpause", minCount: 2 }]),
+    );
   });
 
   it("proves character override and Common1 fallback provenance without changing guard-start timing", () => {

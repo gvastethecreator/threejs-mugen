@@ -1,7 +1,7 @@
 # Choose next gap after IKEMEN Pause buffers
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -17,4 +17,6 @@ What minimal actor-local pause ledger and paused actor loop can support simultan
 
 ## Answer
 
-Pending source/runtime-shape and migration-risk review.
+Use one profile-gated per-pause actor ledger in `RuntimePauseWorld` and one ordered paused-actor executor shared by roots/helpers. Each Pause/SuperPause request records the caller's local move allowance even when that request does not win global ownership; the paused pass consumes root allowances and existing helper allowances independently in prepared RunOrder, appending helpers created during action. Positive same-frame SuperPause `p2defmul` requests multiply the current target defense scale and retain one original value for session-end restoration.
+
+Required traces prove simultaneous root/helper movement and multiplicative target scaling. Legacy profiles retain their established paused branch. Pause/SuperPause created during the paused pass still replace immediately and interrupt the remaining list; defer that lifecycle question to ticket 038.

@@ -1245,6 +1245,16 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenPauseBufferTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-actor-pausemove",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActorPauseMoveTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-superpause-p2defmul-stack",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-global-telemetry",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(),

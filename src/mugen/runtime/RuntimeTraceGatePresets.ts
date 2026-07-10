@@ -8300,6 +8300,80 @@ export function createSyntheticImportedIkemenPauseBufferTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActorPauseMoveTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "simultaneous Pause movetime requests", p1: ["x"], p2: ["x"], frames: 1 },
+    { label: "both roots and helper move during Pause", p1: [], p2: [], frames: 2 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-actor-pausemove-p1",
+    displayName: "Synthetic Imported IKEMEN Actor PauseMove P1",
+    withPause: true,
+    pauseTiming: { time: 4, moveTime: 2, triggerTime: 0 },
+    pauseMovePosAdd: { x: 8, y: 0, time: 1 },
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperVelocity: [3, 0],
+    helperPauseMoveTime: 2,
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-actor-pausemove-p2",
+    displayName: "Synthetic Imported IKEMEN Actor PauseMove P2",
+    withPause: true,
+    pauseTiming: { time: 2, moveTime: 2, triggerTime: 0 },
+    pauseMovePosAdd: { x: -6, y: 0, time: 1 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-actor-pausemove-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-actor-pausemove-golden",
+      label: "Synthetic imported IKEMEN actor-local Pause movetime",
+      source: "imported",
+      notes: [
+        "Explicit ikemen-go trace proves both roots retain actor-local movetime after simultaneous Pause arbitration and a helper advances in the same prepared actor list using its authored pausemovetime. SuperPause movetime, helper-created Pause ownership, replacement during a paused pass, teams, and full IKEMEN pause parity remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-actor-pausemove-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Pause", "PosAdd", "Helper"],
+        requiredExecutedOperations: ["pause:pause", "kinematic:posadd", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredMatchPauses: [{ type: "Pause", actorId: "p1", sourceStateNo: 200, minFrames: 3, minRemaining: 4, minMoveTime: 2 }],
+        requiredMatchPauseAdvances: [
+          { type: "Pause", actorId: "p1", actorKind: "player", ownerId: "p1", minAdvancedFrames: 2, minPreviousMoveTime: 1 },
+          { type: "Pause", actorId: "p2", actorKind: "player", ownerId: "p2", minAdvancedFrames: 2, minPreviousMoveTime: 1 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, observedPosXAtLeast: -87, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, observedPosXAtMost: 89, minFrames: 1 },
+          { actorId: "p1-helper-0", source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, minFrames: 3 },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minAge: 3 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "paused root actor order", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p1", "p2"] },
+          { label: "paused helper actor order", frameIndex: 1, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -24404,6 +24478,63 @@ export function createSyntheticImportedSuperPauseP2DefMulTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-superpause-p2defmul-stack-attacker",
+    displayName: "Synthetic Imported IKEMEN SuperPause P2DefMul Stack Attacker",
+    withSuperPause: true,
+    superPauseP2DefMul: 2,
+    extraSuperPauseP2DefMul: 2,
+    withTargetControllers: true,
+    targetControllerTriggerTime: 3,
+    targetLifeAddValue: -20,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-superpause-p2defmul-stack-defender",
+    displayName: "Synthetic Imported IKEMEN SuperPause P2DefMul Stack Defender",
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage: options.stage ?? closeCombatStage(), runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-ikemen-superpause-p2defmul-stack-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-superpause-p2defmul-stack-golden",
+      label: "Synthetic imported IKEMEN SuperPause p2defmul stacking",
+      source: "imported",
+      notes: [
+        "Explicit ikemen-go trace proves two same-frame SuperPause p2defmul = 2 requests multiply the target's temporary incoming-damage scale to 0.25 and restore it after the SuperPause session. Team-wide targets, p2defmul = 0 config fallback, helper/custom-state ownership, and full IKEMEN super defense parity remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-superpause-p2defmul-stack-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause", "TargetLifeAdd"],
+        requiredExecutedOperations: ["hitdef", { operation: "pause:superpause", minCount: 2 }, "target:targetlifeadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "pause"],
+        requiredCombatReasons: ["hit"],
+        requiredMatchPauses: [
+          { type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 958 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 2 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39082,6 +39213,7 @@ export type SyntheticImportedTraceFighterOptions = {
   superPausePauseBg?: number | string;
   superPauseUnhittable?: number | string;
   superPauseP2DefMul?: number;
+  extraSuperPauseP2DefMul?: number;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
   withSuperPause?: boolean;
@@ -40036,6 +40168,7 @@ ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock(options.pauseTiming) : ""}
 ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable, options.superPauseTiming) : ""}
+${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBlock(options.extraSuperPauseP2DefMul)}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound) : ""}
@@ -43315,6 +43448,19 @@ type = Pause
 trigger1 = Time = ${timing?.triggerTime ?? 2}
 time = ${timing?.time ?? 7}
 movetime = ${timing?.moveTime ?? 1}
+`;
+}
+
+function extraSuperPauseP2DefMulBlock(p2DefMul: number): string {
+  return `
+[State 200, Stacked Super Pause]
+type = SuperPause
+trigger1 = Time = 2
+time = 7
+movetime = 1
+darken = 1
+poweradd = 0
+p2defmul = ${p2DefMul}
 `;
 }
 
