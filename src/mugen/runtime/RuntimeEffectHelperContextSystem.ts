@@ -12,6 +12,8 @@ export type RuntimeEffectHelperContextActor = {
   enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
+  onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
 };
 
 export type RuntimeEffectHelperContextOpponent = {
@@ -40,6 +42,8 @@ export type RuntimeEffectHelperContext = {
   enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
   onController?: RuntimeHelperAdvanceOptions["onController"];
   onOperation?: RuntimeHelperAdvanceOptions["onOperation"];
+  onPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  scaleTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
 };
 
 export type RuntimeEffectHelperContextInput = {
@@ -85,6 +89,8 @@ export class RuntimeEffectHelperContextWorld {
       ...(actor.enterHelperTargetState ? { enterTargetState: actor.enterHelperTargetState } : {}),
       ...(actor.onHelperController ? { onController: actor.onHelperController } : {}),
       ...(actor.onHelperOperation ? { onOperation: actor.onHelperOperation } : {}),
+      ...(actor.onHelperPauseController ? { onPauseController: actor.onHelperPauseController } : {}),
+      ...(actor.scaleHelperTargetDamage ? { scaleTargetDamage: actor.scaleHelperTargetDamage } : {}),
     };
   }
 }

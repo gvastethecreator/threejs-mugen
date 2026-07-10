@@ -24,6 +24,8 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
+  onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
     | "advanceActiveEffects"

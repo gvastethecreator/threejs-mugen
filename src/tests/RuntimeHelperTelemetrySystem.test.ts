@@ -6,13 +6,15 @@ import type { RuntimeHelper } from "../mugen/runtime/HelperSystem";
 import { RuntimeHelperTelemetryWorld, type RuntimeHelperTelemetryOwner } from "../mugen/runtime/RuntimeHelperTelemetrySystem";
 
 describe("RuntimeHelperTelemetryWorld", () => {
-  it("records helper projectile and kinematic telemetry against helper state", () => {
+  it("records helper projectile, kinematic, and pause telemetry against helper state", () => {
     const world = new RuntimeHelperTelemetryWorld();
     const owner = ownerState(200);
     const source = controllerSource("Projectile");
     const operation = projectileOperation();
     const kinematicSource = controllerSource("VelSet");
     const kinematicOperation = helperKinematicOperation();
+    const pauseSource = controllerSource("SuperPause");
+    const pauseOperation = helperPauseOperation();
     const records: string[] = [];
 
     world.attachControllerTelemetry([owner], {
@@ -25,8 +27,17 @@ describe("RuntimeHelperTelemetryWorld", () => {
     owner.onHelperOperation?.(helperState(1200), operation);
     owner.onHelperController?.(helperState(1201), controllerIr(kinematicSource, kinematicOperation));
     owner.onHelperOperation?.(helperState(1201), kinematicOperation);
+    owner.onHelperController?.(helperState(1202), controllerIr(pauseSource, pauseOperation));
+    owner.onHelperOperation?.(helperState(1202), pauseOperation);
 
-    expect(records).toEqual(["200:Projectile:1200", "projectile:1200", "200:VelSet:1201", "kinematic:1201"]);
+    expect(records).toEqual([
+      "200:Projectile:1200",
+      "projectile:1200",
+      "200:VelSet:1201",
+      "kinematic:1201",
+      "200:SuperPause:1202",
+      "pause:1202",
+    ]);
   });
 
   it("uses owner state when helper has no current state", () => {
@@ -147,4 +158,8 @@ function helperOperation(): ControllerOp {
 
 function helperKinematicOperation(): ControllerOp {
   return { kind: "kinematic", controllerType: "velset" } as ControllerOp;
+}
+
+function helperPauseOperation(): ControllerOp {
+  return { kind: "pause", controllerType: "superpause" } as ControllerOp;
 }

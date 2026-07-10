@@ -50,9 +50,13 @@ export class RuntimeHelperTelemetryWorld {
 const helperKinematicControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "hitvelset"]);
 
 function recordsHelperController(controller: ControllerIr): boolean {
-  return controller.operation?.kind === "projectile" || helperKinematicControllers.has(controller.normalizedType);
+  return (
+    controller.operation?.kind === "projectile" ||
+    controller.operation?.kind === "pause" ||
+    helperKinematicControllers.has(controller.normalizedType)
+  );
 }
 
 function recordsHelperOperation(operation: ControllerOp): boolean {
-  return operation.kind === "projectile" || operation.kind === "kinematic";
+  return operation.kind === "projectile" || operation.kind === "kinematic" || operation.kind === "pause";
 }

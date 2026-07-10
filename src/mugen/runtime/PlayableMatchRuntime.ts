@@ -47,7 +47,7 @@ import {
 } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
-import { canAdvanceRuntimeHelper, type RuntimeHelper } from "./HelperSystem";
+import { canAdvanceRuntimeHelper, helperRuntimeState, type RuntimeHelper } from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
@@ -143,6 +143,7 @@ import {
   RuntimePauseWorld,
   RuntimePausedMatchWorld,
   type MatchPauseControllerResult,
+  type RuntimeMatchPause,
   type RuntimePauseControllerParamResolvers,
 } from "./PauseSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
@@ -375,6 +376,7 @@ export class PlayableMatchRuntime {
       contactWorld: this.contactWorld,
     });
     this.attachHelperTargetStateHandlers();
+    this.attachHelperPauseHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
 
@@ -391,6 +393,21 @@ export class PlayableMatchRuntime {
           compatibilityTelemetryWorld.recordOperation(owner, operation, context),
       },
     });
+  }
+
+  private attachHelperPauseHandlers(): void {
+    for (const owner of this.matchRoster().actors) {
+      owner.scaleHelperTargetDamage = scaleRuntimeIncomingDamage;
+      owner.onHelperPauseController = (helper, controller, operation, resolveSoundValue, resolveParams) =>
+        this.applyHelperMatchPauseController(
+          owner,
+          helper,
+          controller,
+          operation,
+          resolveSoundValue,
+          resolveParams,
+        );
+    }
   }
 
   private enterHelperOwnedTargetState(
@@ -935,6 +952,50 @@ export class PlayableMatchRuntime {
     });
   }
 
+  private applyHelperMatchPauseController(
+    owner: FighterMatchState,
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    operation: PauseControllerOp | undefined,
+    resolveSoundValue: () => RuntimeResolvedSoundValue | undefined,
+    resolveParams: RuntimePauseControllerParamResolvers,
+  ): MatchPauseControllerResult {
+    const actor = {
+      id: helper.serialId,
+      label: `Helper ${helper.name ?? helper.helperId ?? helper.serialId}`,
+      runtime: { stateNo: helper.stateNo ?? owner.runtime.stateNo },
+      definition: owner.definition,
+      stateElapsed: helper.stateTime,
+      soundEvents: helper.soundEvents,
+    };
+    const result = this.matchPauseControllerWorld.apply({
+      actor,
+      controller: controller.source,
+      operation,
+      runtimeTick: this.tick,
+      pauseWorld: this.pauseWorld,
+      applyPowerDelta: (_actor, powerDelta) =>
+        applyRuntimePowerDelta(owner.runtime, powerDelta, owner.definition.constants),
+      emitSound: (pauseActor, sound, runtimeTick, resolvedSound) =>
+        this.audioWorld.emitSuperPauseSound(pauseActor, sound, runtimeTick, resolvedSound),
+      recordAudioOperation: (_actor, audioOperation) =>
+        compatibilityTelemetryWorld.recordOperation(owner, audioOperation, {
+          stateNo: helper.stateNo ?? owner.runtime.stateNo,
+        }),
+      resolveSoundValue,
+      resolveParams,
+      applyTargetDefenseMultiplier: (_actor, multiplier, pause) =>
+        this.applyHelperTargetDefenseMultiplier(helper, multiplier, pause),
+      log: (message) => this.logs.unshift(message),
+    });
+    if (result.pause?.type === "Pause") {
+      helper.pauseMoveTime = result.pause.moveTime;
+    } else if (result.pause?.type === "SuperPause") {
+      helper.superMoveTime = result.pause.moveTime;
+    }
+    return result;
+  }
+
   private applyTargetDefenseMultiplier(
     fighter: FighterMatchState,
     multiplier: number,
@@ -946,6 +1007,31 @@ export class PlayableMatchRuntime {
     }
     const opponent = fighter.id === this.p1.id ? this.p2 : this.p1;
     const targets = fighter.targetWorld.resolveCandidates(fighter, [opponent]);
+    return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
+  }
+
+  private applyHelperTargetDefenseMultiplier(
+    helper: RuntimeHelper,
+    multiplier: number,
+    pause: RuntimeMatchPause,
+  ): number {
+    const targets = this.targetWorld.resolveCandidates(
+      {
+        id: helper.serialId,
+        runtime: helperRuntimeState(helper),
+        targets: helper.targets,
+        targetBindings: helper.targetBindings,
+      },
+      [...this.matchRoster().actors],
+    );
+    return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
+  }
+
+  private applyTargetDefenseMultiplierToActors(
+    targets: FighterMatchState[],
+    multiplier: number,
+    pause: RuntimeMatchPause,
+  ): number {
     for (const target of targets) {
       const existing = this.superPauseTargetDefenseOverrides.find(
         (override) => override.actor === target && override.pauseStartedAt === pause.startedAt,

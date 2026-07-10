@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ControllerIr, StateProgramIr } from "../mugen/compiler/RuntimeIr";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
-import type { HelperControllerOp } from "../mugen/compiler/ControllerOps";
+import type { HelperControllerOp, PauseControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
@@ -385,6 +385,64 @@ describe("HelperSystem", () => {
       guardSound: "S6,var(1)",
       guardSoundValue: { rawPrefix: "S", group: 6, index: 7 },
     });
+  });
+
+  it("routes dynamic helper SuperPause params through the match callback", () => {
+    const operation: PauseControllerOp = {
+      kind: "pause",
+      controllerType: "superpause",
+      time: 0,
+      moveTime: 0,
+      pauseBg: true,
+      darken: true,
+      powerAdd: 0,
+    };
+    const pauseController = {
+      ...controllerIr(6000, "SuperPause", {
+        time: "var(0)",
+        movetime: "var(1)",
+        poweradd: "var(2)",
+        sound: "Svar(3),var(4)",
+        p2defmul: "fvar(0)",
+      }),
+      operation,
+    };
+    const active = helper({
+      vars: [7, 3, 125, 9, 4],
+      fvars: [0.5],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [pauseController])] },
+    });
+    const calls: string[] = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      onPauseController: (current, controller, currentOperation, resolveSound, resolveParams) => {
+        expect(current).toBe(active);
+        expect(controller).toBe(pauseController);
+        expect(currentOperation).toBe(operation);
+        expect(resolveSound()).toEqual({ rawPrefix: "S", group: 9, index: 4 });
+        expect(resolveParams.time?.()).toBe(7);
+        expect(resolveParams.moveTime?.()).toBe(3);
+        expect(resolveParams.powerAdd?.()).toBe(125);
+        expect(resolveParams.p2DefMul?.()).toBe(0.5);
+        calls.push("pause");
+        return {
+          pause: {
+            type: "SuperPause",
+            actorId: active.serialId,
+            remaining: 7,
+            moveTime: 3,
+            darken: true,
+            sourceStateNo: 6000,
+            startedAt: 12,
+          },
+          powerDelta: 125,
+        };
+      },
+      onController: (_helper, controller) => calls.push(`controller:${controller.normalizedType}`),
+      onOperation: (_helper, operation) => calls.push(`operation:${operation.kind}`),
+    });
+
+    expect(calls).toEqual(["pause", "controller:superpause", "operation:pause"]);
   });
 
   it("clears active helper reversal moves even when destination state declares hitdefpersist", () => {

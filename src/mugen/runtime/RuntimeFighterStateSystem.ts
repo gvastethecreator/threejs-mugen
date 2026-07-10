@@ -44,6 +44,8 @@ export type FighterMatchState = {
   enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
+  onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
   currentInput: Set<string>;
   aiCooldown: number;
   executedStateIds: Set<number>;

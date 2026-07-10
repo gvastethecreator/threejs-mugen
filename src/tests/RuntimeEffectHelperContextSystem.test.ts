@@ -57,11 +57,15 @@ describe("RuntimeEffectHelperContextWorld", () => {
     const enterTargetState = () => undefined;
     const onController: RuntimeHelperAdvanceOptions["onController"] = () => undefined;
     const onOperation: RuntimeHelperAdvanceOptions["onOperation"] = () => undefined;
+    const onPauseController: RuntimeHelperAdvanceOptions["onPauseController"] = () => ({ powerDelta: 0 });
+    const scaleTargetDamage: RuntimeHelperAdvanceOptions["scaleTargetDamage"] = (_runtime, damage) => damage;
     const actor: RuntimeEffectHelperContextActor = {
       ...contextActor("p1", 0),
       enterHelperTargetState: enterTargetState,
       onHelperController: onController,
       onHelperOperation: onOperation,
+      onHelperPauseController: onPauseController,
+      scaleHelperTargetDamage: scaleTargetDamage,
     };
     const opponent = targetActor("p2", 64);
 
@@ -73,6 +77,8 @@ describe("RuntimeEffectHelperContextWorld", () => {
     expect(context.enterTargetState).toBe(enterTargetState);
     expect(context.onController).toBe(onController);
     expect(context.onOperation).toBe(onOperation);
+    expect(context.onPauseController).toBe(onPauseController);
+    expect(context.scaleTargetDamage).toBe(scaleTargetDamage);
   });
 
   it("fails closed when the owner runtime is not a complete runtime state", () => {

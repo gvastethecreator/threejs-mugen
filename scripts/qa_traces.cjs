@@ -1255,6 +1255,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-helper-superpause",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenHelperSuperPauseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-superpause-p2defmul-stack",
       required: true,
       artifact: presets.createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact(),

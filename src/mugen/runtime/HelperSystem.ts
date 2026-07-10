@@ -1,4 +1,4 @@
-import type { ControllerOp, HelperControllerOp } from "../compiler/ControllerOps";
+import type { ControllerOp, HelperControllerOp, PauseControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
@@ -24,6 +24,7 @@ import type {
   RuntimeModifyProjectilePairParam,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
+import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -140,6 +141,14 @@ export type RuntimeHelperAdvanceOptions = {
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyProjectile?: (helper: RuntimeHelper, controller: ControllerIr, resolveModifyProjectile?: RuntimeProjectileModifyResolver) => boolean;
+  onPauseController?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    operation: PauseControllerOp | undefined,
+    resolveSoundValue: () => RuntimeResolvedSoundValue | undefined,
+    resolveParams: RuntimePauseControllerParamResolvers,
+  ) => MatchPauseControllerResult | undefined;
+  scaleTargetDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onOperation?: (helper: RuntimeHelper, operation: ControllerOp) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
@@ -289,6 +298,8 @@ export function runRuntimeHelperStateControllers(
     | "onRemoveExplod"
     | "onModifyExplod"
     | "onModifyProjectile"
+    | "onPauseController"
+    | "scaleTargetDamage"
     | "onController"
     | "onOperation"
     | "onUnsupportedController"
@@ -373,6 +384,25 @@ export function runRuntimeHelperStateControllers(
     if (dispatch.kind === "side-effect" && dispatch.effect === "hitdef") {
       if (activateRuntimeHelperHitDef(helper, controller, helperHitDefWorld, options)) {
         options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "pause") {
+      const operation = controller.operation?.kind === "pause" ? controller.operation : undefined;
+      const result = options.onPauseController?.(
+        helper,
+        controller,
+        operation,
+        () => resolveRuntimeHelperSoundValueParam(helper, controller, "sound", options),
+        helperPauseControllerParamResolvers(helper, controller, options),
+      );
+      if (result) {
+        options.onController?.(helper, controller);
+        if (result.pause && operation) {
+          options.onOperation?.(helper, operation);
+        }
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
@@ -704,7 +734,7 @@ export function rememberRuntimeHelperTarget(
 export function resolveRuntimeHelperSoundValueParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "hitsound" | "guardsound",
+  key: "sound" | "hitsound" | "guardsound",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): RuntimeResolvedSoundValue | undefined {
   const raw = findControllerParam(controller.source, key);
@@ -730,6 +760,37 @@ export function resolveRuntimeHelperSoundValueParam(
   return { ...(rawPrefix ? { rawPrefix } : {}), group, index };
 }
 
+function helperPauseControllerParamResolvers(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimePauseControllerParamResolvers {
+  const numberParam = (key: string) => () =>
+    resolveHelperNumber(helper, undefined, findControllerParam(controller.source, key), options);
+  const animActionNo = () => {
+    const raw = findControllerParam(controller.source, "anim")?.trim();
+    if (!raw) return undefined;
+    const expression = /^[FS]\s*(.+)$/i.exec(raw)?.[1]?.trim() ?? raw;
+    return resolveHelperNumber(helper, undefined, expression, options);
+  };
+  const pos = () => {
+    const raw = findControllerParam(controller.source, "pos");
+    return raw ? resolveHelperExpressionPair(helper, raw, options) : undefined;
+  };
+  return {
+    time: numberParam("time"),
+    moveTime: numberParam("movetime"),
+    pauseBg: numberParam("pausebg"),
+    unhittable: numberParam("unhittable"),
+    darken: numberParam("darken"),
+    powerAdd: numberParam("poweradd"),
+    p2DefMul: () => resolveHelperFloat(helper, findControllerParam(controller.source, "p2defmul"), options),
+    animActionNo,
+    posX: () => pos()?.[0],
+    posY: () => pos()?.[1],
+  };
+}
+
 function splitHelperSoundValueExpressions(raw: string): [string, string] | undefined {
   const [index] = topLevelCommaIndices(raw);
   if (index === undefined) {
@@ -744,7 +805,7 @@ function applyRuntimeHelperTargetController(
   helper: RuntimeHelper,
   controller: ControllerIr,
   effect: "target" | "bindtotarget",
-  options: Pick<RuntimeHelperAdvanceOptions, "targetCandidates" | "enterTargetState" | "onOperation">,
+  options: Pick<RuntimeHelperAdvanceOptions, "targetCandidates" | "enterTargetState" | "onOperation" | "scaleTargetDamage">,
 ): boolean {
   if (controller.normalizedType === "targetstate" && !options.enterTargetState) {
     return false;
@@ -757,6 +818,7 @@ function applyRuntimeHelperTargetController(
     effect,
     targetWorld: helperTargetWorld,
     recordOperation: (_actor, operation) => options.onOperation?.(helper, operation),
+    scaleIncomingDamage: options.scaleTargetDamage,
     enterTargetState: (target, stateId) => options.enterTargetState?.(helper, target, stateId),
   });
   applyRuntimeStateToHelper(helper, actor.runtime);
@@ -852,6 +914,16 @@ function resolveHelperNumber(
   }
   const result = Number(evaluateExpression(expression, helperExpressionContext(helper, options)));
   return Number.isFinite(result) ? Math.trunc(result) : undefined;
+}
+
+function resolveHelperFloat(
+  helper: RuntimeHelper,
+  expression: string | undefined,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  if (!expression) return undefined;
+  const result = Number(evaluateExpression(expression, helperExpressionContext(helper, options)));
+  return Number.isFinite(result) ? result : undefined;
 }
 
 function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?: number): void {

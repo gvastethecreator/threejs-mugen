@@ -1,7 +1,7 @@
 # Choose next gap after IKEMEN deferred pause activation
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -17,4 +17,6 @@ What minimal helper execution context can route helper-created Pause/SuperPause 
 
 ## Answer
 
-Pending source/runtime-shape and migration-risk review.
+Route helper Pause/SuperPause side effects through a typed helper callback carried by `RuntimeEffectHelperContextWorld`. The match adapter uses helper serial/state identity for global pause ownership and audio attribution, root fighter resources for `poweradd`, helper-local movement fields for `movetime`, and helper target memory for bounded positive `p2defmul`. Dynamic values resolve under helper Parent/Root/Enemy/Target context; `p2defmul` uses a float resolver rather than the integer controller path.
+
+Required trace `synthetic-imported-ikemen-helper-superpause.json` proves same-tick appended helper ownership, root power `125`, helper sound `S9,4`, movetime `3`, current-target linkage, and final P2 life `959` after scaled target damage. Opposing-team breadth and zero-value semantics move to ticket 040.

@@ -8442,6 +8442,77 @@ export function createSyntheticImportedIkemenDeferredPauseActivationTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenHelperSuperPauseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "spawn helper-owned SuperPause", p1: ["x"], p2: [], frames: 1 },
+    { label: "helper moves during owned SuperPause", p1: [], p2: [], frames: 3 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-superpause-p1",
+    displayName: "Synthetic Imported IKEMEN Helper SuperPause P1",
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPos: [0, 0],
+    helperPostype: "p2",
+    helperPauseRoute: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-helper-superpause-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-helper-superpause-golden",
+      label: "Synthetic imported IKEMEN helper-owned SuperPause",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a same-tick appended helper can resolve dynamic SuperPause params, own the global pause by helper serial id, add power through its root, emit helper-attributed sound, and consume helper-local supermovetime. Current-target p2defmul breadth, nested helpers, teams, exact audio playback, and full helper Pause parity remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-helper-superpause-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "SuperPause"],
+        requiredExecutedOperations: ["helper", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredMatchPauses: [
+          { type: "SuperPause", actorId: "p1-helper-0", sourceStateNo: 1200, minFrames: 3, minRemaining: 7, minMoveTime: 3 },
+        ],
+        requiredMatchPauseAdvances: [
+          { type: "SuperPause", actorId: "p1-helper-0", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 2 },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minAge: 4, targetCount: 1 },
+        ],
+        requiredSoundEvents: [
+          { actorId: "p1-helper-0", source: "effect", actorKind: "helper", type: "PlaySnd", group: 9, index: 4, stateNo: 1200 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", observedPowerAtLeast: 125, observedPowerAtMost: 125, minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", actorKind: "player", source: "demo", life: 959 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "same-tick helper owns SuperPause", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39479,6 +39550,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperTriggerTime?: number;
   helperPos?: [number, number];
   helperPostype?: string;
+  helperPauseRoute?: boolean;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperRunOrderRoute?: { expected: number; stateNo: number };
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
@@ -40386,6 +40458,7 @@ ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${passiveControllerStateBlocks(options)}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
+${options.helperPauseRoute ? helperPauseRouteBlock() : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
@@ -45072,6 +45145,73 @@ movetype = I
 physics = N
 anim = 920
 ctrl = 0
+`;
+}
+
+function helperPauseRouteBlock(): string {
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Seed Pause Time]
+type = VarSet
+trigger1 = Time = 0
+var(0) = 7
+
+[State 1200, Seed Move Time]
+type = VarSet
+trigger1 = Time = 0
+var(1) = 3
+
+[State 1200, Seed Power]
+type = VarSet
+trigger1 = Time = 0
+var(2) = 125
+
+[State 1200, Seed Sound Group]
+type = VarSet
+trigger1 = Time = 0
+var(3) = 9
+
+[State 1200, Seed Sound Index]
+type = VarSet
+trigger1 = Time = 0
+var(4) = 4
+
+[State 1200, Seed Defence Mul]
+type = VarSet
+trigger1 = Time = 0
+fvar(0) = 0.5
+
+[State 1200, Helper SuperPause]
+type = SuperPause
+trigger1 = Time = 1
+time = var(0)
+movetime = var(1)
+poweradd = var(2)
+sound = Svar(3),var(4)
+p2defmul = fvar(0)
+
+[State 1200, Acquire Target]
+type = HitDef
+trigger1 = Time = 0
+attr = S,NA
+damage = 1
+id = 77
+pausetime = 0,0
+ground.hittime = 1
+ground.velocity = 0,0
+
+[State 1200, Scaled Target Damage]
+type = TargetLifeAdd
+trigger1 = Time = 2
+id = 77
+value = -20
+absolute = 0
 `;
 }
 
