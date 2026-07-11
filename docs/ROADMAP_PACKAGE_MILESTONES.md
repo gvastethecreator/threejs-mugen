@@ -71,11 +71,11 @@ I2 IKEMEN inert additional-root ownership
   -> no score movement and no tag/team gameplay claim
 ```
 
-Next prefactor:
+Closed prefactor:
 
 ```txt
 I2 RuntimeRootParticipation/v0-style diagnostic
-  -> prove P3-P8, six-reserve cap/overflow policy, interleaved starts, lifecycle and reset identity/cleanup
+  -> proves P3-P8, six-reserve cap/overflow policy, interleaved starts and registry lifecycle
   -> separate owned, disabled, standby, structurally active and per-consumer participation
   -> keep phase owners P1/P2 and do not move roots between snapshot arrays
   -> after this proof, add a plural batch standby transition without assuming one active root per side

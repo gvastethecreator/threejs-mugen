@@ -128,26 +128,85 @@ describe("MatchWorld", () => {
     expect(controllerOrder).toEqual(["p2", "p1"]);
   });
 
-  it("publishes inert P3/P4 roots through the live MatchWorld registry only", () => {
+  it("publishes inert P3-P8 roots and participation through the live MatchWorld registry only", () => {
     const world = new MatchWorld({
       p1: demoFighters[0]!,
       p2: demoFighters[1]!,
       stage: trainingStage,
       runtimeProfile: "ikemen-go",
-      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+      reserveFighters: Array.from({ length: 6 }, (_, index) => demoFighters[index % 2]!),
     });
     const snapshot = world.step({ p1: new Set(), p2: new Set() });
     const registry = world.getActorRegistry();
 
     expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
-    expect(snapshot.reserveActors?.map((actor) => actor.id)).toEqual(["p3", "p4"]);
-    expect(registry.players).toEqual(["p1", "p2", "p3", "p4"]);
-    expect(registry.teamSides).toEqual({ 1: ["p1", "p3"], 2: ["p2", "p4"] });
-    expect(registry.teamRoster.characters.slice(2)).toEqual([
-      expect.objectContaining({ id: "p3", standby: true, enemyBaseEligible: false }),
-      expect.objectContaining({ id: "p4", standby: true, enemyBaseEligible: false }),
-    ]);
+    expect(snapshot.reserveActors?.map((actor) => actor.id)).toEqual(["p3", "p4", "p5", "p6", "p7", "p8"]);
+    expect(registry.players).toEqual(["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"]);
+    expect(registry.teamSides).toEqual({ 1: ["p1", "p3", "p5", "p7"], 2: ["p2", "p4", "p6", "p8"] });
+    expect(registry.teamRoster.characters.slice(2)).toEqual(
+      ["p3", "p4", "p5", "p6", "p7", "p8"].map((id) =>
+        expect.objectContaining({ id, standby: true, enemyBaseEligible: false }),
+      ),
+    );
+    expect(registry.rootParticipation).toEqual(expect.objectContaining({
+      schema: "RuntimeRootParticipation/v0",
+      roots: expect.arrayContaining([
+        expect.objectContaining({ id: "p1", side: 1, structurallyActive: true, scheduled: true, presented: true }),
+        expect.objectContaining({ id: "p2", side: 2, structurallyActive: true, scheduled: true, presented: true }),
+        expect.objectContaining({
+          id: "p3",
+          side: 1,
+          standby: true,
+          structurallyActive: false,
+          scheduled: false,
+          inputOwned: false,
+          combatOwned: false,
+          roundOwned: false,
+          presented: false,
+          effectStoreOwned: false,
+        }),
+        expect.objectContaining({
+          id: "p4",
+          side: 2,
+          standby: true,
+          structurallyActive: false,
+          scheduled: false,
+          inputOwned: false,
+          combatOwned: false,
+          roundOwned: false,
+          presented: false,
+          effectStoreOwned: false,
+        }),
+      ]),
+    }));
+    expect(registry.rootParticipation.roots.slice(2)).toHaveLength(6);
+    expect(
+      registry.rootParticipation.roots.slice(2).every(
+        (root) =>
+          !root.structurallyActive &&
+          !root.scheduled &&
+          !root.inputOwned &&
+          !root.combatOwned &&
+          !root.roundOwned &&
+          !root.presented &&
+          !root.effectStoreOwned,
+      ),
+    ).toBe(true);
+    expect(registry.lifecycle.records.filter((record) => /^p[3-8]$/.test(record.id))).toHaveLength(6);
     expect(registry.effectStores.map((store) => store.ownerId)).toEqual(["p1", "p2"]);
+
+    const structurallyActiveSnapshot = structuredClone(snapshot);
+    structurallyActiveSnapshot.reserveActors![0]!.runtime.teamState!.standby = false;
+    const structurallyActiveRegistry = buildMatchWorldActorRegistry(structurallyActiveSnapshot);
+    expect(structurallyActiveRegistry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
+      structurallyActive: true,
+      scheduled: false,
+      inputOwned: false,
+      combatOwned: false,
+      roundOwned: false,
+      presented: false,
+      effectStoreOwned: false,
+    });
   });
 
   it("exposes a player actor registry without changing match state", () => {
@@ -185,9 +244,11 @@ describe("MatchWorld", () => {
 
     registry.byId.p2!.teamState.standby = true;
     registry.teamSides[2].push("corrupt");
+    registry.rootParticipation.roots[0]!.scheduled = false;
     const freshRegistry = world.getActorRegistry();
     expect(freshRegistry.byId.p2?.teamState.standby).toBe(false);
     expect(freshRegistry.teamSides[2]).toEqual(["p2"]);
+    expect(freshRegistry.rootParticipation.roots[0]?.scheduled).toBe(true);
   });
 
   it("indexes effect actors by kind and owner from runtime snapshots", () => {

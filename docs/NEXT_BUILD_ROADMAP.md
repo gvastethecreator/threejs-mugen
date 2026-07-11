@@ -3247,8 +3247,8 @@ Goal: move source-pinned IKEMEN runtime semantics through explicit, isolated gat
 
 Build sequence:
 
-1. Close inert-root breadth and lifecycle evidence, including P3-P8, cap/overflow policy, side-local starts, lifecycle, reset object identity, and stale optional-state cleanup.
-2. Publish `RuntimeRootParticipation/v0`-style diagnostics that separate owned, disabled, standby, structurally active, scheduled, input-owned, combat-owned, round-owned, presented, and effect-store-owned roots; all executable consumer lists initially remain P1/P2.
+1. Done: inert-root P3-P8 cap, side-local starts, reset, snapshot isolation, registry lifecycle, and negative schedule/effect-store evidence.
+2. Done: `RuntimeRootParticipation/v0` diagnostics separate owned, disabled, standby, structurally active, scheduled, input-owned, combat-owned, round-owned, presented, and effect-store-owned roots; all executable consumer lists remain P1/P2.
 3. Add a plural batch standby transition and derived active ids by side. Do not auto-tag-out another root or assume one active root per side without `teamMode`.
 4. Prove identity/Player/Partner lookup separately from Enemy/P2 eligibility across the transition.
 5. Admit standby roots to the explicit-profile CNS schedule and gate same-tick TagIn/TagOut visibility before collision/draw. Only then plan input, effects, combat, round, presentation/lifebar, leader/member order, and shared-resource policies as separate cuts.

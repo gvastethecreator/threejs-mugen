@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN root participation
+
+- Runtime/IKEMEN: `RuntimeRootParticipation/v0` exposes stable P1-P8 ownership and structural state.
+- Isolation: schedule, input, combat, round, presentation, and effect-store ownership remain explicit P1/P2 lists; P3-P8 are false on every executable axis.
+- Lifecycle: live `MatchWorld` coverage includes all six reserves and registry lifecycle rows.
+- API safety: registry snapshots deep-clone the participation diagnostic.
+- Score: unchanged. No standby mutation or active multi-root gameplay.
+- Next: atomic plural standby transition plus active-root projection, still without scheduler widening.
+
 ## Global report - 2026-07-11 IKEMEN inert roots
 
 - Runtime/IKEMEN: explicit IKEMEN options can construct P3-P8 roots in stable interleaved slots with standby state.
@@ -7,7 +16,7 @@
 - Isolation: reserves do not enter active actors, renderer/camera, schedule, input, combat, round, compatibility execution, helpers, or effect stores.
 - Reset: reserve objects are recreated in place with standby restored.
 - Score: unchanged. No active multi-root gameplay.
-- Next: Wayfinder 046, explicit activation plus active-root read model.
+- Next at that checkpoint was Wayfinder 046; root-participation observability now resolves it.
 
 ## Planning report - 2026-07-11 daily architecture audit
 

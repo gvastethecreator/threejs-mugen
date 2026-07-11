@@ -64,7 +64,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after team eligibility](tickets/043-next-gap-after-team-eligibility.md) - public `MatchWorld.teamRoster` now consumes a parallel unique-id character registry while the scheduler remains pair-only.
 - [Choose next gap after multi-root registry](tickets/044-next-gap-after-multi-root-registry.md) - runtime/snapshot `teamState` now drives public eligibility diagnostics for roots and helpers.
 - [Choose next gap after live team state](tickets/045-next-gap-after-live-team-state.md) - explicit IKEMEN matches can now own/reset P3-P8 standby roots and publish them separately from playable/presented actors.
-- [Choose next gap after inert roots](tickets/046-next-gap-after-inert-roots.md)
+- [Choose next gap after inert roots](tickets/046-next-gap-after-inert-roots.md) - `RuntimeRootParticipation/v0` proves P1/P2 executable ownership versus inert P3-P8 across separate consumer axes.
 
 ## Not Yet Specified
 

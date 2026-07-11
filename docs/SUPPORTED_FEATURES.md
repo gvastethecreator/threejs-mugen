@@ -1,5 +1,7 @@
 ﻿# Supported Features
 
+- `MatchWorldActorRegistrySnapshot.rootParticipation` exposes JSON-safe `RuntimeRootParticipation/v0` diagnostics for all owned roots. Owned, disabled, standby, structurally active, scheduled, input-owned, combat-owned, round-owned, presented, and effect-store-owned are separate fields; explicit IKEMEN P3-P8 reserves remain false for every executable consumer while current P1/P2 roots remain true. This is read-only observability, not activation, TagIn/TagOut, standby CNS scheduling, or playable team support.
+
 - IKEMEN root-player RunOrder is `executed-partial` behind explicit match `runtimeProfile = "ikemen-go"`: two roots consume previous-tick exclusive `RunFirst` / `RunLast`, then use MoveType `A > I > H` and lower id. Their one-based sorted index is exposed through the `RunOrder` trigger before frame controllers. Required traces gate both run flags and `RunOrder = 1` CNS routing. `mugen-1.1` and `unknown` preserve pair order and expose no profile-specific index. Helpers, teams, simul/tag, and full IKEMEN actor scheduling remain unsupported.
 
 - Player `SprPriority` is `rendered-partial` at L2: static/dynamic controller values clamp to official `-5..5` and effective Three.js z puts higher priorities in front. HitDef pair priorities, equal ties, Explod ontop, stage occlusion, and full draw-order parity remain unsupported.

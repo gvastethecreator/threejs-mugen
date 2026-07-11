@@ -318,8 +318,8 @@ Practical reading: from today's evidence, a private playable sandbox is roughly 
 
 ## Next Ten Gates
 
-1. I2 inert-root evidence: P3-P8, cap/overflow policy, side-local starts, lifecycle, reset identity/stale-state cleanup, and negative P1/P2-only consumer assertions.
-2. I2 `RuntimeRootParticipation/v0`-style diagnostics with owned/standby/active and per-phase consumer ownership separated.
+1. Done: I2 inert-root P3-P8/cap/start/reset/isolation evidence.
+2. Done: I2 `RuntimeRootParticipation/v0` diagnostics with structural and per-consumer ownership separated.
 3. R1 bounded post-KO / `NoKOSlow` ordered timeline.
 4. I2 plural batch standby transition and active ids by side, with no one-active-root assumption.
 5. I2 identity/Player/Partner versus Enemy/P2 eligibility matrix, then standby-root CNS schedule and same-tick TagIn/TagOut trace as a later separate gate.

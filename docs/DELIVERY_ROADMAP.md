@@ -153,7 +153,7 @@ Exit gate:
 | Step | Work package | Evidence that moves project |
 | --- | --- | --- |
 | 1 | G1 current-truth reconciliation | Remove already-closed HitDef/presentation/schedule/Common1/guard gates from active queues and separate I1 from I2. |
-| 2 | I2 root participation | Prove P3-P8/cap/reset/lifecycle breadth and publish `RuntimeRootParticipation/v0`-style diagnostics without activation or gameplay. |
+| 2 | I2 root participation - done | P3-P8/cap/reset/lifecycle breadth and `RuntimeRootParticipation/v0` diagnostics landed without activation or gameplay. |
 | 3 | R1 post-KO timeline | Required KO/time-over ordering plus bounded `NoKOSlow`, with no motif/team/continue claim. |
 | 4 | I2 activation then redirects | Plural active-root projection and batch standby transition first; identity/Partner/Enemy/P2 matrix second. |
 | 5 | I2 standby schedule | Standby roots execute CNS in the explicit profile and same-tick TagIn/TagOut visibility is trace-gated before later gameplay consumers. |

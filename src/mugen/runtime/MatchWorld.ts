@@ -30,6 +30,10 @@ import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile"
 import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
 import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTeamState } from "./types";
+import {
+  RuntimeRootParticipationWorld,
+  type RuntimeRootParticipationDiagnostic,
+} from "./RuntimeRootParticipationSystem";
 
 export type MatchWorldOptions = {
   p1?: DemoFighterDefinition;
@@ -78,9 +82,11 @@ export type MatchWorldActorRegistrySnapshot = {
   lifecycle: MatchWorldActorLifecycleSummary;
   teamRoster: RuntimeTeamRosterDiagnostic;
   teamSides: Record<1 | 2, string[]>;
+  rootParticipation: RuntimeRootParticipationDiagnostic;
 };
 
 const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
+const rootParticipationWorld = new RuntimeRootParticipationWorld();
 
 export class MatchWorld {
   private runtime: PlayableMatchRuntime;
@@ -151,7 +157,13 @@ export class MatchWorld {
     }
     const records = buildActorRecordBases(snapshot, this.targetWorld);
     const lifecycle = this.lifecycleTracker.update(snapshot.tick, records);
-    this.actorRegistry = buildMatchWorldActorRegistryFromRecords(records, lifecycle, effectStores, this.targetWorld);
+    this.actorRegistry = buildMatchWorldActorRegistryFromRecords(
+      records,
+      lifecycle,
+      effectStores,
+      this.targetWorld,
+      snapshot.actors.map((actor) => actor.id),
+    );
     this.registryKey = key;
     return this.actorRegistry;
   }
@@ -168,6 +180,7 @@ export function buildMatchWorldActorRegistry(snapshot: MugenSnapshot): MatchWorl
     createStatelessLifecycle(snapshot.tick, records),
     inferEffectStoresFromSnapshot(snapshot),
     new RuntimeTargetWorld(),
+    snapshot.actors.map((actor) => actor.id),
   );
 }
 
@@ -176,6 +189,7 @@ function buildMatchWorldActorRegistryFromRecords(
   lifecycle: MatchWorldActorLifecycleSummary,
   effectStores: RuntimeEffectActorStoreSummary[],
   targetWorld: RuntimeTargetWorld,
+  playablePairRootIds: readonly string[],
 ): MatchWorldActorRegistrySnapshot {
   const actors = records.map((actor) => ({
     ...actor,
@@ -208,6 +222,22 @@ function buildMatchWorldActorRegistryFromRecords(
   }
 
   const teamRoster = buildTeamRosterDiagnostic(actors);
+  const roots = actors
+    .filter((actor) => actor.kind === "player" && actor.id === actor.rootId)
+    .map((actor) => ({
+      id: actor.id,
+      side: requireRootSide(actor.id, teamRoster),
+      teamState: actor.teamState,
+    }));
+  const rootParticipation = rootParticipationWorld.diagnostic({
+    roots,
+    scheduledRootIds: playablePairRootIds,
+    inputOwnedRootIds: playablePairRootIds,
+    combatOwnedRootIds: playablePairRootIds,
+    roundOwnedRootIds: playablePairRootIds,
+    presentedRootIds: playablePairRootIds,
+    effectStoreOwnedRootIds: effectStores.map((store) => store.ownerId),
+  });
   return {
     actors,
     byId,
@@ -219,11 +249,20 @@ function buildMatchWorldActorRegistryFromRecords(
     effectStores: cloneEffectStoreSummaries(effectStores),
     lifecycle,
     teamRoster,
+    rootParticipation,
     teamSides: {
       1: teamRoster.characters.filter((actor) => actor.side === 1).map((actor) => actor.id),
       2: teamRoster.characters.filter((actor) => actor.side === 2).map((actor) => actor.id),
     },
   };
+}
+
+function requireRootSide(id: string, roster: RuntimeTeamRosterDiagnostic): 1 | 2 {
+  const side = roster.characters.find((character) => character.id === id)?.side;
+  if (side !== 1 && side !== 2) {
+    throw new Error(`Root actor ${id} is missing a team side`);
+  }
+  return side;
 }
 
 function buildTeamRosterDiagnostic(actors: readonly MatchWorldActorRecord[]): RuntimeTeamRosterDiagnostic {
