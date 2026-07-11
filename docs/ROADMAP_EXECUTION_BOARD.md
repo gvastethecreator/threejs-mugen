@@ -868,7 +868,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, participation diagnostics, plural structural activation, root selection, standby CNS scheduling, static Tag optional parameters, explicit Tag order/leader, dynamic booleans, and dynamic caller/partner states. | Wayfinder 072: dynamic caller-relative `partner`, then separately specify dynamic order and redirects. | No multi-root input/combat/round/presentation/effect-store gameplay, dynamic partner identity/order/redirect execution, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, participation diagnostics, plural structural activation, root selection, standby CNS scheduling, static Tag optional parameters, explicit Tag order/leader, dynamic booleans, dynamic partner identity, and dynamic caller/partner states. | Wayfinder 073: dynamic one-based `memberno`, then dynamic leader and redirects. | No multi-root input/combat/round/presentation/effect-store gameplay, dynamic order/redirect execution, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -879,8 +879,8 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 dynamic Tag partner selection: resolve TagIn/TagOut `partner` through live caller CNS context while preserving caller-relative identity, omission defaults, and aggregate validation.
-2. I2 dynamic Tag order: separately gate member/leader expressions plus RedirectID before any gameplay widening.
+1. I2 dynamic Tag member order: resolve one-based `memberno` through live caller CNS context while preserving explicit Tag mode and aggregate validation.
+2. I2 dynamic Tag leader: separately gate stable-PlayerNo leader expressions before RedirectID or gameplay widening.
 3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 4. I2 gameplay ownership: only after dynamic controller semantics, specify active-root input/combat/round/presentation/resource consumers independently.
 5. I2 trace promotion: add required Tag traces when bounded behavior reaches a stable cross-system oracle; current unit/integration proof intentionally leaves trace checksums unchanged.
@@ -900,8 +900,8 @@ Issue: `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`
 
 Current checkpoint and next build:
 
-- Closed: P3-P8 ownership/participation, plural structural activation, identity/Partner versus Enemy/P2 selection, standby CNS scheduling, static Tag options, explicit member/leader order, all dynamic booleans, and dynamic caller/partner states.
-- Next: Wayfinder 072 dynamic Tag `partner`, using caller-relative cyclic selection plus the existing deferred expression and aggregate-validation boundaries.
+- Closed: P3-P8 ownership/participation, plural structural activation, identity/Partner versus Enemy/P2 selection, standby CNS scheduling, static Tag options, explicit member/leader order, all dynamic booleans, dynamic partner identity, and dynamic caller/partner states.
+- Next: Wayfinder 073 dynamic Tag `memberno`, using one-based explicit Tag order plus the existing deferred expression and aggregate-validation boundaries.
 - Keep scheduler, input, effects, combat, round, camera, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:

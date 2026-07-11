@@ -1936,6 +1936,14 @@ function resolveDynamicTeamStandbyOperation(
     const { selfExpression: _selfExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, self: resolvedSelf !== 0 };
   }
+  if (operation.partnerOrdinalExpression !== undefined) {
+    const resolvedPartnerOrdinal = evaluateRuntimeControllerNumber(operation.partnerOrdinalExpression, fighter.runtime, context);
+    if (resolvedPartnerOrdinal === undefined) return undefined;
+    const partnerOrdinal = Math.trunc(resolvedPartnerOrdinal);
+    if (partnerOrdinal < 0) return undefined;
+    const { partnerOrdinalExpression: _partnerOrdinalExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, partnerOrdinal };
+  }
   if (operation.callerControlExpression !== undefined) {
     const resolvedControl = evaluateRuntimeControllerNumber(operation.callerControlExpression, fighter.runtime, context);
     if (resolvedControl === undefined) return undefined;

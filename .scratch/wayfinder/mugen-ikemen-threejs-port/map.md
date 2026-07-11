@@ -91,6 +91,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute dynamic Tag caller state](tickets/070-execute-dynamic-tag-caller-state.md) - resolve caller state number before state availability and aggregate mutation.
 - [Execute dynamic Tag partner state](tickets/071-execute-dynamic-tag-partner-state.md) - resolve partner state with static partner identity and owned-state validation.
 - [Execute dynamic Tag partner selection](tickets/072-execute-dynamic-tag-partner.md) - resolve caller-relative partner ordinal before aggregate target validation.
+- [Execute dynamic Tag member order](tickets/073-execute-dynamic-tag-member-order.md) - resolve one-based mutable member position before Tag-order validation.
 
 ## Not Yet Specified
 

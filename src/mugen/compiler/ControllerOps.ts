@@ -519,6 +519,7 @@ export type TeamStandbyControllerOp = {
   self: boolean;
   selfExpression?: string;
   partnerOrdinal?: number;
+  partnerOrdinalExpression?: string;
   callerStateNo?: number;
   callerStateExpression?: string;
   partnerStateNo?: number;
@@ -738,14 +739,20 @@ function compileTeamStandbyControllerOp(
     return undefined;
   }
   let partnerOrdinal: number | undefined;
+  let partnerOrdinalExpression: string | undefined;
   if (partnerRaw !== undefined) {
-    partnerOrdinal = firstNumber(partnerRaw);
+    const normalizedPartner = partnerRaw.trim();
+    partnerOrdinal = normalizedPartner ? Number(normalizedPartner) : undefined;
     if (partnerOrdinal === undefined || !Number.isInteger(partnerOrdinal) || partnerOrdinal < 0) {
-      return undefined;
+      if (!hasValidTagExpressionStructure(partnerRaw)) return undefined;
+      const compiledPartnerOrdinal = compileExpression(partnerRaw);
+      if (compiledPartnerOrdinal.supportLevel === "unsupported") return undefined;
+      partnerOrdinal = undefined;
+      partnerOrdinalExpression = compiledPartnerOrdinal.normalized;
     }
   }
   const selfRaw = findParam(controller, "self");
-  let self = partnerOrdinal === undefined;
+  let self = partnerRaw === undefined;
   let selfExpression: string | undefined;
   if (selfRaw !== undefined) {
     const selfValue = Number(selfRaw.trim());
@@ -823,6 +830,7 @@ function compileTeamStandbyControllerOp(
     self,
     ...(selfExpression === undefined ? {} : { selfExpression }),
     ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),
+    ...(partnerOrdinalExpression === undefined ? {} : { partnerOrdinalExpression }),
     ...(callerStateNo === undefined ? {} : { callerStateNo }),
     ...(callerStateExpression === undefined ? {} : { callerStateExpression }),
     ...(partnerStateNo === undefined ? {} : { partnerStateNo }),

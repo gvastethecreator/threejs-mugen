@@ -417,6 +417,136 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
   });
 
+  it("selects a dynamic TagIn partner and validates that partner's own state", () => {
+    const selectedPartner = createImportedFixture({
+      id: "dynamic-selected-partner",
+      displayName: "Dynamic Selected Partner",
+      withStateMove: false,
+      extraStateNos: [201],
+    });
+    const partnerTagIn = createImportedFixture({
+      id: "dynamic-partner-tag-in",
+      displayName: "Dynamic Partner Tag In",
+      withStateMove: false,
+      passivePreTagVarSet: { trigger: "1", index: 0, value: 1 },
+      passiveTagController: "TagIn",
+      passiveTagPartner: "var(0) + 0.9",
+      passiveTagPartnerStateNo: 201,
+      passiveTagPartnerControl: 1,
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!, selectedPartner, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const firstPartner = snapshot.reserveActors?.find((actor) => actor.id === "p3");
+    const selected = snapshot.reserveActors?.find((actor) => actor.id === "p5");
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(1);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(firstPartner?.runtime.teamState?.standby).toBe(true);
+    expect(selected?.runtime.teamState?.standby).toBe(false);
+    expect(selected?.runtime.stateNo).toBe(201);
+    expect(selected?.runtime.ctrl).toBe(true);
+    expect(selected?.runtime.customState).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("selects a dynamic TagOut partner without defaulting omitted self", () => {
+    const selectedPartner = createImportedFixture({
+      id: "dynamic-tagout-selected-partner",
+      displayName: "Dynamic TagOut Selected Partner",
+      withStateMove: false,
+      extraStateNos: [201],
+    });
+    const partnerTagOut = createImportedFixture({
+      id: "dynamic-partner-tag-out",
+      displayName: "Dynamic Partner Tag Out",
+      withStateMove: false,
+      passivePreTagVarSet: { trigger: "1", index: 0, value: 1 },
+      passiveTagController: "TagOut",
+      passiveTagPartner: "var(0)",
+      passiveTagPartnerStateNo: 201,
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!, selectedPartner, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const selected = snapshot.reserveActors?.find((actor) => actor.id === "p5");
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p3")?.runtime.stateNo).toBe(0);
+    expect(selected?.runtime.teamState?.standby).toBe(true);
+    expect(selected?.runtime.stateNo).toBe(201);
+    expect(selected?.runtime.customState).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it("rejects a negative dynamic Tag partner before mutating explicit self", () => {
+    const partnerTagOut = createImportedFixture({
+      id: "negative-dynamic-partner-tag-out",
+      displayName: "Negative Dynamic Partner Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagSelf: 1,
+      passiveTagPartner: "var(0) - 1",
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p3")?.runtime.teamState?.standby).toBe(true);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("rolls back explicit self when a dynamic Tag partner target is missing", () => {
+    const partnerTagOut = createImportedFixture({
+      id: "missing-dynamic-partner-tag-out",
+      displayName: "Missing Dynamic Partner Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagSelf: 1,
+      passiveTagPartner: "var(0)",
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout partner 0 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("rolls back a dynamic partner target when its requested state is unavailable", () => {
+    const partnerTagIn = createImportedFixture({
+      id: "unavailable-state-dynamic-partner-tag-in",
+      displayName: "Unavailable State Dynamic Partner Tag In",
+      withStateMove: false,
+      passivePreTagVarSet: { trigger: "1", index: 0, value: 1 },
+      passiveTagController: "TagIn",
+      passiveTagSelf: 1,
+      passiveTagPartner: "var(0)",
+      passiveTagPartnerStateNo: 9999,
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!, demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const selected = snapshot.reserveActors?.find((actor) => actor.id === "p5");
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(selected?.runtime.teamState?.standby).toBe(true);
+    expect(selected?.runtime.stateNo).toBe(0);
+    expect(snapshot.logs).toContain("Blocked tagin partner state 9999 for p5");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
   it("fails closed when static Tag partner has no same-side root", () => {
     const partnerTagOut = createImportedFixture({
       id: "missing-partner-tag-out",
@@ -3054,7 +3184,7 @@ function createImportedFixture(
     passiveAssertSpecialTrigger?: string;
     passiveTagController?: "TagIn" | "TagOut";
     passiveTagSelf?: number | string;
-    passiveTagPartner?: number;
+    passiveTagPartner?: number | string;
     passiveTagStateNo?: number | string;
     passiveTagPartnerStateNo?: number | string;
     passiveTagControl?: number | string;

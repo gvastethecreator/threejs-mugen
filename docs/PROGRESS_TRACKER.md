@@ -1249,6 +1249,13 @@ Every compatibility milestone should leave:
 - Proved same-tick variable-selected TagIn/TagOut state, post-entry partner control, and negative/unavailable/missing-partner rollback.
 - Global status: caller and partner Tag state numbers plus all boolean axes execute dynamically; partner identity/order and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN Tag partner selection
+
+- Added deferred `partnerOrdinalExpression` for TagIn/TagOut while preserving authored partner-sensitive self defaults.
+- Resolves/truncates in caller context before cyclic same-side target and aggregate validation.
+- Proved P5 variable selection with partner-owned state/control, TagOut omission behavior, and negative/missing/state rollback.
+- Global status: Tag partner identity, state numbers, and all boolean axes execute dynamically; member/leader order and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM
