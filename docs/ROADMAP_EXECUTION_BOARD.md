@@ -1,8 +1,12 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN SuperPause opposing-team defense (2026-07-10)
+## Latest closeout - IKEMEN team topology (2026-07-10)
 
-Explicit `ikemen-go` now resolves omitted/non-positive `p2defmul` through the game-level `1.5` default, accepts a match-level override, and projects a separate temporary defense multiplier to the current opposing root plus existing helpers without target memory. Required `synthetic-imported-ikemen-superpause-team-defense.json` checksum `76873f0d` / final `b4425c66` passes inside 538/538 traces. Continue at Wayfinder 041 for simul/tag team topology. No score movement.
+`RuntimeTeamTopologyWorld` now maps interleaved P1-P8 root identities to team sides, inherits helper side through `rootId`, and enumerates complete opposing characters in stable order. CNS `TeamSide` and explicit-IKEMEN SuperPause defense use the shared policy; 538/538 traces remain green with team-defense checksum `76873f0d` / final `b4425c66`. Continue at Wayfinder 042 for active/standby eligibility and a public multi-root roster diagnostic. No score movement.
+
+## Previous closeout - IKEMEN SuperPause opposing-team defense (2026-07-10)
+
+Explicit `ikemen-go` now resolves omitted/non-positive `p2defmul` through the game-level `1.5` default, accepts a match-level override, and projects a separate temporary defense multiplier to the current opposing root plus existing helpers without target memory. Required `synthetic-imported-ikemen-superpause-team-defense.json` checksum `76873f0d` / final `b4425c66` passes inside 538/538 traces. Its Wayfinder 041 frontier is resolved by the newer team-topology closeout. No score movement.
 
 ## Previous closeout - IKEMEN helper-owned Pause (2026-07-10)
 
@@ -858,7 +862,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with many typed controller/trigger trace gates. | HitDef priority policy, direct player/helper contact traces, semantic renderer order, then schedule/Common1/guard evidence. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | Scanner/reporting plus root/helper RunOrder, separate buffers, actor-local movement, deferred activation, helper-created Pause/SuperPause, and bounded opposing-root/helper defense fallback. | Resolve Wayfinder 041: pair-only roster to bounded simul/tag team topology. | No global config loading, helper defender combat proof, nested helper ancestry, exact buffer/audio/hitpause parity, teams/simul/tag execution, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
+| IKEMEN | Scanner/reporting plus root/helper RunOrder, separate buffers, Pause/SuperPause ownership/defense, and shared P1-P8 complete-character team topology. | Resolve Wayfinder 042: active/standby eligibility plus public multi-root roster diagnostics before scheduling. | No multi-root construction/scheduling/input/combat/round/presentation, tag transitions, partner redirects, global config loading, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |

@@ -126,6 +126,8 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("TeamSide + EnemyNear, TeamSide", { actor, opponent })).toBe(3);
     expect(runtimeActorTeamSide(runtimeActor("p1-helper-0", "Author"))).toBe(1);
     expect(runtimeActorTeamSide(runtimeActor("p2-helper-0", "Rival"))).toBe(2);
+    expect(runtimeActorTeamSide(runtimeActor("p3-helper-0", "Partner"))).toBe(1);
+    expect(runtimeActorTeamSide(runtimeActor("p4", "Enemy Partner"))).toBe(2);
     expect(runtimeActorTeamSide(runtimeActor("training", "Neutral"))).toBe(0);
   });
 

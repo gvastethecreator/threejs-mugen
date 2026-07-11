@@ -83,6 +83,7 @@ import { RuntimeMatchActorAdvanceWorld } from "./RuntimeMatchActorAdvanceSystem"
 import { RuntimePausedActorAdvanceWorld } from "./RuntimePausedActorAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { defaultSuperPauseTargetDefenseValue } from "./SuperPauseTargetDefensePolicy";
+import { RuntimeTeamTopologyWorld } from "./RuntimeTeamTopologySystem";
 import {
   RuntimeFighterRunOrderWorld,
   type RuntimeRootRunOrderResult,
@@ -206,6 +207,7 @@ const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
 const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
+const runtimeTeamTopologyWorld = new RuntimeTeamTopologyWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
@@ -994,7 +996,7 @@ export class PlayableMatchRuntime {
       resolveParams,
       defaultTargetDefenseValue: () => this.superPauseTargetDefenseValue,
       applyTargetDefenseMultiplier: (_actor, multiplier, pause) =>
-        this.applyHelperTargetDefenseMultiplier(owner, helper, multiplier, pause),
+        this.applyHelperTargetDefenseMultiplier(helper, multiplier, pause),
       log: (message) => this.logs.unshift(message),
     });
     if (result.pause?.type === "Pause") {
@@ -1014,22 +1016,19 @@ export class PlayableMatchRuntime {
     if (pause?.type !== "SuperPause") {
       return 0;
     }
-    const opponent = fighter.id === this.p1.id ? this.p2 : this.p1;
     const targets = this.runtimeProfile === "ikemen-go"
-      ? this.opposingTeamDefenseActors(opponent)
-      : fighter.targetWorld.resolveCandidates(fighter, [opponent]);
+      ? this.opposingTeamDefenseActors(fighter)
+      : fighter.targetWorld.resolveCandidates(fighter, [fighter.id === this.p1.id ? this.p2 : this.p1]);
     return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
   }
 
   private applyHelperTargetDefenseMultiplier(
-    owner: FighterMatchState,
     helper: RuntimeHelper,
     multiplier: number,
     pause: RuntimeMatchPause,
   ): number {
-    const opponent = owner === this.p1 ? this.p2 : this.p1;
     const targets = this.runtimeProfile === "ikemen-go"
-      ? this.opposingTeamDefenseActors(opponent)
+      ? this.opposingTeamDefenseActors(helper)
       : this.targetWorld.resolveCandidates(
           {
             id: helper.serialId,
@@ -1042,8 +1041,18 @@ export class PlayableMatchRuntime {
     return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
   }
 
-  private opposingTeamDefenseActors(opponent: FighterMatchState): Array<FighterMatchState | RuntimeHelper> {
-    return [opponent, ...this.effectActorWorld.helpers(opponent.id)];
+  private opposingTeamDefenseActors(
+    source: FighterMatchState | RuntimeHelper,
+  ): Array<FighterMatchState | RuntimeHelper> {
+    const characters = [
+      ...this.matchRoster().actors.map((actor) => ({ id: actor.id, actor })),
+      ...this.effectActorWorld.helpers(this.p1.id).map((actor) => ({ id: actor.serialId, rootId: actor.rootId, actor })),
+      ...this.effectActorWorld.helpers(this.p2.id).map((actor) => ({ id: actor.serialId, rootId: actor.rootId, actor })),
+    ];
+    const sourceEntry = characters.find((entry) => entry.actor === source);
+    return sourceEntry
+      ? runtimeTeamTopologyWorld.create(characters).opposingCharactersFor(sourceEntry).map((entry) => entry.actor)
+      : [];
   }
 
   private applyTargetDefenseMultiplierToActors(

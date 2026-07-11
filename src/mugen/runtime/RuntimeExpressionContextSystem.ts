@@ -7,6 +7,7 @@ import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./Eff
 import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
+import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 
@@ -247,14 +248,7 @@ export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, 
 }
 
 export function runtimeActorTeamSide(actor: Pick<RuntimeExpressionContextActor, "id">): number {
-  const normalized = actor.id.trim().toLowerCase();
-  if (normalized === "p1" || normalized.startsWith("p1-")) {
-    return 1;
-  }
-  if (normalized === "p2" || normalized.startsWith("p2-")) {
-    return 2;
-  }
-  return 0;
+  return runtimeTeamSide(actor) ?? 0;
 }
 
 export function runtimeDefinitionConst(definition: Pick<RuntimeExpressionContextDefinition, "constants">, name: string): number | undefined {
