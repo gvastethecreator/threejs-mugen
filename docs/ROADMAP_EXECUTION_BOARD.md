@@ -1,8 +1,8 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN team topology (2026-07-10)
+## Latest closeout - IKEMEN active team eligibility (2026-07-11)
 
-`RuntimeTeamTopologyWorld` now maps interleaved P1-P8 root identities to team sides, inherits helper side through `rootId`, and enumerates complete opposing characters in stable order. CNS `TeamSide` and explicit-IKEMEN SuperPause defense use the shared policy; 538/538 traces remain green with team-defense checksum `76873f0d` / final `b4425c66`. Continue at Wayfinder 042 for active/standby eligibility and a public multi-root roster diagnostic. No score movement.
+`RuntimeTeamTopologyWorld` now keeps complete-team enumeration separate from source-backed active eligibility. Disabled, standby, and neutral characters fail closed; EnemyNear projects active opposing roots; P2 projects active opposing player-types that have not reached `overKo`. `RuntimeTeamRoster/v0` exposes a P1-P4-plus-helper diagnostic before playable scheduling changes. Continue at Wayfinder 043 for the multi-root registry ownership cut. No score movement.
 
 ## Previous closeout - IKEMEN SuperPause opposing-team defense (2026-07-10)
 
@@ -862,7 +862,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with many typed controller/trigger trace gates. | HitDef priority policy, direct player/helper contact traces, semantic renderer order, then schedule/Common1/guard evidence. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | Scanner/reporting plus root/helper RunOrder, separate buffers, Pause/SuperPause ownership/defense, and shared P1-P8 complete-character team topology. | Resolve Wayfinder 042: active/standby eligibility plus public multi-root roster diagnostics before scheduling. | No multi-root construction/scheduling/input/combat/round/presentation, tag transitions, partner redirects, global config loading, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
+| IKEMEN | Scanner/reporting plus root/helper RunOrder, separate buffers, Pause/SuperPause ownership/defense, shared P1-P8 topology, active EnemyNear/P2 eligibility, and `RuntimeTeamRoster/v0` diagnostics. | Resolve Wayfinder 043: introduce a public multi-root registry without changing the two-root scheduler. | No multi-root construction/scheduling/input/combat/round/presentation, distance/cache parity, tag transitions, partner redirects, global config loading, ZSS/Lua execution, rollback, netplay, or broad IKEMEN runtime semantics. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |

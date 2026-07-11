@@ -1,7 +1,7 @@
 # Choose next gap after IKEMEN team topology
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -17,4 +17,6 @@ What bounded active/standby character state and public multi-root roster diagnos
 
 ## Answer
 
-Pending eligibility/diagnostic design and fixture audit.
+Add explicit `disabled`, `standby`, `overKo`, and `playerType` state to topology entries without yet changing the two-root playable scheduler. Complete opposing-team enumeration remains unchanged. `EnemyNear` candidates are active opposing roots; P2 candidates are active opposing player-types that have not reached `overKo`. `RuntimeTeamRoster/v0` exposes a serializable P1-P4-plus-helper diagnostic so future roster construction can be inspected before it is allowed into scheduling or combat.
+
+Evidence: focused topology tests, TypeScript 7 typecheck, full suite/build/trace/boundary gates recorded in the 2026-07-11 checkpoint report.

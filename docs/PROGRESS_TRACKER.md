@@ -1,6 +1,14 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-10 IKEMEN team topology
+## Global report - 2026-07-11 IKEMEN team eligibility
+
+- Runtime/IKEMEN: complete-team enumeration now remains distinct from active EnemyNear/P2 candidates; disabled, standby, neutral, and P2 `overKo` states are explicitly filtered from the appropriate projections.
+- Diagnostics: `RuntimeTeamRoster/v0` serializes P1-P4 side/kind/status/player-type plus explicit base-enemy, EnemyNear, and P2 candidate flags for registry integration tests.
+- Toolchain: TypeScript 7.0.2 direct route re-audited with 0 errors / 0 warnings.
+- Score: unchanged. No playable multi-root registry, scheduler, combat, round, or presentation path exists yet.
+- Next: Wayfinder 043, public multi-root registry ownership via expand-contract.
+
+## Previous report - 2026-07-10 IKEMEN team topology
 
 - IKEMEN runtime: shared topology now resolves P1/P3/P5/P7 versus P2/P4/P6/P8 and helper root inheritance.
 - Consumers: CNS `TeamSide` and SuperPause complete opposing-character projection use one stable policy; unknown/neutral ids fail closed.
