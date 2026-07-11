@@ -47,6 +47,13 @@ export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
 export type RuntimeHelper = {
   serialId: string;
+  playerId?: number;
+  playerNo?: number;
+  parentPlayerId?: number;
+  parentPlayerNo?: number;
+  rootPlayerId?: number;
+  rootPlayerNo?: number;
+  destroyed?: boolean;
   runOrderId: number;
   runOrder?: number;
   helperId?: number;
@@ -189,6 +196,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
+    destroyed: false,
     runOrderId: input.runOrderId ?? Number.MAX_SAFE_INTEGER,
     helperId: operation?.helperId ?? firstNumber(findControllerParam(input.controller, "id")),
     name: operation?.name ?? stripMugenString(findControllerParam(input.controller, "name")),
@@ -364,11 +372,17 @@ export function runRuntimeHelperStateControllers(
       const actor = { runtime: helperRuntimeState(helper) };
       helperControllerDispatchWorld.apply(actor, controller, {
         context: {
+          playerId: expressionContext.playerId,
+          playerNo: expressionContext.playerNo,
           stageBounds: options.stageBounds,
           stageTime: options.stageTime,
           opponent: expressionContext.opponent,
           parent: expressionContext.parent,
+          parentPlayerId: expressionContext.parentPlayerId,
+          parentPlayerNo: expressionContext.parentPlayerNo,
           root: expressionContext.root,
+          rootPlayerId: expressionContext.rootPlayerId,
+          rootPlayerNo: expressionContext.rootPlayerNo,
           target: expressionContext.target,
           teamSide: expressionContext.teamSide,
           opponentTeamSide: expressionContext.opponentTeamSide,
@@ -1070,10 +1084,16 @@ function helperExpressionContext(
   const currentOpponent = opponentRoster[0];
   return {
     self: helperRuntimeState(helper),
+    playerId: helper.playerId,
+    playerNo: helper.playerNo,
     opponent: currentOpponent ? cloneRuntimeStateForRedirect(currentOpponent.state) : undefined,
     enemyNear: (index: number) => helperEnemyNearRedirect(helper, opponentRoster, index),
     parent: options.parentState ? cloneRuntimeStateForRedirect(options.parentState) : undefined,
+    parentPlayerId: helper.parentPlayerId,
+    parentPlayerNo: helper.parentPlayerNo,
     root: options.rootState ? cloneRuntimeStateForRedirect(options.rootState) : undefined,
+    rootPlayerId: helper.rootPlayerId,
+    rootPlayerNo: helper.rootPlayerNo,
     teamSide: runtimeActorTeamSide({ id: helper.ownerId }),
     opponentTeamSide: currentOpponent?.id === undefined ? undefined : runtimeActorTeamSide({ id: currentOpponent.id }),
     parentTeamSide: runtimeActorTeamSide({ id: helper.ownerId }),

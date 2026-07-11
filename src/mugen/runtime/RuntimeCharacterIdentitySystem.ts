@@ -4,6 +4,7 @@ export type RuntimeCharacterIdentityActor = {
   id: string;
   playerNo: number;
   rootId?: string;
+  parentId?: string;
   disabled?: boolean;
   destroyed?: boolean;
   standby?: boolean;
@@ -15,6 +16,7 @@ export type RuntimeCharacterIdentityDiagnosticEntry = {
   playerNo: number;
   kind: "root" | "helper";
   rootId?: string;
+  parentId?: string;
   disabled: boolean;
   destroyed: boolean;
   standby: boolean;
@@ -57,8 +59,19 @@ export class RuntimeCharacterIdentityRegistry<TActor extends RuntimeCharacterIde
     if (this.usedActorIds.has(actor.id)) {
       throw new Error(`Runtime character ${actor.id} was already registered`);
     }
-    if (actor.rootId !== undefined && !this.recordByActorId.has(actor.rootId)) {
+    const root = actor.rootId === undefined ? undefined : this.recordByActorId.get(actor.rootId)?.actor;
+    if (actor.rootId !== undefined && !root) {
       throw new Error(`Runtime character ${actor.id} has unknown root ${actor.rootId}`);
+    }
+    const parent = actor.parentId === undefined ? undefined : this.recordByActorId.get(actor.parentId)?.actor;
+    if (actor.parentId !== undefined && !parent) {
+      throw new Error(`Runtime character ${actor.id} has unknown parent ${actor.parentId}`);
+    }
+    if (root && root.playerNo !== actor.playerNo) {
+      throw new Error(`Runtime character ${actor.id} does not inherit root PlayerNo ${root.playerNo}`);
+    }
+    if (parent && parent.playerNo !== actor.playerNo) {
+      throw new Error(`Runtime character ${actor.id} does not inherit parent PlayerNo ${parent.playerNo}`);
     }
 
     const playerId = this.allocatePlayerId();
@@ -98,6 +111,7 @@ export class RuntimeCharacterIdentityRegistry<TActor extends RuntimeCharacterIde
         playerNo: actor.playerNo,
         kind: actor.rootId === undefined ? "root" as const : "helper" as const,
         ...(actor.rootId === undefined ? {} : { rootId: actor.rootId }),
+        ...(actor.parentId === undefined ? {} : { parentId: actor.parentId }),
         disabled: actor.disabled === true,
         destroyed: actor.destroyed === true,
         standby: actor.standby === true,
@@ -135,6 +149,7 @@ function orderInitialRoots<TActor extends RuntimeCharacterIdentityActor>(roots: 
   for (const root of roots) {
     validateCharacter(root);
     if (root.rootId !== undefined) throw new Error(`Initial runtime character ${root.id} is not a root`);
+    if (root.parentId !== undefined) throw new Error(`Initial runtime character ${root.id} has a parent`);
     if (actorIds.has(root.id)) throw new Error(`Duplicate initial runtime character id: ${root.id}`);
     if (playerNos.has(root.playerNo)) throw new Error(`Duplicate initial runtime PlayerNo: ${root.playerNo}`);
     actorIds.add(root.id);
@@ -153,6 +168,9 @@ function validateCharacter(actor: RuntimeCharacterIdentityActor): void {
   }
   if (actor.rootId !== undefined && !actor.rootId.trim()) {
     throw new Error(`Runtime character ${actor.id} has an empty root id`);
+  }
+  if (actor.parentId !== undefined && !actor.parentId.trim()) {
+    throw new Error(`Runtime character ${actor.id} has an empty parent id`);
   }
 }
 

@@ -189,6 +189,51 @@ describe("EffectActorSystem", () => {
     expect(world.countActors("p2", "helper")).toBe(0);
   });
 
+  it("reports Helper spawn and every world-owned removal route", () => {
+    const world = new RuntimeEffectActorWorld();
+    const events: string[] = [];
+    const stop = world.observeHelperLifecycle({
+      onSpawn: (helper) => events.push(`spawn:${helper.serialId}`),
+      onRemove: (helper) => events.push(`remove:${helper.serialId}`),
+    });
+
+    world.spawnHelper("p1", helperInput({ id: "41" }));
+    expect(world.removeHelpers("p1", 41)).toBe(1);
+    const destroyed = world.spawnHelper("p1", helperInput({ id: "42" }));
+    expect(world.destroyHelper("p1", destroyed.serialId)).toBe(true);
+    world.spawnHelper("p1", helperInput({ id: "43", removetime: "1" }));
+    world.advanceHelpers("p1", { bounds: { left: -160, right: 160 } });
+    world.spawnHelper("p2", helperInput({ id: "44" }));
+    world.reset();
+    stop();
+    world.spawnHelper("p1", helperInput({ id: "45" }));
+
+    expect(events).toEqual([
+      "spawn:p1-helper-0",
+      "remove:p1-helper-0",
+      "spawn:p1-helper-1",
+      "remove:p1-helper-1",
+      "spawn:p1-helper-2",
+      "remove:p1-helper-2",
+      "spawn:p2-helper-0",
+      "remove:p2-helper-0",
+    ]);
+  });
+
+  it("reports the oldest Helper removed by the bounded actor store", () => {
+    const world = new RuntimeEffectActorWorld();
+    const removed: string[] = [];
+    world.observeHelperLifecycle({ onRemove: (helper) => removed.push(helper.serialId) });
+
+    for (let index = 0; index < 17; index += 1) {
+      world.spawnHelper("p1", helperInput({ id: `${index}` }));
+    }
+
+    expect(world.helpers("p1")).toHaveLength(16);
+    expect(world.helpers("p1").some(({ serialId }) => serialId === "p1-helper-0")).toBe(false);
+    expect(removed).toEqual(["p1-helper-0"]);
+  });
+
   it("runs a bounded helper-local state program for movement and animation", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

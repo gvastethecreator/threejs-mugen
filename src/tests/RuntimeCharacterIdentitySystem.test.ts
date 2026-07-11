@@ -67,15 +67,24 @@ describe("RuntimeCharacterIdentityWorld", () => {
       actor("p1", 1),
       actor("p2", 2),
     ]);
-    const firstHelper = actor("p1-helper-0", 1, { rootId: "p1" });
-    const secondHelper = actor("p1-helper-1", 1, { rootId: "p1" });
+    const firstHelper = actor("p1-helper-0", 1, { rootId: "p1", parentId: "p1" });
+    const secondHelper = actor("p1-helper-1", 1, { rootId: "p1", parentId: "p1-helper-0" });
 
     expect(registry.register(firstHelper)).toBe(58);
+    expect(registry.diagnostic().characters[2]).toMatchObject({
+      actorId: "p1-helper-0",
+      playerId: 58,
+      playerNo: 1,
+      kind: "helper",
+      rootId: "p1",
+      parentId: "p1",
+    });
+    expect(registry.register(secondHelper)).toBe(59);
     expect(registry.unregister(firstHelper.id)).toBe(true);
     expect(registry.unregister(firstHelper.id)).toBe(false);
     expect(registry.findByPlayerId(58)).toBeUndefined();
-    expect(registry.register(secondHelper)).toBe(59);
-    expect(() => registry.register(actor("p1-helper-0", 1, { rootId: "p1" }))).toThrow("was already registered");
+    expect(registry.findByPlayerId(59)).toBe(secondHelper);
+    expect(() => registry.register(actor("p1-helper-0", 1, { rootId: "p1", parentId: "p1" }))).toThrow("was already registered");
     expect(registry.diagnostic().nextPlayerId).toBe(60);
   });
 
@@ -91,6 +100,10 @@ describe("RuntimeCharacterIdentityWorld", () => {
 
     const registry = world.create<RuntimeCharacterIdentityActor>([actor("p1", 1)]);
     expect(() => registry.register(actor("orphan-helper", 1, { rootId: "p9" }))).toThrow("unknown root p9");
+    expect(() => registry.register(actor("orphan-parent", 1, { rootId: "p1", parentId: "missing" }))).toThrow("unknown parent missing");
+    expect(() => registry.register(actor("wrong-playerno", 2, { rootId: "p1", parentId: "p1" }))).toThrow(
+      "does not inherit root PlayerNo 1",
+    );
   });
 
   it("publishes detached deeply frozen diagnostics while reading live eligibility", () => {

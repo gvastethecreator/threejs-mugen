@@ -87,6 +87,11 @@ export type RuntimeEffectActorStoreSummary = {
 
 export type RuntimeEffectActorCountKind = "explod" | "helper" | "projectile";
 
+export type RuntimeHelperLifecycleObserver = {
+  onSpawn?: (helper: RuntimeHelper) => void;
+  onRemove?: (helper: RuntimeHelper) => void;
+};
+
 export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOptions &
   RuntimeHelperAdvanceOptions & {
   stage?: Pick<MugenStageDefinition, "bounds">;
@@ -122,6 +127,7 @@ export class RuntimeEffectActorAdvanceWorld {
 export class RuntimeEffectActorWorld {
   private readonly stores: RuntimeEffectActorStores;
   private readonly projectileCombatWorld: RuntimeProjectileCombatWorld;
+  private readonly helperLifecycleObservers = new Set<RuntimeHelperLifecycleObserver>();
   private nextHelperRunOrderId = 3;
 
   constructor(
@@ -142,7 +148,13 @@ export class RuntimeEffectActorWorld {
     return this.stores[toEffectActorOwnerKey(ownerId)];
   }
 
+  observeHelperLifecycle(observer: RuntimeHelperLifecycleObserver): () => void {
+    this.helperLifecycleObservers.add(observer);
+    return () => this.helperLifecycleObservers.delete(observer);
+  }
+
   reset(): void {
+    this.notifyHelpersRemoved([...this.stores.p1.helpers, ...this.stores.p2.helpers]);
     resetRuntimeEffectActorStore(this.stores.p1);
     resetRuntimeEffectActorStore(this.stores.p2);
     this.nextHelperRunOrderId = 3;
@@ -222,22 +234,38 @@ export class RuntimeEffectActorWorld {
   }
 
   spawnHelper(ownerId: string, input: Omit<RuntimeHelperSpawnInput, "serialId">): RuntimeHelper {
-    return spawnRuntimeHelperActor(this.getStore(ownerId), ownerId, {
+    const store = this.getStore(ownerId);
+    const previous = [...store.helpers];
+    const helper = spawnRuntimeHelperActor(store, ownerId, {
       ...input,
       runOrderId: this.nextHelperRunOrderId++,
     });
+    this.notifyHelpersRemoved(previous.filter((candidate) => !store.helpers.includes(candidate)));
+    for (const observer of this.helperLifecycleObservers) observer.onSpawn?.(helper);
+    return helper;
   }
 
   removeHelpers(ownerId: string, helperId?: number): number {
-    return removeRuntimeHelperActors(this.getStore(ownerId), { helperId });
+    const store = this.getStore(ownerId);
+    const previous = [...store.helpers];
+    const removed = removeRuntimeHelperActors(store, { helperId });
+    this.notifyHelpersRemoved(previous.filter((candidate) => !store.helpers.includes(candidate)));
+    return removed;
   }
 
   destroyHelper(ownerId: string, serialId: string): boolean {
-    return removeRuntimeHelperActors(this.getStore(ownerId), { serialId }) > 0;
+    const store = this.getStore(ownerId);
+    const previous = [...store.helpers];
+    const destroyed = removeRuntimeHelperActors(store, { serialId }) > 0;
+    this.notifyHelpersRemoved(previous.filter((candidate) => !store.helpers.includes(candidate)));
+    return destroyed;
   }
 
   advanceHelpers(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
-    advanceRuntimeHelperActors(this.getStore(ownerId), stage, options);
+    const store = this.getStore(ownerId);
+    const previous = [...store.helpers];
+    advanceRuntimeHelperActors(store, stage, options);
+    this.notifyHelpersRemoved(previous.filter((candidate) => !store.helpers.includes(candidate)));
   }
 
   advanceHelper(
@@ -252,6 +280,7 @@ export class RuntimeEffectActorWorld {
     }
     if (!advanceRuntimeHelperActor(helper, stage, options)) {
       store.helpers = store.helpers.filter((candidate) => candidate !== helper);
+      this.notifyHelpersRemoved([helper]);
       return false;
     }
     return true;
@@ -329,6 +358,12 @@ export class RuntimeEffectActorWorld {
 
   projectileSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {
     return runtimeProjectileActorsToSnapshots(this.getStore(ownerId), sourceStateNo);
+  }
+
+  private notifyHelpersRemoved(helpers: readonly RuntimeHelper[]): void {
+    for (const helper of helpers) {
+      for (const observer of this.helperLifecycleObservers) observer.onRemove?.(helper);
+    }
   }
 }
 

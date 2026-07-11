@@ -4,7 +4,7 @@ import { parseCmd } from "../mugen/parsers/CmdParser";
 import { parseCns } from "../mugen/parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
 import { trainingStage } from "../mugen/runtime/demoStage";
-import { createRuntimeEffectActorStores } from "../mugen/runtime/EffectActorSystem";
+import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
 
 describe("PlayableMatchRuntime", () => {
@@ -124,6 +124,141 @@ value = ${identityStateNo}
     const legacy = new PlayableMatchRuntime(p1, demoFighters[1]!, trainingStage, { runtimeProfile: "mugen-1.1" });
     expect(legacy.getCharacterIdentity()).toBeUndefined();
     expect(legacy.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.stateNo).toBe(0);
+  });
+
+  it("registers Helpers before same-tick IKEMEN ID and PlayerNo expression execution", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-identity",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperStateControllers: `
+[State 1200, Helper PlayerID]
+type = VarSet
+trigger1 = 1
+v = 0
+value = ID
+
+[State 1200, Helper PlayerNo]
+type = VarSet
+trigger1 = 1
+v = 1
+value = PlayerNo
+
+[State 1200, Parent PlayerID]
+type = VarSet
+trigger1 = 1
+v = 2
+value = Parent, ID
+
+[State 1200, Parent PlayerNo]
+type = VarSet
+trigger1 = 1
+v = 3
+value = Parent, PlayerNo
+
+[State 1200, Root PlayerID]
+type = VarSet
+trigger1 = 1
+v = 4
+value = Root, ID
+
+[State 1200, Root PlayerNo]
+type = VarSet
+trigger1 = 1
+v = 5
+value = Root, PlayerNo
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = snapshot.effects?.find(({ id }) => id === "p1-helper-0");
+    expect(helper?.runtime.vars.slice(0, 6)).toEqual([58, 1, 56, 1, 56, 1]);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked tagout RedirectID 58 for p1"))).toBe(true);
+    expect(runtime.getCharacterIdentity()?.characters).toEqual([
+      expect.objectContaining({ actorId: "p1", playerId: 56, playerNo: 1, kind: "root" }),
+      expect.objectContaining({ actorId: "p2", playerId: 57, playerNo: 2, kind: "root" }),
+      expect.objectContaining({
+        actorId: "p1-helper-0",
+        playerId: 58,
+        playerNo: 1,
+        kind: "helper",
+        rootId: "p1",
+        parentId: "p1",
+        lookupEligible: true,
+      }),
+    ]);
+
+    const legacy = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+    const legacyHelper = legacy.step({ p1: new Set(["x"]), p2: new Set() }).effects?.find(({ id }) => id === "p1-helper-0");
+    expect(legacy.getCharacterIdentity()).toBeUndefined();
+    expect(legacyHelper?.runtime.vars.slice(0, 6)).toEqual([0, 0, 0, 0, 0, 0]);
+  });
+
+  it("unregisters expired Helpers without PlayerID reuse and starts a fresh identity epoch on reset", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-identity-lifecycle",
+      withStateMove: false,
+      withHelper: true,
+      helperRemoveTime: 2,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ actorId: "p1-helper-0", playerId: 58 });
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(runtime.getCharacterIdentity()).toMatchObject({ nextPlayerId: 59, characters: [{ actorId: "p1" }, { actorId: "p2" }] });
+
+    for (let frame = 0; frame < 80 && snapshot.actors[0]?.runtime.stateNo !== 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(0);
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ actorId: "p1-helper-1", playerId: 59 });
+
+    runtime.reset();
+    expect(runtime.getCharacterIdentity()).toMatchObject({
+      nextPlayerId: 58,
+      characters: [
+        { actorId: "p1", playerId: 56, playerNo: 1 },
+        { actorId: "p2", playerId: 57, playerNo: 2 },
+      ],
+    });
+    effectActorWorld.spawnHelper("p1", {
+      controller: {
+        stateId: 0,
+        type: "Helper",
+        params: {},
+        triggers: [],
+        line: 1,
+        rawHeader: "[State 0, Helper]",
+      },
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      spriteOwnerId: fighter.id,
+      spriteOwnerDefinitionId: fighter.id,
+      spriteOwnerLabel: fighter.displayName,
+      localCoord: fighter.localCoord,
+      animations: fighter.animations,
+      action: fighter.animations.get(920)!,
+      stateNo: 1200,
+      animNo: 920,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+    expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ actorId: "p1-helper-0", playerId: 58 });
   });
 
   it("executes redirected Tag params in caller context against the resolved IKEMEN root", () => {
@@ -3502,6 +3637,9 @@ function createImportedFixture(
     stateVelSet?: string;
     withProjectile?: boolean;
     withHelper?: boolean;
+    helperRedirectTag?: boolean;
+    helperRemoveTime?: number;
+    helperStateControllers?: string;
     withTargetControllers?: boolean;
     withBindToTarget?: boolean;
     bindToTargetPostype?: "Foot" | "Mid" | "Head";
@@ -3934,7 +4072,16 @@ pos = -44,-28
 postype = p1
 facing = 1
 sprpriority = 8
-removetime = 30
+removetime = ${options.helperRemoveTime ?? 30}
+`
+    : "";
+  const helperRedirectTag = options.helperRedirectTag
+    ? `
+[State 200, Blocked Helper Tag redirect]
+type = TagOut
+trigger1 = Time = 0
+redirectid = 58
+self = 1
 `
     : "";
   const targetControllers = options.withTargetControllers
@@ -4475,6 +4622,7 @@ ${animElemTimeVars}
 ${projectile}
 ${contactTriggerBranches}
 ${helper}
+${helperRedirectTag}
 ${targetControllers}
 ${bindToTarget}
 ${targetDrop}
@@ -4560,6 +4708,7 @@ movetype = I
 physics = N
 anim = 920
 ctrl = 0
+${options.helperStateControllers ?? ""}
 `);
   const move: DemoMove = {
     actionId: 200,

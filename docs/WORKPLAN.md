@@ -1283,6 +1283,8 @@ Explicit `ikemen-go` matches now integrate stable P1-P8 PlayerNo plus registry-o
 
 Root-only TagIn/TagOut `RedirectID` now resolves first from the original caller through the global numeric registry, then validates and applies every existing Tag axis relative to the redirected root while retaining original-caller expression ownership and concrete caller telemetry. Same-side, opponent, standby, partner/order, invalid-before-RNG, negative, and legacy routes are covered. Wayfinder 079 next integrates Helper identity lifecycle and explicit Helper `ID`/`PlayerNo` contexts without enabling Helper Tag redirects or gameplay.
 
+Root-created Helpers now join the global IKEMEN identity registry before same-tick execution, inherit root PlayerNo, expose explicit self/Parent/Root numeric identity, unregister through every world-owned removal path, and start a fresh source-backed identity epoch on reset. Legacy remains registry-free and Tag RedirectID still rejects Helper targets. Wayfinder 080 next maps exact Helper TagIn/TagOut redirect semantics before any Helper mutation is admitted.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

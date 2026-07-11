@@ -310,8 +310,9 @@ type SuperPauseTargetDefenseOverride = {
   pauseStartedAt: number;
   multiplier: number;
 };
-type RuntimeRootCharacterIdentity = RuntimeCharacterIdentityActor & {
-  fighter: FighterMatchState;
+type RuntimeMatchCharacterIdentity = RuntimeCharacterIdentityActor & {
+  fighter?: FighterMatchState;
+  helper?: RuntimeHelper;
 };
 
 export class PlayableMatchRuntime {
@@ -325,7 +326,7 @@ export class PlayableMatchRuntime {
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
   private readonly reserveRoots: FighterMatchState[];
-  private readonly characterIdentity?: RuntimeCharacterIdentityRegistry<RuntimeRootCharacterIdentity>;
+  private characterIdentity?: RuntimeCharacterIdentityRegistry<RuntimeMatchCharacterIdentity>;
   private readonly tagTeamOrder?: RuntimeTagTeamOrder;
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
@@ -437,11 +438,11 @@ export class PlayableMatchRuntime {
         }) ?? []
       : [];
     if (this.runtimeProfile === "ikemen-go") {
-      const identityRoots = [this.p1, this.p2, ...this.reserveRoots].map(createRootCharacterIdentity);
-      this.characterIdentity = characterIdentityWorld.create(identityRoots);
-      for (const identityRoot of identityRoots) {
-        identityRoot.fighter.playerId = this.characterIdentity.playerIdFor(identityRoot.id);
-      }
+      this.initializeCharacterIdentity();
+      this.effectActorWorld.observeHelperLifecycle({
+        onSpawn: (helper) => this.registerHelperCharacterIdentity(helper),
+        onRemove: (helper) => this.unregisterHelperCharacterIdentity(helper),
+      });
     }
     this.tagTeamOrder = tagTeamOrderWorld.create(
       [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
@@ -480,6 +481,54 @@ export class PlayableMatchRuntime {
           resolveParams,
         );
     }
+  }
+
+  private initializeCharacterIdentity(): void {
+    const identityRoots = this.characterRoots().map(createRootCharacterIdentity);
+    this.characterIdentity = characterIdentityWorld.create<RuntimeMatchCharacterIdentity>(identityRoots);
+    for (const identityRoot of identityRoots) {
+      identityRoot.fighter!.playerId = this.characterIdentity.playerIdFor(identityRoot.id);
+    }
+    for (const helper of [
+      ...this.effectActorWorld.helpers(this.p1.id),
+      ...this.effectActorWorld.helpers(this.p2.id),
+    ]) {
+      this.registerHelperCharacterIdentity(helper);
+    }
+  }
+
+  private registerHelperCharacterIdentity(helper: RuntimeHelper): void {
+    const registry = this.characterIdentity;
+    if (!registry) return;
+    const root = this.characterRoots().find((candidate) => candidate.id === helper.rootId);
+    if (root?.playerNo === undefined || root.playerId === undefined) {
+      throw new Error(`Missing IKEMEN root identity for Helper ${helper.serialId}`);
+    }
+    const parentPlayerId = registry.playerIdFor(helper.parentId);
+    if (parentPlayerId === undefined) {
+      throw new Error(`Missing IKEMEN parent identity ${helper.parentId} for Helper ${helper.serialId}`);
+    }
+    helper.destroyed = false;
+    helper.playerNo = root.playerNo;
+    helper.parentPlayerId = parentPlayerId;
+    helper.parentPlayerNo = root.playerNo;
+    helper.rootPlayerId = root.playerId;
+    helper.rootPlayerNo = root.playerNo;
+    const identity = createHelperCharacterIdentity(helper);
+    helper.playerId = registry.register(identity);
+  }
+
+  private unregisterHelperCharacterIdentity(helper: RuntimeHelper): void {
+    helper.destroyed = true;
+    this.characterIdentity?.unregister(helper.serialId);
+  }
+
+  private characterRoots(): FighterMatchState[] {
+    return [this.p1, this.p2, ...this.reserveRoots];
+  }
+
+  private rootForHelper(helper: RuntimeHelper): FighterMatchState {
+    return this.characterRoots().find((candidate) => candidate.id === helper.rootId) ?? this.p1;
   }
 
   private enterHelperOwnedTargetState(
@@ -737,8 +786,8 @@ export class PlayableMatchRuntime {
             },
             advanceHelper: (helper) => {
               recordPhase("helper:controllers", helper.serialId);
-              const owner = helper.ownerId === this.p2.id ? this.p2 : this.p1;
-              const opponent = owner === this.p1 ? this.p2 : this.p1;
+              const owner = this.rootForHelper(helper);
+              const opponent = this.opponentForRoot(owner);
               this.effectLifecycleWorld.advanceHelper(owner, helper, this.stage, opponent, {
                 gameSpace,
                 stageTime: this.tick,
@@ -985,8 +1034,8 @@ export class PlayableMatchRuntime {
         canAdvanceHelper: (helper, pauseType) => canAdvanceRuntimeHelper(helper, pauseType),
         advanceHelper: (helper, pauseType) => {
           recordPhase("helper:controllers", helper.serialId);
-          const owner = helper.ownerId === this.p2.id ? this.p2 : this.p1;
-          const opponent = owner === this.p1 ? this.p2 : this.p1;
+          const owner = this.rootForHelper(helper);
+          const opponent = this.opponentForRoot(owner);
           this.effectLifecycleWorld.advanceHelper(owner, helper, this.stage, opponent, {
             pauseKind: pauseType,
             gameSpace,
@@ -1074,7 +1123,7 @@ export class PlayableMatchRuntime {
       const redirectedIdentity = redirectPlayerId === undefined
         ? undefined
         : this.characterIdentity?.findByPlayerId(redirectPlayerId);
-      if (!redirectedIdentity) {
+      if (!redirectedIdentity?.fighter) {
         this.logs.unshift(`Blocked ${operation.controllerType} RedirectID ${redirectPlayerId ?? "invalid"} for ${caller.id}`);
         return undefined;
       }
@@ -1448,6 +1497,9 @@ export class PlayableMatchRuntime {
     this.frameClock = resetState.frameClock;
     this.playing = resetState.playing;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
+    if (this.runtimeProfile === "ikemen-go") {
+      this.initializeCharacterIdentity();
+    }
   }
 
   private createFighterState(
@@ -1495,7 +1547,7 @@ function nextRuntimeRandom(fighter: FighterMatchState): number {
   return next.value;
 }
 
-function createRootCharacterIdentity(fighter: FighterMatchState): RuntimeRootCharacterIdentity {
+function createRootCharacterIdentity(fighter: FighterMatchState): RuntimeMatchCharacterIdentity {
   if (fighter.playerNo === undefined) {
     throw new Error(`Missing explicit PlayerNo for runtime root ${fighter.id}`);
   }
@@ -1508,6 +1560,28 @@ function createRootCharacterIdentity(fighter: FighterMatchState): RuntimeRootCha
     },
     get standby() {
       return fighter.runtime.teamState?.standby;
+    },
+  };
+}
+
+function createHelperCharacterIdentity(helper: RuntimeHelper): RuntimeMatchCharacterIdentity {
+  if (helper.playerNo === undefined) {
+    throw new Error(`Missing inherited PlayerNo for runtime Helper ${helper.serialId}`);
+  }
+  return {
+    id: helper.serialId,
+    playerNo: helper.playerNo,
+    rootId: helper.rootId,
+    parentId: helper.parentId,
+    helper,
+    get disabled() {
+      return helper.teamState?.disabled;
+    },
+    get destroyed() {
+      return helper.destroyed;
+    },
+    get standby() {
+      return helper.teamState?.standby;
     },
   };
 }
