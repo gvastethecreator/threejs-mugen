@@ -1972,6 +1972,14 @@ function resolveDynamicTeamStandbyOperation(
     const { partnerStateExpression: _partnerStateExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, partnerStateNo: stateNo };
   }
+  if (operation.memberPositionExpression !== undefined) {
+    const resolvedMemberPosition = evaluateRuntimeControllerNumber(operation.memberPositionExpression, fighter.runtime, context);
+    if (resolvedMemberPosition === undefined) return undefined;
+    const memberPosition = Math.trunc(resolvedMemberPosition);
+    if (memberPosition < 1) return undefined;
+    const { memberPositionExpression: _memberPositionExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, memberPosition };
+  }
   return resolvedOperation;
 }
 

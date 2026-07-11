@@ -1271,6 +1271,8 @@ Dynamic Tag `partnerstateno` now resolves from caller context with static partne
 
 Dynamic Tag `partner` now resolves with integer truncation before caller-relative cyclic selection; authored partner presence preserves omitted-self behavior and selected partner state/control still validate atomically. Wayfinder 073 next extends only one-based `memberno` inside explicit Tag order ownership.
 
+Dynamic Tag `memberno` now resolves one-based mutable position with integer truncation before explicit Tag-mode order validation and every existing Tag effect. Wayfinder 074 next extends only TagIn stable-PlayerNo `leader`, preserving same-side identity and live-life rotation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

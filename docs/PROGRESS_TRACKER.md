@@ -1256,6 +1256,13 @@ Every compatibility milestone should leave:
 - Proved P5 variable selection with partner-owned state/control, TagOut omission behavior, and negative/missing/state rollback.
 - Global status: Tag partner identity, state numbers, and all boolean axes execute dynamically; member/leader order and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN Tag member order
+
+- Added deferred `memberPositionExpression` for TagIn/TagOut.
+- Resolves/truncates one-based position in caller context before explicit Tag-order validation.
+- Proved same-tick P1/P3 swap plus zero/negative/out-of-range/non-Tag rollback.
+- Global status: dynamic partner/state/control/member axes execute; dynamic leader and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM

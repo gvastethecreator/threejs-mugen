@@ -199,6 +199,60 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
   });
 
+  it("selects dynamic Tag member order from a same-tick caller variable", () => {
+    const memberTagOut = createImportedFixture({
+      id: "dynamic-member-tag-out",
+      displayName: "Dynamic Member Tag Out",
+      withStateMove: false,
+      passivePreTagVarSet: { trigger: "1", index: 0, value: 2 },
+      passiveTagController: "TagOut",
+      passiveTagMemberNo: "var(0) + 0.9",
+    });
+    const runtime = new PlayableMatchRuntime(memberTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(2);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(true);
+    expect(snapshot.tagTeamOrder?.sides[0]).toMatchObject({
+      stableRootIds: ["p1", "p3"],
+      memberOrderIds: ["p3", "p1"],
+      leaderId: "p1",
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it.each([
+    ["zero", "var(0)", "tag"],
+    ["negative", "var(0) - 1", "tag"],
+    ["out-of-range", "var(0) + 3", "tag"],
+    ["non-Tag mode", "var(0) + 2", "single"],
+  ] as const)("rolls back %s dynamic Tag member order", (_case, memberExpression, teamMode) => {
+    const memberTagOut = createImportedFixture({
+      id: `blocked-dynamic-member-${_case}`,
+      displayName: "Blocked Dynamic Member Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagSelf: 1,
+      passiveTagMemberNo: memberExpression,
+    });
+    const runtime = new PlayableMatchRuntime(memberTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode,
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(0);
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.tagTeamOrder?.sides[0]?.memberOrderIds).toEqual(teamMode === "tag" ? ["p1", "p3"] : undefined);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it("blocks invalid Tag member order before existing Tag mutations", () => {
     const invalidMemberTagOut = createImportedFixture({
       id: "invalid-member-tag-out",
@@ -3189,7 +3243,7 @@ function createImportedFixture(
     passiveTagPartnerStateNo?: number | string;
     passiveTagControl?: number | string;
     passiveTagPartnerControl?: number | string;
-    passiveTagMemberNo?: number;
+    passiveTagMemberNo?: number | string;
     passiveTagLeader?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     passivePreTagVarSet?: { trigger: string; index: number; value: number };

@@ -529,6 +529,7 @@ export type TeamStandbyControllerOp = {
   partnerControl?: boolean;
   partnerControlExpression?: string;
   memberPosition?: number;
+  memberPositionExpression?: string;
   leaderPlayerNo?: number;
 };
 
@@ -812,10 +813,16 @@ function compileTeamStandbyControllerOp(
     }
   }
   let memberPosition: number | undefined;
+  let memberPositionExpression: string | undefined;
   if (memberPositionRaw !== undefined) {
-    memberPosition = Number(memberPositionRaw.trim());
-    if (!Number.isInteger(memberPosition) || memberPosition < 1) {
-      return undefined;
+    const normalizedMemberPosition = memberPositionRaw.trim();
+    memberPosition = normalizedMemberPosition ? Number(normalizedMemberPosition) : undefined;
+    if (memberPosition === undefined || !Number.isInteger(memberPosition) || memberPosition < 1) {
+      if (!hasValidTagExpressionStructure(memberPositionRaw)) return undefined;
+      const compiledMemberPosition = compileExpression(memberPositionRaw);
+      if (compiledMemberPosition.supportLevel === "unsupported") return undefined;
+      memberPosition = undefined;
+      memberPositionExpression = compiledMemberPosition.normalized;
     }
   }
   let leaderPlayerNo: number | undefined;
@@ -840,6 +847,7 @@ function compileTeamStandbyControllerOp(
     ...(partnerControl === undefined ? {} : { partnerControl }),
     ...(partnerControlExpression === undefined ? {} : { partnerControlExpression }),
     ...(memberPosition === undefined ? {} : { memberPosition }),
+    ...(memberPositionExpression === undefined ? {} : { memberPositionExpression }),
     ...(leaderPlayerNo === undefined ? {} : { leaderPlayerNo }),
   };
 }

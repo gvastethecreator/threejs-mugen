@@ -92,6 +92,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute dynamic Tag partner state](tickets/071-execute-dynamic-tag-partner-state.md) - resolve partner state with static partner identity and owned-state validation.
 - [Execute dynamic Tag partner selection](tickets/072-execute-dynamic-tag-partner.md) - resolve caller-relative partner ordinal before aggregate target validation.
 - [Execute dynamic Tag member order](tickets/073-execute-dynamic-tag-member-order.md) - resolve one-based mutable member position before Tag-order validation.
+- [Execute dynamic TagIn leader](tickets/074-execute-dynamic-tagin-leader.md) - resolve stable PlayerNo before same-side leader rotation validation.
 
 ## Not Yet Specified
 
