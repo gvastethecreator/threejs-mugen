@@ -1,7 +1,7 @@
 # Create IKEMEN character identity boundary
 
 Type: implementation
-Status: claimed
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -16,3 +16,9 @@ What smallest runtime owner can represent IKEMEN PlayerID independently from sta
 - Resolve by numeric PlayerID while rejecting negative, missing, destroyed, and disabled characters; standby remains eligible.
 - Expose an immutable JSON-safe diagnostic and prove order, lookup, lifecycle, duplicate, and no-reuse behavior.
 - Leave PlayableMatchRuntime integration, `ID`/`PlayerNo` triggers, Helper wiring, Tag RedirectID mutation, and gameplay consumers for separate tickets.
+
+## Answer
+
+`RuntimeCharacterIdentityWorld` now creates a generic `RuntimeCharacterIdentityRegistry` independent from actor string ids and PlayerNo. Present roots receive numeric PlayerIDs from the configurable baseline (`56` by default) in odd-PlayerNo then even-PlayerNo order. Later characters allocate monotonically; removal clears lookup without recycling the numeric ID or actor id. Lookup rejects non-integer, negative, missing, destroyed, and disabled entries while retaining standby entries. A deeply frozen `RuntimeCharacterIdentity/v0` diagnostic exposes current registration and eligibility without leaking mutable registry state.
+
+Focused tests cover default/configurable allocation, PlayerID versus PlayerNo separation, standby/disabled/destroyed lookup, later Helper-shaped registration, removal/no-reuse, duplicate/invalid topology, and detached diagnostics. Runtime integration remains Wayfinder 077.

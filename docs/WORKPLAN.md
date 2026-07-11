@@ -1277,6 +1277,8 @@ Dynamic TagIn `leader` now resolves stable PlayerNo with integer truncation befo
 
 RedirectID research now separates global numeric PlayerID from stable actor ids and one-based PlayerNo. Caller-context redirect evaluation, root/Helper lookup, invalid-target failure, and target-owned mutation are pinned. Wayfinder 076 creates the standalone numeric character-identity owner before runtime integration.
 
+`RuntimeCharacterIdentityWorld` now owns source-backed allocation, active lookup, no-reuse lifecycle, and frozen diagnostics without changing match behavior. Wayfinder 077 next integrates P1-P8 identity and explicit `ID`/`PlayerNo` expression context; Helpers and redirects stay blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

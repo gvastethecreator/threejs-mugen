@@ -1183,7 +1183,7 @@ The numbered list below is retained as implementation history. It is superseded 
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Deeper target-specific trace/asset/gate/report jumps after package/source-file drilldowns. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Next proof can add another scanner-only source-mapped signal after `RemoveText` / `NumText`; keep findings recognized/unsupported until runtime gates exist. |
-| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Build numeric character PlayerID ownership next; root integration, expression triggers, Helper lifecycle, and redirected Tag mutation remain separate gates. |
+| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Integrate standalone PlayerID ownership into P1-P8 plus `ID`/`PlayerNo` reads; Helper lifecycle and redirected Tag mutation remain separate gates. |
 | M1 Shared contract readiness | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` | One shared contract candidate proven free of fighting-specific leakage. |
 
 ## Closeout Contract
@@ -1277,6 +1277,14 @@ Every compatibility milestone should leave:
 - Audited the sandbox's string actor registry, expression context, and Tag mutation hook; no numeric PlayerID owner exists.
 - Selected a standalone character-identity world as Wayfinder 076 before runtime or Helper integration.
 - Global status: RedirectID semantics are mapped; identity ownership, triggers, lifecycle integration, and mutation remain open.
+
+### 2026-07-11 - Standalone IKEMEN character identity
+
+- Added numeric PlayerID ownership separate from stable actor ids and one-based PlayerNo.
+- Matched default baseline 56 and present odd-root-then-even-root allocation.
+- Added monotonic later allocation, unregister/no-reuse lifecycle, active lookup, and frozen diagnostics.
+- Full gates: 170 files / 1687 tests, TypeScript 7 build, 538/538 traces, and boundaries.
+- Global status: identity model closed; P1-P8/expression/Helper integration and RedirectID mutation remain open.
 
 ## Not Done
 
