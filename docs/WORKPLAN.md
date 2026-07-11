@@ -17,7 +17,7 @@ The next R1/renderer sequence preserves authored/omitted `HitDef p1sprpriority` 
 
 ## 2026-07-10 IKEMEN Simultaneous Pause Buffer Note
 
-`RuntimeMatchActorRosterWorld` now keeps the current `[p1,p2]` scheduler tuple while a parallel unique-id character registry owns P1-P8/root/helper lookup, topology, and `RuntimeTeamRoster/v0`. `MatchWorldActorRegistrySnapshot.teamRoster` exposes that registry publicly; P1-P4 plus helper is fixture-proven. Source: [pinned CharList ownership](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L12862-L12930). No score movement; next cut is Wayfinder 044 for live standby/disabled/over-KO snapshot state. Multi-root construction/scheduling/input/combat/round/presentation, distance/cache parity, tag transitions, and full team parity remain blocked.
+`CharacterRuntimeState.teamState` now owns disabled/standby/over-KO/player-type visibility across root/helper snapshots and `MatchWorld.teamRoster`. Roots default active/player-type; Helpers default active/non-player-type until Helper type compilation exists. Source: [pinned flag invalidation](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L4696-L4713), [player type](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L5460-L5462), and [over-KO](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L12000-L12006). No score movement; next cut is Wayfinder 045 for inert P3/P4 construction. Playable team phases remain blocked.
 
 ## 2026-07-10 IKEMEN Root/Helper Actor RunOrder Note
 

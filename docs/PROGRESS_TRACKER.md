@@ -1,12 +1,20 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN public multi-root registry
+## Global report - 2026-07-11 IKEMEN live team state
+
+- Runtime/IKEMEN: `CharacterRuntimeState.teamState` carries disabled, standby, over-KO, and player-type state for roots/helpers.
+- Snapshot/registry: player/helper snapshots clone team state; `MatchWorld.teamRoster` now consumes it directly.
+- Compatibility: legacy snapshots normalize safely; current roots remain active player-types, current Helpers active non-player-types.
+- Score: unchanged. No P3/P4 construction or playable team phase exists.
+- Next: Wayfinder 045, inert P3/P4 construction outside scheduler/gameplay.
+
+## Previous report - 2026-07-11 IKEMEN public multi-root registry
 
 - Runtime/IKEMEN: parallel unique-id character registry now supports P1-P8 roots/helpers without widening the scheduler tuple.
 - Public registry snapshot: `MatchWorldActorRegistrySnapshot` exposes `RuntimeTeamRoster/v0`, `byId`, and `teamSides`; synthetic P1-P4 plus helper route is covered.
 - Compatibility: duplicate character ids fail before publication; existing P1/P2 roster, effect stores, round, combat, and presentation remain unchanged.
 - Score: unchanged. Registry visibility is structural proof, not a playable team match.
-- Next: Wayfinder 044, live standby/disabled/over-KO snapshot projection.
+- Next frontier at that checkpoint was Wayfinder 044; live team-state projection now resolves it.
 
 ## Previous report - 2026-07-11 IKEMEN team eligibility
 

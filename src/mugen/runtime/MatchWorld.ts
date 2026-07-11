@@ -29,6 +29,7 @@ import type {
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
 import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
+import type { RuntimeTeamState } from "./types";
 
 export type MatchWorldOptions = {
   p1?: DemoFighterDefinition;
@@ -59,6 +60,7 @@ export type MatchWorldActorRecord = {
   targetBindings: RuntimeTargetBindingSnapshot[];
   bindToTarget?: RuntimeTargetBindingSnapshot;
   lifecycle: MatchWorldActorLifecycleRecord;
+  teamState: RuntimeTeamState;
 };
 
 export type MatchWorldTargetLink = RuntimeTargetLinkSnapshot;
@@ -125,7 +127,7 @@ export class MatchWorld {
 
   getActorRegistry(): MatchWorldActorRegistrySnapshot {
     this.refreshActorRegistry(this.runtime.getSnapshot());
-    return this.actorRegistry;
+    return structuredClone(this.actorRegistry);
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
@@ -138,7 +140,7 @@ export class MatchWorld {
 
   private refreshActorRegistry(snapshot: MugenSnapshot, resetLifecycle = false): MatchWorldActorRegistrySnapshot {
     const effectStores = this.effectActorStoreSummaries();
-    const key = actorRegistryKey(snapshot, effectStores);
+    const key = matchWorldActorRegistryFingerprint(snapshot, effectStores);
     if (!resetLifecycle && key === this.registryKey) {
       return this.actorRegistry;
     }
@@ -228,7 +230,7 @@ function buildTeamRosterDiagnostic(actors: readonly MatchWorldActorRecord[]): Ru
     .map((actor) => ({
       id: actor.id,
       ...(actor.kind === "helper" ? { rootId: actor.rootId } : {}),
-      playerType: actor.kind === "player",
+      ...actor.teamState,
     }));
   return matchActorRosterWorld.createCharacterRegistry(characters).diagnostic();
 }
@@ -267,10 +269,21 @@ function toActorRecordBase(
     targets: targets.targets,
     targetBindings: targets.bindings,
     bindToTarget: targets.bindToTarget,
+    teamState: actor.runtime.teamState
+      ? { ...actor.runtime.teamState }
+      : {
+          disabled: false,
+          standby: false,
+          overKo: false,
+          playerType: actor.actorKind === "player",
+        },
   };
 }
 
-function actorRegistryKey(snapshot: MugenSnapshot, effectStores: RuntimeEffectActorStoreSummary[] = []): string {
+export function matchWorldActorRegistryFingerprint(
+  snapshot: MugenSnapshot,
+  effectStores: RuntimeEffectActorStoreSummary[] = [],
+): string {
   const ids = [
     ...snapshot.actors.map((actor) => actor.id),
     ...(snapshot.effects ?? []).map((effect) => effect.id),
@@ -290,7 +303,9 @@ function actorRegistryKey(snapshot: MugenSnapshot, effectStores: RuntimeEffectAc
       const bindToTarget = actor.runtime.bindToTarget
         ? `${actor.runtime.bindToTarget.actorId}:${actor.runtime.bindToTarget.targetId ?? "*"}:${actor.runtime.bindToTarget.remaining}:${actor.runtime.bindToTarget.offset.x},${actor.runtime.bindToTarget.offset.y}`
         : "";
-      return `${actor.id}:${targets}:${bindings}:${bindToTarget}`;
+      const teamState = normalizedSnapshotTeamState(actor);
+      const teamKey = `${Number(teamState.disabled)},${Number(teamState.standby)},${Number(teamState.overKo)},${Number(teamState.playerType)}`;
+      return `${actor.id}:${targets}:${bindings}:${bindToTarget}:${teamKey}`;
     })
     .join("|");
   const storeKey = effectStores
@@ -300,6 +315,15 @@ function actorRegistryKey(snapshot: MugenSnapshot, effectStores: RuntimeEffectAc
     )
     .join("|");
   return `${snapshot.tick}:${ids.join("|")}:${targetKey}:${storeKey}`;
+}
+
+function normalizedSnapshotTeamState(actor: ActorSnapshot): RuntimeTeamState {
+  return actor.runtime.teamState ?? {
+    disabled: false,
+    standby: false,
+    overKo: false,
+    playerType: actor.actorKind === "player",
+  };
 }
 
 function inferEffectStoresFromSnapshot(snapshot: MugenSnapshot): RuntimeEffectActorStoreSummary[] {

@@ -108,6 +108,12 @@ export class RuntimeFighterStateWorld {
       runtimeProgram,
       stateOwner: undefined,
       runtime: {
+        teamState: {
+          disabled: false,
+          standby: false,
+          overKo: false,
+          playerType: true,
+        },
         pos: { x: input.x, y: input.y },
         vel: { x: 0, y: 0 },
         facing: input.facing,

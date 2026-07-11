@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { demoFighters } from "../mugen/runtime/demoFighters";
 import { trainingStage } from "../mugen/runtime/demoStage";
-import { buildMatchWorldActorRegistry, MatchWorld } from "../mugen/runtime/MatchWorld";
+import {
+  buildMatchWorldActorRegistry,
+  matchWorldActorRegistryFingerprint,
+  MatchWorld,
+} from "../mugen/runtime/MatchWorld";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
 import { expandRuntimeTraceScript, runRuntimeTrace } from "../mugen/runtime/RuntimeTrace";
 
@@ -152,6 +156,16 @@ describe("MatchWorld", () => {
         lastSeenTick: 0,
       },
     });
+    expect(registry.teamRoster.characters).toEqual([
+      expect.objectContaining({ id: "p1", playerType: true, enemyBaseEligible: true }),
+      expect.objectContaining({ id: "p2", playerType: true, enemyBaseEligible: true }),
+    ]);
+
+    registry.byId.p2!.teamState.standby = true;
+    registry.teamSides[2].push("corrupt");
+    const freshRegistry = world.getActorRegistry();
+    expect(freshRegistry.byId.p2?.teamState.standby).toBe(false);
+    expect(freshRegistry.teamSides[2]).toEqual(["p2"]);
   });
 
   it("indexes effect actors by kind and owner from runtime snapshots", () => {
@@ -212,8 +226,18 @@ describe("MatchWorld", () => {
     const snapshot = world.getSnapshot();
     const p1 = snapshot.actors[0]!;
     const p2 = snapshot.actors[1]!;
-    const p3 = { ...p1, id: "p3", label: "P3" };
-    const p4 = { ...p2, id: "p4", label: "P4" };
+    const p3 = {
+      ...p1,
+      id: "p3",
+      label: "P3",
+      runtime: { ...p1.runtime, teamState: { disabled: false, standby: true, overKo: false, playerType: true } },
+    };
+    const p4 = {
+      ...p2,
+      id: "p4",
+      label: "P4",
+      runtime: { ...p2.runtime, teamState: { disabled: true, standby: false, overKo: false, playerType: true } },
+    };
     const helper = {
       ...p3,
       id: "p3-helper-0",
@@ -223,12 +247,23 @@ describe("MatchWorld", () => {
       ownerId: "p3",
       rootId: "p3",
       parentId: "p3",
+      runtime: { ...p3.runtime, teamState: { disabled: false, standby: false, overKo: true, playerType: true } },
     };
     const registry = buildMatchWorldActorRegistry({
       ...snapshot,
       actors: [p1, p2, p3, p4],
       effects: [helper],
     });
+    const standbyChanged = {
+      ...snapshot,
+      actors: [
+        p1,
+        { ...p2, runtime: { ...p2.runtime, teamState: { ...p2.runtime.teamState!, standby: true } } },
+        p3,
+        p4,
+      ],
+      effects: [helper],
+    };
 
     expect(registry.players).toEqual(["p1", "p2", "p3", "p4"]);
     expect(registry.teamRoster.schema).toBe("RuntimeTeamRoster/v0");
@@ -245,6 +280,16 @@ describe("MatchWorld", () => {
       1: ["p1", "p3", "p3-helper-0"],
       2: ["p2", "p4"],
     });
+    expect(registry.teamRoster.characters).toEqual([
+      expect.objectContaining({ id: "p1", enemyBaseEligible: true, enemyNearCandidate: true, p2Candidate: true }),
+      expect.objectContaining({ id: "p2", enemyBaseEligible: true, enemyNearCandidate: true, p2Candidate: true }),
+      expect.objectContaining({ id: "p3", standby: true, enemyBaseEligible: false, enemyNearCandidate: false, p2Candidate: false }),
+      expect.objectContaining({ id: "p4", disabled: true, enemyBaseEligible: false, enemyNearCandidate: false, p2Candidate: false }),
+      expect.objectContaining({ id: "p3-helper-0", playerType: true, overKo: true, enemyBaseEligible: true, enemyNearCandidate: false, p2Candidate: false }),
+    ]);
+    expect(matchWorldActorRegistryFingerprint(standbyChanged)).not.toBe(
+      matchWorldActorRegistryFingerprint({ ...snapshot, actors: [p1, p2, p3, p4], effects: [helper] }),
+    );
   });
 
   it("exposes target ownership links from actor snapshots without changing behavior state", () => {

@@ -41,7 +41,7 @@ import {
   type RuntimeTargetBinding,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
-import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
+import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent, RuntimeTeamState } from "./types";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
@@ -52,6 +52,7 @@ export type RuntimeHelper = {
   helperId?: number;
   name?: string;
   actorKind: "helper";
+  teamState?: RuntimeTeamState;
   ownerId: string;
   rootId: string;
   parentId: string;
@@ -192,6 +193,12 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     helperId: operation?.helperId ?? firstNumber(findControllerParam(input.controller, "id")),
     name: operation?.name ?? stripMugenString(findControllerParam(input.controller, "name")),
     ...identity,
+    teamState: {
+      disabled: false,
+      standby: false,
+      overKo: false,
+      playerType: false,
+    },
     spriteOwnerId: input.spriteOwnerId,
     spriteOwnerDefinitionId: input.spriteOwnerDefinitionId,
     spriteOwnerLabel: input.spriteOwnerLabel,
@@ -1103,6 +1110,12 @@ function helperExpressionContext(
 
 export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
   return {
+    teamState: {
+      disabled: helper.teamState?.disabled ?? false,
+      standby: helper.teamState?.standby ?? false,
+      overKo: helper.teamState?.overKo ?? false,
+      playerType: helper.teamState?.playerType ?? false,
+    },
     pos: { ...helper.pos },
     vel: { ...helper.vel },
     facing: helper.facing,
@@ -1165,6 +1178,7 @@ function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRu
 }
 
 export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRuntimeState): void {
+  helper.teamState = runtime.teamState ? { ...runtime.teamState } : helper.teamState;
   helper.pos = { ...runtime.pos };
   helper.vel = { ...runtime.vel };
   helper.facing = runtime.facing;

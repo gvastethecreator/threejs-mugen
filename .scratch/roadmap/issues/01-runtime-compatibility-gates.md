@@ -230,7 +230,7 @@ Quality contract:
 - STOP conditions: pause if the next damage-scale cut requires broad formula parity, projectile/helper/custom-state ownership changes, target redirect scaling, exact rounding, or combat timing decisions larger than one trace oracle.
 
 - Latest explicit-IKEMEN SuperPause defense cut: required `synthetic-imported-ikemen-superpause-team-defense.json` checksum `76873f0d` / final `b4425c66` gates omitted/non-positive `p2defmul` fallback to game-level `1.5`, separate temporary defense, and opposing root plus existing helper projection without target memory. P2 and `p2-helper-0` expose `0.6667`; final P2 life is `950`; aggregate is 538/538. Claim allowed: bounded explicit-IKEMEN 1v1 root/helper team-defense fallback. Claim blocked: simul/tag topology, global config loading, helper defender combat, nested ancestry, exact hitpause/buffer timing, rollback, score movement, and full parity.
-- Latest IKEMEN multi-root registry cut: `RuntimeMatchActorRosterWorld.createCharacterRegistry(...)` owns stable unique-id lookup/topology/diagnostics beside the unchanged scheduler pair; `MatchWorld.teamRoster` publishes P1-P4-plus-helper evidence. Claim allowed: public multi-root registry and diagnostic route. Claim blocked: live team-state projection, scheduler ownership, and every playable multi-root subsystem.
+- Latest IKEMEN live-team-state cut: `CharacterRuntimeState.teamState` carries disabled/standby/over-KO/player-type state through root/helper snapshots into `MatchWorld.teamRoster`. Claim allowed: source-backed live state projection. Claim blocked: P3/P4 construction, transitions, Helper player-type compile, scheduler ownership, and every playable multi-root subsystem.
 
 ## Previous Closed Quality Slice - Dynamic EnvColor Typed Telemetry
 

@@ -10,6 +10,7 @@ import type {
 } from "./HitDefPriorityPolicy";
 
 export type CharacterRuntimeState = {
+  teamState?: RuntimeTeamState;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   facing: 1 | -1;
@@ -97,6 +98,13 @@ export type CharacterRuntimeState = {
   vars: number[];
   sysvars?: number[];
   fvars: number[];
+};
+
+export type RuntimeTeamState = {
+  disabled: boolean;
+  standby: boolean;
+  overKo: boolean;
+  playerType: boolean;
 };
 
 export type RuntimeInGuardDistanceLatch = {

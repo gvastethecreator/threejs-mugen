@@ -1,7 +1,7 @@
 # Choose next gap after multi-root registry
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -17,4 +17,6 @@ How should live root `disabled`, `standby`, `overKo`, and player-type state ente
 
 ## Answer
 
-Pending state ownership and checksum audit.
+Add optional `CharacterRuntimeState.teamState` as the snapshot-owned contract for `disabled`, `standby`, `overKo`, and `playerType`. Runtime roots initialize active/player-type; Helpers own an explicit state with active/non-player defaults until Helper `type = player` compiles. `RuntimeSnapshotWorld` and helper snapshots clone this state, `MatchWorldActorRecord` normalizes legacy snapshots, and `teamRoster` consumes it. This makes live state observable without changing the pair scheduler or behavior checksum projection.
+
+Evidence: focused Helper/MatchWorld/roster tests, TypeScript 7 typecheck, and full gates recorded in the 2026-07-11 team-state report.

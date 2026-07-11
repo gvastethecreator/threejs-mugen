@@ -7,7 +7,9 @@ import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenSt
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
 import {
   advanceRuntimeHelpers,
+  applyRuntimeStateToHelper,
   createRuntimeHelper,
+  helperRuntimeState,
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
 } from "../mugen/runtime/HelperSystem";
@@ -620,6 +622,12 @@ describe("HelperSystem", () => {
       spriteOwnerDefinitionId: "demo",
       spriteOwnerLabel: "Demo",
       runtime: {
+        teamState: {
+          disabled: false,
+          standby: false,
+          overKo: false,
+          playerType: false,
+        },
         pos: { x: 0, y: 0 },
         vel: { x: 0, y: 0 },
         facing: 1,
@@ -643,6 +651,32 @@ describe("HelperSystem", () => {
       clsn1: [{ x1: 1, y1: 2, x2: 3, y2: 4 }],
       clsn2: [{ x1: -4, y1: -3, x2: 4, y2: 5 }],
     });
+
+    const [playerTypeSnapshot] = runtimeHelpersToSnapshots([
+      helper({
+        frameIndex: 0,
+        teamState: { disabled: false, standby: true, overKo: true, playerType: true },
+      }),
+    ], 100);
+    expect(playerTypeSnapshot?.runtime.teamState).toEqual({
+      disabled: false,
+      standby: true,
+      overKo: true,
+      playerType: true,
+    });
+
+    const roundTripHelper = helper({ frameIndex: 0 });
+    const runtime = helperRuntimeState(roundTripHelper);
+    runtime.teamState = { disabled: true, standby: true, overKo: true, playerType: true };
+    applyRuntimeStateToHelper(roundTripHelper, runtime);
+    runtime.teamState.standby = false;
+    expect(roundTripHelper.teamState).toEqual({
+      disabled: true,
+      standby: true,
+      overKo: true,
+      playerType: true,
+    });
+    expect(runtimeHelpersToSnapshots([roundTripHelper], 100)[0]?.runtime.teamState).toEqual(roundTripHelper.teamState);
 
     expect(snapshot?.clsn1[0]).not.toBe(action.frames[0]?.clsn1[0]);
     expect(snapshot?.clsn2[0]).not.toBe(action.frames[0]?.clsn2[0]);
