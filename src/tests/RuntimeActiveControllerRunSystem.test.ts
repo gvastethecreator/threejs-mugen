@@ -10,6 +10,7 @@ import type { RuntimeActiveStateDispatchHooks } from "../mugen/runtime/RuntimeAc
 import type { RuntimeActiveSideEffectDispatchHooks } from "../mugen/runtime/RuntimeActiveSideEffectDispatchSystem";
 import type { StateProgramDispatch } from "../mugen/runtime/StateProgramExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
+import { RuntimeRootCnsExecutionWorld } from "../mugen/runtime/RuntimeRootCnsExecutionSystem";
 
 describe("RuntimeActiveControllerRunWorld", () => {
   it("bridges owner-backed active-controller scan into runtime and state dispatch", () => {
@@ -98,6 +99,57 @@ describe("RuntimeActiveControllerRunWorld", () => {
       "resolve-boolean:undefined:p1:p2:p1:5",
       "record:p1:ChangeState",
       "enter:p1:310",
+    ]);
+  });
+
+  it("reports standby-blocked runtime and side-effect controllers without invoking their hooks", () => {
+    const world = new RuntimeRootCnsExecutionWorld();
+    const fighter = actor("p3", "imported", 200, [
+      stateProgram(200, [controller("LifeAdd"), controller("VarSet"), controller("PlaySnd"), controller("ChangeState")]),
+    ]);
+    const opponent = actor("p2", "imported", 0, []);
+    const calls: string[] = [];
+
+    const result = world.execute({
+      actor: fighter,
+      opponent,
+      tick: 8,
+      controllerIgnoresHitPause: () => false,
+      triggersPass: (controllerInput) => {
+        calls.push(`trigger:${controllerInput.type}`);
+        return true;
+      },
+      dispatchController: (controllerInput) => dispatch(controllerInput, calls),
+      stateHooks: stateHooks(calls),
+      sideEffectHooks: sideEffectHooks(calls),
+      hooks: routeHooks(calls),
+      onBlocked: (controllerInput, route) => calls.push(`blocked:${controllerInput.type}:${route}`),
+    }, "standby");
+
+    expect(result).toMatchObject({
+      scanned: true,
+      visitedControllers: 4,
+      executedControllers: 2,
+      blockedControllers: 2,
+      stopped: true,
+    });
+    expect(calls).toEqual([
+      "trigger:LifeAdd",
+      "dispatch:LifeAdd",
+      "blocked:LifeAdd:runtime-controller",
+      "trigger:VarSet",
+      "dispatch:VarSet",
+      "runtime:VarSet:p3:p2:p3:8",
+      "trigger:PlaySnd",
+      "dispatch:PlaySnd",
+      "blocked:PlaySnd:sound",
+      "trigger:ChangeState",
+      "dispatch:ChangeState",
+      "resolve-number:310:p3:p2:p3:8",
+      "resolve-number:undefined:p3:p2:p3:8",
+      "resolve-boolean:undefined:p3:p2:p3:8",
+      "record:p3:ChangeState",
+      "enter:p3:310",
     ]);
   });
 });

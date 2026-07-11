@@ -2,6 +2,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import {
   RuntimeActiveControllerDispatchWorld,
   type RuntimeActiveControllerDispatchHooks,
+  type RuntimeActiveControllerCapabilities,
 } from "./RuntimeActiveControllerDispatchSystem";
 import {
   RuntimeActiveControllerScanWorld,
@@ -29,6 +30,8 @@ export type RuntimeActiveControllerRunInput<TActor extends RuntimeActiveControll
   stateHooks: RuntimeActiveStateDispatchHooks<TActor>;
   sideEffectHooks: RuntimeActiveSideEffectDispatchHooks<TActor>;
   hooks?: RuntimeActiveControllerDispatchHooks<TActor>;
+  capabilities?: RuntimeActiveControllerCapabilities;
+  onBlocked?: (controller: ControllerIr, route: string) => void;
 };
 
 export class RuntimeActiveControllerRunWorld {
@@ -58,7 +61,12 @@ export class RuntimeActiveControllerRunWorld {
           stateHooks: input.stateHooks,
           sideEffectHooks: input.sideEffectHooks,
           hooks: input.hooks,
+          capabilities: input.capabilities,
         });
+        if (result.route === "blocked") {
+          input.onBlocked?.(controller, result.blockedRoute);
+          return "blocked";
+        }
         return result.stop ? "stop" : "continue";
       },
     });

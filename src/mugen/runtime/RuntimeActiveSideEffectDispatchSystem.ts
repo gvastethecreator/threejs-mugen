@@ -74,7 +74,7 @@ export class RuntimeActiveSideEffectDispatchWorld {
       return { handled: false, stop: false };
     }
 
-    const route = activeSideEffectRoute(input.dispatch.effect);
+    const route = runtimeActiveSideEffectRoute(input.dispatch.effect);
     const handlerInput = {
       dispatch: input.dispatch,
       controller: input.dispatch.controller,
@@ -127,7 +127,7 @@ export class RuntimeActiveSideEffectDispatchWorld {
   }
 }
 
-function activeSideEffectRoute(effect: StateProgramSideEffect): RuntimeActiveSideEffectRoute {
+export function runtimeActiveSideEffectRoute(effect: StateProgramSideEffect): RuntimeActiveSideEffectRoute {
   if (effect === "hitdef") return "hitdef";
   if (effect === "reversaldef") return "reversaldef";
   if (effect === "width") return "width";

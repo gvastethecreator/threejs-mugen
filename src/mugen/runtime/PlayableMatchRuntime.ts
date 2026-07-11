@@ -98,6 +98,7 @@ import { RuntimeMatchEnvColorBridgeWorld } from "./RuntimeMatchEnvColorBridgeSys
 import { RuntimeMatchEnvShakeBridgeWorld } from "./RuntimeMatchEnvShakeBridgeSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
+import { RuntimeRootCnsExecutionWorld } from "./RuntimeRootCnsExecutionSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
@@ -181,6 +182,7 @@ const stateEntryRouteWorld = new RuntimeStateEntryRouteWorld();
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
+const rootCnsExecutionWorld = new RuntimeRootCnsExecutionWorld(activeControllerRunWorld);
 const activeControllerHookSetWorld = new RuntimeActiveControllerHookSetWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
@@ -1727,7 +1729,7 @@ function runActiveStateControllers(
     },
   });
 
-  activeControllerRunWorld.run({
+  rootCnsExecutionWorld.execute({
     actor: fighter,
     opponent,
     tick,
@@ -1739,7 +1741,7 @@ function runActiveStateControllers(
     stateHooks: hookSet.stateHooks,
     sideEffectHooks: hookSet.sideEffectHooks,
     hooks: hookSet.hooks,
-  });
+  }, "playable");
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {

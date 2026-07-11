@@ -6,6 +6,8 @@ import {
 } from "./RuntimeActiveStateDispatchSystem";
 import {
   RuntimeActiveSideEffectDispatchWorld,
+  runtimeActiveSideEffectRoute,
+  type RuntimeActiveSideEffectRoute,
   type RuntimeActiveSideEffectDispatchHooks,
   type RuntimeActiveSideEffectDispatchResult,
 } from "./RuntimeActiveSideEffectDispatchSystem";
@@ -46,6 +48,14 @@ export type RuntimeActiveControllerDispatchInput<TActor extends RuntimeActiveSta
   stateHooks: RuntimeActiveStateDispatchHooks<TActor>;
   sideEffectHooks: RuntimeActiveSideEffectDispatchHooks<TActor>;
   hooks?: RuntimeActiveControllerDispatchHooks<TActor>;
+  capabilities?: RuntimeActiveControllerCapabilities;
+};
+
+export type RuntimeActiveControllerCapabilities = {
+  state: boolean;
+  runtimeControllers: "all" | readonly string[];
+  sideEffects: "all" | readonly RuntimeActiveSideEffectRoute[];
+  unsupported: boolean;
 };
 
 export type RuntimeActiveControllerDispatchResult =
@@ -77,6 +87,12 @@ export type RuntimeActiveControllerDispatchResult =
       handled: false;
       route: "unhandled";
       stop: false;
+    }
+  | {
+      handled: true;
+      route: "blocked";
+      blockedRoute: "state" | "runtime-controller" | RuntimeActiveSideEffectRoute | "unsupported";
+      stop: false;
     };
 
 export class RuntimeActiveControllerDispatchWorld {
@@ -88,6 +104,10 @@ export class RuntimeActiveControllerDispatchWorld {
   apply<TActor extends RuntimeActiveStateDispatchActor>(
     input: RuntimeActiveControllerDispatchInput<TActor>,
   ): RuntimeActiveControllerDispatchResult {
+    const capabilities = input.capabilities;
+    if ((input.dispatch.kind === "change-state" || input.dispatch.kind === "change-anim") && capabilities?.state === false) {
+      return { handled: true, route: "blocked", blockedRoute: "state", stop: false };
+    }
     const stateDispatch = this.stateDispatchWorld.apply({
       dispatch: input.dispatch,
       actor: input.actor,
@@ -106,6 +126,13 @@ export class RuntimeActiveControllerDispatchWorld {
     }
 
     if (input.dispatch.kind === "runtime-controller") {
+      if (
+        capabilities?.runtimeControllers !== undefined &&
+        capabilities.runtimeControllers !== "all" &&
+        !capabilities.runtimeControllers.includes(input.dispatch.controller.normalizedType)
+      ) {
+        return { handled: true, route: "blocked", blockedRoute: "runtime-controller", stop: false };
+      }
       input.hooks?.runtimeController?.({
         dispatch: input.dispatch,
         actor: input.actor,
@@ -121,6 +148,12 @@ export class RuntimeActiveControllerDispatchWorld {
       };
     }
 
+    if (input.dispatch.kind === "side-effect" && capabilities?.sideEffects !== undefined && capabilities.sideEffects !== "all") {
+      const route = runtimeActiveSideEffectRoute(input.dispatch.effect);
+      if (!capabilities.sideEffects.includes(route)) {
+        return { handled: true, route: "blocked", blockedRoute: route, stop: false };
+      }
+    }
     const sideEffectDispatch = this.sideEffectDispatchWorld.apply({
       dispatch: input.dispatch,
       actor: input.actor,
@@ -139,6 +172,9 @@ export class RuntimeActiveControllerDispatchWorld {
     }
 
     if (input.dispatch.kind === "unsupported") {
+      if (capabilities?.unsupported === false) {
+        return { handled: true, route: "blocked", blockedRoute: "unsupported", stop: false };
+      }
       input.hooks?.unsupported?.({
         dispatch: input.dispatch,
         actor: input.actor,

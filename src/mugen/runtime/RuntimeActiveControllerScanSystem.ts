@@ -17,7 +17,7 @@ export type RuntimeActiveControllerScanOptions<
   onlyIgnoreHitPause?: boolean;
   controllerIgnoresHitPause: (controller: ControllerIr) => boolean;
   triggersPass: (controller: ControllerIr, actor: TActor, opponent: TOpponent, owner: TActor, tick: number) => boolean;
-  executeController: (input: RuntimeActiveControllerExecution<TActor, TOpponent>) => "continue" | "stop" | void;
+  executeController: (input: RuntimeActiveControllerExecution<TActor, TOpponent>) => "continue" | "blocked" | "stop" | void;
 };
 
 export type RuntimeActiveControllerExecution<
@@ -39,6 +39,7 @@ export type RuntimeActiveControllerScanResult<TActor> =
       stateProgram: StateProgramIr;
       visitedControllers: number;
       executedControllers: number;
+      blockedControllers: number;
       stopped: boolean;
     }
   | {
@@ -47,6 +48,7 @@ export type RuntimeActiveControllerScanResult<TActor> =
       owner: TActor;
       visitedControllers: 0;
       executedControllers: 0;
+      blockedControllers: 0;
       stopped: false;
     };
 
@@ -63,6 +65,7 @@ export class RuntimeActiveControllerScanWorld {
         owner,
         visitedControllers: 0,
         executedControllers: 0,
+        blockedControllers: 0,
         stopped: false,
       };
     }
@@ -74,12 +77,14 @@ export class RuntimeActiveControllerScanWorld {
         owner,
         visitedControllers: 0,
         executedControllers: 0,
+        blockedControllers: 0,
         stopped: false,
       };
     }
 
     let visitedControllers = 0;
     let executedControllers = 0;
+    let blockedControllers = 0;
     let stopped = false;
 
     for (const controller of stateProgram.controllers) {
@@ -90,7 +95,6 @@ export class RuntimeActiveControllerScanWorld {
         continue;
       }
       visitedControllers += 1;
-      executedControllers += 1;
       const result = options.executeController({
         actor: options.actor,
         opponent: options.opponent,
@@ -99,6 +103,11 @@ export class RuntimeActiveControllerScanWorld {
         controller,
         tick: options.tick,
       });
+      if (result === "blocked") {
+        blockedControllers += 1;
+        continue;
+      }
+      executedControllers += 1;
       if (result === "stop") {
         stopped = true;
         break;
@@ -111,6 +120,7 @@ export class RuntimeActiveControllerScanWorld {
       stateProgram,
       visitedControllers,
       executedControllers,
+      blockedControllers,
       stopped,
     };
   }

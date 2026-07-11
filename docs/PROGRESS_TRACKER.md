@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN CNS capability boundary
+
+- Runtime: `RuntimeRootCnsExecutionWorld` owns explicit playable/standby controller capabilities.
+- Dispatch: state, individual runtime-controller types, side-effect routes, and unsupported handlers can be blocked before hooks execute and counted separately.
+- Compatibility: P1/P2 explicitly use full playable capabilities; behavior and phase order remain unchanged.
+- Isolation: standby profile permits only state/control/state-type/turn/variable/no-op controllers and blocks life/power/position/combat/presentation runtime types plus all side effects; P3-P8 are not scheduled yet.
+- Score: unchanged. This is prerequisite architecture, not standby CNS support.
+- Next: Wayfinder 051 controller-only P3-P8 scheduling.
+
 ## Global report - 2026-07-11 IKEMEN expression selection
 
 - Expression VM: optional root-selection input separates EnemyNear roster from P2 identity/state.

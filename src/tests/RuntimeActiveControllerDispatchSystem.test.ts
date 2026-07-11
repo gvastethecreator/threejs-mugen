@@ -123,6 +123,41 @@ describe("RuntimeActiveControllerDispatchWorld", () => {
     });
     expect(calls).toEqual(["unsupported:EnemyNear:p1:p2:owner:12"]);
   });
+
+  it("blocks disallowed controller routes before invoking hooks", () => {
+    const calls: string[] = [];
+    const world = new RuntimeActiveControllerDispatchWorld();
+    const base = {
+      actor: activeActor("p1"),
+      opponent: activeActor("p2"),
+      owner: activeActor("owner"),
+      tick: 30,
+      stateHooks: stateHooks(calls),
+      sideEffectHooks: sideEffectHooks(calls),
+      hooks: routeHooks(calls),
+      capabilities: { state: false, runtimeControllers: [] as const, sideEffects: [] as const, unsupported: false },
+    };
+
+    expect(world.apply({ ...base, dispatch: changeStateDispatch(310) })).toEqual({
+      handled: true,
+      route: "blocked",
+      blockedRoute: "state",
+      stop: false,
+    });
+    expect(world.apply({ ...base, dispatch: { kind: "runtime-controller", controller: controllerIr("VelSet") } })).toMatchObject({
+      route: "blocked",
+      blockedRoute: "runtime-controller",
+    });
+    expect(world.apply({ ...base, dispatch: sideEffectDispatch("sound") })).toMatchObject({
+      route: "blocked",
+      blockedRoute: "sound",
+    });
+    expect(world.apply({ ...base, dispatch: { kind: "unsupported", controller: controllerIr("Unknown") } })).toMatchObject({
+      route: "blocked",
+      blockedRoute: "unsupported",
+    });
+    expect(calls).toEqual([]);
+  });
 });
 
 type ActiveDispatchActor = RuntimeActiveStateDispatchActor<{ name: string }> & { id: string };

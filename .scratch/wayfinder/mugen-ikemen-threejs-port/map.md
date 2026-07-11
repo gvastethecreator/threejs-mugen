@@ -69,6 +69,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Route root selection into expressions](tickets/048-route-root-selection-into-expressions.md) - consume the public selection matrix in read-only IKEMEN expression contexts while preserving 1v1 gates.
 - [Schedule standby roots in explicit IKEMEN CNS](tickets/049-standby-root-cns-scheduling.md) - define bounded P3-P8 CNS execution and same-tick standby invalidation before gameplay consumers.
 - [Extract root CNS execution boundary](tickets/050-extract-root-cns-execution-boundary.md) - split monolithic fighter advance before scheduling P3-P8.
+- [Schedule standby roots through CNS boundary](tickets/051-schedule-standby-roots-through-cns-boundary.md) - admit P3-P8 to controller-only IKEMEN run order with blocked side effects.
 
 ## Not Yet Specified
 
