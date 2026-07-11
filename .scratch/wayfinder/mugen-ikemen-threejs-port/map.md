@@ -83,6 +83,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map Tag member and leader order](tickets/062-map-tag-member-leader-order.md) - separate mutable order/leader identity from stable root slots before execution.
 - [Create Tag team order model](tickets/063-create-tag-team-order-model.md) - own explicit Tag mode, mutable member order, and leader identity without slot mutation.
 - [Execute static Tag member order](tickets/064-execute-static-tag-member-order.md) - route positive one-based member swaps through explicit Tag order ownership.
+- [Execute static TagIn leader](tickets/065-execute-static-tagin-leader.md) - rotate stable same-side PlayerNo to leader with live KO ordering.
 
 ## Not Yet Specified
 

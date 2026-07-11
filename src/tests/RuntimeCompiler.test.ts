@@ -328,6 +328,13 @@ time = 20
       self: true,
       callerControl: true,
     });
+    expect(compileControllerIr(controller(200, "TagOut", [], { memberno: "2" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+      self: true,
+      memberPosition: 2,
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "var(0)" },
@@ -342,10 +349,13 @@ time = 20
       { partner: "0", partnerstateno: "var(0)" },
       { partner: "0", partnerstateno: "-1" },
       { partner: "0", partnerstateno: "1, 0" },
+      { memberno: "0" },
+      { memberno: "-1" },
+      { memberno: "var(0)" },
+      { memberno: "1, 0" },
       { partner: "var(0)" },
       { partner: "-1" },
       { leader: "3" },
-      { memberno: "2" },
     ];
     for (const params of unsupportedParamSets) {
       const compiled = compileControllerIr(controller(200, "TagIn", [], params));

@@ -175,6 +175,69 @@ describe("PlayableMatchRuntime", () => {
     expect(tag.dispatch({ type: "reset" }).tagTeamOrder).toEqual(expected);
   });
 
+  it("executes static Tag member order without changing stable root slots", () => {
+    const memberTagIn = createImportedFixture({
+      id: "member-tag-in",
+      displayName: "Member Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagMemberNo: 2,
+    });
+    const runtime = new PlayableMatchRuntime(memberTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.tagTeamOrder?.sides[0]).toMatchObject({
+      stableRootIds: ["p1", "p3"],
+      memberOrderIds: ["p3", "p1"],
+      leaderId: "p1",
+    });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("blocks invalid Tag member order before existing Tag mutations", () => {
+    const invalidMemberTagOut = createImportedFixture({
+      id: "invalid-member-tag-out",
+      displayName: "Invalid Member Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagMemberNo: 3,
+    });
+    const runtime = new PlayableMatchRuntime(invalidMemberTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.tagTeamOrder?.sides[0]?.memberOrderIds).toEqual(["p1", "p3"]);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout member position 3 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("blocks Tag member order outside explicit Tag mode", () => {
+    const memberTagOut = createImportedFixture({
+      id: "single-member-tag-out",
+      displayName: "Single Member Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagMemberNo: 1,
+    });
+    const runtime = new PlayableMatchRuntime(memberTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.tagTeamOrder).toBeUndefined();
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout member position 1 for p1");
+  });
+
   it("refreshes P2 selection for later roots after same-tick self TagOut", () => {
     const tagOutP1 = createImportedFixture({
       id: "tag-out-p1",
@@ -2700,6 +2763,7 @@ function createImportedFixture(
     passiveTagPartnerStateNo?: number;
     passiveTagControl?: number;
     passiveTagPartnerControl?: number;
+    passiveTagMemberNo?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -2950,6 +3014,7 @@ ${options.passiveTagStateNo === undefined ? "" : `stateno = ${options.passiveTag
 ${options.passiveTagPartnerStateNo === undefined ? "" : `partnerstateno = ${options.passiveTagPartnerStateNo}`}
 ${options.passiveTagControl === undefined ? "" : `ctrl = ${options.passiveTagControl}`}
 ${options.passiveTagPartnerControl === undefined ? "" : `partnerctrl = ${options.passiveTagPartnerControl}`}
+${options.passiveTagMemberNo === undefined ? "" : `memberno = ${options.passiveTagMemberNo}`}
 `
       : "",
     options.passiveVarSet

@@ -1033,6 +1033,14 @@ export class PlayableMatchRuntime {
       return false;
     }
     const roots = [this.p1, this.p2, ...this.reserveRoots];
+    const callerSide = runtimeTeamSide(fighter);
+    if (
+      operation.memberPosition !== undefined &&
+      (!this.tagTeamOrder || callerSide === undefined || !this.tagTeamOrder.canSwapMember(callerSide, fighter.id, operation.memberPosition))
+    ) {
+      this.logs.unshift(`Blocked ${operation.controllerType} member position ${operation.memberPosition} for ${fighter.id}`);
+      return false;
+    }
     if (operation.callerStateNo !== undefined && !canEnterState(fighter, operation.callerStateNo, fighter)) {
       this.logs.unshift(`Blocked ${operation.controllerType} state ${operation.callerStateNo} for ${fighter.id}`);
       return false;
@@ -1057,6 +1065,9 @@ export class PlayableMatchRuntime {
       if (operation.callerStateNo !== undefined) {
         enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
       }
+      if (operation.memberPosition !== undefined) {
+        this.tagTeamOrder!.swapMember(callerSide!, fighter.id, operation.memberPosition);
+      }
       if (operation.callerControl !== undefined) {
         applyRuntimeControl(fighter.runtime, operation.callerControl);
       }
@@ -1064,6 +1075,9 @@ export class PlayableMatchRuntime {
     }
     if (operation.callerStateNo !== undefined) {
       enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
+    }
+    if (operation.memberPosition !== undefined) {
+      this.tagTeamOrder!.swapMember(callerSide!, fighter.id, operation.memberPosition);
     }
     if (operation.callerControl !== undefined) {
       applyRuntimeControl(fighter.runtime, operation.callerControl);

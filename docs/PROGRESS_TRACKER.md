@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN static Tag member order
+
+- Compiler: positive static TagIn/TagOut `memberno` lowers to one-based mutable position.
+- Runtime: explicit Tag mode validates caller/position before any Tag mutation.
+- Result: same-tick member order swaps; stable P1-P8 slots and leader remain unchanged.
+- Failure: invalid position or non-Tag mode preserves order, state, control, standby, and telemetry.
+- Next: Wayfinder 065 static TagIn stable-PlayerNo leader rotation.
+
 ## Global report - 2026-07-11 IKEMEN Tag team-order model
 
 - Model: `RuntimeTagTeamOrder/v0` separates stable roots, mutable member order, and leader id by side.

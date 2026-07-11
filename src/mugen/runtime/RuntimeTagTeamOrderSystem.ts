@@ -31,6 +31,11 @@ export class RuntimeTagTeamOrder {
     this.leaderBySide = { 1: requireLeader(stableBySide[1], 1), 2: requireLeader(stableBySide[2], 2) };
   }
 
+  canSwapMember(side: RuntimeTeamSide, callerId: string, targetPosition: number): boolean {
+    const order = this.orderBySide[side];
+    return order.includes(callerId) && Number.isInteger(targetPosition) && targetPosition >= 1 && targetPosition <= order.length;
+  }
+
   swapMember(side: RuntimeTeamSide, callerId: string, targetPosition: number): void {
     const order = this.orderBySide[side];
     const callerIndex = order.indexOf(callerId);

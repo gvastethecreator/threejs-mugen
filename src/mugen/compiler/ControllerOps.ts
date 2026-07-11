@@ -521,6 +521,7 @@ export type TeamStandbyControllerOp = {
   partnerStateNo?: number;
   callerControl?: boolean;
   partnerControl?: boolean;
+  memberPosition?: number;
 };
 
 export type ControllerOp =
@@ -705,7 +706,8 @@ function compileTeamStandbyControllerOp(
         key !== "stateno" &&
         key !== "partnerstateno" &&
         key !== "ctrl" &&
-        key !== "partnerctrl",
+        key !== "partnerctrl" &&
+        key !== "memberno",
     )
   ) {
     return undefined;
@@ -715,6 +717,7 @@ function compileTeamStandbyControllerOp(
   const partnerStateRaw = findParam(controller, "partnerstateno");
   const callerControlRaw = findParam(controller, "ctrl");
   const partnerControlRaw = findParam(controller, "partnerctrl");
+  const memberPositionRaw = findParam(controller, "memberno");
   if (type !== "tagin" && (callerControlRaw !== undefined || partnerControlRaw !== undefined)) {
     return undefined;
   }
@@ -762,6 +765,13 @@ function compileTeamStandbyControllerOp(
       return undefined;
     }
   }
+  let memberPosition: number | undefined;
+  if (memberPositionRaw !== undefined) {
+    memberPosition = Number(memberPositionRaw.trim());
+    if (!Number.isInteger(memberPosition) || memberPosition < 1) {
+      return undefined;
+    }
+  }
   return {
     kind: "team-standby",
     controllerType: type,
@@ -772,6 +782,7 @@ function compileTeamStandbyControllerOp(
     ...(partnerStateNo === undefined ? {} : { partnerStateNo }),
     ...(callerControl === undefined ? {} : { callerControl }),
     ...(partnerControl === undefined ? {} : { partnerControl }),
+    ...(memberPosition === undefined ? {} : { memberPosition }),
   };
 }
 
