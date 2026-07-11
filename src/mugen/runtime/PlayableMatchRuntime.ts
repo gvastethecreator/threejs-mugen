@@ -1942,6 +1942,12 @@ function resolveDynamicTeamStandbyOperation(
     const { callerControlExpression: _callerControlExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, callerControl: resolvedControl !== 0 };
   }
+  if (operation.partnerControlExpression !== undefined) {
+    const resolvedPartnerControl = evaluateRuntimeControllerNumber(operation.partnerControlExpression, fighter.runtime, context);
+    if (resolvedPartnerControl === undefined) return undefined;
+    const { partnerControlExpression: _partnerControlExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, partnerControl: resolvedPartnerControl !== 0 };
+  }
   return resolvedOperation;
 }
 

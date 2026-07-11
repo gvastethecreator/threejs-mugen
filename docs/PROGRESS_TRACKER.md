@@ -1228,6 +1228,13 @@ Every compatibility milestone should leave:
 - Proved per-tick false-to-true variable reevaluation and post-state-entry control precedence.
 - Global status: dynamic caller self/control execute; dynamic partner control and target/state/order/redirect axes remain open.
 
+### 2026-07-11 - Dynamic IKEMEN TagIn partner control
+
+- Added deferred `partnerControlExpression` with required static partner selection.
+- Resolves in caller context before aggregate mutation; applies after partner state entry.
+- Proved StateDef precedence, caller-variable false-to-true reevaluation, and missing-partner rollback.
+- Global status: all Tag boolean axes execute dynamically; dynamic integer target/state/order axes and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM

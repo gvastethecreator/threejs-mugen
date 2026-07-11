@@ -1263,6 +1263,8 @@ Dynamic Tag `self` now resolves per tick through caller CNS context and records 
 
 Dynamic TagIn caller `ctrl` now resolves before aggregate mutation and applies after caller state entry. Wayfinder 069 next extends only `partnerctrl`, retaining static partner identity and partner-state precedence.
 
+Dynamic TagIn `partnerctrl` now resolves from caller context with static partner identity and post-state control precedence. Wayfinder 070 next widens only caller `stateno`, preserving own-state availability and aggregate rollback.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

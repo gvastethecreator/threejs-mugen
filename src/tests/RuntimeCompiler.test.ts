@@ -364,6 +364,15 @@ time = 20
       callerControl: false,
       callerControlExpression: "var(1)",
     });
+    expect(compileControllerIr(controller(200, "TagIn", [], { partner: "0", partnerctrl: "var(2)" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: false,
+      partnerOrdinal: 0,
+      partnerControl: false,
+      partnerControlExpression: "var(2)",
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "1, 0" },
@@ -397,8 +406,8 @@ time = 20
       { ctrl: "1, 0" },
       { ctrl: "(" },
       { partnerctrl: "1" },
-      { partner: "0", partnerctrl: "-1" },
-      { partner: "0", partnerctrl: "var(0)" },
+      { partner: "0", partnerctrl: "1, 0" },
+      { partner: "0", partnerctrl: "(" },
     ];
     for (const params of invalidControlParamSets) {
       expect(compileControllerIr(controller(200, "TagIn", [], params)).operation).toBeUndefined();

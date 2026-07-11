@@ -88,6 +88,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute dynamic Tag self](tickets/067-execute-dynamic-tag-self.md) - resolve boolean self at runtime while preserving aggregate validation.
 - [Execute dynamic TagIn control](tickets/068-execute-dynamic-tagin-control.md) - resolve caller control boolean without widening partner targeting.
 - [Execute dynamic TagIn partner control](tickets/069-execute-dynamic-tagin-partner-control.md) - resolve partner control with static partner selection and atomic validation.
+- [Execute dynamic Tag caller state](tickets/070-execute-dynamic-tag-caller-state.md) - resolve caller state number before state availability and aggregate mutation.
 
 ## Not Yet Specified
 
