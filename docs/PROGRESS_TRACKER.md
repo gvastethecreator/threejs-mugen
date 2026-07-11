@@ -1198,6 +1198,14 @@ Every compatibility milestone should leave:
 - `pnpm qa:trace` for runtime/compat changes
 - `pnpm qa:smoke` plus visual inspection for frontend/render changes
 
+### 2026-07-11 - Static IKEMEN TagIn leader
+
+- Added static positive `leader` compilation only for TagIn.
+- Added atomic same-side stable-PlayerNo validation and live-life leader rotation.
+- Preserved stable slots, scheduler, selection, gameplay, rendering, and fail-closed telemetry.
+- Focused proof: 3 files / 153 tests plus TypeScript 7 typecheck.
+- Global status: bounded Tag order now executes `memberno` and `leader`; dynamic params, redirects, and gameplay consumption remain open.
+
 ## Not Done
 
 - Full MUGEN VM

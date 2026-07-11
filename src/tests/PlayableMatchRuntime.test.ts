@@ -238,6 +238,54 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.logs).toContain("Blocked tagout member position 1 for p1");
   });
 
+  it("executes static TagIn leader against stable PlayerNo", () => {
+    const leaderTagIn = createImportedFixture({
+      id: "leader-tag-in",
+      displayName: "Leader Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagLeader: 3,
+    });
+    const runtime = new PlayableMatchRuntime(leaderTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.tagTeamOrder?.sides[0]).toEqual({
+      side: 1,
+      stableRootIds: ["p1", "p3"],
+      memberOrderIds: ["p3", "p1"],
+      leaderId: "p3",
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it.each([
+    ["opposing", 2],
+    ["missing", 5],
+  ])("blocks %s TagIn leader before existing Tag mutations", (_case, leaderPlayerNo) => {
+    const leaderTagIn = createImportedFixture({
+      id: `invalid-leader-${leaderPlayerNo}`,
+      displayName: "Invalid Leader Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagLeader: leaderPlayerNo,
+    });
+    const runtime = new PlayableMatchRuntime(leaderTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.tagTeamOrder?.sides[0]?.memberOrderIds).toEqual(["p1", "p3"]);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain(`Blocked tagin leader ${leaderPlayerNo} for p1`);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
   it("refreshes P2 selection for later roots after same-tick self TagOut", () => {
     const tagOutP1 = createImportedFixture({
       id: "tag-out-p1",
@@ -2764,6 +2812,7 @@ function createImportedFixture(
     passiveTagControl?: number;
     passiveTagPartnerControl?: number;
     passiveTagMemberNo?: number;
+    passiveTagLeader?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -3015,6 +3064,7 @@ ${options.passiveTagPartnerStateNo === undefined ? "" : `partnerstateno = ${opti
 ${options.passiveTagControl === undefined ? "" : `ctrl = ${options.passiveTagControl}`}
 ${options.passiveTagPartnerControl === undefined ? "" : `partnerctrl = ${options.passiveTagPartnerControl}`}
 ${options.passiveTagMemberNo === undefined ? "" : `memberno = ${options.passiveTagMemberNo}`}
+${options.passiveTagLeader === undefined ? "" : `leader = ${options.passiveTagLeader}`}
 `
       : "",
     options.passiveVarSet

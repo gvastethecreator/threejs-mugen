@@ -335,6 +335,13 @@ time = 20
       self: true,
       memberPosition: 2,
     });
+    expect(compileControllerIr(controller(200, "TagIn", [], { leader: "3" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      leaderPlayerNo: 3,
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "var(0)" },
@@ -353,9 +360,12 @@ time = 20
       { memberno: "-1" },
       { memberno: "var(0)" },
       { memberno: "1, 0" },
+      { leader: "0" },
+      { leader: "-1" },
+      { leader: "var(0)" },
+      { leader: "1, 0" },
       { partner: "var(0)" },
       { partner: "-1" },
-      { leader: "3" },
     ];
     for (const params of unsupportedParamSets) {
       const compiled = compileControllerIr(controller(200, "TagIn", [], params));
@@ -375,6 +385,7 @@ time = 20
       expect(compileControllerIr(controller(200, "TagIn", [], params)).operation).toBeUndefined();
     }
     expect(compileControllerIr(controller(200, "TagOut", [], { ctrl: "1" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "TagOut", [], { leader: "1" })).operation).toBeUndefined();
   });
 
   it("compiles static AssertSpecial flags into typed operations", () => {

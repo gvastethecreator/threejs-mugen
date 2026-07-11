@@ -1033,12 +1033,25 @@ export class PlayableMatchRuntime {
       return false;
     }
     const roots = [this.p1, this.p2, ...this.reserveRoots];
+    const rootById = new Map(roots.map((root) => [root.id, root]));
     const callerSide = runtimeTeamSide(fighter);
+    const leader = operation.leaderPlayerNo === undefined ? undefined : rootById.get(`p${operation.leaderPlayerNo}`);
     if (
       operation.memberPosition !== undefined &&
       (!this.tagTeamOrder || callerSide === undefined || !this.tagTeamOrder.canSwapMember(callerSide, fighter.id, operation.memberPosition))
     ) {
       this.logs.unshift(`Blocked ${operation.controllerType} member position ${operation.memberPosition} for ${fighter.id}`);
+      return false;
+    }
+    if (
+      operation.leaderPlayerNo !== undefined &&
+      (!this.tagTeamOrder ||
+        callerSide === undefined ||
+        !leader ||
+        runtimeTeamSide(leader) !== callerSide ||
+        !this.tagTeamOrder.canRotateLeader(callerSide, leader.id))
+    ) {
+      this.logs.unshift(`Blocked ${operation.controllerType} leader ${operation.leaderPlayerNo} for ${fighter.id}`);
       return false;
     }
     if (operation.callerStateNo !== undefined && !canEnterState(fighter, operation.callerStateNo, fighter)) {
@@ -1071,6 +1084,9 @@ export class PlayableMatchRuntime {
       if (operation.callerControl !== undefined) {
         applyRuntimeControl(fighter.runtime, operation.callerControl);
       }
+      if (leader) {
+        this.tagTeamOrder!.rotateLeader(callerSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
+      }
       return true;
     }
     if (operation.callerStateNo !== undefined) {
@@ -1081,6 +1097,9 @@ export class PlayableMatchRuntime {
     }
     if (operation.callerControl !== undefined) {
       applyRuntimeControl(fighter.runtime, operation.callerControl);
+    }
+    if (leader) {
+      this.tagTeamOrder!.rotateLeader(callerSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
     }
     rootStandbyTransitionWorld.apply(roots, changes);
     if (partner && operation.partnerStateNo !== undefined) {

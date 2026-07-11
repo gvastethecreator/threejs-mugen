@@ -1253,6 +1253,10 @@ Blocked until gates pass:
 | SF3 Ryu demo | Parser/report stress. | Parse/report without crash; runtime playability not required yet. |
 | Imported stage | Presentation gate. | Stage report plus visual rendered/fallback/unsupported layer evidence. |
 
+## Current Checkpoint
+
+Static IKEMEN TagIn `leader` now resolves one-based stable PlayerNo only in explicit Tag mode, validates the same-side root before any Tag mutation, and rotates live mutable order after caller state/member/control while preserving stable slots and non-order consumers. Wayfinder 066 next maps dynamic Tag parameter evaluation from pinned source before widening compilation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.
