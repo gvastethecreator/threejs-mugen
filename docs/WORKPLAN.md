@@ -1257,6 +1257,8 @@ Blocked until gates pass:
 
 Static IKEMEN TagIn `leader` now resolves one-based stable PlayerNo only in explicit Tag mode, validates the same-side root before any Tag mutation, and rotates live mutable order after caller state/member/control while preserving stable slots and non-order consumers. Wayfinder 066 next maps dynamic Tag parameter evaluation from pinned source before widening compilation.
 
+Pinned dynamic Tag research now selects boolean `self` as Wayfinder 067: reuse existing expression resolution, preserve aggregate atomic validation, and keep dynamic targeting/order/redirect axes blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

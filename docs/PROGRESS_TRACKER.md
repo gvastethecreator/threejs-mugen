@@ -1206,6 +1206,13 @@ Every compatibility milestone should leave:
 - Focused proof: 3 files / 153 tests plus TypeScript 7 typecheck.
 - Global status: bounded Tag order now executes `memberno` and `leader`; dynamic params, redirects, and gameplay consumption remain open.
 
+### 2026-07-11 - Dynamic IKEMEN Tag parameter research
+
+- Pinned runtime coercion: integer axes use `evalI`; boolean axes use `evalB`.
+- Pinned redirect-first and serialized parameter execution, including partial-mutation failure risk.
+- Kept sandbox aggregate atomicity explicit; selected dynamic `self` as next bounded slice.
+- Global status: static Tag optional axes complete through leader; dynamic execution and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM

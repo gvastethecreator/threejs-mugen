@@ -85,6 +85,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute static Tag member order](tickets/064-execute-static-tag-member-order.md) - route positive one-based member swaps through explicit Tag order ownership.
 - [Execute static TagIn leader](tickets/065-execute-static-tagin-leader.md) - rotate stable same-side PlayerNo to leader with live KO ordering.
 - [Map dynamic Tag parameters](tickets/066-map-dynamic-tag-parameters.md) - pin expression timing, coercion, and failure semantics before dynamic execution.
+- [Execute dynamic Tag self](tickets/067-execute-dynamic-tag-self.md) - resolve boolean self at runtime while preserving aggregate validation.
 
 ## Not Yet Specified
 
