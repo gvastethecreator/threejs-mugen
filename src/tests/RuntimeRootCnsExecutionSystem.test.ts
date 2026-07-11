@@ -16,5 +16,6 @@ describe("RuntimeRootCnsExecutionWorld", () => {
 
     expect(run.mock.calls[0]?.[0]).toMatchObject({ capabilities: PLAYABLE_ROOT_CNS_CAPABILITIES });
     expect(run.mock.calls[1]?.[0]).toMatchObject({ capabilities: STANDBY_ROOT_CNS_CAPABILITIES });
+    expect(STANDBY_ROOT_CNS_CAPABILITIES.runtimeControllers).toEqual(expect.arrayContaining(["tagin", "tagout"]));
   });
 });

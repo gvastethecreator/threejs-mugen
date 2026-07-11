@@ -127,6 +127,75 @@ describe("PlayableMatchRuntime", () => {
     ]));
   });
 
+  it("executes self TagIn for a standby root without changing its teammates", () => {
+    const tagInReserve = createImportedFixture({
+      id: "tag-in-reserve",
+      displayName: "Tag In Reserve",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+    });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [tagInReserve, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors.map((actor) => [actor.id, actor.runtime.teamState?.standby])).toEqual([
+      ["p1", false],
+      ["p2", false],
+    ]);
+    expect(snapshot.reserveActors?.map((actor) => [actor.id, actor.runtime.teamState?.standby])).toEqual([
+      ["p3", false],
+      ["p4", true],
+    ]);
+  });
+
+  it("refreshes P2 selection for later roots after same-tick self TagOut", () => {
+    const tagOutP1 = createImportedFixture({
+      id: "tag-out-p1",
+      displayName: "Tagged Out P1",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+    });
+    const nextSideOne = createImportedFixture({
+      id: "next-side-one",
+      displayName: "Next Side One",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+    });
+    const observingSideTwo = createImportedFixture({
+      id: "observing-side-two",
+      displayName: "Observing Side Two",
+      withStateMove: false,
+      passiveVarSet: { trigger: 'P2Name = "Next Side One"', index: 0, value: 73 },
+    });
+    const runtime = new PlayableMatchRuntime(tagOutP1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [nextSideOne, observingSideTwo],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(true);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p3")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p4")?.runtime.vars[0]).toBe(73);
+    expect(snapshot.compatibilitySession?.actors.find((actor) => actor.actorId === "p1")?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it("blocks typed TagOut execution outside the explicit IKEMEN profile", () => {
+    const tagOutP1 = createImportedFixture({
+      id: "legacy-tag-out",
+      displayName: "Legacy Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+    });
+    const runtime = new PlayableMatchRuntime(tagOutP1, demoFighters[1]!);
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout for p1 outside ikemen-go profile");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it("exposes the exact active match phase order with an owner for every phase", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -2323,6 +2392,8 @@ function createImportedFixture(
     passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number };
     passiveAssertSpecialFlags?: string[];
     passiveAssertSpecialTrigger?: string;
+    passiveTagController?: "TagIn" | "TagOut";
+    passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
     withPaletteUtilities?: boolean;
@@ -2559,6 +2630,22 @@ ${options.passiveReversalDef.p2StateNo !== undefined ? `p2stateno = ${options.pa
 type = AssertSpecial
 trigger1 = ${options.passiveAssertSpecialTrigger ?? "1"}
 flag = ${options.passiveAssertSpecialFlags.join(", ")}
+`
+      : "",
+    options.passiveTagController
+      ? `
+[State 0, Passive Team Standby]
+type = ${options.passiveTagController}
+trigger1 = 1
+`
+      : "",
+    options.passiveVarSet
+      ? `
+[State 0, Passive Variable]
+type = VarSet
+trigger1 = ${options.passiveVarSet.trigger}
+v = ${options.passiveVarSet.index}
+value = ${options.passiveVarSet.value}
 `
       : "",
     options.passiveRemoveOnGetHitExplod

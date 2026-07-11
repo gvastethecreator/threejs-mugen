@@ -2,6 +2,7 @@ import type {
   AudioControllerOp,
   EnvColorControllerOp,
   PauseControllerOp,
+  TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
@@ -590,6 +591,7 @@ export class PlayableMatchRuntime {
               (target, controller, operation, resolveSoundValue, resolveParams) =>
                 this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
+              (actor, operation) => this.applyTeamStandbyController(actor, operation),
             ),
         });
         return { paused: result.paused, result };
@@ -694,6 +696,7 @@ export class PlayableMatchRuntime {
                 (controller, operation, resolveEnvColor) =>
                   this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
                 recordPhase,
+                (actor, operation) => this.applyTeamStandbyController(actor, operation),
               );
             },
             advanceHelper: (helper) => {
@@ -741,6 +744,7 @@ export class PlayableMatchRuntime {
                 this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
               recordPhase,
+              (actor, operation) => this.applyTeamStandbyController(actor, operation),
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -927,6 +931,7 @@ export class PlayableMatchRuntime {
             (controller, operation, resolveEnvColor) =>
               this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             recordPhase,
+            (actor, operation) => this.applyTeamStandbyController(actor, operation),
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -1007,8 +1012,20 @@ export class PlayableMatchRuntime {
         onlyIgnoreHitPause: options.onlyIgnoreHitPause,
         onBlocked: (controller, route) =>
           this.logs.unshift(`Blocked standby CNS controller ${controller.type} for ${fighter.id} (${route})`),
+        onTeamStandby: (actor, operation) => this.applyTeamStandbyController(actor, operation),
       },
     );
+  }
+
+  private applyTeamStandbyController(fighter: FighterMatchState, operation: TeamStandbyControllerOp): boolean {
+    if (this.runtimeProfile !== "ikemen-go") {
+      this.logs.unshift(`Blocked ${operation.controllerType} for ${fighter.id} outside ikemen-go profile`);
+      return false;
+    }
+    rootStandbyTransitionWorld.apply([this.p1, this.p2, ...this.reserveRoots], [
+      { id: fighter.id, standby: operation.standby },
+    ]);
+    return true;
   }
 
   private opponentForRoot(fighter: FighterMatchState): FighterMatchState {
@@ -1387,6 +1404,7 @@ function advanceFighter(
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
   recordSchedulePhase?: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+  onTeamStandby?: (fighter: FighterMatchState, operation: TeamStandbyControllerOp) => boolean,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -1437,6 +1455,7 @@ function advanceFighter(
         tick,
         onPauseController,
         onEnvColorController,
+        { onTeamStandby },
       );
     },
     advanceImportedGroundRecoveryLanding: (actor) => {
@@ -1512,6 +1531,7 @@ function runHitPauseIgnoredControllers(
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
+  onTeamStandby?: (fighter: FighterMatchState, operation: TeamStandbyControllerOp) => boolean,
 ): void {
   runActiveStateControllers(
     fighter,
@@ -1525,7 +1545,7 @@ function runHitPauseIgnoredControllers(
     tick,
     onPauseController,
     onEnvColorController,
-    { onlyIgnoreHitPause: true },
+    { onlyIgnoreHitPause: true, onTeamStandby },
   );
 }
 
@@ -1533,6 +1553,7 @@ type ActiveControllerRunOptions = {
   onlyIgnoreHitPause?: boolean;
   participation?: "playable" | "standby";
   onBlocked?: (controller: ControllerIr, route: string) => void;
+  onTeamStandby?: (fighter: FighterMatchState, operation: TeamStandbyControllerOp) => boolean;
 };
 
 function runActiveStateControllers(
@@ -1780,6 +1801,15 @@ function runActiveStateControllers(
       });
     },
     runtimeController: ({ dispatch, owner }) => {
+      if (dispatch.controller.operation?.kind === "team-standby") {
+        if (options.onTeamStandby?.(fighter, dispatch.controller.operation)) {
+          runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
+          runtimeActiveControllerTelemetryHooks.recordOperation(fighter, dispatch.controller.operation);
+        } else {
+          options.onBlocked?.(dispatch.controller, "runtime-controller");
+        }
+        return;
+      }
       controllerDispatchWorld.apply(fighter, dispatch.controller, {
         context: runtimeControllerContext(fighter, owner, tick, stageBounds, opponent, gameSpace),
         ...runtimeActiveControllerTelemetryHooks,

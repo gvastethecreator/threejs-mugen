@@ -5,6 +5,7 @@ import { compileControllerIr, compileRuntimeProgram, getControllerSupport, isRun
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import { parseCmd } from "../mugen/parsers/CmdParser";
+import { parseCns } from "../mugen/parsers/CnsParser";
 
 describe("runtime compiler IR", () => {
   it("compiles CMD tokens into executable ordered steps", () => {
@@ -252,6 +253,12 @@ time = 20
       kind: "team-standby",
       controllerType: "tagout",
       standby: true,
+    });
+    const parsedTagIn = parseCns(`[Statedef 0]\ntype = S\n[State 0, Tag]\ntype = TagIn\ntrigger1 = 1`).states[0]!.controllers[0]!;
+    expect(compileControllerIr(parsedTagIn).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
     });
 
     const unsupportedParamSets: Record<string, string>[] = [

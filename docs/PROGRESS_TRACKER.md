@@ -1,6 +1,12 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN standby-root CNS scheduling
+## Global report - 2026-07-11 IKEMEN self TagIn/TagOut runtime
+
+- Latest runtime: parameterless self TagIn/TagOut now mutate caller standby under explicit IKEMEN and refresh later-root Enemy/P2 selection in the same tick.
+- Safety: any optional parameter and every non-IKEMEN execution fail closed; no implicit partner transition or gameplay ownership.
+- Next: Wayfinder 054 maps stable PlayerNo/partner identity before optional Tag targeting.
+
+## Previous report - 2026-07-11 IKEMEN standby-root CNS scheduling
 
 - Scheduler: explicit IKEMEN RunOrder includes P3-P8 roots.
 - Execution: reserves advance state time and controller-only standby CNS in active and pause branches.

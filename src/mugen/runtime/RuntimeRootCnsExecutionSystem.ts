@@ -17,7 +17,7 @@ export const PLAYABLE_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabilities
 
 export const STANDBY_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabilities = {
   state: true,
-  runtimeControllers: ["ctrlset", "statetypeset", "turn", "varset", "varadd", "varrandom", "varrangeset", "null"],
+  runtimeControllers: ["ctrlset", "statetypeset", "turn", "tagin", "tagout", "varset", "varadd", "varrandom", "varrangeset", "null"],
   sideEffects: [],
   unsupported: true,
 };

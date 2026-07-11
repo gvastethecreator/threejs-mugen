@@ -571,7 +571,7 @@ export function compileControllerOp(controller: MugenStateController, context: C
   if (type === "turn") {
     return { kind: "orientation", controllerType: "turn" };
   }
-  if ((type === "tagin" || type === "tagout") && Object.keys(controller.params).length === 0) {
+  if ((type === "tagin" || type === "tagout") && hasOnlyStructuralTypeParam(controller)) {
     return { kind: "team-standby", controllerType: type, standby: type === "tagout" };
   }
   if (type === "sprpriority") {
@@ -683,6 +683,10 @@ export function compileControllerOp(controller: MugenStateController, context: C
     return compileEnvColorControllerOp(controller);
   }
   return undefined;
+}
+
+function hasOnlyStructuralTypeParam(controller: MugenStateController): boolean {
+  return Object.keys(controller.params).every((key) => key.toLowerCase() === "type");
 }
 
 function isKinematicController(type: string): type is KinematicControllerOp["controllerType"] {

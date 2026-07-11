@@ -188,6 +188,9 @@ export class RuntimeCompatibilityTelemetryWorld {
     if (operation.kind === "contact") {
       return `contact:${operation.controllerType}`;
     }
+    if (operation.kind === "team-standby") {
+      return `team-standby:${operation.controllerType}`;
+    }
     return operation.kind;
   }
 
