@@ -36,11 +36,11 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
 
   it("forwards bounded redirect state into executor expression contexts", () => {
     const world = new RuntimeControllerEvaluationContextWorld();
-    const actor = { id: "p1", hitPause: 0 };
+    const actor = { id: "p1", hitPause: 0, playerId: 56, playerNo: 1 };
     const owner = { id: "owner", consts: {} };
-    const opponent = { runtime: runtimeState({ life: 963, vel: { x: -2, y: -5 } }) };
-    const parent = { runtime: runtimeState({ vel: { x: 4, y: 0 } }) };
-    const root = { runtime: runtimeState({ vel: { x: 0, y: -7 } }) };
+    const opponent = { runtime: runtimeState({ life: 963, vel: { x: -2, y: -5 } }), playerId: 58, playerNo: 2 };
+    const parent = { runtime: runtimeState({ vel: { x: 4, y: 0 } }), playerId: 57, playerNo: 3 };
+    const root = { runtime: runtimeState({ vel: { x: 0, y: -7 } }), playerId: 56, playerNo: 1 };
 
     const context = world.create({
       actor,
@@ -55,8 +55,12 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
     });
 
     expect(context.opponent).toBe(opponent.runtime);
+    expect([context.playerId, context.playerNo]).toEqual([56, 1]);
+    expect([context.opponentPlayerId, context.opponentPlayerNo]).toEqual([58, 2]);
     expect(context.parent).toBe(parent.runtime);
+    expect([context.parentPlayerId, context.parentPlayerNo]).toEqual([57, 3]);
     expect(context.root).toBe(root.runtime);
+    expect([context.rootPlayerId, context.rootPlayerNo]).toEqual([56, 1]);
     expect(context.target?.(77)?.self.life).toBe(963);
     expect(context.target?.(999)).toBeUndefined();
   });

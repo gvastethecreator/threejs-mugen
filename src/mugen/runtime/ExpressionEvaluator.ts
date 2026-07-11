@@ -5,7 +5,11 @@ export { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
 
 export type ExpressionContext = {
   self: CharacterRuntimeState;
+  playerId?: number;
+  playerNo?: number;
   opponent?: CharacterRuntimeState;
+  opponentPlayerId?: number;
+  opponentPlayerNo?: number;
   enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
   enemyNearFallbackToOpponent?: boolean;
   stageBounds?: { left: number; right: number };
@@ -15,7 +19,11 @@ export type ExpressionContext = {
   parentLocalCoord?: [number, number];
   rootLocalCoord?: [number, number];
   parent?: CharacterRuntimeState;
+  parentPlayerId?: number;
+  parentPlayerNo?: number;
   root?: CharacterRuntimeState;
+  rootPlayerId?: number;
+  rootPlayerNo?: number;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
   name?: string;
   authorName?: string;
@@ -75,7 +83,11 @@ export type ExpressionGameSpace = {
 
 export type ExpressionRedirectTarget = {
   self: CharacterRuntimeState;
+  playerId?: number;
+  playerNo?: number;
   opponent?: CharacterRuntimeState;
+  opponentPlayerId?: number;
+  opponentPlayerNo?: number;
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
   name?: string;
@@ -209,19 +221,7 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
     if (!redirected) {
       return 0;
     }
-    return evaluateExpression(expressionBody, {
-      ...context,
-      self: redirected.self,
-      opponent: redirected.opponent ?? context.self,
-      localCoord: redirected.localCoord ?? context.localCoord,
-      opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
-      name: redirected.name,
-      authorName: redirected.authorName,
-      opponentName: redirected.opponentName ?? context.name,
-      opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
-      teamSide: redirected.teamSide,
-      opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
-    });
+    return evaluateExpression(expressionBody, redirectedTargetContext(context, redirected));
   }
   if (index) {
     context.reportUnsupported?.(`${target}(index)`);
@@ -235,6 +235,8 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
   return evaluateExpression(expressionBody, {
     ...context,
     self: redirectedSelf,
+    playerId: target === "parent" ? context.parentPlayerId : context.rootPlayerId,
+    playerNo: target === "parent" ? context.parentPlayerNo : context.rootPlayerNo,
     localCoord: target === "parent" ? context.parentLocalCoord ?? context.localCoord : context.rootLocalCoord ?? context.localCoord,
     teamSide: target === "parent" ? context.parentTeamSide : context.rootTeamSide,
   });
@@ -445,19 +447,7 @@ class ExpressionParser {
       if (!redirected) {
         return "fail";
       }
-      return {
-        ...this.context,
-        self: redirected.self,
-        opponent: redirected.opponent ?? this.context.self,
-        localCoord: redirected.localCoord ?? this.context.localCoord,
-        opponentLocalCoord: redirected.opponentLocalCoord ?? this.context.localCoord,
-        name: redirected.name,
-        authorName: redirected.authorName,
-        opponentName: redirected.opponentName ?? this.context.name,
-        opponentAuthorName: redirected.opponentAuthorName ?? this.context.authorName,
-        teamSide: redirected.teamSide,
-        opponentTeamSide: redirected.opponentTeamSide ?? this.context.teamSide,
-      };
+      return redirectedTargetContext(this.context, redirected);
     }
     if (index) {
       this.context.reportUnsupported?.(`${target}(index)`);
@@ -471,6 +461,8 @@ class ExpressionParser {
     return {
       ...this.context,
       self: redirectedSelf,
+      playerId: target === "parent" ? this.context.parentPlayerId : this.context.rootPlayerId,
+      playerNo: target === "parent" ? this.context.parentPlayerNo : this.context.rootPlayerNo,
       localCoord: target === "parent" ? this.context.parentLocalCoord ?? this.context.localCoord : this.context.rootLocalCoord ?? this.context.localCoord,
       teamSide: target === "parent" ? this.context.parentTeamSide : this.context.rootTeamSide,
     };
@@ -537,6 +529,20 @@ class ExpressionParser {
     }
     if (lower === "stateno") {
       return this.context.self.stateNo;
+    }
+    if (lower === "id") {
+      if (!Number.isSafeInteger(this.context.playerId) || this.context.playerId! < 0) {
+        this.context.reportUnsupported?.(identifier);
+        return 0;
+      }
+      return this.context.playerId!;
+    }
+    if (lower === "playerno") {
+      if (!Number.isSafeInteger(this.context.playerNo) || this.context.playerNo! < 1) {
+        this.context.reportUnsupported?.(identifier);
+        return 0;
+      }
+      return this.context.playerNo!;
     }
     if (lower === "statetime") {
       return this.context.stateTime ?? this.context.self.animTime;
@@ -1257,19 +1263,7 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
   }
   const redirected = context.enemyNear?.(enemyIndex);
   if (redirected) {
-    return {
-      ...context,
-      self: redirected.self,
-      opponent: redirected.opponent ?? context.self,
-      localCoord: redirected.localCoord ?? context.localCoord,
-      opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
-      name: redirected.name,
-      authorName: redirected.authorName,
-      opponentName: redirected.opponentName ?? context.name,
-      opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
-      teamSide: redirected.teamSide,
-      opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
-    };
+    return redirectedTargetContext(context, redirected);
   }
   if (enemyIndex > 0) {
     return "fail";
@@ -1284,7 +1278,11 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
   return {
     ...context,
     self: context.opponent,
+    playerId: context.opponentPlayerId,
+    playerNo: context.opponentPlayerNo,
     opponent: context.self,
+    opponentPlayerId: context.playerId,
+    opponentPlayerNo: context.playerNo,
     localCoord: context.opponentLocalCoord ?? context.localCoord,
     opponentLocalCoord: context.localCoord,
     name: context.opponentName,
@@ -1293,6 +1291,26 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     opponentAuthorName: context.authorName,
     teamSide: context.opponentTeamSide,
     opponentTeamSide: context.teamSide,
+  };
+}
+
+function redirectedTargetContext(context: ExpressionContext, redirected: ExpressionRedirectTarget): ExpressionContext {
+  return {
+    ...context,
+    self: redirected.self,
+    playerId: redirected.playerId,
+    playerNo: redirected.playerNo,
+    opponent: redirected.opponent ?? context.self,
+    opponentPlayerId: redirected.opponentPlayerId ?? context.playerId,
+    opponentPlayerNo: redirected.opponentPlayerNo ?? context.playerNo,
+    localCoord: redirected.localCoord ?? context.localCoord,
+    opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
+    name: redirected.name,
+    authorName: redirected.authorName,
+    opponentName: redirected.opponentName ?? context.name,
+    opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
+    teamSide: redirected.teamSide,
+    opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
   };
 }
 

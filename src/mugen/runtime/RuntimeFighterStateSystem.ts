@@ -22,6 +22,8 @@ import { RuntimeTargetWorld, type RuntimeTarget, type RuntimeTargetBinding, type
 
 export type FighterMatchState = {
   id: string;
+  playerId?: number;
+  playerNo?: number;
   label: string;
   definition: DemoFighterDefinition;
   runtimeProgram?: RuntimeProgramIr;
@@ -74,6 +76,8 @@ export type FighterMatchState = {
 
 export type RuntimeFighterStateCreateInput = {
   id: string;
+  playerId?: number;
+  playerNo?: number;
   definition: DemoFighterDefinition;
   x: number;
   y: number;
@@ -103,6 +107,8 @@ export class RuntimeFighterStateWorld {
 
     return {
       id: input.id,
+      ...(input.playerId === undefined ? {} : { playerId: input.playerId }),
+      ...(input.playerNo === undefined ? {} : { playerNo: input.playerNo }),
       label: input.definition.displayName,
       definition: input.definition,
       runtimeProgram,

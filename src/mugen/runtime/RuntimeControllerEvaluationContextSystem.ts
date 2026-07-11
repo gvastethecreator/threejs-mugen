@@ -4,10 +4,14 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerEvaluationActor = {
   hitPause: number;
+  playerId?: number;
+  playerNo?: number;
 };
 
 export type RuntimeControllerEvaluationRedirectActor = {
   runtime: CharacterRuntimeState;
+  playerId?: number;
+  playerNo?: number;
 };
 
 export type RuntimeControllerEvaluationContextInput<TActor extends RuntimeControllerEvaluationActor, TOwner> = {
@@ -33,6 +37,8 @@ export class RuntimeControllerEvaluationContextWorld {
     input: RuntimeControllerEvaluationContextInput<TActor, TOwner>,
   ): RuntimeControllerEvaluationContext {
     return {
+      playerId: input.actor.playerId,
+      playerNo: input.actor.playerNo,
       getConst: (name) => input.getConst(input.owner, name),
       hitPauseTime: () => input.actor.hitPause,
       random: () => input.nextRandom(input.actor),
@@ -44,8 +50,14 @@ export class RuntimeControllerEvaluationContextWorld {
       rootLocalCoord: input.rootLocalCoord,
       stageTime: input.tick,
       opponent: input.opponent?.runtime,
+      opponentPlayerId: input.opponent?.playerId,
+      opponentPlayerNo: input.opponent?.playerNo,
       parent: input.parent?.runtime,
+      parentPlayerId: input.parent?.playerId,
+      parentPlayerNo: input.parent?.playerNo,
       root: input.root?.runtime,
+      rootPlayerId: input.root?.playerId,
+      rootPlayerNo: input.root?.playerNo,
       target: input.target,
     };
   }

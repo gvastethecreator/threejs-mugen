@@ -1279,6 +1279,8 @@ RedirectID research now separates global numeric PlayerID from stable actor ids 
 
 `RuntimeCharacterIdentityWorld` now owns source-backed allocation, active lookup, no-reuse lifecycle, and frozen diagnostics without changing match behavior. Wayfinder 077 next integrates P1-P8 identity and explicit `ID`/`PlayerNo` expression context; Helpers and redirects stay blocked.
 
+Explicit `ikemen-go` matches now integrate stable P1-P8 PlayerNo plus registry-owned odd-then-even PlayerID, expose frozen identity diagnostics, and carry `ID`/`PlayerNo` through caller, EnemyNear, Target, Parent, and Root expression contexts without parsing actor ids. Reset preserves identity and legacy profiles create no registry. Wayfinder 078 next executes root-only Tag RedirectID while retaining original-caller expression evaluation, aggregate validation, and blocked Helper/gameplay scope.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

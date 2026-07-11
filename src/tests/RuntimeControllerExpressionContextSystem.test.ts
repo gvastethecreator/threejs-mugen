@@ -43,14 +43,23 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     const context = createRuntimeControllerExpressionContext(self, {
       helperId: 222,
       isHelper: true,
+      playerId: 60,
+      playerNo: 3,
       parent,
+      parentPlayerId: 56,
+      parentPlayerNo: 1,
       parentTeamSide: 1,
       root,
+      rootPlayerId: 56,
+      rootPlayerNo: 1,
       rootTeamSide: 1,
       teamSide: 1,
     });
 
     expect(evaluateExpression("IsHelper && IsHelper(222)", context)).toBe(1);
+    expect(evaluateExpression("ID = 60 && PlayerNo = 3", context)).toBe(1);
+    expect(evaluateExpression("Parent, ID = 56 && PlayerNo = 1", context)).toBe(1);
+    expect(evaluateExpression("Root, ID = 56 && PlayerNo = 1", context)).toBe(1);
     expect(evaluateExpression("Parent, TeamSide = 1", context)).toBe(1);
     expect(evaluateExpression("Root, TeamSide = 1", context)).toBe(1);
   });

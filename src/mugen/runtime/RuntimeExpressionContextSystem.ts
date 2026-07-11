@@ -25,6 +25,8 @@ export type RuntimeExpressionContextDefinition = {
 };
 
 export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
+  playerId?: number;
+  playerNo?: number;
   definition: RuntimeExpressionContextDefinition;
   runtimeProgram?: { states: readonly { id: number }[] };
   commandBuffer: Pick<CommandBuffer, "isCommandActive">;
@@ -76,7 +78,11 @@ export class RuntimeExpressionContextWorld {
 
     return {
       self: actor.runtime,
+      playerId: actor.playerId,
+      playerNo: actor.playerNo,
       opponent: selectedP2?.runtime,
+      opponentPlayerId: selectedP2?.playerId,
+      opponentPlayerNo: selectedP2?.playerNo,
       enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index),
       enemyNearFallbackToOpponent: input.rootSelection ? false : undefined,
       name: actor.definition.displayName,
@@ -91,6 +97,10 @@ export class RuntimeExpressionContextWorld {
       opponentLocalCoord: selectedP2?.definition.localCoord,
       parentLocalCoord: owner.definition.localCoord,
       rootLocalCoord: actor.definition.localCoord,
+      parentPlayerId: owner.playerId,
+      parentPlayerNo: owner.playerNo,
+      rootPlayerId: actor.playerId,
+      rootPlayerNo: actor.playerNo,
       target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
@@ -157,7 +167,11 @@ export class RuntimeExpressionContextWorld {
     }
     return {
       self: opponent.runtime,
+      playerId: opponent.playerId,
+      playerNo: opponent.playerNo,
       opponent: actor.runtime,
+      opponentPlayerId: actor.playerId,
+      opponentPlayerNo: actor.playerNo,
       localCoord: opponent.definition.localCoord,
       opponentLocalCoord: actor.definition.localCoord,
       name: opponent.definition.displayName,
@@ -180,7 +194,11 @@ export class RuntimeExpressionContextWorld {
     }
     return {
       self: opponent.runtime,
+      playerId: opponent.playerId,
+      playerNo: opponent.playerNo,
       opponent: actor.runtime,
+      opponentPlayerId: actor.playerId,
+      opponentPlayerNo: actor.playerNo,
       localCoord: opponent.definition.localCoord,
       opponentLocalCoord: actor.definition.localCoord,
       name: opponent.definition.displayName,

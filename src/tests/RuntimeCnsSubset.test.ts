@@ -73,6 +73,47 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("!InGuardDist", { self: state, inGuardDist: () => false })).toBe(1);
   });
 
+  it("evaluates explicit numeric character identity in caller and redirected contexts", () => {
+    const self = runtimeState();
+    const opponent = runtimeState({ life: 900 });
+    const parent = runtimeState({ stateNo: 6000 });
+    const root = runtimeState({ stateNo: 0 });
+    const context = {
+      self,
+      playerId: 56,
+      playerNo: 1,
+      opponent,
+      opponentPlayerId: 58,
+      opponentPlayerNo: 2,
+      parent,
+      parentPlayerId: 60,
+      parentPlayerNo: 3,
+      root,
+      rootPlayerId: 56,
+      rootPlayerNo: 1,
+      target: (targetId?: number) => targetId === 77
+        ? {
+            self: opponent,
+            playerId: 58,
+            playerNo: 2,
+            opponent: self,
+            opponentPlayerId: 56,
+            opponentPlayerNo: 1,
+          }
+        : undefined,
+    };
+
+    expect(evaluateExpression("ID = 56 && PlayerNo = 1", context)).toBe(1);
+    expect(evaluateExpression("EnemyNear, ID = 58 && PlayerNo = 2", context)).toBe(1);
+    expect(evaluateExpression("Target(77), ID = 58 && PlayerNo = 2", context)).toBe(1);
+    expect(evaluateExpression("Parent, ID = 60 && PlayerNo = 3", context)).toBe(1);
+    expect(evaluateExpression("Root, ID = 56 && PlayerNo = 1", context)).toBe(1);
+
+    const unsupported: string[] = [];
+    expect(evaluateExpression("ID + PlayerNo", { self, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(0);
+    expect(unsupported).toEqual(["ID", "PlayerNo"]);
+  });
+
   it("evaluates AnimElemTime through the runtime timing callback", () => {
     const state = runtimeState({ frameIndex: 1 });
 

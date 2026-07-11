@@ -73,6 +73,12 @@ import {
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
+import {
+  RuntimeCharacterIdentityWorld,
+  type RuntimeCharacterIdentityActor,
+  type RuntimeCharacterIdentityDiagnostic,
+  type RuntimeCharacterIdentityRegistry,
+} from "./RuntimeCharacterIdentitySystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
@@ -204,6 +210,7 @@ const afterImageSampleWorld = new RuntimeAfterImageSampleWorld();
 const frameWorld = new RuntimeFrameWorld();
 const animationChangeWorld = new RuntimeAnimationWorld();
 const fighterStateWorld = new RuntimeFighterStateWorld();
+const characterIdentityWorld = new RuntimeCharacterIdentityWorld();
 const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
 const targetStateEntryWorld = new RuntimeTargetStateEntryWorld();
 const actorConstraintControllerDispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
@@ -298,6 +305,9 @@ type SuperPauseTargetDefenseOverride = {
   pauseStartedAt: number;
   multiplier: number;
 };
+type RuntimeRootCharacterIdentity = RuntimeCharacterIdentityActor & {
+  fighter: FighterMatchState;
+};
 
 export class PlayableMatchRuntime {
   private tick = 0;
@@ -310,6 +320,7 @@ export class PlayableMatchRuntime {
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
   private readonly reserveRoots: FighterMatchState[];
+  private readonly characterIdentity?: RuntimeCharacterIdentityRegistry<RuntimeRootCharacterIdentity>;
   private readonly tagTeamOrder?: RuntimeTagTeamOrder;
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
@@ -380,6 +391,7 @@ export class PlayableMatchRuntime {
     this.targetWorld = options.targetWorld ?? new RuntimeTargetWorld();
     this.p1 = fighterStateWorld.create({
       id: "p1",
+      ...(this.runtimeProfile === "ikemen-go" ? { playerNo: 1 } : {}),
       definition: p1Definition,
       x: stage.playerStart.p1.x,
       y: stage.playerStart.p1.y,
@@ -393,6 +405,7 @@ export class PlayableMatchRuntime {
     });
     this.p2 = fighterStateWorld.create({
       id: "p2",
+      ...(this.runtimeProfile === "ikemen-go" ? { playerNo: 2 } : {}),
       definition: p2Definition,
       x: stage.playerStart.p2.x,
       y: stage.playerStart.p2.y,
@@ -408,7 +421,7 @@ export class PlayableMatchRuntime {
       ? options.reserveFighters?.slice(0, 6).map((definition, index) => {
           const playerNumber = index + 3;
           const start = playerNumber % 2 === 1 ? stage.playerStart.p1 : stage.playerStart.p2;
-          const fighter = this.createFighterState(`p${playerNumber}`, definition, start);
+          const fighter = this.createFighterState(`p${playerNumber}`, definition, start, { playerNo: playerNumber });
           fighter.runtime.teamState = {
             disabled: false,
             standby: true,
@@ -418,6 +431,13 @@ export class PlayableMatchRuntime {
           return fighter;
         }) ?? []
       : [];
+    if (this.runtimeProfile === "ikemen-go") {
+      const identityRoots = [this.p1, this.p2, ...this.reserveRoots].map(createRootCharacterIdentity);
+      this.characterIdentity = characterIdentityWorld.create(identityRoots);
+      for (const identityRoot of identityRoots) {
+        identityRoot.fighter.playerId = this.characterIdentity.playerIdFor(identityRoot.id);
+      }
+    }
     this.tagTeamOrder = tagTeamOrderWorld.create(
       [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
       this.runtimeProfile === "ikemen-go" ? options.teamMode ?? "single" : "single",
@@ -1345,6 +1365,10 @@ export class PlayableMatchRuntime {
     return this.effectActorWorld.summarize(this.matchRoster().effectStoreOwners);
   }
 
+  getCharacterIdentity(): RuntimeCharacterIdentityDiagnostic | undefined {
+    return this.characterIdentity?.diagnostic();
+  }
+
   reset(): void {
     this.restoreExpiredSuperPauseTargetDefense(true);
     this.tagTeamOrder?.reset();
@@ -1367,7 +1391,11 @@ export class PlayableMatchRuntime {
         start: /p[357]$/.test(actor.id) ? this.stage.playerStart.p1 : this.stage.playerStart.p2,
       })),
       createFighter: (id, definition, start) => {
-        const fighter = this.createFighterState(id, definition, start);
+        const existing = [this.p1, this.p2, ...this.reserveRoots].find((root) => root.id === id);
+        const fighter = this.createFighterState(id, definition, start, {
+          playerId: existing?.playerId,
+          playerNo: existing?.playerNo,
+        });
         if (id !== "p1" && id !== "p2") {
           fighter.runtime.teamState = {
             disabled: false,
@@ -1391,9 +1419,11 @@ export class PlayableMatchRuntime {
     id: string,
     definition: DemoFighterDefinition,
     start: { x: number; y: number; facing: 1 | -1 },
+    identity: Pick<FighterMatchState, "playerId" | "playerNo"> = {},
   ): FighterMatchState {
     return fighterStateWorld.create({
       id,
+      ...identity,
       definition,
       x: start.x,
       y: start.y,
@@ -1428,6 +1458,23 @@ function nextRuntimeRandom(fighter: FighterMatchState): number {
   const next = nextRuntimeRandomUnit(fighter.rngSeed);
   fighter.rngSeed = next.seed;
   return next.value;
+}
+
+function createRootCharacterIdentity(fighter: FighterMatchState): RuntimeRootCharacterIdentity {
+  if (fighter.playerNo === undefined) {
+    throw new Error(`Missing explicit PlayerNo for runtime root ${fighter.id}`);
+  }
+  return {
+    id: fighter.id,
+    playerNo: fighter.playerNo,
+    fighter,
+    get disabled() {
+      return fighter.runtime.teamState?.disabled;
+    },
+    get standby() {
+      return fighter.runtime.teamState?.standby;
+    },
+  };
 }
 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {

@@ -71,6 +71,21 @@ describe("RuntimeExpressionContextWorld", () => {
     });
   });
 
+  it("forwards explicit numeric identity through caller, EnemyNear, and Target reads", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    actor.playerId = 56;
+    actor.playerNo = 1;
+    opponent.playerId = 58;
+    opponent.playerNo = 2;
+    actor.targets = [{ actorId: "p2", targetId: 77, age: 0 }];
+
+    expect(world.evaluateNumber("ID * 100 + PlayerNo", { actor, opponent })).toBe(5601);
+    expect(world.evaluateNumber("EnemyNear, ID * 100 + PlayerNo", { actor, opponent })).toBe(5802);
+    expect(world.evaluateNumber("Target(77), ID * 100 + PlayerNo", { actor, opponent })).toBe(5802);
+  });
+
   it("passes stage bounds into edge-distance expression reads", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author", {

@@ -48,6 +48,7 @@ time = 20
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const helperIdentity = compileExpression("IsHelper && IsHelper(42)");
     const helperIdentityFunction = compileExpression("IsHelper(42)");
+    const characterIdentity = compileExpression("ID >= 56 && PlayerNo = 1 && EnemyNear, ID >= 56");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
     const enemyNear = compileExpression("enemynear, stateno = 5000");
     const parentRedirect = compileExpression("Parent,Var(3) = 7");
@@ -111,6 +112,8 @@ time = 20
     expect(helperIdentityFunction.supportLevel).toBe("executable");
     expect(helperIdentityFunction.functions).toEqual(["IsHelper"]);
     expect(helperIdentityFunction.identifiers).toEqual([]);
+    expect(characterIdentity.supportLevel).toBe("executable");
+    expect(characterIdentity.identifiers).toEqual(["ID", "PlayerNo"]);
     expect(hitDefAttr.supportLevel).toBe("executable");
     expect(hitDefAttr.identifiers).toEqual(["HitDefAttr"]);
     expect(enemyNear.supportLevel).toBe("executable");

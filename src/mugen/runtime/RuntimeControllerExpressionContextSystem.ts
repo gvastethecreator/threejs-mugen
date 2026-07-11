@@ -4,6 +4,8 @@ import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerEvaluationContext = {
+  playerId?: number;
+  playerNo?: number;
   getConst?: (name: string) => number | undefined;
   getAnimation?: (animNo: number, source: NonNullable<CharacterRuntimeState["animationSource"]>) => MugenAnimationAction | undefined;
   hitPauseTime?: () => number;
@@ -16,8 +18,14 @@ export type RuntimeControllerEvaluationContext = {
   rootLocalCoord?: [number, number];
   stageTime?: number;
   opponent?: CharacterRuntimeState;
+  opponentPlayerId?: number;
+  opponentPlayerNo?: number;
   parent?: CharacterRuntimeState;
+  parentPlayerId?: number;
+  parentPlayerNo?: number;
   root?: CharacterRuntimeState;
+  rootPlayerId?: number;
+  rootPlayerNo?: number;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
   teamSide?: number;
   opponentTeamSide?: number;
@@ -34,9 +42,17 @@ export function createRuntimeControllerExpressionContext(
 ): ExpressionContext {
   return {
     self: state,
+    playerId: context.playerId,
+    playerNo: context.playerNo,
     opponent: context.opponent,
+    opponentPlayerId: context.opponentPlayerId,
+    opponentPlayerNo: context.opponentPlayerNo,
     parent: context.parent,
+    parentPlayerId: context.parentPlayerId,
+    parentPlayerNo: context.parentPlayerNo,
     root: context.root,
+    rootPlayerId: context.rootPlayerId,
+    rootPlayerNo: context.rootPlayerNo,
     target: context.target,
     getConst: context.getConst,
     getHitVar: (name) => runtimeHitVar(state, name),

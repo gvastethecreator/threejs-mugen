@@ -72,6 +72,60 @@ describe("PlayableMatchRuntime", () => {
     );
   });
 
+  it("integrates stable IKEMEN P1-P4 identity into runtime expressions and diagnostics", () => {
+    const identityStateNo = 7770;
+    const p1 = createImportedFixture({
+      id: "ikemen-root-identity",
+      withStateMove: false,
+      extraStateNos: [identityStateNo],
+    });
+    p1.stateEntryControllers = [
+      ...(p1.stateEntryControllers ?? []),
+      ...parseCns(`
+[State -1, Numeric root identity]
+type = ChangeState
+trigger1 = ID = 56
+trigger1 = PlayerNo = 1
+trigger1 = EnemyNear, ID = 58
+trigger1 = EnemyNear, PlayerNo = 2
+value = ${identityStateNo}
+`).controllers,
+    ];
+    const runtime = new PlayableMatchRuntime(p1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const initial = runtime.getCharacterIdentity();
+    expect(initial?.characters.map(({ actorId, playerId, playerNo, disabled, standby, lookupEligible }) => ({
+      actorId,
+      playerId,
+      playerNo,
+      disabled,
+      standby,
+      lookupEligible,
+    }))).toEqual([
+      { actorId: "p1", playerId: 56, playerNo: 1, disabled: false, standby: false, lookupEligible: true },
+      { actorId: "p3", playerId: 57, playerNo: 3, disabled: false, standby: true, lookupEligible: true },
+      { actorId: "p2", playerId: 58, playerNo: 2, disabled: false, standby: false, lookupEligible: true },
+      { actorId: "p4", playerId: 59, playerNo: 4, disabled: false, standby: true, lookupEligible: true },
+    ]);
+    expect(Object.isFrozen(initial)).toBe(true);
+    expect(Object.isFrozen(initial?.characters)).toBe(true);
+    expect(runtime.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.stateNo).toBe(identityStateNo);
+
+    runtime.dispatch({ type: "set-root-standby", changes: [{ id: "p1", standby: true }] });
+    expect(runtime.getCharacterIdentity()?.characters.find(({ actorId }) => actorId === "p1")?.standby).toBe(true);
+    runtime.reset();
+    expect(runtime.getCharacterIdentity()?.characters.map(({ actorId, playerId, playerNo }) => [actorId, playerId, playerNo])).toEqual(
+      initial?.characters.map(({ actorId, playerId, playerNo }) => [actorId, playerId, playerNo]),
+    );
+
+    const legacy = new PlayableMatchRuntime(p1, demoFighters[1]!, trainingStage, { runtimeProfile: "mugen-1.1" });
+    expect(legacy.getCharacterIdentity()).toBeUndefined();
+    expect(legacy.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.stateNo).toBe(0);
+  });
+
   it("ignores reserve roots outside the explicit IKEMEN profile", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
       reserveFighters: [demoFighters[0]!, demoFighters[1]!],
