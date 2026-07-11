@@ -169,6 +169,7 @@ export class MatchWorld {
       effectStores,
       this.targetWorld,
       snapshot.actors.map((actor) => actor.id),
+      [...snapshot.actors, ...(snapshot.reserveActors ?? [])].map((actor) => actor.id),
     );
     this.registryKey = key;
     return this.actorRegistry;
@@ -187,6 +188,7 @@ export function buildMatchWorldActorRegistry(snapshot: MugenSnapshot): MatchWorl
     inferEffectStoresFromSnapshot(snapshot),
     new RuntimeTargetWorld(),
     snapshot.actors.map((actor) => actor.id),
+    [...snapshot.actors, ...(snapshot.reserveActors ?? [])].map((actor) => actor.id),
   );
 }
 
@@ -196,6 +198,7 @@ function buildMatchWorldActorRegistryFromRecords(
   effectStores: RuntimeEffectActorStoreSummary[],
   targetWorld: RuntimeTargetWorld,
   playablePairRootIds: readonly string[],
+  scheduledRootIds: readonly string[],
 ): MatchWorldActorRegistrySnapshot {
   const actors = records.map((actor) => ({
     ...actor,
@@ -237,7 +240,7 @@ function buildMatchWorldActorRegistryFromRecords(
     }));
   const rootParticipation = rootParticipationWorld.diagnostic({
     roots,
-    scheduledRootIds: playablePairRootIds,
+    scheduledRootIds,
     inputOwnedRootIds: playablePairRootIds,
     combatOwnedRootIds: playablePairRootIds,
     roundOwnedRootIds: playablePairRootIds,

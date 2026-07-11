@@ -8,7 +8,8 @@ export type RuntimeMatchActorAdvanceInput<TRoot, THelper> = {
   runOrder: RuntimeActorRunOrderResult<TRoot, THelper>;
   opponentOf: (root: TRoot) => TRoot;
   applyAutoGuardStart: (defender: TRoot, attacker: TRoot, checkpoint: "pre" | "post") => void;
-  advanceRoot: (root: TRoot, opponent: TRoot) => void;
+  participationOf: (root: TRoot) => "playable" | "standby";
+  advanceRoot: (root: TRoot, opponent: TRoot, participation: "playable" | "standby") => void;
   advanceHelper: (helper: THelper) => void;
   discoverHelpers: () => RuntimeActorRunOrderCandidate<TRoot, THelper>[];
 };
@@ -20,7 +21,9 @@ export class RuntimeMatchActorAdvanceWorld {
     const seen = new Set(input.runOrder.entries.map((entry) => entry.key));
     for (const entry of input.runOrder.entries) {
       if (entry.kind === "root") {
-        input.applyAutoGuardStart(entry.value, input.opponentOf(entry.value), "pre");
+        if (input.participationOf(entry.value) === "playable") {
+          input.applyAutoGuardStart(entry.value, input.opponentOf(entry.value), "pre");
+        }
       }
     }
 
@@ -28,8 +31,11 @@ export class RuntimeMatchActorAdvanceWorld {
       const entry = input.runOrder.entries[index]!;
       if (entry.kind === "root") {
         const opponent = input.opponentOf(entry.value);
-        input.advanceRoot(entry.value, opponent);
-        input.applyAutoGuardStart(entry.value, opponent, "post");
+        const participation = input.participationOf(entry.value);
+        input.advanceRoot(entry.value, opponent, participation);
+        if (participation === "playable") {
+          input.applyAutoGuardStart(entry.value, opponent, "post");
+        }
       } else {
         input.advanceHelper(entry.value);
       }

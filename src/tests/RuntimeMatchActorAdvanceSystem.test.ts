@@ -20,6 +20,7 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
         helperCandidate(helper, 3, "A"),
       ]),
       opponentOf: (root) => (root === p1 ? p2 : p1),
+      participationOf: () => "playable",
       applyAutoGuardStart: (root, opponent, checkpoint) => calls.push(`guard:${checkpoint}:${root.id}:${opponent.id}`),
       advanceRoot: (root, opponent) => calls.push(`root:${root.id}:${opponent.id}`),
       advanceHelper: (actor) => calls.push(`helper:${actor.id}`),
@@ -48,6 +49,7 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
     const result = new RuntimeMatchActorAdvanceWorld(runOrderWorld).advance({
       runOrder: runOrderWorld.order("ikemen-go", [rootCandidate(p1, 1, "I"), rootCandidate(p2, 2, "I")]),
       opponentOf: (root) => (root === p1 ? p2 : p1),
+      participationOf: () => "playable",
       applyAutoGuardStart: () => undefined,
       advanceRoot: (root) => {
         calls.push(`root:${root.id}`);
@@ -59,6 +61,38 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
 
     expect(calls).toEqual(["root:p1", "root:p2", "helper:spawned:3"]);
     expect(result.entries.map((entry) => entry.value.id)).toEqual(["p1", "p2", "spawned"]);
+  });
+
+  it("advances standby roots without auto-guard ownership", () => {
+    const calls: string[] = [];
+    const p1 = { id: "p1" };
+    const p2 = { id: "p2" };
+    const p3 = { id: "p3" };
+    const runOrderWorld = new RuntimeActorRunOrderWorld();
+
+    new RuntimeMatchActorAdvanceWorld(runOrderWorld).advance({
+      runOrder: runOrderWorld.order("ikemen-go", [
+        rootCandidate(p1, 1, "I"),
+        rootCandidate(p2, 2, "I"),
+        rootCandidate(p3, 3, "I"),
+      ]),
+      opponentOf: (root) => root === p2 ? p1 : p2,
+      participationOf: (root) => root === p3 ? "standby" : "playable",
+      applyAutoGuardStart: (root, _opponent, checkpoint) => calls.push(`guard:${checkpoint}:${root.id}`),
+      advanceRoot: (root, _opponent, participation) => calls.push(`root:${root.id}:${participation}`),
+      advanceHelper: () => undefined,
+      discoverHelpers: () => [],
+    });
+
+    expect(calls).toEqual([
+      "guard:pre:p1",
+      "guard:pre:p2",
+      "root:p1:playable",
+      "guard:post:p1",
+      "root:p2:playable",
+      "guard:post:p2",
+      "root:p3:standby",
+    ]);
   });
 });
 

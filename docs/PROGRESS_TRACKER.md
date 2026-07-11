@@ -1,11 +1,20 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN standby-root CNS scheduling
+
+- Scheduler: explicit IKEMEN RunOrder includes P3-P8 roots.
+- Execution: reserves advance state time and controller-only standby CNS in active and pause branches.
+- Isolation: no reserve auto-guard, input, physics, animation, lifecycle, target binding, clamp, combat, round, presentation, or effect stores.
+- Diagnostics: reserve participation marks scheduled true; tick schedule emits only `fighter:controllers` rows for P3-P8.
+- Score: unchanged. No TagIn/TagOut or playable team phases.
+- Next: Wayfinder 052 bounded typed TagIn/TagOut and same-tick selection refresh.
+
 ## Global report - 2026-07-11 IKEMEN CNS capability boundary
 
 - Runtime: `RuntimeRootCnsExecutionWorld` owns explicit playable/standby controller capabilities.
 - Dispatch: state, individual runtime-controller types, side-effect routes, and unsupported handlers can be blocked before hooks execute and counted separately.
 - Compatibility: P1/P2 explicitly use full playable capabilities; behavior and phase order remain unchanged.
-- Isolation: standby profile permits only state/control/state-type/turn/variable/no-op controllers and blocks life/power/position/combat/presentation runtime types plus all side effects; P3-P8 are not scheduled yet.
+- Isolation: standby profile permits only state/control/state-type/turn/variable/no-op controllers and blocks life/power/position/combat/presentation runtime types plus all side effects; P3-P8 are scheduled only through this controller boundary.
 - Score: unchanged. This is prerequisite architecture, not standby CNS support.
 - Next: Wayfinder 051 controller-only P3-P8 scheduling.
 

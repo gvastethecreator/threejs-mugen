@@ -83,7 +83,7 @@ import { RuntimeMatchActorAdvanceWorld } from "./RuntimeMatchActorAdvanceSystem"
 import { RuntimePausedActorAdvanceWorld } from "./RuntimePausedActorAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { defaultSuperPauseTargetDefenseValue } from "./SuperPauseTargetDefensePolicy";
-import { RuntimeTeamTopologyWorld } from "./RuntimeTeamTopologySystem";
+import { runtimeTeamSide, RuntimeTeamTopologyWorld } from "./RuntimeTeamTopologySystem";
 import {
   RuntimeFighterRunOrderWorld,
   type RuntimeRootRunOrderResult,
@@ -99,6 +99,7 @@ import { RuntimeMatchEnvShakeBridgeWorld } from "./RuntimeMatchEnvShakeBridgeSys
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import { RuntimeRootCnsExecutionWorld } from "./RuntimeRootCnsExecutionSystem";
+import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
@@ -183,6 +184,7 @@ const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
 const rootCnsExecutionWorld = new RuntimeRootCnsExecutionWorld(activeControllerRunWorld);
+const rootSelectionWorld = new RuntimeRootSelectionWorld();
 const activeControllerHookSetWorld = new RuntimeActiveControllerHookSetWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
@@ -501,6 +503,7 @@ export class PlayableMatchRuntime {
     return [
       this.rootRunOrderCandidate(this.p1, 1),
       this.rootRunOrderCandidate(this.p2, 2),
+      ...this.reserveRoots.map((root, index) => this.rootRunOrderCandidate(root, index + 3)),
       ...this.helperRunOrderCandidates(),
     ];
   }
@@ -662,8 +665,13 @@ export class PlayableMatchRuntime {
         if (this.runtimeProfile === "ikemen-go") {
           return matchActorAdvanceWorld.advance({
             runOrder: preparedActorRunOrder,
-            opponentOf: (fighter) => (fighter === this.p1 ? this.p2 : this.p1),
-            advanceRoot: (fighter, opponent) =>
+            opponentOf: (fighter) => this.opponentForRoot(fighter),
+            participationOf: (fighter) => this.reserveRoots.includes(fighter) ? "standby" : "playable",
+            advanceRoot: (fighter, opponent, participation) => {
+              if (participation === "standby") {
+                this.advanceStandbyRootCns(fighter, opponent, gameSpace, recordPhase);
+                return;
+              }
               advanceFighter(
                 fighter,
                 opponent,
@@ -686,7 +694,8 @@ export class PlayableMatchRuntime {
                 (controller, operation, resolveEnvColor) =>
                   this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
                 recordPhase,
-              ),
+              );
+            },
             advanceHelper: (helper) => {
               recordPhase("helper:controllers", helper.serialId);
               const owner = helper.ownerId === this.p2.id ? this.p2 : this.p1;
@@ -873,9 +882,15 @@ export class PlayableMatchRuntime {
       pausedActorAdvanceWorld.advance({
         pause,
         runOrder: preparedActorRunOrder,
-        canAdvanceRoot: (fighter) => this.pauseWorld.canActorMove(fighter.id),
+        canAdvanceRoot: (fighter) => this.reserveRoots.includes(fighter) || this.pauseWorld.canActorMove(fighter.id),
         advanceRoot: (fighter) => {
-          const opponent = fighter === this.p1 ? this.p2 : this.p1;
+          const opponent = this.opponentForRoot(fighter);
+          if (this.reserveRoots.includes(fighter)) {
+            this.advanceStandbyRootCns(fighter, opponent, gameSpace, recordPhase, {
+              onlyIgnoreHitPause: !this.pauseWorld.canActorMove(fighter.id),
+            });
+            return;
+          }
           const fighterInput = fighter === this.p1 ? p1Input : p2Input;
           if (fighter === this.p1 || input.p2 !== undefined) {
             handlePlayerInput(
@@ -962,6 +977,47 @@ export class PlayableMatchRuntime {
       throw error;
     }
     this.pauseWorld.commitDeferredActivation();
+  }
+
+  private advanceStandbyRootCns(
+    fighter: FighterMatchState,
+    opponent: FighterMatchState,
+    gameSpace: ExpressionGameSpace,
+    recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+    options: { onlyIgnoreHitPause?: boolean } = {},
+  ): void {
+    if (!options.onlyIgnoreHitPause) {
+      stateClockWorld.advance(fighter);
+    }
+    recordPhase("fighter:controllers", fighter.id);
+    runActiveStateControllers(
+      fighter,
+      opponent,
+      this.actorConstraintWorld,
+      this.spriteEffectWorld,
+      this.reversalWorld,
+      this.effectSpawnWorld,
+      this.stage.bounds,
+      gameSpace,
+      this.tick,
+      undefined,
+      undefined,
+      {
+        participation: "standby",
+        onlyIgnoreHitPause: options.onlyIgnoreHitPause,
+        onBlocked: (controller, route) =>
+          this.logs.unshift(`Blocked standby CNS controller ${controller.type} for ${fighter.id} (${route})`),
+      },
+    );
+  }
+
+  private opponentForRoot(fighter: FighterMatchState): FighterMatchState {
+    const roots = [this.p1, this.p2, ...this.reserveRoots];
+    const selection = rootSelectionWorld.diagnostic(
+      roots.map((root) => ({ id: root.id, ...root.runtime.teamState })),
+    ).entries.find((entry) => entry.actorId === fighter.id);
+    const selectedId = selection?.p2CandidateIds[0];
+    return roots.find((root) => root.id === selectedId) ?? (runtimeTeamSide(fighter) === 1 ? this.p2 : this.p1);
   }
 
   private applyMatchPauseController(
@@ -1475,6 +1531,8 @@ function runHitPauseIgnoredControllers(
 
 type ActiveControllerRunOptions = {
   onlyIgnoreHitPause?: boolean;
+  participation?: "playable" | "standby";
+  onBlocked?: (controller: ControllerIr, route: string) => void;
 };
 
 function runActiveStateControllers(
@@ -1741,7 +1799,8 @@ function runActiveStateControllers(
     stateHooks: hookSet.stateHooks,
     sideEffectHooks: hookSet.sideEffectHooks,
     hooks: hookSet.hooks,
-  }, "playable");
+    onBlocked: options.onBlocked,
+  }, options.participation ?? "playable");
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {

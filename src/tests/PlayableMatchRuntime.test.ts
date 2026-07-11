@@ -26,7 +26,7 @@ describe("PlayableMatchRuntime", () => {
     });
   });
 
-  it("owns capped IKEMEN P3-P8 reserve roots without scheduling or presenting them", () => {
+  it("schedules capped IKEMEN P3-P8 reserve roots for controller-only CNS without presenting them", () => {
     const reserveFighters = Array.from({ length: 7 }, (_, index) => demoFighters[index % 2]!);
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
       runtimeProfile: "ikemen-go",
@@ -54,7 +54,16 @@ describe("PlayableMatchRuntime", () => {
     expect(advanced.reserveActors?.map((actor) => ({ id: actor.id, stateNo: actor.runtime.stateNo, pos: actor.runtime.pos }))).toEqual(
       isolated.reserveActors?.map((actor) => ({ id: actor.id, stateNo: actor.runtime.stateNo, pos: actor.runtime.pos })),
     );
-    expect(advanced.tickSchedule?.phases.some((phase) => /^p[3-8]$/.test(phase.actorId ?? ""))).toBe(false);
+    expect(
+      advanced.tickSchedule?.phases
+        .filter((phase) => /^p[3-8]$/.test(phase.actorId ?? ""))
+        .map((phase) => [phase.id, phase.actorId]),
+    ).toEqual(["p3", "p4", "p5", "p6", "p7", "p8"].map((id) => ["fighter:controllers", id]));
+    expect(
+      advanced.tickSchedule?.phases.some(
+        (phase) => /^p[3-8]$/.test(phase.actorId ?? "") && phase.id !== "fighter:controllers",
+      ),
+    ).toBe(false);
     expect(runtime.getEffectActorStores().map((store) => store.ownerId)).toEqual(["p1", "p2"]);
 
     runtime.reset();
@@ -69,6 +78,53 @@ describe("PlayableMatchRuntime", () => {
     });
 
     expect(runtime.getSnapshot().reserveActors).toBeUndefined();
+  });
+
+  it("executes standby-safe imported CNS while blocking reserve gameplay side effects", () => {
+    const importedFixture = createImportedFixture({
+        id: "standby-controller-reserve",
+        displayName: "Standby Controller Reserve",
+        withStateMove: false,
+        withRuntimeFlags: true,
+        withSideEffects: true,
+      });
+    const controllerState = importedFixture.states?.find((state) => state.id === 200)!;
+    const importedReserve = {
+      ...importedFixture,
+      states: [
+        {
+          ...controllerState,
+          id: 0,
+          controllers: controllerState.controllers.map((controller) => ({ ...controller, stateId: 0 })),
+        },
+        ...(importedFixture.states?.filter((state) => state.id !== 0) ?? []),
+      ],
+    };
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [importedReserve],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const reserve = snapshot.reserveActors?.[0];
+    expect(reserve).toMatchObject({
+      id: "p3",
+      runtime: {
+        life: 1000,
+        power: 0,
+        stateType: "C",
+        moveType: "A",
+        physics: "N",
+        facing: -1,
+      },
+    });
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p3")).toBe(false);
+    expect(snapshot.logs).toEqual(expect.arrayContaining([
+      expect.stringContaining("Blocked standby CNS controller LifeSet for p3"),
+      expect.stringContaining("Blocked standby CNS controller PowerSet for p3"),
+      expect.stringContaining("Blocked standby CNS controller PlaySnd for p3"),
+      expect.stringContaining("Blocked standby CNS controller Explod for p3"),
+    ]));
   });
 
   it("exposes the exact active match phase order with an owner for every phase", () => {

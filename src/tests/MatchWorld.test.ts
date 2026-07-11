@@ -159,7 +159,7 @@ describe("MatchWorld", () => {
           side: 1,
           standby: true,
           structurallyActive: false,
-          scheduled: false,
+          scheduled: true,
           inputOwned: false,
           combatOwned: false,
           roundOwned: false,
@@ -171,7 +171,7 @@ describe("MatchWorld", () => {
           side: 2,
           standby: true,
           structurallyActive: false,
-          scheduled: false,
+          scheduled: true,
           inputOwned: false,
           combatOwned: false,
           roundOwned: false,
@@ -185,7 +185,7 @@ describe("MatchWorld", () => {
       registry.rootParticipation.roots.slice(2).every(
         (root) =>
           !root.structurallyActive &&
-          !root.scheduled &&
+          root.scheduled &&
           !root.inputOwned &&
           !root.combatOwned &&
           !root.roundOwned &&
@@ -215,7 +215,7 @@ describe("MatchWorld", () => {
     const structurallyActiveRegistry = buildMatchWorldActorRegistry(structurallyActiveSnapshot);
     expect(structurallyActiveRegistry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
       structurallyActive: true,
-      scheduled: false,
+      scheduled: true,
       inputOwned: false,
       combatOwned: false,
       roundOwned: false,
@@ -247,7 +247,7 @@ describe("MatchWorld", () => {
     });
     expect(registry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
       structurallyActive: true,
-      scheduled: false,
+      scheduled: true,
       inputOwned: false,
       combatOwned: false,
       roundOwned: false,
