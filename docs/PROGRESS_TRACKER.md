@@ -1,5 +1,12 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Tag state research
+
+- Official order: caller `stateno` precedes caller standby; partner standby precedes `partnerstateno`.
+- Ownership: caller and partner enter their own state programs; no cross-character state owner is implied.
+- Risk: IKEMEN mutates incrementally, while sandbox Tag standby currently validates atomically.
+- Next: Wayfinder 058 static caller-only `stateno` with state prevalidation; partner state/control remain blocked.
+
 ## Global report - 2026-07-11 IKEMEN static Tag self
 
 - Compiler: exact static `self = 0|1` works with or without static partner; omitted self follows IKEMEN partner-sensitive defaults.

@@ -76,6 +76,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute static Tag partner selection](tickets/055-execute-static-tag-partner.md) - add cyclic same-side partner-only mutation with fail-closed bounds.
 - [Execute static Tag self flag](tickets/056-execute-static-tag-self.md) - combine caller and partner standby changes atomically with official defaults.
 - [Map Tag state transition order](tickets/057-map-tag-state-transition-order.md) - pin state ownership, defaults, and mutation order before compiling Tag state parameters.
+- [Execute static Tag caller state](tickets/058-execute-static-tag-caller-state.md) - add prevalidated caller-owned static state entry without partner breadth.
 
 ## Not Yet Specified
 
