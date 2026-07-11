@@ -516,6 +516,8 @@ export type TeamStandbyControllerOp = {
   kind: "team-standby";
   controllerType: "tagin" | "tagout";
   standby: boolean;
+  redirectPlayerId?: number;
+  redirectPlayerIdExpression?: string;
   self: boolean;
   selfExpression?: string;
   partnerOrdinal?: number;
@@ -711,6 +713,7 @@ function compileTeamStandbyControllerOp(
     keys.some(
       (key) =>
         key !== "type" &&
+        key !== "redirectid" &&
         key !== "self" &&
         key !== "partner" &&
         key !== "stateno" &&
@@ -723,6 +726,7 @@ function compileTeamStandbyControllerOp(
   ) {
     return undefined;
   }
+  const redirectPlayerIdRaw = findParam(controller, "redirectid");
   const partnerRaw = findParam(controller, "partner");
   const callerStateRaw = findParam(controller, "stateno");
   const partnerStateRaw = findParam(controller, "partnerstateno");
@@ -739,6 +743,13 @@ function compileTeamStandbyControllerOp(
   }
   if ((partnerStateRaw !== undefined || partnerControlRaw !== undefined) && partnerRaw === undefined) {
     return undefined;
+  }
+  let redirectPlayerIdExpression: string | undefined;
+  if (redirectPlayerIdRaw !== undefined) {
+    if (!hasValidTagExpressionStructure(redirectPlayerIdRaw)) return undefined;
+    const compiledRedirectPlayerId = compileExpression(redirectPlayerIdRaw);
+    if (compiledRedirectPlayerId.supportLevel === "unsupported") return undefined;
+    redirectPlayerIdExpression = compiledRedirectPlayerId.normalized;
   }
   let partnerOrdinal: number | undefined;
   let partnerOrdinalExpression: string | undefined;
@@ -843,6 +854,7 @@ function compileTeamStandbyControllerOp(
     kind: "team-standby",
     controllerType: type,
     standby: type === "tagout",
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     self,
     ...(selfExpression === undefined ? {} : { selfExpression }),
     ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),

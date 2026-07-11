@@ -297,6 +297,11 @@ type EnvColorControllerHandler = (
   operation?: EnvColorControllerOp,
   resolveEnvColor?: RuntimeEnvColorResolver,
 ) => void;
+type TeamStandbyControllerHandler = (
+  fighter: FighterMatchState,
+  operation: TeamStandbyControllerOp,
+  context: ReturnType<typeof runtimeControllerContext>,
+) => TeamStandbyControllerOp | undefined;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
@@ -622,7 +627,7 @@ export class PlayableMatchRuntime {
               (target, controller, operation, resolveSoundValue, resolveParams) =>
                 this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
-              (actor, operation) => this.applyTeamStandbyController(actor, operation),
+              (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
             ),
         });
         return { paused: result.paused, result };
@@ -727,7 +732,7 @@ export class PlayableMatchRuntime {
                 (controller, operation, resolveEnvColor) =>
                   this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
                 recordPhase,
-                (actor, operation) => this.applyTeamStandbyController(actor, operation),
+                (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
               );
             },
             advanceHelper: (helper) => {
@@ -775,7 +780,7 @@ export class PlayableMatchRuntime {
                 this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
               recordPhase,
-              (actor, operation) => this.applyTeamStandbyController(actor, operation),
+              (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -962,7 +967,7 @@ export class PlayableMatchRuntime {
             (controller, operation, resolveEnvColor) =>
               this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             recordPhase,
-            (actor, operation) => this.applyTeamStandbyController(actor, operation),
+            (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -1043,52 +1048,82 @@ export class PlayableMatchRuntime {
         onlyIgnoreHitPause: options.onlyIgnoreHitPause,
         onBlocked: (controller, route) =>
           this.logs.unshift(`Blocked standby CNS controller ${controller.type} for ${fighter.id} (${route})`),
-        onTeamStandby: (actor, operation) => this.applyTeamStandbyController(actor, operation),
+        onTeamStandby: (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
       },
     );
   }
 
-  private applyTeamStandbyController(fighter: FighterMatchState, operation: TeamStandbyControllerOp): boolean {
+  private applyTeamStandbyController(
+    caller: FighterMatchState,
+    sourceOperation: TeamStandbyControllerOp,
+    context: ReturnType<typeof runtimeControllerContext>,
+  ): TeamStandbyControllerOp | undefined {
     if (this.runtimeProfile !== "ikemen-go") {
-      this.logs.unshift(`Blocked ${operation.controllerType} for ${fighter.id} outside ikemen-go profile`);
-      return false;
+      this.logs.unshift(`Blocked ${sourceOperation.controllerType} for ${caller.id} outside ikemen-go profile`);
+      return undefined;
     }
+    let fighter = caller;
+    let operation = sourceOperation;
+    if (operation.redirectPlayerIdExpression !== undefined) {
+      const resolvedRedirect = evaluateRuntimeControllerNumber(
+        operation.redirectPlayerIdExpression,
+        caller.runtime,
+        context,
+      );
+      const redirectPlayerId = resolvedRedirect === undefined ? undefined : Math.trunc(resolvedRedirect);
+      const redirectedIdentity = redirectPlayerId === undefined
+        ? undefined
+        : this.characterIdentity?.findByPlayerId(redirectPlayerId);
+      if (!redirectedIdentity) {
+        this.logs.unshift(`Blocked ${operation.controllerType} RedirectID ${redirectPlayerId ?? "invalid"} for ${caller.id}`);
+        return undefined;
+      }
+      fighter = redirectedIdentity.fighter;
+      const { redirectPlayerIdExpression: _redirectPlayerIdExpression, ...staticOperation } = operation;
+      operation = { ...staticOperation, redirectPlayerId };
+    }
+    const resolvedOperation = resolveDynamicTeamStandbyOperation(operation, caller, context);
+    if (!resolvedOperation) return undefined;
+    operation = resolvedOperation;
     const roots = [this.p1, this.p2, ...this.reserveRoots];
     const rootById = new Map(roots.map((root) => [root.id, root]));
-    const callerSide = runtimeTeamSide(fighter);
-    const leader = operation.leaderPlayerNo === undefined ? undefined : rootById.get(`p${operation.leaderPlayerNo}`);
+    const rootByPlayerNo = new Map(
+      roots.flatMap((root) => root.playerNo === undefined ? [] : [[root.playerNo, root] as const]),
+    );
+    const targetSide = runtimeTeamSide(fighter);
+    const leader = operation.leaderPlayerNo === undefined ? undefined : rootByPlayerNo.get(operation.leaderPlayerNo);
     if (
       operation.memberPosition !== undefined &&
-      (!this.tagTeamOrder || callerSide === undefined || !this.tagTeamOrder.canSwapMember(callerSide, fighter.id, operation.memberPosition))
+      (!this.tagTeamOrder || targetSide === undefined || !this.tagTeamOrder.canSwapMember(targetSide, fighter.id, operation.memberPosition))
     ) {
       this.logs.unshift(`Blocked ${operation.controllerType} member position ${operation.memberPosition} for ${fighter.id}`);
-      return false;
+      return undefined;
     }
     if (
       operation.leaderPlayerNo !== undefined &&
       (!this.tagTeamOrder ||
-        callerSide === undefined ||
+        targetSide === undefined ||
         !leader ||
-        runtimeTeamSide(leader) !== callerSide ||
-        !this.tagTeamOrder.canRotateLeader(callerSide, leader.id))
+        runtimeTeamSide(leader) !== targetSide ||
+        !this.tagTeamOrder.canRotateLeader(targetSide, leader.id))
     ) {
       this.logs.unshift(`Blocked ${operation.controllerType} leader ${operation.leaderPlayerNo} for ${fighter.id}`);
-      return false;
+      return undefined;
     }
     if (operation.callerStateNo !== undefined && !canEnterState(fighter, operation.callerStateNo, fighter)) {
       this.logs.unshift(`Blocked ${operation.controllerType} state ${operation.callerStateNo} for ${fighter.id}`);
-      return false;
+      return undefined;
     }
     let partner: FighterMatchState | undefined;
     if (operation.partnerOrdinal !== undefined) {
       partner = tagPartnerSelectionWorld.select(roots, fighter, operation.partnerOrdinal);
       if (!partner) {
         this.logs.unshift(`Blocked ${operation.controllerType} partner ${operation.partnerOrdinal} for ${fighter.id}`);
-        return false;
+        return undefined;
       }
       if (operation.partnerStateNo !== undefined && !canEnterState(partner, operation.partnerStateNo, partner)) {
         this.logs.unshift(`Blocked ${operation.controllerType} partner state ${operation.partnerStateNo} for ${partner.id}`);
-        return false;
+        return undefined;
       }
     }
     const targetIds = new Set<string>();
@@ -1100,27 +1135,27 @@ export class PlayableMatchRuntime {
         enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
       }
       if (operation.memberPosition !== undefined) {
-        this.tagTeamOrder!.swapMember(callerSide!, fighter.id, operation.memberPosition);
+        this.tagTeamOrder!.swapMember(targetSide!, fighter.id, operation.memberPosition);
       }
       if (operation.callerControl !== undefined) {
         applyRuntimeControl(fighter.runtime, operation.callerControl);
       }
       if (leader) {
-        this.tagTeamOrder!.rotateLeader(callerSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
+        this.tagTeamOrder!.rotateLeader(targetSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
       }
-      return true;
+      return operation;
     }
     if (operation.callerStateNo !== undefined) {
       enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
     }
     if (operation.memberPosition !== undefined) {
-      this.tagTeamOrder!.swapMember(callerSide!, fighter.id, operation.memberPosition);
+      this.tagTeamOrder!.swapMember(targetSide!, fighter.id, operation.memberPosition);
     }
     if (operation.callerControl !== undefined) {
       applyRuntimeControl(fighter.runtime, operation.callerControl);
     }
     if (leader) {
-      this.tagTeamOrder!.rotateLeader(callerSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
+      this.tagTeamOrder!.rotateLeader(targetSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
     }
     rootStandbyTransitionWorld.apply(roots, changes);
     if (partner && operation.partnerStateNo !== undefined) {
@@ -1129,7 +1164,7 @@ export class PlayableMatchRuntime {
     if (partner && operation.partnerControl !== undefined) {
       applyRuntimeControl(partner.runtime, operation.partnerControl);
     }
-    return true;
+    return operation;
   }
 
   private opponentForRoot(fighter: FighterMatchState): FighterMatchState {
@@ -1537,7 +1572,7 @@ function advanceFighter(
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
   recordSchedulePhase?: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
-  onTeamStandby?: (fighter: FighterMatchState, operation: TeamStandbyControllerOp) => boolean,
+  onTeamStandby?: TeamStandbyControllerHandler,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -1664,7 +1699,7 @@ function runHitPauseIgnoredControllers(
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
-  onTeamStandby?: (fighter: FighterMatchState, operation: TeamStandbyControllerOp) => boolean,
+  onTeamStandby?: TeamStandbyControllerHandler,
 ): void {
   runActiveStateControllers(
     fighter,
@@ -1686,7 +1721,7 @@ type ActiveControllerRunOptions = {
   onlyIgnoreHitPause?: boolean;
   participation?: "playable" | "standby";
   onBlocked?: (controller: ControllerIr, route: string) => void;
-  onTeamStandby?: (fighter: FighterMatchState, operation: TeamStandbyControllerOp) => boolean;
+  onTeamStandby?: TeamStandbyControllerHandler;
 };
 
 function runActiveStateControllers(
@@ -1935,12 +1970,20 @@ function runActiveStateControllers(
     },
     runtimeController: ({ dispatch, actor, opponent: targetOpponent, owner, tick: activeTick }) => {
       if (dispatch.controller.operation?.kind === "team-standby") {
-        const operation = resolveDynamicTeamStandbyOperation(
-          dispatch.controller.operation,
+        const context = runtimeControllerContext(
           actor,
-          runtimeControllerContext(actor, owner, activeTick, stageBounds, targetOpponent, gameSpace),
+          owner,
+          activeTick,
+          stageBounds,
+          targetOpponent,
+          gameSpace,
         );
-        if (operation && options.onTeamStandby?.(fighter, operation)) {
+        const operation = options.onTeamStandby?.(
+          fighter,
+          dispatch.controller.operation,
+          context,
+        );
+        if (operation) {
           runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
           runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
         } else {

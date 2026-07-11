@@ -259,6 +259,20 @@ time = 20
       standby: true,
       self: true,
     });
+    expect(compileControllerIr(controller(200, "TagIn", [], { redirectid: "56" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      redirectPlayerIdExpression: "56",
+      self: true,
+    });
+    expect(compileControllerIr(controller(200, "TagOut", [], { redirectid: "ID + var(0)" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+      redirectPlayerIdExpression: "ID + var(0)",
+      self: true,
+    });
     const parsedTagIn = parseCns(`[Statedef 0]\ntype = S\n[State 0, Tag]\ntype = TagIn\ntrigger1 = 1`).states[0]!.controllers[0]!;
     expect(compileControllerIr(parsedTagIn).operation).toEqual({
       kind: "team-standby",
@@ -460,6 +474,9 @@ time = 20
       { leader: "" },
       { leader: "1, 0" },
       { leader: "(" },
+      { redirectid: "" },
+      { redirectid: "1, 0" },
+      { redirectid: "(" },
       { partner: "" },
       { partner: "1, 0" },
       { partner: "(" },

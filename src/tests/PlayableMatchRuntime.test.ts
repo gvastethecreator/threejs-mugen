@@ -126,6 +126,138 @@ value = ${identityStateNo}
     expect(legacy.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.stateNo).toBe(0);
   });
 
+  it("executes redirected Tag params in caller context against the resolved IKEMEN root", () => {
+    const caller = createImportedFixture({
+      id: "redirected-tag-caller-context",
+      withStateMove: false,
+      passivePreTagVarSet: { trigger: "1", index: 0, value: 57 },
+      passiveTagController: "TagIn",
+      passiveTagRedirectId: "var(0)",
+      passiveTagSelf: "PlayerNo = 1",
+      passiveTagStateNo: "ID + 144",
+      passiveTagControl: "ID = 56",
+      passiveTagMemberNo: "PlayerNo",
+      passiveTagLeader: "PlayerNo + 2",
+    });
+    const target = createImportedFixture({ id: "redirected-tag-target", withStateMove: false });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [target, demoFighters[1]!, demoFighters[0]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const p3 = snapshot.reserveActors?.find(({ id }) => id === "p3");
+    expect(snapshot.actors[0]?.runtime).toMatchObject({ stateNo: 0, ctrl: true });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(57);
+    expect(p3?.runtime).toMatchObject({ stateNo: 200, ctrl: true, teamState: { standby: false } });
+    expect(snapshot.tagTeamOrder?.sides[0]).toMatchObject({
+      stableRootIds: ["p1", "p3", "p5"],
+      memberOrderIds: ["p3", "p1", "p5"],
+      leaderId: "p3",
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("selects redirected Tag partners relative to the resolved root", () => {
+    const caller = createImportedFixture({
+      id: "redirected-tag-partner",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagRedirectId: 57,
+      passiveTagPartner: 0,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!, demoFighters[0]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.reserveActors?.map(({ id, runtime: state }) => [id, state.teamState?.standby])).toEqual([
+      ["p3", true],
+      ["p4", true],
+      ["p5", false],
+    ]);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+  });
+
+  it("allows root RedirectID lookup across teams", () => {
+    const caller = createImportedFixture({
+      id: "redirected-opponent-tagout",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagRedirectId: 57,
+      passiveTagSelf: 1,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors.map(({ id, runtime: state }) => [id, state.teamState?.standby])).toEqual([
+      ["p1", false],
+      ["p2", true],
+    ]);
+  });
+
+  it("rejects invalid RedirectID before evaluating later Tag expressions", () => {
+    const fixture = (self: number | string) => createImportedFixture({
+      id: "invalid-redirect-evaluation-order",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagRedirectId: 999,
+      passiveTagSelf: self,
+      passiveVarSet: { trigger: "1", index: 1, value: "Random" },
+    });
+    const dynamicRuntime = new PlayableMatchRuntime(fixture("Random"), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const staticRuntime = new PlayableMatchRuntime(fixture(1), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const dynamicSnapshot = dynamicRuntime.step({ p1: new Set(), p2: new Set() });
+    const staticSnapshot = staticRuntime.step({ p1: new Set(), p2: new Set() });
+    expect(dynamicSnapshot.actors[0]?.runtime.vars[1]).toBe(staticSnapshot.actors[0]?.runtime.vars[1]);
+    expect(dynamicSnapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(dynamicSnapshot.logs).toContain("Blocked tagout RedirectID 999 for p1");
+    expect(dynamicSnapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("rejects negative RedirectID without mutating the caller", () => {
+    const caller = createImportedFixture({
+      id: "negative-redirected-tagout",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagRedirectId: -1,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout RedirectID -1 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("rejects redirected Tag execution outside the explicit IKEMEN profile", () => {
+    const caller = createImportedFixture({
+      id: "legacy-redirected-tagout",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagRedirectId: 56,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout for p1 outside ikemen-go profile");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it("ignores reserve roots outside the explicit IKEMEN profile", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
       reserveFighters: [demoFighters[0]!, demoFighters[1]!],
@@ -3348,6 +3480,7 @@ function createImportedFixture(
     passiveAssertSpecialFlags?: string[];
     passiveAssertSpecialTrigger?: string;
     passiveTagController?: "TagIn" | "TagOut";
+    passiveTagRedirectId?: number | string;
     passiveTagSelf?: number | string;
     passiveTagPartner?: number | string;
     passiveTagStateNo?: number | string;
@@ -3356,7 +3489,7 @@ function createImportedFixture(
     passiveTagPartnerControl?: number | string;
     passiveTagMemberNo?: number | string;
     passiveTagLeader?: number | string;
-    passiveVarSet?: { trigger: string; index: number; value: number };
+    passiveVarSet?: { trigger: string; index: number; value: number | string };
     passivePreTagVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -3610,6 +3743,7 @@ flag = ${options.passiveAssertSpecialFlags.join(", ")}
 [State 0, Passive Team Standby]
 type = ${options.passiveTagController}
 trigger1 = 1
+${options.passiveTagRedirectId === undefined ? "" : `redirectid = ${options.passiveTagRedirectId}`}
 ${options.passiveTagSelf === undefined ? "" : `self = ${options.passiveTagSelf}`}
 ${options.passiveTagPartner === undefined ? "" : `partner = ${options.passiveTagPartner}`}
 ${options.passiveTagStateNo === undefined ? "" : `stateno = ${options.passiveTagStateNo}`}
