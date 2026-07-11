@@ -868,7 +868,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, participation diagnostics, plural structural activation, root selection, standby CNS scheduling, static Tag optional parameters, explicit Tag order/leader, and bounded dynamic execution for every admitted optional axis. | Wayfinder 075: source-pin RedirectID mutation ownership before implementation. | No multi-root input/combat/round/presentation/effect-store gameplay, redirected Tag execution, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, participation diagnostics, plural structural activation, root selection, standby CNS scheduling, static Tag optional parameters, explicit Tag order/leader, bounded dynamic execution for every admitted optional axis, and source-pinned RedirectID ownership. | Wayfinder 076: create numeric character PlayerID ownership before integration. | No multi-root input/combat/round/presentation/effect-store gameplay, redirected Tag execution, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -879,8 +879,8 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 Tag redirect research: pin RedirectID syntax, target identity, expression context, and mutation ownership before implementation.
-2. I2 Tag redirect prefactor/execution: choose only after Wayfinder 075 identifies the safe actor-resolution boundary.
+1. I2 character identity: create a numeric PlayerID owner with source-backed root order, allocation, lifecycle lookup, and diagnostics.
+2. I2 Tag redirect integration: wire roots, expression identity, Helpers, and redirected mutation as separate gates after Wayfinder 076.
 3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 4. I2 gameplay ownership: only after dynamic controller semantics, specify active-root input/combat/round/presentation/resource consumers independently.
 5. I2 trace promotion: add required Tag traces when bounded behavior reaches a stable cross-system oracle; current unit/integration proof intentionally leaves trace checksums unchanged.
@@ -901,7 +901,8 @@ Issue: `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`
 Current checkpoint and next build:
 
 - Closed: P3-P8 ownership/participation, plural structural activation, identity/Partner versus Enemy/P2 selection, standby CNS scheduling, static Tag options, explicit member/leader order, and bounded dynamic execution for every admitted optional axis.
-- Next: Wayfinder 075 research for RedirectID syntax, target identity, expression context, and mutation ownership.
+- Closed: RedirectID syntax, global target identity, caller expression context, target mutation ownership, and invalid lookup behavior are source-pinned.
+- Next: Wayfinder 076 standalone numeric character PlayerID ownership; no runtime behavior changes yet.
 - Keep scheduler, input, effects, combat, round, camera, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:

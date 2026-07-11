@@ -1275,10 +1275,12 @@ Dynamic Tag `memberno` now resolves one-based mutable position with integer trun
 
 Dynamic TagIn `leader` now resolves stable PlayerNo with integer truncation before explicit Tag-mode/same-side validation and live-life rotation. Every admitted optional Tag axis now has bounded dynamic execution. Wayfinder 075 next researches RedirectID target and mutation ownership before any redirected implementation.
 
+RedirectID research now separates global numeric PlayerID from stable actor ids and one-based PlayerNo. Caller-context redirect evaluation, root/Helper lookup, invalid-target failure, and target-owned mutation are pinned. Wayfinder 076 creates the standalone numeric character-identity owner before runtime integration.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.
-- IKEMEN execution.
+- Full IKEMEN execution beyond the bounded I2 gates.
 - Generic engine SDK implementation.
 - New game genre runtime.
 - Sprite fixes by cropping bad generated motion.

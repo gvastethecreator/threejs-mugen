@@ -93,7 +93,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute dynamic Tag partner selection](tickets/072-execute-dynamic-tag-partner.md) - resolve caller-relative partner ordinal before aggregate target validation.
 - [Execute dynamic Tag member order](tickets/073-execute-dynamic-tag-member-order.md) - resolve one-based mutable member position before Tag-order validation.
 - [Execute dynamic TagIn leader](tickets/074-execute-dynamic-tagin-leader.md) - resolve stable PlayerNo before same-side leader rotation validation.
-- [Map Tag RedirectID mutation ownership](tickets/075-map-tag-redirect-mutation.md) - pin redirected target identity and ownership before mutation widening.
+- [Map Tag RedirectID mutation ownership](tickets/075-map-tag-redirect-mutation.md) - global numeric root/Helper PlayerID lookup, caller-context expressions, redirect-first failure, and target-owned mutation are pinned.
+- [Create IKEMEN character identity boundary](tickets/076-create-ikemen-character-identity.md) - own numeric PlayerID separately from string actor ids and PlayerNo before runtime integration.
 
 ## Not Yet Specified
 

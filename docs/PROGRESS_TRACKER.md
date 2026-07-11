@@ -1183,7 +1183,7 @@ The numbered list below is retained as implementation history. It is superseded 
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Deeper target-specific trace/asset/gate/report jumps after package/source-file drilldowns. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Next proof can add another scanner-only source-mapped signal after `RemoveText` / `NumText`; keep findings recognized/unsupported until runtime gates exist. |
-| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Direct P3-P8/cap/reset/lifecycle evidence and root-participation diagnostics first; plural activation, redirects, and standby CNS scheduling follow as separate gates. |
+| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Build numeric character PlayerID ownership next; root integration, expression triggers, Helper lifecycle, and redirected Tag mutation remain separate gates. |
 | M1 Shared contract readiness | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` | One shared contract candidate proven free of fighting-specific leakage. |
 
 ## Closeout Contract
@@ -1269,6 +1269,14 @@ Every compatibility milestone should leave:
 - Resolves/truncates stable PlayerNo in caller context before same-side explicit-Tag validation.
 - Proved same-tick P3 leader rotation plus zero/negative/opposing/missing/non-Tag rollback.
 - Global status: every currently admitted Tag optional axis supports bounded dynamic expressions; RedirectID mutation remains open.
+
+### 2026-07-11 - IKEMEN Tag RedirectID research
+
+- Pinned RedirectID as a caller-evaluated integer selecting a global numeric root/Helper PlayerID.
+- Pinned redirect-first failure for negative, missing, destroyed, and disabled characters; standby remains eligible.
+- Audited the sandbox's string actor registry, expression context, and Tag mutation hook; no numeric PlayerID owner exists.
+- Selected a standalone character-identity world as Wayfinder 076 before runtime or Helper integration.
+- Global status: RedirectID semantics are mapped; identity ownership, triggers, lifecycle integration, and mutation remain open.
 
 ## Not Done
 
