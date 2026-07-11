@@ -1285,6 +1285,8 @@ Root-only TagIn/TagOut `RedirectID` now resolves first from the original caller 
 
 Root-created Helpers now join the global IKEMEN identity registry before same-tick execution, inherit root PlayerNo, expose explicit self/Parent/Root numeric identity, unregister through every world-owned removal path, and start a fresh source-backed identity epoch on reset. Legacy remains registry-free and Tag RedirectID still rejects Helper targets. Wayfinder 080 next maps exact Helper TagIn/TagOut redirect semantics before any Helper mutation is admitted.
 
+Helper-targeted TagIn/TagOut is now source-mapped: state/control/standby are Helper-local, partner resolves a root teammate through inherited PlayerNo, member/leader enter root team order, and standby Helpers continue CNS while interaction is filtered elsewhere. Local audit shows complete standby and aggregate ownership are not ready. Wayfinder 081 therefore implements only explicit `self = 0` Helper-local state/control redirects before broader Helper Tag participation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.
