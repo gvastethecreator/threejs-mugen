@@ -534,6 +534,7 @@ export type MugenSnapshot = {
   effects?: ActorSnapshot[];
   compatibilitySession?: CompatibilitySessionSnapshot;
   tickSchedule?: RuntimeMatchTickSchedule;
+  tagTeamOrder?: import("./RuntimeTagTeamOrderSystem").RuntimeTagTeamOrderDiagnostic;
   logs: string[];
 };
 

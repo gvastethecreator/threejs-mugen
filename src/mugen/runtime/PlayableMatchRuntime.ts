@@ -102,6 +102,7 @@ import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSys
 import { RuntimeRootCnsExecutionWorld } from "./RuntimeRootCnsExecutionSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
 import { RuntimeTagPartnerSelectionWorld } from "./RuntimeTagPartnerSelectionSystem";
+import { RuntimeTagTeamOrderWorld, type RuntimeTagTeamOrder } from "./RuntimeTagTeamOrderSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
@@ -188,6 +189,7 @@ const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
 const rootCnsExecutionWorld = new RuntimeRootCnsExecutionWorld(activeControllerRunWorld);
 const rootSelectionWorld = new RuntimeRootSelectionWorld();
 const tagPartnerSelectionWorld = new RuntimeTagPartnerSelectionWorld();
+const tagTeamOrderWorld = new RuntimeTagTeamOrderWorld();
 const activeControllerHookSetWorld = new RuntimeActiveControllerHookSetWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
@@ -272,6 +274,7 @@ export type PlayableMatchRuntimeOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
+  teamMode?: "single" | "tag";
 };
 
 type PauseControllerHandler = (
@@ -306,6 +309,7 @@ export class PlayableMatchRuntime {
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
   private readonly reserveRoots: FighterMatchState[];
+  private readonly tagTeamOrder?: RuntimeTagTeamOrder;
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly effectLifecycleWorld: RuntimeEffectLifecycleWorld;
@@ -413,6 +417,10 @@ export class PlayableMatchRuntime {
           return fighter;
         }) ?? []
       : [];
+    this.tagTeamOrder = tagTeamOrderWorld.create(
+      [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
+      this.runtimeProfile === "ikemen-go" ? options.teamMode ?? "single" : "single",
+    );
     this.attachHelperTargetStateHandlers();
     this.attachHelperPauseHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
@@ -1280,7 +1288,7 @@ export class PlayableMatchRuntime {
       envColorWorld: this.envColorWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
     });
-    return this.snapshotWorld.match({
+    const snapshot = this.snapshotWorld.match({
       tick: this.tick,
       playing: this.playing,
       speed: this.speed,
@@ -1296,6 +1304,7 @@ export class PlayableMatchRuntime {
       tickSchedule: this.lastTickSchedule,
       logs: this.logs,
     });
+    return { ...snapshot, ...(this.tagTeamOrder ? { tagTeamOrder: this.tagTeamOrder.diagnostic() } : {}) };
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
@@ -1304,6 +1313,7 @@ export class PlayableMatchRuntime {
 
   reset(): void {
     this.restoreExpiredSuperPauseTargetDefense(true);
+    this.tagTeamOrder?.reset();
     const resetState = this.matchResetWorld.reset({
       p1: this.p1,
       p2: this.p2,

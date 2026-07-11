@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Tag team-order model
+
+- Model: `RuntimeTagTeamOrder/v0` separates stable roots, mutable member order, and leader id by side.
+- Mode: only explicit IKEMEN `teamMode: "tag"` creates/publishes the model.
+- Operations: atomic member swap, leader rotation, dead-member sinking, deterministic reset.
+- Isolation: scheduler, root selection, standby, gameplay, and rendering remain unchanged.
+- Next: Wayfinder 064 static one-based `memberno` execution.
+
 ## Global report - 2026-07-11 IKEMEN Tag member/leader research
 
 - Identity: `leader` targets stable one-based PlayerNo; stable P1-P8 slots never reorder.

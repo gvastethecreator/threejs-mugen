@@ -150,6 +150,31 @@ describe("PlayableMatchRuntime", () => {
     ]);
   });
 
+  it("publishes Tag team order only for explicit IKEMEN Tag mode and resets deterministically", () => {
+    const single = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+    expect(single.getSnapshot().tagTeamOrder).toBeUndefined();
+
+    const tag = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+    const expected = {
+      schema: "RuntimeTagTeamOrder/v0" as const,
+      sides: [
+        { side: 1 as const, stableRootIds: ["p1", "p3"], memberOrderIds: ["p1", "p3"], leaderId: "p1" },
+        { side: 2 as const, stableRootIds: ["p2", "p4"], memberOrderIds: ["p2", "p4"], leaderId: "p2" },
+      ],
+    };
+    expect(tag.getSnapshot().tagTeamOrder).toEqual(expected);
+    tag.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }] });
+    expect(tag.getSnapshot().tagTeamOrder).toEqual(expected);
+    expect(tag.dispatch({ type: "reset" }).tagTeamOrder).toEqual(expected);
+  });
+
   it("refreshes P2 selection for later roots after same-tick self TagOut", () => {
     const tagOutP1 = createImportedFixture({
       id: "tag-out-p1",

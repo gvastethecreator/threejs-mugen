@@ -82,6 +82,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute static TagIn control](tickets/061-execute-static-tagin-control.md) - apply exact caller/partner control after prevalidated state transitions.
 - [Map Tag member and leader order](tickets/062-map-tag-member-leader-order.md) - separate mutable order/leader identity from stable root slots before execution.
 - [Create Tag team order model](tickets/063-create-tag-team-order-model.md) - own explicit Tag mode, mutable member order, and leader identity without slot mutation.
+- [Execute static Tag member order](tickets/064-execute-static-tag-member-order.md) - route positive one-based member swaps through explicit Tag order ownership.
 
 ## Not Yet Specified
 
