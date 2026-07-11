@@ -7,6 +7,7 @@ import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./Eff
 import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
+import type { RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -51,6 +52,8 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   actor: TActor;
   opponent: TActor;
   opponents?: readonly TActor[];
+  characters?: readonly TActor[];
+  rootSelection?: RuntimeRootSelectionEntry;
   owner?: TActor;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
@@ -66,27 +69,29 @@ export class RuntimeExpressionContextWorld {
   constructor(private readonly opponentSelectionWorld = new RuntimeOpponentSelectionWorld()) {}
 
   create<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): ExpressionContext {
-    const { actor, opponent } = input;
+    const { actor } = input;
     const owner = input.owner ?? actor;
     const opponentRoster = this.opponentRoster(input);
+    const selectedP2 = this.selectedP2(input);
 
     return {
       self: actor.runtime,
-      opponent: opponent.runtime,
+      opponent: selectedP2?.runtime,
       enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index),
+      enemyNearFallbackToOpponent: input.rootSelection ? false : undefined,
       name: actor.definition.displayName,
       authorName: actor.definition.authorName,
-      opponentName: opponent.definition.displayName,
-      opponentAuthorName: opponent.definition.authorName,
+      opponentName: selectedP2?.definition.displayName,
+      opponentAuthorName: selectedP2?.definition.authorName,
       teamSide: runtimeActorTeamSide(actor),
-      opponentTeamSide: runtimeActorTeamSide(opponent),
+      opponentTeamSide: selectedP2 ? runtimeActorTeamSide(selectedP2) : undefined,
       stageBounds: input.stageBounds,
       gameSpace: input.gameSpace,
       localCoord: actor.definition.localCoord,
-      opponentLocalCoord: opponent.definition.localCoord,
+      opponentLocalCoord: selectedP2?.definition.localCoord,
       parentLocalCoord: owner.definition.localCoord,
       rootLocalCoord: actor.definition.localCoord,
-      target: (targetId) => this.resolveTargetRedirect(actor, opponent, targetId),
+      target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
       random: input.random,
@@ -228,8 +233,29 @@ export class RuntimeExpressionContextWorld {
   }
 
   private opponentRoster<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): readonly TActor[] {
+    if (input.rootSelection) {
+      const byId = new Map(input.characters?.map((actor) => [actor.id, actor]) ?? []);
+      return this.opponentSelectionWorld.orderByNearest(
+        input.actor,
+        input.rootSelection.enemyIds.flatMap((id) => {
+          const actor = byId.get(id);
+          return actor ? [actor] : [];
+        }),
+      );
+    }
     const opponents = input.opponents ?? [input.opponent];
     return this.opponentSelectionWorld.orderByNearest(input.actor, opponents);
+  }
+
+  private selectedP2<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): TActor | undefined {
+    if (!input.rootSelection) {
+      return input.opponent;
+    }
+    const byId = new Map(input.characters?.map((actor) => [actor.id, actor]) ?? []);
+    return input.rootSelection.p2CandidateIds.flatMap((id) => {
+      const actor = byId.get(id);
+      return actor ? [actor] : [];
+    })[0];
   }
 }
 

@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN expression selection
+
+- Expression VM: optional root-selection input separates EnemyNear roster from P2 identity/state.
+- Failure policy: explicit empty P2 candidates fail closed; missing registry ids are ignored.
+- Compatibility: omitted root selection preserves existing 1v1 expression behavior.
+- Partner: still diagnostic-only; no unsupported redirect grammar is claimed.
+- Score: unchanged. Reserve roots still do not execute CNS.
+- Next: Wayfinder 049 standby-root CNS scheduling and same-tick TagIn/TagOut research.
+
 ## Global report - 2026-07-11 IKEMEN root selection
 
 - Runtime/IKEMEN: `RuntimeRootSelection/v0` separates identity, Partner, Enemy, and P2 candidate domains.

@@ -183,6 +183,65 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("EnemyNear(3), Life", input)).toBe(333);
   });
 
+  it("routes EnemyNear and P2 reads through distinct IKEMEN root-selection rows", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "P1 Author");
+    const fallback = runtimeActor("p2", "Fallback", { life: 111, pos: { x: 200, y: 0 } });
+    const overKoEnemy = runtimeActor("p4", "Enemy Author", { life: 444, pos: { x: 20, y: 0 } });
+    const selectedP2 = runtimeActor("p6", "P2 Author", { life: 666, pos: { x: 80, y: 0 } });
+
+    const input = {
+      actor,
+      opponent: fallback,
+      characters: [actor, fallback, overKoEnemy, selectedP2],
+      rootSelection: {
+        actorId: "p1",
+        side: 1 as const,
+        partnerIds: ["p3"],
+        enemyIds: ["p4", "p6"],
+        p2CandidateIds: ["p6"],
+      },
+    };
+
+    expect(world.evaluateNumber("P2Life", input)).toBe(666);
+    expect(world.evaluateNumber("NumEnemy + EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(1112);
+    expect(world.create(input)).toMatchObject({
+      name: "p1",
+      opponentName: "p6",
+      opponentAuthorName: "P2 Author",
+    });
+
+    expect(
+      world.evaluateNumber("P2Life + EnemyNear(0), Life", {
+        ...input,
+        rootSelection: { ...input.rootSelection, enemyIds: ["missing"] },
+      }),
+    ).toBe(0);
+  });
+
+  it("fails P2 reads closed when an explicit selection has no candidate", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const fallback = runtimeActor("p2", "Fallback", { life: 999 });
+    actor.targets = [{ actorId: "p2", targetId: 77, age: 0 }];
+    const input = {
+      actor,
+      opponent: fallback,
+      characters: [actor, fallback],
+      rootSelection: {
+        actorId: "p1",
+        side: 1 as const,
+        partnerIds: [],
+        enemyIds: [],
+        p2CandidateIds: [],
+      },
+    };
+
+    expect(world.evaluateNumber("P2Life + NumEnemy", input)).toBe(0);
+    expect(world.evaluateNumber("Target(77), Life", input)).toBe(999);
+    expect(world.create(input).opponentName).toBeUndefined();
+  });
+
   it("normalizes transition sentinel state time to observable Time zero", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

@@ -67,6 +67,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after inert roots](tickets/046-next-gap-after-inert-roots.md) - `RuntimeRootParticipation/v0` proves P1/P2 executable ownership versus inert P3-P8 across separate consumer axes.
 - [Choose next gap after root activation](tickets/047-next-gap-after-root-activation.md) - choose identity/Partner versus Enemy/P2 eligibility over plural active roots before scheduling.
 - [Route root selection into expressions](tickets/048-route-root-selection-into-expressions.md) - consume the public selection matrix in read-only IKEMEN expression contexts while preserving 1v1 gates.
+- [Schedule standby roots in explicit IKEMEN CNS](tickets/049-standby-root-cns-scheduling.md) - define bounded P3-P8 CNS execution and same-tick standby invalidation before gameplay consumers.
 
 ## Not Yet Specified
 

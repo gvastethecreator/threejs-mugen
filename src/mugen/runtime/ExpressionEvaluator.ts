@@ -7,6 +7,7 @@ export type ExpressionContext = {
   self: CharacterRuntimeState;
   opponent?: CharacterRuntimeState;
   enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
+  enemyNearFallbackToOpponent?: boolean;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
   localCoord?: [number, number];
@@ -1271,6 +1272,9 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     };
   }
   if (enemyIndex > 0) {
+    return "fail";
+  }
+  if (context.enemyNearFallbackToOpponent === false) {
     return "fail";
   }
   if (!context.opponent) {
