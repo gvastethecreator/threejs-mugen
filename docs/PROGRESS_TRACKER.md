@@ -1263,6 +1263,13 @@ Every compatibility milestone should leave:
 - Proved same-tick P1/P3 swap plus zero/negative/out-of-range/non-Tag rollback.
 - Global status: dynamic partner/state/control/member axes execute; dynamic leader and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN TagIn leader
+
+- Added deferred `leaderPlayerNoExpression` only for TagIn.
+- Resolves/truncates stable PlayerNo in caller context before same-side explicit-Tag validation.
+- Proved same-tick P3 leader rotation plus zero/negative/opposing/missing/non-Tag rollback.
+- Global status: every currently admitted Tag optional axis supports bounded dynamic expressions; RedirectID mutation remains open.
+
 ## Not Done
 
 - Full MUGEN VM

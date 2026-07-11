@@ -1980,6 +1980,14 @@ function resolveDynamicTeamStandbyOperation(
     const { memberPositionExpression: _memberPositionExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, memberPosition };
   }
+  if (operation.leaderPlayerNoExpression !== undefined) {
+    const resolvedLeaderPlayerNo = evaluateRuntimeControllerNumber(operation.leaderPlayerNoExpression, fighter.runtime, context);
+    if (resolvedLeaderPlayerNo === undefined) return undefined;
+    const leaderPlayerNo = Math.trunc(resolvedLeaderPlayerNo);
+    if (leaderPlayerNo < 1) return undefined;
+    const { leaderPlayerNoExpression: _leaderPlayerNoExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, leaderPlayerNo };
+  }
   return resolvedOperation;
 }
 

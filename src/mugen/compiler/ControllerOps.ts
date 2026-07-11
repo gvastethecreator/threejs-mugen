@@ -531,6 +531,7 @@ export type TeamStandbyControllerOp = {
   memberPosition?: number;
   memberPositionExpression?: string;
   leaderPlayerNo?: number;
+  leaderPlayerNoExpression?: string;
 };
 
 export type ControllerOp =
@@ -826,9 +827,17 @@ function compileTeamStandbyControllerOp(
     }
   }
   let leaderPlayerNo: number | undefined;
+  let leaderPlayerNoExpression: string | undefined;
   if (leaderPlayerNoRaw !== undefined) {
-    leaderPlayerNo = Number(leaderPlayerNoRaw.trim());
-    if (!Number.isInteger(leaderPlayerNo) || leaderPlayerNo < 1) return undefined;
+    const normalizedLeaderPlayerNo = leaderPlayerNoRaw.trim();
+    leaderPlayerNo = normalizedLeaderPlayerNo ? Number(normalizedLeaderPlayerNo) : undefined;
+    if (leaderPlayerNo === undefined || !Number.isInteger(leaderPlayerNo) || leaderPlayerNo < 1) {
+      if (!hasValidTagExpressionStructure(leaderPlayerNoRaw)) return undefined;
+      const compiledLeaderPlayerNo = compileExpression(leaderPlayerNoRaw);
+      if (compiledLeaderPlayerNo.supportLevel === "unsupported") return undefined;
+      leaderPlayerNo = undefined;
+      leaderPlayerNoExpression = compiledLeaderPlayerNo.normalized;
+    }
   }
   return {
     kind: "team-standby",
@@ -849,6 +858,7 @@ function compileTeamStandbyControllerOp(
     ...(memberPosition === undefined ? {} : { memberPosition }),
     ...(memberPositionExpression === undefined ? {} : { memberPositionExpression }),
     ...(leaderPlayerNo === undefined ? {} : { leaderPlayerNo }),
+    ...(leaderPlayerNoExpression === undefined ? {} : { leaderPlayerNoExpression }),
   };
 }
 

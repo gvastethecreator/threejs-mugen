@@ -1273,6 +1273,8 @@ Dynamic Tag `partner` now resolves with integer truncation before caller-relativ
 
 Dynamic Tag `memberno` now resolves one-based mutable position with integer truncation before explicit Tag-mode order validation and every existing Tag effect. Wayfinder 074 next extends only TagIn stable-PlayerNo `leader`, preserving same-side identity and live-life rotation.
 
+Dynamic TagIn `leader` now resolves stable PlayerNo with integer truncation before explicit Tag-mode/same-side validation and live-life rotation. Every admitted optional Tag axis now has bounded dynamic execution. Wayfinder 075 next researches RedirectID target and mutation ownership before any redirected implementation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.
