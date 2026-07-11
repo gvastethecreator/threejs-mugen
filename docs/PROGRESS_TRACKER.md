@@ -1,12 +1,30 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN live team state
+## Global report - 2026-07-11 IKEMEN inert roots
+
+- Runtime/IKEMEN: explicit IKEMEN options can construct P3-P8 roots in stable interleaved slots with standby state.
+- Snapshot/registry: reserves publish through `reserveActors`, registry, lifecycle, topology, and team diagnostics.
+- Isolation: reserves do not enter active actors, renderer/camera, schedule, input, combat, round, compatibility execution, helpers, or effect stores.
+- Reset: reserve objects are recreated in place with standby restored.
+- Score: unchanged. No active multi-root gameplay.
+- Next: Wayfinder 046, explicit activation plus active-root read model.
+
+## Planning report - 2026-07-11 daily architecture audit
+
+- Since the previous automation, 23 commits closed the selected HitDef policy/contact, semantic presentation order, schedule, Common1/guard, and later IKEMEN RunOrder/Pause/team-topology sequence.
+- Highest numbered backlog truth is entry 348 and the declared current trace total is 538/538; older 524/524 and 523/523 values remain historical cut baselines.
+- I1 remains scanner/reporting. New I2 owns explicit-profile IKEMEN runtime gates and routes through `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`.
+- Next I2 prefactor: direct P3-P8/cap/start/reset/lifecycle evidence plus a versioned root-participation read model with all executable consumers still P1/P2. Activation, redirects, and standby CNS scheduling are later separate gates.
+- After the small I2 prefactor, return the primary lane to a bounded MUGEN-lite post-KO / `NoKOSlow` timeline.
+- Scores unchanged; this report adds no runtime evidence.
+
+## Previous report - 2026-07-11 IKEMEN live team state
 
 - Runtime/IKEMEN: `CharacterRuntimeState.teamState` carries disabled, standby, over-KO, and player-type state for roots/helpers.
 - Snapshot/registry: player/helper snapshots clone team state; `MatchWorld.teamRoster` now consumes it directly.
 - Compatibility: legacy snapshots normalize safely; current roots remain active player-types, current Helpers active non-player-types.
 - Score: unchanged. No P3/P4 construction or playable team phase exists.
-- Next: Wayfinder 045, inert P3/P4 construction outside scheduler/gameplay.
+- Next frontier at that checkpoint was Wayfinder 045; inert root construction now resolves it.
 
 ## Previous report - 2026-07-11 IKEMEN public multi-root registry
 
@@ -152,7 +170,7 @@
 - Toolchain: TypeScript 7.0.2 remains green.
 - Overall score: unchanged; this closes correctness debt inside partial audio scope.
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 This document is the compact truth board for progress. It does not replace detailed docs; it points to the evidence that keeps claims honest.
 
@@ -907,18 +925,18 @@ Previous runtime evidence checkpoint: required `synthetic-imported-air-hit-corne
 
 | Slot | Cut | Done when |
 | --- | --- | --- |
-| 1 | R1 HitDef priority policy | Authored/omitted values survive compilation; named profile defaults resolve at contact and unknown profiles fail closed. |
-| 2 | R1 direct contact priority | Static player/helper direct hit and guard traces record resolved source and both actor priorities. |
-| 3 | Renderer semantic order | Controlled player/effect/stage overlap is deterministic under asserted material/depth policy. |
-| 4 | R2 schedule | `MatchTickSchedule/v0` is asserted separately while legacy behavior checksums remain stable. |
-| 5 | R1 Common1/guard | State source precedence closes before engine-owned guard-phase order. |
-| 6 | S1/A1/I1 | Source identity/reimport, provenance, then package-level scanner work follow their documented gates. |
+| 1 | I2 inert-root evidence | P3-P8, cap/overflow, starts, lifecycle, reset identity/cleanup, and negative consumer ownership are directly proven. |
+| 2 | I2 participation read model | Owned/disabled/standby/active and scheduled/input/combat/round/presentation/effect-store participation are versioned; executable owners remain P1/P2. |
+| 3 | R1 post-KO | KO/time-over order and bounded `NoKOSlow` are trace-gated without motif/team breadth. |
+| 4 | I2 activation/redirects | Plural batch standby transition lands first; identity/Partner/Enemy/P2 matrix follows separately. |
+| 5 | I2 standby schedule | Standby roots execute explicit-profile CNS and same-tick TagIn/TagOut visibility is gated before later gameplay consumers. |
+| 6 | S1/A1/I1/M1 | Source transaction, provenance, package scanner, then one real shared product contract follow their documented gates. |
 
-Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unless the user changes priority. Use `docs/ROADMAP_PACKAGE_MILESTONES.md` to choose the exact package.
+Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1. After the small I2 prefactor, Slot 3 restores the stated MUGEN-lite delivery priority unless a newer dependency explicitly says otherwise. Use `docs/ROADMAP_PACKAGE_MILESTONES.md` to choose the exact package.
 
 ## Historical Evidence Snapshot - 509/509 Baseline
 
-This table is retained as a historical snapshot. Current global evidence is the 524/524 lane checkpoint near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
+This table is retained as a historical snapshot. Current declared global evidence is 538/538 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
@@ -1025,11 +1043,12 @@ The numbered list below is retained as implementation history. It is superseded 
 
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
-| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, bounded named controller/operation order, default stand get-hit progression order, synthetic auto guard-start/end controller-order evidence, synthetic guard-hit actor-frame telemetry, bounded air/ground velocity telemetry, target-owned custom-state ownership, optional KFM auto guard-start/end order, optional KFM guard-hit frame physics, required hit/guard sound plus hit/guard spark telemetry, smoke-gated player AIR, first-pass FightFX/common loading/provider handoff, bounded common/FightFX system/package-frame spark metadata, and required source-frame plus selected-frame/multi-frame trace metadata into deeper VM loop order, exact FightFX/common render lookup/binding/layering/timing/scale/palette, or broader Common1 parity. |
-| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake/audio/envcolor/envcolor-bridge/sprite-effect/actor-constraint/direct-combat/direct-priority/hitoverride/reversal/projectile-combat/effect-spawn/effect-lifecycle/contact/random/spark/recovery/BindToTarget/hit-eligibility/orientation/guard/default-get-hit/hit-state-transition/state-availability/active-state-dispatch and match actor roster ownership; next proof should target helper VM boundaries, combat/effect ordering, deeper presentation semantics, broader target ownership, real roster/team ownership, or exact checksum-stable ownership. |
+| R1 MUGEN-lite round flow | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | After the I2 participation prefactor, gate one KO/time-over frame sequence plus per-tick `NoKOSlow`; preserve KO sound behavior and keep motif/team/continue/lifebar breadth blocked. |
+| R2 root/participation ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Centralize root construction/reset/side/team-state/participation invariants and remove duplicate policy before widening consumers; require an invariant/deletion test rather than another transparent wrapper. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Deeper target-specific trace/asset/gate/report jumps after package/source-file drilldowns. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Next proof can add another scanner-only source-mapped signal after `RemoveText` / `NumText`; keep findings recognized/unsupported until runtime gates exist. |
+| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Direct P3-P8/cap/reset/lifecycle evidence and root-participation diagnostics first; plural activation, redirects, and standby CNS scheduling follow as separate gates. |
 | M1 Shared contract readiness | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` | One shared contract candidate proven free of fighting-specific leakage. |
 
 ## Closeout Contract

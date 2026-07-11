@@ -26,6 +26,51 @@ describe("PlayableMatchRuntime", () => {
     });
   });
 
+  it("owns capped IKEMEN P3-P8 reserve roots without scheduling or presenting them", () => {
+    const reserveFighters = Array.from({ length: 7 }, (_, index) => demoFighters[index % 2]!);
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters,
+    });
+    const initial = runtime.getSnapshot();
+    const advanced = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(initial.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
+    expect(initial.reserveActors?.map((actor) => actor.id)).toEqual(["p3", "p4", "p5", "p6", "p7", "p8"]);
+    expect(initial.reserveActors?.every((actor) => actor.runtime.teamState?.standby)).toBe(true);
+    expect(initial.reserveActors?.map((actor) => ({ id: actor.id, pos: actor.runtime.pos, facing: actor.runtime.facing }))).toEqual([
+      { id: "p3", pos: { x: trainingStage.playerStart.p1.x, y: trainingStage.playerStart.p1.y }, facing: trainingStage.playerStart.p1.facing },
+      { id: "p4", pos: { x: trainingStage.playerStart.p2.x, y: trainingStage.playerStart.p2.y }, facing: trainingStage.playerStart.p2.facing },
+      { id: "p5", pos: { x: trainingStage.playerStart.p1.x, y: trainingStage.playerStart.p1.y }, facing: trainingStage.playerStart.p1.facing },
+      { id: "p6", pos: { x: trainingStage.playerStart.p2.x, y: trainingStage.playerStart.p2.y }, facing: trainingStage.playerStart.p2.facing },
+      { id: "p7", pos: { x: trainingStage.playerStart.p1.x, y: trainingStage.playerStart.p1.y }, facing: trainingStage.playerStart.p1.facing },
+      { id: "p8", pos: { x: trainingStage.playerStart.p2.x, y: trainingStage.playerStart.p2.y }, facing: trainingStage.playerStart.p2.facing },
+    ]);
+    const originalDuration = initial.reserveActors?.[0]?.frame?.duration;
+    initial.reserveActors![0]!.frame!.duration = 999;
+    const isolated = runtime.getSnapshot();
+    expect(isolated.reserveActors?.[0]?.frame?.duration).toBe(originalDuration);
+    expect(isolated.actors[0]?.frame?.duration).toBe(originalDuration);
+    expect(advanced.reserveActors?.map((actor) => ({ id: actor.id, stateNo: actor.runtime.stateNo, pos: actor.runtime.pos }))).toEqual(
+      isolated.reserveActors?.map((actor) => ({ id: actor.id, stateNo: actor.runtime.stateNo, pos: actor.runtime.pos })),
+    );
+    expect(advanced.tickSchedule?.phases.some((phase) => /^p[3-8]$/.test(phase.actorId ?? ""))).toBe(false);
+    expect(runtime.getEffectActorStores().map((store) => store.ownerId)).toEqual(["p1", "p2"]);
+
+    runtime.reset();
+    expect(runtime.getSnapshot().reserveActors?.map((actor) => [actor.id, actor.runtime.teamState?.standby])).toEqual(
+      ["p3", "p4", "p5", "p6", "p7", "p8"].map((id) => [id, true]),
+    );
+  });
+
+  it("ignores reserve roots outside the explicit IKEMEN profile", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    expect(runtime.getSnapshot().reserveActors).toBeUndefined();
+  });
+
   it("exposes the exact active match phase order with an owner for every phase", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });

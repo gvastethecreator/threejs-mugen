@@ -1,6 +1,6 @@
 # Roadmap Progress System
 
-Last updated: 2026-06-29
+Last updated: 2026-07-11
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
@@ -36,6 +36,7 @@ Use lane-specific checkpoints instead of collapsing every recent entry into one 
 | Latest Studio/UI checkpoint | Most recent visible Studio, runtime UI, browser smoke, or visual QA cut. | `docs/PROGRESS_TRACKER.md`, `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.md` |
 | Latest generated-asset checkpoint | Most recent source/provenance/atlas/QA/playtest evidence cut. | `docs/GENERATED_ASSET_QA_CONTRACT.md` |
 | Latest IKEMEN scanner checkpoint | Most recent scanner-only recognized/unsupported/unknown signal. | `docs/IKEMEN_GO_REFERENCE.md`, `docs/COMPATIBILITY_PROFILES.md` |
+| Latest IKEMEN runtime checkpoint | Most recent explicit-profile IKEMEN scheduling, pause, topology, root-participation, or team-runtime evidence cut. | `docs/ROADMAP_EXECUTION_BOARD.md`, `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` |
 | Latest modular-boundary checkpoint | Most recent shared-contract or boundary proof. | `docs/MODULE_BOUNDARY_CONTRACT.md` |
 | Latest G1 control checkpoint | Most recent AGENTS/setup-project/roadmap/issue-tracker refresh. | `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` |
 
@@ -87,7 +88,8 @@ Do not mark runtime compatibility done from parser counts alone. Do not mark UI/
 | Private playable sandbox | 65 / 100 | Native/generated match stays stable while imported-runtime work continues; smoke evidence remains green. |
 | MUGEN-lite imported MVP | 35 / 100 practical compatibility, 20 / 100 MVP port | KFM/Common1-style fixture can run idle, walk, crouch, jump, attack, guard, get-hit, fall, and recovery with trace/report gaps visible. |
 | Broad MUGEN subset | Future 45-55+ | Multiple local character/stage packages load without hardcoded patches; unsupported controllers/triggers remain reportable instead of fatal. |
-| IKEMEN scanner-plus | Scanner-only today | More Ikemen-GO source signals map into recognized/unsupported/unknown findings; ZSS/Lua execution remains blocked until separately gated. |
+| IKEMEN scanner-plus | Scanner/reporting lane | More Ikemen-GO source signals map into recognized/unsupported/unknown findings; scanner evidence never implies execution. |
+| IKEMEN bounded runtime | 6-8 / 100 full-port horizon | Explicit-profile root/helper RunOrder, Pause/SuperPause, team topology/eligibility/registry/state, and inert P3-P8 ownership have bounded evidence. Next exit is a versioned root-participation read model and then a separate activation contract; tag gameplay remains blocked. |
 | Creator Studio MVP | 25 / 100 | Evidence and Build surfaces become single trust chain for stale, partial, blocked, unsupported, and exportable states. |
 | Modular engine extraction | 10 / 100 | One shared contract proves no CNS, CMD, HitDef, Common1, rounds, helpers, targets, or MUGEN command routing leakage. |
 
@@ -102,6 +104,7 @@ Do not mark runtime compatibility done from parser counts alone. Do not mark UI/
 | Studio/UI/product workflow | `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.md`, `docs/PROGRESS_TRACKER.md`, relevant issue | `pnpm qa:smoke` plus visual inspection |
 | Generated asset pipeline | `docs/GENERATED_ASSET_QA_CONTRACT.md`, `docs/ENGINE_STUDIO_ROADMAP.md`, relevant issue | Atlas/QA/script proof plus visual check when visible |
 | IKEMEN scanner/reference | `docs/COMPATIBILITY_PROFILES.md`, `docs/MUGEN_COMPATIBILITY_PLAN.md`, relevant issue | Focused scanner tests plus normal gates |
+| IKEMEN runtime semantics | `docs/COMPATIBILITY_PROFILES.md`, `docs/SUPPORTED_FEATURES.md`, `docs/WORKPLAN.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Focused runtime tests, `pnpm qa:trace`, and visual smoke only when a visible consumer changes |
 | Modular shared boundary | `docs/MODULE_BOUNDARY_CONTRACT.md`, `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`, relevant issue | Boundary tests or docs-only note if no code |
 
 ## Closeout Template
@@ -133,11 +136,14 @@ Default next work remains:
 RuntimeTrace / ControllerOp depth
   -> MatchWorld ownership
   -> KFM/Common1 fixture precision
+  -> one explicitly bounded I2 IKEMEN runtime slice only when its source, isolation, and anti-claims are named
   -> Studio Evidence/Build trust
   -> generated asset QA/provenance
   -> IKEMEN scanner expansion
   -> shared module contract
 ```
+
+I1 scanner and I2 runtime are independent lanes. Scanner findings do not move I2, and a bounded I2 gate does not imply ZSS/Lua, tag/simul gameplay, rollback, netplay, or broad IKEMEN parity. The product target remains MUGEN-lite; after a small I2 risk-reduction cut, return to the first falsifiable MUGEN-lite gate unless the queue explicitly records a different dependency.
 
 Parallel docs are allowed when they reduce drift. Parallel UI is allowed when it binds to real runtime/project/evidence data and passes visual QA.
 
@@ -145,6 +151,6 @@ Parallel docs are allowed when they reduce drift. Parallel UI is allowed when it
 
 `setup-project`, roadmap routing, issue tracker docs, and AGENTS changes are valid control work, but they are not compatibility evidence. Close them with normal build/test gates, update `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`, and keep `docs/PORT_COMPLETION_SCORECARD.md` unchanged unless runtime, visual, fixture, scanner, Studio, or package evidence also changed.
 
-Every setup/docs pass must compare the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md` with `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and the linked roadmap issue. If an older "next" gate has already closed, refresh the route before selecting more code.
+Every setup/docs pass must compare the highest numbered entry at the bottom of `docs/BUILD_EXECUTION_BACKLOG.md` with `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and the linked roadmap issue. The prefixed summaries at the top are convenient lane history, not the numbered-ledger maximum. If an older "next" gate has already closed, refresh the route before selecting more code.
 
-After any docs-only setup pass, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and `docs/NEXT_BUILD_ROADMAP.md`, then choose the next evidence-producing package. The `AnimTime` required trace, `SelfAnimExist` required trace, `HitBy` accept/reject, target-owned custom-state, required synthetic guard-hit actor-frame telemetry, required synthetic auto guard-start/end controller-order, debug clipboard plus `MakeDust` / `DestroySelf` no-op, `VarRandom` variable, fighter state factory ownership, match reset ownership, helper TargetState handler binding, contact-memory world ownership, `RuntimeRandomSystem` ownership, `RuntimeExpressionContextWorld` ownership, `RuntimeFrameWorld` ownership, `RuntimeAfterImageSampleWorld` ownership, `HitSparkAssetSystem` ownership, `RuntimeRecoverySystem` ownership, `RuntimeAnimationWorld` ownership, `RuntimeKinematicsWorld` ownership, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, player SprPriority draw order, shared Trust Chain, package/source drilldowns, and `RuntimeEffectActorAdvanceWorld` gates are already closed. Current default is the two-step HitDef priority policy/contact sequence, followed by semantic renderer overlap or `MatchTickSchedule/v0` diagnostics as ordered in the tactical roadmap.
+After any docs-only setup pass, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and `docs/NEXT_BUILD_ROADMAP.md`, then choose the next evidence-producing package. The HitDef priority policy/contact sequence, `MugenPresentationOrder/v0`, `MatchTickSchedule/v0`, Common1 source precedence, two-checkpoint automatic guard ordering, IKEMEN root/helper RunOrder, Pause/SuperPause ownership, team topology/eligibility/registry/live-state, and inert P3-P8 ownership are already closed alongside the older gates recorded in the backlog. Current default is the I2 root-participation evidence/read-model prefactor, then a return to a bounded MUGEN-lite post-KO / `NoKOSlow` gate; activation, redirects, and standby-root scheduling remain separate later I2 cuts.

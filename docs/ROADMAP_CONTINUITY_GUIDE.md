@@ -1,6 +1,6 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
 
@@ -39,9 +39,20 @@ The project is not currently trying to claim full MUGEN or IKEMEN parity. It is 
 | 3 | S1 Studio trust chain | Evidence and Build agree on status and next action. | `pnpm qa:smoke`, screenshots, real evidence rows. |
 | 4 | A1 Generated assets | Prompt/source/atlas/QA/playtest/collision records stay linked. | Asset QA records, Studio surfacing, visual smoke if UI changes. |
 | 5 | I1 IKEMEN scanner | More IKEMEN source/docs signals are recognized and classified. | Scanner tests and blocked runtime wording. |
-| 6 | M1 Modular engine | Shared contracts prove no fighting-specific leakage. | `pnpm check:boundaries`, contract tests, docs. |
+| 6 | I2 IKEMEN bounded runtime | Explicit-profile semantics advance through source-pinned, isolated gates. | Focused runtime tests, required traces, blocked consumer claims. |
+| 7 | M1 Modular engine | Shared contracts prove no fighting-specific leakage. | `pnpm check:boundaries`, contract tests, docs. |
 
 ## Next Useful Runtime Gates
+
+Current I2 prefactor: entry 348 owns inert P3-P8 roots with six-reserve cap, side-local starts, reset, snapshot isolation, and negative schedule/effect-store proof. Next publish a versioned root-participation read model with no mutation and all executable phase owners unchanged; broader lifecycle/identity cleanup stays part of that diagnostic gate.
+
+Current I2 follow-up: add a plural batch standby transition and active ids by side without moving storage, automatically tagging out another root, or inferring leader/member/resource ownership. Identity/Player/Partner versus Enemy/P2 eligibility and standby-root CNS scheduling with same-tick TagIn/TagOut visibility are separate later gates.
+
+Current R1 return gate: after that small I2 prefactor, close one post-KO / `NoKOSlow` timeline. The project target remains MUGEN-lite; do not let structural IKEMEN cuts become an unbounded alternate roadmap.
+
+The HitDef priority policy/contact, `MugenPresentationOrder/v0`, `MatchTickSchedule/v0`, Common1 source precedence, automatic guard ordering, and subsequent IKEMEN RunOrder/Pause/team-topology gates are closed. The ledger below is historical context and must not be selected as current work.
+
+### Historical Gate Ledger
 
 Selected next R1/renderer sequence: first preserve authored-versus-omitted direct `HitDef p1sprpriority` / `p2sprpriority` behind a minimal profile/default-source policy; then apply static player/helper values on accepted hit and guard through the MUGEN 1.1 policy and trace resolved source before Three.js adaptation. Projectile inheritance, dynamic values, IKEMEN normative behavior, equal ties, stage/effect interleaving, `Explod ontop`, score movement, and parity remain blocked. Proposed ADR 0002 must be adopted or replaced before runtime mutation.
 

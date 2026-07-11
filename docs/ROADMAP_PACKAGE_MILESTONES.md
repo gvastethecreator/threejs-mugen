@@ -1,6 +1,10 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package closeout - SprPriority draw order
+## Latest package closeout - IKEMEN inert P3-P8 ownership
+
+Explicit `ikemen-go` options own/reset P3-P8 in stable interleaved slots and publish them through a separate snapshot/registry path while all playable consumers remain P1/P2. Focused tests prove the six-reserve cap, side-local starts, reset, snapshot isolation, and negative schedule/effect-store boundaries. Full participation diagnostics and broader lifecycle/identity cleanup are next. No score movement and no tag gameplay claim.
+
+## Previous package closeout - SprPriority draw order
 
 Closed under official-range units, dynamic controller tests, effective mesh diagnostics, ordering oracle, desktop/mobile screenshots, and full gates. No promotion beyond bounded player L2 ordering.
 
@@ -24,7 +28,7 @@ Closed under focused contracts and 524/524 trace gates. No milestone promotion; 
 
 Closed under focused tests and 524/524 trace gates. No milestone or score promotion; next selection is Wayfinder 019.
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -35,11 +39,12 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 | Package | Status | Next proof | Required evidence | Blocked claim |
 | --- | --- | --- | --- | --- |
 | G1 Roadmap control | Active control layer | Keep setup-project, AGENTS, local issues, and roadmap docs synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | Any runtime, Studio, IKEMEN, or modular compatibility score movement. |
-| R1 Runtime compatibility | Active evidence lane | Preserve HitDef p1/p2 authored presence/profile defaults, then gate static direct player/helper contact. | Focused policy/compiler/combat tests plus required traces. | Score movement from this bounded gate, Projectile/dynamic priority, full CNS VM, exact tick-order parity, teams/screenpacks. |
-| R2 Runtime ownership | Active debt-reduction lane | Add `MatchTickSchedule/v0` diagnostics outside legacy behavior checksums before changing order or extracting more seams. | Focused schedule test, separate schedule assertion, stable behavior checksums. | Claiming parity from schedule evidence alone. |
+| R1 Runtime compatibility | Active evidence lane | Return after the I2 participation prefactor to one bounded post-KO / `NoKOSlow` timeline; keep Projectile/dynamic priority as a later presentation slice. | Focused round tests plus a required ordered trace. | Full KO/round/motif/team/continue flow, exact slowdown, full CNS VM, or score movement without broader evidence. |
+| R2 Runtime ownership | Active debt-reduction lane | Audit root roster/participation ownership and collapse duplicate construction/reset/side mapping before widening consumers; no more transparent wrapper-only extraction. | Invariant/deletion test, focused system coverage, stable traces. | Exact tick-order or IKEMEN team parity from architecture cleanup alone. |
 | S1 Studio source workflow | Active product lane | Shared Trust Chain/package-source drilldowns stay stable while source identity/conflict/write-reimport/invalidation/rollback becomes the next bounded contract. | Model/service tests plus `pnpm qa:smoke` and visual inspection using real evidence rows. | Undo/migration, decorative dashboard states, fake green exports, editing workflows without persistence. |
 | A1 Generated assets | Planned/active support lane | Validate permission-aware, content-addressed origin/input/tool/transform/output provenance. | Asset validator proof plus visual QA when shown in runtime or Studio. | Imported MUGEN compatibility credit or third-party permission. |
 | I1 IKEMEN scanner | Active scanner-only lane | Add versioned package-level character/stage/system/screenpack analysis. | Focused scanner tests, report snapshot, blocked runtime wording. | ZSS/Lua/runtime execution, rollback, netplay, IKEMEN system parity. |
+| I2 IKEMEN bounded runtime | Active explicit-profile lane | Publish a versioned root-participation read model over the proven inert P3-P8/cap/reset base; then define plural activation separately. | Pinned-source note, focused runtime tests, stable `pnpm qa:trace`; smoke only when visible consumers change. | Tag/simul gameplay, standby CNS scheduling, input/effects/combat/round/presentation/lifebar/resources, rollback/netplay, or full IKEMEN parity. |
 | M1 Modular boundary | Guarded later architecture lane | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Focused contract/boundary tests plus stable fighting gates. | Platformer/runtime SDK claims before fighting contracts stay stable. |
 
 ## Milestone Exit Gates
@@ -56,7 +61,29 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Latest runtime checkpoint:
+Current cross-lane checkpoint:
+
+```txt
+I2 IKEMEN inert additional-root ownership
+  -> entry 348 owns P3-P8-capable storage, reset handoff and reserve snapshot/registry integration
+  -> active match, renderer, camera, scheduler, input, compatibility execution, combat, round, helpers and effect stores remain P1/P2
+  -> focused tests prove P3-P8 cap, side-local starts, reset, snapshot isolation and negative schedule/effect-store boundaries
+  -> no score movement and no tag/team gameplay claim
+```
+
+Next prefactor:
+
+```txt
+I2 RuntimeRootParticipation/v0-style diagnostic
+  -> prove P3-P8, six-reserve cap/overflow policy, interleaved starts, lifecycle and reset identity/cleanup
+  -> separate owned, disabled, standby, structurally active and per-consumer participation
+  -> keep phase owners P1/P2 and do not move roots between snapshot arrays
+  -> after this proof, add a plural batch standby transition without assuming one active root per side
+```
+
+After that small I2 risk cut, resume the primary MUGEN-lite lane with one post-KO / `NoKOSlow` timeline. The long checkpoint ledger below is historical context; it does not override this current cursor.
+
+Historical runtime checkpoint before the 2026-07-10/11 closeout chain:
 
 ```txt
 R1/R2 voice channel 0 hit cancellation
@@ -3263,9 +3290,10 @@ Current closed gates that must not be reselected as "next":
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
-1. R1 HitDef priority authored-presence/profile policy, then static direct player/helper contact semantics.
-2. Renderer semantic presentation order and controlled overlap proof.
-3. R2 `MatchTickSchedule/v0` diagnostics outside legacy behavior checksums before ownership or order changes.
+1. I2 root-participation evidence/read model: P3-P8/cap/start/reset/lifecycle/identity plus explicit P1/P2-only consumer ownership.
+2. R1 post-KO / `NoKOSlow` ordered timeline after that small I2 prefactor.
+3. I2 plural batch activation/read model, then a separate identity/Partner/Enemy/P2 policy matrix.
+4. I2 standby-root scheduling and same-tick TagIn/TagOut only after the structural and redirect gates; input/effects/combat/round/presentation/resources remain later cuts.
 
 ## Package Closeout Contract
 

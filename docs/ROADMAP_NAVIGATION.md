@@ -1,6 +1,6 @@
 # Roadmap Navigation
 
-Last updated: 2026-06-29
+Last updated: 2026-07-11
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
@@ -64,6 +64,7 @@ Use this quick route when a task is broad:
 | Studio Evidence/Build/Assets/Debug workflow | S1 Studio trust chain | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` |
 | Generated fighters, imagegen, sprite atlas, locomotion/scale QA | A1 generated assets | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` |
 | Ikemen-GO docs/source scan, ZSS/Lua/config/screenpack detection | I1 scanner | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` |
+| Explicit-profile IKEMEN scheduling, pause, team topology, root participation, activation, or tag-runtime semantics | I2 bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` |
 | Shared engine contracts, module boundaries, future platformer support | M1 modular boundary | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` |
 
 If a task spans more than one row, pick the row that changes executable behavior first, then update the control docs that became stale.
@@ -77,6 +78,7 @@ If a task spans more than one row, pick the row that changes executable behavior
 | S1 Studio trust chain | Evidence and Build share one status/next-action contract. | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` |
 | A1 generated assets | Prompt/source/atlas/QA/collision/playtest provenance. | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` |
 | I1 IKEMEN scanner | More recognized/unsupported/unknown scanner findings. | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` |
+| I2 IKEMEN bounded runtime | Source-pinned, profile-gated runtime semantics with explicit consumer isolation and trace claims. | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` |
 | M1 modular engine | One shared contract proven free of fighting leakage. | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` |
 | G1 roadmap control | Keep docs, issue tracker, gates, and claims synchronized. | `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` |
 
@@ -141,6 +143,7 @@ Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when a task asks to continue the broader 
 
 - Do not raise port scores from docs-only work.
 - Do not call scanner support runtime support.
+- Do not fold I2 runtime evidence back into I1 scanner counts or infer tag/team gameplay from structural root ownership.
 - Do not call generated/native roster compatibility with imported MUGEN.
 - Do not bundle commercial or third-party characters.
 - Do not close an issue without evidence and blocked claims.

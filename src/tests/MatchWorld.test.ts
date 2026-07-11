@@ -128,6 +128,28 @@ describe("MatchWorld", () => {
     expect(controllerOrder).toEqual(["p2", "p1"]);
   });
 
+  it("publishes inert P3/P4 roots through the live MatchWorld registry only", () => {
+    const world = new MatchWorld({
+      p1: demoFighters[0]!,
+      p2: demoFighters[1]!,
+      stage: trainingStage,
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+    const snapshot = world.step({ p1: new Set(), p2: new Set() });
+    const registry = world.getActorRegistry();
+
+    expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
+    expect(snapshot.reserveActors?.map((actor) => actor.id)).toEqual(["p3", "p4"]);
+    expect(registry.players).toEqual(["p1", "p2", "p3", "p4"]);
+    expect(registry.teamSides).toEqual({ 1: ["p1", "p3"], 2: ["p2", "p4"] });
+    expect(registry.teamRoster.characters.slice(2)).toEqual([
+      expect.objectContaining({ id: "p3", standby: true, enemyBaseEligible: false }),
+      expect.objectContaining({ id: "p4", standby: true, enemyBaseEligible: false }),
+    ]);
+    expect(registry.effectStores.map((store) => store.ownerId)).toEqual(["p1", "p2"]);
+  });
+
   it("exposes a player actor registry without changing match state", () => {
     const world = new MatchWorld({ p1: demoFighters[0]!, p2: demoFighters[1]!, stage: closeStage });
     const before = world.getSnapshot();

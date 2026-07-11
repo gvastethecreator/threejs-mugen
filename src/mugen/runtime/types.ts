@@ -530,6 +530,7 @@ export type MugenSnapshot = {
   stage: StageSnapshot;
   round?: RoundSnapshot;
   actors: ActorSnapshot[];
+  reserveActors?: ActorSnapshot[];
   effects?: ActorSnapshot[];
   compatibilitySession?: CompatibilitySessionSnapshot;
   tickSchedule?: RuntimeMatchTickSchedule;

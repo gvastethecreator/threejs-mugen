@@ -38,9 +38,9 @@ Date: 2026-07-10
 - Evidence: focused 4 files / 86 tests, full 158 files / 1556 tests, TypeScript 7 build/typecheck, 529/529 traces, and boundary check.
 - Blocked: MUGEN normative order, run flags/triggers, helpers/appended actors, teams/simul/tag, simultaneous Pause ownership, rollback, score movement, full IKEMEN actor-loop parity.
 
-## Next Proposed Quality Sequence - HitDef Priority Policy And Contact
+## Closed Quality Sequence - HitDef Priority Policy And Contact
 
-Status: ready-for-agent
+Status: done
 
 Date: 2026-07-10
 
@@ -55,7 +55,24 @@ Quality contract:
 - Acceptance: explicit and omitted values remain distinguishable; resolved source is visible; hit and guard apply both actor priorities on player and helper direct routes; whiff, eligibility reject, reversal miss, and non-contact paths leave them unchanged.
 - Evidence: focused compiler/policy/direct/helper-combat tests plus one player and one helper required trace with resolved source and before/after actor priority. Renderer proof is a separate follow-up gate.
 - Out of scope: Projectile inheritance, legacy alias policy, dynamic expressions, IKEMEN normative default execution, semantic clamping without an oracle, equal ties, stage/effect ordering, `Explod ontop`, L4/L5 renderer parity, and score movement.
-- References: `docs/research/2026-07-10-daily-roadmap-architecture-audit.md` and proposed `docs/adr/0002-mugen-presentation-order-and-profile-boundaries.md`.
+- Closeout: commits `5913f9db`, `1b29133d`, and `84bd9df3` landed the policy, player/helper contact mutation, and renderer-independent presentation order. ADR 0002 is accepted. Projectile/dynamic values, equal ties, `Explod ontop`, and broad renderer parity remain separate future gates.
+- References: `docs/research/2026-07-10-daily-roadmap-architecture-audit.md` and accepted `docs/adr/0002-mugen-presentation-order-and-profile-boundaries.md`.
+
+## Next Proposed R1 Quality Slice - Post-KO And NoKOSlow Timeline
+
+Status: ready-for-agent
+Date: 2026-07-11
+
+Quality contract:
+
+- Dependency: the small I2 root-participation evidence/read-model prefactor in issue 07 closes first, then the primary lane returns to MUGEN-lite.
+- Baseline: bounded KO/time-over snapshots, KO sound, double KO, and tick-active `NoKOSnd` are already gated.
+- Target: expose and gate one exact-enough KO/time-over frame sequence plus the per-tick `NoKOSlow` assertion window without broad round or motif work.
+- Acceptance: normal KO, `NoKOSlow`, and time-over have distinguishable ordered frames; KO sound remains one-shot and time-over silent; checksum drift is intentional and documented.
+- Evidence: focused round tests and one required timeline trace.
+- Claim allowed: one bounded MUGEN-lite post-KO / `NoKOSlow` route.
+- Claim blocked: exact slowdown curve/duration, motif/lifebar ownership, teams, turns/tag, win/continue flow, broad audio, score movement without wider fixture evidence, and full round parity.
+- Primary source: Elecbyte MUGEN 1.1 State Controller Reference, `AssertSpecial NoKOSlow`.
 
 ## Latest Closed Quality Slice - KO Sound and NoKOSnd Handoff
 
@@ -230,7 +247,7 @@ Quality contract:
 - STOP conditions: pause if the next damage-scale cut requires broad formula parity, projectile/helper/custom-state ownership changes, target redirect scaling, exact rounding, or combat timing decisions larger than one trace oracle.
 
 - Latest explicit-IKEMEN SuperPause defense cut: required `synthetic-imported-ikemen-superpause-team-defense.json` checksum `76873f0d` / final `b4425c66` gates omitted/non-positive `p2defmul` fallback to game-level `1.5`, separate temporary defense, and opposing root plus existing helper projection without target memory. P2 and `p2-helper-0` expose `0.6667`; final P2 life is `950`; aggregate is 538/538. Claim allowed: bounded explicit-IKEMEN 1v1 root/helper team-defense fallback. Claim blocked: simul/tag topology, global config loading, helper defender combat, nested ancestry, exact hitpause/buffer timing, rollback, score movement, and full parity.
-- Latest IKEMEN live-team-state cut: `CharacterRuntimeState.teamState` carries disabled/standby/over-KO/player-type state through root/helper snapshots into `MatchWorld.teamRoster`. Claim allowed: source-backed live state projection. Claim blocked: P3/P4 construction, transitions, Helper player-type compile, scheduler ownership, and every playable multi-root subsystem.
+- Latest IKEMEN inert-root cut: explicit IKEMEN options construct/reset P3-P8 standby roots and publish them through `reserveActors` plus registry/lifecycle, while playable/presentation/effect-store surfaces remain P1/P2. Claim allowed: bounded inert multi-root ownership. Claim blocked: activation, transitions, scheduler ownership, and every playable multi-root subsystem.
 
 ## Previous Closed Quality Slice - Dynamic EnvColor Typed Telemetry
 

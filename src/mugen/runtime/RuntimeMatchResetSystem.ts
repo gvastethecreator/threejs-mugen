@@ -24,7 +24,13 @@ export type RuntimeMatchResetInput<TActor extends object, TDefinition> = {
   pauseWorld: RuntimeMatchResettableWorld;
   envColorWorld: RuntimeMatchResettableWorld;
   effectActorWorld: RuntimeMatchResettableWorld;
-  createFighter: (id: "p1" | "p2", definition: TDefinition, start: RuntimeMatchResetFighterStart) => TActor;
+  reserveActors?: Array<{
+    actor: TActor;
+    id: string;
+    definition: TDefinition;
+    start: RuntimeMatchResetFighterStart;
+  }>;
+  createFighter: (id: string, definition: TDefinition, start: RuntimeMatchResetFighterStart) => TActor;
   attachHelperTargetStateHandlers: () => void;
   log: (message: string) => void;
 };
@@ -44,6 +50,9 @@ export class RuntimeMatchResetWorld {
 
     Object.assign(input.p1, input.createFighter("p1", input.p1Definition, input.p1Start));
     Object.assign(input.p2, input.createFighter("p2", input.p2Definition, input.p2Start));
+    for (const reserve of input.reserveActors ?? []) {
+      Object.assign(reserve.actor, input.createFighter(reserve.id, reserve.definition, reserve.start));
+    }
     input.attachHelperTargetStateHandlers();
     input.log("Round reset");
 

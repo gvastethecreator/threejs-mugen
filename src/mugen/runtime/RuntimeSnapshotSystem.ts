@@ -81,6 +81,7 @@ export type RuntimeMatchSnapshotInput = {
   round: MugenSnapshot["round"];
   p1: RuntimePlayerSnapshotActor;
   p2: RuntimePlayerSnapshotActor;
+  reserveActors?: readonly RuntimePlayerSnapshotActor[];
   effects: RuntimeEffectSnapshotInput;
   compatibilitySession: MugenSnapshot["compatibilitySession"];
   tickSchedule?: MugenSnapshot["tickSchedule"];
@@ -90,6 +91,7 @@ export type RuntimeMatchSnapshotInput = {
 export class RuntimeSnapshotWorld {
   match(input: RuntimeMatchSnapshotInput): MugenSnapshot {
     const actors = [this.actor(input.p1), this.actor(input.p2)];
+    const reserveActors = (input.reserveActors ?? []).map((actor) => this.actor(actor));
     const effects = this.effects(input.effects);
     const globalNoShadow = [...actors, ...effects].some(hasRuntimeGlobalNoShadow);
     return {
@@ -103,6 +105,9 @@ export class RuntimeSnapshotWorld {
       stage: this.stage(input.stage),
       round: input.round,
       actors: actors.map((actor) => applyShadowVisibility(actor, globalNoShadow)),
+      ...(reserveActors.length > 0
+        ? { reserveActors: reserveActors.map((actor) => applyShadowVisibility(actor, globalNoShadow)) }
+        : {}),
       effects: effects.map((effect) => applyShadowVisibility(effect, globalNoShadow)),
       compatibilitySession: input.compatibilitySession,
       ...(input.tickSchedule ? { tickSchedule: structuredClone(input.tickSchedule) } : {}),
@@ -173,7 +178,7 @@ export class RuntimeSnapshotWorld {
             }
           : {}),
       },
-      frame,
+      frame: structuredClone(frame),
       clsn1: activeHitbox,
       clsn2: frameWorld.currentHurtBoxes(actor),
       soundEvents: actor.soundEvents.map((event) => ({ ...event })),

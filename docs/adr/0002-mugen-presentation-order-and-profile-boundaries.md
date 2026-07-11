@@ -1,8 +1,10 @@
 # ADR 0002 - MUGEN Presentation Order And Profile Boundaries
 
-Status: proposed
+Status: accepted
 
 Date: 2026-07-10
+
+Accepted: 2026-07-11 after implementation evidence landed
 
 ## Context
 
@@ -12,7 +14,7 @@ MUGEN 1.1 documents contact-driven priority defaults of P1 = 1 and P2 = 0 on hit
 
 Three.js cannot be used as the semantic truth directly. `Object3D.renderOrder` participates inside render-list sorting, but opaque and transparent objects are sorted in separate lists. Depth and blending settings can therefore defeat an apparently correct numeric z/order mapping.
 
-## Decision Proposed
+## Decision
 
 1. Preserve a renderer-independent presentation order record.
 2. Include compatibility profile, presentation phase/layer, semantic sprite priority, source kind, blend policy, and explicit tie policy or unknown-tie marker.
@@ -54,14 +56,13 @@ Accepted only as the first half of the vertical slice. Runtime/trace proof may l
 - Stage layer 0/1, players, FightFX, Explods, afterimages and overlays can join the same order vocabulary incrementally.
 - The immediate slice does not settle equal ties, `Explod ontop`, stage foreground quirks, Projectile priority inheritance, or IKEMEN runtime semantics.
 
-## Planning Use And Implementation Validation
+## Implementation Validation
 
-- This ADR remains proposed. The queue uses it as a contingent guardrail; the implementing agent must adopt it or record a replacement decision before changing runtime behavior.
-- Focused tests prove authored presence survives compilation and the selected policy resolves MUGEN 1.1 explicit and omitted P1/P2 values on hit and guard.
-- Player and current helper direct-contact coverage prove both actors change only after accepted contact.
-- Renderer diagnostics expose semantic and effective order separately.
-- Desktop and mobile overlap proof stays within one controlled compositing policy.
-- Documentation names the compatibility profile and keeps the tie policy blocked where unknown.
+- Commits `5913f9db` and `1b29133d` preserve authored/omitted values, resolve the named MUGEN 1.1 policy, and apply player/helper direct-contact priorities only after accepted hit or guard.
+- Required player and helper traces record before/final priorities plus profile/source provenance; whiff, reject, SuperPause, HitBy, and reversal-miss paths remain non-mutating.
+- Commit `84bd9df3` adds `MugenPresentationOrder/v0` and a separate Three.js adapter with explicit phase, source kind, blend policy, priority, and tie policy.
+- Focused order/renderer tests and desktop/mobile smoke prove the controlled player, stage, shadow, hit-spark, and stage-foreground overlap route while keeping equal ties and `Explod ontop` blocked.
+- See `docs/research/2026-07-10-hitdef-sprite-priority-policy.md`, `docs/research/2026-07-10-semantic-presentation-order.md`, and `docs/reports/2026-07-10-presentation-order-v0.md` for the implementation evidence.
 
 ## Primary References
 
@@ -76,4 +77,4 @@ Accepted only as the first half of the vertical slice. Runtime/trace proof may l
 
 ## Claim Boundary
 
-This ADR is a proposed architecture decision. It does not prove implementation, runtime behavior, renderer parity, profile switching, score movement, or MUGEN/IKEMEN parity.
+This ADR is accepted and implemented for the bounded static direct player/helper contact and controlled presentation-order route named above. It does not prove Projectile inheritance, dynamic HitDef priority, IKEMEN normative defaults, equal-priority tie parity, `Explod ontop`, afterimages, screenpack composition, broad profile switching, score movement, or MUGEN/IKEMEN parity.

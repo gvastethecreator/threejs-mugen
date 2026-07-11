@@ -1,10 +1,16 @@
 ﻿# Next Build Roadmap
 
-## Planning decision - HitDef priority policy and contact
+## Planning decision - I2 root participation before activation
 
-The 2026-07-10 daily architecture audit selects a two-step next sequence: first preserve authored-versus-omitted HitDef priority behind a minimal profile/default policy, then apply direct, non-projectile `HitDef p1sprpriority` / `p2sprpriority` on accepted hit and guard for player and current helper routes. Target MUGEN 1.1 defaults only through that policy, isolate the observed pinned-Ikemen divergence, and keep semantic priority separate from Three.js z/render-order/material policy. Follow with a deterministic player/effect/stage overlap gate, not a broad renderer rewrite. See `docs/research/2026-07-10-daily-roadmap-architecture-audit.md` and proposed ADR 0002.
+The 2026-07-11 daily audit selects a small I2 prefactor after inert additional-root ownership: close explicit P3-P8/cap/start/reset/lifecycle evidence and publish a versioned root-participation diagnostic before mutating standby or widening any consumer. A later plural batch transition may change standby and active-root projection without assuming one active root per side. Identity/Partner/Enemy/P2, standby CNS scheduling, input, effects, combat, round, presentation, lifebar, and resources remain separate later gates. See `docs/research/2026-07-11-daily-roadmap-architecture-audit.md` and `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`.
 
-## Current cursor - SprPriority draw order
+After the prefactor, return the primary delivery lane to a bounded MUGEN-lite post-KO / `NoKOSlow` timeline. I1 remains scanner-only; I2 owns explicit-profile runtime evidence.
+
+## Closed sequence since the previous audit
+
+HitDef authored/default policy and contact mutation, `MugenPresentationOrder/v0`, `MatchTickSchedule/v0`, Common1 state-source precedence, automatic guard ordering/latch, IKEMEN root/helper RunOrder, Pause/SuperPause ownership, team topology/eligibility/registry/live state, and inert additional roots are closed gates. Do not reselect them from the historical queue below.
+
+## Historical cursor - SprPriority draw order
 
 Player priority range and effective z ordering are closed. Wayfinder 024 compares HitDef pair priorities, stage/effect overlap, flips/rotation, L4 baselines, source-bound Studio editing, IKEMEN ingestion, and post-KO flow.
 
@@ -28,7 +34,7 @@ Automatic KO sound and tick-active `NoKOSnd` suppression are closed. Historical 
 
 Contextual player/common SND banks are closed. Historical Wayfinder 019 compared runtime, Studio, renderer, and IKEMEN candidates; ticket 024 now owns selection.
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
 
@@ -42,17 +48,16 @@ Docs-only changes here do not move scores.
 ## Current Checkpoint
 
 ```txt
-R1/renderer direct HitDef contact sprite priority - selected, not implemented
-  -> preserve authored vs omitted p1sprpriority/p2sprpriority through compilation
-  -> resolve MUGEN 1.1 hit/guard defaults p1 = 1, p2 = 0 through a named policy
-  -> unknown/IKEMEN policy cannot silently receive MUGEN defaults
-  -> mutate player/helper contact actors only after accepted direct hit or guard
-  -> trace semantic priority before browser adapter proof
-  -> defer Projectile inheritance, IKEMEN defaults, equal ties, Explod ontop, and score movement
-  -> Wayfinder 024 and issue 01 own the next implementation cut
+I2 root participation - selected, not implemented
+  -> preserve current inert-root ownership and P1/P2-only playable consumers
+  -> add direct evidence for P3-P8, six-reserve cap/overflow policy, side-local starts, lifecycle, reset identity and stale-state cleanup
+  -> publish owned/disabled/standby/structurally-active and per-consumer participation under a versioned diagnostic
+  -> do not move roots between reserveActors and actors or mutate standby in this prefactor
+  -> next, add a plural batch standby transition without one-active-root or tag-mode assumptions
+  -> Wayfinder 046 and issue 07 own the I2 sequence
 ```
 
-Historical checkpoint ledger (all older Wayfinder selectors below are superseded by current ticket 024):
+Historical checkpoint ledger (all older selectors below are superseded by Wayfinder 046 and issue 07 for I2, or by the current R1 post-KO return gate):
 
 ```txt
 R1/R2 voice channel 0 hit cancellation
@@ -3142,16 +3147,16 @@ Do not reselect `RuntimeEffectActorAdvanceWorld` ownership as fresh next work; t
 
 | Order | Lane | Slice | Evidence | Score impact |
 | ---: | --- | --- | --- | --- |
-| 1 | R1 policy | Preserve authored/omitted HitDef p1/p2 values and add a minimal profile/default-source policy. | Focused compiler/policy tests; unknown profile fails closed. | Architecture truth only; no score movement. |
-| 2 | R1 runtime | Apply static direct player/helper HitDef p1/p2 priorities on accepted hit/guard through the MUGEN 1.1 policy. | Focused player/helper combat tests plus required before/after traces. | No score movement for this bounded contact gate. |
-| 3 | Renderer | Semantic presentation-order key plus controlled player/effect/stage overlap proof. | Focused order tests, `pnpm qa:smoke`, diagnostics, desktop/mobile screenshots, L4 baseline. | Visual confidence only; no tie or full parity claim. |
-| 4 | R2 schedule | `MatchTickSchedule/v0` diagnostics outside the legacy behavior checksum projection. | Focused schedule test, separate schedule assertion, stable behavior checksums. | Architecture debt reduction only. |
-| 5 | R1 Common1 | Character override vs `stcommon` source precedence for state 120. | Source-mapped focused resolver tests and two artifacts. | Source-resolution confidence only. |
-| 6 | R1 guard | Separate engine-owned guard-phase order after source resolution. | Focused guard tests and one ordered required trace. | Bounded guard confidence, not full parity. |
-| 7 | R1 round | One KO freeze/finish plus `NoKOSlow` timeline slice. | Focused round tests and required KO timeline trace. | Bounded round confidence, not motif/team parity. |
-| 8 | S1 Studio | Source identity/fingerprint, conflict, write/reimport, invalidation, and rollback; defer undo/migration. | Model/service tests and browser mutation/conflict/rollback smoke. | Possible Studio movement with real persistence evidence. |
-| 9 | A1 assets | Permission-aware, content-addressed `AssetProvenance/v0`. | Validator fixtures; Studio visual QA only if surfaced. | Generated/native confidence only. |
-| 10 | I1 IKEMEN | VFS/package scanner plus stage-only and system/screenpack-only signal families. | Focused scanner tests and report snapshot. | Scanner-only movement; no execution claim. |
+| 1 | I2 participation | Close P3-P8/cap/overflow/start/reset/lifecycle/identity evidence and add a versioned root-participation diagnostic with all phase owners still P1/P2. | Focused runtime/system tests, stable traces, explicit negative consumer assertions. | Structural confidence only; no active team gameplay. |
+| 2 | R1 round | One KO freeze/finish plus `NoKOSlow` timeline slice. | Focused round tests and required ordered KO/time-over trace. | Bounded MUGEN-lite confidence; no motif/team parity. |
+| 3 | I2 activation | Add a plural batch standby transition and derived active ids by side without moving storage or widening consumers. | Focused transition/read-model tests, stable P1/P2 schedule and traces. | Architecture/runtime state only; no tag claim. |
+| 4 | I2 redirects | Prove identity/Player/Partner remain addressable while Enemy/P2 eligibility changes with standby/over-KO. | Focused policy matrix and diagnostics. | Bounded read semantics only. |
+| 5 | I2 schedule | Admit standby roots to explicit-profile CNS scheduling and gate same-tick TagIn/TagOut visibility before collision/draw. | Schedule tests plus required IKEMEN trace; input/combat/render still isolated. | First deeper tag-scheduling evidence, not team gameplay. |
+| 6 | S1 Studio | Source handle/fingerprint/permission, conflict, write/reimport, invalidation, and rollback; defer undo/migration. | Model/service tests and browser mutation/conflict/rollback smoke. | Possible Studio movement with real persistence evidence. |
+| 7 | A1 assets | Permission-aware, content-addressed `AssetProvenance/v0`. | Validator fixtures; Studio visual QA only if surfaced. | Generated/native confidence only. |
+| 8 | I1 scanner | VFS/package scanner plus stage-only and system/screenpack-only signal families. | Focused scanner tests and report snapshot. | Scanner-only movement; no execution claim. |
+| 9 | Renderer/MUGEN | Choose one palette/ACT or BGCtrl vertical slice with a real fixture and browser oracle. | Focused parser/runtime tests, `pnpm qa:trace` where semantic, `pnpm qa:smoke`, inspected screenshots. | Presentation confidence only. |
+| 10 | M1 modular | Promote one real Project/Evidence/Build contract with a production consumer, MUGEN adapter, keep/delete rationale, and non-vacuous boundary test. | Contract tests, `pnpm check:boundaries`, stable fighting gates. | Modular readiness only. |
 
 ## R1 Runtime Compatibility Plan
 
@@ -3159,11 +3164,11 @@ Goal: imported MUGEN-style packages execute more KFM/Common1-authored routes wit
 
 Build sequence:
 
-1. Preserve authored-versus-omitted HitDef p1/p2 values and add a minimal profile/default-source policy before contact mutation.
-2. Apply static direct player/helper HitDef p1/p2 priorities through the MUGEN 1.1 policy with required trace evidence.
-3. Prove character override versus `stcommon` source precedence, then separately prove the hard guard phase.
-4. Tighten one remaining guard/fall/recovery or post-KO route only with exact controller/phase evidence.
-5. Keep Projectile p1/p2 inheritance, dynamic values, custom states, throws, teams, and screenpacks as explicit blocked scope until separate gates exist.
+1. Treat HitDef policy/contact, semantic presentation order, Common1 source precedence, and the automatic guard-phase sequence as closed gates.
+2. Close one post-KO freeze/finish plus `NoKOSlow` timeline with exact phase evidence; keep motif, teams, continue flow, and broad audio out.
+3. Choose the next visual/runtime breadth cut from Projectile/dynamic priority, palette/ACT, or BGCtrl only when a fixture and falsifiable trace/browser oracle exist.
+4. Continue helper/custom-state/throw and broader corpus work as separate subsystem milestones rather than one “full VM” slice.
+5. Keep equal presentation ties, `Explod ontop`, screenpack/lifebar, broad team semantics, and full parity explicit until their own gates exist.
 
 Done evidence:
 
@@ -3177,10 +3182,10 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Record the actual schedule as `MatchTickSchedule/v0`, including owner and phase diagnostics outside the legacy behavior-checksum projection, without reordering behavior.
-2. Inventory extracted seams by invariant/ownership/deletion test; merge transparent forwarding seams instead of adding more one-callback worlds.
-3. Deepen one cohesive owner only after schedule evidence identifies the mutable store and integration boundary.
-4. Keep checksum drift stable unless the behavior intentionally changes and is separately gated.
+1. Treat `MatchTickSchedule/v0` as closed evidence, not a next task.
+2. Inventory root construction, reset, side mapping, team-state initialization, roster, and participation by invariant/ownership/deletion test.
+3. Centralize one cohesive root-participation owner and remove duplicate construction/reset policy before widening consumers; merge transparent forwarding seams instead of adding more one-callback worlds.
+4. Keep checksum drift stable unless behavior intentionally changes and is separately gated.
 
 Done evidence:
 
@@ -3235,6 +3240,27 @@ Done evidence:
 
 - Focused scanner tests.
 - `docs/IKEMEN_GO_REFERENCE.md`, `docs/COMPATIBILITY_PROFILES.md`, and `docs/MUGEN_COMPATIBILITY_PLAN.md` updated.
+
+## I2 IKEMEN Bounded Runtime Plan
+
+Goal: move source-pinned IKEMEN runtime semantics through explicit, isolated gates without converting structural ownership into a tag/simul/full-port claim.
+
+Build sequence:
+
+1. Close inert-root breadth and lifecycle evidence, including P3-P8, cap/overflow policy, side-local starts, lifecycle, reset object identity, and stale optional-state cleanup.
+2. Publish `RuntimeRootParticipation/v0`-style diagnostics that separate owned, disabled, standby, structurally active, scheduled, input-owned, combat-owned, round-owned, presented, and effect-store-owned roots; all executable consumer lists initially remain P1/P2.
+3. Add a plural batch standby transition and derived active ids by side. Do not auto-tag-out another root or assume one active root per side without `teamMode`.
+4. Prove identity/Player/Partner lookup separately from Enemy/P2 eligibility across the transition.
+5. Admit standby roots to the explicit-profile CNS schedule and gate same-tick TagIn/TagOut visibility before collision/draw. Only then plan input, effects, combat, round, presentation/lifebar, leader/member order, and shared-resource policies as separate cuts.
+
+Done evidence:
+
+- Official Ikemen-GO source pinned by SHA for every semantic claim.
+- Focused runtime/system tests and `pnpm qa:trace` for executable behavior.
+- `pnpm qa:smoke` plus visual inspection only when a visible consumer changes.
+- `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`, support/profile docs, workplan, and backlog updated with allowed/blocked claims.
+
+Blocked throughout the early sequence: ZSS/Lua execution breadth, full tag/simul/turns gameplay, rollback/netplay, model/video stages, broad screenpack/lifebar behavior, resource sharing, and full IKEMEN parity.
 
 ## M1 Modular Engine Plan
 

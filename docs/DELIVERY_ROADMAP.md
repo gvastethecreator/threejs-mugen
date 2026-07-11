@@ -1,6 +1,6 @@
 # Delivery Roadmap
 
-Last updated: 2026-06-28
+Last updated: 2026-07-11
 
 This document turns the broad MUGEN / IKEMEN-GO / Studio / modular-engine horizon into delivery checkpoints. It is an execution companion to `docs/PORT_COMPLETION_SCORECARD.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and `.scratch/roadmap/issues/`.
 
@@ -115,20 +115,23 @@ Exit gate:
 - `pnpm qa:smoke` proves Studio surfaces.
 - Screenshot inspection confirms no fake green states or unsupported-action ambiguity.
 
-### Phase 6 - IKEMEN Scanner To Runtime Bridge
+### Phase 6 - IKEMEN Scanner And Bounded Runtime Bridge
 
-Goal: expand IKEMEN knowledge without pretending scanner recognition is execution.
+Goal: expand IKEMEN knowledge and explicit-profile runtime slices without pretending either proves broad IKEMEN gameplay.
 
 Required evidence:
 
 - Scanner recognizes ZSS, Lua hooks, IKEMEN configs, screenpack/select signals, model-stage signals, and IKEMEN-only controllers/triggers.
 - Each finding is classified as recognized, unsupported, or unknown.
-- First executable IKEMEN slices start only after a scoped runtime contract exists.
+- I1 scanner remains separate from I2 runtime.
+- Current I2 evidence covers bounded root/helper RunOrder, Pause/SuperPause, team topology/eligibility/registry/live state, and inert P3-P8 ownership.
+- Root participation, activation, identity/redirect policy, standby CNS scheduling, input/effects/combat/round/presentation, lifebar, and resources advance through separate gates.
 
 Exit gate:
 
 - Scanner tests prove recognition.
-- Runtime docs still say IKEMEN execution is blocked until actual gates exist.
+- Each I2 slice names the pinned source revision, explicit profile, focused tests, required trace when behavior changes, and blocked consumers.
+- ZSS/Lua, tag/simul gameplay, rollback, netplay, model/video presentation, and broad parity remain blocked until dedicated evidence exists.
 
 ### Phase 7 - Modular Engine Extraction
 
@@ -149,12 +152,12 @@ Exit gate:
 
 | Step | Work package | Evidence that moves project |
 | --- | --- | --- |
-| 1 | R1 HitDef priority policy | Authored/omitted values survive compilation; named profile defaults are policy-tested. |
-| 2 | R1 direct contact priority | Player/helper hit/guard traces show resolved source and both actor priorities. |
-| 3 | Renderer semantic order | Controlled overlap tests plus `pnpm qa:smoke`, diagnostics and L4 baseline. |
-| 4 | R2 schedule contract | Separate schedule assertion with stable legacy behavior checksums. |
-| 5 | R1 Common1 then guard | Source resolver artifacts first; engine-owned guard-phase trace second. |
-| 6 | S1 source workflow | Identity/conflict/write-reimport/invalidation/rollback smoke; undo/migration deferred. |
+| 1 | G1 current-truth reconciliation | Remove already-closed HitDef/presentation/schedule/Common1/guard gates from active queues and separate I1 from I2. |
+| 2 | I2 root participation | Prove P3-P8/cap/reset/lifecycle breadth and publish `RuntimeRootParticipation/v0`-style diagnostics without activation or gameplay. |
+| 3 | R1 post-KO timeline | Required KO/time-over ordering plus bounded `NoKOSlow`, with no motif/team/continue claim. |
+| 4 | I2 activation then redirects | Plural active-root projection and batch standby transition first; identity/Partner/Enemy/P2 matrix second. |
+| 5 | I2 standby schedule | Standby roots execute CNS in the explicit profile and same-tick TagIn/TagOut visibility is trace-gated before later gameplay consumers. |
+| 6 | S1 source workflow | Identity/permission/conflict/write-reimport/invalidation/rollback smoke; undo/migration deferred. |
 | 7 | A1/I1/M1 later | Permission-aware provenance, package scanner, then a real shared product contract with boundary proof. |
 
 ## Closeout Template

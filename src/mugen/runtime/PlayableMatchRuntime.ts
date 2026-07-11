@@ -258,6 +258,7 @@ export type PlayableMatchRuntimeOptions = {
   roundTimerFrames?: number;
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
+  reserveFighters?: readonly DemoFighterDefinition[];
 };
 
 type PauseControllerHandler = (
@@ -291,6 +292,7 @@ export class PlayableMatchRuntime {
   private readonly logs: string[] = [];
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
+  private readonly reserveRoots: FighterMatchState[];
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly effectLifecycleWorld: RuntimeEffectLifecycleWorld;
@@ -384,6 +386,20 @@ export class PlayableMatchRuntime {
       hitEffectWorld: this.hitEffectWorld,
       contactWorld: this.contactWorld,
     });
+    this.reserveRoots = this.runtimeProfile === "ikemen-go"
+      ? options.reserveFighters?.slice(0, 6).map((definition, index) => {
+          const playerNumber = index + 3;
+          const start = playerNumber % 2 === 1 ? stage.playerStart.p1 : stage.playerStart.p2;
+          const fighter = this.createFighterState(`p${playerNumber}`, definition, start);
+          fighter.runtime.teamState = {
+            disabled: false,
+            standby: true,
+            overKo: false,
+            playerType: true,
+          };
+          return fighter;
+        }) ?? []
+      : [];
     this.attachHelperTargetStateHandlers();
     this.attachHelperPauseHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
@@ -1146,6 +1162,7 @@ export class PlayableMatchRuntime {
       round: this.round.snapshot(),
       p1: this.p1,
       p2: this.p2,
+      reserveActors: this.reserveRoots,
       effects: presentationSnapshot.effects,
       compatibilitySession: compatibilityTelemetryWorld.buildSession([...this.matchRoster().actors]),
       tickSchedule: this.lastTickSchedule,
@@ -1171,20 +1188,24 @@ export class PlayableMatchRuntime {
       pauseWorld: this.pauseWorld,
       envColorWorld: this.envColorWorld,
       effectActorWorld: this.effectActorWorld,
-      createFighter: (id, definition, start) =>
-        fighterStateWorld.create({
-          id,
-          definition,
-          x: start.x,
-          y: start.y,
-          facing: start.facing,
-          effectActorWorld: this.effectActorWorld,
-          targetWorld: this.targetWorld,
-          audioWorld: this.audioWorld,
-          envShakeWorld: this.envShakeWorld,
-          hitEffectWorld: this.hitEffectWorld,
-          contactWorld: this.contactWorld,
-        }),
+      reserveActors: this.reserveRoots.map((actor) => ({
+        actor,
+        id: actor.id,
+        definition: actor.definition,
+        start: /p[357]$/.test(actor.id) ? this.stage.playerStart.p1 : this.stage.playerStart.p2,
+      })),
+      createFighter: (id, definition, start) => {
+        const fighter = this.createFighterState(id, definition, start);
+        if (id !== "p1" && id !== "p2") {
+          fighter.runtime.teamState = {
+            disabled: false,
+            standby: true,
+            overKo: false,
+            playerType: true,
+          };
+        }
+        return fighter;
+      },
       attachHelperTargetStateHandlers: () => this.attachHelperTargetStateHandlers(),
       log: (message) => this.logs.unshift(message),
     });
@@ -1192,6 +1213,26 @@ export class PlayableMatchRuntime {
     this.frameClock = resetState.frameClock;
     this.playing = resetState.playing;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
+  }
+
+  private createFighterState(
+    id: string,
+    definition: DemoFighterDefinition,
+    start: { x: number; y: number; facing: 1 | -1 },
+  ): FighterMatchState {
+    return fighterStateWorld.create({
+      id,
+      definition,
+      x: start.x,
+      y: start.y,
+      facing: start.facing,
+      effectActorWorld: this.effectActorWorld,
+      targetWorld: this.targetWorld,
+      audioWorld: this.audioWorld,
+      envShakeWorld: this.envShakeWorld,
+      hitEffectWorld: this.hitEffectWorld,
+      contactWorld: this.contactWorld,
+    });
   }
 
   private recordEnvColorEvent(

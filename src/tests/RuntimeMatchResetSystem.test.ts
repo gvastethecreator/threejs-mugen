@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { RuntimeMatchResetWorld, type RuntimeMatchResetFighterStart } from "../mugen/runtime/RuntimeMatchResetSystem";
 
 type TestFighter = {
-  id: "p1" | "p2" | "stale";
+  id: string;
   definition: string;
   start?: RuntimeMatchResetFighterStart;
   stale?: boolean;
@@ -15,6 +15,7 @@ describe("RuntimeMatchResetWorld", () => {
     const calls: string[] = [];
     const p1: TestFighter = { id: "stale", definition: "nova", stale: true };
     const p2: TestFighter = { id: "stale", definition: "mira", stale: true };
+    const p3: TestFighter = { id: "stale", definition: "reserve", stale: true };
     const p1Ref = p1;
     const p2Ref = p2;
 
@@ -30,6 +31,12 @@ describe("RuntimeMatchResetWorld", () => {
       pauseWorld: { reset: () => calls.push("pause") },
       envColorWorld: { reset: () => calls.push("env-color") },
       effectActorWorld: { reset: () => calls.push("effects") },
+      reserveActors: [{
+        actor: p3,
+        id: "p3",
+        definition: "reserve",
+        start: { x: -80, y: 0, facing: 1 },
+      }],
       createFighter: (id, definition, start) => {
         calls.push(`create:${id}:${definition}:${start.x}:${start.facing}`);
         return { id, definition, start };
@@ -57,6 +64,11 @@ describe("RuntimeMatchResetWorld", () => {
       start: { x: 80, y: 0, facing: -1 },
       handlerAttached: true,
     });
+    expect(p3).toMatchObject({
+      id: "p3",
+      definition: "reserve",
+      start: { x: -80, y: 0, facing: 1 },
+    });
     expect(calls).toEqual([
       "round:3600",
       "pause",
@@ -64,6 +76,7 @@ describe("RuntimeMatchResetWorld", () => {
       "effects",
       "create:p1:nova:-80:1",
       "create:p2:mira:80:-1",
+      "create:p3:reserve:-80:1",
       "attach:p1:p2",
       "log:Round reset",
     ]);

@@ -11,7 +11,7 @@ Before changing code or docs:
 1. Run `git status --short --branch`.
 2. Read `AGENTS.md`, `CONTEXT.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
 3. Open the relevant local issue under `.scratch/roadmap/issues/`.
-4. Identify the work type: runtime compatibility, visual runtime, Studio/product workflow, generated assets, IKEMEN scanner/reference, modular engine boundary, or docs/project control.
+4. Identify the work type: runtime compatibility, visual runtime, Studio/product workflow, generated assets, IKEMEN scanner/reference, IKEMEN bounded runtime, modular engine boundary, or docs/project control.
 5. Name the expected evidence before editing.
 
 Do not raise a score unless the evidence type is allowed by `docs/PORT_COMPLETION_SCORECARD.md`.
@@ -117,6 +117,29 @@ Update when relevant:
 - `docs/COMPATIBILITY_PROFILES.md`
 - `docs/MUGEN_COMPATIBILITY_PLAN.md`
 - `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md`
+
+## IKEMEN Bounded Runtime
+
+Use only for explicit `ikemen-go` runtime behavior such as RunOrder, Pause/SuperPause, team topology, root participation, activation, redirects, scheduling, or later team gameplay.
+
+Required closeout:
+
+- Pin every semantic claim to an official Ikemen-GO source revision or official stable documentation.
+- Name the compatibility profile and the exact consumers changed; structural ownership is not scheduler/input/combat/render support.
+- Close runtime behavior with focused tests and `pnpm qa:trace`; add `pnpm qa:smoke` plus visual inspection only when renderer, camera, HUD, lifebar, Studio, or other visible consumers change.
+- Keep identity lookup, team/member topology, active-root projection, Enemy/P2 eligibility, scheduling, input, effects, combat, round, presentation, lifebar, and resource ownership as separable claims.
+- Record allowed and blocked scope in `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`.
+
+Update when relevant:
+
+- `docs/COMPATIBILITY_PROFILES.md`
+- `docs/SUPPORTED_FEATURES.md`
+- `docs/WORKPLAN.md`
+- `docs/BUILD_EXECUTION_BACKLOG.md`
+- `docs/PROGRESS_TRACKER.md`
+- `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`
+
+Scanner findings stay under I1/issue 04. They never close an I2 runtime gate.
 
 ## Modular Engine Boundary
 

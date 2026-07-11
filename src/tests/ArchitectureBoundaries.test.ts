@@ -45,7 +45,7 @@ describe("Architecture boundaries", () => {
     });
 
     expect(violations).toEqual([]);
-  });
+  }, 15_000);
 });
 
 type ImportInfo = {

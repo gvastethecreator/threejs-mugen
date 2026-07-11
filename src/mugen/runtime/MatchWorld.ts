@@ -38,6 +38,7 @@ export type MatchWorldOptions = {
   roundTimerFrames?: number;
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
+  reserveFighters?: readonly DemoFighterDefinition[];
 };
 
 export type MatchWorldActorRecord = {
@@ -102,6 +103,7 @@ export class MatchWorld {
         roundTimerFrames: options.roundTimerFrames,
         runtimeProfile: options.runtimeProfile,
         superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
+        reserveFighters: options.reserveFighters,
       },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);
@@ -240,6 +242,7 @@ type MatchWorldActorRecordBase = Omit<MatchWorldActorRecord, "lifecycle">;
 function buildActorRecordBases(snapshot: MugenSnapshot, targetWorld: RuntimeTargetWorld): MatchWorldActorRecordBase[] {
   return [
     ...snapshot.actors.map((actor) => toActorRecordBase(actor, "actor", targetWorld)),
+    ...(snapshot.reserveActors ?? []).map((actor) => toActorRecordBase(actor, "actor", targetWorld)),
     ...(snapshot.effects ?? []).map((actor) => toActorRecordBase(actor, "effect", targetWorld)),
   ];
 }
@@ -286,9 +289,10 @@ export function matchWorldActorRegistryFingerprint(
 ): string {
   const ids = [
     ...snapshot.actors.map((actor) => actor.id),
+    ...(snapshot.reserveActors ?? []).map((actor) => actor.id),
     ...(snapshot.effects ?? []).map((effect) => effect.id),
   ];
-  const targetActors = [...snapshot.actors, ...(snapshot.effects ?? [])];
+  const targetActors = [...snapshot.actors, ...(snapshot.reserveActors ?? []), ...(snapshot.effects ?? [])];
   const targetKey = targetActors
     .map((actor) => {
       const targets = (actor.runtime.targetRefs ?? [])
