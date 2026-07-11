@@ -77,6 +77,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute static Tag self flag](tickets/056-execute-static-tag-self.md) - combine caller and partner standby changes atomically with official defaults.
 - [Map Tag state transition order](tickets/057-map-tag-state-transition-order.md) - pin state ownership, defaults, and mutation order before compiling Tag state parameters.
 - [Execute static Tag caller state](tickets/058-execute-static-tag-caller-state.md) - add prevalidated caller-owned static state entry without partner breadth.
+- [Execute static Tag partner state](tickets/059-execute-static-tag-partner-state.md) - prevalidate selected partner and partner-owned state before one bounded transition.
 
 ## Not Yet Specified
 

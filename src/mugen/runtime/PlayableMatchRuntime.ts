@@ -1025,6 +1025,10 @@ export class PlayableMatchRuntime {
       return false;
     }
     const roots = [this.p1, this.p2, ...this.reserveRoots];
+    if (operation.callerStateNo !== undefined && !canEnterState(fighter, operation.callerStateNo, fighter)) {
+      this.logs.unshift(`Blocked ${operation.controllerType} state ${operation.callerStateNo} for ${fighter.id}`);
+      return false;
+    }
     let partner: FighterMatchState | undefined;
     if (operation.partnerOrdinal !== undefined) {
       partner = tagPartnerSelectionWorld.select(roots, fighter, operation.partnerOrdinal);
@@ -1038,7 +1042,13 @@ export class PlayableMatchRuntime {
     if (partner) targetIds.add(partner.id);
     const changes: RuntimeRootStandbyChange[] = [...targetIds].map((id) => ({ id, standby: operation.standby }));
     if (changes.length === 0) {
+      if (operation.callerStateNo !== undefined) {
+        enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
+      }
       return true;
+    }
+    if (operation.callerStateNo !== undefined) {
+      enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
     }
     rootStandbyTransitionWorld.apply(roots, changes);
     return true;

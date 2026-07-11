@@ -290,15 +290,32 @@ time = 20
       self: false,
       partnerOrdinal: 0,
     });
+    expect(compileControllerIr(controller(200, "TagIn", [], { stateno: "200" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      callerStateNo: 200,
+    });
+    expect(compileControllerIr(controller(200, "TagOut", [], { self: "0", stateno: "200" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+      self: false,
+      callerStateNo: 200,
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "var(0)" },
       { self: "-1" },
       { self: "2" },
       { self: "1, 0" },
+      { stateno: "var(0)" },
+      { stateno: "-1" },
+      { stateno: "1, 0" },
+      { partner: "0", stateno: "200" },
       { partner: "var(0)" },
       { partner: "-1" },
-      { stateno: "5600" },
       { ctrl: "1" },
       { leader: "3" },
       { memberno: "2" },

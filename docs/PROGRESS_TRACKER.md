@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN static Tag caller state
+
+- Compiler: static non-negative caller-only `stateno` is typed for TagIn/TagOut.
+- Runtime: caller-owned state availability validates before state entry and standby mutation.
+- Ownership: state entry clears foreign owner; `self = 0` supports state-only execution.
+- Failure: missing state blocks both mutations and successful telemetry.
+- Next: Wayfinder 059 static partner-owned state; partner control remains blocked.
+
 ## Global report - 2026-07-11 IKEMEN Tag state research
 
 - Official order: caller `stateno` precedes caller standby; partner standby precedes `partnerstateno`.

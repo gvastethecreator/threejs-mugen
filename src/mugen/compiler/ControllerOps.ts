@@ -517,6 +517,7 @@ export type TeamStandbyControllerOp = {
   standby: boolean;
   self: boolean;
   partnerOrdinal?: number;
+  callerStateNo?: number;
 };
 
 export type ControllerOp =
@@ -692,10 +693,14 @@ function compileTeamStandbyControllerOp(
   type: "tagin" | "tagout",
 ): TeamStandbyControllerOp | undefined {
   const keys = Object.keys(controller.params).map((key) => key.toLowerCase());
-  if (keys.some((key) => key !== "type" && key !== "self" && key !== "partner")) {
+  if (keys.some((key) => key !== "type" && key !== "self" && key !== "partner" && key !== "stateno")) {
     return undefined;
   }
   const partnerRaw = findParam(controller, "partner");
+  const callerStateRaw = findParam(controller, "stateno");
+  if (partnerRaw !== undefined && callerStateRaw !== undefined) {
+    return undefined;
+  }
   let partnerOrdinal: number | undefined;
   if (partnerRaw !== undefined) {
     partnerOrdinal = firstNumber(partnerRaw);
@@ -712,12 +717,20 @@ function compileTeamStandbyControllerOp(
     }
     self = selfValue === 1;
   }
+  let callerStateNo: number | undefined;
+  if (callerStateRaw !== undefined) {
+    callerStateNo = Number(callerStateRaw.trim());
+    if (!Number.isInteger(callerStateNo) || callerStateNo < 0) {
+      return undefined;
+    }
+  }
   return {
     kind: "team-standby",
     controllerType: type,
     standby: type === "tagout",
     self,
     ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),
+    ...(callerStateNo === undefined ? {} : { callerStateNo }),
   };
 }
 
