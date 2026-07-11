@@ -1,5 +1,12 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN TagIn control research
+
+- Official order: caller state then caller control; partner standby/state then partner control.
+- Precedence: explicit control overrides StateDef control metadata.
+- Defaults: caller `ctrl` implies self; partner control requires selected partner.
+- Next: Wayfinder 061 exact static `ctrl` / `partnerctrl` with aggregate prevalidation.
+
 ## Global report - 2026-07-11 IKEMEN static Tag partner state
 
 - Compiler: static non-negative `partnerstateno` requires static partner selection.

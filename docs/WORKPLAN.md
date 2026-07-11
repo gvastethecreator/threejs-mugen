@@ -53,6 +53,8 @@ Wayfinder 058 adds static non-negative caller-only Tag `stateno`. Caller-owned s
 
 Wayfinder 059 adds static non-negative `partnerstateno` only with static partner. Partner selection and partner-owned state availability validate before partner standby and state entry; missing target/state rolls back all mutation and telemetry. Caller remains unchanged. No gameplay or score movement. Next: Wayfinder 060 TagIn caller/partner control order research.
 
+Wayfinder 060 pins TagIn caller state before caller control and partner state before partner control; explicit control overrides StateDef control metadata. Caller `ctrl` implies self when omitted, while `partnerctrl` requires a resolved partner. Next: Wayfinder 061 exact static `0|1` control with aggregate prevalidation. No runtime or score claim in this research cut.
+
 ## 2026-07-10 IKEMEN Root/Helper Actor RunOrder Note
 
 Explicit `ikemen-go` now builds one ordered actor list from roots plus active helpers. Exclusive previous-tick `RunFirst` / `RunLast` remain `100/-100`; attacking actors use `5`, idle roots `4`, remaining roots `3`, idle helpers `2`, and remaining helpers `1`, with stable actor creation ID ties. Helpers created while a root runs are appended and advanced later in the same tick; the post-fighter bulk helper pass is skipped to prevent double advancement. Required `synthetic-imported-ikemen-helper-runorder.json` checksum `174f927d` / final `3906023d` passes inside 532/532 gates. Source: pinned [IKEMEN GO `CharList` scheduler](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L13096-L13175). No score movement; teams/simul/tag, nested helper creation, simultaneous Pause ownership, and exact Pause/hitpause order remain blocked.
