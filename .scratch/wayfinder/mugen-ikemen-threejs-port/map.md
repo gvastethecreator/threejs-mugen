@@ -74,6 +74,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute self TagIn and TagOut](tickets/053-execute-self-tagin-tagout.md) - compile typed caller-only standby changes and prove same-tick live selection.
 - [Map Tag partner and PlayerNo identity](tickets/054-map-tag-partner-playerno.md) - define stable partner addressing before optional Tag parameters execute.
 - [Execute static Tag partner selection](tickets/055-execute-static-tag-partner.md) - add cyclic same-side partner-only mutation with fail-closed bounds.
+- [Execute static Tag self flag](tickets/056-execute-static-tag-self.md) - combine caller and partner standby changes atomically with official defaults.
 
 ## Not Yet Specified
 

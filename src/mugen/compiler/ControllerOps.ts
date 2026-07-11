@@ -515,6 +515,8 @@ export type TeamStandbyControllerOp = {
   kind: "team-standby";
   controllerType: "tagin" | "tagout";
   standby: boolean;
+  self: boolean;
+  partnerOrdinal?: number;
 };
 
 export type ControllerOp =
@@ -571,8 +573,8 @@ export function compileControllerOp(controller: MugenStateController, context: C
   if (type === "turn") {
     return { kind: "orientation", controllerType: "turn" };
   }
-  if ((type === "tagin" || type === "tagout") && hasOnlyStructuralTypeParam(controller)) {
-    return { kind: "team-standby", controllerType: type, standby: type === "tagout" };
+  if (type === "tagin" || type === "tagout") {
+    return compileTeamStandbyControllerOp(controller, type);
   }
   if (type === "sprpriority") {
     return compileSprPriorityControllerOp(controller);
@@ -685,8 +687,23 @@ export function compileControllerOp(controller: MugenStateController, context: C
   return undefined;
 }
 
-function hasOnlyStructuralTypeParam(controller: MugenStateController): boolean {
-  return Object.keys(controller.params).every((key) => key.toLowerCase() === "type");
+function compileTeamStandbyControllerOp(
+  controller: MugenStateController,
+  type: "tagin" | "tagout",
+): TeamStandbyControllerOp | undefined {
+  const keys = Object.keys(controller.params).map((key) => key.toLowerCase());
+  if (keys.some((key) => key !== "type" && key !== "partner")) {
+    return undefined;
+  }
+  const partnerRaw = findParam(controller, "partner");
+  if (partnerRaw === undefined) {
+    return { kind: "team-standby", controllerType: type, standby: type === "tagout", self: true };
+  }
+  const partnerOrdinal = firstNumber(partnerRaw);
+  if (partnerOrdinal === undefined || !Number.isInteger(partnerOrdinal) || partnerOrdinal < 0) {
+    return undefined;
+  }
+  return { kind: "team-standby", controllerType: type, standby: type === "tagout", self: false, partnerOrdinal };
 }
 
 function isKinematicController(type: string): type is KinematicControllerOp["controllerType"] {

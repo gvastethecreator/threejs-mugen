@@ -43,6 +43,8 @@ Wayfinder 053 executes parameterless self TagIn/TagOut through `RuntimeRootStand
 
 Wayfinder 054 pins Tag `partner` to a caller-relative cyclic same-side root offset, not absolute PlayerNo or mutable memberNo. Partner `0` selects the next teammate; helpers/opponents are excluded and missing targets fail closed. Next: Wayfinder 055 static partner-only typed execution. No runtime or score claim in this research cut.
 
+Wayfinder 055 adds `RuntimeTagPartnerSelectionWorld` plus static non-negative partner-only Tag execution. Selection follows cyclic side-interleaved roots, excludes helpers/opponents, and validates before mutation; caller remains unchanged. Verification passes 168 files / 1628 tests and 538/538 traces. No score movement. Next: Wayfinder 056 static self flag and atomic self+partner combinations.
+
 ## 2026-07-10 IKEMEN Root/Helper Actor RunOrder Note
 
 Explicit `ikemen-go` now builds one ordered actor list from roots plus active helpers. Exclusive previous-tick `RunFirst` / `RunLast` remain `100/-100`; attacking actors use `5`, idle roots `4`, remaining roots `3`, idle helpers `2`, and remaining helpers `1`, with stable actor creation ID ties. Helpers created while a root runs are appended and advanced later in the same tick; the post-fighter bulk helper pass is skipped to prevent double advancement. Required `synthetic-imported-ikemen-helper-runorder.json` checksum `174f927d` / final `3906023d` passes inside 532/532 gates. Source: pinned [IKEMEN GO `CharList` scheduler](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L13096-L13175). No score movement; teams/simul/tag, nested helper creation, simultaneous Pause ownership, and exact Pause/hitpause order remain blocked.

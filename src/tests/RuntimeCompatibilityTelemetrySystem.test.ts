@@ -115,7 +115,7 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
       "eligibility:hitby",
     );
     expect(world.operationKey({ kind: "reversaldef", attr: "S,NA", hitPause: 5 })).toBe("reversaldef");
-    expect(world.operationKey({ kind: "team-standby", controllerType: "tagin", standby: false })).toBe(
+    expect(world.operationKey({ kind: "team-standby", controllerType: "tagin", standby: false, self: true })).toBe(
       "team-standby:tagin",
     );
   });

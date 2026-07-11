@@ -196,6 +196,44 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
   });
 
+  it("executes static partner-only TagIn without changing the caller", () => {
+    const partnerTagIn = createImportedFixture({
+      id: "partner-tag-in",
+      displayName: "Partner Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagPartner: 0,
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p3")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p4")?.runtime.teamState?.standby).toBe(true);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("fails closed when static Tag partner has no same-side root", () => {
+    const partnerTagOut = createImportedFixture({
+      id: "missing-partner-tag-out",
+      displayName: "Missing Partner Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagPartner: 0,
+    });
+    const runtime = new PlayableMatchRuntime(partnerTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout partner 0 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it("exposes the exact active match phase order with an owner for every phase", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -2393,6 +2431,7 @@ function createImportedFixture(
     passiveAssertSpecialFlags?: string[];
     passiveAssertSpecialTrigger?: string;
     passiveTagController?: "TagIn" | "TagOut";
+    passiveTagPartner?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -2637,6 +2676,7 @@ flag = ${options.passiveAssertSpecialFlags.join(", ")}
 [State 0, Passive Team Standby]
 type = ${options.passiveTagController}
 trigger1 = 1
+${options.passiveTagPartner === undefined ? "" : `partner = ${options.passiveTagPartner}`}
 `
       : "",
     options.passiveVarSet

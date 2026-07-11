@@ -248,22 +248,33 @@ time = 20
       kind: "team-standby",
       controllerType: "tagin",
       standby: false,
+      self: true,
     });
     expect(compileControllerIr(controller(200, "TagOut", [])).operation).toEqual({
       kind: "team-standby",
       controllerType: "tagout",
       standby: true,
+      self: true,
     });
     const parsedTagIn = parseCns(`[Statedef 0]\ntype = S\n[State 0, Tag]\ntype = TagIn\ntrigger1 = 1`).states[0]!.controllers[0]!;
     expect(compileControllerIr(parsedTagIn).operation).toEqual({
       kind: "team-standby",
       controllerType: "tagin",
       standby: false,
+      self: true,
+    });
+    expect(compileControllerIr(controller(200, "TagIn", [], { partner: "2" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: false,
+      partnerOrdinal: 2,
     });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "0" },
-      { partner: "3" },
+      { partner: "var(0)" },
+      { partner: "-1" },
       { stateno: "5600" },
       { ctrl: "1" },
       { leader: "3" },

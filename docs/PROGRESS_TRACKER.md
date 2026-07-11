@@ -2,6 +2,10 @@
 
 ## Global report - 2026-07-11 IKEMEN self TagIn/TagOut runtime
 
+- Latest extension: static non-negative Tag `partner` now performs cyclic same-side partner-only standby mutation with missing-target fail-closed behavior.
+- Verification: 168 files / 1628 tests and 538/538 traces; TypeScript 7 build and boundaries pass.
+- Next: Wayfinder 056 static `self` plus atomic self/partner combinations.
+
 - Latest runtime: parameterless self TagIn/TagOut now mutate caller standby under explicit IKEMEN and refresh later-root Enemy/P2 selection in the same tick.
 - Safety: any optional parameter and every non-IKEMEN execution fail closed; no implicit partner transition or gameplay ownership.
 - Next: Wayfinder 054 maps stable PlayerNo/partner identity before optional Tag targeting.

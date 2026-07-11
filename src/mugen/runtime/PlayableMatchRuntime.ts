@@ -101,6 +101,7 @@ import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import { RuntimeRootCnsExecutionWorld } from "./RuntimeRootCnsExecutionSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
+import { RuntimeTagPartnerSelectionWorld } from "./RuntimeTagPartnerSelectionSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
@@ -186,6 +187,7 @@ const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
 const rootCnsExecutionWorld = new RuntimeRootCnsExecutionWorld(activeControllerRunWorld);
 const rootSelectionWorld = new RuntimeRootSelectionWorld();
+const tagPartnerSelectionWorld = new RuntimeTagPartnerSelectionWorld();
 const activeControllerHookSetWorld = new RuntimeActiveControllerHookSetWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
@@ -1022,9 +1024,23 @@ export class PlayableMatchRuntime {
       this.logs.unshift(`Blocked ${operation.controllerType} for ${fighter.id} outside ikemen-go profile`);
       return false;
     }
-    rootStandbyTransitionWorld.apply([this.p1, this.p2, ...this.reserveRoots], [
-      { id: fighter.id, standby: operation.standby },
-    ]);
+    const roots = [this.p1, this.p2, ...this.reserveRoots];
+    const changes: RuntimeRootStandbyChange[] = [];
+    if (operation.self) {
+      changes.push({ id: fighter.id, standby: operation.standby });
+    }
+    if (operation.partnerOrdinal !== undefined) {
+      const partner = tagPartnerSelectionWorld.select(roots, fighter, operation.partnerOrdinal);
+      if (!partner) {
+        this.logs.unshift(`Blocked ${operation.controllerType} partner ${operation.partnerOrdinal} for ${fighter.id}`);
+        return false;
+      }
+      changes.push({ id: partner.id, standby: operation.standby });
+    }
+    if (changes.length === 0) {
+      return false;
+    }
+    rootStandbyTransitionWorld.apply(roots, changes);
     return true;
   }
 
