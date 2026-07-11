@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN static Tag self
+
+- Compiler: exact static `self = 0|1` works with or without static partner; omitted self follows IKEMEN partner-sensitive defaults.
+- Runtime: self+partner targets validate before one deduplicated standby batch; missing partner rolls back caller mutation.
+- Edge cases: self-zero/no-partner executes as a typed no-op; wrapped partner selection cannot duplicate a root mutation.
+- Isolation: dynamic/invalid self, remaining optional parameters, legacy profile, and gameplay ownership remain blocked.
+- Next: Wayfinder 057 research for `stateno` / partner state ownership and execution order.
+
 ## Global report - 2026-07-11 IKEMEN self TagIn/TagOut runtime
 
 - Latest extension: static non-negative Tag `partner` now performs cyclic same-side partner-only standby mutation with missing-target fail-closed behavior.

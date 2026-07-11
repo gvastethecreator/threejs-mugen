@@ -234,6 +234,81 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
   });
 
+  it("applies static Tag self and partner changes atomically", () => {
+    const combinedTagIn = createImportedFixture({
+      id: "combined-tag-in",
+      displayName: "Combined Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagSelf: 1,
+      passiveTagPartner: 0,
+    });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [combinedTagIn, demoFighters[1]!, demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p3")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p5")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).not.toContain(expect.stringContaining("Blocked tagin partner"));
+  });
+
+  it("rolls back static Tag self when partner selection fails", () => {
+    const combinedTagOut = createImportedFixture({
+      id: "atomic-tag-out",
+      displayName: "Atomic Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagSelf: 1,
+      passiveTagPartner: 0,
+    });
+    const runtime = new PlayableMatchRuntime(combinedTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout partner 0 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("records static self zero without mutating a root", () => {
+    const noOpTagOut = createImportedFixture({
+      id: "no-op-tag-out",
+      displayName: "No-op Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagSelf: 0,
+    });
+    const runtime = new PlayableMatchRuntime(noOpTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it("deduplicates static self when partner selection wraps to the caller", () => {
+    const wrappedTagIn = createImportedFixture({
+      id: "wrapped-tag-in",
+      displayName: "Wrapped Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagSelf: 1,
+      passiveTagPartner: 1,
+    });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [wrappedTagIn, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.reserveActors?.find((actor) => actor.id === "p3")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).not.toContain(expect.stringContaining("Blocked tagin partner"));
+  });
+
   it("exposes the exact active match phase order with an owner for every phase", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -2431,6 +2506,7 @@ function createImportedFixture(
     passiveAssertSpecialFlags?: string[];
     passiveAssertSpecialTrigger?: string;
     passiveTagController?: "TagIn" | "TagOut";
+    passiveTagSelf?: number;
     passiveTagPartner?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
@@ -2676,6 +2752,7 @@ flag = ${options.passiveAssertSpecialFlags.join(", ")}
 [State 0, Passive Team Standby]
 type = ${options.passiveTagController}
 trigger1 = 1
+${options.passiveTagSelf === undefined ? "" : `self = ${options.passiveTagSelf}`}
 ${options.passiveTagPartner === undefined ? "" : `partner = ${options.passiveTagPartner}`}
 `
       : "",

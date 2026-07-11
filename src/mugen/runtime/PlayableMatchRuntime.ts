@@ -1025,20 +1025,20 @@ export class PlayableMatchRuntime {
       return false;
     }
     const roots = [this.p1, this.p2, ...this.reserveRoots];
-    const changes: RuntimeRootStandbyChange[] = [];
-    if (operation.self) {
-      changes.push({ id: fighter.id, standby: operation.standby });
-    }
+    let partner: FighterMatchState | undefined;
     if (operation.partnerOrdinal !== undefined) {
-      const partner = tagPartnerSelectionWorld.select(roots, fighter, operation.partnerOrdinal);
+      partner = tagPartnerSelectionWorld.select(roots, fighter, operation.partnerOrdinal);
       if (!partner) {
         this.logs.unshift(`Blocked ${operation.controllerType} partner ${operation.partnerOrdinal} for ${fighter.id}`);
         return false;
       }
-      changes.push({ id: partner.id, standby: operation.standby });
     }
+    const targetIds = new Set<string>();
+    if (operation.self) targetIds.add(fighter.id);
+    if (partner) targetIds.add(partner.id);
+    const changes: RuntimeRootStandbyChange[] = [...targetIds].map((id) => ({ id, standby: operation.standby }));
     if (changes.length === 0) {
-      return false;
+      return true;
     }
     rootStandbyTransitionWorld.apply(roots, changes);
     return true;

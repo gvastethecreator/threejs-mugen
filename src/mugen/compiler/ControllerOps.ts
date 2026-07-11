@@ -692,18 +692,33 @@ function compileTeamStandbyControllerOp(
   type: "tagin" | "tagout",
 ): TeamStandbyControllerOp | undefined {
   const keys = Object.keys(controller.params).map((key) => key.toLowerCase());
-  if (keys.some((key) => key !== "type" && key !== "partner")) {
+  if (keys.some((key) => key !== "type" && key !== "self" && key !== "partner")) {
     return undefined;
   }
   const partnerRaw = findParam(controller, "partner");
-  if (partnerRaw === undefined) {
-    return { kind: "team-standby", controllerType: type, standby: type === "tagout", self: true };
+  let partnerOrdinal: number | undefined;
+  if (partnerRaw !== undefined) {
+    partnerOrdinal = firstNumber(partnerRaw);
+    if (partnerOrdinal === undefined || !Number.isInteger(partnerOrdinal) || partnerOrdinal < 0) {
+      return undefined;
+    }
   }
-  const partnerOrdinal = firstNumber(partnerRaw);
-  if (partnerOrdinal === undefined || !Number.isInteger(partnerOrdinal) || partnerOrdinal < 0) {
-    return undefined;
+  const selfRaw = findParam(controller, "self");
+  let self = partnerOrdinal === undefined;
+  if (selfRaw !== undefined) {
+    const selfValue = Number(selfRaw.trim());
+    if (selfValue !== 0 && selfValue !== 1) {
+      return undefined;
+    }
+    self = selfValue === 1;
   }
-  return { kind: "team-standby", controllerType: type, standby: type === "tagout", self: false, partnerOrdinal };
+  return {
+    kind: "team-standby",
+    controllerType: type,
+    standby: type === "tagout",
+    self,
+    ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),
+  };
 }
 
 function isKinematicController(type: string): type is KinematicControllerOp["controllerType"] {

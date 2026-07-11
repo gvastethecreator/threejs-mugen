@@ -243,7 +243,7 @@ time = 20
     });
   });
 
-  it("compiles only parameterless self TagIn and TagOut into typed standby operations", () => {
+  it("compiles bounded static Tag self and partner combinations with IKEMEN defaults", () => {
     expect(compileControllerIr(controller(200, "TagIn", [])).operation).toEqual({
       kind: "team-standby",
       controllerType: "tagin",
@@ -270,9 +270,32 @@ time = 20
       self: false,
       partnerOrdinal: 2,
     });
+    expect(compileControllerIr(controller(200, "TagOut", [], { self: "0" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+      self: false,
+    });
+    expect(compileControllerIr(controller(200, "TagIn", [], { self: "1", partner: "0" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      partnerOrdinal: 0,
+    });
+    expect(compileControllerIr(controller(200, "TagOut", [], { self: "0", partner: "0" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+      self: false,
+      partnerOrdinal: 0,
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
-      { self: "0" },
+      { self: "var(0)" },
+      { self: "-1" },
+      { self: "2" },
+      { self: "1, 0" },
       { partner: "var(0)" },
       { partner: "-1" },
       { stateno: "5600" },
