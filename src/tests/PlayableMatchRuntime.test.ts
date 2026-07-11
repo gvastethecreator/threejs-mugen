@@ -410,6 +410,68 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
   });
 
+  it("applies static TagIn caller control after caller state metadata", () => {
+    const callerControlTagIn = createImportedFixture({
+      id: "caller-control-tag-in",
+      displayName: "Caller Control Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagStateNo: 200,
+      passiveTagControl: 1,
+    });
+    const runtime = new PlayableMatchRuntime(callerControlTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+  });
+
+  it("applies static TagIn partner control after partner state metadata", () => {
+    const partnerControlTagIn = createImportedFixture({
+      id: "partner-control-tag-in",
+      displayName: "Partner Control Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagPartner: 0,
+      passiveTagPartnerStateNo: 200,
+      passiveTagPartnerControl: 1,
+    });
+    const runtime = new PlayableMatchRuntime(partnerControlTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const partner = snapshot.reserveActors?.find((actor) => actor.id === "p3");
+    expect(partner?.runtime.stateNo).toBe(200);
+    expect(partner?.runtime.ctrl).toBe(true);
+    expect(partner?.runtime.teamState?.standby).toBe(false);
+  });
+
+  it("validates TagIn partner before mutating caller control", () => {
+    const atomicControlTagIn = createImportedFixture({
+      id: "atomic-control-tag-in",
+      displayName: "Atomic Control Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagPartner: 0,
+      passiveTagControl: 0,
+      passiveTagPartnerControl: 1,
+    });
+    const runtime = new PlayableMatchRuntime(atomicControlTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagin partner 0 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
   it("exposes the exact active match phase order with an owner for every phase", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -2611,6 +2673,8 @@ function createImportedFixture(
     passiveTagPartner?: number;
     passiveTagStateNo?: number;
     passiveTagPartnerStateNo?: number;
+    passiveTagControl?: number;
+    passiveTagPartnerControl?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -2859,6 +2923,8 @@ ${options.passiveTagSelf === undefined ? "" : `self = ${options.passiveTagSelf}`
 ${options.passiveTagPartner === undefined ? "" : `partner = ${options.passiveTagPartner}`}
 ${options.passiveTagStateNo === undefined ? "" : `stateno = ${options.passiveTagStateNo}`}
 ${options.passiveTagPartnerStateNo === undefined ? "" : `partnerstateno = ${options.passiveTagPartnerStateNo}`}
+${options.passiveTagControl === undefined ? "" : `ctrl = ${options.passiveTagControl}`}
+${options.passiveTagPartnerControl === undefined ? "" : `partnerctrl = ${options.passiveTagPartnerControl}`}
 `
       : "",
     options.passiveVarSet

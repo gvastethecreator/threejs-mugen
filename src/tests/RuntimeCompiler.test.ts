@@ -312,6 +312,22 @@ time = 20
       partnerOrdinal: 0,
       partnerStateNo: 200,
     });
+    expect(compileControllerIr(controller(200, "TagIn", [], { partner: "0", ctrl: "1", partnerctrl: "0" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      partnerOrdinal: 0,
+      callerControl: true,
+      partnerControl: false,
+    });
+    expect(compileControllerIr(controller(200, "TagIn", [], { ctrl: "1" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      callerControl: true,
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "var(0)" },
@@ -328,7 +344,6 @@ time = 20
       { partner: "0", partnerstateno: "1, 0" },
       { partner: "var(0)" },
       { partner: "-1" },
-      { ctrl: "1" },
       { leader: "3" },
       { memberno: "2" },
     ];
@@ -338,6 +353,18 @@ time = 20
       expect(compiled.operation).toBeUndefined();
       expect(compiled.unsupportedFeatures).toEqual(["TagIn:optional-params"]);
     }
+    const invalidControlParamSets: Record<string, string>[] = [
+      { ctrl: "var(0)" },
+      { ctrl: "2" },
+      { ctrl: "1, 0" },
+      { partnerctrl: "1" },
+      { partner: "0", partnerctrl: "-1" },
+      { partner: "0", partnerctrl: "var(0)" },
+    ];
+    for (const params of invalidControlParamSets) {
+      expect(compileControllerIr(controller(200, "TagIn", [], params)).operation).toBeUndefined();
+    }
+    expect(compileControllerIr(controller(200, "TagOut", [], { ctrl: "1" })).operation).toBeUndefined();
   });
 
   it("compiles static AssertSpecial flags into typed operations", () => {

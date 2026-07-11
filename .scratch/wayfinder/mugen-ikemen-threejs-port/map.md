@@ -80,6 +80,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute static Tag partner state](tickets/059-execute-static-tag-partner-state.md) - prevalidate selected partner and partner-owned state before one bounded transition.
 - [Map Tag control order](tickets/060-map-tag-control-order.md) - pin caller/partner control timing against state entry before implementation.
 - [Execute static TagIn control](tickets/061-execute-static-tagin-control.md) - apply exact caller/partner control after prevalidated state transitions.
+- [Map Tag member and leader order](tickets/062-map-tag-member-leader-order.md) - separate mutable order/leader identity from stable root slots before execution.
 
 ## Not Yet Specified
 

@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN static TagIn control
+
+- Compiler: exact static `ctrl` / `partnerctrl` lower to typed booleans; TagOut control remains blocked.
+- Runtime: control applies after corresponding state metadata and therefore overrides it.
+- Atomicity: caller/partner/state validation completes before standby, state, or control mutation.
+- Defaults: caller control implies omitted self; partner control requires static partner.
+- Next: Wayfinder 062 member/leader order research.
+
 ## Global report - 2026-07-11 IKEMEN TagIn control research
 
 - Official order: caller state then caller control; partner standby/state then partner control.

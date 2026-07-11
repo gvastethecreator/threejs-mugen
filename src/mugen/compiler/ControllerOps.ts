@@ -519,6 +519,8 @@ export type TeamStandbyControllerOp = {
   partnerOrdinal?: number;
   callerStateNo?: number;
   partnerStateNo?: number;
+  callerControl?: boolean;
+  partnerControl?: boolean;
 };
 
 export type ControllerOp =
@@ -696,7 +698,14 @@ function compileTeamStandbyControllerOp(
   const keys = Object.keys(controller.params).map((key) => key.toLowerCase());
   if (
     keys.some(
-      (key) => key !== "type" && key !== "self" && key !== "partner" && key !== "stateno" && key !== "partnerstateno",
+      (key) =>
+        key !== "type" &&
+        key !== "self" &&
+        key !== "partner" &&
+        key !== "stateno" &&
+        key !== "partnerstateno" &&
+        key !== "ctrl" &&
+        key !== "partnerctrl",
     )
   ) {
     return undefined;
@@ -704,10 +713,15 @@ function compileTeamStandbyControllerOp(
   const partnerRaw = findParam(controller, "partner");
   const callerStateRaw = findParam(controller, "stateno");
   const partnerStateRaw = findParam(controller, "partnerstateno");
+  const callerControlRaw = findParam(controller, "ctrl");
+  const partnerControlRaw = findParam(controller, "partnerctrl");
+  if (type !== "tagin" && (callerControlRaw !== undefined || partnerControlRaw !== undefined)) {
+    return undefined;
+  }
   if (partnerRaw !== undefined && callerStateRaw !== undefined) {
     return undefined;
   }
-  if (partnerStateRaw !== undefined && partnerRaw === undefined) {
+  if ((partnerStateRaw !== undefined || partnerControlRaw !== undefined) && partnerRaw === undefined) {
     return undefined;
   }
   let partnerOrdinal: number | undefined;
@@ -725,6 +739,14 @@ function compileTeamStandbyControllerOp(
       return undefined;
     }
     self = selfValue === 1;
+  }
+  const callerControl = parseStaticTagBoolean(callerControlRaw);
+  const partnerControl = parseStaticTagBoolean(partnerControlRaw);
+  if ((callerControlRaw !== undefined && callerControl === undefined) || (partnerControlRaw !== undefined && partnerControl === undefined)) {
+    return undefined;
+  }
+  if (selfRaw === undefined && callerControl !== undefined) {
+    self = true;
   }
   let callerStateNo: number | undefined;
   if (callerStateRaw !== undefined) {
@@ -748,7 +770,15 @@ function compileTeamStandbyControllerOp(
     ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),
     ...(callerStateNo === undefined ? {} : { callerStateNo }),
     ...(partnerStateNo === undefined ? {} : { partnerStateNo }),
+    ...(callerControl === undefined ? {} : { callerControl }),
+    ...(partnerControl === undefined ? {} : { partnerControl }),
   };
+}
+
+function parseStaticTagBoolean(raw: string | undefined): boolean | undefined {
+  if (raw === undefined) return undefined;
+  const value = Number(raw.trim());
+  return value === 0 || value === 1 ? value === 1 : undefined;
 }
 
 function isKinematicController(type: string): type is KinematicControllerOp["controllerType"] {

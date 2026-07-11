@@ -1049,14 +1049,23 @@ export class PlayableMatchRuntime {
       if (operation.callerStateNo !== undefined) {
         enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
       }
+      if (operation.callerControl !== undefined) {
+        applyRuntimeControl(fighter.runtime, operation.callerControl);
+      }
       return true;
     }
     if (operation.callerStateNo !== undefined) {
       enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
     }
+    if (operation.callerControl !== undefined) {
+      applyRuntimeControl(fighter.runtime, operation.callerControl);
+    }
     rootStandbyTransitionWorld.apply(roots, changes);
     if (partner && operation.partnerStateNo !== undefined) {
       enterState(partner, operation.partnerStateNo, undefined, { clearStateOwner: true });
+    }
+    if (partner && operation.partnerControl !== undefined) {
+      applyRuntimeControl(partner.runtime, operation.partnerControl);
     }
     return true;
   }
