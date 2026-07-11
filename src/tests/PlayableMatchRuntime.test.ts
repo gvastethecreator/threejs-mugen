@@ -365,6 +365,51 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
   });
 
+  it("enters a static partner-owned Tag state after partner standby", () => {
+    const partnerStateTagIn = createImportedFixture({
+      id: "partner-state-tag-in",
+      displayName: "Partner State Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagPartner: 0,
+      passiveTagPartnerStateNo: 200,
+    });
+    const runtime = new PlayableMatchRuntime(partnerStateTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const partner = snapshot.reserveActors?.find((actor) => actor.id === "p3");
+    expect(partner?.runtime.teamState?.standby).toBe(false);
+    expect(partner?.runtime.stateNo).toBe(200);
+    expect(partner?.runtime.customState).toBeUndefined();
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("fails closed before partner standby when partner state is unavailable", () => {
+    const missingPartnerStateTagIn = createImportedFixture({
+      id: "missing-partner-state-tag-in",
+      displayName: "Missing Partner State Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagPartner: 0,
+      passiveTagPartnerStateNo: 9999,
+    });
+    const runtime = new PlayableMatchRuntime(missingPartnerStateTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const partner = snapshot.reserveActors?.find((actor) => actor.id === "p3");
+    expect(partner?.runtime.teamState?.standby).toBe(true);
+    expect(partner?.runtime.stateNo).toBe(0);
+    expect(snapshot.logs).toContain("Blocked tagin partner state 9999 for p3");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
   it("exposes the exact active match phase order with an owner for every phase", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -2565,6 +2610,7 @@ function createImportedFixture(
     passiveTagSelf?: number;
     passiveTagPartner?: number;
     passiveTagStateNo?: number;
+    passiveTagPartnerStateNo?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -2812,6 +2858,7 @@ trigger1 = 1
 ${options.passiveTagSelf === undefined ? "" : `self = ${options.passiveTagSelf}`}
 ${options.passiveTagPartner === undefined ? "" : `partner = ${options.passiveTagPartner}`}
 ${options.passiveTagStateNo === undefined ? "" : `stateno = ${options.passiveTagStateNo}`}
+${options.passiveTagPartnerStateNo === undefined ? "" : `partnerstateno = ${options.passiveTagPartnerStateNo}`}
 `
       : "",
     options.passiveVarSet

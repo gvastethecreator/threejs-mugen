@@ -1036,6 +1036,10 @@ export class PlayableMatchRuntime {
         this.logs.unshift(`Blocked ${operation.controllerType} partner ${operation.partnerOrdinal} for ${fighter.id}`);
         return false;
       }
+      if (operation.partnerStateNo !== undefined && !canEnterState(partner, operation.partnerStateNo, partner)) {
+        this.logs.unshift(`Blocked ${operation.controllerType} partner state ${operation.partnerStateNo} for ${partner.id}`);
+        return false;
+      }
     }
     const targetIds = new Set<string>();
     if (operation.self) targetIds.add(fighter.id);
@@ -1051,6 +1055,9 @@ export class PlayableMatchRuntime {
       enterState(fighter, operation.callerStateNo, undefined, { clearStateOwner: true });
     }
     rootStandbyTransitionWorld.apply(roots, changes);
+    if (partner && operation.partnerStateNo !== undefined) {
+      enterState(partner, operation.partnerStateNo, undefined, { clearStateOwner: true });
+    }
     return true;
   }
 

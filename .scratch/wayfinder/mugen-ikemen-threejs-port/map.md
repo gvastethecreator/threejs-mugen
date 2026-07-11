@@ -78,6 +78,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map Tag state transition order](tickets/057-map-tag-state-transition-order.md) - pin state ownership, defaults, and mutation order before compiling Tag state parameters.
 - [Execute static Tag caller state](tickets/058-execute-static-tag-caller-state.md) - add prevalidated caller-owned static state entry without partner breadth.
 - [Execute static Tag partner state](tickets/059-execute-static-tag-partner-state.md) - prevalidate selected partner and partner-owned state before one bounded transition.
+- [Map Tag control order](tickets/060-map-tag-control-order.md) - pin caller/partner control timing against state entry before implementation.
 
 ## Not Yet Specified
 

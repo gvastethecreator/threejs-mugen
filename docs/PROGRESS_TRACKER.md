@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN static Tag partner state
+
+- Compiler: static non-negative `partnerstateno` requires static partner selection.
+- Runtime: partner and partner-owned state validate before standby and state entry.
+- Failure: missing target/state leaves caller and partner unchanged and records no successful operation.
+- Isolation: caller state combinations, control, redirects, dynamic values, and gameplay remain blocked.
+- Next: Wayfinder 060 research for TagIn `ctrl` / `partnerctrl` order.
+
 ## Global report - 2026-07-11 IKEMEN static Tag caller state
 
 - Compiler: static non-negative caller-only `stateno` is typed for TagIn/TagOut.
