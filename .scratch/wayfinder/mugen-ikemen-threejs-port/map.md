@@ -61,7 +61,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Choose next gap after IKEMEN team topology](tickets/042-next-gap-after-ikemen-team-topology.md) - complete-team enumeration is now distinct from active EnemyNear/P2 eligibility; `RuntimeTeamRoster/v0` exposes the first P1-P4 diagnostic.
-- [Choose next gap after team eligibility](tickets/043-next-gap-after-team-eligibility.md)
+- [Choose next gap after team eligibility](tickets/043-next-gap-after-team-eligibility.md) - public `MatchWorld.teamRoster` now consumes a parallel unique-id character registry while the scheduler remains pair-only.
+- [Choose next gap after multi-root registry](tickets/044-next-gap-after-multi-root-registry.md)
 
 ## Not Yet Specified
 

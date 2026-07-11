@@ -1,7 +1,7 @@
 # Choose next gap after team eligibility
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -17,4 +17,6 @@ What minimal public multi-root registry can feed `RuntimeTeamTopologyWorld` and 
 
 ## Answer
 
-Pending registry ownership and expand-contract audit.
+Keep the scheduler-facing `RuntimeMatchActorRoster.actors` as the existing `[p1, p2]` tuple. Add a parallel `createCharacterRegistry(...)` expand path with stable order, unique-id enforcement, topology lookup, and `RuntimeTeamRoster/v0` diagnostics. `MatchWorldActorRegistrySnapshot.teamRoster` consumes that registry from all player/helper snapshot records, so synthetic P1-P4 snapshots prove the public route without entering scheduling, combat, round, presentation, or effect-store mutation.
+
+Evidence: focused roster/MatchWorld tests, TypeScript 7 typecheck, and full gates recorded in the 2026-07-11 multi-root registry report.

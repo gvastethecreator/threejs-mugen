@@ -42,7 +42,7 @@ export class RuntimeTeamTopologyWorld {
   create<TActor extends RuntimeTeamTopologyActor>(
     characters: readonly TActor[],
   ): RuntimeTeamTopology<TActor> {
-    const roster = [...characters];
+    const roster = Object.freeze([...characters]);
     return {
       characters: roster,
       sideFor: runtimeTeamSide,

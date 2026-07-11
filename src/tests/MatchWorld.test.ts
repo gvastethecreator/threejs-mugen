@@ -207,6 +207,46 @@ describe("MatchWorld", () => {
     });
   });
 
+  it("publishes a multi-root team roster diagnostic from synthetic snapshots", () => {
+    const world = new MatchWorld({ p1: demoFighters[0]!, p2: demoFighters[1]!, stage: closeStage });
+    const snapshot = world.getSnapshot();
+    const p1 = snapshot.actors[0]!;
+    const p2 = snapshot.actors[1]!;
+    const p3 = { ...p1, id: "p3", label: "P3" };
+    const p4 = { ...p2, id: "p4", label: "P4" };
+    const helper = {
+      ...p3,
+      id: "p3-helper-0",
+      label: "P3 Helper",
+      actorKind: "helper" as const,
+      source: "effect" as const,
+      ownerId: "p3",
+      rootId: "p3",
+      parentId: "p3",
+    };
+    const registry = buildMatchWorldActorRegistry({
+      ...snapshot,
+      actors: [p1, p2, p3, p4],
+      effects: [helper],
+    });
+
+    expect(registry.players).toEqual(["p1", "p2", "p3", "p4"]);
+    expect(registry.teamRoster.schema).toBe("RuntimeTeamRoster/v0");
+    expect(registry.teamRoster.characters.map((actor) => [actor.id, actor.side, actor.kind])).toEqual([
+      ["p1", 1, "root"],
+      ["p2", 2, "root"],
+      ["p3", 1, "root"],
+      ["p4", 2, "root"],
+      ["p3-helper-0", 1, "helper"],
+    ]);
+    expect(registry.byId.p3).toMatchObject({ id: "p3", kind: "player" });
+    expect(registry.byId["p3-helper-0"]).toMatchObject({ rootId: "p3", kind: "helper" });
+    expect(registry.teamSides).toEqual({
+      1: ["p1", "p3", "p3-helper-0"],
+      2: ["p2", "p4"],
+    });
+  });
+
   it("exposes target ownership links from actor snapshots without changing behavior state", () => {
     const world = new MatchWorld({ p1: demoFighters[0]!, p2: demoFighters[1]!, stage: closeStage });
     const source = world.getSnapshot();

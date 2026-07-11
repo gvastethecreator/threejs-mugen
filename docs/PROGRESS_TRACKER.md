@@ -1,12 +1,20 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN team eligibility
+## Global report - 2026-07-11 IKEMEN public multi-root registry
+
+- Runtime/IKEMEN: parallel unique-id character registry now supports P1-P8 roots/helpers without widening the scheduler tuple.
+- Public registry snapshot: `MatchWorldActorRegistrySnapshot` exposes `RuntimeTeamRoster/v0`, `byId`, and `teamSides`; synthetic P1-P4 plus helper route is covered.
+- Compatibility: duplicate character ids fail before publication; existing P1/P2 roster, effect stores, round, combat, and presentation remain unchanged.
+- Score: unchanged. Registry visibility is structural proof, not a playable team match.
+- Next: Wayfinder 044, live standby/disabled/over-KO snapshot projection.
+
+## Previous report - 2026-07-11 IKEMEN team eligibility
 
 - Runtime/IKEMEN: complete-team enumeration now remains distinct from active EnemyNear/P2 candidates; disabled, standby, neutral, and P2 `overKo` states are explicitly filtered from the appropriate projections.
 - Diagnostics: `RuntimeTeamRoster/v0` serializes P1-P4 side/kind/status/player-type plus explicit base-enemy, EnemyNear, and P2 candidate flags for registry integration tests.
 - Toolchain: TypeScript 7.0.2 direct route re-audited with 0 errors / 0 warnings.
 - Score: unchanged. No playable multi-root registry, scheduler, combat, round, or presentation path exists yet.
-- Next: Wayfinder 043, public multi-root registry ownership via expand-contract.
+- Next frontier at that checkpoint was Wayfinder 043; the newer public-registry closeout resolves it.
 
 ## Previous report - 2026-07-10 IKEMEN team topology
 

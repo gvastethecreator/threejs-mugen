@@ -27,6 +27,8 @@ import type {
   RuntimeTargetSnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
+import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
 
 export type MatchWorldOptions = {
   p1?: DemoFighterDefinition;
@@ -71,7 +73,11 @@ export type MatchWorldActorRegistrySnapshot = {
   targetLinks: MatchWorldTargetLink[];
   effectStores: RuntimeEffectActorStoreSummary[];
   lifecycle: MatchWorldActorLifecycleSummary;
+  teamRoster: RuntimeTeamRosterDiagnostic;
+  teamSides: Record<1 | 2, string[]>;
 };
+
+const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
 
 export class MatchWorld {
   private runtime: PlayableMatchRuntime;
@@ -197,6 +203,7 @@ function buildMatchWorldActorRegistryFromRecords(
     );
   }
 
+  const teamRoster = buildTeamRosterDiagnostic(actors);
   return {
     actors,
     byId,
@@ -207,7 +214,23 @@ function buildMatchWorldActorRegistryFromRecords(
     targetLinks,
     effectStores: cloneEffectStoreSummaries(effectStores),
     lifecycle,
+    teamRoster,
+    teamSides: {
+      1: teamRoster.characters.filter((actor) => actor.side === 1).map((actor) => actor.id),
+      2: teamRoster.characters.filter((actor) => actor.side === 2).map((actor) => actor.id),
+    },
   };
+}
+
+function buildTeamRosterDiagnostic(actors: readonly MatchWorldActorRecord[]): RuntimeTeamRosterDiagnostic {
+  const characters = actors
+    .filter((actor) => actor.kind === "player" || actor.kind === "helper")
+    .map((actor) => ({
+      id: actor.id,
+      ...(actor.kind === "helper" ? { rootId: actor.rootId } : {}),
+      playerType: actor.kind === "player",
+    }));
+  return matchActorRosterWorld.createCharacterRegistry(characters).diagnostic();
 }
 
 type MatchWorldActorRecordBase = Omit<MatchWorldActorRecord, "lifecycle">;
