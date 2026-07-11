@@ -1221,6 +1221,13 @@ Every compatibility milestone should leave:
 - Preserved partner-sensitive omission, aggregate validation, and all non-Tag consumers.
 - Global status: first dynamic Tag axis executes; control, target, state, order, and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN TagIn caller control
+
+- Added deferred `callerControlExpression` lowering only for TagIn.
+- Resolves jointly with dynamic self before aggregate mutation and telemetry.
+- Proved per-tick false-to-true variable reevaluation and post-state-entry control precedence.
+- Global status: dynamic caller self/control execute; dynamic partner control and target/state/order/redirect axes remain open.
+
 ## Not Done
 
 - Full MUGEN VM

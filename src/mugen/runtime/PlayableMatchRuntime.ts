@@ -1929,11 +1929,20 @@ function resolveDynamicTeamStandbyOperation(
   fighter: FighterMatchState,
   context: ReturnType<typeof runtimeControllerContext>,
 ): TeamStandbyControllerOp | undefined {
-  if (operation.selfExpression === undefined) return operation;
-  const resolved = evaluateRuntimeControllerNumber(operation.selfExpression, fighter.runtime, context);
-  if (resolved === undefined) return undefined;
-  const { selfExpression: _selfExpression, ...staticOperation } = operation;
-  return { ...staticOperation, self: resolved !== 0 };
+  let resolvedOperation = operation;
+  if (operation.selfExpression !== undefined) {
+    const resolvedSelf = evaluateRuntimeControllerNumber(operation.selfExpression, fighter.runtime, context);
+    if (resolvedSelf === undefined) return undefined;
+    const { selfExpression: _selfExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, self: resolvedSelf !== 0 };
+  }
+  if (operation.callerControlExpression !== undefined) {
+    const resolvedControl = evaluateRuntimeControllerNumber(operation.callerControlExpression, fighter.runtime, context);
+    if (resolvedControl === undefined) return undefined;
+    const { callerControlExpression: _callerControlExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, callerControl: resolvedControl !== 0 };
+  }
+  return resolvedOperation;
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {

@@ -522,6 +522,7 @@ export type TeamStandbyControllerOp = {
   callerStateNo?: number;
   partnerStateNo?: number;
   callerControl?: boolean;
+  callerControlExpression?: string;
   partnerControl?: boolean;
   memberPosition?: number;
   leaderPlayerNo?: number;
@@ -755,9 +756,17 @@ function compileTeamStandbyControllerOp(
       selfExpression = compiledSelf.normalized;
     }
   }
-  const callerControl = parseStaticTagBoolean(callerControlRaw);
+  let callerControl = parseStaticTagBoolean(callerControlRaw);
+  let callerControlExpression: string | undefined;
+  if (callerControlRaw !== undefined && callerControl === undefined) {
+    if (!hasValidTagExpressionStructure(callerControlRaw)) return undefined;
+    const compiledControl = compileExpression(callerControlRaw);
+    if (compiledControl.supportLevel === "unsupported") return undefined;
+    callerControl = false;
+    callerControlExpression = compiledControl.normalized;
+  }
   const partnerControl = parseStaticTagBoolean(partnerControlRaw);
-  if ((callerControlRaw !== undefined && callerControl === undefined) || (partnerControlRaw !== undefined && partnerControl === undefined)) {
+  if (partnerControlRaw !== undefined && partnerControl === undefined) {
     return undefined;
   }
   if (selfRaw === undefined && callerControl !== undefined) {
@@ -799,6 +808,7 @@ function compileTeamStandbyControllerOp(
     ...(callerStateNo === undefined ? {} : { callerStateNo }),
     ...(partnerStateNo === undefined ? {} : { partnerStateNo }),
     ...(callerControl === undefined ? {} : { callerControl }),
+    ...(callerControlExpression === undefined ? {} : { callerControlExpression }),
     ...(partnerControl === undefined ? {} : { partnerControl }),
     ...(memberPosition === undefined ? {} : { memberPosition }),
     ...(leaderPlayerNo === undefined ? {} : { leaderPlayerNo }),

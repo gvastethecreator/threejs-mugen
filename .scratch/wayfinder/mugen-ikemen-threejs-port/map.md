@@ -87,6 +87,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map dynamic Tag parameters](tickets/066-map-dynamic-tag-parameters.md) - pin expression timing, coercion, and failure semantics before dynamic execution.
 - [Execute dynamic Tag self](tickets/067-execute-dynamic-tag-self.md) - resolve boolean self at runtime while preserving aggregate validation.
 - [Execute dynamic TagIn control](tickets/068-execute-dynamic-tagin-control.md) - resolve caller control boolean without widening partner targeting.
+- [Execute dynamic TagIn partner control](tickets/069-execute-dynamic-tagin-partner-control.md) - resolve partner control with static partner selection and atomic validation.
 
 ## Not Yet Specified
 

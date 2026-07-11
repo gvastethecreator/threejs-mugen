@@ -356,6 +356,14 @@ time = 20
         selfExpression: truthySelf,
       });
     }
+    expect(compileControllerIr(controller(200, "TagIn", [], { ctrl: "var(1)" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      callerControl: false,
+      callerControlExpression: "var(1)",
+    });
 
     const unsupportedParamSets: Record<string, string>[] = [
       { self: "1, 0" },
@@ -386,9 +394,8 @@ time = 20
       expect(compiled.unsupportedFeatures).toEqual(["TagIn:optional-params"]);
     }
     const invalidControlParamSets: Record<string, string>[] = [
-      { ctrl: "var(0)" },
-      { ctrl: "2" },
       { ctrl: "1, 0" },
+      { ctrl: "(" },
       { partnerctrl: "1" },
       { partner: "0", partnerctrl: "-1" },
       { partner: "0", partnerctrl: "var(0)" },

@@ -1261,6 +1261,8 @@ Pinned dynamic Tag research now selects boolean `self` as Wayfinder 067: reuse e
 
 Dynamic Tag `self` now resolves per tick through caller CNS context and records only concrete operations. Wayfinder 068 next applies the same deferred boundary to TagIn caller `ctrl`, preserving state-entry precedence and all target/order blocks.
 
+Dynamic TagIn caller `ctrl` now resolves before aggregate mutation and applies after caller state entry. Wayfinder 069 next extends only `partnerctrl`, retaining static partner identity and partner-state precedence.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

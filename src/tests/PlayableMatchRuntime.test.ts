@@ -285,6 +285,48 @@ describe("PlayableMatchRuntime", () => {
     expect(trueSnapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(2);
   });
 
+  it("resolves dynamic TagIn caller control after state entry", () => {
+    const dynamicControlTagIn = createImportedFixture({
+      id: "dynamic-control-tag-in",
+      displayName: "Dynamic Control Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagStateNo: 200,
+      passiveTagControl: "var(0) + 1",
+      extraStateNos: [200],
+    });
+    const runtime = new PlayableMatchRuntime(dynamicControlTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("re-evaluates dynamic TagIn caller control after variable mutation", () => {
+    const dynamicControlTagIn = createImportedFixture({
+      id: "changing-dynamic-control-tag-in",
+      displayName: "Changing Dynamic Control Tag In",
+      withStateMove: false,
+      passiveTagController: "TagIn",
+      passiveTagControl: "var(0)",
+      passiveVarSet: { trigger: "1", index: 0, value: 1 },
+    });
+    const runtime = new PlayableMatchRuntime(dynamicControlTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const falseSnapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(falseSnapshot.actors[0]?.runtime.ctrl).toBe(false);
+    expect(falseSnapshot.actors[0]?.runtime.vars[0]).toBe(1);
+
+    const trueSnapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(trueSnapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(trueSnapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(2);
+  });
+
   it.each([
     ["opposing", 2],
     ["missing", 5],
@@ -2832,7 +2874,7 @@ function createImportedFixture(
     passiveTagPartner?: number;
     passiveTagStateNo?: number;
     passiveTagPartnerStateNo?: number;
-    passiveTagControl?: number;
+    passiveTagControl?: number | string;
     passiveTagPartnerControl?: number;
     passiveTagMemberNo?: number;
     passiveTagLeader?: number;
