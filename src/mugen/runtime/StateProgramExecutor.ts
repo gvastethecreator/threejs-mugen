@@ -119,6 +119,8 @@ const runtimeControllers = new Set([
   "varrangeset",
   "playerpush",
   "turn",
+  "tagin",
+  "tagout",
   "hitby",
   "nothitby",
   "hitoverride",

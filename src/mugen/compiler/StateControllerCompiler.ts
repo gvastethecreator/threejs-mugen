@@ -92,6 +92,8 @@ const controllerSupport: Record<string, ControllerSupport> = {
   makedust: noop("deprecated dust presentation no-op"),
   destroyself: noop("helper lifecycle no-op"),
   turn: partial("facing"),
+  tagin: partial("self standby transition"),
+  tagout: partial("self standby transition"),
   null: noop("true no-op"),
 };
 
@@ -124,13 +126,17 @@ export function compileControllerIr(controller: MugenStateController, context: C
   }
 
   const operation = compileControllerOp(controller, context);
+  const boundedTagController = normalizedType === "tagin" || normalizedType === "tagout";
+  if (boundedTagController && !operation) {
+    unsupportedFeatures.add(`${controller.type}:optional-params`);
+  }
   return {
     source: controller,
     stateId: controller.stateId,
     name: controller.name,
     type: controller.type,
     normalizedType,
-    supportLevel: support.level,
+    supportLevel: boundedTagController && !operation ? "unsupported" : support.level,
     triggers,
     params: controller.params,
     ...(operation ? { operation } : {}),

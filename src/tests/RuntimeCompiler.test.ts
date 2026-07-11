@@ -242,6 +242,34 @@ time = 20
     });
   });
 
+  it("compiles only parameterless self TagIn and TagOut into typed standby operations", () => {
+    expect(compileControllerIr(controller(200, "TagIn", [])).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+    });
+    expect(compileControllerIr(controller(200, "TagOut", [])).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+    });
+
+    const unsupportedParamSets: Record<string, string>[] = [
+      { self: "0" },
+      { partner: "3" },
+      { stateno: "5600" },
+      { ctrl: "1" },
+      { leader: "3" },
+      { memberno: "2" },
+    ];
+    for (const params of unsupportedParamSets) {
+      const compiled = compileControllerIr(controller(200, "TagIn", [], params));
+      expect(compiled.supportLevel).toBe("unsupported");
+      expect(compiled.operation).toBeUndefined();
+      expect(compiled.unsupportedFeatures).toEqual(["TagIn:optional-params"]);
+    }
+  });
+
   it("compiles static AssertSpecial flags into typed operations", () => {
     const compiled = compileControllerIr(
       controller(200, "AssertSpecial", [], {

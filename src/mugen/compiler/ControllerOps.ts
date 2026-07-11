@@ -511,6 +511,12 @@ export type ContactControllerOp =
   | { kind: "contact"; controllerType: "movehitreset" }
   | { kind: "contact"; controllerType: "hitadd"; value: number };
 
+export type TeamStandbyControllerOp = {
+  kind: "team-standby";
+  controllerType: "tagin" | "tagout";
+  standby: boolean;
+};
+
 export type ControllerOp =
   | HitDefControllerOp
   | TargetControllerOp
@@ -542,7 +548,8 @@ export type ControllerOp =
   | HitOverrideControllerOp
   | ReversalDefControllerOp
   | DamageScaleControllerOp
-  | ContactControllerOp;
+  | ContactControllerOp
+  | TeamStandbyControllerOp;
 
 export function compileControllerOp(controller: MugenStateController, context: ControllerCompileContext = {}): ControllerOp | undefined {
   const type = controller.type.toLowerCase();
@@ -563,6 +570,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "turn") {
     return { kind: "orientation", controllerType: "turn" };
+  }
+  if ((type === "tagin" || type === "tagout") && Object.keys(controller.params).length === 0) {
+    return { kind: "team-standby", controllerType: type, standby: type === "tagout" };
   }
   if (type === "sprpriority") {
     return compileSprPriorityControllerOp(controller);
