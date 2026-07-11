@@ -48,7 +48,13 @@ import {
 } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
-import { canAdvanceRuntimeHelper, helperRuntimeState, type RuntimeHelper } from "./HelperSystem";
+import {
+  applyRuntimeHelperTagStateControl,
+  canAdvanceRuntimeHelper,
+  hasRuntimeHelperState,
+  helperRuntimeState,
+  type RuntimeHelper,
+} from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
@@ -1113,6 +1119,7 @@ export class PlayableMatchRuntime {
     }
     let fighter = caller;
     let operation = sourceOperation;
+    let redirectedIdentity: RuntimeMatchCharacterIdentity | undefined;
     if (operation.redirectPlayerIdExpression !== undefined) {
       const resolvedRedirect = evaluateRuntimeControllerNumber(
         operation.redirectPlayerIdExpression,
@@ -1120,16 +1127,21 @@ export class PlayableMatchRuntime {
         context,
       );
       const redirectPlayerId = resolvedRedirect === undefined ? undefined : Math.trunc(resolvedRedirect);
-      const redirectedIdentity = redirectPlayerId === undefined
+      redirectedIdentity = redirectPlayerId === undefined
         ? undefined
         : this.characterIdentity?.findByPlayerId(redirectPlayerId);
-      if (!redirectedIdentity?.fighter) {
+      if (!redirectedIdentity) {
         this.logs.unshift(`Blocked ${operation.controllerType} RedirectID ${redirectPlayerId ?? "invalid"} for ${caller.id}`);
         return undefined;
       }
-      fighter = redirectedIdentity.fighter;
       const { redirectPlayerIdExpression: _redirectPlayerIdExpression, ...staticOperation } = operation;
       operation = { ...staticOperation, redirectPlayerId };
+    }
+    if (redirectedIdentity?.helper) {
+      return this.applyHelperLocalTeamStandbyController(caller, redirectedIdentity.helper, operation, context);
+    }
+    if (redirectedIdentity?.fighter) {
+      fighter = redirectedIdentity.fighter;
     }
     const resolvedOperation = resolveDynamicTeamStandbyOperation(operation, caller, context);
     if (!resolvedOperation) return undefined;
@@ -1212,6 +1224,72 @@ export class PlayableMatchRuntime {
     }
     if (partner && operation.partnerControl !== undefined) {
       applyRuntimeControl(partner.runtime, operation.partnerControl);
+    }
+    return operation;
+  }
+
+  private applyHelperLocalTeamStandbyController(
+    caller: FighterMatchState,
+    helper: RuntimeHelper,
+    sourceOperation: TeamStandbyControllerOp,
+    context: ReturnType<typeof runtimeControllerContext>,
+  ): TeamStandbyControllerOp | undefined {
+    const redirectPlayerId = sourceOperation.redirectPlayerId ?? helper.playerId ?? "invalid";
+    const block = (reason: string): undefined => {
+      this.logs.unshift(
+        `Blocked ${sourceOperation.controllerType} RedirectID ${redirectPlayerId} for ${caller.id} (${reason})`,
+      );
+      return undefined;
+    };
+    if (hasHelperTagAggregateAxes(sourceOperation)) {
+      return block("Helper aggregate axes unsupported");
+    }
+    if (sourceOperation.controllerType === "tagout" && hasAuthoredCallerControl(sourceOperation)) {
+      return block("TagOut Helper control unsupported");
+    }
+
+    let self = sourceOperation.self;
+    if (sourceOperation.selfExpression !== undefined) {
+      const resolvedSelf = evaluateRuntimeControllerNumber(sourceOperation.selfExpression, caller.runtime, context);
+      if (resolvedSelf === undefined) return block("invalid Helper self expression");
+      self = resolvedSelf !== 0;
+    }
+    if (self) return block("Helper standby unsupported");
+
+    let stateNo = sourceOperation.callerStateNo;
+    if (sourceOperation.callerStateExpression !== undefined) {
+      const resolvedState = evaluateRuntimeControllerNumber(sourceOperation.callerStateExpression, caller.runtime, context);
+      if (resolvedState === undefined) return block("invalid Helper state expression");
+      stateNo = Math.trunc(resolvedState);
+    }
+    if (stateNo !== undefined && !hasRuntimeHelperState(helper, stateNo)) {
+      return block(`Helper state ${stateNo} unavailable for ${helper.serialId}`);
+    }
+
+    let control = sourceOperation.callerControl;
+    if (sourceOperation.callerControlExpression !== undefined) {
+      const resolvedControl = evaluateRuntimeControllerNumber(sourceOperation.callerControlExpression, caller.runtime, context);
+      if (resolvedControl === undefined) return block("invalid Helper control expression");
+      control = resolvedControl !== 0;
+    }
+    const hasLocalMutation = stateNo !== undefined ||
+      (sourceOperation.controllerType === "tagin" && hasAuthoredCallerControl(sourceOperation));
+    if (!hasLocalMutation) return block("Helper local mutation required");
+
+    const {
+      selfExpression: _selfExpression,
+      callerStateExpression: _callerStateExpression,
+      callerControlExpression: _callerControlExpression,
+      ...staticOperation
+    } = sourceOperation;
+    const operation: TeamStandbyControllerOp = {
+      ...staticOperation,
+      self: false,
+      ...(stateNo === undefined ? {} : { callerStateNo: stateNo }),
+      ...(control === undefined ? {} : { callerControl: control }),
+    };
+    if (!applyRuntimeHelperTagStateControl(helper, { stateNo, control })) {
+      return block(`Helper state ${stateNo ?? "invalid"} unavailable for ${helper.serialId}`);
     }
     return operation;
   }
@@ -2153,6 +2231,23 @@ function resolveDynamicTeamStandbyOperation(
     resolvedOperation = { ...staticOperation, leaderPlayerNo };
   }
   return resolvedOperation;
+}
+
+function hasAuthoredCallerControl(operation: TeamStandbyControllerOp): boolean {
+  return operation.callerControl !== undefined || operation.callerControlExpression !== undefined;
+}
+
+function hasHelperTagAggregateAxes(operation: TeamStandbyControllerOp): boolean {
+  return operation.partnerOrdinal !== undefined ||
+    operation.partnerOrdinalExpression !== undefined ||
+    operation.partnerStateNo !== undefined ||
+    operation.partnerStateExpression !== undefined ||
+    operation.partnerControl !== undefined ||
+    operation.partnerControlExpression !== undefined ||
+    operation.memberPosition !== undefined ||
+    operation.memberPositionExpression !== undefined ||
+    operation.leaderPlayerNo !== undefined ||
+    operation.leaderPlayerNoExpression !== undefined;
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {

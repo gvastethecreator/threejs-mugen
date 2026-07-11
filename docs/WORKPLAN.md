@@ -1287,6 +1287,8 @@ Root-created Helpers now join the global IKEMEN identity registry before same-ti
 
 Helper-targeted TagIn/TagOut is now source-mapped: state/control/standby are Helper-local, partner resolves a root teammate through inherited PlayerNo, member/leader enter root team order, and standby Helpers continue CNS while interaction is filtered elsewhere. Local audit shows complete standby and aggregate ownership are not ready. Wayfinder 081 therefore implements only explicit `self = 0` Helper-local state/control redirects before broader Helper Tag participation.
 
+Root-executed TagIn/TagOut can now redirect to a live Helper for explicit non-standby local state/control only. Expressions remain owned by the original root, state validates and applies before explicit control, stale/disabled identity fails early, and blocked standby/aggregate routes produce no mutation or telemetry. Wayfinder 082 next maps every Helper standby participation consumer, including the open presentation-policy question, before default/true self can execute.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

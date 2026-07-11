@@ -261,6 +261,205 @@ value = Root, PlayerNo
     expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ actorId: "p1-helper-0", playerId: 58 });
   });
 
+  it("executes caller-owned dynamic TagIn state and control against a redirected Helper", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-local-tagin",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagParams: `redirectid = 58
+self = ID - 56
+stateno = ID + 1145
+ctrl = ID - 55`,
+      helperExtraStates: `
+[Statedef 1201]
+type = C
+movetype = A
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = snapshot.effects?.find(({ id }) => id === "p1-helper-0");
+    expect(helper?.runtime).toMatchObject({
+      stateNo: 1201,
+      ctrl: true,
+      stateType: "C",
+      moveType: "A",
+      teamState: { standby: false },
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked tagin RedirectID 58"))).toBe(false);
+  });
+
+  it("executes state-only TagOut against a redirected Helper without changing standby", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-local-tagout",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagParams: `redirectid = 58
+self = 0
+stateno = 1201`,
+      helperExtraStates: `
+[Statedef 1201]
+type = A
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({
+      stateNo: 1201,
+      ctrl: false,
+      stateType: "A",
+      teamState: { standby: false },
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it.each([
+    ["default self", "stateno = 1201", "Helper standby unsupported"],
+    ["partner", "self = 0\npartner = 0\nctrl = 1", "Helper aggregate axes unsupported"],
+    ["member", "self = 0\nmemberno = 1\nctrl = 1", "Helper aggregate axes unsupported"],
+    ["leader", "self = 0\nleader = 1\nctrl = 1", "Helper aggregate axes unsupported"],
+  ])("blocks redirected Helper TagIn %s axes atomically", (_case, params, reason) => {
+    const fighter = createImportedFixture({
+      id: `ikemen-helper-blocked-${_case.replace(" ", "-")}`,
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagParams: `redirectid = 58\n${params}`,
+      helperExtraStates: `
+[Statedef 1201]
+type = C
+movetype = A
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({
+      stateNo: 1200,
+      ctrl: false,
+      teamState: { standby: false },
+    });
+    expect(snapshot.logs.some((line) => line.includes(reason))).toBe(true);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
+  it("blocks an unavailable redirected Helper state before control mutation", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-invalid-local-state",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagParams: `redirectid = 58
+self = 0
+stateno = 9999
+ctrl = 1`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({ stateNo: 1200, ctrl: false });
+    expect(snapshot.logs.some((line) => line.includes("Helper state 9999 unavailable for p1-helper-0"))).toBe(true);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
+  it.each(["removed", "disabled"] as const)("rejects a %s Helper identity before local Tag mutation", (lifecycle) => {
+    const fighter = createImportedFixture({
+      id: `ikemen-helper-${lifecycle}-redirect`,
+      withStateMove: false,
+      withHelper: true,
+      helperRemoveTime: lifecycle === "removed" ? 1 : 30,
+      helperRedirectTag: true,
+      helperRedirectTagTrigger: "Time = 1",
+      helperRedirectTagParams: `redirectid = 58
+self = 0
+stateno = 1201`,
+      helperExtraStates: `
+[Statedef 1201]
+type = C
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    if (lifecycle === "disabled") {
+      effectActorWorld.helpers("p1")[0]!.teamState!.disabled = true;
+    }
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.logs).toContain("Blocked tagout RedirectID 58 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+    if (lifecycle === "disabled") {
+      expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.stateNo).toBe(1200);
+      expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ actorId: "p1-helper-0", lookupEligible: false });
+    } else {
+      expect(snapshot.effects?.some(({ id }) => id === "p1-helper-0")).toBe(false);
+      expect(runtime.getCharacterIdentity()?.characters).toHaveLength(2);
+    }
+  });
+
+  it("keeps Helper-local Tag redirects disabled outside the IKEMEN profile", () => {
+    const fighter = createImportedFixture({
+      id: "legacy-helper-local-tag",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagParams: `redirectid = 58
+self = 0
+stateno = 1201
+ctrl = 1`,
+      helperExtraStates: `
+[Statedef 1201]
+type = C
+movetype = A
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({ stateNo: 1200, ctrl: false });
+    expect(snapshot.logs).toContain("Blocked tagin for p1 outside ikemen-go profile");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
   it("executes redirected Tag params in caller context against the resolved IKEMEN root", () => {
     const caller = createImportedFixture({
       id: "redirected-tag-caller-context",
@@ -3638,8 +3837,12 @@ function createImportedFixture(
     withProjectile?: boolean;
     withHelper?: boolean;
     helperRedirectTag?: boolean;
+    helperRedirectTagType?: "TagIn" | "TagOut";
+    helperRedirectTagTrigger?: string;
+    helperRedirectTagParams?: string;
     helperRemoveTime?: number;
     helperStateControllers?: string;
+    helperExtraStates?: string;
     withTargetControllers?: boolean;
     withBindToTarget?: boolean;
     bindToTargetPostype?: "Foot" | "Mid" | "Head";
@@ -4078,10 +4281,10 @@ removetime = ${options.helperRemoveTime ?? 30}
   const helperRedirectTag = options.helperRedirectTag
     ? `
 [State 200, Blocked Helper Tag redirect]
-type = TagOut
-trigger1 = Time = 0
-redirectid = 58
-self = 1
+type = ${options.helperRedirectTagType ?? "TagOut"}
+trigger1 = ${options.helperRedirectTagTrigger ?? "Time = 0"}
+${options.helperRedirectTagParams ?? `redirectid = 58
+self = 1`}
 `
     : "";
   const targetControllers = options.withTargetControllers
@@ -4709,6 +4912,7 @@ physics = N
 anim = 920
 ctrl = 0
 ${options.helperStateControllers ?? ""}
+${options.helperExtraStates ?? ""}
 `);
   const move: DemoMove = {
     actionId: 200,

@@ -973,6 +973,31 @@ function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?
   }
 }
 
+export type RuntimeHelperTagStateControlMutation = {
+  stateNo?: number;
+  control?: boolean;
+};
+
+export function hasRuntimeHelperState(helper: RuntimeHelper, stateNo: number): boolean {
+  return Number.isInteger(stateNo) && stateNo >= 0 && findHelperState(helper, stateNo) !== undefined;
+}
+
+export function applyRuntimeHelperTagStateControl(
+  helper: RuntimeHelper,
+  mutation: RuntimeHelperTagStateControlMutation,
+): boolean {
+  if (mutation.stateNo !== undefined && !hasRuntimeHelperState(helper, mutation.stateNo)) {
+    return false;
+  }
+  if (mutation.stateNo !== undefined) {
+    changeHelperState(helper, mutation.stateNo);
+  }
+  if (mutation.control !== undefined) {
+    helper.ctrl = mutation.control;
+  }
+  return true;
+}
+
 function findHelperState(helper: RuntimeHelper, stateNo: number): MugenStateDef | undefined {
   return helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source;
 }

@@ -44,14 +44,14 @@ The fixed parameter pass is RedirectID first, then `self`, `partner`, `stateno`,
 - The identity registry now resolves live Helpers correctly and preserves caller/parent/root numeric fields.
 - `RuntimeHelper` can store state, control, and `teamState.standby`; its scheduler currently continues running standby Helpers, matching the source action-loop property.
 - Helper TagIn/TagOut controllers are still rejected by `helperRuntimeControllers`, and match-level Tag dispatch currently accepts only `FighterMatchState` targets.
-- Helper standby does not yet suppress every local hit/combat/presentation route, so enabling true/default `self` would expose a flag without its full observable contract.
+- Helper standby does not yet suppress every local hit/push/selection route. Drawing and presentation need an explicit source audit rather than an assumed visibility rule, so enabling true/default `self` would expose a flag without its full observable contract.
 - Partner, member, and leader effects cross from a Helper target into root aggregate systems and need separate ownership tests.
 - Current Helpers execute root-owned programs only; custom state-owner semantics are not modeled.
 
 ## Implementation sequence
 
 1. Admit root-executed RedirectID to a Helper only for explicit `self = 0` and local `stateno`/TagIn `ctrl`.
-2. Add a complete Helper standby participation gate across combat, push, targeting, and presentation before enabling default/true self.
+2. Add a complete Helper standby participation gate across combat, push, targeting, and any source-confirmed camera/presentation consumers before enabling default/true self.
 3. Add Helper-relative root partner selection and partner state/control as a separate aggregate feature.
 4. Map and test the source `memberNo = 0` quirk before allowing Helper-routed member/leader order mutation.
 5. Route Helper-originated Tag controllers through a match callback only after the same target contract is reusable.
