@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Tag member/leader research
+
+- Identity: `leader` targets stable one-based PlayerNo; stable P1-P8 slots never reorder.
+- Order: `memberno` targets one-based mutable team position and swaps caller position.
+- Leader mutation: rotates selected same-side root front, sinks dead members, rewrites member positions.
+- Gap: runtime has no explicit Tag mode, mutable order, or leader owner.
+- Next: Wayfinder 063 `RuntimeTagTeamOrder/v0` diagnostic/model prefactor.
+
 ## Global report - 2026-07-11 IKEMEN static TagIn control
 
 - Compiler: exact static `ctrl` / `partnerctrl` lower to typed booleans; TagOut control remains blocked.
