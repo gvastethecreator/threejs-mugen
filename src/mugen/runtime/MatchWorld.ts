@@ -34,6 +34,10 @@ import {
   RuntimeRootParticipationWorld,
   type RuntimeRootParticipationDiagnostic,
 } from "./RuntimeRootParticipationSystem";
+import {
+  RuntimeRootSelectionWorld,
+  type RuntimeRootSelectionDiagnostic,
+} from "./RuntimeRootSelectionSystem";
 
 export type MatchWorldOptions = {
   p1?: DemoFighterDefinition;
@@ -83,10 +87,12 @@ export type MatchWorldActorRegistrySnapshot = {
   teamRoster: RuntimeTeamRosterDiagnostic;
   teamSides: Record<1 | 2, string[]>;
   rootParticipation: RuntimeRootParticipationDiagnostic;
+  rootSelection: RuntimeRootSelectionDiagnostic;
 };
 
 const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
 const rootParticipationWorld = new RuntimeRootParticipationWorld();
+const rootSelectionWorld = new RuntimeRootSelectionWorld();
 
 export class MatchWorld {
   private runtime: PlayableMatchRuntime;
@@ -238,6 +244,11 @@ function buildMatchWorldActorRegistryFromRecords(
     presentedRootIds: playablePairRootIds,
     effectStoreOwnedRootIds: effectStores.map((store) => store.ownerId),
   });
+  const rootSelection = rootSelectionWorld.diagnostic(
+    actors
+      .filter((actor) => actor.kind === "player")
+      .map((actor) => ({ id: actor.id, ...actor.teamState })),
+  );
   return {
     actors,
     byId,
@@ -250,6 +261,7 @@ function buildMatchWorldActorRegistryFromRecords(
     lifecycle,
     teamRoster,
     rootParticipation,
+    rootSelection,
     teamSides: {
       1: teamRoster.characters.filter((actor) => actor.side === 1).map((actor) => actor.id),
       2: teamRoster.characters.filter((actor) => actor.side === 2).map((actor) => actor.id),

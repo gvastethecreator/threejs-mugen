@@ -4,6 +4,8 @@
 
 - Explicit `ikemen-go` host/test commands can atomically update root standby flags after validating the complete batch. `activeRootIdsBySide` projects plural, stable-order structural activation without moving reserves into playable arrays or widening any executable consumer. Invalid targets leave all roots unchanged and reset restores authored standby state. CNS `TagIn`/`TagOut`, identity/redirect integration, scheduling, and playable team behavior remain unsupported.
 
+- `MatchWorldActorRegistrySnapshot.rootSelection` exposes `RuntimeRootSelection/v0`: complete same-side Partner root ids, active opposing Enemy root ids, and stricter P2 candidate ids are separate stable-order lists per root. Enemy retains active over-KO roots while P2 excludes them; Helpers are excluded from this root-only matrix. Expression redirects, nearest-distance P2 ordering, and gameplay consumption remain unsupported.
+
 - IKEMEN root-player RunOrder is `executed-partial` behind explicit match `runtimeProfile = "ikemen-go"`: two roots consume previous-tick exclusive `RunFirst` / `RunLast`, then use MoveType `A > I > H` and lower id. Their one-based sorted index is exposed through the `RunOrder` trigger before frame controllers. Required traces gate both run flags and `RunOrder = 1` CNS routing. `mugen-1.1` and `unknown` preserve pair order and expose no profile-specific index. Helpers, teams, simul/tag, and full IKEMEN actor scheduling remain unsupported.
 
 - Player `SprPriority` is `rendered-partial` at L2: static/dynamic controller values clamp to official `-5..5` and effective Three.js z puts higher priorities in front. HitDef pair priorities, equal ties, Explod ontop, stage occlusion, and full draw-order parity remain unsupported.

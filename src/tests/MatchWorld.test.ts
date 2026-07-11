@@ -198,6 +198,20 @@ describe("MatchWorld", () => {
 
     const structurallyActiveSnapshot = structuredClone(snapshot);
     structurallyActiveSnapshot.reserveActors![0]!.runtime.teamState!.standby = false;
+    structurallyActiveSnapshot.reserveActors![1]!.runtime.teamState = {
+      disabled: false,
+      standby: false,
+      overKo: true,
+      playerType: true,
+    };
+    structurallyActiveSnapshot.reserveActors![3]!.runtime.teamState = {
+      disabled: false,
+      standby: false,
+      overKo: false,
+      playerType: false,
+    };
+    structurallyActiveSnapshot.reserveActors![5]!.runtime.teamState!.disabled = true;
+    structurallyActiveSnapshot.reserveActors![5]!.runtime.teamState!.standby = false;
     const structurallyActiveRegistry = buildMatchWorldActorRegistry(structurallyActiveSnapshot);
     expect(structurallyActiveRegistry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
       structurallyActive: true,
@@ -207,6 +221,13 @@ describe("MatchWorld", () => {
       roundOwned: false,
       presented: false,
       effectStoreOwned: false,
+    });
+    expect(structurallyActiveRegistry.rootSelection.entries.find((entry) => entry.actorId === "p1")).toEqual({
+      actorId: "p1",
+      side: 1,
+      partnerIds: ["p3", "p5", "p7"],
+      enemyIds: ["p2", "p4", "p6"],
+      p2CandidateIds: ["p2"],
     });
   });
 
@@ -219,6 +240,11 @@ describe("MatchWorld", () => {
     world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }] });
     let registry = world.getActorRegistry();
     expect(registry.rootParticipation.activeRootIdsBySide).toEqual({ 1: ["p1", "p3"], 2: ["p2"] });
+    expect(registry.rootSelection.entries.find((entry) => entry.actorId === "p2")).toMatchObject({
+      partnerIds: ["p4"],
+      enemyIds: ["p1", "p3"],
+      p2CandidateIds: ["p1", "p3"],
+    });
     expect(registry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
       structurallyActive: true,
       scheduled: false,
@@ -240,6 +266,11 @@ describe("MatchWorld", () => {
     expect(snapshot.reserveActors?.map((actor) => actor.id)).toEqual(["p3", "p4"]);
     registry = world.getActorRegistry();
     expect(registry.rootParticipation.activeRootIdsBySide).toEqual({ 1: ["p3"], 2: ["p2"] });
+    expect(registry.rootSelection.entries.find((entry) => entry.actorId === "p2")).toMatchObject({
+      partnerIds: ["p4"],
+      enemyIds: ["p3"],
+      p2CandidateIds: ["p3"],
+    });
     expect(registry.rootParticipation.roots.find((root) => root.id === "p1")?.scheduled).toBe(true);
 
     world.reset();
@@ -282,10 +313,12 @@ describe("MatchWorld", () => {
     registry.byId.p2!.teamState.standby = true;
     registry.teamSides[2].push("corrupt");
     registry.rootParticipation.roots[0]!.scheduled = false;
+    registry.rootSelection.entries[0]!.enemyIds.push("corrupt");
     const freshRegistry = world.getActorRegistry();
     expect(freshRegistry.byId.p2?.teamState.standby).toBe(false);
     expect(freshRegistry.teamSides[2]).toEqual(["p2"]);
     expect(freshRegistry.rootParticipation.roots[0]?.scheduled).toBe(true);
+    expect(freshRegistry.rootSelection.entries[0]?.enemyIds).not.toContain("corrupt");
   });
 
   it("indexes effect actors by kind and owner from runtime snapshots", () => {

@@ -1,5 +1,15 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN root selection
+
+- Runtime/IKEMEN: `RuntimeRootSelection/v0` separates identity, Partner, Enemy, and P2 candidate domains.
+- Partner: complete same-side root slots remain addressable even while standby/disabled.
+- Enemy: active opposing roots only; over-KO remains eligible.
+- P2: active opposing player roots only; over-KO and helper candidates are excluded.
+- Activation: selection refreshes immediately after atomic standby changes.
+- Score: unchanged. Expressions and gameplay still use existing bounded routes.
+- Next: Wayfinder 048 read-only expression-context integration.
+
 ## Global report - 2026-07-11 IKEMEN structural root activation
 
 - Runtime/IKEMEN: explicit-profile host/test command applies atomic plural standby changes.
