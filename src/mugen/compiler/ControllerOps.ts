@@ -520,6 +520,7 @@ export type TeamStandbyControllerOp = {
   selfExpression?: string;
   partnerOrdinal?: number;
   callerStateNo?: number;
+  callerStateExpression?: string;
   partnerStateNo?: number;
   callerControl?: boolean;
   callerControlExpression?: string;
@@ -779,10 +780,15 @@ function compileTeamStandbyControllerOp(
     self = true;
   }
   let callerStateNo: number | undefined;
+  let callerStateExpression: string | undefined;
   if (callerStateRaw !== undefined) {
     callerStateNo = Number(callerStateRaw.trim());
     if (!Number.isInteger(callerStateNo) || callerStateNo < 0) {
-      return undefined;
+      if (!hasValidTagExpressionStructure(callerStateRaw)) return undefined;
+      const compiledCallerState = compileExpression(callerStateRaw);
+      if (compiledCallerState.supportLevel === "unsupported") return undefined;
+      callerStateNo = undefined;
+      callerStateExpression = compiledCallerState.normalized;
     }
   }
   let partnerStateNo: number | undefined;
@@ -812,6 +818,7 @@ function compileTeamStandbyControllerOp(
     ...(selfExpression === undefined ? {} : { selfExpression }),
     ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),
     ...(callerStateNo === undefined ? {} : { callerStateNo }),
+    ...(callerStateExpression === undefined ? {} : { callerStateExpression }),
     ...(partnerStateNo === undefined ? {} : { partnerStateNo }),
     ...(callerControl === undefined ? {} : { callerControl }),
     ...(callerControlExpression === undefined ? {} : { callerControlExpression }),

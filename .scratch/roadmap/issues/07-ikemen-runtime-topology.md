@@ -14,7 +14,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-375` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, static TagIn/TagOut optional parameters, explicit member/leader order, and all dynamic Tag boolean axes are closed with focused/full gates. Next cut is Wayfinder 070 dynamic caller `stateno`. Input, effects, combat, round, presentation, lifebars, resources, broad dynamic targeting/order, mutation redirects, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-376` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, static TagIn/TagOut optional parameters, explicit member/leader order, all dynamic Tag boolean axes, and dynamic caller state are closed with focused/full gates. Next cut is Wayfinder 071 dynamic `partnerstateno` over static partner identity. Input, effects, combat, round, presentation, lifebars, resources, broad dynamic targeting/order, mutation redirects, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.

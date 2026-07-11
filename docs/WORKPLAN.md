@@ -1265,6 +1265,8 @@ Dynamic TagIn caller `ctrl` now resolves before aggregate mutation and applies a
 
 Dynamic TagIn `partnerctrl` now resolves from caller context with static partner identity and post-state control precedence. Wayfinder 070 next widens only caller `stateno`, preserving own-state availability and aggregate rollback.
 
+Dynamic Tag caller `stateno` now resolves with integer truncation before own-state validation and existing state/control/standby order. Wayfinder 071 next extends only `partnerstateno`, retaining static partner identity and partner-owned state validation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

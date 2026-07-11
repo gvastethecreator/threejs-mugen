@@ -1235,6 +1235,13 @@ Every compatibility milestone should leave:
 - Proved StateDef precedence, caller-variable false-to-true reevaluation, and missing-partner rollback.
 - Global status: all Tag boolean axes execute dynamically; dynamic integer target/state/order axes and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN Tag caller state
+
+- Added deferred `callerStateExpression` for TagIn/TagOut.
+- Resolves/truncates in caller context before own-state and aggregate validation.
+- Proved same-tick variable-selected state, post-entry control precedence, unavailable rollback, and negative rejection.
+- Global status: dynamic caller state plus all boolean axes execute; partner state/identity/order and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM

@@ -1948,6 +1948,14 @@ function resolveDynamicTeamStandbyOperation(
     const { partnerControlExpression: _partnerControlExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, partnerControl: resolvedPartnerControl !== 0 };
   }
+  if (operation.callerStateExpression !== undefined) {
+    const resolvedCallerState = evaluateRuntimeControllerNumber(operation.callerStateExpression, fighter.runtime, context);
+    if (resolvedCallerState === undefined) return undefined;
+    const stateNo = Math.trunc(resolvedCallerState);
+    if (stateNo < 0) return undefined;
+    const { callerStateExpression: _callerStateExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, callerStateNo: stateNo };
+  }
   return resolvedOperation;
 }
 

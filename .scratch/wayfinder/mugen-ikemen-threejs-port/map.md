@@ -89,6 +89,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute dynamic TagIn control](tickets/068-execute-dynamic-tagin-control.md) - resolve caller control boolean without widening partner targeting.
 - [Execute dynamic TagIn partner control](tickets/069-execute-dynamic-tagin-partner-control.md) - resolve partner control with static partner selection and atomic validation.
 - [Execute dynamic Tag caller state](tickets/070-execute-dynamic-tag-caller-state.md) - resolve caller state number before state availability and aggregate mutation.
+- [Execute dynamic Tag partner state](tickets/071-execute-dynamic-tag-partner-state.md) - resolve partner state with static partner identity and owned-state validation.
 
 ## Not Yet Specified
 

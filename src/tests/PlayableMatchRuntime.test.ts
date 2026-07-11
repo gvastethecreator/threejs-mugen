@@ -630,6 +630,65 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
   });
 
+  it("selects dynamic Tag caller state from a same-tick variable and then applies control", () => {
+    const dynamicStateTagIn = createImportedFixture({
+      id: "dynamic-state-tag-in",
+      displayName: "Dynamic State Tag In",
+      withStateMove: false,
+      passivePreTagVarSet: { trigger: "1", index: 0, value: 201 },
+      passiveTagController: "TagIn",
+      passiveTagStateNo: "var(0)",
+      passiveTagControl: 1,
+      extraStateNos: [201],
+    });
+    const runtime = new PlayableMatchRuntime(dynamicStateTagIn, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(201);
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(201);
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+  });
+
+  it("blocks unavailable dynamic Tag caller state before every mutation", () => {
+    const unavailableStateTagOut = createImportedFixture({
+      id: "unavailable-dynamic-state-tag-out",
+      displayName: "Unavailable Dynamic State Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagStateNo: "var(0) + 9999",
+    });
+    const runtime = new PlayableMatchRuntime(unavailableStateTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(0);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout state 9999 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
+  it("blocks negative dynamic Tag caller state before every mutation", () => {
+    const negativeStateTagOut = createImportedFixture({
+      id: "negative-dynamic-state-tag-out",
+      displayName: "Negative Dynamic State Tag Out",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+      passiveTagStateNo: "var(0) - 1",
+    });
+    const runtime = new PlayableMatchRuntime(negativeStateTagOut, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(0);
+    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it("applies static TagIn partner control after partner state metadata", () => {
     const partnerControlTagIn = createImportedFixture({
       id: "partner-control-tag-in",
@@ -2918,13 +2977,14 @@ function createImportedFixture(
     passiveTagController?: "TagIn" | "TagOut";
     passiveTagSelf?: number | string;
     passiveTagPartner?: number;
-    passiveTagStateNo?: number;
+    passiveTagStateNo?: number | string;
     passiveTagPartnerStateNo?: number;
     passiveTagControl?: number | string;
     passiveTagPartnerControl?: number | string;
     passiveTagMemberNo?: number;
     passiveTagLeader?: number;
     passiveVarSet?: { trigger: string; index: number; value: number };
+    passivePreTagVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
     withPaletteUtilities?: boolean;
@@ -3106,6 +3166,15 @@ fall.envshake.phase = 0
 `
     : "";
   const passiveControllers = [
+    options.passivePreTagVarSet
+      ? `
+[State 0, Pre Tag Variable]
+type = VarSet
+trigger1 = ${options.passivePreTagVarSet.trigger}
+v = ${options.passivePreTagVarSet.index}
+value = ${options.passivePreTagVarSet.value}
+`
+      : "",
     options.passiveNotHitBy
       ? `
 [State 0, Invulnerable Attrs]
