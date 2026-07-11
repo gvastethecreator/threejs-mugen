@@ -167,6 +167,7 @@ import {
   createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
   createSyntheticImportedIkemenHelperSuperPauseTraceArtifact,
   createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact,
+  createSyntheticImportedIkemenSuperPauseTeamDefenseTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
   createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact,
@@ -15992,6 +15993,25 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(
       expect.arrayContaining([{ operation: "pause:superpause", minCount: 2 }]),
+    );
+  });
+
+  it("creates a required IKEMEN SuperPause opposing-team defense fallback artifact", () => {
+    const artifact = createSyntheticImportedIkemenSuperPauseTeamDefenseTraceArtifact({
+      generatedAt: "2026-07-10T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-superpause-team-defense-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-ikemen-superpause-team-defense-golden", passed: true, failures: [] }],
+      trace: { finalActors: expect.arrayContaining([expect.objectContaining({ id: "p2", life: 950 })]) },
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", observedSuperPauseDefenseMultiplierAtLeast: 0.66669 }),
+        expect.objectContaining({ actorId: "p2-helper-0", observedSuperPauseDefenseMultiplierAtLeast: 0.66669 }),
+      ]),
     );
   });
 

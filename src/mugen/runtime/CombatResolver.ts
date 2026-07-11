@@ -269,10 +269,17 @@ export function parseHitAttribute(value: string): { states: Set<string>; types: 
 }
 
 export function scaleRuntimeIncomingDamage(
-  defender: Pick<CharacterRuntimeState, "defenseMultiplier">,
+  defender: Pick<CharacterRuntimeState, "defenseMultiplier" | "superPauseDefenseMultiplier">,
   damage: number,
 ): number {
-  return Math.max(0, Math.round(damage * (defender.defenseMultiplier ?? 1)));
+  return Math.max(
+    0,
+    Math.round(
+      damage *
+        (defender.defenseMultiplier ?? 1) *
+        (defender.superPauseDefenseMultiplier ?? 1),
+    ),
+  );
 }
 
 export function scaleRuntimeOutgoingDamage(

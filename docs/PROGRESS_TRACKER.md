@@ -1,6 +1,15 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-10 IKEMEN simultaneous Pause buffers
+## Global report - 2026-07-10 IKEMEN SuperPause team defense
+
+- IKEMEN runtime: omitted/non-positive `p2defmul` now uses game-level `1.5`; a positive `MatchWorld` override is supported.
+- Defense ownership: temporary SuperPause scale is separate from base `Data.Defence` / `DefenceMulSet`, stacks per active session, and restores without erasing base changes.
+- Required artifact: `synthetic-imported-ikemen-superpause-team-defense.json`, checksum `76873f0d`, final `b4425c66`; P2 and `p2-helper-0` expose `0.6667`, final P2 life `950`.
+- Aggregate: 538/538 artifacts, 507 required and 31 optional. Full verification: 162 files / 1597 tests, TypeScript 7.0.2 typecheck/build, and boundaries green.
+- Studio, renderer, assets, scanner, modular engine: unchanged. No visual gate required. Overall score unchanged.
+- Next IKEMEN frontier: pair-only roster to bounded simul/tag team topology; global config loading, helper defender combat, nested ancestry, exact hitpause timing, and rollback remain blocked.
+
+## Previous global report - 2026-07-10 IKEMEN helper-owned Pause
 
 - IKEMEN runtime: explicit `ikemen-go` now owns separate Pause/SuperPause slots, same-frame duration arbitration, same-owner overwrite, stable ties, and SuperPause-first timer progression.
 - Required artifact: `synthetic-imported-ikemen-helper-superpause.json`, checksum `d1444550`, final `f6c7da6a`; helper `p1-helper-0` owns SuperPause, root power reaches `125`, sound resolves `S9,4`, and target P2 ends at life `959` under `p2defmul = 0.5`.

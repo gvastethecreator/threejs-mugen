@@ -34,6 +34,7 @@ export type MatchWorldOptions = {
   stage?: MugenStageDefinition;
   roundTimerFrames?: number;
   runtimeProfile?: RuntimeCompatibilityProfile;
+  superPauseTargetDefenseValue?: number;
 };
 
 export type MatchWorldActorRecord = {
@@ -92,6 +93,7 @@ export class MatchWorld {
         targetWorld: this.targetWorld,
         roundTimerFrames: options.roundTimerFrames,
         runtimeProfile: options.runtimeProfile,
+        superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
       },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);

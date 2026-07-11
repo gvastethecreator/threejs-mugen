@@ -229,6 +229,8 @@ Quality contract:
 - Completed proof: required `synthetic-imported-damage-scale-dynamic.json` trace checksum `3433b369` / final checksum `e3db6dd9`, focused damage-scale/dispatch/trace-preset tests, and `pnpm qa:trace` 524/524 artifacts with 493 required and 31 optional.
 - STOP conditions: pause if the next damage-scale cut requires broad formula parity, projectile/helper/custom-state ownership changes, target redirect scaling, exact rounding, or combat timing decisions larger than one trace oracle.
 
+- Latest explicit-IKEMEN SuperPause defense cut: required `synthetic-imported-ikemen-superpause-team-defense.json` checksum `76873f0d` / final `b4425c66` gates omitted/non-positive `p2defmul` fallback to game-level `1.5`, separate temporary defense, and opposing root plus existing helper projection without target memory. P2 and `p2-helper-0` expose `0.6667`; final P2 life is `950`; aggregate is 538/538. Claim allowed: bounded explicit-IKEMEN 1v1 root/helper team-defense fallback. Claim blocked: simul/tag topology, global config loading, helper defender combat, nested ancestry, exact hitpause/buffer timing, rollback, score movement, and full parity.
+
 ## Previous Closed Quality Slice - Dynamic EnvColor Typed Telemetry
 
 Status: done

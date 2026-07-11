@@ -182,7 +182,7 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
   "tick:restore-superpause-defense": {
     id: "tick:restore-superpause-defense",
     owner: "PlayableMatchRuntime",
-    mutableStores: ["superPauseTargetDefenseOverrides", "fighter.runtime.defenseMultiplier"],
+    mutableStores: ["superPauseTargetDefenseOverrides", "actor.runtime.superPauseDefenseMultiplier"],
     sideEffects: ["expired SuperPause target defence restored"],
   },
 };

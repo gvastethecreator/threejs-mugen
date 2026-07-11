@@ -1584,7 +1584,7 @@ describe("PlayableMatchRuntime", () => {
   it("restores temporary SuperPause p2defmul after pause expiry", () => {
     const runtime = new PlayableMatchRuntime(
       createImportedFixture({ withStateMove: false, withDelayedSuperPause: true, superPauseP2DefMul: 2 }),
-      createImportedFixture({ withStateMove: false }),
+      createImportedFixture({ withStateMove: false, defenseMultiplier: 0.5 }),
       {
         ...trainingStage,
         playerStart: {
@@ -1600,13 +1600,85 @@ describe("PlayableMatchRuntime", () => {
     }
     expect(snapshot.matchPause?.type).toBe("SuperPause");
     expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
+    expect(snapshot.actors[1]?.runtime.superPauseDefenseMultiplier).toBe(0.5);
 
     for (let frame = 0; frame < 7; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     }
 
     expect(snapshot.matchPause).toBeUndefined();
-    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
+    expect(snapshot.actors[1]?.runtime.superPauseDefenseMultiplier).toBeUndefined();
+  });
+
+  it.each([
+    ["omitted", undefined],
+    ["zero", 0],
+  ])("uses and restores the IKEMEN default for %s SuperPause p2defmul", (_label, p2DefMul) => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withDelayedSuperPause: true, superPauseP2DefMul: p2DefMul }),
+      createImportedFixture({ withStateMove: false, defenseMultiplier: 0.5 }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 12 && !snapshot.matchPause; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.matchPause?.type).toBe("SuperPause");
+    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
+    expect(snapshot.actors[1]?.runtime.superPauseDefenseMultiplier).toBeCloseTo(2 / 3);
+
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.matchPause).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
+    expect(snapshot.actors[1]?.runtime.superPauseDefenseMultiplier).toBeUndefined();
+  });
+
+  it("uses the explicit IKEMEN game-level SuperPause defense override", () => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withDelayedSuperPause: true }),
+      createImportedFixture({ withStateMove: false }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go", superPauseTargetDefenseValue: 2 },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 12 && !snapshot.matchPause; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.matchPause?.type).toBe("SuperPause");
+    expect(snapshot.actors[1]?.runtime.superPauseDefenseMultiplier).toBe(0.5);
+  });
+
+  it("applies IKEMEN SuperPause defense to the opposing root and existing helpers without target memory", () => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withDelayedSuperPause: true }),
+      createImportedFixture({ withStateMove: false, withHelper: true }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20 && !snapshot.actors[1]?.runtime.ctrl; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.effects?.some((effect) => effect.id === "p2-helper-0")).toBe(true);
+
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 12 && !snapshot.matchPause; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.targetCount).toBe(0);
+    expect(snapshot.actors[1]?.runtime.superPauseDefenseMultiplier).toBeCloseTo(2 / 3);
+    expect(
+      snapshot.effects?.find((effect) => effect.id === "p2-helper-0")?.runtime.superPauseDefenseMultiplier,
+    ).toBeCloseTo(2 / 3);
   });
 
   it("advances imported Explods with supermovetime during SuperPause after source movetime expires", () => {

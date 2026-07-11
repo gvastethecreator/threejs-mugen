@@ -488,6 +488,9 @@ Previous projectile trace addendum: `synthetic-imported-projectile-projhit-multi
 
 `pnpm qa:trace` is the repeatable trace gate command. It writes artifacts to `.scratch/qa/trace-gates/`:
 
+- `synthetic-imported-ikemen-superpause-team-defense.json`: required explicit-IKEMEN route where `p2defmul = 0` falls back to game-level `1.5`, projects temporary multiplier `0.6667` to P2 plus existing `p2-helper-0`, and leaves final P2 life `950`. Current checksum `76873f0d`, final `b4425c66`. This proves current 1v1 root/helper breadth only, not simul/tag topology, global config loading, helper defender combat, or exact hitpause timing.
+- Current temporary-field checksum migration: positive target `cb237a35` / final `361c48ef`, IKEMEN stack `f3c5f15e` / final `6d3f8447`, helper-owned SuperPause `472ac081` / final `c038233c`. These supersede earlier checksums that projected SuperPause state through base `defenseMultiplier`.
+
 - `native-hit.json`: required native generated-roster hit route with hit combat reason evidence.
 - `native-whiff.json`: required native generated-roster active-Clsn1 whiff route with inferred whiff combat reason evidence.
 - `synthetic-imported-x.json`: required imported CMD/CNS State -1 `x -> 200` route with `HitDef`, typed `hitdef` operation, hit event, hit combat reason evidence, and a bounded `MoveHit` owner-state branch into state `261`.

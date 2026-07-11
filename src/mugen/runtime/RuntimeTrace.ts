@@ -55,6 +55,7 @@ export type RuntimeTraceActor = {
   frameIndex: number;
   life: number;
   power: number;
+  superPauseDefenseMultiplier?: number;
   ctrl: boolean;
   stateType: string;
   moveType: string;
@@ -508,6 +509,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedLifeAtMost?: number;
   observedPowerAtLeast?: number;
   observedPowerAtMost?: number;
+  observedSuperPauseDefenseMultiplierAtLeast?: number;
+  observedSuperPauseDefenseMultiplierAtMost?: number;
   observedPosXAtLeast?: number;
   observedPosXAtMost?: number;
   observedPosYAtLeast?: number;
@@ -598,6 +601,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxLife: number;
   minPower: number;
   maxPower: number;
+  minSuperPauseDefenseMultiplier?: number;
+  maxSuperPauseDefenseMultiplier?: number;
   minPos: { x: number; y: number };
   maxPos: { x: number; y: number };
   minVel: { x: number; y: number };
@@ -1615,6 +1620,14 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxLife: Math.max(existing.maxLife, actor.life),
               minPower: Math.min(existing.minPower, actor.power),
               maxPower: Math.max(existing.maxPower, actor.power),
+              minSuperPauseDefenseMultiplier: minOptionalTraceNumber(
+                existing.minSuperPauseDefenseMultiplier,
+                actor.superPauseDefenseMultiplier,
+              ),
+              maxSuperPauseDefenseMultiplier: maxOptionalTraceNumber(
+                existing.maxSuperPauseDefenseMultiplier,
+                actor.superPauseDefenseMultiplier,
+              ),
               minPos: {
                 x: Math.min(existing.minPos.x, actor.pos.x),
                 y: Math.min(existing.minPos.y, actor.pos.y),
@@ -1708,6 +1721,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxLife: actor.life,
               minPower: actor.power,
               maxPower: actor.power,
+              minSuperPauseDefenseMultiplier: actor.superPauseDefenseMultiplier,
+              maxSuperPauseDefenseMultiplier: actor.superPauseDefenseMultiplier,
               minPos: { ...actor.pos },
               maxPos: { ...actor.pos },
               minVel: { ...actor.vel },
@@ -3143,6 +3158,12 @@ function matchesActorFrameRequirement(
     (requirement.observedLifeAtMost === undefined || actor.minLife <= requirement.observedLifeAtMost) &&
     (requirement.observedPowerAtLeast === undefined || actor.maxPower >= requirement.observedPowerAtLeast) &&
     (requirement.observedPowerAtMost === undefined || actor.minPower <= requirement.observedPowerAtMost) &&
+    (requirement.observedSuperPauseDefenseMultiplierAtLeast === undefined ||
+      (actor.maxSuperPauseDefenseMultiplier ?? Number.NEGATIVE_INFINITY) >=
+        requirement.observedSuperPauseDefenseMultiplierAtLeast) &&
+    (requirement.observedSuperPauseDefenseMultiplierAtMost === undefined ||
+      (actor.minSuperPauseDefenseMultiplier ?? Number.POSITIVE_INFINITY) <=
+        requirement.observedSuperPauseDefenseMultiplierAtMost) &&
     (requirement.observedPosXAtLeast === undefined || actor.maxPos.x >= requirement.observedPosXAtLeast) &&
     (requirement.observedPosXAtMost === undefined || actor.minPos.x <= requirement.observedPosXAtMost) &&
     (requirement.observedPosYAtLeast === undefined || actor.maxPos.y >= requirement.observedPosYAtLeast) &&
@@ -3508,6 +3529,10 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     frameIndex: actor.runtime.frameIndex,
     life: actor.runtime.life,
     power: actor.runtime.power,
+    superPauseDefenseMultiplier:
+      actor.runtime.superPauseDefenseMultiplier === undefined
+        ? undefined
+        : roundTraceNumber(actor.runtime.superPauseDefenseMultiplier),
     ctrl: actor.runtime.ctrl,
     stateType: actor.runtime.stateType,
     moveType: actor.runtime.moveType,

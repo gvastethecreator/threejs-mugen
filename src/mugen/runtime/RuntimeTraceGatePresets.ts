@@ -24674,6 +24674,93 @@ export function createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenSuperPauseTeamDefenseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const script = expandRuntimeTraceScript([
+    { label: "spawn opposing helper", p1: [], p2: ["x"], frames: 1 },
+    { label: "IKEMEN zero p2defmul fallback", p1: ["x"], p2: [], frames: 8 },
+    { label: "team defense settle", p1: [], p2: [], frames: 3 },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-superpause-team-defense-attacker",
+    displayName: "Synthetic Imported IKEMEN SuperPause Team Defense Attacker",
+    withSuperPause: true,
+    superPauseP2DefMul: 0,
+    withTargetControllers: true,
+    targetControllerTriggerTime: 3,
+    targetLifeAddValue: -20,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-superpause-team-defense-defender",
+    displayName: "Synthetic Imported IKEMEN SuperPause Team Defense Defender",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1: attacker,
+      p2: defender,
+      stage: options.stage ?? closeCombatStage(),
+      runtimeProfile: "ikemen-go",
+    }),
+    script,
+    { label: "synthetic-imported-ikemen-superpause-team-defense-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-superpause-team-defense-golden",
+      label: "Synthetic imported IKEMEN SuperPause team defense fallback",
+      source: "imported",
+      notes: [
+        "Explicit ikemen-go trace proves p2defmul = 0 falls back to the pinned 1.5 profile default and applies its temporary 2/3 incoming-damage scale to the represented opposing root plus an existing helper. Configurable global rules, teams beyond the current 1v1 roster, projectiles/explods, and full IKEMEN super defense parity remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-superpause-team-defense-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "HitDef", "SuperPause", "TargetLifeAdd"],
+        requiredExecutedOperations: ["helper", "hitdef", "pause:superpause", "target:targetlifeadd"],
+        requiredActiveCommands: ["x"],
+        requiredMatchPauses: [
+          { type: "SuperPause", actorId: "p1", sourceStateNo: 200, minFrames: 2, minRemaining: 7, minMoveTime: 1 },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p2-helper-0", kind: "helper", ownerId: "p2", effectId: 42, name: "Buddy", helperStateNo: 1200 },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            actorKind: "player",
+            ownerId: "p2",
+            observedSuperPauseDefenseMultiplierAtLeast: 0.66669,
+            observedSuperPauseDefenseMultiplierAtMost: 0.66671,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2-helper-0",
+            actorKind: "helper",
+            ownerId: "p2",
+            observedSuperPauseDefenseMultiplierAtLeast: 0.66669,
+            observedSuperPauseDefenseMultiplierAtMost: 0.66671,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 950 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

@@ -452,6 +452,52 @@ describe("PauseSystem", () => {
     ]);
   });
 
+  it.each([
+    ["omitted", {}],
+    ["zero", { p2defmul: "0" }],
+  ])("uses the profile default for %s SuperPause p2defmul", (_label, params) => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const multipliers: number[] = [];
+    const result = world.apply({
+      actor: { ...actor("p1", 3000), label: "P1" },
+      controller: controller("SuperPause", { time: "7", ...params }),
+      runtimeTick: 44,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation) =>
+          createMatchPauseFromController(activeActor, activeController, tick, operation),
+      },
+      applyPowerDelta: () => undefined,
+      defaultTargetDefenseValue: () => 1.5,
+      applyTargetDefenseMultiplier: (_activeActor, multiplier) => {
+        multipliers.push(multiplier);
+        return 1;
+      },
+      log: () => undefined,
+    });
+
+    expect(result.targetDefenseMultiplier).toBeCloseTo(2 / 3);
+    expect(multipliers).toEqual([expect.closeTo(2 / 3)]);
+  });
+
+  it("does not invent a SuperPause p2defmul default when the active profile supplies none", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const result = world.apply({
+      actor: { ...actor("p1", 3000), label: "P1" },
+      controller: controller("SuperPause", { time: "7", p2defmul: "0" }),
+      runtimeTick: 44,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation) =>
+          createMatchPauseFromController(activeActor, activeController, tick, operation),
+      },
+      applyPowerDelta: () => undefined,
+      applyTargetDefenseMultiplier: () => 1,
+      log: () => undefined,
+    });
+
+    expect(result.targetDefenseMultiplier).toBeUndefined();
+    expect(result.targetDefenseTargets).toBeUndefined();
+  });
+
   it("resolves dynamic SuperPause numeric params through active controller context", () => {
     const world = new RuntimeMatchPauseControllerWorld();
     const calls: string[] = [];

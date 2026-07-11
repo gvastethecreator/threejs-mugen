@@ -32,6 +32,7 @@ export type CharacterRuntimeState = {
   hitOverrides?: RuntimeHitOverrideSlot[];
   reversal?: RuntimeReversalDef;
   defenseMultiplier?: number;
+  superPauseDefenseMultiplier?: number;
   attackMultiplier?: number;
   paletteRemap?: RuntimePaletteRemap;
   spritePriority?: number;

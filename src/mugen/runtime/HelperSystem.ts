@@ -84,6 +84,7 @@ export type RuntimeHelper = {
   physics: CharacterRuntimeState["physics"];
   lifeMax: number;
   life: number;
+  superPauseDefenseMultiplier?: number;
   powerMax: number;
   power: number;
   vars: number[];
@@ -1117,6 +1118,9 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     frameIndex: helper.frameIndex,
     lifeMax: helper.lifeMax,
     life: helper.life,
+    ...(helper.superPauseDefenseMultiplier === undefined
+      ? {}
+      : { superPauseDefenseMultiplier: helper.superPauseDefenseMultiplier }),
     powerMax: helper.powerMax,
     power: helper.power,
     bodyWidth: helper.bodyWidth ? { ...helper.bodyWidth } : undefined,
@@ -1170,6 +1174,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.hitDefSpritePriority = runtime.hitDefSpritePriority ? { ...runtime.hitDefSpritePriority } : undefined;
   helper.lifeMax = runtime.lifeMax ?? helper.lifeMax;
   helper.life = runtime.life;
+  helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;
   helper.power = runtime.power;
   helper.ctrl = runtime.ctrl;

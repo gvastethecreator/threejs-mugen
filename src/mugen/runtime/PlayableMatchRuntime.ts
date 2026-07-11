@@ -82,6 +82,7 @@ import {
 import { RuntimeMatchActorAdvanceWorld } from "./RuntimeMatchActorAdvanceSystem";
 import { RuntimePausedActorAdvanceWorld } from "./RuntimePausedActorAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { defaultSuperPauseTargetDefenseValue } from "./SuperPauseTargetDefensePolicy";
 import {
   RuntimeFighterRunOrderWorld,
   type RuntimeRootRunOrderResult,
@@ -254,6 +255,7 @@ export type PlayableMatchRuntimeOptions = {
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
   runtimeProfile?: RuntimeCompatibilityProfile;
+  superPauseTargetDefenseValue?: number;
 };
 
 type PauseControllerHandler = (
@@ -272,9 +274,9 @@ type EnvColorControllerHandler = (
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
 type SuperPauseTargetDefenseOverride = {
-  actor: FighterMatchState;
-  previousMultiplier?: number;
+  actor: FighterMatchState | RuntimeHelper;
   pauseStartedAt: number;
+  multiplier: number;
 };
 
 export class PlayableMatchRuntime {
@@ -326,6 +328,7 @@ export class PlayableMatchRuntime {
   private lastTickSchedule = createIdleMatchTickSchedule();
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
+  private readonly superPauseTargetDefenseValue?: number;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
   private toggles = {
     showClsn1: true,
@@ -342,6 +345,10 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
+    this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
+      this.runtimeProfile,
+      options.superPauseTargetDefenseValue,
+    );
     this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
     this.round = new RuntimeRoundSystem(options.roundTimerFrames);
@@ -948,6 +955,7 @@ export class PlayableMatchRuntime {
         compatibilityTelemetryWorld.recordOperation(actor, audioOperation),
       resolveSoundValue,
       resolveParams,
+      defaultTargetDefenseValue: () => this.superPauseTargetDefenseValue,
       log: (message) => this.logs.unshift(message),
     });
   }
@@ -984,8 +992,9 @@ export class PlayableMatchRuntime {
         }),
       resolveSoundValue,
       resolveParams,
+      defaultTargetDefenseValue: () => this.superPauseTargetDefenseValue,
       applyTargetDefenseMultiplier: (_actor, multiplier, pause) =>
-        this.applyHelperTargetDefenseMultiplier(helper, multiplier, pause),
+        this.applyHelperTargetDefenseMultiplier(owner, helper, multiplier, pause),
       log: (message) => this.logs.unshift(message),
     });
     if (result.pause?.type === "Pause") {
@@ -1006,29 +1015,39 @@ export class PlayableMatchRuntime {
       return 0;
     }
     const opponent = fighter.id === this.p1.id ? this.p2 : this.p1;
-    const targets = fighter.targetWorld.resolveCandidates(fighter, [opponent]);
+    const targets = this.runtimeProfile === "ikemen-go"
+      ? this.opposingTeamDefenseActors(opponent)
+      : fighter.targetWorld.resolveCandidates(fighter, [opponent]);
     return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
   }
 
   private applyHelperTargetDefenseMultiplier(
+    owner: FighterMatchState,
     helper: RuntimeHelper,
     multiplier: number,
     pause: RuntimeMatchPause,
   ): number {
-    const targets = this.targetWorld.resolveCandidates(
-      {
-        id: helper.serialId,
-        runtime: helperRuntimeState(helper),
-        targets: helper.targets,
-        targetBindings: helper.targetBindings,
-      },
-      [...this.matchRoster().actors],
-    );
+    const opponent = owner === this.p1 ? this.p2 : this.p1;
+    const targets = this.runtimeProfile === "ikemen-go"
+      ? this.opposingTeamDefenseActors(opponent)
+      : this.targetWorld.resolveCandidates(
+          {
+            id: helper.serialId,
+            runtime: helperRuntimeState(helper),
+            targets: helper.targets,
+            targetBindings: helper.targetBindings,
+          },
+          [...this.matchRoster().actors],
+        );
     return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
   }
 
+  private opposingTeamDefenseActors(opponent: FighterMatchState): Array<FighterMatchState | RuntimeHelper> {
+    return [opponent, ...this.effectActorWorld.helpers(opponent.id)];
+  }
+
   private applyTargetDefenseMultiplierToActors(
-    targets: FighterMatchState[],
+    targets: Array<FighterMatchState | RuntimeHelper>,
     multiplier: number,
     pause: RuntimeMatchPause,
   ): number {
@@ -1039,38 +1058,48 @@ export class PlayableMatchRuntime {
       if (!existing) {
         this.superPauseTargetDefenseOverrides.push({
           actor: target,
-          previousMultiplier: target.runtime.defenseMultiplier,
           pauseStartedAt: pause.startedAt,
+          multiplier,
         });
+      } else {
+        existing.multiplier *= multiplier;
       }
-      target.runtime.defenseMultiplier = (target.runtime.defenseMultiplier ?? 1) * multiplier;
+      this.setSuperPauseDefenseMultiplier(target, existing ? existing.multiplier : multiplier);
     }
     return targets.length;
   }
 
   private restoreExpiredSuperPauseTargetDefense(force = false): void {
     const pause = this.pauseWorld.current();
-    const active: SuperPauseTargetDefenseOverride[] = [];
-    for (const override of this.superPauseTargetDefenseOverrides) {
-      const stillActive =
-        !force &&
-        pause?.type === "SuperPause" &&
-        pause.startedAt === override.pauseStartedAt;
-      if (stillActive) {
-        active.push(override);
-        continue;
+    const actors = new Set(this.superPauseTargetDefenseOverrides.map((override) => override.actor));
+    const active = force || pause?.type !== "SuperPause"
+      ? []
+      : this.superPauseTargetDefenseOverrides.filter((override) => override.pauseStartedAt === pause.startedAt);
+    for (const actor of actors) {
+      const override = active.find((candidate) => candidate.actor === actor);
+      if (override) {
+        this.setSuperPauseDefenseMultiplier(actor, override.multiplier);
+      } else {
+        this.clearSuperPauseDefenseMultiplier(actor);
       }
-      this.restoreDefenseMultiplier(override.actor, override.previousMultiplier);
     }
     this.superPauseTargetDefenseOverrides = active;
   }
 
-  private restoreDefenseMultiplier(fighter: FighterMatchState, multiplier: number | undefined): void {
-    if (multiplier === undefined) {
-      delete fighter.runtime.defenseMultiplier;
-      return;
+  private setSuperPauseDefenseMultiplier(actor: FighterMatchState | RuntimeHelper, multiplier: number): void {
+    if ("runtime" in actor) {
+      actor.runtime.superPauseDefenseMultiplier = multiplier;
+    } else {
+      actor.superPauseDefenseMultiplier = multiplier;
     }
-    fighter.runtime.defenseMultiplier = multiplier;
+  }
+
+  private clearSuperPauseDefenseMultiplier(actor: FighterMatchState | RuntimeHelper): void {
+    if ("runtime" in actor) {
+      delete actor.runtime.superPauseDefenseMultiplier;
+    } else {
+      delete actor.superPauseDefenseMultiplier;
+    }
   }
 
   private applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState): void {

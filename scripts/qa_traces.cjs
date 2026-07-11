@@ -1265,6 +1265,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenSuperPauseP2DefMulStackTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-superpause-team-defense",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenSuperPauseTeamDefenseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-global-telemetry",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(),
@@ -3790,6 +3795,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-anim-pos",
     "synthetic-imported-superpause-dynamic-anim-pos",
     "synthetic-imported-superpause-p2defmul",
+    "synthetic-imported-ikemen-superpause-team-defense",
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
     "synthetic-imported-movehitpersist",

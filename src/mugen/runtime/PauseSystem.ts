@@ -128,6 +128,7 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
   resolveSoundValue?: () => RuntimeResolvedSoundRef | undefined;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   resolveParams?: RuntimePauseControllerParamResolvers;
+  defaultTargetDefenseValue?: () => number | undefined;
   applyTargetDefenseMultiplier?: (actor: TActor, multiplier: number, pause: RuntimeMatchPause) => number;
   log: (message: string) => void;
 };
@@ -338,6 +339,7 @@ export class RuntimeMatchPauseControllerWorld {
       input.controller,
       input.operation,
       input.resolveParams?.p2DefMul,
+      input.defaultTargetDefenseValue,
     );
     const targetDefenseTargets =
       result.pause.type === "SuperPause" && targetDefenseMultiplier !== undefined
@@ -626,12 +628,14 @@ function superPauseTargetDefenseMultiplierParam(
   controller: MugenStateController,
   operation: PauseControllerOp | undefined,
   resolveTargetDefenseValue: (() => number | undefined) | undefined,
+  defaultTargetDefenseValue: (() => number | undefined) | undefined,
 ): number | undefined {
   const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
   if (controllerType !== "superpause") {
     return undefined;
   }
-  const p2DefMul = operation?.p2DefMul ?? resolveTargetDefenseValue?.() ?? firstNumber(findControllerParam(controller, "p2defmul"));
+  const authoredValue = operation?.p2DefMul ?? resolveTargetDefenseValue?.() ?? firstNumber(findControllerParam(controller, "p2defmul"));
+  const p2DefMul = authoredValue !== undefined && authoredValue > 0 ? authoredValue : defaultTargetDefenseValue?.();
   if (p2DefMul === undefined || p2DefMul <= 0) {
     return undefined;
   }
