@@ -1259,6 +1259,8 @@ Static IKEMEN TagIn `leader` now resolves one-based stable PlayerNo only in expl
 
 Pinned dynamic Tag research now selects boolean `self` as Wayfinder 067: reuse existing expression resolution, preserve aggregate atomic validation, and keep dynamic targeting/order/redirect axes blocked.
 
+Dynamic Tag `self` now resolves per tick through caller CNS context and records only concrete operations. Wayfinder 068 next applies the same deferred boundary to TagIn caller `ctrl`, preserving state-entry precedence and all target/order blocks.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

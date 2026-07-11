@@ -853,7 +853,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | Priority | Workstream | Next shippable proof | Evidence gate | Score effect |
 | --- | --- | --- | --- | --- |
 | P0 | Project control | Keep setup-project, local issues, AGENTS, and roadmap routing synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | No score movement. |
-| P1 | I2 root participation | Prove P3-P8/cap/start/reset/lifecycle/identity and publish consumer participation with every executable owner still P1/P2. | Pinned source, focused runtime/system tests, stable traces, negative consumer assertions. | Structural confidence only; no tag gameplay. |
+| P1 | I2 bounded Tag runtime | Extend source-pinned dynamic Tag parameters one axis at a time after closed P3-P8 participation, activation, selection, standby scheduling, and static Tag options. | Focused compiler/runtime tests, full stable traces, negative consumer assertions. | Bounded IKEMEN execution confidence only; no tag gameplay score claim. |
 | P1 | R1 post-KO timeline | After the I2 prefactor, close KO/time-over ordering plus bounded `NoKOSlow`. | Focused round tests and required ordered trace. | MUGEN-lite confidence only; no motif/team parity. |
 | P1 | R2 root ownership | Centralize construction/reset/side/team-state/participation invariants before any consumer widening. | Invariant/deletion tests and stable traces. | Architecture debt reduction only. |
 | P2 | S1 Studio source workflow | Add source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback; defer undo/migration. | Model/service tests plus `pnpm qa:smoke` and visual inspection. | Possible Studio movement only with real persistence evidence. |
@@ -868,7 +868,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 root/helper RunOrder, pause ownership/defense, P1-P8 topology/state/registry, and inert P3-P8 ownership. | Resolve Wayfinder 046 in stages: participation evidence/read model, plural activation, redirects, then standby CNS scheduling. | No active multi-root input/combat/round/presentation/effect stores, TagIn/TagOut execution, Helper player-type compile, tag/turns gameplay, lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, participation diagnostics, plural structural activation, root selection, standby CNS scheduling, static Tag optional parameters, explicit Tag order/leader, and dynamic caller `self`. | Wayfinder 068: dynamic TagIn caller `ctrl`, then separately specify remaining dynamic targets/states/order and redirects. | No multi-root input/combat/round/presentation/effect-store gameplay, dynamic partner/state/order/redirect execution, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -879,12 +879,12 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 participation evidence: directly cover P3-P8, six-reserve cap/overflow policy, interleaved starts, lifecycle, reset identity/stale-state cleanup, and negative P1/P2-only consumers.
-2. I2 read model: publish owned/disabled/standby/structurally-active and scheduled/input/combat/round/presentation/effect-store participation under a versioned diagnostic; all executable owners remain P1/P2.
+1. I2 dynamic Tag control: resolve TagIn caller `ctrl` through live caller CNS context while preserving state-entry precedence and aggregate validation.
+2. I2 dynamic Tag targets: separately research and gate partner/state/member/leader expressions plus RedirectID before any widening.
 3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
-4. I2 activation: apply a plural batch standby transition and active ids by side without moving storage, auto-tagging a partner, or assuming one active root per side.
-5. I2 redirects: prove identity/Player/Partner separately from Enemy/P2 eligibility across standby and over-KO changes.
-6. I2 schedule: admit standby roots to explicit-profile CNS execution and gate same-tick TagIn/TagOut visibility before collision/draw; input/combat/render remain isolated.
+4. I2 gameplay ownership: only after dynamic controller semantics, specify active-root input/combat/round/presentation/resource consumers independently.
+5. I2 trace promotion: add required Tag traces when bounded behavior reaches a stable cross-system oracle; current unit/integration proof intentionally leaves trace checksums unchanged.
+6. I2 redirects: keep mutation redirects blocked until caller identity, failure atomicity, and telemetry ownership have source-backed fixtures.
 7. S1: add source handle/fingerprint/permission, external conflict, one write/reimport transaction, output invalidation and rollback; defer undo/migration.
 8. A1: validate one permission-aware, content-addressed provenance record linking origin/license, input, tool/version, transforms, outputs, QA and playtest.
 9. I1: add a VFS/package scanner entry plus one stage-only and one system/screenpack-only source-mapped signal family; execution remains blocked.
@@ -894,23 +894,22 @@ These are ordered candidates, not new score claims:
 
 ## Active Implementation Queue
 
-### I2 - Root Participation And Activation
+### I2 - Bounded Tag Runtime
 
 Issue: `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`
 
-Build next:
+Current checkpoint and next build:
 
-- First close direct evidence for P3-P8, the six-reserve cap/overflow policy, interleaved side-local starts, registry/lifecycle coverage, reset object identity, stale optional-state cleanup, and negative scheduler/input/compat/effect/combat/round/presentation ownership.
-- Publish a versioned root-participation read model that separates storage/ownership from disabled, standby, structurally active, scheduled, input-owned, combat-owned, round-owned, presented, and effect-store-owned participation. Keep all executable owners P1/P2 in this prefactor.
-- Only after that proof, add a plural batch standby transition and derived active ids by side. Do not move roots between `reserveActors` and `actors`, auto-tag-out another root, or infer team leader/member/resource ownership.
-- Follow with a separate identity/Player/Partner versus Enemy/P2 eligibility matrix, then a separate standby CNS schedule and same-tick TagIn/TagOut trace.
+- Closed: P3-P8 ownership/participation, plural structural activation, identity/Partner versus Enemy/P2 selection, standby CNS scheduling, static Tag options, explicit member/leader order, and dynamic caller `self`.
+- Next: Wayfinder 068 dynamic TagIn caller `ctrl`, using the existing deferred expression boundary and resolved-operation telemetry.
+- Keep scheduler, input, effects, combat, round, camera, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:
 
 - Every semantic claim names pinned Ikemen-GO SHA `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`.
 - Focused runtime/system tests cover participation invariants and `pnpm qa:trace` remains stable until executable behavior intentionally changes.
-- Structural activation does not enter scheduler, input, compatibility execution, effects, combat, round, camera, renderer, lifebar, Studio detail, or resources.
-- Claim blocked: TagIn/TagOut CNS execution, one-active-root policy, tag/simul/turns gameplay, ZSS/Lua, rollback/netplay, and full IKEMEN parity.
+- Dynamic Tag slices preserve aggregate validation and do not widen input, effects, combat, round, camera, renderer, lifebar, Studio detail, or resources.
+- Claim blocked: broad dynamic target/state/order parameters, mutation redirects, tag/simul/turns gameplay, ZSS/Lua, rollback/netplay, and full IKEMEN parity.
 
 ### R1 - Post-KO And NoKOSlow Timeline
 

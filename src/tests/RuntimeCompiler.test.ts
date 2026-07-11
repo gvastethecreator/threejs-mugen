@@ -342,12 +342,24 @@ time = 20
       self: true,
       leaderPlayerNo: 3,
     });
+    expect(compileControllerIr(controller(200, "TagOut", [], { self: "var(0)" })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagout",
+      standby: true,
+      self: false,
+      selfExpression: "var(0)",
+    });
+    for (const truthySelf of ["-1", "2"]) {
+      expect(compileControllerIr(controller(200, "TagIn", [], { self: truthySelf })).operation).toMatchObject({
+        kind: "team-standby",
+        self: false,
+        selfExpression: truthySelf,
+      });
+    }
 
     const unsupportedParamSets: Record<string, string>[] = [
-      { self: "var(0)" },
-      { self: "-1" },
-      { self: "2" },
       { self: "1, 0" },
+      { self: "(" },
       { stateno: "var(0)" },
       { stateno: "-1" },
       { stateno: "1, 0" },

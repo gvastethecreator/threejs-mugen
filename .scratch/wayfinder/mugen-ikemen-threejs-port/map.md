@@ -86,6 +86,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute static TagIn leader](tickets/065-execute-static-tagin-leader.md) - rotate stable same-side PlayerNo to leader with live KO ordering.
 - [Map dynamic Tag parameters](tickets/066-map-dynamic-tag-parameters.md) - pin expression timing, coercion, and failure semantics before dynamic execution.
 - [Execute dynamic Tag self](tickets/067-execute-dynamic-tag-self.md) - resolve boolean self at runtime while preserving aggregate validation.
+- [Execute dynamic TagIn control](tickets/068-execute-dynamic-tagin-control.md) - resolve caller control boolean without widening partner targeting.
 
 ## Not Yet Specified
 

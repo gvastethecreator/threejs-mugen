@@ -53,6 +53,7 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
+import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import { RuntimeMatchHelperBindingWorld } from "./RuntimeMatchHelperBindingSystem";
 import { RuntimeMatchActiveWorld } from "./RuntimeMatchActiveSystem";
 import { RuntimeMatchActorRosterWorld, type RuntimeMatchActorRoster } from "./RuntimeMatchActorRosterSystem";
@@ -1885,11 +1886,16 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    runtimeController: ({ dispatch, owner }) => {
+    runtimeController: ({ dispatch, actor, opponent: targetOpponent, owner, tick: activeTick }) => {
       if (dispatch.controller.operation?.kind === "team-standby") {
-        if (options.onTeamStandby?.(fighter, dispatch.controller.operation)) {
+        const operation = resolveDynamicTeamStandbyOperation(
+          dispatch.controller.operation,
+          actor,
+          runtimeControllerContext(actor, owner, activeTick, stageBounds, targetOpponent, gameSpace),
+        );
+        if (operation && options.onTeamStandby?.(fighter, operation)) {
           runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
-          runtimeActiveControllerTelemetryHooks.recordOperation(fighter, dispatch.controller.operation);
+          runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
         } else {
           options.onBlocked?.(dispatch.controller, "runtime-controller");
         }
@@ -1916,6 +1922,18 @@ function runActiveStateControllers(
     hooks: hookSet.hooks,
     onBlocked: options.onBlocked,
   }, options.participation ?? "playable");
+}
+
+function resolveDynamicTeamStandbyOperation(
+  operation: TeamStandbyControllerOp,
+  fighter: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): TeamStandbyControllerOp | undefined {
+  if (operation.selfExpression === undefined) return operation;
+  const resolved = evaluateRuntimeControllerNumber(operation.selfExpression, fighter.runtime, context);
+  if (resolved === undefined) return undefined;
+  const { selfExpression: _selfExpression, ...staticOperation } = operation;
+  return { ...staticOperation, self: resolved !== 0 };
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {

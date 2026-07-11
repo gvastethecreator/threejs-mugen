@@ -1213,6 +1213,14 @@ Every compatibility milestone should leave:
 - Kept sandbox aggregate atomicity explicit; selected dynamic `self` as next bounded slice.
 - Global status: static Tag optional axes complete through leader; dynamic execution and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN Tag self
+
+- Added typed deferred `selfExpression` lowering for TagIn/TagOut.
+- Added caller-context runtime coercion with resolved-operation telemetry.
+- Proved changing `var(0)` false-to-true behavior and malformed structural rejection.
+- Preserved partner-sensitive omission, aggregate validation, and all non-Tag consumers.
+- Global status: first dynamic Tag axis executes; control, target, state, order, and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM

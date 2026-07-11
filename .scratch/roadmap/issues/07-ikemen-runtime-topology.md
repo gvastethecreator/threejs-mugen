@@ -1,6 +1,6 @@
 # 07 - IKEMEN Bounded Runtime Topology
 
-Status: ready-for-agent
+Status: in-progress
 Labels: runtime-trace, boundary, ready-for-agent
 Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
@@ -13,6 +13,8 @@ Advance the source-pinned IKEMEN runtime from inert P3-P8 ownership to an explic
 Each cut must expose one versioned contract, name the consumers that changed, preserve the current MUGEN/unknown paths, and close with evidence plus an exact allowed/blocked claim. Structural ownership, observability, activation, CNS scheduling, input, effects, combat, round flow, presentation, lifebars, and resources are separate claims.
 
 The immediate sequence is:
+
+Current checkpoint override (entries `349-373` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, static TagIn/TagOut optional parameters, explicit member/leader order, and dynamic caller `self` are closed with focused/full gates. Next cut is Wayfinder 068 dynamic TagIn caller `ctrl`. Input, effects, combat, round, presentation, lifebars, resources, broad dynamic targeting/order, mutation redirects, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.

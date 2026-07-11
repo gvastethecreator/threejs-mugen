@@ -1,4 +1,5 @@
 import type { MugenStateController } from "../model/MugenState";
+import { compileExpression } from "./ExpressionCompiler";
 
 export type ControllerCompileContext = {
   constants?: Record<string, number>;
@@ -516,6 +517,7 @@ export type TeamStandbyControllerOp = {
   controllerType: "tagin" | "tagout";
   standby: boolean;
   self: boolean;
+  selfExpression?: string;
   partnerOrdinal?: number;
   callerStateNo?: number;
   partnerStateNo?: number;
@@ -740,12 +742,18 @@ function compileTeamStandbyControllerOp(
   }
   const selfRaw = findParam(controller, "self");
   let self = partnerOrdinal === undefined;
+  let selfExpression: string | undefined;
   if (selfRaw !== undefined) {
     const selfValue = Number(selfRaw.trim());
-    if (selfValue !== 0 && selfValue !== 1) {
-      return undefined;
+    if (selfValue === 0 || selfValue === 1) {
+      self = selfValue === 1;
+    } else {
+      if (!hasValidTagExpressionStructure(selfRaw)) return undefined;
+      const compiledSelf = compileExpression(selfRaw);
+      if (compiledSelf.supportLevel === "unsupported") return undefined;
+      self = false;
+      selfExpression = compiledSelf.normalized;
     }
-    self = selfValue === 1;
   }
   const callerControl = parseStaticTagBoolean(callerControlRaw);
   const partnerControl = parseStaticTagBoolean(partnerControlRaw);
@@ -786,6 +794,7 @@ function compileTeamStandbyControllerOp(
     controllerType: type,
     standby: type === "tagout",
     self,
+    ...(selfExpression === undefined ? {} : { selfExpression }),
     ...(partnerOrdinal === undefined ? {} : { partnerOrdinal }),
     ...(callerStateNo === undefined ? {} : { callerStateNo }),
     ...(partnerStateNo === undefined ? {} : { partnerStateNo }),
@@ -794,6 +803,21 @@ function compileTeamStandbyControllerOp(
     ...(memberPosition === undefined ? {} : { memberPosition }),
     ...(leaderPlayerNo === undefined ? {} : { leaderPlayerNo }),
   };
+}
+
+function hasValidTagExpressionStructure(raw: string): boolean {
+  const expression = raw.trim();
+  if (!expression) return false;
+  let depth = 0;
+  for (const character of expression) {
+    if (character === "(") depth += 1;
+    if (character === ")") {
+      depth -= 1;
+      if (depth < 0) return false;
+    }
+    if (character === "," && depth === 0) return false;
+  }
+  return depth === 0;
 }
 
 function parseStaticTagBoolean(raw: string | undefined): boolean | undefined {
