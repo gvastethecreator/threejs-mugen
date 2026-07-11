@@ -1267,6 +1267,8 @@ Dynamic TagIn `partnerctrl` now resolves from caller context with static partner
 
 Dynamic Tag caller `stateno` now resolves with integer truncation before own-state validation and existing state/control/standby order. Wayfinder 071 next extends only `partnerstateno`, retaining static partner identity and partner-owned state validation.
 
+Dynamic Tag `partnerstateno` now resolves from caller context with static partner identity before partner-owned state validation and aggregate mutation. Wayfinder 072 next extends only the caller-relative `partner` ordinal, preserving authored omission defaults and existing atomic target validation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

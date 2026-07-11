@@ -1242,6 +1242,13 @@ Every compatibility milestone should leave:
 - Proved same-tick variable-selected state, post-entry control precedence, unavailable rollback, and negative rejection.
 - Global status: dynamic caller state plus all boolean axes execute; partner state/identity/order and redirects remain open.
 
+### 2026-07-11 - Dynamic IKEMEN Tag partner state
+
+- Added deferred `partnerStateExpression` for TagIn/TagOut with required static partner identity.
+- Resolves/truncates in caller context before partner-owned state and aggregate validation.
+- Proved same-tick variable-selected TagIn/TagOut state, post-entry partner control, and negative/unavailable/missing-partner rollback.
+- Global status: caller and partner Tag state numbers plus all boolean axes execute dynamically; partner identity/order and redirects remain open.
+
 ## Not Done
 
 - Full MUGEN VM
