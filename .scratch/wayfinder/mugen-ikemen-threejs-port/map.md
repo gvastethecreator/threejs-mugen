@@ -65,6 +65,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Choose next gap after multi-root registry](tickets/044-next-gap-after-multi-root-registry.md) - runtime/snapshot `teamState` now drives public eligibility diagnostics for roots and helpers.
 - [Choose next gap after live team state](tickets/045-next-gap-after-live-team-state.md) - explicit IKEMEN matches can now own/reset P3-P8 standby roots and publish them separately from playable/presented actors.
 - [Choose next gap after inert roots](tickets/046-next-gap-after-inert-roots.md) - `RuntimeRootParticipation/v0` proves P1/P2 executable ownership versus inert P3-P8 across separate consumer axes.
+- [Choose next gap after root activation](tickets/047-next-gap-after-root-activation.md) - choose identity/Partner versus Enemy/P2 eligibility over plural active roots before scheduling.
 
 ## Not Yet Specified
 

@@ -150,6 +150,7 @@ describe("MatchWorld", () => {
     );
     expect(registry.rootParticipation).toEqual(expect.objectContaining({
       schema: "RuntimeRootParticipation/v0",
+      activeRootIdsBySide: { 1: ["p1"], 2: ["p2"] },
       roots: expect.arrayContaining([
         expect.objectContaining({ id: "p1", side: 1, structurallyActive: true, scheduled: true, presented: true }),
         expect.objectContaining({ id: "p2", side: 2, structurallyActive: true, scheduled: true, presented: true }),
@@ -207,6 +208,42 @@ describe("MatchWorld", () => {
       presented: false,
       effectStoreOwned: false,
     });
+  });
+
+  it("projects atomic standby transitions without widening playable consumers", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }] });
+    let registry = world.getActorRegistry();
+    expect(registry.rootParticipation.activeRootIdsBySide).toEqual({ 1: ["p1", "p3"], 2: ["p2"] });
+    expect(registry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
+      structurallyActive: true,
+      scheduled: false,
+      inputOwned: false,
+      combatOwned: false,
+      roundOwned: false,
+      presented: false,
+      effectStoreOwned: false,
+    });
+
+    const snapshot = world.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p1", standby: true },
+        { id: "p3", standby: false },
+      ],
+    });
+    expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
+    expect(snapshot.reserveActors?.map((actor) => actor.id)).toEqual(["p3", "p4"]);
+    registry = world.getActorRegistry();
+    expect(registry.rootParticipation.activeRootIdsBySide).toEqual({ 1: ["p3"], 2: ["p2"] });
+    expect(registry.rootParticipation.roots.find((root) => root.id === "p1")?.scheduled).toBe(true);
+
+    world.reset();
+    expect(world.getActorRegistry().rootParticipation.activeRootIdsBySide).toEqual({ 1: ["p1"], 2: ["p2"] });
   });
 
   it("exposes a player actor registry without changing match state", () => {

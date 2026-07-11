@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN structural root activation
+
+- Runtime/IKEMEN: explicit-profile host/test command applies atomic plural standby changes.
+- Read model: `activeRootIdsBySide` preserves stable root order and allows multiple active roots per side.
+- Isolation: activated reserves stay in `reserveActors`; schedule, input, combat, round, presentation, and effect stores remain P1/P2.
+- Reset: authored P1/P2 active and P3-P8 standby topology is restored.
+- Score: unchanged. No CNS TagIn/TagOut or playable teams.
+- Next: Wayfinder 047 identity/Partner versus Enemy/P2 eligibility matrix.
+
 ## Global report - 2026-07-11 IKEMEN root participation
 
 - Runtime/IKEMEN: `RuntimeRootParticipation/v0` exposes stable P1-P8 ownership and structural state.

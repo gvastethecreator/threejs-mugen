@@ -18,6 +18,7 @@ export type RuntimeRootParticipationRecord = {
 export type RuntimeRootParticipationDiagnostic = {
   schema: "RuntimeRootParticipation/v0";
   roots: RuntimeRootParticipationRecord[];
+  activeRootIdsBySide: Record<1 | 2, string[]>;
 };
 
 export type RuntimeRootParticipationInput = {
@@ -39,23 +40,28 @@ export class RuntimeRootParticipationWorld {
     const presented = new Set(input.presentedRootIds);
     const effectStoreOwned = new Set(input.effectStoreOwnedRootIds);
 
+    const roots = input.roots.map(({ id, side, teamState }) => ({
+      id,
+      side,
+      owned: true as const,
+      disabled: teamState.disabled,
+      standby: teamState.standby,
+      structurallyActive:
+        teamState.playerType && !teamState.disabled && !teamState.standby && !teamState.overKo,
+      scheduled: scheduled.has(id),
+      inputOwned: inputOwned.has(id),
+      combatOwned: combatOwned.has(id),
+      roundOwned: roundOwned.has(id),
+      presented: presented.has(id),
+      effectStoreOwned: effectStoreOwned.has(id),
+    }));
     return {
       schema: "RuntimeRootParticipation/v0",
-      roots: input.roots.map(({ id, side, teamState }) => ({
-        id,
-        side,
-        owned: true,
-        disabled: teamState.disabled,
-        standby: teamState.standby,
-        structurallyActive:
-          teamState.playerType && !teamState.disabled && !teamState.standby && !teamState.overKo,
-        scheduled: scheduled.has(id),
-        inputOwned: inputOwned.has(id),
-        combatOwned: combatOwned.has(id),
-        roundOwned: roundOwned.has(id),
-        presented: presented.has(id),
-        effectStoreOwned: effectStoreOwned.has(id),
-      })),
+      roots,
+      activeRootIdsBySide: {
+        1: roots.filter((root) => root.side === 1 && root.structurallyActive).map((root) => root.id),
+        2: roots.filter((root) => root.side === 2 && root.structurallyActive).map((root) => root.id),
+      },
     };
   }
 }

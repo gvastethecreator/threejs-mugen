@@ -118,6 +118,10 @@ import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTeleme
 import { RuntimeFighterAdvanceHookSetWorld } from "./RuntimeFighterAdvanceHookSetSystem";
 import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
+import {
+  RuntimeRootStandbyTransitionWorld,
+  type RuntimeRootStandbyChange,
+} from "./RuntimeRootStandbyTransitionSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
@@ -180,6 +184,7 @@ const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
 const activeControllerHookSetWorld = new RuntimeActiveControllerHookSetWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
+const rootStandbyTransitionWorld = new RuntimeRootStandbyTransitionWorld();
 const controllerEvaluationContextWorld = new RuntimeControllerEvaluationContextWorld();
 const matchPreFacingAssertSpecialWorld = new RuntimeMatchPreFacingAssertSpecialWorld(controllerEvaluationContextWorld);
 const autoGuardStartWorld = new RuntimeAutoGuardStartWorld();
@@ -243,6 +248,7 @@ export type MatchRuntimeCommand =
   | { type: "set-playing"; playing: boolean }
   | { type: "set-speed"; speed: number }
   | { type: "toggle"; key: "showClsn1" | "showClsn2" | "showAxis" | "showGrid"; value: boolean }
+  | { type: "set-root-standby"; changes: readonly RuntimeRootStandbyChange[] }
   | { type: "reset" };
 
 export type MatchStepOptions = {
@@ -464,6 +470,11 @@ export class PlayableMatchRuntime {
       this.speed = Math.max(0.5, Math.min(4, command.speed));
     } else if (command.type === "toggle") {
       this.toggles = { ...this.toggles, [command.key]: command.value };
+    } else if (command.type === "set-root-standby") {
+      if (this.runtimeProfile !== "ikemen-go") {
+        throw new Error("Root standby transitions require the ikemen-go runtime profile");
+      }
+      rootStandbyTransitionWorld.apply([this.p1, this.p2, ...this.reserveRoots], command.changes);
     } else if (command.type === "reset") {
       this.reset();
     }

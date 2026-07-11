@@ -26,6 +26,7 @@ describe("RuntimeRootParticipationWorld", () => {
 
     expect(diagnostic).toEqual({
       schema: "RuntimeRootParticipation/v0",
+      activeRootIdsBySide: { 1: ["p1"], 2: [] },
       roots: [
         {
           id: "p1",
