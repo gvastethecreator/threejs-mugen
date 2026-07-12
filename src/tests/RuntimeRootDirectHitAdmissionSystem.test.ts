@@ -30,6 +30,35 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.admittedPairIds).toEqual(["p5->p4", "p5->p2", "p2->p5"]);
   });
 
+  it("projects directed ReversalDef clash pairs without admitting them as ordinary direct hits", () => {
+    const p3 = actor("p3", 3, 1, 0, { reversal: true });
+    const p2 = actor("p2", 2, 2, 0, { reversal: true });
+    const p1 = actor("p1", 1, 1, 0, { reversal: true });
+    p1.currentMove = reversalMove();
+    p2.currentMove = reversalMove();
+    p3.currentMove = reversalMove();
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [p3, p2, p1], getHurtBoxes: () => hurt });
+
+    expect(result.admittedPairIds).toEqual([]);
+    expect(result.admittedReversalClashPairIds).toEqual(["p2->p1", "p3->p2", "p1->p2", "p2->p3"]);
+    expect(result.reversalClashDecisions).toContainEqual({ attackerId: "p3", getterId: "p1", reason: "same-side" });
+  });
+
+  it("matches the directed attacker's ReversalDef filter against the getter attack attr", () => {
+    const getter = actor("p1", 1, 1, 0, { reversal: true });
+    const attacker = actor("p2", 2, 2, 0, { reversal: true });
+    getter.currentMove = reversalMove({ attr: "S,NA", reversalAttr: "S,SP" });
+    attacker.currentMove = reversalMove({ attr: "S,NA", reversalAttr: "S,NA" });
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [getter, attacker], getHurtBoxes: () => hurt });
+
+    expect(result.reversalClashDecisions).toEqual([
+      { attackerId: "p2", getterId: "p1", reason: "admitted" },
+      { attackerId: "p1", getterId: "p2", reason: "attr-rejected" },
+    ]);
+  });
+
   it("filters standby, disabled, invalid-side and non-player roots while retaining over-KO", () => {
     const roots = [
       actor("p1", 1, 1, 0, { move: true, overKo: true }),
@@ -149,5 +178,25 @@ function actor(
     } : undefined,
     moveTick: options.moveTick ?? 1,
     hasHit: options.hasHit ?? false,
+  };
+}
+
+function reversalMove(
+  attrs: { attr?: string; reversalAttr?: string } = {},
+): NonNullable<RuntimeRootDirectHitAdmissionActor["currentMove"]> {
+  return {
+    actionId: 0,
+    startup: 0,
+    activeStart: 0,
+    activeEnd: 3600,
+    recovery: 3600,
+    damage: 0,
+    attr: attrs.attr ?? "S,NA",
+    reversalAttr: attrs.reversalAttr ?? "S,NA",
+    isReversal: true,
+    hitPause: 0,
+    hitStun: 0,
+    push: 0,
+    hitbox: { x1: -20, y1: -20, x2: 20, y2: 0 },
   };
 }

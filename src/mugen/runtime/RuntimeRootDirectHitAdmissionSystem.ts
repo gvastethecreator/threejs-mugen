@@ -1,5 +1,5 @@
 import type { CollisionBox } from "../model/CollisionBox";
-import { canRuntimeBeHitBy, hasRuntimeBoxContact, runtimeWorldBox } from "./CombatResolver";
+import { canRuntimeBeHitBy, hasRuntimeBoxContact, hitAttributeMatches, runtimeWorldBox } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import type { CharacterRuntimeState, RuntimeTeamState } from "./types";
 import { hasRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
@@ -35,13 +35,23 @@ export type RuntimeRootDirectHitAdmissionDecision = {
   reason: RuntimeRootDirectHitAdmissionReason;
 };
 
+export type RuntimeRootReversalClashAdmissionReason = "admitted" | "same-side" | "inactive" | "attr-rejected" | "no-contact";
+
+export type RuntimeRootReversalClashAdmissionDecision = {
+  attackerId: string;
+  getterId: string;
+  reason: RuntimeRootReversalClashAdmissionReason;
+};
+
 export type RuntimeRootDirectHitAdmissionDiagnostic = {
-  schema: "RuntimeRootDirectHitAdmission/v0";
+  schema: "RuntimeRootDirectHitAdmission/v1";
   mode: "ikemen-tag";
   rootIds: string[];
   attackerIds: string[];
   decisions: RuntimeRootDirectHitAdmissionDecision[];
   admittedPairIds: string[];
+  reversalClashDecisions: RuntimeRootReversalClashAdmissionDecision[];
+  admittedReversalClashPairIds: string[];
 };
 
 export type RuntimeRootDirectHitAdmissionInput<TActor extends RuntimeRootDirectHitAdmissionActor> = {
@@ -59,6 +69,8 @@ export class RuntimeRootDirectHitAdmissionWorld {
     const getters = [...roots].sort(compareAttackers);
     const decisions: RuntimeRootDirectHitAdmissionDecision[] = [];
     const admittedPairIds: string[] = [];
+    const reversalClashDecisions: RuntimeRootReversalClashAdmissionDecision[] = [];
+    const admittedReversalClashPairIds: string[] = [];
 
     for (const getter of getters) {
       for (const attacker of roots) {
@@ -69,15 +81,40 @@ export class RuntimeRootDirectHitAdmissionWorld {
       }
     }
 
+    for (const getter of getters.filter(isActiveReversal)) {
+      for (const attacker of roots.filter(isActiveReversal)) {
+        if (attacker === getter) continue;
+        const reason = inspectReversalClash(attacker, getter);
+        reversalClashDecisions.push({ attackerId: attacker.id, getterId: getter.id, reason });
+        if (reason === "admitted") admittedReversalClashPairIds.push(`${attacker.id}->${getter.id}`);
+      }
+    }
+
     return {
-      schema: "RuntimeRootDirectHitAdmission/v0",
+      schema: "RuntimeRootDirectHitAdmission/v1",
       mode: "ikemen-tag",
       rootIds: roots.map(({ id }) => id),
       attackerIds: attackers.map(({ id }) => id),
       decisions,
       admittedPairIds,
+      reversalClashDecisions,
+      admittedReversalClashPairIds,
     };
   }
+}
+
+function inspectReversalClash(
+  attacker: RuntimeRootDirectHitAdmissionActor,
+  getter: RuntimeRootDirectHitAdmissionActor,
+): RuntimeRootReversalClashAdmissionReason {
+  if (attacker.side === getter.side) return "same-side";
+  const attackerMove = attacker.currentMove!;
+  const getterMove = getter.currentMove!;
+  if (!runtimeMoveIsActive(attacker, attackerMove) || !runtimeMoveIsActive(getter, getterMove)) return "inactive";
+  if (!hitAttributeMatches(attackerMove.reversalAttr ?? "", getterMove.attr ?? "S,NA")) return "attr-rejected";
+  return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, attackerMove.hitbox), getter.runtime, [getterMove.hitbox])
+    ? "admitted"
+    : "no-contact";
 }
 
 function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
@@ -109,6 +146,14 @@ function isEligibleRoot(root: RuntimeRootDirectHitAdmissionActor): boolean {
     !root.teamState.disabled &&
     !root.teamState.standby
   );
+}
+
+function isActiveReversal(actor: RuntimeRootDirectHitAdmissionActor): boolean {
+  return actor.currentMove?.isReversal === true && actor.runtime.reversal !== undefined;
+}
+
+function runtimeMoveIsActive(actor: RuntimeRootDirectHitAdmissionActor, move: DemoMove): boolean {
+  return actor.moveTick >= move.activeStart && actor.moveTick <= move.activeEnd;
 }
 
 function compareAttackers(

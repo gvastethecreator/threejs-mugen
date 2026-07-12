@@ -9003,6 +9003,55 @@ export function createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenReversalClashAdmissionTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const reversal = (id: string, label: string) => createSyntheticImportedTraceFighter({
+    id,
+    displayName: label,
+    withHitDef: false,
+    passiveReversalDef: { attr: "S,NA", p1StateNo: 777, targetId: 127, clsn1Extent: 120 },
+  });
+  const world = new MatchWorld({
+    p1: reversal("synthetic-imported-ikemen-reversal-clash-p1", "Synthetic Imported IKEMEN Reversal Clash P1"),
+    p2: reversal("synthetic-imported-ikemen-reversal-clash-p2", "Synthetic Imported IKEMEN Reversal Clash P2"),
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+  });
+  const script = expandRuntimeTraceScript([{ label: "project directed ReversalDef clash pairs", p1: [], p2: [], frames: 1 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-reversal-clash-admission-golden" });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-reversal-clash-admission-golden",
+      label: "Synthetic imported IKEMEN ReversalDef clash admission",
+      source: "imported",
+      notes: [
+        "Explicit IKEMEN Tag trace proves two active ReversalDefs produce getter-ordered directed clash candidates while ordinary direct admission and combat mutation remain empty. It does not claim a winner, mutation, state routing, randomness, attack depth, helpers/projectiles, or full parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-reversal-clash-admission-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["ReversalDef"],
+      requiredExecutedOperations: ["reversaldef"],
+      requiredRootHitAdmissionFrames: [{
+        admittedPairIds: [],
+        admittedReversalClashPairIds: ["p2->p1", "p1->p2"],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, stateNo: 0 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000, stateNo: 0 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "reversal", "override"],
+    }],
+  });
+}
+
 export function createSyntheticImportedPairMissHitPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

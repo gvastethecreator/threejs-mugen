@@ -1857,7 +1857,7 @@ ctrl = 0
     const active = tag.step({ p1: new Set(), p2: new Set() });
     expect(active.rootBodyPush?.rootIds).toEqual(["p1", "p2", "p3"]);
     expect(active.rootHitAdmission).toMatchObject({
-      schema: "RuntimeRootDirectHitAdmission/v0",
+      schema: "RuntimeRootDirectHitAdmission/v1",
       rootIds: ["p1", "p2", "p3"],
       admittedPairIds: [],
     });

@@ -944,6 +944,20 @@ export type RuntimeTraceGateRootPresentationEvidence = {
   frames: number;
 };
 
+export type RuntimeTraceRootHitAdmissionFrameRequirement = {
+  admittedPairIds?: string[];
+  admittedReversalClashPairIds?: string[];
+  minFrames?: number;
+};
+
+export type RuntimeTraceGateRootHitAdmissionEvidence = {
+  admittedPairIds: string[];
+  admittedReversalClashPairIds: string[];
+  firstTick: number;
+  lastTick: number;
+  frames: number;
+};
+
 export type RuntimeTrace = {
   label: string;
   frameCount: number;
@@ -986,6 +1000,7 @@ export type RuntimeTraceGate = {
   requiredRoundFrames?: RuntimeTraceRoundFrameRequirement[];
   requiredStageFrames?: RuntimeTraceStageFrameRequirement[];
   requiredRootPresentationFrames?: RuntimeTraceRootPresentationFrameRequirement[];
+  requiredRootHitAdmissionFrames?: RuntimeTraceRootHitAdmissionFrameRequirement[];
   requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
   requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
   requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
@@ -1018,6 +1033,7 @@ export type RuntimeTraceGateEvidence = {
   roundFrames: RuntimeTraceGateRoundFrameEvidence[];
   stageFrames: RuntimeTraceGateStageFrameEvidence[];
   rootPresentationFrames: RuntimeTraceGateRootPresentationEvidence[];
+  rootHitAdmissionFrames: RuntimeTraceGateRootHitAdmissionEvidence[];
   actorFrames: RuntimeTraceGateActorFrameEvidence[];
   finalActors: RuntimeTraceGateFinalActorEvidence[];
 };
@@ -1287,6 +1303,15 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing root presentation frame: ${describeRootPresentationFrameRequirement(requirement)}`);
     }
   }
+  for (const requirement of gate.requiredRootHitAdmissionFrames ?? []) {
+    const match = evidence.rootHitAdmissionFrames.find((frame) =>
+      (requirement.admittedPairIds === undefined || sameOrderedStrings(frame.admittedPairIds, requirement.admittedPairIds)) &&
+      (requirement.admittedReversalClashPairIds === undefined || sameOrderedStrings(frame.admittedReversalClashPairIds, requirement.admittedReversalClashPairIds))
+    );
+    if (!match || match.frames < (requirement.minFrames ?? 1)) {
+      failures.push(`Missing root hit admission frame: ${JSON.stringify(requirement)}`);
+    }
+  }
   for (const requirement of gate.requiredActorFrames ?? []) {
     if (!evidence.actorFrames.some((actor) => matchesActorFrameRequirement(actor, requirement))) {
       failures.push(`Missing actor frame: ${describeActorFrameRequirement(requirement)}`);
@@ -1392,6 +1417,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const roundFrames = new Map<string, RuntimeTraceGateRoundFrameEvidence>();
   const stageFrames = new Map<string, RuntimeTraceGateStageFrameEvidence>();
   const rootPresentationFrames = new Map<string, RuntimeTraceGateRootPresentationEvidence>();
+  const rootHitAdmissionFrames = new Map<string, RuntimeTraceGateRootHitAdmissionEvidence>();
   const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
   const executedControllers: Record<string, number> = {};
   const executedOperations: Record<string, number> = {};
@@ -1424,6 +1450,15 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
             lastTick: frame.tick,
             frames: 1,
           });
+    }
+    if (frame.rootHitAdmission) {
+      const admittedPairIds = [...frame.rootHitAdmission.admittedPairIds];
+      const admittedReversalClashPairIds = [...frame.rootHitAdmission.admittedReversalClashPairIds];
+      const key = JSON.stringify([admittedPairIds, admittedReversalClashPairIds]);
+      const existing = rootHitAdmissionFrames.get(key);
+      rootHitAdmissionFrames.set(key, existing
+        ? { ...existing, lastTick: Math.max(existing.lastTick, frame.tick), frames: existing.frames + 1 }
+        : { admittedPairIds, admittedReversalClashPairIds, firstTick: frame.tick, lastTick: frame.tick, frames: 1 });
     }
     if (frame.round) {
       const key = roundFrameEvidenceKey(frame.round);
@@ -1897,6 +1932,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     stageFrames: [...stageFrames.values()].sort((left, right) => stageFrameGateEvidenceKey(left).localeCompare(stageFrameGateEvidenceKey(right))),
     rootPresentationFrames: [...rootPresentationFrames.values()].sort((left, right) =>
       rootPresentationGateEvidenceKey(left).localeCompare(rootPresentationGateEvidenceKey(right))),
+    rootHitAdmissionFrames: [...rootHitAdmissionFrames.values()].sort((left, right) =>
+      JSON.stringify(left).localeCompare(JSON.stringify(right))),
     actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
     finalActors: [...trace.final.actors, ...(trace.final.reserveActors ?? [])].map(summarizeFinalActorEvidence),
   };

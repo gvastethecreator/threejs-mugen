@@ -263,6 +263,11 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           cameraRootIds: [...presentation.cameraRootIds],
           collisionRootIds: [...presentation.collisionRootIds],
         })),
+        rootHitAdmissionFrames: gate.evidence.rootHitAdmissionFrames.map((frame) => ({
+          ...frame,
+          admittedPairIds: [...frame.admittedPairIds],
+          admittedReversalClashPairIds: [...frame.admittedReversalClashPairIds],
+        })),
         actorFrames: gate.evidence.actorFrames.map((actor) => ({ ...actor })),
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
       },
@@ -769,6 +774,13 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
       drawRootIds: [...requirement.drawRootIds],
       cameraRootIds: [...requirement.cameraRootIds],
       collisionRootIds: [...requirement.collisionRootIds],
+    })),
+    requiredRootHitAdmissionFrames: gate.requiredRootHitAdmissionFrames?.map((requirement) => ({
+      ...requirement,
+      admittedPairIds: requirement.admittedPairIds ? [...requirement.admittedPairIds] : undefined,
+      admittedReversalClashPairIds: requirement.admittedReversalClashPairIds
+        ? [...requirement.admittedReversalClashPairIds]
+        : undefined,
     })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrameSequences: gate.requiredActorFrameSequences?.map((sequence) => ({

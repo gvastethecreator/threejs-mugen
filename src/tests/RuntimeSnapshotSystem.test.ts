@@ -333,12 +333,14 @@ describe("RuntimeSnapshotWorld", () => {
       movedRootIds: ["p1", "p2"],
     };
     const rootHitAdmission = {
-      schema: "RuntimeRootDirectHitAdmission/v0" as const,
+      schema: "RuntimeRootDirectHitAdmission/v1" as const,
       mode: "ikemen-tag" as const,
       rootIds: ["p1", "p2"],
       attackerIds: ["p1", "p2"],
       decisions: [{ attackerId: "p1", getterId: "p2", reason: "admitted" as const }],
       admittedPairIds: ["p1->p2"],
+      reversalClashDecisions: [],
+      admittedReversalClashPairIds: [],
     };
 
     const snapshot = world.match({

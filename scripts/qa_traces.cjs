@@ -1295,6 +1295,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-reversal-clash-admission",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenReversalClashAdmissionTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-presentation",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(),
