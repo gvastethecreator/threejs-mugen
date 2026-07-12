@@ -46,6 +46,59 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     expect(() => advance([roots[0]!, { ...roots[1]!, id: "p1" }], true)).toThrow("Duplicate root body-push actor p1");
   });
+
+  it("selects Z push for depth-dominant overlap and reclamps it", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 1)];
+    roots[0]!.runtime.combatDepth = { position: -4, velocity: 0, size: [5, 5], attack: [4, 4] };
+    roots[1]!.runtime.combatDepth = { position: 4, velocity: 0, size: [5, 5], attack: [4, 4] };
+
+    const diagnostic = new RuntimeRootBodyPushWorld().advance({
+      tagMode: true,
+      roots,
+      playableRoots: [roots[0]!, roots[1]!],
+      stage: { bounds: { left: -100, right: 100 }, depthBounds: { top: -5, bottom: 5 } },
+      actorConstraintWorld: new RuntimeActorConstraintWorld(),
+    });
+
+    expect(diagnostic.movedRootIds).toEqual(["p1", "p2"]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([0, 1]);
+    expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([-5, 5]);
+  });
+
+  it("uses localcoord scale when separating depth", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 1)];
+    roots[0]!.localCoord = [640, 480];
+    roots[0]!.runtime.combatDepth = { position: -8, velocity: 0, size: [10, 10], attack: [4, 4] };
+    roots[1]!.runtime.combatDepth = { position: 4, velocity: 0, size: [5, 5], attack: [4, 4] };
+
+    advance(roots, true);
+
+    expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([-10, 5]);
+  });
+
+  it("falls back to X for equal depth and keeps Z unchanged", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    roots[0]!.runtime.combatDepth = { position: 0, velocity: 0, size: [5, 5], attack: [4, 4] };
+    roots[1]!.runtime.combatDepth = { position: 0, velocity: 0, size: [5, 5], attack: [4, 4] };
+
+    advance(roots, true);
+
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 15]);
+    expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([0, 0]);
+  });
+
+  it("pushes both axes when normalized distances are similar", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 8)];
+    roots[0]!.runtime.bodyWidth = { front: 5, back: 5 };
+    roots[1]!.runtime.bodyWidth = { front: 5, back: 5 };
+    roots[0]!.runtime.combatDepth = { position: 0, velocity: 0, size: [5, 5], attack: [4, 4] };
+    roots[1]!.runtime.combatDepth = { position: 8, velocity: 0, size: [5, 5], attack: [4, 4] };
+
+    advance(roots, true);
+
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1, 9]);
+    expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([-1, 9]);
+  });
 });
 
 function advance(roots: RuntimeRootBodyPushActor[], tagMode: boolean) {

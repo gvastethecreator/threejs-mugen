@@ -19,6 +19,8 @@
 
 The required artifact passed with checksum `f709d58c` and final checksum `e28ba92f`.
 
+After depth player-push promotion, current checksum is `ea905cc9` and final checksum is `0efa02b0`; P3 still remains at Z `20` and produces no contact.
+
 ## Verification
 
 - `pnpm test`: 180 files / 1873 tests passed.

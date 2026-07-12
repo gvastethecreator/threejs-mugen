@@ -138,20 +138,63 @@ export class RuntimeActorConstraintWorld {
     state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
   }
 
-  separate(left: RuntimeActorConstraintState, right: RuntimeActorConstraintState): void {
+  clampBodyPushDepthToStage(
+    state: RuntimeActorConstraintState,
+    stage: Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>,
+    actorLocalCoord?: readonly [number, number],
+  ): void {
+    if (!stage.depthBounds || !state.combatDepth || state.stageBound === false) return;
+    const stageScale = 320 / (stage.localCoord?.width ?? 320);
+    const actorScale = 320 / (actorLocalCoord?.[0] ?? 320);
+    const top = (stage.depthBounds.top * stageScale) / actorScale + (state.combatDepth.edge?.[0] ?? 0);
+    const bottom = (stage.depthBounds.bottom * stageScale) / actorScale - (state.combatDepth.edge?.[1] ?? 0);
+    state.combatDepth.position = Math.max(top, Math.min(bottom, state.combatDepth.position));
+  }
+
+  separate(
+    left: RuntimeActorConstraintState,
+    right: RuntimeActorConstraintState,
+    leftLocalCoord?: readonly [number, number],
+    rightLocalCoord?: readonly [number, number],
+  ): void {
     if (left.playerPush === false || right.playerPush === false) {
       return;
     }
-    const minDistance = widthToward(left, right) + widthToward(right, left);
-    const delta = right.pos.x - left.pos.x;
-    const distance = Math.abs(delta);
-    if (distance >= minDistance || distance === 0) {
+    const leftScale = 320 / (leftLocalCoord?.[0] ?? 320);
+    const rightScale = 320 / (rightLocalCoord?.[0] ?? 320);
+    const deltaX = right.pos.x * rightScale - left.pos.x * leftScale;
+    const overlapX = widthToward(left, right) * leftScale + widthToward(right, left) * rightScale - Math.abs(deltaX);
+    if (overlapX <= 0) {
       return;
     }
-    const push = (minDistance - distance) / 2;
-    const direction = delta > 0 ? 1 : -1;
-    left.pos.x -= push * direction;
-    right.pos.x += push * direction;
+
+    const leftDepth = left.combatDepth;
+    const rightDepth = right.combatDepth;
+    if (!leftDepth || !rightDepth) {
+      if (deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale);
+      return;
+    }
+
+    const leftZ = leftDepth.position * leftScale;
+    const rightZ = rightDepth.position * rightScale;
+    const overlapZ = Math.min(leftZ + leftDepth.size[1] * leftScale, rightZ + rightDepth.size[1] * rightScale) -
+      Math.max(leftZ - leftDepth.size[0] * leftScale, rightZ - rightDepth.size[0] * rightScale);
+    if (overlapZ <= 0) return;
+
+    const deltaZ = rightZ - leftZ;
+    let pushX = deltaZ === 0;
+    let pushZ = false;
+    if (deltaZ !== 0) {
+      const xTotal = (bodySpan(left) * leftScale) + (bodySpan(right) * rightScale);
+      const zTotal = depthSpan(leftDepth) * leftScale + depthSpan(rightDepth) * rightScale;
+      const adjustedZDistance = zTotal === 0 ? Math.abs(deltaZ) : (xTotal / zTotal) * Math.abs(deltaZ);
+      const ratio = adjustedZDistance === 0 ? Number.POSITIVE_INFINITY : Math.abs(deltaX) / adjustedZDistance;
+      pushX = ratio > 0.75 && ratio < 1 / 0.75 || Math.abs(deltaX) >= adjustedZDistance;
+      pushZ = ratio > 0.75 && ratio < 1 / 0.75 || Math.abs(deltaX) < adjustedZDistance;
+    }
+
+    if (pushX && deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale);
+    if (pushZ) separateZ(leftDepth, rightDepth, overlapZ, deltaZ, leftScale, rightScale);
   }
 }
 
@@ -205,6 +248,41 @@ function widthToward(self: RuntimeActorConstraintState, target: RuntimeActorCons
   const width = self.bodyWidth ?? { front: 39, back: 39 };
   const targetIsInFront = (target.pos.x - self.pos.x) * self.facing >= 0;
   return targetIsInFront ? width.front : width.back;
+}
+
+function bodySpan(state: RuntimeActorConstraintState): number {
+  const width = state.bodyWidth ?? { front: 39, back: 39 };
+  return width.front + width.back;
+}
+
+function depthSpan(depth: NonNullable<RuntimeActorConstraintState["combatDepth"]>): number {
+  return depth.size[0] + depth.size[1];
+}
+
+function separateX(
+  left: RuntimeActorConstraintState,
+  right: RuntimeActorConstraintState,
+  overlap: number,
+  delta: number,
+  leftScale: number,
+  rightScale: number,
+): void {
+  const direction = delta > 0 ? 1 : -1;
+  left.pos.x -= (overlap / 2 / leftScale) * direction;
+  right.pos.x += (overlap / 2 / rightScale) * direction;
+}
+
+function separateZ(
+  left: NonNullable<RuntimeActorConstraintState["combatDepth"]>,
+  right: NonNullable<RuntimeActorConstraintState["combatDepth"]>,
+  overlap: number,
+  delta: number,
+  leftScale: number,
+  rightScale: number,
+): void {
+  const direction = delta > 0 ? 1 : -1;
+  left.position -= (overlap / 2 / leftScale) * direction;
+  right.position += (overlap / 2 / rightScale) * direction;
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

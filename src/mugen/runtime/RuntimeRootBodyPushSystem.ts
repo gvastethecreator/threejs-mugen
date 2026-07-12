@@ -8,6 +8,7 @@ export type RuntimeRootBodyPushActor = {
   side: RuntimeTeamSide | null;
   teamState: RuntimeTeamState;
   runtime: RuntimeActorConstraintState;
+  localCoord?: readonly [number, number];
 };
 
 export type RuntimeRootBodyPushDiagnostic = {
@@ -22,15 +23,21 @@ export type RuntimeRootBodyPushInput = {
   tagMode: boolean;
   roots: readonly RuntimeRootBodyPushActor[];
   playableRoots: readonly [RuntimeRootBodyPushActor, RuntimeRootBodyPushActor];
-  stage: Pick<MugenStageDefinition, "bounds">;
-  actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampBodyPushToStage">;
+  stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
+  actorConstraintWorld: Pick<
+    RuntimeActorConstraintWorld,
+    "separate" | "clampBodyPushToStage" | "clampBodyPushDepthToStage"
+  >;
 };
 
 export class RuntimeRootBodyPushWorld {
   advance(input: RuntimeRootBodyPushInput): RuntimeRootBodyPushDiagnostic {
     assertUniqueRoots(input.roots);
     const roots = input.tagMode ? input.roots.filter(eligibleTagRoot) : [...input.playableRoots];
-    const before = new Map(roots.map((root) => [root.id, root.runtime.pos.x]));
+    const before = new Map(roots.map((root) => [root.id, {
+      x: root.runtime.pos.x,
+      z: root.runtime.combatDepth?.position,
+    }]));
     const pairIds: Array<[string, string]> = [];
 
     for (let leftIndex = 0; leftIndex < roots.length; leftIndex += 1) {
@@ -38,17 +45,23 @@ export class RuntimeRootBodyPushWorld {
         const left = roots[leftIndex]!;
         const right = roots[rightIndex]!;
         pairIds.push([left.id, right.id]);
-        input.actorConstraintWorld.separate(left.runtime, right.runtime);
+        input.actorConstraintWorld.separate(left.runtime, right.runtime, left.localCoord, right.localCoord);
       }
     }
-    for (const root of roots) input.actorConstraintWorld.clampBodyPushToStage(root.runtime, input.stage);
+    for (const root of roots) {
+      input.actorConstraintWorld.clampBodyPushToStage(root.runtime, input.stage);
+      input.actorConstraintWorld.clampBodyPushDepthToStage(root.runtime, input.stage, root.localCoord);
+    }
 
     return {
       schema: "RuntimeRootBodyPush/v0",
       mode: input.tagMode ? "ikemen-tag" : "pair",
       rootIds: roots.map(({ id }) => id),
       pairIds,
-      movedRootIds: roots.filter((root) => root.runtime.pos.x !== before.get(root.id)).map(({ id }) => id),
+      movedRootIds: roots.filter((root) => {
+        const prior = before.get(root.id);
+        return root.runtime.pos.x !== prior?.x || root.runtime.combatDepth?.position !== prior?.z;
+      }).map(({ id }) => id),
     };
   }
 }

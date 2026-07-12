@@ -1971,6 +1971,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenScreenStageBoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-depth-player-push",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenDepthPlayerPushTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-targetbind-pause",
       required: true,
       artifact: presets.createSyntheticImportedTargetBindPauseTraceArtifact(),

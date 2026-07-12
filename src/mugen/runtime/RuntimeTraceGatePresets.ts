@@ -9093,6 +9093,68 @@ export function createSyntheticImportedIkemenScreenStageBoundTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenDepthPlayerPushTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-depth-player-push-grid",
+    displayName: "Trace Depth Player Push Grid",
+    depthBounds: { top: -20, bottom: 20 },
+    playerStart: { p1: { x: -100, y: 0, z: 0, facing: 1 }, p2: { x: 100, y: 0, z: 0, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-player-push-attacker",
+    displayName: "Synthetic Imported IKEMEN Depth Player Push Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 134, posX: 0, posZ: -4, depth: { mode: "player", top: 2, bottom: 2 }, hitDefTrigger: "0" },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-player-push-defender",
+    displayName: "Synthetic Imported IKEMEN Depth Player Push Defender",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 135, posX: 1, posZ: 4, depth: { mode: "player", top: 2, bottom: 2 }, hitDefTrigger: "0" },
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-player-push-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Depth Player Push Pair Defender",
+    withHitDef: false,
+    withPlayerPush: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([{ label: "P3 and P4 resolve depth-dominant body overlap", p1: [], p2: [], frames: 2 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-depth-player-push-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-depth-player-push-golden",
+      label: "Synthetic imported IKEMEN depth player push",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves depth-dominant overlapping roots separate along logical Z before direct-hit admission. Priority, weight, pushfactor, Clsn/Y policy, helpers, and full parity remain outside this gate."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-depth-player-push-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["PosSet", "Depth"],
+      requiredExecutedOperations: ["kinematic:posset", "collision:depth"],
+      requiredActorFrames: [
+        { actorId: "p3", source: "imported", actorKind: "player", observedPosXAtLeast: 0, observedPosXAtMost: 0, observedPosZAtMost: -5, minFrames: 2 },
+        { actorId: "p4", source: "imported", actorKind: "player", observedPosXAtLeast: 1, observedPosXAtMost: 1, observedPosZAtLeast: 5, minFrames: 2 },
+      ],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41233,6 +41295,7 @@ export type SyntheticImportedTraceFighterOptions = {
     priority?: number;
     priorityType?: "Hit" | "Miss" | "Dodge";
     clsn1Extent?: number;
+    posX?: number;
     posZ?: number;
     velZ?: number;
     posFreeze?: boolean;
@@ -46663,7 +46726,9 @@ stateno = 0
 
 function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["activeRootHitDefRoute"]>): string {
   return `
-${route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`}
+${route.posX === undefined
+  ? (route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`)
+  : `[State 0, Active Root Pos]\ntype = PosSet\ntrigger1 = 1\nx = ${route.posX}\n${route.posZ === undefined ? "" : `z = ${route.posZ}\n`}`}
 ${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
 ${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger1 = 1\nvalue = 1\n` : ""}
 ${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}

@@ -20,6 +20,7 @@ Imported stages now own bounded logical depth through `topbound`, `botbound`, `p
 - Boundary check passed.
 - Trace QA: 558/558 artifacts passed, 527 required and 31 optional.
 - Required artifact checksum: `c12d5a6e`; final checksum: `c08cbae7`.
+- Current checksum after depth player-push promotion: `47cda3cc`; final checksum: `9c14fd01`. The asserted P3/P4 Z outcome remains `5/-5`.
 
 ## Honest boundary
 

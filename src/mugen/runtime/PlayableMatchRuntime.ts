@@ -963,10 +963,11 @@ export class PlayableMatchRuntime {
                 side: runtimeTeamSide(root) ?? null,
                 teamState: root.runtime.teamState!,
                 runtime: root.runtime,
+                localCoord: root.definition.localCoord,
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime },
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
