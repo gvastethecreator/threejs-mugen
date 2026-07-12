@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 466 - Imported visual guarded contact
+
+Done: legal-fixture smoke uses exact imported P1/demo Nova Boxer AI P2 roster, waits until native AI state `200`, applies physical ArrowLeft only during its attack window, and atomically captures imported P1 guard-hit `150/150`. It requires `guarding=true`, exact no-chip life `1000`, frame `150,0`, action-palette crop evidence, and idle return independently on desktop/mobile. Quality gate: independent re-review reports no P1/P2; browser smoke, 183 files / 1935 tests, TypeScript 7 typecheck/build, boundaries, diff hygiene, and 565/565 traces (534 required) pass. Claim allowed: this fixture matchup visibly routes held-back imported P1 through a zero-damage guarded contact. Claim blocked: nonzero chip formulas, exact guard timing/slide, crouch/air guard, body-push, multi-hit, touch input, production art, and visual parity.
+
 ## Entry 465 - Input-driven imported recovery visual journey
 
 Done: legal-fixture smoke reverses the roster through Match selects to imported MUGEN-lite P1 and demo Nova Boxer AI P2, verifies exact identities, and waits for the native AI to deliver the real fall route. It atomically captures `5000 -> 5050 -> 5100`, advances two visible one-frame controls without input, holds physical `a+s`, advances one real frame containing fresh `x+y`, captures imported `5200`, and requires return to `0/0`. Every state requires exact `945` post-hit life, action-palette crop evidence, and mutually distinct masks in independent desktop/mobile runs. Claim allowed: current fixture CNS `command = "recovery"` can visibly drive imported `5100 -> 5200` through the production browser input and step controls. Claim blocked: Common1 recovery tables/thresholds, body-push, guard, multi-hit, touch input, production art, and visual parity.

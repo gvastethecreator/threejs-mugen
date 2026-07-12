@@ -1,6 +1,8 @@
 ﻿# Supported Features
 
-- Legal-fixture browser smoke proves the fixture CNS recovery command: exact imported P1/demo Nova Boxer AI P2 roster, native AI hit, `5000 -> 5050 -> 5100`, two real UI frame steps, fresh keyboard `a+s -> x+y`, imported `5200`, and idle return. Desktop/mobile crops require action-palette evidence and distinct masks. Common1 recovery tables/thresholds, body-push, guard, multi-hit, touch input, production art, and visual parity remain separate gates.
+- Legal-fixture browser smoke proves a zero-chip imported guard contact for this fixture matchup: exact imported P1/demo Nova Boxer AI P2 roster, native AI attack window, held ArrowLeft, imported state/action `150`, `guarding=true`, life `1000`, visible sprite frame `150,0`, and idle return on desktop/mobile. Nonzero chip formulas, exact timing/slide, crouch/air guard, body-push, multi-hit, touch input, production art, and visual parity remain separate gates.
+
+- Legal-fixture browser smoke proves the fixture CNS recovery command: exact imported P1/demo Nova Boxer AI P2 roster, native AI hit, `5000 -> 5050 -> 5100`, two real UI frame steps, fresh keyboard `a+s -> x+y`, imported `5200`, and idle return. Desktop/mobile crops require action-palette evidence and distinct masks. Common1 recovery tables/thresholds, body-push, multi-hit, touch input, production art, and visual parity remain separate gates.
 
 - Legal-fixture browser smoke swaps demo Nova Boxer P1/imported MUGEN-lite P2 through real Match selects, verifies exact roster ids plus actor identities, approaches to bounded center distance, attacks with keyboard `a`, and requires imported get-hit/fall states `5000 -> 5050 -> 5100`, damage `1000 -> 945`, action-palette crop evidence, distinct masks, and natural idle return on desktop/mobile. Body-push semantics, guard visuals, repeated hits, production art, and visual parity remain separate gates.
 
