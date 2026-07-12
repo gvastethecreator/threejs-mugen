@@ -231,6 +231,41 @@ describe("MatchWorld", () => {
     });
   });
 
+  it("exposes Tag side command routing without widening reserve gameplay ownership", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = world.step({ p1: new Set(["x"]), p2: new Set() });
+    const registry = world.getActorRegistry();
+
+    expect(snapshot.rootInputRouting).toMatchObject({
+      schema: "RuntimeRootInputRouting/v0",
+      mode: "ikemen-tag",
+      scope: "normal-active-tick",
+    });
+    expect(snapshot.rootInputRouting?.roots.find(({ id }) => id === "p3")).toMatchObject({
+      commandSource: "p1",
+      commandMapped: true,
+      directControlled: false,
+      aiControlled: false,
+      standby: true,
+      effectiveCtrl: false,
+    });
+    expect(registry.rootParticipation.roots.find(({ id }) => id === "p3")).toMatchObject({
+      scheduled: true,
+      inputOwned: false,
+      combatOwned: false,
+      roundOwned: false,
+      presented: false,
+      effectStoreOwned: false,
+    });
+    expect(snapshot.actors.map(({ id }) => id)).toEqual(["p1", "p2"]);
+    expect(registry.effectStores.map(({ ownerId }) => ownerId)).toEqual(["p1", "p2"]);
+  });
+
   it("projects atomic standby transitions without widening playable consumers", () => {
     const world = new MatchWorld({
       runtimeProfile: "ikemen-go",

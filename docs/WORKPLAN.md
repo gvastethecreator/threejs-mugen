@@ -1313,6 +1313,8 @@ Required `synthetic-imported-ikemen-helper-self-tag` now pins the Helper-owned d
 
 Pinned active-root research now establishes that Human Tag maps each physical side stream into independent same-side root command lists, while effective control, direct gameplay, combat, presentation, and resources remain separate policies. Local audit found storage-class actor scheduling, pair-only phase consumers, non-P2 effect aliasing into P1, and reserve-blind behavior traces. Wayfinder 094 therefore implements only side command routing plus reserve-root trace observability before a later phase-capability cut. No runtime, trace, visual, or score movement is claimed by this research checkpoint.
 
+Explicit `ikemen-go` Tag normal ticks now clone each side input into independent same-side root command buffers through `RuntimeRootInputRouting/v0`. Required checksum `dff92731` proves P2 isolation followed by a P1-driven standby P3 state transition, while Pause/hitpause and every later gameplay owner stay pair-only. Full gates pass 171 files / 1762 tests and 540/540 traces. Wayfinder 095 next models the current per-phase root capability matrix before any direct-input, kinematics, presentation, effect, combat, round, or resource widening; no visual or score movement is claimed.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

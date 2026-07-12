@@ -1,7 +1,7 @@
 # Model Tag Side Command Routing
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -21,4 +21,6 @@ Can explicit IKEMEN Tag mode route each side input stream into independent comma
 
 ## Answer
 
-Pending implementation.
+Explicit `ikemen-go` Tag mode now publishes `RuntimeRootInputRouting/v0` and clones P1 into odd-root command routes plus P2 into even-root routes during normal active ticks. Each mapped command buffer updates once before controller execution, while direct input/AI, full fighter phases, effects, combat, round, presentation, and resources remain P1/P2-only.
+
+Required `synthetic-imported-ikemen-tag-side-command.json` pins checksum `dff92731` and frames `019f58ec`, `a855626a`, `db154ac1`; P2 cannot trigger P3, then P1 drives standby P3 from state `0` to `1284`. Pause/hitpause non-routing, reset, invalid roots, Single/legacy behavior, independent buffers, unchanged root participation, and reserve-blind legacy checksums are covered. Full evidence: `docs/reports/2026-07-11-ikemen-tag-side-command-routing.md`.

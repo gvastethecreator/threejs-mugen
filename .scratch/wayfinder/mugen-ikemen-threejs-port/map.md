@@ -111,16 +111,17 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute Helper-originated self Tag standby](tickets/091-execute-helper-originated-self-tag.md) - Helper CNS now executes concrete self-only TagIn/TagOut with live Helper expressions, owner/state telemetry, standby participation, and reset-safe hook rebinding.
 - [Promote Helper-originated Tag trace](tickets/092-promote-helper-originated-tag-trace.md) - required checksum `08014285` gates Helper standby/control order, continued CNS, concrete Tag telemetry, and a preserved parented Projectile.
 - [Map active-root gameplay ownership](tickets/093-map-active-root-gameplay-ownership.md) - upstream Tag maps one side stream to every same-side root, while local gameplay remains split across pair-only input, effects, combat, round, presentation, and resource owners.
+- [Model Tag side command routing](tickets/094-model-tag-side-command-routing.md) - explicit Tag normal ticks now clone each side stream into independent same-side root command state, with required P2-isolation/P1-to-P3 evidence and all later gameplay owners unchanged.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Model Tag side command routing](tickets/094-model-tag-side-command-routing.md)
+- [Model active-root phase capabilities](tickets/095-model-active-root-phase-capabilities.md)
 
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Active-root gameplay follows the ordered input/capability/presentation/effect/combat/round/resource route fixed by Wayfinder 093; only 094 is implementation-ready.
+- Active-root gameplay follows the ordered capability/presentation/effect/combat/round/resource route fixed by Wayfinder 093; only the capability model in 095 is implementation-ready.
 
 ## Out Of Scope
 

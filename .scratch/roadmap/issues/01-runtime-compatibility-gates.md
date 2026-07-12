@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - IKEMEN Tag Side Command Routing
+
+Status: done
+Date: 2026-07-11
+
+- Baseline: P3-P8 controller-only CNS existed, but only P1/P2 received command state and traces could not gate reserve actors.
+- Result: `RuntimeRootInputRouting/v0` clones P1 into independent odd-root command buffers and P2 into even-root buffers during explicit Tag normal ticks. Direct gameplay and every later owner remain pair-only.
+- Evidence: required checksum `dff92731`; frame checksums `019f58ec`, `a855626a`, `db154ac1`; 540/540 traces with 509 required; focused 7 files / 763 tests; full 171 files / 1762 tests; TypeScript 7 build/typecheck; boundaries green.
+- Audit: Pause/hitpause non-routing, opposite-side isolation, reset, invalid/Single/legacy routes, duplicate ids and actor aliases, unchanged participation, and reserve checksum exclusion are covered.
+- Blocked: P3-P8 direct input/AI, full fighter phases, root-key effects, combat, round, presentation/lifebars/resources, rollback, score movement, and full IKEMEN parity.
+
 ## Latest Closed Quality Slice - Helper-originated Tag Trace
 
 Status: done

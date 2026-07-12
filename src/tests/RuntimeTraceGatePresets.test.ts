@@ -163,6 +163,7 @@ import {
   createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
+  createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
   createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
@@ -15952,6 +15953,42 @@ describe("RuntimeTraceGatePresets", () => {
           parentId: "p1-helper-0",
           effect: expect.objectContaining({ kind: "projectile", id: 8860 }),
         }),
+      ]),
+    );
+  });
+
+  it("creates a required IKEMEN Tag side command routing artifact", () => {
+    const artifact = createSyntheticImportedIkemenTagSideCommandTraceArtifact({
+      generatedAt: "2026-07-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-tag-side-command-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-tag-side-command-golden", passed: true, failures: [] }],
+      trace: {
+        frameCount: 3,
+        finalReserveActors: [
+          expect.objectContaining({ id: "p3", stateNo: 1284, teamStandby: true, ctrl: false }),
+          expect.objectContaining({ id: "p4", stateNo: 0, teamStandby: true, effectiveCtrl: false }),
+        ],
+      },
+    });
+    expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
+    expect(artifact.trace.checksum).toBe("dff92731");
+    expect(artifact.trace.frameChecksums).toEqual(["019f58ec", "a855626a", "db154ac1"]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "opposite-side isolation before same-side command",
+        steps: [
+          expect.objectContaining({ actorId: "p3", stateNo: 0, teamStandby: true, effectiveCtrl: false }),
+          expect.objectContaining({ actorId: "p3", stateNo: 1284, teamStandby: true, effectiveCtrl: false }),
+        ],
+      },
+    ]);
+    expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }),
       ]),
     );
   });

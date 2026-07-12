@@ -533,8 +533,10 @@ export type MugenSnapshot = {
   reserveActors?: ActorSnapshot[];
   effects?: ActorSnapshot[];
   compatibilitySession?: CompatibilitySessionSnapshot;
+  reserveCompatibilitySession?: CompatibilitySessionSnapshot;
   tickSchedule?: RuntimeMatchTickSchedule;
   tagTeamOrder?: import("./RuntimeTagTeamOrderSystem").RuntimeTagTeamOrderDiagnostic;
+  rootInputRouting?: import("./RuntimeRootInputRoutingSystem").RuntimeRootInputRoutingDiagnostic;
   logs: string[];
 };
 

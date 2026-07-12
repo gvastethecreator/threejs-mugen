@@ -8359,6 +8359,113 @@ export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenTagSideCommandTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "opposite-side command stays isolated", p1: [], p2: ["x"], frames: 1 },
+    { label: "same-side command reaches P3", p1: ["x"], p2: [], frames: 1 },
+    { label: "settle mapped command", p1: [], p2: [], frames: 1 },
+  ]);
+  const reserve = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-tag-side-command",
+    displayName: "Synthetic Imported IKEMEN Tag Side Command",
+    withHitDef: false,
+    passiveCommandRoute: { commandName: "x", stateNo: 1284 },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1: demoFighters[0]!,
+      p2: demoFighters[1]!,
+      stage,
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve, demoFighters[1]!],
+    }),
+    script,
+    { label: "synthetic-imported-ikemen-tag-side-command-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-tag-side-command-golden",
+      label: "Synthetic imported IKEMEN Tag side command routing",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go Tag trace proves P2 input cannot activate P3, then P1 input reaches P3's independent command buffer and drives already-admitted standby State 0 CNS into state 1284. P3 remains standby and gains no direct input, AI, effects, combat, round, presentation, or resource ownership.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-tag-side-command-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [1284],
+        requiredExecutedControllers: ["ChangeState"],
+        requiredActiveCommands: ["x"],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 same-side command route",
+            actorId: "p3",
+            steps: [{ stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }],
+          },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 1284,
+            teamStandby: true,
+            effectiveCtrl: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p4",
+            source: "demo",
+            actorKind: "player",
+            stateNo: 0,
+            teamStandby: true,
+            effectiveCtrl: false,
+            minFrames: 3,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "opposite-side isolation before same-side command",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 0,
+                teamStandby: true,
+                effectiveCtrl: false,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 1284,
+                teamStandby: true,
+                effectiveCtrl: false,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", stateNo: 1284, ctrl: false },
+          { actorId: "p4", source: "demo", actorKind: "player", stateNo: 0, ctrl: true },
+        ],
+        forbiddenCombatReasons: ["hit", "guard"],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenPauseBufferTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39735,6 +39842,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
+  passiveCommandRoute?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -40451,6 +40559,7 @@ movetype = I
 physics = S
 anim = 0
 ctrl = 1
+${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandRoute) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
@@ -40652,6 +40761,7 @@ ${options.identityEntry ? simpleStateBlock(options.identityEntry.stateNo, "I") :
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfAnimExistEntry ? simpleStateBlock(options.selfAnimExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo && !passiveControllerStateNos.has(options.selfCommandEntry.stateNo) ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
+${options.passiveCommandRoute ? simpleStateBlock(options.passiveCommandRoute.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.runOrderEntry ? simpleStateBlock(options.runOrderEntry.stateNo, "I") : ""}
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
@@ -40962,6 +41072,11 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.selfCommandEntry === undefined || passiveControllerStateNos.has(options.selfCommandEntry.stateNo)
         ? []
         : ([[options.selfCommandEntry.stateNo, traceAction(options.selfCommandEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.passiveCommandRoute === undefined
+        ? []
+        : ([[options.passiveCommandRoute.stateNo, traceAction(options.passiveCommandRoute.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.stageTimeEntry === undefined
         ? []
         : ([[options.stageTimeEntry.stateNo, traceAction(options.stageTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -45097,6 +45212,15 @@ value = ${route.stateNo}
 triggerall = command = "${route.commandName}"
 trigger1 = ctrl
 trigger1 = SelfCommand = "${route.commandName}"
+`;
+}
+
+function passiveCommandRouteBlock(route: { commandName: string; stateNo: number }): string {
+  return `
+[State 0, Tag Side Command Route]
+type = ChangeState
+value = ${route.stateNo}
+trigger1 = command = "${route.commandName}"
 `;
 }
 

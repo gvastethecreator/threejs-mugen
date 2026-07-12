@@ -73,6 +73,148 @@ describe("PlayableMatchRuntime", () => {
     );
   });
 
+  it("routes explicit IKEMEN Tag side commands into standby root CNS without direct gameplay ownership", () => {
+    const reserveStateNo = 2788;
+    const reserve = createTagSideCommandReserve("x", reserveStateNo);
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve, demoFighters[1]!],
+    });
+
+    const oppositeSideOnly = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    expect(oppositeSideOnly.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(0);
+
+    const sameSide = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(sameSide.reserveActors?.find(({ id }) => id === "p3")?.runtime).toMatchObject({
+      stateNo: reserveStateNo,
+      teamState: { standby: true },
+    });
+    expect(sameSide.rootInputRouting).toEqual({
+      schema: "RuntimeRootInputRouting/v0",
+      mode: "ikemen-tag",
+      scope: "normal-active-tick",
+      roots: [
+        expect.objectContaining({ id: "p1", commandSource: "p1", directControlled: true, aiControlled: false }),
+        expect.objectContaining({ id: "p2", commandSource: "p2", directControlled: true, aiControlled: false }),
+        expect.objectContaining({
+          id: "p3",
+          commandSource: "p1",
+          commandMapped: true,
+          directControlled: false,
+          aiControlled: false,
+          standby: true,
+          effectiveCtrl: false,
+        }),
+        expect.objectContaining({ id: "p4", commandSource: "p2", directControlled: false, aiControlled: false }),
+      ],
+    });
+    expect(sameSide.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")).toMatchObject({
+      activeCommands: ["x"],
+      commandHistory: [
+        { frame: 1, values: [], hitPause: false },
+        { frame: 2, values: ["x"], hitPause: false },
+      ],
+      executedControllers: { ChangeState: 1 },
+      lastExecutedState: reserveStateNo,
+    });
+    expect(sameSide.actors.map(({ id }) => id)).toEqual(["p1", "p2"]);
+    expect(sameSide.effects?.some(({ ownerId }) => ownerId === "p3")).toBe(false);
+
+    runtime.reset();
+    const reset = runtime.getSnapshot();
+    expect(reset.reserveActors?.find(({ id }) => id === "p3")?.runtime).toMatchObject({
+      stateNo: 0,
+      teamState: { standby: true },
+    });
+    expect(reset.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.commandHistory).toEqual([]);
+
+    const single = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "single",
+      reserveFighters: [reserve],
+    });
+    const singleSnapshot = single.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(singleSnapshot.rootInputRouting?.mode).toBe("ikemen-single");
+    expect(singleSnapshot.rootInputRouting?.roots.find(({ id }) => id === "p3")?.commandMapped).toBe(false);
+    expect(singleSnapshot.reserveActors?.[0]?.runtime.stateNo).toBe(0);
+  });
+
+  it("does not route Tag reserve commands through imported Pause ticks", () => {
+    const reserveStateNo = 2789;
+    const reserve = createTagSideCommandReserve("y", reserveStateNo);
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withPause: true }),
+      demoFighters[1]!,
+      trainingStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [reserve],
+      },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.matchPause?.type).toBe("Pause");
+    const reserveHistoryBeforePauseTick = snapshot.reserveCompatibilitySession?.actors.find(
+      ({ actorId }) => actorId === "p3",
+    )?.commandHistory;
+
+    snapshot = runtime.step({ p1: new Set(["y"]), p2: new Set() });
+    expect(snapshot.tickSchedule?.branch).toBe("pause");
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(0);
+    expect(
+      snapshot.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.commandHistory,
+    ).toEqual(reserveHistoryBeforePauseTick);
+
+    for (let frame = 0; frame < 8 && snapshot.matchPause; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["y"]), p2: new Set() });
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(reserveStateNo);
+  });
+
+  it("does not route Tag reserve commands through global HitPause ticks", () => {
+    const reserveStateNo = 2790;
+    const reserve = createTagSideCommandReserve("y", reserveStateNo);
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(
+      createHitPauseIgnoreControllerFixture(false),
+      demoFighters[1]!,
+      closeStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [reserve],
+      },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.hitPause).toBeGreaterThan(0);
+    const reserveHistoryBeforeHitPauseTick = snapshot.reserveCompatibilitySession?.actors.find(
+      ({ actorId }) => actorId === "p3",
+    )?.commandHistory;
+
+    snapshot = runtime.step({ p1: new Set(["y"]), p2: new Set() });
+    expect(snapshot.tickSchedule?.branch).toBe("hitpause");
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(0);
+    expect(
+      snapshot.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.commandHistory,
+    ).toEqual(reserveHistoryBeforeHitPauseTick);
+
+    for (let frame = 0; frame < 12 && (snapshot.actors[0]?.hitPause ?? 0) > 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["y"]), p2: new Set() });
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(reserveStateNo);
+  });
+
   it("integrates stable IKEMEN P1-P4 identity into runtime expressions and diagnostics", () => {
     const identityStateNo = 7770;
     const p1 = createImportedFixture({
@@ -5853,6 +5995,42 @@ ${options.helperExtraStates ?? ""}
     animations,
     hitSparkLibraries: options.hitSparkLibraries,
   };
+}
+
+function createTagSideCommandReserve(command: "x" | "y", stateNo: number): DemoFighterDefinition {
+  const reserve = createImportedFixture({
+    id: `ikemen-tag-side-command-${command}`,
+    displayName: `IKEMEN Tag Side Command ${command.toUpperCase()}`,
+    withStateMove: false,
+    extraStateNos: [stateNo],
+  });
+  if (command !== "x") {
+    reserve.commands = [
+      ...(reserve.commands ?? []),
+      ...parseCmd(`
+[Command]
+name = "${command}"
+command = ${command}
+`).commands,
+    ];
+  }
+  const commandState = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[State 0, Side Command Route]
+type = ChangeState
+trigger1 = command = "${command}"
+value = ${stateNo}
+`).states[0]!;
+  reserve.states = reserve.states?.map((state) =>
+    state.id === 0 ? { ...state, controllers: [...commandState.controllers, ...state.controllers] } : state,
+  );
+  return reserve;
 }
 
 function createHitPauseBufferFixture(bufferHitPause: boolean): DemoFighterDefinition {

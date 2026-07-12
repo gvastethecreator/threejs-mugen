@@ -27,6 +27,7 @@ import type {
   RuntimeTargetSnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import type { RuntimeTagTeamMode } from "./RuntimeTagTeamOrderSystem";
 import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
 import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTeamState } from "./types";
@@ -47,6 +48,7 @@ export type MatchWorldOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
+  teamMode?: RuntimeTagTeamMode;
 };
 
 export type MatchWorldActorRecord = {
@@ -116,6 +118,7 @@ export class MatchWorld {
         runtimeProfile: options.runtimeProfile,
         superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
         reserveFighters: options.reserveFighters,
+        teamMode: options.teamMode,
       },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);

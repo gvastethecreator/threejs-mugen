@@ -199,11 +199,13 @@ export type RuntimeTraceFrame = {
     force: boolean;
   };
   actors: RuntimeTraceActor[];
+  reserveActors?: RuntimeTraceActor[];
   effects: RuntimeTraceActor[];
   stage?: RuntimeTraceStageSummary;
   round?: RoundSnapshot;
   matchPause?: RuntimeMatchPauseSnapshot;
   compatibility?: RuntimeTraceCompatibilityActor[];
+  reserveCompatibility?: RuntimeTraceCompatibilityActor[];
   events: RuntimeTraceEvent[];
   combatReasons: RuntimeTraceCombatReason[];
   tickSchedule?: RuntimeMatchTickSchedule;
@@ -1366,7 +1368,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const controllerEvents = new Map<string, RuntimeTraceControllerEvent>();
 
   for (const [frameIndex, frame] of frames.entries()) {
-    const allActors = [...frame.actors, ...frame.effects];
+    const rootActors = [...frame.actors, ...(frame.reserveActors ?? [])];
+    const allActors = [...rootActors, ...frame.effects];
     if (frame.stage) {
       const key = stageFrameEvidenceKey(frame.stage);
       const existing = stageFrames.get(key);
@@ -1377,7 +1380,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       const existing = roundFrames.get(key);
       roundFrames.set(key, existing ? mergeRoundFrameEvidence(existing, frame.round, frame.tick) : summarizeRoundFrameEvidence(frame.round, frame.tick));
     }
-    for (const actor of frame.actors) {
+    for (const actor of rootActors) {
       if (actor.source) {
         actorSources.add(actor.source);
       }
@@ -1437,7 +1440,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
         );
       }
     }
-    for (const actor of frame.compatibility ?? []) {
+    for (const actor of [...(frame.compatibility ?? []), ...(frame.reserveCompatibility ?? [])]) {
       for (const stateNo of actor.routedStates) {
         routedStates.add(stateNo);
       }
@@ -1843,7 +1846,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     roundFrames: [...roundFrames.values()].sort((left, right) => roundFrameGateEvidenceKey(left).localeCompare(roundFrameGateEvidenceKey(right))),
     stageFrames: [...stageFrames.values()].sort((left, right) => stageFrameGateEvidenceKey(left).localeCompare(stageFrameGateEvidenceKey(right))),
     actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
-    finalActors: trace.final.actors.map(summarizeFinalActorEvidence),
+    finalActors: [...trace.final.actors, ...(trace.final.reserveActors ?? [])].map(summarizeFinalActorEvidence),
   };
 }
 
@@ -3374,6 +3377,7 @@ function summarizeTraceSnapshot(
     line,
   }));
   const actors = snapshot.actors.map(summarizeActor);
+  const reserveActors = (snapshot.reserveActors ?? []).map(summarizeActor);
   const frame: RuntimeTraceFrame = {
     frameIndex,
     tick: snapshot.tick,
@@ -3384,11 +3388,13 @@ function summarizeTraceSnapshot(
       force: inputFrame?.force ?? false,
     },
     actors,
+    ...(reserveActors.length > 0 ? { reserveActors } : {}),
     effects: (snapshot.effects ?? []).map(summarizeActor),
     stage: summarizeStage(snapshot.stage),
     round: snapshot.round,
     matchPause: snapshot.matchPause,
     compatibility: summarizeCompatibility(snapshot.compatibilitySession),
+    reserveCompatibility: summarizeCompatibility(snapshot.reserveCompatibilitySession),
     events,
     combatReasons: summarizeCombatReasons(frameIndex, snapshot.tick, actors, events),
     ...(snapshot.tickSchedule ? { tickSchedule: structuredClone(snapshot.tickSchedule) } : {}),

@@ -114,6 +114,10 @@ import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import { RuntimeRootCnsExecutionWorld } from "./RuntimeRootCnsExecutionSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
+import {
+  RuntimeRootInputRoutingWorld,
+  type RuntimeRootInputRoute,
+} from "./RuntimeRootInputRoutingSystem";
 import { RuntimeTagPartnerSelectionWorld } from "./RuntimeTagPartnerSelectionSystem";
 import { RuntimeTagTeamOrderWorld, type RuntimeTagTeamOrder } from "./RuntimeTagTeamOrderSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
@@ -243,6 +247,7 @@ const matchPausedBridgeWorld = new RuntimeMatchPausedBridgeWorld();
 const matchStepWorld = new RuntimeMatchStepWorld();
 const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
+const rootInputRoutingWorld = new RuntimeRootInputRoutingWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
@@ -373,6 +378,7 @@ export class PlayableMatchRuntime {
   private lastTickSchedule = createIdleMatchTickSchedule();
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
+  private lastP2Controlled = false;
   private readonly superPauseTargetDefenseValue?: number;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
   private toggles = {
@@ -644,6 +650,14 @@ export class PlayableMatchRuntime {
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
+    const rootInputRoutes = rootInputRoutingWorld.routes({
+      runtimeProfile: this.runtimeProfile,
+      teamMode: this.tagTeamOrder ? "tag" : "single",
+      roots: this.characterRoots(),
+      p1Input,
+      p2Input,
+    });
+    this.lastP2Controlled = input.p2 !== undefined;
     const preparedRunOrder = fighterRunOrderWorld.stamp(fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2));
     const preparedActorRunOrder = actorRunOrderWorld.order(this.runtimeProfile, this.actorRunOrderCandidates());
     schedule.record("tick:stamp-input");
@@ -715,6 +729,7 @@ export class PlayableMatchRuntime {
           p2Input,
           preparedRunOrder,
           preparedActorRunOrder,
+          rootInputRoutes,
           (phase, actorId) => schedule.record(phase, actorId),
         ),
     });
@@ -735,6 +750,7 @@ export class PlayableMatchRuntime {
     p2Input: Set<string>,
     preparedRunOrder: RuntimeRootRunOrderResult<FighterMatchState>,
     preparedActorRunOrder: RuntimeActorRunOrderResult<FighterMatchState, RuntimeHelper>,
+    rootInputRoutes: RuntimeRootInputRoute<FighterMatchState>[],
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
@@ -745,7 +761,9 @@ export class PlayableMatchRuntime {
       },
       pushNormalCommandBuffers: () => {
         recordPhase("active:command-buffer");
-        return matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
+        const reserveRoutes = rootInputRoutes.filter(({ actor }) => actor !== this.p1 && actor !== this.p2);
+        matchTickInputWorld.stampMappedActors({ tick: this.tick, routes: reserveRoutes });
+        return matchTickInputWorld.pushMappedNormalCommandBuffers({ tick: this.tick, routes: rootInputRoutes });
       },
       applyInputControl: () => {
         recordPhase("active:input-control");
@@ -1623,7 +1641,22 @@ export class PlayableMatchRuntime {
       tickSchedule: this.lastTickSchedule,
       logs: this.logs,
     });
-    return { ...snapshot, ...(this.tagTeamOrder ? { tagTeamOrder: this.tagTeamOrder.diagnostic() } : {}) };
+    const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);
+    return {
+      ...snapshot,
+      ...(this.tagTeamOrder ? { tagTeamOrder: this.tagTeamOrder.diagnostic() } : {}),
+      ...(this.runtimeProfile === "ikemen-go"
+        ? {
+            rootInputRouting: rootInputRoutingWorld.diagnostic({
+              runtimeProfile: this.runtimeProfile,
+              teamMode: this.tagTeamOrder ? "tag" : "single",
+              roots: this.characterRoots(),
+              p2Controlled: this.lastP2Controlled,
+            }),
+          }
+        : {}),
+      ...(reserveCompatibilitySession ? { reserveCompatibilitySession } : {}),
+    };
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
@@ -1677,6 +1710,7 @@ export class PlayableMatchRuntime {
     this.tick = resetState.tick;
     this.frameClock = resetState.frameClock;
     this.playing = resetState.playing;
+    this.lastP2Controlled = false;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();

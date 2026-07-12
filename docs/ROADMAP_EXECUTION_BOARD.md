@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root gameplay ownership research (2026-07-11)
+## Latest closeout - IKEMEN Tag side command routing (2026-07-11)
+
+Explicit `ikemen-go` Tag normal ticks now clone P1 commands into odd-root buffers and P2 commands into even-root buffers through `RuntimeRootInputRouting/v0`. Required trace checksum `dff92731` proves P2 isolation and a P1-driven standby P3 state transition. Full gates pass 171 files / 1762 tests and 540/540 traces. Wayfinder 095 models per-phase active-root capabilities; direct gameplay, effects, combat, round, presentation, resources, visuals, and scores remain unchanged.
+
+## Previous closeout - IKEMEN active-root gameplay ownership research (2026-07-11)
 
 Pinned IKEMEN source confirms Human Tag maps one side controller to independent command lists for every same-side root, while standby masks effective control and the team leader consumes switch commands. Local audit separates structural roots from scheduling, command mapping, direct control, effects, combat, round, presentation, resources, reset, and trace. Wayfinder 094 now owns side command routing plus reserve-root trace observability; no runtime, visual, trace, or score movement.
 
@@ -912,7 +916,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, bounded root Tag parameters, numeric root/Helper identity, root RedirectID, complete root-to-Helper aggregate execution, one required Helper Tag trace, and a pinned active-root ownership map. | Wayfinder 094: route each Tag side command stream to independent same-side root buffers and expose reserve-root trace frames. | No P3-P8 direct gameplay, root-key effects, multi-root combat/round/presentation/lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, bounded root Tag parameters, numeric root/Helper identity, root RedirectID, complete root-to-Helper aggregate execution, required Helper Tag evidence, active-root ownership map, and same-side Tag command routing. | Wayfinder 095: publish the current per-phase active-root capability contract before changing one later gameplay owner. | No P3-P8 direct gameplay, root-key effects, multi-root combat/round/presentation/lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -923,7 +927,7 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 command routing: Wayfinder 094 maps each explicit Tag side stream to independent same-side root command state and adds reserve-root trace evidence without granting direct gameplay ownership.
+1. I2 phase capabilities: Wayfinder 095 publishes current per-root command/CNS/input/AI/kinematics/animation/effect/combat/round/presentation/resource capabilities without changing execution.
 2. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 3. I2 redirects: keep broader mutation redirects blocked until caller identity, failure atomicity, and telemetry ownership have source-backed fixtures.
 4. S1: add source handle/fingerprint/permission, external conflict, one write/reimport transaction, output invalidation and rollback; defer undo/migration.
@@ -952,8 +956,9 @@ Current checkpoint and next build:
 - Closed: Helper-originated unredirected self TagIn/TagOut with live Helper expressions, local standby, telemetry, and reset-safe hook rebinding.
 - Closed: required Helper-owned TagOut/TagIn trace with standby/effective-control transition, continued CNS, and preserved parented Projectile.
 - Closed: pinned active-root ownership map across scheduler, command/direct input, effects, combat, round, presentation, resources, reset, and trace.
-- Next: Wayfinder 094 implements explicit Tag side command routing plus reserve-root trace observability only.
-- Keep input, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, and resources unchanged.
+- Closed: explicit Tag side command routing plus reserve-root trace observability, with P2 isolation and P1-to-P3 required evidence.
+- Next: Wayfinder 095 models current per-phase active-root capabilities without changing execution.
+- Keep direct input/AI, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:
 

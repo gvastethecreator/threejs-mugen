@@ -94,6 +94,28 @@ describe("RuntimeTrace", () => {
     expect(diagnosticVariant.checksum).toBe(baseline.checksum);
   });
 
+  it("observes reserve-root actor frames without adding them to behavior checksums", () => {
+    const script = expandRuntimeTraceScript([{ label: "idle", frames: 2, p1: [], p2: [] }]);
+    const createRuntime = () => new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+    const observed = runRuntimeTrace(createRuntime(), script, { label: "reserve-root-observation" });
+    const stripped = runRuntimeTrace(runtimeWithoutReserveProjection(createRuntime()), script, {
+      label: "reserve-root-observation",
+    });
+
+    expect(observed.final.reserveActors?.map(({ id }) => id)).toEqual(["p3", "p4"]);
+    expect(evaluateRuntimeTraceGate(observed, {
+      label: "reserve-root-frame-gate",
+      requiredActorFrames: [{ actorId: "p3", actorKind: "player", teamStandby: true, effectiveCtrl: false }],
+      requiredFinalActors: [{ actorId: "p3", actorKind: "player", stateNo: 0 }],
+    })).toMatchObject({ passed: true, failures: [] });
+    expect(observed.frames.map(({ checksum }) => checksum)).toEqual(stripped.frames.map(({ checksum }) => checksum));
+    expect(observed.checksum).toBe(stripped.checksum);
+  });
+
   it("gates actor order for a named tick-schedule phase", () => {
     const trace = runRuntimeTrace(
       new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage, { runtimeProfile: "ikemen-go" }),
@@ -311,6 +333,19 @@ function runtimeWithoutRecordedSchedulePhases(runtime: PlayableMatchRuntime) {
   return {
     getSnapshot: () => withoutPhases(runtime.getSnapshot()),
     step: (...args: Parameters<PlayableMatchRuntime["step"]>) => withoutPhases(runtime.step(...args)),
+  };
+}
+
+function runtimeWithoutReserveProjection(runtime: PlayableMatchRuntime) {
+  const withoutReserves = (snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>) => {
+    delete snapshot.reserveActors;
+    delete snapshot.reserveCompatibilitySession;
+    return snapshot;
+  };
+
+  return {
+    getSnapshot: () => withoutReserves(runtime.getSnapshot()),
+    step: (...args: Parameters<PlayableMatchRuntime["step"]>) => withoutReserves(runtime.step(...args)),
   };
 }
 

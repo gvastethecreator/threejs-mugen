@@ -40,6 +40,7 @@ export type RuntimeTraceArtifact = {
     frameChecksums: string[];
     frames: RuntimeTraceArtifactFrameSummary[];
     finalActors: RuntimeTraceFrame["actors"];
+    finalReserveActors?: NonNullable<RuntimeTraceFrame["reserveActors"]>;
     finalEffects: RuntimeTraceFrame["effects"];
     eventCount: number;
     events: RuntimeTrace["events"];
@@ -88,6 +89,7 @@ export type RuntimeTraceArtifactFrameSummary = {
   checksum: string;
   input: RuntimeTraceFrame["input"];
   actorCount: number;
+  reserveActorCount?: number;
   effectCount: number;
   stage?: RuntimeTraceFrame["stage"];
   round?: RuntimeTraceFrame["round"];
@@ -104,6 +106,7 @@ export type RuntimeTraceArtifactFrameDelta = {
   checksumChanged: boolean;
   inputChanged: boolean;
   actorCountDelta: number;
+  reserveActorCountDelta?: number;
   effectCountDelta: number;
   eventCount: number;
   combatReasonCount: number;
@@ -115,7 +118,7 @@ export type RuntimeTraceArtifactActorDelta = {
   id: string;
   label: string;
   actorKind: RuntimeTraceFrame["actors"][number]["actorKind"];
-  layer: "actor" | "effect";
+  layer: "actor" | "reserve" | "effect";
   changes: string[];
 };
 
@@ -158,6 +161,9 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
       frameChecksums: input.trace.frames.map((frame) => frame.checksum),
       frames: input.trace.frames.map((frame, index, frames) => summarizeArtifactFrame(frame, frames[index - 1])),
       finalActors: input.trace.final.actors.map(cloneTraceActor),
+      ...(input.trace.final.reserveActors?.length
+        ? { finalReserveActors: input.trace.final.reserveActors.map(cloneTraceActor) }
+        : {}),
       finalEffects: input.trace.final.effects.map(cloneTraceActor),
       eventCount: input.trace.events.length,
       events: input.trace.events.map((event) => ({ ...event })),
@@ -274,6 +280,7 @@ function summarizeArtifactFrame(frame: RuntimeTraceFrame, previous: RuntimeTrace
       force: frame.input.force,
     },
     actorCount: frame.actors.length,
+    ...(frame.reserveActors?.length ? { reserveActorCount: frame.reserveActors.length } : {}),
     effectCount: frame.effects.length,
     stage: frame.stage ? cloneTraceStage(frame.stage) : undefined,
     round: frame.round ? { ...frame.round } : undefined,
@@ -395,6 +402,9 @@ function summarizeArtifactFrameDelta(
     checksumChanged: previous ? frame.checksum !== previous.checksum : true,
     inputChanged: previous ? !sameTraceInput(frame.input, previous.input) : true,
     actorCountDelta: frame.actors.length - (previous?.actors.length ?? 0),
+    ...((frame.reserveActors?.length ?? 0) > 0 || (previous?.reserveActors?.length ?? 0) > 0
+      ? { reserveActorCountDelta: (frame.reserveActors?.length ?? 0) - (previous?.reserveActors?.length ?? 0) }
+      : {}),
     effectCountDelta: frame.effects.length - (previous?.effects.length ?? 0),
     eventCount: frame.events.length,
     combatReasonCount: frame.combatReasons.length,
@@ -422,6 +432,7 @@ function cloneTraceStage(stage: NonNullable<RuntimeTraceFrame["stage"]>): NonNul
 function summarizeActorDeltas(frame: RuntimeTraceFrame, previous: RuntimeTraceFrame | undefined): RuntimeTraceArtifactActorDelta[] {
   const changes = [
     ...summarizeActorLayerDeltas(frame.actors, previous?.actors ?? [], "actor"),
+    ...summarizeActorLayerDeltas(frame.reserveActors ?? [], previous?.reserveActors ?? [], "reserve"),
     ...summarizeActorLayerDeltas(frame.effects, previous?.effects ?? [], "effect"),
   ];
   return changes.sort((left, right) => left.layer.localeCompare(right.layer) || left.id.localeCompare(right.id));

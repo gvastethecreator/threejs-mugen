@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Tag side command routing
+
+- Runtime: `RuntimeRootInputRouting/v0` separates side command mapping, direct control, AI, standby, and effective control for every present root.
+- Tag policy: normal active ticks clone P1 commands into odd roots and P2 commands into even roots; every buffer updates once and opposite-side input stays isolated.
+- Claim boundary: P3-P8 gain command state only. Direct input, full fighter phases, effects, combat, round, presentation, HUD/audio, and resources remain P1/P2-owned; Pause/hitpause stay pair-only.
+- Trace: required `synthetic-imported-ikemen-tag-side-command` checksum `dff92731` proves P2 cannot trigger P3, then P1 drives standby P3 from state `0` to `1284`.
+- Verification: 171 files / 1762 tests, TypeScript 7 build, 540/540 traces (509 required, 31 optional), boundaries, and diff check pass.
+- Global status: Wayfinder 094 is closed without visual or score movement; Wayfinder 095 models per-phase active-root capabilities before any broader gameplay owner changes.
+
 ## Global report - 2026-07-11 IKEMEN active-root gameplay ownership
 
 - Research: pinned IKEMEN Tag maps each human side controller to every same-side root while each character keeps its own command list; standby masks effective control rather than command-buffer maintenance.
@@ -1149,7 +1158,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1. Af
 
 ## Historical Evidence Snapshot - 509/509 Baseline
 
-This table is retained as a historical snapshot. Current declared global evidence is 539/539 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
+This table is retained as a historical snapshot. Current declared global evidence is 540/540 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
