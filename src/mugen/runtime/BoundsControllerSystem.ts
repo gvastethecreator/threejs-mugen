@@ -94,6 +94,7 @@ export function resolveRuntimeScreenBoundControllerOperation(
 ): Extract<BoundsControllerOp, { controllerType: "screenbound" }> {
   const camera = pairParam(controller, state, context, "movecamera");
   const stageBound = numberParam(controller, state, context, "stagebound");
+  const redirectPlayerIdExpression = findParam(controller, "redirectid")?.trim();
   return {
     kind: "bounds",
     controllerType: "screenbound",
@@ -101,6 +102,7 @@ export function resolveRuntimeScreenBoundControllerOperation(
     moveCameraX: (camera?.[0] ?? 0) !== 0,
     moveCameraY: (camera?.[1] ?? 0) !== 0,
     ...(stageBound === undefined ? {} : { stageBound: stageBound !== 0 }),
+    ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
   };
 }
 

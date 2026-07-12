@@ -887,6 +887,8 @@ time = 20
     const posFreezeDefault = compileControllerIr(controller(200, "PosFreeze", [], {}));
     const screenBound = compileControllerIr(controller(200, "ScreenBound", [], { value: "0", movecamera: "0,1" }));
     const screenStageBound = compileControllerIr(controller(200, "ScreenBound", [], { stagebound: "0" }));
+    const redirected = compileControllerIr(controller(200, "ScreenBound", [], { value: "1", redirectid: "ID + var(0)" }));
+    const invalidRedirect = compileControllerIr(controller(200, "ScreenBound", [], { redirectid: "1, 0" }));
     const dynamic = compileControllerIr(controller(200, "ScreenBound", [], { value: "Const(data.life)" }));
 
     expect(posFreeze.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
@@ -906,6 +908,8 @@ time = 20
       moveCameraY: false,
       stageBound: false,
     });
+    expect(redirected.operation).toMatchObject({ redirectPlayerIdExpression: "ID + var(0)" });
+    expect(invalidRedirect.operation).toBeUndefined();
     expect(dynamic.operation).toBeUndefined();
   });
 
@@ -924,11 +928,22 @@ time = 20
     const edge = compileControllerIr(controller(200, "Depth", [], { edge: "7,9" }));
     const value = compileControllerIr(controller(200, "Depth", [], { value: "4" }));
     const dynamic = compileControllerIr(controller(200, "Depth", [], { player: "var(0),5" }));
+    const redirected = compileControllerIr(controller(200, "Depth", [], { player: "2,5", redirectid: "59" }));
+    const invalidRedirect = compileControllerIr(controller(200, "Depth", [], { value: "4", redirectid: "(" }));
 
     expect(player.operation).toEqual({ kind: "collision", controllerType: "depth", mode: "player", top: 2, bottom: 5 });
     expect(edge.operation).toEqual({ kind: "collision", controllerType: "depth", mode: "edge", top: 7, bottom: 9 });
     expect(value.operation).toEqual({ kind: "collision", controllerType: "depth", mode: "value", top: 4, bottom: 0 });
     expect(dynamic.operation).toBeUndefined();
+    expect(redirected.operation).toEqual({
+      kind: "collision",
+      controllerType: "depth",
+      mode: "player",
+      top: 2,
+      bottom: 5,
+      redirectPlayerIdExpression: "59",
+    });
+    expect(invalidRedirect.operation).toBeUndefined();
   });
 
   it("compiles static PlayerPush controllers into typed collision operations", () => {

@@ -348,6 +348,7 @@ export type BoundsControllerOp =
       moveCameraX: boolean;
       moveCameraY: boolean;
       stageBound?: boolean;
+      redirectPlayerIdExpression?: string;
     };
 
 export type CollisionControllerOp =
@@ -368,6 +369,7 @@ export type CollisionControllerOp =
       mode: "player" | "edge" | "value";
       top: number;
       bottom: number;
+      redirectPlayerIdExpression?: string;
     };
 
 export type MetadataControllerOp = {
@@ -961,10 +963,16 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
   const valueRaw = findParam(controller, "value");
   const moveCameraRaw = findParam(controller, "movecamera");
   const stageBoundRaw = findParam(controller, "stagebound");
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const value = valueRaw === undefined ? 0 : firstNumber(valueRaw);
   const moveCamera = moveCameraRaw === undefined ? undefined : strictNumberPair(moveCameraRaw);
   const stageBound = optionalBooleanParam(stageBoundRaw);
-  if (value === undefined || (moveCameraRaw !== undefined && moveCamera === undefined) || stageBound === "invalid") {
+  if (
+    value === undefined ||
+    (moveCameraRaw !== undefined && moveCamera === undefined) ||
+    stageBound === "invalid" ||
+    redirectPlayerIdExpression === "invalid"
+  ) {
     return undefined;
   }
   return {
@@ -974,6 +982,7 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
     moveCameraX: (moveCamera?.[0] ?? 0) !== 0,
     moveCameraY: (moveCamera?.[1] ?? 0) !== 0,
     ...(stageBound === undefined ? {} : { stageBound }),
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }
 
@@ -998,8 +1007,24 @@ function compileDepthControllerOp(controller: MugenStateController): CollisionCo
         ? "player"
         : "value";
   const pair = strictNumberPair(findParam(controller, mode));
-  if (!pair) return undefined;
-  return { kind: "collision", controllerType: "depth", mode, top: pair[0], bottom: pair[1] ?? 0 };
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (!pair || redirectPlayerIdExpression === "invalid") return undefined;
+  return {
+    kind: "collision",
+    controllerType: "depth",
+    mode,
+    top: pair[0],
+    bottom: pair[1] ?? 0,
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
+  };
+}
+
+function compileRedirectPlayerIdExpression(controller: MugenStateController): string | "invalid" | undefined {
+  const raw = findParam(controller, "redirectid");
+  if (raw === undefined) return undefined;
+  if (!hasValidScalarExpressionStructure(raw)) return "invalid";
+  const compiled = compileExpression(raw);
+  return compiled.supportLevel === "unsupported" ? "invalid" : compiled.normalized;
 }
 
 function compilePlayerPushControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {

@@ -157,7 +157,7 @@ function scanText(path: string, text: string, findings: FindingAccumulator, zssF
       findings.add("reference", "Lua script hook", location, raw, "Lua hooks are not executed by the browser runtime.");
     }
     if (assignment?.key === "redirectid") {
-      findings.add("controller", "IKEMEN RedirectID controller parameter", location, raw, "Controller redirection is recognized but not executed by the partial runtime.");
+      findings.add("controller", "IKEMEN RedirectID controller parameter", location, raw, "Controller redirection is recognized; runtime execution remains controller- and destination-specific.");
     }
     if (assignment && FIGHTFX_ACTION_PARAM_NAMES.has(assignment.key) && /^f\s+[-+]?\d+/i.test(unquote(assignment.value))) {
       findings.add("controller", "IKEMEN fightfx action prefix", location, raw, "fightfx.air animation routing is recognized but not executed.");

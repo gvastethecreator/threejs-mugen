@@ -336,6 +336,12 @@ type TeamStandbyControllerHandler = (
   operation: TeamStandbyControllerOp,
   context: ReturnType<typeof runtimeControllerContext>,
 ) => TeamStandbyControllerOp | undefined;
+type RootControllerRedirectHandler = (
+  caller: FighterMatchState,
+  expression: string,
+  context: ReturnType<typeof runtimeControllerContext>,
+  controllerType: "depth" | "screenbound",
+) => FighterMatchState | undefined;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
@@ -732,6 +738,8 @@ export class PlayableMatchRuntime {
                 this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
               (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
+              (caller, expression, context, controllerType) =>
+                this.resolveRootControllerRedirect(caller, expression, context, controllerType),
             ),
         });
         return { paused: result.paused, result };
@@ -852,6 +860,8 @@ export class PlayableMatchRuntime {
                   this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
                 recordPhase,
                 (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
+                (caller, expression, context, controllerType) =>
+                  this.resolveRootControllerRedirect(caller, expression, context, controllerType),
               );
             },
             advanceHelper: (helper) => {
@@ -901,6 +911,8 @@ export class PlayableMatchRuntime {
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
               recordPhase,
               (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
+              (caller, expression, context, controllerType) =>
+                this.resolveRootControllerRedirect(caller, expression, context, controllerType),
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -1114,6 +1126,9 @@ export class PlayableMatchRuntime {
             this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue, resolveParams),
           (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
           recordPhase,
+          undefined,
+          (caller, expression, context, controllerType) =>
+            this.resolveRootControllerRedirect(caller, expression, context, controllerType),
         ),
     });
   }
@@ -1184,6 +1199,8 @@ export class PlayableMatchRuntime {
               this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             recordPhase,
             (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
+            (caller, expression, context, controllerType) =>
+              this.resolveRootControllerRedirect(caller, expression, context, controllerType),
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -1267,6 +1284,8 @@ export class PlayableMatchRuntime {
         onBlocked: (controller, route) =>
           this.logs.unshift(`Blocked standby CNS controller ${controller.type} for ${fighter.id} (${route})`),
         onTeamStandby: (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
+        onRootRedirect: (caller, expression, context, controllerType) =>
+          this.resolveRootControllerRedirect(caller, expression, context, controllerType),
       },
     );
   }
@@ -1306,6 +1325,8 @@ export class PlayableMatchRuntime {
               onBlocked: (controller, route) =>
                 this.logs.unshift(`Blocked active-motion CNS controller ${controller.type} for ${actor.id} (${route})`),
               onTeamStandby: (caller, operation, context) => this.applyTeamStandbyController(caller, operation, context),
+              onRootRedirect: (caller, expression, context, controllerType) =>
+                this.resolveRootControllerRedirect(caller, expression, context, controllerType),
             },
           );
         },
@@ -1451,6 +1472,24 @@ export class PlayableMatchRuntime {
       applyRuntimeControl(partner.runtime, operation.partnerControl);
     }
     return operation;
+  }
+
+  private resolveRootControllerRedirect(
+    caller: FighterMatchState,
+    expression: string,
+    context: ReturnType<typeof runtimeControllerContext>,
+    controllerType: "depth" | "screenbound",
+  ): FighterMatchState | undefined {
+    const block = (value: number | "invalid"): undefined => {
+      this.logs.unshift(`Blocked ${controllerType} RedirectID ${value} for ${caller.id}`);
+      return undefined;
+    };
+    if (this.runtimeProfile !== "ikemen-go") return block("invalid");
+    const resolved = evaluateRuntimeControllerNumber(expression, caller.runtime, context);
+    const playerId = resolved === undefined ? undefined : Math.trunc(resolved);
+    if (playerId === undefined || playerId < 0) return block(playerId ?? "invalid");
+    const identity = this.characterIdentity?.findByPlayerId(playerId);
+    return identity?.fighter ?? block(playerId);
   }
 
   private applyHelperOwnedSelfTeamStandbyController(
@@ -2086,6 +2125,7 @@ function advanceFighter(
   onEnvColorController?: EnvColorControllerHandler,
   recordSchedulePhase?: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   onTeamStandby?: TeamStandbyControllerHandler,
+  onRootRedirect?: RootControllerRedirectHandler,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -2140,7 +2180,7 @@ function advanceFighter(
         tick,
         onPauseController,
         onEnvColorController,
-        { onTeamStandby, runtimeProfile },
+        { onTeamStandby, onRootRedirect, runtimeProfile },
       );
     },
     advanceImportedGroundRecoveryLanding: (actor) => {
@@ -2218,6 +2258,7 @@ function runHitPauseIgnoredControllers(
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
   onTeamStandby?: TeamStandbyControllerHandler,
+  onRootRedirect?: RootControllerRedirectHandler,
 ): void {
   runActiveStateControllers(
     fighter,
@@ -2231,7 +2272,7 @@ function runHitPauseIgnoredControllers(
     tick,
     onPauseController,
     onEnvColorController,
-    { onlyIgnoreHitPause: true, onTeamStandby, runtimeProfile },
+    { onlyIgnoreHitPause: true, onTeamStandby, onRootRedirect, runtimeProfile },
   );
 }
 
@@ -2240,6 +2281,7 @@ type ActiveControllerRunOptions = {
   participation?: RuntimeRootCnsParticipation;
   onBlocked?: (controller: ControllerIr, route: string) => void;
   onTeamStandby?: TeamStandbyControllerHandler;
+  onRootRedirect?: RootControllerRedirectHandler;
   runtimeProfile?: RuntimeCompatibilityProfile;
 };
 
@@ -2297,8 +2339,20 @@ function runActiveStateControllers(
       });
     },
     depth: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const redirectExpression =
+        (controller.operation?.kind === "collision" && controller.operation.controllerType === "depth"
+          ? controller.operation.redirectPlayerIdExpression
+          : undefined) ?? findControllerParam(controller, "redirectid")?.trim();
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "depth")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "depth-redirect");
+        return;
+      }
       actorConstraintControllerDispatchWorld.applyDepth({
-        actor: fighter,
+        actor: target,
         controller,
         actorConstraintWorld,
         resolveDepth: {
@@ -2537,8 +2591,21 @@ function runActiveStateControllers(
         }
         return;
       }
-      controllerDispatchWorld.apply(fighter, dispatch.controller, {
-        context: runtimeControllerContext(fighter, owner, tick, stageBounds, opponent, gameSpace),
+      const context = runtimeControllerContext(actor, owner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const redirectExpression = dispatch.controller.normalizedType === "screenbound"
+        ? ((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound"
+            ? dispatch.controller.operation.redirectPlayerIdExpression
+            : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
+        : undefined;
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "screenbound")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(dispatch.controller, "screenbound-redirect");
+        return;
+      }
+      controllerDispatchWorld.apply(target, dispatch.controller, {
+        context,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },

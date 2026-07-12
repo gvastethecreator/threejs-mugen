@@ -63,7 +63,15 @@ export class RuntimeActorConstraintWorld {
       ? ([operation.top, operation.bottom] as [number, number])
       : resolveDepth?.resolvePair(mode) ?? numberPair(findControllerParam(controller, mode));
     if (!pair) return undefined;
-    const applied = { kind: "collision", controllerType: "depth", mode, top: pair[0], bottom: pair[1] ?? 0 } as const;
+    const redirectPlayerIdExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
+    const applied: Extract<CollisionControllerOp, { controllerType: "depth" }> = {
+      kind: "collision",
+      controllerType: "depth",
+      mode,
+      top: pair[0],
+      bottom: pair[1] ?? 0,
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+    };
     if (mode === "player" || mode === "value") {
       state.combatDepth.baseSize ??= [...state.combatDepth.size];
       state.combatDepth.size = [

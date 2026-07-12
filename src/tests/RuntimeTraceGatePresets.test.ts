@@ -172,6 +172,7 @@ import {
   createSyntheticImportedIkemenDepthControllerTraceArtifact,
   createSyntheticImportedIkemenScreenStageBoundTraceArtifact,
   createSyntheticImportedIkemenDepthPlayerPushTraceArtifact,
+  createSyntheticImportedIkemenDepthBoundsRedirectTraceArtifact,
   createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
@@ -25945,6 +25946,33 @@ describe("RuntimeTraceGatePresets", () => {
       target: { id: "synthetic-imported-ikemen-depth-player-push-golden", source: "mixed" },
       gates: [{ label: "synthetic-imported-ikemen-depth-player-push-golden", passed: true, failures: [] }],
     });
+  });
+
+  it("creates a required synthetic imported IKEMEN Depth/ScreenBound RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenDepthBoundsRedirectTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-depth-bounds-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-depth-bounds-redirect-golden", passed: true, failures: [] }],
+    });
+    const redirectedEvents = artifact.gates[0]?.evidence.controllerEvents.filter(
+      ({ actorId, controller }) => actorId === "p3" && (controller === "Depth" || controller === "ScreenBound"),
+    );
+    expect(redirectedEvents?.map(({ controller }) => controller)).toEqual(["Depth", "ScreenBound"]);
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "collision:depth": 1,
+      "bounds:screenbound": 1,
+    });
+    expect(artifact.gates[0]?.evidence.controllerEvents).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: "Invalid Active Root Depth Redirect" })]),
+    );
+    expect(artifact.gates[0]?.evidence.controllerEvents).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p4", controller: "Depth" }),
+        expect.objectContaining({ actorId: "p4", controller: "ScreenBound" }),
+      ]),
+    );
   });
 
   it("creates a projectile-only guard-distance latch without contact", () => {

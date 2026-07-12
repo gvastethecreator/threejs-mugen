@@ -9155,6 +9155,70 @@ export function createSyntheticImportedIkemenDepthPlayerPushTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenDepthBoundsRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const receiver = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-bounds-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Depth Bounds Redirect Receiver",
+    withHitDef: false,
+  });
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-bounds-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Depth Bounds Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId: 136,
+      depth: { mode: "player", top: 2, bottom: 3 },
+      depthRedirectId: 57,
+      invalidDepthRedirectId: 999,
+      screenStageBound: false,
+      screenRedirectId: 57,
+      hitDefTrigger: "0",
+    },
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-bounds-redirect-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Depth Bounds Redirect Pair Defender",
+    withHitDef: false,
+    withPlayerPush: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!,
+    p2: pairDefender,
+    stage: options.stage ?? trainingStage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [receiver, caller],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([{ label: "P4 redirects Depth and ScreenBound to P3", p1: [], p2: [], frames: 1 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-depth-bounds-redirect-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-depth-bounds-redirect-golden",
+      label: "Synthetic imported IKEMEN Depth and ScreenBound RedirectID",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves P4 RedirectID can route Depth and ScreenBound operations to live root P3. Helper destinations, dynamic payload context parity, hitpause timing, and full RedirectID parity remain outside this gate."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-depth-bounds-redirect-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["Depth", "ScreenBound"],
+      requiredExecutedOperations: ["collision:depth", "bounds:screenbound"],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41300,7 +41364,10 @@ export type SyntheticImportedTraceFighterOptions = {
     velZ?: number;
     posFreeze?: boolean;
     depth?: { mode: "player" | "edge" | "value"; top: number; bottom: number };
+    depthRedirectId?: number;
+    invalidDepthRedirectId?: number;
     screenStageBound?: boolean;
+    screenRedirectId?: number;
     hitDefTrigger?: string;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
@@ -46731,8 +46798,9 @@ ${route.posX === undefined
   : `[State 0, Active Root Pos]\ntype = PosSet\ntrigger1 = 1\nx = ${route.posX}\n${route.posZ === undefined ? "" : `z = ${route.posZ}\n`}`}
 ${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
 ${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger1 = 1\nvalue = 1\n` : ""}
-${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}
-${route.screenStageBound === undefined ? "" : `[State 0, Active Root Screen StageBound]\ntype = ScreenBound\ntrigger1 = 1\nvalue = 1\nmovecamera = 1,1\nstagebound = ${route.screenStageBound ? 1 : 0}\n`}
+${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depthRedirectId === undefined ? "" : `redirectid = ${route.depthRedirectId}\n`}${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}
+${route.invalidDepthRedirectId === undefined ? "" : `[State 0, Invalid Active Root Depth Redirect]\ntype = Depth\ntrigger1 = 1\nredirectid = ${route.invalidDepthRedirectId}\nplayer = 20,20\n`}
+${route.screenStageBound === undefined ? "" : `[State 0, Active Root Screen StageBound]\ntype = ScreenBound\ntrigger1 = 1\n${route.screenRedirectId === undefined ? "" : `redirectid = ${route.screenRedirectId}\n`}value = 1\nmovecamera = 1,1\nstagebound = ${route.screenStageBound ? 1 : 0}\n`}
 [State 0, Active Root HitDef]
 type = HitDef
 trigger1 = ${route.hitDefTrigger ?? "1"}
