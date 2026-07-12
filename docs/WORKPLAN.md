@@ -1297,6 +1297,8 @@ Initial Helper standby is now source-mapped. IKEMEN compiles one optional caller
 
 Initial root-created Helper standby now executes under explicit `ikemen-go`. Static and deferred values use zero/non-zero boolean semantics in the original caller context; invalid or unresolved authored values block before runtime mutation, while legacy/unknown profiles preserve existing raw creation. Final standby and StateDef-over-true control are stored before identity observation and same-tick CNS/projectiles. Full gates pass 170 files / 1721 tests and 538/538 traces. Wayfinder 086 next maps Helper-relative partner/member/leader ownership; Helper-originated Tag, gameplay, score, and exact incremental failure remain blocked.
 
+Helper aggregate Tag ownership is now source-mapped. A redirected Helper keeps local state/control/self while inherited PlayerNo selects a partner root; member and leader mutate root Tag order, with Helper `memberno` exposing a zero-initialized position-one source quirk. Upstream failure is incremental, but the local bounded contract remains prevalidated and atomic. Wayfinder 087 executes partner standby/state/control only; member, leader, gameplay, score, and full parity remain blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

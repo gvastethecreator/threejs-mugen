@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN initial Helper standby runtime (2026-07-11)
+## Latest closeout - IKEMEN Helper aggregate Tag ownership research (2026-07-11)
+
+Pinned compiler/runtime source confirms that redirected Helpers keep state/control/self locally, select partner roots through inherited stable PlayerNo, and route member/leader into root Tag order. It also exposes a zero-initialized Helper `memberNo` quirk and incremental partial-failure behavior. Local execution keeps atomic prevalidation. Wayfinder 087 now executes partner only; no runtime, trace, visual, or score movement.
+
+## Previous closeout - IKEMEN initial Helper standby runtime (2026-07-11)
 
 Explicit `ikemen-go` Helper creation now resolves optional static/deferred standby in the original root context, blocks invalid/unresolved authored values, stores final standby before identity observation, and initializes control from StateDef-over-true fallback. Effective control/direct combat remain filtered while same-tick CNS, identity, snapshots, and Helper-parented projectiles continue. Full gates pass 170 files / 1721 tests and 538/538 traces. Continue at Wayfinder 086 for aggregate Helper Tag ownership; no visual or score movement.
 
@@ -880,7 +884,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, complete bounded root Tag parameters, numeric root/Helper identity, root RedirectID, and Helper-local state/control/standby participation. | Wayfinder 084: map initial Helper `standby` compilation, evaluation, and spawn timing. | No Helper aggregate Tag, incoming Helper hurt/push/camera/opponent breadth, multi-root gameplay, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, complete bounded root Tag parameters, numeric root/Helper identity, root RedirectID, Helper-local state/control/standby, initial standby, and aggregate ownership research. | Wayfinder 087: execute Helper-relative partner root standby/state/control. | No Helper member/leader execution, incoming Helper hurt/push/camera/opponent breadth, multi-root gameplay, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -891,8 +895,8 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 Helper aggregate research: Wayfinder 086 maps Helper-relative partner/member/leader root ownership after initial standby creation.
-2. I2 Helper aggregate execution: admit only the source-backed subset after target/order/failure ownership is pinned.
+1. I2 Helper aggregate partner: Wayfinder 087 admits Helper-relative partner-root standby/state/control with atomic validation.
+2. I2 Helper aggregate order: separately specify the source-quirk `memberno` route and stable-PlayerNo leader route after partner proof.
 3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 4. I2 gameplay ownership: only after dynamic controller semantics, specify active-root input/combat/round/presentation/resource consumers independently.
 5. I2 trace promotion: add required Tag traces when bounded behavior reaches a stable cross-system oracle; current unit/integration proof intentionally leaves trace checksums unchanged.
@@ -915,7 +919,8 @@ Current checkpoint and next build:
 - Closed: P3-P8 ownership/participation, plural structural activation, identity/Partner versus Enemy/P2 selection, standby CNS scheduling, static Tag options, explicit member/leader order, and bounded dynamic execution for every admitted optional axis.
 - Closed: RedirectID semantics, numeric root/Helper identity, root RedirectID execution, and Helper-local state/control/standby participation.
 - Closed: source-pinned Helper standby map, direct-combat/effective-control execution, and root-created static/dynamic initial standby; projectiles and drawing remain active.
-- Next: Wayfinder 086 Helper aggregate Tag partner/member/leader ownership research.
+- Closed: Helper aggregate ownership research; partner is stable-root-relative, member/leader own root order, and exact source failure is incremental.
+- Next: Wayfinder 087 Helper-relative partner root standby/state/control with local atomic validation.
 - Keep input, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:
@@ -923,7 +928,7 @@ Acceptance:
 - Every semantic claim names pinned Ikemen-GO SHA `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`.
 - Focused runtime/system tests cover participation invariants and `pnpm qa:trace` remains stable until executable behavior intentionally changes.
 - Helper standby preserves aggregate validation and does not widen input, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, or resources.
-- Claim blocked: Helper aggregate target/order parameters, Helper-originated Tag, tag/simul/turns gameplay, ZSS/Lua, rollback/netplay, and full IKEMEN parity.
+- Claim blocked: Helper member/leader execution, exact incremental partial mutation, Helper-originated Tag, tag/simul/turns gameplay, ZSS/Lua, rollback/netplay, and full IKEMEN parity.
 
 ### R1 - Post-KO And NoKOSlow Timeline
 

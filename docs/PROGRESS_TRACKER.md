@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper aggregate Tag ownership research
+
+- Source: pinned compiler/runtime confirms original-caller expression evaluation and Helper-relative aggregate mutation order.
+- Partner: inherited PlayerNo selects a same-side root; partner standby/state/control occur after Helper-local state/control/self standby.
+- Team order: `memberno` and leader mutate roots; zero-initialized Helper `memberNo` makes member swaps originate from position one.
+- Failure: upstream is incremental; local bounded execution retains prevalidated atomicity.
+- Global status: Wayfinder 086 is closed without runtime, visual, or score movement; Wayfinder 087 executes partner only.
+
 ## Global report - 2026-07-11 IKEMEN initial Helper standby runtime
 
 - Compiler/runtime: Helper `standby` supports static zero/non-zero and one caller-owned deferred expression under explicit `ikemen-go`.
@@ -1351,6 +1359,14 @@ Every compatibility milestone should leave:
 - Same-tick CNS/state time and Helper-parented Projectile creation continue; existing direct-interaction suppression remains active.
 - Full gates: 170 files / 1721 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
 - Global status: Wayfinder 085 is closed without score or visual movement; Wayfinder 086 maps aggregate Helper Tag ownership.
+
+### 2026-07-11 - IKEMEN Helper aggregate Tag ownership research
+
+- Partner selection is rooted in the redirected Helper's inherited stable PlayerNo and always returns a same-side root.
+- Helper local state/control/self precede partner-root standby/state/control; member/leader mutate separate root team-order state.
+- Helpers do not inherit mutable `memberNo`; pinned-source inference makes Helper `memberno` originate from position one.
+- Exact upstream failure preserves earlier mutations; the local cut keeps atomic prevalidation and documents this divergence.
+- Global status: Wayfinder 086 is closed without executable, visual, trace, or score movement; Wayfinder 087 executes partner ownership only.
 
 ## Not Done
 
