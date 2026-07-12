@@ -155,7 +155,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       attackDepth: [12, 15],
       hitbox: { x1: 0, y1: -30, x2: 30, y2: 0 },
     };
-    actor.runtime.combatDepth = { position: 0, size: [3, 3], attack: [4, 4] };
+    actor.runtime.combatDepth = { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] };
 
     world.apply({ actor, controller: compileControllerIr(controller("HitDef", { damage: "30" })), frame: activeFrame() });
 

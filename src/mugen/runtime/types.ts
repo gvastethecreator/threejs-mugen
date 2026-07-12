@@ -103,6 +103,7 @@ export type CharacterRuntimeState = {
 
 export type RuntimeCombatDepth = {
   position: number;
+  velocity: number;
   size: [number, number];
   attack: [number, number];
 };

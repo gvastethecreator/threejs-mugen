@@ -915,7 +915,7 @@ function compileKinematicControllerOp(controller: MugenStateController, type: Ki
     return { kind: "kinematic", controllerType: "gravity", y: 0.55 };
   }
   const pair = strictNumberPair(findParam(controller, "value"));
-  const supportsZ = type === "posset" || type === "posadd";
+  const supportsZ = type !== "hitvelset";
   const op = definedObject({
     kind: "kinematic" as const,
     controllerType: type,

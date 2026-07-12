@@ -59,7 +59,7 @@ describe("RuntimeFighterStateWorld", () => {
         power: 0,
         attackMultiplier: 1.5,
         defenseMultiplier: 0.5,
-        combatDepth: { position: 0, size: [2, 5], attack: [7, 9] },
+        combatDepth: { position: 0, velocity: 0, size: [2, 5], attack: [7, 9] },
         spritePriority: 2,
       },
       frameElapsed: 0,

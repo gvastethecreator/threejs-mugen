@@ -7,7 +7,7 @@ import {
 
 describe("RuntimeCombatDepthSystem", () => {
   it("uses Ikemen character depth defaults and preserves asymmetric constants", () => {
-    expect(runtimeCombatDepthFromConstants()).toEqual({ position: 0, size: [3, 3], attack: [4, 4] });
+    expect(runtimeCombatDepthFromConstants()).toEqual({ position: 0, velocity: 0, size: [3, 3], attack: [4, 4] });
     expect(
       runtimeCombatDepthFromConstants({
         "size.depth.top": 2,
@@ -15,7 +15,7 @@ describe("RuntimeCombatDepthSystem", () => {
         "size.attack.depth.top": 7,
         "size.attack.depth.bottom": 11,
       }),
-    ).toEqual({ position: 0, size: [2, 5], attack: [7, 11] });
+    ).toEqual({ position: 0, velocity: 0, size: [2, 5], attack: [7, 11] });
   });
 
   it("derives Ikemen local scale from localcoord width", () => {

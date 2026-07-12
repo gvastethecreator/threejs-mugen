@@ -604,6 +604,9 @@ class ExpressionParser {
     if (lower === "vely") {
       return this.context.self.vel.y;
     }
+    if (lower === "velz") {
+      return this.context.self.combatDepth?.velocity ?? 0;
+    }
     if (lower === "posx") {
       return this.context.self.pos.x;
     }

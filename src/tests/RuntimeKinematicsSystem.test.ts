@@ -7,13 +7,14 @@ import {
 describe("RuntimeKinematicsWorld", () => {
   it("moves grounded actors by velocity without gravity", () => {
     const world = new RuntimeKinematicsWorld();
-    const fighter = actor({ posX: 4, posY: -2, velX: 3, velY: 1, stateType: "S", physics: "S" });
+    const fighter = actor({ posX: 4, posY: -2, posZ: 5, velX: 3, velY: 1, velZ: -2, stateType: "S", physics: "S" });
 
     const result = world.advance(fighter);
 
     expect(result).toEqual({ moved: true, appliedGravity: false, landed: false, changedIdleAction: false });
     expect(fighter.runtime.pos).toEqual({ x: 7, y: -1 });
     expect(fighter.runtime.vel).toEqual({ x: 3, y: 1 });
+    expect(fighter.runtime.combatDepth).toMatchObject({ position: 3, velocity: -2 });
   });
 
   it("applies current sandbox gravity to airborne actors after velocity integration", () => {
@@ -74,9 +75,11 @@ function actor(
     physics?: "S" | "C" | "A" | "N";
     posX?: number;
     posY?: number;
+    posZ?: number;
     stateType?: "S" | "C" | "A" | "L";
     velX?: number;
     velY?: number;
+    velZ?: number;
   } = {},
 ): RuntimeKinematicsActor {
   const stateType = overrides.stateType ?? "S";
@@ -86,6 +89,12 @@ function actor(
     runtime: {
       pos: { x: overrides.posX ?? 0, y: overrides.posY ?? 0 },
       vel: { x: overrides.velX ?? 0, y: overrides.velY ?? 0 },
+      combatDepth: {
+        position: overrides.posZ ?? 0,
+        velocity: overrides.velZ ?? 0,
+        size: [3, 3],
+        attack: [4, 4],
+      },
       stateType,
       physics,
     },

@@ -11,6 +11,7 @@ export function runtimeCombatLocalScale(localCoord?: readonly [number, number]):
 export function runtimeCombatDepthFromConstants(constants?: Record<string, number>): RuntimeCombatDepth {
   return {
     position: 0,
+    velocity: 0,
     size: constantDepthPair(constants, "size.depth", DEFAULT_RUNTIME_SIZE_DEPTH),
     attack: constantDepthPair(constants, "size.attack.depth", DEFAULT_RUNTIME_ATTACK_DEPTH),
   };

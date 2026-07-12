@@ -13,12 +13,13 @@ describe("RuntimeKinematicControllerWorld", () => {
 
     const typedResult = world.applyController(
       state,
-      source("VelSet", { y: "Const(movement.y)" }),
+      source("VelSet", { y: "Const(movement.y)", z: "3" }),
       { kind: "kinematic", controllerType: "velset", x: -2 },
       { getConst: (name) => (name === "movement.y" ? 7 : undefined) },
     );
     expect(state.vel).toEqual({ x: -2, y: 7 });
-    expect(typedResult.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: -2, y: 7 });
+    expect(state.combatDepth?.velocity).toBe(3);
+    expect(typedResult.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: -2, y: 7, z: 3 });
 
     const dynamicResult = world.applyController(state, source("VelSet", { value: "1 + 1, 9 - 4" }));
     expect(state.vel).toEqual({ x: 2, y: 5 });
@@ -29,11 +30,13 @@ describe("RuntimeKinematicControllerWorld", () => {
     const world = new RuntimeKinematicControllerWorld();
     const state = runtimeState({ vel: { x: 4, y: -6 } });
 
-    world.applyController(state, source("VelAdd", { x: "2" }));
+    world.applyController(state, source("VelAdd", { x: "2", z: "4" }));
     expect(state.vel).toEqual({ x: 6, y: -6 });
+    expect(state.combatDepth?.velocity).toBe(4);
 
-    world.applyController(state, source("VelMul", { y: "-0.5" }));
+    world.applyController(state, source("VelMul", { y: "-0.5", z: "0.5" }));
     expect(state.vel).toEqual({ x: 6, y: 3 });
+    expect(state.combatDepth?.velocity).toBe(2);
 
     world.applyController(state, source("VelMul", { value: "0.25, 2" }));
     expect(state.vel).toEqual({ x: 1.5, y: 6 });

@@ -2,7 +2,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeKinematicsActor = {
   currentMove?: unknown;
-  runtime: Pick<CharacterRuntimeState, "physics" | "pos" | "stateType" | "vel">;
+  runtime: Pick<CharacterRuntimeState, "combatDepth" | "physics" | "pos" | "stateType" | "vel">;
 };
 
 export type RuntimeKinematicsHooks = {
@@ -29,6 +29,7 @@ export class RuntimeKinematicsWorld {
     const gravity = options.gravity ?? 0.55;
     actor.runtime.pos.x += actor.runtime.vel.x;
     actor.runtime.pos.y += actor.runtime.vel.y;
+    if (actor.runtime.combatDepth) actor.runtime.combatDepth.position += actor.runtime.combatDepth.velocity;
 
     const appliedGravity = actor.runtime.stateType === "A";
     if (appliedGravity) {

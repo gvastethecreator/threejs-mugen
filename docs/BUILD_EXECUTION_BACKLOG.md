@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 434 - Logical Z velocity and tick integration
+
+Done: root `combatDepth` now owns logical Z velocity. Static/dynamic `VelSet.z`, `VelAdd.z`, and `VelMul.z` compile and execute through typed kinematic operations; `Vel Z` reads the value; `RuntimeKinematicsWorld` integrates `position += velocity` in the same pass as X/Y. Legacy states lazily receive Ikemen depth defaults when a Z velocity controller first executes. Focused compiler/controller/expression/kinematics tests and TypeScript 7 typecheck pass. Claim allowed: bounded root logical Z velocity authoring, query, and per-tick integration through the existing scheduler. Claim blocked: S/C friction parity, PosFreeze/bind Z, hit velocity Z, depth bounds/push, imported trace, projectiles/helpers, render projection, and full parity. Wayfinder 129 adds imported velocity-Z evidence and maps shared X/Z friction ownership.
+
 ## Entry 433 - Required imported Pos Z depth-miss trace
 
 Done: required `synthetic-imported-ikemen-active-root-depth-miss` runs explicit IKEMEN Tag roots through playable `MatchWorld`: P3 executes CNS `PosSet z=20` and `HitDef`, root admission observes X/Y Clsn contact but records P3->P4 `no-contact` from logical depth, both frames admit zero pairs, P4 keeps 1000 life, no target is acquired, and no hit/guard/override/reversal event occurs. Trace QA passes 553/553 artifacts, 522 required; checksum `7719d4ec`. Claim allowed: imported end-to-end root Pos Z-driven direct HitDef depth rejection. Claim blocked: Z velocity/physics, depth push/bounds, ReversalDef depth trace, projectiles/helpers, visual projection, and full parity. Wayfinder 128 maps logical Z velocity and tick ownership.

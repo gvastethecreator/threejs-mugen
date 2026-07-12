@@ -33,20 +33,32 @@ export class RuntimeKinematicControllerWorld {
     }
 
     if (controllerType === "velset") {
-      const { x, y } = movementAxisParamsFromOperation(effectiveOperation);
+      const { x, y, z } = movementAxisParamsFromOperation(effectiveOperation);
       state.vel = { x: x ?? state.vel.x, y: y ?? state.vel.y };
+      if (z !== undefined) {
+        state.combatDepth ??= runtimeCombatDepthFromConstants();
+        state.combatDepth.velocity = z;
+      }
       return { applied: true, controllerType, ...(effectiveOperation ? { operation: effectiveOperation } : {}) };
     }
 
     if (controllerType === "veladd") {
-      const { x, y } = movementAxisParamsFromOperation(effectiveOperation);
+      const { x, y, z } = movementAxisParamsFromOperation(effectiveOperation);
       state.vel = { x: state.vel.x + (x ?? 0), y: state.vel.y + (y ?? 0) };
+      if (z !== undefined) {
+        state.combatDepth ??= runtimeCombatDepthFromConstants();
+        state.combatDepth.velocity += z;
+      }
       return { applied: true, controllerType, ...(effectiveOperation ? { operation: effectiveOperation } : {}) };
     }
 
     if (controllerType === "velmul") {
-      const { x, y } = movementAxisParamsFromOperation(effectiveOperation);
+      const { x, y, z } = movementAxisParamsFromOperation(effectiveOperation);
       state.vel = { x: state.vel.x * (x ?? 1), y: state.vel.y * (y ?? 1) };
+      if (z !== undefined) {
+        state.combatDepth ??= runtimeCombatDepthFromConstants();
+        state.combatDepth.velocity *= z;
+      }
       return { applied: true, controllerType, ...(effectiveOperation ? { operation: effectiveOperation } : {}) };
     }
 
@@ -127,7 +139,7 @@ function movementAxisParams(
     x: operation?.x ?? numberParam(controller, state, context, "x") ?? pair?.[0],
     y: operation?.y ?? numberParam(controller, state, context, "y") ?? pair?.[1],
     z:
-      controller.normalizedType === "posset" || controller.normalizedType === "posadd"
+      controller.normalizedType !== "hitvelset"
         ? operation?.z ?? numberParam(controller, state, context, "z")
         : undefined,
   };

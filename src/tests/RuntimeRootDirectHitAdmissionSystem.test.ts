@@ -62,8 +62,8 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
   it("rejects direct HitDef depth misses against getter body depth", () => {
     const attacker = actor("p1", 1, 1, 0, { move: true });
     const getter = actor("p2", 2, 2, 0);
-    attacker.runtime.combatDepth = { position: 0, size: [3, 3], attack: [4, 4] };
-    getter.runtime.combatDepth = { position: 8, size: [3, 3], attack: [4, 4] };
+    attacker.runtime.combatDepth = { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] };
+    getter.runtime.combatDepth = { position: 8, velocity: 0, size: [3, 3], attack: [4, 4] };
 
     const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [attacker, getter], getHurtBoxes: () => hurt });
 
@@ -76,8 +76,8 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     const attacker = actor("p2", 2, 2, 0, { reversal: true });
     getter.currentMove = reversalMove();
     attacker.currentMove = reversalMove();
-    getter.runtime.combatDepth = { position: 12, size: [3, 3], attack: [4, 4] };
-    attacker.runtime.combatDepth = { position: 0, size: [3, 3], attack: [4, 4] };
+    getter.runtime.combatDepth = { position: 12, velocity: 0, size: [3, 3], attack: [4, 4] };
+    attacker.runtime.combatDepth = { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] };
     getter.definition = { localCoord: [640, 480] };
 
     const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [getter, attacker], getHurtBoxes: () => hurt });

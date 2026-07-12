@@ -589,10 +589,10 @@ describe("RuntimeCombatResolutionSystem", () => {
     const reversalWorld = new RuntimeReversalWorld(contactWorld);
     const world = new RuntimeCombatResolutionWorld();
     const p1 = actor("p1", "P1", contactWorld, {
-      runtime: runtimeState({ combatDepth: { position: 0, size: [3, 3], attack: [4, 4] }, stateNo: 300 }),
+      runtime: runtimeState({ combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] }, stateNo: 300 }),
     });
     const p2 = actor("p2", "P2", contactWorld, {
-      runtime: runtimeState({ combatDepth: { position: 20, size: [3, 3], attack: [4, 4] }, stateNo: 301 }),
+      runtime: runtimeState({ combatDepth: { position: 20, velocity: 0, size: [3, 3], attack: [4, 4] }, stateNo: 301 }),
     });
     for (const fighter of [p1, p2]) {
       reversalWorld.activate(fighter, {
