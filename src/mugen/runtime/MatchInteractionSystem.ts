@@ -41,6 +41,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   separateActors: (left: TFighter, right: TFighter) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
+  resolveRootReversalClashes?: (resolveReversalClash: (reverser: TFighter, getter: TFighter) => void) => void;
   resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void) => void;
   applyTargetBindings: (fighter: TFighter, candidates: TFighter[]) => void;
   applyBindToTarget: (fighter: TFighter, candidates: TFighter[]) => void;
@@ -49,6 +50,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
   resolveRootPriorityOutcomes?: (resolveEqualPriorityOutcomes: (actors: readonly TFighter[]) => number) => void;
   resolveEqualPriorityOutcomes?: (actors: readonly TFighter[]) => number;
+  resolveReversalClash?: (reverser: TFighter, getter: TFighter) => void;
   resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
   commitHitDefTargets?: (fighter: TFighter) => void;
   recordHitDefContactCommit?: (fighter: TFighter) => void;
@@ -86,6 +88,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
     resolveRootPriorityOutcomes?: (resolveEqualPriorityOutcomes: (actors: readonly TFighter[]) => number) => void;
     resolveEqualPriorityOutcomes?: (actors: readonly TFighter[]) => number;
+    resolveReversalClash?: (reverser: TFighter, getter: TFighter) => void;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     commitHitDefTargets?: (fighter: TFighter) => void;
     recordHitDefContactCommit?: (fighter: TFighter) => void;
@@ -94,6 +97,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
     advanceBodyPush?: () => void;
     inspectHitAdmission?: () => void;
+    resolveRootReversalClashes?: (resolveReversalClash: (reverser: TFighter, getter: TFighter) => void) => void;
     resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void) => void;
     recordTargetMaintenance?: (fighter: TFighter) => void;
     recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
@@ -130,6 +134,9 @@ export class RuntimeMatchInteractionWorld {
     input.inspectHitAdmission?.();
 
     input.recordSchedulePhase?.("post-fighter:combat");
+    if (input.resolveRootReversalClashes && input.resolveReversalClash) {
+      input.resolveRootReversalClashes(input.resolveReversalClash);
+    }
     if (input.resolveRootPriorityClashes) input.resolveRootPriorityClashes(input.resolvePriorityClash);
     else {
       const priorityMessage = input.resolvePriorityClash(p1, p2);
@@ -199,6 +206,7 @@ export class RuntimeMatchInteractionWorld {
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
+      resolveRootReversalClashes: input.resolveRootReversalClashes,
       resolveRootDirectCombat: input.resolveRootDirectCombat,
       applyTargetBindings: (fighter, candidates) => fighter.targetWorld.applyTargetBindings(fighter, candidates),
       applyBindToTarget: (fighter, candidates) => fighter.targetWorld.applyBindToTarget(fighter, candidates),
@@ -206,6 +214,7 @@ export class RuntimeMatchInteractionWorld {
       resolveRootPriorityClashes: input.resolveRootPriorityClashes,
       resolveRootPriorityOutcomes: input.resolveRootPriorityOutcomes,
       resolveEqualPriorityOutcomes: input.resolveEqualPriorityOutcomes,
+      resolveReversalClash: input.resolveReversalClash,
       resolveDirectCombat: input.resolveDirectCombat,
       commitHitDefTargets: input.commitHitDefTargets,
       recordHitDefContactCommit: input.recordHitDefContactCommit,

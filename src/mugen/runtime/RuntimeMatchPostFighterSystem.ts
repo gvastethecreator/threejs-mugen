@@ -31,6 +31,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
   resolveRootPriorityClashes?: (resolvePriorityClash: (left: TActor, right: TActor) => string | undefined) => void;
+  resolveRootReversalClashes?: (resolveReversalClash: (reverser: TActor, getter: TActor) => void) => void;
   resolveRootPriorityOutcomes?: (resolveEqualPriorityOutcomes: (actors: readonly TActor[]) => number) => void;
   resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TActor, defender: TActor) => void) => void;
   recordTargetMaintenance?: (fighter: TActor) => void;
@@ -64,12 +65,14 @@ export class RuntimeMatchPostFighterWorld {
       actorConstraintWorld: input.actorConstraintWorld,
       effectLifecycleWorld: input.effectLifecycleWorld,
       resolvePriorityClash: combatResolvers.resolvePriorityClash,
+      resolveReversalClash: combatResolvers.resolveReversalClash,
       resolveDirectCombat: combatResolvers.resolveDirectCombat,
       resolveProjectileCombat: combatResolvers.resolveProjectileCombat,
       resolveHelperCombat: combatResolvers.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
+      resolveRootReversalClashes: input.resolveRootReversalClashes,
       resolveRootPriorityClashes: input.resolveRootPriorityClashes,
       resolveRootPriorityOutcomes: input.resolveRootPriorityOutcomes,
       resolveEqualPriorityOutcomes: combatResolvers.resolveEqualPriorityOutcomes,

@@ -1004,6 +1004,16 @@ export class PlayableMatchRuntime {
               resolveDirectCombat(attacker, getter);
             }
           } : undefined,
+          resolveRootReversalClashes: this.tagTeamOrder ? (resolveReversalClash) => {
+            const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
+            for (const pairId of this.lastRootHitAdmission?.admittedReversalClashPairIds ?? []) {
+              const [reverserId, getterId] = pairId.split("->");
+              const reverser = rootsById.get(reverserId);
+              const getter = rootsById.get(getterId);
+              if (!reverser || !getter) throw new Error(`Root reversal admission referenced unknown pair ${pairId}`);
+              resolveReversalClash(reverser, getter);
+            }
+          } : undefined,
           resolveRootPriorityClashes: this.tagTeamOrder ? (resolvePriorityClash) => {
             const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
             const ordered = (this.lastRootHitAdmission?.attackerIds ?? []).map((id) => {

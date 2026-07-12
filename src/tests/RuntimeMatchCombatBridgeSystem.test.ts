@@ -38,6 +38,10 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           calls.push(`priority-trades:${input.actors.map(({ id }) => id).join(",")}`);
           return 0;
         },
+        resolveReversalClash: (input) => {
+          calls.push(`reversal-clash:${input.reverser.id}:${input.getter.id}`);
+          return { kind: "skipped", reason: "no-match" };
+        },
         resolveDirect: (input) => {
           calls.push(`direct:${input.attacker.id}:${input.defender.id}:${input.runtimeTick}:${tagOf(input.stateHooks)}`);
           input.getHurtBoxes?.(input.defender);
@@ -50,7 +54,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           input.recordAudioOperation?.(input.attacker, { kind: "audio", controllerType: "playsnd", value: "S6,0" });
           input.log("projectile-log");
         },
-      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveDirect" | "resolveProjectile">,
+      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveReversalClash" | "resolveDirect" | "resolveProjectile">,
       helperCombatWorld: {
         resolveDirect: (input) => {
           calls.push(
@@ -84,12 +88,14 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
     });
 
     expect(bridge.resolvePriorityClash(p1, p2)).toBe("priority-log");
+    bridge.resolveReversalClash(p2, p1);
     bridge.resolveDirectCombat(p1, p2);
     bridge.resolveProjectileCombat(p1, p2);
     bridge.resolveHelperCombat(p1, p2);
 
     expect(calls).toEqual([
       "priority:p1:p2:direct-world",
+      "reversal-clash:p2:p1",
       "direct:p1:p2:77:combat-hooks",
       "hurt:p2",
       "log:direct-log",

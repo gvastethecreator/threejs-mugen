@@ -124,6 +124,19 @@ export type RuntimeCombatResolutionPriorityInput<TActor extends RuntimeCombatRes
   directCombatWorld: RuntimeDirectCombatWorld;
 };
 
+export type RuntimeCombatResolutionReversalClashInput<TActor extends RuntimeCombatResolutionActor> = {
+  reverser: TActor;
+  getter: TActor;
+  reversalWorld: RuntimeReversalWorld;
+  hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
+  stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
+  log: (line: string) => void;
+};
+
+export type RuntimeReversalClashResolutionResult =
+  | { kind: "skipped"; reason: "missing-reversal" | "stale-getter" | "already-hit" | "no-match" }
+  | { kind: "reversal"; message: string };
+
 export type RuntimeDirectCombatResolutionResult =
   | { kind: "skipped"; reason: RuntimeDirectCombatSkipReason }
   | { kind: "reversal"; message: string }
@@ -179,6 +192,49 @@ export class RuntimeCombatResolutionWorld {
     }
     else this.equalPriorityCandidates.delete(tradeKey);
     return outcome?.kind === "win" ? outcome.message : undefined;
+  }
+
+  resolveReversalClash<TActor extends RuntimeCombatResolutionActor>(
+    input: RuntimeCombatResolutionReversalClashInput<TActor>,
+  ): RuntimeReversalClashResolutionResult {
+    const reversal = input.reverser.currentMove;
+    if (!reversal?.isReversal) return { kind: "skipped", reason: "missing-reversal" };
+    const getterMove = input.getter.currentMove;
+    if (!getterMove?.isReversal) return { kind: "skipped", reason: "stale-getter" };
+    if (hasExplicitHitDefContactMemory(input.reverser)
+      ? hasRuntimeHitDefTarget(input.reverser, input.getter.id)
+      : input.reverser.hasHit) {
+      return { kind: "skipped", reason: "already-hit" };
+    }
+    const active = input.reversalWorld.findActive(
+      input.reverser,
+      getterMove,
+      runtimeWorldBox(input.getter.runtime, getterMove.hitbox),
+      {
+        isMoveActive: runtimeMoveIsActive,
+        worldBox: runtimeWorldBox,
+        boxesIntersect: collisionBoxesIntersect,
+        attrMatches: hitAttributeMatches,
+      },
+    );
+    if (active !== reversal) return { kind: "skipped", reason: "no-match" };
+    const outcome = input.reversalWorld.apply(input.reverser, input.getter, reversal, {
+      rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),
+      canEnterState: input.stateHooks.canEnterState,
+      enterState: input.stateHooks.enterState,
+      enterTargetHitState: (target, owner, stateNo, getP1State) =>
+        input.hitStateTransitionWorld.enterTargetHitState(
+          target,
+          owner,
+          stateNo,
+          getP1State,
+          this.hitStateTransitionHooks(input.stateHooks),
+        ),
+    });
+    bufferRuntimeHitDefTarget(input.reverser, input.getter.id);
+    bufferRuntimeHitDefTarget(input.getter, input.reverser.id);
+    input.log(outcome.message);
+    return { kind: "reversal", message: outcome.message };
   }
 
   resolveDirect<TActor extends RuntimeCombatResolutionActor>(

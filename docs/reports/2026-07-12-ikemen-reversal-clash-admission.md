@@ -1,5 +1,7 @@
 # IKEMEN ReversalDef Clash Admission Report
 
+Status: superseded by the directed mutation slice documented in `2026-07-12-ikemen-reversal-clash-runtime.md`; this report remains the read-only prerequisite record.
+
 Date: 2026-07-12
 
 ## Delivered

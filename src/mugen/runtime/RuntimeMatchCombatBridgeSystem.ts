@@ -32,7 +32,7 @@ export type RuntimeMatchCombatBridgeActor =
 export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridgeActor> = {
   combatResolutionWorld: Pick<
     RuntimeCombatResolutionWorld,
-    "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveDirect" | "resolveProjectile"
+    "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveReversalClash" | "resolveDirect" | "resolveProjectile"
   >;
   helperCombatWorld: Pick<RuntimeHelperCombatWorld, "resolveDirect">;
   directCombatWorld: RuntimeDirectCombatWorld;
@@ -59,6 +59,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
 export type RuntimeMatchCombatBridgeResolvers<TActor extends RuntimeMatchCombatBridgeActor> = {
   resolvePriorityClash: (left: TActor, right: TActor) => string | undefined;
   resolveEqualPriorityOutcomes: (actors: readonly TActor[]) => number;
+  resolveReversalClash: (reverser: TActor, getter: TActor) => void;
   resolveDirectCombat: (attacker: TActor, defender: TActor) => void;
   resolveProjectileCombat: (attacker: TActor, defender: TActor) => void;
   resolveHelperCombat: (attacker: TActor, defender: TActor) => void;
@@ -93,6 +94,16 @@ export class RuntimeMatchCombatBridgeWorld {
           stateHooks: input.combatStateHooks,
           log: input.log,
         }),
+      resolveReversalClash: (reverser, getter) => {
+        input.combatResolutionWorld.resolveReversalClash({
+          reverser,
+          getter,
+          reversalWorld: input.reversalWorld,
+          hitStateTransitionWorld: input.hitStateTransitionWorld,
+          stateHooks: input.combatStateHooks,
+          log: input.log,
+        });
+      },
       resolveDirectCombat: (attacker, defender) => {
         input.combatResolutionWorld.resolveDirect({
           attacker,

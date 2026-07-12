@@ -9003,7 +9003,7 @@ export function createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifac
   });
 }
 
-export function createSyntheticImportedIkemenReversalClashAdmissionTraceArtifact(
+export function createSyntheticImportedIkemenReversalClashTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
   const reversal = (id: string, label: string) => createSyntheticImportedTraceFighter({
@@ -9020,34 +9020,37 @@ export function createSyntheticImportedIkemenReversalClashAdmissionTraceArtifact
     teamMode: "tag",
   });
   const script = expandRuntimeTraceScript([{ label: "project directed ReversalDef clash pairs", p1: [], p2: [], frames: 1 }]);
-  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-reversal-clash-admission-golden" });
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-reversal-clash-golden" });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-ikemen-reversal-clash-admission-golden",
-      label: "Synthetic imported IKEMEN ReversalDef clash admission",
+      id: "synthetic-imported-ikemen-reversal-clash-golden",
+      label: "Synthetic imported IKEMEN ReversalDef clash mutation",
       source: "imported",
       notes: [
-        "Explicit IKEMEN Tag trace proves two active ReversalDefs produce getter-ordered directed clash candidates while ordinary direct admission and combat mutation remain empty. It does not claim a winner, mutation, state routing, randomness, attack depth, helpers/projectiles, or full parity.",
+        "Explicit IKEMEN Tag trace proves two active ReversalDefs produce getter-ordered directed candidates, P2 reverses P1 through the first pair, and the inverse candidate cannot mutate again after both moves are consumed. It does not claim broader tie/randomness, attack depth, helpers/projectiles, or full parity.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-ikemen-reversal-clash-admission-golden",
+      label: "synthetic-imported-ikemen-reversal-clash-golden",
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredExecutedControllers: ["ReversalDef"],
       requiredExecutedOperations: ["reversaldef"],
+      requiredEventCategories: ["reversal"],
+      requiredCombatReasons: ["reversal"],
+      requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId: 127 }],
       requiredRootHitAdmissionFrames: [{
         admittedPairIds: [],
         admittedReversalClashPairIds: ["p2->p1", "p1->p2"],
       }],
       requiredFinalActors: [
         { actorId: "p1", source: "imported", actorKind: "player", life: 1000, stateNo: 0 },
-        { actorId: "p2", source: "imported", actorKind: "player", life: 1000, stateNo: 0 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000, stateNo: 777 },
       ],
-      forbiddenCombatReasons: ["hit", "guard", "reversal", "override"],
+      forbiddenCombatReasons: ["hit", "guard", "override"],
     }],
   });
 }

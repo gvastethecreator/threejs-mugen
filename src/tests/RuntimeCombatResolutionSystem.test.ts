@@ -545,6 +545,45 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(100);
   });
 
+  it("applies only the first directed ReversalDef clash candidate", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const p1 = actor("p1", "P1", contactWorld, { runtime: runtimeState({ stateNo: 300 }) });
+    const p2 = actor("p2", "P2", contactWorld, { runtime: runtimeState({ pos: { x: 18, y: 0 }, stateNo: 301 }) });
+    for (const fighter of [p1, p2]) {
+      reversalWorld.activate(fighter, {
+        attr: "S,NA",
+        hitbox: { x1: -40, y1: -40, x2: 40, y2: -1 },
+        hitPause: 3,
+        targetId: 127,
+      });
+    }
+    const logs: string[] = [];
+    const input = {
+      reversalWorld,
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      stateHooks: hooks(),
+      log: (line: string) => logs.push(line),
+    };
+
+    expect(world.resolveReversalClash({ ...input, reverser: p2, getter: p1 })).toEqual({
+      kind: "reversal",
+      message: "P2 reversed P1",
+    });
+    expect(world.resolveReversalClash({ ...input, reverser: p1, getter: p2 })).toEqual({
+      kind: "skipped",
+      reason: "missing-reversal",
+    });
+    expect(logs).toEqual(["P2 reversed P1"]);
+    expect(p1.currentMove).toBeUndefined();
+    expect(p2.currentMove).toBeUndefined();
+    expect(p2.targets).toContainEqual(expect.objectContaining({ actorId: "p1", targetId: 127 }));
+    expect(p2.pendingHitDefTargets).toEqual(["p1"]);
+    expect(p1.pendingHitDefTargets).toEqual(["p2"]);
+    expect(p2.runtime.power).toBe(25);
+  });
+
   it("prioritizes ReversalDef over SuperPause-unhittable Projectile contact", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const reversalWorld = new RuntimeReversalWorld(contactWorld);

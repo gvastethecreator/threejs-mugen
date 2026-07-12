@@ -21,6 +21,8 @@ The important rule: MUGEN data and runtime behavior must stay renderer-independe
 
 The current explicit-Tag direct-combat path preserves IKEMEN's getter-owned detection shape: eligible roots are sorted with ReversalDef getters first, then HitDef getters and PlayerNo, and admitted mutation pairs are traversed getter-first. Active-motion roots can author bounded direct HitDef and ReversalDef operations before that pass. Priority arbitration still owns a separate stable attacker ordering; presentation adapters consume only resulting snapshots and evidence.
 
+Dual ReversalDefs use a separate directed channel and mutation primitive before HitDef priority. This preserves attacker-owned reversal state/target semantics without feeding reversal moves into the ordinary direct-hit API. Candidate identity is revalidated at mutation time so the inverse direction becomes stale after the first accepted reversal.
+
 The future creator studio adds a layer above this engine flow:
 
 ```txt

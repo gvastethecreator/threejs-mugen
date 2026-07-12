@@ -93,6 +93,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       separateActors: (left, right) => tag("separate", left, right),
       applyTargetBindings: (fighter, candidates) => tag("target-bind", fighter, candidates[0]),
       applyBindToTarget: (fighter, candidates) => tag("bind-to-target", fighter, candidates[0]),
+      resolveReversalClash: (reverser, getter) => tag("reversal-clash", reverser, getter),
+      resolveRootReversalClashes: (resolve) => resolve("p2", "p1"),
       resolvePriorityClash: (left, right) => {
         tag("priority", left, right);
         return "priority resolved";
@@ -115,6 +117,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       "target-bind:p2:p1",
       "bind-to-target:p1:p2",
       "bind-to-target:p2:p1",
+      "reversal-clash:p2:p1",
       "priority:p1:p2",
       "log:priority resolved",
       "direct-combat:p1:p2",

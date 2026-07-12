@@ -171,7 +171,7 @@ import {
   createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitDodgePriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifact,
-  createSyntheticImportedIkemenReversalClashAdmissionTraceArtifact,
+  createSyntheticImportedIkemenReversalClashTraceArtifact,
   createSyntheticImportedPairMissHitPriorityTraceArtifact,
   createSyntheticImportedPairHitDodgePriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
@@ -16243,8 +16243,8 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a required read-only IKEMEN ReversalDef clash-admission artifact", () => {
-    const artifact = createSyntheticImportedIkemenReversalClashAdmissionTraceArtifact({
+  it("creates a required IKEMEN ReversalDef clash mutation artifact", () => {
+    const artifact = createSyntheticImportedIkemenReversalClashTraceArtifact({
       generatedAt: "2026-07-12T00:00:00.000Z",
     });
 
@@ -16260,8 +16260,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.rootHitAdmissionFrames).toContainEqual(
       expect.objectContaining({ admittedPairIds: [], admittedReversalClashPairIds: ["p2->p1", "p1->p2"], frames: 2 }),
     );
-    expect(artifact.trace.combatReasons).toEqual([]);
-    expect(artifact.gates[0]?.evidence.targetLinks).toEqual([]);
+    expect(artifact.trace.combatReasons.filter(({ reason }) => reason === "reversal")).toHaveLength(1);
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 127 }),
+    );
   });
 
   it("creates a required IKEMEN active-root presentation handoff artifact", () => {

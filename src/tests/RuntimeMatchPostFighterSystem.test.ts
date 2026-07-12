@@ -51,6 +51,7 @@ describe("RuntimeMatchPostFighterWorld", () => {
           return "priority-log";
         },
         resolveEqualPriorityOutcomes: () => 0,
+        resolveReversalClash: () => ({ kind: "skipped", reason: "no-match" }),
         resolveDirect: (input) => {
           calls.push(`direct:${input.attacker.id}:${input.defender.id}:${input.runtimeTick}:${tagOf(input.stateHooks)}`);
           input.getHurtBoxes?.(input.defender);
@@ -60,7 +61,7 @@ describe("RuntimeMatchPostFighterWorld", () => {
           calls.push(`projectile:${input.attacker.id}:${input.defender.id}:${tagOf(input.effectLifecycleWorld)}`);
           input.rememberProjectileTarget?.(input.attacker, input.defender, projectile);
         },
-      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveDirect" | "resolveProjectile">,
+      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveReversalClash" | "resolveDirect" | "resolveProjectile">,
       helperCombatWorld: {
         resolveDirect: (input) => {
           calls.push(
