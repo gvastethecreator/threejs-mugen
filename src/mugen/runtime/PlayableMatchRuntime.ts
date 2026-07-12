@@ -127,6 +127,7 @@ import {
 import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
+import { RuntimeCollisionOverrideWorld, type RuntimeCollisionOverrideResolver } from "./RuntimeCollisionOverrideSystem";
 import { resolveRuntimePushSizeBox, RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic, usesMugenPlayerPushMinimumWidth } from "./RuntimeRootBodyPushSystem";
 import {
   RuntimeRootDirectHitAdmissionWorld,
@@ -237,6 +238,7 @@ const triggerGateWorld = new RuntimeTriggerGateWorld();
 const triggerEvaluationWorld = new RuntimeTriggerEvaluationWorld();
 const afterImageSampleWorld = new RuntimeAfterImageSampleWorld();
 const frameWorld = new RuntimeFrameWorld();
+const collisionOverrideWorld = new RuntimeCollisionOverrideWorld();
 const animationChangeWorld = new RuntimeAnimationWorld();
 const fighterStateWorld = new RuntimeFighterStateWorld();
 const characterIdentityWorld = new RuntimeCharacterIdentityWorld();
@@ -341,7 +343,7 @@ type RootControllerRedirectHandler = (
   caller: FighterMatchState,
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
-  controllerType: "depth" | "height" | "screenbound" | "playerpush",
+  controllerType: "depth" | "height" | "overrideclsn" | "screenbound" | "playerpush",
 ) => FighterMatchState | undefined;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
@@ -706,6 +708,7 @@ export class PlayableMatchRuntime {
       applyPreFacingAssertSpecial: (fighter, opponent) => this.applyPreFacingAssertSpecial(fighter, opponent),
       updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
     });
+    for (const root of this.characterRoots()) collisionOverrideWorld.resetFrame(root.runtime);
 
     const branchResult = matchTickBranchWorld.advance({
       advanceHitPause: () => {
@@ -980,14 +983,14 @@ export class PlayableMatchRuntime {
                 weight: root.definition.constants?.["size.weight"],
                 pushFactor: root.definition.constants?.["size.pushfactor"],
                 sizeBox: runtimePushSizeBox(root),
-                hurtBoxes: frameWorld.currentFrame(root)?.clsn2,
+                hurtBoxes: frameWorld.currentHurtBoxes(root),
                 sizePushOnly: root.runtime.assertSpecial?.flags.includes("sizepushonly"),
                 moveType: root.runtime.moveType,
                 mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(root.definition),
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2, sizePushOnly: this.p1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p1.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p1.definition) },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2, sizePushOnly: this.p2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p2.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p2.definition) },
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentHurtBoxes(this.p1), sizePushOnly: this.p1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p1.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p1.definition) },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentHurtBoxes(this.p2), sizePushOnly: this.p2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p2.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p2.definition) },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
@@ -1486,7 +1489,7 @@ export class PlayableMatchRuntime {
     caller: FighterMatchState,
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
-    controllerType: "depth" | "height" | "screenbound" | "playerpush",
+    controllerType: "depth" | "height" | "overrideclsn" | "screenbound" | "playerpush",
   ): FighterMatchState | undefined {
     const block = (value: number | "invalid"): undefined => {
       this.logs.unshift(`Blocked ${controllerType} RedirectID ${value} for ${caller.id}`);
@@ -2321,7 +2324,7 @@ function runActiveStateControllers(
       hitDefControllerDispatchWorld.apply({
         actor,
         controller,
-        frame: getCurrentFrame(actor),
+        frame: getCurrentCollisionFrame(actor),
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -2330,7 +2333,7 @@ function runActiveStateControllers(
       reversalControllerDispatchWorld.apply({
         actor: fighter,
         controller,
-        hitbox: frameWorld.currentFrame(fighter)?.clsn1[0],
+        hitbox: frameWorld.firstCurrentAttackBox(fighter),
         reversalWorld,
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -2371,6 +2374,31 @@ function runActiveStateControllers(
         valueScale: targetWidth / callerWidth,
         ...runtimeActiveControllerTelemetryHooks,
       });
+    },
+    overrideClsn: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
+        ? controller.operation
+        : undefined;
+      const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const redirectExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "overrideclsn")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "overrideclsn-redirect");
+        return;
+      }
+      runtimeActiveControllerTelemetryHooks.recordController(target, controller.source);
+      const callerWidth = actor.definition.localCoord?.[0] ?? 320;
+      const targetWidth = target.definition.localCoord?.[0] ?? 320;
+      const applied = collisionOverrideWorld.apply(
+        target.runtime,
+        controller.source,
+        operation,
+        resolveCollisionOverrideParams(controller, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        targetWidth / callerWidth,
+      );
+      if (applied) runtimeActiveControllerTelemetryHooks.recordOperation(target, applied);
     },
     depth: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
@@ -2796,7 +2824,7 @@ function advanceContactTimers(fighter: FighterMatchState): void {
 }
 
 function getRuntimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
-  return frameWorld.currentFrame(fighter)?.clsn2;
+  return frameWorld.currentHurtBoxes(fighter);
 }
 
 function runtimePushSizeBox(fighter: FighterMatchState) {
@@ -2873,6 +2901,11 @@ function isRuntimeInGuardDistLatched(defender: FighterMatchState, attacker: Figh
 
 function getCurrentFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {
   return frameWorld.currentFrame(fighter);
+}
+
+function getCurrentCollisionFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {
+  const frame = getCurrentFrame(fighter);
+  return frame ? { ...frame, clsn1: frameWorld.currentAttackBoxes(fighter), clsn2: frameWorld.currentHurtBoxes(fighter) } : undefined;
 }
 
 function tryApplyStateEntry(
@@ -3052,6 +3085,30 @@ function resolveDepthPairParam(
   if (!bottomExpression) return [top];
   const bottom = resolveDispatchNumber(undefined, bottomExpression, fighter, opponent, owner, stageBounds, stageTime);
   return bottom === undefined ? undefined : [top, bottom];
+}
+
+function resolveCollisionOverrideParams(
+  controller: ControllerIr,
+  actor: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): RuntimeCollisionOverrideResolver {
+  return {
+    resolveNumber: (key) => {
+      const raw = findParam(controller, key);
+      return raw === undefined ? undefined : resolveDispatchNumber(undefined, raw, actor, opponent, owner, stageBounds, tick);
+    },
+    resolveRect: (key) => {
+      const raw = findParam(controller, key);
+      if (raw === undefined) return undefined;
+      const expressions = raw.split(",").map((part) => part.trim());
+      if (expressions.length < 1 || expressions.length > 4 || expressions.some((part) => !part)) return undefined;
+      const values = expressions.map((expression) => resolveDispatchFloat(undefined, expression, actor, opponent, owner, stageBounds, tick));
+      return values.some((value) => value === undefined) ? undefined : values as [number, number?, number?, number?];
+    },
+  };
 }
 
 function resolveRemapPalPairParam(

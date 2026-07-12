@@ -22,6 +22,7 @@ export type RuntimeActiveControllerHookSetInput<TActor extends RuntimeActiveStat
   reversalDef: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["reversalDef"]>;
   width: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["width"]>;
   height: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["height"]>;
+  overrideClsn: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["overrideClsn"]>;
   depth: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["depth"]>;
   fallEnvShake: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["fallEnvShake"]>;
   spriteEffect: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["spriteEffect"]>;
@@ -61,6 +62,7 @@ export class RuntimeActiveControllerHookSetWorld {
         reversalDef: input.reversalDef,
         width: input.width,
         height: input.height,
+        overrideClsn: input.overrideClsn,
         depth: input.depth,
         fallEnvShake: input.fallEnvShake,
         spriteEffect: input.spriteEffect,

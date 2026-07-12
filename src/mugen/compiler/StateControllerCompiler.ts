@@ -34,6 +34,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   screenbound: partial("stage bounds"),
   width: partial("body width"),
   height: partial("body height"),
+  overrideclsn: partial("collision override"),
   depth: partial("body depth"),
   fallenvshake: partial("camera shake"),
   assertspecial: partial("runtime flags"),

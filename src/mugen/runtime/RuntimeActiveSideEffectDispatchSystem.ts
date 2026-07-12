@@ -11,6 +11,7 @@ export type RuntimeActiveSideEffectRoute =
   | "reversaldef"
   | "width"
   | "height"
+  | "overrideclsn"
   | "depth"
   | "fallenvshake"
   | "sprite-effect"
@@ -37,6 +38,7 @@ export type RuntimeActiveSideEffectDispatchHooks<TActor> = {
   reversalDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "reversaldef">) => void;
   width?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "width">) => void;
   height?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "height">) => void;
+  overrideClsn?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "overrideclsn">) => void;
   depth?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "depth">) => void;
   fallEnvShake?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "fallenvshake">) => void;
   spriteEffect?: (
@@ -97,6 +99,8 @@ export class RuntimeActiveSideEffectDispatchWorld {
       input.hooks.width?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "width">);
     } else if (input.dispatch.effect === "height") {
       input.hooks.height?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "height">);
+    } else if (input.dispatch.effect === "overrideclsn") {
+      input.hooks.overrideClsn?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "overrideclsn">);
     } else if (input.dispatch.effect === "depth") {
       input.hooks.depth?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "depth">);
     } else if (input.dispatch.effect === "fallenvshake") {
@@ -140,6 +144,7 @@ export function runtimeActiveSideEffectRoute(effect: StateProgramSideEffect): Ru
   if (effect === "reversaldef") return "reversaldef";
   if (effect === "width") return "width";
   if (effect === "height") return "height";
+  if (effect === "overrideclsn") return "overrideclsn";
   if (effect === "depth") return "depth";
   if (effect === "fallenvshake") return "fallenvshake";
   if (isActiveSpriteEffect(effect)) return "sprite-effect";
@@ -160,6 +165,7 @@ function activeSideEffectHookExists<TActor>(
   if (route === "reversaldef") return Boolean(hooks.reversalDef);
   if (route === "width") return Boolean(hooks.width);
   if (route === "height") return Boolean(hooks.height);
+  if (route === "overrideclsn") return Boolean(hooks.overrideClsn);
   if (route === "depth") return Boolean(hooks.depth);
   if (route === "fallenvshake") return Boolean(hooks.fallEnvShake);
   if (route === "sprite-effect") return Boolean(hooks.spriteEffect);

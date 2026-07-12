@@ -4,6 +4,7 @@ import type { RuntimeActorConstraintState, RuntimeActorConstraintWorld, RuntimeB
 import { collisionBoxesIntersect, runtimeWorldBox } from "./CombatResolver";
 import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTeamState } from "./types";
+import { applyCollisionOverrides } from "./RuntimeCollisionOverrideSystem";
 
 export type RuntimeRootBodyPushActor = {
   id: string;
@@ -124,7 +125,8 @@ function composedSizeBoxY(actor: RuntimeRootBodyPushActor): CollisionBox {
   const delta = actor.runtime.bodyHeightDelta ?? { top: 0, bottom: 0 };
   const y1 = box.y1 - delta.top;
   const y2 = box.y2 + delta.bottom;
-  return { ...box, y1: Math.min(y1, y2), y2: Math.max(y1, y2) };
+  const composed = { ...box, y1: Math.min(y1, y2), y2: Math.max(y1, y2) };
+  return applyCollisionOverrides([composed], actor.runtime.clsnOverrides, 3)[0] ?? { x1: 0, y1: 0, x2: 0, y2: 0 };
 }
 
 function canPairPush(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {
@@ -173,8 +175,9 @@ function composedSizeBoxX(actor: RuntimeRootBodyPushActor, scale: number): { x1:
   const box = sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
   const minimum = actor.mugenMinimumWidth ? 5 / scale : 0;
   const delta = actor.runtime.bodyWidthDelta ?? { front: 0, back: 0 };
-  const x1 = Math.min(-minimum, box.x1 - delta.back);
-  const x2 = Math.max(minimum, box.x2 + delta.front);
+  const overridden = applyCollisionOverrides([{ ...box, x1: box.x1 - delta.back, x2: box.x2 + delta.front }], actor.runtime.clsnOverrides, 3)[0];
+  const x1 = Math.min(-minimum, overridden?.x1 ?? 0);
+  const x2 = Math.max(minimum, overridden?.x2 ?? 0);
   return { x1: Math.min(x1, x2), x2: Math.max(x1, x2) };
 }
 

@@ -27,6 +27,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       reversalDef: () => calls.push("reversaldef"),
       width: () => calls.push("width"),
       height: () => calls.push("height"),
+      overrideClsn: () => calls.push("overrideclsn"),
       depth: () => calls.push("depth"),
       fallEnvShake: () => calls.push("fallenvshake"),
       spriteEffect: () => calls.push("sprite-effect"),
@@ -52,6 +53,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     expect(hookSet.sideEffectHooks.hitDef).toBe(input.hitDef);
     expect(hookSet.sideEffectHooks.reversalDef).toBe(input.reversalDef);
     expect(hookSet.sideEffectHooks.width).toBe(input.width);
+    expect(hookSet.sideEffectHooks.height).toBe(input.height);
+    expect(hookSet.sideEffectHooks.overrideClsn).toBe(input.overrideClsn);
     expect(hookSet.sideEffectHooks.depth).toBe(input.depth);
     expect(hookSet.sideEffectHooks.fallEnvShake).toBe(input.fallEnvShake);
     expect(hookSet.sideEffectHooks.spriteEffect).toBe(input.spriteEffect);
@@ -77,6 +80,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     hookSet.sideEffectHooks.hitDef?.(undefined as never);
     hookSet.sideEffectHooks.reversalDef?.(undefined as never);
     hookSet.sideEffectHooks.width?.(undefined as never);
+    hookSet.sideEffectHooks.height?.(undefined as never);
+    hookSet.sideEffectHooks.overrideClsn?.(undefined as never);
     hookSet.sideEffectHooks.depth?.(undefined as never);
     hookSet.sideEffectHooks.fallEnvShake?.(undefined as never);
     hookSet.sideEffectHooks.spriteEffect?.(undefined as never);
@@ -100,6 +105,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       "hitdef",
       "reversaldef",
       "width",
+      "height",
+      "overrideclsn",
       "depth",
       "fallenvshake",
       "sprite-effect",
@@ -127,6 +134,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       reversalDef: () => undefined,
       width: () => undefined,
       height: () => undefined,
+      overrideClsn: () => undefined,
       depth: () => undefined,
       fallEnvShake: () => undefined,
       spriteEffect: () => undefined,

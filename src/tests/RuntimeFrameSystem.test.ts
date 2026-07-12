@@ -44,6 +44,42 @@ describe("RuntimeFrameSystem", () => {
 
     expect(world.currentAttackBoxes(frameActor({ frames: [] }))).toEqual([]);
   });
+
+  it("projects runtime Clsn1 and Clsn2 overrides without mutating AIR frames", () => {
+    const world = new RuntimeFrameWorld();
+    const actor = frameActor();
+    actor.runtime.clsnOverrides = [
+      { group: 1, index: -1, rect: { x1: 20, y1: -30, x2: 50, y2: -10 } },
+      { group: 2, index: 0, rect: { x1: 0, y1: 0, x2: 0, y2: 0 } },
+    ];
+
+    expect(world.currentAttackBoxes(actor)).toEqual([{ x1: 20, y1: -30, x2: 50, y2: -10 }]);
+    expect(world.currentHurtBoxes(actor)).toEqual([]);
+    expect(actor.currentAction.frames[0]?.clsn1).toEqual([{ x1: 1, y1: -8, x2: 12, y2: -1 }]);
+  });
+
+  it("applies Clsn1 overrides to every AIR box during active moves", () => {
+    const world = new RuntimeFrameWorld();
+    const actor = frameActor({
+      moveTick: 3,
+      frames: [frame({ clsn1: [{ x1: 1, y1: 1, x2: 2, y2: 2 }, { x1: 3, y1: 3, x2: 4, y2: 4 }] })],
+      currentMove: { activeStart: 2, activeEnd: 4, hitbox: { x1: 99, y1: 99, x2: 100, y2: 100 } },
+    });
+    actor.runtime.clsnOverrides = [{ group: 1, index: 1, rect: { x1: 30, y1: -40, x2: 50, y2: -10 } }];
+
+    expect(world.currentAttackBoxes(actor)).toEqual([
+      { x1: 1, y1: 1, x2: 2, y2: 2 },
+      { x1: 30, y1: -40, x2: 50, y2: -10 },
+    ]);
+  });
+
+  it("does not let replace-all create Clsn2 from the synthetic no-frame fallback", () => {
+    const world = new RuntimeFrameWorld();
+    const actor = frameActor({ frames: [] });
+    actor.runtime.clsnOverrides = [{ group: 2, index: -1, rect: { x1: -10, y1: -20, x2: 10, y2: 0 } }];
+
+    expect(world.currentHurtBoxes(actor)).toEqual([]);
+  });
 });
 
 function frameActor(

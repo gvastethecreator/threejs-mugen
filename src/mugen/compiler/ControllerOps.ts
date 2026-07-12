@@ -358,13 +358,21 @@ export type CollisionControllerOp =
       front: number;
       back: number;
     }
-  | {
-      kind: "collision";
-      controllerType: "height";
+    | {
+        kind: "collision";
+        controllerType: "height";
       top: number;
       bottom: number;
-      redirectPlayerIdExpression?: string;
-    }
+        redirectPlayerIdExpression?: string;
+      }
+    | {
+        kind: "collision";
+        controllerType: "overrideclsn";
+        group: 0 | 1 | 2 | 3;
+        index: number;
+        rect: [number, number, number, number];
+        redirectPlayerIdExpression?: string;
+      }
   | {
       kind: "collision";
       controllerType: "playerpush";
@@ -610,6 +618,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "height") {
     return compileHeightControllerOp(controller);
+  }
+  if (type === "overrideclsn") {
+    return compileOverrideClsnControllerOp(controller);
   }
   if (type === "depth") {
     return compileDepthControllerOp(controller);
@@ -1023,6 +1034,37 @@ function compileHeightControllerOp(controller: MugenStateController): CollisionC
     bottom: pair[1] ?? 0,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
+}
+
+function compileOverrideClsnControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
+  const group = parseCollisionGroup(findParam(controller, "group"));
+  const indexRaw = findParam(controller, "index");
+  const index = indexRaw === undefined ? 0 : firstNumber(indexRaw);
+  const rectRaw = findParam(controller, "rect");
+  const rectValues = rectRaw === undefined ? [0] : rectRaw.split(",").map((part) => Number(part.trim()));
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (
+    group === undefined || index === undefined || redirectPlayerIdExpression === "invalid" ||
+    rectValues.length < 1 || rectValues.length > 4 || rectValues.some((value) => !Number.isFinite(value))
+  ) return undefined;
+  const [rawX1 = 0, rawY1 = 0, rawX2 = 0, rawY2 = 0] = rectValues;
+  return {
+    kind: "collision",
+    controllerType: "overrideclsn",
+    group,
+    index: Math.trunc(index),
+    rect: [Math.min(rawX1, rawX2), Math.min(rawY1, rawY2), Math.max(rawX1, rawX2), Math.max(rawY1, rawY2)],
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
+  };
+}
+
+function parseCollisionGroup(raw: string | undefined): 0 | 1 | 2 | 3 | undefined {
+  const token = raw?.trim().toLowerCase();
+  if (token === "none") return 0;
+  if (token === "clsn1") return 1;
+  if (token === "clsn2") return 2;
+  if (token === "size") return 3;
+  return undefined;
 }
 
 function compileDepthControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {

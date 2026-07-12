@@ -3,6 +3,7 @@ import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAn
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenPresentationOrder } from "./PresentationOrder";
 import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
+import type { RuntimeCollisionOverride } from "./RuntimeCollisionOverrideSystem";
 import type { CommandInputHistorySample } from "./CommandBuffer";
 import type {
   RuntimeHitDefPriorityProfile,
@@ -18,6 +19,7 @@ export type CharacterRuntimeState = {
   bodyWidth?: { front: number; back: number };
   bodyWidthDelta?: { front: number; back: number };
   bodyHeightDelta?: { top: number; bottom: number };
+  clsnOverrides?: RuntimeCollisionOverride[];
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;

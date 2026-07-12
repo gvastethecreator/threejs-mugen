@@ -274,6 +274,20 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(advance(roots, true).pairIds).toEqual([]);
   });
 
+  it("uses OverrideClsn size boxes for PlayerPush geometry", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 40)];
+    roots[0]!.sizePushOnly = true;
+    expect(advance(roots, true).movedRootIds).toEqual([]);
+
+    roots[0]!.runtime.clsnOverrides = [{ group: 3, index: -1, rect: { x1: -10, y1: -60, x2: 40, y2: 0 } }];
+    expect(advance(roots, true).movedRootIds).toEqual(["p1", "p2"]);
+
+    roots[0]!.runtime.pos.x = 0;
+    roots[1]!.runtime.pos.x = 40;
+    roots[0]!.runtime.clsnOverrides = [{ group: 3, index: -1, rect: { x1: 0, y1: 0, x2: 0, y2: 0 } }];
+    expect(advance(roots, true).pairIds).toEqual([]);
+  });
+
   it("uses exact interval intersection for contained asymmetric boxes", () => {
     const roots = [actor("p1", 1, 0), actor("p2", 2, 0)];
     roots[0]!.sizeBox = { x1: -100, y1: -60, x2: 100, y2: 0 };

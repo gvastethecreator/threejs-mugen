@@ -941,6 +941,16 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static OverrideClsn modifiers and leaves dynamic payloads for runtime", () => {
+    const value = compileControllerIr(controller(200, "OverrideClsn", [], { group: "Size", index: "-1", rect: "30,10,-20,-40", redirectid: "59" }));
+    const clear = compileControllerIr(controller(200, "OverrideClsn", [], { group: "None" }));
+    const dynamic = compileControllerIr(controller(200, "OverrideClsn", [], { group: "Clsn2", index: "var(0)", rect: "var(1),-20,20,0" }));
+
+    expect(value.operation).toEqual({ kind: "collision", controllerType: "overrideclsn", group: 3, index: -1, rect: [-20, -40, 30, 10], redirectPlayerIdExpression: "59" });
+    expect(clear.operation).toEqual({ kind: "collision", controllerType: "overrideclsn", group: 0, index: 0, rect: [0, 0, 0, 0] });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static Depth player, edge, and value modes", () => {
     const player = compileControllerIr(controller(200, "Depth", [], { player: "2,5" }));
     const edge = compileControllerIr(controller(200, "Depth", [], { edge: "7,9" }));

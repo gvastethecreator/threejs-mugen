@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { CharacterRuntimeState } from "./types";
+import { applyCollisionOverrides } from "./RuntimeCollisionOverrideSystem";
 
 export const defaultRuntimeHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -11,7 +12,7 @@ export type RuntimeFrameMove = {
 };
 
 export type RuntimeFrameActor = {
-  runtime: Pick<CharacterRuntimeState, "frameIndex">;
+  runtime: Pick<CharacterRuntimeState, "frameIndex" | "clsnOverrides">;
   currentAction: Pick<MugenAnimationAction, "frames">;
   currentMove?: RuntimeFrameMove;
   moveTick: number;
@@ -23,10 +24,15 @@ export class RuntimeFrameWorld {
   }
 
   currentHurtBoxes(actor: RuntimeFrameActor): CollisionBox[] {
-    return cloneCollisionBoxes(this.currentFrame(actor)?.clsn2 ?? defaultRuntimeHurtBoxes);
+    const frame = this.currentFrame(actor);
+    const base = frame?.clsn2 ?? (hasCollisionOverride(actor, 2) ? [] : defaultRuntimeHurtBoxes);
+    return applyCollisionOverrides(base, actor.runtime.clsnOverrides, 2);
   }
 
   currentAttackBoxes(actor: RuntimeFrameActor): CollisionBox[] {
+    if (hasCollisionOverride(actor, 1)) {
+      return applyCollisionOverrides(this.currentFrame(actor)?.clsn1 ?? [], actor.runtime.clsnOverrides, 1);
+    }
     if (this.isCurrentMoveActive(actor)) {
       return [{ ...actor.currentMove.hitbox }];
     }
@@ -42,6 +48,10 @@ export class RuntimeFrameWorld {
   } {
     return Boolean(actor.currentMove && actor.moveTick >= actor.currentMove.activeStart && actor.moveTick <= actor.currentMove.activeEnd);
   }
+}
+
+function hasCollisionOverride(actor: RuntimeFrameActor, group: 1 | 2): boolean {
+  return actor.runtime.clsnOverrides?.some((override) => override.group === group) ?? false;
 }
 
 export function cloneCollisionBoxes(boxes: CollisionBox[]): CollisionBox[] {
