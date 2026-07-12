@@ -105,6 +105,41 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("FrontEdgeDist", { actor, opponent })).toBe(999);
   });
 
+  it("evaluates P2BodyDist X from size boxes, Width policy, facing, and localcoord", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", { pos: { x: 0, y: 0 }, facing: 1, bodyWidthDelta: { front: 4, back: 2 } });
+    const opponent = runtimeActor("p2", "Rival", { pos: { x: 64, y: 0 }, facing: -1, bodyWidthDelta: { front: 6, back: 3 } });
+    actor.definition.source = "imported";
+    actor.definition.ikemenVersion = "0.99";
+    actor.definition.localCoord = [320, 240];
+    actor.definition.constants = { "size.ground.front": 10, "size.ground.back": 8 };
+    opponent.definition.source = "imported";
+    opponent.definition.ikemenVersion = "0.99";
+    opponent.definition.localCoord = [640, 480];
+    opponent.definition.constants = { "size.ground.front": 20, "size.ground.back": 12 };
+
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent })).toBe(5);
+
+    actor.definition.ikemenVersion = undefined;
+    opponent.definition.ikemenVersion = undefined;
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent })).toBe(12);
+
+    opponent.definition.ikemenVersion = "0.99";
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent })).toBe(12);
+
+    actor.definition.ikemenVersion = "0.99";
+    opponent.definition.ikemenVersion = undefined;
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent })).toBe(5);
+
+    actor.definition.ikemenVersion = undefined;
+    opponent.runtime.facing = 1;
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent })).toBe(16);
+
+    actor.targets = [{ actorId: "p2", targetId: 77, age: 0 }];
+    expect(world.evaluateNumber("EnemyNear, P2BodyDist X", { actor, opponent })).toBe(-32);
+    expect(world.evaluateNumber("Target(77), P2BodyDist X", { actor, opponent })).toBe(-32);
+  });
+
   it("passes game-space and screen-space dimensions into viewport expression reads", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

@@ -7,6 +7,7 @@ import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./Eff
 import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
+import { resolveRuntimePushSizeBox, usesMugenPlayerPushMinimumWidth } from "./RuntimeRootBodyPushSystem";
 import type { RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
@@ -15,6 +16,8 @@ import { evaluateTriggerIr } from "./TriggerEvaluator";
 export { runtimeHitVar, type RuntimeHitVarTiming } from "./RuntimeHitVarSystem";
 
 export type RuntimeExpressionContextDefinition = {
+  source?: "demo" | "imported";
+  ikemenVersion?: string;
   displayName: string;
   authorName?: string;
   localCoord?: [number, number];
@@ -75,6 +78,7 @@ export class RuntimeExpressionContextWorld {
     const owner = input.owner ?? actor;
     const opponentRoster = this.opponentRoster(input);
     const selectedP2 = this.selectedP2(input);
+    const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
 
     return {
       self: actor.runtime,
@@ -95,6 +99,9 @@ export class RuntimeExpressionContextWorld {
       gameSpace: input.gameSpace,
       localCoord: actor.definition.localCoord,
       opponentLocalCoord: selectedP2?.definition.localCoord,
+      outputLocalCoord: actor.definition.localCoord,
+      sizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
+      opponentSizeBoxX: selectedP2 ? runtimeExpressionSizeBoxX(selectedP2, includeWidth) : undefined,
       parentLocalCoord: owner.definition.localCoord,
       rootLocalCoord: actor.definition.localCoord,
       parentPlayerId: owner.playerId,
@@ -165,6 +172,7 @@ export class RuntimeExpressionContextWorld {
     if (!actor.targetWorld.find(actor, opponent.id, targetId)) {
       return undefined;
     }
+    const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
       self: opponent.runtime,
       playerId: opponent.playerId,
@@ -174,6 +182,8 @@ export class RuntimeExpressionContextWorld {
       opponentPlayerNo: actor.playerNo,
       localCoord: opponent.definition.localCoord,
       opponentLocalCoord: actor.definition.localCoord,
+      sizeBoxX: runtimeExpressionSizeBoxX(opponent, includeWidth),
+      opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
       name: opponent.definition.displayName,
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,
@@ -192,6 +202,7 @@ export class RuntimeExpressionContextWorld {
     if (!opponent) {
       return undefined;
     }
+    const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
       self: opponent.runtime,
       playerId: opponent.playerId,
@@ -201,6 +212,8 @@ export class RuntimeExpressionContextWorld {
       opponentPlayerNo: actor.playerNo,
       localCoord: opponent.definition.localCoord,
       opponentLocalCoord: actor.definition.localCoord,
+      sizeBoxX: runtimeExpressionSizeBoxX(opponent, includeWidth),
+      opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
       name: opponent.definition.displayName,
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,
@@ -280,6 +293,20 @@ export class RuntimeExpressionContextWorld {
 function runtimeExpressionStateTime(actor: Pick<RuntimeExpressionContextActor, "runtime" | "stateElapsed">): number {
   const elapsed = Number.isFinite(actor.stateElapsed) ? actor.stateElapsed : actor.runtime.animTime;
   return Math.max(0, Math.trunc(Number.isFinite(elapsed) ? elapsed : 0));
+}
+
+function runtimeExpressionSizeBoxX(
+  actor: Pick<RuntimeExpressionContextActor, "definition" | "runtime">,
+  includeWidth: boolean,
+): { x1: number; x2: number } {
+  const stateType = actor.runtime.stateType === "C" || actor.runtime.stateType === "A" || actor.runtime.stateType === "L"
+    ? actor.runtime.stateType
+    : "S";
+  const box = resolveRuntimePushSizeBox(actor.definition.constants, stateType);
+  const delta = includeWidth ? actor.runtime.bodyWidthDelta : undefined;
+  const x1 = box.x1 - (delta?.back ?? 0);
+  const x2 = box.x2 + (delta?.front ?? 0);
+  return { x1: Math.min(x1, x2), x2: Math.max(x1, x2) };
 }
 
 export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, "runtimeProgram" | "definition">, stateNo: number): boolean {

@@ -16,6 +16,9 @@ export type ExpressionContext = {
   gameSpace?: ExpressionGameSpace;
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
+  outputLocalCoord?: [number, number];
+  sizeBoxX?: { x1: number; x2: number };
+  opponentSizeBoxX?: { x1: number; x2: number };
   parentLocalCoord?: [number, number];
   rootLocalCoord?: [number, number];
   parent?: CharacterRuntimeState;
@@ -90,6 +93,8 @@ export type ExpressionRedirectTarget = {
   opponentPlayerNo?: number;
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
+  sizeBoxX?: { x1: number; x2: number };
+  opponentSizeBoxX?: { x1: number; x2: number };
   name?: string;
   authorName?: string;
   opponentName?: string;
@@ -927,7 +932,17 @@ class ExpressionParser {
     if (axis === "y") {
       return opponent.pos.y - this.context.self.pos.y;
     }
-    return Math.max(0, Math.abs(opponent.pos.x - this.context.self.pos.x) - 48);
+    const self = this.context.self;
+    const selfScale = 320 / (this.context.localCoord?.[0] ?? 320);
+    const opponentScale = 320 / (this.context.opponentLocalCoord?.[0] ?? 320);
+    const outputScale = 320 / (this.context.outputLocalCoord?.[0] ?? this.context.localCoord?.[0] ?? 320);
+    const selfBox = this.context.sizeBoxX ?? { x1: -24, x2: 24 };
+    const opponentBox = this.context.opponentSizeBoxX ?? { x1: -24, x2: 24 };
+    const distance = opponent.pos.x * opponentScale - self.pos.x * selfScale;
+    const selfWidth = selfBox.x2 * self.facing * selfScale;
+    const opponentUsesFront = ((distance * self.facing) >= 0) === (self.facing !== opponent.facing);
+    const opponentWidth = (opponentUsesFront ? opponentBox.x2 : opponentBox.x1) * opponent.facing * opponentScale;
+    return (distance - selfWidth + opponentWidth) / outputScale;
   }
 
   private edgeDist(direction: "front" | "back", body: boolean): number {
@@ -1291,6 +1306,9 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     opponentPlayerNo: context.playerNo,
     localCoord: context.opponentLocalCoord ?? context.localCoord,
     opponentLocalCoord: context.localCoord,
+    outputLocalCoord: context.outputLocalCoord ?? context.localCoord,
+    sizeBoxX: context.opponentSizeBoxX,
+    opponentSizeBoxX: context.sizeBoxX,
     name: context.opponentName,
     authorName: context.opponentAuthorName,
     opponentName: context.name,
@@ -1311,6 +1329,9 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     opponentPlayerNo: redirected.opponentPlayerNo ?? context.playerNo,
     localCoord: redirected.localCoord ?? context.localCoord,
     opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
+    outputLocalCoord: context.outputLocalCoord ?? context.localCoord,
+    sizeBoxX: redirected.sizeBoxX,
+    opponentSizeBoxX: redirected.opponentSizeBoxX ?? context.sizeBoxX,
     name: redirected.name,
     authorName: redirected.authorName,
     opponentName: redirected.opponentName ?? context.name,

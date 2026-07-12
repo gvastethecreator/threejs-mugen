@@ -46755,7 +46755,7 @@ value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = P2Dist X = 55
 trigger1 = P2Dist Y = 0
-trigger1 = P2BodyDist X = 7
+trigger1 = P2BodyDist X = 23
 trigger1 = P2BodyDist Y = 0
 `;
 }
