@@ -1,7 +1,7 @@
 # Map Active-root Playable Phase Promotion
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,4 @@ What is the smallest source-backed phase promotion that can move one live non-st
 
 ## Answer
 
-Pending research.
+The smallest safe promotion is a normal-tick `active-motion` phase: precompute root participation before actor execution, then run restricted motion CNS, kinematics, and animation for available non-standby P3-P8 roots. Do not call full `advanceFighter`; it mixes effects, hit/contact/recovery, unrestricted controllers, and pair-owned constraints. Keep direct input/AI, paused branches, effects, combat, round, presentation, audio, HUD, and resources unchanged. Wayfinder 097 owns implementation and required trace proof. Full reasoning, source links, hidden-side-effect audit, reset policy, and deletion criteria live in `docs/research/2026-07-11-ikemen-active-root-playable-phase-promotion.md`.

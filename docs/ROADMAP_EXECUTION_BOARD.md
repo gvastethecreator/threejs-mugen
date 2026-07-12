@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root phase capabilities (2026-07-11)
+## Latest closeout - IKEMEN active-root phase promotion research (2026-07-11)
+
+Pinned IKEMEN action order and local owner audit reject full `advanceFighter` reuse for P3-P8. Wayfinder 097 now owns one normal-tick `active-motion` phase: precomputed root participation, restricted motion CNS, kinematics, then animation. Direct control/AI, Pause/hitpause, effects, combat, round, presentation, audio/HUD, resources, visuals, traces, and scores remain unchanged in this docs-only closeout.
+
+## Previous closeout - IKEMEN active-root phase capabilities (2026-07-11)
 
 `RuntimeRootPhaseCapabilities/v0` now reconciles Tag/Single command mapping, playable/bounded CNS, direct input/AI, kinematics, animation, effects, combat, round, presentation, and resources in the explicit IKEMEN `MatchWorld` registry. P3-P8 gain no new execution. Full gates pass 172 files / 1769 tests and unchanged 540/540 traces. Wayfinder 096 maps the first playable phase promotion; visuals and scores remain unchanged.
 

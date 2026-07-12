@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN active-root phase promotion research
+
+- Source: pinned IKEMEN updates every character command list, then runs controller state logic before position physics and animation-frame commit; standby masks interaction rather than removing the whole character tick.
+- Local audit: full `advanceFighter` mixes motion with sprite effects, hit/contact/recovery, unrestricted CNS, and constraints, so it is not safe for P3-P8.
+- Decision: Wayfinder 097 will add a normal-tick `active-motion` phase with a precomputed participation snapshot, restricted motion CNS, kinematics, and animation only.
+- Blocked: direct input/AI handoff, Pause/hitpause widening, effects, combat, round, presentation, camera/HUD/audio, resources, exact same-frame Tag timing, and scores.
+- Evidence: pinned-source order map, local owner reconciliation, hidden-side-effect/deletion audit, roadmap sync, and diff check only; runtime/build/trace/browser evidence remains unchanged from 095.
+- Global status: Wayfinder 096 is closed as docs-only research; Wayfinder 097 is the next executable I2 gate.
+
 ## Global report - 2026-07-11 IKEMEN active-root phase capabilities
 
 - Contract: explicit IKEMEN `MatchWorld` registries publish `RuntimeRootPhaseCapabilities/v0` across commands, CNS, direct input, AI, kinematics, animation, effects, combat, round, presentation, and resources.

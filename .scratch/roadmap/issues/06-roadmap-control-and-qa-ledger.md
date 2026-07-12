@@ -9,7 +9,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Next Useful Cuts
 
-- Current 2026-07-11 roadmap/architecture checkpoint: highest numbered backlog truth is entry 401 and the declared aggregate remains 540/540 traces (509 required, 31 optional). Wayfinder 095 closes the explicit per-root phase-capability matrix without behavior, visual, trace, or score movement.
+- Current 2026-07-11 roadmap/architecture checkpoint: highest numbered backlog truth is entry 402 and the declared aggregate remains 540/540 traces (509 required, 31 optional). Wayfinder 096 closes the pinned active-root phase-promotion map as docs-only research; Wayfinder 097 implements restricted normal-tick motion without implying later gameplay owners.
 - Current lane decision: I1 remains scanner/reporting; I2 explicit-profile runtime routes through `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`. Wayfinder 096 maps upstream/local phase order before selecting one playable promotion.
 - Current delivery order: research the first phase promotion, then implement direct input/kinematics, presentation, root-key effects, combat, round, and resources as separate source-backed gates. The bounded MUGEN-lite post-KO / `NoKOSlow` timeline remains the next competing runtime lane rather than being folded into team work.
 - ADR 0002 is now accepted from landed HitDef policy/contact and semantic presentation-order evidence; equal ties, Projectile/dynamic priority, `Explod ontop`, and full renderer parity remain blocked.

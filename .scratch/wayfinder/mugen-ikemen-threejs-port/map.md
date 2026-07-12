@@ -113,16 +113,17 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map active-root gameplay ownership](tickets/093-map-active-root-gameplay-ownership.md) - upstream Tag maps one side stream to every same-side root, while local gameplay remains split across pair-only input, effects, combat, round, presentation, and resource owners.
 - [Model Tag side command routing](tickets/094-model-tag-side-command-routing.md) - explicit Tag normal ticks now clone each side stream into independent same-side root command state, with required P2-isolation/P1-to-P3 evidence and all later gameplay owners unchanged.
 - [Model active-root phase capabilities](tickets/095-model-active-root-phase-capabilities.md) - explicit IKEMEN registries now reconcile command/CNS/direct-input/AI/kinematics/animation/effect/combat/round/presentation/resource owners without changing execution.
+- [Map active-root playable phase promotion](tickets/096-map-active-root-playable-phase-promotion.md) - full fighter advance is rejected for P3-P8; the first executable cut is a precomputed normal-tick `active-motion` phase with restricted motion CNS, kinematics, and animation only.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Map active-root playable phase promotion](tickets/096-map-active-root-playable-phase-promotion.md)
+- [Execute active-root motion phase](tickets/097-execute-active-root-motion-phase.md)
 
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Active-root gameplay follows the ordered phase route fixed by Wayfinder 093 and exposed by 095; Wayfinder 096 must select the first implementation-ready promotion.
+- Active-root gameplay follows the ordered phase route fixed by Wayfinder 093 and exposed by 095; Wayfinder 097 implements only the normal-tick motion phase selected by 096.
 
 ## Out Of Scope
 

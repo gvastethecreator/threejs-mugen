@@ -87,7 +87,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Evidence Ledger
 
-Current aggregate override: entry 401 confirms `pnpm qa:trace` at 540/540 artifacts, 509 required and 31 optional, after the phase-capability read model; entry 400 remains the latest new required trace. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as the current total.
+Current aggregate override: entry 402 is docs-only phase-promotion research and retains the entry 401 runtime aggregate of 540/540 artifacts, 509 required and 31 optional; entry 400 remains the latest new required trace. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as the current total.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |
