@@ -14,7 +14,7 @@ Roadmap entry: 462
 ## Evidence
 
 - `pnpm qa:smoke`: passed in Playwright/SwiftShader.
-- Desktop/mobile gates require attack frame `200,0`, at least ten action-palette pixels, and a spatial mask checksum different from idle. Numeric samples vary with camera/tick placement; the latest diagnostics are authoritative.
+- Desktop/mobile gates require attack frame `200,0`, at least 50 action-palette pixels, and a spatial mask checksum different from idle. Numeric samples vary with camera/tick placement; the latest diagnostics are authoritative.
 - Attack screenshots: `.scratch/qa/qa-smoke/mugen-lite-runtime-{desktop,mobile}-attack.png`.
 - Attack canvases: `.scratch/qa/qa-smoke/mugen-lite-runtime-{desktop,mobile}-attack-canvas.png`.
 - Diagnostics: `.scratch/qa/qa-smoke/diagnostics.json`.

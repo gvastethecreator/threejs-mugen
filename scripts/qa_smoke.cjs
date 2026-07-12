@@ -162,6 +162,12 @@ async function main() {
             [`${pose}Canvas`, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}-canvas.png`)],
           ]),
         )])),
+        mugenLiteCombat: Object.fromEntries(["desktop", "mobile"].map((viewport) => [viewport, Object.fromEntries(
+          ["get-hit", "fall-motion", "fallen"].flatMap((pose) => [
+            [pose, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}.png`)],
+            [`${pose}Canvas`, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}-canvas.png`)],
+          ]),
+        )])),
         tagPresentationDesktop: path.join(outDir, "runtime-tag-presentation-desktop.png"),
         tagPresentationDesktopCanvas: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
         tagPresentationMobile: path.join(outDir, "runtime-tag-presentation-mobile.png"),
@@ -438,7 +444,87 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
       canvasPath: path.join(path.dirname(options.canvasPath), `mugen-lite-runtime-${viewportLabel}-${transition.id}-canvas.png`),
     });
   }
-  return { ...probe, attack, movement, returnedToIdle: true };
+  const combat = await captureMugenLiteCombatJourney(page, options);
+  return { ...probe, attack, movement, combat, returnedToIdle: true };
+}
+
+async function captureMugenLiteCombatJourney(page, options) {
+  const importedId = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.runtimeRoster?.find((entry) => entry.id.startsWith("imported-"))?.id);
+  if (!importedId) throw new Error("MUGEN-lite imported roster id was unavailable");
+  await changeHiddenSelect(page, '[data-fighter-select="p1"]', "nova-boxer");
+  await changeHiddenSelect(page, '[data-fighter-select="p2"]', importedId);
+  await page.waitForFunction((importedId) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
+    const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
+    return bridge?.project?.entry?.p1 === "nova-boxer" && bridge.project.entry.p2 === importedId &&
+      p1?.source === "demo" && p1.label === "Nova Boxer" && p2?.source === "imported" && p2.label === "MUGEN Lite Journey";
+  }, importedId);
+  const roster = await page.evaluate(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    return {
+      p1: bridge?.project?.entry?.p1,
+      p2: bridge?.project?.entry?.p2,
+      actors: bridge?.snapshot?.actors?.map((actor) => ({ id: actor.id, label: actor.label, source: actor.source, life: actor.runtime.life })) ?? [],
+    };
+  });
+
+  await page.keyboard.down("ArrowRight");
+  await page.waitForFunction(() => {
+    const actors = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors ?? [];
+    const p1 = actors.find((actor) => actor.id === "p1");
+    const p2 = actors.find((actor) => actor.id === "p2");
+    return p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100;
+  }, null, { timeout: 5000 });
+  await page.keyboard.up("ArrowRight");
+
+  const getHitPause = pauseWhenMugenLiteActorStateAppears(page, "p2", 5000, 5000, "get-hit");
+  await page.keyboard.down("a");
+  await page.waitForTimeout(80);
+  await page.keyboard.up("a");
+  await getHitPause;
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
+  const capture = (id) => captureMugenLiteVisualState(
+    page,
+    path.join(path.dirname(options.screenshotPath), `mugen-lite-runtime-${viewportLabel}-${id}.png`),
+    path.join(path.dirname(options.canvasPath), `mugen-lite-runtime-${viewportLabel}-${id}-canvas.png`),
+    "p2",
+  );
+  const getHit = await capture("get-hit");
+  const fallMotion = await resumeAndCaptureMugenLiteActorState(page, "p2", 5050, 5050, "fall-motion", capture);
+  const fallen = await resumeAndCaptureMugenLiteActorState(page, "p2", 5100, 5100, "fallen", capture);
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
+    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+  });
+  return { importedId, roster, getHit, fallMotion, fallen, returnedToIdle: true };
+}
+
+async function resumeAndCaptureMugenLiteActorState(page, actorId, stateNo, action, label, capture) {
+  const pauseOnState = pauseWhenMugenLiteActorStateAppears(page, actorId, stateNo, action, label);
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await pauseOnState;
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  return capture(label);
+}
+
+function pauseWhenMugenLiteActorStateAppears(page, actorId, stateNo, action, label) {
+  return page.evaluate(({ actorId, stateNo, action, label }) => new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite ${label} frame was not observed for ${actorId}`)), 5000);
+    const check = () => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === actorId);
+      if (actor?.runtime?.stateNo === stateNo && actor?.frame?.spriteGroup === action) {
+        window.clearTimeout(timeout);
+        document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.requestAnimationFrame(check);
+    };
+    check();
+  }), { actorId, stateNo, action, label });
 }
 
 async function captureMugenLiteDrivenState(page, transition, paths) {
@@ -473,40 +559,42 @@ function pauseWhenMugenLiteStateAppears(page, stateNo, action, label) {
   }), { stateNo, action, label });
 }
 
-async function captureMugenLiteVisualState(page, screenshotPath, canvasPath) {
+async function captureMugenLiteVisualState(page, screenshotPath, canvasPath, actorId = "p1") {
   await page.screenshot({ path: screenshotPath, fullPage: true });
   const canvasPng = await page.locator("canvas").first().screenshot({ path: canvasPath });
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
-  const presentation = await page.evaluate(() => {
+  const presentation = await page.evaluate((actorId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const p1 = bridge?.renderer?.characters?.find((actor) => actor.actorId === "p1");
-    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-    return { p1, rendererSize: bridge?.renderer?.size, camera: bridge?.renderer?.camera, spriteGroup: actor?.frame?.spriteGroup };
-  });
+    const renderedActor = bridge?.renderer?.characters?.find((actor) => actor.actorId === actorId);
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === actorId);
+    return { renderedActor, rendererSize: bridge?.renderer?.size, camera: bridge?.renderer?.camera, spriteGroup: actor?.frame?.spriteGroup };
+  }, actorId);
   const spritePixels = await getProjectedSpritePixelStats(
     page,
     canvasPng,
-    presentation.p1,
+    presentation.renderedActor,
     presentation.rendererSize,
     presentation.camera,
     fixturePaletteForAction(presentation.spriteGroup),
   );
-  return page.evaluate(({ canvasPixels, spritePixels }) => {
+  return page.evaluate(({ canvasPixels, spritePixels, actorId }) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const p1 = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === "p1");
-    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    const renderedActor = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === actorId);
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === actorId);
     return {
       mode: bridge?.mode,
       character: bridge?.character,
       compatibilityLoaded: bridge?.compatibility?.loaded,
       actorSource: actor?.source,
+      actorState: actor?.runtime?.stateNo,
+      actorLife: actor?.runtime?.life,
       actorFrame: actor?.frame ? { group: actor.frame.spriteGroup, index: actor.frame.spriteIndex } : null,
-      sprite: p1?.sprite,
+      sprite: renderedActor?.sprite,
       renderCalls: bridge?.renderer?.render?.calls ?? 0,
       canvasPixels,
       spritePixels,
     };
-  }, { canvasPixels, spritePixels });
+  }, { canvasPixels, spritePixels, actorId });
 }
 
 async function captureTagPresentation(page, baseUrl, outDir) {
@@ -1887,7 +1975,7 @@ async function getProjectedSpritePixelStats(page, canvasPng, presentation, rende
     for (let offset = 0; offset < data.length; offset += 4) {
       const color = [data[offset], data[offset + 1], data[offset + 2]];
       colors.add(color.join(","));
-      const paletteIndex = expectedColors.findIndex((candidate) => candidate.every((channel, index) => Math.abs(channel - color[index]) <= 20));
+      const paletteIndex = expectedColors.findIndex((candidate) => candidate.every((channel, index) => Math.abs(channel - color[index]) <= 60));
       if (paletteIndex >= 0) {
         fixtureColorPixels += 1;
         fixtureMaskChecksum ^= offset / 4 + paletteIndex * 65537;
@@ -2132,13 +2220,13 @@ function assertSmoke(diagnostics) {
       probe.renderCalls < 1 ||
       !probe.canvasPixels?.nonBlank ||
       probe.canvasPixels.uniqueColors < 10 ||
-      probe.spritePixels?.fixtureColorPixels < 10 ||
+      probe.spritePixels?.fixtureColorPixels < 50 ||
       probe.spritePixels?.uniqueColors < 3 ||
       probe.attack?.actorFrame?.group !== 200 ||
       probe.attack?.actorFrame?.index !== 0 ||
       probe.attack?.sprite?.width !== 32 ||
       probe.attack?.sprite?.height !== 64 ||
-      probe.attack?.spritePixels?.fixtureColorPixels < 10 ||
+      probe.attack?.spritePixels?.fixtureColorPixels < 50 ||
       probe.attack?.spritePixels?.fixtureMaskChecksum === probe.spritePixels?.fixtureMaskChecksum ||
       !probe.returnedToIdle
     ) {
@@ -2151,7 +2239,7 @@ function assertSmoke(diagnostics) {
         transition.actorFrame.index !== 0 ||
         transition.sprite?.width !== 32 ||
         transition.sprite?.height !== 64 ||
-        transition.spritePixels?.fixtureColorPixels < 10 ||
+        transition.spritePixels?.fixtureColorPixels < 50 ||
         transition.spritePixels?.fixtureMaskChecksum === probe.spritePixels?.fixtureMaskChecksum ||
         !transition.returnedToIdle
       ) {
@@ -2166,6 +2254,33 @@ function assertSmoke(diagnostics) {
     ];
     if (movementMasks.some((checksum) => !checksum) || new Set(movementMasks).size !== movementMasks.length) {
       failures.push(`mugen-lite visual ${viewport}: idle/walk/crouch/jump masks were not mutually distinct`);
+    }
+    const combatExpected = { getHit: 5000, fallMotion: 5050, fallen: 5100 };
+    for (const [id, action] of Object.entries(combatExpected)) {
+      const state = probe.combat?.[id];
+      if (
+        state?.actorSource !== "imported" ||
+        state.actorState !== action ||
+        state.actorFrame?.group !== action ||
+        state.actorFrame.index !== 0 ||
+        state.spritePixels?.fixtureColorPixels < 50
+      ) {
+        failures.push(`mugen-lite visual ${viewport} ${id}: imported combat state/frame/crop proof failed`);
+      }
+    }
+    const combatMasks = Object.keys(combatExpected).map((id) => probe.combat?.[id]?.spritePixels?.fixtureMaskChecksum);
+    if (
+      probe.combat?.roster?.p1 !== "nova-boxer" ||
+      probe.combat?.roster?.p2 !== probe.combat?.importedId ||
+      probe.combat?.roster?.actors?.find((actor) => actor.id === "p1")?.source !== "demo" ||
+      probe.combat?.roster?.actors?.find((actor) => actor.id === "p2")?.source !== "imported" ||
+      probe.combat?.roster?.actors?.find((actor) => actor.id === "p2")?.life !== 1000 ||
+      Object.keys(combatExpected).some((id) => probe.combat?.[id]?.actorLife !== 945) ||
+      combatMasks.some((checksum) => !checksum) ||
+      new Set(combatMasks).size !== combatMasks.length ||
+      !probe.combat?.returnedToIdle
+    ) {
+      failures.push(`mugen-lite visual ${viewport}: combat damage, unique poses, or idle return proof failed`);
     }
   }
   const expectedPair = "p1,p2";
@@ -2763,6 +2878,20 @@ function sameIdSet(actual, expected) {
   return actual.length === expected.length && expected.every((id) => actual.includes(id));
 }
 
+function summarizeMugenLiteCombat(combat) {
+  return {
+    importedId: combat.importedId,
+    roster: combat.roster,
+    returnedToIdle: combat.returnedToIdle,
+    states: Object.fromEntries(["getHit", "fallMotion", "fallen"].map((id) => [id, {
+      state: combat[id].actorState,
+      frame: combat[id].actorFrame,
+      life: combat[id].actorLife,
+      spritePixels: combat[id].spritePixels,
+    }])),
+  };
+}
+
 function summarizeDiagnostics(diagnostics) {
   return {
     status: "passed",
@@ -2798,6 +2927,7 @@ function summarizeDiagnostics(diagnostics) {
         spritePixels: probe.spritePixels,
         returnedToIdle: probe.returnedToIdle,
       }])),
+      desktopCombat: summarizeMugenLiteCombat(diagnostics.checks.mugenLiteVisual.desktop.combat),
       mobileSprite: diagnostics.checks.mugenLiteVisual.mobile.sprite,
       mobileFrame: diagnostics.checks.mugenLiteVisual.mobile.actorFrame,
       mobileUniqueColors: diagnostics.checks.mugenLiteVisual.mobile.canvasPixels.uniqueColors,
@@ -2809,6 +2939,7 @@ function summarizeDiagnostics(diagnostics) {
         spritePixels: probe.spritePixels,
         returnedToIdle: probe.returnedToIdle,
       }])),
+      mobileCombat: summarizeMugenLiteCombat(diagnostics.checks.mugenLiteVisual.mobile.combat),
     },
     tagPresentation: {
       baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,

@@ -14,7 +14,7 @@ Roadmap entry: 463
 ## Evidence
 
 - `pnpm qa:smoke`: passed in Playwright/SwiftShader.
-- Every pose exposes frame index `0`, decoded `32x64` sprite geometry, and more than ten action-palette pixels; idle, walk, crouch, and jump masks are mutually distinct.
+- Every pose exposes frame index `0`, decoded `32x64` sprite geometry, and at least 50 action-palette pixels; idle, walk, crouch, and jump masks are mutually distinct.
 - Every route resumes and returns to state/action `0/0` before the next input.
 - Screenshots/canvases: `.scratch/qa/qa-smoke/mugen-lite-runtime-{desktop,mobile}-{walk,crouch,jump}[-canvas].png`.
 - Latest numeric evidence: `.scratch/qa/qa-smoke/diagnostics.json`.

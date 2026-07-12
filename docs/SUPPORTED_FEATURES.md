@@ -1,6 +1,8 @@
 ﻿# Supported Features
 
-- Legal-fixture browser smoke drives ArrowRight, ArrowDown, and ArrowUp through the production keyboard adapter and requires imported walk `20`, crouch `10`, and jump `40` poses. Each desktop/mobile crop contains its action-specific palette, differs spatially from idle, and returns to state/action `0/0`. Backward/diagonal movement, guard/get-hit/fall/recovery visuals, touch input, multi-frame animation, production art, and visual parity remain separate gates.
+- Legal-fixture browser smoke swaps demo Nova Boxer P1/imported MUGEN-lite P2 through real Match selects, verifies exact roster ids plus actor identities, approaches to bounded center distance, attacks with keyboard `a`, and requires imported get-hit/fall states `5000 -> 5050 -> 5100`, damage `1000 -> 945`, action-palette crop evidence, distinct masks, and natural idle return on desktop/mobile. Body-push semantics, visual recovery `5200`, guard visuals, repeated hits, production art, and visual parity remain separate gates.
+
+- Legal-fixture browser smoke drives ArrowRight, ArrowDown, and ArrowUp through the production keyboard adapter and requires imported walk `20`, crouch `10`, and jump `40` poses. Each desktop/mobile crop contains its action-specific palette, differs spatially from idle, and returns to state/action `0/0`. Backward/diagonal movement, guard/recovery visuals, touch input, multi-frame animation, production art, and visual parity remain separate gates.
 
 - Legal-fixture browser smoke proves a real keyboard `a` press emits MUGEN command `x`, enters imported state/action `200`, renders a palette-backed attack silhouette distinct from idle, and returns to state/action `0`. Camera-aware spatial mask checksums cover desktop and mobile independently. Full combat/recovery journeys, multi-frame animation, visual contact proof, touch input, production art, and visual parity remain separate gates.
 
