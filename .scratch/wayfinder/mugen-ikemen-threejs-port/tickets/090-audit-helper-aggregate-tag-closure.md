@@ -1,7 +1,7 @@
 # Audit bounded Helper aggregate Tag closure
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -21,4 +21,4 @@ Does the completed root-to-Helper TagIn/TagOut aggregate path satisfy the bounde
 
 ## Answer
 
-Pending research.
+The root-to-Helper aggregate path is closed within the local atomic-prevalidation contract. Every source-valid static/deferred axis is owned and ordered; exact upstream incremental partial mutation remains deliberately divergent. Helper-authored TagIn/TagOut is the nearest isolated unsupported route, while active P3-P8 gameplay requires a separate input/combat/round/presentation map. Wayfinder 091 selects unredirected Helper-originated self standby. See `docs/research/2026-07-11-ikemen-helper-aggregate-closure-audit.md` and `docs/reports/2026-07-11-ikemen-helper-aggregate-closure-audit.md`.

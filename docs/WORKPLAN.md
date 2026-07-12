@@ -1305,6 +1305,8 @@ Helper-relative TagIn leader now executes under explicit Tag mode. Static/deferr
 
 Helper-relative Tag member ownership now executes under explicit Tag mode. Static/deferred TagIn/TagOut member positions stay original-caller-owned; exact Helper root anchoring selects team side, while a dedicated operation swaps mutable position one and never assigns a Helper root-order slot. Complete prevalidation precedes Helper state, member, control, leader, self, and partner mutation. Full gates pass 170 files / 1736 tests and 538/538 traces. Wayfinder 090 next audits the completed bounded aggregate path before selecting one broader runtime slice; exact incremental failure, Helper-originated Tag, gameplay, score, and full parity remain blocked.
 
+The bounded root-to-Helper aggregate path now passes a pinned-source closure audit. Every source-valid static/deferred axis reconciles with local ownership and order; exact upstream partial failure remains intentionally incremental while local execution remains atomic. Helper-authored Tag is the nearest isolated unsupported controller route. Active P3-P8 gameplay is higher value but still crosses input, combat, round, and presentation owners. Wayfinder 091 therefore executes only unredirected Helper self TagIn/TagOut standby before either trace promotion or a dedicated active-root gameplay map.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

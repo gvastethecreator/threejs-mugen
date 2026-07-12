@@ -107,16 +107,17 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute Helper-relative partner Tag ownership](tickets/087-execute-helper-partner-tag-ownership.md) - live Helper redirects now compose local state/control/self with exact-root-relative partner standby/state/control under atomic validation.
 - [Execute Helper-relative TagIn leader ownership](tickets/088-execute-helper-tagin-leader-ownership.md) - stable same-side PlayerNo rotation now composes between Helper-local control and self/partner standby under exact-root atomic validation.
 - [Execute Helper-relative Tag member position-one ownership](tickets/089-execute-helper-tag-member-position-one.md) - static/deferred TagIn/TagOut member swaps now originate from mutable position one without assigning Helpers a root-order slot.
+- [Audit bounded Helper aggregate Tag closure](tickets/090-audit-helper-aggregate-tag-closure.md) - root-to-Helper aggregate ownership is closed under local atomicity; unredirected Helper-originated self Tag is the next isolated route.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Audit bounded Helper aggregate Tag closure](tickets/090-audit-helper-aggregate-tag-closure.md)
+- [Execute Helper-originated self Tag standby](tickets/091-execute-helper-originated-self-tag.md)
 
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Promotion point from bounded Helper aggregate Tag into broader team gameplay remains unspecified.
+- Active-root gameplay promotion still needs one input/combat/round/presentation ownership map after the Helper-originated self slice.
 
 ## Out Of Scope
 

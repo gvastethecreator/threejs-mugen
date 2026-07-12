@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper aggregate closure audit
+
+- Closure: root-to-Helper static/deferred self, partner, state, control, member, and TagIn leader reconcile with pinned source order and local ownership.
+- Divergence: upstream partial mutation remains incremental; the bounded local route intentionally keeps complete atomic prevalidation.
+- Open runtime: Helper-authored Tag controllers still stop before a team-standby hook; active P3-P8 gameplay crosses four separate P1/P2-only consumers.
+- Decision: Wayfinder 091 executes unredirected Helper-originated self Tag standby only.
+- Verification: official wiki and pinned SHA links plus local compiler/runtime/test ownership rechecked; `git diff --check` is the docs-only gate.
+- Global status: Wayfinder 090 closes research without runtime, visual, trace, or score movement.
+
 ## Global report - 2026-07-11 IKEMEN Helper-relative Tag member runtime
 
 - Ownership: exact Helper root anchors team side, while a dedicated operation swaps from mutable position one without creating a Helper order slot.
@@ -1421,6 +1430,14 @@ Every compatibility milestone should leave:
 - Invalid/out-of-range/non-Tag/missing-root/legacy paths preserve Helper, roots, order, partner, and success telemetry.
 - Full gates: 170 files / 1736 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
 - Global status: Wayfinder 089 is closed without browser or score movement; Wayfinder 090 audits aggregate closure before selecting broader gameplay work.
+
+### 2026-07-11 - IKEMEN Helper aggregate closure audit
+
+- Root-to-Helper TagIn/TagOut now covers every source-valid static/deferred aggregate axis under documented local atomicity.
+- Helper-authored Tag remains unsupported at the Helper runtime-controller boundary despite shared typed IR and complete Helper expression context.
+- Active-root gameplay remains structurally visible but input, combat, round, and presentation ownership still target P1/P2.
+- Residual debt ranks Helper-originated self Tag, required Tag traces, active-root gameplay, incoming Helper breadth, then exact incremental failure.
+- Global status: Wayfinder 090 is closed without executable or score movement; Wayfinder 091 executes Helper-originated self standby only.
 
 ## Not Done
 
