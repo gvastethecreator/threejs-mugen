@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 465 - Input-driven imported recovery visual journey
+
+Done: legal-fixture smoke reverses the roster through Match selects to imported MUGEN-lite P1 and demo Nova Boxer AI P2, verifies exact identities, and waits for the native AI to deliver the real fall route. It atomically captures `5000 -> 5050 -> 5100`, advances two visible one-frame controls without input, holds physical `a+s`, advances one real frame containing fresh `x+y`, captures imported `5200`, and requires return to `0/0`. Every state requires exact `945` post-hit life, action-palette crop evidence, and mutually distinct masks in independent desktop/mobile runs. Claim allowed: current fixture CNS `command = "recovery"` can visibly drive imported `5100 -> 5200` through the production browser input and step controls. Claim blocked: Common1 recovery tables/thresholds, body-push, guard, multi-hit, touch input, production art, and visual parity.
+
 ## Entry 464 - Imported get-hit and fall visual journey
 
 Done: legal-fixture smoke swaps the roster through real Match selects to demo Nova Boxer P1 and imported MUGEN-lite P2, verifies exact manifest ids plus actor source/label identity, approaches to a bounded center distance, attacks through keyboard `a`, and atomically captures imported `5000 -> 5050 -> 5100`. The route requires life `1000 -> 945`, exact state/action pairs, action-palette pixels in each camera-projected P2 crop, mutually distinct combat masks, and natural return to idle. Desktop/mobile runs reload independently. Claim allowed: demo attack visibly drives imported get-hit, airborne fall, grounded fall, damage, and idle return. Claim blocked: body-push semantics, visual recovery `5200` because keyboard input routes P1, guard visuals, repeated hits, production art, and visual parity.

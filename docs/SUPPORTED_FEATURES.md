@@ -1,6 +1,8 @@
 ﻿# Supported Features
 
-- Legal-fixture browser smoke swaps demo Nova Boxer P1/imported MUGEN-lite P2 through real Match selects, verifies exact roster ids plus actor identities, approaches to bounded center distance, attacks with keyboard `a`, and requires imported get-hit/fall states `5000 -> 5050 -> 5100`, damage `1000 -> 945`, action-palette crop evidence, distinct masks, and natural idle return on desktop/mobile. Body-push semantics, visual recovery `5200`, guard visuals, repeated hits, production art, and visual parity remain separate gates.
+- Legal-fixture browser smoke proves the fixture CNS recovery command: exact imported P1/demo Nova Boxer AI P2 roster, native AI hit, `5000 -> 5050 -> 5100`, two real UI frame steps, fresh keyboard `a+s -> x+y`, imported `5200`, and idle return. Desktop/mobile crops require action-palette evidence and distinct masks. Common1 recovery tables/thresholds, body-push, guard, multi-hit, touch input, production art, and visual parity remain separate gates.
+
+- Legal-fixture browser smoke swaps demo Nova Boxer P1/imported MUGEN-lite P2 through real Match selects, verifies exact roster ids plus actor identities, approaches to bounded center distance, attacks with keyboard `a`, and requires imported get-hit/fall states `5000 -> 5050 -> 5100`, damage `1000 -> 945`, action-palette crop evidence, distinct masks, and natural idle return on desktop/mobile. Body-push semantics, guard visuals, repeated hits, production art, and visual parity remain separate gates.
 
 - Legal-fixture browser smoke drives ArrowRight, ArrowDown, and ArrowUp through the production keyboard adapter and requires imported walk `20`, crouch `10`, and jump `40` poses. Each desktop/mobile crop contains its action-specific palette, differs spatially from idle, and returns to state/action `0/0`. Backward/diagonal movement, guard/recovery visuals, touch input, multi-frame animation, production art, and visual parity remain separate gates.
 
