@@ -166,7 +166,7 @@ export class RuntimeActorConstraintWorld {
     right: RuntimeActorConstraintState,
     leftLocalCoord?: readonly [number, number],
     rightLocalCoord?: readonly [number, number],
-    factors: { left: number; right: number } = { left: 0.5, right: 0.5 },
+    factors: { left: number; right: number; xTieDirection?: 1 | -1 } = { left: 0.5, right: 0.5 },
   ): void {
     if (left.playerPush === false || right.playerPush === false) {
       return;
@@ -174,6 +174,7 @@ export class RuntimeActorConstraintWorld {
     const leftScale = 320 / (leftLocalCoord?.[0] ?? 320);
     const rightScale = 320 / (rightLocalCoord?.[0] ?? 320);
     const deltaX = right.pos.x * rightScale - left.pos.x * leftScale;
+    const separationDeltaX = deltaX || factors.xTieDirection || 0;
     const overlapX = widthToward(left, right) * leftScale + widthToward(right, left) * rightScale - Math.abs(deltaX);
     if (overlapX <= 0) {
       return;
@@ -182,7 +183,7 @@ export class RuntimeActorConstraintWorld {
     const leftDepth = left.combatDepth;
     const rightDepth = right.combatDepth;
     if (!leftDepth || !rightDepth) {
-      if (deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale, factors);
+      if (separationDeltaX !== 0) separateX(left, right, overlapX, separationDeltaX, leftScale, rightScale, factors);
       return;
     }
 
@@ -204,7 +205,7 @@ export class RuntimeActorConstraintWorld {
       pushZ = ratio > 0.75 && ratio < 1 / 0.75 || Math.abs(deltaX) < adjustedZDistance;
     }
 
-    if (pushX && deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale, factors);
+    if (pushX && separationDeltaX !== 0) separateX(left, right, overlapX, separationDeltaX, leftScale, rightScale, factors);
     if (pushZ) separateZ(leftDepth, rightDepth, overlapZ, deltaZ, leftScale, rightScale, factors);
   }
 }
@@ -277,7 +278,7 @@ function separateX(
   delta: number,
   leftScale: number,
   rightScale: number,
-  factors: { left: number; right: number },
+  factors: { left: number; right: number; xTieDirection?: 1 | -1 },
 ): void {
   const direction = delta > 0 ? 1 : -1;
   left.pos.x -= (overlap * factors.left / leftScale) * direction;

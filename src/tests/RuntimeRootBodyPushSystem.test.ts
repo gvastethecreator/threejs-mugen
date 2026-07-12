@@ -166,6 +166,22 @@ describe("RuntimeRootBodyPushWorld", () => {
     vertical[1]!.runtime.pos.y = -61;
     expect(advance(vertical, true).pairIds).toEqual([]);
   });
+
+  it("resolves exact X ties through priority and state/facing policy", () => {
+    const fallback = [actor("p1", 1, 0), actor("p2", 2, 0)];
+    advance(fallback, true);
+    expect(fallback.map((root) => root.runtime.pos.x)).toEqual([10, -10]);
+
+    const priority = [actor("p1", 1, 0), actor("p2", 2, 0)];
+    priority[1]!.runtime.pushPriority = 2;
+    advance(priority, true);
+    expect(priority.map((root) => root.runtime.pos.x)).toEqual([-20, 0]);
+
+    const hit = [actor("p1", 1, 0), actor("p2", 2, 0)];
+    hit[0]!.moveType = "H";
+    advance(hit, true);
+    expect(hit.map((root) => root.runtime.pos.x)).toEqual([-10, 10]);
+  });
 });
 
 function advance(roots: RuntimeRootBodyPushActor[], tagMode: boolean) {

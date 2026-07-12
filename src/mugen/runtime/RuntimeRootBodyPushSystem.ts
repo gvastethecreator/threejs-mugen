@@ -16,6 +16,7 @@ export type RuntimeRootBodyPushActor = {
   sizeBox?: CollisionBox;
   hurtBoxes?: readonly CollisionBox[];
   sizePushOnly?: boolean;
+  moveType?: "I" | "A" | "H";
 };
 
 export type RuntimeRootBodyPushDiagnostic = {
@@ -127,20 +128,37 @@ function canPairPush(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushA
 function resolvePushFactors(
   left: RuntimeRootBodyPushActor,
   right: RuntimeRootBodyPushActor,
-): { left: number; right: number } {
+): { left: number; right: number; xTieDirection?: 1 | -1 } {
   const leftPriority = left.runtime.pushPriority ?? 0;
   const rightPriority = right.runtime.pushPriority ?? 0;
   const leftPushFactor = finiteNonNegative(left.pushFactor, 1);
   const rightPushFactor = finiteNonNegative(right.pushFactor, 1);
-  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor };
-  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0 };
+  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor, xTieDirection: resolveXTieDirection(left, right) };
+  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0, xTieDirection: resolveXTieDirection(left, right) };
   const leftWeight = finitePositive(left.weight, 100);
   const rightWeight = finitePositive(right.weight, 100);
   const totalWeight = leftWeight + rightWeight;
   return {
     left: (rightWeight / totalWeight) * leftPushFactor,
     right: (leftWeight / totalWeight) * rightPushFactor,
+    xTieDirection: resolveXTieDirection(left, right),
   };
+}
+
+function resolveXTieDirection(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): 1 | -1 {
+  if (left.runtime.pos.x !== right.runtime.pos.x) return left.runtime.pos.x < right.runtime.pos.x ? 1 : -1;
+  const leftPriority = left.runtime.pushPriority ?? 0;
+  const rightPriority = right.runtime.pushPriority ?? 0;
+  if (rightPriority > leftPriority) return right.runtime.pos.x >= 0 ? 1 : -1;
+  if (rightPriority < leftPriority) return left.runtime.pos.x >= 0 ? -1 : 1;
+  if (right.moveType === "H" && left.moveType !== "H") return right.runtime.facing === 1 ? -1 : 1;
+  if (right.moveType !== "H" && left.moveType === "H") return left.runtime.facing;
+  if (right.moveType === "A" && left.moveType !== "A") return left.runtime.facing;
+  if (right.moveType !== "A" && left.moveType === "A") return right.runtime.facing === 1 ? -1 : 1;
+  const leftScale = 320 / (left.localCoord?.[0] ?? 320);
+  const rightScale = 320 / (right.localCoord?.[0] ?? 320);
+  if (right.runtime.pos.y * rightScale < left.runtime.pos.y * leftScale) return left.runtime.facing;
+  return right.runtime.facing === 1 ? -1 : 1;
 }
 
 function finitePositive(value: number | undefined, fallback: number): number {
