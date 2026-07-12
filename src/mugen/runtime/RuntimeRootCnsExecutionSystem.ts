@@ -34,7 +34,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "posset",
     "posadd",
   ],
-  sideEffects: ["hitdef"],
+  sideEffects: ["hitdef", "reversaldef"],
 };
 
 export class RuntimeRootCnsExecutionWorld {

@@ -1290,6 +1290,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPairHitDodgePriorityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-reversal-order",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-presentation",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(),

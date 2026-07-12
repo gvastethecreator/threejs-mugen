@@ -20,6 +20,16 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.decisions).toContainEqual({ attackerId: "p3", getterId: "p1", reason: "same-side" });
   });
 
+  it("orders admitted mutation pairs by ReversalDef getter before competing HitDef getters", () => {
+    const p2 = actor("p2", 2, 2, 0, { move: true });
+    const p4 = actor("p4", 4, 2, 0, { reversal: true });
+    const p5 = actor("p5", 5, 1, 0, { move: true });
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [p2, p4, p5], getHurtBoxes: () => hurt });
+
+    expect(result.admittedPairIds).toEqual(["p5->p4", "p5->p2", "p2->p5"]);
+  });
+
   it("filters standby, disabled, invalid-side and non-player roots while retaining over-KO", () => {
     const roots = [
       actor("p1", 1, 1, 0, { move: true, overKo: true }),

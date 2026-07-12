@@ -19,6 +19,8 @@ Local ZIP / folder
 
 The important rule: MUGEN data and runtime behavior must stay renderer-independent. Three.js is the presentation adapter, not the engine.
 
+The current explicit-Tag direct-combat path preserves IKEMEN's getter-owned detection shape: eligible roots are sorted with ReversalDef getters first, then HitDef getters and PlayerNo, and admitted mutation pairs are traversed getter-first. Active-motion roots can author bounded direct HitDef and ReversalDef operations before that pass. Priority arbitration still owns a separate stable attacker ordering; presentation adapters consume only resulting snapshots and evidence.
+
 The future creator studio adds a layer above this engine flow:
 
 ```txt

@@ -170,6 +170,7 @@ import {
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitDodgePriorityTraceArtifact,
+  createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifact,
   createSyntheticImportedPairMissHitPriorityTraceArtifact,
   createSyntheticImportedPairHitDodgePriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
@@ -16133,7 +16134,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBe(1);
     expect(artifact.trace.events.filter(({ line }) => line.includes("HitDef priority clash"))).toHaveLength(1);
     expect(artifact.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(1);
-    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p3->p4", "p4->p3"]);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p4->p3", "p3->p4"]);
     expect(artifact.trace.frames[1]?.rootHitAdmission?.decisions).toEqual(
       expect.arrayContaining([
         { attackerId: "p3", getterId: "p4", reason: "already-hit" },
@@ -16154,7 +16155,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.failures).toEqual([]);
     expect(artifact.trace.events.filter(({ line }) => line.includes("HitDef priority clash"))).toHaveLength(1);
     expect(artifact.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(2);
-    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p3->p4", "p4->p3"]);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p4->p3", "p3->p4"]);
     expect(artifact.trace.frames[1]?.rootHitAdmission?.decisions).toEqual(expect.arrayContaining([
       { attackerId: "p3", getterId: "p4", reason: "missing-move" },
       { attackerId: "p4", getterId: "p3", reason: "missing-move" },
@@ -16191,8 +16192,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(hitDodge.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(0);
     expect(hitDodge.trace.events.filter(({ line }) => line.includes("both missed at priority 4"))).toHaveLength(2);
     expect(hitDodge.trace.frames.map((frame) => frame.rootHitAdmission?.admittedPairIds)).toEqual([
-      ["p3->p4", "p4->p3"],
-      ["p3->p4", "p4->p3"],
+      ["p4->p3", "p3->p4"],
+      ["p4->p3", "p3->p4"],
     ]);
     expect(hitDodge.trace.finalReserveActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p3", life: 1000 }),
@@ -16222,6 +16223,23 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ id: "p1", life: 1000 }),
       expect.objectContaining({ id: "p2", life: 1000 }),
     ]));
+  });
+
+  it("creates a required IKEMEN active-root ReversalDef getter-order artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(
+      expect.arrayContaining(["p5->p4", "p5->p2", "p2->p5"]),
+    );
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds.indexOf("p5->p4")).toBeLessThan(
+      artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds.indexOf("p2->p5") ?? -1,
+    );
+    expect(artifact.trace.combatReasons.filter(({ reason }) => reason === "reversal")).toHaveLength(1);
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p5", targetId: 125 }),
+    );
   });
 
   it("creates a required IKEMEN active-root presentation handoff artifact", () => {

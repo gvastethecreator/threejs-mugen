@@ -56,11 +56,12 @@ export class RuntimeRootDirectHitAdmissionWorld {
     assertRoots(input.roots);
     const roots = input.roots.filter(isEligibleRoot);
     const attackers = [...roots].sort(compareAttackers);
+    const getters = [...roots].sort(compareAttackers);
     const decisions: RuntimeRootDirectHitAdmissionDecision[] = [];
     const admittedPairIds: string[] = [];
 
-    for (const attacker of attackers) {
-      for (const getter of roots) {
+    for (const getter of getters) {
+      for (const attacker of roots) {
         if (attacker === getter) continue;
         const reason = inspectPair(attacker, getter, input.getHurtBoxes);
         decisions.push({ attackerId: attacker.id, getterId: getter.id, reason });

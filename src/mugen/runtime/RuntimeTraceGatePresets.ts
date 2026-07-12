@@ -8930,6 +8930,79 @@ export function createSyntheticImportedIkemenActiveRootHitDodgePriorityTraceArti
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootReversalOrderTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-reversal-order-grid",
+    displayName: "Trace Active Root Reversal Order Grid",
+    playerStart: { p1: { x: -20, y: 0, facing: 1 }, p2: { x: 20, y: 0, facing: -1 } },
+  };
+  const immuneRoot = (id: string, label: string) => createSyntheticImportedTraceFighter({
+    id,
+    displayName: label,
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: immuneRoot("synthetic-imported-ikemen-reversal-order-p1", "Synthetic Imported IKEMEN Reversal Order P1"),
+    p2: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-ikemen-reversal-order-p2",
+      displayName: "Synthetic Imported IKEMEN Reversal Order P2",
+      withHitDef: false,
+      activeRootHitDefRoute: { damage: 43, targetId: 124, priority: 7 },
+    }),
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [
+      immuneRoot("synthetic-imported-ikemen-reversal-order-p3", "Synthetic Imported IKEMEN Reversal Order P3"),
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-ikemen-reversal-order-p4",
+        displayName: "Synthetic Imported IKEMEN Reversal Order P4",
+        withHitDef: false,
+        passiveReversalDef: { attr: "S,NA", p1StateNo: 777, p2StateNo: 888, targetId: 125, clsn1Extent: 120 },
+      }),
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-ikemen-reversal-order-p5",
+        displayName: "Synthetic Imported IKEMEN Reversal Order P5",
+        withHitDef: false,
+        activeRootHitDefRoute: { damage: 31, targetId: 126, priority: 1, clsn1Extent: 120 },
+      }),
+    ],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p4", standby: false }, { id: "p5", standby: false }] });
+  const script = expandRuntimeTraceScript([
+    { label: "P4 reverses P5 before P2 can interrupt it", p1: [], p2: [], frames: 1 },
+    { label: "reversal and competing hit remain consumed", p1: [], p2: [], frames: 1 },
+  ]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-active-root-reversal-order-golden" });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-reversal-order-golden",
+      label: "Synthetic imported IKEMEN active-root ReversalDef getter ordering",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves active-motion P4 can author ReversalDef and getter-first admission lets P4 reverse P5 before P2's competing HitDef interrupts P5. It does not claim ReversalDef-versus-ReversalDef ordering, projectile reflection/removal, helpers, throws, attack depth, AffectTeam, or full parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-active-root-reversal-order-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["HitDef", "ReversalDef"],
+      requiredExecutedOperations: ["hitdef", "reversaldef"],
+      requiredEventCategories: ["reversal"],
+      requiredCombatReasons: ["reversal"],
+      requiredTargetLinks: [{ ownerId: "p4", actorId: "p5", targetId: 125 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedPairMissHitPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -40317,7 +40390,14 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveHitBy?: string;
   passiveHitOverride?: SyntheticImportedPassiveHitOverride;
   passiveHitOverrides?: SyntheticImportedPassiveHitOverride[];
-  passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number; targetId?: number };
+  passiveReversalDef?: {
+    attr: string;
+    p1StateNo: number;
+    p2StateNo?: number;
+    hitPause?: number;
+    targetId?: number;
+    clsn1Extent?: number;
+  };
   passiveControllerStates?: Array<{
     stateNo: number;
     stateType?: "S" | "C" | "A" | "L";
@@ -40652,7 +40732,13 @@ export type SyntheticImportedTraceFighterOptions = {
   selfCommandEntry?: { commandName: string; stateNo: number };
   passiveCommandRoute?: { commandName: string; stateNo: number };
   activeRootMotionRoute?: { commandName: string; velocityX: number; blockedHelperId: number };
-  activeRootHitDefRoute?: { damage: number; targetId: number; priority?: number; priorityType?: "Hit" | "Miss" | "Dodge" };
+  activeRootHitDefRoute?: {
+    damage: number;
+    targetId: number;
+    priority?: number;
+    priorityType?: "Hit" | "Miss" | "Dodge";
+    clsn1Extent?: number;
+  };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -41691,7 +41777,16 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     fightFxPrefix: options.fightFxPrefix,
     hitSparkLibraries: options.hitSparkLibraries,
     animations: new Map([
-      [0, passiveReversalAnimNos.has(0) ? reversalTraceAction(0) : traceAction(0)],
+      [
+        0,
+        passiveReversalAnimNos.has(0) || options.activeRootHitDefRoute?.clsn1Extent !== undefined
+          ? reversalTraceAction(
+              0,
+              4,
+              options.passiveReversalDef?.clsn1Extent ?? options.activeRootHitDefRoute?.clsn1Extent,
+            )
+          : traceAction(0),
+      ],
       [10, passiveReversalAnimNos.has(10) ? reversalTraceAction(10) : traceAction(10)],
       [20, passiveReversalAnimNos.has(20) ? reversalTraceAction(20) : traceAction(20)],
       [40, passiveReversalAnimNos.has(40) ? reversalTraceAction(40) : traceAction(40)],
@@ -48358,11 +48453,11 @@ function traceHitSparkAction(actionId: number, spriteGroup: number): MugenAnimat
   };
 }
 
-function reversalTraceAction(id: number, duration = 4): MugenAnimationAction {
+function reversalTraceAction(id: number, duration = 4, clsn1Extent?: number): MugenAnimationAction {
   const action = traceAction(id, duration);
   const frame = action.frames[0];
   if (frame) {
-    frame.clsn1 = [{ x1: 10, y1: -45, x2: 36, y2: -18 }];
+    frame.clsn1 = [{ x1: clsn1Extent === undefined ? 10 : -clsn1Extent, y1: -45, x2: clsn1Extent ?? 36, y2: -18 }];
   }
   return action;
 }
