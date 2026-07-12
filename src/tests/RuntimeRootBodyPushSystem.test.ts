@@ -152,6 +152,20 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(advance(clsn, true).pairIds).toEqual([]);
     expect(clsn.map((root) => root.runtime.pos.x)).toEqual([0, 10]);
   });
+
+  it("allows SizePushOnly to bypass Clsn2 while retaining size admission", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    roots[1]!.hurtBoxes = [];
+    roots[0]!.sizePushOnly = true;
+
+    expect(advance(roots, true).pairIds).toEqual([["p1", "p2"]]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 15]);
+
+    const vertical = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    vertical[0]!.sizePushOnly = true;
+    vertical[1]!.runtime.pos.y = -61;
+    expect(advance(vertical, true).pairIds).toEqual([]);
+  });
 });
 
 function advance(roots: RuntimeRootBodyPushActor[], tagMode: boolean) {

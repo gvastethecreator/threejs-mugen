@@ -980,10 +980,11 @@ export class PlayableMatchRuntime {
                 pushFactor: root.definition.constants?.["size.pushfactor"],
                 sizeBox: runtimePushSizeBox(root),
                 hurtBoxes: frameWorld.currentFrame(root)?.clsn2,
+                sizePushOnly: root.runtime.assertSpecial?.flags.includes("sizepushonly"),
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2 },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2 },
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2, sizePushOnly: this.p1.runtime.assertSpecial?.flags.includes("sizepushonly") },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2, sizePushOnly: this.p2.runtime.assertSpecial?.flags.includes("sizepushonly") },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,

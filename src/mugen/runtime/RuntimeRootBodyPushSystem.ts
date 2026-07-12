@@ -15,6 +15,7 @@ export type RuntimeRootBodyPushActor = {
   pushFactor?: number;
   sizeBox?: CollisionBox;
   hurtBoxes?: readonly CollisionBox[];
+  sizePushOnly?: boolean;
 };
 
 export type RuntimeRootBodyPushDiagnostic = {
@@ -109,6 +110,7 @@ function hasPushGeometry(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyP
   const rightTop = (right.runtime.pos.y + rightSizeBox.y1) * rightScale;
   const rightBottom = (right.runtime.pos.y + rightSizeBox.y2) * rightScale;
   if (Math.min(leftBottom, rightBottom) - Math.max(leftTop, rightTop) <= 0) return false;
+  if (left.sizePushOnly || right.sizePushOnly) return true;
   if (!left.hurtBoxes?.length || !right.hurtBoxes?.length) return false;
   return left.hurtBoxes.some((leftBox) => right.hurtBoxes!.some((rightBox) =>
     collisionBoxesIntersect(runtimeWorldBox(left.runtime, leftBox), runtimeWorldBox(right.runtime, rightBox)),

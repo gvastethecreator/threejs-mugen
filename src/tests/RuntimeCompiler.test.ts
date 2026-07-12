@@ -523,7 +523,7 @@ time = 20
       controller(200, "AssertSpecial", [], {
         flag: "NoAutoTurn, NoWalk",
         flag2: '"Invisible", GlobalNoKO, TimerFreeze, RoundNotOver, NoKOSlow, Intro, NoWalk',
-        flag3: "NoGetUpFromLieDown, NoFastRecoverFromLieDown, RunFirst, RunLast",
+        flag3: "NoGetUpFromLieDown, NoFastRecoverFromLieDown, RunFirst, RunLast, SizePushOnly",
       }),
     );
     const disabled = compileControllerIr(controller(200, "AssertSpecial", [], { flag: "NoWalk", value: "0" }));
@@ -531,7 +531,7 @@ time = 20
 
     expect(compiled.operation).toEqual({
       kind: "assertspecial",
-      flags: ["noautoturn", "nowalk", "invisible", "nogetupfromliedown", "nofastrecoverfromliedown", "runfirst", "runlast"],
+      flags: ["noautoturn", "nowalk", "invisible", "nogetupfromliedown", "nofastrecoverfromliedown", "runfirst", "runlast", "sizepushonly"],
       globalFlags: ["globalnoko", "timerfreeze", "roundnotover", "nokoslow", "intro"],
     });
     expect(disabled.operation).toBeUndefined();
