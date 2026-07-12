@@ -1293,6 +1293,8 @@ Helper standby participation is now source-mapped. Standby suppresses effective 
 
 Helper standby participation now executes for root-driven RedirectID TagIn/TagOut. Local state/control validates and applies before standby, effective `Ctrl` reads false without clearing stored control, and direct Helper HitDef stops until TagIn. CNS, identity lookup, targets, snapshots, animation/drawing, and Helper-parented projectiles continue; the IKEMEN single-Helper scheduler now shares the bulk effect context needed for projectile/explod creation. Aggregate Helper Tag axes and unmodeled incoming hurt/push/camera/opponent breadth remain blocked. Wayfinder 084 next maps initial Helper `standby` creation.
 
+Initial Helper standby is now source-mapped. IKEMEN compiles one optional caller-owned boolean expression, allocates/registers the Helper first, applies standby before initial state entry, requests control enabled, applies any authored StateDef `ctrl` override, and discovers the Helper for same-frame CNS. Local lifecycle/scheduler order already aligns; typed IR, explicit-profile resolution, and hardcoded standby/control defaults do not. Wayfinder 085 executes only root-created explicit-IKEMEN standby with fail-closed unsupported expressions and no Helper/team/gameplay widening.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

@@ -101,11 +101,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute Helper-local Tag state/control](tickets/081-execute-helper-local-tag-redirect-state-control.md) - explicit `self = 0` admits prevalidated Helper-local state and TagIn control without standby or aggregate effects.
 - [Map Helper standby participation](tickets/082-map-helper-standby-participation.md) - standby suppresses direct character interaction and effective control but preserves CNS, projectiles, targets, identity, animation, and drawing.
 - [Execute Helper standby participation](tickets/083-execute-helper-standby-participation.md) - true/default Helper self toggles standby after local mutation; direct HitDef and effective control filter while CNS, identity, snapshots, and projectiles remain active.
+- [Map initial Helper standby creation](tickets/084-map-helper-initial-standby.md) - optional caller-owned boolean standby applies after identity allocation and before StateDef-over-fallback control, initial state, and same-frame CNS.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Map initial Helper standby creation](tickets/084-map-helper-initial-standby.md)
+- [Execute initial Helper standby creation](tickets/085-execute-helper-initial-standby.md)
 
 ## Not Yet Specified
 

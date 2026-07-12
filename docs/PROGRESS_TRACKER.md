@@ -1327,6 +1327,14 @@ Every compatibility milestone should leave:
 - Full gates: 170 files / 1714 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
 - Global status: Wayfinder 083 is closed without score movement; Wayfinder 084 maps initial Helper `standby` creation.
 
+### 2026-07-11 - IKEMEN initial Helper standby research
+
+- Pinned optional boolean syntax, zero/non-zero coercion, original-caller evaluation, and pre-state-entry mutation order.
+- Confirmed fresh Helpers default non-standby; init requests control enabled, then authored StateDef `ctrl` may override it before same-frame CNS.
+- Local audit found typed IR/profile resolution and hardcoded standby/control initialization as the bounded gaps; identity/scheduler order already aligns.
+- Unsupported or unresolved authored standby will block explicit IKEMEN spawn; legacy/unknown behavior remains unchanged.
+- Global status: Wayfinder 084 is closed without score movement; Wayfinder 085 executes root-created initial standby.
+
 ## Not Done
 
 - Full MUGEN VM

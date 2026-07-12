@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN Helper standby participation (2026-07-11)
+## Latest closeout - IKEMEN initial Helper standby research (2026-07-11)
+
+Pinned IKEMEN compiler/runtime source establishes optional caller-owned boolean `standby`, false omission/zero default, identity allocation before parameter evaluation, mutation before initial state entry, requested control true with authored StateDef `ctrl` override, and same-frame CNS. Local identity/scheduler order already aligns; typed IR/profile resolution and hardcoded standby/control defaults are the bounded gaps. Continue at Wayfinder 085; no runtime, visual, or score movement.
+
+## Previous closeout - IKEMEN Helper standby participation (2026-07-11)
 
 Root-executed TagIn/TagOut RedirectID can now set or clear a live Helper's standby flag after local state/control mutation. Standby projects effective `Ctrl = 0` and blocks direct Helper HitDef while preserving raw control, CNS/state time, identity, targets, snapshots/drawing, and Helper-parented projectile spawn/advance. The single-Helper IKEMEN RunOrder path now shares bulk effect context. Full gates pass 170 files / 1714 tests and 538/538 traces. Continue at Wayfinder 084 for initial Helper `standby`; no score movement.
 
@@ -857,7 +861,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | Priority | Workstream | Next shippable proof | Evidence gate | Score effect |
 | --- | --- | --- | --- | --- |
 | P0 | Project control | Keep setup-project, local issues, AGENTS, and roadmap routing synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | No score movement. |
-| P1 | I2 bounded Tag runtime | Map and execute initial Helper `standby` creation after closing redirected Helper standby participation. | Primary-source note, focused runtime tests, full stable traces, negative consumer assertions. | Bounded IKEMEN execution confidence only; no tag gameplay score claim. |
+| P1 | I2 bounded Tag runtime | Execute source-mapped initial Helper `standby` creation in explicit IKEMEN matches. | Focused compiler/runtime/end-to-end tests, full stable traces, negative profile/failure assertions. | Bounded IKEMEN execution confidence only; no tag gameplay score claim. |
 | P1 | R1 post-KO timeline | After the I2 prefactor, close KO/time-over ordering plus bounded `NoKOSlow`. | Focused round tests and required ordered trace. | MUGEN-lite confidence only; no motif/team parity. |
 | P1 | R2 root ownership | Centralize construction/reset/side/team-state/participation invariants before any consumer widening. | Invariant/deletion tests and stable traces. | Architecture debt reduction only. |
 | P2 | S1 Studio source workflow | Add source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback; defer undo/migration. | Model/service tests plus `pnpm qa:smoke` and visual inspection. | Possible Studio movement only with real persistence evidence. |
