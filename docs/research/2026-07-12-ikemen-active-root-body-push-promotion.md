@@ -62,3 +62,9 @@ Replace bounded X/Width separation when runtime actors own current size-box clas
 Allowed: one implementation-ready deterministic plural active-root X/Width push boundary.
 
 Blocked: exact IKEMEN team/geometry/priority/weight/factor/tie/corner semantics, helpers, hit/combat, throws, scores, or full parity.
+
+## Implementation Outcome
+
+Wayfinder 105 implemented the bounded boundary. `RuntimeRootBodyPushWorld` validates unique stable runtime roots, admits explicit-Tag player roots that are valid-side/non-disabled/non-standby, resolves each unordered pair once through current facing-aware X/Width separation, and reclamps through a post-push stage primitive. `RuntimeRootPhaseCapabilities/v3` exposes `bodyPush`; `RuntimeRootBodyPush/v0` snapshots exact roots/pairs/moved ids; actor-scoped `post-fighter:body-push` schedule evidence runs before combat. Pair/Single retain the previous callback exactly.
+
+Required active-root motion checksum is now `fdd687cb`; active-root constraint checksum is `c4d89ec3`. Both retain zero effect stores/targets and forbidden hit/guard evidence inside 543/543 passing traces. Full gates pass 177 files / 1802 tests, TypeScript 7 build 1,611.24 kB, boundaries, and diff audit. Browser is N/A because no presentation surface changed. Exact IKEMEN AffectTeam, size-box Y/Z/localcoord, priority/weight/pushfactor/tie/interpolation, hit admission, and scores remain blocked.

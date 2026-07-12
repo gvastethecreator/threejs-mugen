@@ -119,6 +119,7 @@ import {
 import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
+import { RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic } from "./RuntimeRootBodyPushSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
 import {
   RuntimeRootInputRoutingWorld,
@@ -257,6 +258,7 @@ const rootInputRoutingWorld = new RuntimeRootInputRoutingWorld();
 const rootAdvancePhaseWorld = new RuntimeRootAdvancePhaseWorld();
 const rootMotionAdvanceWorld = new RuntimeRootMotionAdvanceWorld();
 const rootPresentationWorld = new RuntimeRootPresentationWorld();
+const rootBodyPushWorld = new RuntimeRootBodyPushWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
@@ -385,6 +387,7 @@ export class PlayableMatchRuntime {
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
   private lastTickSchedule = createIdleMatchTickSchedule();
+  private lastRootBodyPush?: RuntimeRootBodyPushDiagnostic;
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private lastP2Controlled = false;
@@ -656,6 +659,7 @@ export class PlayableMatchRuntime {
 
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
+    this.lastRootBodyPush = undefined;
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
@@ -930,6 +934,25 @@ export class PlayableMatchRuntime {
             recordPhase("tick:guard-distance-latch", defender.id);
             refreshRuntimeInGuardDist(defender, attacker, this.guardDistanceWorld, this.tick);
           },
+          advanceBodyPush: this.tagTeamOrder ? () => {
+            const roots = this.characterRoots();
+            this.lastRootBodyPush = rootBodyPushWorld.advance({
+              tagMode: true,
+              roots: roots.map((root) => ({
+                id: root.id,
+                side: runtimeTeamSide(root) ?? null,
+                teamState: root.runtime.teamState!,
+                runtime: root.runtime,
+              })),
+              playableRoots: [
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime },
+              ],
+              stage: this.stage,
+              actorConstraintWorld: this.actorConstraintWorld,
+            });
+            for (const id of this.lastRootBodyPush.rootIds) recordPhase("post-fighter:body-push", id);
+          } : undefined,
           log: (line) => this.logs.unshift(line),
           recordSchedulePhase: recordPhase,
         });
@@ -1727,6 +1750,7 @@ export class PlayableMatchRuntime {
       compatibilitySession: compatibilityTelemetryWorld.buildSession([...this.matchRoster().actors]),
       tickSchedule: this.lastTickSchedule,
       rootPresentation,
+      rootBodyPush: this.lastRootBodyPush,
       logs: this.logs,
     });
     const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);
@@ -1800,6 +1824,7 @@ export class PlayableMatchRuntime {
     this.playing = resetState.playing;
     this.lastP2Controlled = false;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
+    this.lastRootBodyPush = undefined;
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
     }

@@ -16008,14 +16008,14 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 4,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -152, y: 0 }, vel: { x: 4, y: 0 } }),
+          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -115, y: 0 }, vel: { x: 4, y: 0 } }),
           expect.objectContaining({ id: "p4", stateNo: 0, teamStandby: true, effectiveCtrl: false }),
         ],
       },
     });
     expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
-    expect(artifact.trace.checksum).toBe("8ee92f65");
-    expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "64d76d9a", "df69cd20"]);
+    expect(artifact.trace.checksum).toBe("fdd687cb");
+    expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "e9370b2c", "8795f006"]);
     expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ TagIn: 1, VelSet: 2 });
     expect(artifact.gates[0]?.evidence.executedControllers.Helper).toBeUndefined();
     expect(artifact.trace.finalEffects).toEqual([]);
@@ -16101,7 +16101,7 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 3,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", pos: { x: -154, y: 0 }, vel: { x: 4, y: 0 }, targetCount: 0 }),
+          expect.objectContaining({ id: "p3", pos: { x: -188.75, y: 0 }, vel: { x: 4, y: 0 }, targetCount: 0 }),
           expect.objectContaining({ id: "p4", teamStandby: true }),
         ],
       },
@@ -16115,8 +16115,14 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.frames[1]?.tickSchedule?.phaseStamps.filter(({ id }) => id === "fighter:constraints")).toEqual([
       expect.objectContaining({ actorId: "p3" }),
     ]);
-    expect(artifact.trace.checksum).toBe("870f8871");
-    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "63a42885", "842716e7"]);
+    expect(artifact.trace.frames.find((frame) => frame.rootBodyPush)?.rootBodyPush).toMatchObject({
+      schema: "RuntimeRootBodyPush/v0",
+      mode: "ikemen-tag",
+      rootIds: ["p1", "p2", "p3"],
+      pairIds: [["p1", "p2"], ["p1", "p3"], ["p2", "p3"]],
+    });
+    expect(artifact.trace.checksum).toBe("c4d89ec3");
+    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "5f103cb5", "06e96d0f"]);
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {

@@ -20,6 +20,7 @@ export type RuntimeMatchTickPhaseId =
   | "fighter:auto-guard-check:pre"
   | "fighter:auto-guard-check:post"
   | "active:post-fighter"
+  | "post-fighter:body-push"
   | "post-fighter:combat"
   | "post-fighter:presentation-effects"
   | "active:round-finish"
@@ -161,6 +162,12 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     "RuntimeMatchPostFighterWorld",
     ["targetWorld", "effects", "fighter.runtime", "contactMemory", "presentationEvents"],
     ["effects and bindings advanced", "combat resolved", "bounds applied"],
+  ),
+  "post-fighter:body-push": phase(
+    "post-fighter:body-push",
+    "RuntimeRootBodyPushWorld",
+    ["fighter.runtime.pos"],
+    ["eligible root body overlap resolved before combat"],
   ),
   "post-fighter:combat": phase(
     "post-fighter:combat",

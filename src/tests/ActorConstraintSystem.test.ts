@@ -100,6 +100,9 @@ describe("ActorConstraintSystem", () => {
     state.screenBound = { bound: false, moveCameraX: false, moveCameraY: true };
     world.clampToStage(state, { bounds: { left: -40, right: 40 } });
     expect(state.pos.x).toBe(80);
+
+    world.clampBodyPushToStage(state, { bounds: { left: -40, right: 40 } });
+    expect(state.pos.x).toBe(40);
   });
 
   it("separates overlapping actors using facing-aware body widths", () => {

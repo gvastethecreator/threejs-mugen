@@ -538,6 +538,7 @@ export type MugenSnapshot = {
   tagTeamOrder?: import("./RuntimeTagTeamOrderSystem").RuntimeTagTeamOrderDiagnostic;
   rootInputRouting?: import("./RuntimeRootInputRoutingSystem").RuntimeRootInputRoutingDiagnostic;
   rootPresentation?: import("./RuntimeRootPresentationSystem").RuntimeRootPresentationDiagnostic;
+  rootBodyPush?: import("./RuntimeRootBodyPushSystem").RuntimeRootBodyPushDiagnostic;
   logs: string[];
 };
 

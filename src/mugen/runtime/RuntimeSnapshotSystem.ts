@@ -86,6 +86,7 @@ export type RuntimeMatchSnapshotInput = {
   compatibilitySession: MugenSnapshot["compatibilitySession"];
   tickSchedule?: MugenSnapshot["tickSchedule"];
   rootPresentation?: MugenSnapshot["rootPresentation"];
+  rootBodyPush?: MugenSnapshot["rootBodyPush"];
   logs: string[];
 };
 
@@ -113,6 +114,7 @@ export class RuntimeSnapshotWorld {
       compatibilitySession: input.compatibilitySession,
       ...(input.tickSchedule ? { tickSchedule: structuredClone(input.tickSchedule) } : {}),
       ...(input.rootPresentation ? { rootPresentation: structuredClone(input.rootPresentation) } : {}),
+      ...(input.rootBodyPush ? { rootBodyPush: structuredClone(input.rootBodyPush) } : {}),
       logs: input.logs.slice(0, 80),
     };
   }

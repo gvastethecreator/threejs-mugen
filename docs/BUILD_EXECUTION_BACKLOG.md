@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 411 - Active-root bounded plural body push
+
+Done: `RuntimeRootBodyPushWorld` promotes explicit-Tag roots into deterministic plural X/Width push before combat, validates unique identities, filters disabled/standby/nonplayer/invalid roots, resolves each unordered pair once, and reclamps moved roots. `RuntimeRootPhaseCapabilities/v3`, `RuntimeRootBodyPush/v0`, actor-scoped schedule rows, reset cleanup, and trace cloning expose proof. Pair/Single remain exact. Required active-motion checksum `fdd687cb` and active-constraint checksum `c4d89ec3` pass inside 543/543 traces with zero effects/targets and no hit/guard evidence. Full gates pass 177 files / 1802 tests, TypeScript 7 build 1,611.24 kB, boundaries, and diff. Wayfinder 106 maps hit admission. Scores unchanged.
+
 ## Entry 410 - Active-root body-push research
 
 Resolved Wayfinder 104 from pinned global push code and local ownership. Selected Wayfinder 105: stable runtime-root eligibility, unique-id validation, each unordered pair once through current X/Width primitive, final stage clamp, explicit capability/schedule/trace, no diagnostic/combat authority leakage. Research only; no runtime or score change.

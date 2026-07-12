@@ -80,6 +80,10 @@ export class RuntimeActorConstraintWorld {
     state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
   }
 
+  clampBodyPushToStage(state: RuntimeActorConstraintState, stage: Pick<MugenStageDefinition, "bounds">): void {
+    state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
+  }
+
   separate(left: RuntimeActorConstraintState, right: RuntimeActorConstraintState): void {
     if (left.playerPush === false || right.playerPush === false) {
       return;

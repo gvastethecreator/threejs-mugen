@@ -287,7 +287,7 @@ describe("MatchWorld", () => {
       cameraRootIds: ["p1", "p2"],
     });
     expect(registry.rootPhaseCapabilities).toMatchObject({
-      schema: "RuntimeRootPhaseCapabilities/v2",
+      schema: "RuntimeRootPhaseCapabilities/v3",
       mode: "ikemen-tag",
     });
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p1")).toMatchObject({

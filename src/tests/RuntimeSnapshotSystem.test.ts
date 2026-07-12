@@ -325,6 +325,13 @@ describe("RuntimeSnapshotWorld", () => {
       cameraRootIds: ["p1", "p2"],
       collisionRootIds: ["p1", "p2"],
     };
+    const rootBodyPush = {
+      schema: "RuntimeRootBodyPush/v0" as const,
+      mode: "ikemen-tag" as const,
+      rootIds: ["p1", "p2"],
+      pairIds: [["p1", "p2"]] as Array<[string, string]>,
+      movedRootIds: ["p1", "p2"],
+    };
 
     const snapshot = world.match({
       tick: 42,
@@ -347,12 +354,14 @@ describe("RuntimeSnapshotWorld", () => {
       },
       compatibilitySession,
       rootPresentation,
+      rootBodyPush,
       logs,
     });
     p1.runtime.pos.x = 999;
     p1Explod.runtime.pos.x = 999;
     logs[0] = "mutated";
     rootPresentation.drawRootIds[0] = "mutated";
+    rootBodyPush.rootIds[0] = "mutated";
 
     expect(snapshot).toMatchObject({
       tick: 42,
@@ -368,6 +377,7 @@ describe("RuntimeSnapshotWorld", () => {
       round,
       compatibilitySession,
       rootPresentation: expect.objectContaining({ drawRootIds: ["p1", "p2"] }),
+      rootBodyPush: expect.objectContaining({ rootIds: ["p1", "p2"] }),
     });
     expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
     expect(snapshot.actors[0]?.runtime.pos.x).toBe(30);

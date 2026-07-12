@@ -17,6 +17,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   advanceActiveEffects: (fighter: TFighter) => void;
   resolveProjectileClashes: (left: TFighter, right: TFighter) => void;
   separateActors: (left: TFighter, right: TFighter) => void;
+  advanceBodyPush?: () => void;
   applyTargetBindings: (fighter: TFighter, opponent: TFighter) => void;
   applyBindToTarget: (fighter: TFighter, opponent: TFighter) => void;
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
@@ -53,6 +54,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
+    advanceBodyPush?: () => void;
     recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
     log: (line: string) => void;
   };
@@ -68,7 +70,8 @@ export class RuntimeMatchInteractionWorld {
     input.advanceActiveEffects(p1);
     input.advanceActiveEffects(p2);
     input.resolveProjectileClashes(p1, p2);
-    input.separateActors(p1, p2);
+    if (input.advanceBodyPush) input.advanceBodyPush();
+    else input.separateActors(p1, p2);
     input.applyTargetBindings(p1, p2);
     input.applyTargetBindings(p2, p1);
     input.applyBindToTarget(p1, p2);
@@ -129,6 +132,7 @@ export class RuntimeMatchInteractionWorld {
           },
         }),
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
+      advanceBodyPush: input.advanceBodyPush,
       applyTargetBindings: (fighter, opponent) => fighter.targetWorld.applyTargetBindings(fighter, [opponent]),
       applyBindToTarget: (fighter, opponent) => fighter.targetWorld.applyBindToTarget(fighter, [opponent]),
       resolvePriorityClash: input.resolvePriorityClash,

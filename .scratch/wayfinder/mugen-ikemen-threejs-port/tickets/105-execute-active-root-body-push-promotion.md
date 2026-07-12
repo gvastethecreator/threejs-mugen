@@ -1,7 +1,7 @@
 # Execute Active-root Body-push Promotion
 
 Type: implementation
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal

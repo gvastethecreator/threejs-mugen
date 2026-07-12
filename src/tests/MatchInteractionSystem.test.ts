@@ -88,6 +88,7 @@ describe("RuntimeMatchInteractionWorld", () => {
         separate: (left, right) => tag("separate", runtimeLabel(left), runtimeLabel(right)),
         clampToStage: (runtime) => tag("clamp", runtimeLabel(runtime)),
       },
+      advanceBodyPush: () => tag("body-push"),
       effectLifecycleWorld: {
         advanceActive: (fighter, _stage, opponent, options) => {
           tag("active-effects", fighter.id);
@@ -117,7 +118,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       "active-effects:p2",
       "projectile-clash:p1/Nova:p2/Mira",
       "projectile-cancel:p1:0:77",
-      "separate:p1:p2",
+      "body-push",
       "target-bind:p1:p2",
       "target-bind:p2:p1",
       "bind-to-target:p1:p2",

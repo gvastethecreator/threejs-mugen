@@ -210,6 +210,7 @@ export type RuntimeTraceFrame = {
   combatReasons: RuntimeTraceCombatReason[];
   tickSchedule?: RuntimeMatchTickSchedule;
   rootPresentation?: MugenSnapshot["rootPresentation"];
+  rootBodyPush?: MugenSnapshot["rootBodyPush"];
   world?: RuntimeTraceWorldSummary;
   checksum: string;
 };
@@ -3479,10 +3480,11 @@ function summarizeTraceSnapshot(
     combatReasons: summarizeCombatReasons(frameIndex, snapshot.tick, actors, events),
     ...(snapshot.tickSchedule ? { tickSchedule: structuredClone(snapshot.tickSchedule) } : {}),
     ...(snapshot.rootPresentation ? { rootPresentation: structuredClone(snapshot.rootPresentation) } : {}),
+    ...(snapshot.rootBodyPush ? { rootBodyPush: structuredClone(snapshot.rootBodyPush) } : {}),
     world: summarizeWorld(actorRegistry),
     checksum: "",
   };
-  // World lifecycle, schedule, and root-presentation diagnostics stay outside the behavior checksum projection.
+  // World lifecycle, schedule, root presentation, and body-push diagnostics stay outside the behavior checksum projection.
   frame.checksum = hashStableJson({
     tick: frame.tick,
     input: frame.input,

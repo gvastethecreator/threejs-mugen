@@ -161,18 +161,18 @@ describe("PlayableMatchRuntime", () => {
       activated.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers"]);
+    ).toEqual(["fighter:controllers", "post-fighter:body-push"]);
 
     const moved = runtime.step({ p1: new Set(), p2: new Set() });
     const movedP3 = moved.reserveActors?.find(({ id }) => id === "p3")!;
-    expect(movedP3.runtime.pos.x).toBe(initial.runtime.pos.x + 4);
+    expect(movedP3.runtime.pos.x).toBe(-54);
     expect(movedP3.runtime.vel.x).toBe(4);
     expect(movedP3.runtime.animTime).toBe(initial.runtime.animTime + 1);
     expect(
       moved.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints"]);
+    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints", "post-fighter:body-push"]);
     expect(moved.effects?.some(({ ownerId }) => ownerId === "p3")).toBe(false);
     expect(
       moved.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.executedControllers.Helper,
@@ -210,7 +210,7 @@ describe("PlayableMatchRuntime", () => {
     expect(movedP3.runtime).toMatchObject({
       stateType: "A",
       physics: "A",
-      pos: { x: initial.runtime.pos.x + 3, y: -22 },
+      pos: { x: -54.5, y: -22 },
       vel: { x: 3, y: -1.45 },
       animTime: initial.runtime.animTime + 1,
     });
@@ -218,7 +218,7 @@ describe("PlayableMatchRuntime", () => {
       moved.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints"]);
+    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints", "post-fighter:body-push"]);
   });
 
   it("keeps active Tag reserve motion disabled during imported Pause ticks", () => {
@@ -242,6 +242,7 @@ describe("PlayableMatchRuntime", () => {
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     const paused = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
     expect(snapshot.tickSchedule?.branch).toBe("pause");
+    expect(snapshot.rootBodyPush).toBeUndefined();
     expect(paused.runtime.pos).toEqual(activated.runtime.pos);
     expect(paused.runtime.animTime).toBe(activated.runtime.animTime);
     expect(
@@ -261,7 +262,7 @@ describe("PlayableMatchRuntime", () => {
       },
     };
     const runtime = new PlayableMatchRuntime(
-      createHitPauseIgnoreControllerFixture(false),
+      createHitPauseIgnoreControllerFixture(false, true),
       demoFighters[1]!,
       closeStage,
       {
@@ -279,6 +280,7 @@ describe("PlayableMatchRuntime", () => {
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     const frozen = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
     expect(snapshot.tickSchedule?.branch).toBe("hitpause");
+    expect(snapshot.rootBodyPush).toBeUndefined();
     expect(frozen.runtime.pos).toEqual(activated.runtime.pos);
     expect(frozen.runtime.animTime).toBe(activated.runtime.animTime);
   });
@@ -1813,7 +1815,10 @@ ctrl = 0
     expect(tag.getSnapshot().tagTeamOrder).toEqual(expected);
     tag.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }] });
     expect(tag.getSnapshot().tagTeamOrder).toEqual(expected);
-    expect(tag.dispatch({ type: "reset" }).tagTeamOrder).toEqual(expected);
+    expect(tag.step({ p1: new Set(), p2: new Set() }).rootBodyPush?.rootIds).toEqual(["p1", "p2", "p3"]);
+    const reset = tag.dispatch({ type: "reset" });
+    expect(reset.tagTeamOrder).toEqual(expected);
+    expect(reset.rootBodyPush).toBeUndefined();
   });
 
   it("executes static Tag member order without changing stable root slots", () => {
@@ -6343,7 +6348,7 @@ ctrl = 1
   };
 }
 
-function createHitPauseIgnoreControllerFixture(ignoreHitPause: boolean): DemoFighterDefinition {
+function createHitPauseIgnoreControllerFixture(ignoreHitPause: boolean, disablePlayerPush = false): DemoFighterDefinition {
   const commands = parseCmd(`
 [Defaults]
 command.time = 30
@@ -6384,6 +6389,8 @@ damage = 1
 pausetime = 5,5
 ground.hittime = 5
 ground.velocity = -1
+
+${disablePlayerPush ? `[State 200, Disable Player Push]\ntype = PlayerPush\ntrigger1 = 1\nvalue = 0` : ""}
 
 [State 200, HitPause Branch]
 type = ChangeState

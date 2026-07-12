@@ -8545,6 +8545,12 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             phase: "fighter:animation",
             actorIds: ["p1", "p2", "p3"],
           },
+          {
+            label: "P3 joins plural body push before combat",
+            frameIndex: 2,
+            phase: "post-fighter:body-push",
+            actorIds: ["p1", "p2", "p3"],
+          },
         ],
         requiredActorFrames: [
           {
@@ -8554,8 +8560,8 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             stateNo: 0,
             teamStandby: false,
             effectiveCtrl: true,
-            observedPosXAtLeast: startX + velocityX * 2,
-            observedPosXAtMost: startX,
+            observedPosXAtLeast: -119,
+            observedPosXAtMost: -115,
             observedVelXAtLeast: velocityX,
             minFrames: 1,
           },
@@ -8753,6 +8759,7 @@ export function createSyntheticImportedIkemenActiveRootConstraintTraceArtifact(
         requiredActiveCommands: ["x"],
         requiredTickSchedulePhaseSequences: [
           { label: "P3 actor-local constraints after promotion", frameIndex: 1, phase: "fighter:constraints", actorIds: ["p3"] },
+          { label: "plural root body push before combat", frameIndex: 1, phase: "post-fighter:body-push", actorIds: ["p1", "p2", "p3"] },
         ],
         requiredActorFrames: [
           {
@@ -8762,8 +8769,8 @@ export function createSyntheticImportedIkemenActiveRootConstraintTraceArtifact(
             stateNo: 0,
             teamStandby: false,
             effectiveCtrl: true,
-            observedPosXAtLeast: -154,
-            observedPosXAtMost: -154,
+            observedPosXAtLeast: -188.75,
+            observedPosXAtMost: -188.75,
             observedVelXAtLeast: 4,
             minFrames: 1,
           },
