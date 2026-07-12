@@ -16384,7 +16384,7 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 3,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", pos: { x: -193, y: 0 }, vel: { x: 3.4, y: 0 }, targetCount: 0 }),
+          expect.objectContaining({ id: "p3", pos: { x: -170, y: 0 }, vel: { x: 3.4, y: 0 }, targetCount: 0 }),
           expect.objectContaining({ id: "p4", teamStandby: true }),
         ],
       },
@@ -16404,8 +16404,8 @@ describe("RuntimeTraceGatePresets", () => {
       rootIds: ["p1", "p2", "p3"],
       pairIds: [],
     });
-    expect(artifact.trace.checksum).toBe("870f8871");
-    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "63a42885", "842716e7"]);
+    expect(artifact.trace.checksum).toBe("8f70d7c0");
+    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "2fe7b680", "ba6192a2"]);
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {

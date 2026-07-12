@@ -16,6 +16,7 @@ export type CharacterRuntimeState = {
   combatDepth?: RuntimeCombatDepth;
   facing: 1 | -1;
   bodyWidth?: { front: number; back: number };
+  bodyWidthDelta?: { front: number; back: number };
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;

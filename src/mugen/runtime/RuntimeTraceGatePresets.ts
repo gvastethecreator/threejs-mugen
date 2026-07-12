@@ -9277,8 +9277,8 @@ export function createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact(
       requiredExecutedControllers: [{ type: "PlayerPush", minCount: 2 }, { type: "PosSet", minCount: 2 }],
       requiredExecutedOperations: [{ operation: "collision:playerpush", minCount: 2 }, { operation: "kinematic:posset", minCount: 2 }],
       requiredActorFrames: [
-        { actorId: "p3", source: "imported", actorKind: "player", observedPosXAtLeast: -8.5, observedPosXAtMost: -8.5, minFrames: 2 },
-        { actorId: "p4", source: "imported", actorKind: "player", observedPosXAtLeast: 112, observedPosXAtMost: 112, minFrames: 2 },
+        { actorId: "p3", source: "imported", actorKind: "player", observedPosXAtLeast: -2.75, observedPosXAtMost: -2.75, minFrames: 2 },
+        { actorId: "p4", source: "imported", actorKind: "player", observedPosXAtLeast: 43, observedPosXAtMost: 43, minFrames: 2 },
       ],
       requiredFinalActors: [
         { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
@@ -9940,8 +9940,8 @@ export function createSyntheticImportedIkemenActiveRootConstraintTraceArtifact(
             stateNo: 0,
             teamStandby: false,
             effectiveCtrl: true,
-            observedPosXAtLeast: -188.75,
-            observedPosXAtMost: -188.75,
+            observedPosXAtLeast: -170,
+            observedPosXAtMost: -170,
             observedVelXAtLeast: 3.4,
             minFrames: 1,
           },

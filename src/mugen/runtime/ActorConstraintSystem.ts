@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "combatDepth" | "facing" | "bodyWidth" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -36,8 +36,8 @@ export type RuntimeBodyPushFactors = {
   left: number;
   right: number;
   xTieDirection?: 1 | -1;
-  leftHalfWidths?: { front: number; back: number };
-  rightHalfWidths?: { front: number; back: number };
+  leftSizeBoxX?: { x1: number; x2: number };
+  rightSizeBoxX?: { x1: number; x2: number };
 };
 
 export class RuntimeActorConstraintWorld {
@@ -48,6 +48,8 @@ export class RuntimeActorConstraintWorld {
     state.posFreeze = undefined;
     state.screenBound = undefined;
     state.stageBound = undefined;
+    state.bodyWidth = { front: 39, back: 39 };
+    state.bodyWidthDelta = undefined;
     if (state.combatDepth?.baseSize) {
       state.combatDepth.size = state.combatDepth.baseSize;
       state.combatDepth.baseSize = undefined;
@@ -118,6 +120,7 @@ export class RuntimeActorConstraintWorld {
       front: appliedOperation.front,
       back: appliedOperation.back,
     };
+    state.bodyWidthDelta = { ...state.bodyWidth };
     return appliedOperation;
   }
 
@@ -183,8 +186,9 @@ export class RuntimeActorConstraintWorld {
     const rightScale = 320 / (rightLocalCoord?.[0] ?? 320);
     const deltaX = right.pos.x * rightScale - left.pos.x * leftScale;
     const separationDeltaX = deltaX || factors.xTieDirection || 0;
-    const overlapX = widthToward(left, right, factors.leftHalfWidths) * leftScale +
-      widthToward(right, left, factors.rightHalfWidths) * rightScale - Math.abs(deltaX);
+    const leftX = worldXInterval(left, leftScale, factors.leftSizeBoxX);
+    const rightX = worldXInterval(right, rightScale, factors.rightSizeBoxX);
+    const overlapX = Math.min(leftX.right, rightX.right) - Math.max(leftX.left, rightX.left);
     if (overlapX <= 0) {
       return;
     }
@@ -206,8 +210,7 @@ export class RuntimeActorConstraintWorld {
     let pushX = deltaZ === 0;
     let pushZ = false;
     if (deltaZ !== 0) {
-      const xTotal = (bodySpan(left, factors.leftHalfWidths) * leftScale) +
-        (bodySpan(right, factors.rightHalfWidths) * rightScale);
+      const xTotal = (leftX.right - leftX.left) + (rightX.right - rightX.left);
       const zTotal = depthSpan(leftDepth) * leftScale + depthSpan(rightDepth) * rightScale;
       const adjustedZDistance = zTotal === 0 ? Math.abs(deltaZ) : (xTotal / zTotal) * Math.abs(deltaZ);
       const ratio = adjustedZDistance === 0 ? Number.POSITIVE_INFINITY : Math.abs(deltaX) / adjustedZDistance;
@@ -266,19 +269,17 @@ export class RuntimeActorConstraintControllerDispatchWorld {
   }
 }
 
-function widthToward(
-  self: RuntimeActorConstraintState,
-  target: RuntimeActorConstraintState,
-  halfWidths?: { front: number; back: number },
-): number {
-  const width = halfWidths ?? self.bodyWidth ?? { front: 39, back: 39 };
-  const targetIsInFront = (target.pos.x - self.pos.x) * self.facing >= 0;
-  return targetIsInFront ? width.front : width.back;
-}
-
-function bodySpan(state: RuntimeActorConstraintState, halfWidths?: { front: number; back: number }): number {
-  const width = halfWidths ?? state.bodyWidth ?? { front: 39, back: 39 };
-  return width.front + width.back;
+function worldXInterval(
+  state: RuntimeActorConstraintState,
+  scale: number,
+  sizeBox?: { x1: number; x2: number },
+): { left: number; right: number } {
+  const width = state.bodyWidth ?? { front: 39, back: 39 };
+  let left = sizeBox?.x1 ?? -width.back;
+  let right = sizeBox?.x2 ?? width.front;
+  if (state.facing < 0) [left, right] = [-right, -left];
+  const position = state.pos.x * scale;
+  return { left: position + left * scale, right: position + right * scale };
 }
 
 function depthSpan(depth: NonNullable<RuntimeActorConstraintState["combatDepth"]>): number {

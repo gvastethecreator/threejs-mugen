@@ -14,6 +14,7 @@ describe("ActorConstraintSystem", () => {
 
     world.applyWidth(state, controller("Width", { player: "18,44" }));
     expect(state.bodyWidth).toEqual({ front: 18, back: 44 });
+    expect(state.bodyWidthDelta).toEqual({ front: 18, back: 44 });
 
     world.applyWidth(state, controller("Width", { value: "1,1" }), {
       kind: "collision",
@@ -82,6 +83,8 @@ describe("ActorConstraintSystem", () => {
     expect(state.playerPush).toBe(true);
     expect(state.posFreeze).toBeUndefined();
     expect(state.screenBound).toBeUndefined();
+    expect(state.bodyWidth).toEqual({ front: 39, back: 39 });
+    expect(state.bodyWidthDelta).toBeUndefined();
 
     state.pos = { x: 20, y: -12 };
     state.combatDepth = { position: 12, velocity: 3, size: [3, 3], attack: [4, 4] };

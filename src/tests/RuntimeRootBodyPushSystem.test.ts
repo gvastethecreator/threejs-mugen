@@ -24,7 +24,7 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(diagnostic.rootIds).toEqual(["p1", "p2", "p3"]);
     expect(diagnostic.pairIds).toEqual([["p1", "p2"], ["p2", "p3"]]);
     expect(diagnostic.movedRootIds).toEqual(["p1", "p2", "p3"]);
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 20, 0]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-11, 29, -3]);
   });
 
   it("filters unavailable Tag roots but keeps over-KO roots eligible", () => {
@@ -53,7 +53,7 @@ describe("RuntimeRootBodyPushWorld", () => {
     const roots = [actor("p1", 1, -95), actor("p2", 2, -90)];
     const diagnostic = advance(roots, true);
     expect(diagnostic.movedRootIds).toEqual(["p1", "p2"]);
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-100, -82.5]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-100, -76.5]);
 
     expect(() => advance([roots[0]!, { ...roots[1]!, id: "p1" }], true)).toThrow("Duplicate root body-push actor p1");
   });
@@ -94,7 +94,7 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     advance(roots, true);
 
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 15]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-11, 21]);
     expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([0, 0]);
   });
 
@@ -107,7 +107,7 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     advance(roots, true);
 
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1, 9]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([0, 8]);
     expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([-1, 9]);
   });
 
@@ -118,7 +118,7 @@ describe("RuntimeRootBodyPushWorld", () => {
     const diagnostic = advance(roots, true);
 
     expect(diagnostic.pairIds).toEqual([["p1", "p3"]]);
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 15]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-11, 21]);
   });
 
   it("moves only the lower-priority actor", () => {
@@ -127,7 +127,7 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     advance(roots, true);
 
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([0, 20]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([0, 32]);
   });
 
   it("weights equal-priority displacement and applies each pushfactor", () => {
@@ -139,7 +139,7 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     advance(roots, true);
 
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1.25, 25]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-2.75, 43]);
   });
 
   it("requires vertical size-box and Clsn2 overlap", () => {
@@ -160,7 +160,7 @@ describe("RuntimeRootBodyPushWorld", () => {
     roots[0]!.sizePushOnly = true;
 
     expect(advance(roots, true).pairIds).toEqual([["p1", "p2"]]);
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 15]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-11, 21]);
 
     const vertical = [actor("p1", 1, 0), actor("p2", 2, 10)];
     vertical[0]!.sizePushOnly = true;
@@ -171,17 +171,17 @@ describe("RuntimeRootBodyPushWorld", () => {
   it("resolves exact X ties through priority and state/facing policy", () => {
     const fallback = [actor("p1", 1, 0), actor("p2", 2, 0)];
     advance(fallback, true);
-    expect(fallback.map((root) => root.runtime.pos.x)).toEqual([10, -10]);
+    expect(fallback.map((root) => root.runtime.pos.x)).toEqual([16, -16]);
 
     const priority = [actor("p1", 1, 0), actor("p2", 2, 0)];
     priority[1]!.runtime.pushPriority = 2;
     advance(priority, true);
-    expect(priority.map((root) => root.runtime.pos.x)).toEqual([-20, 0]);
+    expect(priority.map((root) => root.runtime.pos.x)).toEqual([-32, 0]);
 
     const hit = [actor("p1", 1, 0), actor("p2", 2, 0)];
     hit[0]!.moveType = "H";
     advance(hit, true);
-    expect(hit.map((root) => root.runtime.pos.x)).toEqual([-10, 10]);
+    expect(hit.map((root) => root.runtime.pos.x)).toEqual([-16, 16]);
   });
 
   it("clamps legacy MUGEN push width to five world units", () => {
@@ -195,7 +195,10 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(legacy.map((root) => root.runtime.pos.x)).toEqual([-1, 9]);
 
     const ikemen = [actor("p1", 1, 0), actor("p2", 2, 8)];
-    for (const root of ikemen) root.runtime.bodyWidth = { front: 1, back: 1 };
+    for (const root of ikemen) {
+      root.runtime.bodyWidth = { front: 1, back: 1 };
+      root.sizeBox = { x1: -1, y1: -60, x2: 1, y2: 0 };
+    }
     advance(ikemen, true);
     expect(ikemen.map((root) => root.runtime.pos.x)).toEqual([0, 8]);
 
@@ -230,6 +233,37 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     advance(roots, true);
     expect(roots.map((root) => root.runtime.pos.x)).toEqual([-3, 11]);
+  });
+
+  it("composes one-frame Width deltas over state size-box X", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 30)];
+    roots[0]!.sizeBox = { x1: -10, y1: -60, x2: 10, y2: 0 };
+    roots[1]!.sizeBox = { x1: -10, y1: -60, x2: 10, y2: 0 };
+    expect(advance(roots, true).movedRootIds).toEqual([]);
+
+    roots[0]!.runtime.bodyWidthDelta = { front: 12, back: 2 };
+    roots[0]!.sizePushOnly = true;
+    advance(roots, true);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1, 31]);
+
+    roots[0]!.runtime.bodyWidthDelta = undefined;
+    roots[0]!.localCoord = [640, 480];
+    roots[1]!.localCoord = [640, 480];
+    roots[0]!.runtime.pos.x = 0;
+    roots[1]!.runtime.pos.x = 40;
+    roots[0]!.runtime.bodyWidthDelta = { front: 22, back: 2 };
+    advance(roots, true);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1, 41]);
+  });
+
+  it("uses exact interval intersection for contained asymmetric boxes", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 0)];
+    roots[0]!.sizeBox = { x1: -100, y1: -60, x2: 100, y2: 0 };
+    roots[1]!.sizeBox = { x1: -1, y1: -60, x2: 1, y2: 0 };
+    roots[0]!.sizePushOnly = true;
+
+    advance(roots, true);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([1, -1]);
   });
 });
 

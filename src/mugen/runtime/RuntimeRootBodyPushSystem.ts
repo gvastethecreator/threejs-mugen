@@ -134,9 +134,9 @@ function resolvePushFactors(
   const rightPriority = right.runtime.pushPriority ?? 0;
   const leftPushFactor = finiteNonNegative(left.pushFactor, 1);
   const rightPushFactor = finiteNonNegative(right.pushFactor, 1);
-  const legacyWidths = resolveLegacyWidths(left, right);
-  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor, xTieDirection: resolveXTieDirection(left, right), ...legacyWidths };
-  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0, xTieDirection: resolveXTieDirection(left, right), ...legacyWidths };
+  const sizeWidths = resolveSizeWidths(left, right);
+  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor, xTieDirection: resolveXTieDirection(left, right), ...sizeWidths };
+  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0, xTieDirection: resolveXTieDirection(left, right), ...sizeWidths };
   const leftWeight = finitePositive(left.weight, 100);
   const rightWeight = finitePositive(right.weight, 100);
   const totalWeight = leftWeight + rightWeight;
@@ -144,29 +144,30 @@ function resolvePushFactors(
     left: (rightWeight / totalWeight) * leftPushFactor,
     right: (leftWeight / totalWeight) * rightPushFactor,
     xTieDirection: resolveXTieDirection(left, right),
-    ...legacyWidths,
+    ...sizeWidths,
   };
 }
 
-function resolveLegacyWidths(
+function resolveSizeWidths(
   left: RuntimeRootBodyPushActor,
   right: RuntimeRootBodyPushActor,
-): Pick<RuntimeBodyPushFactors, "leftHalfWidths" | "rightHalfWidths"> {
+): Pick<RuntimeBodyPushFactors, "leftSizeBoxX" | "rightSizeBoxX"> {
   const leftScale = 320 / (left.localCoord?.[0] ?? 320);
   const rightScale = 320 / (right.localCoord?.[0] ?? 320);
   return {
-    ...(left.mugenMinimumWidth ? { leftHalfWidths: clampedSizeWidths(left.sizeBox, leftScale) } : {}),
-    ...(right.mugenMinimumWidth ? { rightHalfWidths: clampedSizeWidths(right.sizeBox, rightScale) } : {}),
+    leftSizeBoxX: composedSizeBoxX(left, leftScale),
+    rightSizeBoxX: composedSizeBoxX(right, rightScale),
   };
 }
 
-function clampedSizeWidths(sizeBox: CollisionBox | undefined, scale: number): { front: number; back: number } {
+function composedSizeBoxX(actor: RuntimeRootBodyPushActor, scale: number): { x1: number; x2: number } {
+  const sizeBox = actor.sizeBox;
   const box = sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
-  const minimum = 5 / scale;
-  return {
-    front: Math.max(minimum, Math.max(0, box.x2)),
-    back: Math.max(minimum, Math.max(0, -box.x1)),
-  };
+  const minimum = actor.mugenMinimumWidth ? 5 / scale : 0;
+  const delta = actor.runtime.bodyWidthDelta ?? { front: 0, back: 0 };
+  const x1 = Math.min(-minimum, box.x1 - delta.back);
+  const x2 = Math.max(minimum, box.x2 + delta.front);
+  return { x1: Math.min(x1, x2), x2: Math.max(x1, x2) };
 }
 
 export function usesMugenPlayerPushMinimumWidth(
