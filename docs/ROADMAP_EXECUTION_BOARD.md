@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root presentation runtime (2026-07-11)
+## Latest closeout - IKEMEN active-root constraint/collision research (2026-07-12)
+
+Pinned IKEMEN source separates actor-local bounds, global plural push, debug Clsn projection, and hit admission. Local audit selects active-root stage-X clamp as Wayfinder 101: explicit capability plus actor-scoped post-motion phase, with push/collision/combat unchanged. Docs/source/diff gates only; runtime metrics and scores remain at the 099 baseline.
+
+## Previous closeout - IKEMEN active-root presentation runtime (2026-07-11)
 
 `RuntimeRootPresentation/v0` now publishes independent body/shadow draw and camera ids while preserving P1/P2 snapshot/HUD/gameplay storage. Required checksum `97255586` passes inside 542/542 traces; desktop/mobile smoke proves exact `[p1,p2] -> [p3,p2] -> [p1,p2]` handoff/reset, stable HUD, matching renderer/capability ids, nonblank canvases, and stale-mesh cleanup. Wayfinder 100 maps stage constraints, push, collision, and combat admission. Scores remain unchanged.
 

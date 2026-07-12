@@ -1,6 +1,10 @@
 # Build Execution Backlog
 
-## Latest closed slice: player SprPriority draw-order oracle (2026-07-10)
+## Entry 406 - Active-root constraint/collision research
+
+Resolved Wayfinder 100 from pinned IKEMEN source and current ownership. Selected Wayfinder 101: actor-local stage-X clamp after active-root motion, explicit capability, actor-scoped schedule proof, and required zero-interaction trace. No runtime or score change. Next cut must not widen pair push, collision debug, combat, targets, effects, round, HUD/audio, or resources.
+
+## Previous closed slice: player SprPriority draw-order oracle (2026-07-10)
 
 Player controller values clamp to official `-5..5`; effective CharacterRenderer z depth and higher-priority-front order are browser-gated on desktop/mobile without collapsing effect actor ranges. Wayfinder 024 owns the next selection; no score movement.
 

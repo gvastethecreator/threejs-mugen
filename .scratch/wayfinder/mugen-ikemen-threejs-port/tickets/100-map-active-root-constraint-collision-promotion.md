@@ -1,7 +1,7 @@
 # Map Active-root Constraint And Collision Promotion
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -21,3 +21,7 @@ What is the smallest source-backed promotion that lets an already-live, presente
 Allowed: one implementation-ready constraint/collision boundary grounded in pinned source and current runtime ownership.
 
 Blocked: executable P3-P8 constraint/collision/combat widening until a later implementation ticket lands; exact Tag ZSS overlap, effects, HUD/audio, round/resources, direct native input/AI, rollback/netplay, scores, or full IKEMEN parity.
+
+## Result
+
+Pinned source and local ownership select actor-local stage-X clamp first. Wayfinder 101 adds an explicit constraint capability and post-motion `fighter:constraints` phase. Plural push, diagnostic collision, and combat remain separate and blocked. See `docs/research/2026-07-12-ikemen-active-root-constraint-collision-promotion.md`.

@@ -1,6 +1,14 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN active-root presentation runtime
+## Global report - 2026-07-12 IKEMEN active-root constraint/collision research
+
+- Source: actor-local bounds run before global push/hit detection; push has plural team/geometry/priority semantics; standby independently blocks collision/hits.
+- Local audit: stage clamp is reusable actor-locally, but `separate`, collision rendering, combat, targets, and effects remain pair-owned.
+- Decision: Wayfinder 101 promotes only stage-X clamp after active-root motion, with explicit constraint capability and actor-scoped schedule row.
+- Evidence: pinned source, local owner map, adversarial/vacuity audit, roadmap sync, and diff gate. No runtime, browser, trace, test-count, build-size, or score movement.
+- Global status: Wayfinder 100 resolved; Wayfinder 101 ready.
+
+## Previous global report - 2026-07-11 IKEMEN active-root presentation runtime
 
 - Contract: `RuntimeRootPresentation/v0` publishes stable per-root draw/camera decisions plus ordered ids without widening `snapshot.actors` beyond P1/P2.
 - Runtime/renderer: explicit Tag handoff selects `[p3,p2]` for body, shadow, and camera; Three.js changes only `CharacterRenderer`, while collision debug, hit sparks, effects, HUD, audio, combat, round, and resources remain pair-owned.

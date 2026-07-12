@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-12 Active-root constraint/collision research reconciliation
+
+Wayfinder 100 maps active-root constraints/collision and selects stage-X clamp for Wayfinder 101. Research adds no capability score: P3-P8 still lack stage constraints, push, diagnostic collision, and combat until executable evidence lands. Verified totals remain the Wayfinder 099 baseline.
+
 ## 2026-07-11 IKEMEN active-root presentation evidence note
 
 The repository now declares 542/542 traces (511 required, 31 optional). Required `synthetic-imported-ikemen-active-root-presentation` checksum `97255586` plus desktop/mobile browser proof establish bounded P3/P2 body/shadow/camera handoff while `snapshot.actors`, HUD, hit sparks, collision debug, effects, combat, round, audio, and resources remain pair-owned. Scores remain unchanged because stage clamp/push, collision/combat, exact Tag ZSS choreography, root-key effects, and later gameplay owners remain blocked.

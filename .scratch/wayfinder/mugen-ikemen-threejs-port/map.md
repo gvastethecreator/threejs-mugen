@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Map active-root constraint and collision promotion](tickets/100-map-active-root-constraint-collision-promotion.md) - actor-local stage-X clamp first; plural push, diagnostic collision, and combat remain separate. Next: Wayfinder 101.
+
 - [TypeScript 7 upgrade posture](tickets/001-typescript-7-upgrade-posture.md) - upgrade directly to `typescript@~7.0.2`; keep `rootDir: "src"` explicit; no TS6 compatibility alias unless a future API-importing tool fails.
 - [Choose next runtime compatibility gap](tickets/002-next-runtime-compatibility-gap.md) - dynamic `EnvShake` and dynamic `EnvColor value/time/under` now record typed telemetry after expression resolution; no camera/presentation-parity score movement.
 - [Choose next runtime gap after EnvColor](tickets/005-next-runtime-gap-after-envcolor.md) - selected dynamic `AttackMulSet` / `DefenceMulSet` typed telemetry; required `synthetic-imported-damage-scale-dynamic.json` is green.

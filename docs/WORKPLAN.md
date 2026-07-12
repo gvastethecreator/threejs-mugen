@@ -1,5 +1,9 @@
 # Workplan
 
+## Active frontier - 2026-07-12
+
+Wayfinder 101 is ready: execute actor-local stage-X constraints for already-live explicit-Tag roots after motion. Required proof: explicit constraint capability, actor-scoped schedule ordering, exact clamp/ScreenBound opt-out trace, zero combat/effect/target widening, full TypeScript 7 gates, docs, and feature commit. Push, diagnostic collision, and combat stay deferred.
+
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 
 Authoritative horizon docs:

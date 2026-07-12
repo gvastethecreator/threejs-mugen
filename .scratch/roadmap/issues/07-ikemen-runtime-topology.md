@@ -6,6 +6,10 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-12 Constraint/collision frontier
+
+Wayfinder 100 resolves actor-local stage-X clamp as next promotion. Wayfinder 101 adds explicit constraint capability and post-motion actor-scoped scheduling for already-live Tag roots. Global plural push, diagnostic collision, hit admission, targets, effects, and combat remain separate blocked owners; no score movement.
+
 ## Objective
 
 Advance the source-pinned IKEMEN runtime from inert P3-P8 ownership to an explicit, plural, deterministic team topology without widening every gameplay consumer at once.
