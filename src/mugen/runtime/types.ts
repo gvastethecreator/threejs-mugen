@@ -539,6 +539,7 @@ export type MugenSnapshot = {
   rootInputRouting?: import("./RuntimeRootInputRoutingSystem").RuntimeRootInputRoutingDiagnostic;
   rootPresentation?: import("./RuntimeRootPresentationSystem").RuntimeRootPresentationDiagnostic;
   rootBodyPush?: import("./RuntimeRootBodyPushSystem").RuntimeRootBodyPushDiagnostic;
+  rootHitAdmission?: import("./RuntimeRootDirectHitAdmissionSystem").RuntimeRootDirectHitAdmissionDiagnostic;
   logs: string[];
 };
 

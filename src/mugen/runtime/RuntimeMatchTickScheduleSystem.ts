@@ -21,6 +21,7 @@ export type RuntimeMatchTickPhaseId =
   | "fighter:auto-guard-check:post"
   | "active:post-fighter"
   | "post-fighter:body-push"
+  | "post-fighter:hit-admission"
   | "post-fighter:combat"
   | "post-fighter:presentation-effects"
   | "active:round-finish"
@@ -168,6 +169,12 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     "RuntimeRootBodyPushWorld",
     ["fighter.runtime.pos"],
     ["eligible root body overlap resolved before combat"],
+  ),
+  "post-fighter:hit-admission": phase(
+    "post-fighter:hit-admission",
+    "RuntimeRootDirectHitAdmissionWorld",
+    [],
+    ["eligible root direct-hit pairs inspected without combat mutation"],
   ),
   "post-fighter:combat": phase(
     "post-fighter:combat",

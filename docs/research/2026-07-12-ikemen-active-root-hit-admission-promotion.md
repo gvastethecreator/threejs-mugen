@@ -65,3 +65,9 @@ Promote or replace this projection when direct combat itself accepts plural acto
 Allowed: source-backed implementation contract for deterministic read-only active-root direct-hit admission.
 
 Blocked: runtime hit/guard/reversal mutation, targets, effects, throws, helpers/projectiles, resources, round/HUD/audio, scores, or full parity.
+
+## Implementation Outcome
+
+Wayfinder 107 implemented the read-only boundary. `RuntimeRootDirectHitAdmissionWorld` validates actor/id/positive-PlayerNo uniqueness, filters invalid/non-player/disabled/standby roots while retaining over-KO, orders attackers by active ReversalDef, active direct HitDef, then PlayerNo/id, and records every enemy pair decision through active move, repeated contact, HitBy/NotHitBy, explicit hurt Clsn, and overlap checks. `RuntimeRootPhaseCapabilities/v4` exposes `hitAdmission` independently from `combat`; snapshots, trace artifacts, and actor-scoped schedule rows carry detached `RuntimeRootDirectHitAdmission/v0` evidence.
+
+Pair/Single combat calls remain exact. Pause, hitpause, and reset clear stale diagnostics. Focused gates pass 7 files / 764 tests; full gates pass 178 files / 1812 tests, TypeScript 7, 543/543 traces, production build, and boundaries. Runtime hit/guard/reversal mutation, targets, effects, helpers/projectiles, throws, resources, round/HUD/audio, scores, and exact parity remain blocked.

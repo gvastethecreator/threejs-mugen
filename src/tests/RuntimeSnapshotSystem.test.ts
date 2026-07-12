@@ -332,6 +332,14 @@ describe("RuntimeSnapshotWorld", () => {
       pairIds: [["p1", "p2"]] as Array<[string, string]>,
       movedRootIds: ["p1", "p2"],
     };
+    const rootHitAdmission = {
+      schema: "RuntimeRootDirectHitAdmission/v0" as const,
+      mode: "ikemen-tag" as const,
+      rootIds: ["p1", "p2"],
+      attackerIds: ["p1", "p2"],
+      decisions: [{ attackerId: "p1", getterId: "p2", reason: "admitted" as const }],
+      admittedPairIds: ["p1->p2"],
+    };
 
     const snapshot = world.match({
       tick: 42,
@@ -355,6 +363,7 @@ describe("RuntimeSnapshotWorld", () => {
       compatibilitySession,
       rootPresentation,
       rootBodyPush,
+      rootHitAdmission,
       logs,
     });
     p1.runtime.pos.x = 999;
@@ -362,6 +371,7 @@ describe("RuntimeSnapshotWorld", () => {
     logs[0] = "mutated";
     rootPresentation.drawRootIds[0] = "mutated";
     rootBodyPush.rootIds[0] = "mutated";
+    rootHitAdmission.attackerIds[0] = "mutated";
 
     expect(snapshot).toMatchObject({
       tick: 42,
@@ -378,6 +388,9 @@ describe("RuntimeSnapshotWorld", () => {
       compatibilitySession,
       rootPresentation: expect.objectContaining({ drawRootIds: ["p1", "p2"] }),
       rootBodyPush: expect.objectContaining({ rootIds: ["p1", "p2"] }),
+      rootHitAdmission: expect.objectContaining({
+        decisions: [{ attackerId: "p1", getterId: "p2", reason: "admitted" }],
+      }),
     });
     expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
     expect(snapshot.actors[0]?.runtime.pos.x).toBe(30);

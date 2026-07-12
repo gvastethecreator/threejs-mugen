@@ -89,6 +89,7 @@ describe("RuntimeMatchInteractionWorld", () => {
         clampToStage: (runtime) => tag("clamp", runtimeLabel(runtime)),
       },
       advanceBodyPush: () => tag("body-push"),
+      inspectHitAdmission: () => tag("hit-admission"),
       effectLifecycleWorld: {
         advanceActive: (fighter, _stage, opponent, options) => {
           tag("active-effects", fighter.id);
@@ -123,6 +124,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       "target-bind:p2:p1",
       "bind-to-target:p1:p2",
       "bind-to-target:p2:p1",
+      "hit-admission",
       "priority:p1:p2",
       "log:priority resolved",
       "direct-combat:p1:p2",

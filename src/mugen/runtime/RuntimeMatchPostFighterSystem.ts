@@ -26,6 +26,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
   refreshGuardDistance?: (defender: TActor, attacker: TActor) => void;
   advanceBodyPush?: () => void;
+  inspectHitAdmission?: () => void;
 };
 
 export class RuntimeMatchPostFighterWorld {
@@ -56,6 +57,7 @@ export class RuntimeMatchPostFighterWorld {
       resolveHelperCombat: combatResolvers.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,
       advanceBodyPush: input.advanceBodyPush,
+      inspectHitAdmission: input.inspectHitAdmission,
       recordSchedulePhase: input.recordSchedulePhase,
       log: input.log,
     });

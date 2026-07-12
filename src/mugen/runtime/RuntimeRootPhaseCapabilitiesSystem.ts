@@ -19,6 +19,7 @@ export type RuntimeRootPhaseCapabilities = {
   animation: boolean;
   constraints: boolean;
   bodyPush: boolean;
+  hitAdmission: boolean;
   effects: boolean;
   combat: boolean;
   round: boolean;
@@ -42,7 +43,7 @@ export type RuntimeRootPhaseCapabilitiesRecord = {
 };
 
 export type RuntimeRootPhaseCapabilitiesDiagnostic = {
-  schema: "RuntimeRootPhaseCapabilities/v3";
+  schema: "RuntimeRootPhaseCapabilities/v4";
   mode: RuntimeRootInputRoutingDiagnostic["mode"];
   roots: RuntimeRootPhaseCapabilitiesRecord[];
 };
@@ -67,6 +68,7 @@ const NO_PHASE_CAPABILITIES: RuntimeRootPhaseCapabilities = {
   animation: false,
   constraints: false,
   bodyPush: false,
+  hitAdmission: false,
   effects: false,
   combat: false,
   round: false,
@@ -82,7 +84,7 @@ export class RuntimeRootPhaseCapabilitiesWorld {
     const resourceOwned = new Set(input.resourceOwnedRootIds);
 
     return {
-      schema: "RuntimeRootPhaseCapabilities/v3",
+      schema: "RuntimeRootPhaseCapabilities/v4",
       mode: input.inputRouting.mode,
       roots: input.roots.map((root) => {
         const participation = participationById.get(root.id)!;
@@ -143,6 +145,7 @@ function phaseCapabilities(
     animation: playable || activeMotion,
     constraints: playable || activeMotion,
     bodyPush: tagMode ? participation.scheduled && !participation.standby : participation.inputOwned,
+    hitAdmission: tagMode && participation.scheduled && !participation.standby,
     effects: participation.effectStoreOwned,
     combat: participation.combatOwned,
     round: participation.roundOwned,

@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 413 - Active-root read-only direct-hit admission
+
+Done: `RuntimeRootDirectHitAdmissionWorld` validates runtime-root actor/id/PlayerNo identity, filters invalid/non-player/disabled/standby roots, retains over-KO, orders ReversalDef/active-HitDef/PlayerNo, and records enemy-pair decisions for move state, repeated contact, HitBy/NotHitBy, explicit hurt Clsn, and overlap. `RuntimeRootPhaseCapabilities/v4`, `RuntimeRootDirectHitAdmission/v0`, snapshot/trace cloning, and actor-scoped pre-combat schedule rows expose proof. Pair/Single combat remains exact; pause/hitpause/reset clear stale evidence; no mutation service enters the API. Full gates and trace totals are recorded in the implementation report. Claim allowed: deterministic read-only explicit-Tag root hit admission. Claim blocked: hit/guard/reversal/HitOverride mutation, targets, juggle, helpers/projectiles, throws, resources, round/HUD/audio, scores, and full parity.
+
 ## Entry 412 - Active-root direct-hit admission research
 
 Done: pinned Ikemen-GO SHA `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703` establishes ReversalDef/HitDef/ID ordering, independent standby/disabled attacker/getter filters, enemy/team policy, guard-distance-before-admission order, HitBy/NotHitBy plus Clsn checks, and mutation only after `hitResultCheck`. Local audit keeps pair combat unchanged. Wayfinder 107 selects read-only `RuntimeRootDirectHitAdmissionWorld` from authoritative runtime roots, exact pair/reason diagnostics, pause/hitpause/reset freshness, and zero combat mutation. Claim allowed: implementation-ready active-root admission projection. Claim blocked: runtime combat widening, guard/juggle/priority/reversal/HitOverride mutation, targets/effects/helpers/projectiles/throws/resources/round/HUD/audio, scores, and full parity.

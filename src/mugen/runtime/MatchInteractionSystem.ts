@@ -18,6 +18,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   resolveProjectileClashes: (left: TFighter, right: TFighter) => void;
   separateActors: (left: TFighter, right: TFighter) => void;
   advanceBodyPush?: () => void;
+  inspectHitAdmission?: () => void;
   applyTargetBindings: (fighter: TFighter, opponent: TFighter) => void;
   applyBindToTarget: (fighter: TFighter, opponent: TFighter) => void;
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
@@ -55,6 +56,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
     advanceBodyPush?: () => void;
+    inspectHitAdmission?: () => void;
     recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
     log: (line: string) => void;
   };
@@ -78,6 +80,7 @@ export class RuntimeMatchInteractionWorld {
     input.applyBindToTarget(p2, p1);
     input.refreshGuardDistance?.(p1, p2);
     input.refreshGuardDistance?.(p2, p1);
+    input.inspectHitAdmission?.();
 
     input.recordSchedulePhase?.("post-fighter:combat");
     const priorityMessage = input.resolvePriorityClash(p1, p2);
@@ -133,6 +136,7 @@ export class RuntimeMatchInteractionWorld {
         }),
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
       advanceBodyPush: input.advanceBodyPush,
+      inspectHitAdmission: input.inspectHitAdmission,
       applyTargetBindings: (fighter, opponent) => fighter.targetWorld.applyTargetBindings(fighter, [opponent]),
       applyBindToTarget: (fighter, opponent) => fighter.targetWorld.applyBindToTarget(fighter, [opponent]),
       resolvePriorityClash: input.resolvePriorityClash,

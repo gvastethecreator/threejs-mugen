@@ -120,6 +120,10 @@ import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
 import { RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic } from "./RuntimeRootBodyPushSystem";
+import {
+  RuntimeRootDirectHitAdmissionWorld,
+  type RuntimeRootDirectHitAdmissionDiagnostic,
+} from "./RuntimeRootDirectHitAdmissionSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
 import {
   RuntimeRootInputRoutingWorld,
@@ -259,6 +263,7 @@ const rootAdvancePhaseWorld = new RuntimeRootAdvancePhaseWorld();
 const rootMotionAdvanceWorld = new RuntimeRootMotionAdvanceWorld();
 const rootPresentationWorld = new RuntimeRootPresentationWorld();
 const rootBodyPushWorld = new RuntimeRootBodyPushWorld();
+const rootDirectHitAdmissionWorld = new RuntimeRootDirectHitAdmissionWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
@@ -388,6 +393,7 @@ export class PlayableMatchRuntime {
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
   private lastTickSchedule = createIdleMatchTickSchedule();
   private lastRootBodyPush?: RuntimeRootBodyPushDiagnostic;
+  private lastRootHitAdmission?: RuntimeRootDirectHitAdmissionDiagnostic;
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private lastP2Controlled = false;
@@ -660,6 +666,7 @@ export class PlayableMatchRuntime {
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
     this.lastRootBodyPush = undefined;
+    this.lastRootHitAdmission = undefined;
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
@@ -952,6 +959,26 @@ export class PlayableMatchRuntime {
               actorConstraintWorld: this.actorConstraintWorld,
             });
             for (const id of this.lastRootBodyPush.rootIds) recordPhase("post-fighter:body-push", id);
+          } : undefined,
+          inspectHitAdmission: this.tagTeamOrder ? () => {
+            const roots = this.characterRoots();
+            this.lastRootHitAdmission = rootDirectHitAdmissionWorld.inspect({
+              roots: roots.map((root) => ({
+                id: root.id,
+                playerNo: root.playerNo,
+                side: runtimeTeamSide(root) ?? null,
+                teamState: root.runtime.teamState!,
+                runtime: root.runtime,
+                currentMove: root.currentMove,
+                moveTick: root.moveTick,
+                hasHit: root.hasHit,
+              })),
+              getHurtBoxes: (candidate) => {
+                const root = roots.find(({ id }) => id === candidate.id);
+                return root ? getRuntimeHurtBoxes(root) : undefined;
+              },
+            });
+            for (const id of this.lastRootHitAdmission.rootIds) recordPhase("post-fighter:hit-admission", id);
           } : undefined,
           log: (line) => this.logs.unshift(line),
           recordSchedulePhase: recordPhase,
@@ -1751,6 +1778,7 @@ export class PlayableMatchRuntime {
       tickSchedule: this.lastTickSchedule,
       rootPresentation,
       rootBodyPush: this.lastRootBodyPush,
+      rootHitAdmission: this.lastRootHitAdmission,
       logs: this.logs,
     });
     const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);
@@ -1825,6 +1853,7 @@ export class PlayableMatchRuntime {
     this.lastP2Controlled = false;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
     this.lastRootBodyPush = undefined;
+    this.lastRootHitAdmission = undefined;
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
     }

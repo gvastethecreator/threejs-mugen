@@ -1,6 +1,6 @@
 # Architecture
 
-Current active-root body-push cut: `RuntimeRootBodyPushWorld` owns explicit-Tag plural eligibility and deterministic unordered-pair X/Width separation before combat. `RuntimeRootPhaseCapabilities/v3`, `RuntimeRootBodyPush/v0`, and actor-scoped schedule rows expose the boundary. Pair/Single behavior and pair-owned hit/combat remain unchanged.
+Current active-root interaction cut: `RuntimeRootBodyPushWorld` owns explicit-Tag plural eligibility and deterministic unordered-pair X/Width separation before combat. `RuntimeRootDirectHitAdmissionWorld` then publishes read-only ordered enemy-pair decisions from authoritative roots without mutation hooks. `RuntimeRootPhaseCapabilities/v4`, detached diagnostics, and actor-scoped schedule rows expose both boundaries. Pair/Single behavior and pair-owned hit/combat mutation remain unchanged.
 
 This file describes the current implementation boundaries. The larger port direction is documented in:
 

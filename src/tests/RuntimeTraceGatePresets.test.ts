@@ -16016,6 +16016,15 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
     expect(artifact.trace.checksum).toBe("fdd687cb");
     expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "e9370b2c", "8795f006"]);
+    const admissionFrames = artifact.trace.frames.filter(({ rootHitAdmission }) => rootHitAdmission !== undefined);
+    expect(admissionFrames.length).toBeGreaterThan(0);
+    expect(admissionFrames.some(({ rootHitAdmission }) => rootHitAdmission?.rootIds.includes("p3"))).toBe(true);
+    expect(admissionFrames.every(({ rootHitAdmission }) => rootHitAdmission?.admittedPairIds.length === 0)).toBe(true);
+    expect(
+      admissionFrames.some(({ tickSchedule }) =>
+        tickSchedule?.phaseStamps.some(({ id, actorId }) => id === "post-fighter:hit-admission" && actorId === "p3"),
+      ),
+    ).toBe(true);
     expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ TagIn: 1, VelSet: 2 });
     expect(artifact.gates[0]?.evidence.executedControllers.Helper).toBeUndefined();
     expect(artifact.trace.finalEffects).toEqual([]);
