@@ -16402,7 +16402,7 @@ describe("RuntimeTraceGatePresets", () => {
       schema: "RuntimeRootBodyPush/v0",
       mode: "ikemen-tag",
       rootIds: ["p1", "p2", "p3"],
-      pairIds: [["p1", "p2"], ["p2", "p3"]],
+      pairIds: [],
     });
     expect(artifact.trace.checksum).toBe("870f8871");
     expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "63a42885", "842716e7"]);

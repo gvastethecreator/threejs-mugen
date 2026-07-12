@@ -130,6 +130,18 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1.25, 25]);
   });
+
+  it("requires vertical size-box and Clsn2 overlap", () => {
+    const vertical = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    vertical[1]!.runtime.pos.y = -61;
+    expect(advance(vertical, true).pairIds).toEqual([]);
+    expect(vertical.map((root) => root.runtime.pos.x)).toEqual([0, 10]);
+
+    const clsn = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    clsn[1]!.hurtBoxes = [{ x1: 100, y1: -60, x2: 120, y2: 0 }];
+    expect(advance(clsn, true).pairIds).toEqual([]);
+    expect(clsn.map((root) => root.runtime.pos.x)).toEqual([0, 10]);
+  });
 });
 
 function advance(roots: RuntimeRootBodyPushActor[], tagMode: boolean) {
@@ -154,5 +166,7 @@ function actor(
     side,
     teamState: { disabled: false, standby: false, overKo: false, playerType: true, ...teamOverrides },
     runtime: { pos: { x, y: 0 }, facing: 1, bodyWidth: { front: 10, back: 10 }, playerPush },
+    sizeHeight: 60,
+    hurtBoxes: [{ x1: -10, y1: -60, x2: 10, y2: 0 }],
   };
 }

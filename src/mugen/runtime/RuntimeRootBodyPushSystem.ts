@@ -1,5 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
+import type { CollisionBox } from "../model/CollisionBox";
 import type { RuntimeActorConstraintState, RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import { collisionBoxesIntersect, runtimeWorldBox } from "./CombatResolver";
 import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTeamState } from "./types";
 
@@ -11,6 +13,8 @@ export type RuntimeRootBodyPushActor = {
   localCoord?: readonly [number, number];
   weight?: number;
   pushFactor?: number;
+  sizeHeight?: number;
+  hurtBoxes?: readonly CollisionBox[];
 };
 
 export type RuntimeRootBodyPushDiagnostic = {
@@ -46,7 +50,7 @@ export class RuntimeRootBodyPushWorld {
       for (let rightIndex = leftIndex + 1; rightIndex < roots.length; rightIndex += 1) {
         const left = roots[leftIndex]!;
         const right = roots[rightIndex]!;
-        if (!canPairPush(left, right)) continue;
+        if (!canPairPush(left, right) || !hasPushGeometry(left, right)) continue;
         pairIds.push([left.id, right.id]);
         input.actorConstraintWorld.separate(
           left.runtime,
@@ -73,6 +77,20 @@ export class RuntimeRootBodyPushWorld {
       }).map(({ id }) => id),
     };
   }
+}
+
+function hasPushGeometry(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {
+  const leftScale = 320 / (left.localCoord?.[0] ?? 320);
+  const rightScale = 320 / (right.localCoord?.[0] ?? 320);
+  const leftTop = (left.runtime.pos.y - finitePositive(left.sizeHeight, 60)) * leftScale;
+  const leftBottom = left.runtime.pos.y * leftScale;
+  const rightTop = (right.runtime.pos.y - finitePositive(right.sizeHeight, 60)) * rightScale;
+  const rightBottom = right.runtime.pos.y * rightScale;
+  if (Math.min(leftBottom, rightBottom) - Math.max(leftTop, rightTop) <= 0) return false;
+  if (!left.hurtBoxes?.length || !right.hurtBoxes?.length) return false;
+  return left.hurtBoxes.some((leftBox) => right.hurtBoxes!.some((rightBox) =>
+    collisionBoxesIntersect(runtimeWorldBox(left.runtime, leftBox), runtimeWorldBox(right.runtime, rightBox)),
+  ));
 }
 
 function canPairPush(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {
