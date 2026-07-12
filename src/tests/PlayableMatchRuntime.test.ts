@@ -66,6 +66,17 @@ describe("PlayableMatchRuntime", () => {
       ),
     ).toBe(false);
     expect(runtime.getEffectActorStores().map((store) => store.ownerId)).toEqual(["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"]);
+    const hitDefContacts = runtime.getHitDefContactMemory();
+    expect(hitDefContacts).toEqual({
+      schema: "RuntimeHitDefContactMemory/v0",
+      actors: ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"].map((actorId) => ({
+        actorId,
+        committed: [],
+        pending: [],
+      })),
+    });
+    hitDefContacts.actors[0]!.committed.push("mutated");
+    expect(runtime.getHitDefContactMemory().actors[0]!.committed).toEqual([]);
 
     runtime.reset();
     expect(runtime.getSnapshot().reserveActors?.map((actor) => [actor.id, actor.runtime.teamState?.standby])).toEqual(
@@ -166,6 +177,7 @@ describe("PlayableMatchRuntime", () => {
       "post-fighter:target-maintenance",
       "post-fighter:body-push",
       "post-fighter:hit-admission",
+      "post-fighter:hitdef-contact-commit",
     ]);
 
     const moved = runtime.step({ p1: new Set(), p2: new Set() });
@@ -185,6 +197,7 @@ describe("PlayableMatchRuntime", () => {
       "post-fighter:target-maintenance",
       "post-fighter:body-push",
       "post-fighter:hit-admission",
+      "post-fighter:hitdef-contact-commit",
     ]);
     expect(moved.effects?.some(({ ownerId }) => ownerId === "p3")).toBe(false);
     expect(
@@ -239,6 +252,7 @@ describe("PlayableMatchRuntime", () => {
       "post-fighter:target-maintenance",
       "post-fighter:body-push",
       "post-fighter:hit-admission",
+      "post-fighter:hitdef-contact-commit",
     ]);
   });
 
@@ -272,6 +286,7 @@ describe("PlayableMatchRuntime", () => {
         ({ actorId, id }) => actorId === "p3" && (id === "fighter:kinematics" || id === "fighter:animation"),
       ),
     ).toBe(false);
+    expect(snapshot.tickSchedule?.phases.some(({ id }) => id === "post-fighter:hitdef-contact-commit")).toBe(false);
   });
 
   it("keeps active Tag reserve motion disabled during global HitPause ticks", () => {
@@ -306,6 +321,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.rootHitAdmission).toBeUndefined();
     expect(frozen.runtime.pos).toEqual(activated.runtime.pos);
     expect(frozen.runtime.animTime).toBe(activated.runtime.animTime);
+    expect(snapshot.tickSchedule?.phases.some(({ id }) => id === "post-fighter:hitdef-contact-commit")).toBe(false);
   });
 
   it("keeps non-standby Single reserves on bounded CNS without motion", () => {
@@ -2946,12 +2962,17 @@ ctrl = 0
     }
 
     const lifeBefore = snapshot.actors[1]!.runtime.life;
-    for (let frame = 0; frame < 24; frame += 1) {
+    for (let frame = 0; frame < 24 && snapshot.actors[1]!.runtime.life === lifeBefore; frame += 1) {
       snapshot = runtime.step({ p1: new Set(["a"]) });
     }
 
     expect(snapshot.actors[1]!.runtime.life).toBeLessThan(lifeBefore);
     expect(snapshot.logs.some((line) => line.includes("hit"))).toBe(true);
+    expect(runtime.getHitDefContactMemory().actors.find(({ actorId }) => actorId === "p1")).toEqual({
+      actorId: "p1",
+      committed: ["p2"],
+      pending: [],
+    });
     expect(snapshot.actors[0]?.hitEffectEvents?.[0]).toMatchObject({
       type: "HitSpark",
       kind: "hit",

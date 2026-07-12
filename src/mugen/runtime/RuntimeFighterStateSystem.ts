@@ -40,6 +40,8 @@ export type FighterMatchState = {
   hitStun: number;
   hitPause: number;
   hasHit: boolean;
+  hitDefTargets: string[];
+  pendingHitDefTargets: string[];
   targets: RuntimeTarget[];
   targetBindings: RuntimeTargetBinding[];
   bindToTarget?: RuntimeTargetBinding;
@@ -158,6 +160,8 @@ export class RuntimeFighterStateWorld {
       hitStun: 0,
       hitPause: 0,
       hasHit: false,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
       targets: [],
       targetBindings: [],
       currentInput: new Set(),

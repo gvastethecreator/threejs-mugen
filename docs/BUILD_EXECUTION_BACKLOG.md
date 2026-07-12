@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 419 - Deferred HitDef contact memory
+
+Done: roots now own committed/pending direct-HitDef getter ids. Accepted direct hit/guard/HitOverride and direct ReversalDef buffer exact ids while CNS target memory remains immediate; active post-combat commits P1-P8 in stable order; MoveStart/HitDef/ReversalDef reset both lists. Detached `RuntimeHitDefContactMemory/v0` diagnostics and actor-scoped commit phases expose proof. Root admission rejects only exact contacted getters when explicit memory exists, while scalar pair mutation remains intact. Claim allowed: direct-HitDef contact memory and exact read-only repeated-contact admission. Claim blocked: P3-P8 mutation, exact hitonce/juggle/priority/reversal, throws, projectile/helper parity, round/HUD/audio/resources, scores, and full parity. Wayfinder 114 maps first mutation next.
+
 ## Entry 418 - Deferred HitDef contact-memory research
 
 Done: pinned IKEMEN source corrects the prior target-buffer assumption. Live CNS targets are acquired immediately through deduplicating `addTarget`; a separate non-projectile `hitdefTargetsBuffer` records getter contacts, commits after character update, resets with the next HitDef, and feeds hitonce/juggle/priority/reversal policy. Wayfinder 113 selects actor-local committed/pending contact ids plus post-combat commit and exact read-only root admission, preserving current pair mutation and all Projectile/Helper routes. Claim allowed: implementation-ready HitDef contact-memory contract. Claim blocked: P3-P8 direct mutation, exact hitonce/juggle/priority/reversal parity, throws, round/HUD/audio, scores, and full parity.

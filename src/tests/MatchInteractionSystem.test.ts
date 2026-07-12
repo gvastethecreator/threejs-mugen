@@ -37,6 +37,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       p2: "p2",
       targetActors: actors,
       targetResetActors: [...actors, "disabled-p5"],
+      hitDefContactActors: actors,
       advanceTargetMemory: (fighter) => calls.push(`age:${fighter}`),
       clearTargetBindingSubject: (fighter) => calls.push(`clear:${fighter}`),
       recordTargetMaintenance: (fighter) => calls.push(`phase:${fighter}`),
@@ -47,6 +48,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       applyBindToTarget: (fighter, candidates) => calls.push(`self-bind:${fighter}:${candidates.join(",")}`),
       resolvePriorityClash: () => undefined,
       resolveDirectCombat: () => undefined,
+      commitHitDefTargets: (fighter) => calls.push(`commit:${fighter}`),
+      recordHitDefContactCommit: (fighter) => calls.push(`commit-phase:${fighter}`),
       resolveProjectileCombat: () => undefined,
       clampToStage: () => undefined,
       advancePresentationEffects: () => undefined,
@@ -67,6 +70,10 @@ describe("RuntimeMatchInteractionWorld", () => {
       "self-bind:p2:p1,p3,p4",
       "self-bind:p3:p1,p2,p4",
       "self-bind:p4:p1,p2,p3",
+      "commit:p1", "commit-phase:p1",
+      "commit:p2", "commit-phase:p2",
+      "commit:p3", "commit-phase:p3",
+      "commit:p4", "commit-phase:p4",
     ]);
   });
 

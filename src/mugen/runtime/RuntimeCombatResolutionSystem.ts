@@ -28,6 +28,7 @@ import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./
 import type { CharacterRuntimeState } from "./types";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
+import { bufferRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -41,6 +42,8 @@ export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
     hitStun: number;
     hitPause: number;
     hasHit: boolean;
+    hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
+    pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
     contact: RuntimeContactMemory;
     definition: Pick<
       DemoFighterDefinition,
@@ -175,6 +178,7 @@ export class RuntimeCombatResolutionWorld {
           ),
       });
       input.log(outcome.message);
+      bufferRuntimeHitDefTarget(defender, attacker.id);
       return { kind: "reversal", message: outcome.message };
     }
 
@@ -205,6 +209,7 @@ export class RuntimeCombatResolutionWorld {
         return { kind: "skipped", reason: "hitoverride-custom-state-miss" };
       }
       attacker.hasHit = true;
+      bufferRuntimeHitDefTarget(attacker, defender.id);
       this.rememberTarget(attacker, defender, move.targetId);
       const result = input.hitOverrideWorld.applyRedirect(attacker, defender, override, move.hitPause, {
         tryEnterState: (target, stateNo) => {
@@ -220,6 +225,7 @@ export class RuntimeCombatResolutionWorld {
     }
 
     attacker.hasHit = true;
+    bufferRuntimeHitDefTarget(attacker, defender.id);
     this.rememberTarget(attacker, defender, move.targetId);
     const result = resolveRuntimeCombatHit({
       attacker: attacker.runtime,

@@ -34,6 +34,22 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.admittedPairIds).toEqual(["p1->p2"]);
   });
 
+  it("rejects only exact committed or pending getters when contact memory exists", () => {
+    const attacker = actor("p1", 1, 1, 0, { move: true, hasHit: true });
+    attacker.hitDefTargets = ["p2"];
+    attacker.pendingHitDefTargets = ["p4"];
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [attacker, actor("p2", 2, 2, 0), actor("p4", 4, 2, 0), actor("p6", 6, 2, 0)],
+      getHurtBoxes: () => hurt,
+    });
+
+    expect(result.decisions).toEqual(expect.arrayContaining([
+      { attackerId: "p1", getterId: "p2", reason: "already-hit" },
+      { attackerId: "p1", getterId: "p4", reason: "already-hit" },
+      { attackerId: "p1", getterId: "p6", reason: "admitted" },
+    ]));
+  });
+
   it.each([
     ["already-hit", { move: true, hasHit: true }],
     ["compiled-hitdef", { move: true, requiresHitDef: true }],

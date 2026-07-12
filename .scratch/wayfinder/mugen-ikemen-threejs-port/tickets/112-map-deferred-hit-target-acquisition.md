@@ -18,7 +18,7 @@ Specify upstream-style per-actor HitDef target buffering and deterministic post-
 
 ## Claim Ceiling
 
-Allowed: implementation-ready deferred HitDef target acquisition contract.
+Allowed: corrected, implementation-ready deferred HitDef contact-memory contract.
 
 Blocked: active-root hit mutation, projectile/helper target parity, throws, round/HUD/audio, scores, or full parity.
 

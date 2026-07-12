@@ -7,6 +7,7 @@ import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
 import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -21,6 +22,8 @@ export type RuntimeReversalActor = {
   hitStun: number;
   hitPause: number;
   hasHit: boolean;
+  hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
+  pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   contact: RuntimeContactMemory;
   effectActorWorld: Pick<RuntimeEffectActorWorld, "removeExplodsOnGetHit">;
 };
@@ -145,6 +148,7 @@ export class RuntimeReversalWorld {
     };
     fighter.currentMoveLabel = activation.label ?? "ReversalDef";
     fighter.hasHit = false;
+    resetRuntimeHitDefContactMemory(fighter);
     fighter.runtime.reversal = {
       attr,
       hitPause: activation.hitPause,

@@ -21,6 +21,8 @@ describe("RuntimeMoveStartWorld", () => {
       moveType: "H",
       reversal: true,
     });
+    fighter.hitDefTargets = ["p2"];
+    fighter.pendingHitDefTargets = ["p4"];
 
     const result = world.start(fighter, move, "QCF_x");
 
@@ -29,6 +31,8 @@ describe("RuntimeMoveStartWorld", () => {
     expect(fighter.currentMoveLabel).toBe("QCF_x");
     expect(fighter.moveTick).toBe(0);
     expect(fighter.hasHit).toBe(false);
+    expect(fighter.hitDefTargets).toEqual([]);
+    expect(fighter.pendingHitDefTargets).toEqual([]);
     expect(fighter.runtime.reversal).toBeUndefined();
     expect(fighter.runtime.moveType).toBe("A");
   });

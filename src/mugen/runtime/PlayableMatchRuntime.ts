@@ -104,6 +104,11 @@ import {
 } from "./RuntimeFighterRunOrderSystem";
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { selectRuntimeRootTargetMaintenanceActors } from "./MatchInteractionSystem";
+import {
+  commitRuntimeHitDefTargets,
+  createRuntimeHitDefContactMemoryDiagnostic,
+  type RuntimeHitDefContactMemoryDiagnostic,
+} from "./RuntimeHitDefContactMemorySystem";
 import { RuntimeMatchPresentationSnapshotWorld } from "./RuntimeMatchPresentationSnapshotSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
@@ -911,6 +916,7 @@ export class PlayableMatchRuntime {
             ? selectRuntimeRootTargetMaintenanceActors(this.characterRoots())
             : undefined,
           targetResetActors: this.tagTeamOrder ? this.characterRoots() : undefined,
+          hitDefContactActors: this.tagTeamOrder ? this.characterRoots() : undefined,
           stage: this.stage,
           stageTime: this.tick,
           helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
@@ -978,6 +984,8 @@ export class PlayableMatchRuntime {
                 currentMove: root.currentMove,
                 moveTick: root.moveTick,
                 hasHit: root.hasHit,
+                hitDefTargets: root.hitDefTargets,
+                pendingHitDefTargets: root.pendingHitDefTargets,
               })),
               getHurtBoxes: (candidate) => {
                 const root = roots.find(({ id }) => id === candidate.id);
@@ -988,6 +996,10 @@ export class PlayableMatchRuntime {
           } : undefined,
           recordTargetMaintenance: this.tagTeamOrder
             ? (root) => recordPhase("post-fighter:target-maintenance", root.id)
+            : undefined,
+          commitHitDefTargets: (root) => commitRuntimeHitDefTargets(root),
+          recordHitDefContactCommit: this.tagTeamOrder
+            ? (root) => recordPhase("post-fighter:hitdef-contact-commit", root.id)
             : undefined,
           log: (line) => this.logs.unshift(line),
           recordSchedulePhase: recordPhase,
@@ -1810,6 +1822,10 @@ export class PlayableMatchRuntime {
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
     return this.effectActorWorld.summarize(this.characterRoots().map(({ id }) => id));
+  }
+
+  getHitDefContactMemory(): RuntimeHitDefContactMemoryDiagnostic {
+    return createRuntimeHitDefContactMemoryDiagnostic(this.characterRoots());
   }
 
   getCharacterIdentity(): RuntimeCharacterIdentityDiagnostic | undefined {

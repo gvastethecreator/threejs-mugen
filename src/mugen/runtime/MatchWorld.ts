@@ -30,6 +30,7 @@ import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile"
 import type { RuntimeTagTeamMode } from "./RuntimeTagTeamOrderSystem";
 import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
 import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
+import type { RuntimeHitDefContactMemoryDiagnostic } from "./RuntimeHitDefContactMemorySystem";
 import type { RuntimeTeamState } from "./types";
 import {
   RuntimeRootParticipationWorld,
@@ -155,6 +156,10 @@ export class MatchWorld {
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
     return this.effectActorStoreSummaries();
+  }
+
+  getHitDefContactMemory(): RuntimeHitDefContactMemoryDiagnostic {
+    return structuredClone(this.runtime.getHitDefContactMemory());
   }
 
   reset(): MugenSnapshot {

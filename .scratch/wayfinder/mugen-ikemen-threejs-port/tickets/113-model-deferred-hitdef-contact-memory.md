@@ -1,7 +1,7 @@
 # Model Deferred HitDef Contact Memory
 
 Type: implementation
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -23,3 +23,7 @@ Add actor-local committed and pending direct-HitDef getter ids with deterministi
 Allowed: source-aligned direct-HitDef contact memory and exact read-only repeated-contact admission.
 
 Blocked: P3-P8 direct hit mutation, exact hitonce/juggle/priority/reversal semantics, throws, projectile/helper parity, round/HUD/audio, scores, or full parity.
+
+## Outcome
+
+Roots now own committed and pending direct-HitDef getter ids. Direct hit, guard, accepted HitOverride, and direct ReversalDef buffer exact getter identity while CNS target memory stays immediate. Post-combat commit runs P1-P8 in stable order on active Tag ticks; MoveStart, HitDef, and ReversalDef reset both lists. Read-only root admission rejects only committed/pending getters when explicit memory exists. Pair scalar behavior, Projectile/Helper routes, pause, and hitpause remain unchanged.

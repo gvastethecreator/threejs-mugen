@@ -1,4 +1,5 @@
 import type { CharacterRuntimeState } from "./types";
+import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 
 export type RuntimeMoveStartMove = {
   actionId: number;
@@ -9,6 +10,8 @@ export type RuntimeMoveStartActor<TMove extends RuntimeMoveStartMove = RuntimeMo
   currentMoveLabel?: string;
   moveTick: number;
   hasHit: boolean;
+  hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
+  pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   runtime: Pick<CharacterRuntimeState, "moveType" | "reversal">;
 };
 
@@ -37,6 +40,7 @@ export class RuntimeMoveStartWorld {
     actor.currentMoveLabel = label;
     actor.moveTick = 0;
     actor.hasHit = false;
+    resetRuntimeHitDefContactMemory(actor);
     actor.runtime.reversal = undefined;
     actor.runtime.moveType = "A";
 

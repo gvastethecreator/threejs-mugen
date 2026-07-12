@@ -25,7 +25,7 @@ Two independent boundaries are missing. Existing target memory and bindings are 
 | Normal aging | `RuntimeMatchInteractionWorld.advance` calls target advance for P1 then P2. | P3-P8 memory never ages. |
 | Binding application | The same world applies both binding directions with one pair opponent. | P3-P8 cannot resolve exact root subjects or anchors. |
 | Pause | `RuntimePausedMatchWorld` advances only the selected moving pair actor. | Preserve current pause semantics until plural pause scheduling is specified. |
-| Acquisition | Direct/projectile/helper combat calls `remember` immediately. | No upstream-style deferred HitDef target buffer/commit. |
+| Acquisition | Direct/projectile/helper combat calls `remember` immediately, matching live CNS target timing. | Separate direct-HitDef getter-contact memory and commit were missing before Wayfinder 113. |
 | Evidence | Registry and trace snapshot actor-local target refs and bindings. | No actor-scoped plural maintenance schedule proof. |
 
 ## Selected Cut: Wayfinder 111

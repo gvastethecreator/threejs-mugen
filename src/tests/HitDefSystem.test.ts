@@ -12,6 +12,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
   it("activates a typed HitDef payload with raw fallbacks and frame hitbox handoff", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
+    actor.hitDefTargets = ["p2"];
+    actor.pendingHitDefTargets = ["p4"];
     const ir = compileControllerIr(
       controller("HitDef", {
         attr: "S,NA",
@@ -70,6 +72,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.runtime.moveType).toBe("A");
     expect(actor.runtime.reversal).toBeUndefined();
     expect(actor.hasHit).toBe(false);
+    expect(actor.hitDefTargets).toEqual([]);
+    expect(actor.pendingHitDefTargets).toEqual([]);
     expect(actor.currentMove).toMatchObject({
       actionId: 200,
       activeStart: 3,

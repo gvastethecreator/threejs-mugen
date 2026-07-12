@@ -127,7 +127,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Model deferred HitDef contact memory](tickets/113-model-deferred-hitdef-contact-memory.md)
+- [Map active-root direct hit execution](tickets/114-map-active-root-direct-hit-execution.md)
 
 ## Not Yet Specified
 

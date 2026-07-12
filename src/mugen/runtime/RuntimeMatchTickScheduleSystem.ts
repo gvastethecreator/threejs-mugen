@@ -21,6 +21,7 @@ export type RuntimeMatchTickPhaseId =
   | "fighter:auto-guard-check:post"
   | "active:post-fighter"
   | "post-fighter:target-maintenance"
+  | "post-fighter:hitdef-contact-commit"
   | "post-fighter:body-push"
   | "post-fighter:hit-admission"
   | "post-fighter:combat"
@@ -170,6 +171,12 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     "RuntimeTargetWorld",
     ["fighter.targets", "fighter.targetBindings", "fighter.bindToTarget", "fighter.runtime.pos"],
     ["actor target memory aged", "existing exact-id target bindings resolved"],
+  ),
+  "post-fighter:hitdef-contact-commit": phase(
+    "post-fighter:hitdef-contact-commit",
+    "RuntimeHitDefContactMemorySystem",
+    ["fighter.hitDefTargets", "fighter.pendingHitDefTargets"],
+    ["pending direct HitDef getter ids committed after direct combat"],
   ),
   "post-fighter:body-push": phase(
     "post-fighter:body-push",

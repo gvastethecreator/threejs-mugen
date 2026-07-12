@@ -23,6 +23,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   helpersAdvancedInActorOrder?: boolean;
   targetActors?: readonly TActor[];
   targetResetActors?: readonly TActor[];
+  hitDefContactActors?: readonly TActor[];
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
@@ -30,6 +31,8 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
   recordTargetMaintenance?: (fighter: TActor) => void;
+  commitHitDefTargets?: (fighter: TActor) => void;
+  recordHitDefContactCommit?: (fighter: TActor) => void;
 };
 
 export class RuntimeMatchPostFighterWorld {
@@ -53,6 +56,7 @@ export class RuntimeMatchPostFighterWorld {
       runtimeTick: input.runtimeTick,
       targetActors: input.targetActors,
       targetResetActors: input.targetResetActors,
+      hitDefContactActors: input.hitDefContactActors,
       helpersAdvancedInActorOrder: input.helpersAdvancedInActorOrder,
       actorConstraintWorld: input.actorConstraintWorld,
       effectLifecycleWorld: input.effectLifecycleWorld,
@@ -64,6 +68,8 @@ export class RuntimeMatchPostFighterWorld {
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
       recordTargetMaintenance: input.recordTargetMaintenance,
+      commitHitDefTargets: input.commitHitDefTargets,
+      recordHitDefContactCommit: input.recordHitDefContactCommit,
       recordSchedulePhase: input.recordSchedulePhase,
       log: input.log,
     });

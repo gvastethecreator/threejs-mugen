@@ -33,6 +33,7 @@ export function selectRuntimeRootTargetMaintenanceActors<TActor extends RuntimeR
 export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractionFighterPair<TFighter> & {
   targetActors?: readonly TFighter[];
   targetResetActors?: readonly TFighter[];
+  hitDefContactActors?: readonly TFighter[];
   advanceTargetMemory: (fighter: TFighter) => void;
   clearTargetBindingSubject?: (fighter: TFighter) => void;
   advanceActiveEffects: (fighter: TFighter) => void;
@@ -45,6 +46,8 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
   resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
   resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
+  commitHitDefTargets?: (fighter: TFighter) => void;
+  recordHitDefContactCommit?: (fighter: TFighter) => void;
   resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
   resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
   clampToStage: (fighter: TFighter) => void;
@@ -73,9 +76,12 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     runtimeTick?: number;
     targetActors?: readonly TFighter[];
     targetResetActors?: readonly TFighter[];
+    hitDefContactActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
+    commitHitDefTargets?: (fighter: TFighter) => void;
+    recordHitDefContactCommit?: (fighter: TFighter) => void;
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
@@ -123,6 +129,10 @@ export class RuntimeMatchInteractionWorld {
 
     input.resolveDirectCombat(p1, p2);
     input.resolveDirectCombat(p2, p1);
+    for (const fighter of input.hitDefContactActors ?? [p1, p2]) {
+      input.commitHitDefTargets?.(fighter);
+      input.recordHitDefContactCommit?.(fighter);
+    }
     input.resolveProjectileCombat(p1, p2);
     input.resolveProjectileCombat(p2, p1);
     input.resolveHelperCombat?.(p1, p2);
@@ -145,6 +155,7 @@ export class RuntimeMatchInteractionWorld {
       p2,
       targetActors: input.targetActors,
       targetResetActors: input.targetResetActors,
+      hitDefContactActors: input.hitDefContactActors,
       advanceTargetMemory: (fighter) => fighter.targetWorld.advance(fighter),
       clearTargetBindingSubject: (fighter) => fighter.targetWorld.clearBindingSubject(fighter),
       advanceActiveEffects: (fighter) => {
@@ -177,6 +188,8 @@ export class RuntimeMatchInteractionWorld {
       applyBindToTarget: (fighter, candidates) => fighter.targetWorld.applyBindToTarget(fighter, candidates),
       resolvePriorityClash: input.resolvePriorityClash,
       resolveDirectCombat: input.resolveDirectCombat,
+      commitHitDefTargets: input.commitHitDefTargets,
+      recordHitDefContactCommit: input.recordHitDefContactCommit,
       resolveProjectileCombat: input.resolveProjectileCombat,
       resolveHelperCombat: input.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,

@@ -64,6 +64,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(result).toMatchObject({ kind: "hit", damage: 25, message: "P1 hit P2 for 25" });
     expect(attacker.hasHit).toBe(true);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 7, age: 0 }]);
+    expect(attacker.pendingHitDefTargets).toEqual(["p2"]);
+    expect(attacker.hitDefTargets).toBeUndefined();
     expect(attacker.soundEvents[0]).toMatchObject({
       type: "PlaySnd",
       group: 5,
@@ -210,6 +212,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(result).toEqual({ kind: "hitoverride", message: "P2 HitOverride slot 1 redirected P1 to state 777" });
     expect(attacker.hasHit).toBe(true);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 77, age: 0 }]);
+    expect(attacker.pendingHitDefTargets).toEqual(["p2"]);
     expect(entries).toEqual(["p2:777:self"]);
     expect(defender.runtime.stateNo).toBe(777);
     expect(defender.runtime.life).toBe(100);

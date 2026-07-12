@@ -8552,6 +8552,12 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             actorIds: ["p1", "p2", "p3", "p4"],
           },
           {
+            label: "all roots commit direct HitDef contact memory after combat",
+            frameIndex: 2,
+            phase: "post-fighter:hitdef-contact-commit",
+            actorIds: ["p1", "p2", "p3", "p4"],
+          },
+          {
             label: "P3 joins plural body push before combat",
             frameIndex: 2,
             phase: "post-fighter:body-push",

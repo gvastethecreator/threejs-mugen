@@ -69,6 +69,8 @@ describe("ReversalSystem", () => {
   it("activates and clears bounded ReversalDef runtime state", () => {
     const world = new RuntimeReversalWorld();
     const fighter = actor("p1", "Reverser", { stateNo: 300 });
+    fighter.hitDefTargets = ["p2"];
+    fighter.pendingHitDefTargets = ["p4"];
 
     const activated = world.activate(fighter, {
       attr: "SA,AA",
@@ -81,6 +83,8 @@ describe("ReversalSystem", () => {
     });
 
     expect(activated).toBe(true);
+    expect(fighter.hitDefTargets).toEqual([]);
+    expect(fighter.pendingHitDefTargets).toEqual([]);
     expect(fighter.currentMove).toMatchObject({
       actionId: 300,
       isReversal: true,

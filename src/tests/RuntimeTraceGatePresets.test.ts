@@ -16033,6 +16033,14 @@ describe("RuntimeTraceGatePresets", () => {
           .join(",") === "p1,p2,p3,p4",
       ),
     ).toBe(true);
+    expect(
+      artifact.trace.frames.some(({ tickSchedule }) =>
+        tickSchedule?.phaseStamps
+          .filter(({ id }) => id === "post-fighter:hitdef-contact-commit")
+          .map(({ actorId }) => actorId)
+          .join(",") === "p1,p2,p3,p4",
+      ),
+    ).toBe(true);
     expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ TagIn: 1, VelSet: 2 });
     expect(artifact.gates[0]?.evidence.executedControllers.Helper).toBeUndefined();
     expect(artifact.trace.finalEffects).toEqual([]);

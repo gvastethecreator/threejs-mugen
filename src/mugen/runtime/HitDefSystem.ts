@@ -9,6 +9,7 @@ import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
+import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeResolvedSoundRef } from "./types";
@@ -20,6 +21,8 @@ export type RuntimeHitDefControllerDispatchActor = {
   moveTick: number;
   frameElapsed: number;
   hasHit: boolean;
+  hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
+  pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   firedHitDefs: Set<string>;
 };
 
@@ -199,6 +202,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     };
     actor.currentMoveLabel = source.name ?? "HitDef";
     actor.hasHit = false;
+    resetRuntimeHitDefContactMemory(actor);
     actor.runtime.reversal = undefined;
     actor.runtime.moveType = "A";
     applyRuntimeControl(actor.runtime, false);

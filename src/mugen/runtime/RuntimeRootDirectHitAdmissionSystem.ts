@@ -2,6 +2,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import { canRuntimeBeHitBy, hasRuntimeBoxContact, runtimeWorldBox } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import type { CharacterRuntimeState, RuntimeTeamState } from "./types";
+import { hasRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 
 export type RuntimeRootDirectHitAdmissionReason =
   | "admitted"
@@ -24,6 +25,8 @@ export type RuntimeRootDirectHitAdmissionActor = {
   currentMove?: DemoMove;
   moveTick: number;
   hasHit: boolean;
+  hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
+  pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
 };
 
 export type RuntimeRootDirectHitAdmissionDecision = {
@@ -84,7 +87,9 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   if (attacker.side === getter.side) return "same-side";
   const move = attacker.currentMove;
   if (!move) return "missing-move";
-  if (attacker.hasHit) return "already-hit";
+  if (hasExplicitHitDefContactMemory(attacker)) {
+    if (hasRuntimeHitDefTarget(attacker, getter.id)) return "already-hit";
+  } else if (attacker.hasHit) return "already-hit";
   if (move.requiresHitDef) return "compiled-hitdef";
   if (move.isReversal) return "reversal-move";
   if (attacker.moveTick < move.activeStart || attacker.moveTick > move.activeEnd) return "inactive";
@@ -118,10 +123,14 @@ function compareAttackers(
 function attackerPriority(actor: RuntimeRootDirectHitAdmissionActor): number {
   if (actor.runtime.reversal) return 2;
   const move = actor.currentMove;
-  if (move && !actor.hasHit && !move.requiresHitDef && !move.isReversal && actor.moveTick >= move.activeStart && actor.moveTick <= move.activeEnd) {
+  if (move && (!actor.hasHit || hasExplicitHitDefContactMemory(actor)) && !move.requiresHitDef && !move.isReversal && actor.moveTick >= move.activeStart && actor.moveTick <= move.activeEnd) {
     return 1;
   }
   return 0;
+}
+
+function hasExplicitHitDefContactMemory(actor: RuntimeRootDirectHitAdmissionActor): boolean {
+  return actor.hitDefTargets !== undefined || actor.pendingHitDefTargets !== undefined;
 }
 
 function assertRoots(roots: readonly RuntimeRootDirectHitAdmissionActor[]): void {
