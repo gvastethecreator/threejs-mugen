@@ -165,7 +165,7 @@ import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSyste
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
 import { RuntimeMoveStartWorld } from "./RuntimeMoveStartSystem";
-import { RuntimeKinematicsWorld } from "./RuntimeKinematicsSystem";
+import { RuntimeKinematicsWorld, runtimeGroundFrictionOptions } from "./RuntimeKinematicsSystem";
 import {
   RuntimeAnimationWorld,
   runtimeAnimationElementTime,
@@ -1307,6 +1307,10 @@ export class PlayableMatchRuntime {
           this.kinematicsWorld.advance(actor, {
             preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(actor),
             changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+            groundFriction:
+              actor.definition.source === "imported"
+                ? runtimeGroundFrictionOptions(actor.definition.constants, actor.definition.localCoord)
+                : undefined,
           });
         },
         advanceAnimation: (actor) => {
@@ -2100,6 +2104,10 @@ function advanceFighter(
       kinematicsWorld.advance(actor, {
         preserveImportedStateMoveType,
         changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+        groundFriction:
+          actor.definition.source === "imported"
+            ? runtimeGroundFrictionOptions(actor.definition.constants, actor.definition.localCoord)
+            : undefined,
       });
     },
     advanceAnimation: (actor) => {

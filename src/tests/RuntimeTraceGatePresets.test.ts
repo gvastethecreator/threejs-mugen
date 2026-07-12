@@ -16019,7 +16019,7 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 4,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -115, y: 0 }, vel: { x: 4, y: 0 } }),
+          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -115, y: 0 }, vel: { x: 3.4, y: 0 } }),
           expect.objectContaining({ id: "p4", stateNo: 0, teamStandby: true, effectiveCtrl: false }),
         ],
       },
@@ -16358,7 +16358,7 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 3,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", pos: { x: -188.75, y: 0 }, vel: { x: 4, y: 0 }, targetCount: 0 }),
+          expect.objectContaining({ id: "p3", pos: { x: -188.75, y: 0 }, vel: { x: 3.4, y: 0 }, targetCount: 0 }),
           expect.objectContaining({ id: "p4", teamStandby: true }),
         ],
       },

@@ -11,6 +11,8 @@ Root logical combat depth now has velocity authoring and scheduler integration i
 - `VelMul z`.
 - `Vel Z` expression trigger.
 - Tick integration through `RuntimeKinematicsWorld`.
+- Imported standing/crouching friction shared by X and logical Z.
+- Player-local standing stop threshold derived from `localcoord.width / 320`.
 - Typed kinematic telemetry preserves Z values.
 
 ## Oracle
@@ -27,9 +29,9 @@ Pinned Ikemen-GO `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`:
 - TypeScript 7 typecheck passed.
 - Full regression/build/boundary gates run before commit.
 
-## Remaining physics boundary
+## Friction boundary
 
-Current sandbox kinematics does not model official S/C friction for X. Adding friction only to Z would create inconsistent physics, so shared X/Z friction ownership remains Wayfinder 129 work. PosFreeze/bind Z and stage depth bounds are also pending.
+Imported roots now model ordinary S/C friction consistently across X/Z. Get-hit `HitDef` stand/crouch friction overrides, PosFreeze/bind Z, helper/projectile physics, and stage depth bounds remain pending.
 
 ## Required trace
 

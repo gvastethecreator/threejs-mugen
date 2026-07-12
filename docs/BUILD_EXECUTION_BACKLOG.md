@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 436 - Imported standing/crouching X/Z friction
+
+Done: imported fighter kinematics now applies the pinned IKEMEN physics order: integrate position first, then multiply X and logical Z velocity by the same standing or crouching friction. Standing physics uses authored `[Movement] stand.friction` or official `0.85`, then zeros both axes below the player-local `localcoord.width / 320` threshold; crouching uses authored `crouch.friction` or `0.82` without that standing threshold. Demo fighters retain existing sandbox motion. Focused kinematics tests and TypeScript 7 typecheck pass. Claim allowed: bounded imported root S/C X/Z friction and localcoord-aware standing stop threshold. Claim blocked: get-hit HitDef friction overrides, PosFreeze/bind Z, depth push/bounds, helper/projectile physics, renderer projection, and full parity. Wayfinder 131 closes root PosFreeze Z ownership next.
+
 ## Entry 435 - Required imported Vel Z integration trace
 
 Done: required `synthetic-imported-ikemen-active-root-depth-velocity` proves active P3 executes CNS `VelSet z=20`, advances logical Z through the normal kinematics phase, then authors a delayed HitDef. Frame one records `missing-move`; subsequent root admissions record P3->P4 `no-contact` from dynamic depth separation, with unchanged life, no targets, and no combat reasons. Trace QA passes 554/554 artifacts, 523 required; checksum `6cf14866`. Claim allowed: imported end-to-end root Vel Z authoring, tick integration, and direct HitDef depth rejection. Claim blocked: S/C friction, PosFreeze/bind Z, hit velocity Z, depth bounds/push, ReversalDef/projectile/helper Z routes, visual projection, and full parity. Wayfinder 130 maps shared X/Z friction and PosFreeze ownership.

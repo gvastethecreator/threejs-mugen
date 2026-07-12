@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   RuntimeKinematicsWorld,
+  runtimeGroundFrictionOptions,
   type RuntimeKinematicsActor,
 } from "../mugen/runtime/RuntimeKinematicsSystem";
 
@@ -15,6 +16,44 @@ describe("RuntimeKinematicsWorld", () => {
     expect(fighter.runtime.pos).toEqual({ x: 7, y: -1 });
     expect(fighter.runtime.vel).toEqual({ x: 3, y: 1 });
     expect(fighter.runtime.combatDepth).toMatchObject({ position: 3, velocity: -2 });
+  });
+
+  it("applies imported standing friction to x and z after position integration", () => {
+    const world = new RuntimeKinematicsWorld();
+    const fighter = actor({ velX: 4, velZ: -2, physics: "S" });
+
+    world.advance(fighter, { groundFriction: runtimeGroundFrictionOptions() });
+
+    expect(fighter.runtime.pos.x).toBe(4);
+    expect(fighter.runtime.combatDepth?.position).toBe(-2);
+    expect(fighter.runtime.vel.x).toBeCloseTo(3.4);
+    expect(fighter.runtime.combatDepth?.velocity).toBeCloseTo(-1.7);
+  });
+
+  it("uses authored standing friction and localcoord-scaled stop threshold for x and z", () => {
+    const world = new RuntimeKinematicsWorld();
+    const fighter = actor({ velX: 1.5, velZ: -1.5, physics: "S" });
+
+    world.advance(fighter, {
+      groundFriction: runtimeGroundFrictionOptions({ "movement.stand.friction": 0.5 }, [640, 480]),
+    });
+
+    expect(fighter.runtime.pos.x).toBe(1.5);
+    expect(fighter.runtime.combatDepth?.position).toBe(-1.5);
+    expect(fighter.runtime.vel.x).toBe(0);
+    expect(fighter.runtime.combatDepth?.velocity).toBe(0);
+  });
+
+  it("applies authored crouching friction to x and z without the standing threshold", () => {
+    const world = new RuntimeKinematicsWorld();
+    const fighter = actor({ velX: 0.5, velZ: -0.5, stateType: "C", physics: "C" });
+
+    world.advance(fighter, {
+      groundFriction: runtimeGroundFrictionOptions({ "movement.crouch.friction": 0.4 }, [640, 480]),
+    });
+
+    expect(fighter.runtime.vel.x).toBeCloseTo(0.2);
+    expect(fighter.runtime.combatDepth?.velocity).toBeCloseTo(-0.2);
   });
 
   it("applies current sandbox gravity to airborne actors after velocity integration", () => {
