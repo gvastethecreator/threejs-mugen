@@ -71,6 +71,30 @@ describe("ActorConstraintSystem", () => {
     expect(result).toEqual({ recordedController: true, recordedOperation: true });
   });
 
+  it("applies static and dynamic Height deltas with redirect localcoord scaling", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
+    const actor = { runtime: actorState() };
+    const staticIr = compileControllerIr(controller("Height", { value: "6" }));
+
+    dispatchWorld.applyHeight({ actor, controller: staticIr, actorConstraintWorld: world, valueScale: 2 });
+    expect(actor.runtime.bodyHeightDelta).toEqual({ top: 12, bottom: 0 });
+
+    const dynamicIr = compileControllerIr(controller("Height", { value: "var(0),var(1)" }));
+    const operations: string[] = [];
+    dispatchWorld.applyHeight({
+      actor,
+      controller: dynamicIr,
+      actorConstraintWorld: world,
+      resolveHeight: { resolvePair: () => [4.5, -2] },
+      valueScale: 0.5,
+      recordOperation: (_actor, operation) => operations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+    expect(dynamicIr.operation).toBeUndefined();
+    expect(actor.runtime.bodyHeightDelta).toEqual({ top: 2.25, bottom: -1 });
+    expect(operations).toEqual(["collision:height"]);
+  });
+
   it("resets one-frame constraints and preserves frozen position axes", () => {
     const world = new RuntimeActorConstraintWorld();
     const state = actorState({
@@ -85,6 +109,7 @@ describe("ActorConstraintSystem", () => {
     expect(state.screenBound).toBeUndefined();
     expect(state.bodyWidth).toEqual({ front: 39, back: 39 });
     expect(state.bodyWidthDelta).toBeUndefined();
+    expect(state.bodyHeightDelta).toBeUndefined();
 
     state.pos = { x: 20, y: -12 };
     state.combatDepth = { position: 12, velocity: 3, size: [3, 3], attack: [4, 4] };

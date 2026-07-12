@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "bodyHeightDelta" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -21,6 +21,10 @@ export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { run
 
 export type RuntimeWidthResolver = {
   resolvePair(key: "player" | "value"): [number, number?] | undefined;
+};
+
+export type RuntimeHeightResolver = {
+  resolvePair(key: "value"): [number, number?] | undefined;
 };
 
 export type RuntimeDepthResolver = {
@@ -50,6 +54,7 @@ export class RuntimeActorConstraintWorld {
     state.stageBound = undefined;
     state.bodyWidth = { front: 39, back: 39 };
     state.bodyWidthDelta = undefined;
+    state.bodyHeightDelta = undefined;
     if (state.combatDepth?.baseSize) {
       state.combatDepth.size = state.combatDepth.baseSize;
       state.combatDepth.baseSize = undefined;
@@ -121,6 +126,28 @@ export class RuntimeActorConstraintWorld {
       back: appliedOperation.back,
     };
     state.bodyWidthDelta = { ...state.bodyWidth };
+    return appliedOperation;
+  }
+
+  applyHeight(
+    state: RuntimeActorConstraintState,
+    controller: MugenStateController,
+    operation?: Extract<CollisionControllerOp, { controllerType: "height" }>,
+    resolveHeight?: RuntimeHeightResolver,
+    valueScale = 1,
+  ): Extract<CollisionControllerOp, { controllerType: "height" }> | undefined {
+    const pair = operation ? undefined : resolveHeight?.resolvePair("value") ?? numberPair(findControllerParam(controller, "value"));
+    const top = operation?.top ?? pair?.[0];
+    if (top === undefined) return undefined;
+    const redirectPlayerIdExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
+    const appliedOperation: Extract<CollisionControllerOp, { controllerType: "height" }> = {
+      kind: "collision",
+      controllerType: "height",
+      top: top * valueScale,
+      bottom: (operation?.bottom ?? pair?.[1] ?? 0) * valueScale,
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+    };
+    state.bodyHeightDelta = { top: appliedOperation.top, bottom: appliedOperation.bottom };
     return appliedOperation;
   }
 
@@ -260,6 +287,28 @@ export class RuntimeActorConstraintControllerDispatchWorld {
       options.controller.source,
       operation,
       options.resolveDepth,
+    );
+    if (appliedOperation) options.recordOperation?.(options.actor, appliedOperation);
+    return {
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(appliedOperation && options.recordOperation),
+    };
+  }
+
+  applyHeight<TActor extends { runtime: RuntimeActorConstraintState }>(
+    options: RuntimeActorConstraintControllerDispatchOptions<TActor> & { resolveHeight?: RuntimeHeightResolver; valueScale?: number },
+  ): RuntimeActorConstraintControllerDispatchResult {
+    const operation =
+      options.controller.operation?.kind === "collision" && options.controller.operation.controllerType === "height"
+        ? options.controller.operation
+        : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    const appliedOperation = options.actorConstraintWorld.applyHeight(
+      options.actor.runtime,
+      options.controller.source,
+      operation,
+      options.resolveHeight,
+      options.valueScale,
     );
     if (appliedOperation) options.recordOperation?.(options.actor, appliedOperation);
     return {

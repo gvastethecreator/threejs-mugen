@@ -13,6 +13,7 @@ describe("RuntimeActiveSideEffectDispatchWorld", () => {
     ["hitdef", "hitdef", "hitDef"],
     ["reversaldef", "reversaldef", "reversalDef"],
     ["width", "width", "width"],
+    ["height", "height", "height"],
     ["depth", "depth", "depth"],
     ["fallenvshake", "fallenvshake", "fallEnvShake"],
     ["sprpriority", "sprite-effect", "spriteEffect"],
@@ -66,6 +67,21 @@ describe("RuntimeActiveSideEffectDispatchWorld", () => {
     expect(result).toEqual({ handled: true, effect: "sound", route: "sound", applied: false, stop: false });
   });
 
+  it("reports Height as applied with only its own hook installed", () => {
+    const calls: string[] = [];
+    const result = new RuntimeActiveSideEffectDispatchWorld().apply({
+      dispatch: sideEffectDispatch("height"),
+      actor: actor("p1"),
+      opponent: actor("p2"),
+      owner: actor("owner"),
+      tick: 3,
+      hooks: { height: routeHooks(calls).height },
+    });
+
+    expect(result).toEqual({ handled: true, effect: "height", route: "height", applied: true, stop: false });
+    expect(calls).toEqual(["height:height:p1:p2:owner:3:height"]);
+  });
+
   it("leaves non-side-effect dispatches for the rest of the active controller pipeline", () => {
     const result = new RuntimeActiveSideEffectDispatchWorld().apply({
       dispatch: { kind: "runtime-controller", controller: controllerIr("CtrlSet") },
@@ -92,6 +108,7 @@ function routeHooks(calls: string[]): RuntimeActiveSideEffectDispatchHooks<Actor
     hitDef: push("hitDef"),
     reversalDef: push("reversalDef"),
     width: push("width"),
+    height: push("height"),
     depth: push("depth"),
     fallEnvShake: push("fallEnvShake"),
     spriteEffect: push("spriteEffect"),

@@ -12,6 +12,7 @@ import {
   RuntimeActorConstraintControllerDispatchWorld,
   RuntimeActorConstraintWorld,
   type RuntimeDepthResolver,
+  type RuntimeHeightResolver,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
 import {
@@ -340,7 +341,7 @@ type RootControllerRedirectHandler = (
   caller: FighterMatchState,
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
-  controllerType: "depth" | "screenbound" | "playerpush",
+  controllerType: "depth" | "height" | "screenbound" | "playerpush",
 ) => FighterMatchState | undefined;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
@@ -1485,7 +1486,7 @@ export class PlayableMatchRuntime {
     caller: FighterMatchState,
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
-    controllerType: "depth" | "screenbound" | "playerpush",
+    controllerType: "depth" | "height" | "screenbound" | "playerpush",
   ): FighterMatchState | undefined {
     const block = (value: number | "invalid"): undefined => {
       this.logs.unshift(`Blocked ${controllerType} RedirectID ${value} for ${caller.id}`);
@@ -2345,6 +2346,32 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
+    height: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const redirectExpression =
+        (controller.operation?.kind === "collision" && controller.operation.controllerType === "height"
+          ? controller.operation.redirectPlayerIdExpression
+          : undefined) ?? findControllerParam(controller, "redirectid")?.trim();
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "height")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "height-redirect");
+        return;
+      }
+      const callerWidth = actor.definition.localCoord?.[0] ?? 320;
+      const targetWidth = target.definition.localCoord?.[0] ?? 320;
+      actorConstraintControllerDispatchWorld.applyHeight({
+        actor: target,
+        controller,
+        actorConstraintWorld,
+        resolveHeight: {
+          resolvePair: (key) => resolveHeightPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        },
+        valueScale: targetWidth / callerWidth,
+        ...runtimeActiveControllerTelemetryHooks,
+      });
+    },
     depth: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
       const redirectExpression =
@@ -2985,6 +3012,26 @@ function resolveWidthPairParam(
     return undefined;
   }
   return [front, back];
+}
+
+function resolveHeightPairParam(
+  controller: ControllerIr,
+  key: Parameters<RuntimeHeightResolver["resolvePair"]>[0],
+  actor: FighterMatchState,
+  opponent: FighterMatchState,
+  stateOwner: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): ReturnType<RuntimeHeightResolver["resolvePair"]> {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return undefined;
+  const [topExpression, bottomExpression] = raw.split(",").map((part) => part.trim());
+  if (!topExpression) return undefined;
+  const top = resolveDispatchFloat(undefined, topExpression, actor, opponent, stateOwner, stageBounds, tick);
+  if (top === undefined) return undefined;
+  if (!bottomExpression) return [top];
+  const bottom = resolveDispatchFloat(undefined, bottomExpression, actor, opponent, stateOwner, stageBounds, tick);
+  return bottom === undefined ? undefined : [top, bottom];
 }
 
 function resolveDepthPairParam(

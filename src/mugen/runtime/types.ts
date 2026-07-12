@@ -17,6 +17,7 @@ export type CharacterRuntimeState = {
   facing: 1 | -1;
   bodyWidth?: { front: number; back: number };
   bodyWidthDelta?: { front: number; back: number };
+  bodyHeightDelta?: { top: number; bottom: number };
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;

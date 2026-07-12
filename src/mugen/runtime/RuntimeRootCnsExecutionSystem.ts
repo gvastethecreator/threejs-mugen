@@ -37,7 +37,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "screenbound",
     "playerpush",
   ],
-  sideEffects: ["hitdef", "reversaldef", "depth"],
+  sideEffects: ["hitdef", "reversaldef", "width", "height", "depth"],
 };
 
 export class RuntimeRootCnsExecutionWorld {

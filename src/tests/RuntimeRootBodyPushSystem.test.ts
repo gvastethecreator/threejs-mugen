@@ -256,6 +256,24 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1, 41]);
   });
 
+  it("composes Height deltas over state size-box Y before push admission", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 8)];
+    roots[0]!.runtime.pos.y = 0;
+    roots[1]!.runtime.pos.y = -70;
+    roots[0]!.sizePushOnly = true;
+    expect(advance(roots, true).pairIds).toEqual([]);
+
+    roots[0]!.runtime.bodyHeightDelta = { top: 12, bottom: 0 };
+    const result = advance(roots, true);
+    expect(result.pairIds).toEqual([["p1", "p2"]]);
+    expect(result.movedRootIds).toEqual(["p1", "p2"]);
+
+    roots[0]!.runtime.bodyHeightDelta = undefined;
+    roots[0]!.runtime.pos.x = 0;
+    roots[1]!.runtime.pos.x = 8;
+    expect(advance(roots, true).pairIds).toEqual([]);
+  });
+
   it("uses exact interval intersection for contained asymmetric boxes", () => {
     const roots = [actor("p1", 1, 0), actor("p2", 2, 0)];
     roots[0]!.sizeBox = { x1: -100, y1: -60, x2: 100, y2: 0 };

@@ -923,6 +923,24 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static Height values and RedirectID into typed collision operations", () => {
+    const pair = compileControllerIr(controller(200, "Height", [], { value: "12,3" }));
+    const topOnly = compileControllerIr(controller(200, "Height", [], { value: "7" }));
+    const redirected = compileControllerIr(controller(200, "Height", [], { value: "2.5,-1", redirectid: "59" }));
+    const dynamic = compileControllerIr(controller(200, "Height", [], { value: "var(0),3" }));
+
+    expect(pair.operation).toEqual({ kind: "collision", controllerType: "height", top: 12, bottom: 3 });
+    expect(topOnly.operation).toEqual({ kind: "collision", controllerType: "height", top: 7, bottom: 0 });
+    expect(redirected.operation).toEqual({
+      kind: "collision",
+      controllerType: "height",
+      top: 2.5,
+      bottom: -1,
+      redirectPlayerIdExpression: "59",
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static Depth player, edge, and value modes", () => {
     const player = compileControllerIr(controller(200, "Depth", [], { player: "2,5" }));
     const edge = compileControllerIr(controller(200, "Depth", [], { edge: "7,9" }));

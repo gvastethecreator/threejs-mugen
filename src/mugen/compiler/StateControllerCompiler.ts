@@ -33,6 +33,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   posfreeze: partial("tick movement"),
   screenbound: partial("stage bounds"),
   width: partial("body width"),
+  height: partial("body height"),
   depth: partial("body depth"),
   fallenvshake: partial("camera shake"),
   assertspecial: partial("runtime flags"),

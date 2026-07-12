@@ -105,8 +105,8 @@ export class RuntimeRootBodyPushWorld {
 function hasPushGeometry(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {
   const leftScale = 320 / (left.localCoord?.[0] ?? 320);
   const rightScale = 320 / (right.localCoord?.[0] ?? 320);
-  const leftSizeBox = left.sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
-  const rightSizeBox = right.sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
+  const leftSizeBox = composedSizeBoxY(left);
+  const rightSizeBox = composedSizeBoxY(right);
   const leftTop = (left.runtime.pos.y + leftSizeBox.y1) * leftScale;
   const leftBottom = (left.runtime.pos.y + leftSizeBox.y2) * leftScale;
   const rightTop = (right.runtime.pos.y + rightSizeBox.y1) * rightScale;
@@ -117,6 +117,14 @@ function hasPushGeometry(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyP
   return left.hurtBoxes.some((leftBox) => right.hurtBoxes!.some((rightBox) =>
     collisionBoxesIntersect(runtimeWorldBox(left.runtime, leftBox), runtimeWorldBox(right.runtime, rightBox)),
   ));
+}
+
+function composedSizeBoxY(actor: RuntimeRootBodyPushActor): CollisionBox {
+  const box = actor.sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
+  const delta = actor.runtime.bodyHeightDelta ?? { top: 0, bottom: 0 };
+  const y1 = box.y1 - delta.top;
+  const y2 = box.y2 + delta.bottom;
+  return { ...box, y1: Math.min(y1, y2), y2: Math.max(y1, y2) };
 }
 
 function canPairPush(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {

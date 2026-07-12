@@ -23,7 +23,7 @@ describe("RuntimeRootCnsExecutionWorld", () => {
     expect(ACTIVE_MOTION_ROOT_CNS_CAPABILITIES.runtimeControllers).toEqual(
       expect.arrayContaining(["tagin", "velset", "posadd", "screenbound"]),
     );
-    expect(ACTIVE_MOTION_ROOT_CNS_CAPABILITIES.sideEffects).toEqual(["hitdef", "reversaldef", "depth"]);
+    expect(ACTIVE_MOTION_ROOT_CNS_CAPABILITIES.sideEffects).toEqual(["hitdef", "reversaldef", "width", "height", "depth"]);
     expect(STANDBY_ROOT_CNS_CAPABILITIES.sideEffects).toEqual([]);
   });
 });

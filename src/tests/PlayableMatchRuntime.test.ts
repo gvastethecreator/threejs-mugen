@@ -4474,7 +4474,7 @@ ctrl = 0
     expect(effectX(snapshot, "Explod 9101")).toBeGreaterThan(movingAfterMovetime);
   });
 
-  it("applies imported Width, SprPriority, PalFX, AfterImage, sound, and EnvShake hook controllers", () => {
+  it("applies imported Width, Height, SprPriority, PalFX, AfterImage, sound, and EnvShake hook controllers", () => {
     const imported = createImportedFixture({ withSideEffects: true });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
 
@@ -4482,6 +4482,7 @@ ctrl = 0
     const actor = snapshot.actors[0];
 
     expect(actor?.runtime.bodyWidth).toEqual({ front: 18, back: 44 });
+    expect(actor?.runtime.bodyHeightDelta).toEqual({ top: 12, bottom: 3 });
     expect(actor?.runtime.spritePriority).toBe(5);
     expect(actor?.runtime.paletteFx).toMatchObject({
       remaining: 18,
@@ -4529,6 +4530,8 @@ ctrl = 0
     });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Width).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["collision:width"]).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Height).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["collision:height"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.SprPriority).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["sprite-effect:sprpriority"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PalFX).toBe(1);
@@ -5329,6 +5332,11 @@ time = 8
 type = Width
 trigger1 = Time = 0
 player = 18,44
+
+[State 200, Height]
+type = Height
+trigger1 = Time = 0
+value = 12,3
 
 [State 200, Sound]
 type = PlaySnd
