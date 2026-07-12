@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 432 - Authored root Pos Z controllers and trigger
+
+Done: typed/static and dynamic `PosSet.z` / `PosAdd.z` now write renderer-independent `combatDepth.position`, initialize Ikemen depth defaults for legacy states on first authored Z use, and preserve Z in `kinematic:posset` / `kinematic:posadd` telemetry. Expression normalization and evaluation support official `Pos Z`, defaulting to zero when logical depth is absent. X/Y position and Three.js render transforms remain unchanged. Focused compiler/controller/expression tests and TypeScript 7 typecheck pass. Claim allowed: bounded root-authored logical Z set/add/query through existing kinematic CNS execution. Claim blocked: VelSet/VelAdd/VelMul Z, PosFreeze Z, redirects, depth bounds/push, projectiles/helpers, visual projection, and full parity. Wayfinder 127 builds required imported trace evidence for Pos Z-driven hit admission.
+
 ## Entry 431 - Root combat-depth admission
 
 Done: explicit-Tag root direct admission now applies the pinned Ikemen Z predicate before Clsn contact. Ordinary HitDef compares attacker attack depth against getter body depth; directed ReversalDef clash compares both attack depths. Each side uses its own `320/localcoord.width` scale, edge contact remains admitted, and actors without logical depth preserve legacy 2D behavior. Clash mutation revalidates the same shared predicate before applying state/target/contact changes, preventing stale depth admission. Focused admission/resolution/trace-regression coverage passes. Claim allowed: bounded logical-depth filtering for root direct HitDef and ReversalDef clash admission plus clash revalidation. Claim blocked: CNS-authored Z movement, ordinary direct mutation revalidation, projectiles/helpers, stage depth bounds, 3D presentation, and full parity. Wayfinder 126 maps first authored Z-position controller/trigger route.

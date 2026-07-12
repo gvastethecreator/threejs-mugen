@@ -2,7 +2,10 @@ import type { CompileSupportLevel, ExpressionIr } from "./RuntimeIr";
 
 export function normalizeMugenExpression(expression: string): string {
   let normalized = expression.trim();
-  normalized = normalized.replace(/\b(vel|pos|p2bodydist|p2dist)\s+([xy])\b/gi, (_match, base: string, axis: string) => {
+  normalized = normalized.replace(/\b(vel|pos)\s+([xyz])\b/gi, (_match, base: string, axis: string) => {
+    return `${base}${axis}`.toLowerCase();
+  });
+  normalized = normalized.replace(/\b(p2bodydist|p2dist)\s+([xy])\b/gi, (_match, base: string, axis: string) => {
     return `${base}${axis}`.toLowerCase();
   });
   normalized = normalized.replace(

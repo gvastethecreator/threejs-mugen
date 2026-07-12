@@ -322,6 +322,7 @@ export type MovementKinematicControllerOp = {
   controllerType: "velset" | "veladd" | "velmul" | "hitvelset" | "posset" | "posadd";
   x?: number;
   y?: number;
+  z?: number;
 };
 
 export type GravityKinematicControllerOp = {
@@ -914,13 +915,15 @@ function compileKinematicControllerOp(controller: MugenStateController, type: Ki
     return { kind: "kinematic", controllerType: "gravity", y: 0.55 };
   }
   const pair = strictNumberPair(findParam(controller, "value"));
+  const supportsZ = type === "posset" || type === "posadd";
   const op = definedObject({
     kind: "kinematic" as const,
     controllerType: type,
     x: firstNumber(findParam(controller, "x")) ?? pair?.[0],
     y: firstNumber(findParam(controller, "y")) ?? pair?.[1],
+    z: supportsZ ? firstNumber(findParam(controller, "z")) : undefined,
   });
-  return op.x === undefined && op.y === undefined ? undefined : op;
+  return op.x === undefined && op.y === undefined && op.z === undefined ? undefined : op;
 }
 
 function compileBoundsControllerOp(controller: MugenStateController, type: BoundsControllerOp["controllerType"]): BoundsControllerOp | undefined {

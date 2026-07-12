@@ -610,6 +610,9 @@ class ExpressionParser {
     if (lower === "posy") {
       return this.context.self.pos.y;
     }
+    if (lower === "posz") {
+      return this.context.self.combatDepth?.position ?? 0;
+    }
     if (lower === "p2bodydistx") {
       return this.p2BodyDist("x");
     }

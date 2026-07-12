@@ -62,19 +62,21 @@ describe("RuntimeKinematicControllerWorld", () => {
     expect(state.vel).toEqual({ x: 7, y: -84 });
     expect(velMulResult.operation).toEqual({ kind: "kinematic", controllerType: "velmul", x: 1, y: 7 });
 
-    const posSetResult = world.applyController(state, source("PosSet", { x: "Target(77), Life - 947", y: "0 - Parent,Vel X" }), undefined, {
+    const posSetResult = world.applyController(state, source("PosSet", { x: "Target(77), Life - 947", y: "0 - Parent,Vel X", z: "Target, Life - 951" }), undefined, {
       parent,
       target: (targetId) => (targetId === 77 || targetId === undefined ? { self: target, opponent: state } : undefined),
     });
     expect(state.pos).toEqual({ x: 16, y: -4 });
-    expect(posSetResult.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 16, y: -4 });
+    expect(state.combatDepth?.position).toBe(12);
+    expect(posSetResult.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 16, y: -4, z: 12 });
 
-    const posAddResult = world.applyController(state, source("PosAdd", { x: "Parent,Vel X + 2", y: "Root,Vel Y" }), undefined, {
+    const posAddResult = world.applyController(state, source("PosAdd", { x: "Parent,Vel X + 2", y: "Root,Vel Y", z: "-5" }), undefined, {
       parent,
       root,
     });
     expect(state.pos).toEqual({ x: 22, y: -11 });
-    expect(posAddResult.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 6, y: -7 });
+    expect(state.combatDepth?.position).toBe(7);
+    expect(posAddResult.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 6, y: -7, z: -5 });
   });
 
   it("applies HitVelSet flags only when hit velocity exists", () => {

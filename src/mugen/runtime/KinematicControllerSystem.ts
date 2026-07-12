@@ -3,6 +3,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
+import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 
 export type RuntimeKinematicControllerSource = Pick<ControllerIr, "params" | "type" | "normalizedType">;
 
@@ -61,14 +62,22 @@ export class RuntimeKinematicControllerWorld {
     }
 
     if (controllerType === "posset") {
-      const { x, y } = movementAxisParamsFromOperation(effectiveOperation);
+      const { x, y, z } = movementAxisParamsFromOperation(effectiveOperation);
       state.pos = { x: x ?? state.pos.x, y: y ?? state.pos.y };
+      if (z !== undefined) {
+        state.combatDepth ??= runtimeCombatDepthFromConstants();
+        state.combatDepth.position = z;
+      }
       return { applied: true, controllerType, ...(effectiveOperation ? { operation: effectiveOperation } : {}) };
     }
 
     if (controllerType === "posadd") {
-      const { x, y } = movementAxisParamsFromOperation(effectiveOperation);
+      const { x, y, z } = movementAxisParamsFromOperation(effectiveOperation);
       state.pos = { x: state.pos.x + (x ?? 0), y: state.pos.y + (y ?? 0) };
+      if (z !== undefined) {
+        state.combatDepth ??= runtimeCombatDepthFromConstants();
+        state.combatDepth.position += z;
+      }
       return { applied: true, controllerType, ...(effectiveOperation ? { operation: effectiveOperation } : {}) };
     }
 
@@ -90,8 +99,8 @@ export function resolveRuntimeKinematicControllerOperation(
     return operation?.controllerType === "gravity" ? operation : { kind: "kinematic", controllerType: "gravity", y: 0.55 };
   }
   const movementOperation = operation?.controllerType === controllerType ? operation : undefined;
-  const { x, y } = movementAxisParams(controller, state, context, movementOperation);
-  if (x === undefined && y === undefined) {
+  const { x, y, z } = movementAxisParams(controller, state, context, movementOperation);
+  if (x === undefined && y === undefined && z === undefined) {
     return undefined;
   }
   return {
@@ -99,11 +108,12 @@ export function resolveRuntimeKinematicControllerOperation(
     controllerType,
     ...(x !== undefined ? { x } : {}),
     ...(y !== undefined ? { y } : {}),
+    ...(z !== undefined ? { z } : {}),
   };
 }
 
-function movementAxisParamsFromOperation(operation?: KinematicControllerOp): { x?: number; y?: number } {
-  return operation && operation.controllerType !== "gravity" ? { x: operation.x, y: operation.y } : {};
+function movementAxisParamsFromOperation(operation?: KinematicControllerOp): { x?: number; y?: number; z?: number } {
+  return operation && operation.controllerType !== "gravity" ? { x: operation.x, y: operation.y, z: operation.z } : {};
 }
 
 function movementAxisParams(
@@ -111,11 +121,15 @@ function movementAxisParams(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext,
   operation?: MovementKinematicControllerOp,
-): { x?: number; y?: number } {
+): { x?: number; y?: number; z?: number } {
   const pair = pairParam(controller, state, context, "value");
   return {
     x: operation?.x ?? numberParam(controller, state, context, "x") ?? pair?.[0],
     y: operation?.y ?? numberParam(controller, state, context, "y") ?? pair?.[1],
+    z:
+      controller.normalizedType === "posset" || controller.normalizedType === "posadd"
+        ? operation?.z ?? numberParam(controller, state, context, "z")
+        : undefined,
   };
 }
 

@@ -308,6 +308,8 @@ describe("ExpressionEvaluator", () => {
     ).toBe(0);
     expect(enemyNearNegativeUnsupported).toEqual(["enemynear(negative)"]);
     expect(evaluateExpression("EnemyNear, Pos X = 108", { self: state, opponent })).toBe(1);
+    state.combatDepth = { position: 12, size: [3, 3], attack: [4, 4] };
+    expect(evaluateExpression("Pos Z = 12", { self: state, opponent })).toBe(1);
     expect(
       evaluateExpression("Target(77), Life = 1000 && Target, StateNo = 0", {
         self: state,

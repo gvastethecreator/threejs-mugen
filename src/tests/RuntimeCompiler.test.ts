@@ -866,16 +866,16 @@ time = 20
   it("compiles simple movement controllers into typed kinematic operations", () => {
     const velSet = compileControllerIr(controller(200, "VelSet", [], { value: "4,-3" }));
     const velAdd = compileControllerIr(controller(200, "VelAdd", [], { y: "0.5" }));
-    const posSet = compileControllerIr(controller(200, "PosSet", [], { x: "12", y: "-24" }));
-    const posAdd = compileControllerIr(controller(200, "PosAdd", [], { value: "8,-2" }));
+    const posSet = compileControllerIr(controller(200, "PosSet", [], { x: "12", y: "-24", z: "9" }));
+    const posAdd = compileControllerIr(controller(200, "PosAdd", [], { value: "8,-2", z: "-3" }));
     const hitVelSet = compileControllerIr(controller(200, "HitVelSet", [], { x: "1", y: "0" }));
     const gravity = compileControllerIr(controller(200, "Gravity", [], {}));
     const dynamic = compileControllerIr(controller(200, "VelAdd", [], { y: "Const(movement.yaccel)" }));
 
     expect(velSet.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: 4, y: -3 });
     expect(velAdd.operation).toEqual({ kind: "kinematic", controllerType: "veladd", y: 0.5 });
-    expect(posSet.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 12, y: -24 });
-    expect(posAdd.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 8, y: -2 });
+    expect(posSet.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 12, y: -24, z: 9 });
+    expect(posAdd.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 8, y: -2, z: -3 });
     expect(hitVelSet.operation).toEqual({ kind: "kinematic", controllerType: "hitvelset", x: 1, y: 0 });
     expect(gravity.operation).toEqual({ kind: "kinematic", controllerType: "gravity", y: 0.55 });
     expect(dynamic.operation).toBeUndefined();
