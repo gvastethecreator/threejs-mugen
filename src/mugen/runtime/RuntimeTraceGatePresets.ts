@@ -8602,6 +8602,7 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             mode: "ikemen-tag",
             drawRootIds: ["p1", "p3", "p2"],
             cameraRootIds: ["p1", "p3", "p2"],
+            collisionRootIds: ["p1", "p3", "p2"],
           },
         ],
         requiredFinalActors: [
@@ -8670,6 +8671,7 @@ export function createSyntheticImportedIkemenActiveRootPresentationTraceArtifact
             mode: "ikemen-tag",
             drawRootIds: ["p3", "p2"],
             cameraRootIds: ["p3", "p2"],
+            collisionRootIds: ["p3", "p2"],
             minFrames: 2,
           },
         ],

@@ -34,6 +34,16 @@ export type RuntimeRootCameraReason =
   | "standby"
   | "screenbound-disabled";
 
+export type RuntimeRootCollisionReason =
+  | "pair"
+  | "tag-active"
+  | "not-pair"
+  | "missing-team-state"
+  | "disabled"
+  | "non-player"
+  | "invalid-side"
+  | "standby";
+
 export type RuntimeRootPresentationEntry = {
   id: string;
   side: RuntimeTeamSide | null;
@@ -41,14 +51,17 @@ export type RuntimeRootPresentationEntry = {
   drawReason: RuntimeRootDrawReason;
   cameraX: boolean;
   cameraReason: RuntimeRootCameraReason;
+  collisionDebug: boolean;
+  collisionReason: RuntimeRootCollisionReason;
 };
 
 export type RuntimeRootPresentationDiagnostic = {
-  schema: "RuntimeRootPresentation/v0";
+  schema: "RuntimeRootPresentation/v1";
   mode: "pair" | "ikemen-tag";
   roots: RuntimeRootPresentationEntry[];
   drawRootIds: string[];
   cameraRootIds: string[];
+  collisionRootIds: string[];
 };
 
 export type RuntimeRootPresentationInput<TActor extends RuntimeRootPresentationActor> = {
@@ -68,11 +81,12 @@ export class RuntimeRootPresentationWorld {
     const roots = input.roots.map((actor) => entryFor(actor, pair.has(actor), tagMode));
 
     return {
-      schema: "RuntimeRootPresentation/v0",
+      schema: "RuntimeRootPresentation/v1",
       mode: tagMode ? "ikemen-tag" : "pair",
       roots,
       drawRootIds: tagMode ? orderedRootIds(roots, "draw") : input.playableRoots.map((root) => root.id),
       cameraRootIds: tagMode ? orderedRootIds(roots, "cameraX") : input.playableRoots.map((root) => root.id),
+      collisionRootIds: tagMode ? orderedRootIds(roots, "collisionDebug") : input.playableRoots.map((root) => root.id),
     };
   }
 }
@@ -91,6 +105,8 @@ function entryFor(
       drawReason: pairOwned ? "pair" : "not-pair",
       cameraX: pairOwned,
       cameraReason: pairOwned ? "pair" : "not-pair",
+      collisionDebug: pairOwned,
+      collisionReason: pairOwned ? "pair" : "not-pair",
     };
   }
 
@@ -103,6 +119,8 @@ function entryFor(
       drawReason: unavailableReason,
       cameraX: false,
       cameraReason: unavailableReason,
+      collisionDebug: false,
+      collisionReason: unavailableReason,
     };
   }
 
@@ -116,6 +134,8 @@ function entryFor(
     drawReason: standby ? "standby-proxy" : invisible ? "invisible" : "tag-active",
     cameraX: !standby && !cameraDisabled,
     cameraReason: standby ? "standby" : cameraDisabled ? "screenbound-disabled" : "tag-active",
+    collisionDebug: !standby,
+    collisionReason: standby ? "standby" : "tag-active",
   };
 }
 
@@ -133,7 +153,7 @@ function unavailableTagReason(
 
 function orderedRootIds(
   roots: readonly RuntimeRootPresentationEntry[],
-  key: "draw" | "cameraX",
+  key: "draw" | "cameraX" | "collisionDebug",
 ): string[] {
   return ([1, 2] as const).flatMap((side) => roots
     .filter((root) => root.side === side && root[key])

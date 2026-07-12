@@ -2,7 +2,7 @@
 
 ## Active frontier - 2026-07-12
 
-Wayfinder 102 is closed. Wayfinder 103 is ready: independent active-root collision-debug ids, strict renderer resolution, exact trace IDs, desktop/mobile handoff/reset proof, no push/combat widening.
+Wayfinder 103 is closed: independent active-root collision-debug ids, strict renderer resolution, exact trace IDs, and desktop/mobile handoff/reset proof pass without push/combat widening. Wayfinder 104 now maps plural active-root body push before implementation.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 
@@ -14,6 +14,10 @@ Authoritative horizon docs:
 - `CONSTRUCTION_WAVES.md`: practical wave plan with build packages, dependencies, acceptance gates, anti-claims, and next rounds.
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
+
+## 2026-07-12 Active-root Diagnostic Collision Checkpoint
+
+`RuntimeRootPresentation/v1` and Three.js now expose selected active-root Clsn1/Clsn2 without changing push or combat authority. Full gates pass 543/543 traces, 176 files / 1798 tests, TypeScript 7, build, boundaries, and desktop/mobile smoke. Wayfinder 104 maps plural body push; scores remain unchanged.
 
 ## 2026-07-11 Active-root Presentation Checkpoint
 

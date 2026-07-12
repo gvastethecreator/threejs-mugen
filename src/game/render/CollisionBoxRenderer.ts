@@ -18,12 +18,17 @@ export class CollisionBoxRenderer {
     opacity: 0.24,
     depthWrite: false,
   });
+  private actorIds: string[] = [];
+  private hitBoxCount = 0;
+  private hurtBoxCount = 0;
 
   update(actors: ActorSnapshot[], options: { showClsn1: boolean; showClsn2: boolean }): void {
     this.clear();
+    this.actorIds = actors.map(({ id }) => id);
     for (const actor of actors) {
       if (options.showClsn2) {
         for (const box of actor.clsn2) {
+          this.hurtBoxCount += 1;
           const projected = projectCollisionBox(actor, box);
           const mesh = createRect(projected.x, projected.y, projected.width, projected.height, this.hurtMaterial);
           applyThreePresentationOrder(mesh, this.hurtMaterial, debugPresentationOrder(1));
@@ -33,6 +38,7 @@ export class CollisionBoxRenderer {
       }
       if (options.showClsn1) {
         for (const box of actor.clsn1) {
+          this.hitBoxCount += 1;
           const projected = projectCollisionBox(actor, box);
           const mesh = createRect(projected.x, projected.y, projected.width, projected.height, this.hitMaterial);
           applyThreePresentationOrder(mesh, this.hitMaterial, debugPresentationOrder(2));
@@ -49,7 +55,18 @@ export class CollisionBoxRenderer {
     this.hurtMaterial.dispose();
   }
 
+  getDiagnostics(): { actorIds: string[]; hitBoxCount: number; hurtBoxCount: number } {
+    return {
+      actorIds: [...this.actorIds],
+      hitBoxCount: this.hitBoxCount,
+      hurtBoxCount: this.hurtBoxCount,
+    };
+  }
+
   private clear(): void {
+    this.actorIds = [];
+    this.hitBoxCount = 0;
+    this.hurtBoxCount = 0;
     for (const child of [...this.group.children]) {
       this.group.remove(child);
       if (child instanceof THREE.Mesh) {

@@ -259,6 +259,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           ...presentation,
           drawRootIds: [...presentation.drawRootIds],
           cameraRootIds: [...presentation.cameraRootIds],
+          collisionRootIds: [...presentation.collisionRootIds],
         })),
         actorFrames: gate.evidence.actorFrames.map((actor) => ({ ...actor })),
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
@@ -763,6 +764,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
       ...requirement,
       drawRootIds: [...requirement.drawRootIds],
       cameraRootIds: [...requirement.cameraRootIds],
+      collisionRootIds: [...requirement.collisionRootIds],
     })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrameSequences: gate.requiredActorFrameSequences?.map((sequence) => ({

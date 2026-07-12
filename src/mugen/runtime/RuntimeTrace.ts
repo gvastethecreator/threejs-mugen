@@ -928,6 +928,7 @@ export type RuntimeTraceRootPresentationFrameRequirement = {
   mode?: NonNullable<MugenSnapshot["rootPresentation"]>["mode"];
   drawRootIds: string[];
   cameraRootIds: string[];
+  collisionRootIds: string[];
   minFrames?: number;
 };
 
@@ -935,6 +936,7 @@ export type RuntimeTraceGateRootPresentationEvidence = {
   mode: NonNullable<MugenSnapshot["rootPresentation"]>["mode"];
   drawRootIds: string[];
   cameraRootIds: string[];
+  collisionRootIds: string[];
   firstTick: number;
   lastTick: number;
   frames: number;
@@ -1415,6 +1417,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
             mode: frame.rootPresentation.mode,
             drawRootIds: [...frame.rootPresentation.drawRootIds],
             cameraRootIds: [...frame.rootPresentation.cameraRootIds],
+            collisionRootIds: [...frame.rootPresentation.collisionRootIds],
             firstTick: frame.tick,
             lastTick: frame.tick,
             frames: 1,
@@ -3099,11 +3102,11 @@ function describeStageFrameRequirement(requirement: RuntimeTraceStageFrameRequir
 function rootPresentationFrameEvidenceKey(
   presentation: NonNullable<RuntimeTraceFrame["rootPresentation"]>,
 ): string {
-  return `${presentation.mode}:${presentation.drawRootIds.join(",")}:${presentation.cameraRootIds.join(",")}`;
+  return `${presentation.mode}:${presentation.drawRootIds.join(",")}:${presentation.cameraRootIds.join(",")}:${presentation.collisionRootIds.join(",")}`;
 }
 
 function rootPresentationGateEvidenceKey(presentation: RuntimeTraceGateRootPresentationEvidence): string {
-  return `${presentation.mode}:${presentation.drawRootIds.join(",")}:${presentation.cameraRootIds.join(",")}`;
+  return `${presentation.mode}:${presentation.drawRootIds.join(",")}:${presentation.cameraRootIds.join(",")}:${presentation.collisionRootIds.join(",")}`;
 }
 
 function matchesRootPresentationFrameRequirement(
@@ -3113,11 +3116,12 @@ function matchesRootPresentationFrameRequirement(
   return (requirement.mode === undefined || evidence.mode === requirement.mode)
     && sameOrderedStrings(evidence.drawRootIds, requirement.drawRootIds)
     && sameOrderedStrings(evidence.cameraRootIds, requirement.cameraRootIds)
+    && sameOrderedStrings(evidence.collisionRootIds, requirement.collisionRootIds)
     && evidence.frames >= (requirement.minFrames ?? 1);
 }
 
 function describeRootPresentationFrameRequirement(requirement: RuntimeTraceRootPresentationFrameRequirement): string {
-  return `${requirement.mode ?? "any"} draw=${requirement.drawRootIds.join(" -> ")} camera=${requirement.cameraRootIds.join(" -> ")} frames>=${requirement.minFrames ?? 1}`;
+  return `${requirement.mode ?? "any"} draw=${requirement.drawRootIds.join(" -> ")} camera=${requirement.cameraRootIds.join(" -> ")} collision=${requirement.collisionRootIds.join(" -> ")} frames>=${requirement.minFrames ?? 1}`;
 }
 
 function sameOrderedStrings(left: readonly string[], right: readonly string[]): boolean {

@@ -90,7 +90,10 @@ export class ThreeMugenRenderer implements MugenRenderer {
     const presentedRoots = resolveRootPresentationActors(snapshot);
     await this.characters.update([...presentedRoots, ...effects]);
     await this.hitSparks.update([...snapshot.actors, ...effects], snapshot.tick);
-    const collisionActors = [...snapshot.actors, ...effects.filter((effect) => effect.clsn1.length > 0 || effect.clsn2.length > 0)];
+    const collisionActors = [
+      ...resolveRootCollisionActors(snapshot),
+      ...effects.filter((effect) => effect.clsn1.length > 0 || effect.clsn2.length > 0),
+    ];
     this.boxes.update(collisionActors, {
       showClsn1: snapshot.showClsn1,
       showClsn2: snapshot.showClsn2,
@@ -163,6 +166,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     characters: ReturnType<CharacterRenderer["getDiagnostics"]>;
     stage: ReturnType<AxisRenderer["getDiagnostics"]>;
     presentationGroups: { stage: number; characters: number; hitSparks: number; collision: number };
+    collision: ReturnType<CollisionBoxRenderer["getDiagnostics"]>;
   } {
     return {
       size: this.size,
@@ -180,6 +184,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
       hitSparks: this.hitSparks.getDiagnostics(),
       characters: this.characters.getDiagnostics(),
       stage: this.axis.getDiagnostics(),
+      collision: this.boxes.getDiagnostics(),
       presentationGroups: {
         stage: this.axis.group.renderOrder,
         characters: this.characters.group.renderOrder,
@@ -209,6 +214,21 @@ export function resolveRootPresentationActors(
   snapshot: Pick<MugenSnapshot, "actors" | "reserveActors" | "rootPresentation">,
 ): ActorSnapshot[] {
   if (!snapshot.rootPresentation) return snapshot.actors;
+  return resolveRootActors(snapshot, snapshot.rootPresentation.drawRootIds, "draw");
+}
+
+export function resolveRootCollisionActors(
+  snapshot: Pick<MugenSnapshot, "actors" | "reserveActors" | "rootPresentation">,
+): ActorSnapshot[] {
+  if (!snapshot.rootPresentation) return snapshot.actors;
+  return resolveRootActors(snapshot, snapshot.rootPresentation.collisionRootIds, "collision");
+}
+
+function resolveRootActors(
+  snapshot: Pick<MugenSnapshot, "actors" | "reserveActors">,
+  ids: readonly string[],
+  consumer: "draw" | "collision",
+): ActorSnapshot[] {
 
   const roots = [...snapshot.actors, ...(snapshot.reserveActors ?? [])];
   const byId = new Map<string, ActorSnapshot>();
@@ -218,11 +238,11 @@ export function resolveRootPresentationActors(
   }
 
   const selected = new Set<string>();
-  return snapshot.rootPresentation.drawRootIds.map((id) => {
-    if (selected.has(id)) throw new Error(`Duplicate root presentation draw id ${id}`);
+  return ids.map((id) => {
+    if (selected.has(id)) throw new Error(`Duplicate root presentation ${consumer} id ${id}`);
     selected.add(id);
     const root = byId.get(id);
-    if (!root) throw new Error(`Unknown root presentation draw actor ${id}`);
+    if (!root) throw new Error(`Unknown root presentation ${consumer} actor ${id}`);
     return root;
   });
 }

@@ -379,11 +379,13 @@ async function waitForTagPresentationState(page, drawRootIds) {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const presentation = bridge?.snapshot?.rootPresentation;
     const rendered = bridge?.renderer?.characters?.map((actor) => actor.actorId) ?? [];
+    const collisionActors = bridge?.renderer?.collision?.actorIds ?? [];
     return bridge?.qa?.scenario === "ikemen-tag-presentation"
       && presentation?.drawRootIds?.join(",") === expectedIds.join(",")
       && presentation?.cameraRootIds?.join(",") === expectedIds.join(",")
+      && presentation?.collisionRootIds?.join(",") === expectedIds.join(",")
       && rendered.length === expectedIds.length
-      && expectedIds.every((id) => rendered.includes(id));
+      && expectedIds.every((id) => rendered.includes(id) && collisionActors.includes(id));
   }, drawRootIds, { timeout: 5000 });
 }
 
@@ -396,7 +398,10 @@ async function readTagPresentationState(page, canvasPixels) {
       reserveActorIds: bridge?.snapshot?.reserveActors?.map((actor) => actor.id) ?? [],
       drawRootIds: bridge?.snapshot?.rootPresentation?.drawRootIds ?? [],
       cameraRootIds: bridge?.snapshot?.rootPresentation?.cameraRootIds ?? [],
+      collisionRootIds: bridge?.snapshot?.rootPresentation?.collisionRootIds ?? [],
       rendererActorIds: bridge?.renderer?.characters?.map((actor) => actor.actorId) ?? [],
+      collisionActorIds: bridge?.renderer?.collision?.actorIds ?? [],
+      collisionBoxCount: (bridge?.renderer?.collision?.hitBoxCount ?? 0) + (bridge?.renderer?.collision?.hurtBoxCount ?? 0),
       hudNames: [...document.querySelectorAll(".hud-fighter-name")].map((node) => node.textContent?.trim() ?? ""),
       presentedRoots:
         bridge?.actorRegistry?.rootParticipation?.roots
@@ -1889,6 +1894,8 @@ function assertSmoke(diagnostics) {
     tagPresentation.baseline.reserveActorIds.join(",") !== "p3,p4" ||
     tagPresentation.baseline.drawRootIds.join(",") !== expectedPair ||
     tagPresentation.baseline.cameraRootIds.join(",") !== expectedPair ||
+    tagPresentation.baseline.collisionRootIds.join(",") !== expectedPair ||
+    !sameIdSet(tagPresentation.baseline.collisionActorIds, ["p1", "p2"]) ||
     !sameIdSet(tagPresentation.baseline.rendererActorIds, ["p1", "p2"])
   ) {
     failures.push("tag-presentation baseline: pair snapshot, reserves, or renderer selection was incorrect");
@@ -1900,6 +1907,10 @@ function assertSmoke(diagnostics) {
       state.reserveActorIds.join(",") !== "p3,p4" ||
       state.drawRootIds.join(",") !== expectedHandoff ||
       state.cameraRootIds.join(",") !== expectedHandoff ||
+      state.collisionRootIds.join(",") !== expectedHandoff ||
+      !sameIdSet(state.collisionActorIds, ["p3", "p2"]) ||
+      state.collisionActorIds.includes("p1") ||
+      state.collisionBoxCount < 1 ||
       !sameIdSet(state.rendererActorIds, ["p3", "p2"]) ||
       state.rendererActorIds.includes("p1") ||
       state.hudNames.join(",") !== "Nova Boxer,Mira Volt" ||
@@ -1915,6 +1926,9 @@ function assertSmoke(diagnostics) {
   if (
     tagPresentation.reset.drawRootIds.join(",") !== expectedPair ||
     tagPresentation.reset.cameraRootIds.join(",") !== expectedPair ||
+    tagPresentation.reset.collisionRootIds.join(",") !== expectedPair ||
+    !sameIdSet(tagPresentation.reset.collisionActorIds, ["p1", "p2"]) ||
+    tagPresentation.reset.collisionActorIds.includes("p3") ||
     !sameIdSet(tagPresentation.reset.rendererActorIds, ["p1", "p2"]) ||
     tagPresentation.reset.rendererActorIds.includes("p3")
   ) {
@@ -2495,6 +2509,8 @@ function summarizeDiagnostics(diagnostics) {
       reset: diagnostics.checks.tagPresentation.reset.drawRootIds,
       desktopRenderer: diagnostics.checks.tagPresentation.desktop.rendererActorIds,
       mobileRenderer: diagnostics.checks.tagPresentation.mobile.rendererActorIds,
+      desktopCollision: diagnostics.checks.tagPresentation.desktop.collisionActorIds,
+      mobileCollision: diagnostics.checks.tagPresentation.mobile.collisionActorIds,
       desktopUniqueColors: diagnostics.checks.tagPresentation.desktop.canvasPixels.uniqueColors,
       mobileUniqueColors: diagnostics.checks.tagPresentation.mobile.canvasPixels.uniqueColors,
     },

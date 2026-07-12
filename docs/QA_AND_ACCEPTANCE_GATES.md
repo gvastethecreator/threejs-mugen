@@ -1,5 +1,9 @@
 ﻿# QA And Acceptance Gates
 
+## Active-root diagnostic collision gate
+
+Acceptance requires `RuntimeRootPresentation/v1` exact collision ids, strict pair/reserve resolution, no duplicate/unknown-id fallback, unchanged effect overlays, stable behavior checksums, and desktop/mobile `[p1,p2] -> [p3,p2] -> [p1,p2]` handoff/reset proof with nonzero Clsn boxes and stale cleanup. Collision ids must not be consumed by push, hit admission, targets, effects, round, HUD/audio, or resources.
+
 ## SprPriority L2 gate
 
 Acceptance requires official player clamp `-5..5`, unchanged broader effect depth support, effective mesh z matching an independent oracle, strict higher-priority-front ordering, both facings, and desktop/mobile smoke.

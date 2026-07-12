@@ -15,15 +15,16 @@ describe("RuntimeRootPresentationWorld", () => {
     });
 
     expect(diagnostic).toEqual({
-      schema: "RuntimeRootPresentation/v0",
+      schema: "RuntimeRootPresentation/v1",
       mode: "ikemen-tag",
       roots: [
-        expect.objectContaining({ id: "p1", side: 1, draw: false, drawReason: "standby-proxy", cameraX: false }),
-        expect.objectContaining({ id: "p2", side: 2, draw: true, drawReason: "tag-active", cameraX: true }),
-        expect.objectContaining({ id: "p3", side: 1, draw: true, drawReason: "tag-active", cameraX: true }),
+        expect.objectContaining({ id: "p1", side: 1, draw: false, cameraX: false, collisionDebug: false, collisionReason: "standby" }),
+        expect.objectContaining({ id: "p2", side: 2, draw: true, cameraX: true, collisionDebug: true, collisionReason: "tag-active" }),
+        expect.objectContaining({ id: "p3", side: 1, draw: true, cameraX: true, collisionDebug: true, collisionReason: "tag-active" }),
       ],
       drawRootIds: ["p3", "p2"],
       cameraRootIds: ["p3", "p2"],
+      collisionRootIds: ["p3", "p2"],
     });
   });
 
@@ -40,6 +41,7 @@ describe("RuntimeRootPresentationWorld", () => {
 
     expect(diagnostic.drawRootIds).toEqual(["p2"]);
     expect(diagnostic.cameraRootIds).toEqual(["p1"]);
+    expect(diagnostic.collisionRootIds).toEqual(["p1", "p2"]);
     expect(diagnostic.roots).toEqual([
       expect.objectContaining({ id: "p1", drawReason: "invisible", cameraReason: "tag-active" }),
       expect.objectContaining({ id: "p2", drawReason: "tag-active", cameraReason: "screenbound-disabled" }),
@@ -59,6 +61,7 @@ describe("RuntimeRootPresentationWorld", () => {
     });
     expect(oneSided.drawRootIds).toEqual(["p2"]);
     expect(oneSided.cameraRootIds).toEqual(["p2"]);
+    expect(oneSided.collisionRootIds).toEqual(["p2"]);
 
     p2.runtime.teamState.standby = true;
     const empty = new RuntimeRootPresentationWorld().diagnostic({
@@ -69,6 +72,7 @@ describe("RuntimeRootPresentationWorld", () => {
     });
     expect(empty.drawRootIds).toEqual([]);
     expect(empty.cameraRootIds).toEqual([]);
+    expect(empty.collisionRootIds).toEqual([]);
   });
 
   it("fails Tag presentation closed for unavailable and invalid roots", () => {
@@ -111,6 +115,7 @@ describe("RuntimeRootPresentationWorld", () => {
       expect(diagnostic.mode).toBe("pair");
       expect(diagnostic.drawRootIds).toEqual(["p1", "p2"]);
       expect(diagnostic.cameraRootIds).toEqual(["p1", "p2"]);
+      expect(diagnostic.collisionRootIds).toEqual(["p1", "p2"]);
     }
 
     const left = actor("left");
@@ -120,7 +125,7 @@ describe("RuntimeRootPresentationWorld", () => {
       teamMode: "single",
       roots: [left, right],
       playableRoots: [left, right],
-    })).toMatchObject({ drawRootIds: ["left", "right"], cameraRootIds: ["left", "right"] });
+    })).toMatchObject({ drawRootIds: ["left", "right"], cameraRootIds: ["left", "right"], collisionRootIds: ["left", "right"] });
   });
 
   it("rejects duplicate roots and an invalid playable pair", () => {

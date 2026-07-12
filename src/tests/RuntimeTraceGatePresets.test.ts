@@ -16075,14 +16075,14 @@ describe("RuntimeTraceGatePresets", () => {
       && frame.rootPresentation.cameraRootIds.join(",") === "p3,p2"
     )).toBe(true);
     expect(artifact.gates[0]?.requirements.requiredRootPresentationFrames).toEqual([
-      { mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"], minFrames: 2 },
+      { mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"], collisionRootIds: ["p3", "p2"], minFrames: 2 },
     ]);
     expect(artifact.gates[0]?.requirements.requiredEffectStores).toEqual([
       { ownerId: "p1", maxTotal: 0 },
       { ownerId: "p2", maxTotal: 0 },
     ]);
     expect(artifact.gates[0]?.evidence.rootPresentationFrames).toEqual([
-      expect.objectContaining({ mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"] }),
+      expect.objectContaining({ mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"], collisionRootIds: ["p3", "p2"] }),
     ]);
     expect(artifact.trace.checksum).toBe("97255586");
     expect(artifact.trace.frameChecksums).toEqual(["65b85d54", "65b00e8f"]);

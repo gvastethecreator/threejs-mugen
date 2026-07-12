@@ -1,6 +1,15 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-12 IKEMEN active-root diagnostic collision research
+## Global report - 2026-07-12 IKEMEN active-root diagnostic collision runtime
+
+- Contract: `RuntimeRootPresentation/v1` publishes independent draw, camera, and collision-debug decisions plus exact ordered ids.
+- Renderer: strict pair/reserve resolution feeds selected active roots plus unchanged effect actors into `CollisionBoxRenderer`; collision diagnostics expose actor/Clsn counts.
+- Isolation: collision ids never enter push, hit admission, targets, effects, HUD/audio, round, or resources; standby/disabled/nonplayer/invalid roots fail closed.
+- Trace/browser: 543/543 traces pass; smoke proves `[p1,p2] -> [p3,p2] -> [p1,p2]` collision handoff/reset on desktop/mobile with two boxes and 1006/1163-color nonblank canvases.
+- Verification: 176 files / 1798 tests, TypeScript 7 build, boundaries, smoke, visual inspection, and diff gate pass. Build bundle: 1,609.20 kB.
+- Global status: Wayfinder 103 resolved without score movement; Wayfinder 104 maps plural active-root body push.
+
+## Previous global report - 2026-07-12 IKEMEN active-root diagnostic collision research
 
 - Source: debug Clsn enrollment is distinct from collision/hit admission; standby Clsn1 is suppressed while standby Clsn2 has its own class.
 - Decision: presentation v1 adds independent collision reasons/ids; initial Tag cut excludes standby proxies but includes invisible/camera-excluded active roots.

@@ -64,3 +64,7 @@ Remove standby exclusion when Tag choreography executes and renderer supports di
 Allowed: implementation-ready P3-P8 Clsn1/Clsn2 diagnostic selection and renderer handoff.
 
 Blocked: standby Clsn2 parity, size geometry, actor axes, push, hit mutation, exact colors/text/rotation/localcoord, scores, or full collision parity.
+
+## Implementation Outcome
+
+Wayfinder 103 implemented the selected boundary. `RuntimeRootPresentation/v1` publishes exact collision ids independently from draw/camera; Three.js strictly resolves pair/reserve actors and feeds selected roots plus unchanged effect actors into `CollisionBoxRenderer`. The existing required presentation trace remains checksum-stable inside 543/543 artifacts while exact collision ids are now gated. Desktop/mobile smoke proves `[p1,p2] -> [p3,p2] -> [p1,p2]`, two collision boxes, 1006/1163-color nonblank canvases, and stale cleanup. Full gates pass 176 files / 1798 tests, TypeScript 7, production build, boundaries, visual inspection, and diff audit. Push, hit admission, targets, and scores remain unchanged.

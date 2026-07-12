@@ -318,11 +318,12 @@ describe("RuntimeSnapshotWorld", () => {
       actors: [],
     };
     const rootPresentation = {
-      schema: "RuntimeRootPresentation/v0" as const,
+      schema: "RuntimeRootPresentation/v1" as const,
       mode: "ikemen-tag" as const,
       roots: [],
       drawRootIds: ["p1", "p2"],
       cameraRootIds: ["p1", "p2"],
+      collisionRootIds: ["p1", "p2"],
     };
 
     const snapshot = world.match({

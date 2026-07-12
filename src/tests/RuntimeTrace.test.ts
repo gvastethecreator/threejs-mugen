@@ -140,6 +140,7 @@ describe("RuntimeTrace", () => {
       mode: "ikemen-tag",
       drawRootIds: ["p3", "p2"],
       cameraRootIds: ["p3", "p2"],
+      collisionRootIds: ["p3", "p2"],
     });
     expect(evaluateRuntimeTraceGate(trace, {
       label: "root-presentation-gate",
@@ -147,12 +148,13 @@ describe("RuntimeTrace", () => {
         mode: "ikemen-tag",
         drawRootIds: ["p3", "p2"],
         cameraRootIds: ["p3", "p2"],
+        collisionRootIds: ["p3", "p2"],
         minFrames: 2,
       }],
     })).toMatchObject({ passed: true, failures: [] });
     expect(evaluateRuntimeTraceGate(trace, {
       label: "wrong-root-presentation-order",
-      requiredRootPresentationFrames: [{ drawRootIds: ["p2", "p3"], cameraRootIds: ["p2", "p3"] }],
+      requiredRootPresentationFrames: [{ drawRootIds: ["p2", "p3"], cameraRootIds: ["p2", "p3"], collisionRootIds: ["p2", "p3"] }],
     })).toMatchObject({ passed: false, failures: [expect.stringContaining("p2 -> p3")] });
 
     const widened = structuredClone(trace);

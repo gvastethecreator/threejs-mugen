@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-12 Active-root diagnostic collision evidence note
+
+`RuntimeRootPresentation/v1`, 543/543 traces, and desktop/mobile smoke now prove bounded active-root Clsn1/Clsn2 diagnostic handoff with strict pair/reserve resolution and stale cleanup. Scores remain unchanged because body push, hit admission, targets, exact standby Clsn2 classes, and multi-root combat remain blocked.
+
 ## 2026-07-12 Active-root stage constraint evidence note
 
 Required checksum `870f8871` and 543/543 traces prove already-live explicit-Tag P3-P8 roots can apply current sandbox stage-X constraints after local motion while targets, effects, push, collision debug, and combat remain unchanged. `RuntimeRootPhaseCapabilities/v2` exposes this narrow capability. Scores remain unchanged because collision/push/combat and exact IKEMEN bounds parity remain blocked.
@@ -52,11 +56,11 @@ Automatic common KO sound and tick-active `NoKOSnd` suppression are green under 
 
 Contextual player/common SND routing is green under focused tests and 524/524 traces. Score unchanged because broader ownership and full audio parity remain open.
 
-Last updated: 2026-07-11
+Last updated: 2026-07-12
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
-Latest evidence note: `RuntimeRootPresentation/v0` plus required checksum `97255586` and desktop/mobile smoke now prove bounded active-root body/shadow/camera handoff with stable P1/P2 gameplay/HUD ownership. This improves the explicit IKEMEN runtime but does not move scores until stage constraints, collision/combat, root-key effects, exact Tag choreography, and later gameplay owners are closed.
+Latest evidence note: `RuntimeRootPresentation/v1` plus 543/543 traces and desktop/mobile smoke now prove bounded active-root body/shadow/camera and diagnostic collision handoff with stable P1/P2 gameplay/HUD ownership. This improves the explicit IKEMEN runtime but does not move scores until plural push, collision admission/combat, root-key effects, exact Tag choreography, and later gameplay owners are closed.
 
 Latest evidence note: numbered Web Audio playback channels are now actor-local, so matching P1/P2/helper channel numbers do not cross-interrupt. This is meaningful playable-audio correctness but does not move scores until broader imported corpus, free-channel allocation, voice-channel cancellation, common/system audio ownership, and perceptual/browser evidence are closed.
 

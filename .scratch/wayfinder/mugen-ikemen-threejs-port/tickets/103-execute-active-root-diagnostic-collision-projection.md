@@ -1,7 +1,7 @@
 # Execute Active-root Diagnostic Collision Projection
 
 Type: implementation
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
