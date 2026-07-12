@@ -127,7 +127,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Map deferred hit target acquisition](tickets/112-map-deferred-hit-target-acquisition.md)
+- [Model deferred HitDef contact memory](tickets/113-model-deferred-hitdef-contact-memory.md)
 
 ## Not Yet Specified
 

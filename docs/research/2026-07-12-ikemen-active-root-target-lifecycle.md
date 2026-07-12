@@ -15,7 +15,7 @@ Two independent boundaries are missing. Existing target memory and bindings are 
 ## Source Facts
 
 1. A successful non-projectile HitDef result appends the getter id to a target buffer before GetHitVars mutation: [IKEMEN hit result target buffer](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L10815-L10835).
-2. Character update later copies buffered HitDef targets into live targets and clears the buffer, explicitly reducing processing-order errors: [IKEMEN deferred target commit](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L12312-L12333).
+2. Character update later copies buffered HitDef-contact ids into the separate `hitdefTargets` list and clears that buffer, explicitly reducing processing-order errors: [IKEMEN deferred contact commit](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L12312-L12333). The live CNS `targets` list is updated immediately and separately.
 
 ## Local Audit
 

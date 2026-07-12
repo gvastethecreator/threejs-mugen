@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 418 - Deferred HitDef contact-memory research
+
+Done: pinned IKEMEN source corrects the prior target-buffer assumption. Live CNS targets are acquired immediately through deduplicating `addTarget`; a separate non-projectile `hitdefTargetsBuffer` records getter contacts, commits after character update, resets with the next HitDef, and feeds hitonce/juggle/priority/reversal policy. Wayfinder 113 selects actor-local committed/pending contact ids plus post-combat commit and exact read-only root admission, preserving current pair mutation and all Projectile/Helper routes. Claim allowed: implementation-ready HitDef contact-memory contract. Claim blocked: P3-P8 direct mutation, exact hitonce/juggle/priority/reversal parity, throws, round/HUD/audio, scores, and full parity.
+
 ## Entry 417 - Active-root target maintenance
 
 Done: explicit Tag normal post-fighter execution now ages target memory once for each stable unique valid root and resolves existing TargetBind passes before BindToTarget passes against the complete exact-id root roster. Pair/Single and pause/hitpause remain unchanged. `post-fighter:target-maintenance` records actor-scoped P1-P8 evidence; invalid, disabled, non-player, and duplicate roots fail closed. Claim allowed: existing actor-key target maintenance. Claim blocked: deferred acquisition, active-root hit mutation, target-controller widening, throws, helpers/projectiles, round/HUD/audio, scores, and full parity. Wayfinder 112 maps deferred HitDef acquisition next.

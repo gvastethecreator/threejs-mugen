@@ -16,8 +16,8 @@ Not yet. The direct resolver is generic over actor type and reserve fighters alr
 
 1. Vulnerability resolves hitflags, falling/guard state, HitBy/NotHitBy PlayerNo/ID filters, and counter-hit priority before result mutation: [hittable and priority policy](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L10488-L10616).
 2. `hitResultCheck` handles existing state changes, throws, combo state, guard selection, HitOverride, and P1/P2 state ownership inside one mutation transaction: [result transaction](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L10619-L10815).
-3. A successful non-projectile result buffers the target id before GetHitVars mutation: [target buffer boundary](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L10815-L10835).
-4. Buffered HitDef targets commit later during character update to reduce processing-order errors: [deferred target commit](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L12312-L12333).
+3. A successful non-projectile result buffers the getter id into separate HitDef-contact memory before GetHitVars mutation, while live CNS target acquisition still occurs immediately: [contact buffer boundary](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L10815-L10835).
+4. Buffered HitDef-contact ids commit later during character update to reduce processing-order errors: [deferred contact commit](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L12312-L12333).
 5. Global detection sorts ReversalDef, HitDef, then ID and resolves each getter in that order: [global detection order](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/char.go#L13886-L13931).
 
 ## Local Ownership Audit

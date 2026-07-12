@@ -1,7 +1,7 @@
 # Map Deferred Hit Target Acquisition
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -21,3 +21,7 @@ Specify upstream-style per-actor HitDef target buffering and deterministic post-
 Allowed: implementation-ready deferred HitDef target acquisition contract.
 
 Blocked: active-root hit mutation, projectile/helper target parity, throws, round/HUD/audio, scores, or full parity.
+
+## Outcome
+
+Upstream disproves deferred CNS target acquisition: successful direct contact immediately calls `addTarget(getter.id)`, which deduplicates the live target list. The deferred structure is `hitdefTargetsBuffer`, a separate per-HitDef getter-contact list used by hitonce, juggle, priority, and reversal admission. It appends on direct contact, commits after character update, and clears with the next non-projectile HitDef reset. Wayfinder 113 models this contact memory without changing current CNS target timing.
