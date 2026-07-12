@@ -12,6 +12,7 @@ import type { ActorSnapshot, CharacterRuntimeState } from "./types";
 
 export type RuntimeEffectGetHitActor = {
   id: string;
+  effectOwnerId?: string;
   runtime: Pick<CharacterRuntimeState, "moveType">;
   effectActorWorld: Pick<RuntimeEffectActorWorld, "removeExplodsOnGetHit">;
 };
@@ -121,7 +122,7 @@ export class RuntimeEffectLifecycleWorld {
 
 export function markRuntimeEffectActorGotHit(actor: RuntimeEffectGetHitActor): void {
   actor.runtime.moveType = "H";
-  actor.effectActorWorld.removeExplodsOnGetHit(actor.id);
+  actor.effectActorWorld.removeExplodsOnGetHit(actor.effectOwnerId ?? actor.id);
 }
 
 function effectBindAnchor(actor: RuntimeEffectLifecycleActor): { pos: { x: number; y: number }; facing: 1 | -1 } {

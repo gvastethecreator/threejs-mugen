@@ -168,6 +168,33 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("registers exact root stores and fails closed for unknown owners", () => {
+    const world = new RuntimeEffectActorWorld();
+    const p3Store = world.registerOwner("p3");
+    const p4Store = world.registerOwner("p4");
+
+    world.spawnExplod("p3", explodInput({ id: "30", removeongethit: "1" }));
+    world.spawnHelper("p4", helperInput({ id: "40" }));
+    world.spawnProjectile("p3", projectileInput({ projid: "50" }));
+
+    expect(world.registerOwner("p3")).toBe(p3Store);
+    expect(world.getStore("p4")).toBe(p4Store);
+    expect(world.summarize(["p3", "p4"])).toEqual([
+      expect.objectContaining({ ownerId: "p3", total: 2, explods: ["p3-explod-0"], projectiles: ["p3-projectile-0"] }),
+      expect.objectContaining({ ownerId: "p4", total: 1, helpers: ["p4-helper-0"] }),
+    ]);
+
+    world.removeExplodsOnGetHit("p3");
+    expect(world.getStore("p3").explods).toEqual([]);
+    expect(world.getStore("p1").explods).toEqual([]);
+    expect(() => world.spawnExplod("p5", explodInput({ id: "60" }))).toThrow("Unknown effect actor owner p5");
+
+    world.reset();
+    expect(world.getStore("p3")).toBe(p3Store);
+    expect(world.getStore("p4")).toBe(p4Store);
+    expect(world.summarize(["p3", "p4"]).map(({ total }) => total)).toEqual([0, 0]);
+  });
+
   it("removes helpers through the runtime world without crossing owner stores", () => {
     const world = new RuntimeEffectActorWorld();
 

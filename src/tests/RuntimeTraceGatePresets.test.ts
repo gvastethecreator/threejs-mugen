@@ -16045,6 +16045,22 @@ describe("RuntimeTraceGatePresets", () => {
         explods: [],
         nextSerials: { helper: 0, projectile: 0, explod: 0 },
       }),
+      expect.objectContaining({
+        ownerId: "p3",
+        total: 0,
+        helpers: [],
+        projectiles: [],
+        explods: [],
+        nextSerials: { helper: 0, projectile: 0, explod: 0 },
+      }),
+      expect.objectContaining({
+        ownerId: "p4",
+        total: 0,
+        helpers: [],
+        projectiles: [],
+        explods: [],
+        nextSerials: { helper: 0, projectile: 0, explod: 0 },
+      }),
     ]);
     expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
       "team-standby:tagin": 1,

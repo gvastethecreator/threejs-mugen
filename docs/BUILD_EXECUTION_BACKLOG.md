@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 415 - Root-key effect stores
+
+Done: `RuntimeEffectActorWorld` now owns exact actor-keyed stores for every authoritative runtime root while preserving P1/P2 compatibility access. Unknown owners fail closed, reset clears every unique registered store, Helper get-hit cleanup resolves its root owner, and actor-registry/trace summaries expose P1-P8 ownership without activating plural effect lifecycle, presentation, or combat. Focused and full gates are recorded in the implementation report. Claim allowed: exact runtime-root effect-store ownership. Claim blocked: active-root hit mutation, plural effect execution, target parity, round/HUD/audio, scores, and full parity. Wayfinder 110 maps target aging/binding/deferred commit next.
+
 ## Entry 414 - Active-root mutation prerequisite research
 
 Done: pinned Ikemen-GO mutation ordering confirms priority/vulnerability, HitOverride/guard/state transaction, target buffering, and later target commit. Local audit rejects direct P3-P8 mutation because `RuntimeEffectActorWorld` still owns fixed P1/P2 stores and unknown root ids can alias pair effects during get-hit cleanup or future spawns. Wayfinder 109 selects exact actor-keyed root effect stores with registration, unknown-owner failure, isolation, reset, and trace proof while lifecycle/presentation/combat widening stays blocked. Claim allowed: implementation-ready ownership prerequisite. Claim blocked: active-root hit mutation, plural effect lifecycle/combat/presentation, target parity, round/HUD/audio, scores, and full parity.

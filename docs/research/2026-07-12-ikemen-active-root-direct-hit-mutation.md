@@ -59,3 +59,9 @@ The root-key registry is final ownership infrastructure, not a temporary shim. R
 Allowed: source-backed prerequisite and implementation-ready root-key effect-store contract.
 
 Blocked: active-root direct mutation, plural effect lifecycle/combat/presentation, target parity, round/HUD/audio, scores, or full parity.
+
+## Implementation Outcome
+
+Wayfinder 109 is resolved. `RuntimeEffectActorWorld` now uses exact actor-keyed stores, match construction registers every authoritative root, unknown owners fail closed, reset covers every unique store, and Helper get-hit cleanup resolves through the root owner. Registry and trace summaries now expose P1-P8 stores while effect advancement, presentation, projectile/helper combat, and direct hit mutation remain pair-owned.
+
+The next prerequisite is Wayfinder 110: actor-keyed target aging, binding, acquisition buffering, and deferred commit. Direct P3-P8 mutation remains blocked until that lifecycle has an exact schedule and regression evidence.

@@ -65,7 +65,7 @@ describe("PlayableMatchRuntime", () => {
         (phase) => /^p[3-8]$/.test(phase.actorId ?? "") && phase.id !== "fighter:controllers",
       ),
     ).toBe(false);
-    expect(runtime.getEffectActorStores().map((store) => store.ownerId)).toEqual(["p1", "p2"]);
+    expect(runtime.getEffectActorStores().map((store) => store.ownerId)).toEqual(["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"]);
 
     runtime.reset();
     expect(runtime.getSnapshot().reserveActors?.map((actor) => [actor.id, actor.runtime.teamState?.standby])).toEqual(

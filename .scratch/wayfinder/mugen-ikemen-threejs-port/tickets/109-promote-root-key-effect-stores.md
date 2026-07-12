@@ -1,7 +1,7 @@
 # Promote Root-key Effect Stores
 
 Type: implementation
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -23,3 +23,7 @@ Replace fixed P1/P2 effect stores with deterministic actor-keyed root stores so 
 Allowed: exact actor-keyed effect ownership for runtime roots.
 
 Blocked: active-root direct-hit mutation, plural effect advancement/presentation, helper/projectile combat widening, round/HUD/audio, scores, or full parity.
+
+## Outcome
+
+`RuntimeEffectActorWorld` now registers and resolves exact root ids, preserves the P1/P2 compatibility keys, rejects unknown owners, and resets every unique registered store. Match construction registers all authoritative roots before runtime use. Helper get-hit cleanup explicitly routes through its root owner. Focused root-isolation, unknown-owner, reset, registry, helper, and trace tests cover the boundary without widening effect execution.

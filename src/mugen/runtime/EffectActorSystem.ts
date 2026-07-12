@@ -65,12 +65,12 @@ export type RuntimeEffectActorStore = {
   nextProjectileSerial: number;
 };
 
-export type RuntimeEffectActorStores = {
+export type RuntimeEffectActorStores = Record<string, RuntimeEffectActorStore> & {
   p1: RuntimeEffectActorStore;
   p2: RuntimeEffectActorStore;
 };
 
-export type RuntimeEffectActorOwnerKey = keyof RuntimeEffectActorStores;
+export type RuntimeEffectActorOwnerKey = string;
 
 export type RuntimeEffectActorStoreSummary = {
   ownerId: string;
@@ -145,7 +145,18 @@ export class RuntimeEffectActorWorld {
   }
 
   getStore(ownerId: string): RuntimeEffectActorStore {
-    return this.stores[toEffectActorOwnerKey(ownerId)];
+    const store = this.stores[ownerId];
+    if (!store) throw new Error(`Unknown effect actor owner ${ownerId}`);
+    return store;
+  }
+
+  registerOwner(ownerId: string, store: RuntimeEffectActorStore = createRuntimeEffectActorStore()): RuntimeEffectActorStore {
+    if (!ownerId) throw new Error("Effect actor owner id must not be empty");
+    const current = this.stores[ownerId];
+    if (current) return current;
+    this.stores[ownerId] = store;
+    this.nextHelperRunOrderId = normalizeRuntimeHelperRunOrderIds(this.stores);
+    return store;
   }
 
   observeHelperLifecycle(observer: RuntimeHelperLifecycleObserver): () => void {
@@ -154,17 +165,19 @@ export class RuntimeEffectActorWorld {
   }
 
   reset(): void {
-    this.notifyHelpersRemoved([...this.stores.p1.helpers, ...this.stores.p2.helpers]);
-    resetRuntimeEffectActorStore(this.stores.p1);
-    resetRuntimeEffectActorStore(this.stores.p2);
+    const stores = uniqueRuntimeEffectActorStores(this.stores);
+    this.notifyHelpersRemoved(stores.flatMap(({ helpers }) => helpers));
+    for (const store of stores) resetRuntimeEffectActorStore(store);
     this.nextHelperRunOrderId = 3;
   }
 
-  summarize(ownerIds: Record<RuntimeEffectActorOwnerKey, string> = { p1: "p1", p2: "p2" }): RuntimeEffectActorStoreSummary[] {
-    return [
-      summarizeRuntimeEffectActorStore(this.stores.p1, ownerIds.p1),
-      summarizeRuntimeEffectActorStore(this.stores.p2, ownerIds.p2),
-    ];
+  summarize(ownerIds: Record<string, string> | readonly string[] = { p1: "p1", p2: "p2" }): RuntimeEffectActorStoreSummary[] {
+    if (Array.isArray(ownerIds)) {
+      return ownerIds.map((ownerId) => summarizeRuntimeEffectActorStore(this.getStore(ownerId), ownerId));
+    }
+    return Object.entries(ownerIds).map(([storeId, ownerId]) =>
+      summarizeRuntimeEffectActorStore(this.getStore(storeId), ownerId),
+    );
   }
 
   spawnExplod(ownerId: string, input: Omit<RuntimeExplodSpawnInput, "serialId">): RuntimeExplod {
@@ -368,7 +381,7 @@ export class RuntimeEffectActorWorld {
 }
 
 function normalizeRuntimeHelperRunOrderIds(stores: RuntimeEffectActorStores): number {
-  const helpers = [...stores.p1.helpers, ...stores.p2.helpers];
+  const helpers = uniqueRuntimeEffectActorStores(stores).flatMap(({ helpers: storeHelpers }) => storeHelpers);
   const assigned = helpers
     .map((helper) => helper.runOrderId)
     .filter((id) => Number.isSafeInteger(id) && id >= 3 && id < Number.MAX_SAFE_INTEGER);
@@ -408,8 +421,8 @@ export function resetRuntimeEffectActorStore(store: RuntimeEffectActorStore): vo
   store.nextProjectileSerial = 0;
 }
 
-function toEffectActorOwnerKey(ownerId: string): RuntimeEffectActorOwnerKey {
-  return ownerId === "p2" ? "p2" : "p1";
+function uniqueRuntimeEffectActorStores(stores: RuntimeEffectActorStores): RuntimeEffectActorStore[] {
+  return [...new Set(Object.values(stores))];
 }
 
 export function summarizeRuntimeEffectActorStore(

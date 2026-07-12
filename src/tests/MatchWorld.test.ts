@@ -164,7 +164,7 @@ describe("MatchWorld", () => {
           combatOwned: false,
           roundOwned: false,
           presented: false,
-          effectStoreOwned: false,
+          effectStoreOwned: true,
         }),
         expect.objectContaining({
           id: "p4",
@@ -176,7 +176,7 @@ describe("MatchWorld", () => {
           combatOwned: false,
           roundOwned: false,
           presented: false,
-          effectStoreOwned: false,
+          effectStoreOwned: true,
         }),
       ]),
     }));
@@ -190,11 +190,11 @@ describe("MatchWorld", () => {
           !root.combatOwned &&
           !root.roundOwned &&
           !root.presented &&
-          !root.effectStoreOwned,
+          root.effectStoreOwned,
       ),
     ).toBe(true);
     expect(registry.lifecycle.records.filter((record) => /^p[3-8]$/.test(record.id))).toHaveLength(6);
-    expect(registry.effectStores.map((store) => store.ownerId)).toEqual(["p1", "p2"]);
+    expect(registry.effectStores.map((store) => store.ownerId)).toEqual(["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"]);
 
     const structurallyActiveSnapshot = structuredClone(snapshot);
     structurallyActiveSnapshot.reserveActors![0]!.runtime.teamState!.standby = false;
@@ -267,10 +267,10 @@ describe("MatchWorld", () => {
       combatOwned: false,
       roundOwned: false,
       presented: false,
-      effectStoreOwned: false,
+      effectStoreOwned: true,
     });
     expect(snapshot.actors.map(({ id }) => id)).toEqual(["p1", "p2"]);
-    expect(registry.effectStores.map(({ ownerId }) => ownerId)).toEqual(["p1", "p2"]);
+    expect(registry.effectStores.map(({ ownerId }) => ownerId)).toEqual(["p1", "p2", "p3", "p4"]);
   });
 
   it("publishes current per-phase root capabilities without widening reserve execution", () => {
@@ -325,7 +325,7 @@ describe("MatchWorld", () => {
         kinematics: false,
         animation: false,
         constraints: false,
-        effects: false,
+        effects: true,
         combat: false,
         round: false,
         presentation: false,
@@ -409,7 +409,7 @@ describe("MatchWorld", () => {
       combatOwned: false,
       roundOwned: false,
       presented: false,
-      effectStoreOwned: false,
+      effectStoreOwned: true,
     });
 
     const snapshot = world.dispatch({

@@ -22,6 +22,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeDirectCombatActor = {
   id: string;
+  effectOwnerId?: string;
   label: string;
   definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile">;
   runtime: CharacterRuntimeState;

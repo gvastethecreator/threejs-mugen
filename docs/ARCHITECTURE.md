@@ -1,6 +1,6 @@
 # Architecture
 
-Current active-root interaction cut: `RuntimeRootBodyPushWorld` owns explicit-Tag plural eligibility and deterministic unordered-pair X/Width separation before combat. `RuntimeRootDirectHitAdmissionWorld` then publishes read-only ordered enemy-pair decisions from authoritative roots without mutation hooks. `RuntimeRootPhaseCapabilities/v4`, detached diagnostics, and actor-scoped schedule rows expose both boundaries. Pair/Single behavior and pair-owned hit/combat mutation remain unchanged.
+Current active-root interaction cut: `RuntimeRootBodyPushWorld` owns explicit-Tag plural eligibility and deterministic unordered-pair X/Width separation before combat. `RuntimeRootDirectHitAdmissionWorld` then publishes read-only ordered enemy-pair decisions from authoritative roots without mutation hooks. `RuntimeEffectActorWorld` registers an exact store for every authoritative root, so reserve ownership cannot alias P1/P2; storage ownership does not schedule effect lifecycle, presentation, or combat. `RuntimeRootPhaseCapabilities/v4`, detached diagnostics, and actor-scoped schedule rows expose these boundaries. Pair/Single behavior and pair-owned hit/combat mutation remain unchanged.
 
 This file describes the current implementation boundaries. The larger port direction is documented in:
 

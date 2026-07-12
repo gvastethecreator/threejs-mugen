@@ -187,7 +187,7 @@ export class MatchWorld {
   }
 
   private effectActorStoreSummaries(): RuntimeEffectActorStoreSummary[] {
-    return this.effectActorWorld.summarize({ p1: "p1", p2: "p2" });
+    return this.runtime.getEffectActorStores();
   }
 }
 

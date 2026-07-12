@@ -467,6 +467,7 @@ export class PlayableMatchRuntime {
           return fighter;
         }) ?? []
       : [];
+    for (const root of this.characterRoots()) this.effectActorWorld.registerOwner(root.id);
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
       this.effectActorWorld.observeHelperLifecycle({
@@ -1800,7 +1801,7 @@ export class PlayableMatchRuntime {
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
-    return this.effectActorWorld.summarize(this.matchRoster().effectStoreOwners);
+    return this.effectActorWorld.summarize(this.characterRoots().map(({ id }) => id));
   }
 
   getCharacterIdentity(): RuntimeCharacterIdentityDiagnostic | undefined {
