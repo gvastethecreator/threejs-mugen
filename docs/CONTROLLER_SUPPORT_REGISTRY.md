@@ -464,3 +464,5 @@ When adding or upgrading a controller, record:
 - A runtime path with ignored params is `executed-partial`.
 - New broad controller behavior should not go directly into `PlayableMatchRuntime` unless it is a bounded bridge with a follow-up extraction note.
 - If a typed operation exists, trace gates should require `executedOperations`.
+
+Depth controller addendum: `Depth` is now `compiled, executed-partial` for self-owned imported playable and explicit active-motion Tag roots. Static and dynamic `player`, `edge`, and fallback `value` pairs emit typed `collision:depth` operations; player values add to base contact depth, edge values narrow stage Z bounds, value applies both, omitted second values default to zero, and frame reset restores base player depth plus zero edge depth. Required `synthetic-imported-ikemen-depth-controller.json` checksum `f4e10380` / final checksum `3cfbad85` proves the combined route; trace QA passes 559/559 artifacts, 528 required. `redirectid`, helpers, exact hitpause persistence, explicit `ScreenBound stagebound`, Z player push, rendering, and full parity remain unsupported.

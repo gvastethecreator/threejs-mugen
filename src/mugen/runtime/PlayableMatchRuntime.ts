@@ -11,6 +11,7 @@ import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import {
   RuntimeActorConstraintControllerDispatchWorld,
   RuntimeActorConstraintWorld,
+  type RuntimeDepthResolver,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
 import {
@@ -2294,6 +2295,18 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
+    depth: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      actorConstraintControllerDispatchWorld.applyDepth({
+        actor: fighter,
+        controller,
+        actorConstraintWorld,
+        resolveDepth: {
+          resolvePair: (key) =>
+            resolveDepthPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        },
+        ...runtimeActiveControllerTelemetryHooks,
+      });
+    },
     fallEnvShake: ({ controller }) => {
       matchEnvShakeBridgeWorld.applyFallController({
         actor: fighter,
@@ -2886,6 +2899,26 @@ function resolveWidthPairParam(
     return undefined;
   }
   return [front, back];
+}
+
+function resolveDepthPairParam(
+  controller: ControllerIr,
+  key: Parameters<RuntimeDepthResolver["resolvePair"]>[0],
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): ReturnType<RuntimeDepthResolver["resolvePair"]> {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return undefined;
+  const [topExpression, bottomExpression] = raw.split(",").map((part) => part.trim());
+  if (!topExpression) return undefined;
+  const top = resolveDispatchNumber(undefined, topExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (top === undefined) return undefined;
+  if (!bottomExpression) return [top];
+  const bottom = resolveDispatchNumber(undefined, bottomExpression, fighter, opponent, owner, stageBounds, stageTime);
+  return bottom === undefined ? undefined : [top, bottom];
 }
 
 function resolveRemapPalPairParam(

@@ -360,6 +360,13 @@ export type CollisionControllerOp =
       kind: "collision";
       controllerType: "playerpush";
       enabled: boolean;
+    }
+  | {
+      kind: "collision";
+      controllerType: "depth";
+      mode: "player" | "edge" | "value";
+      top: number;
+      bottom: number;
     };
 
 export type MetadataControllerOp = {
@@ -587,6 +594,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "width") {
     return compileWidthControllerOp(controller);
+  }
+  if (type === "depth") {
+    return compileDepthControllerOp(controller);
   }
   if (type === "playerpush") {
     return compilePlayerPushControllerOp(controller);
@@ -974,6 +984,18 @@ function compileWidthControllerOp(controller: MugenStateController): CollisionCo
     front: clampStaticBodyWidth(pair[0]),
     back: clampStaticBodyWidth(pair[1] ?? pair[0]),
   };
+}
+
+function compileDepthControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
+  const mode =
+    findParam(controller, "edge") !== undefined
+      ? "edge"
+      : findParam(controller, "player") !== undefined
+        ? "player"
+        : "value";
+  const pair = strictNumberPair(findParam(controller, mode));
+  if (!pair) return undefined;
+  return { kind: "collision", controllerType: "depth", mode, top: pair[0], bottom: pair[1] ?? 0 };
 }
 
 function compilePlayerPushControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {

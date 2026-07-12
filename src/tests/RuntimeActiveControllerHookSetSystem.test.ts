@@ -26,6 +26,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       hitDef: () => calls.push("hitdef"),
       reversalDef: () => calls.push("reversaldef"),
       width: () => calls.push("width"),
+      depth: () => calls.push("depth"),
       fallEnvShake: () => calls.push("fallenvshake"),
       spriteEffect: () => calls.push("sprite-effect"),
       effectSpawn: () => calls.push("effect-spawn"),
@@ -50,6 +51,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     expect(hookSet.sideEffectHooks.hitDef).toBe(input.hitDef);
     expect(hookSet.sideEffectHooks.reversalDef).toBe(input.reversalDef);
     expect(hookSet.sideEffectHooks.width).toBe(input.width);
+    expect(hookSet.sideEffectHooks.depth).toBe(input.depth);
     expect(hookSet.sideEffectHooks.fallEnvShake).toBe(input.fallEnvShake);
     expect(hookSet.sideEffectHooks.spriteEffect).toBe(input.spriteEffect);
     expect(hookSet.sideEffectHooks.effectSpawn).toBe(input.effectSpawn);
@@ -74,6 +76,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     hookSet.sideEffectHooks.hitDef?.(undefined as never);
     hookSet.sideEffectHooks.reversalDef?.(undefined as never);
     hookSet.sideEffectHooks.width?.(undefined as never);
+    hookSet.sideEffectHooks.depth?.(undefined as never);
     hookSet.sideEffectHooks.fallEnvShake?.(undefined as never);
     hookSet.sideEffectHooks.spriteEffect?.(undefined as never);
     hookSet.sideEffectHooks.effectSpawn?.(undefined as never);
@@ -96,6 +99,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       "hitdef",
       "reversaldef",
       "width",
+      "depth",
       "fallenvshake",
       "sprite-effect",
       "effect-spawn",
@@ -121,6 +125,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       hitDef: () => undefined,
       reversalDef: () => undefined,
       width: () => undefined,
+      depth: () => undefined,
       fallEnvShake: () => undefined,
       spriteEffect: () => undefined,
       effectSpawn: () => undefined,

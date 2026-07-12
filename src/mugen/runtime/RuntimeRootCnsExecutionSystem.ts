@@ -35,7 +35,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "posadd",
     "posfreeze",
   ],
-  sideEffects: ["hitdef", "reversaldef"],
+  sideEffects: ["hitdef", "reversaldef", "depth"],
 };
 
 export class RuntimeRootCnsExecutionWorld {

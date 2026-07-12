@@ -8979,6 +8979,63 @@ export function createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifa
   });
 }
 
+export function createSyntheticImportedIkemenDepthControllerTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-depth-controller-grid",
+    displayName: "Trace Depth Controller Grid",
+    depthBounds: { top: -10, bottom: 10 },
+    playerStart: { p1: { x: -20, y: 0, z: 0, facing: 1 }, p2: { x: 20, y: 0, z: -10, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-controller-attacker",
+    displayName: "Synthetic Imported IKEMEN Depth Controller Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 132, posZ: 20, depth: { mode: "value", top: 2, bottom: 3 } },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-controller-defender",
+    displayName: "Synthetic Imported IKEMEN Depth Controller Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-depth-controller-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Depth Controller Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([{ label: "P3 Depth value adjusts edge and player overlap", p1: [], p2: [], frames: 2 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-depth-controller-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-depth-controller-golden",
+      label: "Synthetic imported IKEMEN Depth controller",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves Depth value applies one-frame player-size and stage-edge depth overrides before clamp and hit admission. Redirectid, helper execution, hitpause persistence, visual projection, and full parity remain outside this gate."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-depth-controller-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["PosSet", "Depth", "HitDef"],
+      requiredExecutedOperations: ["kinematic:posset", "collision:depth", "hitdef"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [{ actorId: "p3", source: "imported", actorKind: "player", observedPosZAtMost: 2, minFrames: 2 }],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41122,6 +41179,7 @@ export type SyntheticImportedTraceFighterOptions = {
     posZ?: number;
     velZ?: number;
     posFreeze?: boolean;
+    depth?: { mode: "player" | "edge" | "value"; top: number; bottom: number };
     hitDefTrigger?: string;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
@@ -46550,6 +46608,7 @@ function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFig
 ${route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`}
 ${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
 ${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger1 = 1\nvalue = 1\n` : ""}
+${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}
 [State 0, Active Root HitDef]
 type = HitDef
 trigger1 = ${route.hitDefTrigger ?? "1"}

@@ -126,6 +126,37 @@ describe("ActorConstraintSystem", () => {
     expect(state.combatDepth?.velocity).toBe(3);
   });
 
+  it("applies one-frame Depth player/edge overrides and restores base depth", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const state = actorState({ combatDepth: { position: 100, velocity: 0, size: [3, 4], attack: [4, 4] } });
+
+    const player = world.applyDepth(state, controller("Depth", { player: "2,5" }));
+    const edge = world.applyDepth(state, controller("Depth", { edge: "7,9" }));
+    expect(player).toEqual({ kind: "collision", controllerType: "depth", mode: "player", top: 2, bottom: 5 });
+    expect(edge).toEqual({ kind: "collision", controllerType: "depth", mode: "edge", top: 7, bottom: 9 });
+    expect(state.combatDepth).toMatchObject({ size: [5, 9], baseSize: [3, 4], edge: [7, 9] });
+
+    world.clampToStage(state, { bounds: { left: -40, right: 40 }, depthBounds: { top: -20, bottom: 30 } });
+    expect(state.combatDepth?.position).toBe(21);
+
+    world.resetFrameConstraints(state);
+    expect(state.combatDepth).toMatchObject({ size: [3, 4] });
+    expect(state.combatDepth?.baseSize).toBeUndefined();
+    expect(state.combatDepth?.edge).toBeUndefined();
+  });
+
+  it("resolves dynamic Depth value mode into both player and edge overrides", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const state = actorState({ combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] } });
+
+    const applied = world.applyDepth(state, controller("Depth", { value: "var(0),var(1)" }), undefined, {
+      resolvePair: (key) => (key === "value" ? [6, 8] : undefined),
+    });
+
+    expect(applied).toEqual({ kind: "collision", controllerType: "depth", mode: "value", top: 6, bottom: 8 });
+    expect(state.combatDepth).toMatchObject({ size: [9, 11], edge: [6, 8] });
+  });
+
   it("separates overlapping actors using facing-aware body widths", () => {
     const world = new RuntimeActorConstraintWorld();
     const left = actorState({ pos: { x: 0, y: 0 }, facing: 1, bodyWidth: { front: 20, back: 10 } });

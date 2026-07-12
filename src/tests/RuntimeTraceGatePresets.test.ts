@@ -169,6 +169,7 @@ import {
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact,
   createSyntheticImportedIkemenStageDepthBoundTraceArtifact,
+  createSyntheticImportedIkemenDepthControllerTraceArtifact,
   createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
@@ -25913,6 +25914,15 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
       expect.arrayContaining([expect.objectContaining({ actorId: "p3", maxPosZ: 5 })]),
     );
+  });
+
+  it("creates a required synthetic imported IKEMEN Depth controller artifact", () => {
+    const artifact = createSyntheticImportedIkemenDepthControllerTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-depth-controller-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-depth-controller-golden", passed: true, failures: [] }],
+    });
   });
 
   it("creates a projectile-only guard-distance latch without contact", () => {

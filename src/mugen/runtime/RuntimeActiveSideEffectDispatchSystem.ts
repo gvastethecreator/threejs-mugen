@@ -10,6 +10,7 @@ export type RuntimeActiveSideEffectRoute =
   | "hitdef"
   | "reversaldef"
   | "width"
+  | "depth"
   | "fallenvshake"
   | "sprite-effect"
   | "effect-spawn"
@@ -34,6 +35,7 @@ export type RuntimeActiveSideEffectDispatchHooks<TActor> = {
   hitDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "hitdef">) => void;
   reversalDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "reversaldef">) => void;
   width?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "width">) => void;
+  depth?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "depth">) => void;
   fallEnvShake?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "fallenvshake">) => void;
   spriteEffect?: (
     input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, RuntimeSpriteEffectControllerEffect>,
@@ -91,6 +93,8 @@ export class RuntimeActiveSideEffectDispatchWorld {
       input.hooks.reversalDef?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "reversaldef">);
     } else if (input.dispatch.effect === "width") {
       input.hooks.width?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "width">);
+    } else if (input.dispatch.effect === "depth") {
+      input.hooks.depth?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "depth">);
     } else if (input.dispatch.effect === "fallenvshake") {
       input.hooks.fallEnvShake?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "fallenvshake">);
     } else if (isActiveSpriteEffect(input.dispatch.effect)) {
@@ -131,6 +135,7 @@ export function runtimeActiveSideEffectRoute(effect: StateProgramSideEffect): Ru
   if (effect === "hitdef") return "hitdef";
   if (effect === "reversaldef") return "reversaldef";
   if (effect === "width") return "width";
+  if (effect === "depth") return "depth";
   if (effect === "fallenvshake") return "fallenvshake";
   if (isActiveSpriteEffect(effect)) return "sprite-effect";
   if (isActiveEffectSpawn(effect)) return "effect-spawn";
@@ -149,6 +154,7 @@ function activeSideEffectHookExists<TActor>(
   if (route === "hitdef") return Boolean(hooks.hitDef);
   if (route === "reversaldef") return Boolean(hooks.reversalDef);
   if (route === "width") return Boolean(hooks.width);
+  if (route === "depth") return Boolean(hooks.depth);
   if (route === "fallenvshake") return Boolean(hooks.fallEnvShake);
   if (route === "sprite-effect") return Boolean(hooks.spriteEffect);
   if (route === "effect-spawn") return Boolean(hooks.effectSpawn);

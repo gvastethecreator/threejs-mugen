@@ -106,6 +106,8 @@ export type RuntimeCombatDepth = {
   velocity: number;
   size: [number, number];
   attack: [number, number];
+  baseSize?: [number, number];
+  edge?: [number, number];
 };
 
 export type RuntimeTeamState = {

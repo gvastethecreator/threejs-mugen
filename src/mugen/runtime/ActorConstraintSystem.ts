@@ -16,11 +16,15 @@ export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { run
   actorConstraintWorld: RuntimeActorConstraintWorld;
   resolveWidth?: RuntimeWidthResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
-  recordOperation?: (actor: TActor, operation: Extract<CollisionControllerOp, { controllerType: "width" }>) => void;
+  recordOperation?: (actor: TActor, operation: CollisionControllerOp) => void;
 };
 
 export type RuntimeWidthResolver = {
   resolvePair(key: "player" | "value"): [number, number?] | undefined;
+};
+
+export type RuntimeDepthResolver = {
+  resolvePair(key: "edge" | "player" | "value"): [number, number?] | undefined;
 };
 
 export type RuntimeActorConstraintControllerDispatchResult = {
@@ -33,6 +37,41 @@ export class RuntimeActorConstraintWorld {
     state.playerPush = true;
     state.posFreeze = undefined;
     state.screenBound = undefined;
+    if (state.combatDepth?.baseSize) {
+      state.combatDepth.size = state.combatDepth.baseSize;
+      state.combatDepth.baseSize = undefined;
+    }
+    if (state.combatDepth) state.combatDepth.edge = undefined;
+  }
+
+  applyDepth(
+    state: RuntimeActorConstraintState,
+    controller: MugenStateController,
+    operation?: Extract<CollisionControllerOp, { controllerType: "depth" }>,
+    resolveDepth?: RuntimeDepthResolver,
+  ): Extract<CollisionControllerOp, { controllerType: "depth" }> | undefined {
+    if (!state.combatDepth) return undefined;
+    const mode =
+      operation?.mode ??
+      (findControllerParam(controller, "edge") !== undefined
+        ? "edge"
+        : findControllerParam(controller, "player") !== undefined
+          ? "player"
+          : "value");
+    const pair = operation
+      ? ([operation.top, operation.bottom] as [number, number])
+      : resolveDepth?.resolvePair(mode) ?? numberPair(findControllerParam(controller, mode));
+    if (!pair) return undefined;
+    const applied = { kind: "collision", controllerType: "depth", mode, top: pair[0], bottom: pair[1] ?? 0 } as const;
+    if (mode === "player" || mode === "value") {
+      state.combatDepth.baseSize ??= [...state.combatDepth.size];
+      state.combatDepth.size = [
+        state.combatDepth.baseSize[0] + applied.top,
+        state.combatDepth.baseSize[1] + applied.bottom,
+      ];
+    }
+    if (mode === "edge" || mode === "value") state.combatDepth.edge = [applied.top, applied.bottom];
+    return applied;
   }
 
   applyWidth(
@@ -89,8 +128,8 @@ export class RuntimeActorConstraintWorld {
     const stageScale = 320 / (stage.localCoord?.width ?? 320);
     const actorWidth = actorLocalCoord && "width" in actorLocalCoord ? actorLocalCoord.width : actorLocalCoord?.[0];
     const actorScale = 320 / (actorWidth ?? 320);
-    const top = (stage.depthBounds.top * stageScale) / actorScale;
-    const bottom = (stage.depthBounds.bottom * stageScale) / actorScale;
+    const top = (stage.depthBounds.top * stageScale) / actorScale + (state.combatDepth.edge?.[0] ?? 0);
+    const bottom = (stage.depthBounds.bottom * stageScale) / actorScale - (state.combatDepth.edge?.[1] ?? 0);
     state.combatDepth.position = Math.max(top, Math.min(bottom, state.combatDepth.position));
   }
 
@@ -133,6 +172,27 @@ export class RuntimeActorConstraintControllerDispatchWorld {
     if (appliedOperation) {
       options.recordOperation?.(options.actor, appliedOperation);
     }
+    return {
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(appliedOperation && options.recordOperation),
+    };
+  }
+
+  applyDepth<TActor extends { runtime: RuntimeActorConstraintState }>(
+    options: RuntimeActorConstraintControllerDispatchOptions<TActor> & { resolveDepth?: RuntimeDepthResolver },
+  ): RuntimeActorConstraintControllerDispatchResult {
+    const operation =
+      options.controller.operation?.kind === "collision" && options.controller.operation.controllerType === "depth"
+        ? options.controller.operation
+        : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    const appliedOperation = options.actorConstraintWorld.applyDepth(
+      options.actor.runtime,
+      options.controller.source,
+      operation,
+      options.resolveDepth,
+    );
+    if (appliedOperation) options.recordOperation?.(options.actor, appliedOperation);
     return {
       recordedController: Boolean(options.recordController),
       recordedOperation: Boolean(appliedOperation && options.recordOperation),

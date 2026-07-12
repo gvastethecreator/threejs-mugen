@@ -4,6 +4,7 @@ export type StateProgramSideEffect =
   | "hitdef"
   | "reversaldef"
   | "width"
+  | "depth"
   | "fallenvshake"
   | "sprpriority"
   | "palfx"
@@ -67,6 +68,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   hitdef: "hitdef",
   reversaldef: "reversaldef",
   width: "width",
+  depth: "depth",
   fallenvshake: "fallenvshake",
   sprpriority: "sprpriority",
   palfx: "palfx",

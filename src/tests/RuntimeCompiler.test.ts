@@ -910,6 +910,18 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static Depth player, edge, and value modes", () => {
+    const player = compileControllerIr(controller(200, "Depth", [], { player: "2,5" }));
+    const edge = compileControllerIr(controller(200, "Depth", [], { edge: "7,9" }));
+    const value = compileControllerIr(controller(200, "Depth", [], { value: "4" }));
+    const dynamic = compileControllerIr(controller(200, "Depth", [], { player: "var(0),5" }));
+
+    expect(player.operation).toEqual({ kind: "collision", controllerType: "depth", mode: "player", top: 2, bottom: 5 });
+    expect(edge.operation).toEqual({ kind: "collision", controllerType: "depth", mode: "edge", top: 7, bottom: 9 });
+    expect(value.operation).toEqual({ kind: "collision", controllerType: "depth", mode: "value", top: 4, bottom: 0 });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static PlayerPush controllers into typed collision operations", () => {
     const disabled = compileControllerIr(controller(200, "PlayerPush", [], { value: "0" }));
     const enabled = compileControllerIr(controller(200, "PlayerPush", [], { value: "1" }));
