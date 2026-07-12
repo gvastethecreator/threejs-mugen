@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 421 - CNS-authored active-root direct HitDef
+
+Done: explicit IKEMEN Tag `active-motion` admits only the `hitdef` side-effect route beyond its previous bounded CNS profile. Required `synthetic-imported-ikemen-active-root-direct-hit` proves active P3 authors HitDef before admission, exactly `p3->p4` mutates, P4 life changes 1000 to 963 once, target id 115 binds immediately, committed getter memory blocks the second-frame repeat, and stable P1-P4 contact commits follow combat. `RuntimeRootPhaseCapabilities/v5` now reports direct combat for structurally active Tag roots while standby, round, and resources remain false. Claim allowed: bounded CNS-authored direct HitDef mutation for the exercised passive P3->P4 route. Claim blocked: simultaneous plural priority/trade/ReversalDef, Helper/Projectile/throws, team KO/replacement, broad effect lifecycle, HUD/camera contact rendering, shared resources, rollback, scores, and full parity. Wayfinder 116 pluralizes priority arbitration next.
+
 ## Entry 420 - Active-root ordered direct-hit execution
 
 Done: explicit IKEMEN Tag now consumes `RuntimeRootDirectHitAdmission/v0` admitted pairs through the existing actor-generic direct resolver, replacing rather than duplicating the legacy pair calls. Exact committed/pending getter memory supersedes scalar `hasHit` when present, so one HitDef may contact a new getter while the same getter stays closed. Pair/Single remain on their original route; unknown admitted ids fail closed. Claim allowed: ordered direct hit/guard/accepted HitOverride mutation for exercised explicit-Tag roots, including actor-local life, power, state, targets, contact, spark, and sound events. Claim blocked: active-motion CNS HitDef authoring, plural priority/trade/ReversalDef parity, helpers/projectiles/throws, team KO/replacement, HUD/camera, shared resources, scores, and full parity. Wayfinder 115 selects the next executable P3/P4 trace prerequisite.

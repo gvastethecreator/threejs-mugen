@@ -165,6 +165,7 @@ import {
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
+  createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
   createSyntheticImportedIkemenActiveRootConstraintTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
@@ -16087,6 +16088,33 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "TagIn", name: "Active Root TagIn" }),
         expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "VelSet", name: "Active Root Motion" }),
       ]),
+    );
+  });
+
+  it("creates a required IKEMEN active-root direct HitDef artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(2);
+    expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBe(1);
+    expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBe(1);
+    expect(artifact.gates[0]?.evidence.combatReasons.filter((reason) => reason === "hit")).toHaveLength(1);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p3->p4"]);
+    expect(artifact.trace.frames[1]?.rootHitAdmission?.decisions).toContainEqual({
+      attackerId: "p3",
+      getterId: "p4",
+      reason: "already-hit",
+    });
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p3", life: 1000 }),
+        expect.objectContaining({ id: "p4", life: 963 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 115 }),
     );
   });
 

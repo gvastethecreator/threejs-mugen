@@ -43,7 +43,7 @@ export type RuntimeRootPhaseCapabilitiesRecord = {
 };
 
 export type RuntimeRootPhaseCapabilitiesDiagnostic = {
-  schema: "RuntimeRootPhaseCapabilities/v4";
+  schema: "RuntimeRootPhaseCapabilities/v5";
   mode: RuntimeRootInputRoutingDiagnostic["mode"];
   roots: RuntimeRootPhaseCapabilitiesRecord[];
 };
@@ -84,7 +84,7 @@ export class RuntimeRootPhaseCapabilitiesWorld {
     const resourceOwned = new Set(input.resourceOwnedRootIds);
 
     return {
-      schema: "RuntimeRootPhaseCapabilities/v4",
+      schema: "RuntimeRootPhaseCapabilities/v5",
       mode: input.inputRouting.mode,
       roots: input.roots.map((root) => {
         const participation = participationById.get(root.id)!;
@@ -147,7 +147,7 @@ function phaseCapabilities(
     bodyPush: tagMode ? participation.scheduled && !participation.standby : participation.inputOwned,
     hitAdmission: tagMode && participation.scheduled && !participation.standby,
     effects: participation.effectStoreOwned,
-    combat: participation.combatOwned,
+    combat: participation.combatOwned || activeMotion,
     round: participation.roundOwned,
     presentation: participation.presented,
     resources: resourceOwned,

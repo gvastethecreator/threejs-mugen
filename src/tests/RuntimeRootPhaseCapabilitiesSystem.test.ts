@@ -9,7 +9,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
     const diagnostic = new RuntimeRootPhaseCapabilitiesWorld().diagnostic(input());
 
     expect(diagnostic).toEqual({
-      schema: "RuntimeRootPhaseCapabilities/v4",
+      schema: "RuntimeRootPhaseCapabilities/v5",
       mode: "ikemen-tag",
       roots: [
         expect.objectContaining({
@@ -121,7 +121,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
       bodyPush: true,
       hitAdmission: true,
       effects: false,
-      combat: false,
+      combat: true,
       round: false,
       presentation: false,
       resources: false,

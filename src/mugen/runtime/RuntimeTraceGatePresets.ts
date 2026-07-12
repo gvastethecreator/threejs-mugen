@@ -8637,6 +8637,99 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 37;
+  const targetId = 115;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-direct-hit-grid",
+    displayName: "Trace Active Root Direct Hit Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "active P3 hits active P4", p1: [], p2: [], frames: 1 },
+    { label: "same HitDef cannot damage P4 twice", p1: [], p2: [], frames: 1 },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-direct-hit-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Direct Hit Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage, targetId },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-direct-hit-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Direct Hit Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!,
+    p2: pairDefender,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [attacker, defender],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-direct-hit-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-direct-hit-golden",
+      label: "Synthetic imported IKEMEN active-root direct HitDef",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves active-motion P3 authors HitDef through CNS, ordered root admission selects P3->P4, direct mutation damages P4, target memory records exact P4, and contact memory commits after combat. Pair-owned P2 rejects the same attribute through NotHitBy while normal pair scheduling remains active. Plural priority/trade/ReversalDef, team KO, shared resources, projectile/helper combat, rollback, and full parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-direct-hit-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p3", actorId: "p4", targetId }],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 authors HitDef before root admission", frameIndex: 0, phase: "fighter:controllers", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "all active roots enter root admission", frameIndex: 0, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "all roots commit after direct combat", frameIndex: 0, phase: "post-fighter:hitdef-contact-commit", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredActorFrames: [
+          { actorId: "p3", source: "imported", actorKind: "player", teamStandby: false, effectiveCtrl: false, minFrames: 2 },
+          { actorId: "p4", source: "imported", actorKind: "player", teamStandby: false, observedLifeAtMost: 1000 - damage, minFrames: 2 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, ctrl: false },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000 - damage },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -40178,6 +40271,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfCommandEntry?: { commandName: string; stateNo: number };
   passiveCommandRoute?: { commandName: string; stateNo: number };
   activeRootMotionRoute?: { commandName: string; velocityX: number; blockedHelperId: number };
+  activeRootHitDefRoute?: { damage: number; targetId: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -40896,6 +40990,7 @@ anim = 0
 ctrl = 1
 ${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandRoute) : ""}
 ${options.activeRootMotionRoute ? activeRootMotionRouteBlock(options.activeRootMotionRoute) : ""}
+${options.activeRootHitDefRoute ? activeRootHitDefRouteBlock(options.activeRootHitDefRoute) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
@@ -45585,6 +45680,21 @@ type = Helper
 trigger1 = 1
 id = ${route.blockedHelperId}
 stateno = 0
+`;
+}
+
+function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["activeRootHitDefRoute"]>): string {
+  return `
+[State 0, Active Root HitDef]
+type = HitDef
+trigger1 = 1
+attr = S, NA
+damage = ${route.damage}, 0
+id = ${route.targetId}
+pausetime = 0, 0
+ground.hittime = 8
+ground.velocity = 0, 0
+guardflag = MA
 `;
 }
 
