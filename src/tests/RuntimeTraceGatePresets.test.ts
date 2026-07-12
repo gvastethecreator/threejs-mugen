@@ -167,6 +167,7 @@ import {
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
+  createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact,
@@ -16147,6 +16148,21 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ id: "p4", life: 1000 }),
       ]),
     );
+    expect(artifact.gates[0]?.evidence.targetLinks).toEqual([]);
+  });
+
+  it("creates a required IKEMEN active-root logical Z velocity artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ VelSet: 1, HitDef: 1 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({ "kinematic:velset": 1, hitdef: 1 });
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.decisions).toContainEqual({
+      attackerId: "p3", getterId: "p4", reason: "missing-move",
+    });
+    expect(artifact.trace.frames.slice(1).every((frame) => frame.rootHitAdmission?.decisions.some(
+      (decision) => decision.attackerId === "p3" && decision.getterId === "p4" && decision.reason === "no-contact",
+    ))).toBe(true);
     expect(artifact.gates[0]?.evidence.targetLinks).toEqual([]);
   });
 

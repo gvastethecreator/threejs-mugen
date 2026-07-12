@@ -30,3 +30,7 @@ Pinned Ikemen-GO `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`:
 ## Remaining physics boundary
 
 Current sandbox kinematics does not model official S/C friction for X. Adding friction only to Z would create inconsistent physics, so shared X/Z friction ownership remains Wayfinder 129 work. PosFreeze/bind Z and stage depth bounds are also pending.
+
+## Required trace
+
+`synthetic-imported-ikemen-active-root-depth-velocity` executes `VelSet z=20`, advances one normal kinematics tick, then activates HitDef. Admission changes from `missing-move` to depth-driven `no-contact`; life and targets remain unchanged. Trace QA passes 554/554 artifacts, 523 required; checksum `6cf14866`.

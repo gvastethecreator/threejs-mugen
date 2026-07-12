@@ -8802,6 +8802,64 @@ export function createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-depth-velocity-grid",
+    displayName: "Trace Active Root Depth Velocity Grid",
+    playerStart: { p1: { x: -20, y: 0, facing: 1 }, p2: { x: 20, y: 0, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-depth-velocity-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Depth Velocity Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 129, velZ: 20, hitDefTrigger: "Time >= 1" },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-depth-velocity-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Depth Velocity Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-depth-velocity-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Depth Velocity Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([
+    { label: "P3 authors Z velocity before HitDef", p1: [], p2: [], frames: 1 },
+    { label: "P3 HitDef misses after Z velocity integration", p1: [], p2: [], frames: 2 },
+  ]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-active-root-depth-velocity-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-depth-velocity-golden",
+      label: "Synthetic imported IKEMEN active-root logical Z velocity",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves CNS VelSet Z integrates before delayed HitDef admission and produces depth no-contact without damage or targets. It does not claim S/C friction, PosFreeze/binds, depth bounds/push, projectiles/helpers, visual projection, or full parity."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-active-root-depth-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["VelSet", "HitDef"],
+      requiredExecutedOperations: ["kinematic:velset", "hitdef"],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, ctrl: false },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -40863,6 +40921,8 @@ export type SyntheticImportedTraceFighterOptions = {
     priorityType?: "Hit" | "Miss" | "Dodge";
     clsn1Extent?: number;
     posZ?: number;
+    velZ?: number;
+    hitDefTrigger?: string;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
@@ -46287,9 +46347,10 @@ stateno = 0
 function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["activeRootHitDefRoute"]>): string {
   return `
 ${route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`}
+${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
 [State 0, Active Root HitDef]
 type = HitDef
-trigger1 = 1
+trigger1 = ${route.hitDefTrigger ?? "1"}
 attr = S, NA
 damage = ${route.damage}, 0
 id = ${route.targetId}

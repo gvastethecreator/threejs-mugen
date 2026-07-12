@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 435 - Required imported Vel Z integration trace
+
+Done: required `synthetic-imported-ikemen-active-root-depth-velocity` proves active P3 executes CNS `VelSet z=20`, advances logical Z through the normal kinematics phase, then authors a delayed HitDef. Frame one records `missing-move`; subsequent root admissions record P3->P4 `no-contact` from dynamic depth separation, with unchanged life, no targets, and no combat reasons. Trace QA passes 554/554 artifacts, 523 required; checksum `6cf14866`. Claim allowed: imported end-to-end root Vel Z authoring, tick integration, and direct HitDef depth rejection. Claim blocked: S/C friction, PosFreeze/bind Z, hit velocity Z, depth bounds/push, ReversalDef/projectile/helper Z routes, visual projection, and full parity. Wayfinder 130 maps shared X/Z friction and PosFreeze ownership.
+
 ## Entry 434 - Logical Z velocity and tick integration
 
 Done: root `combatDepth` now owns logical Z velocity. Static/dynamic `VelSet.z`, `VelAdd.z`, and `VelMul.z` compile and execute through typed kinematic operations; `Vel Z` reads the value; `RuntimeKinematicsWorld` integrates `position += velocity` in the same pass as X/Y. Legacy states lazily receive Ikemen depth defaults when a Z velocity controller first executes. Focused compiler/controller/expression/kinematics tests and TypeScript 7 typecheck pass. Claim allowed: bounded root logical Z velocity authoring, query, and per-tick integration through the existing scheduler. Claim blocked: S/C friction parity, PosFreeze/bind Z, hit velocity Z, depth bounds/push, imported trace, projectiles/helpers, render projection, and full parity. Wayfinder 129 adds imported velocity-Z evidence and maps shared X/Z friction ownership.
