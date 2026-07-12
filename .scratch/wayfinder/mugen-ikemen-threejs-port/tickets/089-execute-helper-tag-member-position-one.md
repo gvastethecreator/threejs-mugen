@@ -1,7 +1,7 @@
 # Execute Helper-relative Tag member position-one ownership
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -22,4 +22,4 @@ Can explicit-IKEMEN TagIn/TagOut RedirectID reproduce the pinned Helper `membern
 
 ## Answer
 
-Pending implementation.
+Implemented and verified. Static/deferred TagIn/TagOut `memberno` resolves in the original root caller context, anchors the Helper's exact live root only for team side, and swaps mutable position one through an explicit Tag-order operation without adding a Helper slot. Full prevalidation preserves the local atomic contract; mutation follows state, member, control, leader, self, partner order. Focused 180 tests, full 1736 tests, TypeScript 7 typecheck/build, 538/538 traces, boundaries, and diff check pass. See `docs/reports/2026-07-11-ikemen-helper-tag-member-runtime.md`.

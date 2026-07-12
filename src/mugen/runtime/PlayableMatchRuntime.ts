@@ -1247,9 +1247,6 @@ export class PlayableMatchRuntime {
       );
       return undefined;
     };
-    if (hasHelperTagMemberAxes(sourceOperation)) {
-      return block("Helper aggregate axes unsupported");
-    }
     if (sourceOperation.controllerType === "tagout" && hasAuthoredCallerControl(sourceOperation)) {
       return block("TagOut Helper control unsupported");
     }
@@ -1276,7 +1273,9 @@ export class PlayableMatchRuntime {
     const rootByPlayerNo = new Map(
       roots.flatMap((candidate) => candidate.playerNo === undefined ? [] : [[candidate.playerNo, candidate] as const]),
     );
-    const needsRootAnchor = operation.partnerOrdinal !== undefined || operation.leaderPlayerNo !== undefined;
+    const needsRootAnchor = operation.partnerOrdinal !== undefined ||
+      operation.memberPosition !== undefined ||
+      operation.leaderPlayerNo !== undefined;
     const root = needsRootAnchor ? roots.find((candidate) => candidate.id === helper.rootId) : undefined;
     if (needsRootAnchor && (!root || !root.runtime.teamState?.playerType || root.runtime.teamState.disabled)) {
       return block(`Helper root ${helper.rootId} unavailable`);
@@ -1290,6 +1289,14 @@ export class PlayableMatchRuntime {
       }
     }
     const targetSide = root === undefined ? undefined : runtimeTeamSide(root);
+    if (
+      operation.memberPosition !== undefined &&
+      (!this.tagTeamOrder ||
+        targetSide === undefined ||
+        !this.tagTeamOrder.canSwapPositionOne(targetSide, operation.memberPosition))
+    ) {
+      return block(`member position ${operation.memberPosition} unavailable for ${root!.id}`);
+    }
     const leader = operation.leaderPlayerNo === undefined ? undefined : rootByPlayerNo.get(operation.leaderPlayerNo);
     if (
       operation.leaderPlayerNo !== undefined &&
@@ -1304,11 +1311,18 @@ export class PlayableMatchRuntime {
     }
 
     const hasLocalMutation = stateNo !== undefined ||
+      operation.memberPosition !== undefined ||
       (operation.controllerType === "tagin" && hasAuthoredCallerControl(operation));
     if (!operation.self && !hasLocalMutation && !partner && !leader) return block("Helper local mutation required");
 
-    if (!applyRuntimeHelperTagStateControl(helper, { stateNo, control: operation.callerControl })) {
+    if (!applyRuntimeHelperTagStateControl(helper, { stateNo })) {
       return block(`Helper state ${stateNo ?? "invalid"} unavailable for ${helper.serialId}`);
+    }
+    if (operation.memberPosition !== undefined) {
+      this.tagTeamOrder!.swapPositionOne(targetSide!, operation.memberPosition);
+    }
+    if (operation.callerControl !== undefined) {
+      applyRuntimeHelperTagStateControl(helper, { control: operation.callerControl });
     }
     if (leader) {
       this.tagTeamOrder!.rotateLeader(targetSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
@@ -2292,11 +2306,6 @@ function resolveDynamicTeamStandbyOperation(
 
 function hasAuthoredCallerControl(operation: TeamStandbyControllerOp): boolean {
   return operation.callerControl !== undefined || operation.callerControlExpression !== undefined;
-}
-
-function hasHelperTagMemberAxes(operation: TeamStandbyControllerOp): boolean {
-  return operation.memberPosition !== undefined ||
-    operation.memberPositionExpression !== undefined;
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {

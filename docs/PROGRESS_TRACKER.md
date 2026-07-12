@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper-relative Tag member runtime
+
+- Ownership: exact Helper root anchors team side, while a dedicated operation swaps from mutable position one without creating a Helper order slot.
+- Evaluation: static/deferred TagIn/TagOut member positions remain original-caller-owned, truncate toward zero, and require a positive one-based result.
+- Mutation: complete prevalidation precedes Helper state, member, control, leader, self, and partner order.
+- Failure: invalid position/expression, non-Tag mode, missing root, unavailable aggregate targets, and legacy profile preserve state, order, and telemetry.
+- Verification: 170 files / 1736 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check pass.
+- Global status: Wayfinder 089 is closed without visual or score movement; Wayfinder 090 audits bounded Helper aggregate closure and selects one next runtime slice.
+
 ## Global report - 2026-07-11 IKEMEN Helper-relative TagIn leader runtime
 
 - Ownership: exact Helper root anchors stable same-side PlayerNo leader selection under explicit Tag mode.
@@ -1403,6 +1412,15 @@ Every compatibility milestone should leave:
 - Opposing/missing leader and non-Tag mode roll back Helper, order, standby, partner, and success telemetry.
 - Full gates: 170 files / 1730 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
 - Global status: Wayfinder 088 is closed without browser or score movement; Wayfinder 089 executes Helper `memberno` position-one ownership.
+
+### 2026-07-11 - IKEMEN Helper-relative Tag member runtime
+
+- Static/deferred TagIn/TagOut member positions resolve in original-root caller context and require a positive one-based result.
+- Exact Helper root anchors team side, but mutable position one is always the swap source; Helpers gain no stable or mutable root slot.
+- Full composition applies Helper state, member, control, leader, self, then partner after complete atomic prevalidation.
+- Invalid/out-of-range/non-Tag/missing-root/legacy paths preserve Helper, roots, order, partner, and success telemetry.
+- Full gates: 170 files / 1736 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
+- Global status: Wayfinder 089 is closed without browser or score movement; Wayfinder 090 audits aggregate closure before selecting broader gameplay work.
 
 ## Not Done
 

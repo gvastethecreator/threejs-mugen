@@ -1303,6 +1303,8 @@ Helper-relative partner Tag now executes under explicit `ikemen-go`. The compile
 
 Helper-relative TagIn leader now executes under explicit Tag mode. Static/deferred PlayerNo stays original-caller-owned; exact Helper root anchoring validates same-side stable identity before any mutation. Helper state/control precede existing Tag-order rotation, then Helper self and partner-root effects follow. Full gates pass 170 files / 1730 tests and 538/538 traces. Wayfinder 089 next implements the pinned Helper `memberno` position-one quirk without assigning mutable membership to Helpers.
 
+Helper-relative Tag member ownership now executes under explicit Tag mode. Static/deferred TagIn/TagOut member positions stay original-caller-owned; exact Helper root anchoring selects team side, while a dedicated operation swaps mutable position one and never assigns a Helper root-order slot. Complete prevalidation precedes Helper state, member, control, leader, self, and partner mutation. Full gates pass 170 files / 1736 tests and 538/538 traces. Wayfinder 090 next audits the completed bounded aggregate path before selecting one broader runtime slice; exact incremental failure, Helper-originated Tag, gameplay, score, and full parity remain blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

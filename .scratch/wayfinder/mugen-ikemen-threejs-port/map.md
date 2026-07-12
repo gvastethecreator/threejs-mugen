@@ -106,11 +106,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map Helper aggregate Tag ownership](tickets/086-map-helper-aggregate-tag-ownership.md) - partner selects a same-side root through inherited PlayerNo; member/leader mutate root order, with a distinct zero-valued Helper member-position quirk.
 - [Execute Helper-relative partner Tag ownership](tickets/087-execute-helper-partner-tag-ownership.md) - live Helper redirects now compose local state/control/self with exact-root-relative partner standby/state/control under atomic validation.
 - [Execute Helper-relative TagIn leader ownership](tickets/088-execute-helper-tagin-leader-ownership.md) - stable same-side PlayerNo rotation now composes between Helper-local control and self/partner standby under exact-root atomic validation.
+- [Execute Helper-relative Tag member position-one ownership](tickets/089-execute-helper-tag-member-position-one.md) - static/deferred TagIn/TagOut member swaps now originate from mutable position one without assigning Helpers a root-order slot.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Execute Helper-relative Tag member position-one ownership](tickets/089-execute-helper-tag-member-position-one.md)
+- [Audit bounded Helper aggregate Tag closure](tickets/090-audit-helper-aggregate-tag-closure.md)
 
 ## Not Yet Specified
 

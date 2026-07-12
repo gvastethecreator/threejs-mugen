@@ -36,6 +36,11 @@ export class RuntimeTagTeamOrder {
     return order.includes(callerId) && Number.isInteger(targetPosition) && targetPosition >= 1 && targetPosition <= order.length;
   }
 
+  canSwapPositionOne(side: RuntimeTeamSide, targetPosition: number): boolean {
+    const order = this.orderBySide[side];
+    return Number.isInteger(targetPosition) && targetPosition >= 1 && targetPosition <= order.length;
+  }
+
   canRotateLeader(side: RuntimeTeamSide, leaderId: string): boolean {
     return this.stableBySide[side].includes(leaderId);
   }
@@ -50,6 +55,17 @@ export class RuntimeTagTeamOrder {
     }
     const next = [...order];
     [next[callerIndex], next[targetIndex]] = [next[targetIndex]!, next[callerIndex]!];
+    this.orderBySide = { ...this.orderBySide, [side]: next };
+  }
+
+  swapPositionOne(side: RuntimeTeamSide, targetPosition: number): void {
+    const order = this.orderBySide[side];
+    const targetIndex = targetPosition - 1;
+    if (!Number.isInteger(targetPosition) || targetIndex < 0 || targetIndex >= order.length) {
+      throw new Error(`Invalid Tag member position ${targetPosition} on side ${side}`);
+    }
+    const next = [...order];
+    [next[0], next[targetIndex]] = [next[targetIndex]!, next[0]!];
     this.orderBySide = { ...this.orderBySide, [side]: next };
   }
 

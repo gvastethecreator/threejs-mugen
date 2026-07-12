@@ -30,6 +30,21 @@ describe("RuntimeTagTeamOrderWorld", () => {
     expect(order.diagnostic().sides[0]?.memberOrderIds).toEqual(["p5", "p3", "p1"]);
   });
 
+  it("swaps mutable position one for Helper member ownership without inventing a Helper slot", () => {
+    const order = new RuntimeTagTeamOrderWorld().create(roots, "tag")!;
+    order.swapMember(1, "p1", 3);
+
+    expect(order.canSwapPositionOne(1, 2)).toBe(true);
+    order.swapPositionOne(1, 2);
+
+    expect(order.diagnostic().sides[0]).toEqual({
+      side: 1,
+      stableRootIds: ["p1", "p3", "p5"],
+      memberOrderIds: ["p3", "p5", "p1"],
+      leaderId: "p1",
+    });
+  });
+
   it("rotates a stable leader id and sinks dead non-leaders", () => {
     const order = new RuntimeTagTeamOrderWorld().create(roots, "tag")!;
     order.rotateLeader(1, "p3", (id) => id !== "p5");
@@ -41,9 +56,11 @@ describe("RuntimeTagTeamOrderWorld", () => {
     const order = new RuntimeTagTeamOrderWorld().create(roots, "tag")!;
     const before = order.diagnostic();
     expect(() => order.swapMember(1, "p1", 4)).toThrow("Invalid Tag member position 4");
+    expect(() => order.swapPositionOne(1, 4)).toThrow("Invalid Tag member position 4");
     expect(() => order.rotateLeader(1, "p2")).toThrow("Unknown Tag leader p2 on side 1");
     expect(order.diagnostic()).toEqual(before);
-    order.swapMember(1, "p1", 2);
+    order.swapMember(1, "p1", 3);
+    order.swapPositionOne(1, 2);
     order.reset();
     expect(order.diagnostic()).toEqual(before);
   });
