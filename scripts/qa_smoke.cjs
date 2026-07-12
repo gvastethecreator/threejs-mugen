@@ -149,9 +149,13 @@ async function main() {
         runtimeDesktop: path.join(outDir, "runtime-desktop.png"),
         runtimeMobile: path.join(outDir, "runtime-mobile.png"),
         mugenLiteDesktop: path.join(outDir, "mugen-lite-runtime-desktop.png"),
-        mugenLiteDesktopCanvas: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
+    mugenLiteDesktopCanvas: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
+        mugenLiteDesktopAttack: path.join(outDir, "mugen-lite-runtime-desktop-attack.png"),
+        mugenLiteDesktopAttackCanvas: path.join(outDir, "mugen-lite-runtime-desktop-attack-canvas.png"),
         mugenLiteMobile: path.join(outDir, "mugen-lite-runtime-mobile.png"),
         mugenLiteMobileCanvas: path.join(outDir, "mugen-lite-runtime-mobile-canvas.png"),
+        mugenLiteMobileAttack: path.join(outDir, "mugen-lite-runtime-mobile-attack.png"),
+        mugenLiteMobileAttackCanvas: path.join(outDir, "mugen-lite-runtime-mobile-attack-canvas.png"),
         tagPresentationDesktop: path.join(outDir, "runtime-tag-presentation-desktop.png"),
         tagPresentationDesktopCanvas: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
         tagPresentationMobile: path.join(outDir, "runtime-tag-presentation-mobile.png"),
@@ -358,11 +362,15 @@ async function captureMugenLiteVisual(page, baseUrl, outDir) {
     viewport: { width: 1440, height: 960 },
     screenshotPath: path.join(outDir, "mugen-lite-runtime-desktop.png"),
     canvasPath: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
+    attackScreenshotPath: path.join(outDir, "mugen-lite-runtime-desktop-attack.png"),
+    attackCanvasPath: path.join(outDir, "mugen-lite-runtime-desktop-attack-canvas.png"),
   });
   const mobile = await captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, {
     viewport: { width: 390, height: 844 },
     screenshotPath: path.join(outDir, "mugen-lite-runtime-mobile.png"),
     canvasPath: path.join(outDir, "mugen-lite-runtime-mobile-canvas.png"),
+    attackScreenshotPath: path.join(outDir, "mugen-lite-runtime-mobile-attack.png"),
+    attackCanvasPath: path.join(outDir, "mugen-lite-runtime-mobile-attack-canvas.png"),
   });
   return { fixtureBytes: fixtureBuffer.length, desktop, mobile };
 }
@@ -386,15 +394,53 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
       p1?.sprite?.width === 32 && p1.sprite.height === 64 && p1.sprite.axisX === 16 && p1.sprite.axisY === 62;
   });
   await page.waitForTimeout(250);
-  await page.screenshot({ path: options.screenshotPath, fullPage: true });
-  const canvasPng = await page.locator("canvas").first().screenshot({ path: options.canvasPath });
+  const probe = await captureMugenLiteVisualState(page, options.screenshotPath, options.canvasPath);
+  const pauseOnAttack = page.evaluate(() => new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error("MUGEN-lite attack frame was not observed")), 5000);
+    const check = () => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      if (actor?.runtime?.stateNo === 200 && actor?.frame?.spriteGroup === 200) {
+        window.clearTimeout(timeout);
+        document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.requestAnimationFrame(check);
+    };
+    check();
+  }));
+  await page.keyboard.down("a");
+  await page.waitForTimeout(80);
+  await page.keyboard.up("a");
+  await pauseOnAttack;
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  const attack = await captureMugenLiteVisualState(page, options.attackScreenshotPath, options.attackCanvasPath);
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+  });
+  return { ...probe, attack, returnedToIdle: true };
+}
+
+async function captureMugenLiteVisualState(page, screenshotPath, canvasPath) {
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  const canvasPng = await page.locator("canvas").first().screenshot({ path: canvasPath });
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
   const presentation = await page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.renderer?.characters?.find((actor) => actor.actorId === "p1");
-    return { p1, rendererSize: bridge?.renderer?.size, camera: bridge?.renderer?.camera };
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return { p1, rendererSize: bridge?.renderer?.size, camera: bridge?.renderer?.camera, spriteGroup: actor?.frame?.spriteGroup };
   });
-  const spritePixels = await getProjectedSpritePixelStats(page, canvasPng, presentation.p1, presentation.rendererSize, presentation.camera);
+  const spritePixels = await getProjectedSpritePixelStats(
+    page,
+    canvasPng,
+    presentation.p1,
+    presentation.rendererSize,
+    presentation.camera,
+    fixturePaletteForAction(presentation.spriteGroup),
+  );
   return page.evaluate(({ canvasPixels, spritePixels }) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === "p1");
@@ -1755,8 +1801,14 @@ async function getCanvasPixelStats(page, canvasPng) {
   }, `data:image/png;base64,${canvasPng.toString("base64")}`);
 }
 
-async function getProjectedSpritePixelStats(page, canvasPng, presentation, rendererSize, camera) {
-  return page.evaluate(async ({ dataUrl, presentation, rendererSize, camera }) => {
+function fixturePaletteForAction(action) {
+  const seed = [0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200].indexOf(action);
+  if (seed < 0) return [];
+  return [[(seed * 47) % 255, 180, 240], [240, (seed * 71) % 255, 120], [80, 220, (seed * 29) % 255]];
+}
+
+async function getProjectedSpritePixelStats(page, canvasPng, presentation, rendererSize, camera, expectedColors) {
+  return page.evaluate(async ({ dataUrl, presentation, rendererSize, camera, expectedColors }) => {
     const image = new Image();
     image.src = dataUrl;
     await image.decode();
@@ -1779,19 +1831,23 @@ async function getProjectedSpritePixelStats(page, canvasPng, presentation, rende
     const right = Math.min(sampleCanvas.width, Math.ceil(centerX + width / 2));
     const bottom = Math.min(sampleCanvas.height, Math.ceil(centerY + height / 2));
     const data = context.getImageData(left, top, Math.max(1, right - left), Math.max(1, bottom - top)).data;
-    const expected = [[0, 180, 240], [240, 0, 120], [80, 220, 0]];
     const colors = new Set();
     let fixtureColorPixels = 0;
+    let fixtureMaskChecksum = 0x811c9dc5;
     for (let offset = 0; offset < data.length; offset += 4) {
       const color = [data[offset], data[offset + 1], data[offset + 2]];
       colors.add(color.join(","));
-      if (expected.some((candidate) => candidate.every((channel, index) => Math.abs(channel - color[index]) <= 20))) {
+      const paletteIndex = expectedColors.findIndex((candidate) => candidate.every((channel, index) => Math.abs(channel - color[index]) <= 20));
+      if (paletteIndex >= 0) {
         fixtureColorPixels += 1;
+        fixtureMaskChecksum ^= offset / 4 + paletteIndex * 65537;
+        fixtureMaskChecksum = Math.imul(fixtureMaskChecksum, 0x01000193) >>> 0;
       }
     }
     return {
       sampledPixels: data.length / 4,
       fixtureColorPixels,
+      fixtureMaskChecksum: fixtureMaskChecksum.toString(16).padStart(8, "0"),
       uniqueColors: colors.size,
       rect: { left, top, width: right - left, height: bottom - top },
     };
@@ -1800,6 +1856,7 @@ async function getProjectedSpritePixelStats(page, canvasPng, presentation, rende
     presentation,
     rendererSize,
     camera,
+    expectedColors,
   });
 }
 
@@ -2026,7 +2083,14 @@ function assertSmoke(diagnostics) {
       !probe.canvasPixels?.nonBlank ||
       probe.canvasPixels.uniqueColors < 10 ||
       probe.spritePixels?.fixtureColorPixels < 10 ||
-      probe.spritePixels?.uniqueColors < 3
+      probe.spritePixels?.uniqueColors < 3 ||
+      probe.attack?.actorFrame?.group !== 200 ||
+      probe.attack?.actorFrame?.index !== 0 ||
+      probe.attack?.sprite?.width !== 32 ||
+      probe.attack?.sprite?.height !== 64 ||
+      probe.attack?.spritePixels?.fixtureColorPixels < 10 ||
+      probe.attack?.spritePixels?.fixtureMaskChecksum === probe.spritePixels?.fixtureMaskChecksum ||
+      !probe.returnedToIdle
     ) {
       failures.push(`mugen-lite visual ${viewport}: ZIP load, imported sprite presentation, or canvas proof failed`);
     }
@@ -2654,10 +2718,14 @@ function summarizeDiagnostics(diagnostics) {
       desktopFrame: diagnostics.checks.mugenLiteVisual.desktop.actorFrame,
       desktopUniqueColors: diagnostics.checks.mugenLiteVisual.desktop.canvasPixels.uniqueColors,
       desktopSpritePixels: diagnostics.checks.mugenLiteVisual.desktop.spritePixels,
+      desktopAttackFrame: diagnostics.checks.mugenLiteVisual.desktop.attack.actorFrame,
+      desktopAttackSpritePixels: diagnostics.checks.mugenLiteVisual.desktop.attack.spritePixels,
       mobileSprite: diagnostics.checks.mugenLiteVisual.mobile.sprite,
       mobileFrame: diagnostics.checks.mugenLiteVisual.mobile.actorFrame,
       mobileUniqueColors: diagnostics.checks.mugenLiteVisual.mobile.canvasPixels.uniqueColors,
       mobileSpritePixels: diagnostics.checks.mugenLiteVisual.mobile.spritePixels,
+      mobileAttackFrame: diagnostics.checks.mugenLiteVisual.mobile.attack.actorFrame,
+      mobileAttackSpritePixels: diagnostics.checks.mugenLiteVisual.mobile.attack.spritePixels,
     },
     tagPresentation: {
       baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,

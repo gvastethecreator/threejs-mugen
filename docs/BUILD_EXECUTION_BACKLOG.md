@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 462 - Input-driven legal sprite transition
+
+Done: the legal ZIP browser gate now holds the physical `a` key long enough to emit MUGEN command `x`, atomically pauses the app on imported state/action `200`, captures the attack sprite, resumes play, and requires return to state/action `0`. Camera-aware crops use the action-specific generated palette and spatial mask checksums, so idle and attack geometry must differ on desktop and mobile. Claim allowed: real keyboard input drives a visible imported `idle -> attack -> idle` transition through CMD/CNS/AIR/SFF and Three.js. Claim blocked: every movement/combat/recovery pose, multi-frame animation, attack contact in this visual route, touch input, production art, and visual parity.
+
 ## Entry 461 - Legal ZIP browser render gate
 
 Done: `qa:smoke` generates the repository-owned MUGEN-lite ZIP from its TypeScript fixture inside the served app, independently uploads it through `#zip-input` at desktop and mobile viewports, switches the imported fighter into Match, and requires Three.js P1 frame `0,0` at `32x64@16,62`. Camera-aware crops must contain fixture-palette pixels, preventing the stage or P2 from satisfying visual proof; full canvas checks remain nonblank. The emitted ZIP and four visual artifacts remain under `.scratch/qa/qa-smoke`. Claim allowed: the legal package crosses generated ZIP -> browser ingestion -> production loader -> imported roster -> visible Three.js idle sprite on desktop/mobile. Claim blocked: visual quality beyond fixture art, every pose transition, input-driven animation evidence, production build hosting, public character compatibility, and visual parity.

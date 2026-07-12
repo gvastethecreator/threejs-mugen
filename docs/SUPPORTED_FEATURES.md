@@ -1,6 +1,8 @@
 ﻿# Supported Features
 
-- Browser smoke generates and independently uploads the repository-owned legal MUGEN-lite ZIP through the real file input at desktop/mobile viewports, enters Match with the imported fighter, and requires Three.js to present frame `0,0` as `32x64@16,62`. Camera-aware P1 crops must contain fixture-palette pixels; full canvases must remain nonblank. Pose transitions, production art, production-host smoke, public character compatibility, and visual parity remain separate gates.
+- Legal-fixture browser smoke proves a real keyboard `a` press emits MUGEN command `x`, enters imported state/action `200`, renders a palette-backed attack silhouette distinct from idle, and returns to state/action `0`. Camera-aware spatial mask checksums cover desktop and mobile independently. Full pose journeys, multi-frame animation, visual contact proof, touch input, production art, and visual parity remain separate gates.
+
+- Browser smoke generates and independently uploads the repository-owned legal MUGEN-lite ZIP through the real file input at desktop/mobile viewports, enters Match with the imported fighter, and requires Three.js to present frame `0,0` as `32x64@16,62`. Camera-aware P1 crops must contain fixture-palette pixels; full canvases must remain nonblank. Production art, production-host smoke, public character compatibility, and visual parity remain separate gates.
 
 - The repository-owned legal MUGEN-lite package contains twelve visible 32x64 indexed PCX frames in SFF v1 with foot-aligned axes and distinct movement/combat/recovery geometry. Loader tests prove decoded dimensions, axes, unique indexed payloads, terrestrial baseline contact, airborne separation, and no pixels below the axis. Pose-transition rendering, production art quality, multi-frame animation, palette breadth, and visual parity remain separate gates.
 
