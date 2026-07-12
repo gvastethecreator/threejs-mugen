@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 461 - Legal ZIP browser render gate
+
+Done: `qa:smoke` generates the repository-owned MUGEN-lite ZIP from its TypeScript fixture inside the served app, independently uploads it through `#zip-input` at desktop and mobile viewports, switches the imported fighter into Match, and requires Three.js P1 frame `0,0` at `32x64@16,62`. Camera-aware crops must contain fixture-palette pixels, preventing the stage or P2 from satisfying visual proof; full canvas checks remain nonblank. The emitted ZIP and four visual artifacts remain under `.scratch/qa/qa-smoke`. Claim allowed: the legal package crosses generated ZIP -> browser ingestion -> production loader -> imported roster -> visible Three.js idle sprite on desktop/mobile. Claim blocked: visual quality beyond fixture art, every pose transition, input-driven animation evidence, production build hosting, public character compatibility, and visual parity.
+
 ## Entry 460 - Visible legal fixture sprites
 
 Done: the legal MUGEN-lite package replaces its 2x2 decoder probes with twelve authored 32x64 indexed PCX sprites in SFF v1. Idle, crouch, airborne, attack, guard, get-hit, fall, and recovery groups use distinct bounded poses; every sprite anchors at axis `16,62`. Loader tests require exact dimensions/axes, twelve unique indexed payloads, terrestrial baseline contact, airborne separation, and no pixels below the axis while ZIP byte reproducibility remains covered. Claim allowed: the legal package supplies visible decoded character frames suitable for the current Three.js imported-sprite route. Claim blocked: production art quality, multi-frame animation, palette-selection breadth, exact MUGEN reserved-action art, browser render proof until the next gate, and visual parity.

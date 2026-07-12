@@ -68,6 +68,8 @@ async function main() {
       label: "runtime-mobile",
     });
 
+    const mugenLiteVisual = await captureMugenLiteVisual(page, server.baseUrl, outDir);
+
     const tagPresentation = await captureTagPresentation(page, server.baseUrl, outDir);
 
     const studioWorkbench = await captureStudioWorkbench(page, server.baseUrl, outDir);
@@ -124,6 +126,7 @@ async function main() {
       checks: {
         runtimeDesktop,
         runtimeMobile,
+        mugenLiteVisual,
         tagPresentation,
         studioWorkbench,
         studioWorkbenchTablet,
@@ -145,6 +148,10 @@ async function main() {
       screenshots: {
         runtimeDesktop: path.join(outDir, "runtime-desktop.png"),
         runtimeMobile: path.join(outDir, "runtime-mobile.png"),
+        mugenLiteDesktop: path.join(outDir, "mugen-lite-runtime-desktop.png"),
+        mugenLiteDesktopCanvas: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
+        mugenLiteMobile: path.join(outDir, "mugen-lite-runtime-mobile.png"),
+        mugenLiteMobileCanvas: path.join(outDir, "mugen-lite-runtime-mobile-canvas.png"),
         tagPresentationDesktop: path.join(outDir, "runtime-tag-presentation-desktop.png"),
         tagPresentationDesktopCanvas: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
         tagPresentationMobile: path.join(outDir, "runtime-tag-presentation-mobile.png"),
@@ -335,6 +342,75 @@ async function captureRuntime(page, baseUrl, options) {
     },
     { canvasPixels, drivenHitSparks, label: options.label, presentationOverlap },
   );
+}
+
+async function captureMugenLiteVisual(page, baseUrl, outDir) {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  const fixtureBytes = await page.evaluate(async () => {
+    const fixture = await import("/src/mugen/runtime/MugenLiteJourneyFixture.ts");
+    return Array.from(new Uint8Array(await fixture.createMugenLiteJourneyZipBytes()));
+  });
+  const fixtureBuffer = Buffer.from(fixtureBytes);
+  fs.writeFileSync(path.join(outDir, "mugen-lite-journey.zip"), fixtureBuffer);
+  const desktop = await captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, {
+    viewport: { width: 1440, height: 960 },
+    screenshotPath: path.join(outDir, "mugen-lite-runtime-desktop.png"),
+    canvasPath: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
+  });
+  const mobile = await captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, {
+    viewport: { width: 390, height: 844 },
+    screenshotPath: path.join(outDir, "mugen-lite-runtime-mobile.png"),
+    canvasPath: path.join(outDir, "mugen-lite-runtime-mobile-canvas.png"),
+  });
+  return { fixtureBytes: fixtureBuffer.length, desktop, mobile };
+}
+
+async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, options) {
+  await page.setViewportSize(options.viewport);
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await page.locator("#zip-input").setInputFiles({
+    name: "mugen-lite-journey.zip",
+    mimeType: "application/zip",
+    buffer: fixtureBuffer,
+  });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.character === "MUGEN Lite Journey");
+  await page.locator('[data-mode="match"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.renderer?.characters?.find((actor) => actor.actorId === "p1");
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return bridge?.mode === "match" && actor?.frame?.spriteGroup === 0 && actor.frame.spriteIndex === 0 &&
+      p1?.sprite?.width === 32 && p1.sprite.height === 64 && p1.sprite.axisX === 16 && p1.sprite.axisY === 62;
+  });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: options.screenshotPath, fullPage: true });
+  const canvasPng = await page.locator("canvas").first().screenshot({ path: options.canvasPath });
+  const canvasPixels = await getCanvasPixelStats(page, canvasPng);
+  const presentation = await page.evaluate(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.renderer?.characters?.find((actor) => actor.actorId === "p1");
+    return { p1, rendererSize: bridge?.renderer?.size, camera: bridge?.renderer?.camera };
+  });
+  const spritePixels = await getProjectedSpritePixelStats(page, canvasPng, presentation.p1, presentation.rendererSize, presentation.camera);
+  return page.evaluate(({ canvasPixels, spritePixels }) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === "p1");
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return {
+      mode: bridge?.mode,
+      character: bridge?.character,
+      compatibilityLoaded: bridge?.compatibility?.loaded,
+      actorSource: actor?.source,
+      actorFrame: actor?.frame ? { group: actor.frame.spriteGroup, index: actor.frame.spriteIndex } : null,
+      sprite: p1?.sprite,
+      renderCalls: bridge?.renderer?.render?.calls ?? 0,
+      canvasPixels,
+      spritePixels,
+    };
+  }, { canvasPixels, spritePixels });
 }
 
 async function captureTagPresentation(page, baseUrl, outDir) {
@@ -1679,6 +1755,54 @@ async function getCanvasPixelStats(page, canvasPng) {
   }, `data:image/png;base64,${canvasPng.toString("base64")}`);
 }
 
+async function getProjectedSpritePixelStats(page, canvasPng, presentation, rendererSize, camera) {
+  return page.evaluate(async ({ dataUrl, presentation, rendererSize, camera }) => {
+    const image = new Image();
+    image.src = dataUrl;
+    await image.decode();
+    const sampleCanvas = document.createElement("canvas");
+    sampleCanvas.width = image.naturalWidth;
+    sampleCanvas.height = image.naturalHeight;
+    const context = sampleCanvas.getContext("2d");
+    if (!context || !presentation || !rendererSize || !camera) {
+      return { sampledPixels: 0, fixtureColorPixels: 0, uniqueColors: 0 };
+    }
+    context.drawImage(image, 0, 0);
+    const worldHeight = Math.max(rendererSize.height, 420);
+    const scale = rendererSize.height / worldHeight * camera.zoom;
+    const centerX = rendererSize.width / 2 + (presentation.meshPosition.x - camera.x) * scale;
+    const centerY = rendererSize.height / 2 - (presentation.meshPosition.y - camera.y) * scale;
+    const width = Math.max(1, Math.abs(presentation.meshScale.x) * scale);
+    const height = Math.max(1, Math.abs(presentation.meshScale.y) * scale);
+    const left = Math.max(0, Math.floor(centerX - width / 2));
+    const top = Math.max(0, Math.floor(centerY - height / 2));
+    const right = Math.min(sampleCanvas.width, Math.ceil(centerX + width / 2));
+    const bottom = Math.min(sampleCanvas.height, Math.ceil(centerY + height / 2));
+    const data = context.getImageData(left, top, Math.max(1, right - left), Math.max(1, bottom - top)).data;
+    const expected = [[0, 180, 240], [240, 0, 120], [80, 220, 0]];
+    const colors = new Set();
+    let fixtureColorPixels = 0;
+    for (let offset = 0; offset < data.length; offset += 4) {
+      const color = [data[offset], data[offset + 1], data[offset + 2]];
+      colors.add(color.join(","));
+      if (expected.some((candidate) => candidate.every((channel, index) => Math.abs(channel - color[index]) <= 20))) {
+        fixtureColorPixels += 1;
+      }
+    }
+    return {
+      sampledPixels: data.length / 4,
+      fixtureColorPixels,
+      uniqueColors: colors.size,
+      rect: { left, top, width: right - left, height: bottom - top },
+    };
+  }, {
+    dataUrl: `data:image/png;base64,${canvasPng.toString("base64")}`,
+    presentation,
+    rendererSize,
+    camera,
+  });
+}
+
 function getRelevantConsoleIssues(logs) {
   return logs.filter((log) => {
     if (log.type === "error") {
@@ -1700,6 +1824,7 @@ function assertSmoke(diagnostics) {
   const {
     runtimeDesktop,
     runtimeMobile,
+    mugenLiteVisual,
     tagPresentation,
     studioWorkbench,
     studioWorkbenchTablet,
@@ -1883,6 +2008,27 @@ function assertSmoke(diagnostics) {
     );
     if (unreadyVisibleAtlases.length) {
       failures.push(`${runtime.label}: visible roster atlas was not ready (${unreadyVisibleAtlases.map((entry) => `${entry.id}:${entry.atlasStatus}`).join(", ")})`);
+    }
+  }
+  for (const [viewport, probe] of Object.entries({ desktop: mugenLiteVisual.desktop, mobile: mugenLiteVisual.mobile })) {
+    if (
+      probe.mode !== "match" ||
+      probe.character !== "MUGEN Lite Journey" ||
+      !probe.compatibilityLoaded ||
+      probe.actorSource !== "imported" ||
+      probe.actorFrame?.group !== 0 ||
+      probe.actorFrame?.index !== 0 ||
+      probe.sprite?.width !== 32 ||
+      probe.sprite?.height !== 64 ||
+      probe.sprite?.axisX !== 16 ||
+      probe.sprite?.axisY !== 62 ||
+      probe.renderCalls < 1 ||
+      !probe.canvasPixels?.nonBlank ||
+      probe.canvasPixels.uniqueColors < 10 ||
+      probe.spritePixels?.fixtureColorPixels < 10 ||
+      probe.spritePixels?.uniqueColors < 3
+    ) {
+      failures.push(`mugen-lite visual ${viewport}: ZIP load, imported sprite presentation, or canvas proof failed`);
     }
   }
   const expectedPair = "p1,p2";
@@ -2501,6 +2647,17 @@ function summarizeDiagnostics(diagnostics) {
       hitSparkSources: diagnostics.checks.runtimeMobile.hitSparkSources,
       hitSparkResolvedSprites: diagnostics.checks.runtimeMobile.hitSparkResolvedSprites,
       characterPresentations: diagnostics.checks.runtimeMobile.characterPresentations.length,
+    },
+    mugenLiteVisual: {
+      fixtureBytes: diagnostics.checks.mugenLiteVisual.fixtureBytes,
+      desktopSprite: diagnostics.checks.mugenLiteVisual.desktop.sprite,
+      desktopFrame: diagnostics.checks.mugenLiteVisual.desktop.actorFrame,
+      desktopUniqueColors: diagnostics.checks.mugenLiteVisual.desktop.canvasPixels.uniqueColors,
+      desktopSpritePixels: diagnostics.checks.mugenLiteVisual.desktop.spritePixels,
+      mobileSprite: diagnostics.checks.mugenLiteVisual.mobile.sprite,
+      mobileFrame: diagnostics.checks.mugenLiteVisual.mobile.actorFrame,
+      mobileUniqueColors: diagnostics.checks.mugenLiteVisual.mobile.canvasPixels.uniqueColors,
+      mobileSpritePixels: diagnostics.checks.mugenLiteVisual.mobile.spritePixels,
     },
     tagPresentation: {
       baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,

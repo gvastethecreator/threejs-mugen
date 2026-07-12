@@ -160,6 +160,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   getDiagnostics(): {
     size: { width: number; height: number };
     pixelRatio: number;
+    camera: { x: number; y: number; zoom: number };
     render: { calls: number; triangles: number; points: number; lines: number };
     memory: { geometries: number; textures: number };
     hitSparks: ReturnType<HitSparkRenderer["getDiagnostics"]>;
@@ -171,6 +172,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     return {
       size: this.size,
       pixelRatio: this.renderer.getPixelRatio(),
+      camera: { x: this.camera.position.x, y: this.camera.position.y, zoom: this.camera.zoom },
       render: {
         calls: this.renderer.info.render.calls,
         triangles: this.renderer.info.render.triangles,
