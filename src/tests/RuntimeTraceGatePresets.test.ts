@@ -166,6 +166,7 @@ import {
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
+  createSyntheticImportedIkemenActiveRootConstraintTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
   createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
@@ -16086,6 +16087,36 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.checksum).toBe("97255586");
     expect(artifact.trace.frameChecksums).toEqual(["65b85d54", "65b00e8f"]);
     expect(artifact.trace.finalEffects).toEqual([]);
+  });
+
+  it("creates a required IKEMEN active-root stage-constraint artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootConstraintTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-active-root-constraint-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-active-root-constraint-golden", passed: true, failures: [] }],
+      trace: {
+        frameCount: 3,
+        finalReserveActors: [
+          expect.objectContaining({ id: "p3", pos: { x: -154, y: 0 }, vel: { x: 4, y: 0 }, targetCount: 0 }),
+          expect.objectContaining({ id: "p4", teamStandby: true }),
+        ],
+      },
+    });
+    expect(artifact.trace.finalEffects).toEqual([]);
+    expect(artifact.gates[0]?.requirements.requiredEffectStores).toEqual([
+      { ownerId: "p1", maxTotal: 0 },
+      { ownerId: "p2", maxTotal: 0 },
+    ]);
+    expect(artifact.trace.frames[0]?.tickSchedule?.phaseStamps.filter(({ id }) => id === "fighter:constraints")).toEqual([]);
+    expect(artifact.trace.frames[1]?.tickSchedule?.phaseStamps.filter(({ id }) => id === "fighter:constraints")).toEqual([
+      expect.objectContaining({ actorId: "p3" }),
+    ]);
+    expect(artifact.trace.checksum).toBe("870f8871");
+    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "63a42885", "842716e7"]);
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {

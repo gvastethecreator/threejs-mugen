@@ -8693,6 +8693,92 @@ export function createSyntheticImportedIkemenActiveRootPresentationTraceArtifact
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootConstraintTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...farCombatStage(),
+    id: "trace-active-root-constraint-grid",
+    displayName: "Trace Active Root Constraint Grid",
+    bounds: { left: -320, right: -154 },
+    playerStart: {
+      p1: { x: -160, y: 0, facing: 1 as const },
+      p2: { x: 0, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "same-side TagIn snapshots bounded phase", p1: ["x"], p2: [], frames: 1 },
+    { label: "active root approaches stage edge", p1: [], p2: [], frames: 1 },
+    { label: "active root crosses and clamps", p1: [], p2: [], frames: 1 },
+  ]);
+  const reserve = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-constraint",
+    displayName: "Synthetic Imported IKEMEN Active Root Constraint",
+    withHitDef: false,
+    activeRootMotionRoute: { commandName: "x", velocityX: 4, blockedHelperId: 1286 },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1: demoFighters[0]!,
+      p2: demoFighters[1]!,
+      stage,
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve, demoFighters[1]!],
+    }),
+    script,
+    { label: "synthetic-imported-ikemen-active-root-constraint-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-constraint-golden",
+      label: "Synthetic imported IKEMEN active-root stage constraint",
+      source: "mixed",
+      notes: [
+        "Explicit Tag trace proves an already-live P3 runs actor-local motion through the stage edge, then reaches the exact sandbox X boundary in fighter:constraints after animation. P3 remains excluded from effects, targets, and every combat route.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-constraint-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["TagIn", { type: "VelSet", minCount: 2 }],
+        requiredExecutedOperations: ["team-standby:tagin", { operation: "kinematic:velset", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 actor-local constraints after promotion", frameIndex: 1, phase: "fighter:constraints", actorIds: ["p3"] },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            teamStandby: false,
+            effectiveCtrl: true,
+            observedPosXAtLeast: -154,
+            observedPosXAtMost: -154,
+            observedVelXAtLeast: 4,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", stateNo: 0, ctrl: true, targetCount: 0 },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", maxTotal: 0 },
+          { ownerId: "p2", maxTotal: 0 },
+        ],
+        forbiddenCombatReasons: ["hit", "guard"],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenPauseBufferTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

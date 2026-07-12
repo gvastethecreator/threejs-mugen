@@ -1,5 +1,13 @@
 # Architecture Decisions
 
+## ADR-014: Active-root constraints are actor-local
+
+Status: accepted, initial cut implemented.
+
+Decision: already-live explicit-Tag P3-P8 roots apply current sandbox stage-X constraints after local animation through `RuntimeRootMotionAdvanceWorld`. Constraint capability and actor-scoped schedule evidence are explicit. Do not enroll those roots in pair push, collision rendering, targets, effects, or combat implicitly.
+
+Why: pinned IKEMEN applies actor bounds before its separate global push/hit passes. Local pair `separate` cannot represent plural team/geometry/priority semantics.
+
 This file records the decisions that keep the project from drifting into disconnected demos. Each decision is intentionally short; implementation details belong in code and the workplan.
 
 ## ADR-001: MatchWorld Becomes The Runtime Boundary

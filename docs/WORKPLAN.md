@@ -2,7 +2,7 @@
 
 ## Active frontier - 2026-07-12
 
-Wayfinder 101 is ready: execute actor-local stage-X constraints for already-live explicit-Tag roots after motion. Required proof: explicit constraint capability, actor-scoped schedule ordering, exact clamp/ScreenBound opt-out trace, zero combat/effect/target widening, full TypeScript 7 gates, docs, and feature commit. Push, diagnostic collision, and combat stay deferred.
+Wayfinder 101 is closed: checksum `870f8871`, 543/543 traces, and 176/1797 tests prove actor-local active-root stage-X constraints with no interaction widening. Wayfinder 102 now maps diagnostic collision projection. Push and combat stay deferred.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 
@@ -17,7 +17,7 @@ Authoritative horizon docs:
 
 ## 2026-07-11 Active-root Presentation Checkpoint
 
-Wayfinder 099 closes `RuntimeRootPresentation/v0`: exact draw/camera ids drive P3/P2 character presentation without widening P1/P2 snapshot/HUD/gameplay ownership. Required checksum `97255586`, 542/542 traces, desktop/mobile handoff/reset, 176 files / 1794 tests, TypeScript 7, build, boundaries, and visual inspection pass. Wayfinder 100 now maps stage constraints, body push, collision, and combat admission before one bounded implementation. Scores remain unchanged.
+Wayfinder 101 closes actor-local active-root stage-X constraints after motion. Required checksum `870f8871`, 543/543 traces, 176 files / 1797 tests, TypeScript 7, build, and boundaries pass; prior presentation smoke remains the visual baseline. Wayfinder 102 maps diagnostic collision projection. Scores remain unchanged.
 
 ## 2026-07-11 Daily Architecture Planning Note - superseded
 

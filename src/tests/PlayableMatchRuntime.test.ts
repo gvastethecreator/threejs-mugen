@@ -172,7 +172,7 @@ describe("PlayableMatchRuntime", () => {
       moved.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation"]);
+    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints"]);
     expect(moved.effects?.some(({ ownerId }) => ownerId === "p3")).toBe(false);
     expect(
       moved.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.executedControllers.Helper,
@@ -218,7 +218,7 @@ describe("PlayableMatchRuntime", () => {
       moved.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation"]);
+    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints"]);
   });
 
   it("keeps active Tag reserve motion disabled during imported Pause ticks", () => {

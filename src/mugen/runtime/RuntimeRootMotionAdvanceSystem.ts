@@ -3,6 +3,7 @@ export type RuntimeRootMotionAdvanceHooks<TActor> = {
   runMotionControllers: (actor: TActor) => void;
   advanceKinematics: (actor: TActor) => void;
   advanceAnimation: (actor: TActor) => void;
+  applyConstraints: (actor: TActor) => void;
 };
 
 export type RuntimeRootMotionAdvanceInput<TActor> = {
@@ -17,5 +18,6 @@ export class RuntimeRootMotionAdvanceWorld {
     hooks.runMotionControllers(actor);
     hooks.advanceKinematics(actor);
     hooks.advanceAnimation(actor);
+    hooks.applyConstraints(actor);
   }
 }

@@ -83,6 +83,14 @@ describe("RuntimeMatchTickScheduleSystem", () => {
           actualAfter: "post-fighter:combat",
           matches: false,
         },
+        {
+          id: "animation-before-constraints",
+          expectedBefore: "fighter:animation",
+          expectedAfter: "fighter:constraints",
+          actualBefore: "fighter:constraints",
+          actualAfter: "fighter:animation",
+          matches: false,
+        },
       ],
     });
     expect(schedule.phases.every((phase) => phase.owner && Array.isArray(phase.mutableStores) && phase.sideEffects.length)).toBe(true);
@@ -115,5 +123,17 @@ describe("RuntimeMatchTickScheduleSystem", () => {
     recorder.record("fighter:kinematics", "p2");
 
     expect(recorder.complete("active").architectureComparison.checks[0]?.matches).toBe(false);
+  });
+
+  it("proves animation-before-constraints per root and rejects cross-root masking", () => {
+    const aligned = new RuntimeMatchTickScheduleRecorder(12);
+    aligned.record("fighter:animation", "p3");
+    aligned.record("fighter:constraints", "p3");
+    expect(aligned.complete("active").architectureComparison.checks[2]?.matches).toBe(true);
+
+    const disjoint = new RuntimeMatchTickScheduleRecorder(13);
+    disjoint.record("fighter:animation", "p1");
+    disjoint.record("fighter:constraints", "p3");
+    expect(disjoint.complete("active").architectureComparison.checks[2]?.matches).toBe(false);
   });
 });

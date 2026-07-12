@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 407 - Active-root stage constraint runtime
+
+Done: active-motion P3-P8 roots apply stage-X constraints after animation; `RuntimeRootPhaseCapabilities/v2` adds `constraints`; tick schedule adds actor-scoped `fighter:constraints`. Required checksum `870f8871` passes inside 543/543 traces with final P3 `x=-154`, target count zero, empty effect stores, and no hit/guard evidence. Full gates pass 176 files / 1797 tests and build 1,608.23 kB. Next: Wayfinder 102 diagnostic collision research. No score movement.
+
 ## Entry 406 - Active-root constraint/collision research
 
 Resolved Wayfinder 100 from pinned IKEMEN source and current ownership. Selected Wayfinder 101: actor-local stage-X clamp after active-root motion, explicit capability, actor-scoped schedule proof, and required zero-interaction trace. No runtime or score change. Next cut must not widen pair push, collision debug, combat, targets, effects, round, HUD/audio, or resources.

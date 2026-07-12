@@ -64,3 +64,7 @@ Current stage bounds do not distinguish IKEMEN screen bounds, stage bounds, edge
 Allowed: one implementation-ready actor-local active-root stage-X clamp boundary.
 
 Blocked: body push, collision-debug widening, hits/projectiles/helpers/targets/guard distance, effects, round/resources, exact ScreenBound/stagebound/localcoord/Z/interpolation parity, Tag choreography, scores, or full collision parity.
+
+## Implementation Outcome
+
+Wayfinder 101 implemented the selected actor-local boundary. `RuntimeRootPhaseCapabilities/v2` adds `constraints`; active-root motion records `fighter:constraints` after animation and applies the existing stage-X clamp. Required checksum `870f8871` and frames `37e1175b`, `63a42885`, `842716e7` pass inside 543/543 artifacts with final P3 `x=-154`, target count zero, empty pair effect stores, and no hit/guard evidence. Push, diagnostic collision, and combat remain blocked.

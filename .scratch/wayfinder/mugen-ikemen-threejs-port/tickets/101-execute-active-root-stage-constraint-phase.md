@@ -1,7 +1,7 @@
 # Execute Active-root Stage Constraint Phase
 
 Type: implementation
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -23,3 +23,7 @@ Clamp already-live explicit-Tag P3-P8 active-motion roots to current sandbox sta
 Allowed: bounded active-root stage-X clamp using current sandbox semantics.
 
 Blocked: plural push, collision-debug widening, combat/targets/effects, exact IKEMEN bounds/localcoord/Z parity, Tag choreography, scores, or full collision parity.
+
+## Result
+
+Actor-local active-root constraints now run after animation through existing stage-X clamp semantics. `RuntimeRootPhaseCapabilities/v2` publishes the owner and tick diagnostics record `fighter:constraints` per actor. Required checksum `870f8871` proves exact P3 boundary `x = -154` with zero target/effect/combat widening. Full evidence: `docs/reports/2026-07-12-ikemen-active-root-stage-constraint-runtime.md`.

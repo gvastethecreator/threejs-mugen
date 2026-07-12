@@ -287,7 +287,7 @@ describe("MatchWorld", () => {
       cameraRootIds: ["p1", "p2"],
     });
     expect(registry.rootPhaseCapabilities).toMatchObject({
-      schema: "RuntimeRootPhaseCapabilities/v1",
+      schema: "RuntimeRootPhaseCapabilities/v2",
       mode: "ikemen-tag",
     });
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p1")).toMatchObject({
@@ -300,6 +300,7 @@ describe("MatchWorld", () => {
         ai: false,
         kinematics: true,
         animation: true,
+        constraints: true,
         effects: true,
         combat: true,
         round: true,
@@ -323,6 +324,7 @@ describe("MatchWorld", () => {
         ai: false,
         kinematics: false,
         animation: false,
+        constraints: false,
         effects: false,
         combat: false,
         round: false,
@@ -355,12 +357,12 @@ describe("MatchWorld", () => {
       standby: true,
       structurallyActive: false,
       effectiveCtrl: false,
-      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, presentation: false }),
+      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, constraints: false, presentation: false }),
     });
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")).toMatchObject({
       standby: false,
       structurallyActive: true,
-      phases: expect.objectContaining({ controllerCns: "active-motion", kinematics: true, presentation: true }),
+      phases: expect.objectContaining({ controllerCns: "active-motion", kinematics: true, constraints: true, presentation: true }),
     });
 
     registry.rootPhaseCapabilities!.roots[0]!.phases.combat = false;

@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Execute active-root stage constraint phase](tickets/101-execute-active-root-stage-constraint-phase.md) - active-motion roots now apply actor-local stage-X constraints after animation with explicit v2 capability and required isolation trace. Next: Wayfinder 102.
+
 - [Map active-root constraint and collision promotion](tickets/100-map-active-root-constraint-collision-promotion.md) - actor-local stage-X clamp first; plural push, diagnostic collision, and combat remain separate. Next: Wayfinder 101.
 
 - [TypeScript 7 upgrade posture](tickets/001-typescript-7-upgrade-posture.md) - upgrade directly to `typescript@~7.0.2`; keep `rootDir: "src"` explicit; no TS6 compatibility alias unless a future API-importing tool fails.

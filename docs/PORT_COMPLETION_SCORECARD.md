@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-12 Active-root stage constraint evidence note
+
+Required checksum `870f8871` and 543/543 traces prove already-live explicit-Tag P3-P8 roots can apply current sandbox stage-X constraints after local motion while targets, effects, push, collision debug, and combat remain unchanged. `RuntimeRootPhaseCapabilities/v2` exposes this narrow capability. Scores remain unchanged because collision/push/combat and exact IKEMEN bounds parity remain blocked.
+
 ## 2026-07-12 Active-root constraint/collision research reconciliation
 
 Wayfinder 100 maps active-root constraints/collision and selects stage-X clamp for Wayfinder 101. Research adds no capability score: P3-P8 still lack stage constraints, push, diagnostic collision, and combat until executable evidence lands. Verified totals remain the Wayfinder 099 baseline.
@@ -99,7 +103,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Evidence Ledger
 
-Current aggregate override: entry 405 declares 542/542 artifacts, 511 required and 31 optional. Required active-root presentation checksum `97255586` supersedes the entry 403 motion aggregate while preserving every historical gate. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as the current total.
+Current aggregate override: entry 407 declares 543/543 artifacts, 512 required and 31 optional. Required active-root constraint checksum `870f8871` supersedes the entry 405 presentation aggregate while preserving every historical gate. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |

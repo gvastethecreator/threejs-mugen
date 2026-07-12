@@ -15,6 +15,7 @@ export type RuntimeMatchTickPhaseId =
   | "helper:controllers"
   | "fighter:kinematics"
   | "fighter:animation"
+  | "fighter:constraints"
   | "fighter:controllers"
   | "fighter:auto-guard-check:pre"
   | "fighter:auto-guard-check:post"
@@ -60,7 +61,7 @@ export type RuntimeMatchTickArchitectureComparison = {
 };
 
 export type RuntimeMatchTickOrderCheck = {
-  id: "controllers-before-kinematics" | "combat-before-animation";
+  id: "controllers-before-kinematics" | "combat-before-animation" | "animation-before-constraints";
   expectedBefore: RuntimeMatchTickPhaseId;
   expectedAfter: RuntimeMatchTickPhaseId;
   actualBefore: RuntimeMatchTickPhaseId;
@@ -131,6 +132,12 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     ["fighter position and velocity advanced"],
   ),
   "fighter:animation": phase("fighter:animation", "RuntimeAnimationWorld", ["fighter.runtime"], ["fighter animation clock advanced"]),
+  "fighter:constraints": phase(
+    "fighter:constraints",
+    "RuntimeActorConstraintWorld",
+    ["fighter.runtime.pos"],
+    ["actor-local stage constraints applied"],
+  ),
   "fighter:controllers": phase(
     "fighter:controllers",
     "RuntimeActiveControllerRunWorld",
@@ -248,6 +255,7 @@ function compareArchitectureOrder(
   const checks = [
     orderCheck("controllers-before-kinematics", "fighter:controllers", "fighter:kinematics", phases),
     orderCheck("combat-before-animation", "post-fighter:combat", "fighter:animation", phases),
+    orderCheck("animation-before-constraints", "fighter:animation", "fighter:constraints", phases),
   ];
   return {
     reference: "roadmap-target",

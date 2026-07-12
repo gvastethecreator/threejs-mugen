@@ -1,6 +1,15 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-12 IKEMEN active-root constraint/collision research
+## Global report - 2026-07-12 IKEMEN active-root stage constraints
+
+- Runtime: already-live Tag P3-P8 active-motion roots apply actor-local stage-X constraints after animation; `ScreenBound bound = 0` opts out.
+- Contract: `RuntimeRootPhaseCapabilities/v2` adds explicit `constraints`; schedule adds actor-scoped `fighter:constraints` with cross-root-safe order comparison.
+- Isolation: plural push, collision debug, effects, targets, guard distance, combat, round, HUD/audio, resources, Pause/hitpause, and same-pass TagIn remain unchanged.
+- Trace: required checksum `870f8871`, frames `37e1175b` / `63a42885` / `842716e7`, final P3 `x = -154`, zero targets/effects, no hit/guard evidence.
+- Verification: 176 files / 1797 tests, TypeScript 7, build, 543/543 traces (512 required, 31 optional), boundaries, and diff gate pass. Browser N/A.
+- Global status: Wayfinder 101 resolved without score movement; Wayfinder 102 maps diagnostic collision projection.
+
+## Previous global report - 2026-07-12 IKEMEN active-root constraint/collision research
 
 - Source: actor-local bounds run before global push/hit detection; push has plural team/geometry/priority semantics; standby independently blocks collision/hits.
 - Local audit: stage clamp is reusable actor-locally, but `separate`, collision rendering, combat, targets, and effects remain pair-owned.

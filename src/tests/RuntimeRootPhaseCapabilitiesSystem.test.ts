@@ -9,7 +9,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
     const diagnostic = new RuntimeRootPhaseCapabilitiesWorld().diagnostic(input());
 
     expect(diagnostic).toEqual({
-      schema: "RuntimeRootPhaseCapabilities/v1",
+      schema: "RuntimeRootPhaseCapabilities/v2",
       mode: "ikemen-tag",
       roots: [
         expect.objectContaining({
@@ -25,6 +25,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
             ai: false,
             kinematics: true,
             animation: true,
+            constraints: true,
             effects: true,
             combat: true,
             round: true,
@@ -53,6 +54,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
             ai: false,
             kinematics: false,
             animation: false,
+            constraints: false,
             effects: false,
             combat: false,
             round: false,
@@ -100,6 +102,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
       directInput: false,
       kinematics: false,
       animation: false,
+      constraints: false,
       effects: true,
       presentation: true,
     });
@@ -110,6 +113,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
       ai: false,
       kinematics: true,
       animation: true,
+      constraints: true,
       effects: false,
       combat: false,
       round: false,
@@ -137,6 +141,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
         ai: false,
         kinematics: false,
         animation: false,
+        constraints: false,
         effects: false,
         combat: false,
         round: false,

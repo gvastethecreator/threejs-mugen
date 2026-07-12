@@ -1202,6 +1202,10 @@ export class PlayableMatchRuntime {
           recordPhase("fighter:animation", actor.id);
           this.animationWorld.advance(actor);
         },
+        applyConstraints: (actor) => {
+          recordPhase("fighter:constraints", actor.id);
+          this.actorConstraintWorld.clampToStage(actor.runtime, this.stage);
+        },
       },
     });
   }

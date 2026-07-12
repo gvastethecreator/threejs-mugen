@@ -6,9 +6,9 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
-## 2026-07-12 Constraint/collision frontier
+## 2026-07-12 Active-root constraint checkpoint
 
-Wayfinder 100 resolves actor-local stage-X clamp as next promotion. Wayfinder 101 adds explicit constraint capability and post-motion actor-scoped scheduling for already-live Tag roots. Global plural push, diagnostic collision, hit admission, targets, effects, and combat remain separate blocked owners; no score movement.
+Wayfinder 101 closes actor-local stage-X constraints after active-root motion. `RuntimeRootPhaseCapabilities/v2`, actor-scoped schedule evidence, checksum `870f8871`, and 543/543 traces prove exact clamp with no target/effect/combat widening. Wayfinder 102 maps diagnostic collision; plural push and combat remain blocked. No score movement.
 
 ## Objective
 
@@ -18,7 +18,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-405` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded Tag parameters/order/identity/RedirectID, complete root-to-Helper aggregate execution, Helper-originated self Tag plus required trace, same-side command routing, precomputed normal-tick `active-motion`, and renderer-independent body/shadow/camera presentation are closed. `RuntimeRootPhaseCapabilities/v1` now publishes presentation for selected live P3-P8 roots while stable P1/P2 snapshot/HUD/gameplay ownership remains unchanged. Wayfinder 100 next maps stage constraints, push, collision, and combat admission. P3-P8 direct native input/AI, Pause/hitpause motion, stage clamp/push, collision/combat, root-keyed effects, round, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-407` supersede the original immediate sequence below): root participation, plural activation/selection, standby CNS, bounded Tag identity/RedirectID, Helper aggregate/self Tag, side commands, precomputed `active-motion`, body/shadow/camera presentation, and actor-local stage-X constraints are closed. `RuntimeRootPhaseCapabilities/v2` publishes selected presentation and explicit constraints while stable P1/P2 gameplay/HUD ownership remains unchanged. Wayfinder 102 maps diagnostic collision projection. P3-P8 direct native input/AI, Pause/hitpause motion, plural push, collision/combat, root-keyed effects, round, lifebars, resources, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.

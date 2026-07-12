@@ -1,5 +1,7 @@
 # Architecture
 
+Current active-root constraint cut: `RuntimeRootMotionAdvanceWorld` ends already-live Tag root motion with actor-local constraints after animation. `RuntimeActorConstraintWorld` applies current stage-X bounds, `RuntimeRootPhaseCapabilities/v2` publishes ownership, and `MatchTickSchedule/v0` records `fighter:constraints` per actor. Pair post-fighter push/combat and renderer collision enrollment remain unchanged.
+
 This file describes the current implementation boundaries. The larger port direction is documented in:
 
 - `docs/PORTING_ROADMAP.md`

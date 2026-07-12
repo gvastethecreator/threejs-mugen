@@ -1260,6 +1260,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-constraint",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootConstraintTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-pause-buffer",
       required: true,
       artifact: presets.createSyntheticImportedIkemenPauseBufferTraceArtifact(),
@@ -3407,7 +3412,11 @@ async function main() {
       scheduleDiagnostics.flatMap((schedule) => schedule.snapshotPhaseCatalog),
     );
     const architectureChecks = mergeScheduleCatalog(
-      scheduleDiagnostics.flatMap((schedule) => schedule.architectureChecks),
+      scheduleDiagnostics.flatMap((schedule) => schedule.architectureChecks.map((check) => ({
+        id: check.id,
+        expectedBefore: check.expectedBefore,
+        expectedAfter: check.expectedAfter,
+      }))),
     );
     const catalogConflicts = [...phaseCatalog.conflicts, ...snapshotPhaseCatalog.conflicts, ...architectureChecks.conflicts];
     const requiredScheduleFailures = scheduleArtifacts.filter(

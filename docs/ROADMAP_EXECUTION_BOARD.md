@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root constraint/collision research (2026-07-12)
+## Latest closeout - IKEMEN active-root stage constraints (2026-07-12)
+
+Already-live explicit-Tag P3-P8 roots now apply actor-local stage-X constraints after motion. `RuntimeRootPhaseCapabilities/v2` and actor-scoped `fighter:constraints` expose the owner; required checksum `870f8871` passes inside 543/543 traces with final P3 `x=-154` and zero target/effect/combat widening. Full gates pass 176 files / 1797 tests. Wayfinder 102 maps diagnostic collision; scores unchanged.
+
+## Previous closeout - IKEMEN active-root constraint/collision research (2026-07-12)
 
 Pinned IKEMEN source separates actor-local bounds, global plural push, debug Clsn projection, and hit admission. Local audit selects active-root stage-X clamp as Wayfinder 101: explicit capability plus actor-scoped post-motion phase, with push/collision/combat unchanged. Docs/source/diff gates only; runtime metrics and scores remain at the 099 baseline.
 
@@ -940,7 +944,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, bounded Tag/identity/RedirectID, required Helper/side-command evidence, `RuntimeRootPhaseCapabilities/v1` active-root local motion/animation, and `RuntimeRootPresentation/v0` body/shadow/camera handoff. | Wayfinder 100: map stage constraints, body push, collision, and combat admission before one bounded implementation. | No P3-P8 direct native input/AI, stage clamp/push, collidable gameplay, root-key effects, multi-root combat/round/lifebar/resources, exact Tag ZSS overlap, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, bounded Tag/identity/RedirectID, Helper/side-command evidence, `RuntimeRootPhaseCapabilities/v2` active-root motion/animation/constraints, and `RuntimeRootPresentation/v0` body/shadow/camera handoff. | Wayfinder 102: diagnostic collision projection without push/combat admission. | No P3-P8 direct native input/AI, plural push, collidable gameplay, root-key effects, multi-root combat/round/lifebar/resources, exact Tag ZSS overlap, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
