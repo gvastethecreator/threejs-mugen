@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 414 - Active-root mutation prerequisite research
+
+Done: pinned Ikemen-GO mutation ordering confirms priority/vulnerability, HitOverride/guard/state transaction, target buffering, and later target commit. Local audit rejects direct P3-P8 mutation because `RuntimeEffectActorWorld` still owns fixed P1/P2 stores and unknown root ids can alias pair effects during get-hit cleanup or future spawns. Wayfinder 109 selects exact actor-keyed root effect stores with registration, unknown-owner failure, isolation, reset, and trace proof while lifecycle/presentation/combat widening stays blocked. Claim allowed: implementation-ready ownership prerequisite. Claim blocked: active-root hit mutation, plural effect lifecycle/combat/presentation, target parity, round/HUD/audio, scores, and full parity.
+
 ## Entry 413 - Active-root read-only direct-hit admission
 
 Done: `RuntimeRootDirectHitAdmissionWorld` validates runtime-root actor/id/PlayerNo identity, filters invalid/non-player/disabled/standby roots, retains over-KO, orders ReversalDef/active-HitDef/PlayerNo, and records enemy-pair decisions for move state, repeated contact, HitBy/NotHitBy, explicit hurt Clsn, and overlap. `RuntimeRootPhaseCapabilities/v4`, `RuntimeRootDirectHitAdmission/v0`, snapshot/trace cloning, and actor-scoped pre-combat schedule rows expose proof. Pair/Single combat remains exact; pause/hitpause/reset clear stale evidence; no mutation service enters the API. Full gates and trace totals are recorded in the implementation report. Claim allowed: deterministic read-only explicit-Tag root hit admission. Claim blocked: hit/guard/reversal/HitOverride mutation, targets, juggle, helpers/projectiles, throws, resources, round/HUD/audio, scores, and full parity.

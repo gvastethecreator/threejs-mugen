@@ -1,7 +1,7 @@
 # Map Active-root Direct-hit Mutation
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
