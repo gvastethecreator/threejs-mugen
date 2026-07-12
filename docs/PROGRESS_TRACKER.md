@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper-relative TagIn leader runtime
+
+- Ownership: exact Helper root anchors stable same-side PlayerNo leader selection under explicit Tag mode.
+- Evaluation: static/deferred leader remains original-caller-owned and uses shared source order.
+- Mutation: Helper state/control precede leader rotation; Helper self and partner-root effects follow.
+- Failure: opposing/missing leader, non-Tag mode, missing root, and member axes preserve all state and telemetry.
+- Verification: 170 files / 1730 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check pass.
+- Global status: Wayfinder 088 is closed without visual or score movement; Wayfinder 089 executes Helper `memberno` position-one ownership.
+
 ## Global report - 2026-07-11 IKEMEN Helper-relative partner Tag runtime
 
 - Compiler: source-valid caller `stateno` now composes with partner identity/state/control in one typed Tag operation.
@@ -1385,6 +1394,15 @@ Every compatibility milestone should leave:
 - Missing anchor/partner and unavailable partner state preserve Helper/partner state and suppress success telemetry.
 - Full gates: 170 files / 1727 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
 - Global status: Wayfinder 087 is closed without browser or score movement; Wayfinder 088 executes Helper-relative TagIn leader.
+
+### 2026-07-11 - IKEMEN Helper-relative TagIn leader runtime
+
+- Static/dynamic leader uses original-root expressions and the redirected Helper's exact root/team anchor.
+- Stable same-side PlayerNo rotates through existing Tag order; stable slots and reset behavior remain unchanged.
+- Full local/self/partner composition applies state/control, leader, self standby, then partner standby/state/control.
+- Opposing/missing leader and non-Tag mode roll back Helper, order, standby, partner, and success telemetry.
+- Full gates: 170 files / 1730 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
+- Global status: Wayfinder 088 is closed without browser or score movement; Wayfinder 089 executes Helper `memberno` position-one ownership.
 
 ## Not Done
 

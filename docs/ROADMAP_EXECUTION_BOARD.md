@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN Helper-relative partner Tag runtime (2026-07-11)
+## Latest closeout - IKEMEN Helper-relative TagIn leader runtime (2026-07-11)
+
+Explicit Tag mode now admits static/deferred Helper-targeted TagIn leader rotation through exact root/team ownership and stable same-side PlayerNo. Atomic validation covers Helper, partner, state, root, leader, and mode before mutation; order is Helper state/control, leader, self, partner. Full gates pass 170 files / 1730 tests and 538/538 traces. Continue at Wayfinder 089 for Helper `memberno`; no visual or score movement.
+
+## Previous closeout - IKEMEN Helper-relative partner Tag runtime (2026-07-11)
 
 Explicit `ikemen-go` Helper RedirectID now composes local state/control/self with stable-root-relative partner standby/state/control. Dynamic values resolve once in original-caller source order; exact root anchoring and dual state prevalidation preserve local atomicity. Full gates pass 170 files / 1727 tests and 538/538 traces. Continue at Wayfinder 088 for TagIn leader; no visual or score movement.
 
@@ -888,7 +892,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, bounded root Tag parameters, numeric root/Helper identity, root RedirectID, Helper-local state/control/standby, initial standby, and Helper-relative partner execution. | Wayfinder 088: execute Helper-relative TagIn leader rotation. | No Helper member/leader execution beyond the active cut, incoming Helper hurt/push/camera/opponent breadth, multi-root gameplay, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, bounded root Tag parameters, numeric root/Helper identity, root RedirectID, Helper-local state/control/standby, initial standby, partner execution, and Helper-relative TagIn leader. | Wayfinder 089: execute Helper `memberno` from mutable position one. | No Helper member execution, incoming Helper hurt/push/camera/opponent breadth, multi-root gameplay, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -899,8 +903,8 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 Helper aggregate leader: Wayfinder 088 admits stable-PlayerNo TagIn leader rotation with existing Helper/partner composition.
-2. I2 Helper aggregate member: separately implement the source-quirk position-one `memberno` route after leader proof.
+1. I2 Helper aggregate member: Wayfinder 089 implements the source-quirk position-one `memberno` route.
+2. I2 Helper aggregate audit: reconcile complete bounded Helper aggregate order before choosing broader team gameplay.
 3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 4. I2 gameplay ownership: only after dynamic controller semantics, specify active-root input/combat/round/presentation/resource consumers independently.
 5. I2 trace promotion: add required Tag traces when bounded behavior reaches a stable cross-system oracle; current unit/integration proof intentionally leaves trace checksums unchanged.
@@ -925,7 +929,8 @@ Current checkpoint and next build:
 - Closed: source-pinned Helper standby map, direct-combat/effective-control execution, and root-created static/dynamic initial standby; projectiles and drawing remain active.
 - Closed: Helper aggregate ownership research; partner is stable-root-relative, member/leader own root order, and exact source failure is incremental.
 - Closed: Helper-relative partner root standby/state/control with source-ordered expressions and local atomic validation.
-- Next: Wayfinder 088 Helper-relative TagIn stable-PlayerNo leader rotation.
+- Closed: Helper-relative TagIn stable-PlayerNo leader rotation with local/self/partner composition.
+- Next: Wayfinder 089 Helper `memberno` position-one order mutation.
 - Keep input, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:

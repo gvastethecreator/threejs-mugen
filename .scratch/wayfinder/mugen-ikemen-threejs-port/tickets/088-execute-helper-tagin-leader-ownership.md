@@ -1,7 +1,7 @@
 # Execute Helper-relative TagIn leader ownership
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -21,4 +21,6 @@ Can root-executed explicit-IKEMEN TagIn RedirectID rotate a Helper-relative stab
 
 ## Answer
 
-Pending implementation.
+Explicit `ikemen-go` TagIn can now resolve static/deferred `leader` in the original caller context, anchor team ownership through the live redirected Helper's exact root, and rotate a valid stable same-side PlayerNo through `RuntimeTagTeamOrder`. All Helper, optional partner, state, root, leader, and Tag-mode conditions validate before mutation.
+
+Mutation applies Helper state/control, leader rotation, Helper self standby, then optional partner-root standby/state/control. Opposing/missing leaders, non-Tag mode, missing roots, and every member axis fail atomically without success telemetry. Verification passes 2 focused files / 174 tests, 170 files / 1730 full tests, TypeScript 7 typecheck/build, 538/538 traces, boundaries, and diff check. Full report: `docs/reports/2026-07-11-ikemen-helper-tagin-leader-runtime.md`.

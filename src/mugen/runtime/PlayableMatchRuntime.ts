@@ -1247,11 +1247,17 @@ export class PlayableMatchRuntime {
       );
       return undefined;
     };
-    if (hasHelperTagTeamOrderAxes(sourceOperation)) {
+    if (hasHelperTagMemberAxes(sourceOperation)) {
       return block("Helper aggregate axes unsupported");
     }
     if (sourceOperation.controllerType === "tagout" && hasAuthoredCallerControl(sourceOperation)) {
       return block("TagOut Helper control unsupported");
+    }
+    if (
+      sourceOperation.controllerType !== "tagin" &&
+      (sourceOperation.leaderPlayerNo !== undefined || sourceOperation.leaderPlayerNoExpression !== undefined)
+    ) {
+      return block("TagOut Helper leader unsupported");
     }
 
     const operation = resolveDynamicTeamStandbyOperation(sourceOperation, caller, context);
@@ -1266,25 +1272,46 @@ export class PlayableMatchRuntime {
       return block("Helper partner target required");
     }
     const roots = this.characterRoots();
+    const rootById = new Map(roots.map((candidate) => [candidate.id, candidate]));
+    const rootByPlayerNo = new Map(
+      roots.flatMap((candidate) => candidate.playerNo === undefined ? [] : [[candidate.playerNo, candidate] as const]),
+    );
+    const needsRootAnchor = operation.partnerOrdinal !== undefined || operation.leaderPlayerNo !== undefined;
+    const root = needsRootAnchor ? roots.find((candidate) => candidate.id === helper.rootId) : undefined;
+    if (needsRootAnchor && (!root || !root.runtime.teamState?.playerType || root.runtime.teamState.disabled)) {
+      return block(`Helper root ${helper.rootId} unavailable`);
+    }
     let partner: FighterMatchState | undefined;
     if (operation.partnerOrdinal !== undefined) {
-      const root = roots.find((candidate) => candidate.id === helper.rootId);
-      if (!root || !root.runtime.teamState?.playerType || root.runtime.teamState.disabled) {
-        return block(`Helper root ${helper.rootId} unavailable`);
-      }
-      partner = tagPartnerSelectionWorld.select(roots, root, operation.partnerOrdinal);
-      if (!partner) return block(`partner ${operation.partnerOrdinal} unavailable for ${root.id}`);
+      partner = tagPartnerSelectionWorld.select(roots, root!, operation.partnerOrdinal);
+      if (!partner) return block(`partner ${operation.partnerOrdinal} unavailable for ${root!.id}`);
       if (operation.partnerStateNo !== undefined && !canEnterState(partner, operation.partnerStateNo, partner)) {
         return block(`partner state ${operation.partnerStateNo} unavailable for ${partner.id}`);
       }
     }
+    const targetSide = root === undefined ? undefined : runtimeTeamSide(root);
+    const leader = operation.leaderPlayerNo === undefined ? undefined : rootByPlayerNo.get(operation.leaderPlayerNo);
+    if (
+      operation.leaderPlayerNo !== undefined &&
+      (!this.tagTeamOrder ||
+        targetSide === undefined ||
+        !leader ||
+        leader.runtime.teamState?.disabled ||
+        runtimeTeamSide(leader) !== targetSide ||
+        !this.tagTeamOrder.canRotateLeader(targetSide, leader.id))
+    ) {
+      return block(`leader ${operation.leaderPlayerNo} unavailable for ${root!.id}`);
+    }
 
     const hasLocalMutation = stateNo !== undefined ||
       (operation.controllerType === "tagin" && hasAuthoredCallerControl(operation));
-    if (!operation.self && !hasLocalMutation && !partner) return block("Helper local mutation required");
+    if (!operation.self && !hasLocalMutation && !partner && !leader) return block("Helper local mutation required");
 
     if (!applyRuntimeHelperTagStateControl(helper, { stateNo, control: operation.callerControl })) {
       return block(`Helper state ${stateNo ?? "invalid"} unavailable for ${helper.serialId}`);
+    }
+    if (leader) {
+      this.tagTeamOrder!.rotateLeader(targetSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
     }
     if (operation.self) {
       helper.teamState = {
@@ -2267,11 +2294,9 @@ function hasAuthoredCallerControl(operation: TeamStandbyControllerOp): boolean {
   return operation.callerControl !== undefined || operation.callerControlExpression !== undefined;
 }
 
-function hasHelperTagTeamOrderAxes(operation: TeamStandbyControllerOp): boolean {
+function hasHelperTagMemberAxes(operation: TeamStandbyControllerOp): boolean {
   return operation.memberPosition !== undefined ||
-    operation.memberPositionExpression !== undefined ||
-    operation.leaderPlayerNo !== undefined ||
-    operation.leaderPlayerNoExpression !== undefined;
+    operation.memberPositionExpression !== undefined;
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {
