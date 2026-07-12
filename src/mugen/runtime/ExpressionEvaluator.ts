@@ -17,8 +17,11 @@ export type ExpressionContext = {
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
   outputLocalCoord?: [number, number];
-  sizeBoxX?: { x1: number; x2: number };
-  opponentSizeBoxX?: { x1: number; x2: number };
+  sizeBoxX?: { x1: number; x2: number } | null;
+  opponentSizeBoxX?: { x1: number; x2: number } | null;
+  sizeBoxY?: { y1: number; y2: number } | null;
+  opponentSizeBoxY?: { y1: number; y2: number } | null;
+  p2BodyDistYUsesSizeBoxes?: boolean;
   parentLocalCoord?: [number, number];
   rootLocalCoord?: [number, number];
   parent?: CharacterRuntimeState;
@@ -93,8 +96,10 @@ export type ExpressionRedirectTarget = {
   opponentPlayerNo?: number;
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
-  sizeBoxX?: { x1: number; x2: number };
-  opponentSizeBoxX?: { x1: number; x2: number };
+  sizeBoxX?: { x1: number; x2: number } | null;
+  opponentSizeBoxX?: { x1: number; x2: number } | null;
+  sizeBoxY?: { y1: number; y2: number } | null;
+  opponentSizeBoxY?: { y1: number; y2: number } | null;
   name?: string;
   authorName?: string;
   opponentName?: string;
@@ -927,17 +932,33 @@ class ExpressionParser {
   private p2BodyDist(axis: "x" | "y"): number {
     const opponent = this.context.opponent;
     if (!opponent) {
-      return axis === "x" ? 999 : 0;
+      return Number.NaN;
     }
     if (axis === "y") {
-      return opponent.pos.y - this.context.self.pos.y;
+      const selfScale = 320 / (this.context.localCoord?.[0] ?? 320);
+      const opponentScale = 320 / (this.context.opponentLocalCoord?.[0] ?? 320);
+      const outputScale = 320 / (this.context.outputLocalCoord?.[0] ?? this.context.localCoord?.[0] ?? 320);
+      if (!this.context.p2BodyDistYUsesSizeBoxes) {
+        return (opponent.pos.y * opponentScale - this.context.self.pos.y * selfScale) / outputScale;
+      }
+      const selfBox = this.context.sizeBoxY;
+      const opponentBox = this.context.opponentSizeBoxY;
+      if (!selfBox || !opponentBox) return Number.NaN;
+      const selfTop = (this.context.self.pos.y + selfBox.y1) * selfScale;
+      const selfBottom = (this.context.self.pos.y + selfBox.y2) * selfScale;
+      const opponentTop = (opponent.pos.y + opponentBox.y1) * opponentScale;
+      const opponentBottom = (opponent.pos.y + opponentBox.y2) * opponentScale;
+      if (selfBottom < opponentTop) return (opponentTop - selfBottom) / outputScale;
+      if (selfTop > opponentBottom) return (opponentBottom - selfTop) / outputScale;
+      return 0;
     }
     const self = this.context.self;
     const selfScale = 320 / (this.context.localCoord?.[0] ?? 320);
     const opponentScale = 320 / (this.context.opponentLocalCoord?.[0] ?? 320);
     const outputScale = 320 / (this.context.outputLocalCoord?.[0] ?? this.context.localCoord?.[0] ?? 320);
-    const selfBox = this.context.sizeBoxX ?? { x1: -24, x2: 24 };
-    const opponentBox = this.context.opponentSizeBoxX ?? { x1: -24, x2: 24 };
+    const selfBox = this.context.sizeBoxX === undefined ? { x1: -24, x2: 24 } : this.context.sizeBoxX;
+    const opponentBox = this.context.opponentSizeBoxX === undefined ? { x1: -24, x2: 24 } : this.context.opponentSizeBoxX;
+    if (!selfBox || !opponentBox) return Number.NaN;
     const distance = opponent.pos.x * opponentScale - self.pos.x * selfScale;
     const selfWidth = selfBox.x2 * self.facing * selfScale;
     const opponentUsesFront = ((distance * self.facing) >= 0) === (self.facing !== opponent.facing);
@@ -1309,6 +1330,8 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     outputLocalCoord: context.outputLocalCoord ?? context.localCoord,
     sizeBoxX: context.opponentSizeBoxX,
     opponentSizeBoxX: context.sizeBoxX,
+    sizeBoxY: context.opponentSizeBoxY,
+    opponentSizeBoxY: context.sizeBoxY,
     name: context.opponentName,
     authorName: context.opponentAuthorName,
     opponentName: context.name,
@@ -1331,7 +1354,9 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
     outputLocalCoord: context.outputLocalCoord ?? context.localCoord,
     sizeBoxX: redirected.sizeBoxX,
-    opponentSizeBoxX: redirected.opponentSizeBoxX ?? context.sizeBoxX,
+    opponentSizeBoxX: redirected.opponentSizeBoxX === undefined ? context.sizeBoxX : redirected.opponentSizeBoxX,
+    sizeBoxY: redirected.sizeBoxY,
+    opponentSizeBoxY: redirected.opponentSizeBoxY === undefined ? context.sizeBoxY : redirected.opponentSizeBoxY,
     name: redirected.name,
     authorName: redirected.authorName,
     opponentName: redirected.opponentName ?? context.name,

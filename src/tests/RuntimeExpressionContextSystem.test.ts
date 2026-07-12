@@ -140,6 +140,109 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("Target(77), P2BodyDist X", { actor, opponent })).toBe(-32);
   });
 
+  it("evaluates IKEMEN P2BodyDist Y from size boxes, Height, OverrideClsn, localcoord, and redirects", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", { pos: { x: 0, y: 0 }, facing: 1 });
+    const opponent = runtimeActor("p2", "Rival", { pos: { x: 64, y: -200 }, facing: -1 });
+    actor.definition.source = "imported";
+    actor.definition.ikemenVersion = "0.99";
+    actor.definition.localCoord = [320, 240];
+    actor.definition.constants = { "size.height": 60 };
+    opponent.definition.source = "imported";
+    opponent.definition.ikemenVersion = "0.99";
+    opponent.definition.localCoord = [640, 480];
+    opponent.definition.constants = { "size.height": 120 };
+
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(-40);
+    actor.runtime.bodyHeightDelta = { top: 20, bottom: 0 };
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(-20);
+    actor.runtime.clsnOverrides = [{ group: 3, index: -1, rect: { x1: -16, y1: -120, x2: 16, y2: 0 } }];
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(0);
+
+    actor.runtime.bodyHeightDelta = undefined;
+    actor.runtime.clsnOverrides = undefined;
+    opponent.runtime.pos.y = 200;
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(40);
+    opponent.runtime.pos.y = 100;
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(0);
+
+    opponent.runtime.pos.y = -200;
+    actor.targets = [{ actorId: "p2", targetId: 77, age: 0 }];
+    expect(world.evaluateNumber("EnemyNear, P2BodyDist Y", { actor, opponent })).toBe(40);
+    expect(world.evaluateNumber("Target(77), P2BodyDist Y", { actor, opponent })).toBe(40);
+
+    actor.runtime.clsnOverrides = [{ group: 3, index: -1, rect: { x1: 0, y1: 0, x2: 0, y2: 0 } }];
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBeUndefined();
+
+    actor.runtime.clsnOverrides = undefined;
+    actor.definition.ikemenVersion = undefined;
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(-100);
+
+    actor.targets = [{ actorId: "p2", targetId: 77, age: 0 }];
+    expect(world.evaluateNumber("Target(77), P2BodyDist Y", { actor, opponent })).toBe(100);
+  });
+
+  it.each([
+    ["C", "crouch", -45],
+    ["A", "air", -30],
+    ["L", "down", -20],
+  ] as const)("uses %s state Size Y geometry", (stateType, key, top) => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", { pos: { x: 0, y: 0 }, stateType });
+    const opponent = runtimeActor("p2", "Rival", { pos: { x: 0, y: -80 } });
+    actor.definition.source = "imported";
+    actor.definition.ikemenVersion = "0.99";
+    actor.definition.constants = {
+      [`size.${key}.sizebox.left`]: -10,
+      [`size.${key}.sizebox.top`]: top,
+      [`size.${key}.sizebox.right`]: 10,
+      [`size.${key}.sizebox.bottom`]: 0,
+    };
+    opponent.definition.constants = { "size.height": 60 };
+
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(-80 - top);
+  });
+
+  it("composes opponent Height and OverrideClsn Size into P2BodyDist Y", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", { pos: { x: 0, y: 0 } });
+    const opponent = runtimeActor("p2", "Rival", { pos: { x: 0, y: 100 }, bodyHeightDelta: { top: 30, bottom: 0 } });
+    actor.definition.source = "imported";
+    actor.definition.ikemenVersion = "0.99";
+
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(10);
+    opponent.runtime.clsnOverrides = [{ group: 3, index: -1, rect: { x1: -16, y1: -120, x2: 16, y2: 0 } }];
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent })).toBe(0);
+  });
+
+  it("returns undefined P2BodyDist axes when P2 selection is empty", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+
+    const rootSelection = {
+      actorId: actor.id,
+      side: 1 as const,
+      partnerIds: [],
+      enemyIds: [opponent.id],
+      p2CandidateIds: [],
+    };
+
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent, rootSelection })).toBeUndefined();
+    expect(world.evaluateNumber("P2BodyDist Y", { actor, opponent, rootSelection })).toBeUndefined();
+  });
+
+  it("applies OverrideClsn Size deletion to P2BodyDist X", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", { pos: { x: 0, y: 0 }, facing: 1 });
+    const opponent = runtimeActor("p2", "Rival", { pos: { x: 64, y: 0 }, facing: -1 });
+    actor.definition.source = "imported";
+    actor.definition.ikemenVersion = "0.99";
+    actor.runtime.clsnOverrides = [{ group: 3, index: -1, rect: { x1: 0, y1: 0, x2: 0, y2: 0 } }];
+
+    expect(world.evaluateNumber("P2BodyDist X", { actor, opponent })).toBeUndefined();
+  });
+
   it("passes game-space and screen-space dimensions into viewport expression reads", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

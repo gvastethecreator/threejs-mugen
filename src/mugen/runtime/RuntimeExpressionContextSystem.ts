@@ -12,6 +12,7 @@ import type { RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
+import { applyCollisionOverrides } from "./RuntimeCollisionOverrideSystem";
 
 export { runtimeHitVar, type RuntimeHitVarTiming } from "./RuntimeHitVarSystem";
 
@@ -102,6 +103,9 @@ export class RuntimeExpressionContextWorld {
       outputLocalCoord: actor.definition.localCoord,
       sizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
       opponentSizeBoxX: selectedP2 ? runtimeExpressionSizeBoxX(selectedP2, includeWidth) : undefined,
+      sizeBoxY: runtimeExpressionSizeBoxY(actor, includeWidth),
+      opponentSizeBoxY: selectedP2 ? runtimeExpressionSizeBoxY(selectedP2, includeWidth) : undefined,
+      p2BodyDistYUsesSizeBoxes: includeWidth,
       parentLocalCoord: owner.definition.localCoord,
       rootLocalCoord: actor.definition.localCoord,
       parentPlayerId: owner.playerId,
@@ -184,6 +188,8 @@ export class RuntimeExpressionContextWorld {
       opponentLocalCoord: actor.definition.localCoord,
       sizeBoxX: runtimeExpressionSizeBoxX(opponent, includeWidth),
       opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
+      sizeBoxY: runtimeExpressionSizeBoxY(opponent, includeWidth),
+      opponentSizeBoxY: runtimeExpressionSizeBoxY(actor, includeWidth),
       name: opponent.definition.displayName,
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,
@@ -214,6 +220,8 @@ export class RuntimeExpressionContextWorld {
       opponentLocalCoord: actor.definition.localCoord,
       sizeBoxX: runtimeExpressionSizeBoxX(opponent, includeWidth),
       opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
+      sizeBoxY: runtimeExpressionSizeBoxY(opponent, includeWidth),
+      opponentSizeBoxY: runtimeExpressionSizeBoxY(actor, includeWidth),
       name: opponent.definition.displayName,
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,
@@ -298,7 +306,7 @@ function runtimeExpressionStateTime(actor: Pick<RuntimeExpressionContextActor, "
 function runtimeExpressionSizeBoxX(
   actor: Pick<RuntimeExpressionContextActor, "definition" | "runtime">,
   includeWidth: boolean,
-): { x1: number; x2: number } {
+): { x1: number; x2: number } | null {
   const stateType = actor.runtime.stateType === "C" || actor.runtime.stateType === "A" || actor.runtime.stateType === "L"
     ? actor.runtime.stateType
     : "S";
@@ -306,7 +314,23 @@ function runtimeExpressionSizeBoxX(
   const delta = includeWidth ? actor.runtime.bodyWidthDelta : undefined;
   const x1 = box.x1 - (delta?.back ?? 0);
   const x2 = box.x2 + (delta?.front ?? 0);
-  return { x1: Math.min(x1, x2), x2: Math.max(x1, x2) };
+  const projected = applyCollisionOverrides([{ ...box, x1: Math.min(x1, x2), x2: Math.max(x1, x2) }], actor.runtime.clsnOverrides, 3)[0];
+  return projected ? { x1: projected.x1, x2: projected.x2 } : null;
+}
+
+function runtimeExpressionSizeBoxY(
+  actor: Pick<RuntimeExpressionContextActor, "definition" | "runtime">,
+  includeHeight: boolean,
+): { y1: number; y2: number } | null {
+  const stateType = actor.runtime.stateType === "C" || actor.runtime.stateType === "A" || actor.runtime.stateType === "L"
+    ? actor.runtime.stateType
+    : "S";
+  const box = resolveRuntimePushSizeBox(actor.definition.constants, stateType);
+  const delta = includeHeight ? actor.runtime.bodyHeightDelta : undefined;
+  const y1 = box.y1 - (delta?.top ?? 0);
+  const y2 = box.y2 + (delta?.bottom ?? 0);
+  const projected = applyCollisionOverrides([{ ...box, y1: Math.min(y1, y2), y2: Math.max(y1, y2) }], actor.runtime.clsnOverrides, 3)[0];
+  return projected ? { y1: projected.y1, y2: projected.y2 } : null;
 }
 
 export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, "runtimeProgram" | "definition">, stateNo: number): boolean {
