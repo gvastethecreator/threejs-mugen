@@ -63,7 +63,7 @@ describe("RuntimeFighterAdvanceHookSetWorld", () => {
     hooks.runActiveStateControllers(actor);
     hooks.advanceImportedGroundRecoveryLanding(actor);
     hooks.advanceCommon1LieDownRecovery(actor);
-    hooks.preserveFrozenPosition(actor, { x: 4, y: -2 });
+    hooks.preserveFrozenPosition(actor, { x: 4, y: -2, z: 0 });
 
     expect(calls).toEqual([
       "sprite-effects",

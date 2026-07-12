@@ -74,7 +74,7 @@ describe("ActorConstraintSystem", () => {
     const world = new RuntimeActorConstraintWorld();
     const state = actorState({
       playerPush: false,
-      posFreeze: { x: true, y: true },
+      posFreeze: { x: true, y: true, z: true },
       screenBound: { bound: false, moveCameraX: false, moveCameraY: true },
     });
 
@@ -84,9 +84,11 @@ describe("ActorConstraintSystem", () => {
     expect(state.screenBound).toBeUndefined();
 
     state.pos = { x: 20, y: -12 };
-    state.posFreeze = { x: true, y: false };
-    world.preserveFrozenPosition(state, { x: 5, y: -30 });
+    state.combatDepth = { position: 12, velocity: 3, size: [3, 3], attack: [4, 4] };
+    state.posFreeze = { x: true, y: false, z: true };
+    world.preserveFrozenPosition(state, { x: 5, y: -30, z: 4 });
     expect(state.pos).toEqual({ x: 5, y: -12 });
+    expect(state.combatDepth.position).toBe(4);
   });
 
   it("clamps actors to stage bounds unless ScreenBound disables it", () => {

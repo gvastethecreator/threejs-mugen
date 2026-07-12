@@ -17,7 +17,7 @@ export type CharacterRuntimeState = {
   facing: 1 | -1;
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
-  posFreeze?: { x: boolean; y: boolean };
+  posFreeze?: { x: boolean; y: boolean; z: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   hitVelocity?: { x: number; y: number };
   receivedHitSequence?: number;

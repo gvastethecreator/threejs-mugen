@@ -1,7 +1,7 @@
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeFighterAdvanceActor = {
-  runtime: Pick<CharacterRuntimeState, "pos" | "renderAngle" | "renderScale">;
+  runtime: Pick<CharacterRuntimeState, "combatDepth" | "pos" | "renderAngle" | "renderScale">;
 };
 
 export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor> = {
@@ -20,7 +20,7 @@ export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor
   runActiveStateControllers: (actor: TActor) => void;
   advanceImportedGroundRecoveryLanding: (actor: TActor) => void;
   advanceCommon1LieDownRecovery: (actor: TActor) => void;
-  preserveFrozenPosition: (actor: TActor, tickStartPos: { x: number; y: number }) => void;
+  preserveFrozenPosition: (actor: TActor, tickStartPos: { x: number; y: number; z: number }) => void;
 };
 
 export type RuntimeFighterAdvanceInput<TActor extends RuntimeFighterAdvanceActor> = {
@@ -29,7 +29,7 @@ export type RuntimeFighterAdvanceInput<TActor extends RuntimeFighterAdvanceActor
 };
 
 export type RuntimeFighterAdvanceResult = {
-  tickStartPos: { x: number; y: number };
+  tickStartPos: { x: number; y: number; z: number };
   preserveImportedStateMoveType: boolean;
 };
 
@@ -49,7 +49,7 @@ export class RuntimeFighterAdvanceWorld {
     hooks.resetFrameConstraints(actor);
     hooks.tickHitFallRecoveryWindow(actor);
 
-    const tickStartPos = { ...actor.runtime.pos };
+    const tickStartPos = { ...actor.runtime.pos, z: actor.runtime.combatDepth?.position ?? 0 };
     const preserveImportedStateMoveType = hooks.shouldPreserveImportedStateMoveType(actor);
 
     hooks.advanceStun(actor, preserveImportedStateMoveType);

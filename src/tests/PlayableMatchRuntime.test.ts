@@ -4692,7 +4692,7 @@ ctrl = 0
   });
 
   it("executes imported PosFreeze by cancelling velocity movement for the current tick", () => {
-    const imported = createImportedFixture({ withStateMove: false, withPosFreeze: true, stateVelSet: "7,-3" });
+    const imported = createImportedFixture({ withStateMove: false, withPosFreeze: true, stateVelSet: "7,-3,5" });
     const closeStage = {
       ...trainingStage,
       playerStart: {
@@ -4706,7 +4706,8 @@ ctrl = 0
     const actor = snapshot.actors[0];
 
     expect(actor?.runtime.pos).toEqual({ x: -20, y: -12 });
-    expect(actor?.runtime.posFreeze).toEqual({ x: true, y: true });
+    expect(actor?.runtime.combatDepth?.position).toBe(0);
+    expect(actor?.runtime.posFreeze).toEqual({ x: true, y: true, z: true });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PosFreeze).toBe(1);
   });
 
@@ -5413,8 +5414,7 @@ value = 1234
 [State 200, Freeze Position]
 type = PosFreeze
 trigger1 = Time = 0
-x = 1
-y = 1
+value = 1
 `
     : "";
   const screenBound = options.withScreenBoundOff

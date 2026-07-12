@@ -36,7 +36,7 @@ describe("RuntimeFighterAdvanceWorld", () => {
     expect(actor.runtime.renderAngle).toBeUndefined();
     expect(actor.runtime.renderScale).toBeUndefined();
     expect(result).toEqual({
-      tickStartPos: { x: 8, y: -3 },
+      tickStartPos: { x: 8, y: -3, z: 0 },
       preserveImportedStateMoveType: true,
     });
   });

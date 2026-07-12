@@ -45,15 +45,15 @@ describe("BoundsControllerSystem", () => {
       x: true,
       y: false,
     });
-    expect(state.posFreeze).toEqual({ x: true, y: false });
+    expect(state.posFreeze).toEqual({ x: true, y: false, z: true });
     expect(typedResult.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
 
     const rawResult = world.applyPosFreezeController(state, source("PosFreeze", { x: "0", y: "1" }));
-    expect(state.posFreeze).toEqual({ x: false, y: true });
+    expect(state.posFreeze).toEqual({ x: false, y: true, z: false });
     expect(rawResult.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: false, y: true });
 
     world.applyPosFreezeController(state, source("PosFreeze", {}));
-    expect(state.posFreeze).toEqual({ x: true, y: true });
+    expect(state.posFreeze).toEqual({ x: true, y: true, z: true });
   });
 
   it("applies PosFreeze raw expression fallback", () => {
@@ -62,7 +62,7 @@ describe("BoundsControllerSystem", () => {
 
     const result = world.applyPosFreezeController(state, source("PosFreeze", { x: "var(0)", y: "var(1)" }));
 
-    expect(state.posFreeze).toEqual({ x: true, y: false });
+    expect(state.posFreeze).toEqual({ x: true, y: false, z: false });
     expect(result.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
   });
 

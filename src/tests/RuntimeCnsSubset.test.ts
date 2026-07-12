@@ -742,7 +742,7 @@ describe("StateControllerExecutor", () => {
     expect(compiledHitVelSet.operation).toEqual({ kind: "kinematic", controllerType: "hitvelset", x: 1, y: 1 });
     expect(state.playerPush).toBe(false);
     expect(state.facing).toBe(-1);
-    expect(state.posFreeze).toEqual({ x: true, y: false });
+    expect(state.posFreeze).toEqual({ x: true, y: false, z: false });
     expect(state.screenBound).toEqual({ bound: false, moveCameraX: false, moveCameraY: true });
     expect(compiledPosFreeze.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
     expect(compiledScreenBound.operation).toEqual({

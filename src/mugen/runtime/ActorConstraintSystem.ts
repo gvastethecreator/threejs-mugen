@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -63,13 +63,16 @@ export class RuntimeActorConstraintWorld {
     return appliedOperation;
   }
 
-  preserveFrozenPosition(state: RuntimeActorConstraintState, tickStartPos: { x: number; y: number }): void {
+  preserveFrozenPosition(state: RuntimeActorConstraintState, tickStartPos: { x: number; y: number; z: number }): void {
     const posFreeze = state.posFreeze;
     if (posFreeze?.x) {
       state.pos.x = tickStartPos.x;
     }
     if (posFreeze?.y) {
       state.pos.y = tickStartPos.y;
+    }
+    if (posFreeze?.z && state.combatDepth) {
+      state.combatDepth.position = tickStartPos.z;
     }
   }
 

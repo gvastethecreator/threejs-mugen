@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 437 - Root PosFreeze logical Z ownership
+
+Done: root one-frame `PosFreeze` state now owns a Z flag alongside X/Y. Official `value` and omitted-value routes freeze all three logical axes; the sandbox's legacy axis-specific `x/y` extension keeps Z unfrozen. `RuntimeFighterAdvanceWorld` snapshots logical depth before kinematics/controllers, and `RuntimeActorConstraintWorld` restores it at the existing end-of-tick constraint point without clearing velocity. Focused bounds/constraint/advance/playable tests and TypeScript 7 typecheck pass. Claim allowed: bounded root full-PosFreeze logical Z preservation through existing scheduler ownership. Claim blocked: corner-push exception parity, binds, pause/hitpause ordering, required imported Z-moving trace, helpers/projectiles, visual projection, and full parity. Wayfinder 132 adds required imported PosFreeze Z evidence.
+
 ## Entry 436 - Imported standing/crouching X/Z friction
 
 Done: imported fighter kinematics now applies the pinned IKEMEN physics order: integrate position first, then multiply X and logical Z velocity by the same standing or crouching friction. Standing physics uses authored `[Movement] stand.friction` or official `0.85`, then zeros both axes below the player-local `localcoord.width / 320` threshold; crouching uses authored `crouch.friction` or `0.82` without that standing threshold. Demo fighters retain existing sandbox motion. Focused kinematics tests and TypeScript 7 typecheck pass. Claim allowed: bounded imported root S/C X/Z friction and localcoord-aware standing stop threshold. Claim blocked: get-hit HitDef friction overrides, PosFreeze/bind Z, depth push/bounds, helper/projectile physics, renderer projection, and full parity. Wayfinder 131 closes root PosFreeze Z ownership next.
