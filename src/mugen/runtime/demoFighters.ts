@@ -27,6 +27,7 @@ export type DemoMove = {
   priorityType?: RuntimeHitDefPriorityType;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
+  attackDepth?: [number, number];
   targetId?: number;
   requiresHitDef?: boolean;
   isReversal?: boolean;

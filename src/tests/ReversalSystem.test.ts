@@ -30,6 +30,7 @@ describe("ReversalSystem", () => {
       p1stateno: "777",
       p2stateno: "778",
       id: "9",
+      "attack.depth": "6",
     }));
 
     const result = dispatchWorld.apply({
@@ -53,6 +54,7 @@ describe("ReversalSystem", () => {
       p1StateNo: 777,
       p2StateNo: 778,
       targetId: 9,
+      attackDepth: [6, 6],
     });
     expect(fighter.currentMove).toMatchObject({
       isReversal: true,
@@ -61,9 +63,11 @@ describe("ReversalSystem", () => {
       p1StateNo: 777,
       p2StateNo: 778,
       targetId: 9,
+      attackDepth: [6, 6],
     });
     expect(recordedControllers).toEqual(["ReversalDef"]);
     expect(recordedOperations).toEqual(["reversaldef"]);
+    expect(fighter.runtime.reversal?.attackDepth).toEqual([6, 6]);
   });
 
   it("activates and clears bounded ReversalDef runtime state", () => {

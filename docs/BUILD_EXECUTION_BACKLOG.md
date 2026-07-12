@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 429 - Typed attack-depth preservation
+
+Done: CNS `attack.depth` now compiles as a normalized two-sided combat-depth tuple for both `HitDef` and `ReversalDef`; a single authored value duplicates to both sides, matching pinned Ikemen-GO evaluation. Runtime dispatch preserves the tuple on `DemoMove`, and active ReversalDef state exposes the same value without coupling combat depth to Three.js render Z. Focused compiler/HitDef/ReversalDef tests and TypeScript 7 typecheck pass. Claim allowed: explicit authored attack-depth preservation through compiler and runtime activation. Claim blocked: `size.attack.depth` defaults, actor combat Z/size depth, localcoord scaling, Z-overlap admission, projectile depth, render projection, and full parity. Wayfinder 124 adds renderer-independent actor depth prerequisites before collision filtering.
+
 ## Entry 428 - Directed ReversalDef clash mutation
 
 Done: explicit IKEMEN Tag consumes `admittedReversalClashPairIds` before HitDef priority and ordinary direct combat through a dedicated `resolveReversalClash` primitive. The primitive revalidates live dual-ReversalDef identity and attr/Clsn contact through `RuntimeReversalWorld.findActive`, applies attacker-owned reversal state/target/hitpause/power/contact semantics, buffers reverser-to-getter plus IKEMEN's reciprocal getter-to-reverser HitDef contact memory, and skips stale inverse candidates after the first mutation consumes both moves. Required P1/P2 evidence proves `p2->p1` mutates once, P2 reaches state 777, target id 127 binds to P1, and no hit/guard/override occurs; focused primitive evidence proves both contact buffers. Claim allowed: bounded first-directed ReversalDef-vs-ReversalDef mutation for explicit Tag. Claim blocked: broader tie/randomness, attack depth/Z, AffectTeam, helper/projectile clashes, advanced state ownership, and full parity. Wayfinder 123 maps attack-depth/Z prerequisites.

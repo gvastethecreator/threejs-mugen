@@ -19,6 +19,7 @@ export type HitDefControllerOp = {
   priorityType?: "hit" | "miss" | "dodge";
   p1SpritePriority?: number;
   p2SpritePriority?: number;
+  attackDepth?: [number, number];
   pauseTime?: number;
   groundHitTime?: number;
   groundVelocity?: [number, number?];
@@ -503,6 +504,7 @@ export type ReversalDefControllerOp = {
   p1StateNo?: number;
   p2StateNo?: number;
   targetId?: number;
+  attackDepth?: [number, number];
 };
 
 export type DamageScaleControllerOp = {
@@ -1344,6 +1346,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
   const p2StateNo = staticOptionalNumberParam(controller, "p2stateno");
   const targetId = staticOptionalNumberParam(controller, "id");
+  const attackDepth = normalizedNumberPair(findParam(controller, "attack.depth"));
   if (hitPause === undefined || p1StateNo === false || p2StateNo === false || targetId === false) {
     return undefined;
   }
@@ -1354,6 +1357,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p1StateNo: p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo)),
     p2StateNo: p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo)),
     targetId: targetId === true ? undefined : Math.max(0, Math.round(targetId)),
+    attackDepth,
   });
   return operation as ReversalDefControllerOp;
 }
@@ -1394,6 +1398,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     priorityType: hitDefPriorityType(findParam(controller, "priority")),
     p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority")),
     p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
+    attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     pauseTime: firstNumber(findParam(controller, "pausetime")),
     groundHitTime: firstNumber(findParam(controller, "ground.hittime")),
     groundVelocity,
@@ -1971,6 +1976,11 @@ function numberPair(value: string | undefined): [number, number?] | undefined {
     return undefined;
   }
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
+}
+
+function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
+  const pair = numberPair(value);
+  return pair ? [pair[0], pair[1] ?? pair[0]] : undefined;
 }
 
 function posWithPostype(value: string | undefined): { pos: [number, number]; postype?: "foot" | "mid" | "head" } | undefined {

@@ -36,6 +36,7 @@ export type RuntimeReversalActivation = {
   p1StateNo?: number;
   p2StateNo?: number;
   targetId?: number;
+  attackDepth?: [number, number];
 };
 
 export type RuntimeReversalHooks<TActor extends RuntimeReversalActor = RuntimeReversalActor> = {
@@ -105,6 +106,7 @@ export class RuntimeReversalControllerDispatchWorld {
       p1StateNo: operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno")),
       p2StateNo: operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno")),
       targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
+      attackDepth: operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")),
     });
     return {
       activated,
@@ -142,6 +144,7 @@ export class RuntimeReversalWorld {
       p1StateNo: activation.p1StateNo,
       p2StateNo: activation.p2StateNo,
       hitPause: activation.hitPause,
+      ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       hitStun: 0,
       push: 0,
       hitbox: cloneBox(activation.hitbox),
@@ -152,6 +155,7 @@ export class RuntimeReversalWorld {
     fighter.runtime.reversal = {
       attr,
       hitPause: activation.hitPause,
+      ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       ...(activation.p1StateNo !== undefined ? { p1StateNo: activation.p1StateNo } : {}),
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
     };
@@ -228,6 +232,14 @@ export class RuntimeReversalWorld {
     }
     actor.runtime.reversal = undefined;
   }
+}
+
+function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
+  const values = value?.split(",").map((entry) => Number(entry.trim()));
+  if (!values?.length || !Number.isFinite(values[0]) || (values[1] !== undefined && !Number.isFinite(values[1]))) {
+    return undefined;
+  }
+  return [values[0], values[1] ?? values[0]];
 }
 
 function interruptCurrentMove(actor: RuntimeReversalActor): void {

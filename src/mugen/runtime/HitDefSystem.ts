@@ -138,6 +138,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const missOnOverride = operation?.missOnOverride ?? booleanHitDefParam(source, "missonoverride") ?? existing?.missOnOverride;
     const p1SpritePriority = operation?.p1SpritePriority ?? firstNumber(findParam(source, "p1sprpriority"));
     const p2SpritePriority = operation?.p2SpritePriority ?? firstNumber(findParam(source, "p2sprpriority"));
+    const attackDepth = operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")) ?? existing?.attackDepth;
     const hitSound = operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound;
     const guardSound = operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound;
     const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };
@@ -154,6 +155,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       priorityType,
       p1SpritePriority,
       p2SpritePriority,
+      attackDepth,
       requiresHitDef: false,
       attr,
       targetId,
@@ -223,6 +225,11 @@ export class RuntimeHitDefControllerDispatchWorld {
 function hitDefPriorityType(value: string | undefined): DemoMove["priorityType"] | undefined {
   const normalized = value?.split(",")[1]?.trim().replace(/^"|"$/g, "").toLowerCase();
   return normalized === "hit" || normalized === "miss" || normalized === "dodge" ? normalized : undefined;
+}
+
+function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
+  const pair = numberPair(value);
+  return pair ? [pair[0], pair[1] ?? pair[0]] : undefined;
 }
 
 function buildMoveFallData(controller: MugenStateController, existing?: DemoMove, operation?: HitDefControllerOp): DemoMove["fall"] | undefined {

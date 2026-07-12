@@ -154,6 +154,7 @@ export type RuntimeReversalDef = {
   p1StateNo?: number;
   p2StateNo?: number;
   hitPause: number;
+  attackDepth?: [number, number];
 };
 
 export type RuntimeGetHitVars = {

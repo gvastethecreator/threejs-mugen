@@ -1134,6 +1134,7 @@ time = 20
         p1stateno: "777",
         p2stateno: "778",
         id: "88",
+        "attack.depth": "6, 9",
       }),
     );
     const dynamic = compileControllerIr(
@@ -1150,8 +1151,15 @@ time = 20
       p1StateNo: 777,
       p2StateNo: 778,
       targetId: 88,
+      attackDepth: [6, 9],
     });
     expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("duplicates a single attack.depth value in typed HitDef operations", () => {
+    const hitDef = compileControllerIr(controller(200, "HitDef", [], { attr: "S,NA", "attack.depth": "7" }));
+
+    expect(hitDef.operation).toMatchObject({ kind: "hitdef", attackDepth: [7, 7] });
   });
 
   it("compiles static damage scale controllers into typed operations", () => {
