@@ -2,7 +2,7 @@
 
 `mugen-web-sandbox` is a private/local TypeScript + Three.js project for a progressive MUGEN/IKEMEN-GO browser port. It is also the first module of a future creator studio and modular browser game engine.
 
-Latest frontier (2026-07-12): Wayfinder 101 resolved actor-local active-root stage-X constraints with `RuntimeRootPhaseCapabilities/v2`, checksum `870f8871`, and 543/543 traces. Wayfinder 102 maps diagnostic collision projection; push and combat remain pair-owned and blocked.
+Latest frontier (2026-07-12): Wayfinder 102 resolved independent active-root collision-debug projection. Wayfinder 103 is ready for presentation v1 collision ids plus trace/browser proof; push and combat remain blocked.
 
 This file is the short domain map for agents. Detailed state lives in the docs listed below; do not replace those docs with this summary.
 

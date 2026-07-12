@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 408 - Active-root diagnostic collision research
+
+Resolved Wayfinder 102 from pinned debug Clsn and local ownership. Selected Wayfinder 103: presentation v1 collision reasons/ids, strict pair/reserve renderer resolution, trace/browser handoff/reset proof, no gameplay widening. No runtime or score change.
+
 ## Entry 407 - Active-root stage constraint runtime
 
 Done: active-motion P3-P8 roots apply stage-X constraints after animation; `RuntimeRootPhaseCapabilities/v2` adds `constraints`; tick schedule adds actor-scoped `fighter:constraints`. Required checksum `870f8871` passes inside 543/543 traces with final P3 `x=-154`, target count zero, empty effect stores, and no hit/guard evidence. Full gates pass 176 files / 1797 tests and build 1,608.23 kB. Next: Wayfinder 102 diagnostic collision research. No score movement.

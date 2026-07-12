@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root stage constraints (2026-07-12)
+## Latest closeout - IKEMEN active-root diagnostic collision research (2026-07-12)
+
+Pinned source separates debug Clsn from push/hit admission. Wayfinder 103 upgrades presentation v1 with independent collision ids and routes selected roots only into collision rendering; invisible/camera-disabled roots remain inspectable, standby proxies stay excluded. Docs/source/diff only; metrics and scores unchanged.
+
+## Previous closeout - IKEMEN active-root stage constraints (2026-07-12)
 
 Already-live explicit-Tag P3-P8 roots now apply actor-local stage-X constraints after motion. `RuntimeRootPhaseCapabilities/v2` and actor-scoped `fighter:constraints` expose the owner; required checksum `870f8871` passes inside 543/543 traces with final P3 `x=-154` and zero target/effect/combat widening. Full gates pass 176 files / 1797 tests. Wayfinder 102 maps diagnostic collision; scores unchanged.
 

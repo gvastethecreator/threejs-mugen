@@ -1,6 +1,14 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-12 IKEMEN active-root stage constraints
+## Global report - 2026-07-12 IKEMEN active-root diagnostic collision research
+
+- Source: debug Clsn enrollment is distinct from collision/hit admission; standby Clsn1 is suppressed while standby Clsn2 has its own class.
+- Decision: presentation v1 adds independent collision reasons/ids; initial Tag cut excludes standby proxies but includes invisible/camera-excluded active roots.
+- Renderer: strict pair/reserve resolution feeds only collision debug; effects and gameplay owners remain unchanged.
+- Evidence: pinned source, owner map, adversarial/deletion audit, roadmap sync, diff gate. No runtime/trace/browser/score movement.
+- Global status: Wayfinder 102 resolved; Wayfinder 103 ready.
+
+## Previous global report - 2026-07-12 IKEMEN active-root stage constraints
 
 - Runtime: already-live Tag P3-P8 active-motion roots apply actor-local stage-X constraints after animation; `ScreenBound bound = 0` opts out.
 - Contract: `RuntimeRootPhaseCapabilities/v2` adds explicit `constraints`; schedule adds actor-scoped `fighter:constraints` with cross-root-safe order comparison.

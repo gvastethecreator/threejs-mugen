@@ -1,7 +1,7 @@
 # Map Active-root Diagnostic Collision Projection
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -21,3 +21,7 @@ How can Three.js/debug tooling show Clsn1, Clsn2, axis, and optional size geomet
 Allowed: one implementation-ready diagnostic collision projection.
 
 Blocked: body push, hit admission/mutation, projectile/helper interaction, targets, effects, exact IKEMEN debug colors/text/rotation/localcoord parity, scores, or full collision parity.
+
+## Result
+
+Select `RuntimeRootPresentation/v1` collision eligibility/reasons and ordered ids. Tag collision debug admits valid non-standby roots independently from invisible/camera flags; renderer resolves pair/reserve roots strictly while effects and gameplay owners stay unchanged. Wayfinder 103 executes. See `docs/research/2026-07-12-ikemen-active-root-diagnostic-collision-projection.md`.

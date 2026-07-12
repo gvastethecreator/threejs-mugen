@@ -2,7 +2,7 @@
 
 ## Active frontier - 2026-07-12
 
-Wayfinder 101 is closed: checksum `870f8871`, 543/543 traces, and 176/1797 tests prove actor-local active-root stage-X constraints with no interaction widening. Wayfinder 102 now maps diagnostic collision projection. Push and combat stay deferred.
+Wayfinder 102 is closed. Wayfinder 103 is ready: independent active-root collision-debug ids, strict renderer resolution, exact trace IDs, desktop/mobile handoff/reset proof, no push/combat widening.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 
