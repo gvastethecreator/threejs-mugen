@@ -678,8 +678,8 @@ time = 20
 
   it("compiles Target controllers into typed target operations", () => {
     const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0" }));
-    const bind = compileControllerIr(controller(200, "TargetBind", [], { id: "3", pos: "12,-8", time: "6" }));
-    const bindToTarget = compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", time: "6" }));
+    const bind = compileControllerIr(controller(200, "TargetBind", [], { id: "3", pos: "12,-8,5", time: "6" }));
+    const bindToTarget = compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", posz: "7", time: "6" }));
     const state = compileControllerIr(controller(200, "TargetState", [], { id: "3", value: "5300" }));
     const drop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3", keepone: "1" }));
     const defaultDrop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3" }));
@@ -696,13 +696,14 @@ time = 20
       kind: "target",
       controllerType: "targetbind",
       requestedId: 3,
-      pos: [12, -8],
+      pos: [12, -8, 5],
       time: 6,
     });
     expect(bindToTarget.operation).toMatchObject({
       kind: "bindtotarget",
       requestedId: 3,
       pos: [12, -8],
+      posZ: 7,
       postype: "foot",
       time: 6,
     });

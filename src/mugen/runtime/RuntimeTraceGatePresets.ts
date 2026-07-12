@@ -24865,6 +24865,45 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedTargetBindDepthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-targetbind-depth-attacker",
+    displayName: "Synthetic Imported TargetBind Depth Attacker",
+    withTargetControllers: true,
+    targetBindPosZ: 15,
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-targetbind-depth-target",
+    displayName: "Synthetic Imported TargetBind Depth Target",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: target, stage }), script, {
+    label: "synthetic-imported-targetbind-depth-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-targetbind-depth-golden",
+      label: "Synthetic imported TargetBind logical Z route",
+      source: "imported",
+      notes: ["Synthetic imported TargetBind trace proves the third pos component authors and maintains target logical Z relative to the owner while preserving binding memory. It does not claim BindToTarget posz, cross-localcoord scaling, helpers/projectiles, pause ordering, or full parity."],
+    },
+    gates: [{
+      label: "synthetic-imported-targetbind-depth-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "TargetBind"],
+      requiredExecutedOperations: ["hitdef", "target:targetbind"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [{ actorId: "p2", source: "imported", actorKind: "player", observedPosZAtLeast: 15, observedPosZAtMost: 15, minFrames: 1 }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true, minFrames: 1, bindingOffsetZ: 15 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedTargetRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedTargetScript();
@@ -25352,6 +25391,45 @@ export function createSyntheticImportedBindToTargetMidTraceArtifact(options: Run
         ],
       },
     ],
+  });
+}
+
+export function createSyntheticImportedBindToTargetDepthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bindtotarget-depth-attacker",
+    displayName: "Synthetic Imported BindToTarget Depth Attacker",
+    withBindToTarget: true,
+    bindToTargetPosZ: 12,
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bindtotarget-depth-target",
+    displayName: "Synthetic Imported BindToTarget Depth Target",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: target, stage }), script, {
+    label: "synthetic-imported-bindtotarget-depth-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-bindtotarget-depth-golden",
+      label: "Synthetic imported BindToTarget logical Z route",
+      source: "imported",
+      notes: ["Synthetic imported BindToTarget trace proves explicit IKEMEN posz authors and maintains owner logical Z relative to the remembered target while preserving typed target-link evidence. It does not claim TargetBind Z, cross-localcoord bind scaling, bind-facing edge cases, helpers, pause ordering, or full parity."],
+    },
+    gates: [{
+      label: "synthetic-imported-bindtotarget-depth-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "BindToTarget"],
+      requiredExecutedOperations: ["hitdef", "bindtotarget"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [{ actorId: "p1", source: "imported", actorKind: "player", observedPosZAtLeast: 12, observedPosZAtMost: 12, minFrames: 1 }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true, minFrames: 1, bindingOffsetZ: 12 }],
+    }],
   });
 }
 
@@ -40770,6 +40848,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withTargetControllers?: boolean;
   targetLifeAddValue?: number;
   targetControllerTriggerTime?: number;
+  targetBindPosZ?: number;
   targetStateTriggerTime?: number;
   targetRedirectStateNo?: number;
   targetRedirectId?: number;
@@ -40783,6 +40862,7 @@ export type SyntheticImportedTraceFighterOptions = {
   targetDynamicRedirectStateNo?: number;
   withBindToTarget?: boolean;
   bindToTargetPostype?: "Foot" | "Mid" | "Head";
+  bindToTargetPosZ?: number;
   withTargetDrop?: boolean;
   targetDropTriggerTime?: number;
   withPrePauseTargetBind?: boolean;
@@ -41772,9 +41852,9 @@ ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevSt
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
-${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime) : ""}
+${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime, options.targetBindPosZ) : ""}
 ${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo, options.targetStateTriggerTime) : ""}
-${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype) : ""}
+${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype, options.bindToTargetPosZ) : ""}
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock(options.pauseTiming) : ""}
@@ -43813,7 +43893,7 @@ trigger1 = Time >= 0
 ${timeLine}${valueLine}`;
 }
 
-function targetControllerBlock(targetId: number, lifeAddValue = -20, triggerTime = 2): string {
+function targetControllerBlock(targetId: number, lifeAddValue = -20, triggerTime = 2, posZ?: number): string {
   return `
 [State 200, Target Damage]
 type = TargetLifeAdd
@@ -43851,7 +43931,7 @@ value = 1
 type = TargetBind
 trigger1 = Time = ${triggerTime}
 id = ${targetId}
-pos = 36,-12
+pos = 36,-12${posZ === undefined ? "" : `,${posZ}`}
 time = 4
 `;
 }
@@ -43866,13 +43946,14 @@ value = ${stateNo}
 `;
 }
 
-function bindToTargetBlock(targetId: number, postype: "Foot" | "Mid" | "Head" = "Foot"): string {
+function bindToTargetBlock(targetId: number, postype: "Foot" | "Mid" | "Head" = "Foot", posZ?: number): string {
   return `
 [State 200, Bind Owner To Target]
 type = BindToTarget
 trigger1 = Time = 2
 id = ${targetId}
 pos = 20,-8,${postype}
+${posZ === undefined ? "" : `posz = ${posZ}`}
 time = 4
 `;
 }

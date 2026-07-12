@@ -1946,6 +1946,16 @@ async function main() {
       artifact: presets.createSyntheticImportedBindToTargetMidTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-bindtotarget-depth",
+      required: true,
+      artifact: presets.createSyntheticImportedBindToTargetDepthTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-targetbind-depth",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetBindDepthTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-targetbind-pause",
       required: true,
       artifact: presets.createSyntheticImportedTargetBindPauseTraceArtifact(),

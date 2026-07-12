@@ -14,7 +14,7 @@ export type RuntimeTargetBinding = {
   actorId: string;
   targetId?: number;
   remaining: number;
-  offset: { x: number; y: number };
+  offset: { x: number; y: number; z?: number };
 };
 
 export type RuntimeTargetPostype = "foot" | "mid" | "head";
@@ -49,6 +49,7 @@ export type RuntimeTargetLinkSource = RuntimeTargetMemorySnapshot & {
 
 export type RuntimeTargetControllerActor = {
   id: string;
+  definition?: { id?: string; localCoord?: [number, number] };
   runtime: CharacterRuntimeState;
   targets: RuntimeTarget[];
   targetBindings: RuntimeTargetBinding[];
@@ -315,12 +316,13 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       };
     } else if (type === "targetbind") {
       const typed = options.operation?.controllerType === "targetbind" ? options.operation : undefined;
-      const offset = typed?.pos ?? numberPair(findControllerParam(options.controller, "pos")) ?? [0, 0];
+      const offset = typed?.pos ?? numberTriple(findControllerParam(options.controller, "pos")) ?? [0, 0];
       const remaining = typed?.time ?? firstNumber(findControllerParam(options.controller, "time")) ?? 1;
       target.runtime.pos = {
         x: options.actor.runtime.pos.x + offset[0] * options.actor.runtime.facing,
         y: options.actor.runtime.pos.y + offset[1],
       };
+      applyRuntimeTargetBindDepth(target, options.actor, offset[2]);
       markRuntimeTargetBindingSubject(target.runtime, true);
       options.actor.targetBindings = addRuntimeTargetBinding(
         options.actor.targetBindings,
@@ -328,7 +330,7 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
           actorId: target.id,
           targetId: findRuntimeTargetId(options.actor.targets, target.id),
           remaining,
-          offset: { x: offset[0], y: offset[1] },
+          offset: { x: offset[0], y: offset[1], ...(offset[2] === undefined ? {} : { z: offset[2] }) },
         }),
       );
     } else if (type === "targetstate") {
@@ -357,9 +359,11 @@ export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetW
   const memoryTarget = options.actor.targets.find((candidate) => candidate.actorId === target.id && matchesRuntimeTargetId(candidate, requestedId));
   const bindParams = options.operation ? { pos: options.operation.pos, postype: options.operation.postype } : bindToTargetParams(options.controller);
   const anchor = resolveRuntimeTargetAnchor(target, bindParams.postype, options.getTargetConst);
+  const posZ = options.operation?.posZ ?? firstNumber(findControllerParam(options.controller, "posz"));
   const offset = {
     x: anchor.x + bindParams.pos[0],
     y: anchor.y + bindParams.pos[1],
+    ...(posZ === undefined ? {} : { z: posZ }),
   };
   const remaining = options.operation?.time ?? firstNumber(findControllerParam(options.controller, "time")) ?? 1;
   options.actor.bindToTarget = createRuntimeTargetBinding({
@@ -369,11 +373,13 @@ export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetW
     offset,
   });
   options.actor.runtime.pos = resolveRuntimeTargetBindingPosition(target.runtime.pos, target.runtime.facing, options.actor.bindToTarget);
+  applyRuntimeBindToTargetDepth(options.actor, target, options.actor.bindToTarget.offset.z);
   options.onOperation?.(
     options.operation ?? {
       kind: "bindtotarget",
       requestedId,
       pos: bindParams.pos,
+      posZ: options.actor.bindToTarget.offset.z,
       postype: bindParams.postype,
       time: options.actor.bindToTarget.remaining,
     },
@@ -395,6 +401,7 @@ export function applyRuntimeTargetBindings<TActor extends RuntimeTargetWorldActo
       continue;
     }
     target.runtime.pos = resolveRuntimeTargetBindingPosition(actor.runtime.pos, actor.runtime.facing, binding);
+    applyRuntimeTargetBindDepth(target, actor, binding.offset.z);
     markRuntimeTargetBindingSubject(target.runtime, true);
     appliedBindings += 1;
   }
@@ -414,6 +421,7 @@ export function applyRuntimeBindToTarget<TActor extends RuntimeTargetWorldActor>
     return { appliedBindings: 0 };
   }
   actor.runtime.pos = resolveRuntimeTargetBindingPosition(target.runtime.pos, target.runtime.facing, binding);
+  applyRuntimeBindToTargetDepth(actor, target, binding.offset.z);
   return { appliedBindings: 1 };
 }
 
@@ -581,7 +589,7 @@ export function createRuntimeTargetBinding(input: {
   actorId: string;
   targetId?: number;
   remaining: number;
-  offset: { x: number; y: number };
+  offset: { x: number; y: number; z?: number };
 }): RuntimeTargetBinding {
   return {
     actorId: input.actorId,
@@ -624,6 +632,31 @@ export function resolveRuntimeTargetBindingPosition(
     x: ownerPos.x + binding.offset.x * ownerFacing,
     y: ownerPos.y + binding.offset.y,
   };
+}
+
+function applyRuntimeTargetBindDepth(
+  subject: RuntimeTargetControllerActor,
+  owner: RuntimeTargetControllerActor,
+  offsetZ: number | undefined,
+): void {
+  if (offsetZ === undefined || !subject.runtime.combatDepth || !owner.runtime.combatDepth) return;
+  subject.runtime.combatDepth.position =
+    (owner.runtime.combatDepth.position + offsetZ) * (localDepthScale(owner) / localDepthScale(subject));
+}
+
+function applyRuntimeBindToTargetDepth(
+  subject: RuntimeTargetControllerActor,
+  target: RuntimeTargetControllerActor,
+  offsetZ: number | undefined,
+): void {
+  if (offsetZ === undefined || !subject.runtime.combatDepth || !target.runtime.combatDepth) return;
+  subject.runtime.combatDepth.position =
+    target.runtime.combatDepth.position * (localDepthScale(target) / localDepthScale(subject)) + offsetZ;
+}
+
+function localDepthScale(actor: RuntimeTargetControllerActor): number {
+  const width = actor.definition?.localCoord?.[0];
+  return typeof width === "number" && Number.isFinite(width) && width > 0 ? 320 / width : 1;
 }
 
 export function resolveRuntimeTargetAnchor<TActor>(
@@ -683,14 +716,11 @@ function firstNumber(value: string | undefined): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-function numberPair(value: string | undefined): [number, number] | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const [xRaw, yRaw] = value.split(",");
-  const x = Number(xRaw?.trim());
-  const y = Number(yRaw?.trim());
-  return Number.isFinite(x) && Number.isFinite(y) ? [x, y] : undefined;
+function numberTriple(value: string | undefined): [number, number, number?] | undefined {
+  if (!value) return undefined;
+  const values = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(values[0]) || !Number.isFinite(values[1])) return undefined;
+  return Number.isFinite(values[2]) ? [values[0]!, values[1]!, values[2]!] : [values[0]!, values[1]!];
 }
 
 function bindToTargetParams(controller: MugenStateController): { pos: [number, number]; postype: RuntimeTargetPostype } {

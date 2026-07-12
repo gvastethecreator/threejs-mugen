@@ -544,6 +544,7 @@ import {
   createSyntheticImportedTargetBindPauseTraceArtifact,
   createSyntheticImportedBindToTargetHeadTraceArtifact,
   createSyntheticImportedBindToTargetMidTraceArtifact,
+  createSyntheticImportedBindToTargetDepthTraceArtifact,
   createSyntheticImportedTargetStateCustomTraceArtifact,
   createSyntheticImportedTargetNoKoTraceArtifact,
   createSyntheticImportedTargetDynamicRedirectTraceArtifact,
@@ -554,6 +555,7 @@ import {
   createSyntheticImportedBareTargetRedirectTraceArtifact,
   createSyntheticImportedDefaultTargetRedirectTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
+  createSyntheticImportedTargetBindDepthTraceArtifact,
   createSyntheticImportedHitDefPersistTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
   createSyntheticImportedHitAddTraceArtifact,
@@ -25875,6 +25877,28 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a required synthetic imported BindToTarget logical Z artifact", () => {
+    const artifact = createSyntheticImportedBindToTargetDepthTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-bindtotarget-depth-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-bindtotarget-depth-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.combatDepth).toEqual({ position: 12, velocity: 0 });
+  });
+
+  it("creates a required synthetic imported TargetBind logical Z artifact", () => {
+    const artifact = createSyntheticImportedTargetBindDepthTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-targetbind-depth-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-targetbind-depth-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.combatDepth?.position).toBe(15);
   });
 
   it("creates a projectile-only guard-distance latch without contact", () => {

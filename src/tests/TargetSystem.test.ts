@@ -268,10 +268,12 @@ describe("TargetSystem", () => {
 
   it("applies Target* side effects through the runtime target controller system", () => {
     const actor = targetActor("p1", {
-      runtime: { pos: { x: 100, y: 0 }, facing: 1 },
+      definition: { localCoord: [320, 240] },
+      runtime: { pos: { x: 100, y: 0 }, facing: 1, combatDepth: { position: 4, velocity: 0, size: [3, 3], attack: [4, 4] } },
       targets: [{ actorId: "p2", targetId: 77, age: 0 }],
     });
     const target = targetActor("p2", {
+      definition: { localCoord: [640, 480] },
       runtime: {
         life: 120,
         power: 30,
@@ -279,6 +281,7 @@ describe("TargetSystem", () => {
         facing: -1,
         vel: { x: 1, y: 2 },
         hitVars: { isBound: false },
+        combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
       },
     });
     const operations: string[] = [];
@@ -318,8 +321,8 @@ describe("TargetSystem", () => {
     applyRuntimeTargetController({
       actor,
       candidateTargets: [target],
-      controller: controller("TargetBind", { id: "77", pos: "36,-12", time: "4" }),
-      operation: { kind: "target", controllerType: "targetbind", requestedId: 77, pos: [36, -12], time: 4 },
+      controller: controller("TargetBind", { id: "77", pos: "36,-12,9", time: "4" }),
+      operation: { kind: "target", controllerType: "targetbind", requestedId: 77, pos: [36, -12, 9], time: 4 },
     });
 
     expect(operations).toEqual(["targetlifeadd"]);
@@ -328,17 +331,21 @@ describe("TargetSystem", () => {
     expect(target.runtime.vel).toEqual({ x: 1, y: -3 });
     expect(target.runtime.facing).toBe(1);
     expect(target.runtime.pos).toEqual({ x: 136, y: -12 });
+    expect(target.runtime.combatDepth?.position).toBe(26);
     expect(target.runtime.hitVars?.isBound).toBe(true);
-    expect(actor.targetBindings).toMatchObject([{ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } }]);
+    expect(actor.targetBindings).toMatchObject([{ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12, z: 9 } }]);
   });
 
   it("dispatches active Target controllers with telemetry hooks", () => {
     const world = new RuntimeTargetControllerDispatchWorld();
     const targetWorld = new RuntimeTargetWorld();
     const actor = targetActor("p1", {
+      definition: { localCoord: [640, 480] },
+      runtime: { combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] } },
       targets: [{ actorId: "p2", targetId: 77, age: 0 }],
     });
     const target = targetActor("p2", {
+      definition: { localCoord: [320, 240] },
       runtime: { life: 120 },
     });
     const ir = compileControllerIr(controller("TargetLifeAdd", { id: "77", value: "-20" }));
@@ -499,21 +506,25 @@ describe("TargetSystem", () => {
 
   it("applies typed BindToTarget ops and reports misses without mutation", () => {
     const actor = targetActor("p1", {
+      definition: { localCoord: [640, 480] },
+      runtime: { combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] } },
       targets: [{ actorId: "p2", targetId: 77, age: 0 }],
     });
     const target = targetActor("p2", {
-      runtime: { pos: { x: 20, y: 10 }, facing: 1 },
+      definition: { localCoord: [320, 240] },
+      runtime: { pos: { x: 20, y: 10 }, facing: 1, combatDepth: { position: 6, velocity: 0, size: [3, 3], attack: [4, 4] } },
     });
 
     applyRuntimeBindToTargetController({
       actor,
       candidateTargets: [target],
       controller: controller("BindToTarget", {}),
-      operation: { kind: "bindtotarget", requestedId: 77, pos: [4, -6], postype: "foot", time: 3 },
+      operation: { kind: "bindtotarget", requestedId: 77, pos: [4, -6], posZ: 11, postype: "foot", time: 3 },
     });
 
-    expect(actor.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 3, offset: { x: 4, y: -6 } });
+    expect(actor.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 3, offset: { x: 4, y: -6, z: 11 } });
     expect(actor.runtime.pos).toEqual({ x: 24, y: 4 });
+    expect(actor.runtime.combatDepth?.position).toBe(23);
 
     const before = actor.bindToTarget;
     const result = applyRuntimeBindToTargetController({
@@ -598,6 +609,7 @@ function controller(type: string, params: Record<string, string> = {}) {
 function targetActor(
   id: string,
   overrides: {
+    definition?: RuntimeTargetWorldActor["definition"];
     runtime?: Partial<CharacterRuntimeState>;
     targets?: RuntimeTarget[];
     targetBindings?: RuntimeTargetBinding[];
@@ -605,6 +617,7 @@ function targetActor(
 ): RuntimeTargetWorldActor {
   return {
     id,
+    definition: overrides.definition,
     runtime: runtime(overrides.runtime),
     targets: overrides.targets ?? [],
     targetBindings: overrides.targetBindings ?? [],

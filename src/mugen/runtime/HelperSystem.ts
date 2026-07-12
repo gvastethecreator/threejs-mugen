@@ -121,7 +121,7 @@ export type RuntimeHelper = {
 
 export type RuntimeHelperOwnerBind = {
   target: "parent" | "root";
-  offset: { x: number; y: number };
+  offset: { x: number; y: number; z?: number };
   remaining: number;
   facing?: 1 | -1;
 };

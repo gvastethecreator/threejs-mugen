@@ -79,13 +79,14 @@ export type TargetControllerOp =
   | { kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number }
   | { kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number }
   | { kind: "target"; controllerType: "targetvelset"; requestedId?: number; x?: number; y?: number }
-  | { kind: "target"; controllerType: "targetbind"; requestedId?: number; pos: [number, number]; time: number }
+  | { kind: "target"; controllerType: "targetbind"; requestedId?: number; pos: [number, number, number?]; time: number }
   | { kind: "target"; controllerType: "targetstate"; requestedId?: number; stateNo?: number };
 
 export type BindToTargetControllerOp = {
   kind: "bindtotarget";
   requestedId?: number;
   pos: [number, number];
+  posZ?: number;
   postype: "foot" | "mid" | "head";
   time: number;
 };
@@ -1524,7 +1525,7 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
       kind: "target",
       controllerType: "targetbind",
       requestedId,
-      pos: pairWithDefault(numberPair(findParam(controller, "pos"))),
+      pos: numberTriple(findParam(controller, "pos")) ?? [0, 0],
       time: firstNumber(findParam(controller, "time")) ?? 1,
     };
   }
@@ -1540,6 +1541,7 @@ function compileBindToTargetControllerOp(controller: MugenStateController): Bind
     kind: "bindtotarget",
     requestedId: firstNumber(findParam(controller, "id")),
     pos: pos?.pos ?? [0, 0],
+    posZ: firstNumber(findParam(controller, "posz")),
     postype: pos?.postype ?? "foot",
     time: firstNumber(findParam(controller, "time")) ?? 1,
   };
@@ -1984,6 +1986,13 @@ function numberPair(value: string | undefined): [number, number?] | undefined {
 function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
   const pair = numberPair(value);
   return pair ? [pair[0], pair[1] ?? pair[0]] : undefined;
+}
+
+function numberTriple(value: string | undefined): [number, number, number?] | undefined {
+  if (!value) return undefined;
+  const values = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(values[0]) || !Number.isFinite(values[1])) return undefined;
+  return Number.isFinite(values[2]) ? [values[0]!, values[1]!, values[2]!] : [values[0]!, values[1]!];
 }
 
 function posWithPostype(value: string | undefined): { pos: [number, number]; postype?: "foot" | "mid" | "head" } | undefined {

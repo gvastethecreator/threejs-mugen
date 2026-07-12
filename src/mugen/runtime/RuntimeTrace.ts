@@ -279,6 +279,7 @@ export type RuntimeTraceTargetLinkRequirement = {
   maxBindingRemaining?: number;
   bindingOffsetX?: number;
   bindingOffsetY?: number;
+  bindingOffsetZ?: number;
 };
 
 export type RuntimeTraceWorldLifecycleEventRequirement = {
@@ -471,7 +472,7 @@ export type RuntimeTraceGateTargetLinkEvidence = {
   minBindingRemaining?: number;
   maxBindingRemaining?: number;
   bindingInfinite?: boolean;
-  bindingOffset?: { x: number; y: number };
+  bindingOffset?: { x: number; y: number; z?: number };
 };
 
 export type RuntimeTraceFinalActorRequirement = {
@@ -2960,7 +2961,8 @@ function matchesTargetLinkRequirement(
     (requirement.maxBindingRemaining === undefined ||
       (link.minBindingRemaining ?? Infinity) <= requirement.maxBindingRemaining) &&
     (requirement.bindingOffsetX === undefined || sameTraceNumber(link.bindingOffset?.x ?? NaN, requirement.bindingOffsetX)) &&
-    (requirement.bindingOffsetY === undefined || sameTraceNumber(link.bindingOffset?.y ?? NaN, requirement.bindingOffsetY))
+    (requirement.bindingOffsetY === undefined || sameTraceNumber(link.bindingOffset?.y ?? NaN, requirement.bindingOffsetY)) &&
+    (requirement.bindingOffsetZ === undefined || sameTraceNumber(link.bindingOffset?.z ?? NaN, requirement.bindingOffsetZ))
   );
 }
 

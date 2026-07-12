@@ -137,7 +137,7 @@ export type RuntimeTargetBindingSnapshot = {
   actorId: string;
   targetId?: number;
   remaining: number | "infinite";
-  offset: { x: number; y: number };
+  offset: { x: number; y: number; z?: number };
 };
 
 export type RuntimePaletteRemap = {
