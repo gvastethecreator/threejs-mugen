@@ -46,8 +46,8 @@ describe("DirectCombatSystem", () => {
       kind: "trade",
       message: "HitDef priority clash: P1 priority 4 traded with P2 priority 4",
     });
-    expect(left.hasHit).toBe(true);
-    expect(right.hasHit).toBe(true);
+    expect(left.hasHit).toBe(false);
+    expect(right.hasHit).toBe(false);
   });
 
   it("records priority suppression by exact getter without consuming other root pairs", () => {

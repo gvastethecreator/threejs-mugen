@@ -8809,6 +8809,93 @@ export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-equal-priority-grid",
+    displayName: "Trace Active Root Equal Priority Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "P3 and P4 trade equal-priority HitDefs", p1: [], p2: [], frames: 1 },
+    { label: "bilateral contact stays consumed", p1: [], p2: [], frames: 1 },
+  ]);
+  const immunePairRoot = (id: string, label: string) => createSyntheticImportedTraceFighter({
+    id,
+    displayName: label,
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: immunePairRoot("synthetic-imported-ikemen-equal-priority-p1", "Synthetic Imported IKEMEN Equal Priority P1"),
+    p2: immunePairRoot("synthetic-imported-ikemen-equal-priority-p2", "Synthetic Imported IKEMEN Equal Priority P2"),
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-ikemen-equal-priority-p3",
+        displayName: "Synthetic Imported IKEMEN Equal Priority P3",
+        withHitDef: false,
+        activeRootHitDefRoute: { damage: 41, targetId: 118, priority: 4 },
+      }),
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-ikemen-equal-priority-p4",
+        displayName: "Synthetic Imported IKEMEN Equal Priority P4",
+        withHitDef: false,
+        activeRootHitDefRoute: { damage: 29, targetId: 119, priority: 4 },
+      }),
+    ],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-active-root-equal-priority-golden" });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-equal-priority-golden",
+      label: "Synthetic imported IKEMEN active-root equal-priority Hit trade",
+      source: "mixed",
+      notes: [
+        "Two simultaneous active-root priority 4 HitDefs resolve as one bilateral transaction from pre-contact state. P3 and P4 each damage, target, and consume the other before both moves are interrupted. This proves default Hit-versus-Hit equality only, not Miss/Dodge, ReversalDef, cyclic three-plus-actor arbitration, or full IKEMEN parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-active-root-equal-priority-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredEventCategories: ["runtime", "hit"],
+      requiredEventSubstrings: [
+        "HitDef priority clash",
+        "priority 4 traded with",
+        "Equal Priority P3 hit Synthetic Imported IKEMEN Equal Priority P4 for 41",
+        "Equal Priority P4 hit Synthetic Imported IKEMEN Equal Priority P3 for 29",
+      ],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [
+        { ownerId: "p3", actorId: "p4", targetId: 118 },
+        { ownerId: "p4", actorId: "p3", targetId: 119 },
+      ],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 971 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 959 },
+      ],
+      requiredTickSchedulePhaseSequences: [
+        { label: "plural controllers precede equal-priority trade", frameIndex: 0, phase: "fighter:controllers", actorIds: ["p1", "p2", "p3", "p4"] },
+        { label: "bilateral contact commits after trade", frameIndex: 0, phase: "post-fighter:hitdef-contact-commit", actorIds: ["p1", "p2", "p3", "p4"] },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

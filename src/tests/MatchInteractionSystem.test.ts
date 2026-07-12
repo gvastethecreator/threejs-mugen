@@ -183,6 +183,14 @@ describe("RuntimeMatchInteractionWorld", () => {
         tag("root-priority");
         resolvePriorityClash(p2, p1);
       },
+      resolveEqualPriorityHitTrades: (actors) => {
+        tag("priority-trades", actors[0]?.id, actors[1]?.id);
+        return 1;
+      },
+      resolveRootPriorityTrades: (resolveEqualPriorityHitTrades) => {
+        tag("root-priority-trades");
+        resolveEqualPriorityHitTrades([p1, p2]);
+      },
       resolveDirectCombat: (attacker, defender) => tag("direct-combat", attacker.id, defender.id),
       resolveRootDirectCombat: (resolveDirectCombat) => {
         tag("root-direct-combat");
@@ -208,6 +216,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       "hit-admission",
       "root-priority",
       "priority:p2:p1",
+      "root-priority-trades",
+      "priority-trades:p1:p2",
       "root-direct-combat",
       "direct-combat:p2:p1",
       "direct-combat:p1:p2",

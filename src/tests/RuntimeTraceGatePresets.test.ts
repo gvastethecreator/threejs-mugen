@@ -167,6 +167,7 @@ import {
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
+  createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
   createSyntheticImportedIkemenActiveRootConstraintTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
@@ -16138,6 +16139,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p3", life: 1000 }),
       expect.objectContaining({ id: "p4", life: 959 }),
+    ]));
+  });
+
+  it("creates a required IKEMEN active-root equal-priority Hit trade artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.events.filter(({ line }) => line.includes("HitDef priority clash"))).toHaveLength(1);
+    expect(artifact.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(2);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p3->p4", "p4->p3"]);
+    expect(artifact.trace.frames[1]?.rootHitAdmission?.decisions).toEqual(expect.arrayContaining([
+      { attackerId: "p3", getterId: "p4", reason: "missing-move" },
+      { attackerId: "p4", getterId: "p3", reason: "missing-move" },
+    ]));
+    expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 971 }),
+      expect.objectContaining({ id: "p4", life: 959 }),
+    ]));
+    expect(artifact.gates[0]?.evidence.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 118 }),
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 119 }),
     ]));
   });
 

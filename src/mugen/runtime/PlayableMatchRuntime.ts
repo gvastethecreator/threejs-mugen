@@ -1021,6 +1021,9 @@ export class PlayableMatchRuntime {
               }
             }
           } : undefined,
+          resolveRootPriorityTrades: this.tagTeamOrder ? (resolveEqualPriorityHitTrades) => {
+            resolveEqualPriorityHitTrades(this.characterRoots());
+          } : undefined,
           recordTargetMaintenance: this.tagTeamOrder
             ? (root) => recordPhase("post-fighter:target-maintenance", root.id)
             : undefined,

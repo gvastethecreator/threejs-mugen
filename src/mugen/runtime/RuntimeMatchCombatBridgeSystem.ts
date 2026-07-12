@@ -30,7 +30,10 @@ export type RuntimeMatchCombatBridgeActor =
   RuntimeEffectLifecycleActor;
 
 export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridgeActor> = {
-  combatResolutionWorld: Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveDirect" | "resolveProjectile">;
+  combatResolutionWorld: Pick<
+    RuntimeCombatResolutionWorld,
+    "resolvePriorityClash" | "resolveEqualPriorityHitTrades" | "resolveDirect" | "resolveProjectile"
+  >;
   helperCombatWorld: Pick<RuntimeHelperCombatWorld, "resolveDirect">;
   directCombatWorld: RuntimeDirectCombatWorld;
   hitOverrideWorld: RuntimeHitOverrideWorld;
@@ -55,6 +58,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
 
 export type RuntimeMatchCombatBridgeResolvers<TActor extends RuntimeMatchCombatBridgeActor> = {
   resolvePriorityClash: (left: TActor, right: TActor) => string | undefined;
+  resolveEqualPriorityHitTrades: (actors: readonly TActor[]) => number;
   resolveDirectCombat: (attacker: TActor, defender: TActor) => void;
   resolveProjectileCombat: (attacker: TActor, defender: TActor) => void;
   resolveHelperCombat: (attacker: TActor, defender: TActor) => void;
@@ -70,6 +74,24 @@ export class RuntimeMatchCombatBridgeWorld {
           left,
           right,
           directCombatWorld: input.directCombatWorld,
+        }),
+      resolveEqualPriorityHitTrades: (actors) =>
+        input.combatResolutionWorld.resolveEqualPriorityHitTrades({
+          actors,
+          directCombatWorld: input.directCombatWorld,
+          hitOverrideWorld: input.hitOverrideWorld,
+          reversalWorld: input.reversalWorld,
+          guardWorld: input.guardWorld,
+          getHitStateWorld: input.getHitStateWorld,
+          hitStateTransitionWorld: input.hitStateTransitionWorld,
+          contactPresentationWorld: input.contactPresentationWorld,
+          runtimeTick: input.runtimeTick,
+          stageBounds: input.stageBounds,
+          getHurtBoxes: input.getHurtBoxes,
+          canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
+          recordAudioOperation: input.recordAudioOperation,
+          stateHooks: input.combatStateHooks,
+          log: input.log,
         }),
       resolveDirectCombat: (attacker, defender) => {
         input.combatResolutionWorld.resolveDirect({

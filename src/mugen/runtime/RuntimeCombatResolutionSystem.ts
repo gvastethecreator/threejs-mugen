@@ -8,10 +8,15 @@ import {
   hitAttributeMatches,
   resolveRuntimeCombatHit,
   runtimeWorldBox,
+  type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
-import type { RuntimeDirectCombatOutcome, RuntimeDirectCombatWorld } from "./DirectCombatSystem";
+import {
+  interruptRuntimeDirectMove,
+  type RuntimeDirectCombatOutcome,
+  type RuntimeDirectCombatWorld,
+} from "./DirectCombatSystem";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import type { RuntimeGuardWorld } from "./GuardSystem";
@@ -35,6 +40,10 @@ import {
 } from "./RuntimeHitDefContactMemorySystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
+
+function directTradeKey(leftId: string, rightId: string): string {
+  return leftId < rightId ? `${leftId}\u0000${rightId}` : `${rightId}\u0000${leftId}`;
+}
 
 export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
   RuntimeContactPresentationActor & {
@@ -129,14 +138,34 @@ export type RuntimeDirectCombatSkipReason =
   | "hitoverride-custom-state-miss";
 
 export class RuntimeCombatResolutionWorld {
+  private readonly equalPriorityHitTrades = new Map<string, {
+    leftId: string;
+    rightId: string;
+    leftMove: DemoMove;
+    rightMove: DemoMove;
+    message: string;
+  }>();
+
   resolvePriorityClash<TActor extends RuntimeCombatResolutionActor>(
     input: RuntimeCombatResolutionPriorityInput<TActor>,
   ): string | undefined {
-    return input.directCombatWorld.resolvePriorityClash(input.left, input.right, {
+    const outcome = input.directCombatWorld.resolvePriorityClash(input.left, input.right, {
       isMoveActive: runtimeMoveIsActive,
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
-    })?.message;
+    });
+    const tradeKey = directTradeKey(input.left.id, input.right.id);
+    if (outcome?.kind === "trade" && input.left.currentMove && input.right.currentMove) {
+      this.equalPriorityHitTrades.set(tradeKey, {
+        leftId: input.left.id,
+        rightId: input.right.id,
+        leftMove: input.left.currentMove,
+        rightMove: input.right.currentMove,
+        message: outcome.message,
+      });
+    }
+    else this.equalPriorityHitTrades.delete(tradeKey);
+    return outcome?.kind === "trade" ? undefined : outcome?.message;
   }
 
   resolveDirect<TActor extends RuntimeCombatResolutionActor>(
@@ -253,6 +282,112 @@ export class RuntimeCombatResolutionWorld {
     }, {
       stageBounds: input.stageBounds,
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
+    });
+    input.contactPresentationWorld.emitHitDefContact({
+      attacker,
+      defender,
+      kind: outcome.kind,
+      move,
+      runtimeTick: input.runtimeTick,
+      recordAudioOperation: input.recordAudioOperation,
+    });
+    input.log(outcome.message);
+    return outcome;
+  }
+
+  resolveEqualPriorityHitTrades<TActor extends RuntimeCombatResolutionActor>(
+    input: Omit<RuntimeCombatResolutionDirectInput<TActor>, "attacker" | "defender"> & { actors: readonly TActor[] },
+  ): number {
+    const pending = [...this.equalPriorityHitTrades.values()];
+    this.equalPriorityHitTrades.clear();
+    if (pending.length === 0) return 0;
+    const actorsById = new Map(input.actors.map((actor) => [actor.id, actor]));
+    const preparedHits: Array<{ attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult }> = [];
+    const interruptedMoves = new Map<TActor, DemoMove>();
+    let resolvedPairs = 0;
+    for (const trade of pending) {
+      const left = actorsById.get(trade.leftId);
+      const right = actorsById.get(trade.rightId);
+      if (!left || !right || left.currentMove !== trade.leftMove || right.currentMove !== trade.rightMove) continue;
+      const first = this.prepareEqualPriorityHit(input, left, right);
+      const second = this.prepareEqualPriorityHit(input, right, left);
+      if (!first || !second) continue;
+      input.log(trade.message);
+      preparedHits.push(first, second);
+      interruptedMoves.set(left, trade.leftMove);
+      interruptedMoves.set(right, trade.rightMove);
+      resolvedPairs += 1;
+    }
+    for (const prepared of preparedHits) {
+      prepared.attacker.hasHit = true;
+      bufferRuntimeHitDefTarget(prepared.attacker, prepared.defender.id);
+      this.rememberTarget(prepared.attacker, prepared.defender, prepared.move.targetId);
+    }
+    for (const prepared of preparedHits) this.applyEqualPriorityHit(input, prepared);
+    for (const [actor, move] of interruptedMoves) interruptRuntimeDirectMove(actor, move);
+    return resolvedPairs;
+  }
+
+  private prepareEqualPriorityHit<TActor extends RuntimeCombatResolutionActor>(
+    input: Omit<RuntimeCombatResolutionDirectInput<TActor>, "attacker" | "defender">,
+    attacker: TActor,
+    defender: TActor,
+  ): { attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult } | undefined {
+    const move = attacker.currentMove;
+    if (!move
+      || (hasExplicitHitDefContactMemory(attacker) ? hasRuntimeHitDefTarget(attacker, defender.id) : attacker.hasHit)
+      || move.requiresHitDef
+      || move.isReversal
+      || !runtimeMoveIsActive(move, attacker.moveTick)) {
+      return undefined;
+    }
+    const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
+    if (input.reversalWorld.findActive(defender, move, attackBox, {
+      isMoveActive: runtimeMoveIsActive,
+      worldBox: runtimeWorldBox,
+      boxesIntersect: collisionBoxesIntersect,
+      attrMatches: hitAttributeMatches,
+    })) return undefined;
+    const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
+    if (!hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes)
+      || input.canDefenderBeHit?.(defender) === false
+      || !canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
+      || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
+      return undefined;
+    }
+    return {
+      attacker,
+      defender,
+      move,
+      result: resolveRuntimeCombatHit({
+        attacker: attacker.runtime,
+        defender: defender.runtime,
+        attack: move,
+        holdingBack: isRuntimeHoldingBack(defender.currentInput),
+      }),
+    };
+  }
+
+  private applyEqualPriorityHit<TActor extends RuntimeCombatResolutionActor>(
+    input: Omit<RuntimeCombatResolutionDirectInput<TActor>, "attacker" | "defender">,
+    prepared: { attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult },
+  ): RuntimeDirectCombatOutcome {
+    const { attacker, defender, move, result } = prepared;
+    const outcome = input.directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
+      applyGuardHit: (target) => this.applyDefaultGuardHitState(target, input.guardWorld, input.stateHooks),
+      applyHitStateTransitions: (source, target, moveArg) =>
+        input.hitStateTransitionWorld.applyHitStateTransitions(
+          source,
+          target,
+          moveArg,
+          this.hitStateTransitionHooks(input.stateHooks),
+        ),
+      applyDefaultGetHit: (target, moveArg) =>
+        this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
+    }, {
+      stageBounds: input.stageBounds,
+      hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
+      preserveDefenderMove: true,
     });
     input.contactPresentationWorld.emitHitDefContact({
       attacker,

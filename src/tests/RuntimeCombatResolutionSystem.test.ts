@@ -32,6 +32,133 @@ import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeCombatResolutionSystem", () => {
+  it("applies equal-priority Hit versus Hit as one bilateral transaction", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const left = actor("p3", "P3", contactWorld, {
+      runtime: runtimeState({ pos: { x: -10, y: 0 }, life: 100 }),
+      currentMove: move({ priority: 4, damage: 17, targetId: 31 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const right = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, life: 100 }),
+      currentMove: move({ priority: 4, damage: 23, targetId: 32 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const logs: string[] = [];
+    const base = {
+      directCombatWorld,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 9,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: hooks(),
+      log: (line: string) => logs.push(line),
+    };
+
+    expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityHitTrades({ actors: [left, right], ...base })).toBe(1);
+    expect(world.resolveDirect({ attacker: left, defender: right, ...base })).toEqual({ kind: "skipped", reason: "missing-move" });
+    expect(world.resolveDirect({ attacker: right, defender: left, ...base })).toEqual({ kind: "skipped", reason: "missing-move" });
+
+    expect(left.runtime.life).toBe(77);
+    expect(right.runtime.life).toBe(83);
+    expect(left.pendingHitDefTargets).toEqual(["p4"]);
+    expect(right.pendingHitDefTargets).toEqual(["p3"]);
+    expect(left.targets).toEqual([{ actorId: "p4", targetId: 31, age: 0 }]);
+    expect(right.targets).toEqual([{ actorId: "p3", targetId: 32, age: 0 }]);
+    expect(left.currentMove).toBeUndefined();
+    expect(right.currentMove).toBeUndefined();
+    expect(logs).toEqual([
+      "HitDef priority clash: P3 priority 4 traded with P4 priority 4",
+      "P3 hit P4 for 17",
+      "P4 hit P3 for 23",
+    ]);
+  });
+
+  it("clears unconsumed equal-priority candidates before later moves", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const left = actor("p3", "P3", contactWorld, { currentMove: move({ priority: 4 }), moveTick: 1 });
+    const right = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1 }),
+      currentMove: move({ priority: 4 }),
+      moveTick: 1,
+    });
+    const base = {
+      directCombatWorld,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 9,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: hooks(),
+      log: () => undefined,
+    };
+
+    world.resolvePriorityClash({ left, right, directCombatWorld });
+    left.currentMove = move({ priority: 7, damage: 31 });
+    right.currentMove = move({ priority: 1, damage: 9 });
+    expect(world.resolveEqualPriorityHitTrades({ actors: [left, right], ...base })).toBe(0);
+    expect(left.runtime.life).toBe(100);
+    expect(right.runtime.life).toBe(100);
+    expect(world.resolveEqualPriorityHitTrades({ actors: [left, right], ...base })).toBe(0);
+  });
+
+  it("prepares a connected three-actor equal-priority graph before mutation", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const actors = [
+      actor("p1", "P1", contactWorld, { currentMove: move({ priority: 4, damage: 10 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
+      actor("p2", "P2", contactWorld, { currentMove: move({ priority: 4, damage: 20 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
+      actor("p3", "P3", contactWorld, { currentMove: move({ priority: 4, damage: 30 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
+    ];
+    for (let leftIndex = 0; leftIndex < actors.length; leftIndex += 1) {
+      for (let rightIndex = leftIndex + 1; rightIndex < actors.length; rightIndex += 1) {
+        world.resolvePriorityClash({ left: actors[leftIndex]!, right: actors[rightIndex]!, directCombatWorld });
+      }
+    }
+    const logs: string[] = [];
+    const resolved = world.resolveEqualPriorityHitTrades({
+      actors,
+      directCombatWorld,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 9,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(resolved).toBe(3);
+    expect(actors.map(({ runtime }) => runtime.life)).toEqual([50, 60, 70]);
+    expect(actors.map(({ pendingHitDefTargets }) => pendingHitDefTargets)).toEqual([
+      ["p2", "p3"],
+      ["p1", "p3"],
+      ["p1", "p2"],
+    ]);
+    expect(actors.every(({ currentMove }) => currentMove === undefined)).toBe(true);
+    expect(logs).toHaveLength(9);
+  });
+
   it("owns bounded direct contact ordering, target memory, presentation, and received damage", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();

@@ -57,6 +57,7 @@ export type RuntimeDirectCombatOutcome = {
 export type RuntimeDirectCombatOptions = {
   stageBounds?: RuntimeStageBounds;
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
+  preserveDefenderMove?: boolean;
 };
 
 export type RuntimeDirectPriorityHooks = {
@@ -93,10 +94,6 @@ export class RuntimeDirectCombatWorld {
     const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);
     const rightPriority = clampHitDefPriority(rightMove.priority ?? 4);
     if (leftPriority === rightPriority) {
-      left.hasHit = true;
-      right.hasHit = true;
-      bufferRuntimeHitDefTarget(left, right.id);
-      bufferRuntimeHitDefTarget(right, left.id);
       return {
         kind: "trade",
         message: `HitDef priority clash: ${left.label} priority ${leftPriority} traded with ${right.label} priority ${rightPriority}`,
@@ -140,7 +137,7 @@ export class RuntimeDirectCombatWorld {
     options: RuntimeDirectCombatOptions,
   ): RuntimeDirectCombatOutcome {
     this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "guard", defender.id);
-    interruptCurrentMove(defender);
+    if (!options.preserveDefenderMove) interruptRuntimeDirectMove(defender);
     attacker.hitPause = result.pause;
     defender.hitPause = result.pause;
     defender.runtime.guardStun = result.stun;
@@ -181,7 +178,7 @@ export class RuntimeDirectCombatWorld {
   ): RuntimeDirectCombatOutcome {
     this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "hit", defender.id);
     attacker.hitPause = result.pause;
-    interruptCurrentMove(defender);
+    if (!options.preserveDefenderMove) interruptRuntimeDirectMove(defender);
     defender.hitPause = result.pause;
     defender.hitStun = result.stun;
     defender.runtime.guardStun = 0;
@@ -268,7 +265,8 @@ function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<
   return move;
 }
 
-function interruptCurrentMove(actor: RuntimeDirectCombatActor): void {
+export function interruptRuntimeDirectMove(actor: RuntimeDirectCombatActor, expectedMove?: DemoMove): void {
+  if (expectedMove && actor.currentMove !== expectedMove) return;
   actor.currentMove = undefined;
   actor.currentMoveLabel = undefined;
   actor.moveTick = 0;

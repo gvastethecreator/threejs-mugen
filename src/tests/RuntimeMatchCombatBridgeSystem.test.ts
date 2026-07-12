@@ -34,6 +34,10 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           calls.push(`priority:${input.left.id}:${input.right.id}:${tagOf(input.directCombatWorld)}`);
           return "priority-log";
         },
+        resolveEqualPriorityHitTrades: (input) => {
+          calls.push(`priority-trades:${input.actors.map(({ id }) => id).join(",")}`);
+          return 0;
+        },
         resolveDirect: (input) => {
           calls.push(`direct:${input.attacker.id}:${input.defender.id}:${input.runtimeTick}:${tagOf(input.stateHooks)}`);
           input.getHurtBoxes?.(input.defender);
@@ -46,7 +50,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           input.recordAudioOperation?.(input.attacker, { kind: "audio", controllerType: "playsnd", value: "S6,0" });
           input.log("projectile-log");
         },
-      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveDirect" | "resolveProjectile">,
+      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityHitTrades" | "resolveDirect" | "resolveProjectile">,
       helperCombatWorld: {
         resolveDirect: (input) => {
           calls.push(

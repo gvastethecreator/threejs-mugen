@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 423 - Active-root equal-priority Hit trade
+
+Done: equal-priority default `Hit` versus `Hit` now resolves through a frame-local batch prepared before contact mutation, matching Elecbyte's tie matrix instead of consuming both directions without damage. The batch stores exact move identity, clears every frame, prepares every valid graph edge before applying any, emits trade telemetry only after bilateral preflight, then interrupts all original moves. Required P3/P4 evidence proves one trade, two hits, reciprocal targets, and final life 971/959; focused A/B/C coverage proves all three unordered pairs and six directed contacts resolve. Claim allowed: bounded equal-priority default Hit/Hit trade for admitted pair graphs. Claim blocked: Miss/Dodge matrix, equal-priority guard/override/reversal interaction, fully immutable secondary state transitions, throws/projectiles/helpers, team KO/resources, and full parity. Wayfinder 118 selects priority-type parsing and matrix ownership next.
+
 ## Entry 422 - Active-root plural HitDef priority
 
 Done: explicit IKEMEN Tag resolves every unordered admitted active-root pair through the existing direct-combat priority primitive before mutation. Unequal priorities suppress only the loser-to-winner getter pair; equal priorities preserve the current bounded trade behavior; Pair/Single retain their legacy pair call. Required `synthetic-imported-ikemen-active-root-priority` proves simultaneous P3/P4 admission, priority 6 over 3, one 41-damage contact, exact repeat suppression, target/contact commit, and stable final life. Claim allowed: deterministic plural active-root `HitDef` priority for the exercised acyclic Hit-priority route. Claim blocked: exact Hit/Miss/Dodge parity, ReversalDef ordering, cyclic three-plus-actor arbitration, throws/projectiles/helpers, team KO/resources, and full parity. Wayfinder 117 maps the next priority/reversal oracle.
