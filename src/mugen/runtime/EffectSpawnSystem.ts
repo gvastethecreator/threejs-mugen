@@ -13,6 +13,7 @@ import type { DemoFighterDefinition } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodSpawnInput } from "./ExplodSystem";
 import type { RuntimeProjectileModifyResolver, RuntimeProjectileSpawnInput } from "./ProjectileSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -55,6 +56,8 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   recordOperation?: (actor: TActor, operation: RuntimeEffectSpawnControllerDispatchOperation) => void;
   resolveProjectileSound?: RuntimeProjectileSpawnInput["resolveSoundValue"];
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
+  runtimeProfile?: RuntimeCompatibilityProfile;
+  resolveHelperStandby?: (operation: HelperControllerOp) => boolean | undefined;
 };
 
 export type RuntimeEffectSpawnControllerDispatchResult = {
@@ -140,6 +143,7 @@ export class RuntimeEffectSpawnWorld {
     opponent: RuntimeEffectSpawnActor,
     controller: MugenStateController,
     operation?: HelperControllerOp,
+    initialStandby = false,
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
@@ -165,6 +169,8 @@ export class RuntimeEffectSpawnWorld {
       action,
       stateNo,
       animNo,
+      initialStandby,
+      initialControl: (state?.ctrl ?? 1) !== 0,
       pos: resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos),
       fallbackFacing: fighter.runtime.facing,
     });
@@ -386,15 +392,20 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         controller.source,
         operation?.kind === "modifyexplod" ? operation : undefined,
       );
-    case "helper":
+    case "helper": {
+      const helperOperation = operation?.kind === "helper" ? operation : undefined;
+      const initialStandby = resolveInitialHelperStandby(options, helperOperation);
+      if (initialStandby === "blocked") return 0;
       return effectSpawnWorld.spawnHelper(
         actor,
         opponent,
         controller.source,
-        operation?.kind === "helper" ? operation : undefined,
+        helperOperation,
+        initialStandby,
       )
         ? 1
         : 0;
+    }
     case "projectile":
       return effectSpawnWorld.spawnProjectile(
         actor,
@@ -413,4 +424,19 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveModifyProjectile,
       );
   }
+}
+
+function resolveInitialHelperStandby<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: HelperControllerOp | undefined,
+): boolean | "blocked" {
+  if (options.runtimeProfile !== "ikemen-go") return false;
+  const authored = operation?.standby !== undefined ||
+    operation?.standbyExpression !== undefined ||
+    findParam(options.controller.source, "standby") !== undefined;
+  if (!authored) return false;
+  if (!operation) return "blocked";
+  if (operation.standby !== undefined) return operation.standby;
+  if (!operation.standbyExpression) return "blocked";
+  return options.resolveHelperStandby?.(operation) ?? "blocked";
 }

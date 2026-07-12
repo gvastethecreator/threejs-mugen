@@ -5,6 +5,7 @@ import { parseCns } from "../mugen/parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
 import { trainingStage } from "../mugen/runtime/demoStage";
 import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
+import { runtimeHelperCanDirectlyInteract } from "../mugen/runtime/HelperSystem";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
 
 describe("PlayableMatchRuntime", () => {
@@ -124,6 +125,116 @@ value = ${identityStateNo}
     const legacy = new PlayableMatchRuntime(p1, demoFighters[1]!, trainingStage, { runtimeProfile: "mugen-1.1" });
     expect(legacy.getCharacterIdentity()).toBeUndefined();
     expect(legacy.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.stateNo).toBe(0);
+  });
+
+  it("applies caller-evaluated Helper standby before identity and same-tick Helper CNS", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-initial-standby",
+      withStateMove: false,
+      withHelper: true,
+      helperStandby: "var(0)",
+      helperPreSpawnVarSet: { index: 0, value: 2 },
+      helperStateCtrl: null,
+      helperStateControllers: `
+[State 1200, Effective standby control]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = Ctrl
+
+[State 1200, Same tick execution]
+type = VarAdd
+trigger1 = Time = 0
+v = 1
+value = 1
+
+[State 1200, Same tick projectile]
+type = Projectile
+trigger1 = Time = 0
+projid = 92
+projanim = 910
+offset = 0,-20
+velocity = 3,0
+projremovetime = 20
+damage = 5
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = effectActorWorld.helpers("p1")[0];
+    const helperSnapshot = snapshot.effects?.find(({ id }) => id === helper?.serialId);
+    const projectile = snapshot.effects?.find(
+      ({ actorKind, parentId }) => actorKind === "projectile" && parentId === helper?.serialId,
+    );
+
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(2);
+    expect(helper).toMatchObject({
+      ctrl: true,
+      stateNo: 1200,
+      stateTime: 1,
+      age: 1,
+      teamState: { standby: true },
+    });
+    expect(helperSnapshot?.runtime.vars.slice(0, 2)).toEqual([0, 1]);
+    expect(projectile).toMatchObject({ parentId: "p1-helper-0", actorKind: "projectile" });
+    expect(runtimeHelperCanDirectlyInteract(helper!)).toBe(false);
+    expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({
+      actorId: "p1-helper-0",
+      standby: true,
+      lookupEligible: true,
+    });
+  });
+
+  it.each(["mugen-1.1", "unknown"] as const)("ignores IKEMEN Helper standby under the %s profile", (runtimeProfile) => {
+    const fighter = createImportedFixture({
+      id: `legacy-helper-standby-${runtimeProfile}`,
+      withStateMove: false,
+      withHelper: true,
+      helperStandby: 1,
+      helperStateCtrl: null,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile,
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({
+      ctrl: true,
+      teamState: { standby: false },
+    });
+  });
+
+  it("blocks malformed Helper standby atomically only under the IKEMEN profile", () => {
+    const fighter = createImportedFixture({
+      id: "malformed-helper-standby",
+      withStateMove: false,
+      withHelper: true,
+      helperStandby: "(",
+    });
+    const ikemenWorld = new RuntimeEffectActorWorld();
+    const ikemen = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld: ikemenWorld,
+    });
+    const legacyWorld = new RuntimeEffectActorWorld();
+    const legacy = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+      effectActorWorld: legacyWorld,
+    });
+
+    ikemen.step({ p1: new Set(["x"]), p2: new Set() });
+    legacy.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(ikemenWorld.helpers("p1")).toHaveLength(0);
+    expect(legacyWorld.helpers("p1")[0]?.teamState?.standby).toBe(false);
   });
 
   it("registers Helpers before same-tick IKEMEN ID and PlayerNo expression execution", () => {
@@ -3933,6 +4044,9 @@ function createImportedFixture(
     stateVelSet?: string;
     withProjectile?: boolean;
     withHelper?: boolean;
+    helperStandby?: number | string;
+    helperPreSpawnVarSet?: { index: number; value: number | string };
+    helperStateCtrl?: number | null;
     helperRedirectTag?: boolean;
     helperRedirectTagType?: "TagIn" | "TagOut";
     helperRedirectTagTrigger?: string;
@@ -4362,12 +4476,19 @@ sprpriority = 7
     : "";
   const helper = options.withHelper
     ? `
+${options.helperPreSpawnVarSet ? `[State 200, Helper Standby Source]
+type = VarSet
+trigger1 = Time = 0
+v = ${options.helperPreSpawnVarSet.index}
+value = ${options.helperPreSpawnVarSet.value}
+` : ""}
 [State 200, Buddy]
 type = Helper
 trigger1 = Time = 0
 id = 42
 name = "Buddy"
 stateno = 1200
+${options.helperStandby === undefined ? "" : `standby = ${options.helperStandby}`}
 pos = -44,-28
 postype = p1
 facing = 1
@@ -5007,7 +5128,7 @@ type = S
 movetype = I
 physics = N
 anim = 920
-ctrl = 0
+${options.helperStateCtrl === null ? "" : `ctrl = ${options.helperStateCtrl ?? 0}`}
 ${options.helperStateControllers ?? ""}
 ${options.helperExtraStates ?? ""}
 `);

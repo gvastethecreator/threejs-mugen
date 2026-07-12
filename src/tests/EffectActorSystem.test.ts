@@ -899,7 +899,7 @@ describe("EffectActorSystem", () => {
     expect(helper).toMatchObject({
       stateNo: 6000,
       animNo: 900,
-      ctrl: false,
+      ctrl: true,
       stateTime: 1,
       age: 1,
     });

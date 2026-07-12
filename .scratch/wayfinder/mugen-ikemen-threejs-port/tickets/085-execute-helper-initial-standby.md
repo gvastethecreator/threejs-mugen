@@ -1,7 +1,7 @@
 # Execute initial Helper standby creation
 
 Type: implementation
-Status: claimed
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -20,3 +20,9 @@ How can explicit IKEMEN root-created Helpers apply static or dynamic initial sta
 - Keep Helper-created Helpers, generic Helper RedirectID, aggregate Tag, incoming Helper hurt, push/camera/opponent breadth, exact incremental parameter failure, and gameplay/score ownership blocked.
 - Prove compiler static/dynamic/malformed cases; omitted/zero/non-zero/dynamic runtime cases; caller ownership; identity timing; first-tick CNS/projectile/direct-combat behavior; and legacy isolation.
 - Close with focused tests, full tests, TypeScript 7 typecheck/build, stable traces, boundaries, diff check, docs, audit, and a feature commit.
+
+## Answer
+
+Explicit `ikemen-go` Helper dispatch now compiles `standby` as a static zero/non-zero boolean or one deferred scalar expression, evaluates deferred values once in the original spawning root context, and passes the resolved flag into Helper construction. Omitted and zero values remain false; non-zero values are true. Authored values that cannot compile or resolve block the IKEMEN spawn before mutation, while `mugen-1.1` and `unknown` retain raw Helper creation and ignore this IKEMEN-only parameter.
+
+Helper construction now stores final standby before lifecycle observers register identity. Stored control follows the initial StateDef `ctrl`; omission uses the source-backed true fallback. Standby only projects effective `Ctrl = 0`, so same-tick CNS, state time, identity, snapshots, and Helper-parented projectiles continue while direct Helper combat stays suppressed. Focused verification passes 5 files / 287 tests; full verification passes 170 files / 1721 tests, TypeScript 7 typecheck/build, 538/538 traces, boundaries, and diff check. Exact incremental failure after source-side allocation, Helper-created Helpers, aggregate Tag ownership, incoming Helper interaction breadth, gameplay/score ownership, and full parity remain blocked.

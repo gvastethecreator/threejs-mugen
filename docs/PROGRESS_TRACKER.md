@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN initial Helper standby runtime
+
+- Compiler/runtime: Helper `standby` supports static zero/non-zero and one caller-owned deferred expression under explicit `ikemen-go`.
+- Lifecycle: final standby and StateDef-over-true control are stored before identity observation and same-tick Helper CNS.
+- Safety: invalid/unresolved IKEMEN values block spawn; legacy/unknown profiles ignore the parameter; effective control/direct combat stay filtered without stopping projectiles or presentation.
+- Verification: 170 files / 1721 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check pass.
+- Global status: initial root-created Helper standby is closed without score or visual movement; Wayfinder 086 maps Helper aggregate Tag ownership.
+
 ## Global report - 2026-07-11 IKEMEN static Tag member order
 
 - Compiler: positive static TagIn/TagOut `memberno` lowers to one-based mutable position.
@@ -1334,6 +1342,15 @@ Every compatibility milestone should leave:
 - Local audit found typed IR/profile resolution and hardcoded standby/control initialization as the bounded gaps; identity/scheduler order already aligns.
 - Unsupported or unresolved authored standby will block explicit IKEMEN spawn; legacy/unknown behavior remains unchanged.
 - Global status: Wayfinder 084 is closed without score movement; Wayfinder 085 executes root-created initial standby.
+
+### 2026-07-11 - IKEMEN initial Helper standby runtime
+
+- Compiled optional static/deferred standby with zero/non-zero coercion and original-root expression ownership.
+- Explicit IKEMEN invalid/unresolved values block atomically; omitted/zero/non-zero/dynamic and legacy/unknown boundaries are covered.
+- Final standby reaches Helper identity before same-tick discovery; StateDef `ctrl` overrides a true omission fallback while standby only projects effective control false.
+- Same-tick CNS/state time and Helper-parented Projectile creation continue; existing direct-interaction suppression remains active.
+- Full gates: 170 files / 1721 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
+- Global status: Wayfinder 085 is closed without score or visual movement; Wayfinder 086 maps aggregate Helper Tag ownership.
 
 ## Not Done
 

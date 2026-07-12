@@ -1295,6 +1295,8 @@ Helper standby participation now executes for root-driven RedirectID TagIn/TagOu
 
 Initial Helper standby is now source-mapped. IKEMEN compiles one optional caller-owned boolean expression, allocates/registers the Helper first, applies standby before initial state entry, requests control enabled, applies any authored StateDef `ctrl` override, and discovers the Helper for same-frame CNS. Local lifecycle/scheduler order already aligns; typed IR, explicit-profile resolution, and hardcoded standby/control defaults do not. Wayfinder 085 executes only root-created explicit-IKEMEN standby with fail-closed unsupported expressions and no Helper/team/gameplay widening.
 
+Initial root-created Helper standby now executes under explicit `ikemen-go`. Static and deferred values use zero/non-zero boolean semantics in the original caller context; invalid or unresolved authored values block before runtime mutation, while legacy/unknown profiles preserve existing raw creation. Final standby and StateDef-over-true control are stored before identity observation and same-tick CNS/projectiles. Full gates pass 170 files / 1721 tests and 538/538 traces. Wayfinder 086 next maps Helper-relative partner/member/leader ownership; Helper-originated Tag, gameplay, score, and exact incremental failure remain blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

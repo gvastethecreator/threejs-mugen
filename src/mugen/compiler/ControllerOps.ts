@@ -219,6 +219,8 @@ export type HelperControllerOp = {
   name?: string;
   stateNo?: number;
   animNo?: number;
+  standby?: boolean;
+  standbyExpression?: string;
   pos?: [number, number];
   velocity?: [number, number];
   scale?: [number, number];
@@ -746,7 +748,7 @@ function compileTeamStandbyControllerOp(
   }
   let redirectPlayerIdExpression: string | undefined;
   if (redirectPlayerIdRaw !== undefined) {
-    if (!hasValidTagExpressionStructure(redirectPlayerIdRaw)) return undefined;
+    if (!hasValidScalarExpressionStructure(redirectPlayerIdRaw)) return undefined;
     const compiledRedirectPlayerId = compileExpression(redirectPlayerIdRaw);
     if (compiledRedirectPlayerId.supportLevel === "unsupported") return undefined;
     redirectPlayerIdExpression = compiledRedirectPlayerId.normalized;
@@ -757,7 +759,7 @@ function compileTeamStandbyControllerOp(
     const normalizedPartner = partnerRaw.trim();
     partnerOrdinal = normalizedPartner ? Number(normalizedPartner) : undefined;
     if (partnerOrdinal === undefined || !Number.isInteger(partnerOrdinal) || partnerOrdinal < 0) {
-      if (!hasValidTagExpressionStructure(partnerRaw)) return undefined;
+      if (!hasValidScalarExpressionStructure(partnerRaw)) return undefined;
       const compiledPartnerOrdinal = compileExpression(partnerRaw);
       if (compiledPartnerOrdinal.supportLevel === "unsupported") return undefined;
       partnerOrdinal = undefined;
@@ -772,7 +774,7 @@ function compileTeamStandbyControllerOp(
     if (selfValue === 0 || selfValue === 1) {
       self = selfValue === 1;
     } else {
-      if (!hasValidTagExpressionStructure(selfRaw)) return undefined;
+      if (!hasValidScalarExpressionStructure(selfRaw)) return undefined;
       const compiledSelf = compileExpression(selfRaw);
       if (compiledSelf.supportLevel === "unsupported") return undefined;
       self = false;
@@ -782,7 +784,7 @@ function compileTeamStandbyControllerOp(
   let callerControl = parseStaticTagBoolean(callerControlRaw);
   let callerControlExpression: string | undefined;
   if (callerControlRaw !== undefined && callerControl === undefined) {
-    if (!hasValidTagExpressionStructure(callerControlRaw)) return undefined;
+    if (!hasValidScalarExpressionStructure(callerControlRaw)) return undefined;
     const compiledControl = compileExpression(callerControlRaw);
     if (compiledControl.supportLevel === "unsupported") return undefined;
     callerControl = false;
@@ -791,7 +793,7 @@ function compileTeamStandbyControllerOp(
   let partnerControl = parseStaticTagBoolean(partnerControlRaw);
   let partnerControlExpression: string | undefined;
   if (partnerControlRaw !== undefined && partnerControl === undefined) {
-    if (!hasValidTagExpressionStructure(partnerControlRaw)) return undefined;
+    if (!hasValidScalarExpressionStructure(partnerControlRaw)) return undefined;
     const compiledPartnerControl = compileExpression(partnerControlRaw);
     if (compiledPartnerControl.supportLevel === "unsupported") return undefined;
     partnerControl = false;
@@ -805,7 +807,7 @@ function compileTeamStandbyControllerOp(
   if (callerStateRaw !== undefined) {
     callerStateNo = Number(callerStateRaw.trim());
     if (!Number.isInteger(callerStateNo) || callerStateNo < 0) {
-      if (!hasValidTagExpressionStructure(callerStateRaw)) return undefined;
+      if (!hasValidScalarExpressionStructure(callerStateRaw)) return undefined;
       const compiledCallerState = compileExpression(callerStateRaw);
       if (compiledCallerState.supportLevel === "unsupported") return undefined;
       callerStateNo = undefined;
@@ -817,7 +819,7 @@ function compileTeamStandbyControllerOp(
   if (partnerStateRaw !== undefined) {
     partnerStateNo = Number(partnerStateRaw.trim());
     if (!Number.isInteger(partnerStateNo) || partnerStateNo < 0) {
-      if (!hasValidTagExpressionStructure(partnerStateRaw)) return undefined;
+      if (!hasValidScalarExpressionStructure(partnerStateRaw)) return undefined;
       const compiledPartnerState = compileExpression(partnerStateRaw);
       if (compiledPartnerState.supportLevel === "unsupported") return undefined;
       partnerStateNo = undefined;
@@ -830,7 +832,7 @@ function compileTeamStandbyControllerOp(
     const normalizedMemberPosition = memberPositionRaw.trim();
     memberPosition = normalizedMemberPosition ? Number(normalizedMemberPosition) : undefined;
     if (memberPosition === undefined || !Number.isInteger(memberPosition) || memberPosition < 1) {
-      if (!hasValidTagExpressionStructure(memberPositionRaw)) return undefined;
+      if (!hasValidScalarExpressionStructure(memberPositionRaw)) return undefined;
       const compiledMemberPosition = compileExpression(memberPositionRaw);
       if (compiledMemberPosition.supportLevel === "unsupported") return undefined;
       memberPosition = undefined;
@@ -843,7 +845,7 @@ function compileTeamStandbyControllerOp(
     const normalizedLeaderPlayerNo = leaderPlayerNoRaw.trim();
     leaderPlayerNo = normalizedLeaderPlayerNo ? Number(normalizedLeaderPlayerNo) : undefined;
     if (leaderPlayerNo === undefined || !Number.isInteger(leaderPlayerNo) || leaderPlayerNo < 1) {
-      if (!hasValidTagExpressionStructure(leaderPlayerNoRaw)) return undefined;
+      if (!hasValidScalarExpressionStructure(leaderPlayerNoRaw)) return undefined;
       const compiledLeaderPlayerNo = compileExpression(leaderPlayerNoRaw);
       if (compiledLeaderPlayerNo.supportLevel === "unsupported") return undefined;
       leaderPlayerNo = undefined;
@@ -874,7 +876,7 @@ function compileTeamStandbyControllerOp(
   };
 }
 
-function hasValidTagExpressionStructure(raw: string): boolean {
+function hasValidScalarExpressionStructure(raw: string): boolean {
   const expression = raw.trim();
   if (!expression) return false;
   let depth = 0;
@@ -1727,13 +1729,31 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   });
 }
 
-function compileHelperControllerOp(controller: MugenStateController): HelperControllerOp {
+function compileHelperControllerOp(controller: MugenStateController): HelperControllerOp | undefined {
+  const standbyRaw = findParam(controller, "standby");
+  let standby: boolean | undefined;
+  let standbyExpression: string | undefined;
+  if (standbyRaw !== undefined) {
+    const trimmedStandby = standbyRaw.trim();
+    if (!trimmedStandby) return undefined;
+    const staticStandby = Number(trimmedStandby);
+    if (Number.isFinite(staticStandby)) {
+      standby = staticStandby !== 0;
+    } else {
+      if (!hasValidScalarExpressionStructure(standbyRaw)) return undefined;
+      const compiledStandby = compileExpression(standbyRaw);
+      if (compiledStandby.supportLevel === "unsupported") return undefined;
+      standbyExpression = compiledStandby.normalized;
+    }
+  }
   return definedObject({
     kind: "helper" as const,
     helperId: firstNumber(findParam(controller, "id")),
     name: stripMugenString(findParam(controller, "name")),
     stateNo: firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value")),
     animNo: firstNumber(findParam(controller, "anim")),
+    standby,
+    standbyExpression,
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
     scale: scalePairWithDefaultOrUndefined(helperScalePair(controller)),

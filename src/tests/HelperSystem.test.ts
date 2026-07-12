@@ -282,6 +282,46 @@ describe("HelperSystem", () => {
     });
   });
 
+  it("seeds initial standby and StateDef control before the first Helper tick", () => {
+    const omittedControl = createRuntimeHelper({
+      serialId: "p1-helper-standby",
+      controller: controller({ id: "440" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      runtimeProgram: { states: [stateProgram(stateDef(6000))] },
+      action,
+      stateNo: 6000,
+      animNo: 6100,
+      initialStandby: true,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+    const authoredNoControl = createRuntimeHelper({
+      serialId: "p1-helper-no-control",
+      controller: controller({ id: "441" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      runtimeProgram: { states: [stateProgram(stateDef(6000, { ctrl: 0 }))] },
+      action,
+      stateNo: 6000,
+      animNo: 6100,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(omittedControl).toMatchObject({
+      ctrl: true,
+      teamState: { standby: true },
+    });
+    expect(runtimeHelperCanDirectlyInteract(omittedControl)).toBe(false);
+    expect(authoredNoControl).toMatchObject({
+      ctrl: false,
+      teamState: { standby: false },
+    });
+  });
+
   it("prefers typed helper operations over raw controller params", () => {
     const operation: HelperControllerOp = {
       kind: "helper",

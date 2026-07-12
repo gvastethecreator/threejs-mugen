@@ -1,8 +1,12 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN initial Helper standby research (2026-07-11)
+## Latest closeout - IKEMEN initial Helper standby runtime (2026-07-11)
 
-Pinned IKEMEN compiler/runtime source establishes optional caller-owned boolean `standby`, false omission/zero default, identity allocation before parameter evaluation, mutation before initial state entry, requested control true with authored StateDef `ctrl` override, and same-frame CNS. Local identity/scheduler order already aligns; typed IR/profile resolution and hardcoded standby/control defaults are the bounded gaps. Continue at Wayfinder 085; no runtime, visual, or score movement.
+Explicit `ikemen-go` Helper creation now resolves optional static/deferred standby in the original root context, blocks invalid/unresolved authored values, stores final standby before identity observation, and initializes control from StateDef-over-true fallback. Effective control/direct combat remain filtered while same-tick CNS, identity, snapshots, and Helper-parented projectiles continue. Full gates pass 170 files / 1721 tests and 538/538 traces. Continue at Wayfinder 086 for aggregate Helper Tag ownership; no visual or score movement.
+
+## Previous closeout - IKEMEN initial Helper standby research (2026-07-11)
+
+Pinned IKEMEN compiler/runtime source establishes optional caller-owned boolean `standby`, false omission/zero default, identity allocation before parameter evaluation, mutation before initial state entry, requested control true with authored StateDef `ctrl` override, and same-frame CNS. Local identity/scheduler order already aligns; typed IR/profile resolution and hardcoded standby/control defaults were the bounded gaps. Wayfinder 085 implemented the bounded root-created path without visual or score movement.
 
 ## Previous closeout - IKEMEN Helper standby participation (2026-07-11)
 
@@ -887,8 +891,8 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 initial Helper standby research: pin compiler/evaluation/default/spawn timing before admitting the Helper controller parameter.
-2. I2 Helper aggregate research: map Helper-relative partner/member/leader root ownership after initial standby creation.
+1. I2 Helper aggregate research: Wayfinder 086 maps Helper-relative partner/member/leader root ownership after initial standby creation.
+2. I2 Helper aggregate execution: admit only the source-backed subset after target/order/failure ownership is pinned.
 3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 4. I2 gameplay ownership: only after dynamic controller semantics, specify active-root input/combat/round/presentation/resource consumers independently.
 5. I2 trace promotion: add required Tag traces when bounded behavior reaches a stable cross-system oracle; current unit/integration proof intentionally leaves trace checksums unchanged.
@@ -910,8 +914,8 @@ Current checkpoint and next build:
 
 - Closed: P3-P8 ownership/participation, plural structural activation, identity/Partner versus Enemy/P2 selection, standby CNS scheduling, static Tag options, explicit member/leader order, and bounded dynamic execution for every admitted optional axis.
 - Closed: RedirectID semantics, numeric root/Helper identity, root RedirectID execution, and Helper-local state/control/standby participation.
-- Closed: source-pinned Helper standby map plus direct-combat/effective-control execution; projectiles and drawing remain active.
-- Next: Wayfinder 084 initial Helper `standby` compiler/evaluation/spawn research.
+- Closed: source-pinned Helper standby map, direct-combat/effective-control execution, and root-created static/dynamic initial standby; projectiles and drawing remain active.
+- Next: Wayfinder 086 Helper aggregate Tag partner/member/leader ownership research.
 - Keep input, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:

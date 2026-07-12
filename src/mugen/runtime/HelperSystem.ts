@@ -191,6 +191,8 @@ export type RuntimeHelperSpawnInput = {
   action: MugenAnimationAction;
   stateNo?: number;
   animNo: number;
+  initialStandby?: boolean;
+  initialControl?: boolean;
   pos: { x: number; y: number };
   bodyWidth?: { front: number; back: number };
   fallbackFacing: 1 | -1;
@@ -200,6 +202,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
   const operation = input.operation;
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const identity = resolveActorIdentity(input);
+  const initialState = input.runtimeProgram?.states.find((candidate) => candidate.id === input.stateNo)?.source;
   return {
     serialId: input.serialId,
     destroyed: false,
@@ -209,7 +212,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     ...identity,
     teamState: {
       disabled: false,
-      standby: false,
+      standby: input.initialStandby ?? false,
       overKo: false,
       playerType: false,
     },
@@ -235,7 +238,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     bodyWidth: input.bodyWidth,
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
-    ctrl: false,
+    ctrl: input.initialControl ?? (initialState?.ctrl ?? 1) !== 0,
     stateType: "S",
     moveType: "I",
     physics: "N",

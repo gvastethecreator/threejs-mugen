@@ -1460,6 +1460,7 @@ time = 20
         supermovetime: "4",
         postype: "p1",
         facing: "1",
+        standby: "-2",
         removetime: "30",
         sprpriority: "8",
       }),
@@ -1479,9 +1480,25 @@ time = 20
       superMoveTime: 4,
       postype: "p1",
       facing: 1,
+      standby: true,
       removeTime: 30,
       spritePriority: 8,
     });
+  });
+
+  it("compiles Helper standby as one bounded boolean expression", () => {
+    expect(compileControllerIr(controller(200, "Helper", [], { standby: "0" })).operation).toMatchObject({
+      kind: "helper",
+      standby: false,
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { standby: "var(3)" })).operation).toMatchObject({
+      kind: "helper",
+      standbyExpression: "var(3)",
+    });
+
+    for (const standby of ["", "(", "1, 0"]) {
+      expect(compileControllerIr(controller(200, "Helper", [], { standby })).operation).toBeUndefined();
+    }
   });
 
   it("compiles Explod, ModifyExplod, and RemoveExplod controllers into typed effect operations", () => {

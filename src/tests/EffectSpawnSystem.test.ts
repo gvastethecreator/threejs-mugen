@@ -221,6 +221,59 @@ describe("EffectSpawnSystem", () => {
     });
   });
 
+  it("resolves initial Helper standby only for IKEMEN and preserves StateDef ctrl precedence", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const initialStates = [state(300, 920, 0), state(301, 920)];
+    const fighter = actor("p1", effectActorWorld, {}, definition("p1", [baseAction, helperAction], initialStates));
+    fighter.runtimeProgram = { states: initialStates.map((initialState) => compileStateProgram(initialState)) };
+    const opponent = actor("p2", effectActorWorld);
+    const dispatch = (
+      runtimeProfile: "mugen-1.1" | "ikemen-go" | "unknown",
+      standby: string | undefined,
+      stateNo = 301,
+      resolveHelperStandby?: () => boolean | undefined,
+    ) =>
+      dispatchWorld.apply({
+        actor: fighter,
+        opponent,
+        controller: compileControllerIr(controller("Helper", {
+          stateno: String(stateNo),
+          ...(standby === undefined ? {} : { standby }),
+        })),
+        effect: "helper",
+        effectSpawnWorld: spawnWorld,
+        runtimeProfile,
+        resolveHelperStandby,
+      });
+
+    expect(dispatch("ikemen-go", "1", 300).changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({
+      ctrl: false,
+      teamState: { standby: true },
+    });
+
+    expect(dispatch("ikemen-go", "var(3)", 301, () => true).changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({
+      ctrl: true,
+      teamState: { standby: true },
+    });
+    expect(dispatch("ikemen-go", "var(3)", 301, () => undefined).changed).toBe(false);
+    expect(dispatch("ikemen-go", "(").changed).toBe(false);
+    expect(dispatch("ikemen-go", "0").changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.teamState?.standby).toBe(false);
+    expect(dispatch("ikemen-go", undefined).changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.teamState?.standby).toBe(false);
+
+    for (const profile of ["mugen-1.1", "unknown"] as const) {
+      expect(dispatch(profile, "1").changed).toBe(true);
+      expect(effectActorWorld.helpers("p1")[0]?.teamState?.standby).toBe(false);
+    }
+    expect(dispatch("mugen-1.1", "(").changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.teamState?.standby).toBe(false);
+  });
+
   it("owns helper removal dispatch for current visual helper actors", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();
@@ -407,10 +460,11 @@ function definition(id: string, actions: MugenAnimationAction[], states: MugenSt
   };
 }
 
-function state(id: number, anim: number): MugenStateDef {
+function state(id: number, anim: number, ctrl?: number): MugenStateDef {
   return {
     id,
     anim,
+    ctrl,
     rawParams: {},
     controllers: [],
     line: 1,
