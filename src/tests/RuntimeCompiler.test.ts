@@ -609,6 +609,7 @@ time = 20
       kill: false,
       guardKill: false,
       priority: 6,
+      priorityType: "hit",
       p1SpritePriority: 3,
       p2SpritePriority: -2,
       pauseTime: 8,

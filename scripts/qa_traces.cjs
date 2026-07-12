@@ -1270,6 +1270,26 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-hit-miss-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-hit-dodge-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootHitDodgePriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-pair-miss-hit-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedPairMissHitPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-pair-hit-dodge-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedPairHitDodgePriorityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-presentation",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(),

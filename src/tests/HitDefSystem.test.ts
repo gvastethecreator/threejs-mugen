@@ -18,6 +18,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       controller("HitDef", {
         attr: "S,NA",
         damage: "30,5",
+        priority: "5, Dodge",
         pausetime: "12,8",
         p1sprpriority: "3",
         p2sprpriority: "-2",
@@ -80,6 +81,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       activeEnd: 6,
       recovery: 18,
       damage: 30,
+      priority: 5,
+      priorityType: "dodge",
       guardDamage: 5,
       hitPause: 12,
       hitStun: 15,
@@ -130,6 +133,29 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     expect(result.activated).toBe(true);
     expect(actor.currentMove?.targetId).toBe(0);
+  });
+
+  it("defaults each omitted HitDef priority to 4 Hit instead of inheriting the previous move", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.currentMove = {
+      actionId: 199,
+      startup: 0,
+      activeStart: 0,
+      activeEnd: 4,
+      recovery: 8,
+      damage: 20,
+      hitPause: 4,
+      hitStun: 8,
+      push: 2,
+      priority: 7,
+      priorityType: "dodge",
+      hitbox: { x1: 0, y1: -30, x2: 30, y2: 0 },
+    };
+
+    world.apply({ actor, controller: compileControllerIr(controller("HitDef", { damage: "30" })), frame: activeFrame() });
+
+    expect(actor.currentMove).toMatchObject({ priority: 4, priorityType: "hit" });
   });
 
   it("derives missing airguard.velocity from air.velocity", () => {

@@ -7,6 +7,7 @@ import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 
 export type HitSparkLibrarySource = "common" | "fightfx";
+export type RuntimeHitDefPriorityType = "hit" | "miss" | "dodge";
 
 export type HitSparkLibrary = {
   source: HitSparkLibrarySource;
@@ -23,6 +24,7 @@ export type DemoMove = {
   kill?: boolean;
   attr?: string;
   priority?: number;
+  priorityType?: RuntimeHitDefPriorityType;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   targetId?: number;

@@ -45,6 +45,10 @@ function directTradeKey(leftId: string, rightId: string): string {
   return leftId < rightId ? `${leftId}\u0000${rightId}` : `${rightId}\u0000${leftId}`;
 }
 
+function directHitDirectionKey(attackerId: string, defenderId: string): string {
+  return `${attackerId}\u0000${defenderId}`;
+}
+
 export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
   RuntimeContactPresentationActor & {
     label: string;
@@ -135,16 +139,22 @@ export type RuntimeDirectCombatSkipReason =
   | "no-contact"
   | "superpause-unhittable"
   | "hitby-rejected"
+  | "priority-no-hit"
   | "hitoverride-custom-state-miss";
 
 export class RuntimeCombatResolutionWorld {
-  private readonly equalPriorityHitTrades = new Map<string, {
+  private readonly equalPriorityCandidates = new Map<string, {
     leftId: string;
     rightId: string;
     leftMove: DemoMove;
     rightMove: DemoMove;
+    kind: "trade" | "tie-win" | "no-hit";
+    winnerId?: string;
+    loserId?: string;
     message: string;
   }>();
+  private readonly priorityFrameSkips = new Map<string, DemoMove>();
+  private readonly priorityFrameMessages = new Map<string, { move: DemoMove; message: string }>();
 
   resolvePriorityClash<TActor extends RuntimeCombatResolutionActor>(
     input: RuntimeCombatResolutionPriorityInput<TActor>,
@@ -155,17 +165,20 @@ export class RuntimeCombatResolutionWorld {
       boxesIntersect: collisionBoxesIntersect,
     });
     const tradeKey = directTradeKey(input.left.id, input.right.id);
-    if (outcome?.kind === "trade" && input.left.currentMove && input.right.currentMove) {
-      this.equalPriorityHitTrades.set(tradeKey, {
+    if (outcome && outcome.kind !== "win" && input.left.currentMove && input.right.currentMove) {
+      this.equalPriorityCandidates.set(tradeKey, {
         leftId: input.left.id,
         rightId: input.right.id,
         leftMove: input.left.currentMove,
         rightMove: input.right.currentMove,
+        kind: outcome.kind,
+        winnerId: outcome.winnerId,
+        loserId: outcome.loserId,
         message: outcome.message,
       });
     }
-    else this.equalPriorityHitTrades.delete(tradeKey);
-    return outcome?.kind === "trade" ? undefined : outcome?.message;
+    else this.equalPriorityCandidates.delete(tradeKey);
+    return outcome?.kind === "win" ? outcome.message : undefined;
   }
 
   resolveDirect<TActor extends RuntimeCombatResolutionActor>(
@@ -175,6 +188,14 @@ export class RuntimeCombatResolutionWorld {
     if (!attacker.currentMove) {
       return { kind: "skipped", reason: "missing-move" };
     }
+    const prioritySkipKey = directHitDirectionKey(attacker.id, defender.id);
+    if (this.priorityFrameSkips.get(prioritySkipKey) === attacker.currentMove) {
+      this.priorityFrameSkips.delete(prioritySkipKey);
+      return { kind: "skipped", reason: "priority-no-hit" };
+    }
+    const priorityMessageEntry = this.priorityFrameMessages.get(prioritySkipKey);
+    const priorityMessage = priorityMessageEntry?.move === attacker.currentMove ? priorityMessageEntry.message : undefined;
+    this.priorityFrameMessages.delete(prioritySkipKey);
     if (hasExplicitHitDefContactMemory(attacker)
       ? hasRuntimeHitDefTarget(attacker, defender.id)
       : attacker.hasHit) {
@@ -255,6 +276,7 @@ export class RuntimeCombatResolutionWorld {
           return true;
         },
       });
+      if (priorityMessage) input.log(priorityMessage);
       input.log(result.message);
       return { kind: "hitoverride", message: result.message };
     }
@@ -291,31 +313,53 @@ export class RuntimeCombatResolutionWorld {
       runtimeTick: input.runtimeTick,
       recordAudioOperation: input.recordAudioOperation,
     });
+    if (priorityMessage) input.log(priorityMessage);
     input.log(outcome.message);
     return outcome;
   }
 
-  resolveEqualPriorityHitTrades<TActor extends RuntimeCombatResolutionActor>(
+  resolveEqualPriorityOutcomes<TActor extends RuntimeCombatResolutionActor>(
     input: Omit<RuntimeCombatResolutionDirectInput<TActor>, "attacker" | "defender"> & { actors: readonly TActor[] },
   ): number {
-    const pending = [...this.equalPriorityHitTrades.values()];
-    this.equalPriorityHitTrades.clear();
+    this.priorityFrameSkips.clear();
+    this.priorityFrameMessages.clear();
+    const pending = [...this.equalPriorityCandidates.values()];
+    this.equalPriorityCandidates.clear();
     if (pending.length === 0) return 0;
     const actorsById = new Map(input.actors.map((actor) => [actor.id, actor]));
     const preparedHits: Array<{ attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult }> = [];
     const interruptedMoves = new Map<TActor, DemoMove>();
     let resolvedPairs = 0;
-    for (const trade of pending) {
-      const left = actorsById.get(trade.leftId);
-      const right = actorsById.get(trade.rightId);
-      if (!left || !right || left.currentMove !== trade.leftMove || right.currentMove !== trade.rightMove) continue;
+    for (const candidate of pending) {
+      const left = actorsById.get(candidate.leftId);
+      const right = actorsById.get(candidate.rightId);
+      if (!left || !right || left.currentMove !== candidate.leftMove || right.currentMove !== candidate.rightMove) continue;
+      if (candidate.kind === "tie-win" && candidate.loserId && candidate.winnerId) {
+        const loser = actorsById.get(candidate.loserId);
+        const winner = actorsById.get(candidate.winnerId);
+        if (!loser?.currentMove || !winner?.currentMove) continue;
+        this.priorityFrameSkips.set(directHitDirectionKey(candidate.loserId, candidate.winnerId), loser.currentMove);
+        this.priorityFrameMessages.set(directHitDirectionKey(candidate.winnerId, candidate.loserId), {
+          move: winner.currentMove,
+          message: candidate.message,
+        });
+        resolvedPairs += 1;
+        continue;
+      }
+      if (candidate.kind === "no-hit") {
+        this.priorityFrameSkips.set(directHitDirectionKey(left.id, right.id), candidate.leftMove);
+        this.priorityFrameSkips.set(directHitDirectionKey(right.id, left.id), candidate.rightMove);
+        input.log(candidate.message);
+        resolvedPairs += 1;
+        continue;
+      }
       const first = this.prepareEqualPriorityHit(input, left, right);
       const second = this.prepareEqualPriorityHit(input, right, left);
       if (!first || !second) continue;
-      input.log(trade.message);
+      input.log(candidate.message);
       preparedHits.push(first, second);
-      interruptedMoves.set(left, trade.leftMove);
-      interruptedMoves.set(right, trade.rightMove);
+      interruptedMoves.set(left, candidate.leftMove);
+      interruptedMoves.set(right, candidate.rightMove);
       resolvedPairs += 1;
     }
     for (const prepared of preparedHits) {

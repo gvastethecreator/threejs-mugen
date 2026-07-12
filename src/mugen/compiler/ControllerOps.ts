@@ -16,6 +16,7 @@ export type HitDefControllerOp = {
   kill?: boolean;
   guardKill?: boolean;
   priority?: number;
+  priorityType?: "hit" | "miss" | "dodge";
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   pauseTime?: number;
@@ -1390,6 +1391,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     priority: firstNumber(findParam(controller, "priority")),
+    priorityType: hitDefPriorityType(findParam(controller, "priority")),
     p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority")),
     p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
     pauseTime: firstNumber(findParam(controller, "pausetime")),
@@ -1950,6 +1952,11 @@ function secondNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function hitDefPriorityType(value: string | undefined): "hit" | "miss" | "dodge" | undefined {
+  const normalized = value?.split(",")[1]?.trim().replace(/^"|"$/g, "").toLowerCase();
+  return normalized === "hit" || normalized === "miss" || normalized === "dodge" ? normalized : undefined;
 }
 
 function numberPair(value: string | undefined): [number, number?] | undefined {

@@ -44,10 +44,31 @@ describe("DirectCombatSystem", () => {
 
     expect(outcome).toEqual({
       kind: "trade",
-      message: "HitDef priority clash: P1 priority 4 traded with P2 priority 4",
+      message: "HitDef priority clash: P1 priority 4 Hit traded with P2 priority 4 Hit",
     });
     expect(left.hasHit).toBe(false);
     expect(right.hasHit).toBe(false);
+  });
+
+  it.each([
+    ["hit", "hit", "trade", undefined],
+    ["hit", "miss", "tie-win", "p1"],
+    ["hit", "dodge", "no-hit", undefined],
+    ["dodge", "dodge", "no-hit", undefined],
+    ["dodge", "miss", "no-hit", undefined],
+    ["miss", "miss", "no-hit", undefined],
+    ["miss", "hit", "tie-win", "p2"],
+    ["dodge", "hit", "no-hit", undefined],
+    ["miss", "dodge", "no-hit", undefined],
+  ] as const)("resolves equal-priority %s versus %s as %s", (leftType, rightType, kind, winnerId) => {
+    const world = new RuntimeDirectCombatWorld();
+    const outcome = world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 4, priorityType: leftType }), moveTick: 1 }),
+      actor("p2", "P2", { currentMove: move({ priority: 4, priorityType: rightType }), moveTick: 1 }),
+      priorityHooks(),
+    );
+
+    expect(outcome).toMatchObject({ kind, ...(winnerId ? { winnerId } : {}) });
   });
 
   it("records priority suppression by exact getter without consuming other root pairs", () => {

@@ -50,7 +50,7 @@ describe("RuntimeMatchPostFighterWorld", () => {
           calls.push(`priority:${input.left.id}:${input.right.id}:${tagOf(input.directCombatWorld)}`);
           return "priority-log";
         },
-        resolveEqualPriorityHitTrades: () => 0,
+        resolveEqualPriorityOutcomes: () => 0,
         resolveDirect: (input) => {
           calls.push(`direct:${input.attacker.id}:${input.defender.id}:${input.runtimeTick}:${tagOf(input.stateHooks)}`);
           input.getHurtBoxes?.(input.defender);
@@ -60,7 +60,7 @@ describe("RuntimeMatchPostFighterWorld", () => {
           calls.push(`projectile:${input.attacker.id}:${input.defender.id}:${tagOf(input.effectLifecycleWorld)}`);
           input.rememberProjectileTarget?.(input.attacker, input.defender, projectile);
         },
-      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityHitTrades" | "resolveDirect" | "resolveProjectile">,
+      } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveDirect" | "resolveProjectile">,
       helperCombatWorld: {
         resolveDirect: (input) => {
           calls.push(

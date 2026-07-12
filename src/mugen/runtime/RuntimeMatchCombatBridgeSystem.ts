@@ -32,7 +32,7 @@ export type RuntimeMatchCombatBridgeActor =
 export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridgeActor> = {
   combatResolutionWorld: Pick<
     RuntimeCombatResolutionWorld,
-    "resolvePriorityClash" | "resolveEqualPriorityHitTrades" | "resolveDirect" | "resolveProjectile"
+    "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveDirect" | "resolveProjectile"
   >;
   helperCombatWorld: Pick<RuntimeHelperCombatWorld, "resolveDirect">;
   directCombatWorld: RuntimeDirectCombatWorld;
@@ -58,7 +58,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
 
 export type RuntimeMatchCombatBridgeResolvers<TActor extends RuntimeMatchCombatBridgeActor> = {
   resolvePriorityClash: (left: TActor, right: TActor) => string | undefined;
-  resolveEqualPriorityHitTrades: (actors: readonly TActor[]) => number;
+  resolveEqualPriorityOutcomes: (actors: readonly TActor[]) => number;
   resolveDirectCombat: (attacker: TActor, defender: TActor) => void;
   resolveProjectileCombat: (attacker: TActor, defender: TActor) => void;
   resolveHelperCombat: (attacker: TActor, defender: TActor) => void;
@@ -75,8 +75,8 @@ export class RuntimeMatchCombatBridgeWorld {
           right,
           directCombatWorld: input.directCombatWorld,
         }),
-      resolveEqualPriorityHitTrades: (actors) =>
-        input.combatResolutionWorld.resolveEqualPriorityHitTrades({
+      resolveEqualPriorityOutcomes: (actors) =>
+        input.combatResolutionWorld.resolveEqualPriorityOutcomes({
           actors,
           directCombatWorld: input.directCombatWorld,
           hitOverrideWorld: input.hitOverrideWorld,

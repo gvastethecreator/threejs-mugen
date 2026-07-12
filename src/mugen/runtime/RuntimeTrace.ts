@@ -4016,6 +4016,9 @@ function describeControllerEventRequirement(requirement: RuntimeTraceControllerE
 
 function categorizeLogLine(line: string): RuntimeTraceEvent["category"] {
   const lower = line.toLowerCase();
+  if (lower.includes("hitdef priority clash")) {
+    return "runtime";
+  }
   if (lower.includes("hitoverride")) {
     return "override";
   }

@@ -67,7 +67,7 @@ export type RuntimeDirectPriorityHooks = {
 };
 
 export type RuntimeDirectPriorityOutcome = {
-  kind: "trade" | "win";
+  kind: "trade" | "win" | "tie-win" | "no-hit";
   winnerId?: string;
   loserId?: string;
   message: string;
@@ -94,9 +94,33 @@ export class RuntimeDirectCombatWorld {
     const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);
     const rightPriority = clampHitDefPriority(rightMove.priority ?? 4);
     if (leftPriority === rightPriority) {
+      const leftType = leftMove.priorityType ?? "hit";
+      const rightType = rightMove.priorityType ?? "hit";
+      if (leftType === "hit" && rightType === "hit") {
+        return {
+          kind: "trade",
+          message: `HitDef priority clash: ${left.label} priority ${leftPriority} Hit traded with ${right.label} priority ${rightPriority} Hit`,
+        };
+      }
+      if (leftType === "hit" && rightType === "miss") {
+        return {
+          kind: "tie-win",
+          winnerId: left.id,
+          loserId: right.id,
+          message: `HitDef priority clash: ${left.label} Hit beat ${right.label} Miss at priority ${leftPriority}`,
+        };
+      }
+      if (rightType === "hit" && leftType === "miss") {
+        return {
+          kind: "tie-win",
+          winnerId: right.id,
+          loserId: left.id,
+          message: `HitDef priority clash: ${right.label} Hit beat ${left.label} Miss at priority ${leftPriority}`,
+        };
+      }
       return {
-        kind: "trade",
-        message: `HitDef priority clash: ${left.label} priority ${leftPriority} traded with ${right.label} priority ${rightPriority}`,
+        kind: "no-hit",
+        message: `HitDef priority clash: ${left.label} ${priorityTypeLabel(leftType)} and ${right.label} ${priorityTypeLabel(rightType)} both missed at priority ${leftPriority}`,
       };
     }
     const winner = leftPriority > rightPriority ? left : right;
@@ -211,6 +235,10 @@ export class RuntimeDirectCombatWorld {
       message: `${attacker.label} hit ${defender.label} for ${result.damage}`,
     };
   }
+}
+
+function priorityTypeLabel(type: NonNullable<DemoMove["priorityType"]>): "Hit" | "Miss" | "Dodge" {
+  return type === "hit" ? "Hit" : type === "miss" ? "Miss" : "Dodge";
 }
 
 function applyRuntimeHitDefSpritePriorityContact<TActor extends RuntimeDirectCombatActor>(

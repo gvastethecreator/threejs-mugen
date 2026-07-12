@@ -80,7 +80,8 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
     const hitPause = operation?.pauseTime ?? firstNumber(findParam(source, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
     const hitStun = operation?.groundHitTime ?? firstNumber(findParam(source, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
-    const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")) ?? existing?.priority ?? 4);
+    const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")) ?? 4);
+    const priorityType = operation?.priorityType ?? hitDefPriorityType(findParam(source, "priority")) ?? "hit";
     const groundVelocity = operation?.groundVelocity ?? velocityPair(findParam(source, "ground.velocity"));
     const push = Math.abs(groundVelocity?.[0] ?? existing?.push ?? (damage >= 60 ? 30 : 20));
     const guardPause =
@@ -150,6 +151,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       damage,
       kill,
       priority,
+      priorityType,
       p1SpritePriority,
       p2SpritePriority,
       requiresHitDef: false,
@@ -216,6 +218,11 @@ export class RuntimeHitDefControllerDispatchWorld {
       ...(operation ? { operation } : {}),
     };
   }
+}
+
+function hitDefPriorityType(value: string | undefined): DemoMove["priorityType"] | undefined {
+  const normalized = value?.split(",")[1]?.trim().replace(/^"|"$/g, "").toLowerCase();
+  return normalized === "hit" || normalized === "miss" || normalized === "dodge" ? normalized : undefined;
 }
 
 function buildMoveFallData(controller: MugenStateController, existing?: DemoMove, operation?: HitDefControllerOp): DemoMove["fall"] | undefined {

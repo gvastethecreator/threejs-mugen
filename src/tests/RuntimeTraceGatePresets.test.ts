@@ -168,6 +168,10 @@ import {
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
+  createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact,
+  createSyntheticImportedIkemenActiveRootHitDodgePriorityTraceArtifact,
+  createSyntheticImportedPairMissHitPriorityTraceArtifact,
+  createSyntheticImportedPairHitDodgePriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
   createSyntheticImportedIkemenActiveRootConstraintTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
@@ -16162,6 +16166,61 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.targetLinks).toEqual(expect.arrayContaining([
       expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 118 }),
       expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 119 }),
+    ]));
+  });
+
+  it("creates required IKEMEN active-root Hit/Miss and Hit/Dodge priority artifacts", () => {
+    const hitMiss = createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+    const hitDodge = createSyntheticImportedIkemenActiveRootHitDodgePriorityTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(hitMiss.gates[0]?.failures).toEqual([]);
+    expect(hitMiss.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(1);
+    expect(hitMiss.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1000 }),
+      expect.objectContaining({ id: "p4", life: 959 }),
+    ]));
+    expect(hitMiss.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 120 }),
+    );
+
+    expect(hitDodge.gates[0]?.failures).toEqual([]);
+    expect(hitDodge.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(0);
+    expect(hitDodge.trace.events.filter(({ line }) => line.includes("both missed at priority 4"))).toHaveLength(2);
+    expect(hitDodge.trace.frames.map((frame) => frame.rootHitAdmission?.admittedPairIds)).toEqual([
+      ["p3->p4", "p4->p3"],
+      ["p3->p4", "p4->p3"],
+    ]);
+    expect(hitDodge.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1000 }),
+      expect.objectContaining({ id: "p4", life: 1000 }),
+    ]));
+    expect(hitDodge.gates[0]?.evidence.targetLinks.filter(({ ownerId }) => ownerId === "p3" || ownerId === "p4")).toEqual([]);
+  });
+
+  it("creates required Pair Miss/Hit and Hit/Dodge priority artifacts", () => {
+    const missHit = createSyntheticImportedPairMissHitPriorityTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+    const hitDodge = createSyntheticImportedPairHitDodgePriorityTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(missHit.gates[0]?.failures).toEqual([]);
+    expect(missHit.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(1);
+    expect(missHit.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", life: 971 }),
+      expect.objectContaining({ id: "p2", life: 1000 }),
+    ]));
+    expect(missHit.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 123 }),
+    );
+
+    expect(hitDodge.gates[0]?.failures).toEqual([]);
+    expect(hitDodge.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(0);
+    expect(hitDodge.trace.events.filter(({ line }) => line.includes("both missed at priority 4"))).toHaveLength(2);
+    expect(hitDodge.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", life: 1000 }),
+      expect.objectContaining({ id: "p2", life: 1000 }),
     ]));
   });
 

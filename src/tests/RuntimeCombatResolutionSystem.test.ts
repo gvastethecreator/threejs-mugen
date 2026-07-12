@@ -66,7 +66,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     };
 
     expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
-    expect(world.resolveEqualPriorityHitTrades({ actors: [left, right], ...base })).toBe(1);
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(1);
     expect(world.resolveDirect({ attacker: left, defender: right, ...base })).toEqual({ kind: "skipped", reason: "missing-move" });
     expect(world.resolveDirect({ attacker: right, defender: left, ...base })).toEqual({ kind: "skipped", reason: "missing-move" });
 
@@ -79,7 +79,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(left.currentMove).toBeUndefined();
     expect(right.currentMove).toBeUndefined();
     expect(logs).toEqual([
-      "HitDef priority clash: P3 priority 4 traded with P4 priority 4",
+      "HitDef priority clash: P3 priority 4 Hit traded with P4 priority 4 Hit",
       "P3 hit P4 for 17",
       "P4 hit P3 for 23",
     ]);
@@ -112,10 +112,75 @@ describe("RuntimeCombatResolutionSystem", () => {
     world.resolvePriorityClash({ left, right, directCombatWorld });
     left.currentMove = move({ priority: 7, damage: 31 });
     right.currentMove = move({ priority: 1, damage: 9 });
-    expect(world.resolveEqualPriorityHitTrades({ actors: [left, right], ...base })).toBe(0);
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(0);
     expect(left.runtime.life).toBe(100);
     expect(right.runtime.life).toBe(100);
-    expect(world.resolveEqualPriorityHitTrades({ actors: [left, right], ...base })).toBe(0);
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(0);
+  });
+
+  it("lets equal-priority Hit beat Miss while suppressing only the Miss direction for the frame", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const hit = actor("p3", "P3", contactWorld, { currentMove: move({ priority: 4, priorityType: "hit", damage: 17 }), moveTick: 1 });
+    const miss = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1 }),
+      currentMove: move({ priority: 4, priorityType: "miss", damage: 29 }),
+      moveTick: 1,
+    });
+    const logs: string[] = [];
+    const base = directInputBase(contactWorld, directCombatWorld, logs);
+
+    expect(world.resolvePriorityClash({ left: hit, right: miss, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [hit, miss], ...base })).toBe(1);
+    expect(world.resolveDirect({ attacker: miss, defender: hit, ...base })).toEqual({ kind: "skipped", reason: "priority-no-hit" });
+    expect(world.resolveDirect({ attacker: hit, defender: miss, ...base })).toMatchObject({ kind: "hit", damage: 17 });
+    expect(hit.runtime.life).toBe(100);
+    expect(miss.runtime.life).toBe(83);
+    expect(logs[0]).toBe("HitDef priority clash: P3 Hit beat P4 Miss at priority 4");
+  });
+
+  it("keeps both HitDefs active after an equal-priority Hit versus Dodge no-hit tie", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const hitMove = move({ priority: 4, priorityType: "hit" });
+    const dodgeMove = move({ priority: 4, priorityType: "dodge" });
+    const hit = actor("p3", "P3", contactWorld, { currentMove: hitMove, moveTick: 1 });
+    const dodge = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1 }),
+      currentMove: dodgeMove,
+      moveTick: 1,
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    world.resolvePriorityClash({ left: hit, right: dodge, directCombatWorld });
+    expect(world.resolveEqualPriorityOutcomes({ actors: [hit, dodge], ...base })).toBe(1);
+    expect(world.resolveDirect({ attacker: hit, defender: dodge, ...base })).toEqual({ kind: "skipped", reason: "priority-no-hit" });
+    expect(world.resolveDirect({ attacker: dodge, defender: hit, ...base })).toEqual({ kind: "skipped", reason: "priority-no-hit" });
+    expect(hit.currentMove).toBe(hitMove);
+    expect(dodge.currentMove).toBe(dodgeMove);
+    expect(hit.runtime.life).toBe(100);
+    expect(dodge.runtime.life).toBe(100);
+  });
+
+  it("does not report a Hit-over-Miss victory when the winning contact is rejected", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const hit = actor("p3", "P3", contactWorld, { currentMove: move({ priority: 4, priorityType: "hit" }), moveTick: 1 });
+    const miss = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1 }),
+      currentMove: move({ priority: 4, priorityType: "miss" }),
+      moveTick: 1,
+    });
+    const logs: string[] = [];
+    const base = { ...directInputBase(contactWorld, directCombatWorld, logs), canDefenderBeHit: () => false };
+
+    world.resolvePriorityClash({ left: hit, right: miss, directCombatWorld });
+    world.resolveEqualPriorityOutcomes({ actors: [hit, miss], ...base });
+    expect(world.resolveDirect({ attacker: hit, defender: miss, ...base })).toEqual({ kind: "skipped", reason: "superpause-unhittable" });
+    expect(logs).toEqual(["P4 rejected P3 S,NA via SuperPause unhittable"]);
   });
 
   it("prepares a connected three-actor equal-priority graph before mutation", () => {
@@ -133,7 +198,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       }
     }
     const logs: string[] = [];
-    const resolved = world.resolveEqualPriorityHitTrades({
+    const resolved = world.resolveEqualPriorityOutcomes({
       actors,
       directCombatWorld,
       hitOverrideWorld: new RuntimeHitOverrideWorld(),
@@ -696,6 +761,26 @@ function hooks(entries: string[] = []): RuntimeCombatResolutionStateHooks<TestAc
       entries.push(`${target.id}:${stateNo}:${options?.clearStateOwner ? "clear" : options?.stateOwner?.id ?? "self"}`);
       target.runtime.stateNo = stateNo;
     },
+  };
+}
+
+function directInputBase(
+  contactWorld: RuntimeContactMemoryWorld,
+  directCombatWorld: RuntimeDirectCombatWorld,
+  logs: string[],
+) {
+  return {
+    directCombatWorld,
+    hitOverrideWorld: new RuntimeHitOverrideWorld(),
+    reversalWorld: new RuntimeReversalWorld(contactWorld),
+    guardWorld: new RuntimeGuardWorld(),
+    getHitStateWorld: new RuntimeGetHitStateWorld(),
+    hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+    contactPresentationWorld: new RuntimeContactPresentationWorld(),
+    runtimeTick: 9,
+    getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+    stateHooks: hooks(),
+    log: (line: string) => logs.push(line),
   };
 }
 
