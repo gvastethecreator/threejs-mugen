@@ -47,6 +47,7 @@ export type FighterMatchState = {
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
   currentInput: Set<string>;
   aiCooldown: number;

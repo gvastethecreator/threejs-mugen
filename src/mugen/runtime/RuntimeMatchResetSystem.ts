@@ -31,7 +31,7 @@ export type RuntimeMatchResetInput<TActor extends object, TDefinition> = {
     start: RuntimeMatchResetFighterStart;
   }>;
   createFighter: (id: string, definition: TDefinition, start: RuntimeMatchResetFighterStart) => TActor;
-  attachHelperTargetStateHandlers: () => void;
+  attachHelperHandlers: () => void;
   log: (message: string) => void;
 };
 
@@ -48,12 +48,12 @@ export class RuntimeMatchResetWorld {
     input.envColorWorld.reset();
     input.effectActorWorld.reset();
 
-    Object.assign(input.p1, input.createFighter("p1", input.p1Definition, input.p1Start));
-    Object.assign(input.p2, input.createFighter("p2", input.p2Definition, input.p2Start));
+    replaceObjectContents(input.p1, input.createFighter("p1", input.p1Definition, input.p1Start));
+    replaceObjectContents(input.p2, input.createFighter("p2", input.p2Definition, input.p2Start));
     for (const reserve of input.reserveActors ?? []) {
-      Object.assign(reserve.actor, input.createFighter(reserve.id, reserve.definition, reserve.start));
+      replaceObjectContents(reserve.actor, input.createFighter(reserve.id, reserve.definition, reserve.start));
     }
-    input.attachHelperTargetStateHandlers();
+    input.attachHelperHandlers();
     input.log("Round reset");
 
     return {
@@ -62,4 +62,11 @@ export class RuntimeMatchResetWorld {
       playing: true,
     };
   }
+}
+
+function replaceObjectContents<TActor extends object>(target: TActor, replacement: TActor): void {
+  for (const key of Object.keys(target)) {
+    delete (target as Record<string, unknown>)[key];
+  }
+  Object.assign(target, replacement);
 }

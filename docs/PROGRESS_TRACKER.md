@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper-originated self Tag runtime
+
+- Runtime: Helper CNS now resolves omitted/static/deferred self and routes concrete self-only TagIn/TagOut through an explicit owner hook.
+- Participation: true/default self toggles only Helper standby; CNS, projectiles, identity, snapshots, and presentation continue while effective control/direct HitDef remain filtered.
+- Failure: RedirectID/aggregate payloads, invalid expressions, disabled Helpers, and legacy profiles preserve state and suppress success telemetry.
+- Recovery: reset now clears stale optional actor fields and reattaches all Helper target, telemetry, team-standby, pause, and damage hooks.
+- Verification: 170 files / 1748 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check pass.
+- Global status: Wayfinder 091 is closed without visual or score movement; Wayfinder 092 promotes the stable cycle to a required trace.
+
 ## Global report - 2026-07-11 IKEMEN Helper aggregate closure audit
 
 - Closure: root-to-Helper static/deferred self, partner, state, control, member, and TagIn leader reconcile with pinned source order and local ownership.
@@ -1438,6 +1447,15 @@ Every compatibility milestone should leave:
 - Active-root gameplay remains structurally visible but input, combat, round, and presentation ownership still target P1/P2.
 - Residual debt ranks Helper-originated self Tag, required Tag traces, active-root gameplay, incoming Helper breadth, then exact incremental failure.
 - Global status: Wayfinder 090 is closed without executable or score movement; Wayfinder 091 executes Helper-originated self standby only.
+
+### 2026-07-11 - IKEMEN Helper-originated self Tag runtime
+
+- Helper-authored unredirected TagIn/TagOut now resolves omitted/static/deferred self in live Helper context and mutates only local standby.
+- Standby keeps CNS, projectiles, identity, snapshots, and presentation active while effective control and direct HitDef remain filtered.
+- Concrete controller/operation telemetry remains attributed to the root owner with Helper state context; blocked aggregate/legacy/lifecycle routes record no success.
+- Reset replacement now removes stale optional fighter state and reattaches every Helper-owned runtime hook before replay.
+- Full gates: 170 files / 1748 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
+- Global status: Wayfinder 091 is closed without browser or score movement; Wayfinder 092 promotes the behavior to required trace evidence.
 
 ## Not Done
 

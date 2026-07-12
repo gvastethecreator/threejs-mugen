@@ -6,7 +6,7 @@ import type { RuntimeHelper } from "../mugen/runtime/HelperSystem";
 import { RuntimeHelperTelemetryWorld, type RuntimeHelperTelemetryOwner } from "../mugen/runtime/RuntimeHelperTelemetrySystem";
 
 describe("RuntimeHelperTelemetryWorld", () => {
-  it("records helper projectile, kinematic, and pause telemetry against helper state", () => {
+  it("records helper projectile, kinematic, pause, and team-standby telemetry against helper state", () => {
     const world = new RuntimeHelperTelemetryWorld();
     const owner = ownerState(200);
     const source = controllerSource("Projectile");
@@ -15,6 +15,8 @@ describe("RuntimeHelperTelemetryWorld", () => {
     const kinematicOperation = helperKinematicOperation();
     const pauseSource = controllerSource("SuperPause");
     const pauseOperation = helperPauseOperation();
+    const tagSource = controllerSource("TagOut");
+    const tagOperation = helperTeamStandbyOperation();
     const records: string[] = [];
 
     world.attachControllerTelemetry([owner], {
@@ -29,6 +31,8 @@ describe("RuntimeHelperTelemetryWorld", () => {
     owner.onHelperOperation?.(helperState(1201), kinematicOperation);
     owner.onHelperController?.(helperState(1202), controllerIr(pauseSource, pauseOperation));
     owner.onHelperOperation?.(helperState(1202), pauseOperation);
+    owner.onHelperController?.(helperState(1203), controllerIr(tagSource, tagOperation));
+    owner.onHelperOperation?.(helperState(1203), tagOperation);
 
     expect(records).toEqual([
       "200:Projectile:1200",
@@ -37,6 +41,8 @@ describe("RuntimeHelperTelemetryWorld", () => {
       "kinematic:1201",
       "200:SuperPause:1202",
       "pause:1202",
+      "200:TagOut:1203",
+      "team-standby:1203",
     ]);
   });
 
@@ -162,4 +168,8 @@ function helperKinematicOperation(): ControllerOp {
 
 function helperPauseOperation(): ControllerOp {
   return { kind: "pause", controllerType: "superpause" } as ControllerOp;
+}
+
+function helperTeamStandbyOperation(): ControllerOp {
+  return { kind: "team-standby", controllerType: "tagout", standby: true, self: true } as ControllerOp;
 }

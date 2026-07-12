@@ -11,7 +11,7 @@ import type { RuntimeTargetWorldActor } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeMatchHelperBindingWorld", () => {
-  it("binds helper target-state routing and projectile telemetry for the current match owners", () => {
+  it("binds helper target-state, team-standby, and telemetry routes for the current match owners", () => {
     const world = new RuntimeMatchHelperBindingWorld();
     const p1 = owner("p1", 200);
     const p2 = owner("p2", 300);
@@ -19,11 +19,19 @@ describe("RuntimeMatchHelperBindingWorld", () => {
     p1.enterHelperTargetState = () => records.push("stale-target");
     p1.onHelperController = () => records.push("stale-controller");
     p1.onHelperOperation = () => records.push("stale-operation");
+    p1.onHelperTeamStandby = () => {
+      records.push("stale-team");
+      return undefined;
+    };
 
     world.attach({
       owners: [p1, p2],
       enterTargetState: (routeOwner, helper, target, stateId) =>
         records.push(`target:${routeOwner.id}:${helper.ownerId}:${target.id}:${stateId}`),
+      applyTeamStandby: (routeOwner, helper, operation) => {
+        records.push(`team:${routeOwner.id}:${helper.ownerId}:${operation.controllerType}`);
+        return operation;
+      },
       telemetryRecorder: {
         recordController: (recordOwner, controller, context) =>
           records.push(`controller:${recordOwner.id}:${controller.type}:${context.stateNo}`),
@@ -38,12 +46,14 @@ describe("RuntimeMatchHelperBindingWorld", () => {
     p1.onHelperOperation?.(helper("p1", undefined), projectileOperation());
     p1.onHelperController?.(helper("p1", 1200), controllerIr(controller("Helper"), helperOperation()));
     p1.onHelperOperation?.(helper("p1", 1200), helperOperation());
+    p1.onHelperTeamStandby?.(helper("p1", 1200), teamStandbyOperation());
 
     expect(records).toEqual([
       "target:p1:p1:p2:888",
       "target:p2:p2:p1:889",
       "controller:p1:Projectile:1200",
       "operation:p1:projectile:200",
+      "team:p1:p1:tagout",
     ]);
   });
 });
@@ -123,4 +133,8 @@ function projectileOperation(): ControllerOp {
 
 function helperOperation(): ControllerOp {
   return { kind: "helper" } as ControllerOp;
+}
+
+function teamStandbyOperation(): Extract<ControllerOp, { kind: "team-standby" }> {
+  return { kind: "team-standby", controllerType: "tagout", standby: true, self: true };
 }

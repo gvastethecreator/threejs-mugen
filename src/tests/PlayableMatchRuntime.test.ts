@@ -190,6 +190,146 @@ damage = 5
     });
   });
 
+  it("executes Helper-owned default TagOut and later TagIn without stopping Helper CNS", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-owned-self-tag-cycle",
+      withStateMove: false,
+      withHelper: true,
+      helperStateCtrl: 1,
+      helperStateControllers: `
+[State 1200, Enter own standby]
+type = TagOut
+trigger1 = Time = 0
+
+[State 1200, Leave own standby]
+type = TagIn
+trigger1 = Time = 1
+
+[State 1200, Continue CNS]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 1
+
+[State 1200, Effective control]
+type = VarSet
+trigger1 = 1
+v = 1
+value = Ctrl
+
+[State 1200, Continue projectile]
+type = Projectile
+trigger1 = Time = 0
+projid = 93
+projanim = 910
+offset = 0,-20
+velocity = 3,0
+projremovetime = 20
+damage = 5
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let activeHelper = effectActorWorld.helpers("p1")[0]!;
+    expect(snapshot.effects?.find(({ id }) => id === activeHelper.serialId)?.runtime.vars.slice(0, 2)).toEqual([1, 0]);
+    expect(snapshot.effects?.some(({ actorKind, parentId }) => actorKind === "projectile" && parentId === activeHelper.serialId)).toBe(true);
+    expect(activeHelper.teamState?.standby).toBe(true);
+    expect(runtimeHelperCanDirectlyInteract(activeHelper)).toBe(false);
+    expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ standby: true, lookupEligible: true });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    activeHelper = effectActorWorld.helpers("p1")[0]!;
+    expect(snapshot.effects?.find(({ id }) => id === activeHelper.serialId)?.runtime.vars.slice(0, 2)).toEqual([2, 1]);
+    expect(activeHelper.teamState?.standby).toBe(false);
+    expect(runtimeHelperCanDirectlyInteract(activeHelper)).toBe(true);
+    expect(runtime.getCharacterIdentity()?.characters.at(-1)).toMatchObject({ standby: false, lookupEligible: true });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+
+    runtime.reset();
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(effectActorWorld.helpers("p1")[0]?.teamState?.standby).toBe(true);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it.each([
+    ["TagOut", "static false", "0", false, false],
+    ["TagOut", "deferred true", "var(0)", false, true],
+    ["TagIn", "static false", "0", true, true],
+    ["TagIn", "deferred true", "var(0)", true, false],
+  ] as const)(
+    "executes Helper-owned %s with %s self in live Helper context",
+    (controllerType, _case, self, initialStandby, standby) => {
+      const fighter = createImportedFixture({
+        id: `ikemen-helper-owned-${controllerType.toLowerCase()}-${_case.replace(" ", "-")}`,
+        withStateMove: false,
+        withHelper: true,
+        helperStandby: initialStandby ? 1 : undefined,
+        helperStateControllers: `
+[State 1200, Helper-local source]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 2
+
+[State 1200, Own dynamic standby]
+type = ${controllerType}
+trigger1 = Time = 0
+self = ${self}
+`,
+      });
+      const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+        runtimeProfile: "ikemen-go",
+      });
+
+      const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+      expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({
+        vars: expect.arrayContaining([2]),
+        teamState: { standby },
+      });
+      expect(
+        snapshot.compatibilitySession?.actors[0]?.executedOperations[`team-standby:${controllerType.toLowerCase()}`],
+      ).toBe(1);
+    },
+  );
+
+  it.each([
+    ["aggregate", "ikemen-go", "partner = 0"],
+    ["invalid expression", "ikemen-go", "self = ("],
+    ["legacy profile", "mugen-1.1", ""],
+  ] as const)("blocks Helper-owned self Tag for %s", (_case, runtimeProfile, params) => {
+    const fighter = createImportedFixture({
+      id: `blocked-helper-owned-tag-${_case.replaceAll(" ", "-")}`,
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Blocked own standby]
+type = TagOut
+trigger1 = Time = 0
+${params}
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile,
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.teamState?.standby).toBe(
+      runtimeProfile === "ikemen-go" ? true : undefined,
+    );
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it.each(["mugen-1.1", "unknown"] as const)("ignores IKEMEN Helper standby under the %s profile", (runtimeProfile) => {
     const fighter = createImportedFixture({
       id: `legacy-helper-standby-${runtimeProfile}`,

@@ -58,6 +58,7 @@ describe("RuntimeEffectHelperContextWorld", () => {
     const onController: RuntimeHelperAdvanceOptions["onController"] = () => undefined;
     const onOperation: RuntimeHelperAdvanceOptions["onOperation"] = () => undefined;
     const onPauseController: RuntimeHelperAdvanceOptions["onPauseController"] = () => ({ powerDelta: 0 });
+    const onTeamStandby: RuntimeHelperAdvanceOptions["onTeamStandby"] = (_helper, operation) => operation;
     const scaleTargetDamage: RuntimeHelperAdvanceOptions["scaleTargetDamage"] = (_runtime, damage) => damage;
     const actor: RuntimeEffectHelperContextActor = {
       ...contextActor("p1", 0),
@@ -65,6 +66,7 @@ describe("RuntimeEffectHelperContextWorld", () => {
       onHelperController: onController,
       onHelperOperation: onOperation,
       onHelperPauseController: onPauseController,
+      onHelperTeamStandby: onTeamStandby,
       scaleHelperTargetDamage: scaleTargetDamage,
     };
     const opponent = targetActor("p2", 64);
@@ -78,6 +80,7 @@ describe("RuntimeEffectHelperContextWorld", () => {
     expect(context.onController).toBe(onController);
     expect(context.onOperation).toBe(onOperation);
     expect(context.onPauseController).toBe(onPauseController);
+    expect(context.onTeamStandby).toBe(onTeamStandby);
     expect(context.scaleTargetDamage).toBe(scaleTargetDamage);
   });
 

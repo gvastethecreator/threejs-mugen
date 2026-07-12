@@ -1,7 +1,7 @@
 # Execute Helper-originated self Tag standby
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -22,4 +22,6 @@ Can an active or standby Helper execute its own unredirected TagIn/TagOut self s
 
 ## Answer
 
-Pending implementation.
+Yes. Helper CNS now resolves omitted/static/deferred `self` once in the live Helper expression context, routes only concrete self-only TagIn/TagOut through the match owner, and mutates only the calling Helper's standby state under explicit `ikemen-go`. RedirectID and every aggregate axis fail closed before the hook; disabled/destroyed Helpers and legacy profiles record no success. Standby keeps CNS, projectiles, identity, snapshots, and presentation active while effective control/direct HitDef remain filtered. Controller and concrete `team-standby` telemetry use the existing root-owner plus Helper-state context.
+
+Reset proof exposed and fixed stale optional actor fields left by `Object.assign`; reset now replaces actor contents in place and reattaches target, telemetry, team-standby, pause, and damage hooks. Focused verification passes 6 files / 212 tests; full verification passes 170 files / 1748 tests, TypeScript 7 typecheck/build, 538/538 traces, boundaries, and diff check. See `docs/reports/2026-07-11-ikemen-helper-originated-self-tag-runtime.md`.

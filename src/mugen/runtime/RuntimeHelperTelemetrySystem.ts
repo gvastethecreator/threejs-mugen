@@ -53,10 +53,14 @@ function recordsHelperController(controller: ControllerIr): boolean {
   return (
     controller.operation?.kind === "projectile" ||
     controller.operation?.kind === "pause" ||
+    controller.operation?.kind === "team-standby" ||
     helperKinematicControllers.has(controller.normalizedType)
   );
 }
 
 function recordsHelperOperation(operation: ControllerOp): boolean {
-  return operation.kind === "projectile" || operation.kind === "kinematic" || operation.kind === "pause";
+  return operation.kind === "projectile" ||
+    operation.kind === "kinematic" ||
+    operation.kind === "pause" ||
+    operation.kind === "team-standby";
 }

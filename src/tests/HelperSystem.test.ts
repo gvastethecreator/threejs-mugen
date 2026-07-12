@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ControllerIr, StateProgramIr } from "../mugen/compiler/RuntimeIr";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
-import type { HelperControllerOp, PauseControllerOp } from "../mugen/compiler/ControllerOps";
+import type { HelperControllerOp, PauseControllerOp, TeamStandbyControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
@@ -229,6 +229,65 @@ describe("HelperSystem", () => {
     standby.teamState!.disabled = false;
     standby.destroyed = true;
     expect(runtimeHelperCanDirectlyInteract(standby)).toBe(false);
+  });
+
+  it("resolves Helper-owned deferred self Tag in the Helper context before the match hook", () => {
+    const tagOut = teamStandbyController(6000, "TagOut", {
+      standby: true,
+      self: false,
+      selfExpression: "var(0)",
+    });
+    const active = helper({
+      vars: [2],
+      teamState: { disabled: false, standby: false, overKo: false, playerType: false },
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [tagOut])] },
+    });
+    const calls: string[] = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      onTeamStandby: (current, operation) => {
+        expect(current).toBe(active);
+        expect(operation).toEqual({
+          kind: "team-standby",
+          controllerType: "tagout",
+          standby: true,
+          self: true,
+        });
+        current.teamState = { ...current.teamState!, standby: operation.standby };
+        calls.push("tag");
+        return operation;
+      },
+      onController: (_helper, controller) => calls.push(`controller:${controller.normalizedType}`),
+      onOperation: (_helper, operation) => calls.push(`operation:${operation.kind}`),
+    });
+
+    expect(active.teamState?.standby).toBe(true);
+    expect(calls).toEqual(["tag", "controller:tagout", "operation:team-standby"]);
+  });
+
+  it.each([
+    ["aggregate", { partnerOrdinal: 0 }, false, false],
+    ["disabled", {}, true, false],
+    ["destroyed", {}, false, true],
+  ] as const)("rejects %s Helper-owned self Tag before the match hook", (_case, extra, disabled, destroyed) => {
+    const tagOut = teamStandbyController(6000, "TagOut", { standby: true, self: true, ...extra });
+    const active = helper({
+      destroyed,
+      teamState: { disabled, standby: false, overKo: false, playerType: false },
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [tagOut])] },
+    });
+    const calls: string[] = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      onTeamStandby: () => {
+        calls.push("tag");
+        return tagOut.operation as TeamStandbyControllerOp;
+      },
+      onUnsupportedController: (_helper, controller) => calls.push(`unsupported:${controller.normalizedType}`),
+    });
+
+    expect(active.teamState?.standby).toBe(false);
+    expect(calls).toEqual(["unsupported:tagout"]);
   });
 
   it("creates a bounded visual helper from controller params", () => {
@@ -766,3 +825,18 @@ describe("HelperSystem", () => {
     expect(snapshot?.clsn2[0]).not.toBe(action.frames[0]?.clsn2[0]);
   });
 });
+
+function teamStandbyController(
+  stateId: number,
+  type: "TagIn" | "TagOut",
+  operation: Omit<TeamStandbyControllerOp, "kind" | "controllerType">,
+): ControllerIr {
+  return {
+    ...controllerIr(stateId, type),
+    operation: {
+      kind: "team-standby",
+      controllerType: type.toLowerCase() as TeamStandbyControllerOp["controllerType"],
+      ...operation,
+    },
+  };
+}

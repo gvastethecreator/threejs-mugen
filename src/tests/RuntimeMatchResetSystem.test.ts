@@ -41,7 +41,7 @@ describe("RuntimeMatchResetWorld", () => {
         calls.push(`create:${id}:${definition}:${start.x}:${start.facing}`);
         return { id, definition, start };
       },
-      attachHelperTargetStateHandlers: () => {
+      attachHelperHandlers: () => {
         calls.push(`attach:${p1.id}:${p2.id}`);
         p1.handlerAttached = true;
         p2.handlerAttached = true;
@@ -52,6 +52,9 @@ describe("RuntimeMatchResetWorld", () => {
     expect(result).toEqual({ tick: 0, frameClock: 0, playing: true });
     expect(p1).toBe(p1Ref);
     expect(p2).toBe(p2Ref);
+    expect(p1.stale).toBeUndefined();
+    expect(p2.stale).toBeUndefined();
+    expect(p3.stale).toBeUndefined();
     expect(p1).toMatchObject({
       id: "p1",
       definition: "nova",

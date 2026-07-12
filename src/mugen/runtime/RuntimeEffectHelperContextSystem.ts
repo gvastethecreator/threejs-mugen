@@ -13,6 +13,7 @@ export type RuntimeEffectHelperContextActor = {
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
 };
 
@@ -43,6 +44,7 @@ export type RuntimeEffectHelperContext = {
   onController?: RuntimeHelperAdvanceOptions["onController"];
   onOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   onPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
 };
 
@@ -90,6 +92,7 @@ export class RuntimeEffectHelperContextWorld {
       ...(actor.onHelperController ? { onController: actor.onHelperController } : {}),
       ...(actor.onHelperOperation ? { onOperation: actor.onHelperOperation } : {}),
       ...(actor.onHelperPauseController ? { onPauseController: actor.onHelperPauseController } : {}),
+      ...(actor.onHelperTeamStandby ? { onTeamStandby: actor.onHelperTeamStandby } : {}),
       ...(actor.scaleHelperTargetDamage ? { scaleTargetDamage: actor.scaleHelperTargetDamage } : {}),
     };
   }

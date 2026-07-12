@@ -1,4 +1,9 @@
-import type { ControllerOp, HelperControllerOp, PauseControllerOp } from "../compiler/ControllerOps";
+import type {
+  ControllerOp,
+  HelperControllerOp,
+  PauseControllerOp,
+  TeamStandbyControllerOp,
+} from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
@@ -158,6 +163,7 @@ export type RuntimeHelperAdvanceOptions = {
     resolveParams: RuntimePauseControllerParamResolvers,
   ) => MatchPauseControllerResult | undefined;
   scaleTargetDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
+  onTeamStandby?: (helper: RuntimeHelper, operation: TeamStandbyControllerOp) => TeamStandbyControllerOp | undefined;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onOperation?: (helper: RuntimeHelper, operation: ControllerOp) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
@@ -325,6 +331,7 @@ export function runRuntimeHelperStateControllers(
     | "onModifyProjectile"
     | "onPauseController"
     | "scaleTargetDamage"
+    | "onTeamStandby"
     | "onController"
     | "onOperation"
     | "onUnsupportedController"
@@ -368,6 +375,17 @@ export function runRuntimeHelperStateControllers(
       if (controller.normalizedType === "destroyself") {
         options.onController?.(helper, controller);
         return "destroyed";
+      }
+      if (controller.operation?.kind === "team-standby") {
+        const operation = resolveRuntimeHelperSelfTeamStandbyOperation(helper, controller.operation, options);
+        const appliedOperation = operation === undefined ? undefined : options.onTeamStandby?.(helper, operation);
+        if (!appliedOperation) {
+          options.onUnsupportedController?.(helper, controller);
+          continue;
+        }
+        options.onController?.(helper, controller);
+        options.onOperation?.(helper, appliedOperation);
+        continue;
       }
       if (!helperRuntimeControllers.has(controller.normalizedType)) {
         options.onUnsupportedController?.(helper, controller);
@@ -494,6 +512,43 @@ export function runRuntimeHelperStateControllers(
     options.onUnsupportedController?.(helper, controller);
   }
   return "active";
+}
+
+function resolveRuntimeHelperSelfTeamStandbyOperation(
+  helper: RuntimeHelper,
+  operation: TeamStandbyControllerOp,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): TeamStandbyControllerOp | undefined {
+  if (
+    helper.destroyed ||
+    helper.teamState?.disabled ||
+    operation.redirectPlayerId !== undefined ||
+    operation.redirectPlayerIdExpression !== undefined ||
+    operation.partnerOrdinal !== undefined ||
+    operation.partnerOrdinalExpression !== undefined ||
+    operation.callerStateNo !== undefined ||
+    operation.callerStateExpression !== undefined ||
+    operation.partnerStateNo !== undefined ||
+    operation.partnerStateExpression !== undefined ||
+    operation.callerControl !== undefined ||
+    operation.callerControlExpression !== undefined ||
+    operation.partnerControl !== undefined ||
+    operation.partnerControlExpression !== undefined ||
+    operation.memberPosition !== undefined ||
+    operation.memberPositionExpression !== undefined ||
+    operation.leaderPlayerNo !== undefined ||
+    operation.leaderPlayerNoExpression !== undefined
+  ) {
+    return undefined;
+  }
+  const resolvedSelf = operation.selfExpression === undefined
+    ? operation.self
+    : resolveHelperNumber(helper, undefined, operation.selfExpression, options);
+  if (resolvedSelf === undefined) {
+    return undefined;
+  }
+  const { selfExpression: _selfExpression, ...staticOperation } = operation;
+  return { ...staticOperation, self: typeof resolvedSelf === "boolean" ? resolvedSelf : resolvedSelf !== 0 };
 }
 
 function helperModifyProjectileResolver(

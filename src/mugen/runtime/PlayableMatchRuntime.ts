@@ -454,9 +454,13 @@ export class PlayableMatchRuntime {
       [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
       this.runtimeProfile === "ikemen-go" ? options.teamMode ?? "single" : "single",
     );
+    this.attachHelperHandlers();
+    this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
+  }
+
+  private attachHelperHandlers(): void {
     this.attachHelperTargetStateHandlers();
     this.attachHelperPauseHandlers();
-    this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
 
   private attachHelperTargetStateHandlers(): void {
@@ -465,6 +469,8 @@ export class PlayableMatchRuntime {
       owners: roster.actors,
       enterTargetState: (owner, helper, target, stateId) =>
         this.enterHelperOwnedTargetState(owner, helper, target, stateId),
+      applyTeamStandby: (owner, helper, operation) =>
+        this.applyHelperOwnedSelfTeamStandbyController(owner, helper, operation),
       telemetryRecorder: {
         recordController: (owner, controller, context) =>
           compatibilityTelemetryWorld.recordController(owner, controller, context),
@@ -1234,6 +1240,50 @@ export class PlayableMatchRuntime {
     return operation;
   }
 
+  private applyHelperOwnedSelfTeamStandbyController(
+    owner: FighterMatchState,
+    helper: RuntimeHelper,
+    operation: TeamStandbyControllerOp,
+  ): TeamStandbyControllerOp | undefined {
+    const block = (reason: string): undefined => {
+      this.logs.unshift(`Blocked Helper-owned ${operation.controllerType} for ${helper.serialId} (${reason})`);
+      return undefined;
+    };
+    if (this.runtimeProfile !== "ikemen-go") return block("requires ikemen-go profile");
+    if (helper.ownerId !== owner.id) return block(`owner mismatch ${owner.id}`);
+    if (helper.destroyed || helper.teamState?.disabled) return block("Helper unavailable");
+    if (
+      operation.selfExpression !== undefined ||
+      operation.redirectPlayerId !== undefined ||
+      operation.redirectPlayerIdExpression !== undefined ||
+      operation.partnerOrdinal !== undefined ||
+      operation.partnerOrdinalExpression !== undefined ||
+      operation.callerStateNo !== undefined ||
+      operation.callerStateExpression !== undefined ||
+      operation.partnerStateNo !== undefined ||
+      operation.partnerStateExpression !== undefined ||
+      operation.callerControl !== undefined ||
+      operation.callerControlExpression !== undefined ||
+      operation.partnerControl !== undefined ||
+      operation.partnerControlExpression !== undefined ||
+      operation.memberPosition !== undefined ||
+      operation.memberPositionExpression !== undefined ||
+      operation.leaderPlayerNo !== undefined ||
+      operation.leaderPlayerNoExpression !== undefined
+    ) {
+      return block("aggregate payload unsupported");
+    }
+    if (operation.self) {
+      helper.teamState = {
+        disabled: helper.teamState?.disabled ?? false,
+        standby: operation.standby,
+        overKo: helper.teamState?.overKo ?? false,
+        playerType: helper.teamState?.playerType ?? false,
+      };
+    }
+    return operation;
+  }
+
   private applyHelperLocalTeamStandbyController(
     caller: FighterMatchState,
     helper: RuntimeHelper,
@@ -1621,7 +1671,7 @@ export class PlayableMatchRuntime {
         }
         return fighter;
       },
-      attachHelperTargetStateHandlers: () => this.attachHelperTargetStateHandlers(),
+      attachHelperHandlers: () => this.attachHelperHandlers(),
       log: (message) => this.logs.unshift(message),
     });
     this.tick = resetState.tick;
