@@ -278,7 +278,7 @@ function text(value: string): Uint8Array {
 
 function createFixtureSff(): ArrayBuffer {
   const specs = ACTIONS.map((group) => ({ group, index: 0 }));
-  const chunks = specs.map((_, index) => createPcx2x2(index));
+  const chunks = specs.map((spec, index) => createPcxSprite(spec.group, index));
   const totalLength = 512 + chunks.reduce((total, chunk) => total + 32 + chunk.length, 0);
   const bytes = new Uint8Array(totalLength);
   const view = new DataView(bytes.buffer);
@@ -295,6 +295,8 @@ function createFixtureSff(): ArrayBuffer {
     const nextOffset = spriteNumber === specs.length - 1 ? 0 : offset + 32 + chunk.length;
     view.setUint32(offset, nextOffset, true);
     view.setUint32(offset + 4, chunk.length, true);
+    view.setInt16(offset + 8, 16, true);
+    view.setInt16(offset + 10, 62, true);
     view.setInt16(offset + 12, spec.group, true);
     view.setInt16(offset + 14, spec.index, true);
     bytes.set(chunk, offset + 32);
@@ -303,16 +305,18 @@ function createFixtureSff(): ArrayBuffer {
   return bytes.buffer;
 }
 
-function createPcx2x2(seed: number): Uint8Array {
+function createPcxSprite(action: number, seed: number): Uint8Array {
+  const width = 32;
+  const height = 64;
   const header = new Uint8Array(128);
   const view = new DataView(header.buffer);
   header.set([0x0a, 5, 1, 8]);
-  view.setInt16(8, 1, true);
-  view.setInt16(10, 1, true);
+  view.setInt16(8, width - 1, true);
+  view.setInt16(10, height - 1, true);
   header[65] = 1;
-  view.setUint16(66, 2, true);
+  view.setUint16(66, width, true);
   view.setUint16(68, 1, true);
-  const pixels = new Uint8Array([0, 1, 2, 3]);
+  const pixels = createPosePixels(action, width, height);
   const palette = new Uint8Array(769);
   palette[0] = 0x0c;
   palette.set([255, 0, 255], 1);
@@ -324,6 +328,73 @@ function createPcx2x2(seed: number): Uint8Array {
   result.set(pixels, header.length);
   result.set(palette, header.length + pixels.length);
   return result;
+}
+
+function createPosePixels(action: number, width: number, height: number): Uint8Array {
+  const pixels = new Uint8Array(width * height);
+  const crouching = action === 10;
+  const airborne = action === 40 || action === 5050;
+  const attacking = action === 200;
+  const guarding = action === 120 || action === 130 || action === 150;
+  const hit = action === 5000;
+  const recovering = action === 5200;
+  const fallen = action === 5100;
+  if (fallen) {
+    fillRect(pixels, width, 3, 49, 28, 59, 2);
+    fillRect(pixels, width, 23, 44, 30, 52, 3);
+    fillRect(pixels, width, 1, 58, 15, 62, 4);
+    return pixels;
+  }
+  const shiftY = crouching || recovering ? 7 : airborne ? -4 : 0;
+  const leanX = hit ? 3 : action === 20 ? 1 : 0;
+  fillRect(pixels, width, 11 + leanX, 4 + shiftY, 20 + leanX, 14 + shiftY, 3);
+  fillRect(pixels, width, (crouching || recovering ? 7 : 8) + leanX, 15 + shiftY, (crouching || recovering ? 24 : 23) + leanX, 38 + shiftY, 1);
+  if (attacking) {
+    fillRect(pixels, width, 23, 19 + shiftY, 31, 25 + shiftY, 2);
+    fillRect(pixels, width, 4, 21 + shiftY, 8, 34 + shiftY, 2);
+  } else if (guarding) {
+    const guardLift = action === 120 ? 0 : action === 130 ? 4 : 8;
+    fillRect(pixels, width, 20, 10 + shiftY + guardLift, 25, 29 + shiftY + guardLift, 2);
+    fillRect(pixels, width, 5, 21 + shiftY - guardLift, 9, 34 + shiftY - guardLift, 2);
+  } else if (hit) {
+    fillRect(pixels, width, 2, 12, 9, 18, 2);
+    fillRect(pixels, width, 24, 29, 30, 35, 2);
+  } else {
+    const armSwing = action === 20 ? 4 : action === 40 ? -3 : action === 5050 ? 6 : action === 5200 ? 2 : 0;
+    fillRect(pixels, width, 4, 19 + shiftY + armSwing, 8, 34 + shiftY + armSwing, 2);
+    fillRect(pixels, width, 23, 19 + shiftY - armSwing, 27, 34 + shiftY - armSwing, 2);
+  }
+  if (crouching || recovering) {
+    const split = recovering ? 3 : 0;
+    fillRect(pixels, width, 5, 47 - split, 15, 55 - split, 2);
+    fillRect(pixels, width, 17 + split, 47, 27 + split, 55, 2);
+    fillRect(pixels, width, 3, 56 - split, 14, 62 - split, 4);
+    fillRect(pixels, width, 18, 56, 29, 62, 4);
+  } else {
+    const stride = action === 20 ? 3 : action === 5050 ? 2 : 0;
+    fillRect(pixels, width, 8 - stride, 39 + shiftY, 14 - stride, 58 + shiftY, 2);
+    fillRect(pixels, width, 17 + stride, 39 + shiftY, 23 + stride, 58 + shiftY, 2);
+    fillRect(pixels, width, 5 - stride, 59 + shiftY, 14 - stride, 62 + shiftY, 4);
+    fillRect(pixels, width, 17 + stride, 59 + shiftY, 26 + stride, 62 + shiftY, 4);
+  }
+  return pixels;
+}
+
+function fillRect(
+  pixels: Uint8Array,
+  width: number,
+  left: number,
+  top: number,
+  right: number,
+  bottom: number,
+  color: number,
+): void {
+  const height = pixels.length / width;
+  for (let y = Math.max(0, top); y <= Math.min(height - 1, bottom); y += 1) {
+    for (let x = Math.max(0, left); x <= Math.min(width - 1, right); x += 1) {
+      pixels[y * width + x] = color;
+    }
+  }
 }
 
 function ascii(value: string): Uint8Array {

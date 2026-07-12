@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 460 - Visible legal fixture sprites
+
+Done: the legal MUGEN-lite package replaces its 2x2 decoder probes with twelve authored 32x64 indexed PCX sprites in SFF v1. Idle, crouch, airborne, attack, guard, get-hit, fall, and recovery groups use distinct bounded poses; every sprite anchors at axis `16,62`. Loader tests require exact dimensions/axes, twelve unique indexed payloads, terrestrial baseline contact, airborne separation, and no pixels below the axis while ZIP byte reproducibility remains covered. Claim allowed: the legal package supplies visible decoded character frames suitable for the current Three.js imported-sprite route. Claim blocked: production art quality, multi-frame animation, palette-selection breadth, exact MUGEN reserved-action art, browser render proof until the next gate, and visual parity.
+
 ## Entry 459 - Bounded untrusted ZIP ingestion
 
 Done: `ZipCharacterSourcePolicy/v0` now bounds compressed bytes, file count, per-entry expanded bytes, and aggregate expanded bytes before materializing a VFS where JSZip central-directory metadata is available, then enforces hard actual-byte limits during sequential extraction. Typed errors reject invalid archives, sanitized traversal, absolute/drive/NUL paths, and case-insensitive VFS collisions; `App` logs rejection instead of leaking an unhandled async failure. Focused hostile and valid-package tests pass. Claim allowed: bounded browser-side ingestion for the covered malformed/path/size/count/collision cases. Claim blocked: antivirus/content scanning, parser exploit containment, perfect pre-decompression bomb prevention when metadata is unavailable, password/multivolume support, broad third-party layouts, and full sandbox security.

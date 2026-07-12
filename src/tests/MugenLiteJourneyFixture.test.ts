@@ -38,6 +38,20 @@ describe("MUGEN-lite journey fixture", () => {
     expect(fighter?.source).toBe("imported");
     expect(fighter?.runtimeProgram?.states.some((state) => state.id === 200)).toBe(true);
     expect(fighter?.animations.has(5200)).toBe(true);
+    expect(character.spriteArchive?.sprites).toHaveLength(12);
+    expect(character.spriteArchive?.sprites).toEqual(expect.arrayContaining([
+      expect.objectContaining({ group: 0, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
+      expect.objectContaining({ group: 200, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
+      expect.objectContaining({ group: 5100, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
+    ]));
+    const posePixels = character.spriteArchive!.sprites.map((sprite) => sprite.indexed!.pixels);
+    expect(new Set(posePixels.map((pixels) => Array.from(pixels).join(","))).size).toBe(12);
+    for (const sprite of character.spriteArchive!.sprites) {
+      const pixels = sprite.indexed!.pixels;
+      const restsOnAxis = pixels.some((color, offset) => color !== 0 && Math.floor(offset / sprite.width) === sprite.axisY);
+      expect(restsOnAxis, `group ${sprite.group} axis contact`).toBe(![40, 5050].includes(sprite.group));
+      expect(pixels.some((color, offset) => color !== 0 && Math.floor(offset / sprite.width) > sprite.axisY), `group ${sprite.group} stays above its axis`).toBe(false);
+    }
   });
 
   it("round-trips the legal package through ZIP transport", async () => {
