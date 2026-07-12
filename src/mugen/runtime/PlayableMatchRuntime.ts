@@ -628,7 +628,7 @@ export class PlayableMatchRuntime {
     const result = matchStepWorld.step({
       playing: this.playing,
       frameClock: this.frameClock,
-      speed: this.speed,
+      speed: this.speed * this.round.playbackRate,
       force: options.force,
       isRoundOver: () => this.round.isOver,
       advanceOneTick: () => this.advanceOneTick(input),
@@ -682,6 +682,11 @@ export class PlayableMatchRuntime {
 
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
+    if (this.round.snapshot().state === "ko") {
+      matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
+        this.playing = false;
+      });
+    }
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
@@ -803,7 +808,10 @@ export class PlayableMatchRuntime {
     matchActiveWorld.advance({
       tickRoundTimer: () => {
         recordPhase("active:round-timer");
-        return matchRoundWorld.tickTimer(this.round, this.matchRoster().actors);
+        if (this.round.snapshot().state === "ko") return { frozen: false };
+        return matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
+          this.playing = false;
+        });
       },
       pushNormalCommandBuffers: () => {
         recordPhase("active:command-buffer");

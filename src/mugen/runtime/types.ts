@@ -513,6 +513,16 @@ export type RoundSnapshot = {
   timer: number;
   winner?: string;
   message: string;
+  postRound?: {
+    schema: "RuntimePostRound/v0";
+    frame: number;
+    remaining: number;
+    duration: number;
+    slowRemaining: number;
+    slowDuration: number;
+    playbackRate: number;
+    noKoSlow: boolean;
+  };
 };
 
 export type RuntimeSuperPauseAnimSnapshot = {

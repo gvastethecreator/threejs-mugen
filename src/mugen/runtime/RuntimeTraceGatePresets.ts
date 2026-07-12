@@ -1797,16 +1797,43 @@ export function createSyntheticImportedRoundKoTraceArtifact(options: RuntimeTrac
       ...options,
       targetId: "synthetic-imported-round-ko-golden",
       targetLabel: "Synthetic imported round KO snapshot route",
-      script: importedOneShotXScript(),
+      script: importedPostKoScript(260),
       requireHitEvent: true,
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "HitDef"],
       requiredExecutedOperations: ["hitdef"],
       requiredSoundEvents: [{ actorId: "p2", type: "PlaySnd", group: 11, index: 0, soundPrefix: "f" }],
-      requiredRoundFrames: [{ state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins" }],
+      requiredRoundFrames: [{ state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins", noKoSlow: false, observedPostRoundFrameAtLeast: 45, observedPlaybackRateAtMost: 0.25, observedPlaybackRateAtLeast: 0.7 }],
       requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 0 }],
       notes: [
-        "Synthetic imported round KO trace proves a lethal imported HitDef produces bounded RoundSnapshot KO/winner/message evidence and emits common-bank KO sound f:11,0 for the defeated actor. It does not claim echo timing, KO slowdowns, lifebars, round transitions, intros/winposes, teams, or full screenpack/audio parity.",
+        "Synthetic imported round KO trace proves a lethal imported HitDef starts the bounded 255-tick post-round clock, observes the separate 60-tick default 0.25 slowdown plus fade recovery, and emits common-bank KO sound f:11,0 once for the defeated actor. It does not claim exact motif timing, lifebars, round transitions, intros/winposes, teams, or full screenpack/audio parity.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedRoundNoKoSlowTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-round-nokoslow",
+      displayName: "Synthetic Imported Round NoKOSlow",
+      hitDefDamage: 1200,
+      assertSpecialFlags: ["NoKOSlow"],
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-round-nokoslow-golden",
+      targetLabel: "Synthetic imported round NoKOSlow route",
+      script: importedPostKoScript(70),
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "AssertSpecial"],
+      requiredExecutedOperations: ["hitdef", "assertspecial"],
+      requiredSoundEvents: [{ actorId: "p2", type: "PlaySnd", group: 11, index: 0, soundPrefix: "f" }],
+      requiredRoundFrames: [{ state: "ko", winner: "Synthetic Imported Round NoKOSlow", message: "Synthetic Imported Round NoKOSlow wins", noKoSlow: true, observedPostRoundFrameAtLeast: 59, observedPlaybackRateAtLeast: 1, observedPlaybackRateAtMost: 1 }],
+      requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 0 }],
+      notes: [
+        "Synthetic imported NoKOSlow trace proves the flag is captured on the KO frame, keeps the bounded post-KO timeline at normal playback, and preserves one-shot common KO sound. It does not claim exact motif timing, teams, lifebars, or full round parity.",
       ],
     },
   );
@@ -40413,6 +40440,13 @@ function importedOneShotXScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-x-press", frames: 1, p1: ["x"], p2: [] },
     { label: "prevstateno-route", frames: 10, p1: [], p2: [] },
+  ]);
+}
+
+function importedPostKoScript(frames: number): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-ko-press", frames: 1, p1: ["x"], p2: [] },
+    { label: "post-ko-timeline", frames, p1: [], p2: [] },
   ]);
 }
 

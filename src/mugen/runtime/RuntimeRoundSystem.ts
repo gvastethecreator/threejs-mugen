@@ -1,6 +1,10 @@
 import type { RoundSnapshot } from "./types";
 
 export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
+export const DEFAULT_RUNTIME_KO_SLOW_FRAMES = 60;
+export const DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES = 45;
+export const DEFAULT_RUNTIME_KO_SLOW_RATE = 0.25;
+export const DEFAULT_RUNTIME_POST_KO_FRAMES = 45 + 210;
 
 export type RuntimeRoundParticipant = {
   label: string;
@@ -13,11 +17,19 @@ export type RuntimeRoundFinishResult = {
   message: string;
 };
 
+export type RuntimeRoundTickResult = {
+  finishedNow: boolean;
+};
+
 export class RuntimeRoundSystem {
   private timerFrames: number;
   private state: RoundSnapshot["state"] = "fight";
   private winner?: string;
   private over = false;
+  private postRoundFrame = 0;
+  private postRoundRemaining = 0;
+  private koSlowRemaining = 0;
+  private noKoSlow = false;
 
   constructor(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES) {
     this.timerFrames = boundedRoundFrames(timerFrames);
@@ -27,21 +39,44 @@ export class RuntimeRoundSystem {
     return this.over;
   }
 
-  tickTimer(): void {
-    if (this.over) {
-      return;
-    }
-    this.timerFrames = Math.max(0, this.timerFrames - 1);
+  get playbackRate(): number {
+    if (this.state !== "ko" || this.noKoSlow || this.koSlowRemaining <= 0) return 1;
+    if (this.koSlowRemaining >= DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES) return DEFAULT_RUNTIME_KO_SLOW_RATE;
+    const fadeProgress = (DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES - this.koSlowRemaining) / DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES;
+    return DEFAULT_RUNTIME_KO_SLOW_RATE + (1 - DEFAULT_RUNTIME_KO_SLOW_RATE) * fadeProgress;
   }
 
-  finishIfNeeded(left: RuntimeRoundParticipant, right: RuntimeRoundParticipant): RuntimeRoundFinishResult | undefined {
-    if (this.over || !this.shouldFinish(left, right)) {
+  tickTimer(): RuntimeRoundTickResult {
+    if (this.over) {
+      return { finishedNow: false };
+    }
+    if (this.state === "ko") {
+      this.postRoundFrame += 1;
+      this.postRoundRemaining = Math.max(0, this.postRoundRemaining - 1);
+      this.koSlowRemaining = Math.max(0, this.koSlowRemaining - 1);
+      this.over = this.postRoundRemaining === 0;
+      return { finishedNow: this.over };
+    }
+    this.timerFrames = Math.max(0, this.timerFrames - 1);
+    return { finishedNow: false };
+  }
+
+  finishIfNeeded(
+    left: RuntimeRoundParticipant,
+    right: RuntimeRoundParticipant,
+    options: { noKoSlow?: boolean } = {},
+  ): RuntimeRoundFinishResult | undefined {
+    if (this.state !== "fight" || !this.shouldFinish(left, right)) {
       return undefined;
     }
 
-    this.over = true;
     this.state = this.timerFrames <= 0 ? "timeover" : "ko";
     this.winner = resolveRoundWinner(left, right);
+    this.noKoSlow = this.state === "ko" && options.noKoSlow === true;
+    this.postRoundFrame = 0;
+    this.postRoundRemaining = this.state === "ko" ? DEFAULT_RUNTIME_POST_KO_FRAMES : 1;
+    this.koSlowRemaining = this.state === "ko" ? DEFAULT_RUNTIME_KO_SLOW_FRAMES : 0;
+    this.over = this.state === "timeover";
     return {
       state: this.state,
       winner: this.winner,
@@ -54,15 +89,32 @@ export class RuntimeRoundSystem {
     this.state = "fight";
     this.winner = undefined;
     this.over = false;
+    this.postRoundFrame = 0;
+    this.postRoundRemaining = 0;
+    this.koSlowRemaining = 0;
+    this.noKoSlow = false;
   }
 
   snapshot(): RoundSnapshot {
-    return {
+    const snapshot: RoundSnapshot = {
       state: this.state,
       timer: Math.ceil(this.timerFrames / 60),
       winner: this.winner,
       message: this.message(),
     };
+    if (this.state === "ko") {
+      snapshot.postRound = {
+        schema: "RuntimePostRound/v0",
+        frame: this.postRoundFrame,
+        remaining: this.postRoundRemaining,
+        duration: DEFAULT_RUNTIME_POST_KO_FRAMES,
+        slowRemaining: this.koSlowRemaining,
+        slowDuration: DEFAULT_RUNTIME_KO_SLOW_FRAMES,
+        playbackRate: this.playbackRate,
+        noKoSlow: this.noKoSlow,
+      };
+    }
+    return snapshot;
   }
 
   private shouldFinish(left: RuntimeRoundParticipant, right: RuntimeRoundParticipant): boolean {

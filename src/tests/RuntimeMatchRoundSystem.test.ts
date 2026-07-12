@@ -50,10 +50,53 @@ describe("RuntimeMatchRoundWorld", () => {
       winner: "P1",
       message: "P1 wins - press Reset to fight again",
     });
-    expect(playing).toBe(false);
+    expect(playing).toBe(true);
     expect(logs).toEqual(["P1 wins - press Reset to fight again"]);
     expect(koSounds).toEqual(["P2"]);
+    expect(round.isOver).toBe(false);
+  });
+
+  it("stops playing only after the post-KO timeline completes", () => {
+    const round = new RuntimeRoundSystem();
+    const world = new RuntimeMatchRoundWorld();
+    let playing = true;
+    world.finishIfNeeded({
+      round,
+      p1: actor("P1", 700),
+      p2: actor("P2", 0),
+      stopPlaying: () => { playing = false; },
+      log: () => undefined,
+    });
+
+    for (let frame = 0; frame < 254; frame += 1) world.advanceTimer(round);
+    expect(playing).toBe(true);
+    world.advanceTimer(round, [], () => { playing = false; });
+    expect(playing).toBe(false);
+  });
+
+  it("advances post-KO while TimerFreeze remains asserted", () => {
+    const round = new RuntimeRoundSystem();
+    const world = new RuntimeMatchRoundWorld();
+    const frozenActor = actor("P1", 700, { globalFlags: ["timerfreeze"] });
+    round.finishIfNeeded({ label: "P1", life: 700 }, { label: "P2", life: 0 });
+
+    for (let frame = 0; frame < 255; frame += 1) world.advanceTimer(round, [frozenActor]);
+
     expect(round.isOver).toBe(true);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 255, remaining: 0 });
+  });
+
+  it("captures actor NoKOSlow policy on the first KO frame", () => {
+    const round = new RuntimeRoundSystem();
+    new RuntimeMatchRoundWorld().finishIfNeeded({
+      round,
+      p1: actor("P1", 700, { globalFlags: ["nokoslow"] }),
+      p2: actor("P2", 0),
+      stopPlaying: () => undefined,
+      log: () => undefined,
+    });
+
+    expect(round.snapshot().postRound).toMatchObject({ playbackRate: 1, noKoSlow: true });
   });
 
   it("emits KO sound for both defeated actors on a double KO", () => {

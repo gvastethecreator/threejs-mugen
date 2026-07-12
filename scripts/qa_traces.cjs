@@ -325,6 +325,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRoundKoTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-round-nokoslow",
+      required: true,
+      artifact: presets.createSyntheticImportedRoundNoKoSlowTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-round-timeover",
       required: true,
       artifact: presets.createSyntheticImportedRoundTimeOverTraceArtifact(),
@@ -4202,6 +4207,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-round-ko",
+    "synthetic-imported-round-nokoslow",
     "synthetic-imported-round-timeover",
     "synthetic-imported-match-context",
     "synthetic-imported-resource-max",

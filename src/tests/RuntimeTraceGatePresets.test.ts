@@ -568,6 +568,7 @@ import {
   createSyntheticImportedVariableTraceArtifact,
   createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedRoundKoTraceArtifact,
+  createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
@@ -2645,8 +2646,18 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.gates[0]?.requirements.requiredRoundFrames).toEqual([
-      { state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins" },
+      {
+        state: "ko",
+        winner: "Synthetic Imported Round KO",
+        message: "Synthetic Imported Round KO wins",
+        noKoSlow: false,
+        observedPostRoundFrameAtLeast: 45,
+        observedPlaybackRateAtMost: 0.25,
+        observedPlaybackRateAtLeast: 0.7,
+      },
     ]);
+    const koTimeline = evidence?.roundFrames.find((frame) => frame.state === "ko");
+    expect(koTimeline?.frames ?? 0).toBeGreaterThan(((koTimeline?.lastTick ?? 0) - (koTimeline?.firstTick ?? 0)) * 1.3);
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.life).toBe(0);
   });
 
@@ -2990,6 +3001,18 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1401, minAge: 1 },
     ]);
+  });
+
+  it("creates a synthetic imported NoKOSlow post-KO timeline artifact", () => {
+    const artifact = createSyntheticImportedRoundNoKoSlowTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.status).toBe("passed");
+    const koFrame = artifact.gates[0]?.evidence.roundFrames.find((frame) => frame.state === "ko");
+    expect(koFrame).toMatchObject({ noKoSlow: true, minPlaybackRate: 1, maxPlaybackRate: 1 });
+    expect(koFrame?.maxPostRoundFrame).toBeGreaterThanOrEqual(59);
+    expect((koFrame?.frames ?? 0) - ((koFrame?.lastTick ?? 0) - (koFrame?.firstTick ?? 0))).toBeLessThanOrEqual(6);
+    expect(artifact.gates[0]?.evidence.soundEvents).toHaveLength(1);
   });
 
   it("creates a synthetic imported Helper dynamic VelAdd artifact with typed helper telemetry", () => {

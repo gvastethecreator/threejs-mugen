@@ -28,10 +28,19 @@ export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor
 
 export class RuntimeMatchRoundWorld {
   tickTimer(round: RuntimeRoundSystem, actors: readonly RuntimeMatchRoundActor[] = []): RuntimeMatchRoundTimerResult {
-    if (actors.some(hasTimerFreeze)) {
+    return this.advanceTimer(round, actors);
+  }
+
+  advanceTimer(
+    round: RuntimeRoundSystem,
+    actors: readonly RuntimeMatchRoundActor[] = [],
+    stopPlaying?: () => void,
+  ): RuntimeMatchRoundTimerResult {
+    if (round.snapshot().state === "fight" && actors.some(hasTimerFreeze)) {
       return { frozen: true };
     }
-    round.tickTimer();
+    const tick = round.tickTimer();
+    if (tick.finishedNow) stopPlaying?.();
     return { frozen: false };
   }
 
@@ -44,6 +53,7 @@ export class RuntimeMatchRoundWorld {
     const finish = options.round.finishIfNeeded(
       { label: options.p1.label, life: options.p1.runtime.life },
       { label: options.p2.label, life: options.p2.runtime.life },
+      { noKoSlow: hasNoKoSlow(options.p1, options.p2) },
     );
     if (!finish) {
       return undefined;
@@ -52,10 +62,14 @@ export class RuntimeMatchRoundWorld {
       if (options.p1.runtime.life <= 0) options.emitKoSound?.(options.p1);
       if (options.p2.runtime.life <= 0) options.emitKoSound?.(options.p2);
     }
-    options.stopPlaying();
+    if (options.round.isOver) options.stopPlaying();
     options.log(finish.message);
     return finish;
   }
+}
+
+function hasNoKoSlow(...actors: RuntimeMatchRoundActor[]): boolean {
+  return actors.some((actor) => actor.runtime.assertSpecial?.globalFlags.includes("nokoslow") === true);
 }
 
 function hasNoKoSound(...actors: RuntimeMatchRoundActor[]): boolean {

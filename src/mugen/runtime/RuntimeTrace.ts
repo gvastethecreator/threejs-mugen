@@ -726,6 +726,10 @@ export type RuntimeTraceRoundFrameRequirement = {
   minFrames?: number;
   observedTimerAtLeast?: number;
   observedTimerAtMost?: number;
+  noKoSlow?: boolean;
+  observedPostRoundFrameAtLeast?: number;
+  observedPlaybackRateAtLeast?: number;
+  observedPlaybackRateAtMost?: number;
 };
 
 export type RuntimeTraceGateRoundFrameEvidence = {
@@ -734,6 +738,11 @@ export type RuntimeTraceGateRoundFrameEvidence = {
   message: string;
   minTimer: number;
   maxTimer: number;
+  noKoSlow?: boolean;
+  minPostRoundFrame?: number;
+  maxPostRoundFrame?: number;
+  minPlaybackRate?: number;
+  maxPlaybackRate?: number;
   firstTick: number;
   lastTick: number;
   frames: number;
@@ -2980,6 +2989,11 @@ function summarizeRoundFrameEvidence(round: RoundSnapshot, tick: number): Runtim
     message: round.message,
     minTimer: round.timer,
     maxTimer: round.timer,
+    noKoSlow: round.postRound?.noKoSlow,
+    minPostRoundFrame: round.postRound?.frame,
+    maxPostRoundFrame: round.postRound?.frame,
+    minPlaybackRate: round.postRound?.playbackRate,
+    maxPlaybackRate: round.postRound?.playbackRate,
     firstTick: tick,
     lastTick: tick,
     frames: 1,
@@ -2995,6 +3009,18 @@ function mergeRoundFrameEvidence(
     ...current,
     minTimer: Math.min(current.minTimer, round.timer),
     maxTimer: Math.max(current.maxTimer, round.timer),
+    minPostRoundFrame: round.postRound
+      ? Math.min(current.minPostRoundFrame ?? round.postRound.frame, round.postRound.frame)
+      : current.minPostRoundFrame,
+    maxPostRoundFrame: round.postRound
+      ? Math.max(current.maxPostRoundFrame ?? round.postRound.frame, round.postRound.frame)
+      : current.maxPostRoundFrame,
+    minPlaybackRate: round.postRound
+      ? Math.min(current.minPlaybackRate ?? round.postRound.playbackRate, round.postRound.playbackRate)
+      : current.minPlaybackRate,
+    maxPlaybackRate: round.postRound
+      ? Math.max(current.maxPlaybackRate ?? round.postRound.playbackRate, round.postRound.playbackRate)
+      : current.maxPlaybackRate,
     firstTick: Math.min(current.firstTick, tick),
     lastTick: Math.max(current.lastTick, tick),
     frames: current.frames + 1,
@@ -3020,6 +3046,10 @@ function matchesRoundFrameRequirement(
     (requirement.minFrames === undefined || round.frames >= requirement.minFrames) &&
     (requirement.observedTimerAtLeast === undefined || round.maxTimer >= requirement.observedTimerAtLeast) &&
     (requirement.observedTimerAtMost === undefined || round.minTimer <= requirement.observedTimerAtMost)
+    && (requirement.noKoSlow === undefined || round.noKoSlow === requirement.noKoSlow)
+    && (requirement.observedPostRoundFrameAtLeast === undefined || (round.maxPostRoundFrame ?? -Infinity) >= requirement.observedPostRoundFrameAtLeast)
+    && (requirement.observedPlaybackRateAtLeast === undefined || (round.maxPlaybackRate ?? -Infinity) >= requirement.observedPlaybackRateAtLeast)
+    && (requirement.observedPlaybackRateAtMost === undefined || (round.minPlaybackRate ?? Infinity) <= requirement.observedPlaybackRateAtMost)
   );
 }
 
