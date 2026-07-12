@@ -11,7 +11,11 @@ Authoritative horizon docs:
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 
-## 2026-07-11 Daily Architecture Planning Note
+## 2026-07-11 Active-root Presentation Checkpoint
+
+Wayfinder 099 closes `RuntimeRootPresentation/v0`: exact draw/camera ids drive P3/P2 character presentation without widening P1/P2 snapshot/HUD/gameplay ownership. Required checksum `97255586`, 542/542 traces, desktop/mobile handoff/reset, 176 files / 1794 tests, TypeScript 7, build, boundaries, and visual inspection pass. Wayfinder 100 now maps stage constraints, body push, collision, and combat admission before one bounded implementation. Scores remain unchanged.
+
+## 2026-07-11 Daily Architecture Planning Note - superseded
 
 Since the previous audit, the HitDef policy/contact, semantic presentation order, `MatchTickSchedule/v0`, Common1/guard, and later IKEMEN RunOrder/Pause/team-topology sequence all landed. Entry 348 now owns inert P3-P8 roots with cap/start/reset/snapshot-isolation and negative schedule/effect-store proof. The next I2 prefactor must publish a versioned root-participation read model and close broader lifecycle/identity cleanup while every executable consumer remains P1/P2. A plural batch standby transition, redirects, and standby CNS scheduling follow as separate gates. After the prefactor, return to a bounded MUGEN-lite post-KO / `NoKOSlow` timeline. See `docs/research/2026-07-11-daily-roadmap-architecture-audit.md`. No score movement.
 
@@ -1322,6 +1326,8 @@ Pinned IKEMEN action order and local owner reconciliation now close Wayfinder 09
 Wayfinder 097 is now closed. Explicit IKEMEN Tag normal ticks precompute `playable`, `active-motion`, and `bounded-standby`; already-live P3-P8 roots execute state clock, restricted side-effect-free motion CNS, local kinematics, and animation. Required trace checksum `8ee92f65` proves next-tick promotion and blocked effect/contact routes inside 541/541 artifacts. Full gates pass 174 files / 1781 tests, TypeScript 7, build, boundaries, and diff. Browser smoke is N/A because presentation remains false. Wayfinder 098 maps the first actor/camera presentation cut; direct native input/AI, paused motion, stage clamp/push, effects, combat, round, HUD/audio, resources, and scores remain blocked.
 
 Wayfinder 098 is now closed as source-backed research. Pinned IKEMEN keeps standby roots drawable until authored `invisible`, but excludes standby from camera; Tag entering/leaving/waiting states provide the real overlap, offscreen motion, camera flags, and final invisibility. Local `snapshot.actors` cannot widen without also changing HUD, audio, collision, hit sparks, and app indexing. Wayfinder 099 therefore adds `RuntimeRootPresentation/v0` draw/camera ids, keeps pair storage/gameplay stable, and uses an immediate standby-based visual handoff until Tag ZSS choreography executes. Required trace plus desktop/mobile smoke, canvas pixels, renderer ids, reset, and stale-mesh cleanup gate the implementation. No behavior or score movement in this research closeout.
+
+Wayfinder 099 is now closed. `RuntimeRootPresentation/v0` publishes independent draw/camera reasons and exact ids while `snapshot.actors` remains P1/P2; Three.js changes only character bodies/shadows and camera roots. Required checksum `97255586` passes inside 542/542 artifacts. Desktop/mobile smoke proves `[p1,p2] -> [p3,p2] -> [p1,p2]`, stable HUD/pair/reserve ownership, 994/1173-color nonblank canvases, matching phase capabilities, and stale-mesh cleanup. Full gates pass 176 files / 1794 tests, TypeScript 7, build, boundaries, and diff. Wayfinder 100 now maps stage constraints, body push, collision, and combat admission before implementation; scores remain unchanged.
 
 ## Current Non-Goals
 

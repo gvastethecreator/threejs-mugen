@@ -209,6 +209,7 @@ export type RuntimeTraceFrame = {
   events: RuntimeTraceEvent[];
   combatReasons: RuntimeTraceCombatReason[];
   tickSchedule?: RuntimeMatchTickSchedule;
+  rootPresentation?: MugenSnapshot["rootPresentation"];
   world?: RuntimeTraceWorldSummary;
   checksum: string;
 };
@@ -304,6 +305,7 @@ export type RuntimeTraceGateWorldLifecycleEventEvidence = {
 export type RuntimeTraceEffectStoreRequirement = {
   ownerId?: string;
   minTotal?: number;
+  maxTotal?: number;
   minExplods?: number;
   minHelpers?: number;
   minProjectiles?: number;
@@ -922,6 +924,22 @@ export type RuntimeTraceGateEnvShakeEventEvidence = {
   count: number;
 };
 
+export type RuntimeTraceRootPresentationFrameRequirement = {
+  mode?: NonNullable<MugenSnapshot["rootPresentation"]>["mode"];
+  drawRootIds: string[];
+  cameraRootIds: string[];
+  minFrames?: number;
+};
+
+export type RuntimeTraceGateRootPresentationEvidence = {
+  mode: NonNullable<MugenSnapshot["rootPresentation"]>["mode"];
+  drawRootIds: string[];
+  cameraRootIds: string[];
+  firstTick: number;
+  lastTick: number;
+  frames: number;
+};
+
 export type RuntimeTrace = {
   label: string;
   frameCount: number;
@@ -963,6 +981,7 @@ export type RuntimeTraceGate = {
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
   requiredRoundFrames?: RuntimeTraceRoundFrameRequirement[];
   requiredStageFrames?: RuntimeTraceStageFrameRequirement[];
+  requiredRootPresentationFrames?: RuntimeTraceRootPresentationFrameRequirement[];
   requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
   requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
   requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
@@ -994,6 +1013,7 @@ export type RuntimeTraceGateEvidence = {
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
   roundFrames: RuntimeTraceGateRoundFrameEvidence[];
   stageFrames: RuntimeTraceGateStageFrameEvidence[];
+  rootPresentationFrames: RuntimeTraceGateRootPresentationEvidence[];
   actorFrames: RuntimeTraceGateActorFrameEvidence[];
   finalActors: RuntimeTraceGateFinalActorEvidence[];
 };
@@ -1258,6 +1278,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing stage frame: ${describeStageFrameRequirement(requirement)}`);
     }
   }
+  for (const requirement of gate.requiredRootPresentationFrames ?? []) {
+    if (!evidence.rootPresentationFrames.some((presentation) => matchesRootPresentationFrameRequirement(presentation, requirement))) {
+      failures.push(`Missing root presentation frame: ${describeRootPresentationFrameRequirement(requirement)}`);
+    }
+  }
   for (const requirement of gate.requiredActorFrames ?? []) {
     if (!evidence.actorFrames.some((actor) => matchesActorFrameRequirement(actor, requirement))) {
       failures.push(`Missing actor frame: ${describeActorFrameRequirement(requirement)}`);
@@ -1362,6 +1387,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const targetLinks = new Map<string, RuntimeTraceGateTargetLinkEvidence>();
   const roundFrames = new Map<string, RuntimeTraceGateRoundFrameEvidence>();
   const stageFrames = new Map<string, RuntimeTraceGateStageFrameEvidence>();
+  const rootPresentationFrames = new Map<string, RuntimeTraceGateRootPresentationEvidence>();
   const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
   const executedControllers: Record<string, number> = {};
   const executedOperations: Record<string, number> = {};
@@ -1374,6 +1400,25 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       const key = stageFrameEvidenceKey(frame.stage);
       const existing = stageFrames.get(key);
       stageFrames.set(key, existing ? mergeStageFrameEvidence(existing, frame.stage, frame.tick) : summarizeStageFrameEvidence(frame.stage, frame.tick));
+    }
+    if (frame.rootPresentation) {
+      const key = rootPresentationFrameEvidenceKey(frame.rootPresentation);
+      const existing = rootPresentationFrames.get(key);
+      rootPresentationFrames.set(key, existing
+        ? {
+            ...existing,
+            firstTick: Math.min(existing.firstTick, frame.tick),
+            lastTick: Math.max(existing.lastTick, frame.tick),
+            frames: existing.frames + 1,
+          }
+        : {
+            mode: frame.rootPresentation.mode,
+            drawRootIds: [...frame.rootPresentation.drawRootIds],
+            cameraRootIds: [...frame.rootPresentation.cameraRootIds],
+            firstTick: frame.tick,
+            lastTick: frame.tick,
+            frames: 1,
+          });
     }
     if (frame.round) {
       const key = roundFrameEvidenceKey(frame.round);
@@ -1845,6 +1890,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
     roundFrames: [...roundFrames.values()].sort((left, right) => roundFrameGateEvidenceKey(left).localeCompare(roundFrameGateEvidenceKey(right))),
     stageFrames: [...stageFrames.values()].sort((left, right) => stageFrameGateEvidenceKey(left).localeCompare(stageFrameGateEvidenceKey(right))),
+    rootPresentationFrames: [...rootPresentationFrames.values()].sort((left, right) =>
+      rootPresentationGateEvidenceKey(left).localeCompare(rootPresentationGateEvidenceKey(right))),
     actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
     finalActors: [...trace.final.actors, ...(trace.final.reserveActors ?? [])].map(summarizeFinalActorEvidence),
   };
@@ -1967,6 +2014,7 @@ function matchesEffectStoreRequirement(
   return (
     (requirement.ownerId === undefined || store.ownerId === requirement.ownerId) &&
     (requirement.minTotal === undefined || store.total >= requirement.minTotal) &&
+    (requirement.maxTotal === undefined || store.total <= requirement.maxTotal) &&
     (requirement.minExplods === undefined || store.explods.length >= requirement.minExplods) &&
     (requirement.minHelpers === undefined || store.helpers.length >= requirement.minHelpers) &&
     (requirement.minProjectiles === undefined || store.projectiles.length >= requirement.minProjectiles) &&
@@ -3048,6 +3096,34 @@ function describeStageFrameRequirement(requirement: RuntimeTraceStageFrameRequir
     .join(", ");
 }
 
+function rootPresentationFrameEvidenceKey(
+  presentation: NonNullable<RuntimeTraceFrame["rootPresentation"]>,
+): string {
+  return `${presentation.mode}:${presentation.drawRootIds.join(",")}:${presentation.cameraRootIds.join(",")}`;
+}
+
+function rootPresentationGateEvidenceKey(presentation: RuntimeTraceGateRootPresentationEvidence): string {
+  return `${presentation.mode}:${presentation.drawRootIds.join(",")}:${presentation.cameraRootIds.join(",")}`;
+}
+
+function matchesRootPresentationFrameRequirement(
+  evidence: RuntimeTraceGateRootPresentationEvidence,
+  requirement: RuntimeTraceRootPresentationFrameRequirement,
+): boolean {
+  return (requirement.mode === undefined || evidence.mode === requirement.mode)
+    && sameOrderedStrings(evidence.drawRootIds, requirement.drawRootIds)
+    && sameOrderedStrings(evidence.cameraRootIds, requirement.cameraRootIds)
+    && evidence.frames >= (requirement.minFrames ?? 1);
+}
+
+function describeRootPresentationFrameRequirement(requirement: RuntimeTraceRootPresentationFrameRequirement): string {
+  return `${requirement.mode ?? "any"} draw=${requirement.drawRootIds.join(" -> ")} camera=${requirement.cameraRootIds.join(" -> ")} frames>=${requirement.minFrames ?? 1}`;
+}
+
+function sameOrderedStrings(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
 function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
   return [
     actor.id,
@@ -3398,10 +3474,11 @@ function summarizeTraceSnapshot(
     events,
     combatReasons: summarizeCombatReasons(frameIndex, snapshot.tick, actors, events),
     ...(snapshot.tickSchedule ? { tickSchedule: structuredClone(snapshot.tickSchedule) } : {}),
+    ...(snapshot.rootPresentation ? { rootPresentation: structuredClone(snapshot.rootPresentation) } : {}),
     world: summarizeWorld(actorRegistry),
     checksum: "",
   };
-  // World lifecycle and schedule diagnostics stay outside the behavior checksum projection.
+  // World lifecycle, schedule, and root-presentation diagnostics stay outside the behavior checksum projection.
   frame.checksum = hashStableJson({
     tick: frame.tick,
     input: frame.input,

@@ -118,6 +118,7 @@ import {
 } from "./RuntimeRootCnsExecutionSystem";
 import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
+import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
 import {
   RuntimeRootInputRoutingWorld,
@@ -255,6 +256,7 @@ const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const rootInputRoutingWorld = new RuntimeRootInputRoutingWorld();
 const rootAdvancePhaseWorld = new RuntimeRootAdvancePhaseWorld();
 const rootMotionAdvanceWorld = new RuntimeRootMotionAdvanceWorld();
+const rootPresentationWorld = new RuntimeRootPresentationWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
@@ -1682,11 +1684,26 @@ export class PlayableMatchRuntime {
   }
 
   getSnapshot(): MugenSnapshot {
+    const roots = this.characterRoots();
+    const teamMode = this.tagTeamOrder ? "tag" : "single";
+    const rootPresentation = rootPresentationWorld.diagnostic({
+      runtimeProfile: this.runtimeProfile,
+      teamMode,
+      roots,
+      playableRoots: [this.p1, this.p2],
+    });
+    const rootById = new Map(roots.map((root) => [root.id, root]));
+    const cameraActors = rootPresentation.cameraRootIds.map((id) => {
+      const actor = rootById.get(id);
+      if (!actor) throw new Error(`Root presentation camera actor ${id} is unavailable`);
+      return actor;
+    });
     const presentationSnapshot = matchPresentationSnapshotWorld.create({
       tick: this.tick,
       stage: this.stage,
       p1: this.p1,
       p2: this.p2,
+      cameraActors,
       envShakeWorld: this.envShakeWorld,
       envColorWorld: this.envColorWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
@@ -1705,6 +1722,7 @@ export class PlayableMatchRuntime {
       effects: presentationSnapshot.effects,
       compatibilitySession: compatibilityTelemetryWorld.buildSession([...this.matchRoster().actors]),
       tickSchedule: this.lastTickSchedule,
+      rootPresentation,
       logs: this.logs,
     });
     const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);
@@ -1715,8 +1733,8 @@ export class PlayableMatchRuntime {
         ? {
             rootInputRouting: rootInputRoutingWorld.diagnostic({
               runtimeProfile: this.runtimeProfile,
-              teamMode: this.tagTeamOrder ? "tag" : "single",
-              roots: this.characterRoots(),
+              teamMode,
+              roots,
               p2Controlled: this.lastP2Controlled,
             }),
           }

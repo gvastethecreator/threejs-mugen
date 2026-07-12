@@ -281,6 +281,11 @@ describe("MatchWorld", () => {
     });
 
     let registry = world.getActorRegistry();
+    expect(world.getSnapshot().rootPresentation).toMatchObject({
+      mode: "ikemen-tag",
+      drawRootIds: ["p1", "p2"],
+      cameraRootIds: ["p1", "p2"],
+    });
     expect(registry.rootPhaseCapabilities).toMatchObject({
       schema: "RuntimeRootPhaseCapabilities/v1",
       mode: "ikemen-tag",
@@ -333,29 +338,38 @@ describe("MatchWorld", () => {
       ai: false,
     });
 
-    world.dispatch({
+    const handoffSnapshot = world.dispatch({
       type: "set-root-standby",
       changes: [
         { id: "p1", standby: true },
         { id: "p3", standby: false },
       ],
     });
+    expect(handoffSnapshot.rootPresentation).toMatchObject({
+      mode: "ikemen-tag",
+      drawRootIds: ["p3", "p2"],
+      cameraRootIds: ["p3", "p2"],
+    });
     registry = world.getActorRegistry();
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p1")).toMatchObject({
       standby: true,
       structurallyActive: false,
       effectiveCtrl: false,
-      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, presentation: true }),
+      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, presentation: false }),
     });
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")).toMatchObject({
       standby: false,
       structurallyActive: true,
-      phases: expect.objectContaining({ controllerCns: "active-motion", kinematics: true, presentation: false }),
+      phases: expect.objectContaining({ controllerCns: "active-motion", kinematics: true, presentation: true }),
     });
 
     registry.rootPhaseCapabilities!.roots[0]!.phases.combat = false;
     expect(world.getActorRegistry().rootPhaseCapabilities?.roots[0]?.phases.combat).toBe(true);
-    world.reset();
+    const resetSnapshot = world.reset();
+    expect(resetSnapshot.rootPresentation).toMatchObject({
+      drawRootIds: ["p1", "p2"],
+      cameraRootIds: ["p1", "p2"],
+    });
     expect(world.getActorRegistry().rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")?.standby).toBe(true);
   });
 

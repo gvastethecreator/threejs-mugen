@@ -638,6 +638,8 @@ type AtlasMotionQaReport = {
   errors?: string[];
 };
 
+type RuntimeQaScenario = "ikemen-tag-presentation";
+
 const TRACE_ARTIFACT_HISTORY_LIMIT = 8;
 
 export class App {
@@ -658,6 +660,7 @@ export class App {
   private importedStages: MugenStagePackage[] = [];
   private importedSourceBundle?: ImportedSourceBundle;
   private mode: AppMode = "match";
+  private runtimeQaScenario?: RuntimeQaScenario;
   private selectedP1 = demoFighters[0]!.id;
   private selectedP2 = demoFighters[1]!.id;
   private selectedStageId = rooftopDojoStage.id;
@@ -1325,6 +1328,8 @@ export class App {
 
   private readUrlState(): void {
     const params = new URLSearchParams(window.location.search);
+    const scenario = params.get("scenario");
+    this.runtimeQaScenario = scenario === "ikemen-tag-presentation" ? scenario : undefined;
     const mode = params.get("mode");
     if (mode === "match" || mode === "inspect" || mode === "studio") {
       this.mode = mode;
@@ -1368,6 +1373,9 @@ export class App {
     params.set("p1", this.selectedP1);
     params.set("p2", this.selectedP2);
     params.set("stage", this.selectedStageId);
+    if (this.runtimeQaScenario) {
+      params.set("scenario", this.runtimeQaScenario);
+    }
     if (this.mode === "inspect") {
       params.set("tab", this.activeTab);
       if (this.navigatorFilter.trim()) {
@@ -10529,6 +10537,11 @@ export class App {
         projectImportWarnings: string[];
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
+        qa?: {
+          scenario: RuntimeQaScenario;
+          tagPresentationHandoff(): void;
+          resetTagPresentation(): void;
+        };
       };
     };
     const studio = this.getStudioProjectSummary();
@@ -10566,6 +10579,15 @@ export class App {
       projectImportWarnings: [...this.projectImportWarnings],
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
+      ...(this.runtimeQaScenario
+        ? {
+            qa: {
+              scenario: this.runtimeQaScenario,
+              tagPresentationHandoff: () => this.applyTagPresentationQaHandoff(),
+              resetTagPresentation: () => this.resetTagPresentationQaScenario(),
+            },
+          }
+        : {}),
     };
   }
 
@@ -10774,7 +10796,40 @@ export class App {
       this.selectedP2 = p2.id;
     }
     this.syncMatchSpriteOwnerRoutes(p1, p2);
-    this.matchRuntime = new MatchWorld({ p1, p2, stage });
+    this.matchRuntime = new MatchWorld({
+      p1,
+      p2,
+      stage,
+      ...(this.runtimeQaScenario === "ikemen-tag-presentation"
+        ? {
+            runtimeProfile: "ikemen-go" as const,
+            teamMode: "tag" as const,
+            reserveFighters: [p1, p2],
+          }
+        : {}),
+    });
+  }
+
+  private applyTagPresentationQaHandoff(): void {
+    if (this.runtimeQaScenario !== "ikemen-tag-presentation") {
+      throw new Error("Tag presentation QA handoff requires the dedicated scenario");
+    }
+    this.snapshot = this.matchRuntime.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p1", standby: true },
+        { id: "p3", standby: false },
+      ],
+    });
+    this.updateUi();
+  }
+
+  private resetTagPresentationQaScenario(): void {
+    if (this.runtimeQaScenario !== "ikemen-tag-presentation") {
+      throw new Error("Tag presentation QA reset requires the dedicated scenario");
+    }
+    this.snapshot = this.matchRuntime.reset();
+    this.updateUi();
   }
 
   private syncMatchSpriteOwnerRoutes(p1: DemoFighterDefinition, p2: DemoFighterDefinition): void {

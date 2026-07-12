@@ -11,6 +11,7 @@ import type { DemoFighterDefinition, DemoMove } from "../mugen/runtime/demoFight
 import { trainingStage } from "../mugen/runtime/demoStage";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
+import { MatchWorld } from "../mugen/runtime/MatchWorld";
 import {
   evaluateRuntimeTraceGate,
   expandRuntimeTraceScript,
@@ -114,6 +115,57 @@ describe("RuntimeTrace", () => {
     })).toMatchObject({ passed: true, failures: [] });
     expect(observed.frames.map(({ checksum }) => checksum)).toEqual(stripped.frames.map(({ checksum }) => checksum));
     expect(observed.checksum).toBe(stripped.checksum);
+  });
+
+  it("gates ordered root presentation without widening the behavior checksum", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+    world.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p1", standby: true },
+        { id: "p3", standby: false },
+      ],
+    });
+    const trace = runRuntimeTrace(
+      world,
+      expandRuntimeTraceScript([{ label: "promoted reserve presentation", frames: 2, p1: [], p2: [] }]),
+      { label: "root-presentation-observation" },
+    );
+
+    expect(trace.final.rootPresentation).toMatchObject({
+      mode: "ikemen-tag",
+      drawRootIds: ["p3", "p2"],
+      cameraRootIds: ["p3", "p2"],
+    });
+    expect(evaluateRuntimeTraceGate(trace, {
+      label: "root-presentation-gate",
+      requiredRootPresentationFrames: [{
+        mode: "ikemen-tag",
+        drawRootIds: ["p3", "p2"],
+        cameraRootIds: ["p3", "p2"],
+        minFrames: 2,
+      }],
+    })).toMatchObject({ passed: true, failures: [] });
+    expect(evaluateRuntimeTraceGate(trace, {
+      label: "wrong-root-presentation-order",
+      requiredRootPresentationFrames: [{ drawRootIds: ["p2", "p3"], cameraRootIds: ["p2", "p3"] }],
+    })).toMatchObject({ passed: false, failures: [expect.stringContaining("p2 -> p3")] });
+
+    const widened = structuredClone(trace);
+    const p1Store = widened.frames[0]?.world?.effectStores.find(({ ownerId }) => ownerId === "p1");
+    expect(p1Store).toBeDefined();
+    p1Store!.total = 1;
+    expect(evaluateRuntimeTraceGate(widened, {
+      label: "root-presentation-forbids-effect-widening",
+      requiredEffectStores: [{ ownerId: "p1", maxTotal: 0 }],
+    })).toMatchObject({
+      passed: false,
+      failures: [expect.stringContaining("maxTotal=0")],
+    });
   });
 
   it("gates actor order for a named tick-schedule phase", () => {

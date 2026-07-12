@@ -87,4 +87,33 @@ describe("RuntimeMatchTickScheduleSystem", () => {
     });
     expect(schedule.phases.every((phase) => phase.owner && Array.isArray(phase.mutableStores) && phase.sideEffects.length)).toBe(true);
   });
+
+  it("does not let one root's controller mask another root's ordering divergence", () => {
+    const recorder = new RuntimeMatchTickScheduleRecorder(10);
+    recorder.record("fighter:controllers", "p1");
+    recorder.record("fighter:kinematics", "p2");
+    recorder.record("fighter:animation", "p2");
+    recorder.record("fighter:controllers", "p2");
+    recorder.record("fighter:controllers", "p3");
+    recorder.record("fighter:kinematics", "p3");
+    recorder.record("fighter:animation", "p3");
+    recorder.record("post-fighter:combat");
+
+    expect(recorder.complete("active").architectureComparison.checks[0]).toEqual({
+      id: "controllers-before-kinematics",
+      expectedBefore: "fighter:controllers",
+      expectedAfter: "fighter:kinematics",
+      actualBefore: "fighter:kinematics",
+      actualAfter: "fighter:controllers",
+      matches: false,
+    });
+  });
+
+  it("fails an actor-owned comparison when phases belong to disjoint roots", () => {
+    const recorder = new RuntimeMatchTickScheduleRecorder(11);
+    recorder.record("fighter:controllers", "p1");
+    recorder.record("fighter:kinematics", "p2");
+
+    expect(recorder.complete("active").architectureComparison.checks[0]?.matches).toBe(false);
+  });
 });

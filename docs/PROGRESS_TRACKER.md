@@ -1,6 +1,16 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN active-root presentation research
+## Global report - 2026-07-11 IKEMEN active-root presentation runtime
+
+- Contract: `RuntimeRootPresentation/v0` publishes stable per-root draw/camera decisions plus ordered ids without widening `snapshot.actors` beyond P1/P2.
+- Runtime/renderer: explicit Tag handoff selects `[p3,p2]` for body, shadow, and camera; Three.js changes only `CharacterRenderer`, while collision debug, hit sparks, effects, HUD, audio, combat, round, and resources remain pair-owned.
+- Safety: draw/camera eligibility is independent; disabled, standby, invisible, `moveCameraX`, over-KO, empty-side, missing/invalid state, duplicate id, reset, and stale-mesh paths are covered.
+- Trace: required `synthetic-imported-ikemen-active-root-presentation` checksum `97255586`, frames `65b85d54` / `65b00e8f`, exact `[p3,p2]` ids, stable pair/reserve arrays, and absent combat/effect evidence pass inside 542/542 artifacts.
+- Browser: desktop `1440x960` and mobile `390x844` prove baseline, handoff, reset, stable HUD, matching capabilities, and nonblank canvases with 994/1173 unique colors; screenshots were visually inspected.
+- Verification: 176 files / 1794 tests, TypeScript 7, production build, 542/542 traces (511 required, 31 optional), browser smoke, boundaries, and final diff gate pass.
+- Global status: Wayfinder 099 is closed without score movement; Wayfinder 100 maps active-root stage constraints, body push, collision, and combat admission.
+
+## Previous global report - 2026-07-11 IKEMEN active-root presentation research
 
 - Source: pinned IKEMEN draw enrollment does not reject standby; `invisible` suppresses body and shadow, while camera independently rejects standby and honors `movecamera`.
 - Local audit: `snapshot.actors` is a shared P1/P2 contract for renderer, HUD, audio, collision, hit sparks, and app indexing; reserves cannot be appended safely.

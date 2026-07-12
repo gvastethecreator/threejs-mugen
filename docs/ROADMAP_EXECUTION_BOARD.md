@@ -1,8 +1,12 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root presentation research (2026-07-11)
+## Latest closeout - IKEMEN active-root presentation runtime (2026-07-11)
 
-Pinned IKEMEN source separates character draw, `invisible`/shadow suppression, standby camera filtering, and authored Tag entering/leaving/waiting choreography. Local audit rejects widening `snapshot.actors` because renderer, HUD, audio, collision, hit sparks, and app indexing share that pair. Wayfinder 099 will add runtime-owned draw/camera ids and an immediate P1-to-P3 visual handoff with pair gameplay unchanged. This docs-only closeout adds no runtime, trace, browser, or score movement.
+`RuntimeRootPresentation/v0` now publishes independent body/shadow draw and camera ids while preserving P1/P2 snapshot/HUD/gameplay storage. Required checksum `97255586` passes inside 542/542 traces; desktop/mobile smoke proves exact `[p1,p2] -> [p3,p2] -> [p1,p2]` handoff/reset, stable HUD, matching renderer/capability ids, nonblank canvases, and stale-mesh cleanup. Wayfinder 100 maps stage constraints, push, collision, and combat admission. Scores remain unchanged.
+
+## Previous closeout - IKEMEN active-root presentation research (2026-07-11)
+
+Pinned IKEMEN source separates character draw, `invisible`/shadow suppression, standby camera filtering, and authored Tag entering/leaving/waiting choreography. Local audit rejected widening `snapshot.actors` because renderer, HUD, audio, collision, hit sparks, and app indexing share that pair. Wayfinder 099 selected runtime-owned draw/camera ids and an immediate P1-to-P3 visual handoff with pair gameplay unchanged. This docs-only closeout added no runtime, trace, browser, or score movement.
 
 ## Previous closeout - IKEMEN active-root motion runtime (2026-07-11)
 
@@ -917,7 +921,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | Priority | Workstream | Next shippable proof | Evidence gate | Score effect |
 | --- | --- | --- | --- | --- |
 | P0 | Project control | Keep setup-project, local issues, AGENTS, and roadmap routing synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | No score movement. |
-| P1 | I2 bounded Tag runtime | Execute source-mapped initial Helper `standby` creation in explicit IKEMEN matches. | Focused compiler/runtime/end-to-end tests, full stable traces, negative profile/failure assertions. | Bounded IKEMEN execution confidence only; no tag gameplay score claim. |
+| P1 | I2 bounded Tag runtime | Map active-root stage constraints, body push, collision, and combat admission before selecting one executable cut. | Pinned-source owner map, then focused runtime/trace/browser proof for the selected consumer. | Bounded IKEMEN execution confidence only; no broad Tag gameplay score claim. |
 | P1 | R1 post-KO timeline | After the I2 prefactor, close KO/time-over ordering plus bounded `NoKOSlow`. | Focused round tests and required ordered trace. | MUGEN-lite confidence only; no motif/team parity. |
 | P1 | R2 root ownership | Centralize construction/reset/side/team-state/participation invariants before any consumer widening. | Invariant/deletion tests and stable traces. | Architecture debt reduction only. |
 | P2 | S1 Studio source workflow | Add source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback; defer undo/migration. | Model/service tests plus `pnpm qa:smoke` and visual inspection. | Possible Studio movement only with real persistence evidence. |
@@ -932,7 +936,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, bounded Tag/identity/RedirectID, required Helper/side-command evidence, `RuntimeRootPhaseCapabilities/v1` active-root local motion/animation, and a closed source-backed draw/camera policy. | Wayfinder 099: implement and browser-gate the immediate incoming/outgoing presentation handoff. | No P3-P8 direct native input/AI, collidable gameplay, root-key effects, multi-root combat/round/lifebar/resources, exact Tag ZSS overlap, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, bounded Tag/identity/RedirectID, required Helper/side-command evidence, `RuntimeRootPhaseCapabilities/v1` active-root local motion/animation, and `RuntimeRootPresentation/v0` body/shadow/camera handoff. | Wayfinder 100: map stage constraints, body push, collision, and combat admission before one bounded implementation. | No P3-P8 direct native input/AI, stage clamp/push, collidable gameplay, root-key effects, multi-root combat/round/lifebar/resources, exact Tag ZSS overlap, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -943,7 +947,7 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 presentation implementation: Wayfinder 099 publishes runtime-owned draw/camera ids and browser-gates one immediate P1-to-P3 handoff without granting collision, effects, combat, round, HUD/audio, or resources.
+1. I2 constraint/collision research: Wayfinder 100 pins stage clamp, body push, diagnostic collision, attack/hurt admission, and combat mutation before selecting one bounded implementation.
 2. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 3. I2 redirects: keep broader mutation redirects blocked until caller identity, failure atomicity, and telemetry ownership have source-backed fixtures.
 4. S1: add source handle/fingerprint/permission, external conflict, one write/reimport transaction, output invalidation and rollback; defer undo/migration.
@@ -976,8 +980,9 @@ Current checkpoint and next build:
 - Closed: explicit per-root phase-capability matrix across command/CNS/gameplay owners with no execution change.
 - Closed: pinned active-root phase-order research plus immutable normal-tick `active-motion` execution with restricted CNS, local kinematics/animation, and required checksum `8ee92f65`.
 - Closed: pinned draw/shadow/camera/Tag choreography research plus a selected renderer-independent immediate handoff policy.
-- Next: Wayfinder 099 implements `RuntimeRootPresentation/v0`, required trace linkage, and desktop/mobile browser proof.
-- Keep direct native input/AI, incoming Helper hurt, collision/push, effects, combat, round, lifebar, Studio detail, audio, and resources unchanged; presentation changes only through the selected draw/camera projection.
+- Closed: `RuntimeRootPresentation/v0`, required checksum `97255586`, and desktop/mobile `[p1,p2] -> [p3,p2] -> [p1,p2]` browser proof with stable pair gameplay/HUD ownership.
+- Next: Wayfinder 100 maps stage constraints, body push, diagnostic collision, attack/hurt admission, and combat mutation before one bounded executable ticket.
+- Keep direct native input/AI, incoming Helper hurt, effects, combat, round, lifebar, Studio detail, audio, and resources unchanged until their own source-backed gates; exact Tag overlap remains blocked.
 
 Acceptance:
 

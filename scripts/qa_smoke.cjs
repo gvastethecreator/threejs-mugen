@@ -12,6 +12,7 @@ const DEFAULT_IMPORTED_FIXTURE = ".scratch/fixtures/kfm-official.zip";
 
 const routeParams = `p1=${DEFAULT_P1}&p2=${DEFAULT_P2}&stage=${DEFAULT_STAGE}`;
 const runtimeRoute = `/?mode=match&${routeParams}`;
+const tagPresentationRoute = `/?mode=match&scenario=ikemen-tag-presentation&${routeParams}`;
 const studioWorkbenchRoute = `/?mode=studio&studio=workbench&${routeParams}`;
 const studioBuildRoute = `/?mode=studio&studio=build&${routeParams}`;
 const studioModulesRoute = `/?mode=studio&studio=modules&${routeParams}`;
@@ -67,6 +68,8 @@ async function main() {
       label: "runtime-mobile",
     });
 
+    const tagPresentation = await captureTagPresentation(page, server.baseUrl, outDir);
+
     const studioWorkbench = await captureStudioWorkbench(page, server.baseUrl, outDir);
     const studioWorkbenchTablet = await captureStudioWorkbenchTablet(page, server.baseUrl, outDir);
     const commandPaletteA11y = await captureCommandPaletteA11y(page, server.baseUrl, outDir);
@@ -112,6 +115,7 @@ async function main() {
       browserFallbackReason: "Browser plugin tools were not callable in this session.",
       routes: {
         runtime: runtimeRoute,
+        tagPresentation: tagPresentationRoute,
         studioWorkbench: studioWorkbenchRoute,
         studioBuild: studioBuildRoute,
         studioModules: studioModulesRoute,
@@ -120,6 +124,7 @@ async function main() {
       checks: {
         runtimeDesktop,
         runtimeMobile,
+        tagPresentation,
         studioWorkbench,
         studioWorkbenchTablet,
         commandPaletteA11y,
@@ -140,6 +145,10 @@ async function main() {
       screenshots: {
         runtimeDesktop: path.join(outDir, "runtime-desktop.png"),
         runtimeMobile: path.join(outDir, "runtime-mobile.png"),
+        tagPresentationDesktop: path.join(outDir, "runtime-tag-presentation-desktop.png"),
+        tagPresentationDesktopCanvas: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
+        tagPresentationMobile: path.join(outDir, "runtime-tag-presentation-mobile.png"),
+        tagPresentationMobileCanvas: path.join(outDir, "runtime-tag-presentation-mobile-canvas.png"),
         studioWorkbench: path.join(outDir, "studio-workbench.png"),
         studioProjectAuthoring: path.join(outDir, "studio-project-authoring.png"),
         studioWorkbenchTablet: path.join(outDir, "studio-workbench-tablet.png"),
@@ -326,6 +335,80 @@ async function captureRuntime(page, baseUrl, options) {
     },
     { canvasPixels, drivenHitSparks, label: options.label, presentationOverlap },
   );
+}
+
+async function captureTagPresentation(page, baseUrl, outDir) {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto(`${baseUrl}${tagPresentationRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await warmRuntimeRenderer(page);
+  await waitForTagPresentationState(page, ["p1", "p2"]);
+  const baseline = await readTagPresentationState(page);
+
+  await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.qa?.tagPresentationHandoff());
+  await waitForTagPresentationState(page, ["p3", "p2"]);
+  await page.waitForTimeout(100);
+  await page.screenshot({ path: path.join(outDir, "runtime-tag-presentation-desktop.png"), fullPage: true });
+  const desktopCanvasPng = await page.locator("canvas").first().screenshot({
+    path: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
+  });
+  const desktop = await readTagPresentationState(page, await getCanvasPixelStats(page, desktopCanvasPng));
+
+  await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.qa?.resetTagPresentation());
+  await waitForTagPresentationState(page, ["p1", "p2"]);
+  const reset = await readTagPresentationState(page);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${baseUrl}${tagPresentationRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await warmRuntimeRenderer(page);
+  await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.qa?.tagPresentationHandoff());
+  await waitForTagPresentationState(page, ["p3", "p2"]);
+  await page.waitForTimeout(100);
+  await page.screenshot({ path: path.join(outDir, "runtime-tag-presentation-mobile.png"), fullPage: true });
+  const mobileCanvasPng = await page.locator("canvas").first().screenshot({
+    path: path.join(outDir, "runtime-tag-presentation-mobile-canvas.png"),
+  });
+  const mobile = await readTagPresentationState(page, await getCanvasPixelStats(page, mobileCanvasPng));
+
+  return { baseline, desktop, reset, mobile };
+}
+
+async function waitForTagPresentationState(page, drawRootIds) {
+  await page.waitForFunction((expectedIds) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const presentation = bridge?.snapshot?.rootPresentation;
+    const rendered = bridge?.renderer?.characters?.map((actor) => actor.actorId) ?? [];
+    return bridge?.qa?.scenario === "ikemen-tag-presentation"
+      && presentation?.drawRootIds?.join(",") === expectedIds.join(",")
+      && presentation?.cameraRootIds?.join(",") === expectedIds.join(",")
+      && rendered.length === expectedIds.length
+      && expectedIds.every((id) => rendered.includes(id));
+  }, drawRootIds, { timeout: 5000 });
+}
+
+async function readTagPresentationState(page, canvasPixels) {
+  return page.evaluate((pixels) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    return {
+      scenario: bridge?.qa?.scenario,
+      actorIds: bridge?.snapshot?.actors?.map((actor) => actor.id) ?? [],
+      reserveActorIds: bridge?.snapshot?.reserveActors?.map((actor) => actor.id) ?? [],
+      drawRootIds: bridge?.snapshot?.rootPresentation?.drawRootIds ?? [],
+      cameraRootIds: bridge?.snapshot?.rootPresentation?.cameraRootIds ?? [],
+      rendererActorIds: bridge?.renderer?.characters?.map((actor) => actor.actorId) ?? [],
+      hudNames: [...document.querySelectorAll(".hud-fighter-name")].map((node) => node.textContent?.trim() ?? ""),
+      presentedRoots:
+        bridge?.actorRegistry?.rootParticipation?.roots
+          ?.filter((root) => root.presented)
+          .map((root) => root.id) ?? [],
+      presentationCapabilities:
+        bridge?.actorRegistry?.rootPhaseCapabilities?.roots
+          ?.filter((root) => root.phases.presentation)
+          .map((root) => root.id) ?? [],
+      canvasPixels: pixels,
+    };
+  }, canvasPixels);
 }
 
 async function capturePresentationOverlapOracle(page) {
@@ -1612,6 +1695,7 @@ function assertSmoke(diagnostics) {
   const {
     runtimeDesktop,
     runtimeMobile,
+    tagPresentation,
     studioWorkbench,
     studioWorkbenchTablet,
     commandPaletteA11y,
@@ -1795,6 +1879,46 @@ function assertSmoke(diagnostics) {
     if (unreadyVisibleAtlases.length) {
       failures.push(`${runtime.label}: visible roster atlas was not ready (${unreadyVisibleAtlases.map((entry) => `${entry.id}:${entry.atlasStatus}`).join(", ")})`);
     }
+  }
+  const expectedPair = "p1,p2";
+  const expectedHandoff = "p3,p2";
+  const tagStates = [tagPresentation.desktop, tagPresentation.mobile];
+  if (
+    tagPresentation.baseline.scenario !== "ikemen-tag-presentation" ||
+    tagPresentation.baseline.actorIds.join(",") !== expectedPair ||
+    tagPresentation.baseline.reserveActorIds.join(",") !== "p3,p4" ||
+    tagPresentation.baseline.drawRootIds.join(",") !== expectedPair ||
+    tagPresentation.baseline.cameraRootIds.join(",") !== expectedPair ||
+    !sameIdSet(tagPresentation.baseline.rendererActorIds, ["p1", "p2"])
+  ) {
+    failures.push("tag-presentation baseline: pair snapshot, reserves, or renderer selection was incorrect");
+  }
+  for (const state of tagStates) {
+    if (
+      state.scenario !== "ikemen-tag-presentation" ||
+      state.actorIds.join(",") !== expectedPair ||
+      state.reserveActorIds.join(",") !== "p3,p4" ||
+      state.drawRootIds.join(",") !== expectedHandoff ||
+      state.cameraRootIds.join(",") !== expectedHandoff ||
+      !sameIdSet(state.rendererActorIds, ["p3", "p2"]) ||
+      state.rendererActorIds.includes("p1") ||
+      state.hudNames.join(",") !== "Nova Boxer,Mira Volt" ||
+      !sameIdSet(state.presentedRoots, ["p3", "p2"]) ||
+      !sameIdSet(state.presentationCapabilities, ["p3", "p2"]) ||
+      !state.canvasPixels?.nonBlank ||
+      state.canvasPixels.uniqueColors < 10
+    ) {
+      failures.push("tag-presentation handoff: desktop/mobile runtime, renderer, HUD, ownership, or canvas proof failed");
+      break;
+    }
+  }
+  if (
+    tagPresentation.reset.drawRootIds.join(",") !== expectedPair ||
+    tagPresentation.reset.cameraRootIds.join(",") !== expectedPair ||
+    !sameIdSet(tagPresentation.reset.rendererActorIds, ["p1", "p2"]) ||
+    tagPresentation.reset.rendererActorIds.includes("p3")
+  ) {
+    failures.push("tag-presentation reset: playable pair or stale Three.js mesh cleanup failed");
   }
   if (
     studioWorkbench.mode !== "studio" ||
@@ -2338,6 +2462,10 @@ function expectedPresentationRenderOrder(semantic) {
   return phaseRank * 10_000_000 + boundedPriority * 100 + boundedTieBreaker;
 }
 
+function sameIdSet(actual, expected) {
+  return actual.length === expected.length && expected.every((id) => actual.includes(id));
+}
+
 function summarizeDiagnostics(diagnostics) {
   return {
     status: "passed",
@@ -2359,6 +2487,16 @@ function summarizeDiagnostics(diagnostics) {
       hitSparkSources: diagnostics.checks.runtimeMobile.hitSparkSources,
       hitSparkResolvedSprites: diagnostics.checks.runtimeMobile.hitSparkResolvedSprites,
       characterPresentations: diagnostics.checks.runtimeMobile.characterPresentations.length,
+    },
+    tagPresentation: {
+      baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,
+      desktop: diagnostics.checks.tagPresentation.desktop.drawRootIds,
+      mobile: diagnostics.checks.tagPresentation.mobile.drawRootIds,
+      reset: diagnostics.checks.tagPresentation.reset.drawRootIds,
+      desktopRenderer: diagnostics.checks.tagPresentation.desktop.rendererActorIds,
+      mobileRenderer: diagnostics.checks.tagPresentation.mobile.rendererActorIds,
+      desktopUniqueColors: diagnostics.checks.tagPresentation.desktop.canvasPixels.uniqueColors,
+      mobileUniqueColors: diagnostics.checks.tagPresentation.mobile.canvasPixels.uniqueColors,
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,

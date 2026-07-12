@@ -8505,7 +8505,7 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
       label: "Synthetic imported IKEMEN active-root next-tick motion",
       source: "mixed",
       notes: [
-        "Explicit ikemen-go Tag trace proves P2 input cannot activate P3, P1 input lets standby P3 execute TagIn without same-pass movement, and the next normal tick admits only bounded VelSet-driven kinematics plus animation. A Helper controller remains blocked and P3 gains no effects, combat, round, presentation, or resources.",
+        "Explicit ikemen-go Tag trace proves P2 input cannot activate P3, P1 input lets standby P3 execute TagIn without same-pass movement, and the next normal tick admits only bounded VelSet-driven kinematics plus animation. A Helper controller remains blocked; P3 joins root presentation while effects, combat, round, and resources stay pair-owned.",
       ],
     },
     gates: [
@@ -8597,13 +8597,95 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             ],
           },
         ],
+        requiredRootPresentationFrames: [
+          {
+            mode: "ikemen-tag",
+            drawRootIds: ["p1", "p3", "p2"],
+            cameraRootIds: ["p1", "p3", "p2"],
+          },
+        ],
         requiredFinalActors: [
           { actorId: "p3", source: "imported", actorKind: "player", stateNo: 0, ctrl: true },
           { actorId: "p4", source: "demo", actorKind: "player", stateNo: 0, ctrl: true },
         ],
         requiredEffectStores: [
-          { ownerId: "p1", minTotal: 0 },
-          { ownerId: "p2", minTotal: 0 },
+          { ownerId: "p1", maxTotal: 0 },
+          { ownerId: "p2", maxTotal: 0 },
+        ],
+        forbiddenCombatReasons: ["hit", "guard"],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "observe active Tag presentation handoff", p1: [], p2: [], frames: 2 },
+  ]);
+  const reserve = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-presentation",
+    displayName: "Synthetic Imported IKEMEN Active Root Presentation",
+    withHitDef: false,
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!,
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [reserve, demoFighters[1]!],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p1", standby: true },
+      { id: "p3", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-presentation-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-presentation-golden",
+      label: "Synthetic imported IKEMEN active-root presentation handoff",
+      source: "mixed",
+      notes: [
+        "A host-issued atomic Tag handoff establishes standby P1 and active imported P3 before capture. The required trace then proves ordered draw and camera ownership moves to P3/P2 while the stable actors envelope remains P1/P2 and no effect or combat route widens.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-presentation-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRootPresentationFrames: [
+          {
+            mode: "ikemen-tag",
+            drawRootIds: ["p3", "p2"],
+            cameraRootIds: ["p3", "p2"],
+            minFrames: 2,
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", actorKind: "player", teamStandby: true, effectiveCtrl: false, minFrames: 2 },
+          { actorId: "p2", actorKind: "player", teamStandby: false, effectiveCtrl: true, minFrames: 2 },
+          { actorId: "p3", source: "imported", actorKind: "player", teamStandby: false, effectiveCtrl: true, minFrames: 2 },
+          { actorId: "p4", actorKind: "player", teamStandby: true, effectiveCtrl: false, minFrames: 2 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "demo", actorKind: "player", stateNo: 0, ctrl: true },
+          { actorId: "p3", source: "imported", actorKind: "player", stateNo: 0, ctrl: true },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", maxTotal: 0 },
+          { ownerId: "p2", maxTotal: 0 },
         ],
         forbiddenCombatReasons: ["hit", "guard"],
       },

@@ -21,12 +21,14 @@ describe("RuntimeMatchPresentationSnapshotWorld", () => {
     } satisfies MugenStageDefinition;
     const p1 = actor("p1", 12);
     const p2 = actor("p2", 88);
+    const p3 = actor("p3", -32);
     const calls: string[] = [];
     const result = new RuntimeMatchPresentationSnapshotWorld().create({
       tick: 42,
       stage,
       p1,
       p2,
+      cameraActors: [p3, p2],
       envShakeWorld: {
         snapshotCameraShake: (runtimeTick, actors) => {
           calls.push(`shake:${runtimeTick}:${actors.map((actor) => actor.id).join(",")}`);
@@ -57,7 +59,7 @@ describe("RuntimeMatchPresentationSnapshotWorld", () => {
       cameraShake: { x: 2, y: -1, remaining: 5, amplitude: 7 },
       envColor: { color: [16, 24, 32], opacity: 0.5, remaining: 3, under: true },
     });
-    expect(result.stage.actors).toEqual([p1, p2]);
+    expect(result.stage.actors).toEqual([p3, p2]);
     expect(result.effects.p1.explods[0]).toMatchObject({ id: "p1-explod" });
     expect(result.effects.p2.explods[0]).toMatchObject({ id: "p2-explod" });
   });

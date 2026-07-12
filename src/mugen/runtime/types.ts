@@ -537,6 +537,7 @@ export type MugenSnapshot = {
   tickSchedule?: RuntimeMatchTickSchedule;
   tagTeamOrder?: import("./RuntimeTagTeamOrderSystem").RuntimeTagTeamOrderDiagnostic;
   rootInputRouting?: import("./RuntimeRootInputRoutingSystem").RuntimeRootInputRoutingDiagnostic;
+  rootPresentation?: import("./RuntimeRootPresentationSystem").RuntimeRootPresentationDiagnostic;
   logs: string[];
 };
 

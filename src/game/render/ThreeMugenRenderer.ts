@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { SffArchive } from "../../mugen/model/MugenSprite";
 import type { SpriteProvider } from "../../mugen/model/MugenSprite";
-import type { MugenSnapshot } from "../../mugen/runtime/types";
+import type { ActorSnapshot, MugenSnapshot } from "../../mugen/runtime/types";
 import { AxisRenderer } from "./AxisRenderer";
 import { CharacterRenderer } from "./CharacterRenderer";
 import { CollisionBoxRenderer } from "./CollisionBoxRenderer";
@@ -87,7 +87,8 @@ export class ThreeMugenRenderer implements MugenRenderer {
       tick: snapshot.tick,
     });
     const effects = snapshot.effects ?? [];
-    await this.characters.update([...snapshot.actors, ...effects]);
+    const presentedRoots = resolveRootPresentationActors(snapshot);
+    await this.characters.update([...presentedRoots, ...effects]);
     await this.hitSparks.update([...snapshot.actors, ...effects], snapshot.tick);
     const collisionActors = [...snapshot.actors, ...effects.filter((effect) => effect.clsn1.length > 0 || effect.clsn2.length > 0)];
     this.boxes.update(collisionActors, {
@@ -202,4 +203,26 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
+}
+
+export function resolveRootPresentationActors(
+  snapshot: Pick<MugenSnapshot, "actors" | "reserveActors" | "rootPresentation">,
+): ActorSnapshot[] {
+  if (!snapshot.rootPresentation) return snapshot.actors;
+
+  const roots = [...snapshot.actors, ...(snapshot.reserveActors ?? [])];
+  const byId = new Map<string, ActorSnapshot>();
+  for (const root of roots) {
+    if (byId.has(root.id)) throw new Error(`Duplicate root presentation snapshot actor ${root.id}`);
+    byId.set(root.id, root);
+  }
+
+  const selected = new Set<string>();
+  return snapshot.rootPresentation.drawRootIds.map((id) => {
+    if (selected.has(id)) throw new Error(`Duplicate root presentation draw id ${id}`);
+    selected.add(id);
+    const root = byId.get(id);
+    if (!root) throw new Error(`Unknown root presentation draw actor ${id}`);
+    return root;
+  });
 }

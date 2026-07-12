@@ -94,6 +94,7 @@ export type RuntimeTraceArtifactFrameSummary = {
   stage?: RuntimeTraceFrame["stage"];
   round?: RuntimeTraceFrame["round"];
   world?: RuntimeTraceFrame["world"];
+  rootPresentation?: RuntimeTraceFrame["rootPresentation"];
   tickSchedule?: RuntimeTraceArtifactTickScheduleFrame;
   eventCategories: RuntimeTraceFrame["events"][number]["category"][];
   combatReasons: RuntimeTraceFrame["combatReasons"][number]["reason"][];
@@ -254,6 +255,11 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           minCamera: { ...stage.minCamera },
           maxCamera: { ...stage.maxCamera },
         })),
+        rootPresentationFrames: gate.evidence.rootPresentationFrames.map((presentation) => ({
+          ...presentation,
+          drawRootIds: [...presentation.drawRootIds],
+          cameraRootIds: [...presentation.cameraRootIds],
+        })),
         actorFrames: gate.evidence.actorFrames.map((actor) => ({ ...actor })),
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
       },
@@ -285,6 +291,7 @@ function summarizeArtifactFrame(frame: RuntimeTraceFrame, previous: RuntimeTrace
     stage: frame.stage ? cloneTraceStage(frame.stage) : undefined,
     round: frame.round ? { ...frame.round } : undefined,
     world: frame.world ? cloneTraceWorld(frame.world) : undefined,
+    rootPresentation: frame.rootPresentation ? structuredClone(frame.rootPresentation) : undefined,
     tickSchedule: frame.tickSchedule ? summarizeArtifactTickSchedule(frame.tickSchedule) : undefined,
     eventCategories: [...new Set(frame.events.map((event) => event.category))],
     combatReasons: [...new Set(frame.combatReasons.map((reason) => reason.reason))],
@@ -752,6 +759,11 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
     requiredRoundFrames: gate.requiredRoundFrames?.map((requirement) => ({ ...requirement })),
     requiredStageFrames: gate.requiredStageFrames?.map((requirement) => ({ ...requirement })),
+    requiredRootPresentationFrames: gate.requiredRootPresentationFrames?.map((requirement) => ({
+      ...requirement,
+      drawRootIds: [...requirement.drawRootIds],
+      cameraRootIds: [...requirement.cameraRootIds],
+    })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrameSequences: gate.requiredActorFrameSequences?.map((sequence) => ({
       ...sequence,

@@ -317,6 +317,13 @@ describe("RuntimeSnapshotWorld", () => {
     const compatibilitySession = {
       actors: [],
     };
+    const rootPresentation = {
+      schema: "RuntimeRootPresentation/v0" as const,
+      mode: "ikemen-tag" as const,
+      roots: [],
+      drawRootIds: ["p1", "p2"],
+      cameraRootIds: ["p1", "p2"],
+    };
 
     const snapshot = world.match({
       tick: 42,
@@ -338,11 +345,13 @@ describe("RuntimeSnapshotWorld", () => {
         p2: { explods: [], helpers: [], projectiles: [] },
       },
       compatibilitySession,
+      rootPresentation,
       logs,
     });
     p1.runtime.pos.x = 999;
     p1Explod.runtime.pos.x = 999;
     logs[0] = "mutated";
+    rootPresentation.drawRootIds[0] = "mutated";
 
     expect(snapshot).toMatchObject({
       tick: 42,
@@ -357,6 +366,7 @@ describe("RuntimeSnapshotWorld", () => {
       matchPause,
       round,
       compatibilitySession,
+      rootPresentation: expect.objectContaining({ drawRootIds: ["p1", "p2"] }),
     });
     expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
     expect(snapshot.actors[0]?.runtime.pos.x).toBe(30);
@@ -424,6 +434,30 @@ describe("RuntimeSnapshotWorld", () => {
     expect(globalSnapshot.effects?.find((effect) => effect.actorKind === "explod")?.shadowVisible).toBe(false);
     expect(globalSnapshot.effects?.find((effect) => effect.actorKind === "helper")?.shadowVisible).toBe(false);
     expect(globalSnapshot.effects?.find((effect) => effect.actorKind === "projectile")?.shadowVisible).toBeUndefined();
+
+    p1.runtime.assertSpecial = { flags: [], globalFlags: [], noShadow: false };
+    const p3 = playerActor("p3", "P3", 0);
+    p3.runtime.assertSpecial = { flags: [], globalFlags: ["globalnoshadow"], noShadow: true };
+    const reserveGlobalSnapshot = world.match({
+      tick: 3,
+      playing: true,
+      speed: 1,
+      toggles: { showClsn1: false, showClsn2: false, showAxis: false, showGrid: false },
+      matchPause: undefined,
+      stage: { stage: trainingStage, actors: [p1, p2] },
+      round: undefined,
+      p1,
+      p2,
+      reserveActors: [p3],
+      effects: {
+        p1: { explods: [], helpers: [], projectiles: [] },
+        p2: { explods: [], helpers: [], projectiles: [] },
+      },
+      compatibilitySession: undefined,
+      logs: [],
+    });
+    expect(reserveGlobalSnapshot.actors.map((actor) => actor.shadowVisible)).toEqual([false, false]);
+    expect(reserveGlobalSnapshot.reserveActors?.[0]?.shadowVisible).toBe(false);
   });
 });
 

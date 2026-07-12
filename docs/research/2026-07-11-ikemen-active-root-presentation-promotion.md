@@ -89,8 +89,12 @@ Browser evidence uses a dedicated local QA scenario, not production defaults:
 
 Remove the standby draw proxy once the runtime executes the shipped Tag entering/leaving/waiting states, supports their `ScreenBound`, `AssertSpecial invisible`, position, velocity, and sprite-priority behavior, and has a browser oracle for the outgoing/incoming overlap. Replace the bounded camera average when full IKEMEN camera edge, Y, zoom, and stage-bound behavior lands. Retain the versioned draw/camera projection even after those upgrades; it remains the renderer-independent explanation of which roots each presentation consumer selected.
 
+## Implementation Outcome
+
+Wayfinder 099 implemented the selected boundary. `RuntimeRootPresentation/v0` now publishes stable draw/camera rows and exact ordered ids; Three.js resolves only selected character bodies/shadows across pair/reserve storage; camera consumes selected roots while EnvShake/effects remain pair-owned. Required trace checksum `97255586` and frame checksums `65b85d54`, `65b00e8f` pass inside 542/542 artifacts. Desktop/mobile smoke proves `[p1,p2] -> [p3,p2] -> [p1,p2]`, stable P1/P2 HUD/gameplay storage, matching phase capabilities, and stale-mesh cleanup.
+
 ## Claim Ceiling
 
-Allowed after this research: pinned draw/shadow/camera/Tag choreography facts, the local owner map, and one implementation-ready immediate presentation handoff are documented.
+Allowed now: bounded immediate P3-P8 body/shadow/camera presentation under explicit IKEMEN Tag, with pinned draw/shadow/camera/Tag choreography facts and the stable local owner boundary documented.
 
-Blocked: executable or visible P3-P8 until Wayfinder 099 lands; exact outgoing/incoming overlap; Tag ZSS/Lua execution; P3 collision, effects, audio, HUD/lifebar, combat, round, resources, direct native input/AI, camera Y/zoom parity, score movement, or full IKEMEN presentation parity.
+Blocked: exact outgoing/incoming overlap; Tag ZSS/Lua execution; P3 stage clamp/push/collision, effects, audio, HUD/lifebar, combat, round, resources, direct native input/AI, camera Y/zoom parity, score movement, or full IKEMEN presentation parity.

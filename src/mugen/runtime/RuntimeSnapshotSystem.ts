@@ -85,6 +85,7 @@ export type RuntimeMatchSnapshotInput = {
   effects: RuntimeEffectSnapshotInput;
   compatibilitySession: MugenSnapshot["compatibilitySession"];
   tickSchedule?: MugenSnapshot["tickSchedule"];
+  rootPresentation?: MugenSnapshot["rootPresentation"];
   logs: string[];
 };
 
@@ -93,7 +94,7 @@ export class RuntimeSnapshotWorld {
     const actors = [this.actor(input.p1), this.actor(input.p2)];
     const reserveActors = (input.reserveActors ?? []).map((actor) => this.actor(actor));
     const effects = this.effects(input.effects);
-    const globalNoShadow = [...actors, ...effects].some(hasRuntimeGlobalNoShadow);
+    const globalNoShadow = [...actors, ...reserveActors, ...effects].some(hasRuntimeGlobalNoShadow);
     return {
       tick: input.tick,
       selectedActionId: input.p1.runtime.animNo,
@@ -111,6 +112,7 @@ export class RuntimeSnapshotWorld {
       effects: effects.map((effect) => applyShadowVisibility(effect, globalNoShadow)),
       compatibilitySession: input.compatibilitySession,
       ...(input.tickSchedule ? { tickSchedule: structuredClone(input.tickSchedule) } : {}),
+      ...(input.rootPresentation ? { rootPresentation: structuredClone(input.rootPresentation) } : {}),
       logs: input.logs.slice(0, 80),
     };
   }

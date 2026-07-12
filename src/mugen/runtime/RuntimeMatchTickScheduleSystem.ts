@@ -262,9 +262,26 @@ function orderCheck(
   expectedAfter: RuntimeMatchTickPhaseId,
   phases: RuntimeMatchTickPhase[],
 ): RuntimeMatchTickOrderCheck {
-  const beforeIndex = phases.findIndex((phase) => phase.id === expectedBefore);
-  const afterIndex = phases.findIndex((phase) => phase.id === expectedAfter);
-  const matches = beforeIndex >= 0 && afterIndex >= 0 && beforeIndex < afterIndex;
+  const actorIds = new Set(
+    phases
+      .filter((phase) => phase.id === expectedBefore && phase.actorId)
+      .map((phase) => phase.actorId!),
+  );
+  const afterActorIds = new Set(
+    phases
+      .filter((phase) => phase.id === expectedAfter && phase.actorId)
+      .map((phase) => phase.actorId!),
+  );
+  const comparableActorIds = [...actorIds].filter((actorId) =>
+    afterActorIds.has(actorId));
+  const actorOwnedComparison = actorIds.size > 0 && afterActorIds.size > 0;
+  const matches = actorOwnedComparison
+    ? comparableActorIds.length > 0 && comparableActorIds.every((actorId) => {
+        const beforeIndex = phases.findIndex((phase) => phase.id === expectedBefore && phase.actorId === actorId);
+        const afterIndex = phases.findIndex((phase) => phase.id === expectedAfter && phase.actorId === actorId);
+        return beforeIndex < afterIndex;
+      })
+    : phasesAreOrdered(phases, expectedBefore, expectedAfter);
   return {
     id,
     expectedBefore,
@@ -273,6 +290,16 @@ function orderCheck(
     actualAfter: matches ? expectedAfter : expectedBefore,
     matches,
   };
+}
+
+function phasesAreOrdered(
+  phases: RuntimeMatchTickPhase[],
+  expectedBefore: RuntimeMatchTickPhaseId,
+  expectedAfter: RuntimeMatchTickPhaseId,
+): boolean {
+  const beforeIndex = phases.findIndex((phase) => phase.id === expectedBefore);
+  const afterIndex = phases.findIndex((phase) => phase.id === expectedAfter);
+  return beforeIndex >= 0 && afterIndex >= 0 && beforeIndex < afterIndex;
 }
 
 function phase(

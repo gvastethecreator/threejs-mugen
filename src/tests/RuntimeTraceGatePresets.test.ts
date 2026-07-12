@@ -165,6 +165,7 @@ import {
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
+  createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
   createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
@@ -16045,6 +16046,46 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "VelSet", name: "Active Root Motion" }),
       ]),
     );
+  });
+
+  it("creates a required IKEMEN active-root presentation handoff artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootPresentationTraceArtifact({
+      generatedAt: "2026-07-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-active-root-presentation-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-active-root-presentation-golden", passed: true, failures: [] }],
+      trace: {
+        frameCount: 2,
+        finalActors: [
+          expect.objectContaining({ id: "p1", teamStandby: true, effectiveCtrl: false }),
+          expect.objectContaining({ id: "p2" }),
+        ],
+        finalReserveActors: [
+          expect.objectContaining({ id: "p3", source: "imported" }),
+          expect.objectContaining({ id: "p4", teamStandby: true, effectiveCtrl: false }),
+        ],
+      },
+    });
+    expect(artifact.trace.frames.every((frame) =>
+      frame.rootPresentation?.drawRootIds.join(",") === "p3,p2"
+      && frame.rootPresentation.cameraRootIds.join(",") === "p3,p2"
+    )).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredRootPresentationFrames).toEqual([
+      { mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"], minFrames: 2 },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredEffectStores).toEqual([
+      { ownerId: "p1", maxTotal: 0 },
+      { ownerId: "p2", maxTotal: 0 },
+    ]);
+    expect(artifact.gates[0]?.evidence.rootPresentationFrames).toEqual([
+      expect.objectContaining({ mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"] }),
+    ]);
+    expect(artifact.trace.checksum).toBe("97255586");
+    expect(artifact.trace.frameChecksums).toEqual(["65b85d54", "65b00e8f"]);
+    expect(artifact.trace.finalEffects).toEqual([]);
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {
