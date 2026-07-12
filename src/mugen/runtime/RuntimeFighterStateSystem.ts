@@ -4,6 +4,7 @@ import type { MugenAnimationAction } from "../model/MugenAnimation";
 import { RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
+import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
@@ -125,6 +126,7 @@ export class RuntimeFighterStateWorld {
         },
         pos: { x: input.x, y: input.y },
         vel: { x: 0, y: 0 },
+        combatDepth: runtimeCombatDepthFromConstants(input.definition.constants),
         facing: input.facing,
         bodyWidth: { front: 39, back: 39 },
         playerPush: true,

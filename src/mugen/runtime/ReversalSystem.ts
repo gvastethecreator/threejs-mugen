@@ -106,7 +106,8 @@ export class RuntimeReversalControllerDispatchWorld {
       p1StateNo: operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno")),
       p2StateNo: operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno")),
       targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
-      attackDepth: operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")),
+      attackDepth:
+        operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")) ?? actor.runtime.combatDepth?.attack,
     });
     return {
       activated,

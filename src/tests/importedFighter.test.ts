@@ -230,6 +230,25 @@ describe("createImportedFighterDefinition", () => {
       guardSpark: "41",
     });
   });
+
+  it("preserves explicit and default attack depth on imported state moves", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+      [210, action(210, [[210, 0, 0], [210, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const states = [
+      state(200, 200, [controller(200, "HitDef", { damage: "30", "attack.depth": "6" })]),
+      state(210, 210, [controller(210, "HitDef", { damage: "40" })]),
+    ];
+    const character = fakeCharacter(animations, true, states);
+    character.constants = { "size.attack.depth.top": 7, "size.attack.depth.bottom": 9 };
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)?.attackDepth).toEqual([6, 6]);
+    expect(fighter?.stateMoves?.get(210)?.attackDepth).toEqual([7, 9]);
+  });
 });
 
 function action(id: number, frames: Array<[number, number, number, { x1: number; y1: number; x2: number; y2: number }?]>): MugenAnimationAction {

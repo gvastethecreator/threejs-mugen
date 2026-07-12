@@ -6,6 +6,7 @@ import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 
 type FrameWindow = {
   index: number;
@@ -195,6 +196,7 @@ function buildStateMoves(
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
         guardSpark: hitDefSparkParam(hitDef.params, constants, "guard.sparkno"),
         sparkXy: numberPair(hitDef.params.sparkxy),
+        attackDepth: normalizedNumberPair(hitDef.params["attack.depth"]) ?? runtimeCombatDepthFromConstants(constants).attack,
         hitVars: buildHitVars(hitDef.params),
         fall: buildFallData(hitDef.params),
         requiresHitDef: true,
@@ -300,6 +302,7 @@ function buildMove(
       | "hitSpark"
       | "guardSpark"
       | "sparkXy"
+      | "attackDepth"
       | "hitVars"
       | "fall"
     >
@@ -347,6 +350,7 @@ function buildMove(
     hitSpark: overrides.hitSpark,
     guardSpark: overrides.guardSpark,
     sparkXy: overrides.sparkXy,
+    attackDepth: overrides.attackDepth,
     hitVars: overrides.hitVars,
     fall: overrides.fall,
     hitbox: cloneBox(activeWindow?.frame.clsn1[0] ?? fallbackHitbox),
@@ -544,6 +548,17 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
+}
+
+function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(numbers[0]) || (numbers[1] !== undefined && !Number.isFinite(numbers[1]))) {
+    return undefined;
+  }
+  return [numbers[0], numbers[1] ?? numbers[0]];
 }
 
 function frameWindows(action: MugenAnimationAction): FrameWindow[] {

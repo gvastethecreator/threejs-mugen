@@ -13,6 +13,7 @@ export type CharacterRuntimeState = {
   teamState?: RuntimeTeamState;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  combatDepth?: RuntimeCombatDepth;
   facing: 1 | -1;
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
@@ -98,6 +99,12 @@ export type CharacterRuntimeState = {
   vars: number[];
   sysvars?: number[];
   fvars: number[];
+};
+
+export type RuntimeCombatDepth = {
+  position: number;
+  size: [number, number];
+  attack: [number, number];
 };
 
 export type RuntimeTeamState = {

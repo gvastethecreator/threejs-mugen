@@ -160,4 +160,8 @@ function applySectionConstant(constants: Record<string, number>, section: "data"
     constants[`${name}.x`] = values[0];
     constants[`${name}.y`] = values[1];
   }
+  if (section === "size" && (key.trim().toLowerCase() === "depth" || key.trim().toLowerCase() === "attack.depth")) {
+    constants[`${name}.top`] = values[0];
+    constants[`${name}.bottom`] = values[1] ?? values[0];
+  }
 }

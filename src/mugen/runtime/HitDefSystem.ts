@@ -138,7 +138,11 @@ export class RuntimeHitDefControllerDispatchWorld {
     const missOnOverride = operation?.missOnOverride ?? booleanHitDefParam(source, "missonoverride") ?? existing?.missOnOverride;
     const p1SpritePriority = operation?.p1SpritePriority ?? firstNumber(findParam(source, "p1sprpriority"));
     const p2SpritePriority = operation?.p2SpritePriority ?? firstNumber(findParam(source, "p2sprpriority"));
-    const attackDepth = operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")) ?? existing?.attackDepth;
+    const attackDepth =
+      operation?.attackDepth ??
+      normalizedNumberPair(findParam(source, "attack.depth")) ??
+      actor.runtime.combatDepth?.attack ??
+      existing?.attackDepth;
     const hitSound = operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound;
     const guardSound = operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound;
     const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };

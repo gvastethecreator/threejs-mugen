@@ -203,6 +203,8 @@ air.gethit.groundrecover = -.15,-3.5
 [Size]
 head.pos = 5,-120
 mid.pos = 2,-64
+depth = 2,5
+attack.depth = 7
 `);
 
     expect(parsed.constants["data.life"]).toBe(1000);
@@ -221,6 +223,10 @@ mid.pos = 2,-64
     expect(parsed.constants["size.head.pos.y"]).toBe(-120);
     expect(parsed.constants["size.mid.pos.x"]).toBe(2);
     expect(parsed.constants["size.mid.pos.y"]).toBe(-64);
+    expect(parsed.constants["size.depth.top"]).toBe(2);
+    expect(parsed.constants["size.depth.bottom"]).toBe(5);
+    expect(parsed.constants["size.attack.depth.top"]).toBe(7);
+    expect(parsed.constants["size.attack.depth.bottom"]).toBe(7);
   });
 
   it("indexes triggerall in command state-entry controllers", () => {

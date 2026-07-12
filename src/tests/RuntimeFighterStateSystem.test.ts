@@ -18,6 +18,10 @@ describe("RuntimeFighterStateWorld", () => {
         "data.power": 1200,
         "data.attack": 150,
         "data.defence": 200,
+        "size.depth.top": 2,
+        "size.depth.bottom": 5,
+        "size.attack.depth.top": 7,
+        "size.attack.depth.bottom": 9,
       },
     };
     const effectActorWorld = new RuntimeEffectActorWorld();
@@ -55,6 +59,7 @@ describe("RuntimeFighterStateWorld", () => {
         power: 0,
         attackMultiplier: 1.5,
         defenseMultiplier: 0.5,
+        combatDepth: { position: 0, size: [2, 5], attack: [7, 9] },
         spritePriority: 2,
       },
       frameElapsed: 0,

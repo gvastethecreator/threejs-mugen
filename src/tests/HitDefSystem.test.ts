@@ -152,12 +152,14 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       push: 2,
       priority: 7,
       priorityType: "dodge",
+      attackDepth: [12, 15],
       hitbox: { x1: 0, y1: -30, x2: 30, y2: 0 },
     };
+    actor.runtime.combatDepth = { position: 0, size: [3, 3], attack: [4, 4] };
 
     world.apply({ actor, controller: compileControllerIr(controller("HitDef", { damage: "30" })), frame: activeFrame() });
 
-    expect(actor.currentMove).toMatchObject({ priority: 4, priorityType: "hit" });
+    expect(actor.currentMove).toMatchObject({ priority: 4, priorityType: "hit", attackDepth: [4, 4] });
   });
 
   it("derives missing airguard.velocity from air.velocity", () => {
