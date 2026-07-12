@@ -180,6 +180,11 @@ describe("RuntimeMatchInteractionWorld", () => {
         return "priority resolved";
       },
       resolveDirectCombat: (attacker, defender) => tag("direct-combat", attacker.id, defender.id),
+      resolveRootDirectCombat: (resolveDirectCombat) => {
+        tag("root-direct-combat");
+        resolveDirectCombat(p2, p1);
+        resolveDirectCombat(p1, p2);
+      },
       resolveProjectileCombat: (attacker, defender) => tag("projectile-combat", attacker.id, defender.id),
       log: (line) => tag("log", line),
     });
@@ -199,8 +204,9 @@ describe("RuntimeMatchInteractionWorld", () => {
       "hit-admission",
       "priority:p1:p2",
       "log:priority resolved",
-      "direct-combat:p1:p2",
+      "root-direct-combat",
       "direct-combat:p2:p1",
+      "direct-combat:p1:p2",
       "projectile-combat:p1:p2",
       "projectile-combat:p2:p1",
       "clamp:p1",

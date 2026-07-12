@@ -28,7 +28,11 @@ import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./
 import type { CharacterRuntimeState } from "./types";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
-import { bufferRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
+import {
+  bufferRuntimeHitDefTarget,
+  hasRuntimeHitDefTarget,
+  type RuntimeHitDefContactMemoryActor,
+} from "./RuntimeHitDefContactMemorySystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -142,7 +146,9 @@ export class RuntimeCombatResolutionWorld {
     if (!attacker.currentMove) {
       return { kind: "skipped", reason: "missing-move" };
     }
-    if (attacker.hasHit) {
+    if (hasExplicitHitDefContactMemory(attacker)
+      ? hasRuntimeHitDefTarget(attacker, defender.id)
+      : attacker.hasHit) {
       return { kind: "skipped", reason: "already-hit" };
     }
     const move = attacker.currentMove;
@@ -425,6 +431,10 @@ export class RuntimeCombatResolutionWorld {
   ): RuntimeCombatResolutionStateHooks<TActor> {
     return stateHooks;
   }
+}
+
+function hasExplicitHitDefContactMemory(actor: RuntimeCombatResolutionActor): boolean {
+  return actor.hitDefTargets !== undefined || actor.pendingHitDefTargets !== undefined;
 }
 
 function shouldRuntimeHitOverrideMissDirect(move: DemoMove): boolean {

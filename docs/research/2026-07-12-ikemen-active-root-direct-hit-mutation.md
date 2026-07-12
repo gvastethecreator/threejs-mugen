@@ -65,3 +65,13 @@ Blocked: active-root direct mutation, plural effect lifecycle/combat/presentatio
 Wayfinder 109 is resolved. `RuntimeEffectActorWorld` now uses exact actor-keyed stores, match construction registers every authoritative root, unknown owners fail closed, reset covers every unique store, and Helper get-hit cleanup resolves through the root owner. Registry and trace summaries now expose P1-P8 stores while effect advancement, presentation, projectile/helper combat, and direct hit mutation remain pair-owned.
 
 The next prerequisite is Wayfinder 110: actor-keyed target aging, binding, acquisition buffering, and deferred commit. Direct P3-P8 mutation remains blocked until that lifecycle has an exact schedule and regression evidence.
+
+## Wayfinder 114 Outcome
+
+Wayfinders 110-113 closed the target and contact-memory prerequisites. The first mutation route now reuses `RuntimeCombatResolutionWorld.resolveDirect` for the ordered pairs admitted by `RuntimeRootDirectHitAdmissionWorld`. Explicit Tag execution replaces the legacy two-call pair route, resolves ids against the authoritative root registry, and fails closed if admission references an unknown root. Pair/Single retain their original path.
+
+The resolver now treats `hasHit` as a legacy fallback only. Actors with explicit HitDef contact memory reject an exact committed or pending getter id, allowing one HitDef to contact another getter without reopening the same getter.
+
+Claim allowed: ordered direct hit/guard/accepted HitOverride mutation for the exercised explicit-Tag root pairs, including actor-local life, power, state, target, contact, spark, and sound event writes.
+
+Claim blocked: active-motion CNS HitDef authoring, complete plural priority/trade/ReversalDef arbitration, helpers/projectiles/throws, team KO and replacement, HUD/camera contact presentation, shared resources, rollback, scores, or full IKEMEN parity.

@@ -41,6 +41,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   separateActors: (left: TFighter, right: TFighter) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
+  resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void) => void;
   applyTargetBindings: (fighter: TFighter, candidates: TFighter[]) => void;
   applyBindToTarget: (fighter: TFighter, candidates: TFighter[]) => void;
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
@@ -87,6 +88,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
     advanceBodyPush?: () => void;
     inspectHitAdmission?: () => void;
+    resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void) => void;
     recordTargetMaintenance?: (fighter: TFighter) => void;
     recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
     log: (line: string) => void;
@@ -127,8 +129,11 @@ export class RuntimeMatchInteractionWorld {
       input.log(priorityMessage);
     }
 
-    input.resolveDirectCombat(p1, p2);
-    input.resolveDirectCombat(p2, p1);
+    if (input.resolveRootDirectCombat) input.resolveRootDirectCombat(input.resolveDirectCombat);
+    else {
+      input.resolveDirectCombat(p1, p2);
+      input.resolveDirectCombat(p2, p1);
+    }
     for (const fighter of input.hitDefContactActors ?? [p1, p2]) {
       input.commitHitDefTargets?.(fighter);
       input.recordHitDefContactCommit?.(fighter);
@@ -184,6 +189,7 @@ export class RuntimeMatchInteractionWorld {
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
+      resolveRootDirectCombat: input.resolveRootDirectCombat,
       applyTargetBindings: (fighter, candidates) => fighter.targetWorld.applyTargetBindings(fighter, candidates),
       applyBindToTarget: (fighter, candidates) => fighter.targetWorld.applyBindToTarget(fighter, candidates),
       resolvePriorityClash: input.resolvePriorityClash,

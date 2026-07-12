@@ -39,6 +39,9 @@ describe("RuntimeCombatResolutionSystem", () => {
       runtime: runtimeState({ stateNo: 200, power: 10 }),
       currentMove: move({ targetId: 7, hitSound: "S5,0", hitSpark: "S7000" }),
       moveTick: 2,
+      hasHit: true,
+      hitDefTargets: ["p4"],
+      pendingHitDefTargets: [],
     });
     const defender = actor("p2", "P2", contactWorld, {
       runtime: runtimeState({ pos: { x: 18, y: 0 }, stateNo: 0, life: 100 }),
@@ -65,7 +68,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(attacker.hasHit).toBe(true);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 7, age: 0 }]);
     expect(attacker.pendingHitDefTargets).toEqual(["p2"]);
-    expect(attacker.hitDefTargets).toBeUndefined();
+    expect(attacker.hitDefTargets).toEqual(["p4"]);
     expect(attacker.soundEvents[0]).toMatchObject({
       type: "PlaySnd",
       group: 5,
@@ -492,6 +495,8 @@ type ActorOptions = {
   currentMove?: DemoMove;
   moveTick?: number;
   hasHit?: boolean;
+  hitDefTargets?: string[];
+  pendingHitDefTargets?: string[];
   projectileResolver?: ProjectileResolver;
   projectiles?: RuntimeProjectile[];
 };
@@ -518,6 +523,8 @@ function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorl
     hitStun: 0,
     hitPause: 0,
     hasHit: options.hasHit ?? false,
+    hitDefTargets: options.hitDefTargets,
+    pendingHitDefTargets: options.pendingHitDefTargets,
     contact: createRuntimeContactMemory(),
     contactWorld,
     currentInput: new Set<string>(),

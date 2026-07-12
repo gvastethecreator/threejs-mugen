@@ -994,6 +994,16 @@ export class PlayableMatchRuntime {
             });
             for (const id of this.lastRootHitAdmission.rootIds) recordPhase("post-fighter:hit-admission", id);
           } : undefined,
+          resolveRootDirectCombat: this.tagTeamOrder ? (resolveDirectCombat) => {
+            const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
+            for (const pairId of this.lastRootHitAdmission?.admittedPairIds ?? []) {
+              const [attackerId, getterId] = pairId.split("->");
+              const attacker = rootsById.get(attackerId);
+              const getter = rootsById.get(getterId);
+              if (!attacker || !getter) throw new Error(`Root hit admission referenced unknown pair ${pairId}`);
+              resolveDirectCombat(attacker, getter);
+            }
+          } : undefined,
           recordTargetMaintenance: this.tagTeamOrder
             ? (root) => recordPhase("post-fighter:target-maintenance", root.id)
             : undefined,

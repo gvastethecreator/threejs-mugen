@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 420 - Active-root ordered direct-hit execution
+
+Done: explicit IKEMEN Tag now consumes `RuntimeRootDirectHitAdmission/v0` admitted pairs through the existing actor-generic direct resolver, replacing rather than duplicating the legacy pair calls. Exact committed/pending getter memory supersedes scalar `hasHit` when present, so one HitDef may contact a new getter while the same getter stays closed. Pair/Single remain on their original route; unknown admitted ids fail closed. Claim allowed: ordered direct hit/guard/accepted HitOverride mutation for exercised explicit-Tag roots, including actor-local life, power, state, targets, contact, spark, and sound events. Claim blocked: active-motion CNS HitDef authoring, plural priority/trade/ReversalDef parity, helpers/projectiles/throws, team KO/replacement, HUD/camera, shared resources, scores, and full parity. Wayfinder 115 selects the next executable P3/P4 trace prerequisite.
+
 ## Entry 419 - Deferred HitDef contact memory
 
 Done: roots now own committed/pending direct-HitDef getter ids. Accepted direct hit/guard/HitOverride and direct ReversalDef buffer exact ids while CNS target memory remains immediate; active post-combat commits P1-P8 in stable order; MoveStart/HitDef/ReversalDef reset both lists. Detached `RuntimeHitDefContactMemory/v0` diagnostics and actor-scoped commit phases expose proof. Root admission rejects only exact contacted getters when explicit memory exists, while scalar pair mutation remains intact. Claim allowed: direct-HitDef contact memory and exact read-only repeated-contact admission. Claim blocked: P3-P8 mutation, exact hitonce/juggle/priority/reversal, throws, projectile/helper parity, round/HUD/audio/resources, scores, and full parity. Wayfinder 114 maps first mutation next.
