@@ -1250,6 +1250,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenTagSideCommandTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-motion",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootMotionTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-pause-buffer",
       required: true,
       artifact: presets.createSyntheticImportedIkemenPauseBufferTraceArtifact(),

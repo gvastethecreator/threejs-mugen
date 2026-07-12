@@ -9,7 +9,7 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
     const diagnostic = new RuntimeRootPhaseCapabilitiesWorld().diagnostic(input());
 
     expect(diagnostic).toEqual({
-      schema: "RuntimeRootPhaseCapabilities/v0",
+      schema: "RuntimeRootPhaseCapabilities/v1",
       mode: "ikemen-tag",
       roots: [
         expect.objectContaining({
@@ -76,6 +76,46 @@ describe("RuntimeRootPhaseCapabilitiesWorld", () => {
     const reserve = new RuntimeRootPhaseCapabilitiesWorld().diagnostic(source).roots[2]!;
 
     expect(reserve.phases).toMatchObject({ commands: false, controllerCns: "bounded-reserve" });
+  });
+
+  it("promotes only structurally active Tag reserves into motion phases", () => {
+    const source = input();
+    source.roots[0]!.teamState.standby = true;
+    source.participation.roots[0]!.standby = true;
+    source.participation.roots[0]!.structurallyActive = false;
+    source.inputRouting.roots[0]!.standby = true;
+    source.inputRouting.roots[0]!.effectiveCtrl = false;
+    source.roots[2]!.teamState.standby = false;
+    source.participation.roots[2]!.standby = false;
+    source.participation.roots[2]!.structurallyActive = true;
+    source.inputRouting.roots[2]!.standby = false;
+    source.inputRouting.roots[2]!.effectiveCtrl = true;
+
+    const diagnostic = new RuntimeRootPhaseCapabilitiesWorld().diagnostic(source);
+    const p1 = diagnostic.roots[0]!;
+    const p3 = diagnostic.roots[2]!;
+
+    expect(p1.phases).toMatchObject({
+      controllerCns: "bounded-reserve",
+      directInput: false,
+      kinematics: false,
+      animation: false,
+      effects: true,
+      presentation: true,
+    });
+    expect(p3.phases).toEqual({
+      commands: true,
+      controllerCns: "active-motion",
+      directInput: false,
+      ai: false,
+      kinematics: true,
+      animation: true,
+      effects: false,
+      combat: false,
+      round: false,
+      presentation: false,
+      resources: false,
+    });
   });
 
   it("fails closed for unavailable, invalid-side, and non-player roots", () => {

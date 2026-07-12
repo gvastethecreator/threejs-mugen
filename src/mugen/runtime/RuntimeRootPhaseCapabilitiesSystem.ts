@@ -8,7 +8,7 @@ import type {
 } from "./RuntimeRootParticipationSystem";
 import type { RuntimeTeamState } from "./types";
 
-export type RuntimeRootControllerCnsCapability = "none" | "bounded-reserve" | "playable";
+export type RuntimeRootControllerCnsCapability = "none" | "bounded-reserve" | "active-motion" | "playable";
 
 export type RuntimeRootPhaseCapabilities = {
   commands: boolean;
@@ -40,7 +40,7 @@ export type RuntimeRootPhaseCapabilitiesRecord = {
 };
 
 export type RuntimeRootPhaseCapabilitiesDiagnostic = {
-  schema: "RuntimeRootPhaseCapabilities/v0";
+  schema: "RuntimeRootPhaseCapabilities/v1";
   mode: RuntimeRootInputRoutingDiagnostic["mode"];
   roots: RuntimeRootPhaseCapabilitiesRecord[];
 };
@@ -78,7 +78,7 @@ export class RuntimeRootPhaseCapabilitiesWorld {
     const resourceOwned = new Set(input.resourceOwnedRootIds);
 
     return {
-      schema: "RuntimeRootPhaseCapabilities/v0",
+      schema: "RuntimeRootPhaseCapabilities/v1",
       mode: input.inputRouting.mode,
       roots: input.roots.map((root) => {
         const participation = participationById.get(root.id)!;
@@ -86,7 +86,12 @@ export class RuntimeRootPhaseCapabilitiesWorld {
         assertMatchingRootState(root, participation, routing);
         const available = rootAvailable(root, routing);
         const phases = available
-          ? phaseCapabilities(participation, routing, resourceOwned.has(root.id))
+          ? phaseCapabilities(
+              participation,
+              routing,
+              resourceOwned.has(root.id),
+              input.inputRouting.mode === "ikemen-tag",
+            )
           : { ...NO_PHASE_CAPABILITIES };
         return {
           id: root.id,
@@ -111,15 +116,27 @@ function phaseCapabilities(
   participation: RuntimeRootParticipationRecord,
   routing: RuntimeRootInputRoutingRecord,
   resourceOwned: boolean,
+  tagMode: boolean,
 ): RuntimeRootPhaseCapabilities {
-  const playable = participation.inputOwned;
+  const playable = participation.inputOwned && (!tagMode || participation.structurallyActive);
+  const activeMotion =
+    tagMode &&
+    participation.scheduled &&
+    participation.structurallyActive &&
+    !participation.inputOwned;
   return {
     commands: routing.commandMapped,
-    controllerCns: participation.scheduled ? (playable ? "playable" : "bounded-reserve") : "none",
+    controllerCns: participation.scheduled
+      ? playable
+        ? "playable"
+        : activeMotion
+          ? "active-motion"
+          : "bounded-reserve"
+      : "none",
     directInput: playable && routing.directControlled,
     ai: playable && routing.aiControlled,
-    kinematics: playable,
-    animation: playable,
+    kinematics: playable || activeMotion,
+    animation: playable || activeMotion,
     effects: participation.effectStoreOwned,
     combat: participation.combatOwned,
     round: participation.roundOwned,

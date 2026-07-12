@@ -140,6 +140,171 @@ describe("PlayableMatchRuntime", () => {
     expect(singleSnapshot.reserveActors?.[0]?.runtime.stateNo).toBe(0);
   });
 
+  it("promotes a live Tag reserve into motion only on the next normal actor pass", () => {
+    const reserve = createTagMotionReserve("x", 4);
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve],
+    });
+    const initial = runtime.getSnapshot().reserveActors?.find(({ id }) => id === "p3")!;
+
+    const activated = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const activatedP3 = activated.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(activatedP3.runtime).toMatchObject({
+      pos: initial.runtime.pos,
+      vel: initial.runtime.vel,
+      animTime: initial.runtime.animTime,
+      teamState: { standby: false },
+    });
+    expect(
+      activated.tickSchedule?.phases
+        .filter(({ actorId }) => actorId === "p3")
+        .map(({ id }) => id),
+    ).toEqual(["fighter:controllers"]);
+
+    const moved = runtime.step({ p1: new Set(), p2: new Set() });
+    const movedP3 = moved.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(movedP3.runtime.pos.x).toBe(initial.runtime.pos.x + 4);
+    expect(movedP3.runtime.vel.x).toBe(4);
+    expect(movedP3.runtime.animTime).toBe(initial.runtime.animTime + 1);
+    expect(
+      moved.tickSchedule?.phases
+        .filter(({ actorId }) => actorId === "p3")
+        .map(({ id }) => id),
+    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation"]);
+    expect(moved.effects?.some(({ ownerId }) => ownerId === "p3")).toBe(false);
+    expect(
+      moved.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.executedControllers.Helper,
+    ).toBeUndefined();
+
+    runtime.reset();
+    const resetP3 = runtime.getSnapshot().reserveActors?.find(({ id }) => id === "p3")!;
+    expect(resetP3.runtime).toMatchObject({
+      pos: initial.runtime.pos,
+      vel: initial.runtime.vel,
+      animTime: initial.runtime.animTime,
+      teamState: { standby: true },
+    });
+  });
+
+  it("advances allowed airborne Tag reserve motion after CNS on the next normal pass", () => {
+    const reserve = createTagMotionReserve("x", 3, {
+      stateType: "A",
+      physics: "A",
+      positionY: -20,
+      velocityY: -2,
+    });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve],
+    });
+    const initial = runtime.getSnapshot().reserveActors?.find(({ id }) => id === "p3")!;
+
+    const activated = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(activated.reserveActors?.find(({ id }) => id === "p3")?.runtime.pos.y).toBe(initial.runtime.pos.y);
+
+    const moved = runtime.step({ p1: new Set(), p2: new Set() });
+    const movedP3 = moved.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(movedP3.runtime).toMatchObject({
+      stateType: "A",
+      physics: "A",
+      pos: { x: initial.runtime.pos.x + 3, y: -22 },
+      vel: { x: 3, y: -1.45 },
+      animTime: initial.runtime.animTime + 1,
+    });
+    expect(
+      moved.tickSchedule?.phases
+        .filter(({ actorId }) => actorId === "p3")
+        .map(({ id }) => id),
+    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation"]);
+  });
+
+  it("keeps active Tag reserve motion disabled during imported Pause ticks", () => {
+    const reserve = createTagMotionReserve("y", 4);
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withPause: true }),
+      demoFighters[1]!,
+      trainingStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [reserve],
+      },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x", "y"]), p2: new Set() });
+    const activated = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(snapshot.matchPause?.type).toBe("Pause");
+    expect(activated.runtime.teamState?.standby).toBe(false);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const paused = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(snapshot.tickSchedule?.branch).toBe("pause");
+    expect(paused.runtime.pos).toEqual(activated.runtime.pos);
+    expect(paused.runtime.animTime).toBe(activated.runtime.animTime);
+    expect(
+      snapshot.tickSchedule?.phases.some(
+        ({ actorId, id }) => actorId === "p3" && (id === "fighter:kinematics" || id === "fighter:animation"),
+      ),
+    ).toBe(false);
+  });
+
+  it("keeps active Tag reserve motion disabled during global HitPause ticks", () => {
+    const reserve = createTagMotionReserve("y", 4);
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(
+      createHitPauseIgnoreControllerFixture(false),
+      demoFighters[1]!,
+      closeStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [reserve],
+      },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x", "y"]), p2: new Set() });
+    const activated = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(snapshot.actors[0]?.hitPause).toBeGreaterThan(0);
+    expect(activated.runtime.teamState?.standby).toBe(false);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const frozen = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(snapshot.tickSchedule?.branch).toBe("hitpause");
+    expect(frozen.runtime.pos).toEqual(activated.runtime.pos);
+    expect(frozen.runtime.animTime).toBe(activated.runtime.animTime);
+  });
+
+  it("keeps non-standby Single reserves on bounded CNS without motion", () => {
+    const reserve = createTagMotionReserve("x", 4);
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "single",
+      reserveFighters: [reserve],
+    });
+    runtime.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }] });
+    const before = runtime.getSnapshot().reserveActors?.find(({ id }) => id === "p3")!;
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const after = snapshot.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(after.runtime.pos).toEqual(before.runtime.pos);
+    expect(after.runtime.vel).toEqual(before.runtime.vel);
+    expect(after.runtime.animTime).toBe(before.runtime.animTime);
+    expect(
+      snapshot.tickSchedule?.phases
+        .filter(({ actorId }) => actorId === "p3")
+        .map(({ id }) => id),
+    ).toEqual(["fighter:controllers"]);
+  });
+
   it("does not route Tag reserve commands through imported Pause ticks", () => {
     const reserveStateNo = 2789;
     const reserve = createTagSideCommandReserve("y", reserveStateNo);
@@ -6029,6 +6194,51 @@ value = ${stateNo}
 `).states[0]!;
   reserve.states = reserve.states?.map((state) =>
     state.id === 0 ? { ...state, controllers: [...commandState.controllers, ...state.controllers] } : state,
+  );
+  return reserve;
+}
+
+function createTagMotionReserve(
+  command: "x" | "y",
+  velocityX: number,
+  options: {
+    stateType?: "S" | "A";
+    physics?: "S" | "A";
+    positionY?: number;
+    velocityY?: number;
+  } = {},
+): DemoFighterDefinition {
+  const reserve = createTagSideCommandReserve(command, 2791);
+  const motionState = parseCns(`
+[Statedef 0]
+type = ${options.stateType ?? "S"}
+movetype = I
+physics = ${options.physics ?? "S"}
+anim = 0
+ctrl = 1
+
+[State 0, Activate Self]
+type = TagIn
+trigger1 = command = "${command}"
+
+${options.stateType === undefined && options.physics === undefined ? "" : `[State 0, Seed Air State]\ntype = StateTypeSet\ntrigger1 = 1\nstatetype = ${options.stateType ?? "S"}\nphysics = ${options.physics ?? "S"}`}
+
+${options.positionY === undefined ? "" : `[State 0, Seed Air Position]\ntype = PosSet\ntrigger1 = 1\ny = ${options.positionY}`}
+
+[State 0, Seed Motion]
+type = VelSet
+trigger1 = 1
+x = ${velocityX}
+y = ${options.velocityY ?? 0}
+
+[State 0, Blocked Helper]
+type = Helper
+trigger1 = 1
+id = 2791
+stateno = 0
+`).states[0]!;
+  reserve.states = reserve.states?.map((state) =>
+    state.id === 0 ? { ...state, controllers: motionState.controllers } : state,
   );
   return reserve;
 }

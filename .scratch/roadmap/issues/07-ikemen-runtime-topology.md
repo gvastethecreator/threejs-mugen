@@ -14,7 +14,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-402` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded Tag parameters/order/identity/RedirectID, complete root-to-Helper aggregate execution, Helper-originated self Tag plus required trace, active-root ownership research, same-side command routing, `RuntimeRootPhaseCapabilities/v0`, and the source-pinned first phase-promotion map are closed. Wayfinder 097 next executes only precomputed normal-tick `active-motion`: restricted motion CNS, kinematics, and animation. P3-P8 direct input/AI, Pause/hitpause motion, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-403` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded Tag parameters/order/identity/RedirectID, complete root-to-Helper aggregate execution, Helper-originated self Tag plus required trace, active-root ownership research, same-side command routing, and precomputed normal-tick `active-motion` are closed. `RuntimeRootPhaseCapabilities/v1` publishes restricted motion CNS, kinematics, and animation for already-live P3-P8 roots. Wayfinder 098 next maps only presentation/camera promotion. P3-P8 direct native input/AI, Pause/hitpause motion, stage clamp/push, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.
@@ -444,12 +444,12 @@ Every implementation cut under this issue must record:
 
 Allowed now, from the latest checkpoint override:
 
-> The explicit IKEMEN profile has bounded source-backed root/helper scheduling, complete team topology and selection diagnostics, bounded root-to-Helper Tag aggregate execution, Helper-originated self Tag standby, required Helper-owned Tag evidence, independent same-side Tag command routing, and an explicit per-root phase-capability matrix while later gameplay consumers remain P1/P2-owned.
+> The explicit IKEMEN profile has bounded source-backed root/helper scheduling, complete team topology and selection diagnostics, bounded root-to-Helper Tag aggregate execution, Helper-originated self Tag standby, required Helper-owned Tag evidence, independent same-side Tag command routing, and immutable normal-tick active-root motion/animation while later gameplay consumers remain P1/P2-owned.
 
-The next accepted implementation boundary is narrower than full gameplay: a normal-tick participation snapshot may promote an already-live P3-P8 root into restricted CNS, local kinematics, and animation only. Full `advanceFighter` reuse is rejected until effects, hit/contact/recovery, constraints, and pair aliases have independent root ownership.
+The next accepted decision boundary is narrower than full gameplay: Wayfinder 098 must map outgoing/incoming actor draw and camera participation over the existing motion root before a browser-visible implementation is selected. Effects, collision, combat, round, HUD/audio, and resources stay independent.
 
 Blocked now:
 
-> Helper-originated redirect/aggregate Tag axes, active-root direct input/AI, full fighter phases, root-key effects, combat/round/presentation/lifebars/resources, complete Simul/Tag/Turns gameplay, ZSS/Lua/config/screenpack execution, rollback, netplay, or full IKEMEN parity.
+> Helper-originated redirect/aggregate Tag axes, active-root direct native input/AI, remaining fighter phases, root-key effects, combat/round/presentation/lifebars/resources, complete Simul/Tag/Turns gameplay, ZSS/Lua/config/screenpack execution, rollback, netplay, or full IKEMEN parity.
 
 This issue closes only when each claimed cut has its own evidence. Completing `046a` does not close `046b`, completing `046c` does not imply team gameplay, and no I2 runtime gate closes an I1 scanner task.

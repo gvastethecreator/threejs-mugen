@@ -1319,6 +1319,8 @@ Explicit `ikemen-go` Tag normal ticks now clone each side input into independent
 
 Pinned IKEMEN action order and local owner reconciliation now close Wayfinder 096. Full `advanceFighter` is too broad for P3-P8 because it combines sprite/hit/contact/recovery owners, unrestricted CNS, movement, animation, and constraints. Wayfinder 097 will instead snapshot normal-tick root phases and run only restricted motion CNS, kinematics, and animation for live non-standby reserves. Direct input/AI, paused branches, effects, combat, round, presentation, audio/HUD, resources, exact same-frame Tag parity, and scores remain blocked. This checkpoint is docs-only; previous runtime/trace evidence was not re-run.
 
+Wayfinder 097 is now closed. Explicit IKEMEN Tag normal ticks precompute `playable`, `active-motion`, and `bounded-standby`; already-live P3-P8 roots execute state clock, restricted side-effect-free motion CNS, local kinematics, and animation. Required trace checksum `8ee92f65` proves next-tick promotion and blocked effect/contact routes inside 541/541 artifacts. Full gates pass 174 files / 1781 tests, TypeScript 7, build, boundaries, and diff. Browser smoke is N/A because presentation remains false. Wayfinder 098 maps the first actor/camera presentation cut; direct native input/AI, paused motion, stage clamp/push, effects, combat, round, HUD/audio, resources, and scores remain blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

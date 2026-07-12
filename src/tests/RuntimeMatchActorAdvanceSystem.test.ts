@@ -77,7 +77,7 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
         rootCandidate(p3, 3, "I"),
       ]),
       opponentOf: (root) => root === p2 ? p1 : p2,
-      participationOf: (root) => root === p3 ? "standby" : "playable",
+      participationOf: (root) => root === p3 ? "bounded-standby" : "playable",
       applyAutoGuardStart: (root, _opponent, checkpoint) => calls.push(`guard:${checkpoint}:${root.id}`),
       advanceRoot: (root, _opponent, participation) => calls.push(`root:${root.id}:${participation}`),
       advanceHelper: () => undefined,
@@ -91,7 +91,39 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
       "guard:post:p1",
       "root:p2:playable",
       "guard:post:p2",
-      "root:p3:standby",
+      "root:p3:bounded-standby",
+    ]);
+  });
+
+  it("advances active-motion roots without auto-guard ownership", () => {
+    const calls: string[] = [];
+    const p1 = { id: "p1" };
+    const p2 = { id: "p2" };
+    const p3 = { id: "p3" };
+    const runOrderWorld = new RuntimeActorRunOrderWorld();
+
+    new RuntimeMatchActorAdvanceWorld(runOrderWorld).advance({
+      runOrder: runOrderWorld.order("ikemen-go", [
+        rootCandidate(p1, 1, "I"),
+        rootCandidate(p2, 2, "I"),
+        rootCandidate(p3, 3, "I"),
+      ]),
+      opponentOf: (root) => root === p2 ? p1 : p2,
+      participationOf: (root) => root === p3 ? "active-motion" : "playable",
+      applyAutoGuardStart: (root, _opponent, checkpoint) => calls.push(`guard:${checkpoint}:${root.id}`),
+      advanceRoot: (root, _opponent, participation) => calls.push(`root:${root.id}:${participation}`),
+      advanceHelper: () => undefined,
+      discoverHelpers: () => [],
+    });
+
+    expect(calls).toEqual([
+      "guard:pre:p1",
+      "guard:pre:p2",
+      "root:p1:playable",
+      "guard:post:p1",
+      "root:p2:playable",
+      "guard:post:p2",
+      "root:p3:active-motion",
     ]);
   });
 });

@@ -112,7 +112,12 @@ import { RuntimeMatchEnvColorBridgeWorld } from "./RuntimeMatchEnvColorBridgeSys
 import { RuntimeMatchEnvShakeBridgeWorld } from "./RuntimeMatchEnvShakeBridgeSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
-import { RuntimeRootCnsExecutionWorld } from "./RuntimeRootCnsExecutionSystem";
+import {
+  RuntimeRootCnsExecutionWorld,
+  type RuntimeRootCnsParticipation,
+} from "./RuntimeRootCnsExecutionSystem";
+import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
+import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
 import {
   RuntimeRootInputRoutingWorld,
@@ -248,6 +253,8 @@ const matchStepWorld = new RuntimeMatchStepWorld();
 const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const rootInputRoutingWorld = new RuntimeRootInputRoutingWorld();
+const rootAdvancePhaseWorld = new RuntimeRootAdvancePhaseWorld();
+const rootMotionAdvanceWorld = new RuntimeRootMotionAdvanceWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const fighterRunOrderWorld = new RuntimeFighterRunOrderWorld();
@@ -754,6 +761,12 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
+    const rootAdvancePhases = rootAdvancePhaseWorld.snapshot({
+      runtimeProfile: this.runtimeProfile,
+      teamMode: this.tagTeamOrder ? "tag" : "single",
+      roots: this.characterRoots(),
+      playableRoots: [this.p1, this.p2],
+    });
     matchActiveWorld.advance({
       tickRoundTimer: () => {
         recordPhase("active:round-timer");
@@ -784,10 +797,14 @@ export class PlayableMatchRuntime {
           return matchActorAdvanceWorld.advance({
             runOrder: preparedActorRunOrder,
             opponentOf: (fighter) => this.opponentForRoot(fighter),
-            participationOf: (fighter) => this.reserveRoots.includes(fighter) ? "standby" : "playable",
+            participationOf: (fighter) => rootAdvancePhases.phaseOf(fighter),
             advanceRoot: (fighter, opponent, participation) => {
-              if (participation === "standby") {
+              if (participation === "bounded-standby") {
                 this.advanceStandbyRootCns(fighter, opponent, gameSpace, recordPhase);
+                return;
+              }
+              if (participation === "active-motion") {
+                this.advanceActiveRootMotion(fighter, opponent, gameSpace, recordPhase);
                 return;
               }
               advanceFighter(
@@ -1111,6 +1128,7 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
     options: { onlyIgnoreHitPause?: boolean } = {},
   ): void {
+    if (fighter.runtime.teamState?.disabled || fighter.runtime.teamState?.playerType === false) return;
     if (!options.onlyIgnoreHitPause) {
       stateClockWorld.advance(fighter);
     }
@@ -1136,6 +1154,54 @@ export class PlayableMatchRuntime {
         onTeamStandby: (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
       },
     );
+  }
+
+  private advanceActiveRootMotion(
+    fighter: FighterMatchState,
+    opponent: FighterMatchState,
+    gameSpace: ExpressionGameSpace,
+    recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+  ): void {
+    rootMotionAdvanceWorld.advance({
+      actor: fighter,
+      hooks: {
+        advanceStateClock: (actor) => stateClockWorld.advance(actor),
+        runMotionControllers: (actor) => {
+          recordPhase("fighter:controllers", actor.id);
+          runActiveStateControllers(
+            actor,
+            opponent,
+            this.actorConstraintWorld,
+            this.spriteEffectWorld,
+            this.reversalWorld,
+            this.effectSpawnWorld,
+            this.stage.bounds,
+            gameSpace,
+            this.tick,
+            undefined,
+            undefined,
+            {
+              participation: "active-motion",
+              runtimeProfile: this.runtimeProfile,
+              onBlocked: (controller, route) =>
+                this.logs.unshift(`Blocked active-motion CNS controller ${controller.type} for ${actor.id} (${route})`),
+              onTeamStandby: (caller, operation, context) => this.applyTeamStandbyController(caller, operation, context),
+            },
+          );
+        },
+        advanceKinematics: (actor) => {
+          recordPhase("fighter:kinematics", actor.id);
+          this.kinematicsWorld.advance(actor, {
+            preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(actor),
+            changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+          });
+        },
+        advanceAnimation: (actor) => {
+          recordPhase("fighter:animation", actor.id);
+          this.animationWorld.advance(actor);
+        },
+      },
+    });
   }
 
   private applyTeamStandbyController(
@@ -2010,7 +2076,7 @@ function runHitPauseIgnoredControllers(
 
 type ActiveControllerRunOptions = {
   onlyIgnoreHitPause?: boolean;
-  participation?: "playable" | "standby";
+  participation?: RuntimeRootCnsParticipation;
   onBlocked?: (controller: ControllerIr, route: string) => void;
   onTeamStandby?: TeamStandbyControllerHandler;
   runtimeProfile?: RuntimeCompatibilityProfile;

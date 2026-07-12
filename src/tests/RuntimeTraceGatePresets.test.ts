@@ -164,6 +164,7 @@ import {
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
+  createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
   createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
@@ -15989,6 +15990,59 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }),
+      ]),
+    );
+  });
+
+  it("creates a required IKEMEN active-root next-tick motion artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootMotionTraceArtifact({
+      generatedAt: "2026-07-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-active-root-motion-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-active-root-motion-golden", passed: true, failures: [] }],
+      trace: {
+        frameCount: 4,
+        finalReserveActors: [
+          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -152, y: 0 }, vel: { x: 4, y: 0 } }),
+          expect.objectContaining({ id: "p4", stateNo: 0, teamStandby: true, effectiveCtrl: false }),
+        ],
+      },
+    });
+    expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
+    expect(artifact.trace.checksum).toBe("8ee92f65");
+    expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "64d76d9a", "df69cd20"]);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ TagIn: 1, VelSet: 2 });
+    expect(artifact.gates[0]?.evidence.executedControllers.Helper).toBeUndefined();
+    expect(artifact.trace.finalEffects).toEqual([]);
+    expect(artifact.gates[0]?.evidence.effectStores).toEqual([
+      expect.objectContaining({
+        ownerId: "p1",
+        total: 0,
+        helpers: [],
+        projectiles: [],
+        explods: [],
+        nextSerials: { helper: 0, projectile: 0, explod: 0 },
+      }),
+      expect.objectContaining({
+        ownerId: "p2",
+        total: 0,
+        helpers: [],
+        projectiles: [],
+        explods: [],
+        nextSerials: { helper: 0, projectile: 0, explod: 0 },
+      }),
+    ]);
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "team-standby:tagin": 1,
+      "kinematic:velset": 2,
+    });
+    expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "TagIn", name: "Active Root TagIn" }),
+        expect.objectContaining({ actorId: "p3", stateNo: 0, controller: "VelSet", name: "Active Root Motion" }),
       ]),
     );
   });

@@ -223,3 +223,13 @@ Decision: passive CNS controller mutation should leave `StateControllerExecutor`
 Why: the port needs smaller testable ownership seams before chasing full CNS VM parity.
 
 Gate: each extraction must preserve current trace behavior or document intentional checksum drift, add focused system coverage, and state blocked parity claims.
+
+## ADR-012: Root Phase Promotion Uses Immutable Capability Snapshots
+
+Status: accepted, incremental.
+
+Decision: explicit IKEMEN root execution selects `playable`, `active-motion`, or `bounded-standby` once before the normal actor pass. A controller may mutate live standby state, but it cannot widen its own remaining phase capabilities until the next normal tick. `active-motion` has a dedicated side-effect-free CNS profile and a dedicated controller-before-kinematics-before-animation executor.
+
+Why: reusing full fighter advance would silently grant sprite effects, hit/contact/recovery, constraints, and pair-owned gameplay. Recomputing participation mid-pass would let TagIn alter its own remaining privileges and make actor order part of the security boundary.
+
+Gate: every widened phase needs a versioned public capability, focused success/failure/reset/freeze tests, one required trace when behavior changes, stable historical gates, and an explicit browser requirement when presentation changes. Direct input/AI, effects, combat, round, presentation, and resources remain independent promotions.

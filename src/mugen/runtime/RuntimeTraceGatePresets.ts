@@ -8466,6 +8466,151 @@ export function createSyntheticImportedIkemenTagSideCommandTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const startX = stage.playerStart.p1.x;
+  const velocityX = 4;
+  const script = expandRuntimeTraceScript([
+    { label: "opposite-side command stays isolated", p1: [], p2: ["x"], frames: 1 },
+    { label: "same-side TagIn snapshots bounded phase", p1: ["x"], p2: [], frames: 1 },
+    { label: "next normal tick enters active motion", p1: [], p2: [], frames: 1 },
+    { label: "active motion remains local", p1: [], p2: [], frames: 1 },
+  ]);
+  const reserve = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-motion",
+    displayName: "Synthetic Imported IKEMEN Active Root Motion",
+    withHitDef: false,
+    activeRootMotionRoute: { commandName: "x", velocityX, blockedHelperId: 1285 },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1: demoFighters[0]!,
+      p2: demoFighters[1]!,
+      stage,
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve, demoFighters[1]!],
+    }),
+    script,
+    { label: "synthetic-imported-ikemen-active-root-motion-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-motion-golden",
+      label: "Synthetic imported IKEMEN active-root next-tick motion",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go Tag trace proves P2 input cannot activate P3, P1 input lets standby P3 execute TagIn without same-pass movement, and the next normal tick admits only bounded VelSet-driven kinematics plus animation. A Helper controller remains blocked and P3 gains no effects, combat, round, presentation, or resources.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-motion-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["TagIn", { type: "VelSet", minCount: 2 }],
+        requiredExecutedOperations: ["team-standby:tagin", { operation: "kinematic:velset", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 next-tick TagIn to motion",
+            actorId: "p3",
+            steps: [
+              { stateNo: 0, controller: "TagIn", name: "Active Root TagIn" },
+              { stateNo: 0, controller: "VelSet", name: "Active Root Motion" },
+            ],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          {
+            label: "P3 excluded from activation-pass kinematics",
+            frameIndex: 1,
+            phase: "fighter:kinematics",
+            actorIds: ["p2", "p1"],
+          },
+          {
+            label: "P3 admitted to next-pass kinematics",
+            frameIndex: 2,
+            phase: "fighter:kinematics",
+            actorIds: ["p1", "p2", "p3"],
+          },
+          {
+            label: "P3 admitted to next-pass animation",
+            frameIndex: 2,
+            phase: "fighter:animation",
+            actorIds: ["p1", "p2", "p3"],
+          },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            teamStandby: false,
+            effectiveCtrl: true,
+            observedPosXAtLeast: startX + velocityX * 2,
+            observedPosXAtMost: startX,
+            observedVelXAtLeast: velocityX,
+            minFrames: 1,
+          },
+          {
+            actorId: "p4",
+            source: "demo",
+            actorKind: "player",
+            stateNo: 0,
+            teamStandby: true,
+            effectiveCtrl: false,
+            minFrames: 4,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "P3 standby before active-motion range",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 0,
+                teamStandby: true,
+                effectiveCtrl: false,
+                observedPosXAtLeast: startX,
+                observedPosXAtMost: startX,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 0,
+                teamStandby: false,
+                effectiveCtrl: true,
+                observedPosXAtLeast: startX + velocityX * 2,
+                observedPosXAtMost: startX,
+                observedVelXAtLeast: velocityX,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", stateNo: 0, ctrl: true },
+          { actorId: "p4", source: "demo", actorKind: "player", stateNo: 0, ctrl: true },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 0 },
+          { ownerId: "p2", minTotal: 0 },
+        ],
+        forbiddenCombatReasons: ["hit", "guard"],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenPauseBufferTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39843,6 +39988,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
   passiveCommandRoute?: { commandName: string; stateNo: number };
+  activeRootMotionRoute?: { commandName: string; velocityX: number; blockedHelperId: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -40560,6 +40706,7 @@ physics = S
 anim = 0
 ctrl = 1
 ${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandRoute) : ""}
+${options.activeRootMotionRoute ? activeRootMotionRouteBlock(options.activeRootMotionRoute) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
@@ -45221,6 +45368,34 @@ function passiveCommandRouteBlock(route: { commandName: string; stateNo: number 
 type = ChangeState
 value = ${route.stateNo}
 trigger1 = command = "${route.commandName}"
+`;
+}
+
+function activeRootMotionRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["activeRootMotionRoute"]>): string {
+  return `
+[State 0, Active Root TagIn]
+type = TagIn
+triggerall = var(59) = 0
+trigger1 = command = "${route.commandName}"
+
+[State 0, Mark Active Root TagIn]
+type = VarSet
+triggerall = var(59) = 0
+trigger1 = command = "${route.commandName}"
+v = 59
+value = 1
+
+[State 0, Active Root Motion]
+type = VelSet
+trigger1 = 1
+x = ${route.velocityX}
+y = 0
+
+[State 0, Blocked Active Root Helper]
+type = Helper
+trigger1 = 1
+id = ${route.blockedHelperId}
+stateno = 0
 `;
 }
 

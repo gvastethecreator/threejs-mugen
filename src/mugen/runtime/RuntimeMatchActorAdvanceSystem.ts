@@ -3,13 +3,14 @@ import {
   type RuntimeActorRunOrderCandidate,
   type RuntimeActorRunOrderResult,
 } from "./RuntimeActorRunOrderSystem";
+import type { RuntimeRootAdvancePhase } from "./RuntimeRootAdvancePhaseSystem";
 
 export type RuntimeMatchActorAdvanceInput<TRoot, THelper> = {
   runOrder: RuntimeActorRunOrderResult<TRoot, THelper>;
   opponentOf: (root: TRoot) => TRoot;
   applyAutoGuardStart: (defender: TRoot, attacker: TRoot, checkpoint: "pre" | "post") => void;
-  participationOf: (root: TRoot) => "playable" | "standby";
-  advanceRoot: (root: TRoot, opponent: TRoot, participation: "playable" | "standby") => void;
+  participationOf: (root: TRoot) => RuntimeRootAdvancePhase;
+  advanceRoot: (root: TRoot, opponent: TRoot, participation: RuntimeRootAdvancePhase) => void;
   advanceHelper: (helper: THelper) => void;
   discoverHelpers: () => RuntimeActorRunOrderCandidate<TRoot, THelper>[];
 };

@@ -282,7 +282,7 @@ describe("MatchWorld", () => {
 
     let registry = world.getActorRegistry();
     expect(registry.rootPhaseCapabilities).toMatchObject({
-      schema: "RuntimeRootPhaseCapabilities/v0",
+      schema: "RuntimeRootPhaseCapabilities/v1",
       mode: "ikemen-tag",
     });
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p1")).toMatchObject({
@@ -345,12 +345,12 @@ describe("MatchWorld", () => {
       standby: true,
       structurallyActive: false,
       effectiveCtrl: false,
-      phases: expect.objectContaining({ controllerCns: "playable", kinematics: true, presentation: true }),
+      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, presentation: true }),
     });
     expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")).toMatchObject({
       standby: false,
       structurallyActive: true,
-      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, presentation: false }),
+      phases: expect.objectContaining({ controllerCns: "active-motion", kinematics: true, presentation: false }),
     });
 
     registry.rootPhaseCapabilities!.roots[0]!.phases.combat = false;

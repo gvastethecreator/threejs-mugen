@@ -6,7 +6,7 @@ import {
 import type { RuntimeActiveControllerCapabilities } from "./RuntimeActiveControllerDispatchSystem";
 import type { RuntimeActiveControllerScanResult } from "./RuntimeActiveControllerScanSystem";
 
-export type RuntimeRootCnsParticipation = "playable" | "standby";
+export type RuntimeRootCnsParticipation = "playable" | "active-motion" | "standby";
 
 export const PLAYABLE_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabilities = {
   state: true,
@@ -22,6 +22,20 @@ export const STANDBY_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabilities 
   unsupported: true,
 };
 
+export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabilities = {
+  ...STANDBY_ROOT_CNS_CAPABILITIES,
+  runtimeControllers: [
+    ...STANDBY_ROOT_CNS_CAPABILITIES.runtimeControllers,
+    "gravity",
+    "velset",
+    "veladd",
+    "velmul",
+    "hitvelset",
+    "posset",
+    "posadd",
+  ],
+};
+
 export class RuntimeRootCnsExecutionWorld {
   constructor(private readonly controllerRunWorld = new RuntimeActiveControllerRunWorld()) {}
 
@@ -31,7 +45,12 @@ export class RuntimeRootCnsExecutionWorld {
   ): RuntimeActiveControllerScanResult<TActor> {
     return this.controllerRunWorld.run({
       ...input,
-      capabilities: participation === "playable" ? PLAYABLE_ROOT_CNS_CAPABILITIES : STANDBY_ROOT_CNS_CAPABILITIES,
+      capabilities:
+        participation === "playable"
+          ? PLAYABLE_ROOT_CNS_CAPABILITIES
+          : participation === "active-motion"
+            ? ACTIVE_MOTION_ROOT_CNS_CAPABILITIES
+            : STANDBY_ROOT_CNS_CAPABILITIES,
     });
   }
 }

@@ -1,6 +1,15 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN active-root phase promotion research
+## Global report - 2026-07-11 IKEMEN active-root motion runtime
+
+- Runtime: one immutable normal-tick phase snapshot selects `playable`, `active-motion`, or `bounded-standby`; a TagIn cannot widen the same actor pass.
+- Motion: already-live explicit-Tag P3-P8 roots run state clock, restricted side-effect-free CNS, local kinematics, then animation. `RuntimeRootPhaseCapabilities/v1` publishes the result.
+- Isolation: direct native input/AI, Pause/hitpause motion, sprite/effect lifecycle, hit/contact/recovery, stage clamp/push, combat, round, presentation, camera/HUD/audio, and resources remain unchanged.
+- Trace: required `synthetic-imported-ikemen-active-root-motion` checksum `8ee92f65` proves next-tick P3 TagIn-to-motion, two `VelSet` operations, final `x = -152`, inert P4, and blocked Helper/effect/contact routes.
+- Verification: 174 files / 1781 tests, TypeScript 7, build, 541/541 traces (510 required, 31 optional), boundaries, and final diff gate pass; browser smoke is N/A while presentation remains false.
+- Global status: Wayfinder 097 is closed without score movement; Wayfinder 098 maps incoming/outgoing actor presentation and camera ownership before a browser-visible implementation.
+
+## Previous global report - 2026-07-11 IKEMEN active-root phase promotion research
 
 - Source: pinned IKEMEN updates every character command list, then runs controller state logic before position physics and animation-frame commit; standby masks interaction rather than removing the whole character tick.
 - Local audit: full `advanceFighter` mixes motion with sprite effects, hit/contact/recovery, unrestricted CNS, and constraints, so it is not safe for P3-P8.
@@ -1176,7 +1185,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1. Af
 
 ## Historical Evidence Snapshot - 509/509 Baseline
 
-This table is retained as a historical snapshot. Current declared global evidence is 540/540 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
+This table is retained as a historical snapshot. Current declared global evidence is 541/541 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
