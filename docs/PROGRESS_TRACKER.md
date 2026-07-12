@@ -1,6 +1,15 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-11 IKEMEN active-root motion runtime
+## Global report - 2026-07-11 IKEMEN active-root presentation research
+
+- Source: pinned IKEMEN draw enrollment does not reject standby; `invisible` suppresses body and shadow, while camera independently rejects standby and honors `movecamera`.
+- Local audit: `snapshot.actors` is a shared P1/P2 contract for renderer, HUD, audio, collision, hit sparks, and app indexing; reserves cannot be appended safely.
+- Decision: Wayfinder 099 adds `RuntimeRootPresentation/v0` draw/camera ids while preserving `actors` and `reserveActors` storage.
+- Bounded divergence: the first handoff hides the outgoing standby root immediately; exact leaving overlap waits for executable Tag ZSS choreography.
+- Evidence: pinned source, local owner map, adversarial/deletion audit, roadmap sync, and diff gate only. Runtime/build/trace/browser evidence remains unchanged from 097.
+- Global status: Wayfinder 098 is closed without behavior or score movement; Wayfinder 099 is the next browser-visible I2 gate.
+
+## Previous global report - 2026-07-11 IKEMEN active-root motion runtime
 
 - Runtime: one immutable normal-tick phase snapshot selects `playable`, `active-motion`, or `bounded-standby`; a TagIn cannot widen the same actor pass.
 - Motion: already-live explicit-Tag P3-P8 roots run state clock, restricted side-effect-free CNS, local kinematics, then animation. `RuntimeRootPhaseCapabilities/v1` publishes the result.

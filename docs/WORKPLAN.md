@@ -1321,6 +1321,8 @@ Pinned IKEMEN action order and local owner reconciliation now close Wayfinder 09
 
 Wayfinder 097 is now closed. Explicit IKEMEN Tag normal ticks precompute `playable`, `active-motion`, and `bounded-standby`; already-live P3-P8 roots execute state clock, restricted side-effect-free motion CNS, local kinematics, and animation. Required trace checksum `8ee92f65` proves next-tick promotion and blocked effect/contact routes inside 541/541 artifacts. Full gates pass 174 files / 1781 tests, TypeScript 7, build, boundaries, and diff. Browser smoke is N/A because presentation remains false. Wayfinder 098 maps the first actor/camera presentation cut; direct native input/AI, paused motion, stage clamp/push, effects, combat, round, HUD/audio, resources, and scores remain blocked.
 
+Wayfinder 098 is now closed as source-backed research. Pinned IKEMEN keeps standby roots drawable until authored `invisible`, but excludes standby from camera; Tag entering/leaving/waiting states provide the real overlap, offscreen motion, camera flags, and final invisibility. Local `snapshot.actors` cannot widen without also changing HUD, audio, collision, hit sparks, and app indexing. Wayfinder 099 therefore adds `RuntimeRootPresentation/v0` draw/camera ids, keeps pair storage/gameplay stable, and uses an immediate standby-based visual handoff until Tag ZSS choreography executes. Required trace plus desktop/mobile smoke, canvas pixels, renderer ids, reset, and stale-mesh cleanup gate the implementation. No behavior or score movement in this research closeout.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

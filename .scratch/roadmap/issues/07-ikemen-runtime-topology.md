@@ -14,7 +14,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-403` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded Tag parameters/order/identity/RedirectID, complete root-to-Helper aggregate execution, Helper-originated self Tag plus required trace, active-root ownership research, same-side command routing, and precomputed normal-tick `active-motion` are closed. `RuntimeRootPhaseCapabilities/v1` publishes restricted motion CNS, kinematics, and animation for already-live P3-P8 roots. Wayfinder 098 next maps only presentation/camera promotion. P3-P8 direct native input/AI, Pause/hitpause motion, stage clamp/push, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-404` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded Tag parameters/order/identity/RedirectID, complete root-to-Helper aggregate execution, Helper-originated self Tag plus required trace, active-root ownership research, same-side command routing, precomputed normal-tick `active-motion`, and the first actor/camera presentation policy are closed. `RuntimeRootPhaseCapabilities/v1` publishes restricted motion CNS, kinematics, and animation for already-live P3-P8 roots. Wayfinder 099 next implements renderer-independent draw/camera ids plus browser proof. P3-P8 direct native input/AI, Pause/hitpause motion, stage clamp/push, root-keyed effects, multi-root combat, round, executable presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.
@@ -446,7 +446,9 @@ Allowed now, from the latest checkpoint override:
 
 > The explicit IKEMEN profile has bounded source-backed root/helper scheduling, complete team topology and selection diagnostics, bounded root-to-Helper Tag aggregate execution, Helper-originated self Tag standby, required Helper-owned Tag evidence, independent same-side Tag command routing, and immutable normal-tick active-root motion/animation while later gameplay consumers remain P1/P2-owned.
 
-The next accepted decision boundary is narrower than full gameplay: Wayfinder 098 must map outgoing/incoming actor draw and camera participation over the existing motion root before a browser-visible implementation is selected. Effects, collision, combat, round, HUD/audio, and resources stay independent.
+The next accepted implementation boundary is narrower than full gameplay: Wayfinder 099 must publish and browser-gate outgoing/incoming actor draw and camera participation over the existing motion root. Effects, collision, combat, round, HUD/audio, and resources stay independent.
+
+Wayfinder 098 is now resolved. Pinned source and local ownership select `RuntimeRootPresentation/v0` with separate draw/camera ids, stable pair storage, and an immediate standby-based handoff as temporary debt until Tag ZSS entering/leaving/waiting states execute. Wayfinder 099 owns the implementation, required trace, desktop/mobile screenshots, canvas-pixel checks, reset, and stale-mesh proof. Effects, collision, combat, round, HUD/audio, and resources remain independent.
 
 Blocked now:
 

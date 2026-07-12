@@ -233,3 +233,13 @@ Decision: explicit IKEMEN root execution selects `playable`, `active-motion`, or
 Why: reusing full fighter advance would silently grant sprite effects, hit/contact/recovery, constraints, and pair-owned gameplay. Recomputing participation mid-pass would let TagIn alter its own remaining privileges and make actor order part of the security boundary.
 
 Gate: every widened phase needs a versioned public capability, focused success/failure/reset/freeze tests, one required trace when behavior changes, stable historical gates, and an explicit browser requirement when presentation changes. Direct input/AI, effects, combat, round, presentation, and resources remain independent promotions.
+
+## ADR-013: Root Presentation Uses Runtime-owned Consumer Projections
+
+Status: accepted, planned implementation.
+
+Decision: multi-root draw and camera selection must be published by a renderer-independent runtime contract with separate ordered ids. `MugenSnapshot.actors` remains the stable playable/HUD/audio/collision pair; reserves remain separately addressable. Three.js resolves selected draw ids across those stores but cannot infer compatibility policy. Draw, shadow, camera, collision debug, hit sparks, effects, HUD, audio, combat, round, and resources remain separate consumers.
+
+Why: appending a live P3-P8 root to `actors` would silently widen several pair-owned systems, while filtering only inside Three.js would hide compatibility policy from traces and Studio diagnostics. Pinned IKEMEN also treats standby, invisible, shadow, and camera as distinct axes.
+
+Gate: the first implementation requires a versioned diagnostic, stable pair regression tests, required trace linkage, desktop/mobile screenshots, canvas-pixel and renderer-id checks, reset/stale-mesh proof, and explicit temporary-debt language for the immediate standby draw proxy. Exact outgoing/incoming overlap remains blocked until Tag ZSS choreography executes.

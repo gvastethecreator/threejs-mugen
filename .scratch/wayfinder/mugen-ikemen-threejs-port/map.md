@@ -115,16 +115,17 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Model active-root phase capabilities](tickets/095-model-active-root-phase-capabilities.md) - explicit IKEMEN registries now reconcile command/CNS/direct-input/AI/kinematics/animation/effect/combat/round/presentation/resource owners without changing execution.
 - [Map active-root playable phase promotion](tickets/096-map-active-root-playable-phase-promotion.md) - full fighter advance is rejected for P3-P8; the first executable cut is a precomputed normal-tick `active-motion` phase with restricted motion CNS, kinematics, and animation only.
 - [Execute active-root motion phase](tickets/097-execute-active-root-motion-phase.md) - explicit Tag normal ticks now promote already-live P3-P8 roots through restricted motion CNS, local kinematics, and animation under an immutable phase snapshot and required trace evidence.
+- [Map active-root presentation promotion](tickets/098-map-active-root-presentation-promotion.md) - draw, shadow, camera, HUD/audio, collision, and reset owners are now separated; the selected first cut is a runtime-owned immediate draw/camera handoff with pair gameplay preserved.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Map active-root presentation promotion](tickets/098-map-active-root-presentation-promotion.md)
+- [Execute active-root presentation handoff](tickets/099-execute-active-root-presentation-handoff.md)
 
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Active-root gameplay follows the ordered phase route fixed by Wayfinder 093 and exposed by 095/097; Wayfinder 098 maps only the first browser-visible actor/camera cut before implementation.
+- Active-root gameplay follows the ordered phase route fixed by Wayfinder 093 and exposed by 095/097; Wayfinder 099 implements only the first browser-visible actor/camera cut selected by 098.
 
 ## Out Of Scope
 

@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root motion runtime (2026-07-11)
+## Latest closeout - IKEMEN active-root presentation research (2026-07-11)
+
+Pinned IKEMEN source separates character draw, `invisible`/shadow suppression, standby camera filtering, and authored Tag entering/leaving/waiting choreography. Local audit rejects widening `snapshot.actors` because renderer, HUD, audio, collision, hit sparks, and app indexing share that pair. Wayfinder 099 will add runtime-owned draw/camera ids and an immediate P1-to-P3 visual handoff with pair gameplay unchanged. This docs-only closeout adds no runtime, trace, browser, or score movement.
+
+## Previous closeout - IKEMEN active-root motion runtime (2026-07-11)
 
 Explicit IKEMEN Tag normal ticks now snapshot `playable`, `active-motion`, and `bounded-standby` before actor execution. Already-live P3-P8 roots run restricted side-effect-free CNS, local kinematics, and animation; same-pass TagIn promotion, direct native input/AI, Pause/hitpause motion, effects, combat, round, presentation, audio/HUD, and resources remain blocked. Required checksum `8ee92f65` passes inside 541/541 traces; full verification passes 174 files / 1781 tests. Wayfinder 098 maps the first browser-visible presentation cut. Scores remain unchanged.
 
@@ -928,7 +932,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, bounded Tag/identity/RedirectID, required Helper/side-command evidence, and `RuntimeRootPhaseCapabilities/v1` active-root local motion/animation. | Wayfinder 098: map incoming/outgoing actor presentation and camera ownership before browser implementation. | No P3-P8 direct native input/AI, visible/collidable gameplay, root-key effects, multi-root combat/round/lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, bounded Tag/identity/RedirectID, required Helper/side-command evidence, `RuntimeRootPhaseCapabilities/v1` active-root local motion/animation, and a closed source-backed draw/camera policy. | Wayfinder 099: implement and browser-gate the immediate incoming/outgoing presentation handoff. | No P3-P8 direct native input/AI, collidable gameplay, root-key effects, multi-root combat/round/lifebar/resources, exact Tag ZSS overlap, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -939,7 +943,7 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 presentation research: Wayfinder 098 maps one browser-visible actor/camera cut over the closed active-motion phase without granting collision, effects, combat, round, HUD/audio, or resources.
+1. I2 presentation implementation: Wayfinder 099 publishes runtime-owned draw/camera ids and browser-gates one immediate P1-to-P3 handoff without granting collision, effects, combat, round, HUD/audio, or resources.
 2. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
 3. I2 redirects: keep broader mutation redirects blocked until caller identity, failure atomicity, and telemetry ownership have source-backed fixtures.
 4. S1: add source handle/fingerprint/permission, external conflict, one write/reimport transaction, output invalidation and rollback; defer undo/migration.
@@ -971,8 +975,9 @@ Current checkpoint and next build:
 - Closed: explicit Tag side command routing plus reserve-root trace observability, with P2 isolation and P1-to-P3 required evidence.
 - Closed: explicit per-root phase-capability matrix across command/CNS/gameplay owners with no execution change.
 - Closed: pinned active-root phase-order research plus immutable normal-tick `active-motion` execution with restricted CNS, local kinematics/animation, and required checksum `8ee92f65`.
-- Next: Wayfinder 098 maps incoming/outgoing actor presentation and camera ownership before any browser-visible implementation.
-- Keep direct native input/AI, incoming Helper hurt, collision/push, effects, combat, round, renderer, lifebar, Studio detail, audio, and resources unchanged until their separate gates.
+- Closed: pinned draw/shadow/camera/Tag choreography research plus a selected renderer-independent immediate handoff policy.
+- Next: Wayfinder 099 implements `RuntimeRootPresentation/v0`, required trace linkage, and desktop/mobile browser proof.
+- Keep direct native input/AI, incoming Helper hurt, collision/push, effects, combat, round, lifebar, Studio detail, audio, and resources unchanged; presentation changes only through the selected draw/camera projection.
 
 Acceptance:
 

@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-11 IKEMEN active-root presentation research note
+
+Pinned source and local ownership are reconciled for the first P3-P8 draw/camera handoff. Scores remain unchanged because `RuntimeRootPresentation/v0`, renderer consumption, required trace linkage, and desktop/mobile browser proof are selected but not implemented; collision, effects, HUD/audio, combat, round, resources, and exact Tag ZSS choreography remain blocked.
+
 ## 2026-07-11 IKEMEN active-root motion evidence note
 
 The repository now declares 541/541 traces (510 required, 31 optional). Required `synthetic-imported-ikemen-active-root-motion` checksum `8ee92f65` proves an already-live P3 can execute bounded imported CNS-driven local motion and animation on normal explicit-Tag ticks without same-pass promotion, effects, contact, presentation, or round/resource ownership. Scores remain unchanged because P3-P8 are still invisible/non-collidable and lack direct native input/AI plus every later gameplay owner.
