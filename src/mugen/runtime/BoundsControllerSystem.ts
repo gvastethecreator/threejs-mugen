@@ -20,7 +20,9 @@ export class RuntimeBoundsControllerWorld {
     context: RuntimeControllerEvaluationContext = {},
   ): RuntimeBoundsControllerResult {
     const appliedOperation = operation ?? resolveRuntimePlayerPushControllerOperation(controller, state, context);
-    state.playerPush = appliedOperation.enabled;
+    if (appliedOperation.enabled !== undefined) state.playerPush = appliedOperation.enabled;
+    if (appliedOperation.priority !== undefined) state.pushPriority = appliedOperation.priority;
+    if (appliedOperation.affectTeam !== undefined) state.pushAffectTeam = appliedOperation.affectTeam;
     return { applied: true, controllerType: "playerpush", operation: appliedOperation };
   }
 
@@ -63,10 +65,18 @@ export function resolveRuntimePlayerPushControllerOperation(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext = {},
 ): Extract<CollisionControllerOp, { controllerType: "playerpush" }> {
+  const valueRaw = findParam(controller, "value");
+  const priorityRaw = findParam(controller, "priority");
+  const affectTeamRaw = findParam(controller, "affectteam")?.trim().toLowerCase()[0];
+  const redirectPlayerIdExpression = findParam(controller, "redirectid")?.trim();
   return {
     kind: "collision",
     controllerType: "playerpush",
-    enabled: (numberParam(controller, state, context, "value") ?? 1) !== 0,
+    ...(valueRaw === undefined && priorityRaw === undefined && affectTeamRaw === undefined ? { enabled: true } : {}),
+    ...(valueRaw === undefined ? {} : { enabled: (numberParam(controller, state, context, "value") ?? 0) !== 0 }),
+    ...(priorityRaw === undefined ? {} : { priority: Math.trunc(numberParam(controller, state, context, "priority") ?? 0) }),
+    ...(affectTeamRaw === "e" ? { affectTeam: 1 as const } : affectTeamRaw === "f" ? { affectTeam: -1 as const } : affectTeamRaw === "b" ? { affectTeam: 0 as const } : {}),
+    ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
   };
 }
 

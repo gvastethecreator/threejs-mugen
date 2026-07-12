@@ -3,6 +3,7 @@ import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { ControllerIr } from "../mugen/compiler/RuntimeIr";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import { RuntimeBoundsControllerWorld } from "../mugen/runtime/BoundsControllerSystem";
+import { RuntimeActorConstraintWorld } from "../mugen/runtime/ActorConstraintSystem";
 import { executeControllerIr } from "../mugen/runtime/StateControllerExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -33,6 +34,22 @@ describe("BoundsControllerSystem", () => {
 
     expect(state.playerPush).toBe(false);
     expect(result.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: false });
+  });
+
+  it("composes IKEMEN PlayerPush priority and AffectTeam fields", () => {
+    const world = new RuntimeBoundsControllerWorld();
+    const state = runtimeState({ playerPush: false, pushPriority: 0, pushAffectTeam: 1, vars: [3] });
+
+    const result = world.applyPlayerPushController(
+      state,
+      source("PlayerPush", { priority: "var(0) + 2", affectteam: "B" }),
+    );
+
+    expect(state).toMatchObject({ playerPush: false, pushPriority: 5, pushAffectTeam: 0 });
+    expect(result.operation).toMatchObject({ priority: 5, affectTeam: 0 });
+
+    new RuntimeActorConstraintWorld().resetFrameConstraints(state);
+    expect(state).toMatchObject({ playerPush: true, pushPriority: 0, pushAffectTeam: 1 });
   });
 
   it("applies PosFreeze typed operations and raw axis fallback", () => {

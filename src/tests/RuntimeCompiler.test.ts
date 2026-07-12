@@ -951,11 +951,21 @@ time = 20
     const enabled = compileControllerIr(controller(200, "PlayerPush", [], { value: "1" }));
     const defaultEnabled = compileControllerIr(controller(200, "PlayerPush", [], {}));
     const dynamic = compileControllerIr(controller(200, "PlayerPush", [], { value: "Const(data.life)" }));
+    const policy = compileControllerIr(controller(200, "PlayerPush", [], { priority: "4", affectteam: "F", redirectid: "59" }));
+    const invalidTeam = compileControllerIr(controller(200, "PlayerPush", [], { affectteam: "X" }));
 
     expect(disabled.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: false });
     expect(enabled.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: true });
     expect(defaultEnabled.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: true });
     expect(dynamic.operation).toBeUndefined();
+    expect(policy.operation).toEqual({
+      kind: "collision",
+      controllerType: "playerpush",
+      priority: 4,
+      affectTeam: -1,
+      redirectPlayerIdExpression: "59",
+    });
+    expect(invalidTeam.operation).toBeUndefined();
   });
 
   it("compiles Turn controllers into typed orientation operations", () => {

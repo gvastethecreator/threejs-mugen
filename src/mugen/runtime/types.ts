@@ -17,6 +17,8 @@ export type CharacterRuntimeState = {
   facing: 1 | -1;
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
+  pushPriority?: number;
+  pushAffectTeam?: -1 | 0 | 1;
   posFreeze?: { x: boolean; y: boolean; z: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   stageBound?: false;

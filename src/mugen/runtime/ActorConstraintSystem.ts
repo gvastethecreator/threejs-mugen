@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "combatDepth" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound" | "stageBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -35,6 +35,8 @@ export type RuntimeActorConstraintControllerDispatchResult = {
 export class RuntimeActorConstraintWorld {
   resetFrameConstraints(state: RuntimeActorConstraintState): void {
     state.playerPush = true;
+    state.pushPriority = 0;
+    state.pushAffectTeam = 1;
     state.posFreeze = undefined;
     state.screenBound = undefined;
     state.stageBound = undefined;
@@ -164,6 +166,7 @@ export class RuntimeActorConstraintWorld {
     right: RuntimeActorConstraintState,
     leftLocalCoord?: readonly [number, number],
     rightLocalCoord?: readonly [number, number],
+    factors: { left: number; right: number } = { left: 0.5, right: 0.5 },
   ): void {
     if (left.playerPush === false || right.playerPush === false) {
       return;
@@ -179,7 +182,7 @@ export class RuntimeActorConstraintWorld {
     const leftDepth = left.combatDepth;
     const rightDepth = right.combatDepth;
     if (!leftDepth || !rightDepth) {
-      if (deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale);
+      if (deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale, factors);
       return;
     }
 
@@ -201,8 +204,8 @@ export class RuntimeActorConstraintWorld {
       pushZ = ratio > 0.75 && ratio < 1 / 0.75 || Math.abs(deltaX) < adjustedZDistance;
     }
 
-    if (pushX && deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale);
-    if (pushZ) separateZ(leftDepth, rightDepth, overlapZ, deltaZ, leftScale, rightScale);
+    if (pushX && deltaX !== 0) separateX(left, right, overlapX, deltaX, leftScale, rightScale, factors);
+    if (pushZ) separateZ(leftDepth, rightDepth, overlapZ, deltaZ, leftScale, rightScale, factors);
   }
 }
 
@@ -274,10 +277,11 @@ function separateX(
   delta: number,
   leftScale: number,
   rightScale: number,
+  factors: { left: number; right: number },
 ): void {
   const direction = delta > 0 ? 1 : -1;
-  left.pos.x -= (overlap / 2 / leftScale) * direction;
-  right.pos.x += (overlap / 2 / rightScale) * direction;
+  left.pos.x -= (overlap * factors.left / leftScale) * direction;
+  right.pos.x += (overlap * factors.right / rightScale) * direction;
 }
 
 function separateZ(
@@ -287,10 +291,11 @@ function separateZ(
   delta: number,
   leftScale: number,
   rightScale: number,
+  factors: { left: number; right: number },
 ): void {
   const direction = delta > 0 ? 1 : -1;
-  left.position -= (overlap / 2 / leftScale) * direction;
-  right.position += (overlap / 2 / rightScale) * direction;
+  left.position -= (overlap * factors.left / leftScale) * direction;
+  right.position += (overlap * factors.right / rightScale) * direction;
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

@@ -7,13 +7,13 @@ import {
 
 describe("RuntimeRootBodyPushWorld", () => {
   it("resolves every eligible Tag pair once in stable root order", () => {
-    const roots = [actor("p1", 1, 0), actor("p2", 2, 30), actor("p3", 1, 10)];
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 10), actor("p3", 1, 5)];
     const diagnostic = advance(roots, true);
 
     expect(diagnostic.rootIds).toEqual(["p1", "p2", "p3"]);
-    expect(diagnostic.pairIds).toEqual([["p1", "p2"], ["p1", "p3"], ["p2", "p3"]]);
+    expect(diagnostic.pairIds).toEqual([["p1", "p2"], ["p2", "p3"]]);
     expect(diagnostic.movedRootIds).toEqual(["p1", "p2", "p3"]);
-    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 32.5, 12.5]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 20, 0]);
   });
 
   it("filters unavailable Tag roots but keeps over-KO roots eligible", () => {
@@ -98,6 +98,37 @@ describe("RuntimeRootBodyPushWorld", () => {
 
     expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1, 9]);
     expect(roots.map((root) => root.runtime.combatDepth?.position)).toEqual([-1, 9]);
+  });
+
+  it("allows same-side push when either actor authors AffectTeam both", () => {
+    const roots = [actor("p1", 1, 0), actor("p3", 1, 10)];
+    roots[0]!.runtime.pushAffectTeam = 0;
+
+    const diagnostic = advance(roots, true);
+
+    expect(diagnostic.pairIds).toEqual([["p1", "p3"]]);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-5, 15]);
+  });
+
+  it("moves only the lower-priority actor", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    roots[0]!.runtime.pushPriority = 2;
+
+    advance(roots, true);
+
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([0, 20]);
+  });
+
+  it("weights equal-priority displacement and applies each pushfactor", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 10)];
+    roots[0]!.weight = 300;
+    roots[0]!.pushFactor = 0.5;
+    roots[1]!.weight = 100;
+    roots[1]!.pushFactor = 2;
+
+    advance(roots, true);
+
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-1.25, 25]);
   });
 });
 

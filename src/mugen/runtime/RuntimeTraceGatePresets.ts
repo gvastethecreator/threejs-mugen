@@ -8572,8 +8572,8 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             stateNo: 0,
             teamStandby: false,
             effectiveCtrl: true,
-            observedPosXAtLeast: -119,
-            observedPosXAtMost: -115,
+            observedPosXAtLeast: startX + velocityX * 2,
+            observedPosXAtMost: startX + velocityX * 2,
             observedVelXAtLeast: velocityX * 0.85,
             minFrames: 1,
           },
@@ -9210,6 +9210,73 @@ export function createSyntheticImportedIkemenDepthBoundsRedirectTraceArtifact(
       requiredActorKinds: ["player"],
       requiredExecutedControllers: ["Depth", "ScreenBound"],
       requiredExecutedOperations: ["collision:depth", "bounds:screenbound"],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
+export function createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-playerpush-policy-grid",
+    displayName: "Trace PlayerPush Policy Grid",
+    playerStart: { p1: { x: -100, y: 0, facing: 1 }, p2: { x: 100, y: 0, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-playerpush-policy-attacker",
+    displayName: "Synthetic Imported IKEMEN PlayerPush Policy Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37, targetId: 137, posX: 0, playerPushPolicy: { priority: 0, affectTeam: "E" }, hitDefTrigger: "0",
+    },
+  });
+  attacker.constants = { ...attacker.constants, "size.weight": 300, "size.pushfactor": 0.5 };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-playerpush-policy-defender",
+    displayName: "Synthetic Imported IKEMEN PlayerPush Policy Defender",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37, targetId: 138, posX: 10, playerPushPolicy: { priority: 0, affectTeam: "E" }, hitDefTrigger: "0",
+    },
+  });
+  defender.constants = { ...defender.constants, "size.weight": 100, "size.pushfactor": 2 };
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-playerpush-policy-pair-defender",
+    displayName: "Synthetic Imported IKEMEN PlayerPush Policy Pair Defender",
+    withHitDef: false,
+    withPlayerPush: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([{ label: "P3 and P4 apply weighted PlayerPush policy", p1: [], p2: [], frames: 2 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-playerpush-policy-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-playerpush-policy-golden",
+      label: "Synthetic imported IKEMEN PlayerPush policy",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves PlayerPush priority/AffectTeam execution and imported size.weight/pushfactor produce asymmetric displacement. Clsn/Y, exact tie/corner interpolation, helpers, and full parity remain outside this gate."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-playerpush-policy-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: [{ type: "PlayerPush", minCount: 2 }, { type: "PosSet", minCount: 2 }],
+      requiredExecutedOperations: [{ operation: "collision:playerpush", minCount: 2 }, { operation: "kinematic:posset", minCount: 2 }],
+      requiredActorFrames: [
+        { actorId: "p3", source: "imported", actorKind: "player", observedPosXAtLeast: -8.5, observedPosXAtMost: -8.5, minFrames: 2 },
+        { actorId: "p4", source: "imported", actorKind: "player", observedPosXAtLeast: 112, observedPosXAtMost: 112, minFrames: 2 },
+      ],
       requiredFinalActors: [
         { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
         { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
@@ -41368,6 +41435,7 @@ export type SyntheticImportedTraceFighterOptions = {
     invalidDepthRedirectId?: number;
     screenStageBound?: boolean;
     screenRedirectId?: number;
+    playerPushPolicy?: { priority: number; affectTeam: "E" | "F" | "B"; redirectId?: number };
     hitDefTrigger?: string;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
@@ -46801,6 +46869,7 @@ ${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger
 ${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depthRedirectId === undefined ? "" : `redirectid = ${route.depthRedirectId}\n`}${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}
 ${route.invalidDepthRedirectId === undefined ? "" : `[State 0, Invalid Active Root Depth Redirect]\ntype = Depth\ntrigger1 = 1\nredirectid = ${route.invalidDepthRedirectId}\nplayer = 20,20\n`}
 ${route.screenStageBound === undefined ? "" : `[State 0, Active Root Screen StageBound]\ntype = ScreenBound\ntrigger1 = 1\n${route.screenRedirectId === undefined ? "" : `redirectid = ${route.screenRedirectId}\n`}value = 1\nmovecamera = 1,1\nstagebound = ${route.screenStageBound ? 1 : 0}\n`}
+${route.playerPushPolicy === undefined ? "" : `[State 0, Active Root PlayerPush Policy]\ntype = PlayerPush\ntrigger1 = 1\n${route.playerPushPolicy.redirectId === undefined ? "" : `redirectid = ${route.playerPushPolicy.redirectId}\n`}priority = ${route.playerPushPolicy.priority}\naffectteam = ${route.playerPushPolicy.affectTeam}\n`}
 [State 0, Active Root HitDef]
 type = HitDef
 trigger1 = ${route.hitDefTrigger ?? "1"}

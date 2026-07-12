@@ -173,6 +173,7 @@ import {
   createSyntheticImportedIkemenScreenStageBoundTraceArtifact,
   createSyntheticImportedIkemenDepthPlayerPushTraceArtifact,
   createSyntheticImportedIkemenDepthBoundsRedirectTraceArtifact,
+  createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact,
   createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
@@ -16027,14 +16028,14 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 4,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -115, y: 0 }, vel: { x: 3.4, y: 0 } }),
+          expect.objectContaining({ id: "p3", stateNo: 0, ctrl: true, pos: { x: -152, y: 0 }, vel: { x: 3.4, y: 0 } }),
           expect.objectContaining({ id: "p4", stateNo: 0, teamStandby: true, effectiveCtrl: false }),
         ],
       },
     });
     expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
-    expect(artifact.trace.checksum).toBe("fdd687cb");
-    expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "e9370b2c", "8795f006"]);
+    expect(artifact.trace.checksum).toBe("8ee92f65");
+    expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "64d76d9a", "df69cd20"]);
     const admissionFrames = artifact.trace.frames.filter(({ rootHitAdmission }) => rootHitAdmission !== undefined);
     expect(admissionFrames.length).toBeGreaterThan(0);
     expect(admissionFrames.some(({ rootHitAdmission }) => rootHitAdmission?.rootIds.includes("p3"))).toBe(true);
@@ -16383,7 +16384,7 @@ describe("RuntimeTraceGatePresets", () => {
       trace: {
         frameCount: 3,
         finalReserveActors: [
-          expect.objectContaining({ id: "p3", pos: { x: -188.75, y: 0 }, vel: { x: 3.4, y: 0 }, targetCount: 0 }),
+          expect.objectContaining({ id: "p3", pos: { x: -193, y: 0 }, vel: { x: 3.4, y: 0 }, targetCount: 0 }),
           expect.objectContaining({ id: "p4", teamStandby: true }),
         ],
       },
@@ -16401,10 +16402,10 @@ describe("RuntimeTraceGatePresets", () => {
       schema: "RuntimeRootBodyPush/v0",
       mode: "ikemen-tag",
       rootIds: ["p1", "p2", "p3"],
-      pairIds: [["p1", "p2"], ["p1", "p3"], ["p2", "p3"]],
+      pairIds: [["p1", "p2"], ["p2", "p3"]],
     });
-    expect(artifact.trace.checksum).toBe("c4d89ec3");
-    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "5f103cb5", "06e96d0f"]);
+    expect(artifact.trace.checksum).toBe("870f8871");
+    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "63a42885", "842716e7"]);
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {
@@ -25973,6 +25974,15 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ actorId: "p4", controller: "ScreenBound" }),
       ]),
     );
+  });
+
+  it("creates a required synthetic imported IKEMEN PlayerPush policy artifact", () => {
+    const artifact = createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-playerpush-policy-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-playerpush-policy-golden", passed: true, failures: [] }],
+    });
   });
 
   it("creates a projectile-only guard-distance latch without contact", () => {

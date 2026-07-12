@@ -1981,6 +1981,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenDepthBoundsRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-playerpush-policy",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-targetbind-pause",
       required: true,
       artifact: presets.createSyntheticImportedTargetBindPauseTraceArtifact(),

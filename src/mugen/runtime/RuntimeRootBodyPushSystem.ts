@@ -9,6 +9,8 @@ export type RuntimeRootBodyPushActor = {
   teamState: RuntimeTeamState;
   runtime: RuntimeActorConstraintState;
   localCoord?: readonly [number, number];
+  weight?: number;
+  pushFactor?: number;
 };
 
 export type RuntimeRootBodyPushDiagnostic = {
@@ -44,8 +46,15 @@ export class RuntimeRootBodyPushWorld {
       for (let rightIndex = leftIndex + 1; rightIndex < roots.length; rightIndex += 1) {
         const left = roots[leftIndex]!;
         const right = roots[rightIndex]!;
+        if (!canPairPush(left, right)) continue;
         pairIds.push([left.id, right.id]);
-        input.actorConstraintWorld.separate(left.runtime, right.runtime, left.localCoord, right.localCoord);
+        input.actorConstraintWorld.separate(
+          left.runtime,
+          right.runtime,
+          left.localCoord,
+          right.localCoord,
+          resolvePushFactors(left, right),
+        );
       }
     }
     for (const root of roots) {
@@ -64,6 +73,40 @@ export class RuntimeRootBodyPushWorld {
       }).map(({ id }) => id),
     };
   }
+}
+
+function canPairPush(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {
+  const leftAffect = left.runtime.pushAffectTeam ?? 1;
+  const rightAffect = right.runtime.pushAffectTeam ?? 1;
+  if (left.side === right.side) return !(leftAffect > 0 && rightAffect > 0);
+  return leftAffect >= 0 && rightAffect >= 0;
+}
+
+function resolvePushFactors(
+  left: RuntimeRootBodyPushActor,
+  right: RuntimeRootBodyPushActor,
+): { left: number; right: number } {
+  const leftPriority = left.runtime.pushPriority ?? 0;
+  const rightPriority = right.runtime.pushPriority ?? 0;
+  const leftPushFactor = finiteNonNegative(left.pushFactor, 1);
+  const rightPushFactor = finiteNonNegative(right.pushFactor, 1);
+  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor };
+  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0 };
+  const leftWeight = finitePositive(left.weight, 100);
+  const rightWeight = finitePositive(right.weight, 100);
+  const totalWeight = leftWeight + rightWeight;
+  return {
+    left: (rightWeight / totalWeight) * leftPushFactor,
+    right: (leftWeight / totalWeight) * rightPushFactor,
+  };
+}
+
+function finitePositive(value: number | undefined, fallback: number): number {
+  return value !== undefined && Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+function finiteNonNegative(value: number | undefined, fallback: number): number {
+  return value !== undefined && Number.isFinite(value) && value >= 0 ? value : fallback;
 }
 
 function eligibleTagRoot(root: RuntimeRootBodyPushActor): boolean {

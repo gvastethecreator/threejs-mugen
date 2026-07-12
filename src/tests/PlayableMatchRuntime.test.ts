@@ -182,7 +182,7 @@ describe("PlayableMatchRuntime", () => {
 
     const moved = runtime.step({ p1: new Set(), p2: new Set() });
     const movedP3 = moved.reserveActors?.find(({ id }) => id === "p3")!;
-    expect(movedP3.runtime.pos.x).toBe(-54);
+    expect(movedP3.runtime.pos.x).toBe(-91);
     expect(movedP3.runtime.vel.x).toBeCloseTo(3.4);
     expect(movedP3.runtime.animTime).toBe(initial.runtime.animTime + 1);
     expect(
@@ -236,7 +236,7 @@ describe("PlayableMatchRuntime", () => {
     expect(movedP3.runtime).toMatchObject({
       stateType: "A",
       physics: "A",
-      pos: { x: -54.5, y: -22 },
+      pos: { x: -92, y: -22 },
       vel: { x: 3, y: -1.45 },
       animTime: initial.runtime.animTime + 1,
     });

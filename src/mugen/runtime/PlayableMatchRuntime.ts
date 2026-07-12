@@ -340,7 +340,7 @@ type RootControllerRedirectHandler = (
   caller: FighterMatchState,
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
-  controllerType: "depth" | "screenbound",
+  controllerType: "depth" | "screenbound" | "playerpush",
 ) => FighterMatchState | undefined;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
@@ -976,10 +976,12 @@ export class PlayableMatchRuntime {
                 teamState: root.runtime.teamState!,
                 runtime: root.runtime,
                 localCoord: root.definition.localCoord,
+                weight: root.definition.constants?.["size.weight"],
+                pushFactor: root.definition.constants?.["size.pushfactor"],
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord },
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"] },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"] },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
@@ -1478,7 +1480,7 @@ export class PlayableMatchRuntime {
     caller: FighterMatchState,
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
-    controllerType: "depth" | "screenbound",
+    controllerType: "depth" | "screenbound" | "playerpush",
   ): FighterMatchState | undefined {
     const block = (value: number | "invalid"): undefined => {
       this.logs.unshift(`Blocked ${controllerType} RedirectID ${value} for ${caller.id}`);
@@ -2592,13 +2594,20 @@ function runActiveStateControllers(
         return;
       }
       const context = runtimeControllerContext(actor, owner, activeTick, stageBounds, targetOpponent, gameSpace);
-      const redirectExpression = dispatch.controller.normalizedType === "screenbound"
-        ? ((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound"
+      const redirectableBoundsController = dispatch.controller.normalizedType === "screenbound" || dispatch.controller.normalizedType === "playerpush";
+      const redirectExpression = redirectableBoundsController
+        ? (((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound") ||
+              (dispatch.controller.operation?.kind === "collision" && dispatch.controller.operation.controllerType === "playerpush")
             ? dispatch.controller.operation.redirectPlayerIdExpression
             : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
         : undefined;
       const target = redirectExpression
-        ? options.onRootRedirect?.(fighter, redirectExpression, context, "screenbound")
+        ? options.onRootRedirect?.(
+            fighter,
+            redirectExpression,
+            context,
+            dispatch.controller.normalizedType as "screenbound" | "playerpush",
+          )
         : fighter;
       if (!target) {
         options.onBlocked?.(dispatch.controller, "screenbound-redirect");

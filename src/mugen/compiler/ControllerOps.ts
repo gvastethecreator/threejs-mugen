@@ -361,7 +361,10 @@ export type CollisionControllerOp =
   | {
       kind: "collision";
       controllerType: "playerpush";
-      enabled: boolean;
+      enabled?: boolean;
+      priority?: number;
+      affectTeam?: -1 | 0 | 1;
+      redirectPlayerIdExpression?: string;
     }
   | {
       kind: "collision";
@@ -1029,15 +1032,37 @@ function compileRedirectPlayerIdExpression(controller: MugenStateController): st
 
 function compilePlayerPushControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
   const raw = findParam(controller, "value");
-  const enabled = raw === undefined ? true : booleanNumber(raw);
-  if (enabled === undefined) {
-    return undefined;
-  }
+  const priorityRaw = findParam(controller, "priority");
+  const affectTeamRaw = findParam(controller, "affectteam");
+  const enabled = raw === undefined ? undefined : booleanNumber(raw);
+  const priority = priorityRaw === undefined ? undefined : firstNumber(priorityRaw);
+  const affectTeam = parsePlayerPushAffectTeam(affectTeamRaw);
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (
+    enabled === undefined && raw !== undefined ||
+    priority === undefined && priorityRaw !== undefined ||
+    affectTeam === "invalid" ||
+    redirectPlayerIdExpression === "invalid"
+  ) return undefined;
+  const hasIkemenPayload = raw !== undefined || priorityRaw !== undefined || affectTeamRaw !== undefined;
   return {
     kind: "collision",
     controllerType: "playerpush",
-    enabled,
+    ...(hasIkemenPayload ? {} : { enabled: true }),
+    ...(enabled === undefined ? {} : { enabled }),
+    ...(priority === undefined ? {} : { priority: Math.trunc(priority) }),
+    ...(affectTeam === undefined ? {} : { affectTeam }),
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
+}
+
+function parsePlayerPushAffectTeam(raw: string | undefined): -1 | 0 | 1 | "invalid" | undefined {
+  if (raw === undefined) return undefined;
+  const token = raw.trim().toLowerCase()[0];
+  if (token === "e") return 1;
+  if (token === "f") return -1;
+  if (token === "b") return 0;
+  return "invalid";
 }
 
 function compileStateTypeSetControllerOp(controller: MugenStateController): MetadataControllerOp | undefined {

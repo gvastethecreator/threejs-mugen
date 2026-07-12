@@ -35,6 +35,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "posadd",
     "posfreeze",
     "screenbound",
+    "playerpush",
   ],
   sideEffects: ["hitdef", "reversaldef", "depth"],
 };
