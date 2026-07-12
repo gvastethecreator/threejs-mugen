@@ -1,7 +1,7 @@
 # Map Active-root Body-push Promotion
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal

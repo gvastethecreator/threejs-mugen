@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 410 - Active-root body-push research
+
+Resolved Wayfinder 104 from pinned global push code and local ownership. Selected Wayfinder 105: stable runtime-root eligibility, unique-id validation, each unordered pair once through current X/Width primitive, final stage clamp, explicit capability/schedule/trace, no diagnostic/combat authority leakage. Research only; no runtime or score change.
+
 ## Entry 409 - Active-root diagnostic collision runtime
 
 Done: `RuntimeRootPresentation/v1` adds independent collision reasons/ids; Three.js strictly resolves active roots across pair/reserve snapshots and renders their existing Clsn1/Clsn2 beside unchanged effect overlays. Trace stays 543/543. Browser handoff/reset passes desktop/mobile with exact collision ids, two boxes, 1006/1163 unique colors, and stale cleanup. Full gates pass 176 files / 1798 tests, TypeScript 7 build 1,609.20 kB, boundaries, visual and diff audit. Next: Wayfinder 104 plural body-push research. No combat or score movement.

@@ -2,7 +2,7 @@
 
 ## Active frontier - 2026-07-12
 
-Wayfinder 103 is closed: independent active-root collision-debug ids, strict renderer resolution, exact trace IDs, and desktop/mobile handoff/reset proof pass without push/combat widening. Wayfinder 104 now maps plural active-root body push before implementation.
+Wayfinder 104 is closed. Wayfinder 105 is ready: named plural body-push ownership over stable runtime roots, current bounded X/Width geometry, exact eligibility/order/trace evidence, no combat widening.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 

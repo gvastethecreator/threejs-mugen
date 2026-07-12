@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN active-root diagnostic collision runtime (2026-07-12)
+## Latest closeout - IKEMEN active-root body-push research (2026-07-12)
+
+Pinned IKEMEN push is a run-order global pass with eligibility, AffectTeam, size-box Y/X/Z geometry, priority/weight/pushfactor, tie policy, and reclamp before hits. Wayfinder 105 selects a named plural runtime owner using stable roots and current bounded X/Width separation; diagnostics and combat remain independent. Research only; scores unchanged.
+
+## Previous closeout - IKEMEN active-root diagnostic collision runtime (2026-07-12)
 
 `RuntimeRootPresentation/v1` now selects diagnostic Clsn roots independently from draw/camera and Three.js resolves them strictly across pair/reserve storage. Required trace remains green at 543/543; desktop/mobile smoke proves exact collision handoff/reset, two boxes, nonblank canvases, and stale cleanup. Full gates pass 176 files / 1798 tests. Wayfinder 104 maps plural body push; gameplay and scores remain unchanged.
 

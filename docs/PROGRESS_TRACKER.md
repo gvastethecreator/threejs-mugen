@@ -1,6 +1,14 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-12 IKEMEN active-root diagnostic collision runtime
+## Global report - 2026-07-12 IKEMEN active-root body-push research
+
+- Source: push is a run-order global pass before hits, with independent eligibility, AffectTeam, size-box Y/X/Z, priority/weight/factor, tie, clamp, and interpolation policy.
+- Local gap: current `separate` is P1/P2-only, symmetric X/Width; root storage and diagnostic collision ids cannot become implicit gameplay authority.
+- Decision: Wayfinder 105 adds a plural owner over stable runtime roots, resolves each eligible unordered pair once, and reclamps without widening combat/effects/targets.
+- Evidence: pinned primary source, owner map, adversarial/deletion audit, roadmap sync, diff gate. No runtime/test/trace/browser/score movement.
+- Global status: Wayfinder 104 resolved; Wayfinder 105 ready.
+
+## Previous global report - 2026-07-12 IKEMEN active-root diagnostic collision runtime
 
 - Contract: `RuntimeRootPresentation/v1` publishes independent draw, camera, and collision-debug decisions plus exact ordered ids.
 - Renderer: strict pair/reserve resolution feeds selected active roots plus unchanged effect actors into `CollisionBoxRenderer`; collision diagnostics expose actor/Clsn counts.
