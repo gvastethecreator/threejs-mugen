@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 412 - Active-root direct-hit admission research
+
+Done: pinned Ikemen-GO SHA `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703` establishes ReversalDef/HitDef/ID ordering, independent standby/disabled attacker/getter filters, enemy/team policy, guard-distance-before-admission order, HitBy/NotHitBy plus Clsn checks, and mutation only after `hitResultCheck`. Local audit keeps pair combat unchanged. Wayfinder 107 selects read-only `RuntimeRootDirectHitAdmissionWorld` from authoritative runtime roots, exact pair/reason diagnostics, pause/hitpause/reset freshness, and zero combat mutation. Claim allowed: implementation-ready active-root admission projection. Claim blocked: runtime combat widening, guard/juggle/priority/reversal/HitOverride mutation, targets/effects/helpers/projectiles/throws/resources/round/HUD/audio, scores, and full parity.
+
 ## Entry 411 - Active-root bounded plural body push
 
 Done: `RuntimeRootBodyPushWorld` promotes explicit-Tag roots into deterministic plural X/Width push before combat, validates unique identities, filters disabled/standby/nonplayer/invalid roots, resolves each unordered pair once, and reclamps moved roots. `RuntimeRootPhaseCapabilities/v3`, `RuntimeRootBodyPush/v0`, actor-scoped schedule rows, reset cleanup, and trace cloning expose proof. Pair/Single remain exact. Required active-motion checksum `fdd687cb` and active-constraint checksum `c4d89ec3` pass inside 543/543 traces with zero effects/targets and no hit/guard evidence. Full gates pass 177 files / 1802 tests, TypeScript 7 build 1,611.24 kB, boundaries, and diff. Wayfinder 106 maps hit admission. Scores unchanged.
