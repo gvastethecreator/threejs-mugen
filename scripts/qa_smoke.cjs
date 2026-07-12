@@ -156,6 +156,12 @@ async function main() {
         mugenLiteMobileCanvas: path.join(outDir, "mugen-lite-runtime-mobile-canvas.png"),
         mugenLiteMobileAttack: path.join(outDir, "mugen-lite-runtime-mobile-attack.png"),
         mugenLiteMobileAttackCanvas: path.join(outDir, "mugen-lite-runtime-mobile-attack-canvas.png"),
+        mugenLiteMovement: Object.fromEntries(["desktop", "mobile"].map((viewport) => [viewport, Object.fromEntries(
+          ["walk", "crouch", "jump"].flatMap((pose) => [
+            [pose, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}.png`)],
+            [`${pose}Canvas`, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}-canvas.png`)],
+          ]),
+        )])),
         tagPresentationDesktop: path.join(outDir, "runtime-tag-presentation-desktop.png"),
         tagPresentationDesktopCanvas: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
         tagPresentationMobile: path.join(outDir, "runtime-tag-presentation-mobile.png"),
@@ -420,7 +426,51 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
     const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   });
-  return { ...probe, attack, returnedToIdle: true };
+  const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
+  const movement = {};
+  for (const transition of [
+    { id: "walk", key: "ArrowRight", stateNo: 20, action: 20 },
+    { id: "crouch", key: "ArrowDown", stateNo: 10, action: 10 },
+    { id: "jump", key: "ArrowUp", stateNo: 40, action: 40 },
+  ]) {
+    movement[transition.id] = await captureMugenLiteDrivenState(page, transition, {
+      screenshotPath: path.join(path.dirname(options.screenshotPath), `mugen-lite-runtime-${viewportLabel}-${transition.id}.png`),
+      canvasPath: path.join(path.dirname(options.canvasPath), `mugen-lite-runtime-${viewportLabel}-${transition.id}-canvas.png`),
+    });
+  }
+  return { ...probe, attack, movement, returnedToIdle: true };
+}
+
+async function captureMugenLiteDrivenState(page, transition, paths) {
+  const pauseOnState = pauseWhenMugenLiteStateAppears(page, transition.stateNo, transition.action, transition.id);
+  await page.keyboard.down(transition.key);
+  await pauseOnState;
+  await page.keyboard.up(transition.key);
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  const probe = await captureMugenLiteVisualState(page, paths.screenshotPath, paths.canvasPath);
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+  });
+  return { ...probe, returnedToIdle: true };
+}
+
+function pauseWhenMugenLiteStateAppears(page, stateNo, action, label) {
+  return page.evaluate(({ stateNo, action, label }) => new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite ${label} frame was not observed`)), 5000);
+    const check = () => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      if (actor?.runtime?.stateNo === stateNo && actor?.frame?.spriteGroup === action) {
+        window.clearTimeout(timeout);
+        document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.requestAnimationFrame(check);
+    };
+    check();
+  }), { stateNo, action, label });
 }
 
 async function captureMugenLiteVisualState(page, screenshotPath, canvasPath) {
@@ -2094,6 +2144,29 @@ function assertSmoke(diagnostics) {
     ) {
       failures.push(`mugen-lite visual ${viewport}: ZIP load, imported sprite presentation, or canvas proof failed`);
     }
+    for (const [id, action] of Object.entries({ walk: 20, crouch: 10, jump: 40 })) {
+      const transition = probe.movement?.[id];
+      if (
+        transition?.actorFrame?.group !== action ||
+        transition.actorFrame.index !== 0 ||
+        transition.sprite?.width !== 32 ||
+        transition.sprite?.height !== 64 ||
+        transition.spritePixels?.fixtureColorPixels < 10 ||
+        transition.spritePixels?.fixtureMaskChecksum === probe.spritePixels?.fixtureMaskChecksum ||
+        !transition.returnedToIdle
+      ) {
+        failures.push(`mugen-lite visual ${viewport} ${id}: input-driven pose or idle return proof failed`);
+      }
+    }
+    const movementMasks = [
+      probe.spritePixels?.fixtureMaskChecksum,
+      probe.movement?.walk?.spritePixels?.fixtureMaskChecksum,
+      probe.movement?.crouch?.spritePixels?.fixtureMaskChecksum,
+      probe.movement?.jump?.spritePixels?.fixtureMaskChecksum,
+    ];
+    if (movementMasks.some((checksum) => !checksum) || new Set(movementMasks).size !== movementMasks.length) {
+      failures.push(`mugen-lite visual ${viewport}: idle/walk/crouch/jump masks were not mutually distinct`);
+    }
   }
   const expectedPair = "p1,p2";
   const expectedHandoff = "p3,p2";
@@ -2720,12 +2793,22 @@ function summarizeDiagnostics(diagnostics) {
       desktopSpritePixels: diagnostics.checks.mugenLiteVisual.desktop.spritePixels,
       desktopAttackFrame: diagnostics.checks.mugenLiteVisual.desktop.attack.actorFrame,
       desktopAttackSpritePixels: diagnostics.checks.mugenLiteVisual.desktop.attack.spritePixels,
+      desktopMovement: Object.fromEntries(Object.entries(diagnostics.checks.mugenLiteVisual.desktop.movement).map(([id, probe]) => [id, {
+        frame: probe.actorFrame,
+        spritePixels: probe.spritePixels,
+        returnedToIdle: probe.returnedToIdle,
+      }])),
       mobileSprite: diagnostics.checks.mugenLiteVisual.mobile.sprite,
       mobileFrame: diagnostics.checks.mugenLiteVisual.mobile.actorFrame,
       mobileUniqueColors: diagnostics.checks.mugenLiteVisual.mobile.canvasPixels.uniqueColors,
       mobileSpritePixels: diagnostics.checks.mugenLiteVisual.mobile.spritePixels,
       mobileAttackFrame: diagnostics.checks.mugenLiteVisual.mobile.attack.actorFrame,
       mobileAttackSpritePixels: diagnostics.checks.mugenLiteVisual.mobile.attack.spritePixels,
+      mobileMovement: Object.fromEntries(Object.entries(diagnostics.checks.mugenLiteVisual.mobile.movement).map(([id, probe]) => [id, {
+        frame: probe.actorFrame,
+        spritePixels: probe.spritePixels,
+        returnedToIdle: probe.returnedToIdle,
+      }])),
     },
     tagPresentation: {
       baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,

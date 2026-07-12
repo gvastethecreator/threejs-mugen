@@ -1,6 +1,8 @@
 ﻿# Supported Features
 
-- Legal-fixture browser smoke proves a real keyboard `a` press emits MUGEN command `x`, enters imported state/action `200`, renders a palette-backed attack silhouette distinct from idle, and returns to state/action `0`. Camera-aware spatial mask checksums cover desktop and mobile independently. Full pose journeys, multi-frame animation, visual contact proof, touch input, production art, and visual parity remain separate gates.
+- Legal-fixture browser smoke drives ArrowRight, ArrowDown, and ArrowUp through the production keyboard adapter and requires imported walk `20`, crouch `10`, and jump `40` poses. Each desktop/mobile crop contains its action-specific palette, differs spatially from idle, and returns to state/action `0/0`. Backward/diagonal movement, guard/get-hit/fall/recovery visuals, touch input, multi-frame animation, production art, and visual parity remain separate gates.
+
+- Legal-fixture browser smoke proves a real keyboard `a` press emits MUGEN command `x`, enters imported state/action `200`, renders a palette-backed attack silhouette distinct from idle, and returns to state/action `0`. Camera-aware spatial mask checksums cover desktop and mobile independently. Full combat/recovery journeys, multi-frame animation, visual contact proof, touch input, production art, and visual parity remain separate gates.
 
 - Browser smoke generates and independently uploads the repository-owned legal MUGEN-lite ZIP through the real file input at desktop/mobile viewports, enters Match with the imported fighter, and requires Three.js to present frame `0,0` as `32x64@16,62`. Camera-aware P1 crops must contain fixture-palette pixels; full canvases must remain nonblank. Production art, production-host smoke, public character compatibility, and visual parity remain separate gates.
 

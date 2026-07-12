@@ -14,8 +14,7 @@ Roadmap entry: 461
 
 - `pnpm qa:smoke`: passed in Playwright/SwiftShader against a Vite server.
 - Fixture ZIP: 3,208 bytes at `.scratch/qa/qa-smoke/mugen-lite-journey.zip`.
-- Desktop: frame `0,0`, 82 render calls, 994 sampled canvas colors, 296 fixture-palette pixels in the camera-projected P1 crop.
-- Mobile: frame `0,0`, 41 render calls, 1159 sampled canvas colors, 215 fixture-palette pixels in the camera-projected P1 crop.
+- Desktop/mobile gates require frame `0,0`, active renderer calls, a colorful nonblank canvas, and at least ten fixture-palette pixels in the camera-projected P1 crop. Numeric samples vary with camera/tick placement; the latest diagnostics are authoritative.
 - Screenshots: `.scratch/qa/qa-smoke/mugen-lite-runtime-{desktop,mobile}.png`.
 - Canvas captures: `.scratch/qa/qa-smoke/mugen-lite-runtime-{desktop,mobile}-canvas.png`.
 - Diagnostics: `.scratch/qa/qa-smoke/diagnostics.json`.

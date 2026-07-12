@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 463 - Input-driven legal movement poses
+
+Done: desktop/mobile legal-fixture smoke now drives ArrowRight, ArrowDown, and ArrowUp through the production keyboard adapter, atomically pauses on imported state/action pairs `20/20`, `10/10`, and `40/40`, and captures each Three.js pose. Every camera-projected P1 crop must contain its action-specific fixture palette; idle, walk, crouch, and jump masks must be mutually distinct; every route then returns to `0/0`. Claim allowed: real keyboard input visibly drives imported walk, crouch, and jump transitions. Claim blocked: backward/diagonal movement, guard/get-hit/fall/recovery visual routes, touch input, multi-frame animation, production art, and visual parity.
+
 ## Entry 462 - Input-driven legal sprite transition
 
 Done: the legal ZIP browser gate now holds the physical `a` key long enough to emit MUGEN command `x`, atomically pauses the app on imported state/action `200`, captures the attack sprite, resumes play, and requires return to state/action `0`. Camera-aware crops use the action-specific generated palette and spatial mask checksums, so idle and attack geometry must differ on desktop and mobile. Claim allowed: real keyboard input drives a visible imported `idle -> attack -> idle` transition through CMD/CNS/AIR/SFF and Three.js. Claim blocked: every movement/combat/recovery pose, multi-frame animation, attack contact in this visual route, touch input, production art, and visual parity.
