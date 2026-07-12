@@ -584,6 +584,36 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(p2.runtime.power).toBe(25);
   });
 
+  it("revalidates ReversalDef clash depth before mutation", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const p1 = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ combatDepth: { position: 0, size: [3, 3], attack: [4, 4] }, stateNo: 300 }),
+    });
+    const p2 = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ combatDepth: { position: 20, size: [3, 3], attack: [4, 4] }, stateNo: 301 }),
+    });
+    for (const fighter of [p1, p2]) {
+      reversalWorld.activate(fighter, {
+        attr: "S,NA",
+        hitbox: { x1: -40, y1: -40, x2: 40, y2: -1 },
+        hitPause: 3,
+      });
+    }
+
+    expect(world.resolveReversalClash({
+      reverser: p2,
+      getter: p1,
+      reversalWorld,
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      stateHooks: hooks(),
+      log: () => undefined,
+    })).toEqual({ kind: "skipped", reason: "no-match" });
+    expect(p1.currentMove?.isReversal).toBe(true);
+    expect(p2.currentMove?.isReversal).toBe(true);
+  });
+
   it("prioritizes ReversalDef over SuperPause-unhittable Projectile contact", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const reversalWorld = new RuntimeReversalWorld(contactWorld);

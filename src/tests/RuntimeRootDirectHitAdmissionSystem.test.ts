@@ -59,6 +59,32 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     ]);
   });
 
+  it("rejects direct HitDef depth misses against getter body depth", () => {
+    const attacker = actor("p1", 1, 1, 0, { move: true });
+    const getter = actor("p2", 2, 2, 0);
+    attacker.runtime.combatDepth = { position: 0, size: [3, 3], attack: [4, 4] };
+    getter.runtime.combatDepth = { position: 8, size: [3, 3], attack: [4, 4] };
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [attacker, getter], getHurtBoxes: () => hurt });
+
+    expect(result.admittedPairIds).toEqual([]);
+    expect(result.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "no-contact" });
+  });
+
+  it("uses attack depth on both sides of ReversalDef clashes with localcoord scaling", () => {
+    const getter = actor("p1", 1, 1, 0, { reversal: true });
+    const attacker = actor("p2", 2, 2, 0, { reversal: true });
+    getter.currentMove = reversalMove();
+    attacker.currentMove = reversalMove();
+    getter.runtime.combatDepth = { position: 12, size: [3, 3], attack: [4, 4] };
+    attacker.runtime.combatDepth = { position: 0, size: [3, 3], attack: [4, 4] };
+    getter.definition = { localCoord: [640, 480] };
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [getter, attacker], getHurtBoxes: () => hurt });
+
+    expect(result.admittedReversalClashPairIds).toEqual(["p2->p1", "p1->p2"]);
+  });
+
   it("filters standby, disabled, invalid-side and non-player roots while retaining over-KO", () => {
     const roots = [
       actor("p1", 1, 1, 0, { move: true, overKo: true }),

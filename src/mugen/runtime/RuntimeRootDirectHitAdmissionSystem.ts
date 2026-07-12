@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import { canRuntimeBeHitBy, hasRuntimeBoxContact, hitAttributeMatches, runtimeWorldBox } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
+import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import type { CharacterRuntimeState, RuntimeTeamState } from "./types";
 import { hasRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 
@@ -21,7 +22,8 @@ export type RuntimeRootDirectHitAdmissionActor = {
   playerNo?: number;
   side: 1 | 2 | null;
   teamState: RuntimeTeamState;
-  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "hitBy" | "reversal">;
+  definition?: { localCoord?: [number, number] };
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "hitBy" | "reversal" | "combatDepth">;
   currentMove?: DemoMove;
   moveTick: number;
   hasHit: boolean;
@@ -112,6 +114,9 @@ function inspectReversalClash(
   const getterMove = getter.currentMove!;
   if (!runtimeMoveIsActive(attacker, attackerMove) || !runtimeMoveIsActive(getter, getterMove)) return "inactive";
   if (!hitAttributeMatches(attackerMove.reversalAttr ?? "", getterMove.attr ?? "S,NA")) return "attr-rejected";
+  if (!hasRuntimeDepthContact(attacker, attackerMove, getter, getterMove.attackDepth ?? getter.runtime.combatDepth?.attack)) {
+    return "no-contact";
+  }
   return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, attackerMove.hitbox), getter.runtime, [getterMove.hitbox])
     ? "admitted"
     : "no-contact";
@@ -134,9 +139,27 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   if (!canRuntimeBeHitBy(getter.runtime, move.attr ?? "S,NA")) return "hitby-rejected";
   const hurtBoxes = getHurtBoxes(getter);
   if (!hurtBoxes?.length) return "missing-hurt-box";
+  if (!hasRuntimeDepthContact(attacker, move, getter, getter.runtime.combatDepth?.size)) return "no-contact";
   return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, move.hitbox), getter.runtime, [...hurtBoxes])
     ? "admitted"
     : "no-contact";
+}
+
+function hasRuntimeDepthContact(
+  attacker: RuntimeRootDirectHitAdmissionActor,
+  move: DemoMove,
+  getter: RuntimeRootDirectHitAdmissionActor,
+  getterDepth: [number, number] | undefined,
+): boolean {
+  const attackerDepth = move.attackDepth ?? attacker.runtime.combatDepth?.attack;
+  return hasRuntimeCombatDepthContact({
+    attacker: attacker.runtime.combatDepth,
+    attackDepth: attackerDepth,
+    attackerLocalCoord: attacker.definition?.localCoord,
+    getter: getter.runtime.combatDepth,
+    getterDepth,
+    getterLocalCoord: getter.definition?.localCoord,
+  });
 }
 
 function isEligibleRoot(root: RuntimeRootDirectHitAdmissionActor): boolean {

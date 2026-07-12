@@ -31,6 +31,25 @@ export function runtimeDepthRangesOverlap(
   return leftBottom >= rightTop && leftTop <= rightBottom;
 }
 
+export function hasRuntimeCombatDepthContact(input: {
+  attacker: RuntimeCombatDepth | undefined;
+  attackDepth: [number, number] | undefined;
+  attackerLocalCoord?: readonly [number, number];
+  getter: RuntimeCombatDepth | undefined;
+  getterDepth: [number, number] | undefined;
+  getterLocalCoord?: readonly [number, number];
+}): boolean {
+  if (!input.attacker || !input.getter || !input.attackDepth || !input.getterDepth) return true;
+  return runtimeDepthRangesOverlap(
+    input.attacker.position,
+    input.attackDepth,
+    input.getter.position,
+    input.getterDepth,
+    runtimeCombatLocalScale(input.attackerLocalCoord),
+    runtimeCombatLocalScale(input.getterLocalCoord),
+  );
+}
+
 function constantDepthPair(
   constants: Record<string, number> | undefined,
   key: string,

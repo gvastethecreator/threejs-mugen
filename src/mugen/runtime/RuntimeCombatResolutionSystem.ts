@@ -33,6 +33,7 @@ import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./
 import type { CharacterRuntimeState } from "./types";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
+import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import {
   bufferRuntimeHitDefTarget,
   hasRuntimeHitDefTarget,
@@ -64,7 +65,7 @@ export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
     contact: RuntimeContactMemory;
     definition: Pick<
       DemoFighterDefinition,
-      "source" | "constants" | "animations" | "hitSparkLibraries" | "hitDefPriorityProfile"
+      "source" | "constants" | "animations" | "hitSparkLibraries" | "hitDefPriorityProfile" | "localCoord"
     >;
     contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileContact" | "markReceivedDamage">;
     currentInput: Iterable<string>;
@@ -218,6 +219,14 @@ export class RuntimeCombatResolutionWorld {
       },
     );
     if (active !== reversal) return { kind: "skipped", reason: "no-match" };
+    if (!hasRuntimeCombatDepthContact({
+      attacker: input.reverser.runtime.combatDepth,
+      attackDepth: reversal.attackDepth ?? input.reverser.runtime.combatDepth?.attack,
+      attackerLocalCoord: input.reverser.definition.localCoord,
+      getter: input.getter.runtime.combatDepth,
+      getterDepth: getterMove.attackDepth ?? input.getter.runtime.combatDepth?.attack,
+      getterLocalCoord: input.getter.definition.localCoord,
+    })) return { kind: "skipped", reason: "no-match" };
     const outcome = input.reversalWorld.apply(input.reverser, input.getter, reversal, {
       rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),
       canEnterState: input.stateHooks.canEnterState,
