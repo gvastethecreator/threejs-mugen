@@ -8730,6 +8730,78 @@ export function createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 128;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-depth-miss-grid",
+    displayName: "Trace Active Root Depth Miss Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "active P3 authors logical Z outside P4 body depth", p1: [], p2: [], frames: 1 },
+    { label: "depth-separated HitDef remains eligible without contact", p1: [], p2: [], frames: 1 },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-depth-miss-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Depth Miss Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId, posZ: 20 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-depth-miss-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Depth Miss Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-depth-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Depth Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!,
+    p2: pairDefender,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-active-root-depth-miss-golden" });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-depth-miss-golden",
+      label: "Synthetic imported IKEMEN active-root logical depth miss",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves active P3 authors Pos Z and HitDef through CNS before root admission, then depth separation rejects P3->P4 despite X/Y Clsn contact. It does not claim Z velocity/physics, depth push/bounds, projectiles/helpers, visual projection, or full parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-active-root-depth-miss-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["PosSet", "HitDef"],
+      requiredExecutedOperations: ["kinematic:posset", "hitdef"],
+      requiredRootHitAdmissionFrames: [{ admittedPairIds: [], admittedReversalClashPairIds: [], minFrames: 2 }],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, ctrl: false },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -40790,6 +40862,7 @@ export type SyntheticImportedTraceFighterOptions = {
     priority?: number;
     priorityType?: "Hit" | "Miss" | "Dodge";
     clsn1Extent?: number;
+    posZ?: number;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
@@ -46213,6 +46286,7 @@ stateno = 0
 
 function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["activeRootHitDefRoute"]>): string {
   return `
+${route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`}
 [State 0, Active Root HitDef]
 type = HitDef
 trigger1 = 1

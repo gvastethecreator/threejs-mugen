@@ -166,6 +166,7 @@ import {
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
+  createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact,
@@ -16124,6 +16125,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 115 }),
     );
+  });
+
+  it("creates a required IKEMEN active-root logical depth miss artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ PosSet: 2, HitDef: 1 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({ "kinematic:posset": 2, hitdef: 1 });
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.decisions).toContainEqual({
+      attackerId: "p3",
+      getterId: "p4",
+      reason: "no-contact",
+    });
+    expect(artifact.trace.frames.every((frame) => frame.rootHitAdmission?.admittedPairIds.length === 0)).toBe(true);
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p3", life: 1000 }),
+        expect.objectContaining({ id: "p4", life: 1000 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.targetLinks).toEqual([]);
   });
 
   it("creates a required IKEMEN active-root priority artifact", () => {

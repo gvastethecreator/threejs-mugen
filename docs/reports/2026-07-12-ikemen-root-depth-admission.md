@@ -22,6 +22,6 @@ Pinned Ikemen-GO `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`, `src/char.go` lines
 - TypeScript 7 typecheck passed.
 - Full regression/build/boundary gates run before commit.
 
-## Limited gate
+## End-to-end promotion
 
-No CNS controller currently authors root Z position, so required imported runtime traces cannot yet generate a depth miss through playable input. Unit/integration seams prove the new behavior; Wayfinder 126 must add an official authored Z route before promoting this to end-to-end trace evidence.
+Superseded by required trace `synthetic-imported-ikemen-active-root-depth-miss`: CNS `PosSet z=20` now produces a root admission `no-contact`, zero admitted pairs, unchanged life/targets, and no combat event through playable `MatchWorld`. Trace QA: 553/553 artifacts passed, 522 required; checksum `7719d4ec`.

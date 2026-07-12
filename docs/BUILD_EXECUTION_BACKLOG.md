@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 433 - Required imported Pos Z depth-miss trace
+
+Done: required `synthetic-imported-ikemen-active-root-depth-miss` runs explicit IKEMEN Tag roots through playable `MatchWorld`: P3 executes CNS `PosSet z=20` and `HitDef`, root admission observes X/Y Clsn contact but records P3->P4 `no-contact` from logical depth, both frames admit zero pairs, P4 keeps 1000 life, no target is acquired, and no hit/guard/override/reversal event occurs. Trace QA passes 553/553 artifacts, 522 required; checksum `7719d4ec`. Claim allowed: imported end-to-end root Pos Z-driven direct HitDef depth rejection. Claim blocked: Z velocity/physics, depth push/bounds, ReversalDef depth trace, projectiles/helpers, visual projection, and full parity. Wayfinder 128 maps logical Z velocity and tick ownership.
+
 ## Entry 432 - Authored root Pos Z controllers and trigger
 
 Done: typed/static and dynamic `PosSet.z` / `PosAdd.z` now write renderer-independent `combatDepth.position`, initialize Ikemen depth defaults for legacy states on first authored Z use, and preserve Z in `kinematic:posset` / `kinematic:posadd` telemetry. Expression normalization and evaluation support official `Pos Z`, defaulting to zero when logical depth is absent. X/Y position and Three.js render transforms remain unchanged. Focused compiler/controller/expression tests and TypeScript 7 typecheck pass. Claim allowed: bounded root-authored logical Z set/add/query through existing kinematic CNS execution. Claim blocked: VelSet/VelAdd/VelMul Z, PosFreeze Z, redirects, depth bounds/push, projectiles/helpers, visual projection, and full parity. Wayfinder 127 builds required imported trace evidence for Pos Z-driven hit admission.

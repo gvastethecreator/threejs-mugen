@@ -27,3 +27,7 @@ Pinned Ikemen-GO `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`, `src/compiler_funct
 ## Deferred
 
 Velocity Z requires a logical Z velocity field plus explicit movement integration and pause/physics ordering. It is not approximated through render position.
+
+## Required trace
+
+`synthetic-imported-ikemen-active-root-depth-miss` executes `PosSet z=20` plus HitDef through an active imported Tag root. Root admission records P3->P4 `no-contact`; life and targets remain unchanged. Trace QA passes 553/553 artifacts, 522 required; checksum `7719d4ec`.
