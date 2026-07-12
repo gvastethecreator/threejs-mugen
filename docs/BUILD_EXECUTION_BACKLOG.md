@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 458 - Deterministic ZIP package transport
+
+Done: the legal MUGEN-lite acceptance journey now generates deterministic DEFLATE ZIP bytes with fixed entry metadata, loads them through production `ZipCharacterSource`, and only then enters `MugenCharacterLoader`. Focused coverage proves the ZIP signature, byte-for-byte repeated generation, exact VFS file parity including the CC0 notice, loader compatibility, and archive source name. Required `mugen-lite-journey.json` remains checksum-stable at `8b19b865`. Claim allowed: one repository-owned package crosses deterministic ZIP generation, archive extraction, character loading, import, and runtime execution. Claim blocked: hostile/corrupt ZIP policy beyond JSZip, password/multivolume archives, broad third-party archive layouts, exact Common1 behavior, visual/audio parity, and full MUGEN/IKEMEN parity.
+
 ## Entry 457 - Legal MUGEN-lite package journey
 
 Done: one repository-authored `CC0-1.0` character package now loads its real DEF/CMD/CNS/AIR/SFF surfaces through `MugenCharacterLoader` and executes a deterministic idle, walk, crouch, jump, attack, guard, get-hit, fall, recovery, and final-idle journey. Required `mugen-lite-journey.json` checksum `8b19b865` gates imported ownership, command activation, guard and hit events, ordered actor states, controller counts, 10 chip plus 70 hit damage, and final control restoration. Loader coverage also requires one intentional unknown controller to remain visible in compatibility diagnostics. Trace QA passes 565/565 artifacts, 534 required. Claim allowed: one legal portable in-memory MUGEN-format package exercises the current loader-to-runtime seam end to end. Claim blocked: archive/ZIP transport, exact Common1 timing, commercial character compatibility, visual/audio parity, broad unsupported controllers, and full MUGEN/IKEMEN parity.

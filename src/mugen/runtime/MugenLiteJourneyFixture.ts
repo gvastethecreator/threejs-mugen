@@ -1,3 +1,4 @@
+import JSZip from "jszip";
 import { VirtualFileSystem } from "../loader/VirtualFileSystem";
 
 export const MUGEN_LITE_JOURNEY_MANIFEST = Object.freeze({
@@ -22,6 +23,18 @@ export function createMugenLiteJourneyVfs(): VirtualFileSystem {
   vfs.addFile(`${root}/journey.sff`, createFixtureSff());
   vfs.addFile(`${root}/LICENSE.txt`, text(JOURNEY_LICENSE));
   return vfs;
+}
+
+export async function createMugenLiteJourneyZipBytes(): Promise<ArrayBuffer> {
+  const vfs = createMugenLiteJourneyVfs();
+  const zip = new JSZip();
+  const fixtureDate = new Date("1980-01-01T00:00:00.000Z");
+  for (const path of vfs.listFiles()) {
+    const bytes = vfs.readBytes(path);
+    if (!bytes) throw new Error(`MUGEN-lite journey package is missing ${path}`);
+    zip.file(path, bytes, { date: fixtureDate });
+  }
+  return zip.generateAsync({ type: "arraybuffer", compression: "DEFLATE", compressionOptions: { level: 9 }, platform: "DOS" });
 }
 
 const JOURNEY_LICENSE = `MUGEN Lite Journey fixture

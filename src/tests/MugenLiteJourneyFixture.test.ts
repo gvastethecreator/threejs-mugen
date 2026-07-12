@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
+import { ZipCharacterSource } from "../mugen/loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import {
   createMugenLiteJourneyVfs,
+  createMugenLiteJourneyZipBytes,
   MUGEN_LITE_JOURNEY_MANIFEST,
 } from "../mugen/runtime/MugenLiteJourneyFixture";
 import { createMugenLiteJourneyTraceArtifact } from "../mugen/runtime/RuntimeTraceGatePresets";
@@ -36,6 +38,23 @@ describe("MUGEN-lite journey fixture", () => {
     expect(fighter?.source).toBe("imported");
     expect(fighter?.runtimeProgram?.states.some((state) => state.id === 200)).toBe(true);
     expect(fighter?.animations.has(5200)).toBe(true);
+  });
+
+  it("round-trips the legal package through ZIP transport", async () => {
+    const bytes = await createMugenLiteJourneyZipBytes();
+    const source = new ZipCharacterSource(new File([bytes], "mugen-lite-journey.zip"));
+    const vfs = await source.load();
+    const character = await new MugenCharacterLoader().load(source.name, vfs);
+    const canonical = createMugenLiteJourneyVfs();
+
+    expect(Array.from(new Uint8Array(bytes, 0, 4))).toEqual([0x50, 0x4b, 0x03, 0x04]);
+    expect(new Uint8Array(await createMugenLiteJourneyZipBytes())).toEqual(new Uint8Array(bytes));
+    expect(vfs.listFiles()).toEqual(canonical.listFiles());
+    for (const path of canonical.listFiles()) {
+      expect(vfs.readBytes(path), path).toEqual(canonical.readBytes(path));
+    }
+    expect(character.compatibility.loaded).toBe(true);
+    expect(source.name).toBe("mugen-lite-journey.zip");
   });
 
   it("runs the loaded package through one movement, combat, and recovery journey", async () => {

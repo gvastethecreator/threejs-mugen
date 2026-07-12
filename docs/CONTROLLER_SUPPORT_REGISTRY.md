@@ -19,6 +19,8 @@ Every controller family should have:
 
 `mugen-lite-journey.json` checksum `8b19b865` is the required loader-to-runtime package gate. Its repository-authored `CC0-1.0` DEF/CMD/CNS/AIR/SFF surfaces prove ordered movement, attack, guard, get-hit, fall, and recovery through the same imported character definition. `JourneyUnknownController` is intentional negative evidence and must remain visible in compatibility diagnostics. This gate does not claim ZIP transport, exact Common1 behavior, third-party character compatibility, visual/audio parity, or controller parity beyond the observed route.
 
+Entry 458 extends that same checksum-stable gate through deterministic ZIP generation and production `ZipCharacterSource` extraction. ZIP signature, repeat-byte identity, extracted VFS parity, and loader success are focused-test requirements. Hostile/corrupt/password/multivolume archives and broad third-party layout compatibility remain unsupported.
+
 | State | Meaning |
 | --- | --- |
 | `recognized` | The controller name is known and can be counted/reported. |

@@ -26,8 +26,9 @@ import type { RuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { createRuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { trainingStage } from "./demoStage";
 import { MugenCharacterLoader } from "../loader/MugenCharacterLoader";
+import { ZipCharacterSource } from "../loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "./importedFighter";
-import { createMugenLiteJourneyVfs, MUGEN_LITE_JOURNEY_MANIFEST } from "./MugenLiteJourneyFixture";
+import { createMugenLiteJourneyZipBytes, MUGEN_LITE_JOURNEY_MANIFEST } from "./MugenLiteJourneyFixture";
 
 export type RuntimeTraceGatePresetArtifact = RuntimeTraceArtifact & {
   presetId: string;
@@ -42,7 +43,8 @@ export async function createMugenLiteJourneyTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): Promise<RuntimeTraceArtifact> {
   const loader = new MugenCharacterLoader();
-  const character = await loader.load(MUGEN_LITE_JOURNEY_MANIFEST.entry, createMugenLiteJourneyVfs());
+  const source = new ZipCharacterSource(new File([await createMugenLiteJourneyZipBytes()], "mugen-lite-journey.zip"));
+  const character = await loader.load(source.name, await source.load());
   const p1 = createImportedFighterDefinition(character);
   const p2 = createImportedFighterDefinition(character);
   if (!p1 || !p2) throw new Error("MUGEN-lite journey package did not produce runtime fighters");
@@ -73,7 +75,7 @@ export async function createMugenLiteJourneyTraceArtifact(
       label: "Repository-owned legal MUGEN-lite package journey",
       source: "imported",
       notes: [
-        `${MUGEN_LITE_JOURNEY_MANIFEST.schema} loads DEF/CMD/CNS/AIR/SFF from one ${MUGEN_LITE_JOURNEY_MANIFEST.license} package and executes one movement/combat/recovery journey. Exact Common1 timing, commercial KFM compatibility, visual parity, and full MUGEN parity remain blocked.`,
+        `${MUGEN_LITE_JOURNEY_MANIFEST.schema} loads DEF/CMD/CNS/AIR/SFF from one ${MUGEN_LITE_JOURNEY_MANIFEST.license} ZIP package and executes one movement/combat/recovery journey. Exact Common1 timing, commercial KFM compatibility, visual parity, and full MUGEN parity remain blocked.`,
       ],
     },
     gates: [{
