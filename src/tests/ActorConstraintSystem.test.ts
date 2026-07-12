@@ -126,6 +126,25 @@ describe("ActorConstraintSystem", () => {
     expect(state.combatDepth?.velocity).toBe(3);
   });
 
+  it("honors one-frame ScreenBound stagebound opt-out for Z and resets it", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const state = actorState({
+      pos: { x: 80, y: 0 },
+      combatDepth: { position: 100, velocity: 0, size: [3, 3], attack: [4, 4] },
+      stageBound: false,
+    });
+    const stage = { bounds: { left: -40, right: 40 }, depthBounds: { top: -10, bottom: 10 } };
+
+    world.clampToStage(state, stage);
+    expect(state.pos.x).toBe(40);
+    expect(state.combatDepth?.position).toBe(100);
+
+    world.resetFrameConstraints(state);
+    world.clampToStage(state, stage);
+    expect(state.stageBound).toBeUndefined();
+    expect(state.combatDepth?.position).toBe(10);
+  });
+
   it("applies one-frame Depth player/edge overrides and restores base depth", () => {
     const world = new RuntimeActorConstraintWorld();
     const state = actorState({ combatDepth: { position: 100, velocity: 0, size: [3, 4], attack: [4, 4] } });

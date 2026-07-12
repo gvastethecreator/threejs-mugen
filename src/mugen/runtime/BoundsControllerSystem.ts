@@ -51,6 +51,9 @@ export class RuntimeBoundsControllerWorld {
       moveCameraX: appliedOperation.moveCameraX,
       moveCameraY: appliedOperation.moveCameraY,
     };
+    if (appliedOperation.stageBound !== undefined) {
+      state.stageBound = appliedOperation.stageBound ? undefined : false;
+    }
     return { applied: true, controllerType: "screenbound", operation: appliedOperation };
   }
 }
@@ -90,12 +93,14 @@ export function resolveRuntimeScreenBoundControllerOperation(
   context: RuntimeControllerEvaluationContext = {},
 ): Extract<BoundsControllerOp, { controllerType: "screenbound" }> {
   const camera = pairParam(controller, state, context, "movecamera");
+  const stageBound = numberParam(controller, state, context, "stagebound");
   return {
     kind: "bounds",
     controllerType: "screenbound",
     bound: (numberParam(controller, state, context, "value") ?? 0) !== 0,
     moveCameraX: (camera?.[0] ?? 0) !== 0,
     moveCameraY: (camera?.[1] ?? 0) !== 0,
+    ...(stageBound === undefined ? {} : { stageBound: stageBound !== 0 }),
   };
 }
 

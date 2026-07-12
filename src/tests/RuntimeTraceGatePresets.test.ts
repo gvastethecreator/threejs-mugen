@@ -170,6 +170,7 @@ import {
   createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact,
   createSyntheticImportedIkemenStageDepthBoundTraceArtifact,
   createSyntheticImportedIkemenDepthControllerTraceArtifact,
+  createSyntheticImportedIkemenScreenStageBoundTraceArtifact,
   createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
@@ -25922,6 +25923,16 @@ describe("RuntimeTraceGatePresets", () => {
       status: "passed",
       target: { id: "synthetic-imported-ikemen-depth-controller-golden", source: "mixed" },
       gates: [{ label: "synthetic-imported-ikemen-depth-controller-golden", passed: true, failures: [] }],
+    });
+  });
+
+  it("creates a required synthetic imported IKEMEN ScreenBound stagebound artifact", () => {
+    const artifact = createSyntheticImportedIkemenScreenStageBoundTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-screen-stagebound-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-screen-stagebound-golden", passed: true, failures: [] }],
     });
   });
 

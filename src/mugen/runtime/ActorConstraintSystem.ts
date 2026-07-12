@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "combatDepth" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound" | "stageBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -37,6 +37,7 @@ export class RuntimeActorConstraintWorld {
     state.playerPush = true;
     state.posFreeze = undefined;
     state.screenBound = undefined;
+    state.stageBound = undefined;
     if (state.combatDepth?.baseSize) {
       state.combatDepth.size = state.combatDepth.baseSize;
       state.combatDepth.baseSize = undefined;
@@ -123,7 +124,7 @@ export class RuntimeActorConstraintWorld {
     if (state.screenBound?.bound !== false) {
       state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
     }
-    if (!stage.depthBounds || !state.combatDepth) return;
+    if (!stage.depthBounds || !state.combatDepth || state.stageBound === false) return;
 
     const stageScale = 320 / (stage.localCoord?.width ?? 320);
     const actorWidth = actorLocalCoord && "width" in actorLocalCoord ? actorLocalCoord.width : actorLocalCoord?.[0];

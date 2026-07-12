@@ -21,7 +21,7 @@ describe("RuntimeRootCnsExecutionWorld", () => {
     expect(run.mock.calls[2]?.[0]).toMatchObject({ capabilities: STANDBY_ROOT_CNS_CAPABILITIES });
     expect(STANDBY_ROOT_CNS_CAPABILITIES.runtimeControllers).toEqual(expect.arrayContaining(["tagin", "tagout"]));
     expect(ACTIVE_MOTION_ROOT_CNS_CAPABILITIES.runtimeControllers).toEqual(
-      expect.arrayContaining(["tagin", "velset", "posadd"]),
+      expect.arrayContaining(["tagin", "velset", "posadd", "screenbound"]),
     );
     expect(ACTIVE_MOTION_ROOT_CNS_CAPABILITIES.sideEffects).toEqual(["hitdef", "reversaldef", "depth"]);
     expect(STANDBY_ROOT_CNS_CAPABILITIES.sideEffects).toEqual([]);

@@ -347,6 +347,7 @@ export type BoundsControllerOp =
       bound: boolean;
       moveCameraX: boolean;
       moveCameraY: boolean;
+      stageBound?: boolean;
     };
 
 export type CollisionControllerOp =
@@ -959,9 +960,11 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
 
   const valueRaw = findParam(controller, "value");
   const moveCameraRaw = findParam(controller, "movecamera");
+  const stageBoundRaw = findParam(controller, "stagebound");
   const value = valueRaw === undefined ? 0 : firstNumber(valueRaw);
   const moveCamera = moveCameraRaw === undefined ? undefined : strictNumberPair(moveCameraRaw);
-  if (value === undefined || (moveCameraRaw !== undefined && moveCamera === undefined)) {
+  const stageBound = optionalBooleanParam(stageBoundRaw);
+  if (value === undefined || (moveCameraRaw !== undefined && moveCamera === undefined) || stageBound === "invalid") {
     return undefined;
   }
   return {
@@ -970,6 +973,7 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
     bound: value !== 0,
     moveCameraX: (moveCamera?.[0] ?? 0) !== 0,
     moveCameraY: (moveCamera?.[1] ?? 0) !== 0,
+    ...(stageBound === undefined ? {} : { stageBound }),
   };
 }
 

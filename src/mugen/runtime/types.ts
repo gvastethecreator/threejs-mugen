@@ -19,6 +19,7 @@ export type CharacterRuntimeState = {
   playerPush?: boolean;
   posFreeze?: { x: boolean; y: boolean; z: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
+  stageBound?: false;
   hitVelocity?: { x: number; y: number };
   receivedHitSequence?: number;
   hitVars?: RuntimeGetHitVars;

@@ -113,6 +113,27 @@ describe("BoundsControllerSystem", () => {
     });
   });
 
+  it("applies optional ScreenBound stagebound without coupling camera flags", () => {
+    const world = new RuntimeBoundsControllerWorld();
+    const state = runtimeState({ vars: [0] });
+
+    const disabled = world.applyScreenBoundController(
+      state,
+      source("ScreenBound", { value: "1", movecamera: "1,1", stagebound: "0" }),
+    );
+    expect(state.screenBound).toEqual({ bound: true, moveCameraX: true, moveCameraY: true });
+    expect(state.stageBound).toBe(false);
+    expect(disabled.operation).toMatchObject({ controllerType: "screenbound", stageBound: false });
+
+    const omitted = world.applyScreenBoundController(state, source("ScreenBound", { value: "0" }));
+    expect(state.stageBound).toBe(false);
+    expect(omitted.operation).not.toHaveProperty("stageBound");
+
+    const dynamic = world.applyScreenBoundController(state, source("ScreenBound", { stagebound: "1 - var(0)" }));
+    expect(state.stageBound).toBeUndefined();
+    expect(dynamic.operation).toMatchObject({ controllerType: "screenbound", stageBound: true });
+  });
+
   it("keeps StateControllerExecutor as router for bounds controllers", () => {
     const state = runtimeState({ playerPush: true });
     const next = executeControllerIr(compileControllerIr(controller("PlayerPush", { value: "0" })), state, () => undefined);

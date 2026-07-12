@@ -9036,6 +9036,63 @@ export function createSyntheticImportedIkemenDepthControllerTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenScreenStageBoundTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-screen-stagebound-grid",
+    displayName: "Trace Screen StageBound Grid",
+    depthBounds: { top: -10, bottom: 10 },
+    playerStart: { p1: { x: -20, y: 0, z: 0, facing: 1 }, p2: { x: 20, y: 0, z: -10, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-screen-stagebound-attacker",
+    displayName: "Synthetic Imported IKEMEN Screen StageBound Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 133, posZ: 20, screenStageBound: false },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-screen-stagebound-defender",
+    displayName: "Synthetic Imported IKEMEN Screen StageBound Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-screen-stagebound-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Screen StageBound Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([{ label: "P3 disables stagebound before Z clamp", p1: [], p2: [], frames: 2 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-screen-stagebound-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-screen-stagebound-golden",
+      label: "Synthetic imported IKEMEN ScreenBound stagebound",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves ScreenBound stagebound=0 disables logical-Z stage clamp independently from bound/movecamera. Legacy X stage/screen split, redirectid, helpers, camera-depth projection, and full parity remain outside this gate."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-screen-stagebound-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["PosSet", "ScreenBound", "HitDef"],
+      requiredExecutedOperations: ["kinematic:posset", "bounds:screenbound", "hitdef"],
+      requiredActorFrames: [{ actorId: "p3", source: "imported", actorKind: "player", observedPosZAtLeast: 20, minFrames: 2 }],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41180,6 +41237,7 @@ export type SyntheticImportedTraceFighterOptions = {
     velZ?: number;
     posFreeze?: boolean;
     depth?: { mode: "player" | "edge" | "value"; top: number; bottom: number };
+    screenStageBound?: boolean;
     hitDefTrigger?: string;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
@@ -46609,6 +46667,7 @@ ${route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\n
 ${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
 ${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger1 = 1\nvalue = 1\n` : ""}
 ${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}
+${route.screenStageBound === undefined ? "" : `[State 0, Active Root Screen StageBound]\ntype = ScreenBound\ntrigger1 = 1\nvalue = 1\nmovecamera = 1,1\nstagebound = ${route.screenStageBound ? 1 : 0}\n`}
 [State 0, Active Root HitDef]
 type = HitDef
 trigger1 = ${route.hitDefTrigger ?? "1"}

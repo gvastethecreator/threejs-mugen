@@ -886,6 +886,7 @@ time = 20
     const posFreeze = compileControllerIr(controller(200, "PosFreeze", [], { x: "1", y: "0" }));
     const posFreezeDefault = compileControllerIr(controller(200, "PosFreeze", [], {}));
     const screenBound = compileControllerIr(controller(200, "ScreenBound", [], { value: "0", movecamera: "0,1" }));
+    const screenStageBound = compileControllerIr(controller(200, "ScreenBound", [], { stagebound: "0" }));
     const dynamic = compileControllerIr(controller(200, "ScreenBound", [], { value: "Const(data.life)" }));
 
     expect(posFreeze.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
@@ -896,6 +897,14 @@ time = 20
       bound: false,
       moveCameraX: false,
       moveCameraY: true,
+    });
+    expect(screenStageBound.operation).toEqual({
+      kind: "bounds",
+      controllerType: "screenbound",
+      bound: false,
+      moveCameraX: false,
+      moveCameraY: false,
+      stageBound: false,
     });
     expect(dynamic.operation).toBeUndefined();
   });
