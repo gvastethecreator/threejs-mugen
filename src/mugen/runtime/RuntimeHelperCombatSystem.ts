@@ -10,6 +10,7 @@ import {
   applyRuntimeStateToHelper,
   helperRuntimeState,
   rememberRuntimeHelperTarget,
+  runtimeHelperCanDirectlyInteract,
   type RuntimeHelper,
 } from "./HelperSystem";
 import type { RuntimeContactPresentationActor } from "./RuntimeContactPresentationSystem";
@@ -91,6 +92,9 @@ export class RuntimeHelperCombatWorld {
     input: RuntimeHelperCombatInput<TDefender>,
   ): void {
     for (const helper of input.owner.effectActorWorld.helpers(input.owner.id)) {
+      if (!runtimeHelperCanDirectlyInteract(helper)) {
+        continue;
+      }
       const attacker = helperDirectCombatActor(helper, input.owner);
       const move = attacker.currentMove;
       if (!move || attacker.hasHit || move.requiresHitDef || move.isReversal || !runtimeHelperMoveIsActive(move, attacker.moveTick)) {

@@ -1254,7 +1254,6 @@ export class PlayableMatchRuntime {
       if (resolvedSelf === undefined) return block("invalid Helper self expression");
       self = resolvedSelf !== 0;
     }
-    if (self) return block("Helper standby unsupported");
 
     let stateNo = sourceOperation.callerStateNo;
     if (sourceOperation.callerStateExpression !== undefined) {
@@ -1274,7 +1273,7 @@ export class PlayableMatchRuntime {
     }
     const hasLocalMutation = stateNo !== undefined ||
       (sourceOperation.controllerType === "tagin" && hasAuthoredCallerControl(sourceOperation));
-    if (!hasLocalMutation) return block("Helper local mutation required");
+    if (!self && !hasLocalMutation) return block("Helper local mutation required");
 
     const {
       selfExpression: _selfExpression,
@@ -1284,12 +1283,20 @@ export class PlayableMatchRuntime {
     } = sourceOperation;
     const operation: TeamStandbyControllerOp = {
       ...staticOperation,
-      self: false,
+      self,
       ...(stateNo === undefined ? {} : { callerStateNo: stateNo }),
       ...(control === undefined ? {} : { callerControl: control }),
     };
     if (!applyRuntimeHelperTagStateControl(helper, { stateNo, control })) {
       return block(`Helper state ${stateNo ?? "invalid"} unavailable for ${helper.serialId}`);
+    }
+    if (self) {
+      helper.teamState = {
+        disabled: helper.teamState?.disabled ?? false,
+        standby: operation.standby,
+        overKo: helper.teamState?.overKo ?? false,
+        playerType: helper.teamState?.playerType ?? false,
+      };
     }
     return operation;
   }

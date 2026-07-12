@@ -10,6 +10,7 @@ import {
   applyRuntimeStateToHelper,
   createRuntimeHelper,
   helperRuntimeState,
+  runtimeHelperCanDirectlyInteract,
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
 } from "../mugen/runtime/HelperSystem";
@@ -187,6 +188,49 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("keeps standby Helper CNS and projectile dispatch active while projecting Ctrl as false", () => {
+    const standby = helper({
+      ctrl: true,
+      teamState: { disabled: false, standby: true, overKo: false, playerType: false },
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000), [
+            controllerIr(6000, "VarAdd", { v: "0", value: "1" }),
+            controllerIr(6000, "VarSet", { v: "1", value: "Ctrl" }),
+            controllerIr(6000, "Projectile", { projid: "71", projanim: "6100" }),
+          ]),
+        ],
+      },
+    });
+    let projectileSpawns = 0;
+
+    advanceRuntimeHelpers([standby], stage, {
+      onSpawnProjectile: () => {
+        projectileSpawns += 1;
+        return true;
+      },
+    });
+
+    expect(standby.vars.slice(0, 2)).toEqual([1, 0]);
+    expect(standby.ctrl).toBe(true);
+    expect(standby.stateTime).toBe(1);
+    expect(projectileSpawns).toBe(1);
+    expect(runtimeHelpersToSnapshots([standby], 100)[0]?.runtime.teamState?.standby).toBe(true);
+    expect(runtimeHelperCanDirectlyInteract(standby)).toBe(false);
+
+    standby.teamState!.standby = false;
+    advanceRuntimeHelpers([standby], stage);
+
+    expect(standby.vars.slice(0, 2)).toEqual([2, 1]);
+    expect(standby.ctrl).toBe(true);
+    expect(runtimeHelperCanDirectlyInteract(standby)).toBe(true);
+    standby.teamState!.disabled = true;
+    expect(runtimeHelperCanDirectlyInteract(standby)).toBe(false);
+    standby.teamState!.disabled = false;
+    standby.destroyed = true;
+    expect(runtimeHelperCanDirectlyInteract(standby)).toBe(false);
+  });
+
   it("creates a bounded visual helper from controller params", () => {
     const created = createRuntimeHelper({
       serialId: "p1-helper-1",

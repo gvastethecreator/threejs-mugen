@@ -168,6 +168,12 @@ export type RuntimeHelperRemovalFilter = {
   serialId?: string;
 };
 
+export function runtimeHelperCanDirectlyInteract(helper: RuntimeHelper): boolean {
+  return helper.destroyed !== true &&
+    helper.teamState?.disabled !== true &&
+    helper.teamState?.standby !== true;
+}
+
 export type RuntimeHelperSpawnInput = {
   serialId: string;
   runOrderId?: number;
@@ -372,6 +378,7 @@ export function runRuntimeHelperStateControllers(
       const actor = { runtime: helperRuntimeState(helper) };
       helperControllerDispatchWorld.apply(actor, controller, {
         context: {
+          self: expressionContext.self,
           playerId: expressionContext.playerId,
           playerNo: expressionContext.playerNo,
           stageBounds: options.stageBounds,
@@ -1108,7 +1115,7 @@ function helperExpressionContext(
   const opponentRoster = helperOpponentRoster(helper, options);
   const currentOpponent = opponentRoster[0];
   return {
-    self: helperRuntimeState(helper),
+    self: helperExpressionRuntimeState(helper),
     playerId: helper.playerId,
     playerNo: helper.playerNo,
     opponent: currentOpponent ? cloneRuntimeStateForRedirect(currentOpponent.state) : undefined,
@@ -1151,6 +1158,12 @@ function helperExpressionContext(
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };
+}
+
+function helperExpressionRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
+  const runtime = helperRuntimeState(helper);
+  runtime.ctrl = runtime.ctrl && runtime.teamState?.standby !== true;
+  return runtime;
 }
 
 export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {

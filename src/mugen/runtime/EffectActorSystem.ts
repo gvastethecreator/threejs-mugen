@@ -278,7 +278,7 @@ export class RuntimeEffectActorWorld {
     if (!store.helpers.includes(helper)) {
       return false;
     }
-    if (!advanceRuntimeHelperActor(helper, stage, options)) {
+    if (!advanceRuntimeHelperActor(helper, stage, createRuntimeHelperAdvanceOptions(store, stage, options))) {
       store.helpers = store.helpers.filter((candidate) => candidate !== helper);
       this.notifyHelpersRemoved([helper]);
       return false;
@@ -489,7 +489,15 @@ export function advanceRuntimeHelperActors(
   stage: Pick<MugenStageDefinition, "bounds">,
   options?: RuntimeHelperAdvanceOptions,
 ): void {
-  store.helpers = advanceRuntimeHelpers(store.helpers, stage, {
+  store.helpers = advanceRuntimeHelpers(store.helpers, stage, createRuntimeHelperAdvanceOptions(store, stage, options));
+}
+
+function createRuntimeHelperAdvanceOptions(
+  store: RuntimeEffectActorStore,
+  stage: Pick<MugenStageDefinition, "bounds">,
+  options?: RuntimeHelperAdvanceOptions,
+): RuntimeHelperAdvanceOptions {
+  return {
     ...options,
     stageBounds: options?.stageBounds ?? stage.bounds,
     gameSpace: options?.gameSpace ?? runtimeStageGameSpace(stage),
@@ -562,7 +570,7 @@ export function advanceRuntimeHelperActors(
       modifyRuntimeHelperProjectileActors(store, helper, controller, resolveModifyProjectile);
       return true;
     },
-  });
+  };
 }
 
 export function spawnRuntimeHelperProjectileActor(

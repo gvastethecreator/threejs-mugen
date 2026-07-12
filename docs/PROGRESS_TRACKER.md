@@ -1317,6 +1317,16 @@ Every compatibility milestone should leave:
 - Local audit found direct Helper HitDef and effective-control projection as the only blockers for bounded self standby.
 - Global status: Wayfinder 083 is implementation-ready; no score movement from this research checkpoint.
 
+### 2026-07-11 - IKEMEN Helper standby participation runtime
+
+- Default/static and dynamic-true Helper self now set/clear standby after local state/control mutation.
+- One reusable predicate suppresses destroyed/disabled/standby Helper direct HitDef; TagIn resumes contact.
+- Helper expressions expose effective `Ctrl = 0` while preserving stored control and continuing CNS/state time.
+- IKEMEN single-Helper RunOrder now carries bulk-equivalent effect context; standby Helper projectiles spawn and advance with parent provenance.
+- Identity lookup, targets, snapshots, animation/drawing, projectiles, and all 538 trace artifacts remain active/stable.
+- Full gates: 170 files / 1714 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
+- Global status: Wayfinder 083 is closed without score movement; Wayfinder 084 maps initial Helper `standby` creation.
+
 ## Not Done
 
 - Full MUGEN VM

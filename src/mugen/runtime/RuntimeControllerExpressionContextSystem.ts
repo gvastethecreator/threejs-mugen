@@ -4,6 +4,7 @@ import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerEvaluationContext = {
+  self?: CharacterRuntimeState;
   playerId?: number;
   playerNo?: number;
   getConst?: (name: string) => number | undefined;
@@ -41,7 +42,7 @@ export function createRuntimeControllerExpressionContext(
   context: RuntimeControllerEvaluationContext = {},
 ): ExpressionContext {
   return {
-    self: state,
+    self: context.self ?? state,
     playerId: context.playerId,
     playerNo: context.playerNo,
     opponent: context.opponent,
