@@ -25,6 +25,9 @@ import { expandRuntimeTraceScript, runRuntimeTrace } from "./RuntimeTrace";
 import type { RuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { createRuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { trainingStage } from "./demoStage";
+import { MugenCharacterLoader } from "../loader/MugenCharacterLoader";
+import { createImportedFighterDefinition } from "./importedFighter";
+import { createMugenLiteJourneyVfs, MUGEN_LITE_JOURNEY_MANIFEST } from "./MugenLiteJourneyFixture";
 
 export type RuntimeTraceGatePresetArtifact = RuntimeTraceArtifact & {
   presetId: string;
@@ -34,6 +37,88 @@ export type RuntimeTraceGatePresetOptions = {
   generatedAt?: string;
   stage?: MugenStageDefinition;
 };
+
+export async function createMugenLiteJourneyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const loader = new MugenCharacterLoader();
+  const character = await loader.load(MUGEN_LITE_JOURNEY_MANIFEST.entry, createMugenLiteJourneyVfs());
+  const p1 = createImportedFighterDefinition(character);
+  const p2 = createImportedFighterDefinition(character);
+  if (!p1 || !p2) throw new Error("MUGEN-lite journey package did not produce runtime fighters");
+  const script = expandRuntimeTraceScript([
+    { label: "journey-idle", frames: 2, p1: [], p2: [] },
+    { label: "journey-walk", frames: 60, p1: ["F"], p2: [] },
+    { label: "journey-crouch", frames: 3, p1: ["D"], p2: [] },
+    { label: "journey-jump-start", frames: 1, p1: ["U"], p2: [] },
+    { label: "journey-jump", frames: 44, p1: [], p2: [] },
+    { label: "journey-guard-contact", frames: 1, p1: ["x"], p2: ["B"] },
+    { label: "journey-guard", frames: 17, p1: [], p2: ["B"] },
+    { label: "journey-settle", frames: 16, p1: [], p2: [] },
+    { label: "journey-reapproach", frames: 15, p1: ["F"], p2: [] },
+    { label: "journey-hit-contact", frames: 1, p1: ["x"], p2: [] },
+    { label: "journey-hit-fall", frames: 30, p1: [], p2: [] },
+    { label: "journey-recovery", frames: 14, p1: [], p2: ["x", "y"] },
+    { label: "journey-final-idle", frames: 12, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: { ...p2, id: `${p2.id}-p2` }, stage: options.stage ?? trainingStage }), script, {
+    label: "mugen-lite-journey-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-lite-journey-golden",
+      label: "Repository-owned legal MUGEN-lite package journey",
+      source: "imported",
+      notes: [
+        `${MUGEN_LITE_JOURNEY_MANIFEST.schema} loads DEF/CMD/CNS/AIR/SFF from one ${MUGEN_LITE_JOURNEY_MANIFEST.license} package and executes one movement/combat/recovery journey. Exact Common1 timing, commercial KFM compatibility, visual parity, and full MUGEN parity remain blocked.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-lite-journey-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [0, 150, 200, 5000, 5050, 5100, 5200],
+      requiredExecutedControllers: [
+        { type: "ChangeState", minCount: 6 },
+        { type: "HitDef", minCount: 2 },
+        "HitFallVel",
+      ],
+      requiredActiveCommands: ["x", "recovery"],
+      requiredEventCategories: ["guard", "hit"],
+      requiredEventSubstrings: ["guarded MUGEN Lite Journey for 10", "hit MUGEN Lite Journey for 70"],
+      requiredCombatReasons: ["guard", "hit"],
+      requiredActorFrameSequences: [
+        {
+          label: "loaded package movement and attack order",
+          steps: [
+            { actorId: "p1", source: "imported", stateNo: 20, animNo: 20 },
+            { actorId: "p1", source: "imported", stateNo: 10, animNo: 10 },
+            { actorId: "p1", source: "imported", stateNo: 40, animNo: 40, observedPosYAtMost: -1 },
+            { actorId: "p1", source: "imported", stateNo: 200, animNo: 200, moveType: "A" },
+          ],
+        },
+        {
+          label: "loaded package guard, fall, and recovery order",
+          steps: [
+            { actorId: "p2", source: "imported", stateNo: 150, animNo: 150, guarding: true, observedLifeAtLeast: 990, observedLifeAtMost: 990 },
+            { actorId: "p2", source: "imported", stateNo: 5000, animNo: 5000, observedLifeAtLeast: 920, observedLifeAtMost: 920 },
+            { actorId: "p2", source: "imported", stateNo: 5050, animNo: 5050 },
+            { actorId: "p2", source: "imported", stateNo: 5100, animNo: 5100 },
+            { actorId: "p2", source: "imported", stateNo: 5200, animNo: 5200 },
+          ],
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", stateNo: 0, animNo: 0, life: 1000, ctrl: true },
+        { actorId: "p2", source: "imported", stateNo: 0, animNo: 0, life: 920, ctrl: true },
+      ],
+    }],
+  });
+}
 
 const SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT = {
   assetFrameOffsetX: 3,

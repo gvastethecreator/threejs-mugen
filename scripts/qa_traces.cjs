@@ -55,6 +55,11 @@ async function main() {
       artifact: presets.createSyntheticImportedBasicMovementTraceArtifact(),
     });
     artifacts.push({
+      name: "mugen-lite-journey",
+      required: true,
+      artifact: await presets.createMugenLiteJourneyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-movecontact",
       required: true,
       artifact: presets.createSyntheticImportedMoveContactTraceArtifact(),
@@ -3864,6 +3869,7 @@ function validateTraceCoverage(coverage) {
   const requiredHitEffectEventKinds = ["HitSpark:hit", "HitSpark:guard"];
   const requiredEnvShakeEventTypes = ["EnvShake"];
   const requiredArtifactNames = [
+    "mugen-lite-journey",
     "synthetic-imported-custom-state",
     "synthetic-imported-custom-state-gethitvar",
     "synthetic-imported-custom-state-gethitvar-animtype",
