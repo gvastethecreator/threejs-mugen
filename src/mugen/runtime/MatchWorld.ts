@@ -39,6 +39,10 @@ import {
   RuntimeRootSelectionWorld,
   type RuntimeRootSelectionDiagnostic,
 } from "./RuntimeRootSelectionSystem";
+import {
+  RuntimeRootPhaseCapabilitiesWorld,
+  type RuntimeRootPhaseCapabilitiesDiagnostic,
+} from "./RuntimeRootPhaseCapabilitiesSystem";
 
 export type MatchWorldOptions = {
   p1?: DemoFighterDefinition;
@@ -89,11 +93,13 @@ export type MatchWorldActorRegistrySnapshot = {
   teamRoster: RuntimeTeamRosterDiagnostic;
   teamSides: Record<1 | 2, string[]>;
   rootParticipation: RuntimeRootParticipationDiagnostic;
+  rootPhaseCapabilities?: RuntimeRootPhaseCapabilitiesDiagnostic;
   rootSelection: RuntimeRootSelectionDiagnostic;
 };
 
 const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
 const rootParticipationWorld = new RuntimeRootParticipationWorld();
+const rootPhaseCapabilitiesWorld = new RuntimeRootPhaseCapabilitiesWorld();
 const rootSelectionWorld = new RuntimeRootSelectionWorld();
 
 export class MatchWorld {
@@ -173,6 +179,7 @@ export class MatchWorld {
       this.targetWorld,
       snapshot.actors.map((actor) => actor.id),
       [...snapshot.actors, ...(snapshot.reserveActors ?? [])].map((actor) => actor.id),
+      snapshot.rootInputRouting,
     );
     this.registryKey = key;
     return this.actorRegistry;
@@ -192,6 +199,7 @@ export function buildMatchWorldActorRegistry(snapshot: MugenSnapshot): MatchWorl
     new RuntimeTargetWorld(),
     snapshot.actors.map((actor) => actor.id),
     [...snapshot.actors, ...(snapshot.reserveActors ?? [])].map((actor) => actor.id),
+    snapshot.rootInputRouting,
   );
 }
 
@@ -202,6 +210,7 @@ function buildMatchWorldActorRegistryFromRecords(
   targetWorld: RuntimeTargetWorld,
   playablePairRootIds: readonly string[],
   scheduledRootIds: readonly string[],
+  rootInputRouting: MugenSnapshot["rootInputRouting"],
 ): MatchWorldActorRegistrySnapshot {
   const actors = records.map((actor) => ({
     ...actor,
@@ -250,6 +259,14 @@ function buildMatchWorldActorRegistryFromRecords(
     presentedRootIds: playablePairRootIds,
     effectStoreOwnedRootIds: effectStores.map((store) => store.ownerId),
   });
+  const rootPhaseCapabilities = rootInputRouting
+    ? rootPhaseCapabilitiesWorld.diagnostic({
+        roots,
+        participation: rootParticipation,
+        inputRouting: rootInputRouting,
+        resourceOwnedRootIds: playablePairRootIds,
+      })
+    : undefined;
   const rootSelection = rootSelectionWorld.diagnostic(
     actors
       .filter((actor) => actor.kind === "player")
@@ -267,6 +284,7 @@ function buildMatchWorldActorRegistryFromRecords(
     lifecycle,
     teamRoster,
     rootParticipation,
+    ...(rootPhaseCapabilities ? { rootPhaseCapabilities } : {}),
     rootSelection,
     teamSides: {
       1: teamRoster.characters.filter((actor) => actor.side === 1).map((actor) => actor.id),

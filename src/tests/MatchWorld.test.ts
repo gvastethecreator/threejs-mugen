@@ -212,6 +212,13 @@ describe("MatchWorld", () => {
     };
     structurallyActiveSnapshot.reserveActors![5]!.runtime.teamState!.disabled = true;
     structurallyActiveSnapshot.reserveActors![5]!.runtime.teamState!.standby = false;
+    for (const actor of structurallyActiveSnapshot.reserveActors ?? []) {
+      const route = structurallyActiveSnapshot.rootInputRouting?.roots.find(({ id }) => id === actor.id);
+      if (!route) continue;
+      route.standby = actor.runtime.teamState?.standby ?? false;
+      route.effectiveCtrl =
+        actor.runtime.ctrl && actor.runtime.teamState?.disabled !== true && actor.runtime.teamState?.standby !== true;
+    }
     const structurallyActiveRegistry = buildMatchWorldActorRegistry(structurallyActiveSnapshot);
     expect(structurallyActiveRegistry.rootParticipation.roots.find((root) => root.id === "p3")).toMatchObject({
       structurallyActive: true,
@@ -264,6 +271,105 @@ describe("MatchWorld", () => {
     });
     expect(snapshot.actors.map(({ id }) => id)).toEqual(["p1", "p2"]);
     expect(registry.effectStores.map(({ ownerId }) => ownerId)).toEqual(["p1", "p2"]);
+  });
+
+  it("publishes current per-phase root capabilities without widening reserve execution", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    let registry = world.getActorRegistry();
+    expect(registry.rootPhaseCapabilities).toMatchObject({
+      schema: "RuntimeRootPhaseCapabilities/v0",
+      mode: "ikemen-tag",
+    });
+    expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p1")).toMatchObject({
+      available: true,
+      effectiveCtrl: true,
+      phases: {
+        commands: true,
+        controllerCns: "playable",
+        directInput: true,
+        ai: false,
+        kinematics: true,
+        animation: true,
+        effects: true,
+        combat: true,
+        round: true,
+        presentation: true,
+        resources: true,
+      },
+    });
+    expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p2")?.phases).toMatchObject({
+      directInput: false,
+      ai: true,
+    });
+    expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")).toMatchObject({
+      standby: true,
+      structurallyActive: false,
+      scheduled: true,
+      effectiveCtrl: false,
+      phases: {
+        commands: true,
+        controllerCns: "bounded-reserve",
+        directInput: false,
+        ai: false,
+        kinematics: false,
+        animation: false,
+        effects: false,
+        combat: false,
+        round: false,
+        presentation: false,
+        resources: false,
+      },
+    });
+
+    world.step({ p1: new Set(), p2: new Set() });
+    registry = world.getActorRegistry();
+    expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p2")?.phases).toMatchObject({
+      directInput: true,
+      ai: false,
+    });
+
+    world.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p1", standby: true },
+        { id: "p3", standby: false },
+      ],
+    });
+    registry = world.getActorRegistry();
+    expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p1")).toMatchObject({
+      standby: true,
+      structurallyActive: false,
+      effectiveCtrl: false,
+      phases: expect.objectContaining({ controllerCns: "playable", kinematics: true, presentation: true }),
+    });
+    expect(registry.rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")).toMatchObject({
+      standby: false,
+      structurallyActive: true,
+      phases: expect.objectContaining({ controllerCns: "bounded-reserve", kinematics: false, presentation: false }),
+    });
+
+    registry.rootPhaseCapabilities!.roots[0]!.phases.combat = false;
+    expect(world.getActorRegistry().rootPhaseCapabilities?.roots[0]?.phases.combat).toBe(true);
+    world.reset();
+    expect(world.getActorRegistry().rootPhaseCapabilities?.roots.find(({ id }) => id === "p3")?.standby).toBe(true);
+  });
+
+  it("keeps Single reserves command-disabled and legacy registries capability-free", () => {
+    const single = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "single",
+      reserveFighters: [demoFighters[0]!],
+    });
+    const singleReserve = single.getActorRegistry().rootPhaseCapabilities?.roots.find(({ id }) => id === "p3");
+
+    expect(single.getActorRegistry().rootPhaseCapabilities?.mode).toBe("ikemen-single");
+    expect(singleReserve?.phases).toMatchObject({ commands: false, controllerCns: "bounded-reserve" });
+    expect(new MatchWorld().getActorRegistry().rootPhaseCapabilities).toBeUndefined();
   });
 
   it("projects atomic standby transitions without widening playable consumers", () => {

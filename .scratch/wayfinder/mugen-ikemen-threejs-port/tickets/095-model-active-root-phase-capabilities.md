@@ -1,7 +1,7 @@
 # Model Active-root Phase Capabilities
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -20,4 +20,6 @@ Can explicit IKEMEN matches publish one versioned per-root, per-phase capability
 
 ## Answer
 
-Pending implementation.
+Explicit IKEMEN `MatchWorld` registries now publish `RuntimeRootPhaseCapabilities/v0`, reconciling live team state with `RuntimeRootParticipation/v0` and `RuntimeRootInputRouting/v0`. The matrix distinguishes commands, bounded/playable CNS, direct input, AI, kinematics, animation, effects, combat, round, presentation, and resources without changing execution.
+
+P1/P2 retain current owners; Tag P3-P8 expose mapped commands plus bounded reserve CNS only; Single reserves keep command mapping disabled; legacy/unknown registries expose no schema. Disabled/non-player/invalid-side roots fail closed, source-diagnostic drift throws before partial publication, standby/reset and P2 AI/direct transitions are covered, and returned registries remain isolated. Full evidence: `docs/reports/2026-07-11-ikemen-active-root-phase-capabilities.md`.

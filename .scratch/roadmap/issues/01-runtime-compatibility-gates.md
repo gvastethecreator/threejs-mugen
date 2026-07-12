@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - IKEMEN Active-root Phase Capabilities
+
+Status: done
+Date: 2026-07-11
+
+- Baseline: participation and command routing were separate diagnostics, but no machine-readable contract named every later P1/P2-only phase.
+- Result: explicit IKEMEN `MatchWorld` registries publish `RuntimeRootPhaseCapabilities/v0` across commands, playable/bounded CNS, direct input/AI, kinematics, animation, effects, combat, round, presentation, and resources. No execution changed.
+- Evidence: focused 5 files / 23 tests; full 172 files / 1769 tests; unchanged 540/540 traces with 509 required; TypeScript 7 build/typecheck; boundaries green.
+- Audit: id/team-state/structural-activity/side drift rejects partial publication; disabled/non-player/invalid-side roots fail closed; Tag/Single, AI/direct, standby/reset, legacy omission, and detached reads are covered.
+- Blocked: scheduler consumption, P3-P8 playable phases, root-key effects, combat, round, presentation/lifebars/resources, rollback, score movement, and full IKEMEN parity.
+
 ## Latest Closed Quality Slice - IKEMEN Tag Side Command Routing
 
 Status: done

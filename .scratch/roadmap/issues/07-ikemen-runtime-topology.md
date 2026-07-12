@@ -14,7 +14,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-400` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded static/deferred TagIn/TagOut parameters, explicit member/leader order, root and Helper numeric identity/RedirectID ownership, complete root-to-Helper aggregate execution, Helper-originated self Tag, its required cross-system trace, the pinned active-root gameplay ownership map, and explicit Tag same-side command routing are closed. Wayfinder 095 next models current per-phase active-root capabilities without changing execution. P3-P8 direct gameplay, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-401` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded Tag parameters/order/identity/RedirectID, complete root-to-Helper aggregate execution, Helper-originated self Tag plus required trace, active-root ownership research, same-side command routing, and `RuntimeRootPhaseCapabilities/v0` are closed. Wayfinder 096 next maps the first playable phase promotion without changing execution. P3-P8 direct gameplay, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.
@@ -444,7 +444,7 @@ Every implementation cut under this issue must record:
 
 Allowed now, from the latest checkpoint override:
 
-> The explicit IKEMEN profile has bounded source-backed root/helper scheduling, complete team topology and selection diagnostics, bounded root-to-Helper Tag aggregate execution, Helper-originated self Tag standby, required Helper-owned Tag evidence, and independent same-side Tag command routing while later gameplay consumers remain P1/P2-owned.
+> The explicit IKEMEN profile has bounded source-backed root/helper scheduling, complete team topology and selection diagnostics, bounded root-to-Helper Tag aggregate execution, Helper-originated self Tag standby, required Helper-owned Tag evidence, independent same-side Tag command routing, and an explicit per-root phase-capability matrix while later gameplay consumers remain P1/P2-owned.
 
 Blocked now:
 

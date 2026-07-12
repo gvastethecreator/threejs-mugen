@@ -1,5 +1,9 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-11 IKEMEN phase-capability evidence note
+
+Explicit IKEMEN `MatchWorld` registries now expose `RuntimeRootPhaseCapabilities/v0`, making current P1/P2 gameplay ownership and P3-P8 command/bounded-CNS limits machine-readable. The trace aggregate remains 540/540 and scores remain unchanged because the model does not schedule or execute a new phase.
+
 ## 2026-07-11 IKEMEN Tag command-routing evidence note
 
 The repository now declares 540/540 traces (509 required, 31 optional). Required `synthetic-imported-ikemen-tag-side-command` proves opposite-side isolation and one P1-to-P3 standby CNS transition through independent same-side command state. Scores remain unchanged: direct input/AI, full fighter advancement, effects, combat, round, camera, renderer, lifebar, and resources remain P1/P2-owned.
@@ -83,7 +87,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Evidence Ledger
 
-Current aggregate override: entry 400 declares `pnpm qa:trace` at 540/540 artifacts, 509 required and 31 optional, after required IKEMEN Tag side command routing evidence. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as the current total.
+Current aggregate override: entry 401 confirms `pnpm qa:trace` at 540/540 artifacts, 509 required and 31 optional, after the phase-capability read model; entry 400 remains the latest new required trace. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as the current total.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |

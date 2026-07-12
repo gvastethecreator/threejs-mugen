@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN active-root phase capabilities
+
+- Contract: explicit IKEMEN `MatchWorld` registries publish `RuntimeRootPhaseCapabilities/v0` across commands, CNS, direct input, AI, kinematics, animation, effects, combat, round, presentation, and resources.
+- Current truth: P1/P2 retain playable owners; Tag P3-P8 expose mapped commands plus bounded reserve CNS only. Non-standby does not imply playable.
+- Safety: availability, standby, structural activity, scheduling, and effective control stay separate; id/state/side drift rejects the complete matrix and returned snapshots are isolated.
+- Compatibility: Single reserves remain command-disabled, legacy/unknown publish no schema, and no scheduler/runtime/trace/visual behavior changed.
+- Verification: 172 files / 1769 tests, TypeScript 7 build, 540/540 traces (509 required, 31 optional), boundaries, and diff check pass.
+- Global status: Wayfinder 095 is closed without trace, visual, or score movement; Wayfinder 096 maps the first source-backed playable phase promotion.
+
 ## Global report - 2026-07-11 IKEMEN Tag side command routing
 
 - Runtime: `RuntimeRootInputRouting/v0` separates side command mapping, direct control, AI, standby, and effective control for every present root.

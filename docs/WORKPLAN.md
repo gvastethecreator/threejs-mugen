@@ -1315,6 +1315,8 @@ Pinned active-root research now establishes that Human Tag maps each physical si
 
 Explicit `ikemen-go` Tag normal ticks now clone each side input into independent same-side root command buffers through `RuntimeRootInputRouting/v0`. Required checksum `dff92731` proves P2 isolation followed by a P1-driven standby P3 state transition, while Pause/hitpause and every later gameplay owner stay pair-only. Full gates pass 171 files / 1762 tests and 540/540 traces. Wayfinder 095 next models the current per-phase root capability matrix before any direct-input, kinematics, presentation, effect, combat, round, or resource widening; no visual or score movement is claimed.
 
+`RuntimeRootPhaseCapabilities/v0` now publishes the explicit IKEMEN registry truth for command state, playable/bounded CNS, direct input, AI, kinematics, animation, effects, combat, round, presentation, and resources. Availability, standby, structural activation, scheduling, and effective control remain separate; P3-P8 gain no new execution and legacy exposes no schema. Full gates pass 172 files / 1769 tests and unchanged 540/540 traces. Wayfinder 096 next maps upstream/local phase order and selects one executable promotion; no visual or score movement is claimed.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.
