@@ -126,7 +126,7 @@ import {
 import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
-import { RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic } from "./RuntimeRootBodyPushSystem";
+import { resolveRuntimePushSizeBox, RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic } from "./RuntimeRootBodyPushSystem";
 import {
   RuntimeRootDirectHitAdmissionWorld,
   type RuntimeRootDirectHitAdmissionDiagnostic,
@@ -978,12 +978,12 @@ export class PlayableMatchRuntime {
                 localCoord: root.definition.localCoord,
                 weight: root.definition.constants?.["size.weight"],
                 pushFactor: root.definition.constants?.["size.pushfactor"],
-                sizeHeight: root.definition.constants?.["size.height"],
+                sizeBox: runtimePushSizeBox(root),
                 hurtBoxes: frameWorld.currentFrame(root)?.clsn2,
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeHeight: this.p1.definition.constants?.["size.height"], hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2 },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeHeight: this.p2.definition.constants?.["size.height"], hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2 },
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2 },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2 },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
@@ -2767,6 +2767,10 @@ function advanceContactTimers(fighter: FighterMatchState): void {
 
 function getRuntimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
   return frameWorld.currentFrame(fighter)?.clsn2;
+}
+
+function runtimePushSizeBox(fighter: FighterMatchState) {
+  return resolveRuntimePushSizeBox(fighter.definition.constants, fighter.runtime.stateType);
 }
 
 function applyAutoGuardStart(

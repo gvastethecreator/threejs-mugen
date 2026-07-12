@@ -2,10 +2,20 @@ import { describe, expect, it } from "vitest";
 import { RuntimeActorConstraintWorld } from "../mugen/runtime/ActorConstraintSystem";
 import {
   RuntimeRootBodyPushWorld,
+  resolveRuntimePushSizeBox,
   type RuntimeRootBodyPushActor,
 } from "../mugen/runtime/RuntimeRootBodyPushSystem";
 
 describe("RuntimeRootBodyPushWorld", () => {
+  it("resolves legacy and IKEMEN state-specific size boxes", () => {
+    expect(resolveRuntimePushSizeBox(undefined, "S")).toEqual({ x1: -16, y1: -60, x2: 16, y2: 0 });
+    expect(resolveRuntimePushSizeBox({ "size.air.back": 9, "size.air.front": 13, "size.height": 70 }, "A"))
+      .toEqual({ x1: -9, y1: -70, x2: 13, y2: 0 });
+    expect(resolveRuntimePushSizeBox({
+      "size.crouch.sizebox.left": 20, "size.crouch.sizebox.top": 4,
+      "size.crouch.sizebox.right": -18, "size.crouch.sizebox.bottom": -50,
+    }, "C")).toEqual({ x1: -18, y1: -50, x2: 20, y2: 4 });
+  });
   it("resolves every eligible Tag pair once in stable root order", () => {
     const roots = [actor("p1", 1, 0), actor("p2", 2, 10), actor("p3", 1, 5)];
     const diagnostic = advance(roots, true);
@@ -166,7 +176,7 @@ function actor(
     side,
     teamState: { disabled: false, standby: false, overKo: false, playerType: true, ...teamOverrides },
     runtime: { pos: { x, y: 0 }, facing: 1, bodyWidth: { front: 10, back: 10 }, playerPush },
-    sizeHeight: 60,
+    sizeBox: { x1: -16, y1: -60, x2: 16, y2: 0 },
     hurtBoxes: [{ x1: -10, y1: -60, x2: 10, y2: 0 }],
   };
 }

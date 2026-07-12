@@ -205,6 +205,7 @@ head.pos = 5,-120
 mid.pos = 2,-64
 depth = 2,5
 attack.depth = 7
+stand.sizebox = -18,-70,20,2
 `);
 
     expect(parsed.constants["data.life"]).toBe(1000);
@@ -227,6 +228,10 @@ attack.depth = 7
     expect(parsed.constants["size.depth.bottom"]).toBe(5);
     expect(parsed.constants["size.attack.depth.top"]).toBe(7);
     expect(parsed.constants["size.attack.depth.bottom"]).toBe(7);
+    expect(parsed.constants["size.stand.sizebox.left"]).toBe(-18);
+    expect(parsed.constants["size.stand.sizebox.top"]).toBe(-70);
+    expect(parsed.constants["size.stand.sizebox.right"]).toBe(20);
+    expect(parsed.constants["size.stand.sizebox.bottom"]).toBe(2);
   });
 
   it("indexes triggerall in command state-entry controllers", () => {

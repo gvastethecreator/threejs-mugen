@@ -164,4 +164,10 @@ function applySectionConstant(constants: Record<string, number>, section: "data"
     constants[`${name}.top`] = values[0];
     constants[`${name}.bottom`] = values[1] ?? values[0];
   }
+  if (section === "size" && key.trim().toLowerCase().endsWith(".sizebox") && values.length >= 4) {
+    constants[`${name}.left`] = values[0]!;
+    constants[`${name}.top`] = values[1]!;
+    constants[`${name}.right`] = values[2]!;
+    constants[`${name}.bottom`] = values[3]!;
+  }
 }

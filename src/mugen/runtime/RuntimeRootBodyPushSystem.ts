@@ -13,7 +13,7 @@ export type RuntimeRootBodyPushActor = {
   localCoord?: readonly [number, number];
   weight?: number;
   pushFactor?: number;
-  sizeHeight?: number;
+  sizeBox?: CollisionBox;
   hurtBoxes?: readonly CollisionBox[];
 };
 
@@ -35,6 +35,26 @@ export type RuntimeRootBodyPushInput = {
     "separate" | "clampBodyPushToStage" | "clampBodyPushDepthToStage"
   >;
 };
+
+export function resolveRuntimePushSizeBox(
+  constants: Readonly<Record<string, number>> | undefined,
+  stateType: "S" | "C" | "A" | "L",
+): CollisionBox {
+  const values = constants ?? {};
+  const stand: CollisionBox = {
+    x1: -(values["size.ground.back"] ?? 16), y1: -(values["size.height"] ?? 60),
+    x2: values["size.ground.front"] ?? 16, y2: 0,
+  };
+  const key = stateType === "C" ? "crouch" : stateType === "A" ? "air" : stateType === "L" ? "down" : "stand";
+  const fallback = key === "air"
+    ? { x1: -(values["size.air.back"] ?? 12), y1: stand.y1, x2: values["size.air.front"] ?? 12, y2: stand.y2 }
+    : stand;
+  const edges = ["left", "top", "right", "bottom"].map((edge) => values[`size.${key}.sizebox.${edge}`]);
+  const box = edges.every((value) => value !== undefined && Number.isFinite(value))
+    ? { x1: edges[0]!, y1: edges[1]!, x2: edges[2]!, y2: edges[3]! }
+    : fallback;
+  return { x1: Math.min(box.x1, box.x2), y1: Math.min(box.y1, box.y2), x2: Math.max(box.x1, box.x2), y2: Math.max(box.y1, box.y2) };
+}
 
 export class RuntimeRootBodyPushWorld {
   advance(input: RuntimeRootBodyPushInput): RuntimeRootBodyPushDiagnostic {
@@ -82,10 +102,12 @@ export class RuntimeRootBodyPushWorld {
 function hasPushGeometry(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): boolean {
   const leftScale = 320 / (left.localCoord?.[0] ?? 320);
   const rightScale = 320 / (right.localCoord?.[0] ?? 320);
-  const leftTop = (left.runtime.pos.y - finitePositive(left.sizeHeight, 60)) * leftScale;
-  const leftBottom = left.runtime.pos.y * leftScale;
-  const rightTop = (right.runtime.pos.y - finitePositive(right.sizeHeight, 60)) * rightScale;
-  const rightBottom = right.runtime.pos.y * rightScale;
+  const leftSizeBox = left.sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
+  const rightSizeBox = right.sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
+  const leftTop = (left.runtime.pos.y + leftSizeBox.y1) * leftScale;
+  const leftBottom = (left.runtime.pos.y + leftSizeBox.y2) * leftScale;
+  const rightTop = (right.runtime.pos.y + rightSizeBox.y1) * rightScale;
+  const rightBottom = (right.runtime.pos.y + rightSizeBox.y2) * rightScale;
   if (Math.min(leftBottom, rightBottom) - Math.max(leftTop, rightTop) <= 0) return false;
   if (!left.hurtBoxes?.length || !right.hurtBoxes?.length) return false;
   return left.hurtBoxes.some((leftBox) => right.hurtBoxes!.some((rightBox) =>
