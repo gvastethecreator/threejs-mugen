@@ -104,16 +104,17 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map initial Helper standby creation](tickets/084-map-helper-initial-standby.md) - optional caller-owned boolean standby applies after identity allocation and before StateDef-over-fallback control, initial state, and same-frame CNS.
 - [Execute initial Helper standby creation](tickets/085-execute-helper-initial-standby.md) - explicit IKEMEN root-created Helpers resolve caller-owned static/dynamic standby before final identity visibility and same-tick CNS, with StateDef-over-true control and fail-closed invalid values.
 - [Map Helper aggregate Tag ownership](tickets/086-map-helper-aggregate-tag-ownership.md) - partner selects a same-side root through inherited PlayerNo; member/leader mutate root order, with a distinct zero-valued Helper member-position quirk.
+- [Execute Helper-relative partner Tag ownership](tickets/087-execute-helper-partner-tag-ownership.md) - live Helper redirects now compose local state/control/self with exact-root-relative partner standby/state/control under atomic validation.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Execute Helper-relative partner Tag ownership](tickets/087-execute-helper-partner-tag-ownership.md)
+- [Execute Helper-relative TagIn leader ownership](tickets/088-execute-helper-tagin-leader-ownership.md)
 
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Exact bounded execution contract for Helper `memberno` and `leader` after partner ownership lands.
+- Exact bounded execution contract for the zero-valued Helper `memberno` position-one quirk after leader ownership lands.
 
 ## Out Of Scope
 

@@ -740,9 +740,6 @@ function compileTeamStandbyControllerOp(
     return undefined;
   }
   if (type !== "tagin" && leaderPlayerNoRaw !== undefined) return undefined;
-  if (partnerRaw !== undefined && callerStateRaw !== undefined) {
-    return undefined;
-  }
   if ((partnerStateRaw !== undefined || partnerControlRaw !== undefined) && partnerRaw === undefined) {
     return undefined;
   }

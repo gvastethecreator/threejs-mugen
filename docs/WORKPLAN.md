@@ -1299,6 +1299,8 @@ Initial root-created Helper standby now executes under explicit `ikemen-go`. Sta
 
 Helper aggregate Tag ownership is now source-mapped. A redirected Helper keeps local state/control/self while inherited PlayerNo selects a partner root; member and leader mutate root Tag order, with Helper `memberno` exposing a zero-initialized position-one source quirk. Upstream failure is incremental, but the local bounded contract remains prevalidated and atomic. Wayfinder 087 executes partner standby/state/control only; member, leader, gameplay, score, and full parity remain blocked.
 
+Helper-relative partner Tag now executes under explicit `ikemen-go`. The compiler admits caller state plus partner composition; dynamic values resolve once in pinned source order and original-root context. Exact `rootId` anchoring selects the stable same-side root, all Helper/partner states prevalidate, then Helper state/control/self precede partner standby/state/control. Full gates pass 170 files / 1727 tests and 538/538 traces. Wayfinder 088 next admits TagIn leader rotation; `memberno`, exact incremental failure, gameplay, score, and full parity remain blocked.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

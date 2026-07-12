@@ -329,6 +329,24 @@ time = 20
       partnerOrdinal: 0,
       partnerStateNo: 200,
     });
+    expect(compileControllerIr(controller(200, "TagIn", [], {
+      self: "1",
+      partner: "0",
+      stateno: "1201",
+      partnerstateno: "201",
+      ctrl: "1",
+      partnerctrl: "0",
+    })).operation).toEqual({
+      kind: "team-standby",
+      controllerType: "tagin",
+      standby: false,
+      self: true,
+      partnerOrdinal: 0,
+      callerStateNo: 1201,
+      partnerStateNo: 201,
+      callerControl: true,
+      partnerControl: false,
+    });
     expect(compileControllerIr(controller(200, "TagIn", [], { partner: "0", ctrl: "1", partnerctrl: "0" })).operation).toEqual({
       kind: "team-standby",
       controllerType: "tagin",
@@ -464,7 +482,6 @@ time = 20
       { self: "(" },
       { stateno: "1, 0" },
       { stateno: "(" },
-      { partner: "0", stateno: "200" },
       { partnerstateno: "200" },
       { partner: "0", partnerstateno: "1, 0" },
       { partner: "0", partnerstateno: "(" },

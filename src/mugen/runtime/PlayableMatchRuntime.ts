@@ -1247,62 +1247,61 @@ export class PlayableMatchRuntime {
       );
       return undefined;
     };
-    if (hasHelperTagAggregateAxes(sourceOperation)) {
+    if (hasHelperTagTeamOrderAxes(sourceOperation)) {
       return block("Helper aggregate axes unsupported");
     }
     if (sourceOperation.controllerType === "tagout" && hasAuthoredCallerControl(sourceOperation)) {
       return block("TagOut Helper control unsupported");
     }
 
-    let self = sourceOperation.self;
-    if (sourceOperation.selfExpression !== undefined) {
-      const resolvedSelf = evaluateRuntimeControllerNumber(sourceOperation.selfExpression, caller.runtime, context);
-      if (resolvedSelf === undefined) return block("invalid Helper self expression");
-      self = resolvedSelf !== 0;
-    }
-
-    let stateNo = sourceOperation.callerStateNo;
-    if (sourceOperation.callerStateExpression !== undefined) {
-      const resolvedState = evaluateRuntimeControllerNumber(sourceOperation.callerStateExpression, caller.runtime, context);
-      if (resolvedState === undefined) return block("invalid Helper state expression");
-      stateNo = Math.trunc(resolvedState);
-    }
+    const operation = resolveDynamicTeamStandbyOperation(sourceOperation, caller, context);
+    if (!operation) return block("invalid Helper Tag expression");
+    const stateNo = operation.callerStateNo;
     if (stateNo !== undefined && !hasRuntimeHelperState(helper, stateNo)) {
       return block(`Helper state ${stateNo} unavailable for ${helper.serialId}`);
     }
 
-    let control = sourceOperation.callerControl;
-    if (sourceOperation.callerControlExpression !== undefined) {
-      const resolvedControl = evaluateRuntimeControllerNumber(sourceOperation.callerControlExpression, caller.runtime, context);
-      if (resolvedControl === undefined) return block("invalid Helper control expression");
-      control = resolvedControl !== 0;
+    const hasPartnerPayload = operation.partnerStateNo !== undefined || operation.partnerControl !== undefined;
+    if (operation.partnerOrdinal === undefined && hasPartnerPayload) {
+      return block("Helper partner target required");
     }
-    const hasLocalMutation = stateNo !== undefined ||
-      (sourceOperation.controllerType === "tagin" && hasAuthoredCallerControl(sourceOperation));
-    if (!self && !hasLocalMutation) return block("Helper local mutation required");
+    const roots = this.characterRoots();
+    let partner: FighterMatchState | undefined;
+    if (operation.partnerOrdinal !== undefined) {
+      const root = roots.find((candidate) => candidate.id === helper.rootId);
+      if (!root || !root.runtime.teamState?.playerType || root.runtime.teamState.disabled) {
+        return block(`Helper root ${helper.rootId} unavailable`);
+      }
+      partner = tagPartnerSelectionWorld.select(roots, root, operation.partnerOrdinal);
+      if (!partner) return block(`partner ${operation.partnerOrdinal} unavailable for ${root.id}`);
+      if (operation.partnerStateNo !== undefined && !canEnterState(partner, operation.partnerStateNo, partner)) {
+        return block(`partner state ${operation.partnerStateNo} unavailable for ${partner.id}`);
+      }
+    }
 
-    const {
-      selfExpression: _selfExpression,
-      callerStateExpression: _callerStateExpression,
-      callerControlExpression: _callerControlExpression,
-      ...staticOperation
-    } = sourceOperation;
-    const operation: TeamStandbyControllerOp = {
-      ...staticOperation,
-      self,
-      ...(stateNo === undefined ? {} : { callerStateNo: stateNo }),
-      ...(control === undefined ? {} : { callerControl: control }),
-    };
-    if (!applyRuntimeHelperTagStateControl(helper, { stateNo, control })) {
+    const hasLocalMutation = stateNo !== undefined ||
+      (operation.controllerType === "tagin" && hasAuthoredCallerControl(operation));
+    if (!operation.self && !hasLocalMutation && !partner) return block("Helper local mutation required");
+
+    if (!applyRuntimeHelperTagStateControl(helper, { stateNo, control: operation.callerControl })) {
       return block(`Helper state ${stateNo ?? "invalid"} unavailable for ${helper.serialId}`);
     }
-    if (self) {
+    if (operation.self) {
       helper.teamState = {
         disabled: helper.teamState?.disabled ?? false,
         standby: operation.standby,
         overKo: helper.teamState?.overKo ?? false,
         playerType: helper.teamState?.playerType ?? false,
       };
+    }
+    if (partner) {
+      rootStandbyTransitionWorld.apply(roots, [{ id: partner.id, standby: operation.standby }]);
+      if (operation.partnerStateNo !== undefined) {
+        enterState(partner, operation.partnerStateNo, undefined, { clearStateOwner: true });
+      }
+      if (operation.partnerControl !== undefined) {
+        applyRuntimeControl(partner.runtime, operation.partnerControl);
+      }
     }
     return operation;
   }
@@ -2217,6 +2216,30 @@ function resolveDynamicTeamStandbyOperation(
     const { partnerOrdinalExpression: _partnerOrdinalExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, partnerOrdinal };
   }
+  if (operation.callerStateExpression !== undefined) {
+    const resolvedCallerState = evaluateRuntimeControllerNumber(operation.callerStateExpression, fighter.runtime, context);
+    if (resolvedCallerState === undefined) return undefined;
+    const stateNo = Math.trunc(resolvedCallerState);
+    if (stateNo < 0) return undefined;
+    const { callerStateExpression: _callerStateExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, callerStateNo: stateNo };
+  }
+  if (operation.memberPositionExpression !== undefined) {
+    const resolvedMemberPosition = evaluateRuntimeControllerNumber(operation.memberPositionExpression, fighter.runtime, context);
+    if (resolvedMemberPosition === undefined) return undefined;
+    const memberPosition = Math.trunc(resolvedMemberPosition);
+    if (memberPosition < 1) return undefined;
+    const { memberPositionExpression: _memberPositionExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, memberPosition };
+  }
+  if (operation.partnerStateExpression !== undefined) {
+    const resolvedPartnerState = evaluateRuntimeControllerNumber(operation.partnerStateExpression, fighter.runtime, context);
+    if (resolvedPartnerState === undefined) return undefined;
+    const stateNo = Math.trunc(resolvedPartnerState);
+    if (stateNo < 0) return undefined;
+    const { partnerStateExpression: _partnerStateExpression, ...staticOperation } = resolvedOperation;
+    resolvedOperation = { ...staticOperation, partnerStateNo: stateNo };
+  }
   if (operation.callerControlExpression !== undefined) {
     const resolvedControl = evaluateRuntimeControllerNumber(operation.callerControlExpression, fighter.runtime, context);
     if (resolvedControl === undefined) return undefined;
@@ -2228,30 +2251,6 @@ function resolveDynamicTeamStandbyOperation(
     if (resolvedPartnerControl === undefined) return undefined;
     const { partnerControlExpression: _partnerControlExpression, ...staticOperation } = resolvedOperation;
     resolvedOperation = { ...staticOperation, partnerControl: resolvedPartnerControl !== 0 };
-  }
-  if (operation.callerStateExpression !== undefined) {
-    const resolvedCallerState = evaluateRuntimeControllerNumber(operation.callerStateExpression, fighter.runtime, context);
-    if (resolvedCallerState === undefined) return undefined;
-    const stateNo = Math.trunc(resolvedCallerState);
-    if (stateNo < 0) return undefined;
-    const { callerStateExpression: _callerStateExpression, ...staticOperation } = resolvedOperation;
-    resolvedOperation = { ...staticOperation, callerStateNo: stateNo };
-  }
-  if (operation.partnerStateExpression !== undefined) {
-    const resolvedPartnerState = evaluateRuntimeControllerNumber(operation.partnerStateExpression, fighter.runtime, context);
-    if (resolvedPartnerState === undefined) return undefined;
-    const stateNo = Math.trunc(resolvedPartnerState);
-    if (stateNo < 0) return undefined;
-    const { partnerStateExpression: _partnerStateExpression, ...staticOperation } = resolvedOperation;
-    resolvedOperation = { ...staticOperation, partnerStateNo: stateNo };
-  }
-  if (operation.memberPositionExpression !== undefined) {
-    const resolvedMemberPosition = evaluateRuntimeControllerNumber(operation.memberPositionExpression, fighter.runtime, context);
-    if (resolvedMemberPosition === undefined) return undefined;
-    const memberPosition = Math.trunc(resolvedMemberPosition);
-    if (memberPosition < 1) return undefined;
-    const { memberPositionExpression: _memberPositionExpression, ...staticOperation } = resolvedOperation;
-    resolvedOperation = { ...staticOperation, memberPosition };
   }
   if (operation.leaderPlayerNoExpression !== undefined) {
     const resolvedLeaderPlayerNo = evaluateRuntimeControllerNumber(operation.leaderPlayerNoExpression, fighter.runtime, context);
@@ -2268,14 +2267,8 @@ function hasAuthoredCallerControl(operation: TeamStandbyControllerOp): boolean {
   return operation.callerControl !== undefined || operation.callerControlExpression !== undefined;
 }
 
-function hasHelperTagAggregateAxes(operation: TeamStandbyControllerOp): boolean {
-  return operation.partnerOrdinal !== undefined ||
-    operation.partnerOrdinalExpression !== undefined ||
-    operation.partnerStateNo !== undefined ||
-    operation.partnerStateExpression !== undefined ||
-    operation.partnerControl !== undefined ||
-    operation.partnerControlExpression !== undefined ||
-    operation.memberPosition !== undefined ||
+function hasHelperTagTeamOrderAxes(operation: TeamStandbyControllerOp): boolean {
+  return operation.memberPosition !== undefined ||
     operation.memberPositionExpression !== undefined ||
     operation.leaderPlayerNo !== undefined ||
     operation.leaderPlayerNoExpression !== undefined;

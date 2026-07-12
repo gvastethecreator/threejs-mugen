@@ -89,7 +89,7 @@ This is incremental source behavior. It is not the local bounded contract, which
 - `RuntimeTagPartnerSelectionWorld` already provides stable same-side cyclic root selection, but requires a root anchor. Helper aggregate dispatch must resolve that anchor through `helper.rootId` and fail closed if the root is unavailable; it must not use a fallback root.
 - `RuntimeTagTeamOrder` already owns explicit Tag-mode root member swaps and leader rotations. It has no Helper `memberNo`, which is correct for isolation but leaves the upstream position-one quirk unmodeled.
 - Helper identity registration already copies root PlayerNo and stores explicit parent/root identity.
-- The compiler already supports static and deferred partner, partner state/control, member, and leader fields. No compiler expansion is required for the first runtime cut.
+- The compiler already supports every static/deferred field individually, but retains a historical guard against combining `partner` with caller `stateno`. The first runtime cut must remove that guard and prove the combined typed operation.
 - `resolveDynamicTeamStandbyOperation` currently resolves aggregate expressions in a different order from pinned source. The next implementation must align shared resolution to compiler/source order while preserving original-caller context.
 
 ## Decision

@@ -520,11 +520,199 @@ ctrl = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
   });
 
+  it("executes Helper-relative static TagIn partner mutation after local state, control, and self", () => {
+    const partner = createImportedFixture({
+      id: "helper-static-partner",
+      withStateMove: false,
+      extraStateNos: [201],
+    });
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-static-partner-tagin",
+      withStateMove: false,
+      withHelper: true,
+      helperStandby: 1,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagParams: `redirectid = ID + 4
+self = 1
+partner = 0
+stateno = 1201
+partnerstateno = 201
+ctrl = 1
+partnerctrl = ID - 55`,
+      helperExtraStates: `
+[Statedef 1201]
+type = C
+movetype = A
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [partner, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({
+      stateNo: 1201,
+      ctrl: true,
+      teamState: { standby: false },
+    });
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime).toMatchObject({
+      stateNo: 201,
+      ctrl: true,
+      teamState: { standby: false },
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBe(1);
+  });
+
+  it("resolves a dynamic Helper-relative TagOut partner in the original caller context", () => {
+    const selectedPartner = createImportedFixture({
+      id: "helper-dynamic-selected-partner",
+      withStateMove: false,
+      extraStateNos: [201],
+    });
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-dynamic-partner-tagout",
+      withStateMove: false,
+      withHelper: true,
+      helperPreSpawnVarSet: { index: 0, value: 1 },
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagOut",
+      helperRedirectTagParams: `redirectid = ID + 6
+partner = var(0) + 0.9
+stateno = 1201
+partnerstateno = var(0) + 200.9`,
+      helperExtraStates: `
+[Statedef 1201]
+type = A
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!, selectedPartner, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(1);
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({
+      stateNo: 1201,
+      teamState: { standby: false },
+    });
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(0);
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p5")?.runtime).toMatchObject({
+      stateNo: 201,
+      teamState: { standby: true },
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+  });
+
+  it("rolls back Helper and partner mutation when the partner state is unavailable", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-invalid-partner-state",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagParams: `redirectid = ID + 4
+self = 1
+partner = 0
+stateno = 1201
+partnerstateno = 9999
+ctrl = 1
+partnerctrl = 0`,
+      helperExtraStates: `
+[Statedef 1201]
+type = C
+movetype = A
+physics = N
+anim = 920
+ctrl = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime).toMatchObject({
+      stateNo: 1200,
+      ctrl: false,
+      teamState: { standby: false },
+    });
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime).toMatchObject({
+      stateNo: 0,
+      ctrl: true,
+      teamState: { standby: true },
+    });
+    expect(snapshot.logs).toContain("Blocked tagin RedirectID 60 for p1 (partner state 9999 unavailable for p3)");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
+  it("fails closed when a redirected Helper has no live root anchor for partner selection", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-missing-partner-anchor",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagIn",
+      helperRedirectTagTrigger: "Time = 1",
+      helperRedirectTagParams: `redirectid = ID + 4
+self = 0
+partner = 0`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    effectActorWorld.helpers("p1")[0]!.rootId = "missing-root";
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.teamState?.standby).toBe(true);
+    expect(snapshot.logs).toContain("Blocked tagin RedirectID 60 for p1 (Helper root missing-root unavailable)");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagin"]).toBeUndefined();
+  });
+
+  it("rolls back explicit Helper self when no same-side partner root exists", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-missing-partner",
+      withStateMove: false,
+      withHelper: true,
+      helperRedirectTag: true,
+      helperRedirectTagType: "TagOut",
+      helperRedirectTagParams: `redirectid = 58
+self = 1
+partner = 0`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.teamState?.standby).toBe(false);
+    expect(snapshot.logs).toContain("Blocked tagout RedirectID 58 for p1 (partner 0 unavailable for p1)");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
+  });
+
   it.each([
-    ["partner", "self = 0\npartner = 0\nctrl = 1", "Helper aggregate axes unsupported"],
     ["member", "self = 0\nmemberno = 1\nctrl = 1", "Helper aggregate axes unsupported"],
+    ["dynamic member", "self = 0\nmemberno = var(0) + 1\nctrl = 1", "Helper aggregate axes unsupported"],
     ["leader", "self = 0\nleader = 1\nctrl = 1", "Helper aggregate axes unsupported"],
-  ])("blocks redirected Helper TagIn %s axes atomically", (_case, params, reason) => {
+    ["dynamic leader", "self = 0\nleader = var(0) + 1\nctrl = 1", "Helper aggregate axes unsupported"],
+  ])("blocks redirected Helper TagIn %s order axes atomically", (_case, params, reason) => {
     const fighter = createImportedFixture({
       id: `ikemen-helper-blocked-${_case.replace(" ", "-")}`,
       withStateMove: false,

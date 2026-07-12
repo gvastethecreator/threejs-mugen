@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper-relative partner Tag runtime
+
+- Compiler: source-valid caller `stateno` now composes with partner identity/state/control in one typed Tag operation.
+- Runtime: exact Helper root anchors stable same-side partner selection; dynamic values stay original-caller-owned and source-ordered.
+- Mutation: Helper state/control/self precede partner-root standby/state/control after complete prevalidation.
+- Failure: missing roots/partners and unavailable states roll back Helper, partner, and telemetry atomically; member/leader stay blocked.
+- Verification: 170 files / 1727 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check pass.
+- Global status: Wayfinder 087 is closed without visual or score movement; Wayfinder 088 executes Helper-relative TagIn leader.
+
 ## Global report - 2026-07-11 IKEMEN Helper aggregate Tag ownership research
 
 - Source: pinned compiler/runtime confirms original-caller expression evaluation and Helper-relative aggregate mutation order.
@@ -1367,6 +1376,15 @@ Every compatibility milestone should leave:
 - Helpers do not inherit mutable `memberNo`; pinned-source inference makes Helper `memberno` originate from position one.
 - Exact upstream failure preserves earlier mutations; the local cut keeps atomic prevalidation and documents this divergence.
 - Global status: Wayfinder 086 is closed without executable, visual, trace, or score movement; Wayfinder 087 executes partner ownership only.
+
+### 2026-07-11 - IKEMEN Helper-relative partner Tag runtime
+
+- Removed the historical compiler prohibition against source-valid caller-state plus partner composition.
+- Static/dynamic Helper partner selection resolves through the exact live root anchor and returns a stable same-side root.
+- Helper local state/control/self execute before partner-root standby/state/control; dynamic values stay in original-caller context.
+- Missing anchor/partner and unavailable partner state preserve Helper/partner state and suppress success telemetry.
+- Full gates: 170 files / 1727 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
+- Global status: Wayfinder 087 is closed without browser or score movement; Wayfinder 088 executes Helper-relative TagIn leader.
 
 ## Not Done
 
