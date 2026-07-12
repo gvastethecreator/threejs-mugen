@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 459 - Bounded untrusted ZIP ingestion
+
+Done: `ZipCharacterSourcePolicy/v0` now bounds compressed bytes, file count, per-entry expanded bytes, and aggregate expanded bytes before materializing a VFS where JSZip central-directory metadata is available, then enforces hard actual-byte limits during sequential extraction. Typed errors reject invalid archives, sanitized traversal, absolute/drive/NUL paths, and case-insensitive VFS collisions; `App` logs rejection instead of leaking an unhandled async failure. Focused hostile and valid-package tests pass. Claim allowed: bounded browser-side ingestion for the covered malformed/path/size/count/collision cases. Claim blocked: antivirus/content scanning, parser exploit containment, perfect pre-decompression bomb prevention when metadata is unavailable, password/multivolume support, broad third-party layouts, and full sandbox security.
+
 ## Entry 458 - Deterministic ZIP package transport
 
 Done: the legal MUGEN-lite acceptance journey now generates deterministic DEFLATE ZIP bytes with fixed entry metadata, loads them through production `ZipCharacterSource`, and only then enters `MugenCharacterLoader`. Focused coverage proves the ZIP signature, byte-for-byte repeated generation, exact VFS file parity including the CC0 notice, loader compatibility, and archive source name. Required `mugen-lite-journey.json` remains checksum-stable at `8b19b865`. Claim allowed: one repository-owned package crosses deterministic ZIP generation, archive extraction, character loading, import, and runtime execution. Claim blocked: hostile/corrupt ZIP policy beyond JSZip, password/multivolume archives, broad third-party archive layouts, exact Common1 behavior, visual/audio parity, and full MUGEN/IKEMEN parity.

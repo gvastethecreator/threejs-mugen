@@ -1423,11 +1423,16 @@ export class App {
 
   private async loadZip(file: File): Promise<void> {
     this.log(`Loading ZIP ${file.name}`);
-    const source = new ZipCharacterSource(file);
-    const vfs = await source.load();
-    const character = await this.loader.load(source.name, vfs);
-    const stages = await this.stageLoader.loadAll(source.name, vfs);
-    this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "zip", vfs, fileCount: vfs.listFiles().length });
+    try {
+      const source = new ZipCharacterSource(file);
+      const vfs = await source.load();
+      const character = await this.loader.load(source.name, vfs);
+      const stages = await this.stageLoader.loadAll(source.name, vfs);
+      this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "zip", vfs, fileCount: vfs.listFiles().length });
+    } catch (error) {
+      this.log(`ZIP rejected: ${error instanceof Error ? error.message : String(error)}`);
+      this.updateUi();
+    }
   }
 
   private async loadFolder(files: FileList): Promise<void> {
