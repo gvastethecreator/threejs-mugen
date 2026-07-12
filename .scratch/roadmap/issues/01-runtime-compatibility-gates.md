@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## Latest Closed Quality Slice - Helper-originated Tag Trace
+
+Status: done
+Date: 2026-07-11
+
+- Baseline: Helper-originated self Tag execution had focused integration coverage but no required cross-system oracle.
+- Result: required `synthetic-imported-ikemen-helper-self-tag` executes default-self TagOut then TagIn, observes standby/effective-control transition, continues CNS into state `1283`, and preserves a Helper-parented Projectile.
+- Evidence: trace checksum `08014285`; frame checksums `17bffcaa`, `750da07e`, `6cde1d19`, `910fa3f3`; 539/539 traces with 508 required; focused 3 files / 557 tests; full 170 files / 1749 tests; TypeScript 7 build/typecheck; boundaries green.
+- Audit: fixed actor-frame over-partitioning exposed by official KFM air guard and deterministic evidence-order drift exposed by AssertSpecial coverage.
+- Blocked: Helper-originated RedirectID/aggregate axes, active-root gameplay, incoming Helper breadth, exact incremental failure, rollback, score movement, and full IKEMEN parity.
+
 ## Latest Closed Quality Slice - IKEMEN Root RunOrder Trigger
 
 Status: done

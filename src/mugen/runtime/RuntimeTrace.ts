@@ -56,6 +56,8 @@ export type RuntimeTraceActor = {
   life: number;
   power: number;
   superPauseDefenseMultiplier?: number;
+  teamStandby?: true;
+  effectiveCtrl?: false;
   ctrl: boolean;
   stateType: string;
   moveType: string;
@@ -499,6 +501,8 @@ export type RuntimeTraceActorFrameRequirement = {
   moveType?: string;
   runOrder?: number;
   physics?: string;
+  teamStandby?: boolean;
+  effectiveCtrl?: boolean;
   guarding?: boolean;
   inGuardDistAttackerId?: string;
   inGuardDistSource?: RuntimeTraceInGuardDistance["source"];
@@ -591,6 +595,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   moveType: string;
   runOrder?: number;
   physics: string;
+  teamStandby: boolean;
+  effectiveCtrlFrames: { enabled: number; disabled: number };
   guardingFrames: number;
   inGuardDistAttackerIds: string[];
   inGuardDistSources: RuntimeTraceInGuardDistance["source"][];
@@ -1692,6 +1698,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                     [actor.inGuardDist.source]: existing.inGuardDistFrames[actor.inGuardDist.source] + 1,
                   }
                 : existing.inGuardDistFrames,
+              effectiveCtrlFrames: {
+                enabled: existing.effectiveCtrlFrames.enabled + ((actor.effectiveCtrl ?? actor.ctrl) ? 1 : 0),
+                disabled: existing.effectiveCtrlFrames.disabled + ((actor.effectiveCtrl ?? actor.ctrl) ? 0 : 1),
+              },
             }
           : {
               actorId: actor.id,
@@ -1707,6 +1717,11 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               moveType: actor.moveType,
               runOrder: actor.runOrder,
               physics: actor.physics,
+              teamStandby: actor.teamStandby === true,
+              effectiveCtrlFrames: {
+                enabled: (actor.effectiveCtrl ?? actor.ctrl) ? 1 : 0,
+                disabled: (actor.effectiveCtrl ?? actor.ctrl) ? 0 : 1,
+              },
               guardingFrames: actor.guarding ? 1 : 0,
               inGuardDistAttackerIds: actor.inGuardDist ? [actor.inGuardDist.attackerId] : [],
               inGuardDistSources: actor.inGuardDist ? [actor.inGuardDist.source] : [],
@@ -3044,6 +3059,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.moveType,
     actor.runOrder === undefined ? "ro*" : `ro${actor.runOrder}`,
     actor.physics,
+    actor.teamStandby === true ? "ts1" : "ts0",
     actor.clsn1Count,
     actor.clsn2Count,
     actor.bodyWidth?.front === undefined ? "wf*" : `wf${actor.bodyWidth.front}`,
@@ -3081,6 +3097,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.moveType,
     actor.runOrder === undefined ? "ro*" : `ro${actor.runOrder}`,
     actor.physics,
+    actor.teamStandby ? "ts1" : "ts0",
     actor.clsn1Count,
     actor.clsn2Count,
     `life${actor.minLife}:${actor.maxLife}`,
@@ -3148,6 +3165,9 @@ function matchesActorFrameRequirement(
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
     (requirement.runOrder === undefined || actor.runOrder === requirement.runOrder) &&
     (requirement.physics === undefined || actor.physics === requirement.physics) &&
+    (requirement.teamStandby === undefined || actor.teamStandby === requirement.teamStandby) &&
+    (requirement.effectiveCtrl === undefined ||
+      (requirement.effectiveCtrl ? actor.effectiveCtrlFrames.enabled > 0 : actor.effectiveCtrlFrames.disabled > 0)) &&
     (requirement.guarding === undefined || matchingFrames > 0) &&
     (requirement.inGuardDistAttackerId === undefined || actor.inGuardDistAttackerIds.includes(requirement.inGuardDistAttackerId)) &&
     (requirement.inGuardDistSource === undefined || actor.inGuardDistSources.includes(requirement.inGuardDistSource)) &&
@@ -3533,6 +3553,8 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       actor.runtime.superPauseDefenseMultiplier === undefined
         ? undefined
         : roundTraceNumber(actor.runtime.superPauseDefenseMultiplier),
+    ...(actor.runtime.teamState?.standby === true ? { teamStandby: true as const } : {}),
+    ...(actor.runtime.ctrl && actor.runtime.teamState?.standby === true ? { effectiveCtrl: false as const } : {}),
     ctrl: actor.runtime.ctrl,
     stateType: actor.runtime.stateType,
     moveType: actor.runtime.moveType,

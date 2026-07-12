@@ -14,7 +14,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-382` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, static TagIn/TagOut optional parameters, explicit member/leader order, bounded dynamic execution for every admitted optional axis, RedirectID ownership research, and standalone numeric character identity are closed. Wayfinder 077 next integrates root PlayerID plus `ID`/`PlayerNo` expression reads. Input, effects, combat, round, presentation, lifebars, resources, mutation redirects, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-398` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded static/deferred TagIn/TagOut parameters, explicit member/leader order, root and Helper numeric identity/RedirectID ownership, complete root-to-Helper aggregate execution, Helper-originated self Tag, and its required cross-system trace are closed. Wayfinder 093 next maps active-root gameplay ownership before implementation. Input, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.
@@ -442,12 +442,12 @@ Every implementation cut under this issue must record:
 
 ## Overall Claim Ceiling
 
-Allowed now, from the closed baseline only:
+Allowed now, from the latest checkpoint override:
 
-> The explicit IKEMEN profile has bounded source-backed root/helper scheduling and Pause/SuperPause behavior, complete team topology/eligibility/registry/live-state diagnostics, and inert P3-P8 ownership while current playable consumers remain P1/P2.
+> The explicit IKEMEN profile has bounded source-backed root/helper scheduling, complete team topology and selection diagnostics, bounded root-to-Helper Tag aggregate execution, Helper-originated self Tag standby, and one required Helper-owned Tag trace while current gameplay consumers remain P1/P2-owned.
 
 Blocked now:
 
-> Plural activation, identity/redirect parity, standby CNS scheduling, executable TagIn/TagOut, multi-root input/effects/combat/round/presentation/lifebars/resources, complete Simul/Tag/Turns, ZSS/Lua/config/screenpack execution, rollback, netplay, or full IKEMEN parity.
+> Helper-originated redirect/aggregate Tag axes, active-root input/effects/combat/round/presentation/lifebars/resources, complete Simul/Tag/Turns gameplay, ZSS/Lua/config/screenpack execution, rollback, netplay, or full IKEMEN parity.
 
 This issue closes only when each claimed cut has its own evidence. Completing `046a` does not close `046b`, completing `046c` does not imply team gameplay, and no I2 runtime gate closes an I1 scanner task.

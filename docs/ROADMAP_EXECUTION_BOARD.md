@@ -1,6 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Latest closeout - IKEMEN Helper-originated self Tag runtime (2026-07-11)
+## Latest closeout - IKEMEN Helper-originated Tag trace (2026-07-11)
+
+Required `synthetic-imported-ikemen-helper-self-tag` checksum `08014285` now proves a Helper-owned default-self TagOut/TagIn cycle, standby/effective-control transition, continued CNS, concrete telemetry, and preserved parented Projectile. Full gates pass 170 files / 1749 tests and 539/539 traces. Wayfinder 093 maps active-root gameplay ownership; no runtime, visual, or score movement.
+
+## Previous closeout - IKEMEN Helper-originated self Tag runtime (2026-07-11)
 
 Helper CNS now executes unredirected self-only TagIn/TagOut with live omitted/static/deferred self resolution, concrete owner/state telemetry, and existing standby participation. Aggregate/lifecycle/legacy routes fail closed. Reset now removes stale optional actor state and rebinds all Helper hooks. Full gates pass 170 files / 1748 tests and 538/538 traces. Wayfinder 092 promotes the cycle to required trace evidence; no visual or score movement.
 
@@ -904,7 +908,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` no longer reflects a green cei
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with HitDef priority/contact, semantic presentation order, versioned schedule, Common1 source precedence, and bounded guard order now closed. | Return after the I2 prefactor to one post-KO / `NoKOSlow` timeline, then choose a fixture-backed palette/BGCtrl/Projectile-priority slice. | Full CNS VM, exact tick order, Projectile/dynamic priority, custom states, teams, screenpacks. |
-| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, bounded root Tag parameters, numeric root/Helper identity, root RedirectID, complete root-to-Helper aggregate execution, and Helper-originated self standby under local atomicity. | Wayfinder 092: promote the Helper Tag cycle to one required trace oracle. | No Helper-originated redirect/aggregate axes, incoming Helper hurt/push/camera/opponent breadth, multi-root gameplay, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
+| IKEMEN | I1 scanner/reporting plus I2 P1-P8 ownership, standby CNS, bounded root Tag parameters, numeric root/Helper identity, root RedirectID, complete root-to-Helper aggregate execution, Helper-originated self standby, and one required cross-system Tag trace. | Wayfinder 093: map active-root input/combat/round/presentation/resource ownership. | No Helper-originated redirect/aggregate axes, incoming Helper hurt/push/camera/opponent breadth, multi-root gameplay, tag/turns lifebar/resources, ZSS/Lua, rollback, netplay, or broad IKEMEN parity. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist; shared Trust Chain and package/source drilldowns are closed. | Source identity/fingerprint, conflict, one write/reimport transaction, invalidation and rollback. | Undo/migration, full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Permission-aware, content-addressed provenance plus motion/scale/baseline QA. | Imported compatibility credit or third-party permission. |
 | Modular engine | Boundary docs and metadata registry exist; platformer slice intentionally delayed. | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Production multi-genre engine or generic fighting VM. |
@@ -915,16 +919,15 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. I2 required Tag trace promotion: Wayfinder 092 adds one cross-system Helper TagOut/TagIn oracle without runtime widening.
-2. I2 gameplay ownership: map active-root input/combat/round/presentation/resource ownership after trace promotion.
-3. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
-4. I2 redirects: keep broader mutation redirects blocked until caller identity, failure atomicity, and telemetry ownership have source-backed fixtures.
-5. S1: add source handle/fingerprint/permission, external conflict, one write/reimport transaction, output invalidation and rollback; defer undo/migration.
-6. A1: validate one permission-aware, content-addressed provenance record linking origin/license, input, tool/version, transforms, outputs, QA and playtest.
-7. I1: add a VFS/package scanner entry plus one stage-only and one system/screenpack-only source-mapped signal family; execution remains blocked.
-8. Renderer/MUGEN breadth: choose one palette/ACT or BGCtrl vertical slice with a real fixture, trace where semantic, browser oracle, and inspected screenshots.
-9. M1: prove one real shared Project/Evidence/Build contract with a production consumer, MUGEN adapter, keep/delete rationale, and non-vacuous boundary test.
-10. R3 later: add another permitted local fixture corpus package only as evidence; bundle no commercial or third-party assets.
+1. I2 gameplay ownership: Wayfinder 093 maps active-root input/combat/round/presentation/resource ownership before executable widening.
+2. R1 round flow: return to one bounded KO freeze/finish plus `NoKOSlow` timeline without motif/team/continue breadth.
+3. I2 redirects: keep broader mutation redirects blocked until caller identity, failure atomicity, and telemetry ownership have source-backed fixtures.
+4. S1: add source handle/fingerprint/permission, external conflict, one write/reimport transaction, output invalidation and rollback; defer undo/migration.
+5. A1: validate one permission-aware, content-addressed provenance record linking origin/license, input, tool/version, transforms, outputs, QA and playtest.
+6. I1: add a VFS/package scanner entry plus one stage-only and one system/screenpack-only source-mapped signal family; execution remains blocked.
+7. Renderer/MUGEN breadth: choose one palette/ACT or BGCtrl vertical slice with a real fixture, trace where semantic, browser oracle, and inspected screenshots.
+8. M1: prove one real shared Project/Evidence/Build contract with a production consumer, MUGEN adapter, keep/delete rationale, and non-vacuous boundary test.
+9. R3 later: add another permitted local fixture corpus package only as evidence; bundle no commercial or third-party assets.
 
 ## Active Implementation Queue
 
@@ -943,7 +946,8 @@ Current checkpoint and next build:
 - Closed: Helper-relative static/deferred TagIn/TagOut member mutation from mutable position one without a Helper root-order slot.
 - Closed: complete root-to-Helper aggregate audit under explicit local atomicity; upstream incremental failure remains divergent.
 - Closed: Helper-originated unredirected self TagIn/TagOut with live Helper expressions, local standby, telemetry, and reset-safe hook rebinding.
-- Next: Wayfinder 092 promotes the stable Helper-owned Tag cycle to one required trace artifact.
+- Closed: required Helper-owned TagOut/TagIn trace with standby/effective-control transition, continued CNS, and preserved parented Projectile.
+- Next: Wayfinder 093 maps active-root gameplay ownership across input, combat, round, presentation, effects, and resources.
 - Keep input, incoming Helper hurt, push, camera, opponent breadth, round, renderer, lifebar, Studio detail, and resources unchanged.
 
 Acceptance:

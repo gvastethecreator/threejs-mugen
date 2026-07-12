@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN Helper-originated Tag trace
+
+- Trace: required `synthetic-imported-ikemen-helper-self-tag` executes default-self TagOut then TagIn from Helper CNS and pins checksum `08014285`.
+- Participation: ordered actor-frame evidence proves standby/effective-control suppression, restoration, and continued CNS into state `1283`.
+- Effects: a Helper-parented Projectile is present before TagOut and remains live through TagIn and the later state transition.
+- Telemetry: concrete TagOut/TagIn/Projectile controllers and `team-standby:*`/`projectile` operations remain root-owner plus Helper-state scoped.
+- Verification: 170 files / 1749 tests, TypeScript 7 build, 539/539 traces, boundaries, and diff check pass.
+- Global status: Wayfinder 092 is closed without runtime, visual, or score movement; Wayfinder 093 maps active-root gameplay ownership before implementation.
+
 ## Global report - 2026-07-11 IKEMEN Helper-originated self Tag runtime
 
 - Runtime: Helper CNS now resolves omitted/static/deferred self and routes concrete self-only TagIn/TagOut through an explicit owner hook.
@@ -1132,7 +1141,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1. Af
 
 ## Historical Evidence Snapshot - 509/509 Baseline
 
-This table is retained as a historical snapshot. Current declared global evidence is 538/538 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
+This table is retained as a historical snapshot. Current declared global evidence is 539/539 near the top of this document and in the backlog; do not use the 509/509 row below as the current aggregate.
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |

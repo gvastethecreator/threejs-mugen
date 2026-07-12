@@ -1309,6 +1309,8 @@ The bounded root-to-Helper aggregate path now passes a pinned-source closure aud
 
 Unredirected Helper-authored self TagIn/TagOut now executes under explicit `ikemen-go`. Omitted/static/deferred self resolves once in live Helper context, only local standby mutates, and concrete telemetry remains root-owner/Helper-state scoped. Existing standby CNS/projectile/identity/presentation behavior and effective-control/direct-HitDef filters remain intact. Aggregate/RedirectID, lifecycle, expression, and legacy failures are closed. Reset now clears stale optional actor state and rebinds every Helper hook. Full gates pass 170 files / 1748 tests and 538/538 traces. Wayfinder 092 next promotes this stable cross-system cycle to a required trace before active-root gameplay mapping.
 
+Required `synthetic-imported-ikemen-helper-self-tag` now pins the Helper-owned default-self TagOut/TagIn cycle at checksum `08014285`. Ordered actor-frame requirements prove standby/effective-control suppression and restoration, then continued CNS into state `1283`; a Helper-parented Projectile remains live throughout. Concrete controller/operation telemetry and literal per-frame checksums prevent a test-side reimplementation. Full gates pass 170 files / 1749 tests and 539/539 traces. Wayfinder 093 next maps active-root input, combat, round, presentation, effect, and resource ownership before any gameplay widening.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

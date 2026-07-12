@@ -109,16 +109,17 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute Helper-relative Tag member position-one ownership](tickets/089-execute-helper-tag-member-position-one.md) - static/deferred TagIn/TagOut member swaps now originate from mutable position one without assigning Helpers a root-order slot.
 - [Audit bounded Helper aggregate Tag closure](tickets/090-audit-helper-aggregate-tag-closure.md) - root-to-Helper aggregate ownership is closed under local atomicity; unredirected Helper-originated self Tag is the next isolated route.
 - [Execute Helper-originated self Tag standby](tickets/091-execute-helper-originated-self-tag.md) - Helper CNS now executes concrete self-only TagIn/TagOut with live Helper expressions, owner/state telemetry, standby participation, and reset-safe hook rebinding.
+- [Promote Helper-originated Tag trace](tickets/092-promote-helper-originated-tag-trace.md) - required checksum `08014285` gates Helper standby/control order, continued CNS, concrete Tag telemetry, and a preserved parented Projectile.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Promote Helper-originated Tag trace](tickets/092-promote-helper-originated-tag-trace.md)
+- [Map active-root gameplay ownership](tickets/093-map-active-root-gameplay-ownership.md)
 
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
-- Active-root gameplay promotion still needs one input/combat/round/presentation ownership map after required Tag trace promotion.
+- Active-root gameplay promotion now has Wayfinder 093 for input/combat/round/presentation/effect/resource ownership research.
 
 ## Out Of Scope
 

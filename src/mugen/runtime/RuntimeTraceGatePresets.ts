@@ -8240,6 +8240,125 @@ export function createSyntheticImportedIkemenHelperRunOrderTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "spawn Helper and complete self Tag cycle", p1: ["x"], p2: [], frames: 4 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-self-tag",
+    displayName: "Synthetic Imported IKEMEN Helper Self Tag",
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperSelfTagRoute: {
+      continuedStateNo: 1283,
+      animNo: 923,
+      projectileAnimNo: 944,
+      projectileId: 8860,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-helper-self-tag-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-helper-self-tag-golden",
+      label: "Synthetic imported IKEMEN Helper-owned default-self Tag cycle",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a live Helper can execute default-self TagOut and TagIn, transition through standby with effective control suppressed and restored, continue CNS, and retain its parented Projectile. RedirectID, partner targets, aggregate Helper callers, reserve-root gameplay ownership, and full IKEMEN tag parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-helper-self-tag-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", "TagOut", "TagIn"],
+        requiredExecutedOperations: ["helper", "projectile", "team-standby:tagout", "team-standby:tagin"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1283,
+            animNo: 923,
+            teamStandby: false,
+            effectiveCtrl: true,
+            minFrames: 1,
+          },
+          {
+            actorId: "p1-projectile-0",
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 944,
+            moveType: "A",
+            minFrames: 3,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "Helper self Tag standby cycle",
+            steps: [
+              {
+                actorId: "p1-helper-0",
+                source: "effect",
+                actorKind: "helper",
+                ownerId: "p1",
+                stateNo: 1200,
+                teamStandby: true,
+                effectiveCtrl: false,
+              },
+              {
+                actorId: "p1-helper-0",
+                source: "effect",
+                actorKind: "helper",
+                ownerId: "p1",
+                stateNo: 1200,
+                teamStandby: false,
+                effectiveCtrl: true,
+              },
+              {
+                actorId: "p1-helper-0",
+                source: "effect",
+                actorKind: "helper",
+                ownerId: "p1",
+                stateNo: 1283,
+                teamStandby: false,
+                effectiveCtrl: true,
+              },
+            ],
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1283, minAge: 3 },
+          { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: 8860, minAge: 3 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenPauseBufferTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -39640,6 +39759,15 @@ export type SyntheticImportedTraceFighterOptions = {
   helperPauseRoute?: boolean;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperRunOrderRoute?: { expected: number; stateNo: number };
+  helperSelfTagRoute?: {
+    continuedStateNo: number;
+    animNo?: number;
+    projectileAnimNo: number;
+    projectileId?: number;
+    pos?: [number, number];
+    velocity?: [number, number];
+    removeTime?: number;
+  };
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
   helperParentRootRedirectRoute?: { stateNo: number; animNo?: number };
   helperControllerParamRedirectRoute?: { stateNo: number; animNo?: number };
@@ -40545,6 +40673,7 @@ ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${passiveControllerStateBlocks(options)}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
+${options.helperSelfTagRoute ? helperSelfTagRouteBlock(options.helperSelfTagRoute) : ""}
 ${options.helperPauseRoute ? helperPauseRouteBlock() : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
@@ -40956,6 +41085,18 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                   number,
                   MugenAnimationAction,
                 ]>)),
+            ...(options.helperSelfTagRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperSelfTagRoute.animNo ?? options.helperSelfTagRoute.continuedStateNo,
+                    helperTraceAction(options.helperSelfTagRoute.animNo ?? options.helperSelfTagRoute.continuedStateNo),
+                  ],
+                  [
+                    options.helperSelfTagRoute.projectileAnimNo,
+                    projectileTraceAction(options.helperSelfTagRoute.projectileAnimNo),
+                  ],
+                ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperProjectileRoute === undefined
               ? []
               : ([
@@ -45232,6 +45373,61 @@ movetype = I
 physics = N
 anim = 920
 ctrl = 0
+`;
+}
+
+function helperSelfTagRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperSelfTagRoute"]>): string {
+  const animNo = route.animNo ?? route.continuedStateNo;
+  const projectileId = route.projectileId ?? 8860;
+  const pos = route.pos ?? [56, -42];
+  const velocity = route.velocity ?? [2, 0];
+  const removeTime = route.removeTime ?? 48;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 1
+
+[State 1200, Preserved Helper Projectile]
+type = Projectile
+trigger1 = Time = 0
+projid = ${projectileId}
+projpriority = 2
+projhits = 1
+projmisstime = 0
+projanim = ${route.projectileAnimNo}
+offset = ${pos[0]},${pos[1]}
+velocity = ${velocity[0]},${velocity[1]}
+projremovetime = ${removeTime}
+damage = 18,2
+pausetime = 3,3
+ground.hittime = 11
+ground.velocity = -3
+guardflag = MA
+sprpriority = 6
+
+[State 1200, Default Self TagOut]
+type = TagOut
+trigger1 = Time = 0
+
+[State 1200, Default Self TagIn]
+type = TagIn
+trigger1 = Time = 1
+
+[State 1200, Continue CNS After Tag]
+type = ChangeState
+trigger1 = Time = 2
+value = ${route.continuedStateNo}
+ctrl = 1
+
+[Statedef ${route.continuedStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 1
 `;
 }
 

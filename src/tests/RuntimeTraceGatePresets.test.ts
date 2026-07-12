@@ -162,6 +162,7 @@ import {
   createSyntheticImportedIkemenRunFirstTraceArtifact,
   createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
+  createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
   createSyntheticImportedIkemenActorPauseMoveTraceArtifact,
   createSyntheticImportedIkemenDeferredPauseActivationTraceArtifact,
@@ -15903,6 +15904,56 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
       { label: "same-tick appended helper advance", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
     ]);
+  });
+
+  it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {
+    const artifact = createSyntheticImportedIkemenHelperSelfTagTraceArtifact({
+      generatedAt: "2026-07-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-helper-self-tag-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-helper-self-tag-golden", passed: true, failures: [] }],
+      trace: {
+        frameCount: 4,
+        checksum: "08014285",
+        frameChecksums: [
+          "17bffcaa",
+          "750da07e",
+          "6cde1d19",
+          "910fa3f3",
+        ],
+      },
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "Helper self Tag standby cycle",
+        steps: [
+          expect.objectContaining({ actorId: "p1-helper-0", teamStandby: true, effectiveCtrl: false }),
+          expect.objectContaining({ actorId: "p1-helper-0", teamStandby: false, effectiveCtrl: true }),
+          expect.objectContaining({ actorId: "p1-helper-0", stateNo: 1283, teamStandby: false, effectiveCtrl: true }),
+        ],
+      },
+    ]);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      TagOut: 1,
+      TagIn: 1,
+      Projectile: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "team-standby:tagout": 1,
+      "team-standby:tagin": 1,
+      projectile: 1,
+    });
+    expect(artifact.gates[0]?.evidence.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 8860 }),
+        }),
+      ]),
+    );
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {

@@ -1240,6 +1240,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenHelperRunOrderTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-helper-self-tag",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-pause-buffer",
       required: true,
       artifact: presets.createSyntheticImportedIkemenPauseBufferTraceArtifact(),

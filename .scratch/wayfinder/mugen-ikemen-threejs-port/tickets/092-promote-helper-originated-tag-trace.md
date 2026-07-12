@@ -1,7 +1,7 @@
 # Promote Helper-originated Tag trace
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,6 @@ Can the now-stable Helper-authored self TagOut/TagIn cycle become one required c
 
 ## Answer
 
-Pending implementation.
+Yes. Required `synthetic-imported-ikemen-helper-self-tag` now executes a Helper-owned default-self TagOut/TagIn cycle through the public trace harness. Literal checksum `08014285` and four literal frame checksums cover standby/effective-control suppression and restoration, continued CNS state `1283`, concrete Tag/Projectile telemetry, and a Helper-parented Projectile that survives the cycle.
+
+The trace promotion required no runtime widening. The adversarial pass caught actor-frame over-partitioning against official KFM air guard and evidence-count sorting drift against AssertSpecial; both were corrected before full gates. Final evidence is 170 files / 1749 tests and 539/539 traces, with 508 required and 31 optional.
