@@ -1311,6 +1311,8 @@ Unredirected Helper-authored self TagIn/TagOut now executes under explicit `ikem
 
 Required `synthetic-imported-ikemen-helper-self-tag` now pins the Helper-owned default-self TagOut/TagIn cycle at checksum `08014285`. Ordered actor-frame requirements prove standby/effective-control suppression and restoration, then continued CNS into state `1283`; a Helper-parented Projectile remains live throughout. Concrete controller/operation telemetry and literal per-frame checksums prevent a test-side reimplementation. Full gates pass 170 files / 1749 tests and 539/539 traces. Wayfinder 093 next maps active-root input, combat, round, presentation, effect, and resource ownership before any gameplay widening.
 
+Pinned active-root research now establishes that Human Tag maps each physical side stream into independent same-side root command lists, while effective control, direct gameplay, combat, presentation, and resources remain separate policies. Local audit found storage-class actor scheduling, pair-only phase consumers, non-P2 effect aliasing into P1, and reserve-blind behavior traces. Wayfinder 094 therefore implements only side command routing plus reserve-root trace observability before a later phase-capability cut. No runtime, trace, visual, or score movement is claimed by this research checkpoint.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

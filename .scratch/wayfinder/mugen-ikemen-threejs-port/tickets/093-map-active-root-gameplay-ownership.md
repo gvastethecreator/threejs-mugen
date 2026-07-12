@@ -1,7 +1,7 @@
 # Map Active-root Gameplay Ownership
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -18,4 +18,6 @@ Which exact IKEMEN and local owners must change to promote structurally active P
 
 ## Answer
 
-Pending source and local ownership research.
+Pinned-source and local ownership research is complete. IKEMEN Tag maps the side controller to every same-side root command list; command update runs for every loaded character, effective control masks standby, and the default Tag program lets the team leader consume the switch command. The browser instead stamps and directly controls only P1/P2, classifies gameplay participation by primary/reserve storage, aliases every non-P2 effect owner into P1, and keeps combat, round, presentation, HUD/audio, resources, and behavior traces pair-only.
+
+One broad active-root switch would therefore cross multiple unproven contracts. Wayfinder 094 first implements versioned side command routing plus reserve-root trace observability while direct input, full fighter advancement, effects, combat, round, presentation, and resources remain unchanged. Full findings and source links: `docs/research/2026-07-11-ikemen-active-root-gameplay-ownership.md`.

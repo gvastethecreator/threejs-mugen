@@ -14,7 +14,7 @@ Each cut must expose one versioned contract, name the consumers that changed, pr
 
 The immediate sequence is:
 
-Current checkpoint override (entries `349-398` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded static/deferred TagIn/TagOut parameters, explicit member/leader order, root and Helper numeric identity/RedirectID ownership, complete root-to-Helper aggregate execution, Helper-originated self Tag, and its required cross-system trace are closed. Wayfinder 093 next maps active-root gameplay ownership before implementation. Input, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
+Current checkpoint override (entries `349-399` supersede the original immediate sequence below): root participation, plural activation, root selection, standby CNS scheduling, bounded static/deferred TagIn/TagOut parameters, explicit member/leader order, root and Helper numeric identity/RedirectID ownership, complete root-to-Helper aggregate execution, Helper-originated self Tag, its required cross-system trace, and the pinned active-root gameplay ownership map are closed. Wayfinder 094 next implements side command routing plus reserve-root trace observability. P3-P8 direct gameplay, root-keyed effects, multi-root combat, round, presentation, lifebars, resources, Helper-originated redirect/aggregate Tag, ZSS/Lua, rollback, netplay, and full IKEMEN parity remain blocked.
 
 0. `046p`: publish root-participation diagnostics and close broader lifecycle/reset identity evidence over the proven P3-P8/cap/start base, with all executable consumers still P1/P2.
 1. `046a`: plural `activeRootIdsBySide` projection plus atomic standby transition, with no scheduler change.
@@ -312,8 +312,8 @@ Dependency: `046c` closed.
 
 Scope and acceptance:
 
-- Add an explicit controller-seat/input-owner policy per root; do not derive input ownership from leader, member order, active index, or resource owner.
-- Name Tag and Simul policies separately. Prove no physical command stream is consumed twice and no standby root receives direct gameplay input unless the pinned policy explicitly requires command-buffer maintenance.
+- Add an explicit command-source and direct-input policy per root; do not derive either from leader, member order, active index, or resource owner.
+- Name Tag and Simul policies separately. Pinned Human Tag intentionally fans one physical side stream into every same-side root command list. Prove each independent root buffer updates once, no cross-side stream aliases, and no standby root receives direct gameplay control merely because its command buffer is maintained.
 - Gate same-tick versus next-tick input handoff around TagIn with an official-source note before implementation.
 - Preserve AI/controller identity and command buffer reset across activation and match reset.
 - Require focused input/command/scheduler tests plus one ordered input-handoff trace. No effects/combat claim.

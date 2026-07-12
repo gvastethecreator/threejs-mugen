@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-11 IKEMEN active-root gameplay ownership
+
+- Research: pinned IKEMEN Tag maps each human side controller to every same-side root while each character keeps its own command list; standby masks effective control rather than command-buffer maintenance.
+- Local audit: root structure and live standby are already plural, but normal input stamping, direct control, effects, combat, round, presentation, HUD/audio, resources, and behavior traces retain P1/P2 ownership. The effect store currently aliases every non-P2 actor into P1.
+- Decision: Wayfinder 094 implements only versioned side command routing plus reserve-root trace observability. Full fighter advancement, combat, round, renderer, resources, and scores remain unchanged.
+- Evidence: pinned-source research note, owner inventory, adversarial audit, roadmap reconciliation, and `git diff --check`; runtime/build/trace/browser gates are N/A for this docs-only checkpoint.
+- Global status: Wayfinder 093 is closed; the next I2 gate is executable command routing, followed by a separate phase-capability model before any playable or visible P3 claim.
+
 ## Global report - 2026-07-11 IKEMEN Helper-originated Tag trace
 
 - Trace: required `synthetic-imported-ikemen-helper-self-tag` executes default-self TagOut then TagIn from Helper CNS and pins checksum `08014285`.
