@@ -16025,6 +16025,14 @@ describe("RuntimeTraceGatePresets", () => {
         tickSchedule?.phaseStamps.some(({ id, actorId }) => id === "post-fighter:hit-admission" && actorId === "p3"),
       ),
     ).toBe(true);
+    expect(
+      artifact.trace.frames.some(({ tickSchedule }) =>
+        tickSchedule?.phaseStamps
+          .filter(({ id }) => id === "post-fighter:target-maintenance")
+          .map(({ actorId }) => actorId)
+          .join(",") === "p1,p2,p3,p4",
+      ),
+    ).toBe(true);
     expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ TagIn: 1, VelSet: 2 });
     expect(artifact.gates[0]?.evidence.executedControllers.Helper).toBeUndefined();
     expect(artifact.trace.finalEffects).toEqual([]);

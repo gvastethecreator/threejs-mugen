@@ -130,6 +130,16 @@ describe("TargetSystem", () => {
     ]);
   });
 
+  it("clears stale target-binding subject telemetry for an excluded actor", () => {
+    const world = new RuntimeTargetWorld();
+    const actor = targetActor("p4");
+    actor.runtime.hitVars = { isBound: true };
+
+    world.clearBindingSubject(actor);
+
+    expect(actor.runtime.hitVars?.isBound).toBe(false);
+  });
+
   it("builds unbound target-link snapshots from target memory snapshots", () => {
     const world = new RuntimeTargetWorld();
 

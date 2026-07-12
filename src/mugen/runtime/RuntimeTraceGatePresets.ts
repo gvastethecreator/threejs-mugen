@@ -8546,6 +8546,12 @@ export function createSyntheticImportedIkemenActiveRootMotionTraceArtifact(
             actorIds: ["p1", "p2", "p3"],
           },
           {
+            label: "all valid roots receive target maintenance",
+            frameIndex: 2,
+            phase: "post-fighter:target-maintenance",
+            actorIds: ["p1", "p2", "p3", "p4"],
+          },
+          {
             label: "P3 joins plural body push before combat",
             frameIndex: 2,
             phase: "post-fighter:body-push",

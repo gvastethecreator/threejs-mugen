@@ -123,6 +123,10 @@ export class RuntimeTargetWorld {
     syncRuntimeTargetCount(actor);
   }
 
+  clearBindingSubject(actor: RuntimeTargetWorldActor): void {
+    markRuntimeTargetBindingSubject(actor.runtime, false);
+  }
+
   snapshot(actor: RuntimeTargetControllerActor): RuntimeTargetMemorySnapshot {
     return snapshotRuntimeTargetMemory({ targets: actor.targets, bindings: actor.targetBindings });
   }

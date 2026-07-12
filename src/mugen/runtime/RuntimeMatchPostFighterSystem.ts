@@ -21,12 +21,15 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   helpersAdvancedInActorOrder?: boolean;
+  targetActors?: readonly TActor[];
+  targetResetActors?: readonly TActor[];
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
   refreshGuardDistance?: (defender: TActor, attacker: TActor) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
+  recordTargetMaintenance?: (fighter: TActor) => void;
 };
 
 export class RuntimeMatchPostFighterWorld {
@@ -48,6 +51,8 @@ export class RuntimeMatchPostFighterWorld {
       gameSpace: input.gameSpace,
       stageTime: input.stageTime,
       runtimeTick: input.runtimeTick,
+      targetActors: input.targetActors,
+      targetResetActors: input.targetResetActors,
       helpersAdvancedInActorOrder: input.helpersAdvancedInActorOrder,
       actorConstraintWorld: input.actorConstraintWorld,
       effectLifecycleWorld: input.effectLifecycleWorld,
@@ -58,6 +63,7 @@ export class RuntimeMatchPostFighterWorld {
       refreshGuardDistance: input.refreshGuardDistance,
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
+      recordTargetMaintenance: input.recordTargetMaintenance,
       recordSchedulePhase: input.recordSchedulePhase,
       log: input.log,
     });

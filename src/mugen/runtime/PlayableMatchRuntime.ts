@@ -103,6 +103,7 @@ import {
   type RuntimeRootRunOrderResult,
 } from "./RuntimeFighterRunOrderSystem";
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
+import { selectRuntimeRootTargetMaintenanceActors } from "./MatchInteractionSystem";
 import { RuntimeMatchPresentationSnapshotWorld } from "./RuntimeMatchPresentationSnapshotSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
@@ -906,6 +907,10 @@ export class PlayableMatchRuntime {
         return matchPostFighterWorld.advanceRuntime({
           p1: this.p1,
           p2: this.p2,
+          targetActors: this.tagTeamOrder
+            ? selectRuntimeRootTargetMaintenanceActors(this.characterRoots())
+            : undefined,
+          targetResetActors: this.tagTeamOrder ? this.characterRoots() : undefined,
           stage: this.stage,
           stageTime: this.tick,
           helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
@@ -981,6 +986,9 @@ export class PlayableMatchRuntime {
             });
             for (const id of this.lastRootHitAdmission.rootIds) recordPhase("post-fighter:hit-admission", id);
           } : undefined,
+          recordTargetMaintenance: this.tagTeamOrder
+            ? (root) => recordPhase("post-fighter:target-maintenance", root.id)
+            : undefined,
           log: (line) => this.logs.unshift(line),
           recordSchedulePhase: recordPhase,
         });

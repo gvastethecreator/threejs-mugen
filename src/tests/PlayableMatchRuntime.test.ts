@@ -161,7 +161,12 @@ describe("PlayableMatchRuntime", () => {
       activated.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers", "post-fighter:body-push", "post-fighter:hit-admission"]);
+    ).toEqual([
+      "fighter:controllers",
+      "post-fighter:target-maintenance",
+      "post-fighter:body-push",
+      "post-fighter:hit-admission",
+    ]);
 
     const moved = runtime.step({ p1: new Set(), p2: new Set() });
     const movedP3 = moved.reserveActors?.find(({ id }) => id === "p3")!;
@@ -172,7 +177,15 @@ describe("PlayableMatchRuntime", () => {
       moved.tickSchedule?.phases
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
-    ).toEqual(["fighter:controllers", "fighter:kinematics", "fighter:animation", "fighter:constraints", "post-fighter:body-push", "post-fighter:hit-admission"]);
+    ).toEqual([
+      "fighter:controllers",
+      "fighter:kinematics",
+      "fighter:animation",
+      "fighter:constraints",
+      "post-fighter:target-maintenance",
+      "post-fighter:body-push",
+      "post-fighter:hit-admission",
+    ]);
     expect(moved.effects?.some(({ ownerId }) => ownerId === "p3")).toBe(false);
     expect(
       moved.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.executedControllers.Helper,
@@ -223,6 +236,7 @@ describe("PlayableMatchRuntime", () => {
       "fighter:kinematics",
       "fighter:animation",
       "fighter:constraints",
+      "post-fighter:target-maintenance",
       "post-fighter:body-push",
       "post-fighter:hit-admission",
     ]);

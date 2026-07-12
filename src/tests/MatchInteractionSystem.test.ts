@@ -1,10 +1,75 @@
 import { describe, expect, it } from "vitest";
 import {
   RuntimeMatchInteractionWorld,
+  selectRuntimeRootTargetMaintenanceActors,
   type RuntimeMatchInteractionRuntimeActor,
 } from "../mugen/runtime/MatchInteractionSystem";
 
 describe("RuntimeMatchInteractionWorld", () => {
+  it("selects unique valid root target actors while retaining standby and over-KO roots", () => {
+    const candidate = (id: string, disabled = false, playerType = true) => ({
+      id,
+      runtime: { teamState: { disabled, playerType } },
+    });
+    const p3 = {
+      ...candidate("p3"),
+      runtime: { teamState: { disabled: false, playerType: true, standby: true, overKo: true } },
+    };
+
+    expect(selectRuntimeRootTargetMaintenanceActors([
+      candidate("p1"),
+      candidate("p2"),
+      p3,
+      p3,
+      candidate("p4", true),
+      candidate("p5", false, false),
+      candidate("helper-0"),
+      candidate("p6"),
+    ]).map(({ id }) => id)).toEqual(["p1", "p2", "p3", "p6"]);
+  });
+
+  it("maintains an explicit root roster once each with complete exact candidates", () => {
+    const calls: string[] = [];
+    const actors = ["p1", "p2", "p3", "p4"];
+
+    new RuntimeMatchInteractionWorld().advance({
+      p1: "p1",
+      p2: "p2",
+      targetActors: actors,
+      targetResetActors: [...actors, "disabled-p5"],
+      advanceTargetMemory: (fighter) => calls.push(`age:${fighter}`),
+      clearTargetBindingSubject: (fighter) => calls.push(`clear:${fighter}`),
+      recordTargetMaintenance: (fighter) => calls.push(`phase:${fighter}`),
+      advanceActiveEffects: () => undefined,
+      resolveProjectileClashes: () => undefined,
+      separateActors: () => undefined,
+      applyTargetBindings: (fighter, candidates) => calls.push(`target-bind:${fighter}:${candidates.join(",")}`),
+      applyBindToTarget: (fighter, candidates) => calls.push(`self-bind:${fighter}:${candidates.join(",")}`),
+      resolvePriorityClash: () => undefined,
+      resolveDirectCombat: () => undefined,
+      resolveProjectileCombat: () => undefined,
+      clampToStage: () => undefined,
+      advancePresentationEffects: () => undefined,
+      log: () => undefined,
+    });
+
+    expect(calls).toEqual([
+      "age:p1", "phase:p1",
+      "age:p2", "phase:p2",
+      "age:p3", "phase:p3",
+      "age:p4", "phase:p4",
+      "clear:p1", "clear:p2", "clear:p3", "clear:p4", "clear:disabled-p5",
+      "target-bind:p1:p2,p3,p4",
+      "target-bind:p2:p1,p3,p4",
+      "target-bind:p3:p1,p2,p4",
+      "target-bind:p4:p1,p2,p3",
+      "self-bind:p1:p2,p3,p4",
+      "self-bind:p2:p1,p3,p4",
+      "self-bind:p3:p1,p2,p4",
+      "self-bind:p4:p1,p2,p3",
+    ]);
+  });
+
   it("owns post-fighter target, effect, combat, clamp, and presentation ordering", () => {
     const world = new RuntimeMatchInteractionWorld();
     const calls: string[] = [];
@@ -19,8 +84,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       advanceActiveEffects: (fighter) => tag("active-effects", fighter),
       resolveProjectileClashes: (left, right) => tag("projectile-clash", left, right),
       separateActors: (left, right) => tag("separate", left, right),
-      applyTargetBindings: (fighter, opponent) => tag("target-bind", fighter, opponent),
-      applyBindToTarget: (fighter, opponent) => tag("bind-to-target", fighter, opponent),
+      applyTargetBindings: (fighter, candidates) => tag("target-bind", fighter, candidates[0]),
+      applyBindToTarget: (fighter, candidates) => tag("bind-to-target", fighter, candidates[0]),
       resolvePriorityClash: (left, right) => {
         tag("priority", left, right);
         return "priority resolved";
@@ -175,6 +240,7 @@ function runtimeActor(id: string, label: string, x: number, calls: string[]): Ru
     },
     targetWorld: {
       advance: (fighter) => calls.push(`target-memory:${fighter.id}`),
+      clearBindingSubject: () => undefined,
       applyTargetBindings: (fighter, candidates) => {
         calls.push(`target-bind:${fighter.id}:${candidates[0]?.id ?? "none"}`);
         return { appliedBindings: 1 };

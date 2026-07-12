@@ -1,7 +1,7 @@
 # Promote Root Target Maintenance
 
 Type: implementation
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -23,3 +23,7 @@ Advance target memory and resolve existing target bindings across authoritative 
 Allowed: actor-keyed existing target-memory maintenance for explicit Tag roots.
 
 Blocked: deferred hit-target acquisition, active-root hit mutation, target controller widening, throws, helpers/projectiles, round/HUD/audio, scores, or full parity.
+
+## Outcome
+
+Explicit Tag normal post-fighter maintenance now selects stable, unique, valid P1-P8 roots; ages each target store once; clears stale binding-subject telemetry across every authoritative root; resolves all TargetBind passes before all BindToTarget passes against complete exact-id candidates; and records actor-scoped schedule evidence. Pair/Single defaults and pause/hitpause paths remain unchanged. Invalid, disabled, non-player, and duplicate candidates fail closed.

@@ -49,3 +49,7 @@ Two independent boundaries are missing. Existing target memory and bindings are 
 Allowed: source-backed split between plural target maintenance and deferred hit-target acquisition, with an implementation-ready first cut.
 
 Blocked: active-root hit mutation, target acquisition parity, target-controller widening, throws, helper/projectile breadth, pause parity, round/HUD/audio, scores, or full parity.
+
+## Implementation Outcome
+
+Wayfinder 111 is resolved. `RuntimeMatchInteractionWorld` now accepts a deterministic maintenance roster while preserving P1/P2 defaults. Explicit Tag selects stable unique valid roots, ages each target store once, applies every TargetBind pass before every BindToTarget pass against complete exact-id candidates, and records `post-fighter:target-maintenance` per actor. Pause/hitpause and target acquisition remain unchanged. Wayfinder 112 owns deferred HitDef buffer/commit research.

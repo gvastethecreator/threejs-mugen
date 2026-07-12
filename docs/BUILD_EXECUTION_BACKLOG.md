@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 417 - Active-root target maintenance
+
+Done: explicit Tag normal post-fighter execution now ages target memory once for each stable unique valid root and resolves existing TargetBind passes before BindToTarget passes against the complete exact-id root roster. Pair/Single and pause/hitpause remain unchanged. `post-fighter:target-maintenance` records actor-scoped P1-P8 evidence; invalid, disabled, non-player, and duplicate roots fail closed. Claim allowed: existing actor-key target maintenance. Claim blocked: deferred acquisition, active-root hit mutation, target-controller widening, throws, helpers/projectiles, round/HUD/audio, scores, and full parity. Wayfinder 112 maps deferred HitDef acquisition next.
+
 ## Entry 416 - Active-root target lifecycle research
 
 Done: pinned IKEMEN source separates successful HitDef target buffering from later character-update commit. Local audit finds actor-generic stores/primitives but P1/P2-only normal aging and one-opponent binding resolution. Wayfinder 111 selects deterministic explicit-Tag root maintenance against complete exact-id candidates, leaving pause behavior and all acquisition/combat mutation unchanged. Claim allowed: implementation-ready plural existing-target maintenance. Claim blocked: deferred acquisition, active-root hit mutation, target parity, throws, helpers/projectiles, round/HUD/audio, scores, and full parity.

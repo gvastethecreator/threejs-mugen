@@ -4,6 +4,7 @@ import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactM
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
+import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 
@@ -12,15 +13,35 @@ export type RuntimeMatchInteractionFighterPair<TFighter> = {
   p2: TFighter;
 };
 
+export type RuntimeRootTargetMaintenanceCandidate = {
+  id: string;
+  runtime: { teamState?: { disabled: boolean; playerType: boolean } };
+};
+
+export function selectRuntimeRootTargetMaintenanceActors<TActor extends RuntimeRootTargetMaintenanceCandidate>(
+  roots: readonly TActor[],
+): TActor[] {
+  const seen = new Set<string>();
+  return roots.filter((root) => {
+    const teamState = root.runtime.teamState;
+    if (!teamState?.playerType || teamState.disabled || runtimeTeamSide(root) === undefined || seen.has(root.id)) return false;
+    seen.add(root.id);
+    return true;
+  });
+}
+
 export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractionFighterPair<TFighter> & {
+  targetActors?: readonly TFighter[];
+  targetResetActors?: readonly TFighter[];
   advanceTargetMemory: (fighter: TFighter) => void;
+  clearTargetBindingSubject?: (fighter: TFighter) => void;
   advanceActiveEffects: (fighter: TFighter) => void;
   resolveProjectileClashes: (left: TFighter, right: TFighter) => void;
   separateActors: (left: TFighter, right: TFighter) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
-  applyTargetBindings: (fighter: TFighter, opponent: TFighter) => void;
-  applyBindToTarget: (fighter: TFighter, opponent: TFighter) => void;
+  applyTargetBindings: (fighter: TFighter, candidates: TFighter[]) => void;
+  applyBindToTarget: (fighter: TFighter, candidates: TFighter[]) => void;
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
   resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
   resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
@@ -28,6 +49,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
   clampToStage: (fighter: TFighter) => void;
   advancePresentationEffects: (fighter: TFighter) => void;
+  recordTargetMaintenance?: (fighter: TFighter) => void;
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
   log: (line: string) => void;
 };
@@ -37,7 +59,7 @@ export type RuntimeMatchInteractionRuntimeActor = RuntimeEffectLifecycleActor &
     label: string;
     contact: RuntimeContactMemory;
     contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileCancel">;
-    targetWorld: Pick<RuntimeTargetWorld, "advance" | "applyTargetBindings" | "applyBindToTarget">;
+    targetWorld: Pick<RuntimeTargetWorld, "advance" | "clearBindingSubject" | "applyTargetBindings" | "applyBindToTarget">;
     effectActorWorld: RuntimeEffectLifecycleActor["effectActorWorld"] & Pick<RuntimeEffectActorWorld, "resolveProjectileClashes">;
   };
 
@@ -49,6 +71,8 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     gameSpace?: ExpressionGameSpace;
     stageTime?: number;
     runtimeTick?: number;
+    targetActors?: readonly TFighter[];
+    targetResetActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
@@ -57,6 +81,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
     advanceBodyPush?: () => void;
     inspectHitAdmission?: () => void;
+    recordTargetMaintenance?: (fighter: TFighter) => void;
     recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
     log: (line: string) => void;
   };
@@ -66,18 +91,26 @@ export class RuntimeMatchInteractionWorld {
 
   advance<TFighter>(input: RuntimeMatchInteractionWorldInput<TFighter>): void {
     const { p1, p2 } = input;
+    const targetActors = input.targetActors ?? [p1, p2];
 
-    input.advanceTargetMemory(p1);
-    input.advanceTargetMemory(p2);
+    for (const fighter of targetActors) {
+      input.advanceTargetMemory(fighter);
+      input.recordTargetMaintenance?.(fighter);
+    }
     input.advanceActiveEffects(p1);
     input.advanceActiveEffects(p2);
     input.resolveProjectileClashes(p1, p2);
     if (input.advanceBodyPush) input.advanceBodyPush();
     else input.separateActors(p1, p2);
-    input.applyTargetBindings(p1, p2);
-    input.applyTargetBindings(p2, p1);
-    input.applyBindToTarget(p1, p2);
-    input.applyBindToTarget(p2, p1);
+    for (const fighter of input.targetResetActors ?? []) input.clearTargetBindingSubject?.(fighter);
+    for (const fighter of targetActors) {
+      const candidates = targetActors.filter((candidate) => candidate !== fighter);
+      input.applyTargetBindings(fighter, candidates);
+    }
+    for (const fighter of targetActors) {
+      const candidates = targetActors.filter((candidate) => candidate !== fighter);
+      input.applyBindToTarget(fighter, candidates);
+    }
     input.refreshGuardDistance?.(p1, p2);
     input.refreshGuardDistance?.(p2, p1);
     input.inspectHitAdmission?.();
@@ -110,7 +143,10 @@ export class RuntimeMatchInteractionWorld {
     this.advance({
       p1,
       p2,
+      targetActors: input.targetActors,
+      targetResetActors: input.targetResetActors,
       advanceTargetMemory: (fighter) => fighter.targetWorld.advance(fighter),
+      clearTargetBindingSubject: (fighter) => fighter.targetWorld.clearBindingSubject(fighter),
       advanceActiveEffects: (fighter) => {
         const context = this.opponentContextWorld.forActor(pair, fighter);
         if (!context) {
@@ -137,13 +173,14 @@ export class RuntimeMatchInteractionWorld {
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
-      applyTargetBindings: (fighter, opponent) => fighter.targetWorld.applyTargetBindings(fighter, [opponent]),
-      applyBindToTarget: (fighter, opponent) => fighter.targetWorld.applyBindToTarget(fighter, [opponent]),
+      applyTargetBindings: (fighter, candidates) => fighter.targetWorld.applyTargetBindings(fighter, candidates),
+      applyBindToTarget: (fighter, candidates) => fighter.targetWorld.applyBindToTarget(fighter, candidates),
       resolvePriorityClash: input.resolvePriorityClash,
       resolveDirectCombat: input.resolveDirectCombat,
       resolveProjectileCombat: input.resolveProjectileCombat,
       resolveHelperCombat: input.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,
+      recordTargetMaintenance: input.recordTargetMaintenance,
       recordSchedulePhase: input.recordSchedulePhase,
       clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage),
       advancePresentationEffects: (fighter) => effectLifecycleWorld.advancePresentation(fighter),
