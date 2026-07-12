@@ -127,7 +127,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Map active-root target lifecycle](tickets/110-map-active-root-target-lifecycle.md)
+- [Promote root target maintenance](tickets/111-promote-root-target-maintenance.md)
 
 ## Not Yet Specified
 

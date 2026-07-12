@@ -1,7 +1,7 @@
 # Map Active-root Target Lifecycle
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -21,3 +21,7 @@ Map actor-keyed target aging, binding, buffered acquisition, and deferred commit
 Allowed: source-backed target-lifecycle implementation contract.
 
 Blocked: active-root hit mutation, target parity, throws, helpers/projectiles, round/HUD/audio, scores, or full parity.
+
+## Outcome
+
+The local target store and binding primitives are actor-generic, but normal and paused match orchestration still supplies only P1/P2 actors and one opponent. Upstream separately buffers successful HitDef target ids and commits them after character update. The implementation must therefore land in two cuts: plural root maintenance/candidate resolution first, then deferred hit-target acquisition. Wayfinder 111 owns the first cut.

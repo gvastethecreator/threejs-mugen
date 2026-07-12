@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 416 - Active-root target lifecycle research
+
+Done: pinned IKEMEN source separates successful HitDef target buffering from later character-update commit. Local audit finds actor-generic stores/primitives but P1/P2-only normal aging and one-opponent binding resolution. Wayfinder 111 selects deterministic explicit-Tag root maintenance against complete exact-id candidates, leaving pause behavior and all acquisition/combat mutation unchanged. Claim allowed: implementation-ready plural existing-target maintenance. Claim blocked: deferred acquisition, active-root hit mutation, target parity, throws, helpers/projectiles, round/HUD/audio, scores, and full parity.
+
 ## Entry 415 - Root-key effect stores
 
 Done: `RuntimeEffectActorWorld` now owns exact actor-keyed stores for every authoritative runtime root while preserving P1/P2 compatibility access. Unknown owners fail closed, reset clears every unique registered store, Helper get-hit cleanup resolves its root owner, and actor-registry/trace summaries expose P1-P8 ownership without activating plural effect lifecycle, presentation, or combat. Focused and full gates are recorded in the implementation report. Claim allowed: exact runtime-root effect-store ownership. Claim blocked: active-root hit mutation, plural effect execution, target parity, round/HUD/audio, scores, and full parity. Wayfinder 110 maps target aging/binding/deferred commit next.
