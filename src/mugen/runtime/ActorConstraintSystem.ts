@@ -32,6 +32,14 @@ export type RuntimeActorConstraintControllerDispatchResult = {
   recordedOperation: boolean;
 };
 
+export type RuntimeBodyPushFactors = {
+  left: number;
+  right: number;
+  xTieDirection?: 1 | -1;
+  leftHalfWidths?: { front: number; back: number };
+  rightHalfWidths?: { front: number; back: number };
+};
+
 export class RuntimeActorConstraintWorld {
   resetFrameConstraints(state: RuntimeActorConstraintState): void {
     state.playerPush = true;
@@ -166,7 +174,7 @@ export class RuntimeActorConstraintWorld {
     right: RuntimeActorConstraintState,
     leftLocalCoord?: readonly [number, number],
     rightLocalCoord?: readonly [number, number],
-    factors: { left: number; right: number; xTieDirection?: 1 | -1 } = { left: 0.5, right: 0.5 },
+    factors: RuntimeBodyPushFactors = { left: 0.5, right: 0.5 },
   ): void {
     if (left.playerPush === false || right.playerPush === false) {
       return;
@@ -175,7 +183,8 @@ export class RuntimeActorConstraintWorld {
     const rightScale = 320 / (rightLocalCoord?.[0] ?? 320);
     const deltaX = right.pos.x * rightScale - left.pos.x * leftScale;
     const separationDeltaX = deltaX || factors.xTieDirection || 0;
-    const overlapX = widthToward(left, right) * leftScale + widthToward(right, left) * rightScale - Math.abs(deltaX);
+    const overlapX = widthToward(left, right, factors.leftHalfWidths) * leftScale +
+      widthToward(right, left, factors.rightHalfWidths) * rightScale - Math.abs(deltaX);
     if (overlapX <= 0) {
       return;
     }
@@ -197,7 +206,8 @@ export class RuntimeActorConstraintWorld {
     let pushX = deltaZ === 0;
     let pushZ = false;
     if (deltaZ !== 0) {
-      const xTotal = (bodySpan(left) * leftScale) + (bodySpan(right) * rightScale);
+      const xTotal = (bodySpan(left, factors.leftHalfWidths) * leftScale) +
+        (bodySpan(right, factors.rightHalfWidths) * rightScale);
       const zTotal = depthSpan(leftDepth) * leftScale + depthSpan(rightDepth) * rightScale;
       const adjustedZDistance = zTotal === 0 ? Math.abs(deltaZ) : (xTotal / zTotal) * Math.abs(deltaZ);
       const ratio = adjustedZDistance === 0 ? Number.POSITIVE_INFINITY : Math.abs(deltaX) / adjustedZDistance;
@@ -256,14 +266,18 @@ export class RuntimeActorConstraintControllerDispatchWorld {
   }
 }
 
-function widthToward(self: RuntimeActorConstraintState, target: RuntimeActorConstraintState): number {
-  const width = self.bodyWidth ?? { front: 39, back: 39 };
+function widthToward(
+  self: RuntimeActorConstraintState,
+  target: RuntimeActorConstraintState,
+  halfWidths?: { front: number; back: number },
+): number {
+  const width = halfWidths ?? self.bodyWidth ?? { front: 39, back: 39 };
   const targetIsInFront = (target.pos.x - self.pos.x) * self.facing >= 0;
   return targetIsInFront ? width.front : width.back;
 }
 
-function bodySpan(state: RuntimeActorConstraintState): number {
-  const width = state.bodyWidth ?? { front: 39, back: 39 };
+function bodySpan(state: RuntimeActorConstraintState, halfWidths?: { front: number; back: number }): number {
+  const width = halfWidths ?? state.bodyWidth ?? { front: 39, back: 39 };
   return width.front + width.back;
 }
 
@@ -278,7 +292,7 @@ function separateX(
   delta: number,
   leftScale: number,
   rightScale: number,
-  factors: { left: number; right: number; xTieDirection?: 1 | -1 },
+  factors: RuntimeBodyPushFactors,
 ): void {
   const direction = delta > 0 ? 1 : -1;
   left.pos.x -= (overlap * factors.left / leftScale) * direction;

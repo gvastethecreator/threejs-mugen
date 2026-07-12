@@ -3,6 +3,7 @@ import { RuntimeActorConstraintWorld } from "../mugen/runtime/ActorConstraintSys
 import {
   RuntimeRootBodyPushWorld,
   resolveRuntimePushSizeBox,
+  usesMugenPlayerPushMinimumWidth,
   type RuntimeRootBodyPushActor,
 } from "../mugen/runtime/RuntimeRootBodyPushSystem";
 
@@ -181,6 +182,54 @@ describe("RuntimeRootBodyPushWorld", () => {
     hit[0]!.moveType = "H";
     advance(hit, true);
     expect(hit.map((root) => root.runtime.pos.x)).toEqual([-10, 10]);
+  });
+
+  it("clamps legacy MUGEN push width to five world units", () => {
+    const legacy = [actor("p1", 1, 0), actor("p2", 2, 8)];
+    for (const root of legacy) {
+      root.runtime.bodyWidth = { front: 1, back: 1 };
+      root.sizeBox = { x1: -1, y1: -60, x2: 1, y2: 0 };
+      root.mugenMinimumWidth = true;
+    }
+    advance(legacy, true);
+    expect(legacy.map((root) => root.runtime.pos.x)).toEqual([-1, 9]);
+
+    const ikemen = [actor("p1", 1, 0), actor("p2", 2, 8)];
+    for (const root of ikemen) root.runtime.bodyWidth = { front: 1, back: 1 };
+    advance(ikemen, true);
+    expect(ikemen.map((root) => root.runtime.pos.x)).toEqual([0, 8]);
+
+    const scaled = [actor("p1", 1, 0), actor("p2", 2, 16)];
+    for (const root of scaled) {
+      root.localCoord = [640, 480];
+      root.runtime.bodyWidth = { front: 1, back: 1 };
+      root.sizeBox = { x1: -1, y1: -60, x2: 1, y2: 0 };
+      root.mugenMinimumWidth = true;
+    }
+    advance(scaled, true);
+    expect(scaled.map((root) => root.runtime.pos.x)).toEqual([-2, 18]);
+  });
+
+  it("routes only MUGEN-compatible imported versions to the width clamp", () => {
+    expect(usesMugenPlayerPushMinimumWidth({ source: "imported" })).toBe(true);
+    expect(usesMugenPlayerPushMinimumWidth({ source: "imported", ikemenVersion: "0.0" })).toBe(true);
+    expect(usesMugenPlayerPushMinimumWidth({ source: "imported", ikemenVersion: "0, 0" })).toBe(true);
+    expect(usesMugenPlayerPushMinimumWidth({ source: "imported", ikemenVersion: "0.99" })).toBe(false);
+    expect(usesMugenPlayerPushMinimumWidth({ source: "demo" })).toBe(false);
+  });
+
+  it("clamps asymmetric size-box sides before facing-aware separation", () => {
+    const roots = [actor("p1", 1, 0), actor("p2", 2, 8)];
+    roots[0]!.runtime.bodyWidth = { front: 1, back: 1 };
+    roots[0]!.sizeBox = { x1: -9, y1: -60, x2: 1, y2: 0 };
+    roots[0]!.runtime.facing = -1;
+    roots[0]!.mugenMinimumWidth = true;
+    roots[1]!.runtime.bodyWidth = { front: 1, back: 1 };
+    roots[1]!.sizeBox = { x1: -1, y1: -60, x2: 1, y2: 0 };
+    roots[1]!.mugenMinimumWidth = true;
+
+    advance(roots, true);
+    expect(roots.map((root) => root.runtime.pos.x)).toEqual([-3, 11]);
   });
 });
 

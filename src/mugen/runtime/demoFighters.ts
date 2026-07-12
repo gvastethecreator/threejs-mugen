@@ -95,6 +95,7 @@ export type DemoFighterDefinition = {
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   displayName: string;
   authorName?: string;
+  ikemenVersion?: string;
   localCoord?: [number, number];
   palette: string;
   spriteGroupBase: number;

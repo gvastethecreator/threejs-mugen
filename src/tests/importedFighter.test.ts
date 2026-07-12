@@ -43,6 +43,13 @@ describe("createImportedFighterDefinition", () => {
     expect(fighter?.localCoord).toEqual([640, 480]);
   });
 
+  it("carries parsed IKEMEN version into imported fighters", () => {
+    const character = fakeCharacter(new Map([[0, action(0, [[0, 0, 0]])]]));
+    character.definition.info.ikemenVersion = "0.99";
+
+    expect(createImportedFighterDefinition(character)?.ikemenVersion).toBe("0.99");
+  });
+
   it("maps assessed package profiles into the HitDef priority policy seam", () => {
     const animations = new Map<number, MugenAnimationAction>([[0, action(0, [[0, 0, 0]])]]);
     const mugen11 = fakeCharacter(animations);

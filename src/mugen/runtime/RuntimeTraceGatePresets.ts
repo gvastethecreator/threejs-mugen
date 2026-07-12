@@ -9231,6 +9231,7 @@ export function createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact(
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-ikemen-playerpush-policy-attacker",
     displayName: "Synthetic Imported IKEMEN PlayerPush Policy Attacker",
+    ikemenVersion: "0.99",
     withHitDef: false,
     activeRootHitDefRoute: {
       damage: 37, targetId: 137, posX: 0, playerPushPolicy: { priority: 0, affectTeam: "E" }, hitDefTrigger: "0",
@@ -9240,6 +9241,7 @@ export function createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact(
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-ikemen-playerpush-policy-defender",
     displayName: "Synthetic Imported IKEMEN PlayerPush Policy Defender",
+    ikemenVersion: "0.99",
     withHitDef: false,
     activeRootHitDefRoute: {
       damage: 37, targetId: 138, posX: 10, playerPushPolicy: { priority: 0, affectTeam: "E" }, hitDefTrigger: "0",
@@ -9249,6 +9251,7 @@ export function createSyntheticImportedIkemenPlayerPushPolicyTraceArtifact(
   const pairDefender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-ikemen-playerpush-policy-pair-defender",
     displayName: "Synthetic Imported IKEMEN PlayerPush Policy Pair Defender",
+    ikemenVersion: "0.99",
     withHitDef: false,
     withPlayerPush: false,
     passiveNotHitBy: "S,NA",
@@ -9889,6 +9892,7 @@ export function createSyntheticImportedIkemenActiveRootConstraintTraceArtifact(
   const reserve = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-ikemen-active-root-constraint",
     displayName: "Synthetic Imported IKEMEN Active Root Constraint",
+    ikemenVersion: "0.99",
     withHitDef: false,
     activeRootMotionRoute: { commandName: "x", velocityX: 4, blockedHelperId: 1286 },
   });
@@ -41051,6 +41055,7 @@ export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
   authorName?: string;
+  ikemenVersion?: string;
   localCoord?: [number, number];
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   hitDefAttr?: string;
@@ -42455,6 +42460,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
   return {
     id: options.id ?? "synthetic-imported-trace",
     source: "imported",
+    ikemenVersion: options.ikemenVersion,
     hitDefPriorityProfile: options.hitDefPriorityProfile,
     displayName: options.displayName ?? "Synthetic Imported Trace",
     authorName: options.authorName,

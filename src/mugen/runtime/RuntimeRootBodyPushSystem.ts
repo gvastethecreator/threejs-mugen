@@ -1,6 +1,6 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { CollisionBox } from "../model/CollisionBox";
-import type { RuntimeActorConstraintState, RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import type { RuntimeActorConstraintState, RuntimeActorConstraintWorld, RuntimeBodyPushFactors } from "./ActorConstraintSystem";
 import { collisionBoxesIntersect, runtimeWorldBox } from "./CombatResolver";
 import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTeamState } from "./types";
@@ -17,6 +17,7 @@ export type RuntimeRootBodyPushActor = {
   hurtBoxes?: readonly CollisionBox[];
   sizePushOnly?: boolean;
   moveType?: "I" | "A" | "H";
+  mugenMinimumWidth?: boolean;
 };
 
 export type RuntimeRootBodyPushDiagnostic = {
@@ -128,13 +129,14 @@ function canPairPush(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushA
 function resolvePushFactors(
   left: RuntimeRootBodyPushActor,
   right: RuntimeRootBodyPushActor,
-): { left: number; right: number; xTieDirection?: 1 | -1 } {
+): RuntimeBodyPushFactors {
   const leftPriority = left.runtime.pushPriority ?? 0;
   const rightPriority = right.runtime.pushPriority ?? 0;
   const leftPushFactor = finiteNonNegative(left.pushFactor, 1);
   const rightPushFactor = finiteNonNegative(right.pushFactor, 1);
-  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor, xTieDirection: resolveXTieDirection(left, right) };
-  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0, xTieDirection: resolveXTieDirection(left, right) };
+  const legacyWidths = resolveLegacyWidths(left, right);
+  if (leftPriority > rightPriority) return { left: 0, right: rightPushFactor, xTieDirection: resolveXTieDirection(left, right), ...legacyWidths };
+  if (leftPriority < rightPriority) return { left: leftPushFactor, right: 0, xTieDirection: resolveXTieDirection(left, right), ...legacyWidths };
   const leftWeight = finitePositive(left.weight, 100);
   const rightWeight = finitePositive(right.weight, 100);
   const totalWeight = leftWeight + rightWeight;
@@ -142,7 +144,39 @@ function resolvePushFactors(
     left: (rightWeight / totalWeight) * leftPushFactor,
     right: (leftWeight / totalWeight) * rightPushFactor,
     xTieDirection: resolveXTieDirection(left, right),
+    ...legacyWidths,
   };
+}
+
+function resolveLegacyWidths(
+  left: RuntimeRootBodyPushActor,
+  right: RuntimeRootBodyPushActor,
+): Pick<RuntimeBodyPushFactors, "leftHalfWidths" | "rightHalfWidths"> {
+  const leftScale = 320 / (left.localCoord?.[0] ?? 320);
+  const rightScale = 320 / (right.localCoord?.[0] ?? 320);
+  return {
+    ...(left.mugenMinimumWidth ? { leftHalfWidths: clampedSizeWidths(left.sizeBox, leftScale) } : {}),
+    ...(right.mugenMinimumWidth ? { rightHalfWidths: clampedSizeWidths(right.sizeBox, rightScale) } : {}),
+  };
+}
+
+function clampedSizeWidths(sizeBox: CollisionBox | undefined, scale: number): { front: number; back: number } {
+  const box = sizeBox ?? { x1: -16, y1: -60, x2: 16, y2: 0 };
+  const minimum = 5 / scale;
+  return {
+    front: Math.max(minimum, Math.max(0, box.x2)),
+    back: Math.max(minimum, Math.max(0, -box.x1)),
+  };
+}
+
+export function usesMugenPlayerPushMinimumWidth(
+  definition: { source?: "demo" | "imported"; ikemenVersion?: string },
+): boolean {
+  if (definition.source !== "imported") return false;
+  const version = definition.ikemenVersion?.trim();
+  if (!version) return true;
+  const components = version.split(/[\s,]+/).map(Number);
+  return components.length > 0 && components.every((component) => Number.isFinite(component) && component === 0);
 }
 
 function resolveXTieDirection(left: RuntimeRootBodyPushActor, right: RuntimeRootBodyPushActor): 1 | -1 {

@@ -63,7 +63,7 @@
 
 ## DEF
 
-- `[Info]`: `name`, `displayname`, `versiondate`, `mugenversion`, `author`.
+- `[Info]`: `name`, `displayname`, `versiondate`, `mugenversion`, `ikemenversion`, `author`.
 - `[Info] fightfx.prefix` is preserved from raw sections and handed to imported runtime fighter definitions as lowercase `fightFxPrefix` metadata for bounded FightFX spark and sound trace/debug routing. When `[Files] fx = ...` declares an IKEMEN-style FightFX DEF with matching `[Info] prefix`, that package AIR/SFF/SND is loaded and preferred for runtime `F` spark frames and `F` sound refs before the global `data/fightfx.*` fallback. Exact `sys.ffx` cache/refcount semantics, channel fallback, screenpack ownership, scale, palette, timing, layering, mixing, and full FightFX parity remain unsupported.
 - `[Files]`: `cmd`, `cns`, `st`, `stcommon`, `sprite`, `anim`, `sound`, `pal1` through `pal12`.
 - Raw sections and diagnostics.

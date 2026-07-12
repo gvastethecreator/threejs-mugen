@@ -46,6 +46,7 @@ export function parseDef(text: string, file?: string): MugenCharacterDef {
       displayName: getValue(infoRaw, "displayname"),
       versionDate: getValue(infoRaw, "versiondate"),
       mugenVersion: getValue(infoRaw, "mugenversion"),
+      ikemenVersion: getValue(infoRaw, "ikemenversion"),
       author: getValue(infoRaw, "author"),
       localCoord: numberPair(getValue(infoRaw, "localcoord")),
     },

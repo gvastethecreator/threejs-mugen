@@ -46,6 +46,7 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     hitDefPriorityProfile: runtimeHitDefPriorityProfile(character),
     displayName,
     authorName: character.definition.info.author,
+    ikemenVersion: character.definition.info.ikemenVersion,
     localCoord: character.definition.info.localCoord,
     palette: "#d8dde7",
     spriteGroupBase: 0,

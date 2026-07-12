@@ -8,6 +8,7 @@ describe("parseDef", () => {
 name = "Kung Fu Man"
 displayname = "KFM"
 mugenversion = 1.0
+ikemenversion = 0.99
 author = Elecbyte
 localcoord = 640,480
 
@@ -24,6 +25,8 @@ pal1 = kfm.act
 
     expect(parsed.info.name).toBe("Kung Fu Man");
     expect(parsed.info.displayName).toBe("KFM");
+    expect(parsed.info.mugenVersion).toBe("1.0");
+    expect(parsed.info.ikemenVersion).toBe("0.99");
     expect(parsed.info.localCoord).toEqual([640, 480]);
     expect(parsed.files.cmd).toBe("kfm.cmd");
     expect(parsed.files.states).toEqual(["extra.st"]);

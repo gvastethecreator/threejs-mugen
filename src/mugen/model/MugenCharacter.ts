@@ -14,6 +14,7 @@ export type MugenCharacterDef = {
     displayName?: string;
     versionDate?: string;
     mugenVersion?: string;
+    ikemenVersion?: string;
     author?: string;
     localCoord?: [number, number];
   };

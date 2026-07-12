@@ -126,7 +126,7 @@ import {
 import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
-import { resolveRuntimePushSizeBox, RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic } from "./RuntimeRootBodyPushSystem";
+import { resolveRuntimePushSizeBox, RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic, usesMugenPlayerPushMinimumWidth } from "./RuntimeRootBodyPushSystem";
 import {
   RuntimeRootDirectHitAdmissionWorld,
   type RuntimeRootDirectHitAdmissionDiagnostic,
@@ -982,10 +982,11 @@ export class PlayableMatchRuntime {
                 hurtBoxes: frameWorld.currentFrame(root)?.clsn2,
                 sizePushOnly: root.runtime.assertSpecial?.flags.includes("sizepushonly"),
                 moveType: root.runtime.moveType,
+                mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(root.definition),
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2, sizePushOnly: this.p1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p1.runtime.moveType },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2, sizePushOnly: this.p2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p2.runtime.moveType },
+                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentFrame(this.p1)?.clsn2, sizePushOnly: this.p1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p1.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p1.definition) },
+                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentFrame(this.p2)?.clsn2, sizePushOnly: this.p2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p2.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p2.definition) },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
