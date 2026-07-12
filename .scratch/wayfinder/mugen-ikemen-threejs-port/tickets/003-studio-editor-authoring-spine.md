@@ -1,7 +1,7 @@
 # Define Studio editor authoring spine
 
 Type: task
-Status: claimed
+Status: open
 Blocked by: None
 
 ## Question

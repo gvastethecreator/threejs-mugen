@@ -1286,6 +1286,37 @@ Every compatibility milestone should leave:
 - Full gates: 170 files / 1687 tests, TypeScript 7 build, 538/538 traces, and boundaries.
 - Global status: identity model closed; P1-P8/expression/Helper integration and RedirectID mutation remain open.
 
+### 2026-07-11 - IKEMEN root identity and Tag RedirectID
+
+- Integrated stable P1-P8 PlayerNo plus registry-owned PlayerID and explicit `ID`/`PlayerNo` expression contexts.
+- TagIn/TagOut now resolve root RedirectID first while later expressions remain original-caller-owned.
+- Root-relative state/control/partner/member/leader/standby mutation retains bounded aggregate validation.
+- Full gates at the latest root checkpoint: 170 files / 1696 tests, TypeScript 7 build, 538/538 traces, and boundaries.
+- Global status: root identity and redirected Tag execution are closed; Helper identity and mutation follow separately.
+
+### 2026-07-11 - IKEMEN Helper character identity
+
+- Registered root-created Helpers before same-tick execution with monotonic PlayerID and inherited PlayerNo.
+- Added explicit self/parent/root numeric identity plus removal/reset lifecycle ownership.
+- Full gates: 170 files / 1700 tests, TypeScript 7 build, 538/538 traces, and boundaries.
+- Global status: Helper lookup/identity is closed; Helper-created Helpers and broad redirected controller behavior remain open.
+
+### 2026-07-11 - IKEMEN Helper Tag semantics and local execution
+
+- Mapped Helper-local state/control/standby versus root-owned partner/member/leader semantics from pinned source.
+- Executed explicit/dynamic `self = 0` root-to-Helper Tag state/control with redirect-first caller ownership.
+- Proved state validation, state-before-control order, stale/disabled rejection, aggregate blocking, and legacy rejection.
+- Full gates: 170 files / 1710 tests, TypeScript 7 build, 538/538 traces, and boundaries.
+- Global status: Helper local Tag state/control is closed; standby and aggregate axes remain open.
+
+### 2026-07-11 - IKEMEN Helper standby participation research
+
+- Pinned standby as direct-character participation rather than lifecycle or visibility.
+- Standby keeps CNS, projectiles, targets, identity, animation, snapshots, and drawing active.
+- Effective control, direct hit/hurt, push, camera, Enemy, and P2 participation are filtered.
+- Local audit found direct Helper HitDef and effective-control projection as the only blockers for bounded self standby.
+- Global status: Wayfinder 083 is implementation-ready; no score movement from this research checkpoint.
+
 ## Not Done
 
 - Full MUGEN VM

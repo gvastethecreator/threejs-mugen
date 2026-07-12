@@ -1289,6 +1289,8 @@ Helper-targeted TagIn/TagOut is now source-mapped: state/control/standby are Hel
 
 Root-executed TagIn/TagOut can now redirect to a live Helper for explicit non-standby local state/control only. Expressions remain owned by the original root, state validates and applies before explicit control, stale/disabled identity fails early, and blocked standby/aggregate routes produce no mutation or telemetry. Wayfinder 082 next maps every Helper standby participation consumer, including the open presentation-policy question, before default/true self can execute.
 
+Helper standby participation is now source-mapped. Standby suppresses effective control plus direct character hit/hurt, push, camera, and Enemy/P2 candidacy, but it does not stop CNS, projectiles, targets, identity, animation, or drawing. Local architecture already excludes Helpers from incoming hurt, push, camera, and executable opponent rosters; only direct Helper HitDef plus effective-control projection block bounded self standby. Wayfinder 083 executes that cut and must preserve projectiles/presentation.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.

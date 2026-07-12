@@ -57,9 +57,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - Runtime claims need required trace artifacts, checksums, and explicit allowed/blocked wording.
 - Historical docs can keep superseded evidence, but latest/current docs must not describe closed gaps as still open.
 
-## Frontier
+## Decisions So Far, Continued
 
-- [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - [Choose next gap after IKEMEN team topology](tickets/042-next-gap-after-ikemen-team-topology.md) - complete-team enumeration is now distinct from active EnemyNear/P2 eligibility; `RuntimeTeamRoster/v0` exposes the first P1-P4 diagnostic.
 - [Choose next gap after team eligibility](tickets/043-next-gap-after-team-eligibility.md) - public `MatchWorld.teamRoster` now consumes a parallel unique-id character registry while the scheduler remains pair-only.
 - [Choose next gap after multi-root registry](tickets/044-next-gap-after-multi-root-registry.md) - runtime/snapshot `teamState` now drives public eligibility diagnostics for roots and helpers.
@@ -96,6 +95,16 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map Tag RedirectID mutation ownership](tickets/075-map-tag-redirect-mutation.md) - global numeric root/Helper PlayerID lookup, caller-context expressions, redirect-first failure, and target-owned mutation are pinned.
 - [Create IKEMEN character identity boundary](tickets/076-create-ikemen-character-identity.md) - numeric allocation, active lookup, lifecycle, and immutable diagnostics are isolated from actor ids and PlayerNo.
 - [Integrate IKEMEN root character identity](tickets/077-integrate-ikemen-root-character-identity.md) - wire P1-P8 plus `ID`/`PlayerNo` reads before mutation redirects.
+- [Execute root-only Tag RedirectID](tickets/078-execute-root-tag-redirectid.md) - RedirectID resolves first through live numeric root identity while every later Tag expression stays original-caller-owned.
+- [Integrate IKEMEN Helper character identity](tickets/079-integrate-ikemen-helper-character-identity.md) - root-created Helpers receive monotonic PlayerID, inherited PlayerNo, lifecycle lookup, and explicit self/parent/root identity.
+- [Map Helper Tag redirect semantics](tickets/080-map-helper-tag-redirect-semantics.md) - state/control/standby are Helper-local while partner/member/leader cross into root team ownership.
+- [Execute Helper-local Tag state/control](tickets/081-execute-helper-local-tag-redirect-state-control.md) - explicit `self = 0` admits prevalidated Helper-local state and TagIn control without standby or aggregate effects.
+- [Map Helper standby participation](tickets/082-map-helper-standby-participation.md) - standby suppresses direct character interaction and effective control but preserves CNS, projectiles, targets, identity, animation, and drawing.
+
+## Frontier
+
+- [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
+- [Execute Helper standby participation](tickets/083-execute-helper-standby-participation.md)
 
 ## Not Yet Specified
 
