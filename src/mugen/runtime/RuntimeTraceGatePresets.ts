@@ -8860,6 +8860,63 @@ export function createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenStageDepthBoundTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-stage-depth-bound-grid",
+    displayName: "Trace Stage Depth Bound Grid",
+    depthBounds: { top: -10, bottom: 10 },
+    playerStart: { p1: { x: -20, y: 0, z: 0, facing: 1 }, p2: { x: 20, y: 0, z: -10, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-stage-depth-bound-attacker",
+    displayName: "Synthetic Imported IKEMEN Stage Depth Bound Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 131, posZ: 20 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-stage-depth-bound-defender",
+    displayName: "Synthetic Imported IKEMEN Stage Depth Bound Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-stage-depth-bound-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Stage Depth Bound Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([{ label: "P3 PosSet Z is clamped before admission", p1: [], p2: [], frames: 2 }]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-stage-depth-bound-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-stage-depth-bound-golden",
+      label: "Synthetic imported IKEMEN stage depth bound",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves stage topbound/botbound clamp active-root logical Z after PosSet and before root hit admission. DepthEdge, Z player push, helpers/projectiles, visual projection, and full parity remain outside this gate."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-stage-depth-bound-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["PosSet", "HitDef"],
+      requiredExecutedOperations: ["kinematic:posset", "hitdef"],
+      requiredActorFrames: [{ actorId: "p3", source: "imported", actorKind: "player", observedPosZAtMost: 5, minFrames: 2 }],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 0 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+      ],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

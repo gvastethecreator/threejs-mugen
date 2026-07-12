@@ -20,6 +20,10 @@ zoomin = 1
 [PlayerInfo]
 p1startx = -70
 p2startx = 70
+p1startz = -5
+p2startz = 7
+topbound = -30
+botbound = 40
 p1facing = 1
 p2facing = -1
 
@@ -89,8 +93,9 @@ describe("parseStageDef", () => {
     expect(parsed.files.music).toBe("sound/kfm.mid");
     expect(runtime.displayName).toBe("Mountainside Temple");
     expect(runtime.bounds).toEqual({ left: -150, right: 150 });
-    expect(runtime.playerStart.p1).toMatchObject({ x: -70, facing: 1 });
-    expect(runtime.playerStart.p2).toMatchObject({ x: 70, facing: -1 });
+    expect(runtime.playerStart.p1).toMatchObject({ x: -70, z: -5, facing: 1 });
+    expect(runtime.playerStart.p2).toMatchObject({ x: 70, z: 7, facing: -1 });
+    expect(runtime.depthBounds).toEqual({ top: -30, bottom: 40 });
     expect(runtime.camera.zoom).toBe(1);
     expect(parsed.animations.get(10)?.frames).toHaveLength(2);
     expect(runtime.animations?.get(10)?.frames[1]).toMatchObject({ spriteGroup: 2, spriteIndex: 1, offsetX: 4 });

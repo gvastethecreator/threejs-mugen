@@ -1193,7 +1193,7 @@ export class PlayableMatchRuntime {
           });
           fighter.targetWorld.applyTargetBindings(fighter, [opponent]);
           fighter.targetWorld.applyBindToTarget(fighter, [opponent]);
-          this.actorConstraintWorld.clampToStage(fighter.runtime, this.stage);
+          this.actorConstraintWorld.clampToStage(fighter.runtime, this.stage, fighter.definition.localCoord);
         },
         consumeRootMoveTime: (fighter) => this.pauseWorld.consumeActorMoveTime(fighter.id),
         canAdvanceHelper: (helper, pauseType) => canAdvanceRuntimeHelper(helper, pauseType),
@@ -1325,7 +1325,7 @@ export class PlayableMatchRuntime {
         applyConstraints: (actor) => {
           recordPhase("fighter:constraints", actor.id);
           this.actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos);
-          this.actorConstraintWorld.clampToStage(actor.runtime, this.stage);
+          this.actorConstraintWorld.clampToStage(actor.runtime, this.stage, actor.definition.localCoord);
         },
       },
     });
@@ -1937,7 +1937,7 @@ export class PlayableMatchRuntime {
   private createFighterState(
     id: string,
     definition: DemoFighterDefinition,
-    start: { x: number; y: number; facing: 1 | -1 },
+    start: { x: number; y: number; z?: number; facing: 1 | -1 },
     identity: Pick<FighterMatchState, "playerId" | "playerNo"> = {},
   ): FighterMatchState {
     return fighterStateWorld.create({
@@ -1946,6 +1946,10 @@ export class PlayableMatchRuntime {
       definition,
       x: start.x,
       y: start.y,
+      z:
+        start.z === undefined
+          ? undefined
+          : start.z * ((320 / this.stage.localCoord.width) / (320 / (definition.localCoord?.[0] ?? 320))),
       facing: start.facing,
       effectActorWorld: this.effectActorWorld,
       targetWorld: this.targetWorld,

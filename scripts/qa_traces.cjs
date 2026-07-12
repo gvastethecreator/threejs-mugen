@@ -1956,6 +1956,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetBindDepthTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-stage-depth-bound",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenStageDepthBoundTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-targetbind-pause",
       required: true,
       artifact: presets.createSyntheticImportedTargetBindPauseTraceArtifact(),

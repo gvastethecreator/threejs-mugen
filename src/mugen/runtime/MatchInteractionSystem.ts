@@ -65,6 +65,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
 
 export type RuntimeMatchInteractionRuntimeActor = RuntimeEffectLifecycleActor &
   RuntimeTargetWorldActor & {
+    definition?: { localCoord?: { width: number } | readonly [number, number] };
     label: string;
     contact: RuntimeContactMemory;
     contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileCancel">;
@@ -74,7 +75,7 @@ export type RuntimeMatchInteractionRuntimeActor = RuntimeEffectLifecycleActor &
 
 export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMatchInteractionRuntimeActor> =
   RuntimeMatchInteractionFighterPair<TFighter> & {
-    stage: Pick<MugenStageDefinition, "bounds">;
+    stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
     actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
     effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation">;
     gameSpace?: ExpressionGameSpace;
@@ -223,7 +224,7 @@ export class RuntimeMatchInteractionWorld {
       refreshGuardDistance: input.refreshGuardDistance,
       recordTargetMaintenance: input.recordTargetMaintenance,
       recordSchedulePhase: input.recordSchedulePhase,
-      clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage),
+      clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage, fighter.definition?.localCoord),
       advancePresentationEffects: (fighter) => effectLifecycleWorld.advancePresentation(fighter),
       log: input.log,
     });

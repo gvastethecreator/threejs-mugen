@@ -90,6 +90,8 @@ export function stageDefToRuntime(
   const cameraStartY = localcoord[1] - zOffset + (numberValue(camera, "starty") ?? 0) + 72;
   const zoomOut = numberValue(camera, "zoomout") ?? 1;
   const zoomIn = numberValue(camera, "zoomin") ?? zoomOut;
+  const topBound = numberValue(player, "topbound") ?? 0;
+  const bottomBound = numberValue(player, "botbound") ?? 0;
 
   return {
     id,
@@ -105,6 +107,9 @@ export function stageDefToRuntime(
       left: boundLeft,
       right: boundRight,
     },
+    ...(topBound === bottomBound
+      ? {}
+      : { depthBounds: { top: Math.min(topBound, bottomBound), bottom: Math.max(topBound, bottomBound) } }),
     camera: {
       startX: numberValue(camera, "startx") ?? 0,
       startY: cameraStartY,
@@ -114,11 +119,13 @@ export function stageDefToRuntime(
       p1: {
         x: numberValue(player, "p1startx") ?? -70,
         y: floorY + (numberValue(player, "p1starty") ?? 0),
+        z: numberValue(player, "p1startz") ?? 0,
         facing: normalizeFacing(numberValue(player, "p1facing"), 1),
       },
       p2: {
         x: numberValue(player, "p2startx") ?? 70,
         y: floorY + (numberValue(player, "p2starty") ?? 0),
+        z: numberValue(player, "p2startz") ?? 0,
         facing: normalizeFacing(numberValue(player, "p2facing"), -1),
       },
     },

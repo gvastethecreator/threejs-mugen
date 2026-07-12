@@ -168,6 +168,7 @@ import {
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact,
+  createSyntheticImportedIkemenStageDepthBoundTraceArtifact,
   createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
@@ -25899,6 +25900,19 @@ describe("RuntimeTraceGatePresets", () => {
       gates: [{ label: "synthetic-imported-targetbind-depth-golden", passed: true, failures: [] }],
     });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.combatDepth?.position).toBe(15);
+  });
+
+  it("creates a required synthetic imported IKEMEN stage depth-bound artifact", () => {
+    const artifact = createSyntheticImportedIkemenStageDepthBoundTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-stage-depth-bound-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-stage-depth-bound-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p3", maxPosZ: 5 })]),
+    );
   });
 
   it("creates a projectile-only guard-distance latch without contact", () => {

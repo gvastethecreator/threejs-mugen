@@ -107,6 +107,25 @@ describe("ActorConstraintSystem", () => {
     expect(state.pos.x).toBe(40);
   });
 
+  it("clamps combat depth in actor-local coordinates independently from ScreenBound", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const state = actorState({
+      pos: { x: 80, y: 0 },
+      combatDepth: { position: 100, velocity: 3, size: [3, 3], attack: [4, 4] },
+      screenBound: { bound: false, moveCameraX: false, moveCameraY: false },
+    });
+
+    world.clampToStage(
+      state,
+      { bounds: { left: -40, right: 40 }, depthBounds: { top: -20, bottom: 30 }, localCoord: { width: 320, height: 240 } },
+      { width: 640 },
+    );
+
+    expect(state.pos.x).toBe(80);
+    expect(state.combatDepth?.position).toBe(60);
+    expect(state.combatDepth?.velocity).toBe(3);
+  });
+
   it("separates overlapping actors using facing-aware body widths", () => {
     const world = new RuntimeActorConstraintWorld();
     const left = actorState({ pos: { x: 0, y: 0 }, facing: 1, bodyWidth: { front: 20, back: 10 } });

@@ -17,7 +17,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
 > & {
   p1: TActor;
   p2: TActor;
-  stage: Pick<MugenStageDefinition, "bounds">;
+  stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   helpersAdvancedInActorOrder?: boolean;

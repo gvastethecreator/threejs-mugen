@@ -24,7 +24,7 @@ export type RuntimeMatchPausedBridgeInput<TActor extends RuntimeMatchPausedBridg
   p1Input: Set<string>;
   p2Input: Set<string>;
   p2Controlled: boolean;
-  stage: Pick<MugenStageDefinition, "bounds">;
+  stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
   gameSpace?: ExpressionGameSpace;
   tick: number;
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "clampToStage">;

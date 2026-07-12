@@ -102,14 +102,18 @@ export type MugenStageDefinition = {
     left: number;
     right: number;
   };
+  depthBounds?: {
+    top: number;
+    bottom: number;
+  };
   camera: {
     startX: number;
     startY: number;
     zoom: number;
   };
   playerStart: {
-    p1: { x: number; y: number; facing: 1 | -1 };
-    p2: { x: number; y: number; facing: 1 | -1 };
+    p1: { x: number; y: number; z?: number; facing: 1 | -1 };
+    p2: { x: number; y: number; z?: number; facing: 1 | -1 };
   };
   layers: MugenStageLayer[];
   animations?: Map<number, MugenAnimationAction>;

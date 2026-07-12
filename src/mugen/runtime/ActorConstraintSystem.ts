@@ -76,11 +76,22 @@ export class RuntimeActorConstraintWorld {
     }
   }
 
-  clampToStage(state: RuntimeActorConstraintState, stage: Pick<MugenStageDefinition, "bounds">): void {
-    if (state.screenBound?.bound === false) {
-      return;
+  clampToStage(
+    state: RuntimeActorConstraintState,
+    stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>,
+    actorLocalCoord?: { width: number } | readonly [number, number],
+  ): void {
+    if (state.screenBound?.bound !== false) {
+      state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
     }
-    state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
+    if (!stage.depthBounds || !state.combatDepth) return;
+
+    const stageScale = 320 / (stage.localCoord?.width ?? 320);
+    const actorWidth = actorLocalCoord && "width" in actorLocalCoord ? actorLocalCoord.width : actorLocalCoord?.[0];
+    const actorScale = 320 / (actorWidth ?? 320);
+    const top = (stage.depthBounds.top * stageScale) / actorScale;
+    const bottom = (stage.depthBounds.bottom * stageScale) / actorScale;
+    state.combatDepth.position = Math.max(top, Math.min(bottom, state.combatDepth.position));
   }
 
   clampBodyPushToStage(state: RuntimeActorConstraintState, stage: Pick<MugenStageDefinition, "bounds">): void {

@@ -85,6 +85,7 @@ export type RuntimeFighterStateCreateInput = {
   definition: DemoFighterDefinition;
   x: number;
   y: number;
+  z?: number;
   facing: 1 | -1;
   effectActorWorld?: RuntimeEffectActorWorld;
   targetWorld?: RuntimeTargetWorld;
@@ -126,7 +127,10 @@ export class RuntimeFighterStateWorld {
         },
         pos: { x: input.x, y: input.y },
         vel: { x: 0, y: 0 },
-        combatDepth: runtimeCombatDepthFromConstants(input.definition.constants),
+        combatDepth: {
+          ...runtimeCombatDepthFromConstants(input.definition.constants),
+          position: input.z ?? 0,
+        },
         facing: input.facing,
         bodyWidth: { front: 39, back: 39 },
         playerPush: true,

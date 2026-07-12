@@ -58,6 +58,7 @@ export type RuntimePausedMatchWorldInput<TActor extends RuntimePausedMatchActor>
 
 export type RuntimePausedMatchRuntimeActor = RuntimeEffectLifecycleActor &
   RuntimeTargetWorldActor & {
+    definition?: { localCoord?: { width: number } | readonly [number, number] };
     targetWorld: Pick<RuntimeTargetWorld, "advance" | "applyTargetBindings" | "applyBindToTarget">;
   };
 
@@ -67,7 +68,7 @@ export type RuntimePausedMatchRuntimeWorldInput<TActor extends RuntimePausedMatc
   p1Input: Set<string>;
   p2Input: Set<string>;
   p2Controlled: boolean;
-  stage: Pick<MugenStageDefinition, "bounds">;
+  stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "clampToStage">;
   effectLifecycleWorld: Pick<
     RuntimeEffectLifecycleWorld,
@@ -465,7 +466,7 @@ export class RuntimePausedMatchWorld {
       advancePresentationEffects: (actor) => effectLifecycleWorld.advancePresentation(actor),
       applyTargetBindings: (actor, opponent) => actor.targetWorld.applyTargetBindings(actor, [opponent]),
       applyBindToTarget: (actor, opponent) => actor.targetWorld.applyBindToTarget(actor, [opponent]),
-      clampToStage: (actor) => actorConstraintWorld.clampToStage(actor.runtime, stage),
+      clampToStage: (actor) => actorConstraintWorld.clampToStage(actor.runtime, stage, actor.definition?.localCoord),
       advancePausedPresentation: (actor, pause) => {
         const context = this.opponentContextWorld.forActor(pair, actor);
         if (!context) {
