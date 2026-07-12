@@ -168,6 +168,7 @@ import {
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact,
+  createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact,
   createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootEqualPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitMissPriorityTraceArtifact,
@@ -16164,6 +16165,23 @@ describe("RuntimeTraceGatePresets", () => {
       (decision) => decision.attackerId === "p3" && decision.getterId === "p4" && decision.reason === "no-contact",
     ))).toBe(true);
     expect(artifact.gates[0]?.evidence.targetLinks).toEqual([]);
+  });
+
+  it("creates a required IKEMEN active-root PosFreeze logical Z artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-active-root-posfreeze-depth-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-active-root-posfreeze-depth-golden", passed: true, failures: [] }],
+      trace: {
+        frameCount: 2,
+        finalReserveActors: [
+          expect.objectContaining({ id: "p3", combatDepth: { position: 0, velocity: 14.45 }, targetCount: 1 }),
+          expect.objectContaining({ id: "p4", life: 963 }),
+        ],
+      },
+    });
   });
 
   it("creates a required IKEMEN active-root priority artifact", () => {

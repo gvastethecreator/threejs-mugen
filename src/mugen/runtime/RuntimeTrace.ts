@@ -64,6 +64,7 @@ export type RuntimeTraceActor = {
   physics: string;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  combatDepth?: { position: number; velocity: number };
   renderOpacity?: number;
   shadowVisible?: false;
   renderScale?: { x: number; y: number };
@@ -525,10 +526,14 @@ export type RuntimeTraceActorFrameRequirement = {
   observedPosXAtMost?: number;
   observedPosYAtLeast?: number;
   observedPosYAtMost?: number;
+  observedPosZAtLeast?: number;
+  observedPosZAtMost?: number;
   observedVelXAtLeast?: number;
   observedVelXAtMost?: number;
   observedVelYAtLeast?: number;
   observedVelYAtMost?: number;
+  observedVelZAtLeast?: number;
+  observedVelZAtMost?: number;
   observedScaleXAtLeast?: number;
   observedScaleXAtMost?: number;
   observedScaleYAtLeast?: number;
@@ -619,6 +624,10 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxPos: { x: number; y: number };
   minVel: { x: number; y: number };
   maxVel: { x: number; y: number };
+  minPosZ?: number;
+  maxPosZ?: number;
+  minVelZ?: number;
+  maxVelZ?: number;
   minScale: { x: number; y: number };
   maxScale: { x: number; y: number };
   minOpacity: number;
@@ -1738,6 +1747,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 x: Math.max(existing.maxVel.x, actor.vel.x),
                 y: Math.max(existing.maxVel.y, actor.vel.y),
               },
+              minPosZ: minOptionalTraceNumber(existing.minPosZ, actor.combatDepth?.position),
+              maxPosZ: maxOptionalTraceNumber(existing.maxPosZ, actor.combatDepth?.position),
+              minVelZ: minOptionalTraceNumber(existing.minVelZ, actor.combatDepth?.velocity),
+              maxVelZ: maxOptionalTraceNumber(existing.maxVelZ, actor.combatDepth?.velocity),
               minScale: {
                 x: Math.min(existing.minScale.x, actor.renderScale?.x ?? 1),
                 y: Math.min(existing.minScale.y, actor.renderScale?.y ?? 1),
@@ -1830,6 +1843,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxPos: { ...actor.pos },
               minVel: { ...actor.vel },
               maxVel: { ...actor.vel },
+              minPosZ: actor.combatDepth?.position,
+              maxPosZ: actor.combatDepth?.position,
+              minVelZ: actor.combatDepth?.velocity,
+              maxVelZ: actor.combatDepth?.velocity,
               minScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               minOpacity: actor.renderOpacity ?? 1,
@@ -3310,10 +3327,14 @@ function matchesActorFrameRequirement(
     (requirement.observedPosXAtMost === undefined || actor.minPos.x <= requirement.observedPosXAtMost) &&
     (requirement.observedPosYAtLeast === undefined || actor.maxPos.y >= requirement.observedPosYAtLeast) &&
     (requirement.observedPosYAtMost === undefined || actor.minPos.y <= requirement.observedPosYAtMost) &&
+    (requirement.observedPosZAtLeast === undefined || (actor.maxPosZ ?? Number.NEGATIVE_INFINITY) >= requirement.observedPosZAtLeast) &&
+    (requirement.observedPosZAtMost === undefined || (actor.minPosZ ?? Number.POSITIVE_INFINITY) <= requirement.observedPosZAtMost) &&
     (requirement.observedVelXAtLeast === undefined || actor.maxVel.x >= requirement.observedVelXAtLeast) &&
     (requirement.observedVelXAtMost === undefined || actor.minVel.x <= requirement.observedVelXAtMost) &&
     (requirement.observedVelYAtLeast === undefined || actor.maxVel.y >= requirement.observedVelYAtLeast) &&
     (requirement.observedVelYAtMost === undefined || actor.minVel.y <= requirement.observedVelYAtMost) &&
+    (requirement.observedVelZAtLeast === undefined || (actor.maxVelZ ?? Number.NEGATIVE_INFINITY) >= requirement.observedVelZAtLeast) &&
+    (requirement.observedVelZAtMost === undefined || (actor.minVelZ ?? Number.POSITIVE_INFINITY) <= requirement.observedVelZAtMost) &&
     (requirement.observedScaleXAtLeast === undefined || actor.maxScale.x >= requirement.observedScaleXAtLeast) &&
     (requirement.observedScaleXAtMost === undefined || actor.minScale.x <= requirement.observedScaleXAtMost) &&
     (requirement.observedScaleYAtLeast === undefined || actor.maxScale.y >= requirement.observedScaleYAtLeast) &&
@@ -3695,6 +3716,12 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       x: roundTraceNumber(actor.runtime.vel.x),
       y: roundTraceNumber(actor.runtime.vel.y),
     },
+    combatDepth: actor.runtime.combatDepth
+      ? {
+          position: roundTraceNumber(actor.runtime.combatDepth.position),
+          velocity: roundTraceNumber(actor.runtime.combatDepth.velocity),
+        }
+      : undefined,
     renderScale: actor.runtime.renderScale
       ? {
           x: roundTraceNumber(actor.runtime.renderScale.x),
@@ -3806,6 +3833,7 @@ function summarizeActorForChecksum(
   | "paletteFx"
   | "paletteRemap"
   | "afterImage"
+  | "combatDepth"
   | "posFreeze"
   | "screenBound"
   | "assertSpecialFlags"
@@ -3831,6 +3859,7 @@ function summarizeActorForChecksum(
     paletteFx: _paletteFx,
     paletteRemap: _paletteRemap,
     afterImage: _afterImage,
+    combatDepth: _combatDepth,
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     assertSpecialFlags: _assertSpecialFlags,

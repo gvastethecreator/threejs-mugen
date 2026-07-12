@@ -37,3 +37,5 @@ Imported roots now model ordinary S/C friction consistently across X/Z. Root ful
 ## Required trace
 
 `synthetic-imported-ikemen-active-root-depth-velocity` executes `VelSet z=20`, advances one normal kinematics tick, then activates HitDef. Admission changes from `missing-move` to depth-driven `no-contact`; life and targets remain unchanged. Trace QA passes 554/554 artifacts, 523 required; checksum `6cf14866`.
+
+`synthetic-imported-ikemen-active-root-posfreeze-depth` executes `VelSet z=20`, full `PosFreeze`, then delayed HitDef. Actor telemetry observes logical Z position remaining zero while velocity remains authored and receives standing friction; P3 consequently hits P4 at shared depth zero for 37 damage. Active Tag roots now share one-frame reset/snapshot/restore constraint ownership. Trace QA passes 555/555 artifacts, 524 required.

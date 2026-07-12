@@ -8860,6 +8860,68 @@ export function createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-posfreeze-depth-grid",
+    displayName: "Trace Active Root PosFreeze Depth Grid",
+    playerStart: { p1: { x: -20, y: 0, facing: 1 }, p2: { x: 20, y: 0, facing: -1 } },
+  };
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-posfreeze-depth-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root PosFreeze Depth Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 130, velZ: 20, posFreeze: true, hitDefTrigger: "Time >= 1" },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-posfreeze-depth-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root PosFreeze Depth Defender",
+    withHitDef: false,
+  });
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-posfreeze-depth-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root PosFreeze Depth Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: demoFighters[0]!, p2: pairDefender, stage, runtimeProfile: "ikemen-go", teamMode: "tag", reserveFighters: [attacker, defender],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const script = expandRuntimeTraceScript([
+    { label: "P3 authors Z velocity under PosFreeze", p1: [], p2: [], frames: 1 },
+    { label: "P3 remains at Z zero and hits P4", p1: [], p2: [], frames: 1 },
+  ]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-active-root-posfreeze-depth-golden" });
+  return createRuntimeTraceArtifact({
+    trace, script, generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-posfreeze-depth-golden",
+      label: "Synthetic imported IKEMEN active-root PosFreeze logical Z",
+      source: "mixed",
+      notes: ["Explicit IKEMEN Tag trace proves VelSet Z remains authored while full PosFreeze restores logical Z before delayed HitDef admission, allowing contact at depth zero. It does not claim binds, corner-push exceptions, pause/hitpause ordering, helpers/projectiles, visual projection, or full parity."],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-active-root-posfreeze-depth-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["VelSet", "PosFreeze", "HitDef"],
+      requiredExecutedOperations: ["kinematic:velset", "bounds:posfreeze", "hitdef"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [{
+        actorId: "p3", source: "imported", actorKind: "player", observedPosZAtLeast: 0, observedPosZAtMost: 0,
+        observedVelZAtLeast: 14.45, posFreezeX: true, posFreezeY: true, minFrames: 2,
+      }],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -40922,6 +40984,7 @@ export type SyntheticImportedTraceFighterOptions = {
     clsn1Extent?: number;
     posZ?: number;
     velZ?: number;
+    posFreeze?: boolean;
     hitDefTrigger?: string;
   };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
@@ -46348,6 +46411,7 @@ function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFig
   return `
 ${route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`}
 ${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
+${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger1 = 1\nvalue = 1\n` : ""}
 [State 0, Active Root HitDef]
 type = HitDef
 trigger1 = ${route.hitDefTrigger ?? "1"}

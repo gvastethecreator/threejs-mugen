@@ -1270,6 +1270,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-posfreeze-depth",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootPosFreezeDepthTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-priority",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(),

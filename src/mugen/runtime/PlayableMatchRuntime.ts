@@ -1275,6 +1275,11 @@ export class PlayableMatchRuntime {
     gameSpace: ExpressionGameSpace,
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
+    this.actorConstraintWorld.resetFrameConstraints(fighter.runtime);
+    const tickStartPos = {
+      ...fighter.runtime.pos,
+      z: fighter.runtime.combatDepth?.position ?? 0,
+    };
     rootMotionAdvanceWorld.advance({
       actor: fighter,
       hooks: {
@@ -1319,6 +1324,7 @@ export class PlayableMatchRuntime {
         },
         applyConstraints: (actor) => {
           recordPhase("fighter:constraints", actor.id);
+          this.actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos);
           this.actorConstraintWorld.clampToStage(actor.runtime, this.stage);
         },
       },

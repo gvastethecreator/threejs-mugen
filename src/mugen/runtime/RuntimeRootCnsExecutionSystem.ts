@@ -33,6 +33,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "hitvelset",
     "posset",
     "posadd",
+    "posfreeze",
   ],
   sideEffects: ["hitdef", "reversaldef"],
 };

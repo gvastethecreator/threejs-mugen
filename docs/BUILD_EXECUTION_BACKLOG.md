@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 438 - Required active-root PosFreeze Z trace
+
+Done: required `synthetic-imported-ikemen-active-root-posfreeze-depth` proves an explicit IKEMEN Tag P3 executes `VelSet z=20`, full `PosFreeze`, and delayed `HitDef`; active-motion now admits PosFreeze and applies one-frame constraint reset/snapshot/restore before stage clamp. New actor trace telemetry exposes logical Z position/velocity and gate ranges while excluding the additive field from the legacy behavior checksum projection. Both frames observe P3 at Z zero while Z velocity decays through standing friction; delayed admission hits P4 for 37 damage and records one target. Trace QA passes 555/555 artifacts, 524 required. Claim allowed: imported active-root full-PosFreeze logical Z preservation and direct-hit consequence. Claim blocked: bind Z, corner-push exception parity, pause/hitpause ordering, depth bounds/push, helper/projectile Z constraints, visual projection, and full parity. Wayfinder 133 maps bind/depth-bound ownership next.
+
 ## Entry 437 - Root PosFreeze logical Z ownership
 
 Done: root one-frame `PosFreeze` state now owns a Z flag alongside X/Y. Official `value` and omitted-value routes freeze all three logical axes; the sandbox's legacy axis-specific `x/y` extension keeps Z unfrozen. `RuntimeFighterAdvanceWorld` snapshots logical depth before kinematics/controllers, and `RuntimeActorConstraintWorld` restores it at the existing end-of-tick constraint point without clearing velocity. Focused bounds/constraint/advance/playable tests and TypeScript 7 typecheck pass. Claim allowed: bounded root full-PosFreeze logical Z preservation through existing scheduler ownership. Claim blocked: corner-push exception parity, binds, pause/hitpause ordering, required imported Z-moving trace, helpers/projectiles, visual projection, and full parity. Wayfinder 132 adds required imported PosFreeze Z evidence.
