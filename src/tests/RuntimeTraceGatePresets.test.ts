@@ -166,6 +166,7 @@ import {
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
+  createSyntheticImportedIkemenActiveRootPriorityTraceArtifact,
   createSyntheticImportedIkemenActiveRootPresentationTraceArtifact,
   createSyntheticImportedIkemenActiveRootConstraintTraceArtifact,
   createSyntheticImportedIkemenPauseBufferTraceArtifact,
@@ -16116,6 +16117,28 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 115 }),
     );
+  });
+
+  it("creates a required IKEMEN active-root priority artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootPriorityTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBe(1);
+    expect(artifact.trace.events.filter(({ line }) => line.includes("HitDef priority clash"))).toHaveLength(1);
+    expect(artifact.trace.combatReasons.filter(({ reason }) => reason === "hit")).toHaveLength(1);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual(["p3->p4", "p4->p3"]);
+    expect(artifact.trace.frames[1]?.rootHitAdmission?.decisions).toEqual(
+      expect.arrayContaining([
+        { attackerId: "p3", getterId: "p4", reason: "already-hit" },
+        { attackerId: "p4", getterId: "p3", reason: "missing-move" },
+      ]),
+    );
+    expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1000 }),
+      expect.objectContaining({ id: "p4", life: 959 }),
+    ]));
   });
 
   it("creates a required IKEMEN active-root presentation handoff artifact", () => {

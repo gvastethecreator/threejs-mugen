@@ -8730,6 +8730,85 @@ export function createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootPriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-priority-grid",
+    displayName: "Trace Active Root Priority Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "P3 priority defeats simultaneous P4 HitDef", p1: [], p2: [], frames: 1 },
+    { label: "priority suppression persists by exact getter", p1: [], p2: [], frames: 1 },
+  ]);
+  const immunePairRoot = (id: string, label: string) => createSyntheticImportedTraceFighter({
+    id,
+    displayName: label,
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const world = new MatchWorld({
+    p1: immunePairRoot("synthetic-imported-ikemen-priority-p1", "Synthetic Imported IKEMEN Priority P1"),
+    p2: immunePairRoot("synthetic-imported-ikemen-priority-p2", "Synthetic Imported IKEMEN Priority P2"),
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-ikemen-priority-p3",
+        displayName: "Synthetic Imported IKEMEN Priority P3",
+        withHitDef: false,
+        activeRootHitDefRoute: { damage: 41, targetId: 116, priority: 6 },
+      }),
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-ikemen-priority-p4",
+        displayName: "Synthetic Imported IKEMEN Priority P4",
+        withHitDef: false,
+        activeRootHitDefRoute: { damage: 29, targetId: 117, priority: 3 },
+      }),
+    ],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }, { id: "p4", standby: false }] });
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-active-root-priority-golden" });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-priority-golden",
+      label: "Synthetic imported IKEMEN active-root priority arbitration",
+      source: "mixed",
+      notes: [
+        "Two simultaneous active-root HitDefs enter deterministic unordered enemy-pair priority arbitration. P3 priority 6 suppresses exact P4->P3, then P3->P4 deals 41 once. Pair roots reject the attribute. This proves current bounded Hit-priority winner semantics, not every MUGEN priority type, reversal ordering, multi-getter cycles, or full IKEMEN parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-ikemen-active-root-priority-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedControllers: ["HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredEventCategories: ["runtime", "hit"],
+      requiredEventSubstrings: ["HitDef priority clash", "P3 priority 6 beat", "hit Synthetic Imported IKEMEN Priority P4 for 41"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p3", actorId: "p4", targetId: 116 }],
+      requiredFinalActors: [
+        { actorId: "p3", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p4", source: "imported", actorKind: "player", life: 959 },
+      ],
+      requiredTickSchedulePhaseSequences: [
+        { label: "plural controllers precede arbitration", frameIndex: 0, phase: "fighter:controllers", actorIds: ["p1", "p2", "p3", "p4"] },
+        { label: "plural contact memory commits after arbitration", frameIndex: 0, phase: "post-fighter:hitdef-contact-commit", actorIds: ["p1", "p2", "p3", "p4"] },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootPresentationTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -40271,7 +40350,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfCommandEntry?: { commandName: string; stateNo: number };
   passiveCommandRoute?: { commandName: string; stateNo: number };
   activeRootMotionRoute?: { commandName: string; velocityX: number; blockedHelperId: number };
-  activeRootHitDefRoute?: { damage: number; targetId: number };
+  activeRootHitDefRoute?: { damage: number; targetId: number; priority?: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -45691,6 +45770,7 @@ trigger1 = 1
 attr = S, NA
 damage = ${route.damage}, 0
 id = ${route.targetId}
+priority = ${route.priority ?? 4}, Hit
 pausetime = 0, 0
 ground.hittime = 8
 ground.velocity = 0, 0

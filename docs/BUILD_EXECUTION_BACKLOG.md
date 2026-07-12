@@ -1,5 +1,9 @@
 # Build Execution Backlog
 
+## Entry 422 - Active-root plural HitDef priority
+
+Done: explicit IKEMEN Tag resolves every unordered admitted active-root pair through the existing direct-combat priority primitive before mutation. Unequal priorities suppress only the loser-to-winner getter pair; equal priorities preserve the current bounded trade behavior; Pair/Single retain their legacy pair call. Required `synthetic-imported-ikemen-active-root-priority` proves simultaneous P3/P4 admission, priority 6 over 3, one 41-damage contact, exact repeat suppression, target/contact commit, and stable final life. Claim allowed: deterministic plural active-root `HitDef` priority for the exercised acyclic Hit-priority route. Claim blocked: exact Hit/Miss/Dodge parity, ReversalDef ordering, cyclic three-plus-actor arbitration, throws/projectiles/helpers, team KO/resources, and full parity. Wayfinder 117 maps the next priority/reversal oracle.
+
 ## Entry 421 - CNS-authored active-root direct HitDef
 
 Done: explicit IKEMEN Tag `active-motion` admits only the `hitdef` side-effect route beyond its previous bounded CNS profile. Required `synthetic-imported-ikemen-active-root-direct-hit` proves active P3 authors HitDef before admission, exactly `p3->p4` mutates, P4 life changes 1000 to 963 once, target id 115 binds immediately, committed getter memory blocks the second-frame repeat, and stable P1-P4 contact commits follow combat. `RuntimeRootPhaseCapabilities/v5` now reports direct combat for structurally active Tag roots while standby, round, and resources remain false. Claim allowed: bounded CNS-authored direct HitDef mutation for the exercised passive P3->P4 route. Claim blocked: simultaneous plural priority/trade/ReversalDef, Helper/Projectile/throws, team KO/replacement, broad effect lifecycle, HUD/camera contact rendering, shared resources, rollback, scores, and full parity. Wayfinder 116 pluralizes priority arbitration next.

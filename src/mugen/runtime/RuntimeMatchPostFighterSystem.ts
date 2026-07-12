@@ -30,6 +30,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   refreshGuardDistance?: (defender: TActor, attacker: TActor) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
+  resolveRootPriorityClashes?: (resolvePriorityClash: (left: TActor, right: TActor) => string | undefined) => void;
   resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TActor, defender: TActor) => void) => void;
   recordTargetMaintenance?: (fighter: TActor) => void;
   commitHitDefTargets?: (fighter: TActor) => void;
@@ -68,6 +69,7 @@ export class RuntimeMatchPostFighterWorld {
       refreshGuardDistance: input.refreshGuardDistance,
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
+      resolveRootPriorityClashes: input.resolveRootPriorityClashes,
       resolveRootDirectCombat: input.resolveRootDirectCombat,
       recordTargetMaintenance: input.recordTargetMaintenance,
       commitHitDefTargets: input.commitHitDefTargets,

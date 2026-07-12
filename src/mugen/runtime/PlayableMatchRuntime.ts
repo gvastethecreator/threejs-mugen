@@ -1004,6 +1004,23 @@ export class PlayableMatchRuntime {
               resolveDirectCombat(attacker, getter);
             }
           } : undefined,
+          resolveRootPriorityClashes: this.tagTeamOrder ? (resolvePriorityClash) => {
+            const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
+            const ordered = (this.lastRootHitAdmission?.attackerIds ?? []).map((id) => {
+              const root = rootsById.get(id);
+              if (!root) throw new Error(`Root hit admission referenced unknown priority actor ${id}`);
+              return root;
+            });
+            for (let leftIndex = 0; leftIndex < ordered.length; leftIndex += 1) {
+              const left = ordered[leftIndex]!;
+              for (let rightIndex = leftIndex + 1; rightIndex < ordered.length; rightIndex += 1) {
+                const right = ordered[rightIndex]!;
+                if (runtimeTeamSide(left) === runtimeTeamSide(right)) continue;
+                const message = resolvePriorityClash(left, right);
+                if (message) this.logs.unshift(message);
+              }
+            }
+          } : undefined,
           recordTargetMaintenance: this.tagTeamOrder
             ? (root) => recordPhase("post-fighter:target-maintenance", root.id)
             : undefined,

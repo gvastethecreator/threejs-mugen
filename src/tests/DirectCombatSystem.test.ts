@@ -50,6 +50,33 @@ describe("DirectCombatSystem", () => {
     expect(right.hasHit).toBe(true);
   });
 
+  it("records priority suppression by exact getter without consuming other root pairs", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const winner = actor("p3", "P3", {
+      currentMove: move({ priority: 6 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const loser = actor("p4", "P4", {
+      currentMove: move({ priority: 3 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const other = actor("p2", "P2", {
+      currentMove: move({ priority: 2 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+
+    expect(world.resolvePriorityClash(winner, loser, priorityHooks())).toMatchObject({ kind: "win", winnerId: "p3" });
+    expect(loser.pendingHitDefTargets).toEqual(["p3"]);
+    expect(world.resolvePriorityClash(loser, other, priorityHooks())).toMatchObject({ kind: "win", winnerId: "p4" });
+    expect(other.pendingHitDefTargets).toEqual(["p4"]);
+  });
+
   it("skips priority clashes for inactive, consumed, reversal, or separated attacks", () => {
     const world = new RuntimeDirectCombatWorld();
     expect(world.resolvePriorityClash(
@@ -314,7 +341,7 @@ describe("DirectCombatSystem", () => {
 });
 
 type ActorOverrides = Partial<CharacterRuntimeState> &
-  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun">>;
+  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun" | "hitDefTargets" | "pendingHitDefTargets">>;
 
 function actor(id: string, label: string, overrides: ActorOverrides = {}): RuntimeDirectCombatActor & { removedExplodsOnGetHit: number } {
   const state = runtimeState(overrides);
@@ -329,6 +356,8 @@ function actor(id: string, label: string, overrides: ActorOverrides = {}): Runti
     hitStun: overrides.hitStun ?? 0,
     hitPause: overrides.hitPause ?? 0,
     hasHit: overrides.hasHit ?? false,
+    hitDefTargets: overrides.hitDefTargets,
+    pendingHitDefTargets: overrides.pendingHitDefTargets,
     contact: createRuntimeContactMemory(),
     get removedExplodsOnGetHit() {
       return removedExplodsOnGetHit;

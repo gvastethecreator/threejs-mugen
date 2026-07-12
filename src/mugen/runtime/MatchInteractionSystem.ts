@@ -46,6 +46,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   applyBindToTarget: (fighter: TFighter, candidates: TFighter[]) => void;
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
   resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
+  resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
   resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
   commitHitDefTargets?: (fighter: TFighter) => void;
   recordHitDefContactCommit?: (fighter: TFighter) => void;
@@ -80,6 +81,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     hitDefContactActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
+    resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     commitHitDefTargets?: (fighter: TFighter) => void;
     recordHitDefContactCommit?: (fighter: TFighter) => void;
@@ -124,9 +126,10 @@ export class RuntimeMatchInteractionWorld {
     input.inspectHitAdmission?.();
 
     input.recordSchedulePhase?.("post-fighter:combat");
-    const priorityMessage = input.resolvePriorityClash(p1, p2);
-    if (priorityMessage) {
-      input.log(priorityMessage);
+    if (input.resolveRootPriorityClashes) input.resolveRootPriorityClashes(input.resolvePriorityClash);
+    else {
+      const priorityMessage = input.resolvePriorityClash(p1, p2);
+      if (priorityMessage) input.log(priorityMessage);
     }
 
     if (input.resolveRootDirectCombat) input.resolveRootDirectCombat(input.resolveDirectCombat);
@@ -193,6 +196,7 @@ export class RuntimeMatchInteractionWorld {
       applyTargetBindings: (fighter, candidates) => fighter.targetWorld.applyTargetBindings(fighter, candidates),
       applyBindToTarget: (fighter, candidates) => fighter.targetWorld.applyBindToTarget(fighter, candidates),
       resolvePriorityClash: input.resolvePriorityClash,
+      resolveRootPriorityClashes: input.resolveRootPriorityClashes,
       resolveDirectCombat: input.resolveDirectCombat,
       commitHitDefTargets: input.commitHitDefTargets,
       recordHitDefContactCommit: input.recordHitDefContactCommit,

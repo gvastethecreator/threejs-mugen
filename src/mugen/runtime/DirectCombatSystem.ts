@@ -19,6 +19,10 @@ import {
 } from "./ContactMemorySystem";
 import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
+import {
+  bufferRuntimeHitDefTarget,
+  type RuntimeHitDefContactMemoryActor,
+} from "./RuntimeHitDefContactMemorySystem";
 
 export type RuntimeDirectCombatActor = {
   id: string;
@@ -32,6 +36,8 @@ export type RuntimeDirectCombatActor = {
   hitStun: number;
   hitPause: number;
   hasHit: boolean;
+  hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
+  pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   contact: RuntimeContactMemory;
   effectActorWorld: Pick<RuntimeEffectActorWorld, "removeExplodsOnGetHit">;
 };
@@ -89,6 +95,8 @@ export class RuntimeDirectCombatWorld {
     if (leftPriority === rightPriority) {
       left.hasHit = true;
       right.hasHit = true;
+      bufferRuntimeHitDefTarget(left, right.id);
+      bufferRuntimeHitDefTarget(right, left.id);
       return {
         kind: "trade",
         message: `HitDef priority clash: ${left.label} priority ${leftPriority} traded with ${right.label} priority ${rightPriority}`,
@@ -98,6 +106,7 @@ export class RuntimeDirectCombatWorld {
     const loser = winner === left ? right : left;
     winner.hasHit = false;
     loser.hasHit = true;
+    bufferRuntimeHitDefTarget(loser, winner.id);
     return {
       kind: "win",
       winnerId: winner.id,
@@ -252,7 +261,8 @@ function applyResolvedSpritePriority(
 
 function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<RuntimeDirectPriorityHooks, "isMoveActive">): DemoMove | undefined {
   const move = actor.currentMove;
-  if (!move || actor.hasHit || move.requiresHitDef || move.isReversal || !hooks.isMoveActive(move, actor.moveTick)) {
+  const legacyConsumed = actor.hitDefTargets === undefined && actor.pendingHitDefTargets === undefined && actor.hasHit;
+  if (!move || legacyConsumed || move.requiresHitDef || move.isReversal || !hooks.isMoveActive(move, actor.moveTick)) {
     return undefined;
   }
   return move;

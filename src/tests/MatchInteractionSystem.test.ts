@@ -179,6 +179,10 @@ describe("RuntimeMatchInteractionWorld", () => {
         tag("priority", left.id, right.id);
         return "priority resolved";
       },
+      resolveRootPriorityClashes: (resolvePriorityClash) => {
+        tag("root-priority");
+        resolvePriorityClash(p2, p1);
+      },
       resolveDirectCombat: (attacker, defender) => tag("direct-combat", attacker.id, defender.id),
       resolveRootDirectCombat: (resolveDirectCombat) => {
         tag("root-direct-combat");
@@ -202,8 +206,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       "bind-to-target:p1:p2",
       "bind-to-target:p2:p1",
       "hit-admission",
-      "priority:p1:p2",
-      "log:priority resolved",
+      "root-priority",
+      "priority:p2:p1",
       "root-direct-combat",
       "direct-combat:p2:p1",
       "direct-combat:p1:p2",
