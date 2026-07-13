@@ -151,10 +151,11 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Prove active-root air guard landing](tickets/127-prove-active-root-air-guard-landing.md) - resolved: the required 44-frame active-root trace extends the A-only contact into fixture-owned `40/A -> 132/A -> 154/A -> 155/A -> 52/S -> 20/S`; one zero-chip `p4 -> p3` guard preserves life `1000`, controller-before-kinematics ordering, and final control. Checksum `fe532005` / final `8434e7f8`. Generic physics-A landing, exact Common1 timing, and broader aerial movement remain blocked.
 - [Map CompatibilityJourney/v1](tickets/128-map-compatibility-journey-v1.md) - resolved: a typed immutable aggregate now references the legal package/license/digest, loader findings, required runtime traces, browser desktop/mobile proof, and native regression without copying their payloads; serialized checksum `cabcd573`, trace refs `a372a02c` / `ceac9f37`. No score movement. Next: adjudicate the written MUGEN-lite milestone against the named evidence.
+- [Adjudicate MUGEN-lite milestone](tickets/129-adjudicate-mugen-lite-milestone.md) - resolved: the written M2 exit is accepted at bounded fixture scope. Local KFM traces cover movement, normal/special input, guard, get-hit, fall, and recovery; the CC0 legal journey remains a separate `CompatibilityJourney/v1` envelope. Scores stay unchanged; the exact next missing breadth gate is independent legal input or ACT/palette evidence.
 
 ## Frontier
 
-- [Adjudicate MUGEN-lite milestone](tickets/129-adjudicate-mugen-lite-milestone.md)
+- [Select independent legal breadth](tickets/130-select-independent-legal-breadth.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - Continue evidence-led compatibility breadth without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
 
