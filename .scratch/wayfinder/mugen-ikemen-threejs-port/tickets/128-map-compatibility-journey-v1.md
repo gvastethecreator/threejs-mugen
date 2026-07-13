@@ -1,7 +1,7 @@
 # Map CompatibilityJourney/v1
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -34,3 +34,18 @@ Which bounded repository-owned compatibility journey should follow the active-ro
 Allowed: a source-backed next-step selection for `CompatibilityJourney/v1` with an executable acceptance gate.
 
 Blocked: declaring the MUGEN-lite milestone complete, moving scores without fresh evidence, or claiming full MUGEN/IKEMEN parity from a planning pass.
+
+## Outcome
+
+- Added `src/mugen/compatibility/CompatibilityJourney.ts` with `CompatibilityJourney/v1` input/result types, deterministic normalization, stable checksum, fail-closed diagnostics, deep immutability, and serialized checksum validation.
+- The current legal fixture instance is covered by `CompatibilityJourney.test.ts` without reimplementing ZIP loading, runtime traces, browser smoke, or the native regression suite.
+- Aggregate checksum: `cabcd573`; canonical source-package digest: `sha256:f0389c3f95003bb16e26d6ae2020acdb57c12fa0f088d63ba25ca3466ed71eb0`.
+- Runtime references: `mugen-lite-journey` checksum `a372a02c` / final `24709fb2`; `mugen-lite-journey-nokoslow` checksum `ceac9f37` / final `1d5b25e4`.
+- Report: `docs/reports/2026-07-13-compatibility-journey-v1.md`.
+
+## Closure Audit
+
+- The aggregate stores references, checksums, paths, counts, and claim language; it does not copy trace frames or rerun loader/Playwright logic.
+- The intentional `JourneyUnknownController` finding remains visible inside the loader evidence instead of being treated as a clean compatibility pass.
+- Serialized round-trip accepts the generated checksum; a tampered checksum is rejected before a journey result is returned.
+- Independent review was not used; this narrow contract received a manual schema, immutability, provenance, and fail-closed audit.
