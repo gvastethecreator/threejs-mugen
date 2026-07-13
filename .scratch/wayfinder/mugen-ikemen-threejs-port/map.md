@@ -135,10 +135,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Prove active-root crouch guard contact](tickets/119-prove-active-root-crouch-guard-contact.md) - resolved: held-back plus held-down P3 executes fixture-only Common1-style `120` `StateTypeSet` C and `120 -> 131` before P4's delayed overlap; existing root admission/direct combat records one zero-chip `p4 -> p3` guard in C state `152`; checksum `9aac9d7d` / final `82f0d463`. Next: map one narrow high/low guard-flag rejection boundary without widening root ownership.
 
+- [Prove active-root crouch high-guard rejection](tickets/120-prove-active-root-crouch-high-guard-rejection.md) - resolved: P4 fixture authors `guardflag = H`; P3 has a prior S direct latch, then `120` `StateTypeSet` C and `120 -> 131` before delayed contact; existing admission/direct combat produces one C-state `p4 -> p3` hit, not guard; checksum `935e6e6d` / final `20bea107`. Next: map one low-only active-root C guard contact or another narrow guard-flag boundary without widening root ownership.
+
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Map active-root high/low guard-flag rejection without widening helpers, target precedence, or presentation ownership.
+- Map low-only active-root crouch guard contact or another narrow guard-flag boundary without widening helpers, target precedence, or presentation ownership.
 
 ## Not Yet Specified
 

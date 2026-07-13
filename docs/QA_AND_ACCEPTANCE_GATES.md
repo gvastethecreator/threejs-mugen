@@ -927,6 +927,19 @@ This gate proves:
 
 Required trace checksum is `9aac9d7d`; final checksum is `82f0d463`. This proves one normal-tick direct active-root crouch guard contact through the existing generic admission, combat, target/contact, StateTypeSet, and default guard-state routes. High/low rejection matrices, air guard, projectile/helper contacts, target ranking, Pause/hitpause, guard sound/spark/renderer effects, custom-state or forceguard variants, team replacement/KO, HUD/resources, and full MUGEN/IKEMEN parity remain unsupported.
 
+## Current Active-root Crouch High Guard Rejection Gate
+
+`pnpm qa:trace` includes required `synthetic-imported-ikemen-active-root-crouch-high-guard-reject.json`.
+
+This gate proves:
+
+- P2 remains guardable but out of range while P4 is P3's only direct threat;
+- P3 first records P4 direct `InGuardDist` while standing, then held-back plus held-down input enters imported `120`, whose `StateTypeSet` selects C before `120 -> 131`;
+- once P3 is C, P4's active-root `guardflag = H` is no longer guardable in the current latch snapshot; P4's delayed `PosSet` and P3's `ChangeState` nevertheless finish before post-fighter root admission;
+- root admission contains exactly `p4 -> p3`, the direct resolver records `hit` rather than `guard`, `override`, or `reversal`, P4 records target id `126`, and P3 remains C in state `131` with `moveType = H`, `guarding = false`, and life `963`.
+
+Required trace checksum is `935e6e6d`; final checksum is `20bea107`. This proves one normal-tick active-root high-only rejection against a crouching defender through existing generic StateTypeSet, root admission, and direct combat routes. It does not establish a complete guard-start policy or high/low matrix: low-only, standing, air, projectiles/helpers, custom state, forceguard, target ranking, Pause/hitpause, guard sound/spark/renderer effects, team replacement/KO, HUD/resources, and full MUGEN/IKEMEN parity remain unsupported.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:
