@@ -504,6 +504,7 @@ export type RuntimeTraceActorFrameRequirement = {
   customOwnerId?: string;
   stateNo?: number;
   animNo?: number;
+  observedFrameIndex?: number;
   facing?: 1 | -1;
   stateType?: string;
   moveType?: string;
@@ -602,6 +603,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   customOwnerId?: string;
   stateNo: number;
   animNo: number;
+  frameIndices: number[];
+  frameIndexCounts: Record<number, number>;
   facing: 1 | -1;
   stateType: string;
   moveType: string;
@@ -1726,6 +1729,11 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
         existing
           ? {
               ...existing,
+              frameIndices: [...new Set([...existing.frameIndices, actor.frameIndex])].sort((left, right) => left - right),
+              frameIndexCounts: {
+                ...existing.frameIndexCounts,
+                [actor.frameIndex]: (existing.frameIndexCounts[actor.frameIndex] ?? 0) + 1,
+              },
               firstTick: Math.min(existing.firstTick, frame.tick),
               lastTick: Math.max(existing.lastTick, frame.tick),
               frames: existing.frames + 1,
@@ -1823,6 +1831,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               customOwnerId: actor.customOwnerId,
               stateNo: actor.stateNo,
               animNo: actor.animNo,
+              frameIndices: [actor.frameIndex],
+              frameIndexCounts: { [actor.frameIndex]: 1 },
               facing: actor.facing,
               stateType: actor.stateType,
               moveType: actor.moveType,
@@ -3308,13 +3318,15 @@ function matchesActorFrameRequirement(
   actor: RuntimeTraceGateActorFrameEvidence,
   requirement: RuntimeTraceActorFrameRequirement,
 ): boolean {
-  const matchingFrames = requirement.inGuardDistSource
-    ? actor.inGuardDistFrames[requirement.inGuardDistSource]
-    : requirement.guarding === true
-      ? actor.guardingFrames
-      : requirement.guarding === false
-        ? actor.frames - actor.guardingFrames
-        : actor.frames;
+  const matchingFrames = requirement.observedFrameIndex !== undefined
+    ? actor.frameIndexCounts[requirement.observedFrameIndex] ?? 0
+    : requirement.inGuardDistSource
+      ? actor.inGuardDistFrames[requirement.inGuardDistSource]
+      : requirement.guarding === true
+        ? actor.guardingFrames
+        : requirement.guarding === false
+          ? actor.frames - actor.guardingFrames
+          : actor.frames;
   const hitFallRecoverTimeDrop =
     actor.firstHitFallRecoverTime === undefined || actor.lastHitFallRecoverTime === undefined
       ? undefined
@@ -3331,6 +3343,7 @@ function matchesActorFrameRequirement(
     (requirement.customOwnerId === undefined || actor.customOwnerId === requirement.customOwnerId) &&
     (requirement.stateNo === undefined || actor.stateNo === requirement.stateNo) &&
     (requirement.animNo === undefined || actor.animNo === requirement.animNo) &&
+    (requirement.observedFrameIndex === undefined || actor.frameIndices.includes(requirement.observedFrameIndex)) &&
     (requirement.facing === undefined || actor.facing === requirement.facing) &&
     (requirement.stateType === undefined || actor.stateType === requirement.stateType) &&
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&

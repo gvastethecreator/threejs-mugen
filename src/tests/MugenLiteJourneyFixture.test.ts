@@ -38,14 +38,17 @@ describe("MUGEN-lite journey fixture", () => {
     expect(fighter?.source).toBe("imported");
     expect(fighter?.runtimeProgram?.states.some((state) => state.id === 200)).toBe(true);
     expect(fighter?.animations.has(5200)).toBe(true);
-    expect(character.spriteArchive?.sprites).toHaveLength(12);
+    expect(character.spriteArchive?.sprites).toHaveLength(13);
     expect(character.spriteArchive?.sprites).toEqual(expect.arrayContaining([
       expect.objectContaining({ group: 0, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 200, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
+      expect.objectContaining({ group: 200, index: 1, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 5100, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
     ]));
     const posePixels = character.spriteArchive!.sprites.map((sprite) => sprite.indexed!.pixels);
-    expect(new Set(posePixels.map((pixels) => Array.from(pixels).join(","))).size).toBe(12);
+    expect(new Set(posePixels.map((pixels) => Array.from(pixels).join(","))).size).toBe(13);
+    expect(fighter?.animations.get(200)?.frames.map((frame) => [frame.spriteGroup, frame.spriteIndex, frame.duration]))
+      .toEqual([[200, 0, 4], [200, 1, 4]]);
     for (const sprite of character.spriteArchive!.sprites) {
       const pixels = sprite.indexed!.pixels;
       const restsOnAxis = pixels.some((color, offset) => color !== 0 && Math.floor(offset / sprite.width) === sprite.axisY);
@@ -80,6 +83,16 @@ describe("MUGEN-lite journey fixture", () => {
       gates: [{ label: "mugen-lite-journey-golden", passed: true, failures: [] }],
     });
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toHaveLength(2);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      { actorId: "p1", source: "imported", stateNo: 200, animNo: 200, observedFrameIndex: 0, moveType: "A", minFrames: 1 },
+      { actorId: "p1", source: "imported", stateNo: 200, animNo: 200, observedFrameIndex: 1, moveType: "A", minFrames: 1 },
+    ]);
+    const attackFrameEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) =>
+      frame.actorId === "p1" && frame.stateNo === 200 && frame.animNo === 200 && frame.frameIndices.length === 2,
+    );
+    expect(attackFrameEvidence).toMatchObject({ frameIndices: [0, 1], frameIndexCounts: expect.any(Object) });
+    expect(attackFrameEvidence?.frameIndexCounts[0]).toBeGreaterThan(0);
+    expect(attackFrameEvidence?.frameIndexCounts[1]).toBeGreaterThan(0);
     expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([150, 200, 5000, 5050, 5100, 5200]));
     expect(artifact.gates[0]?.evidence.eventCategories).toEqual(expect.arrayContaining(["guard", "hit"]));
     expect(artifact.gates[0]?.evidence.eventLines).toEqual(expect.arrayContaining([

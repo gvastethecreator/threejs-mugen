@@ -114,6 +114,10 @@ export async function createMugenLiteJourneyTraceArtifact(
           ],
         },
       ],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", stateNo: 200, animNo: 200, observedFrameIndex: 0, moveType: "A", minFrames: 1 },
+        { actorId: "p1", source: "imported", stateNo: 200, animNo: 200, observedFrameIndex: 1, moveType: "A", minFrames: 1 },
+      ],
       requiredFinalActors: [
         { actorId: "p1", source: "imported", stateNo: 0, animNo: 0, life: 1000, ctrl: true },
         { actorId: "p2", source: "imported", stateNo: 0, animNo: 0, life: 920, ctrl: true },

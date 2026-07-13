@@ -266,10 +266,11 @@ trigger1 = 1
 `;
 
 const ACTIONS = [0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200];
+const SPRITES = [...ACTIONS.map((group) => ({ group, index: 0 })), { group: 200, index: 1 }];
 const JOURNEY_AIR = ACTIONS.map((action) => `[Begin Action ${action}]
 Clsn2Default: 1
   Clsn2[0] = -16,-60,16,0
-${action === 200 ? "Clsn1: 1\n  Clsn1[0] = 8,-48,72,-18\n" : ""}${action},0,0,0,4
+${action === 200 ? "Clsn1: 1\n  Clsn1[0] = 8,-48,72,-18\n" : ""}${action},0,0,0,4${action === 200 ? `\n200,1,0,0,4` : ""}
 `).join("\n");
 
 function text(value: string): Uint8Array {
@@ -277,8 +278,8 @@ function text(value: string): Uint8Array {
 }
 
 function createFixtureSff(): ArrayBuffer {
-  const specs = ACTIONS.map((group) => ({ group, index: 0 }));
-  const chunks = specs.map((spec, index) => createPcxSprite(spec.group, index));
+  const specs = SPRITES;
+  const chunks = specs.map((spec, seed) => createPcxSprite(spec.group, spec.index, seed));
   const totalLength = 512 + chunks.reduce((total, chunk) => total + 32 + chunk.length, 0);
   const bytes = new Uint8Array(totalLength);
   const view = new DataView(bytes.buffer);
@@ -305,7 +306,7 @@ function createFixtureSff(): ArrayBuffer {
   return bytes.buffer;
 }
 
-function createPcxSprite(action: number, seed: number): Uint8Array {
+function createPcxSprite(action: number, index: number, seed: number): Uint8Array {
   const width = 32;
   const height = 64;
   const header = new Uint8Array(128);
@@ -316,7 +317,7 @@ function createPcxSprite(action: number, seed: number): Uint8Array {
   header[65] = 1;
   view.setUint16(66, width, true);
   view.setUint16(68, 1, true);
-  const pixels = createPosePixels(action, width, height);
+  const pixels = createPosePixels(action, index, width, height);
   const palette = new Uint8Array(769);
   palette[0] = 0x0c;
   palette.set([255, 0, 255], 1);
@@ -330,7 +331,7 @@ function createPcxSprite(action: number, seed: number): Uint8Array {
   return result;
 }
 
-function createPosePixels(action: number, width: number, height: number): Uint8Array {
+function createPosePixels(action: number, index: number, width: number, height: number): Uint8Array {
   const pixels = new Uint8Array(width * height);
   const crouching = action === 10;
   const airborne = action === 40 || action === 5050;
@@ -350,8 +351,14 @@ function createPosePixels(action: number, width: number, height: number): Uint8A
   fillRect(pixels, width, 11 + leanX, 4 + shiftY, 20 + leanX, 14 + shiftY, 3);
   fillRect(pixels, width, (crouching || recovering ? 7 : 8) + leanX, 15 + shiftY, (crouching || recovering ? 24 : 23) + leanX, 38 + shiftY, 1);
   if (attacking) {
-    fillRect(pixels, width, 23, 19 + shiftY, 31, 25 + shiftY, 2);
-    fillRect(pixels, width, 4, 21 + shiftY, 8, 34 + shiftY, 2);
+    if (index === 1) {
+      fillRect(pixels, width, 22, 12 + shiftY, 31, 19 + shiftY, 2);
+      fillRect(pixels, width, 25, 20 + shiftY, 30, 35 + shiftY, 2);
+      fillRect(pixels, width, 3, 24 + shiftY, 7, 37 + shiftY, 2);
+    } else {
+      fillRect(pixels, width, 23, 19 + shiftY, 31, 25 + shiftY, 2);
+      fillRect(pixels, width, 4, 21 + shiftY, 8, 34 + shiftY, 2);
+    }
   } else if (guarding) {
     const guardLift = action === 120 ? 0 : action === 130 ? 4 : 8;
     fillRect(pixels, width, 20, 10 + shiftY + guardLift, 25, 29 + shiftY + guardLift, 2);

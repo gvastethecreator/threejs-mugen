@@ -268,6 +268,46 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.failures).toEqual([]);
   });
 
+  it("counts observed actor-frame elements independently from aggregate minFrames", () => {
+    const frameZero = playerActor({ animNo: 200, moveType: "A", frameIndex: 0 });
+    const frameOne = playerActor({ animNo: 200, moveType: "A", frameIndex: 1 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "element-0-a", actors: [frameZero], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "element-0-b", actors: [frameZero], effects: [] }),
+      traceFrame({ frameIndex: 2, tick: 3, checksum: "element-0-c", actors: [frameZero], effects: [] }),
+      traceFrame({ frameIndex: 3, tick: 4, checksum: "element-1", actors: [frameOne], effects: [] }),
+    ]);
+    const target = { id: "synthetic-observed-frame-index", label: "Synthetic observed frame-index", source: "imported" } as const;
+    const passing = createRuntimeTraceArtifact({
+      trace,
+      target,
+      gates: [{
+        label: "observed-frame-index",
+        requiredActorFrames: [
+          { actorId: "p2", source: "imported", animNo: 200, observedFrameIndex: 0, minFrames: 4 },
+          { actorId: "p2", source: "imported", animNo: 200, observedFrameIndex: 1, minFrames: 2 },
+        ],
+      }],
+    });
+    const failing = createRuntimeTraceArtifact({
+      trace,
+      target,
+      gates: [{
+        label: "observed-frame-index-too-many",
+        requiredActorFrames: [
+          { actorId: "p2", source: "imported", animNo: 200, observedFrameIndex: 1, minFrames: 3 },
+        ],
+      }],
+    });
+
+    expect(passing.status).toBe("passed");
+    expect(passing.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", animNo: 200, frameIndices: [0, 1], frameIndexCounts: { 0: 4, 1: 2 } }),
+    ]));
+    expect(failing.status).toBe("failed");
+    expect(failing.gates[0]?.failures[0]).toContain("Missing actor frame");
+  });
+
   it("gates actor-frame down-recovery timer evidence", () => {
     const lieDown = playerActor({ animNo: 5110, moveType: "H", hitFallDownRecoverTime: 2 });
     const lieDownCountdown = playerActor({ animNo: 5110, moveType: "H", hitFallDownRecoverTime: 1 });
@@ -1036,6 +1076,7 @@ function effectActor(
 function playerActor(input: {
   animNo: number;
   moveType: string;
+  frameIndex?: number;
   life?: number;
   power?: number;
   hitFallRecoverTime?: number;
@@ -1052,7 +1093,7 @@ function playerActor(input: {
     stateNo: input.animNo,
     animNo: input.animNo,
     animTime: 0,
-    frameIndex: 0,
+    frameIndex: input.frameIndex ?? 0,
     life: input.life ?? 1000,
     power: input.power ?? 0,
     ctrl: input.moveType === "I",
