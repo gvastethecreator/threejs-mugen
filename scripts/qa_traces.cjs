@@ -65,6 +65,11 @@ async function main() {
       artifact: await presets.createMugenLiteJourneyNoKoSlowTraceArtifact(),
     });
     artifacts.push({
+      name: "mugen-lite-journey-palette",
+      required: true,
+      artifact: await presets.createMugenLiteJourneyPaletteTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-movecontact",
       required: true,
       artifact: presets.createSyntheticImportedMoveContactTraceArtifact(),
@@ -3931,6 +3936,7 @@ function validateTraceCoverage(coverage) {
   const requiredArtifactNames = [
     "mugen-lite-journey",
     "mugen-lite-journey-nokoslow",
+    "mugen-lite-journey-palette",
     "synthetic-imported-custom-state",
     "synthetic-imported-custom-state-gethitvar",
     "synthetic-imported-custom-state-gethitvar-animtype",

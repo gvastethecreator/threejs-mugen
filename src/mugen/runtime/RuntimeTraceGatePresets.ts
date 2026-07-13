@@ -121,6 +121,53 @@ export async function createMugenLiteJourneyTraceArtifact(
   });
 }
 
+export async function createMugenLiteJourneyPaletteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const { p1, p2 } = await loadMugenLiteJourneyTraceFighters();
+  const script = expandRuntimeTraceScript([
+    { label: "journey-palette-press", frames: 6, p1: ["y"], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: { ...p2, id: `${p2.id}-p2` }, stage: options.stage ?? trainingStage }), script, {
+    label: "mugen-lite-journey-palette-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-lite-journey-palette-golden",
+      label: "Repository-owned legal MUGEN-lite ACT palette route",
+      source: "imported",
+      notes: [
+        `${MUGEN_LITE_JOURNEY_MANIFEST.schema} loads CC0 source and destination ACT palettes through DEF and executes imported RemapPal source (1,1) -> destination (1,2) telemetry. The route does not claim arbitrary palette depth, transitive mappings, helper/projectile ownpal behavior, PalFX interaction, or full palette/render parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-lite-journey-palette-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [220],
+      requiredExecutedStates: [220],
+      requiredExecutedControllers: ["ChangeState", "RemapPal"],
+      requiredExecutedOperations: ["sprite-effect:remappal"],
+      requiredActiveCommands: ["palette"],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 220,
+        animNo: 200,
+        paletteRemapSourceGroup: 1,
+        paletteRemapSourceIndex: 1,
+        paletteRemapDestGroup: 1,
+        paletteRemapDestIndex: 2,
+        minFrames: 1,
+      }],
+    }],
+  });
+}
+
 export async function createMugenLiteJourneyNoKoSlowTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): Promise<RuntimeTraceArtifact> {

@@ -2,16 +2,28 @@ import JSZip from "jszip";
 import { VirtualFileSystem } from "../loader/VirtualFileSystem";
 
 export const MUGEN_LITE_JOURNEY_MANIFEST = Object.freeze({
-  schema: "MugenLiteJourneyFixture/v0" as const,
+  schema: "MugenLiteJourneyFixture/v1" as const,
   id: "mugen-lite-journey",
   displayName: "MUGEN Lite Journey",
   license: "CC0-1.0",
   licenseFile: "chars/mugen-lite-journey/LICENSE.txt",
   provenance: "Repository-authored deterministic test fixture",
   entry: "chars/mugen-lite-journey/journey.def",
-  expectedRoutes: ["idle", "walk", "crouch", "jump", "attack", "guard", "get-hit", "fall", "recovery", "no-ko-slow"] as const,
+  expectedRoutes: ["idle", "walk", "crouch", "jump", "attack", "guard", "get-hit", "fall", "recovery", "palette", "no-ko-slow"] as const,
   intentionalUnsupported: ["JourneyUnknownController"] as const,
 });
+
+export const MUGEN_LITE_JOURNEY_PALETTE_COLORS = Object.freeze([
+  [240, 32, 80],
+  [35, 195, 255],
+  [255, 210, 45],
+] as const);
+
+const MUGEN_LITE_JOURNEY_SOURCE_PALETTE_COLORS = Object.freeze([
+  [40, 160, 220],
+  [220, 120, 45],
+  [90, 215, 105],
+] as const);
 
 export function createMugenLiteJourneyVfs(): VirtualFileSystem {
   const vfs = new VirtualFileSystem();
@@ -21,6 +33,8 @@ export function createMugenLiteJourneyVfs(): VirtualFileSystem {
   vfs.addFile(`${root}/journey.cns`, text(JOURNEY_CNS));
   vfs.addFile(`${root}/journey.air`, text(JOURNEY_AIR));
   vfs.addFile(`${root}/journey.sff`, createFixtureSff());
+  vfs.addFile(`${root}/journey-source.act`, createJourneyAct(MUGEN_LITE_JOURNEY_SOURCE_PALETTE_COLORS));
+  vfs.addFile(`${root}/journey-palette.act`, createJourneyPaletteAct());
   vfs.addFile(`${root}/LICENSE.txt`, text(JOURNEY_LICENSE));
   return vfs;
 }
@@ -60,6 +74,8 @@ cns = journey.cns
 st = journey.cns
 sprite = journey.sff
 anim = journey.air
+pal1 = journey-source.act
+pal2 = journey-palette.act
 
 [Size]
 height = 60
@@ -100,6 +116,18 @@ trigger1 = statetype = S
 type = ChangeState
 value = 210
 triggerall = command = "finisher"
+trigger1 = ctrl
+trigger1 = statetype = S
+
+[Command]
+name = "palette"
+command = y
+time = 5
+
+[State -1, Journey Palette]
+type = ChangeState
+value = 220
+triggerall = command = "palette"
 trigger1 = ctrl
 trigger1 = statetype = S
 `;
@@ -235,6 +263,25 @@ value = 0
 ctrl = 1
 trigger1 = Time >= 12
 
+[Statedef 220]
+type = S
+movetype = I
+physics = S
+anim = 200
+ctrl = 0
+
+[State 220, Apply Palette]
+type = RemapPal
+source = 1,1
+dest = 1,2
+trigger1 = Time = 0
+
+[State 220, Exit]
+type = ChangeState
+value = 0
+ctrl = 1
+trigger1 = Time >= 8
+
 [Statedef 5000]
 type = S
 movetype = H
@@ -351,6 +398,18 @@ function createFixtureSff(): ArrayBuffer {
     offset = nextOffset;
   });
   return bytes.buffer;
+}
+
+function createJourneyPaletteAct(): Uint8Array {
+  return createJourneyAct(MUGEN_LITE_JOURNEY_PALETTE_COLORS);
+}
+
+function createJourneyAct(colors: readonly (readonly [number, number, number])[]): Uint8Array {
+  const bytes = new Uint8Array(768);
+  for (const [index, color] of colors.entries()) {
+    bytes.set(color, (index + 1) * 3);
+  }
+  return bytes;
 }
 
 function createPcxSprite(action: number, index: number, seed: number): Uint8Array {

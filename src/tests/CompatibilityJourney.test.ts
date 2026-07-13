@@ -6,7 +6,11 @@ import {
   createMugenLiteJourneyVfs,
   MUGEN_LITE_JOURNEY_MANIFEST,
 } from "../mugen/runtime/MugenLiteJourneyFixture";
-import { createMugenLiteJourneyNoKoSlowTraceArtifact, createMugenLiteJourneyTraceArtifact } from "../mugen/runtime/RuntimeTraceGatePresets";
+import {
+  createMugenLiteJourneyNoKoSlowTraceArtifact,
+  createMugenLiteJourneyPaletteTraceArtifact,
+  createMugenLiteJourneyTraceArtifact,
+} from "../mugen/runtime/RuntimeTraceGatePresets";
 
 describe("CompatibilityJourney/v1", () => {
   it("aggregates package, loader, trace, browser, and native evidence into an immutable result", () => {
@@ -73,9 +77,10 @@ describe("CompatibilityJourney/v1", () => {
   it("aggregates the current legal fixture without copying its loader, trace, or browser artifacts", async () => {
     const vfs = createMugenLiteJourneyVfs();
     const character = await new MugenCharacterLoader().load(MUGEN_LITE_JOURNEY_MANIFEST.entry, vfs);
-    const [journeyArtifact, noKoSlowArtifact] = await Promise.all([
+    const [journeyArtifact, noKoSlowArtifact, paletteArtifact] = await Promise.all([
       createMugenLiteJourneyTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" }),
       createMugenLiteJourneyNoKoSlowTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" }),
+      createMugenLiteJourneyPaletteTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" }),
     ]);
     const packageDigest = createHash("sha256");
     for (const path of vfs.listFiles()) {
@@ -115,9 +120,9 @@ describe("CompatibilityJourney/v1", () => {
         status: "passed",
         traceQa: {
           status: "passed",
-          totalArtifacts: 577,
-          requiredArtifacts: 546,
-          passedArtifacts: 577,
+          totalArtifacts: 578,
+          requiredArtifacts: 547,
+          passedArtifacts: 578,
           failedArtifacts: 0,
           diagnosticsPath: ".scratch/qa/trace-gates/diagnostics.json",
         },
@@ -140,14 +145,23 @@ describe("CompatibilityJourney/v1", () => {
             frameCount: noKoSlowArtifact.trace.frameCount,
             detail: "lethal NoKOSlow post-KO route",
           },
+          {
+            id: "mugen-lite-journey-palette",
+            status: paletteArtifact.status,
+            path: ".scratch/qa/trace-gates/mugen-lite-journey-palette.json",
+            checksum: paletteArtifact.trace.checksum,
+            finalChecksum: paletteArtifact.trace.finalChecksum,
+            frameCount: paletteArtifact.trace.frameCount,
+            detail: "ACT-backed RemapPal source/destination route",
+          },
         ],
       },
       browser: {
         status: "passed",
         diagnosticsPath: ".scratch/qa/qa-smoke/diagnostics.json",
         viewports: [
-          { id: "desktop", status: "passed", artifacts: ["mugen-lite-runtime-desktop.png", "mugen-lite-runtime-desktop-nokoslow.png"], detail: "ZIP upload, imported roster, movement/combat/recovery, and NoKOSlow" },
-          { id: "mobile", status: "passed", artifacts: ["mugen-lite-runtime-mobile.png", "mugen-lite-runtime-mobile-nokoslow.png"], detail: "independent mobile reload with the same legal route" },
+          { id: "desktop", status: "passed", artifacts: ["mugen-lite-runtime-desktop.png", "mugen-lite-runtime-desktop-nokoslow.png", "mugen-lite-runtime-desktop-palette.png"], detail: "ZIP upload, imported roster, movement/combat/recovery, NoKOSlow, and ACT-backed RemapPal" },
+          { id: "mobile", status: "passed", artifacts: ["mugen-lite-runtime-mobile.png", "mugen-lite-runtime-mobile-nokoslow.png", "mugen-lite-runtime-mobile-palette.png"], detail: "independent mobile reload with the same legal route and ACT-backed RemapPal" },
         ],
       },
       nativeRegression: {
@@ -164,11 +178,12 @@ describe("CompatibilityJourney/v1", () => {
     });
 
     expect(result.status).toBe("passed");
-    expect(result.checksum).toBe("cabcd573");
-    expect(result.runtime.artifacts.map((artifact) => artifact.checksum)).toEqual(["a372a02c", "ceac9f37"]);
+    expect(result.package.packageDigest).toBe("sha256:b8e917e9b968f86765db017388823e897779d46041b3738a47c702ce57adfc50");
+    expect(result.checksum).toBe("11da5411");
+    expect(result.runtime.artifacts.map((artifact) => artifact.checksum)).toEqual(["7615fd2b", "ceac9f37", "1291909d"]);
     expect(result.loader.compatibility.unsupported.some((item) => item.feature === "JourneyUnknownController")).toBe(true);
     expect(JSON.stringify(result)).toContain("sha256:");
-  });
+  }, 15_000);
 });
 
 function input(): CompatibilityJourneyInput {

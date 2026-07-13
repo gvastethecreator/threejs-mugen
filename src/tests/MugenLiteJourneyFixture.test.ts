@@ -6,8 +6,13 @@ import {
   createMugenLiteJourneyVfs,
   createMugenLiteJourneyZipBytes,
   MUGEN_LITE_JOURNEY_MANIFEST,
+  MUGEN_LITE_JOURNEY_PALETTE_COLORS,
 } from "../mugen/runtime/MugenLiteJourneyFixture";
-import { createMugenLiteJourneyNoKoSlowTraceArtifact, createMugenLiteJourneyTraceArtifact } from "../mugen/runtime/RuntimeTraceGatePresets";
+import {
+  createMugenLiteJourneyNoKoSlowTraceArtifact,
+  createMugenLiteJourneyPaletteTraceArtifact,
+  createMugenLiteJourneyTraceArtifact,
+} from "../mugen/runtime/RuntimeTraceGatePresets";
 
 describe("MUGEN-lite journey fixture", () => {
   it("loads one repository-owned MUGEN-format package with visible unsupported gaps", async () => {
@@ -16,6 +21,8 @@ describe("MUGEN-lite journey fixture", () => {
     const fighter = createImportedFighterDefinition(character);
 
     expect(vfs.listFiles()).toEqual([
+      "chars/mugen-lite-journey/journey-palette.act",
+      "chars/mugen-lite-journey/journey-source.act",
       "chars/mugen-lite-journey/journey.air",
       "chars/mugen-lite-journey/journey.cmd",
       "chars/mugen-lite-journey/journey.cns",
@@ -24,15 +31,30 @@ describe("MUGEN-lite journey fixture", () => {
       "chars/mugen-lite-journey/LICENSE.txt",
     ]);
     expect(MUGEN_LITE_JOURNEY_MANIFEST).toMatchObject({
+      schema: "MugenLiteJourneyFixture/v1",
       license: "CC0-1.0",
       licenseFile: "chars/mugen-lite-journey/LICENSE.txt",
       entry: "chars/mugen-lite-journey/journey.def",
     });
+    expect(MUGEN_LITE_JOURNEY_MANIFEST.expectedRoutes).toContain("palette");
     expect(vfs.readText(MUGEN_LITE_JOURNEY_MANIFEST.licenseFile)).toContain("SPDX-License-Identifier: CC0-1.0");
     expect(character.compatibility).toMatchObject({
       loaded: true,
       files: { def: true, sff: true, air: true, cmd: true, cns: true },
+      palettes: { total: 2, parsed: 2, colors: 512, withTransparency: 0 },
     });
+    expect(character.files.palettes).toEqual([
+      "chars/mugen-lite-journey/journey-source.act",
+      "chars/mugen-lite-journey/journey-palette.act",
+    ]);
+    expect(character.palettes).toHaveLength(2);
+    expect(character.palettes?.map((palette) => ({ group: palette.group, index: palette.index }))).toEqual([
+      { group: 1, index: 1 },
+      { group: 1, index: 2 },
+    ]);
+    expect(character.palettes?.[1]?.colors?.slice(1, 4)).toEqual(
+      MUGEN_LITE_JOURNEY_PALETTE_COLORS.map(([red, green, blue]) => `#${red.toString(16)}${green.toString(16)}${blue.toString(16)}`),
+    );
     expect(character.compatibility.unsupported.some((gap) => gap.feature.toLowerCase().includes("journeyunknowncontroller"))).toBe(true);
     expect(fighter).toBeDefined();
     expect(fighter?.source).toBe("imported");
@@ -126,5 +148,39 @@ describe("MUGEN-lite journey fixture", () => {
     expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p2", source: "imported", life: 0 }),
     ]));
+  });
+
+  it("runs the loaded package through an ACT-backed RemapPal source/destination journey", async () => {
+    const artifact = await createMugenLiteJourneyPaletteTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "mugen-lite-journey-palette-golden", source: "imported" },
+      gates: [{ label: "mugen-lite-journey-palette-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([{
+      actorId: "p1",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 220,
+      animNo: 200,
+      paletteRemapSourceGroup: 1,
+      paletteRemapSourceIndex: 1,
+      paletteRemapDestGroup: 1,
+      paletteRemapDestIndex: 2,
+      minFrames: 1,
+    }]);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1",
+        stateNo: 220,
+        animNo: 200,
+        paletteRemapSourceGroup: 1,
+        paletteRemapSourceIndex: 1,
+        paletteRemapDestGroup: 1,
+        paletteRemapDestIndex: 2,
+      }),
+    ]));
+    expect(artifact.gates[0]?.evidence.executedOperations["sprite-effect:remappal"]).toBeGreaterThan(0);
   });
 });
