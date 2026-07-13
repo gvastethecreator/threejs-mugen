@@ -91,6 +91,11 @@ import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvide
 import { StudioAutosave } from "./StudioAutosave";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
+import {
+  prepareSourceImportTransaction,
+  runSourceImportTransaction,
+  type SourceImportTransaction,
+} from "./StudioSourceTransaction";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
@@ -649,6 +654,32 @@ type ImportedSourceBundle = {
   fileCount: number;
   fingerprint: SourceFingerprint;
 };
+type SourceImportRollbackState = {
+  character?: MugenCharacter;
+  importedFighter?: DemoFighterDefinition;
+  importedSffProvider?: SffSpriteProvider;
+  importedStages: MugenStagePackage[];
+  importedSourceBundle?: ImportedSourceBundle;
+  importedProjectManifest?: GameProjectManifest;
+  projectNameOverride?: string;
+  projectImportWarnings: string[];
+  projectDirty: boolean;
+  projectStorageRevision?: number;
+  projectStorageConflict?: ProjectStorageConflict;
+  autosavePending: boolean;
+  selectedP1: string;
+  selectedP2: string;
+  selectedStageId: string;
+  mode: AppMode;
+  snapshot: MugenSnapshot;
+  matchRuntime: MatchWorld;
+  inspectorRuntime: MugenRuntime;
+  pendingSourceRelinkPackageId?: string;
+  sourceImportTransaction?: SourceImportTransaction;
+  lastCompiledProject?: CompiledRuntimeManifest;
+  lastProjectBundle?: ProjectExportBundleSummary;
+  lastTraceArtifact?: RuntimeTraceArtifact;
+};
 type AtlasMotionQa = {
   status: "loading" | "pass" | "warn" | "fail" | "missing";
   checkedStates: string[];
@@ -697,6 +728,7 @@ export class App {
   private studioSelectedAssetId?: string;
   private studioSelectedActorId?: string;
   private pendingSourceRelinkPackageId?: string;
+  private sourceImportTransaction?: SourceImportTransaction;
   private navigatorFilter = "";
   private selectedInspectorStateId?: number;
   private selectedInspectorControllerType?: string;
@@ -1542,7 +1574,13 @@ export class App {
       const character = await this.loader.load(source.name, vfs);
       const stages = await this.stageLoader.loadAll(source.name, vfs);
       const fingerprint = await fingerprintVirtualFileSystem(vfs);
-      this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "zip", vfs, fileCount: vfs.listFiles().length, fingerprint });
+      const sourceBundle = { sourceName: source.name, sourceKind: "zip" as const, vfs, fileCount: vfs.listFiles().length, fingerprint };
+      const transaction = this.prepareSourceImportTransaction(sourceBundle);
+      if (transaction.status === "rejected") {
+        this.rejectSourceImportTransaction(transaction);
+        return;
+      }
+      this.useCharacter(character, stages, sourceBundle, transaction);
     } catch (error) {
       this.log(`ZIP rejected: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
@@ -1560,11 +1598,44 @@ export class App {
       const character = await this.loader.load(source.name, vfs);
       const stages = await this.stageLoader.loadAll(source.name, vfs);
       const fingerprint = await fingerprintVirtualFileSystem(vfs);
-      this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "folder", vfs, fileCount: vfs.listFiles().length, fingerprint });
+      const sourceBundle = { sourceName: source.name, sourceKind: "folder" as const, vfs, fileCount: vfs.listFiles().length, fingerprint };
+      const transaction = this.prepareSourceImportTransaction(sourceBundle);
+      if (transaction.status === "rejected") {
+        this.rejectSourceImportTransaction(transaction);
+        return;
+      }
+      this.useCharacter(character, stages, sourceBundle, transaction);
     } catch (error) {
       this.log(`Folder rejected: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
     }
+  }
+
+  private prepareSourceImportTransaction(sourceBundle: ImportedSourceBundle): SourceImportTransaction {
+    return prepareSourceImportTransaction(
+      this.importedProjectManifest,
+      {
+        name: sourceBundle.sourceName,
+        kind: sourceBundle.sourceKind,
+        fileCount: sourceBundle.fileCount,
+        paths: sourceBundle.vfs.listFiles(),
+        fingerprint: sourceBundle.fingerprint.digest,
+        byteLength: sourceBundle.fingerprint.byteLength,
+      },
+      this.pendingSourceRelinkPackageId,
+    );
+  }
+
+  private rejectSourceImportTransaction(transaction: SourceImportTransaction): void {
+    this.pendingSourceRelinkPackageId = undefined;
+    this.sourceImportTransaction = transaction;
+    this.projectImportWarnings = this.projectImportWarnings.filter((warning) => !isSourcePackageRelinkWarning(warning));
+    for (const warning of transaction.warnings) {
+      this.projectImportWarnings.push(warning);
+      this.log(`Project manifest warning: ${warning}`);
+    }
+    this.log(`Source import rejected: ${transaction.reason}; current runtime/source session retained.`);
+    this.updateUi();
   }
 
   private startSourcePackageRelink(sourcePackageId: string | undefined, kind: "zip" | "folder"): void {
@@ -1853,70 +1924,150 @@ export class App {
     this.updateUi();
   }
 
-  private useCharacter(character: MugenCharacter, stages: MugenStagePackage[] = [], sourceBundle?: ImportedSourceBundle): void {
-    this.studioAutosave.cancel();
-    this.character = character;
-    this.importedStages = stages;
-    this.importedSourceBundle = sourceBundle;
-    this.relinkImportedProjectSourcePackages(sourceBundle);
-    this.invalidateBuildOutputs();
-    this.renderer.setStageSpriteArchives(
-      stages.map((stage) => ({ stageId: stage.stage.id, archive: stage.spriteArchive })),
+  private useCharacter(
+    character: MugenCharacter,
+    stages: MugenStagePackage[] = [],
+    sourceBundle: ImportedSourceBundle,
+    transaction: SourceImportTransaction,
+  ): void {
+    const rollback = this.captureSourceImportRollbackState();
+    const commitStatus = runSourceImportTransaction(
+      transaction,
+      rollback,
+      (acceptedTransaction) => {
+        this.studioAutosave.cancel();
+        this.character = character;
+        this.importedStages = stages;
+        this.importedSourceBundle = sourceBundle;
+        this.applySourceImportTransaction(acceptedTransaction);
+        this.invalidateBuildOutputs();
+        this.renderer.setStageSpriteArchives(
+          stages.map((stage) => ({ stageId: stage.stage.id, archive: stage.spriteArchive })),
+        );
+        if (stages.length > 0) {
+          this.selectedStageId = stages[0]!.stage.id;
+          this.log(
+            `Imported ${stages.length} MUGEN stage${stages.length === 1 ? "" : "s"}; selected ${stages[0]!.stage.displayName}`,
+          );
+        } else if (!this.getAvailableStages().some((stage) => stage.id === this.selectedStageId)) {
+          this.selectedStageId = trainingStage.id;
+        }
+        const imported = createImportedFighterDefinition(character);
+        this.installCharacterSffProvider(character);
+        this.installCharacterSoundArchive(character);
+        this.installImportedFighter(imported);
+        const animations = character.animations.size > 0 ? character.animations : createFixtureAnimations();
+        this.inspectorRuntime = new MugenRuntime(animations);
+        this.mode = "inspect";
+        this.snapshot = this.inspectorRuntime.getSnapshot();
+        this.log(`Loaded ${character.definition.info.displayName ?? character.definition.info.name ?? character.sourceName}`);
+        this.writeUrlState();
+      },
+      (previousState) => this.restoreSourceImportRollbackState(previousState),
     );
-    if (stages.length > 0) {
-      this.selectedStageId = stages[0]!.stage.id;
-      this.log(
-        `Imported ${stages.length} MUGEN stage${stages.length === 1 ? "" : "s"}; selected ${stages[0]!.stage.displayName}`,
-      );
-    } else if (!this.getAvailableStages().some((stage) => stage.id === this.selectedStageId)) {
-      this.selectedStageId = trainingStage.id;
+    if (commitStatus === "rejected") {
+      this.rejectSourceImportTransaction(transaction);
+      return;
     }
-    const imported = createImportedFighterDefinition(character);
-    this.installCharacterSffProvider(character);
-    this.installCharacterSoundArchive(character);
-    this.installImportedFighter(imported);
     this.studioEditHistory.reset();
-    const animations = character.animations.size > 0 ? character.animations : createFixtureAnimations();
-    this.inspectorRuntime = new MugenRuntime(animations);
-    this.mode = "inspect";
-    this.snapshot = this.inspectorRuntime.getSnapshot();
-    this.log(`Loaded ${character.definition.info.displayName ?? character.definition.info.name ?? character.sourceName}`);
-    this.writeUrlState();
     this.updateUi();
   }
 
-  private relinkImportedProjectSourcePackages(sourceBundle: ImportedSourceBundle | undefined): void {
-    if (!sourceBundle || !this.importedProjectManifest?.sourcePackages.length) {
-      this.pendingSourceRelinkPackageId = undefined;
-      return;
-    }
-
-    const result = relinkGameProjectSourcePackages(
-      this.importedProjectManifest.sourcePackages,
-      {
-        name: sourceBundle.sourceName,
-        kind: sourceBundle.sourceKind,
-        fileCount: sourceBundle.fileCount,
-        paths: sourceBundle.vfs.listFiles(),
-        fingerprint: sourceBundle.fingerprint.digest,
-        byteLength: sourceBundle.fingerprint.byteLength,
-      },
-      this.pendingSourceRelinkPackageId,
-    );
+  private applySourceImportTransaction(transaction: SourceImportTransaction): void {
     this.pendingSourceRelinkPackageId = undefined;
-    this.importedProjectManifest = {
-      ...this.importedProjectManifest,
-      sourcePackages: result.sourcePackages,
-    };
+    this.sourceImportTransaction = transaction;
+    if (this.importedProjectManifest?.sourcePackages.length) {
+      this.importedProjectManifest = {
+        ...this.importedProjectManifest,
+        sourcePackages: transaction.sourcePackages,
+      };
+    }
     this.projectImportWarnings = this.projectImportWarnings.filter((warning) => !isSourcePackageRelinkWarning(warning));
-    for (const warning of result.warnings) {
+    for (const warning of transaction.warnings) {
       this.projectImportWarnings.push(warning);
       this.log(`Project manifest warning: ${warning}`);
     }
-    for (const linkedId of result.linkedIds) {
-      const sourcePackage = result.sourcePackages.find((item) => item.id === linkedId);
+    for (const linkedId of transaction.linkedIds) {
+      const sourcePackage = transaction.sourcePackages.find((item) => item.id === linkedId);
       this.log(`Relinked source package ${sourcePackage?.name ?? linkedId}`);
     }
+  }
+
+  private captureSourceImportRollbackState(): SourceImportRollbackState {
+    return {
+      character: this.character,
+      importedFighter: this.importedFighter,
+      importedSffProvider: this.importedSffProvider,
+      importedStages: [...this.importedStages],
+      importedSourceBundle: this.importedSourceBundle,
+      importedProjectManifest: this.importedProjectManifest,
+      projectNameOverride: this.projectNameOverride,
+      projectImportWarnings: [...this.projectImportWarnings],
+      projectDirty: this.projectDirty,
+      projectStorageRevision: this.projectStorageRevision,
+      projectStorageConflict: this.projectStorageConflict,
+      autosavePending: this.studioAutosave.pending,
+      selectedP1: this.selectedP1,
+      selectedP2: this.selectedP2,
+      selectedStageId: this.selectedStageId,
+      mode: this.mode,
+      snapshot: this.snapshot,
+      matchRuntime: this.matchRuntime,
+      inspectorRuntime: this.inspectorRuntime,
+      pendingSourceRelinkPackageId: this.pendingSourceRelinkPackageId,
+      sourceImportTransaction: this.sourceImportTransaction,
+      lastCompiledProject: this.lastCompiledProject,
+      lastProjectBundle: this.lastProjectBundle,
+      lastTraceArtifact: this.lastTraceArtifact,
+    };
+  }
+
+  private restoreSourceImportRollbackState(previousState: SourceImportRollbackState): void {
+    this.character = previousState.character;
+    this.importedFighter = previousState.importedFighter;
+    this.importedStages = previousState.importedStages;
+    this.importedSourceBundle = previousState.importedSourceBundle;
+    this.importedProjectManifest = previousState.importedProjectManifest;
+    this.projectNameOverride = previousState.projectNameOverride;
+    this.projectImportWarnings = [...previousState.projectImportWarnings];
+    this.projectDirty = previousState.projectDirty;
+    this.projectStorageRevision = previousState.projectStorageRevision;
+    this.projectStorageConflict = previousState.projectStorageConflict;
+    this.selectedP1 = previousState.selectedP1;
+    this.selectedP2 = previousState.selectedP2;
+    this.selectedStageId = previousState.selectedStageId;
+    this.mode = previousState.mode;
+    this.snapshot = previousState.snapshot;
+    this.matchRuntime = previousState.matchRuntime;
+    this.inspectorRuntime = previousState.inspectorRuntime;
+    this.pendingSourceRelinkPackageId = previousState.pendingSourceRelinkPackageId;
+    this.sourceImportTransaction = previousState.sourceImportTransaction;
+    this.lastCompiledProject = previousState.lastCompiledProject;
+    this.lastProjectBundle = previousState.lastProjectBundle;
+    this.lastTraceArtifact = previousState.lastTraceArtifact;
+
+    if (this.character) {
+      this.installCharacterSffProvider(this.character);
+      this.installCharacterSoundArchive(this.character);
+    } else {
+      this.spriteProvider.clearRoutesByTag("character-sff");
+      this.spriteProvider.clearRoutesByTag("system-hit-sparks");
+      this.importedSffProvider = undefined;
+      this.audio.setArchive(undefined);
+    }
+    this.renderer.setStageSpriteArchives(
+      this.importedStages.map((stage) => ({ stageId: stage.stage.id, archive: stage.spriteArchive })),
+    );
+    this.syncMatchSpriteOwnerRoutes(
+      this.findFighter(this.selectedP1) ?? demoFighters[0]!,
+      this.findFighter(this.selectedP2) ?? demoFighters[1]!,
+    );
+    this.studioAutosave.cancel();
+    if (previousState.autosavePending) {
+      this.studioAutosave.schedule(() => this.autosaveProjectLocal());
+    }
+    this.writeUrlState();
+    this.updateUi();
   }
 
   private installCharacterSoundArchive(character: MugenCharacter): void {
@@ -6755,6 +6906,7 @@ export class App {
     return `
       <div class="section">
         <h2>Source Packages</h2>
+        ${this.renderSourceImportTransactionNotice()}
         ${
           sourcePackages.length
             ? `<div class="list compact-list">
@@ -6765,6 +6917,26 @@ export class App {
             : `<div class="empty-state">No imported source package is required for the current local/generated project.</div>`
         }
       </div>
+    `;
+  }
+
+  private renderSourceImportTransactionNotice(): string {
+    const transaction = this.sourceImportTransaction;
+    if (!transaction || transaction.status !== "rejected") {
+      return "";
+    }
+    const fingerprint = transaction.fingerprint ? ` / ${transaction.fingerprint.slice(0, 12)}...` : "";
+    return `
+      <section class="studio-project-conflict studio-source-transaction" role="alert" aria-live="assertive">
+        <div class="studio-project-conflict-head">
+          ${tablerIcon("alert", "ui-icon action-icon")}
+          <span>
+            <strong>Source reimport rejected</strong>
+            <small>${escapeHtml(transaction.reason)} / ${escapeHtml(transaction.sourceName)}${escapeHtml(fingerprint)}</small>
+          </span>
+        </div>
+        <div class="studio-project-conflict-actions"><small>Current runtime/source session was retained.</small></div>
+      </section>
     `;
   }
 
@@ -6803,14 +6975,8 @@ export class App {
         </span>
         <span class="row-actions">
           ${this.statusBadge(sourcePackage.status === "linked" ? "ok" : "warn")}
-          ${
-            sourcePackage.status === "linked"
-              ? ""
-              : `
-                <button type="button" data-action="relink-source">ZIP</button>
-                <button type="button" data-action="relink-source-folder">Folder</button>
-              `
-          }
+          <button type="button" data-action="relink-source">${sourcePackage.status === "linked" ? "Reimport" : "ZIP"}</button>
+          <button type="button" data-action="relink-source-folder">Folder</button>
         </span>
       </div>
     `;
@@ -10878,6 +11044,7 @@ export class App {
         traceArtifacts: RuntimeTraceArtifact[];
         storedTraceEvidence: StoredTraceEvidenceEntry[];
         projectImportWarnings: string[];
+        sourceImportTransaction?: SourceImportTransaction;
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
         projectStorageRevision?: number;
@@ -10932,6 +11099,7 @@ export class App {
       traceArtifacts: this.traceArtifacts.map((artifact) => structuredClone(artifact)),
       storedTraceEvidence: this.storedTraceEvidence.map((entry) => structuredClone(entry)),
       projectImportWarnings: [...this.projectImportWarnings],
+      sourceImportTransaction: this.sourceImportTransaction,
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,
@@ -11502,7 +11670,10 @@ function isNonEmptyString(value: unknown): value is string {
 }
 
 function isSourcePackageRelinkWarning(value: string): boolean {
-  return value.startsWith("Source package '") && (value.includes("is required for full export") || value.includes("could not be relinked"));
+  return (
+    (value.startsWith("Source package '") || value.startsWith("Source package target '")) &&
+    (value.includes("is required for full export") || value.includes("could not be relinked") || value.includes("does not exist"))
+  );
 }
 
 function uniqueStrings(values: string[]): string[] {

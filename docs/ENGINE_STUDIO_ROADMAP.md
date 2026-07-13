@@ -182,3 +182,4 @@ The project is "usable" for the current horizon when:
 - Unsupported behavior is visible in reports and does not crash the app.
 - At least one real imported MUGEN character and the generated local roster can be visually verified through scripted QA.
 - The next developer can add a controller, parser feature, renderer effect, or module without rewriting the shell.
+Current source import transaction checkpoint: source identity is now followed by an admission/commit/rollback boundary. Durable handles, external replacement, invalidation, and recovery remain the next source-workspace slice.

@@ -233,6 +233,7 @@ async function main() {
         studioModules: path.join(outDir, "studio-modules.png"),
         studioModulesContracts: path.join(outDir, "studio-modules-contracts.png"),
         studioSourceRelink: path.join(outDir, "studio-source-relink.png"),
+        studioSourceRelinkRejected: path.join(outDir, "studio-source-relink-rejected.png"),
         ikemenScan: path.join(outDir, "ikemen-scan-evidence.png"),
         studioStage: path.join(outDir, "studio-stage.png"),
         studioBgCtrlStage: path.join(outDir, "studio-stage-bgctrl.png"),
@@ -1855,7 +1856,48 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       relinkButtons: document.querySelectorAll('[data-action="relink-source"]').length,
     };
   });
-  return { skipped: false, projectPath, before, after };
+  const changedFixturePath = await writeChangedSourceRelinkFixture(outDir, importedFixturePath);
+  const changedChooserPromise = page.waitForEvent("filechooser");
+  await page.locator('[data-source-package-id="kfm-official"] [data-action="relink-source"]').first().click();
+  const changedChooser = await changedChooserPromise;
+  await changedChooser.setFiles(changedFixturePath);
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.sourceImportTransaction?.status === "rejected");
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: path.join(outDir, "studio-source-relink-rejected.png"), fullPage: true });
+  const rejected = await evaluateWithStableBridge(page, () => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const sourcePackage = bridge?.project?.sourcePackages?.find((candidate) => candidate.id === "kfm-official");
+    const transaction = bridge?.sourceImportTransaction;
+    const bodyText = document.body.innerText;
+    return {
+      mode: bridge?.mode,
+      studioTab: bridge?.studioTab,
+      character: bridge?.character,
+      status: transaction?.status,
+      reason: transaction?.reason,
+      transactionFingerprint: transaction?.fingerprint,
+      currentSourceStatus: sourcePackage?.status,
+      currentIdentityStatus: sourcePackage?.identityStatus,
+      currentFingerprint: sourcePackage?.fingerprint,
+      currentObservedFingerprint: sourcePackage?.observedFingerprint,
+      bodyHasSourceRejected: bodyText.includes("Source reimport rejected"),
+      bodyHasRetainedSession: bodyText.includes("Current runtime/source session was retained"),
+    };
+  });
+  return { skipped: false, projectPath, before, after, rejected, changedFixturePath };
+}
+
+async function writeChangedSourceRelinkFixture(outDir, importedFixturePath) {
+  const zip = await JSZip.loadAsync(fs.readFileSync(importedFixturePath));
+  const defPath = Object.keys(zip.files).find((candidate) => candidate.toLowerCase() === "chars/kfm/kfm.def");
+  if (!defPath) {
+    throw new Error("Source relink fixture did not contain chars/kfm/kfm.def");
+  }
+  const definition = await zip.file(defPath).async("string");
+  zip.file(defPath, `${definition}\n; qa changed source fingerprint\n`);
+  const changedPath = path.join(outDir, "kfm-official-changed.zip");
+  fs.writeFileSync(changedPath, await zip.generateAsync({ type: "nodebuffer" }));
+  return changedPath;
 }
 
 async function captureIkemenScan(page, baseUrl, outDir) {
@@ -3549,6 +3591,22 @@ function assertSmoke(diagnostics) {
     failures.push("studio-source-relink: missing source package did not relink through the Build Center UI");
   }
   if (
+    !studioSourceRelink?.skipped &&
+    (studioSourceRelink.rejected?.mode !== "studio" ||
+      studioSourceRelink.rejected?.studioTab !== "build" ||
+      studioSourceRelink.rejected?.status !== "rejected" ||
+      studioSourceRelink.rejected?.reason !== "changed-source" ||
+      studioSourceRelink.rejected?.currentSourceStatus !== "linked" ||
+      studioSourceRelink.rejected?.currentIdentityStatus !== "matched" ||
+      !/^[0-9a-f]{64}$/i.test(String(studioSourceRelink.rejected?.transactionFingerprint ?? "")) ||
+      studioSourceRelink.rejected?.transactionFingerprint === studioSourceRelink.rejected?.currentFingerprint ||
+      studioSourceRelink.rejected?.currentFingerprint !== studioSourceRelinkIdentity?.fingerprint ||
+      !studioSourceRelink.rejected?.bodyHasSourceRejected ||
+      !studioSourceRelink.rejected?.bodyHasRetainedSession)
+  ) {
+    failures.push("studio-source-relink: changed source did not reject atomically while retaining the active runtime/source session");
+  }
+  if (
     ikemenScan.mode !== "studio" ||
     ikemenScan.studioTab !== "evidence" ||
     !ikemenScan.detected ||
@@ -4097,6 +4155,18 @@ function summarizeDiagnostics(diagnostics) {
           afterMissing: diagnostics.checks.studioSourceRelink?.after?.missing,
           identity: diagnostics.checks.studioSourceRelink?.after?.identity,
           requiredPaths: diagnostics.checks.studioSourceRelink?.after?.requiredPaths,
+          rejected: diagnostics.checks.studioSourceRelink?.rejected
+            ? {
+                status: diagnostics.checks.studioSourceRelink.rejected.status,
+                reason: diagnostics.checks.studioSourceRelink.rejected.reason,
+                currentSourceStatus: diagnostics.checks.studioSourceRelink.rejected.currentSourceStatus,
+                currentIdentityStatus: diagnostics.checks.studioSourceRelink.rejected.currentIdentityStatus,
+                transactionFingerprint: diagnostics.checks.studioSourceRelink.rejected.transactionFingerprint,
+                currentFingerprint: diagnostics.checks.studioSourceRelink.rejected.currentFingerprint,
+                bodyHasSourceRejected: diagnostics.checks.studioSourceRelink.rejected.bodyHasSourceRejected,
+                bodyHasRetainedSession: diagnostics.checks.studioSourceRelink.rejected.bodyHasRetainedSession,
+              }
+            : undefined,
         },
     ikemenScan: {
       detected: diagnostics.checks.ikemenScan.detected,

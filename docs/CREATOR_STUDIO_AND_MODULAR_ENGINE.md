@@ -601,3 +601,4 @@ MUGEN Web Sandbox
 ```
 
 This keeps the current work valuable while making the future bigger than one legacy engine.
+Current source import checkpoint: linked-package reimport is accepted only after source admission; changed bytes leave the active runtime/source session untouched, and accepted installation has a rollback snapshot. Durable file writes and handle persistence remain future work.
