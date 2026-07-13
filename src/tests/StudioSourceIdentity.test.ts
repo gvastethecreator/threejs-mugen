@@ -20,6 +20,9 @@ describe("StudioSourceIdentity", () => {
     expect(firstFingerprint.digest).toMatch(/^[0-9a-f]{64}$/);
     expect(firstFingerprint.fileCount).toBe(2);
     expect(firstFingerprint.byteLength).toBe(21);
+    expect(firstFingerprint.files).toHaveLength(2);
+    expect(firstFingerprint.files.map((file) => file.path)).toEqual(["chars/kfm/kfm.def", "chars/kfm/kfm.sff"]);
+    expect(firstFingerprint.files.every((file) => /^[0-9a-f]{64}$/.test(file.digest))).toBe(true);
   });
 
   it("changes when source bytes change and classifies the read model", async () => {
@@ -32,6 +35,7 @@ describe("StudioSourceIdentity", () => {
     const changedFingerprint = await fingerprintVirtualFileSystem(changed);
 
     expect(changedFingerprint.digest).not.toBe(originalFingerprint.digest);
+    expect(changedFingerprint.files[0]?.digest).not.toBe(originalFingerprint.files[0]?.digest);
     expect(classifySourceIdentity(originalFingerprint.digest, originalFingerprint.digest, true)).toBe("matched");
     expect(classifySourceIdentity(originalFingerprint.digest, changedFingerprint.digest, true)).toBe("changed");
     expect(classifySourceIdentity(originalFingerprint.digest.toUpperCase(), originalFingerprint.digest, true)).toBe("matched");

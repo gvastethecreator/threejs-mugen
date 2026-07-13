@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 492 - AssetProvenance/v1 per-file digest coverage
+
+Done: source identity now records a SHA-256 digest and
+byte length for every virtual source file, persists that inventory in
+`project.json`, and joins imported VFS candidates with the hashes of files
+actually bundled by the browser exporter. `studioAssets.provenance` exposes
+sorted redacted `inputFiles` and `outputFiles` records under
+`mugen-web-sandbox/asset-provenance/v1`; completeness remains partial when
+either side is absent or has an undigested file. Claim allowed: per-file hash
+coverage for the current source/export session. Claim blocked: durable handles,
+license certainty, source writes, aggregate output identity for arbitrary
+multi-file transforms, and full MUGEN/IKEMEN parity. Closure passes 4 focused
+files / 29 tests, 191 files / 1991 tests, TypeScript 7, boundaries, CSS budget,
+production build at 1,690.37 kB JavaScript / 424.86 kB gzip, 581/581 trace
+artifacts (547 required, 34 optional, 0 skipped), and browser smoke with 0
+page errors, 0 console issues, 14 persisted source file digests, 10 input
+files, 53 output files, 2 complete records, and 0 absolute-path leaks. Next:
+permission-aware source replacement/recovery, then generated-authoring
+transform chains.
+
 ## Entry 491 - AssetProvenance/v0 read model
 
 Done: Asset Library now publishes `AssetProvenance/v0` records with separate

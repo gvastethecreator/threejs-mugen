@@ -16,7 +16,7 @@ describe("StudioAssetProvenance", () => {
     });
 
     expect(record).toMatchObject({
-      schemaVersion: "mugen-web-sandbox/asset-provenance/v0",
+      schemaVersion: "mugen-web-sandbox/asset-provenance/v1",
       status: "complete",
       canExport: true,
       inputDigest: { algorithm: "sha-256", digest: "a".repeat(64) },
@@ -24,6 +24,36 @@ describe("StudioAssetProvenance", () => {
       sourceRef: "chars/kfm/kfm.def",
       tool: "mugen-loader",
       warnings: [],
+    });
+  });
+
+  it("accepts complete per-file input and output coverage without an aggregate shortcut", () => {
+    const record = createAssetProvenanceRecord({
+      asset: asset(),
+      inputFiles: [{ path: "chars/kfm/kfm.sff", digest: "A".repeat(64), byteLength: 12 }],
+      outputFiles: [{ path: "assets/imported/kfm/kfm.sff", digest: "B".repeat(64), byteLength: 12 }],
+    });
+
+    expect(record).toMatchObject({
+      status: "complete",
+      canExport: true,
+      inputFiles: [{ path: "chars/kfm/kfm.sff", bytes: 12, digest: { digest: "a".repeat(64) } }],
+      outputFiles: [{ path: "assets/imported/kfm/kfm.sff", bytes: 12, digest: { digest: "b".repeat(64) } }],
+      warnings: [],
+    });
+  });
+
+  it("keeps incomplete per-file output coverage partial", () => {
+    const record = createAssetProvenanceRecord({
+      asset: asset(),
+      inputFiles: [{ path: "chars/kfm/kfm.sff", digest: "a".repeat(64), byteLength: 12 }],
+      outputFiles: [{ path: "assets/imported/kfm/kfm.sff", byteLength: 12 }],
+    });
+
+    expect(record).toMatchObject({
+      status: "partial",
+      canExport: false,
+      warnings: ["Output file digest coverage is incomplete."],
     });
   });
 

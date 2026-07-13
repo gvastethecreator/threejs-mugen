@@ -4,11 +4,18 @@ export const SOURCE_FINGERPRINT_ALGORITHM = "sha-256" as const;
 
 export type SourceFingerprintAlgorithm = typeof SOURCE_FINGERPRINT_ALGORITHM;
 
+export type SourceFileFingerprint = {
+  path: string;
+  digest: string;
+  byteLength: number;
+};
+
 export type SourceFingerprint = {
   algorithm: SourceFingerprintAlgorithm;
   digest: string;
   fileCount: number;
   byteLength: number;
+  files: SourceFileFingerprint[];
 };
 
 export type SourceIdentityStatus = "matched" | "changed" | "missing" | "unknown";
@@ -24,6 +31,7 @@ export async function fingerprintVirtualFileSystem(
   }
   const encoder = new TextEncoder();
   const chunks: Uint8Array[] = [];
+  const files: SourceFileFingerprint[] = [];
   let inputLength = 0;
   let byteLength = 0;
   const paths = vfs.listFiles().sort(compareVirtualPaths);
@@ -36,6 +44,14 @@ export async function fingerprintVirtualFileSystem(
     view.setUint32(4, bytes.byteLength);
     header.set(pathBytes, 8);
     chunks.push(header, bytes);
+    const fileInput = new Uint8Array(bytes.byteLength);
+    fileInput.set(bytes);
+    const fileDigest = await digestApi.digest(SOURCE_FINGERPRINT_ALGORITHM.toUpperCase(), fileInput);
+    files.push({
+      path,
+      digest: toHex(new Uint8Array(fileDigest)),
+      byteLength: bytes.byteLength,
+    });
     inputLength += header.byteLength + bytes.byteLength;
     byteLength += bytes.byteLength;
   }
@@ -52,6 +68,7 @@ export async function fingerprintVirtualFileSystem(
     digest: toHex(new Uint8Array(digest)),
     fileCount: paths.length,
     byteLength,
+    files,
   };
 }
 

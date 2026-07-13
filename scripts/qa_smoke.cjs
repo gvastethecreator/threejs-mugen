@@ -1740,6 +1740,15 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       stageLayerStatuses: [
         ...new Set((bridge?.stages ?? []).flatMap((stage) => stage.backgrounds?.layers?.map((layer) => layer.status) ?? [])),
       ],
+      provenanceSchema: bridge?.studioAssets?.provenance?.[0]?.schemaVersion,
+      provenanceRecords: bridge?.studioAssets?.provenance?.length ?? 0,
+      provenanceInputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0) ?? 0,
+      provenanceOutputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0) ?? 0,
+      provenanceCompleteRecords: bridge?.studioAssets?.provenance?.filter((record) => record.status === "complete").length ?? 0,
+      provenanceFilePathLeaks: (bridge?.studioAssets?.provenance ?? []).flatMap((record) => [
+        ...(record.inputFiles ?? []),
+        ...(record.outputFiles ?? []),
+      ]).filter((file) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(file.path ?? "")).length,
       studioEvidenceStats: bridge?.studioEvidence?.stats,
       downloadedArtifact: {
         filename: downloadedArtifact.target?.id,
@@ -2055,6 +2064,7 @@ async function inspectPackageZip(packagePath) {
     projectSourcePackages: project.sourcePackages?.length ?? 0,
     linkedProjectSourcePackages: project.sourcePackages?.filter((sourcePackage) => sourcePackage.status === "linked").length ?? 0,
     projectSourceRequiredPaths: project.sourcePackages?.reduce((total, sourcePackage) => total + (sourcePackage.requiredPaths?.length ?? 0), 0) ?? 0,
+    projectSourceFileDigests: project.sourcePackages?.reduce((total, sourcePackage) => total + (sourcePackage.fileDigests?.length ?? 0), 0) ?? 0,
     hasKfmSourcePackage: project.sourcePackages?.some((sourcePackage) =>
       String(sourcePackage.name ?? "").toLowerCase().includes("kfm") &&
       sourcePackage.requiredPaths?.some((requiredPath) => String(requiredPath).toLowerCase().endsWith("kfm.def")),
@@ -2278,6 +2288,12 @@ async function captureStudioAssets(page, outDir) {
       provenanceSchema: bridge?.studioAssets?.provenance?.[0]?.schemaVersion,
       provenanceRecords: bridge?.studioAssets?.provenance?.length ?? 0,
       provenanceReady: bridge?.studioAssets?.provenance?.filter((record) => record.canExport).length ?? 0,
+      provenanceInputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0) ?? 0,
+      provenanceOutputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0) ?? 0,
+      provenanceFilePathLeaks: (bridge?.studioAssets?.provenance ?? []).flatMap((record) => [
+        ...(record.inputFiles ?? []),
+        ...(record.outputFiles ?? []),
+      ]).filter((file) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(file.path ?? "")).length,
       selectedProvenanceStatus: bridge?.studioAssets?.selectedProvenance?.status,
       provenanceAbsolutePathLeaks: (bridge?.studioAssets?.provenance ?? []).filter((record) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(record.sourceRef ?? "")).length,
       missingReferences: bridge?.studioAssets?.missingReferences?.length ?? 0,
@@ -3540,6 +3556,7 @@ function assertSmoke(diagnostics) {
       (studioBuild.downloadedPackage?.projectSourcePackages ?? 0) < 1 ||
       (studioBuild.downloadedPackage?.linkedProjectSourcePackages ?? 0) < 1 ||
       (studioBuild.downloadedPackage?.projectSourceRequiredPaths ?? 0) < 5 ||
+      (studioBuild.downloadedPackage?.projectSourceFileDigests ?? 0) < 5 ||
       !studioBuild.downloadedPackage?.hasKfmSourcePackage ||
       !studioBuild.downloadedPackage?.hasImportedDef ||
       !studioBuild.downloadedPackage?.hasImportedSff ||
@@ -3548,6 +3565,17 @@ function assertSmoke(diagnostics) {
       !studioBuild.downloadedPackage?.hasImportedCns)
   ) {
     failures.push("studio-build: imported fixture source files were not embedded in the project package");
+  }
+  if (
+    studioBuild.importedFixtureLoaded &&
+    (studioBuild.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v1" ||
+      studioBuild.provenanceRecords < 1 ||
+      studioBuild.provenanceInputFiles < 5 ||
+      studioBuild.provenanceOutputFiles < 5 ||
+      studioBuild.provenanceCompleteRecords < 1 ||
+      studioBuild.provenanceFilePathLeaks !== 0)
+  ) {
+    failures.push("studio-build: imported asset provenance did not join per-file source and bundled output hashes");
   }
   if (
     studioBuild.importedFixtureLoaded &&
@@ -3702,8 +3730,9 @@ function assertSmoke(diagnostics) {
     (studioAssets.sourceRuntimeLanes?.runtime ?? 0) < 1 ||
     (studioAssets.sourceRuntimeLanes?.qa ?? 0) < 1 ||
     (studioAssets.sourceRuntimeLanes?.export ?? 0) < 1 ||
-    studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v0" ||
+    studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v1" ||
     studioAssets.provenanceRecords < studioAssets.assetTotal ||
+    studioAssets.provenanceFilePathLeaks !== 0 ||
     studioAssets.selectedProvenanceStatus !== "partial" ||
     studioAssets.provenanceAbsolutePathLeaks !== 0 ||
     studioAssets.relatedEvidence < 1 ||
@@ -4150,6 +4179,13 @@ function summarizeDiagnostics(diagnostics) {
       sourcePackages: diagnostics.checks.studioBuild.downloadedPackage?.projectSourcePackages,
       linkedSourcePackages: diagnostics.checks.studioBuild.downloadedPackage?.linkedProjectSourcePackages,
       sourceRequiredPaths: diagnostics.checks.studioBuild.downloadedPackage?.projectSourceRequiredPaths,
+      sourceFileDigests: diagnostics.checks.studioBuild.downloadedPackage?.projectSourceFileDigests,
+      provenanceSchema: diagnostics.checks.studioBuild.provenanceSchema,
+      provenanceRecords: diagnostics.checks.studioBuild.provenanceRecords,
+      provenanceInputFiles: diagnostics.checks.studioBuild.provenanceInputFiles,
+      provenanceOutputFiles: diagnostics.checks.studioBuild.provenanceOutputFiles,
+      provenanceCompleteRecords: diagnostics.checks.studioBuild.provenanceCompleteRecords,
+      provenanceFilePathLeaks: diagnostics.checks.studioBuild.provenanceFilePathLeaks,
       architectureGateStatus: diagnostics.checks.studioBuild.architectureGateStatus,
       architectureEvidenceRecord: diagnostics.checks.studioBuild.architectureEvidenceRecord,
       bodyHasArchitectureBoundaries: diagnostics.checks.studioBuild.bodyHasArchitectureBoundaries,
@@ -4163,6 +4199,9 @@ function summarizeDiagnostics(diagnostics) {
       provenanceSchema: diagnostics.checks.studioAssets.provenanceSchema,
       provenanceRecords: diagnostics.checks.studioAssets.provenanceRecords,
       provenanceReady: diagnostics.checks.studioAssets.provenanceReady,
+      provenanceInputFiles: diagnostics.checks.studioAssets.provenanceInputFiles,
+      provenanceOutputFiles: diagnostics.checks.studioAssets.provenanceOutputFiles,
+      provenanceFilePathLeaks: diagnostics.checks.studioAssets.provenanceFilePathLeaks,
       selectedProvenanceStatus: diagnostics.checks.studioAssets.selectedProvenanceStatus,
       provenanceAbsolutePathLeaks: diagnostics.checks.studioAssets.provenanceAbsolutePathLeaks,
     },

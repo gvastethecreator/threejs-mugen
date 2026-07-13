@@ -255,6 +255,7 @@ describe("StudioModel", () => {
       kind: "zip",
       fileCount: 6,
       paths: ["chars/kfm/kfm.def", "chars/kfm/kfm.sff", "chars/kfm/kfm.air", "chars/kfm/kfm.cmd", "chars/kfm/kfm.cns"],
+      fileDigests: [{ path: "chars/kfm/kfm.sff", digest: "a".repeat(64), byteLength: 12 }],
     });
 
     expect(result.warnings).toEqual([]);
@@ -264,6 +265,7 @@ describe("StudioModel", () => {
       name: "kfm-copy.zip",
       status: "linked",
       fileCount: 6,
+      fileDigests: [{ path: "chars/kfm/kfm.sff", digest: "a".repeat(64), byteLength: 12 }],
     });
   });
 

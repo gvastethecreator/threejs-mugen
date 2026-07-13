@@ -8,7 +8,13 @@ import {
   type EngineModuleStatus,
   type SharedEngineContractId,
 } from "../engine/ModuleContracts";
-import { SOURCE_FINGERPRINT_ALGORITHM, classifySourceIdentity, type SourceFingerprintAlgorithm, type SourceIdentityStatus } from "./StudioSourceIdentity";
+import {
+  SOURCE_FINGERPRINT_ALGORITHM,
+  classifySourceIdentity,
+  type SourceFileFingerprint,
+  type SourceFingerprintAlgorithm,
+  type SourceIdentityStatus,
+} from "./StudioSourceIdentity";
 
 export type StudioStatus = "ok" | "warn" | "fail" | "pending" | "partial" | "planned" | "active" | "blocked" | "unsupported" | "unknown";
 export type StudioSeverity = "info" | "notice" | "warning" | "error";
@@ -142,6 +148,7 @@ export type GameProjectSourcePackage = {
   byteLength?: number;
   observedFingerprint?: string;
   observedByteLength?: number;
+  fileDigests?: SourceFileFingerprint[];
   identityStatus?: SourceIdentityStatus;
 };
 
@@ -158,6 +165,7 @@ export type GameProjectSourceRelinkSource = {
   paths: string[];
   fingerprint?: string;
   byteLength?: number;
+  fileDigests?: SourceFileFingerprint[];
 };
 
 export type GameProjectSourceRelinkResult = {
@@ -381,6 +389,7 @@ export function relinkGameProjectSourcePackages(
       fingerprint: sourcePackage.fingerprint ?? source.fingerprint,
       fingerprintAlgorithm: sourcePackage.fingerprintAlgorithm ?? (source.fingerprint ? SOURCE_FINGERPRINT_ALGORITHM : undefined),
       byteLength: sourcePackage.byteLength ?? source.byteLength,
+      ...(sourcePackage.fileDigests ?? source.fileDigests ? { fileDigests: sourcePackage.fileDigests ?? source.fileDigests } : {}),
       observedFingerprint: source.fingerprint,
       observedByteLength: source.byteLength,
       identityStatus: resolvedIdentityStatus,
@@ -752,8 +761,20 @@ function isGameProjectSourcePackage(value: unknown): value is GameProjectSourceP
     (value.byteLength === undefined || (typeof value.byteLength === "number" && Number.isSafeInteger(value.byteLength) && value.byteLength >= 0)) &&
     (value.observedFingerprint === undefined || (typeof value.observedFingerprint === "string" && /^[0-9a-f]{64}$/i.test(value.observedFingerprint))) &&
     (value.observedByteLength === undefined || (typeof value.observedByteLength === "number" && Number.isSafeInteger(value.observedByteLength) && value.observedByteLength >= 0)) &&
+    (value.fileDigests === undefined || isSourceFileFingerprintArray(value.fileDigests)) &&
     (value.identityStatus === undefined || value.identityStatus === "matched" || value.identityStatus === "changed" || value.identityStatus === "missing" || value.identityStatus === "unknown")
   );
+}
+
+function isSourceFileFingerprintArray(value: unknown): value is SourceFileFingerprint[] {
+  return Array.isArray(value) && value.every((item) => (
+    isRecord(item) &&
+    typeof item.path === "string" &&
+    /^[0-9a-f]{64}$/i.test(typeof item.digest === "string" ? item.digest : "") &&
+    typeof item.byteLength === "number" &&
+    Number.isSafeInteger(item.byteLength) &&
+    item.byteLength >= 0
+  ));
 }
 
 function isStudioGateRecord(value: unknown): value is StudioGateRecord {

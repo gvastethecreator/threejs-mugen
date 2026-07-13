@@ -2,13 +2,25 @@ import type { StudioAssetRecord } from "./StudioModel";
 import type { SourceFingerprintAlgorithm } from "./StudioSourceIdentity";
 import type { SourceTransactionPermission } from "./StudioSourceTransaction";
 
-export const ASSET_PROVENANCE_SCHEMA = "mugen-web-sandbox/asset-provenance/v0" as const;
+export const ASSET_PROVENANCE_SCHEMA = "mugen-web-sandbox/asset-provenance/v1" as const;
 
 export type AssetProvenanceStatus = "complete" | "partial" | "blocked";
 export type AssetProvenancePermission = "not-required" | SourceTransactionPermission;
 export type AssetProvenanceDigest = {
   algorithm: SourceFingerprintAlgorithm;
   digest: string;
+};
+
+export type AssetProvenanceFileInput = {
+  path: string;
+  digest?: string;
+  byteLength?: number;
+};
+
+export type AssetProvenanceFileRecord = {
+  path: string;
+  bytes?: number;
+  digest?: AssetProvenanceDigest;
 };
 
 export type AssetProvenanceRecord = {
@@ -22,6 +34,8 @@ export type AssetProvenanceRecord = {
   requiresDurablePermission: boolean;
   inputDigest?: AssetProvenanceDigest;
   outputDigest?: AssetProvenanceDigest;
+  inputFiles: AssetProvenanceFileRecord[];
+  outputFiles: AssetProvenanceFileRecord[];
   sourceRef?: string;
   tool?: string;
   canExport: boolean;
@@ -32,6 +46,8 @@ export type AssetProvenanceInput = {
   asset: StudioAssetRecord;
   sourceFingerprint?: string;
   outputDigest?: string;
+  inputFiles?: AssetProvenanceFileInput[];
+  outputFiles?: AssetProvenanceFileInput[];
   sourcePath?: string;
   tool?: string;
   permission?: AssetProvenancePermission;
@@ -43,17 +59,23 @@ export function createAssetProvenanceRecord(input: AssetProvenanceInput): AssetP
   const requiresDurablePermission = input.requiresDurablePermission === true;
   const inputDigest = digestRecord(input.sourceFingerprint);
   const outputDigest = digestRecord(input.outputDigest);
+  const inputFiles = normalizeFileRecords(input.inputFiles);
+  const outputFiles = normalizeFileRecords(input.outputFiles);
   const sourceRef = redactAssetSourcePath(input.sourcePath);
+  const inputFileCoverageComplete = inputFiles.length > 0 && inputFiles.every((file) => Boolean(file.digest));
+  const outputFileCoverageComplete = outputFiles.length > 0 && outputFiles.every((file) => Boolean(file.digest));
   const warnings = [
-    ...(!inputDigest ? ["Input content digest is missing."] : []),
-    ...(!outputDigest ? ["Output content digest is missing."] : []),
+    ...(!inputDigest && !inputFileCoverageComplete ? [inputFiles.length ? "Input file digest coverage is incomplete." : "Input content digest is missing."] : []),
+    ...(!outputDigest && !outputFileCoverageComplete ? [outputFiles.length ? "Output file digest coverage is incomplete." : "Output content digest is missing."] : []),
     ...(requiresDurablePermission && permission !== "granted"
       ? ["Durable provenance permission is not granted."]
       : []),
     ...(sourceRef === "[local-path-redacted]" ? ["Absolute local source path was redacted from the provenance record."] : []),
   ];
   const blocked = requiresDurablePermission && permission !== "granted";
-  const complete = Boolean(inputDigest && outputDigest);
+  const inputEvidenceComplete = inputFiles.length > 0 ? inputFileCoverageComplete : Boolean(inputDigest);
+  const outputEvidenceComplete = outputFiles.length > 0 ? outputFileCoverageComplete : Boolean(outputDigest);
+  const complete = inputEvidenceComplete && outputEvidenceComplete;
   return {
     schemaVersion: ASSET_PROVENANCE_SCHEMA,
     id: `asset-provenance:${input.asset.id}`,
@@ -65,11 +87,36 @@ export function createAssetProvenanceRecord(input: AssetProvenanceInput): AssetP
     requiresDurablePermission,
     ...(inputDigest ? { inputDigest } : {}),
     ...(outputDigest ? { outputDigest } : {}),
+    inputFiles,
+    outputFiles,
     ...(sourceRef ? { sourceRef } : {}),
     ...(input.tool ? { tool: input.tool } : {}),
     canExport: complete && !blocked,
     warnings: uniqueStrings(warnings),
   };
+}
+
+function normalizeFileRecords(values: AssetProvenanceFileInput[] | undefined): AssetProvenanceFileRecord[] {
+  const records = (values ?? []).flatMap((value) => {
+    const path = redactAssetSourcePath(value.path);
+    if (!path) {
+      return [];
+    }
+    const digest = digestRecord(value.digest);
+    const bytes = typeof value.byteLength === "number" && Number.isSafeInteger(value.byteLength) && value.byteLength >= 0
+      ? value.byteLength
+      : undefined;
+    return [{
+      path,
+      ...(bytes !== undefined ? { bytes } : {}),
+      ...(digest ? { digest } : {}),
+    } satisfies AssetProvenanceFileRecord];
+  });
+  const unique = new Map<string, AssetProvenanceFileRecord>();
+  for (const record of records) {
+    unique.set(record.path.toLowerCase(), record);
+  }
+  return [...unique.values()].sort((left, right) => left.path.localeCompare(right.path));
 }
 
 export function redactAssetSourcePath(value: string | undefined): string | undefined {

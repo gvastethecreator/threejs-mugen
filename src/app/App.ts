@@ -91,6 +91,7 @@ import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvide
 import { StudioAutosave } from "./StudioAutosave";
 import {
   createAssetProvenanceRecord,
+  type AssetProvenanceFileInput,
   type AssetProvenancePermission,
   type AssetProvenanceRecord,
 } from "./StudioAssetProvenance";
@@ -1631,6 +1632,7 @@ export class App {
         paths: sourceBundle.vfs.listFiles(),
         fingerprint: sourceBundle.fingerprint.digest,
         byteLength: sourceBundle.fingerprint.byteLength,
+        fileDigests: sourceBundle.fingerprint.files,
       },
       this.pendingSourceRelinkPackageId,
     );
@@ -4463,6 +4465,8 @@ export class App {
           <dt>Provenance</dt><dd>${library.selectedProvenance ? this.statusBadge(library.selectedProvenance.status === "complete" ? "ok" : library.selectedProvenance.status === "blocked" ? "blocked" : "warn") : this.statusBadge("unknown")}</dd>
           <dt>Input digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.inputDigest?.digest ?? "missing")}</dd>
           <dt>Output digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.outputDigest?.digest ?? "missing")}</dd>
+          <dt>Input files</dt><dd>${library.selectedProvenance ? `${library.selectedProvenance.inputFiles.filter((file) => file.digest).length}/${library.selectedProvenance.inputFiles.length} hashed` : "missing"}</dd>
+          <dt>Output files</dt><dd>${library.selectedProvenance ? `${library.selectedProvenance.outputFiles.filter((file) => file.digest).length}/${library.selectedProvenance.outputFiles.length} hashed` : "missing"}</dd>
           <dt>Source ref</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.sourceRef ?? "missing")}</dd>
           <dt>Evidence</dt><dd>${asset.evidenceIds.length ? asset.evidenceIds.map((id) => `<span class="badge">${escapeHtml(id)}</span>`).join(" ") : "none linked yet"}</dd>
         </dl>
@@ -8227,6 +8231,7 @@ export class App {
   private getStudioAssetProvenance(assets: StudioAssetRecord[]): AssetProvenanceRecord[] {
     const sourcePackages = this.getProjectSourcePackages();
     const sourceTransactions = this.getSourceTransactionRecords();
+    const bundledRecords = this.lastProjectBundle?.manifest.assets.records ?? [];
     return assets.map((asset) => {
       const sourcePackage = asset.source === "mugen-import"
         ? sourcePackages.find((candidate) => candidate.characterId === asset.id) ?? sourcePackages[0]
@@ -8238,9 +8243,29 @@ export class App {
       const permission: AssetProvenancePermission = sourcePackage
         ? sourceTransaction?.permission ?? "unsupported"
         : "not-required";
+      const inputFiles: AssetProvenanceFileInput[] = sourcePackage?.fileDigests
+        ? this.getProjectBundleAssetCandidates(asset)
+          .filter((candidate) => candidate.sourceKind === "vfs")
+          .map((candidate) => {
+            const file = sourcePackage.fileDigests?.find((digest) => sourceFilePathMatches(digest.path, candidate.sourcePath));
+            return {
+              path: candidate.sourcePath,
+              ...(file ? { digest: file.digest, byteLength: file.byteLength } : {}),
+            };
+          })
+        : [];
+      const outputFiles: AssetProvenanceFileInput[] = bundledRecords
+        .filter((record) => record.assetId === asset.id && record.status === "bundled")
+        .map((record) => ({
+          path: record.packagePath,
+          ...(record.sha256 ? { digest: record.sha256 } : {}),
+          ...(record.bytes !== undefined ? { byteLength: record.bytes } : {}),
+        }));
       return createAssetProvenanceRecord({
         asset,
         sourceFingerprint: sourcePackage?.fingerprint,
+        inputFiles,
+        outputFiles,
         sourcePath: sourceRecord?.path,
         tool: asset.source === "generated" && asset.tags.includes("sprite-atlas-builder") ? "sprite-atlas-builder" : undefined,
         permission,
@@ -11496,6 +11521,7 @@ export class App {
             paths: this.importedSourceBundle?.vfs.listFiles() ?? currentPackage.requiredPaths,
             fingerprint: currentPackage.fingerprint,
             byteLength: currentPackage.byteLength,
+            fileDigests: this.importedSourceBundle?.fingerprint.files ?? currentPackage.fileDigests,
           }).sourcePackages
         : this.importedProjectManifest.sourcePackages;
       return sourcePackages.map((sourcePackage) => ({
@@ -11562,6 +11588,7 @@ export class App {
         fingerprint: this.importedSourceBundle.fingerprint.digest,
         fingerprintAlgorithm: this.importedSourceBundle.fingerprint.algorithm,
         byteLength: this.importedSourceBundle.fingerprint.byteLength,
+        fileDigests: this.importedSourceBundle.fingerprint.files,
         observedFingerprint: this.importedSourceBundle.fingerprint.digest,
         observedByteLength: this.importedSourceBundle.fingerprint.byteLength,
         identityStatus: "matched",
@@ -11813,6 +11840,12 @@ function contentTypeForPath(value: string): string | undefined {
   if (extension === "mp3") return "audio/mpeg";
   if (extension === "ogg") return "audio/ogg";
   return undefined;
+}
+
+function sourceFilePathMatches(left: string, right: string): boolean {
+  const normalizedLeft = left.replace(/\\/g, "/").toLowerCase();
+  const normalizedRight = right.replace(/\\/g, "/").toLowerCase();
+  return normalizedLeft === normalizedRight || normalizedLeft.endsWith(`/${normalizedRight}`) || normalizedRight.endsWith(`/${normalizedLeft}`);
 }
 
 function formatBytes(value: number): string {
