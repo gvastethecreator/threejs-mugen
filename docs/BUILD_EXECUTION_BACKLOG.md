@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 486 - Studio project autosave
+
+Done: Studio now coalesces dirty project identity edits into a debounced local
+project-index save after `1.5s`. Explicit save, manifest import, and source
+replacement cancel the pending timer; the diagnostics bridge exposes pending
+state and the browser smoke asserts the authored manifest is persisted, the
+timer is clear, and `projectDirty` returns to `false`. The dedicated controller
+has `2/2` focused tests. Closure passes `188` files / `1971` tests, TypeScript 7
+typecheck, boundaries, build, `581/581` trace artifacts (`547` required,
+`34` optional), and full Playwright smoke. Claim allowed: debounced local
+autosave for the current Studio identity spine. Claim blocked: filesystem and
+source writes, conflict resolution, migrations, deeper editor transactions,
+multi-scene graphs, and full MUGEN/IKEMEN parity. Next: define a durable
+project/source transaction boundary before adding deeper authoring surfaces.
+
 ## Entry 485 - Studio dirty-navigation guard
 
 Done: the Studio now protects unsaved project identity edits across browser

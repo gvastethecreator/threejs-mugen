@@ -80,6 +80,7 @@ import { compileGameProjectManifest, type CompiledRuntimeManifest } from "./Proj
 import { listStoredProjects, loadStoredProjectManifest, saveStoredProjectManifest, type StoredProjectEntry } from "./ProjectStorage";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
+import { StudioAutosave } from "./StudioAutosave";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
@@ -703,6 +704,7 @@ export class App {
   private projectNameOverride?: string;
   private projectDirty = false;
   private readonly studioEditHistory = new StudioEditHistory();
+  private readonly studioAutosave = new StudioAutosave();
   private projectImportWarnings: string[] = [];
   private storedProjects: StoredProjectEntry[] = [];
   private lastCompiledProject?: CompiledRuntimeManifest;
@@ -1559,18 +1561,26 @@ export class App {
     }
   }
 
-  private saveCurrentProjectLocal(): void {
+  private saveCurrentProjectLocal(options: { automatic?: boolean } = {}): void {
+    this.studioAutosave.cancel();
     const manifest = this.getGameProjectManifest();
     try {
       this.storedProjects = saveStoredProjectManifest(window.localStorage, manifest);
       this.importedProjectManifest = manifest;
       this.projectDirty = false;
-      this.log(`Saved local project ${manifest.id}`);
+      this.log(`${options.automatic ? "Autosaved" : "Saved"} local project ${manifest.id}`);
       this.updateUi();
     } catch (error) {
       this.log(`Could not save local project: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
     }
+  }
+
+  private autosaveProjectLocal(): void {
+    if (!this.projectDirty) {
+      return;
+    }
+    this.saveCurrentProjectLocal({ automatic: true });
   }
 
   private openStoredProject(id: string): void {
@@ -1600,6 +1610,7 @@ export class App {
 
   private markProjectDirty(): void {
     this.projectDirty = true;
+    this.studioAutosave.schedule(() => this.autosaveProjectLocal());
   }
 
   private applyProjectName(value: string): void {
@@ -1700,6 +1711,7 @@ export class App {
 
     this.importedProjectManifest = manifest;
     this.projectNameOverride = manifest.name;
+    this.studioAutosave.cancel();
     this.projectDirty = false;
     this.studioEditHistory.reset();
     this.projectImportWarnings = nextWarnings;
@@ -1716,6 +1728,7 @@ export class App {
   }
 
   private useCharacter(character: MugenCharacter, stages: MugenStagePackage[] = [], sourceBundle?: ImportedSourceBundle): void {
+    this.studioAutosave.cancel();
     this.character = character;
     this.importedStages = stages;
     this.importedSourceBundle = sourceBundle;
@@ -10688,6 +10701,10 @@ export class App {
           undoCount: number;
           redoCount: number;
         };
+        studioAutosave: {
+          pending: boolean;
+          delayMs: number;
+        };
         project: GameProjectManifest;
         compiledProject?: CompiledRuntimeManifest;
         projectBundle?: ProjectExportBundleSummary;
@@ -10735,6 +10752,10 @@ export class App {
         canRedo: this.studioEditHistory.canRedo,
         undoCount: this.studioEditHistory.undoCount,
         redoCount: this.studioEditHistory.redoCount,
+      },
+      studioAutosave: {
+        pending: this.studioAutosave.pending,
+        delayMs: this.studioAutosave.delayMs,
       },
       project: this.getGameProjectManifest(studio),
       compiledProject: this.lastCompiledProject,

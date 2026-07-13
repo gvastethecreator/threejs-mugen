@@ -64,9 +64,9 @@
 
 - Player sprite axis projection is `rendered-partial` at proof ladder L2: effective Three.js mesh position/scale matches SFF axis, AIR offset, facing, and runtime scale in desktop/mobile browser oracles. Flips, rotation pivots, draw order, full effects, and reference parity remain unsupported.
 
-- Studio single-match scene authoring is `executed-partial`: name, P1, CPU, and stage edits have explicit dirty state, output invalidation, bounded undo/redo, dirty-navigation protection, local save, and reload/reopen persistence. Autosave, multi-scene graphs, conflicts, and source writes remain unsupported.
+- Studio single-match scene authoring is `executed-partial`: name, P1, CPU, and stage edits have explicit dirty state, output invalidation, bounded undo/redo, dirty-navigation protection, debounced local autosave, local save, and reload/reopen persistence. Filesystem/source writes, conflict resolution, migrations, and multi-scene graphs remain unsupported.
 
-- Studio project identity authoring is `executed-partial`: project names can be edited, validated, propagated to manifests, saved locally, and reopened after reload. Autosave, conflicts, migrations, file-system writes, and scene/state/collision editors remain unsupported.
+- Studio project identity authoring is `executed-partial`: project names can be edited, validated, propagated to manifests, autosaved locally, explicitly saved, and reopened after reload. Conflicts, migrations, file-system writes, and scene/state/collision editors remain unsupported.
 
 - Automatic KO sound is `executed-partial`: first KO transition emits common `f:11,0` per defeated player; time-over emits none; tick-active global `NoKOSnd` suppresses all KO emission. Post-KO echo timing, slowdown, teams, and full round/audio parity remain unsupported.
 

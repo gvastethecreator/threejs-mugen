@@ -460,6 +460,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
     return bridge?.mode === "match" && actor?.source === "imported" && actor.runtime?.stateNo === 0 && actor.frame?.spriteGroup === 0;
   });
+  await waitForRuntimeTicks(page, 8);
   await page.waitForTimeout(250);
   const initial = await captureMugenLiteVisualState(
     page,
@@ -611,11 +612,11 @@ async function pressCodeFuManQcfX(page) {
 }
 
 async function pressCodeFuManUpperX(page) {
-  const hold = async (keys, durationMs = 52) => {
+  const hold = async (keys, durationMs = 36) => {
     for (const key of keys) await page.keyboard.down(key);
     await page.waitForTimeout(durationMs);
     for (const key of [...keys].reverse()) await page.keyboard.up(key);
-    await page.waitForTimeout(16);
+    await page.waitForTimeout(8);
   };
   await hold(["ArrowRight"]);
   await hold(["ArrowDown"]);
@@ -1394,6 +1395,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   const afterKeyboardUndo = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project);
   await page.keyboard.press("Control+Shift+Z");
   const afterKeyboardRedo = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project);
+  const dirtyBeforeAutosave = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty);
   const beforeUnloadPrevented = await page.evaluate(() => {
     const event = new Event("beforeunload", { cancelable: true });
     window.dispatchEvent(event);
@@ -1409,7 +1411,24 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
     entry: window.__MUGEN_WEB_SANDBOX__?.project?.entry,
   }));
-  const dirtyBeforeSave = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty);
+  const autosaveDelayMs = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.delayMs ?? 1500);
+  await page.waitForTimeout(autosaveDelayMs + 250);
+  const afterAutosave = await page.evaluate(({ key, authoredName }) => {
+    const raw = localStorage.getItem(key);
+    const entries = raw ? JSON.parse(raw).entries ?? [] : [];
+    return {
+      dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+      pending: window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.pending,
+      stored: entries.some(
+        (entry) =>
+          entry.name === authoredName &&
+          entry.manifest?.name === authoredName &&
+          entry.manifest?.entry?.p1 === "rook-apprentice" &&
+          entry.manifest?.entry?.p2 === "nova-boxer" &&
+          entry.manifest?.entry?.stage === "training-grid",
+      ),
+    };
+  }, { key: "mugen-web-sandbox:projects:v0", authoredName });
   await page.locator('[data-action="save-project-local"]').first().click();
   const saved = await page.evaluate(({ key, authoredName }) => {
     const raw = localStorage.getItem(key);
@@ -1439,7 +1458,9 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     projectAuthoring: {
       authoredName,
       saved,
-      dirtyBeforeSave,
+      dirtyBeforeAutosave,
+      autosaveDelayMs,
+      afterAutosave,
       reopenedName,
       historyAfterEdits,
       afterUndo,
@@ -2496,6 +2517,14 @@ async function waitForBridge(page) {
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.renderer), null, { timeout: 15000 });
 }
 
+async function waitForRuntimeTicks(page, minimumTick) {
+  await page.waitForFunction(
+    (minimum) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? -1) >= minimum,
+    minimumTick,
+    { timeout: 15000 },
+  );
+}
+
 async function scrollLiveSelectorIntoView(page, selector) {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     await page.waitForSelector(selector, { state: "attached", timeout: 5000 });
@@ -3111,7 +3140,6 @@ function assertSmoke(diagnostics) {
     studioWorkbench.projectAuthoring.entry?.p1 !== "rook-apprentice" ||
     studioWorkbench.projectAuthoring.entry?.p2 !== "nova-boxer" ||
     studioWorkbench.projectAuthoring.entry?.stage !== "training-grid" ||
-    studioWorkbench.projectAuthoring.dirtyBeforeSave !== true ||
     studioWorkbench.projectAuthoring.dirty !== false ||
     (studioWorkbench.projectAuthoring.historyAfterEdits?.undoCount ?? 0) < 4 ||
     studioWorkbench.projectAuthoring.afterUndo?.project?.entry?.stage === "training-grid" ||
@@ -3120,12 +3148,16 @@ function assertSmoke(diagnostics) {
     studioWorkbench.projectAuthoring.afterRedo?.history?.canRedo ||
     studioWorkbench.projectAuthoring.afterKeyboardUndo?.entry?.stage === "training-grid" ||
     studioWorkbench.projectAuthoring.afterKeyboardRedo?.entry?.stage !== "training-grid" ||
+    studioWorkbench.projectAuthoring.dirtyBeforeAutosave !== true ||
     studioWorkbench.projectAuthoring.beforeUnloadPrevented !== true ||
     studioWorkbench.projectAuthoring.navigationDialogDismissed !== true ||
     studioWorkbench.projectAuthoring.afterDismissedNavigation?.dirty !== true ||
-    studioWorkbench.projectAuthoring.afterDismissedNavigation?.entry?.stage !== "training-grid"
+    studioWorkbench.projectAuthoring.afterDismissedNavigation?.entry?.stage !== "training-grid" ||
+    studioWorkbench.projectAuthoring.afterAutosave?.dirty !== false ||
+    studioWorkbench.projectAuthoring.afterAutosave?.pending !== false ||
+    studioWorkbench.projectAuthoring.afterAutosave?.stored !== true
   ) {
-    failures.push("studio-workbench: authored project scene, dirty-state, undo/redo history, or navigation guard did not behave correctly");
+    failures.push("studio-workbench: authored project scene, dirty-state, undo/redo history, navigation guard, or autosave did not behave correctly");
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||
