@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 489 - Studio source import transaction boundary
+
+Done: Studio source imports now plan admission before active-session mutation,
+accept matched relinks and legacy baseline establishment, reject changed
+fingerprints or missing contracts, and expose explicit reasons. The commit
+boundary rolls back runtime, manifest, providers, audio, stages, inspector,
+build outputs, and autosave state if a later install step fails. Build Center
+exposes linked-package reimport plus a visible rejection notice; browser smoke
+changes one DEF byte and proves `rejected / changed-source` while the active
+package remains `linked / matched` with its prior fingerprint. Closure passes
+190 files / 1981 tests, TypeScript 7, boundaries, CSS budget, production build
+at 1,682.34 kB JavaScript / 422.57 kB gzip with the known chunk advisory,
+`581/581` trace artifacts (547 required, 34 optional, 0 skipped), and full
+browser smoke with no page or console issues. Claim allowed: current-session
+source admission, rejection, and commit rollback boundary. Claim blocked:
+persisted source editing/reimport, external file recovery, automatic reacquire,
+and full MUGEN/IKEMEN parity. Next: durable handle/permission-aware source
+replacement and recovery protocol.
+
 ## Entry 488 - Studio project storage conflict boundary
 
 Done: Studio project saves now carry an expected revision, reject stale writes
@@ -16602,5 +16621,3 @@ These are future horizons, not blockers for the private usable MVP.
 473. Done bounded IKEMEN active-root crouch low-guard contact. The four-frame fixture routes held-back plus held-down P3 through imported `holddown -> state 10` C while distant `guardflag = L` P4 has no latch. State `10` then executes an explicit fixture-local `PosSet` to isolate P3 from P1; P4 becomes P3's sole direct low-only latch, P3 executes `120` `StateTypeSet` C and `120 -> 131`, and delayed P4 overlap follows. Existing admission admits exactly `p4 -> p3`; existing combat records `guard`, target id `129`, C guard state `152`, `guarding = true`, and zero-chip life `1000`. Required `synthetic-imported-ikemen-active-root-crouch-low-guard.json` checksum `748679c8` / final `acec0c58` passes in four frames. Verification passes focused coverage, full `183` files / `1948` tests, TypeScript typecheck, module boundaries, production build with the existing `1,661.99 kB` Vite chunk advisory, and `573/573` traces (`542` required). Browser smoke is N/A because no visual surface changed. Claim allowed: one low-only direct active-root contact against a command-driven C fixture state through current state entry/guard-distance/admission/combat ownership. Claim blocked: generic active-root crouch movement, standing/air and complete high/low behavior, automatic-guard breadth, projectiles/helpers, target precedence, Pause/hitpause, guard presentation/audio, custom-state or forceguard variants, team replacement/KO, HUD/resources, rollback, score movement, and full MUGEN/IKEMEN parity.
 
 474. Done bounded source identity fingerprint and relink gate. ZIP/folder imports now compute deterministic SHA-256 metadata over normalized VFS paths and bytes; project source packages carry optional expected/observed fingerprint, algorithm, byte length, and `matched`/`changed`/`missing`/`unknown` identity status. Explicit relink establishes a baseline for legacy manifests, changed bytes stay unavailable for clean export, and observed identity remains visible for the future reimport transaction. Focused verification passes 2 files / 15 tests; full verification passes 189 files / 1977 tests, TypeScript 7 typecheck, module boundaries, CSS budget, production build with the existing `1,676.71 kB` Vite chunk advisory, `581/581` traces (547 required, 34 optional), and browser smoke with desktop/mobile source relink plus 64-character fingerprint evidence. Persistent handles, automatic reacquire, source writes, rollback, and streaming digest remain blocked future work. Claim allowed: deterministic current-session source identity and changed-relink admission boundary. Claim blocked: durable filesystem ownership, source editing, reimport transaction/rollback, large-source streaming, and full MUGEN/IKEMEN parity.
-475. Done bounded Studio source import transaction. `prepareSourceImportTransaction` now plans source admission before active-session mutation, accepts matched relinks and legacy baseline establishment, rejects changed fingerprints/missing contracts, and exposes explicit reasons. `runSourceImportTransaction` wraps the session commit with rollback of runtime, manifest, providers, audio, stages, inspector, build outputs, and autosave state when commit fails. Build Center exposes a reimport action for linked packages and a visible rejection notice; browser smoke mutates one DEF byte and proves `rejected / changed-source` while the active package remains `linked / matched` with its prior fingerprint. Focused verification passes 3 files / 19 tests, TypeScript 7 typecheck, script syntax/diff checks, and `pnpm qa:smoke` with zero page/console issues. Durable writes, handles, permission recovery, crash-safe replacement, and streaming digest remain blocked. Claim allowed: current-session source admission, rejection, and commit rollback boundary. Claim blocked: persisted source editing/reimport, external file recovery, automatic reacquire, and full MUGEN/IKEMEN parity.
-Verification addendum for 475: full regression passes 190 files / 1981 tests, TypeScript 7, boundaries, CSS budget, production build at 1,682.34 kB JavaScript / 422.57 kB gzip with the known chunk advisory, and qa:trace 581/581 artifacts (547 required, 34 optional, 0 skipped).
