@@ -1275,6 +1275,16 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-hitoverride",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-hitoverride-expiry",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-depth-miss",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact(),

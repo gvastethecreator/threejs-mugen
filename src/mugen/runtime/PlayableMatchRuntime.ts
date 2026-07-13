@@ -1316,6 +1316,7 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     this.actorConstraintWorld.resetFrameConstraints(fighter.runtime);
+    this.hitOverrideWorld.tickSlots(fighter.runtime);
     const tickStartPos = {
       ...fighter.runtime.pos,
       z: fighter.runtime.combatDepth?.position ?? 0,

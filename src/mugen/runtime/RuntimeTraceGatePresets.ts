@@ -8912,6 +8912,195 @@ export function createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 116;
+  const overrideStateNo = 777;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-hitoverride-grid",
+    displayName: "Trace Active Root HitOverride Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "active P3 installs HitOverride before active P4 contact", p1: [], p2: [], frames: 1 },
+    { label: "redirected P3 ages its one-tick override slot", p1: [], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-hitoverride-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Override Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const overrideDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-hitoverride-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Override Defender",
+    withHitDef: false,
+    passiveHitOverride: { attr: "S,NA", stateNo: overrideStateNo, slot: 2, time: 1 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-hitoverride-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Override Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [overrideDefender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-hitoverride-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-hitoverride-golden",
+      label: "Synthetic imported IKEMEN active-root HitOverride",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves active-motion P3 authors one ordinary defender-owned HitOverride, ordered P4 direct HitDef selects it, P3 enters its override state without normal damage, and P4 records exact P3 target/contact memory. It does not claim auto guard, forceguard/custom-state variants, helpers/projectiles, team KO, HUD/audio/resources, or full parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-hitoverride-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitOverride", "HitDef"],
+        requiredExecutedOperations: ["hitoverride", "hitdef"],
+        requiredEventCategories: ["override"],
+        requiredCombatReasons: ["override"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        forbiddenCombatReasons: ["hit", "guard"],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 installs HitOverride during active-motion controllers", frameIndex: 0, phase: "fighter:controllers", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "all active roots enter root admission before override resolution", frameIndex: 0, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "all roots commit contact memory after override resolution", frameIndex: 0, phase: "post-fighter:hitdef-contact-commit", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredActorFrames: [
+          { actorId: "p3", source: "imported", actorKind: "player", stateNo: overrideStateNo, teamStandby: false, observedLifeAtLeast: 1000, minFrames: 1 },
+          { actorId: "p4", source: "imported", actorKind: "player", teamStandby: false, minFrames: 2 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, stateNo: overrideStateNo },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 117;
+  const damage = 37;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-hitoverride-expiry-grid",
+    displayName: "Trace Active Root HitOverride Expiry Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "active P3 installs a one-tick HitOverride before P4 can attack", p1: [], p2: [], frames: 1 },
+    { label: "expired active P3 slot allows delayed P4 HitDef", p1: [], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-hitoverride-expiry-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Override Expiry Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const expiringDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-hitoverride-expiry-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Override Expiry Defender",
+    withHitDef: false,
+    passiveHitOverride: { attr: "S,NA", stateNo: 777, slot: 2, time: 1, trigger: "Time = 0" },
+  });
+  const delayedAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-hitoverride-expiry-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Override Expiry Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage, targetId, hitDefTrigger: "Time >= 1" },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [expiringDefender, delayedAttacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-hitoverride-expiry-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-hitoverride-expiry-golden",
+      label: "Synthetic imported IKEMEN active-root HitOverride slot expiry",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves an active-motion P3 one-tick HitOverride installed at Time = 0 expires before P4's delayed Time >= 1 HitDef. P3 then receives the ordinary defender-owned hit route, making active-root slot aging observable. It does not claim override replacement, permanent slots, guard, custom-state/force variants, helpers/projectiles, or full parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-hitoverride-expiry-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitOverride", "HitDef"],
+        requiredExecutedOperations: ["hitoverride", "hitdef"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        forbiddenCombatReasons: ["override", "guard"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 programs the one-tick slot before delayed combat", frameIndex: 0, phase: "fighter:controllers", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P4 receives delayed HitDef admission after P3 slot aging", frameIndex: 1, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredActorFrames: [
+          { actorId: "p3", source: "imported", actorKind: "player", observedLifeAtMost: 1000 - damage, minFrames: 1 },
+          { actorId: "p4", source: "imported", actorKind: "player", teamStandby: false, minFrames: 2 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000 - damage },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41222,6 +41411,7 @@ type SyntheticImportedGetHitVarBranchOptions = {
 type SyntheticImportedPassiveHitOverride = {
   attr: string;
   stateNo: number;
+  trigger?: string;
   slot?: number;
   time?: number;
   guardFlag?: string;
@@ -43533,7 +43723,7 @@ function passiveHitOverrideController(config: SyntheticImportedPassiveHitOverrid
   return `
 [State 0, Hit Override${suffix}]
 type = HitOverride
-trigger1 = Time >= 0
+trigger1 = ${config.trigger ?? "Time >= 0"}
 slot = ${config.slot ?? 1}
 attr = ${config.attr}
 stateno = ${config.stateNo}

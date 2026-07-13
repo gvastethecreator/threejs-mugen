@@ -125,10 +125,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute active-root presentation handoff](tickets/099-execute-active-root-presentation-handoff.md) - `RuntimeRootPresentation/v0` now drives P3 body/shadow/camera handoff through trace and desktop/mobile browser proof while pair gameplay/HUD ownership stays stable.
 - [Prove legal MUGEN-lite NoKOSlow browser route](tickets/115-legal-mugen-lite-nokoslow-browser-route.md) - resolved: legal ZIP command/state `210` now proves normal post-KO playback through required trace plus desktop/mobile browser smoke.
 
+- [Map active-root direct hit execution](tickets/114-map-active-root-direct-hit-execution.md) - resolved after implementation audit: ordered root direct hits, active-root CNS HitDef authoring, priority/trade, and directed reversal routes are already trace-gated. Next: Wayfinder 116.
+
+- [Execute active-root HitOverride route](tickets/116-execute-active-root-hitoverride-route.md) - resolved: active-motion P3-P8 may author ordinary actor-local HitOverride slots, age them once per active tick with an adversarial expiry trace, and redirect an admitted opposing root direct HitDef through existing resolver ownership. Next: map plural automatic guard scheduling or another unblocked root-combat boundary.
+
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- [Map active-root direct hit execution](tickets/114-map-active-root-direct-hit-execution.md)
+- Map plural active-root automatic guard scheduling.
 
 ## Not Yet Specified
 

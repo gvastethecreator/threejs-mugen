@@ -36,6 +36,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "posfreeze",
     "screenbound",
     "playerpush",
+    "hitoverride",
   ],
   sideEffects: ["hitdef", "reversaldef", "width", "height", "overrideclsn", "depth"],
 };

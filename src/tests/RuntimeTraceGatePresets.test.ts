@@ -166,6 +166,8 @@ import {
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
+  createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact,
+  createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthVelocityTraceArtifact,
   createSyntheticImportedIkemenStageDepthBoundTraceArtifact,
@@ -16157,6 +16159,51 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 115 }),
+    );
+  });
+
+  it("creates a required IKEMEN active-root HitOverride artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(2);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ HitOverride: 1, HitDef: 1 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({ hitoverride: 1, hitdef: 1 });
+    expect(artifact.gates[0]?.evidence.combatReasons).toEqual(["override"]);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toContain("p4->p3");
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p3", life: 1000, stateNo: 777 }),
+        expect.objectContaining({ id: "p4", life: 1000, targetCount: 1 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 116 }),
+    );
+  });
+
+  it("creates a required IKEMEN active-root HitOverride slot-expiry artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(2);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ HitOverride: 1, HitDef: 1 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({ hitoverride: 1, hitdef: 1 });
+    expect(artifact.gates[0]?.evidence.combatReasons).toEqual(["hit"]);
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual([]);
+    expect(artifact.trace.frames[1]?.rootHitAdmission?.admittedPairIds).toContain("p4->p3");
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p3", life: 963 }),
+        expect.objectContaining({ id: "p4", life: 1000, targetCount: 1 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 117 }),
     );
   });
 

@@ -1,7 +1,7 @@
 # Map Active-root Direct Hit Execution
 
 Type: research
-Status: ready
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -21,3 +21,9 @@ Map the first real P3-P8 direct-hit mutation cut now that effect ownership, targ
 Allowed: implementation-ready first active-root direct-hit execution contract.
 
 Blocked: full multi-root combat, throws, projectile/helper teams, exact round/HUD/audio/resources, scores, or full parity.
+
+## Outcome
+
+The mapped first mutation route already landed in the runtime. Explicit IKEMEN Tag resolves ordered admitted direct pairs through `RuntimeCombatResolutionWorld.resolveDirect`, exact roots are looked up from the authoritative registry, and unknown admitted ids fail closed. Follow-on cuts also added active-root CNS HitDef authoring, actor-keyed target/contact memory, HitDef priority arbitration, equal-priority trades, and directed ReversalDef clashes.
+
+Required traces now cover the direct-hit, priority, trade, and reversal routes. The next unimplemented direct-combat boundary is active-root HitOverride authoring and resolution, tracked by Wayfinder 116.
