@@ -9228,6 +9228,201 @@ export function createSyntheticImportedIkemenActiveRootDirectGuardTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootCrouchGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 123;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-crouch-guard-grid",
+    displayName: "Trace Active Root Crouch Guard Grid",
+    playerStart: {
+      p1: { x: -220, y: 0, facing: 1 },
+      p2: { x: 180, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "near P4 latches P3 crouch guard distance without contact", p1: ["B", "D"], p2: [], frames: 1 },
+    { label: "latched P3 enters crouch guard while P4 remains out of contact", p1: ["B", "D"], p2: [], frames: 1 },
+    { label: "crouch-guarding P3 blocks delayed P4 direct contact", p1: ["B", "D"], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-guard-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Guard Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const pairAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-guard-pair-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Guard Pair Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 124, guardDistance: 112, clsn1Extent: 36, posX: 180 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-guard-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Guard Defender",
+    withHitDef: false,
+    withCrouchAutoGuardStartStates: true,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      guardStateNo: 130,
+    },
+    activeRootHitDefRoute: { damage: 0, targetId: 125, posX: -95, hitDefTrigger: "0" },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-guard-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Guard Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      guardDistance: 112,
+      clsn1Extent: 36,
+      posX: 55,
+      delayedPosX: { x: -55, trigger: "Time >= 2" },
+    },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: pairAttacker,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [defender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-crouch-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-crouch-guard-golden",
+      label: "Synthetic imported IKEMEN active-root crouch guard contact",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves a prior direct P4 InGuardDist latch places P3 in imported guard state 120, whose Common1-style StateTypeSet selects C before 120 -> 131. On P4's delayed physical-overlap tick, P4's PosSet and P3's guard-start controller complete before post-fighter root admission, so the existing root admission and direct combat resolver record one guarded P4->P3 HitDef contact using P3's crouch guard-hit state 152. The fixture retains P3 life for zero chip damage, creates P4 target memory, and keeps Pair P2 guardable but out of range. High/low rejection, air guard, projectile/helper contact, pause/hitpause, guard effects or sound parity, custom-state variants, target precedence, team KO, and full parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-crouch-guard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [120, 131, 152],
+        requiredExecutedControllers: ["ChangeState", "StateTypeSet", "HitDef", "PosSet"],
+        requiredExecutedOperations: ["metadata:statetypeset", "hitdef", "kinematic:posset"],
+        requiredActiveCommands: ["holdback", "holddown"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        forbiddenCombatReasons: ["hit", "override", "reversal"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 selects crouch state before completing its guard-start controller",
+            actorId: "p3",
+            allowSameTick: true,
+            steps: [
+              { tick: 2, stateNo: 120, controller: "StateTypeSet", name: "Crouch Guard Start State Type" },
+              { tick: 2, stateNo: 120, operation: "metadata:statetypeset" },
+              { tick: 3, stateNo: 120, controller: "ChangeState", name: "Crouch Guard Start Done" },
+            ],
+          },
+          {
+            label: "P4 enters physical overlap on the delayed-contact tick",
+            actorId: "p4",
+            allowSameTick: true,
+            steps: [{ tick: 3, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 receives direct plural guard latches before crouch automatic guard", frameIndex: 0, phase: "tick:guard-distance-latch", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P3 completes crouch guard-start controllers before root admission", frameIndex: 2, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "root admission follows all active root controllers", frameIndex: 2, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredTickScheduleStampSequences: [
+          {
+            label: "delayed P4 position and P3 crouch guard-start both precede root admission",
+            frameIndex: 2,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "post-fighter:hit-admission", actorId: "p1" },
+            ],
+          },
+        ],
+        requiredRootHitAdmissionFrames: [{ admittedPairIds: ["p4->p3"], minFrames: 1 }],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 120,
+            stateType: "C",
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 152,
+            stateType: "C",
+            guarding: true,
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            teamStandby: false,
+            minFrames: 1,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "P3 starts crouch guarding from the prior P4 latch before contact resolves",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 120,
+                stateType: "C",
+                inGuardDistAttackerId: "p4",
+                inGuardDistSource: "direct",
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 152,
+                stateType: "C",
+                guarding: true,
+                observedLifeAtLeast: 1000,
+                observedLifeAtMost: 1000,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, stateNo: 152, stateType: "C", guarding: true, ctrl: false },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -42464,6 +42659,7 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveRemoveOnGetHitExplod?: boolean;
   withInGuardDistGuardStart?: boolean;
   withAutoGuardStartStates?: boolean;
+  withCrouchAutoGuardStartStates?: boolean;
   withBoundsControllers?: boolean;
   withScreenBoundCameraProbe?: boolean;
   withGravity?: boolean;
@@ -43078,7 +43274,11 @@ ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
-${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
+${options.withCrouchAutoGuardStartStates
+  ? crouchAutoGuardStartStateBlock()
+  : options.withAutoGuardStartStates
+    ? autoGuardStartStateBlock()
+    : ""}
 ${passiveControllerStateBlocks(options)}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
@@ -43200,9 +43400,11 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
         ? []
         : ([[options.passiveHitOverride.stateNo, traceAction(options.passiveHitOverride.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...passiveHitOverrideTraceActions(options.passiveHitOverrides),
-      ...(options.withAutoGuardStartStates
-        ? ([[120, traceAction(120)], [130, traceAction(130)], [140, traceAction(140)]] as Array<[number, MugenAnimationAction]>)
-        : []),
+      ...(options.withCrouchAutoGuardStartStates
+        ? ([[120, traceAction(120)], [131, traceAction(131)]] as Array<[number, MugenAnimationAction]>)
+        : options.withAutoGuardStartStates
+          ? ([[120, traceAction(120)], [130, traceAction(130)], [140, traceAction(140)]] as Array<[number, MugenAnimationAction]>)
+          : []),
       ...(options.withProjectile
         ? ([[910, projectileTraceAction(910)], ...projectileTerminalTraceActions(options)] as Array<[number, MugenAnimationAction]>)
         : []),
@@ -45325,6 +45527,34 @@ type = ChangeState
 trigger1 = Time >= 1
 value = 0
 ctrl = 1
+`;
+}
+
+function crouchAutoGuardStartStateBlock(): string {
+  return `
+[Statedef 120]
+type = U
+physics = U
+anim = 120
+ctrl = 0
+
+[State 120, Crouch Guard Start State Type]
+type = StateTypeSet
+trigger1 = Time = 0
+statetype = C
+physics = C
+
+[State 120, Crouch Guard Start Done]
+type = ChangeState
+trigger1 = Time >= 1
+value = 131
+
+[Statedef 131]
+type = C
+movetype = I
+physics = C
+anim = 131
+ctrl = 0
 `;
 }
 

@@ -133,10 +133,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Prove active-root direct guard contact](tickets/118-prove-active-root-direct-guard-contact.md) - resolved: prior P3 direct guard-distance observation reaches imported state `120` before P4's delayed-overlap tick; deterministic phase stamps prove P4's `PosSet` and P3's `120 -> 130` controller both finish before existing root admission/direct resolver produces exactly one zero-chip `p4 -> p3` guard and default state `150`; checksum `202b9838` / final `140ed77e`. Next: map one narrow active-root guard-contact boundary rather than widening target or effect semantics.
 
+- [Prove active-root crouch guard contact](tickets/119-prove-active-root-crouch-guard-contact.md) - resolved: held-back plus held-down P3 executes fixture-only Common1-style `120` `StateTypeSet` C and `120 -> 131` before P4's delayed overlap; existing root admission/direct combat records one zero-chip `p4 -> p3` guard in C state `152`; checksum `9aac9d7d` / final `82f0d463`. Next: map one narrow high/low guard-flag rejection boundary without widening root ownership.
+
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Map active-root guard-contact variants or contact-order boundary.
+- Map active-root high/low guard-flag rejection without widening helpers, target precedence, or presentation ownership.
 
 ## Not Yet Specified
 

@@ -914,6 +914,19 @@ This gate proves:
 
 Required trace checksum is `202b9838`; final checksum is `140ed77e`. This proves one direct normal-tick active-root guard contact through existing admission, generic combat, target, contact, and default guard-state ownership. Projectile/helper contacts, target ranking, Pause/hitpause, guard sound/spark/renderer effects, custom-state or forceguard variants, team replacement/KO, HUD/resources, and full MUGEN/IKEMEN parity remain unsupported.
 
+## Current Active-root Crouch Guard Contact Gate
+
+`pnpm qa:trace` includes required `synthetic-imported-ikemen-active-root-crouch-guard.json`.
+
+This gate proves:
+
+- P2 remains guardable but out of range while P4 is P3's only direct `InGuardDist` provenance;
+- held-back plus held-down side-one input reaches P3, whose imported state `120` executes `StateTypeSet` to C, then follows `120 -> 131` before P4 reaches physical overlap;
+- on P4's delayed-overlap tick, P4's delayed `PosSet` and P3's imported `ChangeState` both complete before post-fighter root admission and generic combat;
+- root admission contains exactly `p4 -> p3`, the direct resolver records `guard` rather than `hit`, `override`, or `reversal`, P4 records target id `123`, and P3 enters crouch guard-hit state `152` with state type C, `guarding = true`, zero chip damage, and life `1000`.
+
+Required trace checksum is `9aac9d7d`; final checksum is `82f0d463`. This proves one normal-tick direct active-root crouch guard contact through the existing generic admission, combat, target/contact, StateTypeSet, and default guard-state routes. High/low rejection matrices, air guard, projectile/helper contacts, target ranking, Pause/hitpause, guard sound/spark/renderer effects, custom-state or forceguard variants, team replacement/KO, HUD/resources, and full MUGEN/IKEMEN parity remain unsupported.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:

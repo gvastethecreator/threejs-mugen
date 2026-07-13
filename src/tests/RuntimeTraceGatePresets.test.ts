@@ -168,6 +168,7 @@ import {
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootAutoGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectGuardTraceArtifact,
+  createSyntheticImportedIkemenActiveRootCrouchGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
@@ -16255,6 +16256,66 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 120 }),
+    );
+  });
+
+  it("creates a required IKEMEN active-root crouch guard-contact artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootCrouchGuardTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(3);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      ChangeState: expect.any(Number),
+      StateTypeSet: expect.any(Number),
+      HitDef: expect.any(Number),
+      PosSet: expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "metadata:statetypeset": expect.any(Number),
+      hitdef: expect.any(Number),
+      "kinematic:posset": expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.combatReasons).toEqual(expect.arrayContaining(["guard"]));
+    expect(artifact.gates[0]?.evidence.combatReasons).not.toEqual(expect.arrayContaining(["hit", "override", "reversal"]));
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual([]);
+    expect(artifact.trace.frames[1]?.rootHitAdmission?.admittedPairIds).toEqual([]);
+    expect(artifact.trace.frames[2]?.rootHitAdmission?.admittedPairIds).toContain("p4->p3");
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p3",
+        steps: expect.arrayContaining([
+          expect.objectContaining({ tick: 2, stateNo: 120, controller: "StateTypeSet", name: "Crouch Guard Start State Type" }),
+          expect.objectContaining({ tick: 3, stateNo: 120, controller: "ChangeState", name: "Crouch Guard Start Done" }),
+        ]),
+      }),
+      expect.objectContaining({
+        actorId: "p4",
+        steps: [expect.objectContaining({ tick: 3, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" })],
+      }),
+    ]));
+    expect(artifact.gates[0]?.requirements.requiredTickScheduleStampSequences).toEqual([
+      {
+        label: "delayed P4 position and P3 crouch guard-start both precede root admission",
+        frameIndex: 2,
+        steps: [
+          { phase: "fighter:controllers", actorId: "p4" },
+          { phase: "fighter:controllers", actorId: "p3" },
+          { phase: "post-fighter:hit-admission", actorId: "p1" },
+        ],
+      },
+    ]);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p3", stateNo: 120, stateType: "C", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
+      expect.objectContaining({ actorId: "p3", stateNo: 152, stateType: "C", guardingFrames: 2 }),
+    ]));
+    expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1000, stateNo: 152, stateType: "C", guarding: true, ctrl: false }),
+      expect.objectContaining({ id: "p4", life: 1000, targetCount: 1 }),
+    ]));
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 123 }),
     );
   });
 

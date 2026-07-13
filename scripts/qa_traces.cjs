@@ -1285,6 +1285,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootDirectGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-crouch-guard",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootCrouchGuardTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-hitoverride",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(),
