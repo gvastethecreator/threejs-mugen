@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 483 - Independent Code Fu Man upper route
+
+Done: the optional MIT Code Fu Man package now proves a second authored route,
+`upper_x -> state 1100 -> AIR 1100`, through the production loader,
+deterministic runtime trace, and real browser input. The route is sourced from
+`kfm.cmd` (`~F, D, DF, x` plus State -1 value `1100`) and `kfm.cns` (authored
+`Width` plus two `HitDef` branches). The bounded trace
+`codefuman-independent-upper-x` passes with checksum `f26de55f`, initial
+`3bb8fbdd`, final `392e1dbb`, and 31 frames; it requires state `1100`,
+`ChangeState`, `Width`, `HitDef`, typed `collision:width` / `hitdef`, active
+`upper_x` / `x`, and a hit event. Browser smoke sends physical `F -> D -> DF -> x`
+and captures imported `1100/1100`, nonblank pixels, and idle return. Full
+closure passes `185` files / `1964` tests, TypeScript 7 typecheck, boundaries,
+build, `581/581` trace artifacts (`547` required, `34` optional), and full
+browser smoke. Claim allowed: a second bounded independent authored route.
+Claim blocked: complete Code Fu Man/special breadth, exact command or Width
+semantics, public asset support, broad corpus compatibility, and full
+MUGEN/IKEMEN parity. Next: Wayfinder 003 defines the practical Studio editor
+authoring spine.
+
 ## Entry 482 - Independent Code Fu Man QCF special route
 
 Done: the optional MIT Code Fu Man package now proves one authored

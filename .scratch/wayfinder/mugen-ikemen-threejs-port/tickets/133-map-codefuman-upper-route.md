@@ -1,7 +1,7 @@
 # Map Code Fu Man Upper Route
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -32,3 +32,16 @@ Allowed: one independently sourced Code Fu Man upper-route command/state path.
 Blocked: all specials, command-priority parity, complete AIR/Width semantics,
 exact Common1 timing, broad controller parity, public asset bundling, and full
 MUGEN/IKEMEN parity.
+
+## Resolution
+
+Selected the authored `upper_x` route from `kfm.cmd`: `~F, D, DF, x` routes
+through State -1 `Light Kung Fu Upper` to state `1100`. The imported `kfm.cns`
+state publishes AIR action `1100`, executes authored `Width` controllers, and
+contains two `HitDef` branches. The optional production trace
+`codefuman-independent-upper-x` passes with checksum `f26de55f`, 31 frames,
+and final checksum `392e1dbb`; browser smoke proves physical input, nonblank
+Three.js output, and idle return. Details are recorded in
+`docs/reports/2026-07-13-codefuman-upper-route.md`.
+
+Next: Wayfinder 003 defines the practical Studio editor authoring spine.

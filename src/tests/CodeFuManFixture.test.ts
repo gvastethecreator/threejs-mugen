@@ -9,6 +9,7 @@ import { ZipCharacterSource } from "../mugen/loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import {
   createCodeFuManIndependentQcfXTraceArtifact,
+  createCodeFuManIndependentUpperXTraceArtifact,
   createCodeFuManIndependentXTraceArtifact,
 } from "../mugen/runtime/RuntimeTraceGatePresets";
 
@@ -109,6 +110,23 @@ describe("Code Fu Man external fixture", () => {
     });
     expect(artifact.gates[0]?.evidence.activeCommands).toEqual(expect.arrayContaining(["QCF_x", "x"]));
     expect(artifact.gates[0]?.evidence.routedStates).toContain(1000);
+  });
+
+  itWithCodeFuManFixture("proves the authored upper_x route in the deterministic runtime trace", async () => {
+    const { imported } = await loadCodeFuMan();
+    const artifact = createCodeFuManIndependentUpperXTraceArtifact(imported);
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates.flatMap((gate) => gate.failures)).toEqual([]);
+    expect(artifact.target).toMatchObject({
+      id: "codefuman-independent-upper-x-golden",
+      source: "mixed",
+    });
+    expect(artifact.trace.finalActors[0]).toMatchObject({
+      source: "imported",
+    });
+    expect(artifact.gates[0]?.evidence.activeCommands).toEqual(expect.arrayContaining(["upper_x", "x"]));
+    expect(artifact.gates[0]?.evidence.routedStates).toContain(1100);
   });
 });
 

@@ -2613,6 +2613,25 @@ export function createCodeFuManIndependentQcfXTraceArtifact(
   });
 }
 
+export function createCodeFuManIndependentUpperXTraceArtifact(
+  imported: DemoFighterDefinition,
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedUpperXTraceArtifact(imported, {
+    ...options,
+    targetId: "codefuman-independent-upper-x-golden",
+    targetLabel: "Code Fu Man independent upper x route",
+    requireHitEvent: true,
+    requiredExecutedControllers: ["ChangeState", { type: "Width", minCount: 1 }, "HitDef"],
+    requiredExecutedOperations: ["collision:width", "hitdef"],
+    script: upperXContactScript(),
+    notes: [
+      "Optional local Code Fu Man fixture trace proves the authored upper_x command sequence reaches state 1100, publishes its authored Width controller, executes HitDef, and produces a bounded hit event.",
+      "This does not claim every Code Fu Man special, exact command priority/buffering parity, complete Width semantics, exact Common1 timing, or full MUGEN/IKEMEN compatibility.",
+    ],
+  });
+}
+
 export function createSyntheticImportedRejectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -42582,6 +42601,67 @@ export function createImportedQcfXTraceArtifact(
   });
 }
 
+export function createImportedUpperXTraceArtifact(
+  imported: DemoFighterDefinition,
+  options: RuntimeTraceGatePresetOptions & {
+    targetId?: string;
+    targetLabel?: string;
+    notes?: string[];
+    requireHitEvent?: boolean;
+    requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
+    requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
+    requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
+    requiredHitEffectEvents?: RuntimeTraceGate["requiredHitEffectEvents"];
+    requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
+    requiredTargetLinks?: RuntimeTraceGate["requiredTargetLinks"];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
+    script?: RuntimeTraceInputFrame[];
+  } = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = options.script ?? upperXContactScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage }), script, {
+    label: `${imported.id}-upper-x-golden`,
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: options.targetId ?? `${imported.id}-upper-x-golden`,
+      label: options.targetLabel ?? `${imported.displayName} upper x route`,
+      source: "mixed",
+      notes: options.notes ?? [
+        "Imported upper x trace verifies an authored command sequence and bounded upper-state execution for fixtures that expose upper_x.",
+      ],
+    },
+    gates: [
+      {
+        label: "imported-upper-x-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [1100],
+        requiredExecutedStates: [1100],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", { type: "Width", minCount: 1 }, "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["collision:width", "hitdef"],
+        requiredSoundEvents: options.requiredSoundEvents,
+        requiredHitEffectEvents: options.requiredHitEffectEvents,
+        requiredContactEffectPackages: options.requiredContactEffectPackages,
+        requiredTargetLinks: options.requiredTargetLinks,
+        requiredActorFrames: options.requiredActorFrames,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
+        requiredActiveCommands: ["upper_x", "x"],
+        ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const], requiredCombatReasons: ["hit" as const] } : {}),
+        requiredFinalActors: options.requiredFinalActors,
+      },
+    ],
+  });
+}
+
 export function officialKfmQcfXControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM QCF_x command into state 1000 contact controller order",
@@ -43374,6 +43454,16 @@ export function qcfXContactScript(): RuntimeTraceInputFrame[] {
     { label: "qcf-f", frames: 2, p1: ["F"], p2: [] },
     { label: "qcf-x", frames: 1, p1: ["x"], p2: [] },
     { label: "qcf-contact-settle", frames: 24, p1: [], p2: [] },
+  ]);
+}
+
+export function upperXContactScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "upper-f", frames: 2, p1: ["F"], p2: [] },
+    { label: "upper-d", frames: 2, p1: ["D"], p2: [] },
+    { label: "upper-df", frames: 2, p1: ["D", "F"], p2: [] },
+    { label: "upper-x", frames: 1, p1: ["x"], p2: [] },
+    { label: "upper-contact-settle", frames: 24, p1: [], p2: [] },
   ]);
 }
 

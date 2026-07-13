@@ -159,7 +159,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Map Code Fu Man special route](tickets/132-map-codefuman-special-route.md) - resolved: authored `QCF_x` (`~D, DF, F, x`) reaches state `1000` / AIR `1000`, executes three `PosAdd` steps plus `HitDef`, and passes optional trace `5540d52b` with browser input and idle return. Broad special/corpus parity remains blocked.
 
-- [Map Code Fu Man upper route](tickets/133-map-codefuman-upper-route.md)
+- [Map Code Fu Man upper route](tickets/133-map-codefuman-upper-route.md) - resolved: authored `upper_x` (`~F, D, DF, x`) reaches state `1100` / AIR `1100`, publishes nine `Width` executions and two `HitDef` executions, and passes optional trace `f26de55f` with browser input and idle return. Complete AIR/Width semantics and broad parity remain blocked.
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - Continue evidence-led compatibility breadth without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
 
