@@ -167,6 +167,7 @@ import {
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
   createSyntheticImportedIkemenActiveRootAutoGuardTraceArtifact,
+  createSyntheticImportedIkemenActiveRootDirectGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
@@ -16193,6 +16194,67 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ id: "p3", life: 1000, stateNo: 130, ctrl: false }),
         expect.objectContaining({ id: "p4", life: 1000 }),
       ]),
+    );
+  });
+
+  it("creates a required IKEMEN active-root direct guard-contact artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootDirectGuardTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(3);
+    expect(artifact.gates[0]?.evidence.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.PosSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.combatReasons).toEqual(expect.arrayContaining(["guard"]));
+    expect(artifact.gates[0]?.evidence.combatReasons).not.toEqual(expect.arrayContaining(["hit", "override", "reversal"]));
+    expect(artifact.trace.frames[0]?.rootHitAdmission?.admittedPairIds).toEqual([]);
+    expect(artifact.trace.frames[1]?.rootHitAdmission?.admittedPairIds).toEqual([]);
+    expect(artifact.trace.frames[2]?.rootHitAdmission?.admittedPairIds).toContain("p4->p3");
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p3",
+        steps: [expect.objectContaining({ tick: 3, stateNo: 120, controller: "ChangeState", name: "Guard Start Done" })],
+      }),
+      expect.objectContaining({
+        actorId: "p4",
+        steps: [expect.objectContaining({ tick: 3, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" })],
+      }),
+    ]));
+    expect(artifact.gates[0]?.requirements.requiredTickScheduleStampSequences).toEqual([
+      {
+        label: "delayed P4 position and P3 guard-start both precede root admission",
+        frameIndex: 2,
+        steps: [
+          { phase: "fighter:controllers", actorId: "p4" },
+          { phase: "fighter:controllers", actorId: "p3" },
+          { phase: "post-fighter:hit-admission", actorId: "p1" },
+        ],
+      },
+    ]);
+    const phaseStamps = artifact.trace.frames[2]?.tickSchedule?.phaseStamps ?? [];
+    const p4Controllers = phaseStamps.findIndex((stamp) => stamp.id === "fighter:controllers" && stamp.actorId === "p4");
+    const p3Controllers = phaseStamps.findIndex((stamp) => stamp.id === "fighter:controllers" && stamp.actorId === "p3");
+    const firstAdmission = phaseStamps.findIndex((stamp) => stamp.id === "post-fighter:hit-admission" && stamp.actorId === "p1");
+    expect(p4Controllers).toBeGreaterThanOrEqual(0);
+    expect(p3Controllers).toBeGreaterThan(p4Controllers);
+    expect(firstAdmission).toBeGreaterThan(p3Controllers);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p3", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
+      ]),
+    );
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p3", life: 1000, stateNo: 150, guarding: true, ctrl: false }),
+        expect.objectContaining({ id: "p4", life: 1000, targetCount: 1 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 120 }),
     );
   });
 

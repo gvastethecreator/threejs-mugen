@@ -901,6 +901,19 @@ This gate proves:
 
 Required trace checksum is `5e0aaf61`; final checksum is `0221a0e8`. This proves direct normal-tick guard-start scheduling only. Projectile/helper threats, nearest-target ordering, Pause/hitpause guard scheduling, guard contact/effects, and broad team parity remain unsupported.
 
+## Current Active-root Direct Guard Contact Gate
+
+`pnpm qa:trace` includes required `synthetic-imported-ikemen-active-root-direct-guard.json`.
+
+This gate proves:
+
+- P2 remains guardable but out of range while P4 supplies P3's prior direct `InGuardDist` latch;
+- P3 is observable in imported automatic guard state `120` before P4's delayed-overlap tick; on that tick P4's delayed `PosSet` then P3's `120 -> 130` controller occur in deterministic actor-phase order, and both precede post-fighter root admission and combat;
+- root admission contains exactly `p4 -> p3`, and the existing direct resolver classifies the contact as `guard` rather than `hit`, `override`, or `reversal`;
+- P4 records target id `120` against P3, while P3 enters default guard state `150` with `guarding = true`, zero chip damage, and life `1000`.
+
+Required trace checksum is `202b9838`; final checksum is `140ed77e`. This proves one direct normal-tick active-root guard contact through existing admission, generic combat, target, contact, and default guard-state ownership. Projectile/helper contacts, target ranking, Pause/hitpause, guard sound/spark/renderer effects, custom-state or forceguard variants, team replacement/KO, HUD/resources, and full MUGEN/IKEMEN parity remain unsupported.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:

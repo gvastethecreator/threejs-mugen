@@ -9048,6 +9048,186 @@ export function createSyntheticImportedIkemenActiveRootAutoGuardTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootDirectGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 120;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-direct-guard-grid",
+    displayName: "Trace Active Root Direct Guard Grid",
+    playerStart: {
+      p1: { x: -220, y: 0, facing: 1 },
+      p2: { x: 180, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "near P4 latches P3 guard distance without contact", p1: ["B"], p2: [], frames: 1 },
+    { label: "latched P3 enters automatic guard while P4 remains out of contact", p1: ["B"], p2: [], frames: 1 },
+    { label: "guarding P3 blocks delayed P4 direct contact", p1: ["B"], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-direct-guard-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Direct Guard Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const pairAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-direct-guard-pair-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Direct Guard Pair Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 121, guardDistance: 112, clsn1Extent: 36, posX: 180 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-direct-guard-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Direct Guard Defender",
+    withHitDef: false,
+    withAutoGuardStartStates: true,
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, guardStateNo: 142 },
+    activeRootHitDefRoute: { damage: 0, targetId: 122, posX: -95, hitDefTrigger: "0" },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-direct-guard-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Direct Guard Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      guardDistance: 112,
+      clsn1Extent: 36,
+      posX: 55,
+      delayedPosX: { x: -55, trigger: "Time >= 2" },
+    },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: pairAttacker,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [defender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-direct-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-direct-guard-golden",
+      label: "Synthetic imported IKEMEN active-root direct guard contact",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves a prior direct P4 InGuardDist latch places P3 in imported guard state 120 before P4's delayed physical-overlap tick. On that tick P4's delayed PosSet and P3's 120 -> 130 controller run before post-fighter root admission, so the existing root admission and direct combat resolver record P4->P3 as one guarded HitDef contact. The fixture retains P3 life for zero chip damage, creates P4 target memory, and enters P3's default guard state; Pair P2 remains guardable but out of range. Projectile/helper contact, pause/hitpause, guard effects or sound parity, custom-state variants, target precedence, team KO, and full parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-direct-guard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "PosSet"],
+        requiredExecutedOperations: ["hitdef", "kinematic:posset"],
+        requiredActiveCommands: ["holdback"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        forbiddenCombatReasons: ["hit", "override", "reversal"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 completes its imported guard-start controller on the delayed-contact tick",
+            actorId: "p3",
+            allowSameTick: true,
+            steps: [{ tick: 3, stateNo: 120, controller: "ChangeState", name: "Guard Start Done" }],
+          },
+          {
+            label: "P4 enters physical overlap on the delayed-contact tick",
+            actorId: "p4",
+            allowSameTick: true,
+            steps: [{ tick: 3, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 receives direct plural guard latches before automatic guard", frameIndex: 0, phase: "tick:guard-distance-latch", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P3 completes guard-start controllers before root admission", frameIndex: 2, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "root admission follows all active root controllers", frameIndex: 2, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredTickScheduleStampSequences: [
+          {
+            label: "delayed P4 position and P3 guard-start both precede root admission",
+            frameIndex: 2,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "post-fighter:hit-admission", actorId: "p1" },
+            ],
+          },
+        ],
+        requiredRootHitAdmissionFrames: [{ admittedPairIds: ["p4->p3"], minFrames: 1 }],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 120,
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 150,
+            guarding: true,
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            teamStandby: false,
+            minFrames: 1,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "P3 starts guarding from the prior P4 latch before contact resolves",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 120,
+                inGuardDistAttackerId: "p4",
+                inGuardDistSource: "direct",
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 150,
+                guarding: true,
+                observedLifeAtLeast: 1000,
+                observedLifeAtMost: 1000,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, stateNo: 150, guarding: true, ctrl: false },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41948,6 +42128,7 @@ export type SyntheticImportedTraceFighterOptions = {
     priorityType?: "Hit" | "Miss" | "Dodge";
     clsn1Extent?: number;
     posX?: number;
+    delayedPosX?: { x: number; trigger?: string };
     posZ?: number;
     velZ?: number;
     posFreeze?: boolean;
@@ -47386,6 +47567,7 @@ function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFig
 ${route.posX === undefined
   ? (route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`)
   : `[State 0, Active Root Pos]\ntype = PosSet\ntrigger1 = 1\nx = ${route.posX}\n${route.posZ === undefined ? "" : `z = ${route.posZ}\n`}`}
+${route.delayedPosX === undefined ? "" : `[State 0, Active Root Delayed Pos]\ntype = PosSet\ntrigger1 = ${route.delayedPosX.trigger ?? "Time >= 1"}\nx = ${route.delayedPosX.x}\n`}
 ${route.velZ === undefined ? "" : `[State 0, Active Root Vel Z]\ntype = VelSet\ntrigger1 = Time = 0\nz = ${route.velZ}\n`}
 ${route.posFreeze ? `[State 0, Active Root PosFreeze]\ntype = PosFreeze\ntrigger1 = 1\nvalue = 1\n` : ""}
 ${route.depth ? `[State 0, Active Root Depth]\ntype = Depth\ntrigger1 = 1\n${route.depthRedirectId === undefined ? "" : `redirectid = ${route.depthRedirectId}\n`}${route.depth.mode} = ${route.depth.top},${route.depth.bottom}\n` : ""}

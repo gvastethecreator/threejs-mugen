@@ -1003,6 +1003,7 @@ export type RuntimeTraceGate = {
   requiredExecutedOperations?: Array<string | { operation: string; minCount: number }>;
   requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
   requiredTickSchedulePhaseSequences?: RuntimeTraceTickSchedulePhaseSequenceRequirement[];
+  requiredTickScheduleStampSequences?: RuntimeTraceTickScheduleStampSequenceRequirement[];
   requiredActiveCommands?: string[];
   requiredEventCategories?: RuntimeTraceEvent["category"][];
   requiredEventSubstrings?: string[];
@@ -1069,6 +1070,7 @@ export type RuntimeTraceGateResult = {
 
 export type RuntimeTraceControllerEventRequirement = {
   actorId?: string;
+  tick?: number;
   stateNo?: number;
   controller?: string;
   name?: string;
@@ -1090,6 +1092,17 @@ export type RuntimeTraceTickSchedulePhaseSequenceRequirement = {
   frameIndex?: number;
   phase: RuntimeMatchTickPhaseId;
   actorIds: string[];
+};
+
+export type RuntimeTraceTickScheduleStampRequirement = {
+  phase: RuntimeMatchTickPhaseId;
+  actorId?: string;
+};
+
+export type RuntimeTraceTickScheduleStampSequenceRequirement = {
+  label?: string;
+  frameIndex?: number;
+  steps: RuntimeTraceTickScheduleStampRequirement[];
 };
 
 export type RuntimeTraceRunner = {
@@ -1211,6 +1224,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
   for (const requirement of gate.requiredTickSchedulePhaseSequences ?? []) {
     if (!matchesTickSchedulePhaseSequenceRequirement(trace, requirement)) {
       failures.push(`Missing tick schedule phase sequence: ${describeTickSchedulePhaseSequenceRequirement(requirement)}`);
+    }
+  }
+  for (const requirement of gate.requiredTickScheduleStampSequences ?? []) {
+    if (!matchesTickScheduleStampSequenceRequirement(trace, requirement)) {
+      failures.push(`Missing tick schedule stamp sequence: ${describeTickScheduleStampSequenceRequirement(requirement)}`);
     }
   }
   for (const command of gate.requiredActiveCommands ?? []) {
@@ -1411,6 +1429,39 @@ function describeTickSchedulePhaseSequenceRequirement(requirement: RuntimeTraceT
   const label = requirement.label ? `${requirement.label}: ` : "";
   const frame = requirement.frameIndex === undefined ? "any frame" : `frame ${requirement.frameIndex}`;
   return `${label}${frame} ${requirement.phase} = ${requirement.actorIds.join(" -> ")}`;
+}
+
+function matchesTickScheduleStampSequenceRequirement(
+  trace: RuntimeTrace,
+  requirement: RuntimeTraceTickScheduleStampSequenceRequirement,
+): boolean {
+  if (requirement.steps.length === 0) {
+    return false;
+  }
+  return trace.frames.some((frame) => {
+    if (requirement.frameIndex !== undefined && frame.frameIndex !== requirement.frameIndex) {
+      return false;
+    }
+    const phaseStamps = frame.tickSchedule?.phases ?? [];
+    let cursor = -1;
+    for (const step of requirement.steps) {
+      const foundIndex = phaseStamps.findIndex((stamp, index) =>
+        index > cursor && stamp.id === step.phase && (step.actorId === undefined || stamp.actorId === step.actorId),
+      );
+      if (foundIndex === -1) {
+        return false;
+      }
+      cursor = foundIndex;
+    }
+    return true;
+  });
+}
+
+function describeTickScheduleStampSequenceRequirement(requirement: RuntimeTraceTickScheduleStampSequenceRequirement): string {
+  const label = requirement.label ? `${requirement.label}: ` : "";
+  const frame = requirement.frameIndex === undefined ? "any frame" : `frame ${requirement.frameIndex}`;
+  const steps = requirement.steps.map((step) => `${step.phase}${step.actorId ? `(${step.actorId})` : ""}`).join(" -> ");
+  return `${label}${frame} ${steps}`;
 }
 
 export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGateEvidence {
@@ -4103,6 +4154,7 @@ function matchesControllerEventRequirement(
 ): boolean {
   return (
     (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
+    (requirement.tick === undefined || event.tick === requirement.tick) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
     (requirement.controller === undefined || event.controller === requirement.controller) &&
     (requirement.name === undefined || event.name === requirement.name) &&

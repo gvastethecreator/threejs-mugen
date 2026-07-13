@@ -730,7 +730,8 @@
 
 - Explicit IKEMEN Tag active-motion roots now refresh a direct-only plural `InGuardDist` latch after body push and before hit admission, then use the existing imported automatic guard-start checkpoints.
 - Required `synthetic-imported-ikemen-active-root-auto-guard.json` checksum `5e0aaf61` / final `0221a0e8` proves P3 holds side-one back, observes near P4 while P2 is guardable but out of range, enters `120 -> 130`, and takes no contact damage.
-- This is `executed-partial`: projectile/helper threats, nearest-target ranking, Pause/hitpause behavior, direct guard contact/effects, replacement, HUD/audio/resources, and full MUGEN/IKEMEN team guard parity remain unsupported.
+- Required `synthetic-imported-ikemen-active-root-direct-guard.json` checksum `202b9838` / final `140ed77e` proves the prior P4 latch puts P3 in imported state `120` before P4's delayed-overlap tick; ordered phase stamps then place P4's `PosSet` and P3's `120 -> 130` controller before post-fighter admission and generic direct combat produces one `p4 -> p3` `guard`, target id `120`, default guard state `150`, `guarding = true`, and zero-chip P3 life `1000`.
+- This is `executed-partial`: projectile/helper threats, nearest-target ranking, Pause/hitpause behavior, guard effects/audio/renderer parity, custom-state or forceguard variants, replacement, HUD/audio/resources, and full MUGEN/IKEMEN team guard parity remain unsupported.
 
 ## Not Supported Yet
 

@@ -184,6 +184,16 @@ describe("RuntimeTrace", () => {
       evaluateRuntimeTraceGate(trace, {
         label: "expected-order",
         requiredTickSchedulePhaseSequences: [{ frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p1"] }],
+        requiredTickScheduleStampSequences: [
+          {
+            frameIndex: 1,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p2" },
+              { phase: "fighter:controllers", actorId: "p1" },
+              { phase: "active:post-fighter" },
+            ],
+          },
+        ],
       }),
     ).toMatchObject({ passed: true, failures: [] });
     expect(
@@ -194,8 +204,23 @@ describe("RuntimeTrace", () => {
     ).toMatchObject({ passed: false, failures: [expect.stringContaining("fighter:controllers = p1 -> p2")] });
     expect(
       evaluateRuntimeTraceGate(trace, {
+        label: "wrong-stamp-order",
+        requiredTickScheduleStampSequences: [
+          {
+            frameIndex: 1,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p1" },
+              { phase: "fighter:controllers", actorId: "p2" },
+            ],
+          },
+        ],
+      }),
+    ).toMatchObject({ passed: false, failures: [expect.stringContaining("tick schedule stamp sequence")] });
+    expect(
+      evaluateRuntimeTraceGate(trace, {
         label: "empty-order",
         requiredTickSchedulePhaseSequences: [{ frameIndex: 1, phase: "fighter:controllers", actorIds: [] }],
+        requiredTickScheduleStampSequences: [{ frameIndex: 1, steps: [] }],
       }),
     ).toMatchObject({ passed: false });
   });

@@ -131,10 +131,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Execute plural active-root automatic guard scheduling](tickets/117-execute-active-root-auto-guard-scheduling.md) - resolved: active-motion P3-P8 now receive direct-only plural guard-distance latches and existing pre/post auto-guard checks without widening Pair attacker identity; required P2-far/P3<-P4 no-contact trace checksum `5e0aaf61` / final `0221a0e8` passes. Next: map direct guard-contact resolution separately.
 
+- [Prove active-root direct guard contact](tickets/118-prove-active-root-direct-guard-contact.md) - resolved: prior P3 direct guard-distance observation reaches imported state `120` before P4's delayed-overlap tick; deterministic phase stamps prove P4's `PosSet` and P3's `120 -> 130` controller both finish before existing root admission/direct resolver produces exactly one zero-chip `p4 -> p3` guard and default state `150`; checksum `202b9838` / final `140ed77e`. Next: map one narrow active-root guard-contact boundary rather than widening target or effect semantics.
+
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Map active-root direct guard-contact resolution.
+- Map active-root guard-contact variants or contact-order boundary.
 
 ## Not Yet Specified
 
