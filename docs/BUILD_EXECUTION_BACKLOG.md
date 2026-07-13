@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 488 - Studio project storage conflict boundary
+
+Done: Studio project saves now carry an expected revision, reject stale writes
+without replacing the remote entry, and listen for same-origin `storage` events.
+The browser proof uses two pages in one context to detect a clean remote edit,
+pause autosave after a second edit arrives while local changes are dirty, and
+prove that a stale save leaves the remote name/revision intact. Closure passes
+`13/13` focused tests, `188/188` files / `1974/1974` tests, TypeScript 7,
+boundaries, build, `581/581` trace artifacts (`547` required, `34` optional),
+and full Playwright smoke. Claim allowed: external revision detection plus
+optimistic local save rejection. Claim blocked: conflict
+presentation/resolution actions, durable file persistence, source
+writes/reimport, and full MUGEN/IKEMEN parity. Next: add explicit Studio
+actions for reload-remote or keep-local before reopening the source transaction.
+
 ## Entry 487 - Versioned local project index
 
 Done: `ProjectStorage` now migrates valid `project-index/v0` payloads to

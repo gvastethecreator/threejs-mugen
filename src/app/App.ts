@@ -77,7 +77,15 @@ import type { MugenSnapshot } from "../mugen/runtime/types";
 import { renderActorRegistry, renderDebugPanel, escapeHtml, type RuntimeRosterEntry } from "./DebugPanel";
 import { FileDropZone } from "./FileDropZone";
 import { compileGameProjectManifest, type CompiledRuntimeManifest } from "./ProjectCompiler";
-import { listStoredProjects, loadStoredProjectManifest, saveStoredProjectManifest, type StoredProjectEntry } from "./ProjectStorage";
+import {
+  listStoredProjects,
+  loadStoredProject,
+  PROJECT_STORAGE_KEY,
+  ProjectStorageConflictError,
+  saveStoredProjectManifest,
+  type ProjectStorageConflict,
+  type StoredProjectEntry,
+} from "./ProjectStorage";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
@@ -703,6 +711,8 @@ export class App {
   private importedProjectManifest?: GameProjectManifest;
   private projectNameOverride?: string;
   private projectDirty = false;
+  private projectStorageRevision?: number;
+  private projectStorageConflict?: ProjectStorageConflict;
   private readonly studioEditHistory = new StudioEditHistory();
   private readonly studioAutosave = new StudioAutosave();
   private projectImportWarnings: string[] = [];
@@ -745,6 +755,7 @@ export class App {
     this.installFileDropZone();
     this.installEvents();
     this.installNavigationGuard();
+    this.installProjectStorageListener();
     this.installAudioUnlock();
     this.updateUi();
     this.loop.start();
@@ -849,6 +860,35 @@ export class App {
       event.preventDefault();
       event.returnValue = "";
     });
+  }
+
+  private installProjectStorageListener(): void {
+    window.addEventListener("storage", (event) => {
+      if (event.key !== PROJECT_STORAGE_KEY && event.key !== null) {
+        return;
+      }
+      this.handleExternalProjectStorageChange();
+    });
+  }
+
+  private handleExternalProjectStorageChange(): void {
+    this.refreshStoredProjects();
+    const projectId = this.importedProjectManifest?.id;
+    if (!projectId || this.mode !== "studio") {
+      this.updateUi();
+      return;
+    }
+    const actualRevision = this.storedProjects.find((entry) => entry.id === projectId)?.revision ?? 0;
+    const expectedRevision = this.projectStorageRevision ?? 0;
+    if (actualRevision === expectedRevision) {
+      return;
+    }
+    this.projectStorageConflict = { projectId, expectedRevision, actualRevision };
+    this.studioAutosave.cancel();
+    this.log(
+      `${this.projectDirty ? "Local edits retained" : "External update detected"} for project ${projectId}; save is paused until the revision is resolved.`,
+    );
+    this.updateUi();
   }
 
   private confirmStudioProjectNavigation(destination: string): boolean {
@@ -1565,19 +1605,32 @@ export class App {
     this.studioAutosave.cancel();
     const manifest = this.getGameProjectManifest();
     try {
-      this.storedProjects = saveStoredProjectManifest(window.localStorage, manifest);
+      this.storedProjects = saveStoredProjectManifest(window.localStorage, manifest, {
+        expectedRevision: this.projectStorageRevision ?? 0,
+      });
+      this.projectStorageRevision = this.storedProjects.find((entry) => entry.id === manifest.id)?.revision;
+      this.projectStorageConflict = undefined;
       this.importedProjectManifest = manifest;
       this.projectDirty = false;
       this.log(`${options.automatic ? "Autosaved" : "Saved"} local project ${manifest.id}`);
       this.updateUi();
     } catch (error) {
+      if (error instanceof ProjectStorageConflictError) {
+        this.projectStorageConflict = error.conflict;
+        this.refreshStoredProjects();
+        this.log(
+          `Could not save local project ${manifest.id}: revision conflict (expected ${error.conflict.expectedRevision}, found ${error.conflict.actualRevision}).`,
+        );
+        this.updateUi();
+        return;
+      }
       this.log(`Could not save local project: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
     }
   }
 
   private autosaveProjectLocal(): void {
-    if (!this.projectDirty) {
+    if (!this.projectDirty || this.projectStorageConflict) {
       return;
     }
     this.saveCurrentProjectLocal({ automatic: true });
@@ -1588,14 +1641,14 @@ export class App {
       return;
     }
     try {
-      const manifest = loadStoredProjectManifest(window.localStorage, id);
-      if (!manifest) {
+      const entry = loadStoredProject(window.localStorage, id);
+      if (!entry) {
         this.refreshStoredProjects();
         this.log(`Stored project ${id} was not found`);
         this.updateUi();
         return;
       }
-      this.applyProjectManifest(manifest);
+      this.applyProjectManifest(entry.manifest, [], { storageRevision: entry.revision });
     } catch (error) {
       this.log(`Could not open local project ${id}: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
@@ -1610,7 +1663,9 @@ export class App {
 
   private markProjectDirty(): void {
     this.projectDirty = true;
-    this.studioAutosave.schedule(() => this.autosaveProjectLocal());
+    if (!this.projectStorageConflict) {
+      this.studioAutosave.schedule(() => this.autosaveProjectLocal());
+    }
   }
 
   private applyProjectName(value: string): void {
@@ -1681,7 +1736,11 @@ export class App {
     }
   }
 
-  private applyProjectManifest(manifest: GameProjectManifest, warnings: string[] = []): void {
+  private applyProjectManifest(
+    manifest: GameProjectManifest,
+    warnings: string[] = [],
+    options: { storageRevision?: number } = {},
+  ): void {
     const nextWarnings = [...warnings];
     for (const sourcePackage of manifest.sourcePackages) {
       if (!this.isSourcePackageLinked(sourcePackage)) {
@@ -1711,6 +1770,8 @@ export class App {
 
     this.importedProjectManifest = manifest;
     this.projectNameOverride = manifest.name;
+    this.projectStorageRevision = options.storageRevision;
+    this.projectStorageConflict = undefined;
     this.studioAutosave.cancel();
     this.projectDirty = false;
     this.studioEditHistory.reset();
@@ -10714,6 +10775,8 @@ export class App {
         projectImportWarnings: string[];
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
+        projectStorageRevision?: number;
+        projectStorageConflict?: ProjectStorageConflict;
         qa?: {
           scenario: RuntimeQaScenario;
           tagPresentationHandoff(): void;
@@ -10766,6 +10829,8 @@ export class App {
       projectImportWarnings: [...this.projectImportWarnings],
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
+      projectStorageRevision: this.projectStorageRevision,
+      projectStorageConflict: this.projectStorageConflict,
       ...(this.runtimeQaScenario
         ? {
             qa: {

@@ -18,6 +18,23 @@ export type StoredProjectEntry = {
   manifest: GameProjectManifest;
 };
 
+export type ProjectStorageConflict = {
+  projectId: string;
+  expectedRevision: number;
+  actualRevision: number;
+};
+
+export class ProjectStorageConflictError extends Error {
+  readonly code = "project-storage-conflict" as const;
+
+  constructor(readonly conflict: ProjectStorageConflict) {
+    super(
+      `Project ${conflict.projectId} changed from revision ${conflict.expectedRevision} to ${conflict.actualRevision} in another browser context.`,
+    );
+    this.name = "ProjectStorageConflictError";
+  }
+}
+
 type StoredProjectIndex = {
   schemaVersion: typeof PROJECT_STORAGE_SCHEMA_VERSION;
   entries: StoredProjectEntry[];
@@ -27,19 +44,31 @@ export function listStoredProjects(storage: StorageLike): StoredProjectEntry[] {
   return readIndex(storage).entries;
 }
 
+export function loadStoredProject(storage: StorageLike, id: string): StoredProjectEntry | undefined {
+  return readIndex(storage).entries.find((entry) => entry.id === id);
+}
+
 export function loadStoredProjectManifest(storage: StorageLike, id: string): GameProjectManifest | undefined {
-  return readIndex(storage).entries.find((entry) => entry.id === id)?.manifest;
+  return loadStoredProject(storage, id)?.manifest;
 }
 
 export function saveStoredProjectManifest(
   storage: StorageLike,
   manifest: GameProjectManifest,
-  options: { savedAt?: string; maxEntries?: number } = {},
+  options: { savedAt?: string; maxEntries?: number; expectedRevision?: number } = {},
 ): StoredProjectEntry[] {
   const savedAt = options.savedAt ?? new Date().toISOString();
   const maxEntries = options.maxEntries ?? 8;
   const index = readIndex(storage);
   const previous = index.entries.find((candidate) => candidate.id === manifest.id);
+  const actualRevision = previous?.revision ?? 0;
+  if (options.expectedRevision !== undefined && options.expectedRevision !== actualRevision) {
+    throw new ProjectStorageConflictError({
+      projectId: manifest.id,
+      expectedRevision: options.expectedRevision,
+      actualRevision,
+    });
+  }
   const entry: StoredProjectEntry = {
     id: manifest.id,
     name: manifest.name,

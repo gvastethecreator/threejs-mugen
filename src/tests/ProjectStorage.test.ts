@@ -4,6 +4,7 @@ import {
   listStoredProjects,
   PROJECT_STORAGE_KEY,
   PROJECT_STORAGE_SCHEMA_VERSION,
+  ProjectStorageConflictError,
   saveStoredProjectManifest,
   type StorageLike,
 } from "../app/ProjectStorage";
@@ -86,6 +87,26 @@ describe("ProjectStorage", () => {
     );
 
     expect(listStoredProjects(storage)).toMatchObject([{ id: saved.id, revision: 1 }]);
+  });
+
+  it("rejects a stale revision without replacing the remote project", () => {
+    const storage = memoryStorage();
+    const first = manifest("Conflict", "nova-boxer");
+    const remote = { ...first, name: "Remote Conflict" };
+    saveStoredProjectManifest(storage, first, { expectedRevision: 0 });
+
+    let failure: unknown;
+    try {
+      saveStoredProjectManifest(storage, remote, { expectedRevision: 0 });
+    } catch (error) {
+      failure = error;
+    }
+    expect(failure).toBeInstanceOf(ProjectStorageConflictError);
+    expect(listStoredProjects(storage)).toMatchObject([{ name: "Conflict", revision: 1 }]);
+    expect(failure).toMatchObject({
+      code: "project-storage-conflict",
+      conflict: { projectId: first.id, expectedRevision: 0, actualRevision: 1 },
+    });
   });
 });
 

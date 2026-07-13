@@ -126,6 +126,7 @@ async function main() {
     const studioAssets = await captureStudioAssets(page, outDir);
     const studioReplacement = await captureStudioAssetReplacement(context, server.baseUrl, outDir);
     await buildPage.close();
+    const studioStorageConflict = await captureStudioProjectStorageConflict(context, server.baseUrl, outDir);
 
     const consoleIssues = getRelevantConsoleIssues(logs);
     const diagnostics = {
@@ -159,6 +160,7 @@ async function main() {
         studioBgCtrlStage,
         studioAssets,
         studioReplacement,
+        studioStorageConflict,
         studioEvidence,
         studioDebug,
       },
@@ -236,6 +238,7 @@ async function main() {
         studioBgCtrlStage: path.join(outDir, "studio-stage-bgctrl.png"),
         studioAssets: path.join(outDir, "studio-assets.png"),
         studioReplacement: path.join(outDir, "studio-assets-replacement.png"),
+        studioStorageConflict: path.join(outDir, "studio-project-storage-conflict.png"),
         studioEvidence: path.join(outDir, "studio-evidence.png"),
         studioEvidenceWorldDelta: path.join(outDir, "studio-evidence-world-delta.png"),
         studioDebug: path.join(outDir, "studio-debug.png"),
@@ -2293,6 +2296,127 @@ async function captureStudioAssetReplacement(context, baseUrl, outDir) {
   }
 }
 
+async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
+  const primary = await context.newPage();
+  const remote = await context.newPage();
+  const projectId = "qa-authored-fight-project";
+  try {
+    await Promise.all([
+      primary.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" }),
+      remote.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" }),
+    ]);
+    await Promise.all([waitForBridge(primary), waitForBridge(remote)]);
+    for (const candidate of [primary, remote]) {
+      await candidate.locator(`[data-stored-project-id="${projectId}"]`).first().evaluate((element) => element.click());
+      await candidate.waitForFunction((id) => window.__MUGEN_WEB_SANDBOX__?.project?.id === id, projectId);
+    }
+
+    const baselineRevision = await primary.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
+    const remoteBaselineRevision = await remote.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
+    if (baselineRevision !== remoteBaselineRevision) {
+      throw new Error(`Project storage baseline diverged (${baselineRevision} vs ${remoteBaselineRevision})`);
+    }
+
+    const remoteNameOne = "QA Remote Revision One";
+    await remote.locator("[data-project-name]").first().fill(remoteNameOne);
+    await remote.locator("[data-project-name]").first().press("Tab");
+    await remote.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty === true);
+    await remote.locator('[data-action="save-project-local"]').first().click();
+    await remote.waitForFunction(
+      (expectedRevision) =>
+        window.__MUGEN_WEB_SANDBOX__?.projectDirty === false &&
+        window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === expectedRevision + 1,
+      baselineRevision,
+    );
+    const remoteRevisionOne = await remote.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
+    await primary.waitForFunction(
+      (expectedRevision) => {
+        const conflict = window.__MUGEN_WEB_SANDBOX__?.projectStorageConflict;
+        return conflict?.expectedRevision === expectedRevision && conflict.actualRevision === expectedRevision + 1;
+      },
+      baselineRevision,
+    );
+    const cleanExternal = await primary.evaluate(() => ({
+      dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+      conflict: window.__MUGEN_WEB_SANDBOX__?.projectStorageConflict,
+      pending: window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.pending,
+    }));
+
+    const localName = "QA Local Pending Conflict";
+    await primary.locator("[data-project-name]").first().fill(localName);
+    await primary.locator("[data-project-name]").first().press("Tab");
+    await primary.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty === true);
+
+    const remoteNameTwo = "QA Remote Revision Two";
+    await remote.locator("[data-project-name]").first().fill(remoteNameTwo);
+    await remote.locator("[data-project-name]").first().press("Tab");
+    await remote.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty === true);
+    await remote.locator('[data-action="save-project-local"]').first().click();
+    await remote.waitForFunction(
+      (expectedRevision) =>
+        window.__MUGEN_WEB_SANDBOX__?.projectDirty === false &&
+        window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === expectedRevision + 1,
+      remoteRevisionOne,
+    );
+    const remoteRevisionTwo = await remote.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
+    await primary.waitForFunction(
+      (expectedRevision) => {
+        const bridge = window.__MUGEN_WEB_SANDBOX__;
+        return bridge?.projectDirty === true && bridge.projectStorageConflict?.actualRevision === expectedRevision;
+      },
+      remoteRevisionTwo,
+    );
+    const dirtyExternal = await primary.evaluate(() => ({
+      dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+      pending: window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.pending,
+      projectName: window.__MUGEN_WEB_SANDBOX__?.project?.name,
+      conflict: window.__MUGEN_WEB_SANDBOX__?.projectStorageConflict,
+    }));
+
+    await primary.locator('[data-action="save-project-local"]').first().click();
+    await primary.waitForTimeout(150);
+    const rejectedSave = await primary.evaluate(({ key, projectId: id }) => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const raw = localStorage.getItem(key);
+      const entry = raw ? JSON.parse(raw).entries?.find((candidate) => candidate.id === id) : undefined;
+      return {
+        dirty: bridge?.projectDirty,
+        projectName: bridge?.project?.name,
+        conflict: bridge?.projectStorageConflict,
+        storedName: entry?.name,
+        storedRevision: entry?.revision,
+      };
+    }, { key: "mugen-web-sandbox:projects:v0", projectId });
+    await primary.screenshot({ path: path.join(outDir, "studio-project-storage-conflict.png"), fullPage: true });
+
+    return {
+      projectId,
+      baselineRevision,
+      remoteRevisionOne,
+      remoteRevisionTwo,
+      cleanExternal,
+      dirtyExternal,
+      rejectedSave,
+      cleanExternalDetected:
+        cleanExternal.dirty === false &&
+        cleanExternal.conflict?.expectedRevision === baselineRevision &&
+        cleanExternal.conflict?.actualRevision === remoteRevisionOne,
+      dirtyExternalDetected:
+        dirtyExternal.dirty === true &&
+        dirtyExternal.pending === false &&
+        dirtyExternal.projectName === localName &&
+        dirtyExternal.conflict?.actualRevision === remoteRevisionTwo,
+      staleSaveRejected:
+        rejectedSave.dirty === true &&
+        rejectedSave.projectName === localName &&
+        rejectedSave.storedName === remoteNameTwo &&
+        rejectedSave.storedRevision === remoteRevisionTwo,
+    };
+  } finally {
+    await Promise.all([primary.close(), remote.close()]);
+  }
+}
+
 async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 1440, height: 960 });
   await waitForBridge(page);
@@ -3158,6 +3282,13 @@ function assertSmoke(diagnostics) {
     studioWorkbench.projectAuthoring.afterAutosave?.stored !== true
   ) {
     failures.push("studio-workbench: authored project scene, dirty-state, undo/redo history, navigation guard, or autosave did not behave correctly");
+  }
+  if (
+    !diagnostics.checks.studioStorageConflict?.cleanExternalDetected ||
+    !diagnostics.checks.studioStorageConflict?.dirtyExternalDetected ||
+    !diagnostics.checks.studioStorageConflict?.staleSaveRejected
+  ) {
+    failures.push("studio-storage-conflict: same-origin external edits, autosave pause, or stale-save rejection did not behave correctly");
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||
