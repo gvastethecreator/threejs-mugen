@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  createSourceTransactionRecord,
   prepareSourceImportTransaction,
   runSourceImportTransaction,
+  type SourceTransactionRecord,
   type SourceImportTransaction,
 } from "../app/StudioSourceTransaction";
 import type { GameProjectManifest, GameProjectSourcePackage } from "../app/StudioModel";
@@ -53,6 +55,79 @@ describe("StudioSourceTransaction", () => {
     expect(apply).not.toHaveBeenCalled();
     expect(rollback).not.toHaveBeenCalled();
   });
+
+  it("exposes a linked read model without pretending that a write permission exists", () => {
+    const record = createSourceTransactionRecord({
+      sourcePackage: linkedPackage(),
+      permission: "not-requested",
+    });
+
+    expect(record).toMatchObject({
+      schemaVersion: "mugen-web-sandbox/source-transaction/v0",
+      state: "linked",
+      permission: "not-requested",
+      revisionStatus: "unknown",
+      canRead: true,
+      canWrite: false,
+      nextAction: "request-permission",
+      invalidatedOutputs: [],
+    });
+  });
+
+  it("turns changed source identity into an explicit reimport action", () => {
+    const record = createSourceTransactionRecord({
+      sourcePackage: {
+        ...linkedPackage(),
+        status: "missing",
+        identityStatus: "changed",
+        observedFingerprint: "b".repeat(64),
+      },
+      permission: "granted",
+    });
+
+    expect(record).toMatchObject({
+      state: "changed",
+      canRead: false,
+      canWrite: false,
+      nextAction: "reimport-source",
+      invalidatedOutputs: ["project-bundle", "runtime-manifest", "trace-artifact"],
+    });
+  });
+
+  it("prioritizes a project revision conflict over a granted source permission", () => {
+    const record = createSourceTransactionRecord({
+      sourcePackage: linkedPackage(),
+      permission: "granted",
+      expectedRevision: 4,
+      observedRevision: 5,
+    });
+
+    expect(record).toMatchObject({
+      state: "conflict",
+      revisionStatus: "changed",
+      canRead: true,
+      canWrite: false,
+      nextAction: "resolve-conflict",
+    });
+  });
+
+  it("allows a durable write only for a matched linked source and equal revision", () => {
+    const record: SourceTransactionRecord = createSourceTransactionRecord({
+      sourcePackage: linkedPackage(),
+      permission: "granted",
+      expectedRevision: 7,
+      observedRevision: 7,
+    });
+
+    expect(record).toMatchObject({
+      state: "linked",
+      revisionStatus: "matched",
+      canRead: true,
+      canWrite: true,
+      nextAction: "none",
+      warnings: [],
+    });
+  });
 });
 
 function source(fingerprint: string) {
@@ -103,6 +178,25 @@ function manifestWithSourcePackage(fields: Partial<GameProjectSourcePackage>): G
     assetRecords: [],
     entry: { mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: "rooftop-dojo" },
     compatibility: { gates: [], stats: { characters: 0, stages: 0, importedCharacters: 0, importedStages: 0, generatedAtlases: 0 } },
+  };
+}
+
+function linkedPackage(): GameProjectSourcePackage {
+  return {
+    id: "kfm-official",
+    name: "kfm-official.zip",
+    kind: "zip",
+    fileCount: 5,
+    status: "linked",
+    stageIds: [],
+    stageDefPaths: [],
+    requiredPaths: requiredPaths(),
+    fingerprint: "a".repeat(64),
+    fingerprintAlgorithm: "sha-256",
+    byteLength: 5,
+    observedFingerprint: "a".repeat(64),
+    observedByteLength: 5,
+    identityStatus: "matched",
   };
 }
 

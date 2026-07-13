@@ -1817,6 +1817,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       warnings: bridge?.projectImportWarnings ?? [],
       relinkButtons: document.querySelectorAll('[data-action="relink-source"]').length,
       bodyHasRelinkCopy: document.body.innerText.includes("Reload the original ZIP or folder"),
+      sourceTransactions: bridge?.sourceTransactions ?? [],
     };
   });
 
@@ -1854,6 +1855,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       bodyHasLinkedCopy: bodyText.includes("Source files are available for package export"),
       bodyHasKfm: bodyText.toLowerCase().includes("kfm"),
       relinkButtons: document.querySelectorAll('[data-action="relink-source"]').length,
+      sourceTransactions: bridge?.sourceTransactions ?? [],
     };
   });
   const changedFixturePath = await writeChangedSourceRelinkFixture(outDir, importedFixturePath);
@@ -1880,6 +1882,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       currentIdentityStatus: sourcePackage?.identityStatus,
       currentFingerprint: sourcePackage?.fingerprint,
       currentObservedFingerprint: sourcePackage?.observedFingerprint,
+      sourceTransaction: bridge?.sourceTransactions?.find((candidate) => candidate.sourcePackageId === "kfm-official"),
       bodyHasSourceRejected: bodyText.includes("Source reimport rejected"),
       bodyHasRetainedSession: bodyText.includes("Current runtime/source session was retained"),
     };
@@ -3586,6 +3589,12 @@ function assertSmoke(diagnostics) {
       studioSourceRelinkIdentity?.observedFingerprint !== studioSourceRelinkIdentity?.fingerprint ||
       !studioSourceRelink.after?.bodyHasSourcePackages ||
       !studioSourceRelink.after?.bodyHasKfm ||
+      studioSourceRelink.after?.sourceTransactions?.[0]?.schemaVersion !== "mugen-web-sandbox/source-transaction/v0" ||
+      studioSourceRelink.after?.sourceTransactions?.[0]?.state !== "linked" ||
+      studioSourceRelink.after?.sourceTransactions?.[0]?.canRead !== true ||
+      studioSourceRelink.after?.sourceTransactions?.[0]?.canWrite !== false ||
+      !["not-requested", "unsupported"].includes(studioSourceRelink.after?.sourceTransactions?.[0]?.permission) ||
+      !["request-permission", "manual-relink"].includes(studioSourceRelink.after?.sourceTransactions?.[0]?.nextAction) ||
       studioSourceRelink.after?.warnings?.some((warning) => String(warning).includes("is required for full export")))
   ) {
     failures.push("studio-source-relink: missing source package did not relink through the Build Center UI");
@@ -3601,6 +3610,9 @@ function assertSmoke(diagnostics) {
       !/^[0-9a-f]{64}$/i.test(String(studioSourceRelink.rejected?.transactionFingerprint ?? "")) ||
       studioSourceRelink.rejected?.transactionFingerprint === studioSourceRelink.rejected?.currentFingerprint ||
       studioSourceRelink.rejected?.currentFingerprint !== studioSourceRelinkIdentity?.fingerprint ||
+      studioSourceRelink.rejected?.sourceTransaction?.state !== "linked" ||
+      studioSourceRelink.rejected?.sourceTransaction?.canRead !== true ||
+      studioSourceRelink.rejected?.sourceTransaction?.canWrite !== false ||
       !studioSourceRelink.rejected?.bodyHasSourceRejected ||
       !studioSourceRelink.rejected?.bodyHasRetainedSession)
   ) {
@@ -4154,6 +4166,16 @@ function summarizeDiagnostics(diagnostics) {
           afterLinked: diagnostics.checks.studioSourceRelink?.after?.linked,
           afterMissing: diagnostics.checks.studioSourceRelink?.after?.missing,
           identity: diagnostics.checks.studioSourceRelink?.after?.identity,
+          sourceTransactions: diagnostics.checks.studioSourceRelink?.after?.sourceTransactions?.map((record) => ({
+            schemaVersion: record.schemaVersion,
+            state: record.state,
+            permission: record.permission,
+            revisionStatus: record.revisionStatus,
+            canRead: record.canRead,
+            canWrite: record.canWrite,
+            nextAction: record.nextAction,
+            invalidatedOutputs: record.invalidatedOutputs,
+          })),
           requiredPaths: diagnostics.checks.studioSourceRelink?.after?.requiredPaths,
           rejected: diagnostics.checks.studioSourceRelink?.rejected
             ? {
@@ -4163,6 +4185,7 @@ function summarizeDiagnostics(diagnostics) {
                 currentIdentityStatus: diagnostics.checks.studioSourceRelink.rejected.currentIdentityStatus,
                 transactionFingerprint: diagnostics.checks.studioSourceRelink.rejected.transactionFingerprint,
                 currentFingerprint: diagnostics.checks.studioSourceRelink.rejected.currentFingerprint,
+                sourceTransaction: diagnostics.checks.studioSourceRelink.rejected.sourceTransaction,
                 bodyHasSourceRejected: diagnostics.checks.studioSourceRelink.rejected.bodyHasSourceRejected,
                 bodyHasRetainedSession: diagnostics.checks.studioSourceRelink.rejected.bodyHasRetainedSession,
               }

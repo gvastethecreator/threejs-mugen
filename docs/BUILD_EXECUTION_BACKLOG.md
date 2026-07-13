@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 490 - SourceTransaction/v0 read model
+
+Done: Studio now publishes a pure `SourceTransaction/v0` record for each
+imported source package. The record distinguishes readable session bytes from
+durable write permission, models linked/changed/missing/conflict states,
+surfaces expected versus observed project revisions, selects one next action,
+and invalidates runtime manifest, trace artifact, and project bundle outputs
+outside the linked/equal-revision/granted-write case. Build Center and the
+diagnostics bridge expose the contract, while browser smoke proves the normal
+relink is readable but non-writable without a requested permission and a
+changed reimport retains the prior linked/matched session. Claim allowed:
+read-only source transaction state and evidence. Closure passes 3 focused files
+/ 23 tests, 190 files / 1985 tests, TypeScript 7, boundaries, CSS budget,
+production build at 1,685.38 kB JavaScript / 423.41 kB gzip, 581/581 trace
+artifacts (547 required, 34 optional, 0 skipped), and full browser smoke with
+0 page errors and 0 console issues. Claim blocked: durable handles, permission
+requests, source writes, crash recovery, and full MUGEN/IKEMEN parity. Next:
+permission-aware durable source replacement/recovery, then content-addressed
+asset provenance.
+
 ## Entry 489 - Studio source import transaction boundary
 
 Done: Studio source imports now plan admission before active-session mutation,

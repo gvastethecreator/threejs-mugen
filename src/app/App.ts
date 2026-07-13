@@ -92,8 +92,11 @@ import { StudioAutosave } from "./StudioAutosave";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import {
+  createSourceTransactionRecord,
   prepareSourceImportTransaction,
   runSourceImportTransaction,
+  type SourceTransactionPermission,
+  type SourceTransactionRecord,
   type SourceImportTransaction,
 } from "./StudioSourceTransaction";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
@@ -6903,6 +6906,9 @@ export class App {
 
   private renderSourcePackagePanel(): string {
     const sourcePackages = this.getProjectSourcePackages();
+    const sourceTransactions = new Map(
+      this.getSourceTransactionRecords().map((record) => [record.sourcePackageId, record]),
+    );
     return `
       <div class="section">
         <h2>Source Packages</h2>
@@ -6911,7 +6917,7 @@ export class App {
           sourcePackages.length
             ? `<div class="list compact-list">
                 ${sourcePackages
-                  .map((sourcePackage) => this.renderSourcePackageRow(sourcePackage))
+                  .map((sourcePackage) => this.renderSourcePackageRow(sourcePackage, sourceTransactions.get(sourcePackage.id)))
                   .join("")}
               </div>`
             : `<div class="empty-state">No imported source package is required for the current local/generated project.</div>`
@@ -6940,7 +6946,7 @@ export class App {
     `;
   }
 
-  private renderSourcePackageRow(sourcePackage: GameProjectSourcePackage): string {
+  private renderSourcePackageRow(sourcePackage: GameProjectSourcePackage, sourceTransaction?: SourceTransactionRecord): string {
     const packageFocused = this.studioFocusedSourcePackageId === sourcePackage.id;
     const focusClass = packageFocused ? " is-linked-focus" : "";
     const identityStatus = sourcePackage.identityStatus ?? "unknown";
@@ -6967,6 +6973,7 @@ export class App {
               : `<span class="list-meta">${escapeHtml(identityDetail)} Reload the original ZIP or folder so imported DEF/SFF/AIR/CNS files can be embedded again.</span>`
           }
           <span class="list-meta">Identity: ${escapeHtml(identityStatus)}${sourcePackage.fingerprint ? ` / ${escapeHtml(sourcePackage.fingerprint.slice(0, 12))}...` : ""}</span>
+          <span class="list-meta">Transaction: ${escapeHtml(sourceTransaction?.state ?? "missing")} / permission ${escapeHtml(sourceTransaction?.permission ?? "unsupported")} / next ${escapeHtml(sourceTransaction?.nextAction ?? "relink-source")}</span>
           ${
             pathRows
               ? `<span class="source-package-path-list" aria-label="Required source paths">${pathRows}${hiddenPathCount ? `<span class="list-meta">+${hiddenPathCount} more required source path(s)</span>` : ""}</span>`
@@ -11045,6 +11052,7 @@ export class App {
         storedTraceEvidence: StoredTraceEvidenceEntry[];
         projectImportWarnings: string[];
         sourceImportTransaction?: SourceImportTransaction;
+        sourceTransactions: SourceTransactionRecord[];
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
         projectStorageRevision?: number;
@@ -11100,6 +11108,7 @@ export class App {
       storedTraceEvidence: this.storedTraceEvidence.map((entry) => structuredClone(entry)),
       projectImportWarnings: [...this.projectImportWarnings],
       sourceImportTransaction: this.sourceImportTransaction,
+      sourceTransactions: this.getSourceTransactionRecords(),
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,
@@ -11454,6 +11463,33 @@ export class App {
     }
 
     return currentPackage ? [currentPackage] : [];
+  }
+
+  private getSourceTransactionRecords(): SourceTransactionRecord[] {
+    const sourcePackages = this.getProjectSourcePackages();
+    if (!sourcePackages.length) {
+      return [];
+    }
+    const permission = this.getSourceTransactionPermission();
+    const expectedRevision = this.projectStorageConflict?.expectedRevision ?? this.projectStorageRevision;
+    const observedRevision = this.projectStorageConflict?.actualRevision ?? this.projectStorageRevision;
+    return sourcePackages.map((sourcePackage) => createSourceTransactionRecord({
+      sourcePackage,
+      permission,
+      expectedRevision,
+      observedRevision,
+      conflict: Boolean(this.projectStorageConflict),
+    }));
+  }
+
+  private getSourceTransactionPermission(): SourceTransactionPermission {
+    const browser = window as Window & {
+      showOpenFilePicker?: unknown;
+      showSaveFilePicker?: unknown;
+    };
+    return typeof browser.showOpenFilePicker === "function" || typeof browser.showSaveFilePicker === "function"
+      ? "not-requested"
+      : "unsupported";
   }
 
   private getCurrentImportedSourcePackage(): GameProjectSourcePackage | undefined {
