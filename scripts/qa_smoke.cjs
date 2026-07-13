@@ -188,6 +188,8 @@ async function main() {
         codeFuManInitialCanvas: path.join(outDir, "codefuman-runtime-desktop-canvas.png"),
         codeFuManAttack: path.join(outDir, "codefuman-runtime-desktop-attack.png"),
         codeFuManAttackCanvas: path.join(outDir, "codefuman-runtime-desktop-attack-canvas.png"),
+        codeFuManSpecial: path.join(outDir, "codefuman-runtime-desktop-qcf.png"),
+        codeFuManSpecialCanvas: path.join(outDir, "codefuman-runtime-desktop-qcf-canvas.png"),
         mugenLiteMovement: Object.fromEntries(["desktop", "mobile"].map((viewport) => [viewport, Object.fromEntries(
           ["walk", "crouch", "jump"].flatMap((pose) => [
             [pose, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}.png`)],
@@ -506,7 +508,63 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   });
-  return { skipped: false, fixturePath, initial, attack, returnedToIdle: true };
+  await page.waitForTimeout(80);
+
+  const pauseOnQcf = page.evaluate(() => new Promise((resolve, reject) => {
+    let lastSnapshot = {};
+    const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man QCF_x special frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+    const check = () => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      lastSnapshot = actor ? {
+        stateNo: actor.runtime?.stateNo,
+        moveType: actor.runtime?.moveType,
+        ctrl: actor.runtime?.ctrl,
+        frame: actor.frame,
+        activeCommands: actor.runtime?.activeCommands,
+        playing: bridge?.snapshot?.playing,
+      } : {};
+      if (actor?.runtime?.stateNo === 1000) {
+        window.clearTimeout(timeout);
+        document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.setTimeout(check, 4);
+    };
+    check();
+  }));
+  await pressCodeFuManQcfX(page);
+  await pauseOnQcf;
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  const special = await captureMugenLiteVisualState(
+    page,
+    path.join(outDir, "codefuman-runtime-desktop-qcf.png"),
+    path.join(outDir, "codefuman-runtime-desktop-qcf-canvas.png"),
+    "p1",
+    [],
+  );
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+  });
+  return { skipped: false, fixturePath, initial, attack, special, returnedToIdle: true, specialReturnedToIdle: true };
+}
+
+async function pressCodeFuManQcfX(page) {
+  const hold = async (keys, durationMs = 52) => {
+    for (const key of keys) await page.keyboard.down(key);
+    await page.waitForTimeout(durationMs);
+    for (const key of [...keys].reverse()) await page.keyboard.up(key);
+    await page.waitForTimeout(16);
+  };
+  await hold(["ArrowDown"]);
+  await hold(["ArrowDown", "ArrowRight"]);
+  await hold(["ArrowRight"]);
+  await page.keyboard.down("a");
+  await page.waitForTimeout(80);
+  await page.keyboard.up("a");
 }
 
 async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, options) {
@@ -2845,9 +2903,17 @@ function assertSmoke(diagnostics) {
       !codeFuManVisual.attack.canvasPixels?.nonBlank ||
       codeFuManVisual.attack.canvasPixels.uniqueColors < 10 ||
       codeFuManVisual.attack.spritePixels?.uniqueColors < 3 ||
-      !codeFuManVisual.returnedToIdle
+      !codeFuManVisual.returnedToIdle ||
+      codeFuManVisual.special?.actorSource !== "imported" ||
+      codeFuManVisual.special.actorState !== 1000 ||
+      !Number.isFinite(codeFuManVisual.special.actorFrame?.group) ||
+      codeFuManVisual.special.actorFrame.group <= 0 ||
+      !codeFuManVisual.special.canvasPixels?.nonBlank ||
+      codeFuManVisual.special.canvasPixels.uniqueColors < 10 ||
+      codeFuManVisual.special.spritePixels?.uniqueColors < 3 ||
+      !codeFuManVisual.specialReturnedToIdle
     ) {
-      failures.push("codefuman visual: independent package did not prove imported idle, x state 200, nonblank canvas, or idle return");
+      failures.push("codefuman visual: independent package did not prove imported idle, x state 200, QCF_x state 1000, nonblank canvases, or idle returns");
     }
   }
   const expectedPair = "p1,p2";
@@ -3574,7 +3640,14 @@ function summarizeDiagnostics(diagnostics) {
             uniqueColors: diagnostics.checks.codeFuManVisual.attack.canvasPixels.uniqueColors,
             spriteUniqueColors: diagnostics.checks.codeFuManVisual.attack.spritePixels.uniqueColors,
           },
+          special: {
+            actorState: diagnostics.checks.codeFuManVisual.special.actorState,
+            actorFrame: diagnostics.checks.codeFuManVisual.special.actorFrame,
+            uniqueColors: diagnostics.checks.codeFuManVisual.special.canvasPixels.uniqueColors,
+            spriteUniqueColors: diagnostics.checks.codeFuManVisual.special.spritePixels.uniqueColors,
+          },
           returnedToIdle: diagnostics.checks.codeFuManVisual.returnedToIdle,
+          specialReturnedToIdle: diagnostics.checks.codeFuManVisual.specialReturnedToIdle,
         },
     tagPresentation: {
       baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,

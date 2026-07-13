@@ -1,7 +1,7 @@
 # Map Code Fu Man Special Route
 
 Type: research
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -32,3 +32,17 @@ Allowed: one independently sourced Code Fu Man special command/state route.
 Blocked: all specials, AI parity, command priority parity, exact Common1
 timing, broad controller parity, public asset bundling, and full
 MUGEN/IKEMEN parity.
+
+## Resolution
+
+Selected the authored `QCF_x` route from `kfm.cmd`: `~D, DF, F, x` routes
+through State -1 `Light Kung Fu Palm` to state `1000`. The imported `kfm.cns`
+state changes to AIR action `1000`, applies three observable `PosAdd` steps,
+and executes its `HitDef` branch at animation element `5`. The optional
+production trace `codefuman-independent-qcf-x` passes with checksum `5540d52b`,
+31 frames, and final checksum `f1dac6db`; browser smoke proves physical input,
+nonblank Three.js output, and idle return. Details are recorded in
+`docs/reports/2026-07-13-codefuman-qcf-special-route.md`.
+
+Next: Wayfinder 133 maps one additional authored Code Fu Man route without
+turning this bounded special evidence into a broad compatibility claim.

@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 482 - Independent Code Fu Man QCF special route
+
+Done: the optional MIT Code Fu Man package now proves one authored
+`QCF_x -> state 1000 -> AIR 1000` route through the production loader,
+deterministic runtime trace, and real browser input. The route is sourced from
+`kfm.cmd` (`~D, DF, F, x` plus State -1 value `1000`) and `kfm.cns` (authored
+`PosAdd` plus `HitDef` at animation element `5`). The required bounded trace
+evidence is `codefuman-independent-qcf-x`, checksum `5540d52b`, initial
+`3bb8fbdd`, final `f1dac6db`, and 31 frames; it requires state `1000`,
+`ChangeState`, `PosAdd`, `HitDef`, typed `kinematic:posadd` / `hitdef`, active
+`QCF_x` / `x`, and a hit event. Browser smoke sends physical `D -> DF -> F -> x`
+and captures imported state/action `1000/1000`, nonblank pixels, and idle
+return. Closure for this slice passes focused `4/4`, `580/580` trace artifacts
+(`547` required, `33` optional), and full browser smoke. Full repository tests,
+TypeScript 7 typecheck, boundaries, and build are intentionally batched into
+the next quality round. Claim allowed: one independent authored Code Fu Man
+special route. Claim blocked: all other specials, exact command priority or
+Common1 timing, public asset support, broad corpus compatibility, and full
+MUGEN/IKEMEN parity. Next: Wayfinder 133 maps the next authored independent
+route.
+
 ## Entry 481 - Independent Code Fu Man package route
 
 Done: Code Fu Man is now the second independently sourced legal package in the

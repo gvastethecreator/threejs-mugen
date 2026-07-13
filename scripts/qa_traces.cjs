@@ -3566,6 +3566,11 @@ async function main() {
         required: false,
         artifact: presets.createCodeFuManIndependentXTraceArtifact(imported),
       });
+      artifacts.push({
+        name: "codefuman-independent-qcf-x",
+        required: false,
+        artifact: presets.createCodeFuManIndependentQcfXTraceArtifact(imported),
+      });
     } else {
       skipped.push({
         name: "codefuman-independent",

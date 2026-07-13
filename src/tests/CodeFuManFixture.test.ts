@@ -7,7 +7,10 @@ import { CODE_FUMAN_FIXTURE_MANIFEST } from "../mugen/compatibility/ExternalFixt
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { ZipCharacterSource } from "../mugen/loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
-import { createCodeFuManIndependentXTraceArtifact } from "../mugen/runtime/RuntimeTraceGatePresets";
+import {
+  createCodeFuManIndependentQcfXTraceArtifact,
+  createCodeFuManIndependentXTraceArtifact,
+} from "../mugen/runtime/RuntimeTraceGatePresets";
 
 const fixturePath = resolve(process.cwd(), CODE_FUMAN_FIXTURE_MANIFEST.archive.relativePath);
 const itWithCodeFuManFixture = existsSync(fixturePath) ? it : it.skip;
@@ -89,6 +92,23 @@ describe("Code Fu Man external fixture", () => {
       source: "imported",
       stateNo: 200,
     });
+  });
+
+  itWithCodeFuManFixture("proves the authored QCF_x special route in the deterministic runtime trace", async () => {
+    const { imported } = await loadCodeFuMan();
+    const artifact = createCodeFuManIndependentQcfXTraceArtifact(imported);
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates.flatMap((gate) => gate.failures)).toEqual([]);
+    expect(artifact.target).toMatchObject({
+      id: "codefuman-independent-qcf-x-golden",
+      source: "mixed",
+    });
+    expect(artifact.trace.finalActors[0]).toMatchObject({
+      source: "imported",
+    });
+    expect(artifact.gates[0]?.evidence.activeCommands).toEqual(expect.arrayContaining(["QCF_x", "x"]));
+    expect(artifact.gates[0]?.evidence.routedStates).toContain(1000);
   });
 });
 

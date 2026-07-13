@@ -2594,6 +2594,25 @@ export function createCodeFuManIndependentXTraceArtifact(
   });
 }
 
+export function createCodeFuManIndependentQcfXTraceArtifact(
+  imported: DemoFighterDefinition,
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedQcfXTraceArtifact(imported, {
+    ...options,
+    targetId: "codefuman-independent-qcf-x-golden",
+    targetLabel: "Code Fu Man independent QCF x route",
+    requireHitEvent: true,
+    requiredExecutedControllers: ["ChangeState", { type: "PosAdd", minCount: 1 }, "HitDef"],
+    requiredExecutedOperations: ["kinematic:posadd", "hitdef"],
+    script: qcfXContactScript(),
+    notes: [
+      "Optional local Code Fu Man fixture trace proves the authored QCF_x command sequence reaches state 1000, advances through its authored PosAdd, executes HitDef, and produces a bounded hit event.",
+      "This does not claim every Code Fu Man special, exact command priority/buffering parity, exact Common1 timing, or full MUGEN/IKEMEN compatibility.",
+    ],
+  });
+}
+
 export function createSyntheticImportedRejectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
