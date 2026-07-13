@@ -1,16 +1,22 @@
 import { VirtualFileSystem } from "./VirtualFileSystem";
 
+export type FolderCharacterSourceFile = {
+  file: File;
+  relativePath: string;
+};
+
+export type FolderCharacterSourceInput = FileList | readonly (File | FolderCharacterSourceFile)[];
+
 export class FolderCharacterSource {
-  constructor(private readonly files: FileList | File[]) {}
+  constructor(private readonly files: FolderCharacterSourceInput) {}
 
   async load(): Promise<VirtualFileSystem> {
     const vfs = new VirtualFileSystem();
-    const files = Array.from(this.files);
+    const files = Array.from(this.files, toFolderSourceFile);
 
     await Promise.all(
       files.map(async (file) => {
-        const path = getRelativePath(file);
-        vfs.addFile(path, await file.arrayBuffer());
+        vfs.addFile(file.relativePath, await file.file.arrayBuffer());
       }),
     );
 
@@ -18,9 +24,20 @@ export class FolderCharacterSource {
   }
 
   get name(): string {
-    const first = Array.from(this.files)[0];
-    return first ? getRelativePath(first).split("/")[0] ?? "folder" : "folder";
+    const first = Array.from(this.files, toFolderSourceFile)[0];
+    return first ? first.relativePath.split("/")[0] ?? "folder" : "folder";
   }
+}
+
+function toFolderSourceFile(file: File | FolderCharacterSourceFile): FolderCharacterSourceFile {
+  if (isFolderCharacterSourceFile(file)) {
+    return file;
+  }
+  return { file, relativePath: getRelativePath(file) };
+}
+
+function isFolderCharacterSourceFile(value: File | FolderCharacterSourceFile): value is FolderCharacterSourceFile {
+  return typeof value === "object" && value !== null && "file" in value && "relativePath" in value;
 }
 
 function getRelativePath(file: File): string {

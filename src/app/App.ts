@@ -49,7 +49,7 @@ import { CompositeSpriteProvider } from "../game/textures/CompositeSpriteProvide
 import { MockSpriteProvider } from "../game/textures/MockSpriteProvider";
 import { NativeHitSparkSpriteProvider } from "../game/textures/NativeHitSparkSpriteProvider";
 import { SffSpriteProvider } from "../game/textures/SffSpriteProvider";
-import { FolderCharacterSource } from "../mugen/loader/FolderCharacterSource";
+import { FolderCharacterSource, type FolderCharacterSourceFile } from "../mugen/loader/FolderCharacterSource";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { MugenStageLoader } from "../mugen/loader/MugenStageLoader";
 import type { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
@@ -104,6 +104,7 @@ import {
   detectSourceHandleCapability,
   detectSourceHandleStorage,
   pickSourceHandle,
+  readSourceHandleFolder,
   readSourceHandleFile,
   requestSourceHandlePermission,
   type SourceHandleBrowserHost,
@@ -1625,9 +1626,9 @@ export class App {
     }
   }
 
-  private async loadFolder(files: FileList): Promise<void> {
+  private async loadFolder(files: FileList | readonly (File | FolderCharacterSourceFile)[]): Promise<boolean> {
     if (!this.confirmStudioProjectNavigation("load a new source package")) {
-      return;
+      return false;
     }
     this.log(`Loading folder (${files.length} files)`);
     try {
@@ -1640,12 +1641,14 @@ export class App {
       const transaction = this.prepareSourceImportTransaction(sourceBundle);
       if (transaction.status === "rejected") {
         this.rejectSourceImportTransaction(transaction);
-        return;
+        return false;
       }
       this.useCharacter(character, stages, sourceBundle, transaction);
+      return true;
     } catch (error) {
       this.log(`Folder rejected: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
+      return false;
     }
   }
 
@@ -1751,11 +1754,6 @@ export class App {
       this.updateUi();
       return;
     }
-    if (sourcePackage.kind !== "zip") {
-      this.log("Persistent source handle recovery currently supports ZIP packages; folder relink remains manual.");
-      this.updateUi();
-      return;
-    }
     const existing = this.sourceHandleEntries.find((entry) => entry.record.sourcePackageId === sourcePackage.id);
     try {
       const host = this.getSourceHandleBrowserHost();
@@ -1776,9 +1774,10 @@ export class App {
 
       const shouldRecover = action === "recover-source-handle" || action === "link-source-handle" || sourcePackage.status !== "linked";
       if (shouldRecover) {
-        const file = await readSourceHandleFile(handle);
         this.pendingSourceRelinkPackageId = sourcePackage.id;
-        const accepted = await this.loadZip(file);
+        const accepted = sourcePackage.kind === "folder"
+          ? await this.loadFolder(await readSourceHandleFolder(handle))
+          : await this.loadZip(await readSourceHandleFile(handle));
         if (!accepted && this.pendingSourceRelinkPackageId === sourcePackage.id) {
           this.pendingSourceRelinkPackageId = undefined;
         }
@@ -1825,6 +1824,7 @@ export class App {
       handleLinked: true,
       persisted: this.sourceHandleStorage === "indexeddb",
       sourceAvailable: true,
+      handleKind: handle.kind,
       observedFingerprint,
       observedByteLength,
     });
@@ -1844,6 +1844,7 @@ export class App {
         handleLinked: true,
         persisted: false,
         sourceAvailable: true,
+        handleKind: handle.kind,
         observedFingerprint,
         observedByteLength,
       });
@@ -7134,6 +7135,8 @@ export class App {
     const packageFocused = this.studioFocusedSourcePackageId === sourcePackage.id;
     const focusClass = packageFocused ? " is-linked-focus" : "";
     const sourceHandle = this.getSourceHandleRecords().find((record) => record.sourcePackageId === sourcePackage.id);
+    const sourceHandleLabel = sourcePackage.kind === "folder" ? "folder handle" : "ZIP handle";
+    const sourceHandleKind = sourceHandle?.handleKind ?? (sourcePackage.kind === "folder" ? "directory" : "file");
     const identityStatus = sourcePackage.identityStatus ?? "unknown";
     const identityDetail = identityStatus === "matched"
       ? "Fingerprint matches the saved source identity."
@@ -7159,7 +7162,7 @@ export class App {
           }
           <span class="list-meta">Identity: ${escapeHtml(identityStatus)}${sourcePackage.fingerprint ? ` / ${escapeHtml(sourcePackage.fingerprint.slice(0, 12))}...` : ""}</span>
           <span class="list-meta">Transaction: ${escapeHtml(sourceTransaction?.state ?? "missing")} / permission ${escapeHtml(sourceTransaction?.permission ?? "unsupported")} / next ${escapeHtml(sourceTransaction?.nextAction ?? "relink-source")}</span>
-          <span class="list-meta">Handle: ${escapeHtml(sourceHandle?.state ?? "not-linked")} / ${escapeHtml(sourceHandle?.storage ?? "memory")} / next ${escapeHtml(sourceHandle?.nextAction ?? "relink-source")}</span>
+          <span class="list-meta">Handle: ${escapeHtml(sourceHandle?.state ?? "not-linked")} / ${escapeHtml(sourceHandleKind)} / ${escapeHtml(sourceHandle?.storage ?? "memory")} / next ${escapeHtml(sourceHandle?.nextAction ?? "relink-source")}</span>
           ${
             pathRows
               ? `<span class="source-package-path-list" aria-label="Required source paths">${pathRows}${hiddenPathCount ? `<span class="list-meta">+${hiddenPathCount} more required source path(s)</span>` : ""}</span>`
@@ -7170,14 +7173,14 @@ export class App {
           ${this.statusBadge(sourcePackage.status === "linked" ? "ok" : "warn")}
           <button type="button" data-action="relink-source">${sourcePackage.status === "linked" ? "Reimport" : "ZIP"}</button>
           <button type="button" data-action="relink-source-folder">Folder</button>
-          ${sourcePackage.kind === "zip" && sourceHandle?.nextAction === "link-handle"
-            ? `<button type="button" data-action="link-source-handle" title="Remember this ZIP handle for future recovery">Remember</button>`
+          ${sourceHandle?.nextAction === "link-handle"
+            ? `<button type="button" data-action="link-source-handle" title="Remember this ${sourceHandleLabel} for future recovery">Remember</button>`
             : ""}
-          ${sourcePackage.kind === "zip" && sourceHandle?.nextAction === "request-permission"
-            ? `<button type="button" data-action="request-source-handle-permission" title="Request read permission for the remembered ZIP handle">Permit</button>`
+          ${sourceHandle?.nextAction === "request-permission"
+            ? `<button type="button" data-action="request-source-handle-permission" title="Request read permission for the remembered ${sourceHandleLabel}">Permit</button>`
             : ""}
-          ${sourcePackage.kind === "zip" && sourceHandle?.nextAction === "recover-source"
-            ? `<button type="button" data-action="recover-source-handle" title="Recover this source package from its remembered ZIP handle">Recover</button>`
+          ${sourceHandle?.nextAction === "recover-source"
+            ? `<button type="button" data-action="recover-source-handle" title="Recover this source package from its remembered ${sourceHandleLabel}">Recover</button>`
             : ""}
         </span>
       </div>

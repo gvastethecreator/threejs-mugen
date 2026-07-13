@@ -141,6 +141,7 @@ export type SourceHandleLike = {
   kind?: SourceHandleKind;
   name?: string;
   getFile?: () => Promise<File>;
+  values?: () => AsyncIterable<SourceHandleLike>;
   queryPermission?: (descriptor?: { mode?: "read" | "readwrite" }) => Promise<string>;
   requestPermission?: (descriptor?: { mode?: "read" | "readwrite" }) => Promise<string>;
 };
@@ -228,6 +229,57 @@ export async function readSourceHandleFile(handle: SourceHandleLike): Promise<Fi
     const code = classifyReadError(error);
     throw new SourceHandleReadError(code, `Could not read the persisted source handle (${code}).`, { cause: error });
   }
+}
+
+export type SourceHandleFolderFile = {
+  file: File;
+  relativePath: string;
+};
+
+export async function readSourceHandleFolder(handle: SourceHandleLike): Promise<SourceHandleFolderFile[]> {
+  if (handle.kind !== "directory" || typeof handle.values !== "function") {
+    throw new SourceHandleReadError("unsupported", "The persisted source handle cannot enumerate a folder.");
+  }
+  const files: SourceHandleFolderFile[] = [];
+  try {
+    await readDirectory(handle, safeSourceHandleSegment(handle.name ?? "folder"), files);
+  } catch (error) {
+    if (error instanceof SourceHandleReadError) {
+      throw error;
+    }
+    const code = classifyReadError(error);
+    throw new SourceHandleReadError(code, `Could not enumerate the persisted source folder (${code}).`, { cause: error });
+  }
+  return files;
+}
+
+async function readDirectory(
+  directory: SourceHandleLike,
+  prefix: string,
+  files: SourceHandleFolderFile[],
+): Promise<void> {
+  if (typeof directory.values !== "function") {
+    throw new SourceHandleReadError("unsupported", "The persisted folder entry cannot enumerate its children.");
+  }
+  for await (const entry of directory.values()) {
+    const relativePath = `${prefix}/${safeSourceHandleSegment(entry.name ?? "")}`;
+    if (entry.kind === "directory") {
+      await readDirectory(entry, relativePath, files);
+      continue;
+    }
+    if (entry.kind !== "file") {
+      throw new SourceHandleReadError("read-failed", "The persisted folder returned an unknown entry kind.");
+    }
+    files.push({ file: await readSourceHandleFile(entry), relativePath });
+  }
+}
+
+function safeSourceHandleSegment(value: string): string {
+  const normalized = value.replace(/\\/g, "/");
+  if (!normalized || normalized === "." || normalized === ".." || normalized.includes("/") || normalized.includes("\0")) {
+    throw new SourceHandleReadError("read-failed", "The persisted source folder returned an unsafe path segment.");
+  }
+  return normalized;
 }
 
 export type SourceHandleStoreEntry = {
@@ -415,7 +467,7 @@ function parseRecord(value: unknown): SourceHandleRecord | undefined {
 
 function isSourceHandleLike(value: unknown): value is SourceHandleLike {
   return isRecord(value) &&
-    (typeof value.getFile === "function" || typeof value.queryPermission === "function" || typeof value.requestPermission === "function");
+    (typeof value.getFile === "function" || typeof value.values === "function" || typeof value.queryPermission === "function" || typeof value.requestPermission === "function");
 }
 
 function isPermission(value: unknown): value is SourceHandlePermission {

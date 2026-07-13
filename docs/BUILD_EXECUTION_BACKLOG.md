@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## Entry 494 - SourceHandle/v0 read-only folder recovery
+
+Done: `SourceHandle/v0` now accepts a directory handle, recursively enumerates
+its asynchronous `values()` entries, preserves the selected root as an explicit
+relative-path segment, rejects unsafe path segments, and feeds the resulting
+`{ file, relativePath }` records into `FolderCharacterSource`. Build Center now
+shows the handle kind (`file` or `directory`) alongside state and storage. The
+existing source fingerprint and `SourceTransaction/v0` admission boundary still
+decide whether the recovered package can replace the active session. Claim
+allowed: read-only folder recovery in the current browser session with matched
+identity, readable source bytes, and explicit non-writable transaction state.
+Claim blocked: native cross-reload folder persistence proof, source writes,
+directory watching, background reacquire, and complete MUGEN/IKEMEN parity.
+Closure passes 2 focused files / 9 tests, 193 files / 2000 tests, TypeScript 7,
+boundaries, Node smoke syntax, CSS budget at 319,446 bytes / 1,472 rules / 70
+repeated declaration groups / 51 cross-file overlaps / 0 duplicate keys,
+production build at 1,704.40 kB JavaScript / 428.45 kB gzip, and 581/581 trace
+artifacts (547 required, 34 optional, 0 skipped). Browser smoke passes with 0
+page errors, 0 console issues, Code Fu Man states `0 -> 200 -> 1000 -> 1100`
+plus idle returns, and folder recovery evidence for 14 fixture entries,
+`directory/granted/canRead`, matched SHA-256 identity, `linked/canRead=true`,
+`canWrite=false`, visible Build Center evidence, and 0 absolute-path leaks.
+The smoke picker uses a non-cloneable test handle and therefore reports the
+explicit memory/session fallback; native IndexedDB persistence remains
+capability-dependent and is not claimed by this browser proof. Next: native
+permission/persistence evidence or the next bounded source-edit transaction.
+
 ## Entry 493 - SourceHandle/v0 persistent ZIP recovery
 
 Done: Studio now exposes a permission-aware `SourceHandle/v0` read model for

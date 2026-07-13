@@ -27,6 +27,7 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 - Promote `docs/PORT_COMPLETION_SCORECARD.md` scores into Studio Evidence/Build as read-only status rows once the data can link to real gates.
 - Continue tightening Evidence and Build around the shared Trust Chain source of truth, especially deeper trace, asset, gate, and report row jumps after the focused Trust Chain row has identified the target record.
 - 2026-07-13 implementation checkpoint: `SourceHandle/v0` now adds permission-aware ZIP handle metadata, IndexedDB persistence with a memory fallback, stale fingerprint blocking, and Build Center remember/permit/recover actions. Manual relink remains the source-of-truth fallback; folder-handle recovery, source writes, and background reacquire remain blocked until a separate evidence cut.
+- 2026-07-13 folder-handle checkpoint: the same `SourceHandle/v0` lane now enumerates read-only directory handles recursively, preserves the selected root as `relativePath`, rejects unsafe entry names, and feeds `FolderCharacterSource` before the existing fingerprint/transaction admission. Writes, watching, background reacquire, and parity claims remain blocked.
 - Expose stale, missing, partial, blocked, and exportable states with affected item, impact, evidence, and next action.
 - Give each blocked item one primary next action and one linked evidence/source row.
 - Improve Character/Stage/Debug panels only when they bind to real runtime, parser, or evidence data.

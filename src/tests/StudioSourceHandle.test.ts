@@ -4,6 +4,7 @@ import {
   createSourceHandleRecord,
   pickSourceHandle,
   querySourceHandlePermission,
+  readSourceHandleFolder,
   readSourceHandleFile,
   requestSourceHandlePermission,
   SOURCE_HANDLE_SCHEMA,
@@ -122,6 +123,44 @@ describe("StudioSourceHandle", () => {
     expect(host.showOpenFilePicker).toHaveBeenCalledWith({
       multiple: false,
       types: [{ description: "MUGEN source ZIP", accept: { "application/zip": [".zip"] } }],
+    });
+  });
+
+  it("recursively reads directory handles with stable relative paths", async () => {
+    const defFile = { kind: "file" as const, name: "kfm.def", getFile: vi.fn(async () => new File(["def"], "kfm.def")) };
+    const nestedDirectory = {
+      kind: "directory" as const,
+      name: "chars",
+      values: async function* () {
+        yield defFile;
+      },
+    };
+    const root = {
+      kind: "directory" as const,
+      name: "kfm",
+      values: async function* () {
+        yield nestedDirectory;
+      },
+    };
+
+    await expect(readSourceHandleFolder(root)).resolves.toEqual([
+      { file: expect.any(File), relativePath: "kfm/chars/kfm.def" },
+    ]);
+    expect(defFile.getFile).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects unsafe native directory entry names before adding them to the VFS", async () => {
+    const root = {
+      kind: "directory" as const,
+      name: "kfm",
+      values: async function* () {
+        yield { kind: "file" as const, name: "../escape.def", getFile: vi.fn() };
+      },
+    };
+
+    await expect(readSourceHandleFolder(root)).rejects.toMatchObject({
+      name: "SourceHandleReadError",
+      code: "read-failed",
     });
   });
 });

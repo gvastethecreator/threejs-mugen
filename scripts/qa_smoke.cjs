@@ -107,6 +107,14 @@ async function main() {
       fs.existsSync(importedFixturePath) ? importedFixturePath : undefined,
     );
     await relinkPage.close();
+    const folderHandlePage = await context.newPage();
+    const studioFolderHandleRecovery = await captureStudioFolderHandleRecovery(
+      folderHandlePage,
+      server.baseUrl,
+      outDir,
+      fs.existsSync(importedFixturePath) ? importedFixturePath : undefined,
+    );
+    await folderHandlePage.close();
     const ikemenPage = await context.newPage();
     const ikemenScan = await captureIkemenScan(ikemenPage, server.baseUrl, outDir);
     await ikemenPage.close();
@@ -155,6 +163,7 @@ async function main() {
         studioBuild,
         studioModules,
         studioSourceRelink,
+        studioFolderHandleRecovery,
         ikemenScan,
         studioStage,
         studioBgCtrlStage,
@@ -234,6 +243,7 @@ async function main() {
         studioModulesContracts: path.join(outDir, "studio-modules-contracts.png"),
         studioSourceRelink: path.join(outDir, "studio-source-relink.png"),
         studioSourceRelinkRejected: path.join(outDir, "studio-source-relink-rejected.png"),
+        studioSourceFolderHandle: path.join(outDir, "studio-source-folder-handle.png"),
         ikemenScan: path.join(outDir, "ikemen-scan-evidence.png"),
         studioStage: path.join(outDir, "studio-stage.png"),
         studioBgCtrlStage: path.join(outDir, "studio-stage-bgctrl.png"),
@@ -516,6 +526,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   });
   await page.waitForTimeout(80);
+  await resetCodeFuManRound(page);
 
   const waitForQcf = () => page.evaluate(() => new Promise((resolve, reject) => {
     let lastSnapshot = {};
@@ -552,7 +563,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
       if (attempt === 1) {
         throw error;
       }
-      await page.waitForTimeout(120);
+      await resetCodeFuManRound(page);
     }
   }
   await page.evaluate(() => {
@@ -574,6 +585,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   });
   await page.waitForTimeout(80);
+  await resetCodeFuManRound(page);
 
   const pauseOnUpper = page.evaluate(() => new Promise((resolve, reject) => {
     let lastSnapshot = {};
@@ -615,6 +627,19 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   });
   return { skipped: false, fixturePath, initial, attack, special, upper, returnedToIdle: true, specialReturnedToIdle: true, upperReturnedToIdle: true };
+}
+
+async function resetCodeFuManRound(page) {
+  await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    const p2 = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
+    return bridge?.snapshot?.playing === true &&
+      p1?.runtime?.stateNo === 0 && p1.runtime.ctrl === true && p1.frame?.spriteGroup === 0 &&
+      p2?.runtime?.stateNo === 0;
+  });
+  await page.waitForTimeout(120);
 }
 
 async function pressCodeFuManQcfX(page) {
@@ -1919,6 +1944,113 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
   return { skipped: false, projectPath, before, after, rejected, changedFixturePath };
 }
 
+async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, importedFixturePath) {
+  if (!importedFixturePath) {
+    return { skipped: true, reason: "imported fixture not found" };
+  }
+  const entries = await readZipAsFolderHandleEntries(importedFixturePath);
+  await page.addInitScript(({ entries: fixtureEntries }) => {
+    const makeDirectory = (name) => {
+      const directory = {
+        kind: "directory",
+        name,
+        children: [],
+        values: async function* () {
+          for (const child of directory.children) yield child;
+        },
+        queryPermission: async () => "granted",
+        requestPermission: async () => "granted",
+      };
+      return directory;
+    };
+    const root = makeDirectory("kfm-folder");
+    const directories = new Map([["", root]]);
+    for (const entry of fixtureEntries) {
+      const segments = String(entry.path).replace(/\\/g, "/").split("/").filter(Boolean);
+      let directory = root;
+      let prefix = "";
+      for (const segment of segments.slice(0, -1)) {
+        prefix = prefix ? `${prefix}/${segment}` : segment;
+        let child = directories.get(prefix);
+        if (!child) {
+          child = makeDirectory(segment);
+          directories.set(prefix, child);
+          directory.children.push(child);
+        }
+        directory = child;
+      }
+      const name = segments.at(-1) ?? "source.bin";
+      const bytes = Uint8Array.from(atob(entry.base64), (character) => character.charCodeAt(0));
+      const file = new File([bytes], name, { type: "application/octet-stream" });
+      directory.children.push({
+        kind: "file",
+        name,
+        getFile: async () => file,
+      });
+    }
+    Object.defineProperty(window, "showDirectoryPicker", {
+      configurable: true,
+      value: async () => root,
+    });
+  }, { entries });
+
+  const projectPath = writeFolderHandleRecoveryProject(outDir);
+  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await page.locator("#project-input").setInputFiles(projectPath);
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.sourcePackages?.some((sourcePackage) => sourcePackage.status === "missing"));
+  const before = await page.evaluate(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const sourcePackage = bridge?.project?.sourcePackages?.find((candidate) => candidate.id === "kfm-folder");
+    const sourceHandle = bridge?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-folder");
+    return {
+      kind: sourcePackage?.kind,
+      missing: sourcePackage?.status === "missing",
+      sourceHandle,
+      rememberButtons: document.querySelectorAll('[data-action="link-source-handle"]').length,
+    };
+  });
+  await page.locator('[data-source-package-id="kfm-folder"] [data-action="link-source-handle"]').first().click();
+  await page.waitForFunction(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const sourcePackage = bridge?.project?.sourcePackages?.find((candidate) => candidate.id === "kfm-folder");
+    const sourceHandle = bridge?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-folder");
+    return sourcePackage?.status === "linked" && sourceHandle?.handleKind === "directory" && sourceHandle?.canRead === true;
+  });
+  await page.locator('[data-mode="studio"]').first().click();
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
+  await selectStudioTab(page, "build");
+  await scrollLiveSelectorIntoView(page, '[data-source-package-id="kfm-folder"].source-package-row');
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: path.join(outDir, "studio-source-folder-handle.png"), fullPage: true });
+  const after = await evaluateWithStableBridge(page, () => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const sourcePackage = bridge?.project?.sourcePackages?.find((candidate) => candidate.id === "kfm-folder");
+    const sourceHandle = bridge?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-folder");
+    const sourceTransaction = bridge?.sourceTransactions?.find((candidate) => candidate.sourcePackageId === "kfm-folder");
+    const bodyText = document.body.textContent ?? "";
+    return {
+      mode: bridge?.mode,
+      studioTab: bridge?.studioTab,
+      character: bridge?.character,
+      sourcePackage,
+      sourceHandle,
+      sourceTransaction,
+      bodyHasSourcePackages: bodyText.includes("Source Packages"),
+      bodyHasLinkedCopy: bodyText.includes("Source files are available for package export"),
+      bodyHasFolderHandle: bodyText.toLowerCase().includes("folder") && bodyText.includes("Handle: granted"),
+    };
+  });
+  return { skipped: false, projectPath, before, after, fixtureEntries: entries.length };
+}
+
+async function readZipAsFolderHandleEntries(importedFixturePath) {
+  const zip = await JSZip.loadAsync(fs.readFileSync(importedFixturePath));
+  return Promise.all(Object.entries(zip.files)
+    .filter(([, entry]) => !entry.dir)
+    .map(async ([entryPath, entry]) => ({ path: entryPath, base64: await entry.async("base64") })));
+}
+
 async function writeChangedSourceRelinkFixture(outDir, importedFixturePath) {
   const zip = await JSZip.loadAsync(fs.readFileSync(importedFixturePath));
   const defPath = Object.keys(zip.files).find((candidate) => candidate.toLowerCase() === "chars/kfm/kfm.def");
@@ -2041,6 +2173,47 @@ function writeSourceRelinkProject(outDir) {
         requiredPaths: ["chars/kfm/kfm.def", "chars/kfm/kfm.sff", "chars/kfm/kfm.air", "chars/kfm/kfm.cmd", "chars/kfm/kfm.cns"],
       },
     ],
+    assets: {
+      characters: ["nova-boxer", "mira-volt", "rook-apprentice"],
+      stages: ["rooftop-dojo"],
+      audio: [],
+      ui: [],
+      effects: [],
+    },
+    assetRecords: [],
+    entry: { mode: "match", p1: DEFAULT_P1, p2: DEFAULT_P2, stage: DEFAULT_STAGE },
+    compatibility: {
+      gates: [],
+      stats: { characters: 3, stages: 1, importedCharacters: 1, importedStages: 0, generatedAtlases: 3 },
+    },
+  };
+  fs.writeFileSync(projectPath, JSON.stringify(project, null, 2));
+  return projectPath;
+}
+
+function writeFolderHandleRecoveryProject(outDir) {
+  const projectPath = path.join(outDir, "source-folder-handle-project.json");
+  const project = {
+    schemaVersion: "mugen-web-sandbox/project/v0",
+    id: "source-folder-handle-fixture",
+    name: "Source Folder Handle Fixture",
+    engineVersion: "qa-smoke",
+    generatedAt: "2026-07-13T00:00:00.000Z",
+    projectType: "mugen-port",
+    modules: ["mugen-compat", "three-render", "studio-workspace"],
+    sourcePackages: [{
+      id: "kfm-folder",
+      name: "kfm-folder",
+      kind: "folder",
+      fileCount: 14,
+      status: "linked",
+      characterId: "imported-kfm",
+      characterName: "Kung Fu Man",
+      defPath: "chars/kfm/kfm.def",
+      stageIds: ["kfm"],
+      stageDefPaths: ["stages/kfm.def"],
+      requiredPaths: ["chars/kfm/kfm.def", "chars/kfm/kfm.sff", "chars/kfm/kfm.air", "chars/kfm/kfm.cmd", "chars/kfm/kfm.cns"],
+    }],
     assets: {
       characters: ["nova-boxer", "mira-volt", "rook-apprentice"],
       stages: ["rooftop-dojo"],
@@ -2939,6 +3112,7 @@ function assertSmoke(diagnostics) {
     studioBuild,
     studioModules,
     studioSourceRelink,
+    studioFolderHandleRecovery,
     ikemenScan,
     studioStage,
     studioAssets,
@@ -3680,6 +3854,30 @@ function assertSmoke(diagnostics) {
     failures.push("studio-source-relink: changed source did not reject atomically while retaining the active runtime/source session");
   }
   if (
+    !studioFolderHandleRecovery?.skipped &&
+    (studioFolderHandleRecovery.before?.kind !== "folder" ||
+      studioFolderHandleRecovery.before?.missing !== true ||
+      studioFolderHandleRecovery.before?.sourceHandle?.state !== "not-linked" ||
+      studioFolderHandleRecovery.after?.mode !== "studio" ||
+      studioFolderHandleRecovery.after?.studioTab !== "build" ||
+      studioFolderHandleRecovery.after?.character !== "Kung Fu Man" ||
+      studioFolderHandleRecovery.after?.sourcePackage?.status !== "linked" ||
+      studioFolderHandleRecovery.after?.sourceHandle?.schemaVersion !== "mugen-web-sandbox/source-handle/v0" ||
+      studioFolderHandleRecovery.after?.sourceHandle?.handleKind !== "directory" ||
+      studioFolderHandleRecovery.after?.sourceHandle?.state !== "granted" ||
+      studioFolderHandleRecovery.after?.sourceHandle?.canRead !== true ||
+      !/^[0-9a-f]{64}$/i.test(String(studioFolderHandleRecovery.after?.sourceHandle?.observedFingerprint ?? "")) ||
+      studioFolderHandleRecovery.after?.sourceTransaction?.schemaVersion !== "mugen-web-sandbox/source-transaction/v0" ||
+      studioFolderHandleRecovery.after?.sourceTransaction?.state !== "linked" ||
+      studioFolderHandleRecovery.after?.sourceTransaction?.canRead !== true ||
+      studioFolderHandleRecovery.after?.sourceTransaction?.canWrite !== false ||
+      !studioFolderHandleRecovery.after?.bodyHasSourcePackages ||
+      !studioFolderHandleRecovery.after?.bodyHasLinkedCopy ||
+      !studioFolderHandleRecovery.after?.bodyHasFolderHandle)
+  ) {
+    failures.push("studio-folder-handle: directory enumeration did not recover the real fixture through SourceHandle/v0 and SourceTransaction/v0");
+  }
+  if (
     ikemenScan.mode !== "studio" ||
     ikemenScan.studioTab !== "evidence" ||
     !ikemenScan.detected ||
@@ -4282,6 +4480,30 @@ function summarizeDiagnostics(diagnostics) {
                 bodyHasRetainedSession: diagnostics.checks.studioSourceRelink.rejected.bodyHasRetainedSession,
               }
             : undefined,
+        },
+    studioFolderHandleRecovery: diagnostics.checks.studioFolderHandleRecovery?.skipped
+      ? { skipped: true, reason: diagnostics.checks.studioFolderHandleRecovery.reason }
+      : {
+          fixtureEntries: diagnostics.checks.studioFolderHandleRecovery?.fixtureEntries,
+          before: {
+            kind: diagnostics.checks.studioFolderHandleRecovery?.before?.kind,
+            missing: diagnostics.checks.studioFolderHandleRecovery?.before?.missing,
+            handle: diagnostics.checks.studioFolderHandleRecovery?.before?.sourceHandle,
+          },
+          after: {
+            mode: diagnostics.checks.studioFolderHandleRecovery?.after?.mode,
+            studioTab: diagnostics.checks.studioFolderHandleRecovery?.after?.studioTab,
+            character: diagnostics.checks.studioFolderHandleRecovery?.after?.character,
+            sourcePackage: {
+              status: diagnostics.checks.studioFolderHandleRecovery?.after?.sourcePackage?.status,
+              identityStatus: diagnostics.checks.studioFolderHandleRecovery?.after?.sourcePackage?.identityStatus,
+            },
+            sourceHandle: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceHandle,
+            sourceTransaction: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceTransaction,
+            bodyHasSourcePackages: diagnostics.checks.studioFolderHandleRecovery?.after?.bodyHasSourcePackages,
+            bodyHasLinkedCopy: diagnostics.checks.studioFolderHandleRecovery?.after?.bodyHasLinkedCopy,
+            bodyHasFolderHandle: diagnostics.checks.studioFolderHandleRecovery?.after?.bodyHasFolderHandle,
+          },
         },
     ikemenScan: {
       detected: diagnostics.checks.ikemenScan.detected,
