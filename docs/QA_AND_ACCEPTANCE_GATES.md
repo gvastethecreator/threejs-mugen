@@ -992,6 +992,19 @@ This gate proves:
 
 Required trace checksum is `e8856c68`; final checksum is `d4148a87`. This proves one normal-tick A-only contact against a command-driven imported A fixture state through existing command entry, guard-distance, automatic guard, root admission, direct combat, target/contact, and default air guard-state routes. It does not establish generic jumping or air movement, exact Common1 air-guard start or landing timing, a complete high/low/air policy, projectiles/helpers, custom state, forceguard, target ranking, Pause/hitpause, guard sound/spark/renderer effects, team replacement/KO, HUD/resources, or full MUGEN/IKEMEN parity.
 
+## Current Active-root Air Guard Landing Gate
+
+`pnpm qa:trace` includes required `synthetic-imported-ikemen-active-root-air-guard-landing.json`.
+
+This gate proves:
+
+- P2 remains guardable but out of range while P4 is P3's only direct threat;
+- the fixture-owned active root progresses through `40/A -> 132/A -> 154/A -> 155/A -> 52/S -> 20/S`;
+- active-root guard-stun maintenance runs before state clock/CNS/kinematics, and the required `HitVelSet`, `VelAdd`, `CtrlSet`, `VelSet`, `PosSet`, and `ChangeState` controller families execute in the authored route;
+- root admission contains exactly `p4 -> p3`, direct combat records one zero-chip `guard`, P4 records target id `138`, P3 life remains `1000`, and the final P3 frame is `20/S/I` with `ctrl = true`.
+
+Required trace checksum is `fe532005`; initial checksum is `912a2131`; final checksum is `8434e7f8`; frame count is `44`. This proves one fixture-owned authored air-guard exit and landing route under the active-motion scheduler. It does not establish generic `physics = A` landing, jumping or air movement, exact Common1/IKEMEN timing, complete high/low/air policy, projectiles/helpers, custom state, forceguard, target ranking, Pause/hitpause, guard sound/spark/renderer effects, team replacement/KO, HUD/resources, rollback, or full MUGEN/IKEMEN parity.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:

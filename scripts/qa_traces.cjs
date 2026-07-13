@@ -1315,6 +1315,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-active-root-air-guard-landing",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenActiveRootAirGuardLandingTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-active-root-hitoverride",
       required: true,
       artifact: presets.createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(),

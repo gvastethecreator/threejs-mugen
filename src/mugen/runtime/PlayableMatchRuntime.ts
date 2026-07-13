@@ -183,7 +183,7 @@ import { RuntimeStateEntryRouteWorld } from "./RuntimeStateEntryRouteSystem";
 import { RuntimeStateEntrySetupWorld } from "./RuntimeStateEntrySetupSystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { runtimeStageGameSpace } from "./RuntimeStageGameSpaceSystem";
-import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
+import { hasRuntimeStun, RuntimeStunWorld, tickRuntimeGuardStun } from "./RuntimeStunSystem";
 import { RuntimeActiveControllerHookSetWorld } from "./RuntimeActiveControllerHookSetSystem";
 import {
   RuntimeMatchPauseControllerWorld,
@@ -1345,6 +1345,7 @@ export class PlayableMatchRuntime {
     rootMotionAdvanceWorld.advance({
       actor: fighter,
       hooks: {
+        advanceGuardStun: (actor) => tickRuntimeGuardStun(actor),
         advanceStateClock: (actor) => stateClockWorld.advance(actor),
         runMotionControllers: (actor) => {
           recordPhase("fighter:controllers", actor.id);

@@ -10,6 +10,7 @@ describe("RuntimeRootMotionAdvanceWorld", () => {
     new RuntimeRootMotionAdvanceWorld().advance({
       actor,
       hooks: {
+        advanceGuardStun: (root) => calls.push(`guard-stun:${root.id}`),
         advanceStateClock: (root) => calls.push(`clock:${root.id}`),
         runMotionControllers: (root) => calls.push(`controllers:${root.id}`),
         advanceKinematics: (root) => calls.push(`kinematics:${root.id}`),
@@ -18,7 +19,7 @@ describe("RuntimeRootMotionAdvanceWorld", () => {
       },
     });
 
-    expect(calls).toEqual(["clock:p3", "controllers:p3", "kinematics:p3", "animation:p3", "constraints:p3"]);
+    expect(calls).toEqual(["guard-stun:p3", "clock:p3", "controllers:p3", "kinematics:p3", "animation:p3", "constraints:p3"]);
   });
 
   it("clamps the final motion position and honors the one-frame ScreenBound opt-out", () => {
@@ -36,6 +37,7 @@ describe("RuntimeRootMotionAdvanceWorld", () => {
       new RuntimeRootMotionAdvanceWorld().advance({
         actor,
         hooks: {
+          advanceGuardStun: () => undefined,
           advanceStateClock: () => undefined,
           runMotionControllers: () => undefined,
           advanceKinematics: (root) => { root.runtime.pos.x += 5; },

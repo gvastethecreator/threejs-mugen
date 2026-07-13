@@ -149,12 +149,13 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Map active-root air guard exit and landing](tickets/126-map-active-root-air-guard-exit-and-landing.md) - resolved: existing Common1-style `154/A,N -> 155/A,N -> 52/S,S -> 20/S,S` fixture already owns explicit exit/landing controllers; active-motion permits those controllers but has controllers-before-kinematics scheduling, so it needs its own required trace. Next: prove that fixture-owned route under an active root without claiming generic physics-A landing.
 
-- [Prove active-root air guard landing](tickets/127-prove-active-root-air-guard-landing.md) - open: extend the required active-root A-only contact into the existing fixture-owned `154 -> 155 -> 52 -> 20` exit/landing route with schedule and state evidence.
+- [Prove active-root air guard landing](tickets/127-prove-active-root-air-guard-landing.md) - resolved: the required 44-frame active-root trace extends the A-only contact into fixture-owned `40/A -> 132/A -> 154/A -> 155/A -> 52/S -> 20/S`; one zero-chip `p4 -> p3` guard preserves life `1000`, controller-before-kinematics ordering, and final control. Checksum `fe532005` / final `8434e7f8`. Generic physics-A landing, exact Common1 timing, and broader aerial movement remain blocked.
 
 ## Frontier
 
+- [Map CompatibilityJourney/v1](tickets/128-map-compatibility-journey-v1.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Prove active-root air guard landing without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
+- Continue the fixture-owned compatibility journey without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
 
 ## Not Yet Specified
 

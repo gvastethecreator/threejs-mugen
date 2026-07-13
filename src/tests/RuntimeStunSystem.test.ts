@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   hasRuntimeStun,
   RuntimeStunWorld,
+  tickRuntimeGuardStun,
   tickRuntimeStun,
   type RuntimeStunActor,
 } from "../mugen/runtime/RuntimeStunSystem";
@@ -26,6 +27,16 @@ describe("RuntimeStunSystem", () => {
     tickRuntimeStun(fighter);
     expect(fighter.runtime.guardStun).toBe(0);
     expect(fighter.runtime.guarding).toBe(false);
+  });
+
+  it("can tick only guard stun without changing hit stun", () => {
+    const fighter = actor({ hitStun: 3, guardStun: 1, velX: 10, moveType: "I" });
+
+    expect(tickRuntimeGuardStun(fighter)).toBe(true);
+    expect(fighter.runtime.guardStun).toBe(0);
+    expect(fighter.runtime.guarding).toBe(false);
+    expect(fighter.hitStun).toBe(3);
+    expect(fighter.runtime.vel.x).toBeCloseTo(8.2);
   });
 
   it("ticks hit stun and applies hit friction", () => {

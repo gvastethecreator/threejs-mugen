@@ -1,4 +1,5 @@
 export type RuntimeRootMotionAdvanceHooks<TActor> = {
+  advanceGuardStun: (actor: TActor) => void;
   advanceStateClock: (actor: TActor) => void;
   runMotionControllers: (actor: TActor) => void;
   advanceKinematics: (actor: TActor) => void;
@@ -14,6 +15,7 @@ export type RuntimeRootMotionAdvanceInput<TActor> = {
 export class RuntimeRootMotionAdvanceWorld {
   advance<TActor>(input: RuntimeRootMotionAdvanceInput<TActor>): void {
     const { actor, hooks } = input;
+    hooks.advanceGuardStun(actor);
     hooks.advanceStateClock(actor);
     hooks.runMotionControllers(actor);
     hooks.advanceKinematics(actor);

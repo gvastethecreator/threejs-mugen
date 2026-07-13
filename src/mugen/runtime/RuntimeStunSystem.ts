@@ -10,6 +10,8 @@ export type RuntimeStunTickResult = {
   hitActive: boolean;
 };
 
+export type RuntimeGuardStunActor = Pick<RuntimeStunActor, "runtime">;
+
 export type RuntimeStunAdvanceOptions<TActor extends RuntimeStunActor> = {
   hasCurrentMove?: boolean;
   preserveImportedStateMoveType?: boolean;
@@ -26,20 +28,26 @@ export function hasRuntimeStun(actor: RuntimeStunActor): boolean {
   return actor.hitStun > 0 || (actor.runtime.guardStun ?? 0) > 0;
 }
 
+export function tickRuntimeGuardStun(actor: RuntimeGuardStunActor): boolean {
+  actor.runtime.guarding = false;
+  if ((actor.runtime.guardStun ?? 0) <= 0) {
+    return false;
+  }
+
+  actor.runtime.guardStun = Math.max(0, (actor.runtime.guardStun ?? 0) - 1);
+  actor.runtime.guarding = actor.runtime.guardStun > 0;
+  actor.runtime.moveType = actor.runtime.guarding ? "H" : actor.runtime.moveType;
+  actor.runtime.vel.x *= 0.82;
+  return true;
+}
+
 export function tickRuntimeStun(actor: RuntimeStunActor): RuntimeStunTickResult {
   const result: RuntimeStunTickResult = {
     guardActive: false,
     hitActive: false,
   };
 
-  actor.runtime.guarding = false;
-  if ((actor.runtime.guardStun ?? 0) > 0) {
-    actor.runtime.guardStun = Math.max(0, (actor.runtime.guardStun ?? 0) - 1);
-    actor.runtime.guarding = actor.runtime.guardStun > 0;
-    actor.runtime.moveType = actor.runtime.guarding ? "H" : actor.runtime.moveType;
-    actor.runtime.vel.x *= 0.82;
-    result.guardActive = true;
-  }
+  result.guardActive = tickRuntimeGuardStun(actor);
 
   if (actor.hitStun > 0) {
     actor.hitStun = Math.max(0, actor.hitStun - 1);

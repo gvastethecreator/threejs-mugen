@@ -174,6 +174,7 @@ import {
   createSyntheticImportedIkemenActiveRootStandingLowGuardRejectTraceArtifact,
   createSyntheticImportedIkemenActiveRootStandingHighGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact,
+  createSyntheticImportedIkemenActiveRootAirGuardLandingTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
@@ -16595,6 +16596,71 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 136 }),
+    );
+  });
+
+  it("creates a required IKEMEN active-root air guard landing artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootAirGuardLandingTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(44);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      ChangeState: expect.any(Number),
+      CtrlSet: expect.any(Number),
+      HitDef: expect.any(Number),
+      HitVelSet: expect.any(Number),
+      PosSet: expect.any(Number),
+      VelAdd: expect.any(Number),
+      VelSet: expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: expect.any(Number),
+      "resource:ctrlset": expect.any(Number),
+      "kinematic:hitvelset": expect.any(Number),
+      "kinematic:posset": expect.any(Number),
+      "kinematic:velset": expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.combatReasons).toEqual(expect.arrayContaining(["guard"]));
+    expect(artifact.gates[0]?.evidence.combatReasons).not.toEqual(expect.arrayContaining(["hit", "override", "reversal"]));
+    const admissions = artifact.trace.frames
+      .map((frame) => frame.rootHitAdmission?.admittedPairIds ?? [])
+      .filter((pairIds) => pairIds.length > 0);
+    expect(admissions).toEqual([["p4->p3"]]);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p3", stateNo: 40, stateType: "A", inGuardDistAttackerIds: [] }),
+      expect.objectContaining({ actorId: "p3", stateNo: 40, stateType: "A", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
+      expect.objectContaining({ actorId: "p3", stateNo: 132, stateType: "A", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
+      expect.objectContaining({ actorId: "p3", stateNo: 154, stateType: "A", guardingFrames: expect.any(Number) }),
+      expect.objectContaining({ actorId: "p3", stateNo: 155, stateType: "A" }),
+      expect.objectContaining({
+        actorId: "p3",
+        stateNo: 52,
+        stateType: "S",
+        minPos: expect.objectContaining({ y: 0 }),
+        maxPos: expect.objectContaining({ y: 0 }),
+      }),
+      expect.objectContaining({
+        actorId: "p3",
+        stateNo: 20,
+        stateType: "S",
+        effectiveCtrlFrames: expect.objectContaining({ enabled: expect.any(Number) }),
+      }),
+    ]));
+    expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p3", stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" }),
+      expect.objectContaining({ actorId: "p3", stateNo: 155, controller: "VelAdd", name: "Apply Air Guard Gravity" }),
+      expect.objectContaining({ actorId: "p3", stateNo: 155, controller: "VelSet", name: "Air Guard Land Velocity" }),
+      expect.objectContaining({ actorId: "p3", stateNo: 155, controller: "PosSet", name: "Air Guard Land Position" }),
+      expect.objectContaining({ actorId: "p3", stateNo: 155, controller: "ChangeState", name: "Air Guard Land" }),
+    ]));
+    expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1000, stateNo: 20, stateType: "S", moveType: "I", physics: "S", guarding: false, ctrl: true }),
+      expect.objectContaining({ id: "p4", life: 1000, targetCount: 1 }),
+    ]));
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 138 }),
     );
   });
 
