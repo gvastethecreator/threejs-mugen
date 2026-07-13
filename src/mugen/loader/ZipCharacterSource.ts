@@ -46,7 +46,8 @@ export class ZipCharacterSource {
     }
     let zip: JSZip;
     try {
-      zip = await JSZip.loadAsync(await this.file.arrayBuffer());
+      const archiveBuffer = await this.file.arrayBuffer();
+      zip = await JSZip.loadAsync(archiveBuffer.slice(0));
     } catch (cause) {
       throw new ZipCharacterSourceError("invalid-archive", "ZIP could not be decoded", { cause });
     }
