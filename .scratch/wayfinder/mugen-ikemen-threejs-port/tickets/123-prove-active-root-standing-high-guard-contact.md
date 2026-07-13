@@ -1,7 +1,7 @@
 # Prove Active-root Standing High Guard Contact
 
 Type: implementation
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -25,3 +25,9 @@ Prove one explicit IKEMEN Tag active-motion root can remain in an imported comma
 Allowed: one normal-tick direct high-only active-root contact against an imported standing fixture state through existing command entry, guard-distance, automatic guard, root admission, direct combat, target/contact, and default guard-state ownership.
 
 Blocked: generic active-root movement, crouch/air/complete high-low behavior, automatic-guard policy breadth, projectiles/helpers, custom state, target precedence, Pause/hitpause, presentation, team lifecycle, scores, rollback, and full MUGEN/IKEMEN parity.
+
+## Outcome
+
+- Resolved with required `synthetic-imported-ikemen-active-root-standing-high-guard.json`, checksum `bec58061`, final checksum `3faaf48b`.
+- Tick sequence: P3 `holdback -> state 20` S at x = `-220`; state-`20` `PosSet` to x = `-100` creates the sole direct P4 H latch; P3 enters `120 -> 130`; delayed P4 overlap admits `p4 -> p3`, target `134`, S guard state `150`, and zero-chip life `1000`.
+- This proves only an H-versus-S positive route. It does not add generic active-root standing movement or complete high/low behavior.

@@ -141,12 +141,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Prove active-root standing low-guard rejection](tickets/122-prove-active-root-standing-low-guard-rejection.md) - resolved: held-back P3 enters fixture state `20` S, its local `PosSet` isolates geometry without an L latch, and delayed P4 `guardflag = L` overlap resolves as exact `p4 -> p3` hit; checksum `906e4751` / final `1eaa402b`. Next: prove H-specific standing contact without widening root ownership.
 
-- [Prove active-root standing high-guard contact](tickets/123-prove-active-root-standing-high-guard-contact.md) - open: isolate one command-driven S P3 route that observes authored P4 `guardflag = H`, enters the existing automatic guard path, and resolves delayed contact as guard.
+- [Prove active-root standing high-guard contact](tickets/123-prove-active-root-standing-high-guard-contact.md) - resolved: held-back P3 enters fixture state `20` S, its local `PosSet` makes authored P4 `guardflag = H` the direct latch, and existing `120 -> 130` / admission / direct combat resolve exact `p4 -> p3` guard state `150`; checksum `bec58061` / final `3faaf48b`. Next: map the active-root A-only route before air guard execution.
+
+- [Map active-root air guard contact](tickets/124-map-active-root-air-guard-contact.md) - open: establish source-backed state-entry, guard-start, admission, and default guard-state ownership for one A-only active-root route before any fixture implementation.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Prove active-root standing high-guard contact without widening helpers, target precedence, or presentation ownership.
+- Map active-root air guard contact before widening helpers, target precedence, or presentation ownership.
 
 ## Not Yet Specified
 
