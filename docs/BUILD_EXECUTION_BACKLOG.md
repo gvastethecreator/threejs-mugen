@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 491 - AssetProvenance/v0 read model
+
+Done: Asset Library now publishes `AssetProvenance/v0` records with separate
+input/output SHA-256 evidence, optional durable permission state, redacted
+source references, explicit complete/partial/blocked status, and provenance
+readiness. A source package fingerprint is never mislabeled as an output-file
+digest. The Studio bridge, selected Asset Detail panel, and browser smoke share
+the same record set and prove zero absolute local path leaks. Claim allowed:
+provenance completeness and redaction evidence. Claim blocked: per-file output
+hash coverage, license certainty, durable source editing, handle persistence,
+and full MUGEN/IKEMEN parity. Closure passes 3 focused files / 25 tests, 191
+files / 1989 tests, TypeScript 7, boundaries, CSS budget, Node smoke syntax,
+production build at 1,688.02 kB JavaScript / 424.20 kB gzip, 581/581 trace
+artifacts (547 required, 34 optional, 0 skipped), and full browser smoke with
+0 page errors, 0 console issues, 6/6 provenance records, the v0 schema,
+selected status `partial`, and 0 absolute-path leaks. Next: per-file binary
+digest coverage and permission-aware source replacement/recovery.
+
 ## Entry 490 - SourceTransaction/v0 read model
 
 Done: Studio now publishes a pure `SourceTransaction/v0` record for each

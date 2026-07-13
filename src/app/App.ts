@@ -89,6 +89,11 @@ import {
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
+import {
+  createAssetProvenanceRecord,
+  type AssetProvenancePermission,
+  type AssetProvenanceRecord,
+} from "./StudioAssetProvenance";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import {
@@ -478,6 +483,8 @@ type StudioAssetLibrarySummary = {
   selectedDependencies: StudioAssetDependencyRecord[];
   selectedDependencyGraph: StudioAssetDependencyGraph;
   replacementPlan: StudioAssetReplacementPlan;
+  provenance: AssetProvenanceRecord[];
+  selectedProvenance?: AssetProvenanceRecord;
   sourceRuntimeMap: StudioAssetSourceRuntimeMap;
   missingReferences: StudioAssetDependencyRecord[];
   relatedEvidence: StudioEvidenceRecord[];
@@ -4338,6 +4345,10 @@ export class App {
             <small>exportable</small>
           </span>
           <span>
+            <b>${library.provenance.filter((record) => record.canExport).length}/${library.provenance.length}</b>
+            <small>provenance ready</small>
+          </span>
+          <span>
             <b>${library.sourceRuntimeMap.records.length}</b>
             <small>mapped</small>
           </span>
@@ -4449,6 +4460,10 @@ export class App {
           <dt>Impact</dt><dd>${escapeHtml(asset.impact)}</dd>
           <dt>Next action</dt><dd>${escapeHtml(asset.nextAction.label)}</dd>
           <dt>Export</dt><dd>${this.statusBadge(asset.canExport ? "ok" : "blocked")}</dd>
+          <dt>Provenance</dt><dd>${library.selectedProvenance ? this.statusBadge(library.selectedProvenance.status === "complete" ? "ok" : library.selectedProvenance.status === "blocked" ? "blocked" : "warn") : this.statusBadge("unknown")}</dd>
+          <dt>Input digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.inputDigest?.digest ?? "missing")}</dd>
+          <dt>Output digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.outputDigest?.digest ?? "missing")}</dd>
+          <dt>Source ref</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.sourceRef ?? "missing")}</dd>
           <dt>Evidence</dt><dd>${asset.evidenceIds.length ? asset.evidenceIds.map((id) => `<span class="badge">${escapeHtml(id)}</span>`).join(" ") : "none linked yet"}</dd>
         </dl>
         <div class="badge-row">
@@ -8173,6 +8188,7 @@ export class App {
     const selectedDependencyGraph = selectedAsset
       ? this.getAssetDependencyGraph(selectedAsset, selectedDependencies)
       : this.getEmptyAssetDependencyGraph();
+    const provenance = this.getStudioAssetProvenance(assets);
     const replacementPlan = selectedAsset
       ? this.getAssetReplacementPlan(selectedAsset, assets)
       : this.getEmptyAssetReplacementPlan("Select an asset to inspect replacement candidates.");
@@ -8187,6 +8203,8 @@ export class App {
       selectedDependencies,
       selectedDependencyGraph,
       replacementPlan,
+      provenance,
+      selectedProvenance: selectedAsset ? provenance.find((record) => record.assetId === selectedAsset.id) : undefined,
       sourceRuntimeMap,
       missingReferences,
       relatedEvidence,
@@ -8204,6 +8222,31 @@ export class App {
         selected: assets.filter((asset) => asset.tags.includes("selected")).length,
       },
     };
+  }
+
+  private getStudioAssetProvenance(assets: StudioAssetRecord[]): AssetProvenanceRecord[] {
+    const sourcePackages = this.getProjectSourcePackages();
+    const sourceTransactions = this.getSourceTransactionRecords();
+    return assets.map((asset) => {
+      const sourcePackage = asset.source === "mugen-import"
+        ? sourcePackages.find((candidate) => candidate.characterId === asset.id) ?? sourcePackages[0]
+        : undefined;
+      const sourceTransaction = sourcePackage
+        ? sourceTransactions.find((candidate) => candidate.sourcePackageId === sourcePackage.id)
+        : undefined;
+      const sourceRecord = this.getAssetSourceRecords(asset).find((record) => record.lane === "source" && record.path);
+      const permission: AssetProvenancePermission = sourcePackage
+        ? sourceTransaction?.permission ?? "unsupported"
+        : "not-required";
+      return createAssetProvenanceRecord({
+        asset,
+        sourceFingerprint: sourcePackage?.fingerprint,
+        sourcePath: sourceRecord?.path,
+        tool: asset.source === "generated" && asset.tags.includes("sprite-atlas-builder") ? "sprite-atlas-builder" : undefined,
+        permission,
+        requiresDurablePermission: false,
+      });
+    });
   }
 
   private getFilteredStudioAssets(assets: StudioAssetRecord[]): StudioAssetRecord[] {

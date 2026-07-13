@@ -2262,6 +2262,7 @@ async function captureStudioAssets(page, outDir) {
       bodyHasDependencyDrilldown: document.body.innerText.includes("Dependency Drilldown"),
       bodyHasMissingReferences: document.body.innerText.includes("Missing / Partial References"),
       bodyHasRelatedEvidence: document.body.innerText.includes("Related Evidence"),
+      bodyHasProvenance: document.body.innerText.includes("Provenance"),
       bodyHasNextAction: document.body.innerText.includes("Next action"),
       selectedAssetId: bridge?.studioAssets?.selectedAssetId,
       selectedAssetLabel: bridge?.studioAssets?.selectedAsset?.label,
@@ -2274,6 +2275,11 @@ async function captureStudioAssets(page, outDir) {
       replacementCandidates: bridge?.studioAssets?.replacementPlan?.candidates?.length ?? 0,
       sourceRuntimeRecords: bridge?.studioAssets?.sourceRuntimeMap?.records?.length ?? 0,
       sourceRuntimeLanes: bridge?.studioAssets?.sourceRuntimeMap?.lanes,
+      provenanceSchema: bridge?.studioAssets?.provenance?.[0]?.schemaVersion,
+      provenanceRecords: bridge?.studioAssets?.provenance?.length ?? 0,
+      provenanceReady: bridge?.studioAssets?.provenance?.filter((record) => record.canExport).length ?? 0,
+      selectedProvenanceStatus: bridge?.studioAssets?.selectedProvenance?.status,
+      provenanceAbsolutePathLeaks: (bridge?.studioAssets?.provenance ?? []).filter((record) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(record.sourceRef ?? "")).length,
       missingReferences: bridge?.studioAssets?.missingReferences?.length ?? 0,
       relatedEvidence: bridge?.studioAssets?.relatedEvidence?.length ?? 0,
       assetTotal: bridge?.studioAssets?.stats?.total ?? 0,
@@ -3681,6 +3687,7 @@ function assertSmoke(diagnostics) {
     !studioAssets.bodyHasDependencyDrilldown ||
     !studioAssets.bodyHasMissingReferences ||
     !studioAssets.bodyHasRelatedEvidence ||
+    !studioAssets.bodyHasProvenance ||
     !studioAssets.bodyHasNextAction ||
     !studioAssets.selectedAssetId ||
     !studioAssets.selectedAssetNextAction ||
@@ -3695,6 +3702,10 @@ function assertSmoke(diagnostics) {
     (studioAssets.sourceRuntimeLanes?.runtime ?? 0) < 1 ||
     (studioAssets.sourceRuntimeLanes?.qa ?? 0) < 1 ||
     (studioAssets.sourceRuntimeLanes?.export ?? 0) < 1 ||
+    studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v0" ||
+    studioAssets.provenanceRecords < studioAssets.assetTotal ||
+    studioAssets.selectedProvenanceStatus !== "partial" ||
+    studioAssets.provenanceAbsolutePathLeaks !== 0 ||
     studioAssets.relatedEvidence < 1 ||
     studioAssets.assetTotal < 3 ||
     studioAssets.visibleAssets < 1 ||
@@ -4149,6 +4160,11 @@ function summarizeDiagnostics(diagnostics) {
       trustChainBlocked: diagnostics.checks.studioBuild.trustChainBlocked,
       trustFocusedRow: diagnostics.checks.studioBuild.trustFocusedRow,
       trustFocusedRowClass: diagnostics.checks.studioBuild.trustFocusedRowClass,
+      provenanceSchema: diagnostics.checks.studioAssets.provenanceSchema,
+      provenanceRecords: diagnostics.checks.studioAssets.provenanceRecords,
+      provenanceReady: diagnostics.checks.studioAssets.provenanceReady,
+      selectedProvenanceStatus: diagnostics.checks.studioAssets.selectedProvenanceStatus,
+      provenanceAbsolutePathLeaks: diagnostics.checks.studioAssets.provenanceAbsolutePathLeaks,
     },
     studioModules: {
       schema: diagnostics.checks.studioModules.contractSchema,
