@@ -9,6 +9,7 @@ const DEFAULT_P2 = "mira-volt";
 const DEFAULT_STAGE = "rooftop-dojo";
 const DEFAULT_OUT_DIR = ".scratch/qa/qa-smoke";
 const DEFAULT_IMPORTED_FIXTURE = ".scratch/fixtures/kfm-official.zip";
+const DEFAULT_CODE_FUMAN_FIXTURE = ".scratch/fixtures/codefuman.zip";
 const MUGEN_LITE_FIXTURE_SPRITES = [
   ...[0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200].map((group) => [group, 0]),
   [200, 1],
@@ -80,6 +81,14 @@ async function main() {
 
     const mugenLiteVisual = await captureMugenLiteVisual(page, server.baseUrl, outDir);
 
+    const codeFuManFixturePath = path.resolve(process.cwd(), process.env.QA_CODEFUMAN_FIXTURE_PATH ?? DEFAULT_CODE_FUMAN_FIXTURE);
+    const codeFuManVisual = await captureCodeFuManVisual(
+      page,
+      server.baseUrl,
+      outDir,
+      fs.existsSync(codeFuManFixturePath) ? codeFuManFixturePath : undefined,
+    );
+
     const tagPresentation = await captureTagPresentation(page, server.baseUrl, outDir);
 
     const studioWorkbench = await captureStudioWorkbench(page, server.baseUrl, outDir);
@@ -137,6 +146,7 @@ async function main() {
         runtimeDesktop,
         runtimeMobile,
         mugenLiteVisual,
+        codeFuManVisual,
         tagPresentation,
         studioWorkbench,
         studioWorkbenchTablet,
@@ -174,6 +184,10 @@ async function main() {
         mugenLiteMobileAttackFollowThroughCanvas: path.join(outDir, "mugen-lite-runtime-mobile-attack-follow-through-canvas.png"),
         mugenLiteMobilePalette: path.join(outDir, "mugen-lite-runtime-mobile-palette.png"),
         mugenLiteMobilePaletteCanvas: path.join(outDir, "mugen-lite-runtime-mobile-palette-canvas.png"),
+        codeFuManInitial: path.join(outDir, "codefuman-runtime-desktop.png"),
+        codeFuManInitialCanvas: path.join(outDir, "codefuman-runtime-desktop-canvas.png"),
+        codeFuManAttack: path.join(outDir, "codefuman-runtime-desktop-attack.png"),
+        codeFuManAttackCanvas: path.join(outDir, "codefuman-runtime-desktop-attack-canvas.png"),
         mugenLiteMovement: Object.fromEntries(["desktop", "mobile"].map((viewport) => [viewport, Object.fromEntries(
           ["walk", "crouch", "jump"].flatMap((pose) => [
             [pose, path.join(outDir, `mugen-lite-runtime-${viewport}-${pose}.png`)],
@@ -421,6 +435,78 @@ async function captureMugenLiteVisual(page, baseUrl, outDir) {
     paletteCanvasPath: path.join(outDir, "mugen-lite-runtime-mobile-palette-canvas.png"),
   });
   return { fixtureBytes: fixtureBuffer.length, desktop, mobile };
+}
+
+async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
+  if (!fixturePath) {
+    return { skipped: true, reason: "Optional Code Fu Man fixture is not present" };
+  }
+
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await page.locator("#zip-input").setInputFiles(fixturePath);
+  await page.waitForFunction(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    return bridge?.character === "Code Fu Man" && bridge.compatibility?.loaded === true;
+  });
+  await page.locator('[data-mode="match"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return bridge?.mode === "match" && actor?.source === "imported" && actor.runtime?.stateNo === 0 && actor.frame?.spriteGroup === 0;
+  });
+  await page.waitForTimeout(250);
+  const initial = await captureMugenLiteVisualState(
+    page,
+    path.join(outDir, "codefuman-runtime-desktop.png"),
+    path.join(outDir, "codefuman-runtime-desktop-canvas.png"),
+    "p1",
+    [],
+  );
+
+  const pauseOnAttack = page.evaluate(() => new Promise((resolve, reject) => {
+    let lastSnapshot = {};
+    const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man x attack frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+    const check = () => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      lastSnapshot = actor ? {
+        stateNo: actor.runtime?.stateNo,
+        moveType: actor.runtime?.moveType,
+        ctrl: actor.runtime?.ctrl,
+        frame: actor.frame,
+        activeCommands: actor.runtime?.activeCommands,
+        playing: bridge?.snapshot?.playing,
+      } : {};
+      if (actor?.runtime?.stateNo === 200) {
+        window.clearTimeout(timeout);
+        document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.setTimeout(check, 4);
+    };
+    check();
+  }));
+  await page.keyboard.down("a");
+  await page.waitForTimeout(80);
+  await page.keyboard.up("a");
+  await pauseOnAttack;
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  const attack = await captureMugenLiteVisualState(
+    page,
+    path.join(outDir, "codefuman-runtime-desktop-attack.png"),
+    path.join(outDir, "codefuman-runtime-desktop-attack-canvas.png"),
+    "p1",
+    [],
+  );
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+  });
+  return { skipped: false, fixturePath, initial, attack, returnedToIdle: true };
 }
 
 async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, options) {
@@ -2383,6 +2469,7 @@ function assertSmoke(diagnostics) {
     runtimeDesktop,
     runtimeMobile,
     mugenLiteVisual,
+    codeFuManVisual,
     tagPresentation,
     studioWorkbench,
     studioWorkbenchTablet,
@@ -2738,6 +2825,29 @@ function assertSmoke(diagnostics) {
       !probe.palette?.returnedToIdle
     ) {
       failures.push(`mugen-lite visual ${viewport}: ACT-backed source/destination RemapPal pixel proof failed`);
+    }
+  }
+  if (!codeFuManVisual.skipped) {
+    if (
+      codeFuManVisual.initial?.mode !== "match" ||
+      codeFuManVisual.initial.character !== "Code Fu Man" ||
+      !codeFuManVisual.initial.compatibilityLoaded ||
+      codeFuManVisual.initial.actorSource !== "imported" ||
+      codeFuManVisual.initial.actorState !== 0 ||
+      codeFuManVisual.initial.actorFrame?.group !== 0 ||
+      !codeFuManVisual.initial.canvasPixels?.nonBlank ||
+      codeFuManVisual.initial.canvasPixels.uniqueColors < 10 ||
+      codeFuManVisual.initial.spritePixels?.uniqueColors < 3 ||
+      codeFuManVisual.attack?.actorSource !== "imported" ||
+      codeFuManVisual.attack.actorState !== 200 ||
+      !Number.isFinite(codeFuManVisual.attack.actorFrame?.group) ||
+      codeFuManVisual.attack.actorFrame.group <= 0 ||
+      !codeFuManVisual.attack.canvasPixels?.nonBlank ||
+      codeFuManVisual.attack.canvasPixels.uniqueColors < 10 ||
+      codeFuManVisual.attack.spritePixels?.uniqueColors < 3 ||
+      !codeFuManVisual.returnedToIdle
+    ) {
+      failures.push("codefuman visual: independent package did not prove imported idle, x state 200, nonblank canvas, or idle return");
     }
   }
   const expectedPair = "p1,p2";
@@ -3447,6 +3557,25 @@ function summarizeDiagnostics(diagnostics) {
       mobileRecovery: summarizeMugenLiteRecovery(diagnostics.checks.mugenLiteVisual.mobile.recovery),
       mobileGuard: summarizeMugenLiteGuard(diagnostics.checks.mugenLiteVisual.mobile.guard),
     },
+    codeFuManVisual: diagnostics.checks.codeFuManVisual.skipped
+      ? { skipped: true, reason: diagnostics.checks.codeFuManVisual.reason }
+      : {
+          skipped: false,
+          initial: {
+            character: diagnostics.checks.codeFuManVisual.initial.character,
+            actorState: diagnostics.checks.codeFuManVisual.initial.actorState,
+            actorFrame: diagnostics.checks.codeFuManVisual.initial.actorFrame,
+            uniqueColors: diagnostics.checks.codeFuManVisual.initial.canvasPixels.uniqueColors,
+            spriteUniqueColors: diagnostics.checks.codeFuManVisual.initial.spritePixels.uniqueColors,
+          },
+          attack: {
+            actorState: diagnostics.checks.codeFuManVisual.attack.actorState,
+            actorFrame: diagnostics.checks.codeFuManVisual.attack.actorFrame,
+            uniqueColors: diagnostics.checks.codeFuManVisual.attack.canvasPixels.uniqueColors,
+            spriteUniqueColors: diagnostics.checks.codeFuManVisual.attack.spritePixels.uniqueColors,
+          },
+          returnedToIdle: diagnostics.checks.codeFuManVisual.returnedToIdle,
+        },
     tagPresentation: {
       baseline: diagnostics.checks.tagPresentation.baseline.drawRootIds,
       desktop: diagnostics.checks.tagPresentation.desktop.drawRootIds,

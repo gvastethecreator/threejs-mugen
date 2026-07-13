@@ -2578,6 +2578,22 @@ export function createImportedXTraceArtifact(
   });
 }
 
+export function createCodeFuManIndependentXTraceArtifact(
+  imported: DemoFighterDefinition,
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(imported, {
+    ...options,
+    targetId: "codefuman-independent-x-golden",
+    targetLabel: "Code Fu Man independent x route",
+    requireHitEvent: true,
+    notes: [
+      "Optional local Code Fu Man fixture trace proves the independent MIT package reaches its authored x command, state 200, HitDef execution, and a bounded hit event through the production import bridge.",
+      "This does not claim public asset bundling, exact Common1 timing, exact Code Fu Man visual/audio parity, AI parity, or full MUGEN/IKEMEN compatibility.",
+    ],
+  });
+}
+
 export function createSyntheticImportedRejectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();

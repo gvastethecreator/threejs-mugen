@@ -23,6 +23,7 @@ const { File } = require("node:buffer");
 
 const DEFAULT_OUT_DIR = ".scratch/qa/trace-gates";
 const DEFAULT_KFM_FIXTURE = ".scratch/fixtures/kfm-official.zip";
+const DEFAULT_CODE_FUMAN_FIXTURE = ".scratch/fixtures/codefuman.zip";
 
 async function main() {
   const outDir = path.resolve(process.cwd(), process.env.QA_TRACE_OUT_DIR ?? DEFAULT_OUT_DIR);
@@ -3554,6 +3555,21 @@ async function main() {
       skipped.push({
         name: "kfm-official",
         reason: `Optional fixture not found at ${path.relative(process.cwd(), kfmFixturePath)}`,
+      });
+    }
+
+    const codeFuManFixturePath = path.resolve(process.cwd(), process.env.CODEFUMAN_FIXTURE_PATH ?? DEFAULT_CODE_FUMAN_FIXTURE);
+    if (fs.existsSync(codeFuManFixturePath)) {
+      const imported = await loadImportedFighter(vite, codeFuManFixturePath);
+      artifacts.push({
+        name: "codefuman-independent-x",
+        required: false,
+        artifact: presets.createCodeFuManIndependentXTraceArtifact(imported),
+      });
+    } else {
+      skipped.push({
+        name: "codefuman-independent",
+        reason: `Optional fixture not found at ${path.relative(process.cwd(), codeFuManFixturePath)}`,
       });
     }
 

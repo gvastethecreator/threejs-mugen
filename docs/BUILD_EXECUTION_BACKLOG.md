@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 481 - Independent Code Fu Man package route
+
+Done: Code Fu Man is now the second independently sourced legal package in the
+compatibility frontier. `ExternalFixtureManifest/v1` records the GitHub source,
+MIT license path, exact 20-entry ZIP inventory, 307511-byte archive size, and
+SHA-256 `7974f5101a3f3bca0ef3aef3b491fc34d81cbc132d91b53a51b78f34819b1ca0`.
+Optional fixture tests verify archive provenance and the production ZIP -> VFS
+-> loader -> imported-fighter path. `qa:trace` adds
+`codefuman-independent-x` with checksum `91e27e22`, initial `3bb8fbdd`, final
+`827caf7d`, and 14 frames; it requires imported `x`, state `200`, `HitDef`,
+`hitdef`, and a hit event. `qa:smoke` uploads the local ZIP through the real
+browser input, proves idle plus authored state `200` / AIR action `1055`,
+nonblank Three.js pixels, and idle return. Full closure passes 185/1962 tests,
+TypeScript 7 typecheck, boundaries, build, 579/579 trace artifacts, and the
+full browser smoke. Claim allowed: one independently sourced MIT package at
+bounded loader/runtime/browser scope. Claim blocked: public asset bundling,
+exact Common1 timing, QCF/special breadth, exact visual/audio/AI parity, broad
+corpus support, score movement, and full MUGEN/IKEMEN parity. Next: Wayfinder
+132 maps one independent Code Fu Man special route.
+
 ## Entry 480 - Legal ACT/RemapPal route
 
 Done: the repository-owned `MugenLiteJourneyFixture/v1` now carries two deterministic 768-byte ACT palettes through DEF `pal1`/`pal2`, and imported state `220` executes `RemapPal source = 1,1` to `dest = 1,2` from the physical `y` command. The loader records both palettes, the runtime trace promotes `mugen-lite-journey-palette` to a required artifact with checksum `1291909d` / final `380400cf`, and browser smoke is wired to capture per-color destination coverage within rendering tolerance on desktop/mobile with idle return. Current `CompatibilityJourney/v1` values are checksum `11da5411` and package digest `sha256:b8e917e9b968f86765db017388823e897779d46041b3738a47c702ce57adfc50`; trace refs are `7615fd2b`, `ceac9f37`, and `1291909d`. Claim ceiling remains one repository-owned ACT source/destination route; arbitrary palette depth, transitive mappings, PalFX interaction, helper/projectile ownership, commercial breadth, exact Common1 timing, and full MUGEN/IKEMEN parity remain blocked. Next: Wayfinder 131 maps a second independent legal character package.

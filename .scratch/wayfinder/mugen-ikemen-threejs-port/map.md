@@ -153,10 +153,11 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Map CompatibilityJourney/v1](tickets/128-map-compatibility-journey-v1.md) - resolved: a typed immutable aggregate now references the legal package/license/digest, loader findings, required runtime traces, browser desktop/mobile proof, and native regression without copying their payloads; the refreshed aggregate is tracked by Entry 480. No score movement.
 - [Adjudicate MUGEN-lite milestone](tickets/129-adjudicate-mugen-lite-milestone.md) - resolved: the written M2 exit is accepted at bounded fixture scope. Local KFM traces cover movement, normal/special input, guard, get-hit, fall, and recovery; the CC0 legal journey remains a separate `CompatibilityJourney/v1` envelope. Scores stay unchanged.
 - [Select independent legal breadth](tickets/130-select-independent-legal-breadth.md) - resolved: the repository-owned ACT/palette route was selected and implemented with distinct source/destination ACT files, required runtime checksum `1291909d` / final `380400cf`, package digest `sha256:b8e917e9b968f86765db017388823e897779d46041b3738a47c702ce57adfc50`, and refreshed aggregate checksum `11da5411`. Next: independent character package mapping.
+- [Map independent legal character package](tickets/131-map-independent-legal-character-package.md) - resolved: Code Fu Man was selected from the MIT-licensed Jesuszilla/CodeFuMan source, with exact archive SHA-256 `7974f510...b1ca0`, production loader evidence, optional runtime checksum `91e27e22`, and desktop browser proof. No score movement; public bundling and broad parity remain blocked.
 
 ## Frontier
 
-- [Map independent legal character package](tickets/131-map-independent-legal-character-package.md)
+- [Map Code Fu Man special route](tickets/132-map-codefuman-special-route.md)
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
 - Continue evidence-led compatibility breadth without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
 
