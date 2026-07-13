@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 487 - Versioned local project index
+
+Done: `ProjectStorage` now migrates valid `project-index/v0` payloads to
+`project-index/v1` under the existing localStorage key, assigns revision `1`
+to migrated entries, increments revisions on replacement, and keeps valid read
+access if migration writes are blocked by browser policy. Focused coverage
+proves migration, revision increment, malformed revision normalization, and
+corrupted-entry filtering. Closure passes `188` files / `1973` tests, TypeScript
+7 typecheck, boundaries, build, `581/581` trace artifacts (`547` required,
+`34` optional), and full Playwright smoke. Claim allowed: backward-compatible
+versioned local project-index persistence. Claim blocked: cross-tab conflict
+detection/resolution, IndexedDB/File System Access persistence, source writes,
+and full MUGEN/IKEMEN parity. Next: implement an explicit transaction boundary
+for external edits before adding conflict UI.
+
 ## Entry 486 - Studio project autosave
 
 Done: Studio now coalesces dirty project identity edits into a debounced local

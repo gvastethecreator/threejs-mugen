@@ -1,6 +1,9 @@
 import { parseGameProjectManifest, type GameProjectManifest } from "./StudioModel";
 
 export const PROJECT_STORAGE_KEY = "mugen-web-sandbox:projects:v0";
+export const PROJECT_STORAGE_SCHEMA_VERSION = "mugen-web-sandbox/project-index/v1" as const;
+
+const LEGACY_PROJECT_STORAGE_SCHEMA_VERSION = "mugen-web-sandbox/project-index/v0";
 
 export type StorageLike = {
   getItem(key: string): string | null;
@@ -11,11 +14,12 @@ export type StoredProjectEntry = {
   id: string;
   name: string;
   savedAt: string;
+  revision: number;
   manifest: GameProjectManifest;
 };
 
 type StoredProjectIndex = {
-  schemaVersion: "mugen-web-sandbox/project-index/v0";
+  schemaVersion: typeof PROJECT_STORAGE_SCHEMA_VERSION;
   entries: StoredProjectEntry[];
 };
 
@@ -35,14 +39,16 @@ export function saveStoredProjectManifest(
   const savedAt = options.savedAt ?? new Date().toISOString();
   const maxEntries = options.maxEntries ?? 8;
   const index = readIndex(storage);
+  const previous = index.entries.find((candidate) => candidate.id === manifest.id);
   const entry: StoredProjectEntry = {
     id: manifest.id,
     name: manifest.name,
     savedAt,
+    revision: (previous?.revision ?? 0) + 1,
     manifest,
   };
   const entries = [entry, ...index.entries.filter((candidate) => candidate.id !== manifest.id)].slice(0, maxEntries);
-  writeIndex(storage, { schemaVersion: "mugen-web-sandbox/project-index/v0", entries });
+  writeIndex(storage, { schemaVersion: PROJECT_STORAGE_SCHEMA_VERSION, entries });
   return entries;
 }
 
@@ -53,13 +59,28 @@ function readIndex(storage: StorageLike): StoredProjectIndex {
   }
   try {
     const parsed = JSON.parse(raw) as unknown;
-    if (!isRecord(parsed) || parsed.schemaVersion !== "mugen-web-sandbox/project-index/v0" || !Array.isArray(parsed.entries)) {
+    if (!isRecord(parsed) || !Array.isArray(parsed.entries)) {
       return emptyIndex();
     }
-    return {
-      schemaVersion: "mugen-web-sandbox/project-index/v0",
-      entries: parsed.entries.flatMap(readEntry),
-    };
+    if (parsed.schemaVersion === PROJECT_STORAGE_SCHEMA_VERSION) {
+      return {
+        schemaVersion: PROJECT_STORAGE_SCHEMA_VERSION,
+        entries: parsed.entries.flatMap((value) => readEntry(value, 1)),
+      };
+    }
+    if (parsed.schemaVersion === LEGACY_PROJECT_STORAGE_SCHEMA_VERSION) {
+      const migrated: StoredProjectIndex = {
+        schemaVersion: PROJECT_STORAGE_SCHEMA_VERSION,
+        entries: parsed.entries.flatMap((value) => readEntry(value, 1)),
+      };
+      try {
+        writeIndex(storage, migrated);
+      } catch {
+        // Keep read access available when a browser blocks migration writes.
+      }
+      return migrated;
+    }
+    return emptyIndex();
   } catch {
     return emptyIndex();
   }
@@ -69,7 +90,7 @@ function writeIndex(storage: StorageLike, index: StoredProjectIndex): void {
   storage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(index));
 }
 
-function readEntry(value: unknown): StoredProjectEntry[] {
+function readEntry(value: unknown, fallbackRevision: number): StoredProjectEntry[] {
   if (!isRecord(value) || typeof value.id !== "string" || typeof value.name !== "string" || typeof value.savedAt !== "string") {
     return [];
   }
@@ -77,11 +98,12 @@ function readEntry(value: unknown): StoredProjectEntry[] {
   if (!manifest) {
     return [];
   }
-  return [{ id: value.id, name: value.name, savedAt: value.savedAt, manifest }];
+  const revision = typeof value.revision === "number" && Number.isSafeInteger(value.revision) && value.revision >= 1 ? value.revision : fallbackRevision;
+  return [{ id: value.id, name: value.name, savedAt: value.savedAt, revision, manifest }];
 }
 
 function emptyIndex(): StoredProjectIndex {
-  return { schemaVersion: "mugen-web-sandbox/project-index/v0", entries: [] };
+  return { schemaVersion: PROJECT_STORAGE_SCHEMA_VERSION, entries: [] };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
