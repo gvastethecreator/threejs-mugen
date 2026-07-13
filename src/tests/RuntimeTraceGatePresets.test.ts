@@ -173,6 +173,7 @@ import {
   createSyntheticImportedIkemenActiveRootCrouchLowGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootStandingLowGuardRejectTraceArtifact,
   createSyntheticImportedIkemenActiveRootStandingHighGuardTraceArtifact,
+  createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
@@ -16538,6 +16539,62 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 134 }),
+    );
+  });
+
+  it("creates a required IKEMEN active-root air guard contact artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(4);
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      ChangeState: expect.any(Number),
+      HitDef: expect.any(Number),
+      PosSet: expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: expect.any(Number),
+      "kinematic:posset": expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.combatReasons).toEqual(expect.arrayContaining(["guard"]));
+    expect(artifact.gates[0]?.evidence.combatReasons).not.toEqual(expect.arrayContaining(["hit", "override", "reversal"]));
+    expect(artifact.trace.frames.slice(0, 3).every((frame) => frame.rootHitAdmission?.admittedPairIds.length === 0)).toBe(true);
+    expect(artifact.trace.frames[3]?.rootHitAdmission?.admittedPairIds).toEqual(["p4->p3"]);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p3",
+        stateNo: 40,
+        stateType: "A",
+        minPos: { x: -220, y: 0 },
+        maxPos: { x: -220, y: 0 },
+        inGuardDistAttackerIds: [],
+        inGuardDistSources: [],
+      }),
+      expect.objectContaining({
+        actorId: "p3",
+        stateNo: 40,
+        stateType: "A",
+        minPos: { x: -100, y: -23.45 },
+        maxPos: { x: -100, y: -23.45 },
+        inGuardDistAttackerIds: ["p4"],
+        inGuardDistSources: ["direct"],
+      }),
+      expect.objectContaining({ actorId: "p3", stateNo: 132, stateType: "A", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
+      expect.objectContaining({ actorId: "p3", stateNo: 154, stateType: "A", guardingFrames: 2 }),
+    ]));
+    expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }),
+      expect.objectContaining({ actorId: "p3", tick: 2, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" }),
+      expect.objectContaining({ actorId: "p4", tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }),
+    ]));
+    expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1000, stateNo: 154, stateType: "A", guarding: true, ctrl: false }),
+      expect.objectContaining({ id: "p4", life: 1000, targetCount: 1 }),
+    ]));
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 136 }),
     );
   });
 

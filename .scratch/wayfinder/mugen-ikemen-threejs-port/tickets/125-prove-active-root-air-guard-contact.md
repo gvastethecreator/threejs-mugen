@@ -1,7 +1,7 @@
 # Prove Active-root Air Guard Contact
 
 Type: implementation
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Goal
@@ -25,3 +25,9 @@ Prove one explicit IKEMEN Tag active-motion root can remain in an imported fixtu
 Allowed: one normal-tick direct A-only active-root guard against an imported A fixture state through existing command entry, guard-distance, automatic guard, root admission, direct combat, target/contact, and default air guard-state ownership.
 
 Blocked: generic air movement, exact Common1 timing/landing, complete guard policy, projectiles/helpers, custom state, target precedence, Pause/hitpause, presentation, team lifecycle, scores, rollback, and full MUGEN/IKEMEN parity.
+
+## Outcome
+
+- Required `synthetic-imported-ikemen-active-root-air-guard.json` passes with trace checksum `e8856c68` and final checksum `d4148a87`.
+- Held-back P3 reaches fixture `40/A`, latches A-only P4 after fixture-local positioning, enters existing auto guard state `132/A`, and guards the delayed direct P4 contact in `154/A` at zero chip with target id `136`.
+- Generic jump/air movement, exit/landing behavior, exact Common1 timing, and all listed blocked scope remain outside this implementation.

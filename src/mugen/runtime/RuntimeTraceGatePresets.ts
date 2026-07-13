@@ -10340,6 +10340,253 @@ export function createSyntheticImportedIkemenActiveRootStandingHighGuardTraceArt
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 136;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-air-guard-grid",
+    displayName: "Trace Active Root Air Guard Grid",
+    playerStart: {
+      p1: { x: -220, y: 0, facing: 1 },
+      p2: { x: 180, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "P3 enters command-driven A state while distant A-only P4 cannot latch", p1: ["B"], p2: [], frames: 1 },
+    { label: "P3 A state positions into A-only P4 guard distance without contact", p1: ["B"], p2: [], frames: 1 },
+    { label: "latched P3 enters A guard state while P4 remains out of contact", p1: ["B"], p2: [], frames: 1 },
+    { label: "air-guarding P3 blocks delayed A-only P4 direct contact", p1: ["B"], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-air-guard-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Air Guard Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const pairAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-air-guard-pair-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Air Guard Pair Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 137, guardDistance: 112, clsn1Extent: 36, posX: 180 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-air-guard-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Air Guard Defender",
+    withHitDef: false,
+    passiveCommandRoute: { commandName: "holdback", stateNo: 40 },
+    passiveControllerStates: [{ stateNo: 40, stateType: "A", physics: "N", animNo: 40, posX: -100, posY: -24, posTrigger: "1" }],
+    withAirAutoGuardStartStates: true,
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, airShakeStateNo: 154, airSlideStateNo: 155, guardStateNo: 130 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-air-guard-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Air Guard Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      guardFlag: "A",
+      guardDistance: 112,
+      clsn1Extent: 36,
+      posX: 50,
+      delayedPosX: { x: -65, trigger: "Time >= 3" },
+    },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: pairAttacker,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [defender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-air-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-air-guard-golden",
+      label: "Synthetic imported IKEMEN active-root air guard contact",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves held-back P3 enters fixture state 40 A before A-only P4 guardflag A becomes direct InGuardDist provenance. State 40 positions only P3 into isolated A geometry; state 132 is the only available automatic guard-start state, so existing guard selection preserves A through delayed P4 overlap and existing root admission/direct combat records one A guard in state 154 with zero chip. This is a fixture-only A state and local geometry route, not generic jumping or air movement. P2 stays guardable but out of range, and guard-distance/admission/resolver ownership stay unchanged. Ground matrices, exact Common1 air-start timing/landing, projectiles/helpers, custom-state variants, target precedence, pause/hitpause, team KO, and full parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-air-guard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [132, 154],
+        forbiddenExecutedStates: [120, 130, 150, 152],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "PosSet"],
+        requiredExecutedOperations: ["hitdef", "kinematic:posset"],
+        requiredActiveCommands: ["holdback"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        forbiddenCombatReasons: ["hit", "override", "reversal"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 enters A and positions before the A-only guard latch",
+            actorId: "p3",
+            allowSameTick: true,
+            steps: [
+              { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
+              { tick: 2, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 2, stateNo: 40, operation: "kinematic:posset" },
+            ],
+          },
+          {
+            label: "P4 enters physical overlap with A-only guard flag on the delayed-contact tick",
+            actorId: "p4",
+            allowSameTick: true,
+            steps: [{ tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 A-state placement completes before A-only latch", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "P3 receives direct plural A guard latches while in state type A", frameIndex: 1, phase: "tick:guard-distance-latch", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P3 A guard state precedes A-only root admission", frameIndex: 3, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "root admission follows all active root controllers", frameIndex: 3, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredTickScheduleStampSequences: [
+          {
+            label: "P3 A-state placement precedes A-only direct latch",
+            frameIndex: 1,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "tick:guard-distance-latch", actorId: "p1" },
+            ],
+          },
+          {
+            label: "delayed P4 position and P3 A guard state both precede root admission",
+            frameIndex: 3,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "post-fighter:hit-admission", actorId: "p1" },
+            ],
+          },
+        ],
+        requiredRootHitAdmissionFrames: [{ admittedPairIds: ["p4->p3"], minFrames: 1 }],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 40,
+            stateType: "A",
+            observedPosXAtLeast: -220,
+            observedPosXAtMost: -220,
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 40,
+            stateType: "A",
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            observedPosXAtLeast: -100,
+            observedPosXAtMost: -100,
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 132,
+            stateType: "A",
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 154,
+            stateType: "A",
+            guarding: true,
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            teamStandby: false,
+            minFrames: 1,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "P3 enters A, latches A-only P4, starts A guard, and guards delayed contact",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 40,
+                stateType: "A",
+                observedPosXAtLeast: -220,
+                observedPosXAtMost: -220,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 40,
+                stateType: "A",
+                inGuardDistAttackerId: "p4",
+                inGuardDistSource: "direct",
+                observedPosXAtLeast: -100,
+                observedPosXAtMost: -100,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 132,
+                stateType: "A",
+                inGuardDistAttackerId: "p4",
+                inGuardDistSource: "direct",
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 154,
+                stateType: "A",
+                guarding: true,
+                observedLifeAtLeast: 1000,
+                observedLifeAtMost: 1000,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, stateNo: 154, stateType: "A", guarding: true, ctrl: false },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -42903,6 +43150,7 @@ export type SyntheticImportedTraceFighterOptions = {
     animNo?: number;
     ctrl?: number;
     posX?: number;
+    posY?: number;
     posTrigger?: string;
   }>;
   defenseMultiplier?: number;
@@ -43580,6 +43828,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withInGuardDistGuardStart?: boolean;
   withAutoGuardStartStates?: boolean;
   withCrouchAutoGuardStartStates?: boolean;
+  withAirAutoGuardStartStates?: boolean;
   withBoundsControllers?: boolean;
   withScreenBoundCameraProbe?: boolean;
   withGravity?: boolean;
@@ -44194,7 +44443,9 @@ ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
-${options.withCrouchAutoGuardStartStates
+${options.withAirAutoGuardStartStates
+  ? airAutoGuardStartStateBlock()
+  : options.withCrouchAutoGuardStartStates
   ? crouchAutoGuardStartStateBlock()
   : options.withAutoGuardStartStates
     ? autoGuardStartStateBlock()
@@ -44320,7 +44571,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
         ? []
         : ([[options.passiveHitOverride.stateNo, traceAction(options.passiveHitOverride.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...passiveHitOverrideTraceActions(options.passiveHitOverrides),
-      ...(options.withCrouchAutoGuardStartStates
+      ...(options.withAirAutoGuardStartStates
+        ? ([[132, traceAction(132)]] as Array<[number, MugenAnimationAction]>)
+        : options.withCrouchAutoGuardStartStates
         ? ([[120, traceAction(120)], [131, traceAction(131)]] as Array<[number, MugenAnimationAction]>)
         : options.withAutoGuardStartStates
           ? ([[120, traceAction(120)], [130, traceAction(130)], [140, traceAction(140)]] as Array<[number, MugenAnimationAction]>)
@@ -45202,7 +45455,9 @@ function passiveControllerStateBlocks(options: SyntheticImportedTraceFighterOpti
     .map((state, index) => {
       const suffix = ` ${index + 2}`;
       const controllers = [
-        state.posX === undefined ? "" : passiveControllerStatePosSet(state.stateNo, state.posX, state.posTrigger, suffix),
+        state.posX === undefined && state.posY === undefined
+          ? ""
+          : passiveControllerStatePosSet(state.stateNo, state.posX, state.posY, state.posTrigger, suffix),
         options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef, state.stateNo, suffix) : "",
         options.passiveAssertSpecialFlags?.length
           ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger, suffix, state.stateNo)
@@ -45221,12 +45476,19 @@ ${controllers.join("\n")}
     .join("");
 }
 
-function passiveControllerStatePosSet(stateNo: number, x: number, trigger: string | undefined, suffix: string): string {
+function passiveControllerStatePosSet(
+  stateNo: number,
+  x: number | undefined,
+  y: number | undefined,
+  trigger: string | undefined,
+  suffix: string,
+): string {
   return `
 [State ${stateNo}, Passive State Pos${suffix}]
 type = PosSet
 trigger1 = ${trigger ?? "Time = 0"}
-x = ${x}
+${x === undefined ? "" : `x = ${x}`}
+${y === undefined ? "" : `y = ${y}`}
 `;
 }
 
@@ -46489,6 +46751,17 @@ type = C
 movetype = I
 physics = C
 anim = 131
+ctrl = 0
+`;
+}
+
+function airAutoGuardStartStateBlock(): string {
+  return `
+[Statedef 132]
+type = A
+movetype = I
+physics = N
+anim = 132
 ctrl = 0
 `;
 }

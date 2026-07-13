@@ -32,3 +32,9 @@ No generic guard, active-root scheduling, admission, or combat mutation is requi
 - Exact Common1 air guard-start source/timing is not established by this map.
 - Air landing, movement physics, projectile/helper threats, pause, effects, audio, target precedence, team lifecycle, and full parity remain blocked.
 - The selected cut proves only state-type-A guard classification and existing ownership composition.
+
+## Result
+
+- Required `synthetic-imported-ikemen-active-root-air-guard.json` now passes with trace checksum `e8856c68` and final checksum `d4148a87`.
+- The four-frame route observes P3 `40/A` at x = `-220`, then `40/A` at x = `-100`, y = `-23.45` after authored `PosSet y = -24`, with direct P4 A latch, then automatic state `132/A`, then zero-chip P4 -> P3 guard contact in state `154/A`.
+- The fixture deliberately owns only initial A state and local geometry. It has no generic jump, descent, exit, or landing claim; the next research cut maps post-guard A exit and landing ownership before either is widened.

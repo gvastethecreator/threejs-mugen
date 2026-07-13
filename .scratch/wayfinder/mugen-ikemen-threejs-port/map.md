@@ -145,12 +145,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Map active-root air guard contact](tickets/124-map-active-root-air-guard-contact.md) - resolved: `guardflag = A` maps to A state type, active roots already own direct latch refresh, state `132` is selected when `120` is unavailable, and state `154` is the A guard-hit preference. Next: fixture-only A route, not generic aerial movement.
 
-- [Prove active-root air guard contact](tickets/125-prove-active-root-air-guard-contact.md) - open: use a dedicated imported A fixture start state `132` plus default `154/155` guard-hit states to prove one direct A-only active-root guard contact without broad movement or Common1 claims.
+- [Prove active-root air guard contact](tickets/125-prove-active-root-air-guard-contact.md) - resolved: held-back P3 enters fixture `40/A`, fixture-local geometry exposes direct A-only P4, existing auto guard selects `132/A`, and delayed P4 contact resolves exact zero-chip guard state `154/A`; checksum `e8856c68` / final `d4148a87`. Next: map post-guard A exit and landing ownership before widening the claim.
+
+- [Map active-root air guard exit and landing](tickets/126-map-active-root-air-guard-exit-and-landing.md) - open: identify source-backed ownership, timing, and a bounded fixture for the `154/155` post-contact A route without claiming generic jumping or landing.
 
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Prove active-root air guard contact without widening helpers, target precedence, or presentation ownership.
+- Map active-root air guard exit and landing before widening aerial behavior, helpers, target precedence, or presentation ownership.
 
 ## Not Yet Specified
 
