@@ -279,6 +279,47 @@ describe("StudioModel", () => {
     expect(result.missing).toEqual([]);
   });
 
+  it("establishes a source identity on explicit relink and blocks changed bytes", () => {
+    const expectedFingerprint = "a".repeat(64);
+    const observedFingerprint = "b".repeat(64);
+    const sourcePackage = {
+      ...kfmSourcePackage("missing"),
+      fingerprint: expectedFingerprint,
+      fingerprintAlgorithm: "sha-256" as const,
+      byteLength: 5,
+    };
+    const matching = relinkGameProjectSourcePackages([kfmSourcePackage("missing")], {
+      name: "kfm-copy.zip",
+      kind: "zip",
+      fileCount: 5,
+      paths: kfmRequiredPaths(),
+      fingerprint: expectedFingerprint,
+      byteLength: 5,
+    });
+    const changed = relinkGameProjectSourcePackages([sourcePackage], {
+      name: "kfm-copy.zip",
+      kind: "zip",
+      fileCount: 5,
+      paths: kfmRequiredPaths(),
+      fingerprint: observedFingerprint,
+      byteLength: 5,
+    });
+
+    expect(matching.sourcePackages[0]).toMatchObject({
+      status: "linked",
+      fingerprint: expectedFingerprint,
+      observedFingerprint: expectedFingerprint,
+      identityStatus: "matched",
+    });
+    expect(changed.sourcePackages[0]).toMatchObject({
+      status: "missing",
+      observedFingerprint,
+      identityStatus: "changed",
+    });
+    expect(changed.linkedIds).toEqual([]);
+    expect(changed.warnings[0]).toContain("source fingerprint changed");
+  });
+
   it("keeps source packages missing when relink paths are incomplete", () => {
     const result = relinkGameProjectSourcePackages([kfmSourcePackage("missing")], {
       name: "broken-kfm.zip",
@@ -417,6 +458,10 @@ function kfmSourcePackage(status: GameProjectSourcePackage["status"]): GameProje
     stageDefPaths: [],
     requiredPaths: ["chars/kfm/kfm.def", "chars/kfm/kfm.sff", "chars/kfm/kfm.air", "chars/kfm/kfm.cmd", "chars/kfm/kfm.cns"],
   };
+}
+
+function kfmRequiredPaths(): string[] {
+  return ["chars/kfm/kfm.def", "chars/kfm/kfm.sff", "chars/kfm/kfm.air", "chars/kfm/kfm.cmd", "chars/kfm/kfm.cns"];
 }
 
 function importedFighter(): DemoFighterDefinition {

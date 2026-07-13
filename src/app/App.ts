@@ -90,6 +90,7 @@ import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHist
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
+import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
@@ -646,6 +647,7 @@ type ImportedSourceBundle = {
   sourceKind: "zip" | "folder";
   vfs: VirtualFileSystem;
   fileCount: number;
+  fingerprint: SourceFingerprint;
 };
 type AtlasMotionQa = {
   status: "loading" | "pass" | "warn" | "fail" | "missing";
@@ -1539,7 +1541,8 @@ export class App {
       const vfs = await source.load();
       const character = await this.loader.load(source.name, vfs);
       const stages = await this.stageLoader.loadAll(source.name, vfs);
-      this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "zip", vfs, fileCount: vfs.listFiles().length });
+      const fingerprint = await fingerprintVirtualFileSystem(vfs);
+      this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "zip", vfs, fileCount: vfs.listFiles().length, fingerprint });
     } catch (error) {
       this.log(`ZIP rejected: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
@@ -1551,11 +1554,17 @@ export class App {
       return;
     }
     this.log(`Loading folder (${files.length} files)`);
-    const source = new FolderCharacterSource(files);
-    const vfs = await source.load();
-    const character = await this.loader.load(source.name, vfs);
-    const stages = await this.stageLoader.loadAll(source.name, vfs);
-    this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "folder", vfs, fileCount: vfs.listFiles().length });
+    try {
+      const source = new FolderCharacterSource(files);
+      const vfs = await source.load();
+      const character = await this.loader.load(source.name, vfs);
+      const stages = await this.stageLoader.loadAll(source.name, vfs);
+      const fingerprint = await fingerprintVirtualFileSystem(vfs);
+      this.useCharacter(character, stages, { sourceName: source.name, sourceKind: "folder", vfs, fileCount: vfs.listFiles().length, fingerprint });
+    } catch (error) {
+      this.log(`Folder rejected: ${error instanceof Error ? error.message : String(error)}`);
+      this.updateUi();
+    }
   }
 
   private startSourcePackageRelink(sourcePackageId: string | undefined, kind: "zip" | "folder"): void {
@@ -1889,6 +1898,8 @@ export class App {
         kind: sourceBundle.sourceKind,
         fileCount: sourceBundle.fileCount,
         paths: sourceBundle.vfs.listFiles(),
+        fingerprint: sourceBundle.fingerprint.digest,
+        byteLength: sourceBundle.fingerprint.byteLength,
       },
       this.pendingSourceRelinkPackageId,
     );
@@ -6760,6 +6771,14 @@ export class App {
   private renderSourcePackageRow(sourcePackage: GameProjectSourcePackage): string {
     const packageFocused = this.studioFocusedSourcePackageId === sourcePackage.id;
     const focusClass = packageFocused ? " is-linked-focus" : "";
+    const identityStatus = sourcePackage.identityStatus ?? "unknown";
+    const identityDetail = identityStatus === "matched"
+      ? "Fingerprint matches the saved source identity."
+      : identityStatus === "changed"
+        ? "Fingerprint changed; explicit reimport is required before export."
+        : identityStatus === "missing"
+          ? "No source bytes are currently linked in this browser session."
+          : "Source identity is not established yet.";
     const pathRows = sourcePackage.requiredPaths
       .slice(0, 12)
       .map((sourcePath) => this.renderSourcePackageRequiredPath(sourcePackage, sourcePath))
@@ -6773,8 +6792,9 @@ export class App {
           ${
             sourcePackage.status === "linked"
               ? `<span class="list-meta">Source files are available for package export in this browser session.</span>`
-              : `<span class="list-meta">Reload the original ZIP or folder so imported DEF/SFF/AIR/CNS files can be embedded again.</span>`
+              : `<span class="list-meta">${escapeHtml(identityDetail)} Reload the original ZIP or folder so imported DEF/SFF/AIR/CNS files can be embedded again.</span>`
           }
+          <span class="list-meta">Identity: ${escapeHtml(identityStatus)}${sourcePackage.fingerprint ? ` / ${escapeHtml(sourcePackage.fingerprint.slice(0, 12))}...` : ""}</span>
           ${
             pathRows
               ? `<span class="source-package-path-list" aria-label="Required source paths">${pathRows}${hiddenPathCount ? `<span class="list-meta">+${hiddenPathCount} more required source path(s)</span>` : ""}</span>`
@@ -11254,11 +11274,14 @@ export class App {
             kind: currentPackage.kind,
             fileCount: currentPackage.fileCount,
             paths: this.importedSourceBundle?.vfs.listFiles() ?? currentPackage.requiredPaths,
+            fingerprint: currentPackage.fingerprint,
+            byteLength: currentPackage.byteLength,
           }).sourcePackages
         : this.importedProjectManifest.sourcePackages;
       return sourcePackages.map((sourcePackage) => ({
         ...sourcePackage,
         status: this.isSourcePackageLinked(sourcePackage) ? "linked" : "missing",
+        identityStatus: this.importedSourceBundle ? sourcePackage.identityStatus ?? "unknown" : "missing",
       }));
     }
 
@@ -11289,6 +11312,12 @@ export class App {
         kind: this.importedSourceBundle.sourceKind,
         fileCount: this.importedSourceBundle.fileCount,
         status: "linked",
+        fingerprint: this.importedSourceBundle.fingerprint.digest,
+        fingerprintAlgorithm: this.importedSourceBundle.fingerprint.algorithm,
+        byteLength: this.importedSourceBundle.fingerprint.byteLength,
+        observedFingerprint: this.importedSourceBundle.fingerprint.digest,
+        observedByteLength: this.importedSourceBundle.fingerprint.byteLength,
+        identityStatus: "matched",
         characterId: this.importedFighter?.id,
         characterName: this.character.definition.info.displayName ?? this.character.definition.info.name ?? this.character.sourceName,
         defPath: this.character.files.def ?? this.character.defPath,
@@ -11303,8 +11332,9 @@ export class App {
   private isSourcePackageLinked(sourcePackage: GameProjectSourcePackage): boolean {
     return Boolean(
       this.importedSourceBundle &&
-        this.importedSourceBundle.sourceKind === sourcePackage.kind &&
-        this.importedSourceBundle.sourceName === sourcePackage.name,
+      this.importedSourceBundle.sourceKind === sourcePackage.kind &&
+        this.importedSourceBundle.sourceName === sourcePackage.name &&
+        sourcePackage.identityStatus !== "changed",
     );
   }
 

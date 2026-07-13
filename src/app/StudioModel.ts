@@ -8,6 +8,7 @@ import {
   type EngineModuleStatus,
   type SharedEngineContractId,
 } from "../engine/ModuleContracts";
+import { SOURCE_FINGERPRINT_ALGORITHM, classifySourceIdentity, type SourceFingerprintAlgorithm, type SourceIdentityStatus } from "./StudioSourceIdentity";
 
 export type StudioStatus = "ok" | "warn" | "fail" | "pending" | "partial" | "planned" | "active" | "blocked" | "unsupported" | "unknown";
 export type StudioSeverity = "info" | "notice" | "warning" | "error";
@@ -136,6 +137,12 @@ export type GameProjectSourcePackage = {
   stageIds: string[];
   stageDefPaths: string[];
   requiredPaths: string[];
+  fingerprint?: string;
+  fingerprintAlgorithm?: SourceFingerprintAlgorithm;
+  byteLength?: number;
+  observedFingerprint?: string;
+  observedByteLength?: number;
+  identityStatus?: SourceIdentityStatus;
 };
 
 export type GameProjectManifestParseResult = {
@@ -149,6 +156,8 @@ export type GameProjectSourceRelinkSource = {
   kind: GameProjectSourcePackage["kind"];
   fileCount: number;
   paths: string[];
+  fingerprint?: string;
+  byteLength?: number;
 };
 
 export type GameProjectSourceRelinkResult = {
@@ -337,27 +346,44 @@ export function relinkGameProjectSourcePackages(
     const pathsMatch = requiredPaths.length > 0 && missingPaths.length === 0;
     const nameMatches = normalizeSourcePackageName(sourcePackage.name) === normalizedSourceName;
     const kindMatches = sourcePackage.kind === source.kind;
-    const canRelink = pathsMatch || (nameMatches && kindMatches);
+    const identityStatus = classifySourceIdentity(sourcePackage.fingerprint, source.fingerprint, true);
+    const fingerprintMatches = identityStatus !== "changed";
+    const canRelink = (pathsMatch || (nameMatches && kindMatches)) && fingerprintMatches;
 
     if (!canRelink) {
       missing.push({
         id: sourcePackage.id,
         missingPaths,
       });
-      const detail = missingPaths.length
+      const detail = identityStatus === "changed"
+        ? "source fingerprint changed; explicit reimport is required"
+        : missingPaths.length
         ? `${missingPaths.length} required path(s) missing: ${missingPaths.slice(0, 3).join(", ")}${missingPaths.length > 3 ? "..." : ""}`
         : `source '${source.name}' did not match package '${sourcePackage.name}'`;
       warnings.push(`Source package '${sourcePackage.name}' could not be relinked from ${source.name}; ${detail}.`);
-      return { ...sourcePackage, status: "missing" as const };
+      return {
+        ...sourcePackage,
+        status: "missing" as const,
+        observedFingerprint: source.fingerprint,
+        observedByteLength: source.byteLength,
+        identityStatus,
+      };
     }
 
     linkedIds.push(sourcePackage.id);
+    const resolvedIdentityStatus = source.fingerprint && !sourcePackage.fingerprint ? "matched" : identityStatus;
     return {
       ...sourcePackage,
       name: source.name,
       kind: source.kind,
       fileCount: source.fileCount,
       status: "linked" as const,
+      fingerprint: sourcePackage.fingerprint ?? source.fingerprint,
+      fingerprintAlgorithm: sourcePackage.fingerprintAlgorithm ?? (source.fingerprint ? SOURCE_FINGERPRINT_ALGORITHM : undefined),
+      byteLength: sourcePackage.byteLength ?? source.byteLength,
+      observedFingerprint: source.fingerprint,
+      observedByteLength: source.byteLength,
+      identityStatus: resolvedIdentityStatus,
     };
   });
 
@@ -720,7 +746,13 @@ function isGameProjectSourcePackage(value: unknown): value is GameProjectSourceP
     value.requiredPaths.every((item) => typeof item === "string") &&
     (value.characterId === undefined || typeof value.characterId === "string") &&
     (value.characterName === undefined || typeof value.characterName === "string") &&
-    (value.defPath === undefined || typeof value.defPath === "string")
+    (value.defPath === undefined || typeof value.defPath === "string") &&
+    (value.fingerprint === undefined || (typeof value.fingerprint === "string" && /^[0-9a-f]{64}$/i.test(value.fingerprint))) &&
+    (value.fingerprintAlgorithm === undefined || value.fingerprintAlgorithm === SOURCE_FINGERPRINT_ALGORITHM) &&
+    (value.byteLength === undefined || (typeof value.byteLength === "number" && Number.isSafeInteger(value.byteLength) && value.byteLength >= 0)) &&
+    (value.observedFingerprint === undefined || (typeof value.observedFingerprint === "string" && /^[0-9a-f]{64}$/i.test(value.observedFingerprint))) &&
+    (value.observedByteLength === undefined || (typeof value.observedByteLength === "number" && Number.isSafeInteger(value.observedByteLength) && value.observedByteLength >= 0)) &&
+    (value.identityStatus === undefined || value.identityStatus === "matched" || value.identityStatus === "changed" || value.identityStatus === "missing" || value.identityStatus === "unknown")
   );
 }
 

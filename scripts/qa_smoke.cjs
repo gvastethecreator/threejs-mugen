@@ -1841,6 +1841,12 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       missing: sourcePackages.filter((sourcePackage) => sourcePackage.status === "missing").length,
       linked: sourcePackages.filter((sourcePackage) => sourcePackage.status === "linked").length,
       names: sourcePackages.map((sourcePackage) => sourcePackage.name),
+      identity: sourcePackages.map((sourcePackage) => ({
+        id: sourcePackage.id,
+        status: sourcePackage.identityStatus,
+        fingerprint: sourcePackage.fingerprint,
+        observedFingerprint: sourcePackage.observedFingerprint,
+      })),
       requiredPaths: sourcePackages.reduce((total, sourcePackage) => total + (sourcePackage.requiredPaths?.length ?? 0), 0),
       warnings: bridge?.projectImportWarnings ?? [],
       bodyHasSourcePackages: bodyText.includes("Source Packages"),
@@ -2853,6 +2859,7 @@ function assertSmoke(diagnostics) {
     studioEvidence,
     studioDebug,
   } = diagnostics.checks;
+  const studioSourceRelinkIdentity = studioSourceRelink?.after?.identity?.find((identity) => identity.id === "kfm-official");
   for (const runtime of [runtimeDesktop, runtimeMobile]) {
     if (runtime.mode !== "match" || !runtime.bodyHasRuntime || !runtime.bodyHasP1 || !runtime.bodyHasP2) {
       failures.push(`${runtime.label}: runtime shell or roster text missing`);
@@ -3532,6 +3539,9 @@ function assertSmoke(diagnostics) {
       studioSourceRelink.after?.linked < 1 ||
       studioSourceRelink.after?.missing !== 0 ||
       studioSourceRelink.after?.requiredPaths < 5 ||
+      studioSourceRelinkIdentity?.status !== "matched" ||
+      !/^[0-9a-f]{64}$/i.test(String(studioSourceRelinkIdentity?.fingerprint ?? "")) ||
+      studioSourceRelinkIdentity?.observedFingerprint !== studioSourceRelinkIdentity?.fingerprint ||
       !studioSourceRelink.after?.bodyHasSourcePackages ||
       !studioSourceRelink.after?.bodyHasKfm ||
       studioSourceRelink.after?.warnings?.some((warning) => String(warning).includes("is required for full export")))
@@ -4085,6 +4095,7 @@ function summarizeDiagnostics(diagnostics) {
           beforeRelinkButtons: diagnostics.checks.studioSourceRelink?.before?.relinkButtons,
           afterLinked: diagnostics.checks.studioSourceRelink?.after?.linked,
           afterMissing: diagnostics.checks.studioSourceRelink?.after?.missing,
+          identity: diagnostics.checks.studioSourceRelink?.after?.identity,
           requiredPaths: diagnostics.checks.studioSourceRelink?.after?.requiredPaths,
         },
     ikemenScan: {
