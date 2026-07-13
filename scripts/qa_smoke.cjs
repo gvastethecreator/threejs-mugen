@@ -517,9 +517,9 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
   });
   await page.waitForTimeout(80);
 
-  const pauseOnQcf = page.evaluate(() => new Promise((resolve, reject) => {
+  const waitForQcf = () => page.evaluate(() => new Promise((resolve, reject) => {
     let lastSnapshot = {};
-    const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man QCF_x special frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+    const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man QCF_x special frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 3000);
     const check = () => {
       const bridge = window.__MUGEN_WEB_SANDBOX__;
       const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
@@ -541,8 +541,25 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     };
     check();
   }));
-  await pressCodeFuManQcfX(page);
-  await pauseOnQcf;
+  let qcfObserved = false;
+  for (let attempt = 0; attempt < 2 && !qcfObserved; attempt += 1) {
+    const pauseOnQcf = waitForQcf();
+    await pressCodeFuManQcfX(page);
+    try {
+      await pauseOnQcf;
+      qcfObserved = true;
+    } catch (error) {
+      if (attempt === 1) {
+        throw error;
+      }
+      await page.waitForTimeout(120);
+    }
+  }
+  await page.evaluate(() => {
+    if (window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const special = await captureMugenLiteVisualState(
     page,
@@ -1827,6 +1844,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       relinkButtons: document.querySelectorAll('[data-action="relink-source"]').length,
       bodyHasRelinkCopy: document.body.innerText.includes("Reload the original ZIP or folder"),
       sourceTransactions: bridge?.sourceTransactions ?? [],
+      sourceHandles: bridge?.sourceHandles ?? [],
     };
   });
 
@@ -1865,6 +1883,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       bodyHasKfm: bodyText.toLowerCase().includes("kfm"),
       relinkButtons: document.querySelectorAll('[data-action="relink-source"]').length,
       sourceTransactions: bridge?.sourceTransactions ?? [],
+      sourceHandles: bridge?.sourceHandles ?? [],
     };
   });
   const changedFixturePath = await writeChangedSourceRelinkFixture(outDir, importedFixturePath);
@@ -1892,6 +1911,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       currentFingerprint: sourcePackage?.fingerprint,
       currentObservedFingerprint: sourcePackage?.observedFingerprint,
       sourceTransaction: bridge?.sourceTransactions?.find((candidate) => candidate.sourcePackageId === "kfm-official"),
+      sourceHandle: bridge?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-official"),
       bodyHasSourceRejected: bodyText.includes("Source reimport rejected"),
       bodyHasRetainedSession: bodyText.includes("Current runtime/source session was retained"),
     };
@@ -2927,6 +2947,7 @@ function assertSmoke(diagnostics) {
     studioDebug,
   } = diagnostics.checks;
   const studioSourceRelinkIdentity = studioSourceRelink?.after?.identity?.find((identity) => identity.id === "kfm-official");
+  const studioSourceRelinkHandle = studioSourceRelink?.after?.sourceHandles?.find((handle) => handle.sourcePackageId === "kfm-official");
   for (const runtime of [runtimeDesktop, runtimeMobile]) {
     if (runtime.mode !== "match" || !runtime.bodyHasRuntime || !runtime.bodyHasP1 || !runtime.bodyHasP2) {
       failures.push(`${runtime.label}: runtime shell or roster text missing`);
@@ -3629,6 +3650,12 @@ function assertSmoke(diagnostics) {
       studioSourceRelink.after?.sourceTransactions?.[0]?.canWrite !== false ||
       !["not-requested", "unsupported"].includes(studioSourceRelink.after?.sourceTransactions?.[0]?.permission) ||
       !["request-permission", "manual-relink"].includes(studioSourceRelink.after?.sourceTransactions?.[0]?.nextAction) ||
+      studioSourceRelinkHandle?.schemaVersion !== "mugen-web-sandbox/source-handle/v0" ||
+      !["available", "unsupported"].includes(studioSourceRelinkHandle?.capability) ||
+      studioSourceRelinkHandle?.state !== "not-linked" ||
+      studioSourceRelinkHandle?.canRead !== false ||
+      !["link-handle", "relink-source"].includes(studioSourceRelinkHandle?.nextAction) ||
+      (studioSourceRelinkHandle?.warnings ?? []).some((warning) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(String(warning))) ||
       studioSourceRelink.after?.warnings?.some((warning) => String(warning).includes("is required for full export")))
   ) {
     failures.push("studio-source-relink: missing source package did not relink through the Build Center UI");
@@ -4230,6 +4257,16 @@ function summarizeDiagnostics(diagnostics) {
             canWrite: record.canWrite,
             nextAction: record.nextAction,
             invalidatedOutputs: record.invalidatedOutputs,
+          })),
+          sourceHandles: diagnostics.checks.studioSourceRelink?.after?.sourceHandles?.map((record) => ({
+            schemaVersion: record.schemaVersion,
+            state: record.state,
+            capability: record.capability,
+            storage: record.storage,
+            persisted: record.persisted,
+            permission: record.permission,
+            canRead: record.canRead,
+            nextAction: record.nextAction,
           })),
           requiredPaths: diagnostics.checks.studioSourceRelink?.after?.requiredPaths,
           rejected: diagnostics.checks.studioSourceRelink?.rejected

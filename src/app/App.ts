@@ -98,6 +98,22 @@ import {
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import {
+  createIndexedDbSourceHandleStore,
+  createMemorySourceHandleStore,
+  createSourceHandleRecord,
+  detectSourceHandleCapability,
+  detectSourceHandleStorage,
+  pickSourceHandle,
+  readSourceHandleFile,
+  requestSourceHandlePermission,
+  type SourceHandleBrowserHost,
+  type SourceHandleCapability,
+  type SourceHandleRecord,
+  type SourceHandleStore,
+  type SourceHandleStoreEntry,
+  type SourceHandleStorage,
+} from "./StudioSourceHandle";
+import {
   createSourceTransactionRecord,
   prepareSourceImportTransaction,
   runSourceImportTransaction,
@@ -740,6 +756,11 @@ export class App {
   private studioSelectedActorId?: string;
   private pendingSourceRelinkPackageId?: string;
   private sourceImportTransaction?: SourceImportTransaction;
+  private readonly memorySourceHandleStore = createMemorySourceHandleStore();
+  private sourceHandleStore: SourceHandleStore = this.memorySourceHandleStore;
+  private sourceHandleEntries: SourceHandleStoreEntry[] = [];
+  private sourceHandleCapability: SourceHandleCapability = "unsupported";
+  private sourceHandleStorage: SourceHandleStorage = "memory";
   private navigatorFilter = "";
   private selectedInspectorStateId?: number;
   private selectedInspectorControllerType?: string;
@@ -794,6 +815,7 @@ export class App {
     this.readUrlState();
     this.refreshStoredProjects();
     this.refreshStoredTraceEvidence();
+    void this.refreshStoredSourceHandles();
     this.root.innerHTML = this.template();
     this.renderer.mount(this.root.querySelector<HTMLElement>("#stage")!);
     this.keyboard.start();
@@ -1039,6 +1061,9 @@ export class App {
       } else if (action === "relink-source-folder") {
         const sourcePackageId = target.closest<HTMLElement>("[data-source-package-id]")?.dataset.sourcePackageId;
         this.startSourcePackageRelink(sourcePackageId, "folder");
+      } else if (action === "link-source-handle" || action === "request-source-handle-permission" || action === "recover-source-handle") {
+        const sourcePackageId = target.closest<HTMLElement>("[data-source-package-id]")?.dataset.sourcePackageId;
+        void this.handleSourceHandleAction(sourcePackageId, action);
       } else if (action === "load-zip") {
         this.root.querySelector<HTMLInputElement>("#zip-input")?.click();
       } else if (action === "load-folder") {
@@ -1574,9 +1599,9 @@ export class App {
     window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
   }
 
-  private async loadZip(file: File): Promise<void> {
+  private async loadZip(file: File): Promise<boolean> {
     if (!this.confirmStudioProjectNavigation("load a new source package")) {
-      return;
+      return false;
     }
     this.log(`Loading ZIP ${file.name}`);
     try {
@@ -1589,12 +1614,14 @@ export class App {
       const transaction = this.prepareSourceImportTransaction(sourceBundle);
       if (transaction.status === "rejected") {
         this.rejectSourceImportTransaction(transaction);
-        return;
+        return false;
       }
       this.useCharacter(character, stages, sourceBundle, transaction);
+      return true;
     } catch (error) {
       this.log(`ZIP rejected: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
+      return false;
     }
   }
 
@@ -1687,6 +1714,144 @@ export class App {
       this.storedTraceEvidence = [];
       this.log(`Local evidence storage unavailable: ${error instanceof Error ? error.message : String(error)}`);
     }
+  }
+
+  private async refreshStoredSourceHandles(): Promise<void> {
+    const host = this.getSourceHandleBrowserHost();
+    const hadStoredEntries = this.sourceHandleEntries.length > 0;
+    this.sourceHandleCapability = detectSourceHandleCapability(host);
+    this.sourceHandleStorage = detectSourceHandleStorage(host);
+    this.sourceHandleStore = createIndexedDbSourceHandleStore(host.indexedDB) ?? this.memorySourceHandleStore;
+    let shouldRefreshUi = false;
+    try {
+      this.sourceHandleEntries = await this.sourceHandleStore.list();
+    } catch (error) {
+      this.sourceHandleStorage = "memory";
+      this.sourceHandleStore = this.memorySourceHandleStore;
+      this.sourceHandleEntries = await this.memorySourceHandleStore.list();
+      this.log(`Persistent source handle storage unavailable: ${error instanceof Error ? error.message : String(error)}`);
+      shouldRefreshUi = true;
+    }
+    if (shouldRefreshUi || hadStoredEntries || this.sourceHandleEntries.length > 0) {
+      this.updateUi();
+    }
+  }
+
+  private getSourceHandleBrowserHost(): SourceHandleBrowserHost {
+    return window as Window & SourceHandleBrowserHost;
+  }
+
+  private async handleSourceHandleAction(
+    sourcePackageId: string | undefined,
+    action: "link-source-handle" | "request-source-handle-permission" | "recover-source-handle",
+  ): Promise<void> {
+    const sourcePackage = sourcePackageId ? this.getProjectSourcePackages().find((item) => item.id === sourcePackageId) : undefined;
+    if (!sourcePackage) {
+      this.log("Source handle action ignored: source package is unavailable.");
+      this.updateUi();
+      return;
+    }
+    if (sourcePackage.kind !== "zip") {
+      this.log("Persistent source handle recovery currently supports ZIP packages; folder relink remains manual.");
+      this.updateUi();
+      return;
+    }
+    const existing = this.sourceHandleEntries.find((entry) => entry.record.sourcePackageId === sourcePackage.id);
+    try {
+      const host = this.getSourceHandleBrowserHost();
+      const handle = existing?.handle ?? (action === "link-source-handle" ? await pickSourceHandle(host, sourcePackage.kind) : undefined);
+      if (!handle) {
+        this.log(`No source handle selected for ${sourcePackage.name}.`);
+        this.updateUi();
+        return;
+      }
+      const permission = await requestSourceHandlePermission(handle);
+      const previousFingerprint = existing?.record.observedFingerprint;
+      if (permission !== "granted") {
+        await this.persistSourceHandle(sourcePackage, handle, permission, previousFingerprint, existing?.record.observedByteLength);
+        this.log(`Source handle for ${sourcePackage.name} remains ${permission}; no source bytes were read.`);
+        this.updateUi();
+        return;
+      }
+
+      const shouldRecover = action === "recover-source-handle" || action === "link-source-handle" || sourcePackage.status !== "linked";
+      if (shouldRecover) {
+        const file = await readSourceHandleFile(handle);
+        this.pendingSourceRelinkPackageId = sourcePackage.id;
+        const accepted = await this.loadZip(file);
+        if (!accepted && this.pendingSourceRelinkPackageId === sourcePackage.id) {
+          this.pendingSourceRelinkPackageId = undefined;
+        }
+        const rejectedFingerprint = this.sourceImportTransaction?.status === "rejected"
+          ? this.sourceImportTransaction.fingerprint
+          : undefined;
+        const activePackage = this.getProjectSourcePackages().find((item) => item.id === sourcePackage.id) ?? sourcePackage;
+        const observed = accepted ? this.importedSourceBundle?.fingerprint : undefined;
+        await this.persistSourceHandle(
+          accepted ? activePackage : sourcePackage,
+          handle,
+          permission,
+          observed?.digest ?? rejectedFingerprint ?? previousFingerprint,
+          observed?.byteLength ?? existing?.record.observedByteLength,
+        );
+        this.log(accepted
+          ? `Recovered source package ${sourcePackage.name} from its persistent handle.`
+          : `Source handle read completed but the package was not committed; the current session was retained.`);
+        this.updateUi();
+        return;
+      }
+
+      await this.persistSourceHandle(sourcePackage, handle, permission, previousFingerprint, existing?.record.observedByteLength);
+      this.log(`Source handle linked for ${sourcePackage.name}.`);
+      this.updateUi();
+    } catch (error) {
+      this.log(`Source handle recovery failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.updateUi();
+    }
+  }
+
+  private async persistSourceHandle(
+    sourcePackage: GameProjectSourcePackage,
+    handle: NonNullable<SourceHandleStoreEntry["handle"]>,
+    permission: SourceHandleRecord["permission"],
+    observedFingerprint?: string,
+    observedByteLength?: number,
+  ): Promise<SourceHandleRecord> {
+    let record = createSourceHandleRecord({
+      sourcePackage,
+      capability: this.sourceHandleCapability,
+      storage: this.sourceHandleStorage,
+      permission,
+      handleLinked: true,
+      persisted: this.sourceHandleStorage === "indexeddb",
+      sourceAvailable: true,
+      observedFingerprint,
+      observedByteLength,
+    });
+    try {
+      await this.sourceHandleStore.put({ record, handle });
+    } catch (error) {
+      if (this.sourceHandleStore === this.memorySourceHandleStore) {
+        throw error;
+      }
+      this.sourceHandleStorage = "memory";
+      this.sourceHandleStore = this.memorySourceHandleStore;
+      record = createSourceHandleRecord({
+        sourcePackage,
+        capability: this.sourceHandleCapability,
+        storage: "memory",
+        permission,
+        handleLinked: true,
+        persisted: false,
+        sourceAvailable: true,
+        observedFingerprint,
+        observedByteLength,
+      });
+      await this.sourceHandleStore.put({ record, handle });
+      this.log(`Persistent source handle storage rejected the browser handle; retained it for this session only.`);
+    }
+    this.sourceHandleEntries = await this.sourceHandleStore.list();
+    return record;
   }
 
   private saveTraceEvidenceLocal(manifest: GameProjectManifest, artifact: RuntimeTraceArtifact): void {
@@ -6968,6 +7133,7 @@ export class App {
   private renderSourcePackageRow(sourcePackage: GameProjectSourcePackage, sourceTransaction?: SourceTransactionRecord): string {
     const packageFocused = this.studioFocusedSourcePackageId === sourcePackage.id;
     const focusClass = packageFocused ? " is-linked-focus" : "";
+    const sourceHandle = this.getSourceHandleRecords().find((record) => record.sourcePackageId === sourcePackage.id);
     const identityStatus = sourcePackage.identityStatus ?? "unknown";
     const identityDetail = identityStatus === "matched"
       ? "Fingerprint matches the saved source identity."
@@ -6993,6 +7159,7 @@ export class App {
           }
           <span class="list-meta">Identity: ${escapeHtml(identityStatus)}${sourcePackage.fingerprint ? ` / ${escapeHtml(sourcePackage.fingerprint.slice(0, 12))}...` : ""}</span>
           <span class="list-meta">Transaction: ${escapeHtml(sourceTransaction?.state ?? "missing")} / permission ${escapeHtml(sourceTransaction?.permission ?? "unsupported")} / next ${escapeHtml(sourceTransaction?.nextAction ?? "relink-source")}</span>
+          <span class="list-meta">Handle: ${escapeHtml(sourceHandle?.state ?? "not-linked")} / ${escapeHtml(sourceHandle?.storage ?? "memory")} / next ${escapeHtml(sourceHandle?.nextAction ?? "relink-source")}</span>
           ${
             pathRows
               ? `<span class="source-package-path-list" aria-label="Required source paths">${pathRows}${hiddenPathCount ? `<span class="list-meta">+${hiddenPathCount} more required source path(s)</span>` : ""}</span>`
@@ -7003,6 +7170,15 @@ export class App {
           ${this.statusBadge(sourcePackage.status === "linked" ? "ok" : "warn")}
           <button type="button" data-action="relink-source">${sourcePackage.status === "linked" ? "Reimport" : "ZIP"}</button>
           <button type="button" data-action="relink-source-folder">Folder</button>
+          ${sourcePackage.kind === "zip" && sourceHandle?.nextAction === "link-handle"
+            ? `<button type="button" data-action="link-source-handle" title="Remember this ZIP handle for future recovery">Remember</button>`
+            : ""}
+          ${sourcePackage.kind === "zip" && sourceHandle?.nextAction === "request-permission"
+            ? `<button type="button" data-action="request-source-handle-permission" title="Request read permission for the remembered ZIP handle">Permit</button>`
+            : ""}
+          ${sourcePackage.kind === "zip" && sourceHandle?.nextAction === "recover-source"
+            ? `<button type="button" data-action="recover-source-handle" title="Recover this source package from its remembered ZIP handle">Recover</button>`
+            : ""}
         </span>
       </div>
     `;
@@ -11121,6 +11297,7 @@ export class App {
         projectImportWarnings: string[];
         sourceImportTransaction?: SourceImportTransaction;
         sourceTransactions: SourceTransactionRecord[];
+        sourceHandles: SourceHandleRecord[];
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
         projectStorageRevision?: number;
@@ -11177,6 +11354,7 @@ export class App {
       projectImportWarnings: [...this.projectImportWarnings],
       sourceImportTransaction: this.sourceImportTransaction,
       sourceTransactions: this.getSourceTransactionRecords(),
+      sourceHandles: this.getSourceHandleRecords(),
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,
@@ -11549,6 +11727,26 @@ export class App {
       observedRevision,
       conflict: Boolean(this.projectStorageConflict),
     }));
+  }
+
+  private getSourceHandleRecords(): SourceHandleRecord[] {
+    const entries = new Map(this.sourceHandleEntries.map((entry) => [entry.record.sourcePackageId, entry]));
+    return this.getProjectSourcePackages().map((sourcePackage) => {
+      const entry = entries.get(sourcePackage.id);
+      return createSourceHandleRecord({
+        sourcePackage,
+        capability: this.sourceHandleCapability,
+        storage: this.sourceHandleStorage,
+        permission: entry?.record.permission ?? "not-requested",
+        handleLinked: Boolean(entry?.handle),
+        persisted: Boolean(entry?.record.persisted),
+        sourceAvailable: entry ? entry.record.state !== "missing" : false,
+        observedFingerprint: entry?.record.observedFingerprint,
+        observedByteLength: entry?.record.observedByteLength,
+        handleKind: entry?.record.handleKind,
+        updatedAt: entry?.record.updatedAt,
+      });
+    });
   }
 
   private getSourceTransactionPermission(): SourceTransactionPermission {

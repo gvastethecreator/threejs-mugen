@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## Entry 493 - SourceHandle/v0 persistent ZIP recovery
+
+Done: Studio now exposes a permission-aware `SourceHandle/v0` read model for
+ZIP packages, native File System Access picker/permission adapters, an
+IndexedDB-backed handle repository with an explicit memory fallback, stale
+fingerprint blocking, and Build Center remember/permit/recover actions.
+Recovery reads through the existing ZIP loader and `SourceTransaction/v0`, so
+changed bytes cannot silently replace the active session. Claim allowed:
+permission/storage/read/recovery metadata and the current-session rollback
+boundary. Claim blocked: native folder recovery, source writes, background
+reacquire, crash-safe external replacement, and full MUGEN/IKEMEN parity.
+Closure passes 4 focused files / 29 tests, 192 files / 1997 tests, TypeScript
+7, boundaries, Node smoke syntax, CSS budget at 319,446 bytes / 1,472 rules /
+70 repeated declaration groups / 51 cross-file overlaps / 0 duplicate keys,
+production build at 1,703.26 kB JavaScript / 428.16 kB gzip, and 581/581 trace
+artifacts (547 required, 34 optional, 0 skipped). Browser smoke passes with
+0 page errors, 0 console issues, Code Fu Man states `0 -> 200 -> 1000 ->
+1100` plus idle returns, 64 exported package files, 53 bundled binaries, 14
+source file digests, 10 provenance inputs, 53 outputs, 2 complete records, and
+0 absolute-path leaks. The browser handle row is proven as
+`available/indexeddb/not-linked`; native picker persistence remains capability-
+dependent and is not claimed by this smoke. Next: browser-backed persisted
+handle evidence, then folder enumeration only if it preserves identity and
+rollback guarantees.
+
 ## Entry 492 - AssetProvenance/v1 per-file digest coverage
 
 Done: source identity now records a SHA-256 digest and
