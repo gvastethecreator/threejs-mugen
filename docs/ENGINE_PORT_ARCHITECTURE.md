@@ -203,6 +203,8 @@ Current typed operation coverage includes bounded static `hitfall:*`, `kinematic
 
 `RuntimeAssertSpecialWorld` owns the bounded pre-facing `AssertSpecial` pass that used to live inline in `PlayableMatchRuntime`: imported active-state lookup, owner-backed state lookup, `AssertSpecial` controller filtering, trigger gating, and controller application before automatic facing. `PlayableMatchRuntime` still supplies trigger evaluation, constants, random, and controller execution context, so this is current-order ownership cleanup, not exact persistence layering, global/team/helper ownership, pause interaction, or full MUGEN/IKEMEN `AssertSpecial` parity.
 
+`RuntimeGlobalAssertSpecialWorld` owns the bounded per-tick match read model for recognized global `AssertSpecial` flags: canonical flag ordering, deterministic source actor ids, unknown-name diagnostics, and typed `NoKOSlow` / `NoKOSnd` / `TimerFreeze` / `RoundNotOver` projections. `RuntimeMatchRoundWorld` consumes that snapshot for the current P1/P2 timer, KO, and round-finish boundary. This is an ownership prefactor, not team/root precedence, Helper/Projectile global ownership, IKEMEN-only `roundFreeze`, post-KO echo parity, or full MUGEN/IKEMEN round parity.
+
 `RuntimeSnapshotWorld` owns the bounded stage/camera, player-actor, and final effect snapshot projection that used to live inline in `PlayableMatchRuntime`: camera center selection honors `ScreenBound` `moveCameraX = 0`, falls back to all actors when every actor disables camera following, applies stage camera offsets, carries current EnvShake camera shake plus EnvColor stage-flash data into `StageSnapshot`, projects player actor identity/source/sprite-owner metadata, clones runtime state, attaches target refs/bindings, chooses active move or AIR-frame collision boxes, applies the current fallback hurtbox, clones sound, hit-effect, and env-shake event histories, then aggregates cloned Explod/Helper/Projectile snapshots in stable owner/kind order. Compatibility sessions, full stage controller timing, motif/screenpack camera logic, target semantics, effect VM semantics, renderer parity, and full MUGEN/IKEMEN snapshot parity remain outside this cut.
 
 `RuntimeCompatibilityTelemetryWorld` owns the imported-compatibility telemetry/session projection that used to live inline in `PlayableMatchRuntime`: imported actor detection including owner-backed imported state owners, executed-state bookkeeping, routed State -1 entries, controller counts, typed-operation count keys, bounded controller-event history, active-command projection, command-history handoff, and `compatibilitySession` snapshot construction. This is ownership cleanup for existing debug/trace/session data, not new controller semantics, exact CNS VM timing, or MUGEN/IKEMEN parity.
@@ -340,6 +342,7 @@ MatchWorld
   RuntimeStateAvailabilityWorld
   RuntimeHitEligibilityWorld
   RuntimeAssertSpecialWorld
+  RuntimeGlobalAssertSpecialWorld
   RuntimeOrientationWorld
   RuntimeStunWorld
   RuntimeInputControlWorld
@@ -403,6 +406,7 @@ The current extraction order is:
 28. `RuntimeStateAvailabilityWorld`: own bounded state/action availability and state-source lookup outside inline state validation.
 29. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
 30. `RuntimeAssertSpecialWorld`: own bounded imported pre-facing `AssertSpecial` lookup/filter/trigger/application ordering outside inline `PlayableMatchRuntime` branching.
+30a. `RuntimeGlobalAssertSpecialWorld`: own bounded per-tick global `AssertSpecial` reduction and round-consumer projections outside inline round branching.
 31. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
 32. `RuntimeStunWorld`: own bounded hitstun/guardstun timer advance, hitstun presentation requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration outside inline match-loop branching.
 33. `RuntimeMoveLifecycleWorld`: own bounded active-move lifecycle mutation for current move ticking, non-reversal attack lock, completed move cleanup, reversal cleanup, and idle/control restoration callbacks outside inline match-loop branching.

@@ -1,15 +1,14 @@
 import type { RuntimeRoundFinishResult, RuntimeRoundSystem } from "./RuntimeRoundSystem";
+import {
+  RuntimeGlobalAssertSpecialWorld,
+  type RuntimeGlobalAssertSpecialActor,
+  type RuntimeGlobalAssertSpecialSnapshot,
+} from "./RuntimeGlobalAssertSpecialSystem";
 
-export type RuntimeMatchRoundActor = {
+export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
   label: string;
   runtime: {
     life: number;
-    assertSpecial?: {
-      flags: string[];
-      globalFlags: string[];
-      timerFreeze?: boolean;
-      roundNotOver?: boolean;
-    };
   };
 };
 
@@ -21,44 +20,61 @@ export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor
   round: RuntimeRoundSystem;
   p1: TActor;
   p2: TActor;
+  tick?: number;
   stopPlaying: () => void;
   log: (message: string) => void;
   emitKoSound?: (actor: TActor) => void;
 };
 
 export class RuntimeMatchRoundWorld {
-  tickTimer(round: RuntimeRoundSystem, actors: readonly RuntimeMatchRoundActor[] = []): RuntimeMatchRoundTimerResult {
-    return this.advanceTimer(round, actors);
+  constructor(private readonly globalAssertSpecialWorld = new RuntimeGlobalAssertSpecialWorld()) {}
+
+  snapshotGlobalAssertSpecial(
+    actors: readonly RuntimeMatchRoundActor[] = [],
+    tick = 0,
+  ): RuntimeGlobalAssertSpecialSnapshot {
+    return this.globalAssertSpecialWorld.snapshot({ actors, tick });
+  }
+
+  tickTimer(
+    round: RuntimeRoundSystem,
+    actors: readonly RuntimeMatchRoundActor[] = [],
+    tick = 0,
+  ): RuntimeMatchRoundTimerResult {
+    return this.advanceTimer(round, actors, undefined, tick);
   }
 
   advanceTimer(
     round: RuntimeRoundSystem,
     actors: readonly RuntimeMatchRoundActor[] = [],
     stopPlaying?: () => void,
+    runtimeTick = 0,
   ): RuntimeMatchRoundTimerResult {
-    if (round.snapshot().state === "fight" && actors.some(hasTimerFreeze)) {
+    const globalAssertSpecial = this.snapshotGlobalAssertSpecial(actors, runtimeTick);
+    if (round.snapshot().state === "fight" && globalAssertSpecial.timerFreeze) {
       return { frozen: true };
     }
-    const tick = round.tickTimer();
-    if (tick.finishedNow) stopPlaying?.();
+    const timerTick = round.tickTimer();
+    if (timerTick.finishedNow) stopPlaying?.();
     return { frozen: false };
   }
 
   finishIfNeeded<TActor extends RuntimeMatchRoundActor>(
     options: RuntimeMatchRoundFinishOptions<TActor>,
   ): RuntimeRoundFinishResult | undefined {
-    if (hasRoundNotOver(options.p1) || hasRoundNotOver(options.p2)) {
+    const globalAssertSpecial = this.snapshotGlobalAssertSpecial([options.p1, options.p2], options.tick);
+    if (globalAssertSpecial.roundNotOver) {
       return undefined;
     }
     const finish = options.round.finishIfNeeded(
       { label: options.p1.label, life: options.p1.runtime.life },
       { label: options.p2.label, life: options.p2.runtime.life },
-      { noKoSlow: hasNoKoSlow(options.p1, options.p2) },
+      { noKoSlow: globalAssertSpecial.noKoSlow },
     );
     if (!finish) {
       return undefined;
     }
-    if (finish.state === "ko" && !hasNoKoSound(options.p1, options.p2)) {
+    if (finish.state === "ko" && !globalAssertSpecial.noKoSound) {
       if (options.p1.runtime.life <= 0) options.emitKoSound?.(options.p1);
       if (options.p2.runtime.life <= 0) options.emitKoSound?.(options.p2);
     }
@@ -66,30 +82,4 @@ export class RuntimeMatchRoundWorld {
     options.log(finish.message);
     return finish;
   }
-}
-
-function hasNoKoSlow(...actors: RuntimeMatchRoundActor[]): boolean {
-  return actors.some((actor) => actor.runtime.assertSpecial?.globalFlags.includes("nokoslow") === true);
-}
-
-function hasNoKoSound(...actors: RuntimeMatchRoundActor[]): boolean {
-  return actors.some((actor) => actor.runtime.assertSpecial?.globalFlags.includes("nokosnd") === true);
-}
-
-function hasTimerFreeze(actor: RuntimeMatchRoundActor): boolean {
-  const assertSpecial = actor.runtime.assertSpecial;
-  return Boolean(
-    assertSpecial?.timerFreeze ||
-      assertSpecial?.flags.includes("timerfreeze") ||
-      assertSpecial?.globalFlags.includes("timerfreeze"),
-  );
-}
-
-function hasRoundNotOver(actor: RuntimeMatchRoundActor): boolean {
-  const assertSpecial = actor.runtime.assertSpecial;
-  return Boolean(
-    assertSpecial?.roundNotOver ||
-      assertSpecial?.flags.includes("roundnotover") ||
-      assertSpecial?.globalFlags.includes("roundnotover"),
-  );
 }

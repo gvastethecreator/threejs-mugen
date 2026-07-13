@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 495 - RuntimeGlobalAssertSpecial/v0 ownership
+
+Done: `RuntimeGlobalAssertSpecialWorld/v0` now reduces recognized global
+`AssertSpecial` flags once per current pair-round read, records deterministic
+source actor ids, reports unknown global names, and exposes typed
+`NoKOSlow`/`NoKOSnd`/`TimerFreeze`/`RoundNotOver` policy. `RuntimeMatchRoundWorld`
+consumes that read model for timer freeze, KO slowdown, KO sound suppression,
+and round-finish blocking; the model does not latch between ticks. Existing
+trace payloads/checksums remain unchanged. Claim allowed: bounded pair-round
+global `AssertSpecial` ownership and diagnostics. Claim blocked: team
+KO/replacement, multi-root precedence, Helper/Projectile global ownership,
+post-KO echo timing, IKEMEN-only `roundFreeze`, and full parity. Evidence:
+focused 3 files / 19 tests, 194 files / 2003 tests, TypeScript 7 typecheck,
+production build, 581/581 traces (547 required, 34 optional), boundaries, and
+`git diff --check`; visual smoke N/A because no visible surface changed. See
+`docs/reports/2026-07-13-global-assertspecial-ownership.md`, ADR 0003, and
+Wayfinder 134.
+
 ## Entry 494 - SourceHandle/v0 read-only folder recovery
 
 Done: `SourceHandle/v0` now accepts a directory handle, recursively enumerates

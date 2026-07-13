@@ -685,7 +685,7 @@ export class PlayableMatchRuntime {
     if (this.round.snapshot().state === "ko") {
       matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
         this.playing = false;
-      });
+      }, this.tick);
     }
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
@@ -819,7 +819,7 @@ export class PlayableMatchRuntime {
         if (this.round.snapshot().state === "ko") return { frozen: false };
         return matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
           this.playing = false;
-        });
+        }, this.tick);
       },
       pushNormalCommandBuffers: () => {
         recordPhase("active:command-buffer");
@@ -1105,6 +1105,7 @@ export class PlayableMatchRuntime {
           round: this.round,
           p1: this.p1,
           p2: this.p2,
+          tick: this.tick,
           stopPlaying: () => {
             this.playing = false;
           },
