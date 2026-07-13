@@ -1379,6 +1379,21 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "rook-apprentice");
   await changeHiddenSelect(page, '[data-studio-fighter-select="p2"]', "nova-boxer");
   await changeHiddenSelect(page, "[data-studio-stage-select]", "training-grid");
+  const historyAfterEdits = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.studioEditHistory);
+  await page.locator('[data-action="undo-project-edit"]').first().click();
+  const afterUndo = await page.evaluate(() => ({
+    project: window.__MUGEN_WEB_SANDBOX__?.project,
+    history: window.__MUGEN_WEB_SANDBOX__?.studioEditHistory,
+  }));
+  await page.locator('[data-action="redo-project-edit"]').first().click();
+  const afterRedo = await page.evaluate(() => ({
+    project: window.__MUGEN_WEB_SANDBOX__?.project,
+    history: window.__MUGEN_WEB_SANDBOX__?.studioEditHistory,
+  }));
+  await page.keyboard.press("Control+Z");
+  const afterKeyboardUndo = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project);
+  await page.keyboard.press("Control+Shift+Z");
+  const afterKeyboardRedo = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project);
   const dirtyBeforeSave = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty);
   await page.locator('[data-action="save-project-local"]').first().click();
   const saved = await page.evaluate(({ key, authoredName }) => {
@@ -1404,7 +1419,21 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
   }));
   await page.screenshot({ path: path.join(outDir, "studio-project-authoring.png"), fullPage: true });
-  return { ...baseline, projectAuthoring: { authoredName, saved, dirtyBeforeSave, reopenedName, ...reopened } };
+  return {
+    ...baseline,
+    projectAuthoring: {
+      authoredName,
+      saved,
+      dirtyBeforeSave,
+      reopenedName,
+      historyAfterEdits,
+      afterUndo,
+      afterRedo,
+      afterKeyboardUndo,
+      afterKeyboardRedo,
+      ...reopened,
+    },
+  };
 }
 
 async function changeHiddenSelect(page, selector, value) {
@@ -3065,9 +3094,16 @@ function assertSmoke(diagnostics) {
     studioWorkbench.projectAuthoring.entry?.p2 !== "nova-boxer" ||
     studioWorkbench.projectAuthoring.entry?.stage !== "training-grid" ||
     studioWorkbench.projectAuthoring.dirtyBeforeSave !== true ||
-    studioWorkbench.projectAuthoring.dirty !== false
+    studioWorkbench.projectAuthoring.dirty !== false ||
+    (studioWorkbench.projectAuthoring.historyAfterEdits?.undoCount ?? 0) < 4 ||
+    studioWorkbench.projectAuthoring.afterUndo?.project?.entry?.stage === "training-grid" ||
+    !studioWorkbench.projectAuthoring.afterUndo?.history?.canRedo ||
+    studioWorkbench.projectAuthoring.afterRedo?.project?.entry?.stage !== "training-grid" ||
+    studioWorkbench.projectAuthoring.afterRedo?.history?.canRedo ||
+    studioWorkbench.projectAuthoring.afterKeyboardUndo?.entry?.stage === "training-grid" ||
+    studioWorkbench.projectAuthoring.afterKeyboardRedo?.entry?.stage !== "training-grid"
   ) {
-    failures.push("studio-workbench: authored project scene or dirty-state did not survive save/reopen correctly");
+    failures.push("studio-workbench: authored project scene, dirty-state, or undo/redo history did not behave correctly");
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||

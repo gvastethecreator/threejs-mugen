@@ -1,4 +1,94 @@
 /* Studio command pipeline: project mission rail, primary actions, compact tabs. */
+.app-shell.mode-studio .studio-project-open {
+  display: grid;
+  grid-template-columns: minmax(118px, 1fr) max-content max-content max-content;
+  gap: 7px;
+  align-items: end;
+  padding: 8px;
+  border-top: 1px solid var(--surface-border);
+  background: var(--surface-flat);
+}
+
+.app-shell.mode-studio .studio-project-name {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  color: var(--subtle);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.app-shell.mode-studio .studio-project-name > span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  line-height: 1;
+}
+
+.app-shell.mode-studio .studio-project-name input {
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
+  padding: 6px 8px;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: 3px;
+  background: var(--surface-flat-recessed);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.app-shell.mode-studio .studio-edit-history {
+  display: flex;
+  gap: 4px;
+  align-items: end;
+}
+
+.app-shell.mode-studio .studio-history-button {
+  display: grid;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  place-items: center;
+  padding: 7px;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: 3px;
+  background: var(--surface-flat-raised);
+  color: var(--text);
+}
+
+.app-shell.mode-studio .studio-history-button:hover,
+.app-shell.mode-studio .studio-history-button:focus-visible {
+  border-color: var(--surface-accent);
+  background: var(--surface-flat-strong);
+  outline: 1px solid var(--surface-accent);
+  outline-offset: -1px;
+}
+
+.app-shell.mode-studio .studio-history-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.app-shell.mode-studio .studio-history-button .action-icon {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 560px) {
+  .app-shell.mode-studio .studio-project-open {
+    grid-template-columns: minmax(0, 1fr) max-content max-content;
+  }
+
+  .app-shell.mode-studio .studio-project-name {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (min-width: 1161px) {
   .app-shell.mode-studio .workspace-actions {
     gap: 0;

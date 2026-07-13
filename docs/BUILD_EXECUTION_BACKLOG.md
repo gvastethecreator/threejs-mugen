@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 484 - Studio project edit history
+
+Done: Studio now has a bounded project-edit history for the current authoring
+spine. Project name, P1, CPU, and stage changes record immutable
+`projectName/p1/p2/stage` snapshots, expose icon-only undo/redo controls, and
+support `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`, and `Ctrl/Cmd+Y`. Undo/redo rebuilds
+the match runtime, invalidates stale compile/trace/package outputs, preserves
+the dirty marker, updates the project manifest, and resets history when a new
+manifest or imported package becomes the active source. The history model
+rejects stale current states, skips no-op edits, bounds retained entries to
+50, and clears redo after a new branch. Browser smoke proves four edits,
+button undo/redo, keyboard undo/redo, dirty state, save, and reopen. Closure
+passes `3/3` focused history tests, `186` files / `1967` tests, TypeScript 7
+typecheck, boundaries, build, `581/581` trace artifacts (`547` required,
+`34` optional), and full Playwright smoke. Claim allowed: bounded identity
+authoring history for the current Studio project spine. Claim blocked:
+autosave/navigation guards, multi-scene graphs, state/controller/collision
+authoring, filesystem conflict handling, migrations, source writes, and full
+MUGEN/IKEMEN parity. Next: continue the open Studio authoring ticket toward
+save-safe navigation and deeper editable runtime contracts.
+
 ## Entry 483 - Independent Code Fu Man upper route
 
 Done: the optional MIT Code Fu Man package now proves a second authored route,

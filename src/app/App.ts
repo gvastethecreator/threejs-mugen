@@ -38,6 +38,8 @@ import iconUser from "@tabler/icons/outline/user-square-rounded.svg?raw";
 import iconWand from "@tabler/icons/outline/wand.svg?raw";
 import iconX from "@tabler/icons/outline/x.svg?raw";
 import iconAxisX from "@tabler/icons/outline/axis-x.svg?raw";
+import iconArrowBackUp from "@tabler/icons/outline/arrow-back-up.svg?raw";
+import iconArrowForwardUp from "@tabler/icons/outline/arrow-forward-up.svg?raw";
 import iconGrid3x3 from "@tabler/icons/outline/grid-3x3.svg?raw";
 import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { KeyboardInputAdapter } from "../game/input/KeyboardInputAdapter";
@@ -76,6 +78,7 @@ import { renderActorRegistry, renderDebugPanel, escapeHtml, type RuntimeRosterEn
 import { FileDropZone } from "./FileDropZone";
 import { compileGameProjectManifest, type CompiledRuntimeManifest } from "./ProjectCompiler";
 import { listStoredProjects, loadStoredProjectManifest, saveStoredProjectManifest, type StoredProjectEntry } from "./ProjectStorage";
+import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
@@ -142,6 +145,8 @@ type StudioIconName =
   | "sound"
   | "axis"
   | "grid"
+  | "undo"
+  | "redo"
   | "hit"
   | "hurt"
   | "report"
@@ -194,6 +199,8 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
   step: iconPlayerTrackNext,
   studio: iconCpu,
   tools: iconTools,
+  undo: iconArrowBackUp,
+  redo: iconArrowForwardUp,
   wand: iconWand,
   workbench: iconDashboard,
 };
@@ -252,6 +259,12 @@ function labelForStudioTab(tab: StudioTab): string {
 
 function iconForAction(label: string, attribute: string): StudioIconName {
   const key = `${label} ${attribute}`.toLowerCase();
+  if (key.includes("undo")) {
+    return "undo";
+  }
+  if (key.includes("redo")) {
+    return "redo";
+  }
   if (key.includes("playtest") || key.includes("match")) {
     return "match";
   }
@@ -688,6 +701,7 @@ export class App {
   private importedProjectManifest?: GameProjectManifest;
   private projectNameOverride?: string;
   private projectDirty = false;
+  private readonly studioEditHistory = new StudioEditHistory();
   private projectImportWarnings: string[] = [];
   private storedProjects: StoredProjectEntry[] = [];
   private lastCompiledProject?: CompiledRuntimeManifest;
@@ -895,6 +909,10 @@ export class App {
         this.root.querySelector<HTMLInputElement>("#project-input")?.click();
       } else if (action === "save-project-local") {
         this.saveCurrentProjectLocal();
+      } else if (action === "undo-project-edit") {
+        this.undoStudioProjectEdit();
+      } else if (action === "redo-project-edit") {
+        this.redoStudioProjectEdit();
       } else if (action === "compile-project") {
         this.compileCurrentProject();
       } else if (action === "export-runtime") {
@@ -995,8 +1013,10 @@ export class App {
 
       const studioStageId = target.closest<HTMLElement>("[data-studio-stage-id]")?.dataset.studioStageId;
       if (studioStageId) {
+        const before = this.captureStudioProjectEditState();
         this.selectedStageId = studioStageId;
         this.markProjectDirty();
+        this.recordStudioProjectEdit(before);
         this.studioSelectedAssetId = studioStageId;
         this.invalidateBuildOutputs();
         this.rebuildMatchRuntime();
@@ -1121,6 +1141,7 @@ export class App {
       }
       const studioFighterSelect = target.dataset.studioFighterSelect;
       if (target instanceof HTMLSelectElement && studioFighterSelect) {
+        const before = this.captureStudioProjectEditState();
         if (studioFighterSelect === "p1") {
           this.selectedP1 = target.value;
         } else {
@@ -1128,6 +1149,7 @@ export class App {
         }
         this.invalidateBuildOutputs();
         this.markProjectDirty();
+        this.recordStudioProjectEdit(before);
         this.rebuildMatchRuntime();
         this.mode = "studio";
         this.snapshot = this.matchRuntime.getSnapshot();
@@ -1144,9 +1166,11 @@ export class App {
         this.updateUi();
       }
       if (target instanceof HTMLSelectElement && target.dataset.studioStageSelect) {
+        const before = this.captureStudioProjectEditState();
         this.selectedStageId = target.value;
         this.invalidateBuildOutputs();
         this.markProjectDirty();
+        this.recordStudioProjectEdit(before);
         this.rebuildMatchRuntime();
         this.mode = "studio";
         this.snapshot = this.matchRuntime.getSnapshot();
@@ -1210,6 +1234,23 @@ export class App {
         event.preventDefault();
         this.closeCommandPalette();
         return;
+      }
+      if (!this.commandPaletteOpen && this.mode === "studio" && (event.ctrlKey || event.metaKey)) {
+        const key = event.key.toLowerCase();
+        if (key === "z") {
+          event.preventDefault();
+          if (event.shiftKey) {
+            this.redoStudioProjectEdit();
+          } else {
+            this.undoStudioProjectEdit();
+          }
+          return;
+        }
+        if (key === "y") {
+          event.preventDefault();
+          this.redoStudioProjectEdit();
+          return;
+        }
       }
       if (event.key === "Tab" && this.commandPaletteOpen) {
         this.trapCommandPaletteFocus(event);
@@ -1541,14 +1582,62 @@ export class App {
     if (name === this.getStudioProjectSummary().name) {
       return;
     }
+    const before = this.captureStudioProjectEditState();
     this.projectNameOverride = name;
     if (this.importedProjectManifest) {
       this.importedProjectManifest = { ...this.importedProjectManifest, name };
     }
     this.invalidateBuildOutputs();
     this.markProjectDirty();
+    this.recordStudioProjectEdit(before);
     this.log(`Project renamed to ${name}`);
     this.updateUi();
+  }
+
+  private captureStudioProjectEditState(): StudioProjectEditState {
+    return {
+      projectName: this.getStudioProjectSummary().name,
+      p1: this.selectedP1,
+      p2: this.selectedP2,
+      stage: this.selectedStageId,
+    };
+  }
+
+  private recordStudioProjectEdit(before: StudioProjectEditState): void {
+    this.studioEditHistory.record(before, this.captureStudioProjectEditState());
+  }
+
+  private applyStudioProjectEditState(state: StudioProjectEditState, actionLabel: string): void {
+    this.projectNameOverride = state.projectName;
+    if (this.importedProjectManifest) {
+      this.importedProjectManifest = { ...this.importedProjectManifest, name: state.projectName };
+    }
+    this.selectedP1 = state.p1;
+    this.selectedP2 = state.p2;
+    this.selectedStageId = state.stage;
+    this.studioSelectedAssetId = this.resolveSelectedStudioAssetId();
+    this.invalidateBuildOutputs();
+    this.markProjectDirty();
+    this.rebuildMatchRuntime();
+    this.mode = "studio";
+    this.snapshot = this.matchRuntime.getSnapshot();
+    this.writeUrlState();
+    this.log(`${actionLabel} Studio project edit`);
+    this.updateUi();
+  }
+
+  private undoStudioProjectEdit(): void {
+    const state = this.studioEditHistory.undo(this.captureStudioProjectEditState());
+    if (state) {
+      this.applyStudioProjectEditState(state, "Undid");
+    }
+  }
+
+  private redoStudioProjectEdit(): void {
+    const state = this.studioEditHistory.redo(this.captureStudioProjectEditState());
+    if (state) {
+      this.applyStudioProjectEditState(state, "Redid");
+    }
   }
 
   private applyProjectManifest(manifest: GameProjectManifest, warnings: string[] = []): void {
@@ -1582,6 +1671,7 @@ export class App {
     this.importedProjectManifest = manifest;
     this.projectNameOverride = manifest.name;
     this.projectDirty = false;
+    this.studioEditHistory.reset();
     this.projectImportWarnings = nextWarnings;
     this.invalidateBuildOutputs();
     this.rebuildMatchRuntime();
@@ -1616,6 +1706,7 @@ export class App {
     this.installCharacterSffProvider(character);
     this.installCharacterSoundArchive(character);
     this.installImportedFighter(imported);
+    this.studioEditHistory.reset();
     const animations = character.animations.size > 0 ? character.animations : createFixtureAnimations();
     this.inspectorRuntime = new MugenRuntime(animations);
     this.mode = "inspect";
@@ -2615,6 +2706,26 @@ export class App {
         run: () => this.saveCurrentProjectLocal(),
       },
       {
+        id: "undo-project-edit",
+        group: "Project",
+        label: "Undo Project Edit",
+        detail: this.studioEditHistory.canUndo ? "Restore the previous Studio project state." : "No Studio project edit is available to undo.",
+        keywords: ["undo", "history", "project", "authoring"],
+        tone: this.studioEditHistory.canUndo ? "active" : "neutral",
+        disabled: this.mode !== "studio" || !this.studioEditHistory.canUndo,
+        run: () => this.undoStudioProjectEdit(),
+      },
+      {
+        id: "redo-project-edit",
+        group: "Project",
+        label: "Redo Project Edit",
+        detail: this.studioEditHistory.canRedo ? "Reapply the next Studio project state." : "No Studio project edit is available to redo.",
+        keywords: ["redo", "history", "project", "authoring"],
+        tone: this.studioEditHistory.canRedo ? "active" : "neutral",
+        disabled: this.mode !== "studio" || !this.studioEditHistory.canRedo,
+        run: () => this.redoStudioProjectEdit(),
+      },
+      {
         id: "compile-runtime",
         group: "Build",
         label: "Compile Runtime Manifest",
@@ -3042,6 +3153,14 @@ export class App {
               <span>Project name <b class="studio-project-dirty ${this.projectDirty ? "is-dirty" : "is-clean"}" aria-live="polite">${this.projectDirty ? "Unsaved" : "Saved"}</b></span>
               <input type="text" data-project-name value="${escapeHtml(summary.name)}" maxlength="${MAX_PROJECT_NAME_LENGTH}" autocomplete="off" aria-label="Project name" />
             </label>
+            <div class="studio-edit-history" aria-label="Project edit history">
+              <button type="button" class="studio-history-button" data-action="undo-project-edit" aria-label="Undo project edit" aria-keyshortcuts="Control+Z Meta+Z" title="Undo project edit" ${this.studioEditHistory.canUndo ? "" : "disabled"}>
+                ${tablerIcon("undo", "ui-icon action-icon")}
+              </button>
+              <button type="button" class="studio-history-button" data-action="redo-project-edit" aria-label="Redo project edit" aria-keyshortcuts="Control+Shift+Z Control+Y Meta+Shift+Z Meta+Y" title="Redo project edit" ${this.studioEditHistory.canRedo ? "" : "disabled"}>
+                ${tablerIcon("redo", "ui-icon action-icon")}
+              </button>
+            </div>
             <button type="button" data-action="open-project">
               ${tablerIcon("folder", "ui-icon action-icon")}
               <span>Open Project</span>
@@ -10533,6 +10652,12 @@ export class App {
         studioFocusedSourcePath?: string;
         traceFrameScrubber: StudioTraceFrameScrubberSummary;
         studioTab: StudioTab;
+        studioEditHistory: {
+          canUndo: boolean;
+          canRedo: boolean;
+          undoCount: number;
+          redoCount: number;
+        };
         project: GameProjectManifest;
         compiledProject?: CompiledRuntimeManifest;
         projectBundle?: ProjectExportBundleSummary;
@@ -10575,6 +10700,12 @@ export class App {
       studioFocusedSourcePath: this.studioFocusedSourcePath,
       traceFrameScrubber: this.getTraceFrameScrubberSummary(),
       studioTab: this.studioTab,
+      studioEditHistory: {
+        canUndo: this.studioEditHistory.canUndo,
+        canRedo: this.studioEditHistory.canRedo,
+        undoCount: this.studioEditHistory.undoCount,
+        redoCount: this.studioEditHistory.redoCount,
+      },
       project: this.getGameProjectManifest(studio),
       compiledProject: this.lastCompiledProject,
       projectBundle: this.lastProjectBundle,
