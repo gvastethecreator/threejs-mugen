@@ -80,6 +80,7 @@ import { compileGameProjectManifest, type CompiledRuntimeManifest } from "./Proj
 import { listStoredProjects, loadStoredProjectManifest, saveStoredProjectManifest, type StoredProjectEntry } from "./ProjectStorage";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
+import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
@@ -741,6 +742,7 @@ export class App {
     this.keyboard.start();
     this.installFileDropZone();
     this.installEvents();
+    this.installNavigationGuard();
     this.installAudioUnlock();
     this.updateUi();
     this.loop.start();
@@ -837,6 +839,23 @@ export class App {
     }).mount();
   }
 
+  private installNavigationGuard(): void {
+    window.addEventListener("beforeunload", (event) => {
+      if (!needsStudioProjectNavigationGuard(this.mode, this.projectDirty)) {
+        return;
+      }
+      event.preventDefault();
+      event.returnValue = "";
+    });
+  }
+
+  private confirmStudioProjectNavigation(destination: string): boolean {
+    if (!needsStudioProjectNavigationGuard(this.mode, this.projectDirty)) {
+      return true;
+    }
+    return window.confirm(studioProjectDiscardMessage(destination));
+  }
+
   private installEvents(): void {
     this.root.addEventListener("click", (event) => {
       const target = event.target as HTMLElement;
@@ -906,7 +925,9 @@ export class App {
       } else if (action === "export-project") {
         this.exportStudioProjectManifest();
       } else if (action === "open-project") {
-        this.root.querySelector<HTMLInputElement>("#project-input")?.click();
+        if (this.confirmStudioProjectNavigation("open another project")) {
+          this.root.querySelector<HTMLInputElement>("#project-input")?.click();
+        }
       } else if (action === "save-project-local") {
         this.saveCurrentProjectLocal();
       } else if (action === "undo-project-edit") {
@@ -1463,6 +1484,9 @@ export class App {
   }
 
   private async loadZip(file: File): Promise<void> {
+    if (!this.confirmStudioProjectNavigation("load a new source package")) {
+      return;
+    }
     this.log(`Loading ZIP ${file.name}`);
     try {
       const source = new ZipCharacterSource(file);
@@ -1477,6 +1501,9 @@ export class App {
   }
 
   private async loadFolder(files: FileList): Promise<void> {
+    if (!this.confirmStudioProjectNavigation("load a new source package")) {
+      return;
+    }
     this.log(`Loading folder (${files.length} files)`);
     const source = new FolderCharacterSource(files);
     const vfs = await source.load();
@@ -1547,6 +1574,9 @@ export class App {
   }
 
   private openStoredProject(id: string): void {
+    if (!this.confirmStudioProjectNavigation("open another project")) {
+      return;
+    }
     try {
       const manifest = loadStoredProjectManifest(window.localStorage, id);
       if (!manifest) {

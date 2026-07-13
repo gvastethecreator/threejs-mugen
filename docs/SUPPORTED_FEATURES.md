@@ -64,7 +64,7 @@
 
 - Player sprite axis projection is `rendered-partial` at proof ladder L2: effective Three.js mesh position/scale matches SFF axis, AIR offset, facing, and runtime scale in desktop/mobile browser oracles. Flips, rotation pivots, draw order, full effects, and reference parity remain unsupported.
 
-- Studio single-match scene authoring is `executed-partial`: name, P1, CPU, and stage edits have explicit dirty state, output invalidation, local save, and reload/reopen persistence. Undo/redo, navigation guards, multi-scene graphs, conflicts, and source writes remain unsupported.
+- Studio single-match scene authoring is `executed-partial`: name, P1, CPU, and stage edits have explicit dirty state, output invalidation, bounded undo/redo, dirty-navigation protection, local save, and reload/reopen persistence. Autosave, multi-scene graphs, conflicts, and source writes remain unsupported.
 
 - Studio project identity authoring is `executed-partial`: project names can be edited, validated, propagated to manifests, saved locally, and reopened after reload. Autosave, conflicts, migrations, file-system writes, and scene/state/collision editors remain unsupported.
 

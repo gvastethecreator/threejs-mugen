@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 485 - Studio dirty-navigation guard
+
+Done: the Studio now protects unsaved project identity edits across browser
+exit and project/source replacement boundaries. `beforeunload` cancels dirty
+Studio exits, opening another manifest or stored project asks for confirmation,
+and ZIP/folder imports ask before replacing the current source context. The
+guard is isolated behind a small tested predicate so match/inspector surfaces
+and clean projects remain non-blocking. Browser smoke proves the real
+`beforeunload` event, dismissible project confirmation, preserved
+`dirty=true`, and unchanged authored stage after cancellation. Closure passes
+`2/2` focused guard tests, `187` files / `1969` tests, TypeScript 7 typecheck,
+boundaries, build, `581/581` trace artifacts (`547` required, `34` optional),
+and full Playwright smoke. Claim allowed: dirty-navigation protection for the
+current Studio project/source boundaries. Claim blocked: autosave, conflict
+resolution, migrations, filesystem/source writes, deeper editor transactions,
+and full MUGEN/IKEMEN parity. Next: specify save-safe local persistence and
+source transaction boundaries before adding deeper authoring surfaces.
+
 ## Entry 484 - Studio project edit history
 
 Done: Studio now has a bounded project-edit history for the current authoring

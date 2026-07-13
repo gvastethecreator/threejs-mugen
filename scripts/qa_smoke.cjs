@@ -1394,6 +1394,21 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   const afterKeyboardUndo = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project);
   await page.keyboard.press("Control+Shift+Z");
   const afterKeyboardRedo = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project);
+  const beforeUnloadPrevented = await page.evaluate(() => {
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+  let navigationDialogDismissed = false;
+  page.once("dialog", async (dialog) => {
+    navigationDialogDismissed = dialog.type() === "confirm" && dialog.message().includes("unsaved changes");
+    await dialog.dismiss();
+  });
+  await page.locator('[data-action="open-project"]').first().click();
+  const afterDismissedNavigation = await page.evaluate(() => ({
+    dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+    entry: window.__MUGEN_WEB_SANDBOX__?.project?.entry,
+  }));
   const dirtyBeforeSave = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty);
   await page.locator('[data-action="save-project-local"]').first().click();
   const saved = await page.evaluate(({ key, authoredName }) => {
@@ -1431,6 +1446,9 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
       afterRedo,
       afterKeyboardUndo,
       afterKeyboardRedo,
+      beforeUnloadPrevented,
+      navigationDialogDismissed,
+      afterDismissedNavigation,
       ...reopened,
     },
   };
@@ -3101,9 +3119,13 @@ function assertSmoke(diagnostics) {
     studioWorkbench.projectAuthoring.afterRedo?.project?.entry?.stage !== "training-grid" ||
     studioWorkbench.projectAuthoring.afterRedo?.history?.canRedo ||
     studioWorkbench.projectAuthoring.afterKeyboardUndo?.entry?.stage === "training-grid" ||
-    studioWorkbench.projectAuthoring.afterKeyboardRedo?.entry?.stage !== "training-grid"
+    studioWorkbench.projectAuthoring.afterKeyboardRedo?.entry?.stage !== "training-grid" ||
+    studioWorkbench.projectAuthoring.beforeUnloadPrevented !== true ||
+    studioWorkbench.projectAuthoring.navigationDialogDismissed !== true ||
+    studioWorkbench.projectAuthoring.afterDismissedNavigation?.dirty !== true ||
+    studioWorkbench.projectAuthoring.afterDismissedNavigation?.entry?.stage !== "training-grid"
   ) {
-    failures.push("studio-workbench: authored project scene, dirty-state, or undo/redo history did not behave correctly");
+    failures.push("studio-workbench: authored project scene, dirty-state, undo/redo history, or navigation guard did not behave correctly");
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||
