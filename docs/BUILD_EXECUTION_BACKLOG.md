@@ -10,10 +10,11 @@ prove that a stale save leaves the remote name/revision intact. Closure passes
 `13/13` focused tests, `188/188` files / `1974/1974` tests, TypeScript 7,
 boundaries, build, `581/581` trace artifacts (`547` required, `34` optional),
 and full Playwright smoke. Claim allowed: external revision detection plus
-optimistic local save rejection. Claim blocked: conflict
-presentation/resolution actions, durable file persistence, source
-writes/reimport, and full MUGEN/IKEMEN parity. Next: add explicit Studio
-actions for reload-remote or keep-local before reopening the source transaction.
+optimistic local save rejection. Closure also proves the visible `Reload
+Remote` action and `Keep Local Copy` fork, which preserves the remote revision
+while clearing the local conflict. Claim blocked: durable file persistence,
+source writes/reimport, deep editor authoring, and full MUGEN/IKEMEN parity.
+Next: define source identity and one write/reimport rollback transaction.
 
 ## Entry 487 - Versioned local project index
 

@@ -41,6 +41,86 @@
   font-size: 12px;
 }
 
+.app-shell.mode-studio .studio-project-conflict {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--desk-warn) 55%, var(--surface-border));
+  background: color-mix(in srgb, var(--desk-warn) 8%, var(--surface-flat));
+}
+
+.app-shell.mode-studio .studio-project-conflict-head {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+  color: var(--desk-warn);
+}
+
+.app-shell.mode-studio .studio-project-conflict-head > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.app-shell.mode-studio .studio-project-conflict-head strong,
+.app-shell.mode-studio .studio-project-conflict-head small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.mode-studio .studio-project-conflict-head strong {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.app-shell.mode-studio .studio-project-conflict-head small {
+  color: var(--subtle);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.app-shell.mode-studio .studio-project-conflict-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.app-shell.mode-studio .studio-project-conflict-actions button {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 7px;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: 3px;
+  background: var(--surface-flat-raised);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.app-shell.mode-studio .studio-project-conflict-actions button:hover,
+.app-shell.mode-studio .studio-project-conflict-actions button:focus-visible {
+  border-color: var(--surface-accent);
+  background: var(--surface-flat-strong);
+  outline: 1px solid var(--surface-accent);
+  outline-offset: -1px;
+}
+
+.app-shell.mode-studio .studio-project-conflict-actions .ui-icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+}
+
 .app-shell.mode-studio .studio-edit-history {
   display: flex;
   gap: 4px;

@@ -2341,6 +2341,20 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
       conflict: window.__MUGEN_WEB_SANDBOX__?.projectStorageConflict,
       pending: window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.pending,
     }));
+    await primary.locator('[data-action="reload-project-remote"]').first().click();
+    await primary.waitForFunction(
+      (expectedRevision) => {
+        const bridge = window.__MUGEN_WEB_SANDBOX__;
+        return bridge?.projectDirty === false && bridge.projectStorageRevision === expectedRevision && !bridge.projectStorageConflict;
+      },
+      remoteRevisionOne,
+    );
+    const reloadedRemote = await primary.evaluate(() => ({
+      dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+      conflict: window.__MUGEN_WEB_SANDBOX__?.projectStorageConflict,
+      revision: window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision,
+      projectName: window.__MUGEN_WEB_SANDBOX__?.project?.name,
+    }));
 
     const localName = "QA Local Pending Conflict";
     await primary.locator("[data-project-name]").first().fill(localName);
@@ -2387,6 +2401,29 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
         storedRevision: entry?.revision,
       };
     }, { key: "mugen-web-sandbox:projects:v0", projectId });
+    await primary.locator('[data-action="keep-project-local"]').first().click();
+    await primary.waitForFunction(
+      () => {
+        const bridge = window.__MUGEN_WEB_SANDBOX__;
+        return bridge?.projectDirty === false && !bridge.projectStorageConflict && bridge.project?.id !== "qa-authored-fight-project";
+      },
+    );
+    const keptLocal = await primary.evaluate(({ key, originalId }) => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const raw = localStorage.getItem(key);
+      const entries = raw ? JSON.parse(raw).entries ?? [] : [];
+      const entry = entries.find((candidate) => candidate.id === bridge?.project?.id);
+      return {
+        projectId: bridge?.project?.id,
+        projectName: bridge?.project?.name,
+        dirty: bridge?.projectDirty,
+        revision: bridge?.projectStorageRevision,
+        conflict: bridge?.projectStorageConflict,
+        originalStillPresent: entries.some((candidate) => candidate.id === originalId),
+        storedName: entry?.name,
+        storedRevision: entry?.revision,
+      };
+    }, { key: "mugen-web-sandbox:projects:v0", originalId: projectId });
     await primary.screenshot({ path: path.join(outDir, "studio-project-storage-conflict.png"), fullPage: true });
 
     return {
@@ -2395,12 +2432,19 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
       remoteRevisionOne,
       remoteRevisionTwo,
       cleanExternal,
+      reloadedRemote,
       dirtyExternal,
       rejectedSave,
+      keptLocal,
       cleanExternalDetected:
         cleanExternal.dirty === false &&
         cleanExternal.conflict?.expectedRevision === baselineRevision &&
         cleanExternal.conflict?.actualRevision === remoteRevisionOne,
+      remoteReloadResolved:
+        reloadedRemote.dirty === false &&
+        !reloadedRemote.conflict &&
+        reloadedRemote.revision === remoteRevisionOne &&
+        reloadedRemote.projectName === remoteNameOne,
       dirtyExternalDetected:
         dirtyExternal.dirty === true &&
         dirtyExternal.pending === false &&
@@ -2411,6 +2455,15 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
         rejectedSave.projectName === localName &&
         rejectedSave.storedName === remoteNameTwo &&
         rejectedSave.storedRevision === remoteRevisionTwo,
+      localCopyResolved:
+        keptLocal.dirty === false &&
+        !keptLocal.conflict &&
+        keptLocal.projectId !== projectId &&
+        keptLocal.projectName === `${localName} (Local copy)` &&
+        keptLocal.revision === 1 &&
+        keptLocal.storedName === `${localName} (Local copy)` &&
+        keptLocal.storedRevision === 1 &&
+        keptLocal.originalStillPresent,
     };
   } finally {
     await Promise.all([primary.close(), remote.close()]);
@@ -3285,10 +3338,12 @@ function assertSmoke(diagnostics) {
   }
   if (
     !diagnostics.checks.studioStorageConflict?.cleanExternalDetected ||
+    !diagnostics.checks.studioStorageConflict?.remoteReloadResolved ||
     !diagnostics.checks.studioStorageConflict?.dirtyExternalDetected ||
-    !diagnostics.checks.studioStorageConflict?.staleSaveRejected
+    !diagnostics.checks.studioStorageConflict?.staleSaveRejected ||
+    !diagnostics.checks.studioStorageConflict?.localCopyResolved
   ) {
-    failures.push("studio-storage-conflict: same-origin external edits, autosave pause, or stale-save rejection did not behave correctly");
+    failures.push("studio-storage-conflict: external edit detection, remote reload, local-copy preservation, autosave pause, or stale-save rejection did not behave correctly");
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||

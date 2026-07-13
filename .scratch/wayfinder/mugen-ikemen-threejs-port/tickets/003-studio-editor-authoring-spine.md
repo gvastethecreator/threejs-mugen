@@ -17,8 +17,8 @@ Open. Candidate inputs: `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.
 - 2026-07-13: added the transaction boundary for browser-local project edits.
   Saves carry the opened revision, stale writes are rejected without replacing
   the remote entry, and same-origin storage events cancel pending autosave and
-  expose the mismatch through the diagnostics bridge. Explicit reload/keep
-  actions remain the next slice.
+  expose the mismatch through the diagnostics bridge. Workbench now proves
+  explicit remote reload and local-copy preservation actions.
 - 2026-07-13: versioned the browser-local project index as
   `project-index/v1`. Legacy v0 entries migrate with revision `1`, project
   replacements increment revisions, and malformed entries remain fail-closed.
@@ -38,7 +38,7 @@ Open. Candidate inputs: `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.
   replacement is guarded without blocking clean match/inspector flows. Smoke
   proves dismissal preserves the authored state.
 - Remaining: multi-scene graphs, state/controller/collision authoring,
-  conflict actions, filesystem persistence, and source writes.
+  filesystem persistence, source writes/reimport, and rollback.
 - 2026-07-10: expanded persistent identity authoring into a bounded scene-authoring workflow. Name, P1, CPU, stage, stage-list selection, and asset replacement mark explicit dirty state, invalidate stale outputs, save the current manifest entry, and reopen clean under browser proof.
 - Remaining: autosave/navigation guards, undo/redo, multi-scene graphs, state/controller/collision authoring, filesystem persistence, conflicts, migrations, and source writes.
 - 2026-07-10: added the first directly editable persistent project field. Workbench project names normalize whitespace, cap at 80 characters, invalidate stale build outputs, flow into manifests, save to the local project index, and survive browser reload/reopen under smoke coverage.

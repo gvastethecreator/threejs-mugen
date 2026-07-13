@@ -972,6 +972,10 @@ export class App {
         }
       } else if (action === "save-project-local") {
         this.saveCurrentProjectLocal();
+      } else if (action === "reload-project-remote") {
+        this.reloadExternalProject();
+      } else if (action === "keep-project-local") {
+        this.keepLocalProjectCopy();
       } else if (action === "undo-project-edit") {
         this.undoStudioProjectEdit();
       } else if (action === "redo-project-edit") {
@@ -1651,6 +1655,58 @@ export class App {
       this.applyProjectManifest(entry.manifest, [], { storageRevision: entry.revision });
     } catch (error) {
       this.log(`Could not open local project ${id}: ${error instanceof Error ? error.message : String(error)}`);
+      this.updateUi();
+    }
+  }
+
+  private reloadExternalProject(): void {
+    const conflict = this.projectStorageConflict;
+    if (!conflict) {
+      return;
+    }
+    try {
+      const entry = loadStoredProject(window.localStorage, conflict.projectId);
+      if (!entry) {
+        this.log(`Remote project ${conflict.projectId} is no longer available; keep the local copy or open another project.`);
+        this.updateUi();
+        return;
+      }
+      this.applyProjectManifest(entry.manifest, [`Reloaded remote project revision ${entry.revision}.`], {
+        storageRevision: entry.revision,
+      });
+    } catch (error) {
+      this.log(`Could not reload remote project ${conflict.projectId}: ${error instanceof Error ? error.message : String(error)}`);
+      this.updateUi();
+    }
+  }
+
+  private keepLocalProjectCopy(): void {
+    if (!this.projectStorageConflict) {
+      return;
+    }
+    const source = this.getGameProjectManifest();
+    const copyName = normalizeProjectName(`${source.name} (Local copy)`) ?? "Local Project Copy";
+    const existingIds = new Set(this.storedProjects.map((entry) => entry.id));
+    const baseId = `${source.id}-local`;
+    let copyId = baseId;
+    let suffix = 2;
+    while (existingIds.has(copyId)) {
+      copyId = `${baseId}-${suffix}`;
+      suffix += 1;
+    }
+    const copy = { ...source, id: copyId, name: copyName };
+    try {
+      this.storedProjects = saveStoredProjectManifest(window.localStorage, copy, { expectedRevision: 0 });
+      this.importedProjectManifest = copy;
+      this.projectNameOverride = copy.name;
+      this.projectStorageRevision = this.storedProjects.find((entry) => entry.id === copy.id)?.revision;
+      this.projectStorageConflict = undefined;
+      this.studioAutosave.cancel();
+      this.projectDirty = false;
+      this.log(`Saved local project copy ${copy.id}`);
+      this.updateUi();
+    } catch (error) {
+      this.log(`Could not save local project copy: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
     }
   }
@@ -3273,6 +3329,7 @@ export class App {
               ${tablerIcon("save", "ui-icon action-icon")}
             </button>
           </div>
+          ${this.renderProjectStorageConflict()}
         </div>
       `;
     }
@@ -3320,6 +3377,34 @@ export class App {
           ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}
         </div>
       </div>
+    `;
+  }
+
+  private renderProjectStorageConflict(): string {
+    const conflict = this.projectStorageConflict;
+    if (!conflict) {
+      return "";
+    }
+    return `
+      <section class="studio-project-conflict" role="alert" aria-live="assertive" aria-label="Project storage conflict">
+        <div class="studio-project-conflict-head">
+          ${tablerIcon("alert", "ui-icon action-icon")}
+          <span>
+            <strong>External project update</strong>
+            <small>${escapeHtml(conflict.projectId)} / local base r${conflict.expectedRevision} / remote r${conflict.actualRevision}</small>
+          </span>
+        </div>
+        <div class="studio-project-conflict-actions">
+          <button type="button" data-action="reload-project-remote" title="Reload the remote project revision">
+            ${tablerIcon("reset", "ui-icon action-icon")}
+            <span>Reload Remote</span>
+          </button>
+          <button type="button" data-action="keep-project-local" title="Save local edits as a new project copy">
+            ${tablerIcon("save", "ui-icon action-icon")}
+            <span>Keep Local Copy</span>
+          </button>
+        </div>
+      </section>
     `;
   }
 
