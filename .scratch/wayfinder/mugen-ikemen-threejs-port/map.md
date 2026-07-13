@@ -139,10 +139,14 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Prove active-root crouch low-guard contact](tickets/121-prove-active-root-crouch-low-guard-contact.md) - resolved: command-driven P3 state `10` C first has no low-only latch, then its fixture-local `PosSet` isolates P3 before direct P4 `guardflag = L` latches; existing `120 -> 131`, root admission, and direct combat produce exact zero-chip `p4 -> p3` C guard state `152`; checksum `748679c8` / final `acec0c58`. Next: map standing low-only rejection without widening root ownership.
 
+- [Prove active-root standing low-guard rejection](tickets/122-prove-active-root-standing-low-guard-rejection.md) - resolved: held-back P3 enters fixture state `20` S, its local `PosSet` isolates geometry without an L latch, and delayed P4 `guardflag = L` overlap resolves as exact `p4 -> p3` hit; checksum `906e4751` / final `1eaa402b`. Next: prove H-specific standing contact without widening root ownership.
+
+- [Prove active-root standing high-guard contact](tickets/123-prove-active-root-standing-high-guard-contact.md) - open: isolate one command-driven S P3 route that observes authored P4 `guardflag = H`, enters the existing automatic guard path, and resolves delayed contact as guard.
+
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Prove active-root standing low-guard rejection without widening helpers, target precedence, or presentation ownership.
+- Prove active-root standing high-guard contact without widening helpers, target precedence, or presentation ownership.
 
 ## Not Yet Specified
 

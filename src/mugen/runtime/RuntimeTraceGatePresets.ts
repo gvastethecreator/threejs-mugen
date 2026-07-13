@@ -9884,6 +9884,215 @@ export function createSyntheticImportedIkemenActiveRootCrouchLowGuardTraceArtifa
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootStandingLowGuardRejectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 132;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-standing-low-guard-reject-grid",
+    displayName: "Trace Active Root Standing Low Guard Reject Grid",
+    playerStart: {
+      p1: { x: -220, y: 0, facing: 1 },
+      p2: { x: 180, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "P3 enters command-driven S state while distant low-only P4 cannot latch", p1: ["B"], p2: [], frames: 1 },
+    { label: "P3 standing state positions while low-only P4 remains out of guard distance", p1: ["B"], p2: [], frames: 1 },
+    { label: "standing P3 holds back while P4 remains out of contact", p1: ["B"], p2: [], frames: 1 },
+    { label: "standing P3 receives delayed low-only P4 direct contact as a hit", p1: ["B"], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Standing Low Guard Reject Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const pairAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-pair-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Standing Low Guard Reject Pair Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 133, guardDistance: 112, clsn1Extent: 36, posX: 180 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Standing Low Guard Reject Defender",
+    withHitDef: false,
+    passiveCommandRoute: { commandName: "holdback", stateNo: 20 },
+    passiveControllerStates: [{ stateNo: 20, stateType: "S", physics: "S", animNo: 20, posX: -100, posTrigger: "1" }],
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Standing Low Guard Reject Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      guardFlag: "L",
+      guardDistance: 112,
+      clsn1Extent: 36,
+      posX: 50,
+      delayedPosX: { x: -65, trigger: "Time >= 3" },
+    },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: pairAttacker,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [defender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-golden",
+      label: "Synthetic imported IKEMEN active-root standing low guard rejection",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace aims to prove held-back P3 remains in fixture state 20 S while a low-only P4 guardflag L cannot become direct InGuardDist provenance. State 20 positions only P3 away from P1, then P4 delayed overlap reaches existing root admission/direct combat and must record one S hit rather than guard. This is command-driven fixture state entry, not generic active-root walking. P2 stays guardable but out of range, and admission/resolver ownership stay unchanged. Crouch/air, complete high/low matrix, automatic-guard breadth, projectiles/helpers, custom-state variants, target precedence, pause/hitpause, team KO, and full parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-standing-low-guard-reject-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [20],
+        forbiddenExecutedStates: [120, 130, 131, 150, 152],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "PosSet"],
+        requiredExecutedOperations: ["hitdef", "kinematic:posset"],
+        requiredActiveCommands: ["holdback"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        forbiddenCombatReasons: ["guard", "override", "reversal"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 enters and remains in standing fixture geometry before low-only contact",
+            actorId: "p3",
+            allowSameTick: true,
+            steps: [
+              { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
+              { tick: 2, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 2, stateNo: 20, operation: "kinematic:posset" },
+            ],
+          },
+          {
+            label: "P4 enters physical overlap with low-only guard flag on the delayed-contact tick",
+            actorId: "p4",
+            allowSameTick: true,
+            steps: [{ tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 standing-state placement completes before low-only contact", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "P3 remains in the direct guard-distance pass while standing", frameIndex: 1, phase: "tick:guard-distance-latch", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "root admission follows delayed P4 controller phase", frameIndex: 3, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredTickScheduleStampSequences: [
+          {
+            label: "P3 standing-state placement precedes low-only direct latch check",
+            frameIndex: 1,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "tick:guard-distance-latch", actorId: "p1" },
+            ],
+          },
+          {
+            label: "delayed P4 position precedes low-only root admission",
+            frameIndex: 3,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "post-fighter:hit-admission", actorId: "p1" },
+            ],
+          },
+        ],
+        requiredRootHitAdmissionFrames: [{ admittedPairIds: ["p4->p3"], minFrames: 1 }],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 20,
+            stateType: "S",
+            observedPosXAtLeast: -220,
+            observedPosXAtMost: -220,
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 20,
+            stateType: "S",
+            observedPosXAtLeast: -100,
+            observedPosXAtMost: -100,
+            observedLifeAtMost: 963,
+            guarding: false,
+            teamStandby: false,
+            minFrames: 1,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "P3 stays standing through placement and low-only hit",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 20,
+                stateType: "S",
+                observedPosXAtLeast: -220,
+                observedPosXAtMost: -220,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 20,
+                stateType: "S",
+                observedPosXAtLeast: -100,
+                observedPosXAtMost: -100,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 20,
+                stateType: "S",
+                guarding: false,
+                observedLifeAtMost: 963,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 963, stateNo: 20, stateType: "S", guarding: false, ctrl: true },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
