@@ -940,6 +940,19 @@ This gate proves:
 
 Required trace checksum is `935e6e6d`; final checksum is `20bea107`. This proves one normal-tick active-root high-only rejection against a crouching defender through existing generic StateTypeSet, root admission, and direct combat routes. It does not establish a complete guard-start policy or high/low matrix: low-only, standing, air, projectiles/helpers, custom state, forceguard, target ranking, Pause/hitpause, guard sound/spark/renderer effects, team replacement/KO, HUD/resources, and full MUGEN/IKEMEN parity remain unsupported.
 
+## Current Active-root Low-only Crouch Guard Contact Gate
+
+`pnpm qa:trace` includes required `synthetic-imported-ikemen-active-root-crouch-low-guard.json`.
+
+This gate proves:
+
+- P3 receives held-back plus held-down input and uses an imported fixture command route into state `10` C; the initial distant low-only P4 threat has no latch;
+- on the next normal tick, state `10` executes its active-root `PosSet` to isolate P3 geometry from P1, then P4 becomes P3's sole direct `InGuardDist` source with `guardflag = L` and no contact;
+- P3 follows imported `120` `StateTypeSet` C and `120 -> 131` before the delayed P4 overlap; P4's delayed `PosSet` and P3's controller finish before root admission;
+- root admission contains exactly `p4 -> p3`, the direct resolver records `guard` rather than `hit`, `override`, or `reversal`, P4 records target id `129`, and P3 enters C guard-hit state `152` with `guarding = true`, zero chip damage, and life `1000`.
+
+Required trace checksum is `748679c8`; final checksum is `acec0c58`. This proves one normal-tick low-only contact against a command-driven C active root through existing state entry, guard-distance, StateTypeSet, root admission, direct combat, and target/contact routes. It does not establish generic active-root crouch movement, standing/air behavior, a complete high/low matrix, automatic-guard breadth, projectiles/helpers, custom state, forceguard, target ranking, Pause/hitpause, guard sound/spark/renderer effects, team replacement/KO, HUD/resources, or full MUGEN/IKEMEN parity.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:

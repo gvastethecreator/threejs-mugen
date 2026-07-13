@@ -9629,6 +9629,261 @@ export function createSyntheticImportedIkemenActiveRootCrouchHighGuardRejectTrac
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootCrouchLowGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 129;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-crouch-low-guard-grid",
+    displayName: "Trace Active Root Crouch Low Guard Grid",
+    playerStart: {
+      p1: { x: -220, y: 0, facing: 1 },
+      p2: { x: 180, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "P3 enters command-driven C state while distant low-only P4 cannot latch", p1: ["B", "D"], p2: [], frames: 1 },
+    { label: "P3 C state positions into low-only P4 guard distance without contact", p1: ["B", "D"], p2: [], frames: 1 },
+    { label: "latched P3 enters crouch guard while P4 remains out of contact", p1: ["B", "D"], p2: [], frames: 1 },
+    { label: "crouch-guarding P3 blocks delayed low-only P4 direct contact", p1: ["B", "D"], p2: [], frames: 1 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-low-guard-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Low Guard Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const pairAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-low-guard-pair-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Low Guard Pair Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 130, guardDistance: 112, clsn1Extent: 36, posX: 180 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-low-guard-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Low Guard Defender",
+    withHitDef: false,
+    passiveCommandRoute: { commandName: "holddown", stateNo: 10 },
+    passiveControllerStates: [{ stateNo: 10, stateType: "C", physics: "C", animNo: 10, posX: -100, posTrigger: "1" }],
+    withCrouchAutoGuardStartStates: true,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-crouch-low-guard-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Crouch Low Guard Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      guardFlag: "L",
+      guardDistance: 112,
+      clsn1Extent: 36,
+      posX: 50,
+      delayedPosX: { x: -65, trigger: "Time >= 3" },
+    },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: pairAttacker,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [defender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-crouch-low-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-crouch-low-guard-golden",
+      label: "Synthetic imported IKEMEN active-root crouch low guard contact",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves an imported held-back plus held-down command route places P3 in fixture state 10 C before a low-only P4 guardflag L can become direct InGuardDist provenance. State 10 then performs one active-root PosSet solely to isolate P3 geometry from P1; the later L latch enters imported 120 -> 131 before P4's delayed overlap, so existing root admission/direct combat records one C guard in state 152 with zero chip. This is command-driven fixture state entry, not generic active-root crouch movement. P2 stays guardable but out of range, and admission/resolver ownership stay unchanged. Standing/air, high-only, high/low matrix, automatic-guard breadth, projectiles/helpers, custom-state variants, target precedence, pause/hitpause, team KO, and full parity remain blocked.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-crouch-low-guard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [120, 131, 152],
+        requiredExecutedControllers: ["ChangeState", "StateTypeSet", "HitDef", "PosSet"],
+        requiredExecutedOperations: ["metadata:statetypeset", "hitdef", "kinematic:posset"],
+        requiredActiveCommands: ["holdback", "holddown"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        forbiddenCombatReasons: ["hit", "override", "reversal"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p3", targetId }],
+        requiredControllerEventSequences: [
+          {
+            label: "P3 enters C, positions into low-only guard distance, then starts crouch guard",
+            actorId: "p3",
+            allowSameTick: true,
+            steps: [
+              { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
+              { tick: 2, stateNo: 10, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 2, stateNo: 10, operation: "kinematic:posset" },
+              { tick: 3, stateNo: 120, controller: "StateTypeSet", name: "Crouch Guard Start State Type" },
+              { tick: 3, stateNo: 120, operation: "metadata:statetypeset" },
+              { tick: 4, stateNo: 120, controller: "ChangeState", name: "Crouch Guard Start Done" },
+            ],
+          },
+          {
+            label: "P4 enters physical overlap with low-only guard flag on the delayed-contact tick",
+            actorId: "p4",
+            allowSameTick: true,
+            steps: [{ tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 C-state placement completes before low-only latch", frameIndex: 1, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "P3 receives direct plural guard latches after crouching", frameIndex: 1, phase: "tick:guard-distance-latch", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P3 completes crouch guard-start controllers before low-only root admission", frameIndex: 3, phase: "fighter:controllers", actorIds: ["p2", "p4", "p1", "p3"] },
+          { label: "root admission follows all active root controllers", frameIndex: 3, phase: "post-fighter:hit-admission", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredTickScheduleStampSequences: [
+          {
+            label: "P3 C-state placement precedes low-only direct latch",
+            frameIndex: 1,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "tick:guard-distance-latch", actorId: "p1" },
+            ],
+          },
+          {
+            label: "delayed P4 position and P3 low-only crouch guard-start both precede root admission",
+            frameIndex: 3,
+            steps: [
+              { phase: "fighter:controllers", actorId: "p4" },
+              { phase: "fighter:controllers", actorId: "p3" },
+              { phase: "post-fighter:hit-admission", actorId: "p1" },
+            ],
+          },
+        ],
+        requiredRootHitAdmissionFrames: [{ admittedPairIds: ["p4->p3"], minFrames: 1 }],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 10,
+            stateType: "C",
+            observedPosXAtLeast: -220,
+            observedPosXAtMost: -220,
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 10,
+            stateType: "C",
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            observedPosXAtLeast: -100,
+            observedPosXAtMost: -100,
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 120,
+            stateType: "C",
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 152,
+            stateType: "C",
+            guarding: true,
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            teamStandby: false,
+            minFrames: 1,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "P3 crouches, positions, latches low-only P4, and guards delayed contact",
+            steps: [
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 10,
+                stateType: "C",
+                observedPosXAtLeast: -220,
+                observedPosXAtMost: -220,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 10,
+                stateType: "C",
+                inGuardDistAttackerId: "p4",
+                inGuardDistSource: "direct",
+                observedPosXAtLeast: -100,
+                observedPosXAtMost: -100,
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 120,
+                stateType: "C",
+                inGuardDistAttackerId: "p4",
+                inGuardDistSource: "direct",
+              },
+              {
+                actorId: "p3",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 152,
+                stateType: "C",
+                guarding: true,
+                observedLifeAtLeast: 1000,
+                observedLifeAtMost: 1000,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, stateNo: 152, stateType: "C", guarding: true, ctrl: false },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -42191,6 +42446,8 @@ export type SyntheticImportedTraceFighterOptions = {
     physics?: "S" | "C" | "A" | "N";
     animNo?: number;
     ctrl?: number;
+    posX?: number;
+    posTrigger?: string;
   }>;
   defenseMultiplier?: number;
   attackMultiplier?: number;
@@ -43463,7 +43720,7 @@ ${options.identityEntry ? simpleStateBlock(options.identityEntry.stateNo, "I") :
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfAnimExistEntry ? simpleStateBlock(options.selfAnimExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo && !passiveControllerStateNos.has(options.selfCommandEntry.stateNo) ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
-${options.passiveCommandRoute ? simpleStateBlock(options.passiveCommandRoute.stateNo, "I") : ""}
+${options.passiveCommandRoute && !passiveControllerStateNos.has(options.passiveCommandRoute.stateNo) ? simpleStateBlock(options.passiveCommandRoute.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.runOrderEntry ? simpleStateBlock(options.runOrderEntry.stateNo, "I") : ""}
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
@@ -44482,12 +44739,19 @@ ${config.targetId === undefined ? "" : `id = ${config.targetId}`}
 }
 
 function passiveControllerStateBlocks(options: SyntheticImportedTraceFighterOptions): string {
-  if (!options.passiveControllerStates?.length || (!options.passiveReversalDef && !options.passiveAssertSpecialFlags?.length)) {
+  if (!options.passiveControllerStates?.length) {
     return "";
   }
   return options.passiveControllerStates
     .map((state, index) => {
       const suffix = ` ${index + 2}`;
+      const controllers = [
+        state.posX === undefined ? "" : passiveControllerStatePosSet(state.stateNo, state.posX, state.posTrigger, suffix),
+        options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef, state.stateNo, suffix) : "",
+        options.passiveAssertSpecialFlags?.length
+          ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger, suffix, state.stateNo)
+          : "",
+      ].filter(Boolean);
       return `
 [Statedef ${state.stateNo}]
 type = ${state.stateType ?? "S"}
@@ -44495,11 +44759,19 @@ movetype = I
 physics = ${state.physics ?? "S"}
 anim = ${state.animNo ?? state.stateNo}
 ctrl = ${state.ctrl ?? 1}
-${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef, state.stateNo, suffix) : ""}
-${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger, suffix, state.stateNo) : ""}
+${controllers.join("\n")}
 `;
     })
     .join("");
+}
+
+function passiveControllerStatePosSet(stateNo: number, x: number, trigger: string | undefined, suffix: string): string {
+  return `
+[State ${stateNo}, Passive State Pos${suffix}]
+type = PosSet
+trigger1 = ${trigger ?? "Time = 0"}
+x = ${x}
+`;
 }
 
 function passiveReversalStateBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["passiveReversalDef"]>): string {
