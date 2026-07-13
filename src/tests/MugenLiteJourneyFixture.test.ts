@@ -7,7 +7,7 @@ import {
   createMugenLiteJourneyZipBytes,
   MUGEN_LITE_JOURNEY_MANIFEST,
 } from "../mugen/runtime/MugenLiteJourneyFixture";
-import { createMugenLiteJourneyTraceArtifact } from "../mugen/runtime/RuntimeTraceGatePresets";
+import { createMugenLiteJourneyNoKoSlowTraceArtifact, createMugenLiteJourneyTraceArtifact } from "../mugen/runtime/RuntimeTraceGatePresets";
 
 describe("MUGEN-lite journey fixture", () => {
   it("loads one repository-owned MUGEN-format package with visible unsupported gaps", async () => {
@@ -37,16 +37,19 @@ describe("MUGEN-lite journey fixture", () => {
     expect(fighter).toBeDefined();
     expect(fighter?.source).toBe("imported");
     expect(fighter?.runtimeProgram?.states.some((state) => state.id === 200)).toBe(true);
+    expect(fighter?.runtimeProgram?.states.some((state) => state.id === 210)).toBe(true);
     expect(fighter?.animations.has(5200)).toBe(true);
-    expect(character.spriteArchive?.sprites).toHaveLength(13);
+    expect(fighter?.animations.has(210)).toBe(true);
+    expect(character.spriteArchive?.sprites).toHaveLength(14);
     expect(character.spriteArchive?.sprites).toEqual(expect.arrayContaining([
       expect.objectContaining({ group: 0, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 200, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 200, index: 1, width: 32, height: 64, axisX: 16, axisY: 62 }),
+      expect.objectContaining({ group: 210, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 5100, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
     ]));
     const posePixels = character.spriteArchive!.sprites.map((sprite) => sprite.indexed!.pixels);
-    expect(new Set(posePixels.map((pixels) => Array.from(pixels).join(","))).size).toBe(13);
+    expect(new Set(posePixels.map((pixels) => Array.from(pixels).join(","))).size).toBe(14);
     expect(fighter?.animations.get(200)?.frames.map((frame) => [frame.spriteGroup, frame.spriteIndex, frame.duration]))
       .toEqual([[200, 0, 4], [200, 1, 4]]);
     for (const sprite of character.spriteArchive!.sprites) {
@@ -103,6 +106,25 @@ describe("MUGEN-lite journey fixture", () => {
     expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p1", source: "imported", stateNo: 0, life: 1000, ctrl: true }),
       expect.objectContaining({ id: "p2", source: "imported", stateNo: 0, life: 920, ctrl: true }),
+    ]));
+  });
+
+  it("runs the loaded package through a lethal NoKOSlow post-KO journey", async () => {
+    const artifact = await createMugenLiteJourneyNoKoSlowTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "mugen-lite-journey-nokoslow-golden", source: "imported" },
+      gates: [{ label: "mugen-lite-journey-nokoslow-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.requirements.requiredActiveCommands).toEqual(["finisher"]);
+    expect(artifact.gates[0]?.evidence.executedControllers.AssertSpecial).toBeGreaterThan(0);
+    expect(artifact.gates[0]?.evidence.executedOperations.assertspecial).toBeGreaterThan(0);
+    expect(artifact.gates[0]?.evidence.roundFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ state: "ko", noKoSlow: true, minPlaybackRate: 1, maxPlaybackRate: 1 }),
+    ]));
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p2", source: "imported", life: 0 }),
     ]));
   });
 });

@@ -9,7 +9,7 @@ export const MUGEN_LITE_JOURNEY_MANIFEST = Object.freeze({
   licenseFile: "chars/mugen-lite-journey/LICENSE.txt",
   provenance: "Repository-authored deterministic test fixture",
   entry: "chars/mugen-lite-journey/journey.def",
-  expectedRoutes: ["idle", "walk", "crouch", "jump", "attack", "guard", "get-hit", "fall", "recovery"] as const,
+  expectedRoutes: ["idle", "walk", "crouch", "jump", "attack", "guard", "get-hit", "fall", "recovery", "no-ko-slow"] as const,
   intentionalUnsupported: ["JourneyUnknownController"] as const,
 });
 
@@ -83,11 +83,23 @@ name = "recovery"
 command = x+y
 time = 5
 
+[Command]
+name = "finisher"
+command = z
+time = 5
+
 [Statedef -1]
 [State -1, Journey Attack]
 type = ChangeState
 value = 200
 triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = statetype = S
+
+[State -1, Journey NoKOSlow Finisher]
+type = ChangeState
+value = 210
+triggerall = command = "finisher"
 trigger1 = ctrl
 trigger1 = statetype = S
 `;
@@ -192,6 +204,37 @@ value = 0
 ctrl = 1
 trigger1 = Time >= 12
 
+[Statedef 210]
+type = S
+movetype = A
+physics = S
+anim = 210
+ctrl = 0
+
+[State 210, No KO Slow]
+type = AssertSpecial
+flag = NoKOSlow
+trigger1 = 1
+
+[State 210, Finisher HitDef]
+type = HitDef
+trigger1 = Time = 0
+attr = S, NA
+damage = 1200,0
+guardflag = MA
+pausetime = 0,0
+ground.hittime = 12
+ground.velocity = -3,-6
+fall = 1
+fall.recover = 1
+fall.recovertime = 8
+
+[State 210, Exit]
+type = ChangeState
+value = 0
+ctrl = 1
+trigger1 = Time >= 12
+
 [Statedef 5000]
 type = S
 movetype = H
@@ -265,13 +308,17 @@ type = JourneyUnknownController
 trigger1 = 1
 `;
 
-const ACTIONS = [0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200];
-const SPRITES = [...ACTIONS.map((group) => ({ group, index: 0 })), { group: 200, index: 1 }];
-const JOURNEY_AIR = ACTIONS.map((action) => `[Begin Action ${action}]
+const ACTIONS = [0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200, 210];
+const SPRITES = [...ACTIONS.filter((group) => group !== 210).map((group) => ({ group, index: 0 })), { group: 200, index: 1 }, { group: 210, index: 0 }];
+const JOURNEY_AIR = ACTIONS.map((action) => {
+  const attacking = action === 200 || action === 210;
+  const attackClsn1 = action === 210 ? "8,-48,128,-18" : "8,-48,72,-18";
+  return `[Begin Action ${action}]
 Clsn2Default: 1
   Clsn2[0] = -16,-60,16,0
-${action === 200 ? "Clsn1: 1\n  Clsn1[0] = 8,-48,72,-18\n" : ""}${action},0,0,0,4${action === 200 ? `\n200,1,0,0,4` : ""}
-`).join("\n");
+${attacking ? `Clsn1: 1\n  Clsn1[0] = ${attackClsn1}\n` : ""}${action},0,0,0,4${action === 200 ? `\n200,1,0,0,4` : ""}
+`;
+}).join("\n");
 
 function text(value: string): Uint8Array {
   return new TextEncoder().encode(value);
@@ -335,7 +382,7 @@ function createPosePixels(action: number, index: number, width: number, height: 
   const pixels = new Uint8Array(width * height);
   const crouching = action === 10;
   const airborne = action === 40 || action === 5050;
-  const attacking = action === 200;
+  const attacking = action === 200 || action === 210;
   const guarding = action === 120 || action === 130 || action === 150;
   const hit = action === 5000;
   const recovering = action === 5200;
@@ -351,7 +398,11 @@ function createPosePixels(action: number, index: number, width: number, height: 
   fillRect(pixels, width, 11 + leanX, 4 + shiftY, 20 + leanX, 14 + shiftY, 3);
   fillRect(pixels, width, (crouching || recovering ? 7 : 8) + leanX, 15 + shiftY, (crouching || recovering ? 24 : 23) + leanX, 38 + shiftY, 1);
   if (attacking) {
-    if (index === 1) {
+    if (action === 210) {
+      fillRect(pixels, width, 20, 8 + shiftY, 31, 17 + shiftY, 2);
+      fillRect(pixels, width, 24, 18 + shiftY, 31, 27 + shiftY, 2);
+      fillRect(pixels, width, 2, 16 + shiftY, 7, 39 + shiftY, 2);
+    } else if (index === 1) {
       fillRect(pixels, width, 22, 12 + shiftY, 31, 19 + shiftY, 2);
       fillRect(pixels, width, 25, 20 + shiftY, 30, 35 + shiftY, 2);
       fillRect(pixels, width, 3, 24 + shiftY, 7, 37 + shiftY, 2);

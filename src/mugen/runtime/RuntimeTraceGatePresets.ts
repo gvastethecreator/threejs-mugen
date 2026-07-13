@@ -42,12 +42,7 @@ export type RuntimeTraceGatePresetOptions = {
 export async function createMugenLiteJourneyTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): Promise<RuntimeTraceArtifact> {
-  const loader = new MugenCharacterLoader();
-  const source = new ZipCharacterSource(new File([await createMugenLiteJourneyZipBytes()], "mugen-lite-journey.zip"));
-  const character = await loader.load(source.name, await source.load());
-  const p1 = createImportedFighterDefinition(character);
-  const p2 = createImportedFighterDefinition(character);
-  if (!p1 || !p2) throw new Error("MUGEN-lite journey package did not produce runtime fighters");
+  const { p1, p2 } = await loadMugenLiteJourneyTraceFighters();
   const script = expandRuntimeTraceScript([
     { label: "journey-idle", frames: 2, p1: [], p2: [] },
     { label: "journey-walk", frames: 60, p1: ["F"], p2: [] },
@@ -124,6 +119,75 @@ export async function createMugenLiteJourneyTraceArtifact(
       ],
     }],
   });
+}
+
+export async function createMugenLiteJourneyNoKoSlowTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const { p1, p2 } = await loadMugenLiteJourneyTraceFighters();
+  const script = expandRuntimeTraceScript([
+    { label: "journey-finisher-approach", frames: 70, p1: ["F"], p2: [] },
+    { label: "journey-finisher-contact", frames: 1, p1: ["z"], p2: [] },
+    { label: "journey-finisher-post-ko", frames: 70, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: { ...p2, id: `${p2.id}-p2` }, stage: options.stage ?? trainingStage }), script, {
+    label: "mugen-lite-journey-nokoslow-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-lite-journey-nokoslow-golden",
+      label: "Repository-owned legal MUGEN-lite NoKOSlow journey",
+      source: "imported",
+      notes: [
+        `${MUGEN_LITE_JOURNEY_MANIFEST.schema} loads one ${MUGEN_LITE_JOURNEY_MANIFEST.license} ZIP package and proves a lethal imported state asserts NoKOSlow on the KO tick. Exact motif timing, lifebars, KO echoes, teams, and full MUGEN round parity remain blocked.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-lite-journey-nokoslow-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [210],
+      requiredExecutedStates: [210],
+      requiredExecutedControllers: ["AssertSpecial", "ChangeState", "HitDef"],
+      requiredExecutedOperations: ["assertspecial", "hitdef"],
+      requiredActiveCommands: ["finisher"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["hit MUGEN Lite Journey for 1200"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", stateNo: 210, animNo: 210, observedFrameIndex: 0, moveType: "A", minFrames: 1 },
+      ],
+      requiredRoundFrames: [
+        {
+          state: "ko",
+          winner: "MUGEN Lite Journey",
+          message: "MUGEN Lite Journey wins",
+          noKoSlow: true,
+          observedPostRoundFrameAtLeast: 59,
+          observedPlaybackRateAtLeast: 1,
+          observedPlaybackRateAtMost: 1,
+        },
+      ],
+      requiredSoundEvents: [{ actorId: "p2", type: "PlaySnd", group: 11, index: 0, soundPrefix: "f" }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", life: 1000 },
+        { actorId: "p2", source: "imported", life: 0 },
+      ],
+    }],
+  });
+}
+
+async function loadMugenLiteJourneyTraceFighters(): Promise<{ p1: DemoFighterDefinition; p2: DemoFighterDefinition }> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(new File([await createMugenLiteJourneyZipBytes()], "mugen-lite-journey.zip"));
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  const p2 = createImportedFighterDefinition(character);
+  if (!p1 || !p2) throw new Error("MUGEN-lite journey package did not produce runtime fighters");
+  return { p1, p2 };
 }
 
 const SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT = {

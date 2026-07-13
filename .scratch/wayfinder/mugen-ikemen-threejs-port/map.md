@@ -123,6 +123,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Execute active-root motion phase](tickets/097-execute-active-root-motion-phase.md) - explicit Tag normal ticks now promote already-live P3-P8 roots through restricted motion CNS, local kinematics, and animation under an immutable phase snapshot and required trace evidence.
 - [Map active-root presentation promotion](tickets/098-map-active-root-presentation-promotion.md) - draw, shadow, camera, HUD/audio, collision, and reset owners are now separated; the selected first cut is a runtime-owned immediate draw/camera handoff with pair gameplay preserved.
 - [Execute active-root presentation handoff](tickets/099-execute-active-root-presentation-handoff.md) - `RuntimeRootPresentation/v0` now drives P3 body/shadow/camera handoff through trace and desktop/mobile browser proof while pair gameplay/HUD ownership stays stable.
+- [Prove legal MUGEN-lite NoKOSlow browser route](tickets/115-legal-mugen-lite-nokoslow-browser-route.md) - resolved: legal ZIP command/state `210` now proves normal post-KO playback through required trace plus desktop/mobile browser smoke.
 
 ## Frontier
 

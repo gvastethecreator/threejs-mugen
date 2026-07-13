@@ -12,6 +12,7 @@ const DEFAULT_IMPORTED_FIXTURE = ".scratch/fixtures/kfm-official.zip";
 const MUGEN_LITE_FIXTURE_SPRITES = [
   ...[0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200].map((group) => [group, 0]),
   [200, 1],
+  [210, 0],
 ];
 
 const routeParams = `p1=${DEFAULT_P1}&p2=${DEFAULT_P2}&stage=${DEFAULT_STAGE}`;
@@ -153,7 +154,7 @@ async function main() {
         runtimeDesktop: path.join(outDir, "runtime-desktop.png"),
         runtimeMobile: path.join(outDir, "runtime-mobile.png"),
         mugenLiteDesktop: path.join(outDir, "mugen-lite-runtime-desktop.png"),
-    mugenLiteDesktopCanvas: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
+        mugenLiteDesktopCanvas: path.join(outDir, "mugen-lite-runtime-desktop-canvas.png"),
         mugenLiteDesktopAttack: path.join(outDir, "mugen-lite-runtime-desktop-attack.png"),
         mugenLiteDesktopAttackCanvas: path.join(outDir, "mugen-lite-runtime-desktop-attack-canvas.png"),
         mugenLiteDesktopAttackFollowThrough: path.join(outDir, "mugen-lite-runtime-desktop-attack-follow-through.png"),
@@ -185,6 +186,10 @@ async function main() {
         mugenLiteGuard: Object.fromEntries(["desktop", "mobile"].map((viewport) => [viewport, {
           guarded: path.join(outDir, `mugen-lite-runtime-${viewport}-guarded.png`),
           guardedCanvas: path.join(outDir, `mugen-lite-runtime-${viewport}-guarded-canvas.png`),
+        }])),
+        mugenLiteNoKoSlow: Object.fromEntries(["desktop", "mobile"].map((viewport) => [viewport, {
+          finisher: path.join(outDir, `mugen-lite-runtime-${viewport}-nokoslow.png`),
+          finisherCanvas: path.join(outDir, `mugen-lite-runtime-${viewport}-nokoslow-canvas.png`),
         }])),
         tagPresentationDesktop: path.join(outDir, "runtime-tag-presentation-desktop.png"),
         tagPresentationDesktopCanvas: path.join(outDir, "runtime-tag-presentation-desktop-canvas.png"),
@@ -474,7 +479,8 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
   const combat = await captureMugenLiteCombatJourney(page, options);
   const recovery = await captureMugenLiteRecoveryJourney(page, options, combat.importedId);
   const guard = await captureMugenLiteGuardJourney(page, options, combat.importedId);
-  return { ...probe, attack, attackFollowThrough, movement, combat, recovery, guard, returnedToIdle: true };
+  const noKoSlow = await captureMugenLiteNoKoSlowJourney(page, options, combat.importedId);
+  return { ...probe, attack, attackFollowThrough, movement, combat, recovery, guard, noKoSlow, returnedToIdle: true };
 }
 
 async function captureMugenLiteGuardJourney(page, options, importedId) {
@@ -540,6 +546,91 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   });
   return { roster, guarded, returnedToIdle: true };
+}
+
+async function captureMugenLiteNoKoSlowJourney(page, options, importedId) {
+  await changeHiddenSelect(page, '[data-fighter-select="p1"]', importedId);
+  await changeHiddenSelect(page, '[data-fighter-select="p2"]', "nova-boxer");
+  await page.waitForFunction((importedId) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
+    const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
+    return bridge?.project?.entry?.p1 === importedId && bridge.project.entry.p2 === "nova-boxer" &&
+      p1?.source === "imported" && p1.label === "MUGEN Lite Journey" && p2?.source === "demo" && p2.label === "Nova Boxer";
+  }, importedId);
+  const roster = await page.evaluate(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    return {
+      p1: bridge?.project?.entry?.p1,
+      p2: bridge?.project?.entry?.p2,
+      actors: bridge?.snapshot?.actors?.map((actor) => ({ id: actor.id, label: actor.label, source: actor.source, life: actor.runtime.life })) ?? [],
+    };
+  });
+  await page.keyboard.down("ArrowRight");
+  await page.waitForFunction(() => {
+    const actors = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors ?? [];
+    const p1 = actors.find((actor) => actor.id === "p1");
+    const p2 = actors.find((actor) => actor.id === "p2");
+    return p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 140;
+  }, null, { timeout: 5000 });
+  await page.keyboard.up("ArrowRight");
+  await page.waitForFunction(() => {
+    const p1 = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p1");
+    return p1?.runtime?.stateNo === 0 && p1.runtime.ctrl && p1.runtime.life === 1000;
+  }, null, { timeout: 1000 });
+
+  const pauseOnNoKoSlow = page.evaluate(() => new Promise((resolve, reject) => {
+    let lastSnapshot = {};
+    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite NoKOSlow KO was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+    const check = () => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
+      const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
+      const postRound = bridge?.snapshot?.round?.postRound;
+      lastSnapshot = {
+        p1: p1 ? { stateNo: p1.runtime?.stateNo, action: p1.frame?.spriteGroup, life: p1.runtime?.life, guarding: p1.runtime?.guarding } : undefined,
+        p2: p2 ? { stateNo: p2.runtime?.stateNo, action: p2.frame?.spriteGroup, life: p2.runtime?.life, guarding: p2.runtime?.guarding } : undefined,
+        round: bridge?.snapshot?.round,
+      };
+      if (
+        p1?.runtime?.stateNo === 210 &&
+        p1?.frame?.spriteGroup === 210 &&
+        p2?.runtime?.life === 0 &&
+        bridge?.snapshot?.round?.state === "ko" &&
+        postRound?.noKoSlow === true &&
+        postRound.frame >= 4 &&
+        postRound.playbackRate === 1
+      ) {
+        window.clearTimeout(timeout);
+        if (bridge?.snapshot?.playing) document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.setTimeout(check, 4);
+    };
+    check();
+  }));
+  await page.keyboard.down("d");
+  await page.waitForTimeout(80);
+  await page.keyboard.up("d");
+  await pauseOnNoKoSlow;
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
+  const finisher = await captureMugenLiteVisualState(
+    page,
+    path.join(path.dirname(options.screenshotPath), `mugen-lite-runtime-${viewportLabel}-nokoslow.png`),
+    path.join(path.dirname(options.canvasPath), `mugen-lite-runtime-${viewportLabel}-nokoslow-canvas.png`),
+    "p1",
+  );
+  await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
+    const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
+    return bridge?.snapshot?.round?.state === "fight" && p1?.runtime?.life === 1000 && p2?.runtime?.life === 1000 &&
+      p1.runtime.stateNo === 0;
+  }, null, { timeout: 5000 });
+  return { roster, finisher, reset: true };
 }
 
 async function captureMugenLiteRecoveryJourney(page, options, importedId) {
@@ -777,7 +868,12 @@ async function captureMugenLiteVisualState(page, screenshotPath, canvasPath, act
       actorState: actor?.runtime?.stateNo,
       actorLife: actor?.runtime?.life,
       actorGuarding: actor?.runtime?.guarding ?? false,
+      actorAssertSpecial: actor?.runtime?.assertSpecial,
       actorFrame: actor?.frame ? { group: actor.frame.spriteGroup, index: actor.frame.spriteIndex } : null,
+      opponent: bridge?.snapshot?.actors
+        ?.filter((candidate) => candidate.id !== actorId)
+        .map((candidate) => ({ id: candidate.id, source: candidate.source, label: candidate.label, life: candidate.runtime.life })) ?? [],
+      round: bridge?.snapshot?.round,
       sprite: renderedActor?.sprite,
       renderCalls: bridge?.renderer?.render?.calls ?? 0,
       canvasPixels,
@@ -2527,6 +2623,29 @@ function assertSmoke(diagnostics) {
       !probe.guard?.returnedToIdle
     ) {
       failures.push(`mugen-lite visual ${viewport}: guarded imported contact, exact chip, or idle return proof failed`);
+    }
+    const noKoSlow = probe.noKoSlow?.finisher;
+    if (
+      probe.noKoSlow?.roster?.p1 !== probe.combat?.importedId ||
+      probe.noKoSlow?.roster?.p2 !== "nova-boxer" ||
+      probe.noKoSlow?.roster?.actors?.find((actor) => actor.id === "p1")?.source !== "imported" ||
+      probe.noKoSlow?.roster?.actors?.find((actor) => actor.id === "p2")?.source !== "demo" ||
+      noKoSlow?.actorSource !== "imported" ||
+      noKoSlow.actorState !== 210 ||
+      noKoSlow.actorFrame?.group !== 210 ||
+      noKoSlow.actorFrame.index !== 0 ||
+      noKoSlow.actorLife !== 1000 ||
+      !noKoSlow.actorAssertSpecial?.globalFlags?.includes("nokoslow") ||
+      noKoSlow.opponent?.find((actor) => actor.id === "p2")?.life !== 0 ||
+      noKoSlow.round?.state !== "ko" ||
+      !noKoSlow.round?.postRound?.noKoSlow ||
+      noKoSlow.round?.postRound?.frame < 4 ||
+      noKoSlow.round?.postRound?.playbackRate !== 1 ||
+      noKoSlow.spritePixels?.fixtureColorPixels < 50 ||
+      noKoSlow.spritePixels?.fixtureMaskChecksum === probe.attack?.spritePixels?.fixtureMaskChecksum ||
+      !probe.noKoSlow?.reset
+    ) {
+      failures.push(`mugen-lite visual ${viewport}: legal NoKOSlow KO, normal playback, or reset proof failed`);
     }
   }
   const expectedPair = "p1,p2";
