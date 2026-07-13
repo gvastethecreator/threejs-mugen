@@ -200,6 +200,8 @@ describe("RuntimeMatchInteractionWorld", () => {
         resolveDirectCombat(p2, p1);
         resolveDirectCombat(p1, p2);
       },
+      refreshGuardDistance: (defender, attacker) => tag("guard-latch", defender.id, attacker.id),
+      refreshRootGuardDistance: () => tag("root-guard-latch"),
       resolveProjectileCombat: (attacker, defender) => tag("projectile-combat", attacker.id, defender.id),
       log: (line) => tag("log", line),
     });
@@ -216,6 +218,9 @@ describe("RuntimeMatchInteractionWorld", () => {
       "target-bind:p2:p1",
       "bind-to-target:p1:p2",
       "bind-to-target:p2:p1",
+      "guard-latch:p1:p2",
+      "guard-latch:p2:p1",
+      "root-guard-latch",
       "hit-admission",
       "root-priority",
       "priority:p2:p1",

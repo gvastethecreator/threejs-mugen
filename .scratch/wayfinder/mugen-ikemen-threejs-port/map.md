@@ -129,10 +129,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Execute active-root HitOverride route](tickets/116-execute-active-root-hitoverride-route.md) - resolved: active-motion P3-P8 may author ordinary actor-local HitOverride slots, age them once per active tick with an adversarial expiry trace, and redirect an admitted opposing root direct HitDef through existing resolver ownership. Next: map plural automatic guard scheduling or another unblocked root-combat boundary.
 
+- [Execute plural active-root automatic guard scheduling](tickets/117-execute-active-root-auto-guard-scheduling.md) - resolved: active-motion P3-P8 now receive direct-only plural guard-distance latches and existing pre/post auto-guard checks without widening Pair attacker identity; required P2-far/P3<-P4 no-contact trace checksum `5e0aaf61` / final `0221a0e8` passes. Next: map direct guard-contact resolution separately.
+
 ## Frontier
 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md)
-- Map plural active-root automatic guard scheduling.
+- Map active-root direct guard-contact resolution.
 
 ## Not Yet Specified
 

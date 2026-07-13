@@ -22,7 +22,7 @@ export class RuntimeMatchActorAdvanceWorld {
     const seen = new Set(input.runOrder.entries.map((entry) => entry.key));
     for (const entry of input.runOrder.entries) {
       if (entry.kind === "root") {
-        if (input.participationOf(entry.value) === "playable") {
+        if (canRunAutoGuardStart(input.participationOf(entry.value))) {
           input.applyAutoGuardStart(entry.value, input.opponentOf(entry.value), "pre");
         }
       }
@@ -34,7 +34,7 @@ export class RuntimeMatchActorAdvanceWorld {
         const opponent = input.opponentOf(entry.value);
         const participation = input.participationOf(entry.value);
         input.advanceRoot(entry.value, opponent, participation);
-        if (participation === "playable") {
+        if (canRunAutoGuardStart(participation)) {
           input.applyAutoGuardStart(entry.value, opponent, "post");
         }
       } else {
@@ -47,4 +47,8 @@ export class RuntimeMatchActorAdvanceWorld {
     }
     return input.runOrder;
   }
+}
+
+function canRunAutoGuardStart(participation: RuntimeRootAdvancePhase): boolean {
+  return participation === "playable" || participation === "active-motion";
 }

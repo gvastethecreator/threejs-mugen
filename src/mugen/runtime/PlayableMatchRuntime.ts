@@ -124,7 +124,7 @@ import {
   RuntimeRootCnsExecutionWorld,
   type RuntimeRootCnsParticipation,
 } from "./RuntimeRootCnsExecutionSystem";
-import { RuntimeRootAdvancePhaseWorld } from "./RuntimeRootAdvancePhaseSystem";
+import { RuntimeRootAdvancePhaseWorld, type RuntimeRootAdvancePhase } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
 import { RuntimeCollisionOverrideWorld, type RuntimeCollisionOverrideResolver } from "./RuntimeCollisionOverrideSystem";
@@ -718,6 +718,9 @@ export class PlayableMatchRuntime {
     const branchResult = matchTickBranchWorld.advance({
       advanceHitPause: () => {
         schedule.record("branch:hitpause-advance");
+        if (Math.max(this.p1.hitPause, this.p2.hitPause) > 0) {
+          this.clearActiveRootGuardDistanceLatches();
+        }
         const gameSpace = runtimeStageGameSpace(this.stage);
         const result = matchHitPauseWorld.advanceRuntime<FighterMatchState>({
           hitPauseWorld: this.hitPauseWorld,
@@ -759,6 +762,7 @@ export class PlayableMatchRuntime {
       },
       advancePaused: () => {
         schedule.record("pause:advance");
+        this.clearActiveRootGuardDistanceLatches();
         return this.advancePausedMatch(
           input,
           p1Input,
@@ -783,6 +787,7 @@ export class PlayableMatchRuntime {
       refreshRuntimeInGuardDist(this.p1, this.p2, this.guardDistanceWorld, this.tick);
       schedule.record("tick:guard-distance-latch", this.p2.id);
       refreshRuntimeInGuardDist(this.p2, this.p1, this.guardDistanceWorld, this.tick);
+      this.clearActiveRootGuardDistanceLatches();
     }
     schedule.record("tick:restore-superpause-defense");
     this.restoreExpiredSuperPauseTargetDefense();
@@ -805,6 +810,9 @@ export class PlayableMatchRuntime {
       roots: this.characterRoots(),
       playableRoots: [this.p1, this.p2],
     });
+    const activeRootGuardDefenders = this.tagTeamOrder
+      ? this.characterRoots().filter((root) => rootAdvancePhases.phaseOf(root) === "active-motion")
+      : [];
     matchActiveWorld.advance({
       tickRoundTimer: () => {
         recordPhase("active:round-timer");
@@ -889,8 +897,18 @@ export class PlayableMatchRuntime {
             },
             discoverHelpers: () => this.helperRunOrderCandidates(),
             applyAutoGuardStart: (defender, attacker, checkpoint) => {
+              const initialParticipation = rootAdvancePhases.phaseOf(defender);
+              const currentParticipation = this.currentRootAdvancePhaseOf(defender);
+              if (
+                currentParticipation === "bounded-standby" ||
+                (initialParticipation === "active-motion" && currentParticipation !== "active-motion")
+              ) {
+                return;
+              }
               recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
-              applyAutoGuardStart(defender, attacker, this.guardWorld);
+              applyAutoGuardStart(defender, attacker, this.guardWorld, {
+                useAnyLatchedAttacker: initialParticipation === "active-motion",
+              });
             },
           });
         }
@@ -978,6 +996,9 @@ export class PlayableMatchRuntime {
             recordPhase("tick:guard-distance-latch", defender.id);
             refreshRuntimeInGuardDist(defender, attacker, this.guardDistanceWorld, this.tick);
           },
+          refreshRootGuardDistance: this.tagTeamOrder ? () => {
+            this.refreshActiveRootDirectGuardDistance(recordPhase, activeRootGuardDefenders);
+          } : undefined,
           advanceBodyPush: this.tagTeamOrder ? () => {
             const roots = this.characterRoots();
             this.lastRootBodyPush = rootBodyPushWorld.advance({
@@ -1676,6 +1697,50 @@ export class PlayableMatchRuntime {
     ).entries.find((entry) => entry.actorId === fighter.id);
     const selectedId = selection?.p2CandidateIds[0];
     return roots.find((root) => root.id === selectedId) ?? (runtimeTeamSide(fighter) === 1 ? this.p2 : this.p1);
+  }
+
+  private currentRootAdvancePhaseOf(fighter: FighterMatchState): RuntimeRootAdvancePhase {
+    return rootAdvancePhaseWorld.snapshot({
+      runtimeProfile: this.runtimeProfile,
+      teamMode: this.tagTeamOrder ? "tag" : "single",
+      roots: this.characterRoots(),
+      playableRoots: [this.p1, this.p2],
+    }).phaseOf(fighter);
+  }
+
+  private refreshActiveRootDirectGuardDistance(
+    recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+    activeRootGuardDefenders: readonly FighterMatchState[],
+  ): void {
+    const roots = this.characterRoots();
+    const rootsById = new Map(roots.map((root) => [root.id, root]));
+    const currentRootAdvancePhases = rootAdvancePhaseWorld.snapshot({
+      runtimeProfile: this.runtimeProfile,
+      teamMode: this.tagTeamOrder ? "tag" : "single",
+      roots,
+      playableRoots: [this.p1, this.p2],
+    });
+    const selections = rootSelectionWorld.diagnostic(
+      roots.map((root) => ({ id: root.id, ...root.runtime.teamState })),
+    );
+    for (const defender of activeRootGuardDefenders) {
+      recordPhase("tick:guard-distance-latch", defender.id);
+      if (currentRootAdvancePhases.phaseOf(defender) !== "active-motion") {
+        delete defender.runtime.inGuardDist;
+        continue;
+      }
+      const candidateIds = selections.entries.find((entry) => entry.actorId === defender.id)?.p2CandidateIds ?? [];
+      const attackers = candidateIds.flatMap((id) => {
+        const candidate = rootsById.get(id);
+        return candidate ? [candidate] : [];
+      });
+      refreshRuntimeDirectInGuardDist(defender, attackers, this.guardDistanceWorld, this.tick);
+    }
+  }
+
+  private clearActiveRootGuardDistanceLatches(): void {
+    if (!this.tagTeamOrder) return;
+    for (const root of this.reserveRoots) delete root.runtime.inGuardDist;
   }
 
   private applyMatchPauseController(
@@ -2844,6 +2909,7 @@ function applyAutoGuardStart(
   defender: FighterMatchState,
   attacker: FighterMatchState,
   guardWorld: RuntimeGuardWorld,
+  options: { useAnyLatchedAttacker?: boolean } = {},
 ): void {
   autoGuardStartWorld.apply({
     defender,
@@ -2851,7 +2917,7 @@ function applyAutoGuardStart(
     guardWorld,
     hooks: {
       isInGuardDistance: (candidateDefender, candidateAttacker) =>
-        isRuntimeInGuardDistLatched(candidateDefender, candidateAttacker),
+        isRuntimeInGuardDistLatched(candidateDefender, options.useAnyLatchedAttacker ? undefined : candidateAttacker),
       canEnterState: (candidateDefender, stateNo) => canEnterState(candidateDefender, stateNo),
       enterState: (candidateDefender, stateNo, options) => enterState(candidateDefender, stateNo, undefined, options),
     },
@@ -2869,10 +2935,7 @@ function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolea
   return state?.moveType?.toUpperCase() === "H";
 }
 
-function evaluateRuntimeInGuardDist(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-): boolean {
+function evaluateRuntimeInGuardDist(fighter: FighterMatchState, opponent: FighterMatchState): boolean {
   return isRuntimeInGuardDistLatched(fighter, opponent);
 }
 
@@ -2904,8 +2967,39 @@ function refreshRuntimeInGuardDist(
   }
 }
 
-function isRuntimeInGuardDistLatched(defender: FighterMatchState, attacker: FighterMatchState): boolean {
-  return defender.runtime.inGuardDist?.attackerId === attacker.id;
+function refreshRuntimeDirectInGuardDist(
+  defender: FighterMatchState,
+  attackers: readonly FighterMatchState[],
+  guardDistanceWorld: RuntimeGuardDistanceWorld = defaultGuardDistanceWorld,
+  tick = 0,
+): void {
+  const attacker = attackers.find((candidate) =>
+    guardDistanceWorld.isInGuardDistance(
+      {
+        runtime: defender.runtime,
+        hurtBoxes: frameWorld.currentHurtBoxes(defender),
+      },
+      {
+        runtime: candidate.runtime,
+        currentMove: candidate.currentMove,
+        moveTick: candidate.moveTick,
+        hasHit: candidate.hasHit,
+      },
+    ),
+  );
+  if (attacker) {
+    defender.runtime.inGuardDist = {
+      attackerId: attacker.id,
+      source: "direct",
+      observedTick: tick,
+    };
+  } else {
+    delete defender.runtime.inGuardDist;
+  }
+}
+
+function isRuntimeInGuardDistLatched(defender: FighterMatchState, attacker?: FighterMatchState): boolean {
+  return attacker ? defender.runtime.inGuardDist?.attackerId === attacker.id : defender.runtime.inGuardDist !== undefined;
 }
 
 function getCurrentFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {

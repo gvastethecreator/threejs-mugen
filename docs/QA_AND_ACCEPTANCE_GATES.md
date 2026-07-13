@@ -887,6 +887,20 @@ These gates prove:
 
 This proves bounded player active-state `HitPauseTime`/`ignorehitpause` routing and bounded Explod `ignorehitpause`/`pausemovetime`/`supermovetime` actor advance only. Exact MUGEN/IKEMEN pause layering and broad controller tick order remain unsupported.
 
+## Current Active-root Automatic Guard Gate
+
+`pnpm qa:trace` includes required `synthetic-imported-ikemen-active-root-auto-guard.json`.
+
+This gate proves:
+
+- explicit IKEMEN Tag P3/P4 participate in the existing pre/post automatic guard schedule;
+- P3 refreshes a direct `InGuardDist` latch after plural body push and before root hit admission;
+- P2 can author a guardable direct HitDef while deliberately out of range, while P4 becomes P3's direct latch provenance;
+- side-one held-back input reaches P3, which enters state `120` then state `130` through its imported guard route;
+- no hit, guard contact, or HitOverride outcome occurs in the no-contact geometry.
+
+Required trace checksum is `5e0aaf61`; final checksum is `0221a0e8`. This proves direct normal-tick guard-start scheduling only. Projectile/helper threats, nearest-target ordering, Pause/hitpause guard scheduling, guard contact/effects, and broad team parity remain unsupported.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:

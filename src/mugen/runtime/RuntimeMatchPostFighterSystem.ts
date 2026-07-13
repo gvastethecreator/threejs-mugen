@@ -28,6 +28,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
   refreshGuardDistance?: (defender: TActor, attacker: TActor) => void;
+  refreshRootGuardDistance?: () => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
   resolveRootPriorityClashes?: (resolvePriorityClash: (left: TActor, right: TActor) => string | undefined) => void;
@@ -70,6 +71,7 @@ export class RuntimeMatchPostFighterWorld {
       resolveProjectileCombat: combatResolvers.resolveProjectileCombat,
       resolveHelperCombat: combatResolvers.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,
+      refreshRootGuardDistance: input.refreshRootGuardDistance,
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
       resolveRootReversalClashes: input.resolveRootReversalClashes,

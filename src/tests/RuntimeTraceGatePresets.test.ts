@@ -166,6 +166,7 @@ import {
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
   createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact,
+  createSyntheticImportedIkemenActiveRootAutoGuardTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact,
   createSyntheticImportedIkemenActiveRootHitOverrideExpiryTraceArtifact,
   createSyntheticImportedIkemenActiveRootDepthMissTraceArtifact,
@@ -16159,6 +16160,39 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p3", actorId: "p4", targetId: 115 }),
+    );
+  });
+
+  it("creates a required IKEMEN plural active-root automatic guard artifact", () => {
+    const artifact = createSyntheticImportedIkemenActiveRootAutoGuardTraceArtifact({
+      generatedAt: "2026-07-12T00:00:00.000Z",
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.trace.frameCount).toBe(3);
+    expect(artifact.gates[0]?.evidence.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.combatReasons).not.toEqual(expect.arrayContaining(["hit", "guard", "override"]));
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p3",
+          inGuardDistAttackerIds: ["p4"],
+          inGuardDistSources: ["direct"],
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", controller: "HitDef", name: "Active Root HitDef" }),
+        expect.objectContaining({ actorId: "p4", controller: "HitDef", name: "Active Root HitDef" }),
+      ]),
+    );
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p3", life: 1000, stateNo: 130, ctrl: false }),
+        expect.objectContaining({ id: "p4", life: 1000 }),
+      ]),
     );
   });
 

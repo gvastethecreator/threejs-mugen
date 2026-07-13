@@ -726,6 +726,12 @@
 - Individual rows can be regenerated as new imagegen art and inserted with `scripts/replace_atlas_state_from_imagegen_row.py`; this is the preferred fix for bad locomotion poses over cutting or mechanically repairing old frames.
 - The inspector fallback still uses procedural sprites when imported SFF images cannot be decoded.
 
+## Current Active-root Guard Slice
+
+- Explicit IKEMEN Tag active-motion roots now refresh a direct-only plural `InGuardDist` latch after body push and before hit admission, then use the existing imported automatic guard-start checkpoints.
+- Required `synthetic-imported-ikemen-active-root-auto-guard.json` checksum `5e0aaf61` / final `0221a0e8` proves P3 holds side-one back, observes near P4 while P2 is guardable but out of range, enters `120 -> 130`, and takes no contact damage.
+- This is `executed-partial`: projectile/helper threats, nearest-target ranking, Pause/hitpause behavior, direct guard contact/effects, replacement, HUD/audio/resources, and full MUGEN/IKEMEN team guard parity remain unsupported.
+
 ## Not Supported Yet
 
 - Remaining SFF edge cases: SFF v2.1 PNG paths, truecolor palette behavior, broader palette-bank/source semantics, and malformed or unusual encodings.

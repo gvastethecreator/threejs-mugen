@@ -8912,6 +8912,142 @@ export function createSyntheticImportedIkemenActiveRootDirectHitTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenActiveRootAutoGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-active-root-auto-guard-grid",
+    displayName: "Trace Active Root Auto Guard Grid",
+    playerStart: {
+      p1: { x: -95, y: 0, facing: 1 },
+      p2: { x: 180, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "near P4 observes direct guard distance while P2 remains far", p1: ["B"], p2: [], frames: 1 },
+    { label: "latched active P3 enters and settles automatic guard", p1: ["B"], p2: [], frames: 2 },
+  ]);
+  const pairDefender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-auto-guard-pair-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Auto Guard Pair Defender",
+    withHitDef: false,
+    passiveNotHitBy: "S,NA",
+  });
+  const pairAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-auto-guard-pair-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Auto Guard Pair Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 119, guardDistance: 112, clsn1Extent: 36, posX: 180 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-auto-guard-defender",
+    displayName: "Synthetic Imported IKEMEN Active Root Auto Guard Defender",
+    withHitDef: false,
+    withAutoGuardStartStates: true,
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-active-root-auto-guard-attacker",
+    displayName: "Synthetic Imported IKEMEN Active Root Auto Guard Attacker",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 37, targetId: 118, guardDistance: 112, clsn1Extent: 36, posX: 55 },
+  });
+  const world = new MatchWorld({
+    p1: pairDefender,
+    p2: pairAttacker,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [defender, attacker],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-active-root-auto-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-active-root-auto-guard-golden",
+      label: "Synthetic imported IKEMEN plural active-root automatic guard",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves held side-one input reaches active-motion P3, direct P4 guard distance becomes a prior-tick P3 latch even while primary P2 is far, and the existing pre/post automatic guard route enters 120 then 130 without contact. It does not claim projectile/helper guard distance, nearest-target ordering, Pause/hitpause scheduling, guard contact/effects, or full parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-active-root-auto-guard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [120, 130],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["holdback"],
+        forbiddenCombatReasons: ["hit", "guard", "override"],
+        requiredControllerEventSequences: [
+          {
+            label: "far P2 keeps a guardable direct HitDef active",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 0, controller: "HitDef", name: "Active Root HitDef" }],
+          },
+          {
+            label: "near P4 keeps a guardable direct HitDef active",
+            actorId: "p4",
+            allowSameTick: true,
+            steps: [{ stateNo: 0, controller: "HitDef", name: "Active Root HitDef" }],
+          },
+          {
+            label: "active P3 settles its existing automatic guard state",
+            actorId: "p3",
+            allowSameTick: true,
+            steps: [{ stateNo: 120, controller: "ChangeState", name: "Guard Start Done" }],
+          },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "P3 direct latch follows post-push pair latches", frameIndex: 0, phase: "tick:guard-distance-latch", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P3 joins the full pre-controller active-root guard pass", frameIndex: 0, phase: "fighter:auto-guard-check:pre", actorIds: ["p1", "p2", "p3", "p4"] },
+          { label: "P3 joins the full post-controller active-root guard pass", frameIndex: 0, phase: "fighter:auto-guard-check:post", actorIds: ["p1", "p2", "p3", "p4"] },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 120,
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            teamStandby: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 130,
+            inGuardDistAttackerId: "p4",
+            inGuardDistSource: "direct",
+            teamStandby: false,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000, stateNo: 130, ctrl: false },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenActiveRootHitOverrideTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -41807,6 +41943,7 @@ export type SyntheticImportedTraceFighterOptions = {
   activeRootHitDefRoute?: {
     damage: number;
     targetId: number;
+    guardDistance?: number;
     priority?: number;
     priorityType?: "Hit" | "Miss" | "Dodge";
     clsn1Extent?: number;
@@ -47266,6 +47403,7 @@ pausetime = 0, 0
 ground.hittime = 8
 ground.velocity = 0, 0
 guardflag = MA
+${route.guardDistance === undefined ? "" : `guard.dist = ${route.guardDistance}\n`}
 `;
 }
 

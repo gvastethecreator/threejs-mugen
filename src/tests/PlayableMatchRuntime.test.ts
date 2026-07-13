@@ -190,12 +190,15 @@ describe("PlayableMatchRuntime", () => {
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
     ).toEqual([
+      "fighter:auto-guard-check:pre",
       "fighter:controllers",
       "fighter:kinematics",
       "fighter:animation",
       "fighter:constraints",
+      "fighter:auto-guard-check:post",
       "post-fighter:target-maintenance",
       "post-fighter:body-push",
+      "tick:guard-distance-latch",
       "post-fighter:hit-admission",
       "post-fighter:hitdef-contact-commit",
     ]);
@@ -245,12 +248,15 @@ describe("PlayableMatchRuntime", () => {
         .filter(({ actorId }) => actorId === "p3")
         .map(({ id }) => id),
     ).toEqual([
+      "fighter:auto-guard-check:pre",
       "fighter:controllers",
       "fighter:kinematics",
       "fighter:animation",
       "fighter:constraints",
+      "fighter:auto-guard-check:post",
       "post-fighter:target-maintenance",
       "post-fighter:body-push",
+      "tick:guard-distance-latch",
       "post-fighter:hit-admission",
       "post-fighter:hitdef-contact-commit",
     ]);
@@ -287,6 +293,234 @@ describe("PlayableMatchRuntime", () => {
       ),
     ).toBe(false);
     expect(snapshot.tickSchedule?.phases.some(({ id }) => id === "post-fighter:hitdef-contact-commit")).toBe(false);
+  });
+
+  it("clears active Tag guard latches before paused reserve CNS can read them", () => {
+    const reserve = createTagMotionReserve("y", 4);
+    const trapStates = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[State 0, Stale Guard Latch Trap]
+type = ChangeState
+trigger1 = InGuardDist
+value = 2792
+
+[Statedef 2792]
+type = S
+movetype = I
+physics = S
+anim = 2792
+ctrl = 0
+`).states;
+    const trapState = trapStates.find((state) => state.id === 0)!;
+    const observedState = trapStates.find((state) => state.id === 2792)!;
+    reserve.states = [
+      ...(reserve.states ?? []).map((state) =>
+        state.id === 0 ? { ...state, controllers: [...state.controllers, ...trapState.controllers] } : state,
+      ),
+      observedState,
+    ];
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withPause: true }),
+      demoFighters[1]!,
+      trainingStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [reserve],
+      },
+    );
+
+    runtime.step({ p1: new Set(["x", "y"]), p2: new Set() });
+    const internals = runtime as unknown as { reserveRoots: Array<{ runtime: { inGuardDist?: unknown } }> };
+    internals.reserveRoots[0]!.runtime.inGuardDist = { attackerId: "p2", source: "direct", observedTick: 1 };
+
+    const paused = runtime.step({ p1: new Set(), p2: new Set() });
+    const p3 = paused.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(paused.tickSchedule?.branch).toBe("pause");
+    expect(p3.runtime.stateNo).toBe(0);
+    expect(p3.runtime.inGuardDist).toBeUndefined();
+  });
+
+  it("clears active Tag guard latches during global HitPause", () => {
+    const reserve = createTagMotionReserve("y", 4);
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(
+      createHitPauseIgnoreControllerFixture(false, true),
+      demoFighters[1]!,
+      closeStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [reserve],
+      },
+    );
+
+    runtime.step({ p1: new Set(["x", "y"]), p2: new Set() });
+    const internals = runtime as unknown as { reserveRoots: Array<{ runtime: { inGuardDist?: unknown } }> };
+    internals.reserveRoots[0]!.runtime.inGuardDist = { attackerId: "p2", source: "direct", observedTick: 1 };
+
+    const frozen = runtime.step({ p1: new Set(), p2: new Set() });
+    const p3 = frozen.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(frozen.tickSchedule?.branch).toBe("hitpause");
+    expect(p3.runtime.stateNo).toBe(0);
+    expect(p3.runtime.inGuardDist).toBeUndefined();
+  });
+
+  it("keeps Pair guard latches bound to their selected opponent after a Tag target handoff", () => {
+    const guardStates = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[Statedef 120]
+type = S
+movetype = I
+physics = S
+anim = 120
+ctrl = 0
+
+[Statedef 2793]
+type = S
+movetype = I
+physics = S
+anim = 2793
+ctrl = 0
+
+[State 0, Pair Guard Latch Trap]
+type = ChangeState
+trigger1 = InGuardDist
+value = 2793
+`).states;
+    const guardDefender = createImportedFixture({
+      id: "pair-guard-latch-defender",
+      withStateMove: false,
+    });
+    const stateZero = guardStates.find((state) => state.id === 0)!;
+    guardDefender.states = [
+      ...(guardDefender.states ?? []).map((state) =>
+        state.id === 0 ? { ...state, controllers: [...state.controllers, ...stateZero.controllers] } : state,
+      ),
+      ...guardStates.filter((state) => state.id !== 0),
+    ];
+    const pairAttacker = createImportedFixture({
+      id: "pair-guard-latch-attacker",
+      withStateMove: true,
+      guardFlag: "MA",
+      guardDistance: 112,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(guardDefender, pairAttacker, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[1]!],
+    });
+
+    const latched = runtime.step({ p1: new Set(["B"]), p2: new Set(["x"]) });
+    expect(latched.actors.find(({ id }) => id === "p1")?.runtime.inGuardDist?.attackerId).toBe("p2");
+
+    runtime.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p2", standby: true },
+        { id: "p3", standby: false },
+      ],
+    });
+    const handedOff = runtime.step({ p1: new Set(["B"]), p2: new Set() });
+
+    const p1 = handedOff.actors.find(({ id }) => id === "p1")!;
+    expect(p1.runtime.stateNo).not.toBe(120);
+    expect(p1.runtime.stateNo).not.toBe(2793);
+  });
+
+  it("clears post-fighter guard latches when an active Tag root tags out during its controller pass", () => {
+    const trapStates = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[Statedef 2794]
+type = S
+movetype = I
+physics = S
+anim = 2794
+ctrl = 0
+
+[State 0, Standby Guard Latch Trap]
+type = ChangeState
+trigger1 = InGuardDist
+value = 2794
+`).states;
+    const reserve = createImportedFixture({
+      id: "active-root-tagout-guard-latch",
+      withStateMove: false,
+      passiveTagController: "TagOut",
+    });
+    const trapState = trapStates.find((state) => state.id === 0)!;
+    reserve.states = [
+      ...(reserve.states ?? []).map((state) =>
+        state.id === 0 ? { ...state, controllers: [...state.controllers, ...trapState.controllers] } : state,
+      ),
+      trapStates.find((state) => state.id === 2794)!,
+    ];
+    const attacker = createImportedFixture({
+      id: "active-root-tagout-guard-latch-attacker",
+      withStateMove: true,
+      guardFlag: "MA",
+      guardDistance: 112,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve, attacker],
+    });
+    runtime.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p3", standby: false },
+        { id: "p4", standby: false },
+      ],
+    });
+
+    const taggedOut = runtime.step({ p1: new Set(["B"]), p2: new Set(["x"]) });
+    const firstP3 = taggedOut.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(firstP3.runtime.teamState?.standby).toBe(true);
+    expect(firstP3.runtime.inGuardDist).toBeUndefined();
+
+    const standby = runtime.step({ p1: new Set(), p2: new Set() });
+    const secondP3 = standby.reserveActors?.find(({ id }) => id === "p3")!;
+    expect(secondP3.runtime.stateNo).toBe(0);
+    expect(secondP3.runtime.inGuardDist).toBeUndefined();
   });
 
   it("keeps active Tag reserve motion disabled during global HitPause ticks", () => {
@@ -4989,6 +5223,7 @@ function createImportedFixture(
     guardDamage?: number;
     guardKill?: boolean;
     guardFlag?: string;
+    guardDistance?: number;
     guardSlideTime?: number;
     guardControlTime?: number;
     passiveNotHitBy?: string;
@@ -5100,6 +5335,7 @@ sparkxy = 10,-72
     options.guardFlag !== undefined
       ? `
 guardflag = ${options.guardFlag}
+${options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`}
 ${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
 guard.pausetime = 4,4
 guard.hittime = 9

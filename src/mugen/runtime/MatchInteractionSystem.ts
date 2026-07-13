@@ -46,6 +46,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   applyTargetBindings: (fighter: TFighter, candidates: TFighter[]) => void;
   applyBindToTarget: (fighter: TFighter, candidates: TFighter[]) => void;
   refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
+  refreshRootGuardDistance?: () => void;
   resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
   resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
   resolveRootPriorityOutcomes?: (resolveEqualPriorityOutcomes: (actors: readonly TFighter[]) => number) => void;
@@ -96,6 +97,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
     refreshGuardDistance?: (defender: TFighter, attacker: TFighter) => void;
+    refreshRootGuardDistance?: () => void;
     advanceBodyPush?: () => void;
     inspectHitAdmission?: () => void;
     resolveRootReversalClashes?: (resolveReversalClash: (reverser: TFighter, getter: TFighter) => void) => void;
@@ -132,6 +134,7 @@ export class RuntimeMatchInteractionWorld {
     }
     input.refreshGuardDistance?.(p1, p2);
     input.refreshGuardDistance?.(p2, p1);
+    input.refreshRootGuardDistance?.();
     input.inspectHitAdmission?.();
 
     input.recordSchedulePhase?.("post-fighter:combat");
@@ -222,6 +225,7 @@ export class RuntimeMatchInteractionWorld {
       resolveProjectileCombat: input.resolveProjectileCombat,
       resolveHelperCombat: input.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,
+      refreshRootGuardDistance: input.refreshRootGuardDistance,
       recordTargetMaintenance: input.recordTargetMaintenance,
       recordSchedulePhase: input.recordSchedulePhase,
       clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage, fighter.definition?.localCoord),

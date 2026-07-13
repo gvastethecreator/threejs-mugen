@@ -86,6 +86,8 @@ describe("RuntimeMatchPostFighterWorld", () => {
       helperStateHooks: helperStateHooks as never,
       defaultHurtBoxes,
       rememberProjectileTarget: (source, target, entry) => calls.push(`remember:${source.id}:${target.id}:${entry.serialId}`),
+      refreshGuardDistance: (defender, attacker) => calls.push(`guard-latch:${defender.id}:${attacker.id}`),
+      refreshRootGuardDistance: () => calls.push("root-guard-latch"),
       log: (line) => calls.push(`log:${line}`),
     });
 
@@ -101,6 +103,9 @@ describe("RuntimeMatchPostFighterWorld", () => {
       "target-bind:p2:p1",
       "bind-to-target:p1:p2",
       "bind-to-target:p2:p1",
+      "guard-latch:p1:p2",
+      "guard-latch:p2:p1",
+      "root-guard-latch",
       "priority:p1:p2:direct-world",
       "log:priority-log",
       "direct:p1:p2:91:combat-hooks",

@@ -95,7 +95,7 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
     ]);
   });
 
-  it("advances active-motion roots without auto-guard ownership", () => {
+  it("runs automatic guard checkpoints for active-motion roots", () => {
     const calls: string[] = [];
     const p1 = { id: "p1" };
     const p2 = { id: "p2" };
@@ -119,11 +119,13 @@ describe("RuntimeMatchActorAdvanceWorld", () => {
     expect(calls).toEqual([
       "guard:pre:p1",
       "guard:pre:p2",
+      "guard:pre:p3",
       "root:p1:playable",
       "guard:post:p1",
       "root:p2:playable",
       "guard:post:p2",
       "root:p3:active-motion",
+      "guard:post:p3",
     ]);
   });
 });
