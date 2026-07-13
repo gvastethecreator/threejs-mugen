@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 496 - RuntimeTeamRoundDecision/v0 read model
+
+Done: `RuntimeTeamRoundDecisionWorld/v0` now exposes explicit Single/Simul/Tag/Turns
+policy facts without mutating the pair-owned round. Actor KO, `overKo`, side
+defeat, winner side, `LoseOnKO`, and explicit healthy standby replacement
+candidates remain separate; `RoundNotOver` blocks only the global outcome while
+preserving side facts. Helpers, duplicates, unknown sides, invalid life values,
+and malformed replacement shape produce deterministic diagnostics. Focused
+coverage is added in `RuntimeTeamRoundDecisionSystem.test.ts`; the read model is
+exposed through `RuntimeMatchRoundWorld`. Focused verification passes 2 files /
+17 tests; full verification passes 195 files / 2009 tests, TypeScript 7
+typecheck, production build (274 modules; JS 1,707.70 kB / gzip 429.63 kB),
+581/581 traces (547 required, 34 optional), boundaries, and diff hygiene.
+Browser smoke is N/A because no visible surface changed. Claim allowed: bounded
+read-only team round decisions. Claim blocked: ordered KO/handoff traces,
+replacement mutation, exact Simul/Tag/Turns timing, lifebars/resources, scores,
+rollback, and full MUGEN/IKEMEN parity. See Wayfinder 135, ADR 0004, and the
+research note dated 2026-07-13.
+
 ## Entry 495 - RuntimeGlobalAssertSpecial/v0 ownership
 
 Done: `RuntimeGlobalAssertSpecialWorld/v0` now reduces recognized global
