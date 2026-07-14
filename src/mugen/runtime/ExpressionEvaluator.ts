@@ -669,13 +669,13 @@ class ExpressionParser {
       return this.context.self.runOrder ?? -1;
     }
     if (lower === "roundno") {
-      return 1;
+      return this.context.self.roundNo ?? 1;
     }
     if (lower === "roundstate") {
       return 2;
     }
     if (lower === "roundsexisted" || lower === "matchover") {
-      return 0;
+      return lower === "roundsexisted" ? (this.context.self.roundsExisted ?? 0) : (this.context.self.matchOver ? 1 : 0);
     }
     if (lower === "teamside") {
       return Math.max(0, Math.trunc(this.context.teamSide ?? 0));

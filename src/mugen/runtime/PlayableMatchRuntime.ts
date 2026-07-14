@@ -159,6 +159,10 @@ import {
   RuntimeRoundState5900World,
   type RuntimeRoundState5900Snapshot,
 } from "./RuntimeRoundState5900System";
+import {
+  RuntimeRoundContextWorld,
+  type RuntimeRoundContextSnapshot,
+} from "./RuntimeRoundContextSystem";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
 import {
@@ -353,6 +357,7 @@ export type MatchRuntimeCommand =
 export type RuntimeNextRoundResult = RuntimeRoundResourceResetResult & {
   applied: boolean;
   matchOutcome: RuntimeMatchOutcomeResult;
+  roundContext: RuntimeRoundContextSnapshot;
   state5900: RuntimeRoundState5900Snapshot;
 };
 
@@ -470,6 +475,8 @@ export class PlayableMatchRuntime {
   private readonly roundResourceResetWorld = new RuntimeRoundResourceResetWorld();
   private readonly matchOutcome: RuntimeMatchOutcomeSystem;
   private readonly roundState5900World = new RuntimeRoundState5900World();
+  private readonly roundContextWorld = new RuntimeRoundContextWorld();
+  private lastRoundContext: RuntimeRoundContextSnapshot;
   private lastRoundState5900?: RuntimeRoundState5900Snapshot;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
@@ -562,6 +569,8 @@ export class PlayableMatchRuntime {
       [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
       this.runtimeProfile === "ikemen-go" && this.teamRoundMode === "tag" ? "tag" : "single",
     );
+    this.lastRoundContext = this.roundContextWorld.reset(this.characterRoots().map(({ id }) => ({ id })));
+    this.applyRoundContext(this.lastRoundContext);
     this.resetTeamResourceBanks();
     this.attachHelperHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
@@ -2355,9 +2364,11 @@ export class PlayableMatchRuntime {
   reset(): void {
     this.resetRuntimeState();
     this.matchOutcome.reset();
+    this.lastRoundContext = this.roundContextWorld.reset(this.characterRoots().map(({ id }) => ({ id })));
+    this.applyRoundContext(this.lastRoundContext);
   }
 
-  private resetRuntimeState(): void {
+  private resetRuntimeState(options: { preserveRound?: boolean } = {}): void {
     this.restoreExpiredSuperPauseTargetDefense(true);
     this.tagTeamOrder?.reset();
     const resetState = this.matchResetWorld.reset({
@@ -2368,6 +2379,7 @@ export class PlayableMatchRuntime {
       p1Start: this.stage.playerStart.p1,
       p2Start: this.stage.playerStart.p2,
       round: this.round,
+      resetRound: options.preserveRound !== true,
       roundTimerFrames: this.roundTimerFrames,
       pauseWorld: this.pauseWorld,
       envColorWorld: this.envColorWorld,
@@ -2423,6 +2435,18 @@ export class PlayableMatchRuntime {
       nextRoundNo: this.round.currentRoundNo + 1,
     });
     const state5900 = this.roundState5900World.prepare(roots.map(roundState5900Actor));
+    const roundContextPlan = this.roundContextWorld.prepareNextRound(plan.nextRoundNo, roots.map(({ id }) => ({ id })));
+    if (!roundContextPlan.applied) {
+      const matchOutcome = this.matchOutcome.blocked("round-context-unavailable");
+      return {
+        ...plan,
+        applied: false,
+        diagnostics: [...plan.diagnostics, ...roundContextPlan.diagnostics],
+        matchOutcome,
+        roundContext: roundContextPlan.snapshot,
+        state5900,
+      };
+    }
     if (!this.round.isOver) {
       const matchOutcome = this.matchOutcome.blocked("round-not-over");
       return {
@@ -2430,18 +2454,22 @@ export class PlayableMatchRuntime {
         applied: false,
         diagnostics: [...plan.diagnostics, "round-not-over"],
         matchOutcome,
+        roundContext: this.lastRoundContext,
         state5900,
       };
     }
 
     const matchOutcome = this.matchOutcome.recordRound(winnerRoot ? runtimeTeamSide(winnerRoot) : undefined);
     if (matchOutcome.matchOver) {
+      this.lastRoundContext = this.roundContextWorld.snapshot(true, ["match-over"]);
+      this.applyRoundContext(this.lastRoundContext);
       this.logs.unshift(`Match over; side ${matchOutcome.winnerSide} wins`);
       return {
         ...plan,
         applied: false,
         diagnostics: [...plan.diagnostics, "match-over"],
         matchOutcome,
+        roundContext: this.lastRoundContext,
         state5900,
       };
     }
@@ -2454,11 +2482,13 @@ export class PlayableMatchRuntime {
     );
     const matchTick = this.tick;
     const matchFrameClock = this.frameClock;
-    this.resetRuntimeState();
+    this.resetRuntimeState({ preserveRound: true });
     this.tick = matchTick;
     this.frameClock = matchFrameClock;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
     this.round.startNextRound(this.roundTimerFrames);
+    this.lastRoundContext = this.roundContextWorld.commit(roundContextPlan);
+    this.applyRoundContext(this.lastRoundContext);
 
     const stateByActorId = new Map(plan.states.map((state) => [state.actorId, state]));
     for (const root of this.characterRoots()) {
@@ -2490,6 +2520,7 @@ export class PlayableMatchRuntime {
       ...plan,
       applied: true,
       matchOutcome,
+      roundContext: this.lastRoundContext,
       state5900,
     };
   }
@@ -2499,6 +2530,9 @@ export class PlayableMatchRuntime {
     if (this.matchOutcome.roundsExisted > 0 || this.matchOutcome.isOver) {
       round.match = this.matchOutcome.snapshot();
     }
+    if (this.lastRoundContext.roundNo > 1 || this.lastRoundContext.matchOver) {
+      round.roundContext = this.lastRoundContext;
+    }
     if (this.lastRoundState5900) {
       round.state5900 = this.lastRoundState5900;
     }
@@ -2507,6 +2541,17 @@ export class PlayableMatchRuntime {
       round.message = `Match over - ${winnerLabel}`;
     }
     return round;
+  }
+
+  private applyRoundContext(context: RuntimeRoundContextSnapshot): void {
+    const byActorId = new Map(context.actors.map((actor) => [actor.actorId, actor]));
+    for (const root of this.characterRoots()) {
+      const actor = byActorId.get(root.id);
+      if (!actor) continue;
+      root.runtime.roundNo = actor.roundNo;
+      root.runtime.roundsExisted = actor.roundsExisted;
+      root.runtime.matchOver = context.matchOver;
+    }
   }
 
   private createFighterState(

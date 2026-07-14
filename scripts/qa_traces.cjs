@@ -416,6 +416,11 @@ async function main() {
       artifact: presets.createSyntheticImportedMatchOutcomeState5900TraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-round-context-sequence",
+      required: true,
+      artifact: presets.createSyntheticImportedRoundContextSequenceTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-team-resource-superpause",
       required: true,
       artifact: presets.createSyntheticImportedTeamResourceSuperPauseTraceArtifact(),

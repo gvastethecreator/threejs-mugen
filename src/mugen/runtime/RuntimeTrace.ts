@@ -58,6 +58,9 @@ export type RuntimeTraceActor = {
   guardPoints?: number;
   dizzyPoints?: number;
   redLife?: number;
+  roundNo?: number;
+  roundsExisted?: number;
+  matchOver?: boolean;
   superPauseDefenseMultiplier?: number;
   teamStandby?: true;
   effectiveCtrl?: false;
@@ -494,6 +497,9 @@ export type RuntimeTraceFinalActorRequirement = {
   guardPoints?: number;
   dizzyPoints?: number;
   redLife?: number;
+  roundNo?: number;
+  roundsExisted?: number;
+  matchOver?: boolean;
   ctrl?: boolean;
   stateType?: string;
   moveType?: string;
@@ -801,6 +807,9 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "guardPoints"
   | "dizzyPoints"
   | "redLife"
+  | "roundNo"
+  | "roundsExisted"
+  | "matchOver"
   | "ctrl"
   | "stateType"
   | "moveType"
@@ -2991,6 +3000,9 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     ...(actor.guardPoints === undefined ? {} : { guardPoints: actor.guardPoints }),
     ...(actor.dizzyPoints === undefined ? {} : { dizzyPoints: actor.dizzyPoints }),
     ...(actor.redLife === undefined ? {} : { redLife: actor.redLife }),
+    ...(actor.roundNo === undefined ? {} : { roundNo: actor.roundNo }),
+    ...(actor.roundsExisted === undefined ? {} : { roundsExisted: actor.roundsExisted }),
+    ...(actor.matchOver === undefined ? {} : { matchOver: actor.matchOver }),
     ctrl: actor.ctrl,
     stateType: actor.stateType,
     moveType: actor.moveType,
@@ -3917,6 +3929,13 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     ...(actor.runtime.redLife === undefined || actor.runtime.redLife === 0
       ? {}
       : { redLife: roundTraceNumber(actor.runtime.redLife) }),
+    ...(actor.runtime.roundNo === undefined || (actor.runtime.roundNo <= 1 && !actor.runtime.matchOver)
+      ? {}
+      : {
+          roundNo: actor.runtime.roundNo,
+          roundsExisted: actor.runtime.roundsExisted,
+          matchOver: actor.runtime.matchOver,
+        }),
     superPauseDefenseMultiplier:
       actor.runtime.superPauseDefenseMultiplier === undefined
         ? undefined
@@ -4043,6 +4062,9 @@ function summarizeActorForChecksum(
   | "prevMoveType"
   | "runOrder"
   | "hitPause"
+  | "roundNo"
+  | "roundsExisted"
+  | "matchOver"
   | "targetCount"
   | "effect"
   | "bodyWidth"
@@ -4069,6 +4091,9 @@ function summarizeActorForChecksum(
     prevMoveType: _prevMoveType,
     runOrder: _runOrder,
     hitPause: _hitPause,
+    roundNo: _roundNo,
+    roundsExisted: _roundsExisted,
+    matchOver: _matchOver,
     guardPoints,
     dizzyPoints,
     targetCount: _targetCount,

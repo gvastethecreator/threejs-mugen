@@ -20,6 +20,7 @@ export type RuntimeMatchResetInput<TActor extends object, TDefinition> = {
   p1Start: RuntimeMatchResetFighterStart;
   p2Start: RuntimeMatchResetFighterStart;
   round: RuntimeMatchResetRound;
+  resetRound?: boolean;
   roundTimerFrames?: number;
   pauseWorld: RuntimeMatchResettableWorld;
   envColorWorld: RuntimeMatchResettableWorld;
@@ -43,7 +44,9 @@ export type RuntimeMatchResetResult = {
 
 export class RuntimeMatchResetWorld {
   reset<TActor extends object, TDefinition>(input: RuntimeMatchResetInput<TActor, TDefinition>): RuntimeMatchResetResult {
-    input.round.reset(input.roundTimerFrames);
+    if (input.resetRound !== false) {
+      input.round.reset(input.roundTimerFrames);
+    }
     input.pauseWorld.reset();
     input.envColorWorld.reset();
     input.effectActorWorld.reset();

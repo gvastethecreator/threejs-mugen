@@ -6,6 +6,7 @@ import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem"
 import type { RuntimeCollisionOverride } from "./RuntimeCollisionOverrideSystem";
 import type { CommandInputHistorySample } from "./CommandBuffer";
 import type { RuntimeMatchOutcomeSnapshot } from "./RuntimeMatchOutcomeSystem";
+import type { RuntimeRoundContextSnapshot } from "./RuntimeRoundContextSystem";
 import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900System";
 import type {
   RuntimeHitDefPriorityProfile,
@@ -90,6 +91,9 @@ export type CharacterRuntimeState = {
   prevMoveType?: "I" | "A" | "H";
   runOrder?: number;
   stateNo: number;
+  roundNo?: number;
+  roundsExisted?: number;
+  matchOver?: boolean;
   animNo: number;
   animTime: number;
   frameIndex: number;
@@ -525,6 +529,7 @@ export type RoundSnapshot = {
   winner?: string;
   message: string;
   match?: RuntimeMatchOutcomeSnapshot;
+  roundContext?: RuntimeRoundContextSnapshot;
   state5900?: RuntimeRoundState5900Snapshot;
   postRound?: {
     schema: "RuntimePostRound/v0";

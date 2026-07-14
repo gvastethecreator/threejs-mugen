@@ -596,6 +596,7 @@ import {
   createSyntheticImportedTeamRedLifeShareTraceArtifact,
   createSyntheticImportedRedLifeRoundResetTraceArtifact,
   createSyntheticImportedMatchOutcomeState5900TraceArtifact,
+  createSyntheticImportedRoundContextSequenceTraceArtifact,
   createSyntheticImportedHelperLocalResourceTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
@@ -3059,6 +3060,25 @@ describe("RuntimeTraceGatePresets", () => {
       match: { matchWins: 2, wins: { 1: 1, 2: 0 }, matchOver: false },
     });
     expect(artifact.trace.finalActors.map((actor) => actor.stateNo)).toEqual([5900, 5900]);
+  });
+
+  it("proves per-root round context across a three-round imported sequence", () => {
+    const artifact = createSyntheticImportedRoundContextSequenceTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-round-context-sequence-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-round-context-sequence-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.frames.at(-1)?.round).toMatchObject({
+      roundNo: 3,
+      roundsExisted: 2,
+      match: { matchWins: 3, wins: { 1: 2, 2: 0 }, matchOver: false },
+    });
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", roundNo: 3, roundsExisted: 2, matchOver: false }),
+      expect.objectContaining({ id: "p2", roundNo: 3, roundsExisted: 2, matchOver: false }),
+    ]));
   });
 
   it("proves SuperPause poweradd reaches only the shared power bank", () => {

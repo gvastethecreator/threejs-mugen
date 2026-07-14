@@ -3231,6 +3231,40 @@ ctrl = 0
     expect(runtime.getSnapshot().round).not.toHaveProperty("state5900");
   });
 
+  it("publishes per-root round context and evaluates RoundNo/RoundsExisted in CNS", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      passiveVarSet: { trigger: "RoundNo = 2 && RoundsExisted = 1 && MatchOver = 0", index: 7, value: 1 },
+    });
+    const runtime = new PlayableMatchRuntime(imported, imported, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 1,
+      matchWins: 3,
+    });
+
+    const firstOver = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(firstOver.round?.state).toBe("timeover");
+    expect(firstOver.round?.roundNo).toBeUndefined();
+    const secondRound = runtime.startNextRound();
+    expect(secondRound.roundContext).toMatchObject({ roundNo: 2, roundsExisted: 1, matchOver: false });
+    expect(secondRound.roundContext.actors).toEqual([
+      { actorId: "p1", roundNo: 2, roundsExisted: 1, joinedRoundNo: 1 },
+      { actorId: "p2", roundNo: 2, roundsExisted: 1, joinedRoundNo: 1 },
+    ]);
+
+    const secondOver = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(secondOver.round).toMatchObject({ roundNo: 2, roundsExisted: 1 });
+    expect(secondOver.actors.every((actor) => actor.runtime.roundNo === 2)).toBe(true);
+    expect(secondOver.actors.every((actor) => actor.runtime.roundsExisted === 1)).toBe(true);
+    expect(secondOver.actors.every((actor) => actor.runtime.vars[7] === 1)).toBe(true);
+
+    const thirdRound = runtime.startNextRound();
+    expect(thirdRound.roundContext).toMatchObject({ roundNo: 3, roundsExisted: 2, matchOver: false });
+    expect(runtime.getSnapshot().round).toMatchObject({ roundNo: 3, roundsExisted: 2 });
+    expect(runtime.getSnapshot().actors.every((actor) => actor.runtime.roundNo === 3)).toBe(true);
+    expect(runtime.getSnapshot().actors.every((actor) => actor.runtime.roundsExisted === 2)).toBe(true);
+  });
+
   it("stops the next-round route after the configured match win", () => {
     const attacker = createImportedFixture({
       id: "match-over-attacker",

@@ -3022,6 +3022,109 @@ ctrl = 0
   });
 }
 
+export function createSyntheticImportedRoundContextSequenceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = "synthetic-imported-round-context-sequence-golden";
+  const state5900 = parseCns(`
+[Statedef 5900]
+type = S
+movetype = I
+physics = S
+anim = 5900
+ctrl = 0
+
+[State 5900, Return to Stand]
+type = ChangeState
+trigger1 = Time >= 1
+value = 0
+ctrl = 1
+`).states[0]!;
+  const withState5900 = (fighter: DemoFighterDefinition): DemoFighterDefinition => ({
+    ...fighter,
+    states: [...(fighter.states ?? []), state5900],
+    animations: new Map([...fighter.animations, [5900, traceAction(5900)] as const]),
+  });
+  const p1 = withState5900(createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-round-context-sequence-p1",
+    displayName: "Synthetic Imported Round Context Sequence P1",
+    hitDefDamage: 1200,
+  }));
+  const p2 = withState5900(createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-round-context-sequence-p2",
+    displayName: "Synthetic Imported Round Context Sequence P2",
+    withHitDef: false,
+  }));
+  const script = expandRuntimeTraceScript([
+    { label: "round-1-ko-press", frames: 1, p1: ["x"], p2: [] },
+    { label: "round-1-post-ko", frames: 400, p1: [], p2: [] },
+    { label: "round-2-ko-press", frames: 1, p1: ["x"], p2: [] },
+    { label: "round-2-post-ko", frames: 400, p1: [], p2: [] },
+    { label: "round-3-context-observe", frames: 4, p1: [], p2: [] },
+  ]);
+  const world = new MatchWorld({
+    p1,
+    p2,
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+    matchWins: 3,
+  });
+  let nextRoundApplied = 0;
+  const trace = runRuntimeTrace(
+    {
+      getSnapshot: () => world.getSnapshot(),
+      step: (input, stepOptions) => {
+        const snapshot = world.step(input, stepOptions);
+        if (nextRoundApplied < 2 && snapshot.round?.state === "ko" && snapshot.round.postRound?.remaining === 0) {
+          world.nextRound();
+          nextRoundApplied += 1;
+        }
+        return snapshot;
+      },
+      getActorRegistry: () => world.getActorRegistry(),
+    },
+    script,
+    { label: targetId },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: "Synthetic imported sequential round context",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves two completed KO transitions preserve a bounded per-root round context through rounds 1, 2, and 3. It does not claim Turns continuation, rollback/netplay, exact state-5900 controller breadth, or full MUGEN/IKEMEN parity.",
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [0, 200, 5900],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit", "runtime"],
+      requiredEventSubstrings: [
+        "Round 2 started; red life reset; state 5900 entered for p1,p2",
+        "Round 3 started; red life reset; state 5900 entered for p1,p2",
+      ],
+      requiredCombatReasons: ["hit"],
+      requiredRoundFrames: [
+        { state: "fight", roundNo: 2, roundsExisted: 1, matchWins: 3, wins: { 1: 1, 2: 0 }, draws: 0, matchOver: false, message: "Fight" },
+        { state: "fight", roundNo: 3, roundsExisted: 2, matchWins: 3, wins: { 1: 2, 2: 0 }, draws: 0, matchOver: false, message: "Fight" },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", roundNo: 3, roundsExisted: 2, matchOver: false },
+        { actorId: "p2", source: "imported", actorKind: "player", roundNo: 3, roundsExisted: 2, matchOver: false },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedTeamResourceTargetTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
