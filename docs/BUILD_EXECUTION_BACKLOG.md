@@ -1,5 +1,17 @@
 # Build Execution Backlog
 
+## Entry 527 - Official stage compatibility journey
+
+Added `StageCompatibilityJourney/v1` and a reproducible manifest for the
+official Elecbyte MUGEN 1.1b1 Training Room stage. The production stage loader
+now has a typed package-evidence envelope covering license provenance, DEF/SFF
+report output, runtime stage-clock checks, and explicit browser/native gates.
+The local official fixture route passes 4 focal files / 213 tests and
+TypeScript 7 typecheck; the journey remains `partial` until browser and native
+closeout evidence is executed. No binary fixture is copied into the repository.
+See `docs/reports/2026-07-14-official-stage-compatibility-journey.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/166-official-stage-compatibility-journey.md`.
+
 ## Entry 526 - Stage resetBG round clock
 
 Added the source-backed `StageInfo.resetBG` slice. Stage parsing now preserves

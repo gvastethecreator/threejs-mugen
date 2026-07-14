@@ -1,5 +1,25 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Official stage compatibility journey
+
+- Entry 527 adds `StageCompatibilityJourney/v1` and the official local
+  Elecbyte MUGEN 1.1b1 Training Room manifest. The production
+  `MugenStageLoader` loads DEF/SFF, `StageCompatibilityReport` records decoded
+  and ordered background evidence, and the playable runtime proves the
+  `resetBG` round-local clock.
+- The package provenance is classified as legal noncommercial sample content;
+  no binary asset is copied into the repository. Browser and native gates are
+  explicit `not-run`, so the journey status is `partial`, not passed.
+- Focal StageJourney/StageReport/StageDefParser/Playable coverage passes 4
+  files / 213 tests; TypeScript 7 typecheck passes. Scores remain unchanged.
+- Next: execute browser stage render proof, native closeout, then promote this
+  optional-private package route into `CompatibilityCorpus/v0`.
+- Sources: [official MUGEN 1.1b1 distribution](https://www.elecbyte.com/mugenfiles/1.1/mugen-1.1b1.zip),
+  [Elecbyte 1.1b1 background docs](https://www.elecbyte.com/mugendocs-11b1/bgs.html), and
+  [Elecbyte stage tutorial](https://www.elecbyte.com/mugendocs/bg-tut.html).
+- See `docs/research/2026-07-14-official-stage-compatibility-journey.md` and
+  `docs/reports/2026-07-14-official-stage-compatibility-journey.md`.
+
 ## Global report - 2026-07-14 Stage resetBG round clock
 
 - Entry 526 closes a bounded stage lifecycle gap from the official MUGEN stage contract: `StageInfo.resetBG = 1` resets stage animation/BGCtrl time at a real numbered round boundary, while `resetBG = 0` continues the global tick.

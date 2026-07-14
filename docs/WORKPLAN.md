@@ -2,6 +2,16 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 527 adds `StageCompatibilityJourney/v1` around the local official
+Elecbyte MUGEN 1.1b1 Training Room stage. The route loads the real DEF/SFF
+through `MugenStageLoader`, verifies the readme's noncommercial license
+provenance, records `StageCompatibilityReport`, and proves `resetBG` round
+clock behavior through `PlayableMatchRuntime`. The envelope is intentionally
+`partial` until the official stage browser smoke and native closeout are run.
+Focal coverage passes 213 tests and TypeScript 7 typecheck. Next: execute the
+browser/runtime visual gate, then promote the stage route into the corpus as an
+optional-private legal package without copying binary assets.
+
 Entry 526 adds the first source-backed stage lifecycle clock. `StageInfo.resetBG`
 is parsed into `resetBackgroundBetweenRounds`; the runtime keeps gameplay tick
 global while publishing a round-local `backgroundTick`, and the renderer uses
