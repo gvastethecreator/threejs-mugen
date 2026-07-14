@@ -1,5 +1,23 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 guard-points ownership
+
+- Entry 507 closes explicit direct `HitDef guardpoints` plus actor-local
+  `GuardPointsAdd`/`GuardPointsSet`; authored maxima fall back to life and
+  signed guard deltas remain visible in the required trace.
+- Required artifact `synthetic-imported-guardpoints` passes with checksum
+  `b4942998`; global trace coverage is 589/589 artifacts, 555 required and 34
+  optional. Scores remain unchanged.
+- Claim ceiling: explicit direct guard points and actor-local resource writes.
+  Omitted defaults, `NoGuardPointsDamage`, `AttackMulSet`/`TargetGuardPointsAdd`,
+  projectile/helper/team sharing, reset, persistence, HUD, and full parity
+  remain blocked.
+- Full gates: 200 files / 2052 tests, TypeScript 7, 279-module build,
+  boundaries, CSS QA, and diff check. Browser smoke N/A: no visual surface
+  changed.
+- See `docs/research/2026-07-14-guard-points-ownership.md` and
+  `docs/reports/2026-07-14-guard-points-ownership.md`.
+
 ## Global report - 2026-07-14 daily roadmap and architecture audit
 
 - Entry 505 is the committed cursor; its report declares 587/587 traces. The complete 2026-07-13 selected sequence is now closed, including M2 bounded adjudication, independent legal character evidence, Studio folder editing, team handoff/lifebar/life-power banks, and Helper-local resources.

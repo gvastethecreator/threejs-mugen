@@ -48,7 +48,7 @@ export class RuntimeHelperTelemetryWorld {
 }
 
 const helperKinematicControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "hitvelset"]);
-const helperResourceControllers = new Set(["ctrlset", "lifeadd", "lifeset", "redlifeadd", "redlifeset", "poweradd", "powerset"]);
+const helperResourceControllers = new Set(["ctrlset", "lifeadd", "lifeset", "guardpointsadd", "guardpointsset", "redlifeadd", "redlifeset", "poweradd", "powerset"]);
 
 function recordsHelperController(controller: ControllerIr): boolean {
   return (

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   applyRuntimeControl,
+  applyRuntimeGuardPointsAdd,
+  applyRuntimeGuardPointsSet,
   applyRuntimeLifeAdd,
   applyRuntimePowerDelta,
   applyRuntimeRedLifeAdd,
@@ -13,6 +15,7 @@ import {
   resolveRuntimeResourceControllerOperation,
   RuntimeResourceWorld,
   runtimeLifeMaxFromConstants,
+  runtimeGuardPointsMaxFromConstants,
   runtimePowerMaxForState,
   runtimePowerMaxFromConstants,
   type RuntimeResourceControllerSource,
@@ -85,6 +88,18 @@ describe("RuntimeResourceSystem", () => {
 
     applyRuntimeRedLifeSet(state, 999);
     expect(state.redLife).toBe(250);
+  });
+
+  it("keeps guard points actor-local and bounded by authored max or life", () => {
+    expect(runtimeGuardPointsMaxFromConstants({ "data.life": 750 })).toBe(750);
+    expect(runtimeGuardPointsMaxFromConstants({ "data.life": 750, "data.guardpoints": 1200 })).toBe(1200);
+
+    const state = runtimeState({ lifeMax: 750, guardPointsMax: 500, guardPoints: 100 });
+    applyRuntimeGuardPointsAdd(state, -140);
+    expect(state.guardPoints).toBe(0);
+
+    applyRuntimeGuardPointsSet(state, 999);
+    expect(state.guardPoints).toBe(500);
   });
 
   it("resolves authored max resources from constants", () => {
@@ -179,6 +194,25 @@ describe("RuntimeResourceSystem", () => {
     applyRuntimeResourceController(state, redLifeAdd!);
     applyRuntimeResourceController(state, redLifeSet!);
     expect(state.redLife).toBe(80);
+  });
+
+  it("resolves dynamic GuardPointsAdd and GuardPointsSet values", () => {
+    const state = runtimeState({ guardPoints: 500, guardPointsMax: 1000, vars: [1] });
+    const guardPointsAdd = resolveRuntimeResourceControllerOperation(
+      controller({ value: "IfElse(var(0), -25, 0)" }, "GuardPointsAdd"),
+      state,
+    );
+    const guardPointsSet = resolveRuntimeResourceControllerOperation(
+      controller({ value: "IfElse(var(0), 800, 0)" }, "GuardPointsSet"),
+      state,
+    );
+
+    expect(guardPointsAdd).toEqual({ kind: "resource", controllerType: "guardpointsadd", value: -25 });
+    expect(guardPointsSet).toEqual({ kind: "resource", controllerType: "guardpointsset", value: 800 });
+
+    applyRuntimeResourceController(state, guardPointsAdd!);
+    applyRuntimeResourceController(state, guardPointsSet!);
+    expect(state.guardPoints).toBe(800);
   });
 
   it("applies var, fvar, and sysvar assignments", () => {

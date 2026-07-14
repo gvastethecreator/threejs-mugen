@@ -92,6 +92,8 @@ export type CharacterRuntimeState = {
   frameIndex: number;
   lifeMax?: number;
   life: number;
+  guardPointsMax?: number;
+  guardPoints?: number;
   redLife?: number;
   powerMax?: number;
   power: number;

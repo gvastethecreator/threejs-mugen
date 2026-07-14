@@ -29,12 +29,23 @@ export class RuntimeResourceWorld {
     return boundedRuntimeResourceMax(constants?.["data.life"], 1000);
   }
 
+  guardPointsMaxFromConstants(constants?: RuntimeResourceConstants): number {
+    return boundedRuntimeResourceMax(constants?.["data.guardpoints"], this.lifeMaxFromConstants(constants));
+  }
+
   powerMaxFromConstants(constants?: RuntimeResourceConstants): number {
     return boundedRuntimeResourceMax(constants?.["data.power"], 3000);
   }
 
   powerMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
     return boundedRuntimeResourceMax(state.powerMax ?? constants?.["data.power"], 3000);
+  }
+
+  guardPointsMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
+    return boundedRuntimeResourceMax(
+      state.guardPointsMax ?? constants?.["data.guardpoints"],
+      state.lifeMax ?? this.lifeMaxFromConstants(constants),
+    );
   }
 
   applyControl(state: CharacterRuntimeState, value: boolean): void {
@@ -62,6 +73,14 @@ export class RuntimeResourceWorld {
     }
     if (operation.controllerType === "lifeset") {
       state.life = clampRuntimeResource(operation.value, 0, state.lifeMax);
+      return;
+    }
+    if (operation.controllerType === "guardpointsadd") {
+      this.applyGuardPointsAdd(state, operation.value);
+      return;
+    }
+    if (operation.controllerType === "guardpointsset") {
+      this.applyGuardPointsSet(state, operation.value);
       return;
     }
     if (operation.controllerType === "redlifeadd") {
@@ -95,6 +114,18 @@ export class RuntimeResourceWorld {
     state.redLife = clampRuntimeResource(value, 0, state.lifeMax);
   }
 
+  applyGuardPointsAdd(state: CharacterRuntimeState, value: number): void {
+    state.guardPoints = clampRuntimeResource(
+      (state.guardPoints ?? this.guardPointsMaxForState(state)) + value,
+      0,
+      this.guardPointsMaxForState(state),
+    );
+  }
+
+  applyGuardPointsSet(state: CharacterRuntimeState, value: number): void {
+    state.guardPoints = clampRuntimeResource(value, 0, this.guardPointsMaxForState(state));
+  }
+
   applyVariableAssignment(state: CharacterRuntimeState, assignment: RuntimeVariableAssignment, additive: boolean): void {
     if (assignment.index < 0) {
       return;
@@ -123,12 +154,20 @@ export function runtimeLifeMaxFromConstants(constants?: RuntimeResourceConstants
   return defaultRuntimeResourceWorld.lifeMaxFromConstants(constants);
 }
 
+export function runtimeGuardPointsMaxFromConstants(constants?: RuntimeResourceConstants): number {
+  return defaultRuntimeResourceWorld.guardPointsMaxFromConstants(constants);
+}
+
 export function runtimePowerMaxFromConstants(constants?: RuntimeResourceConstants): number {
   return defaultRuntimeResourceWorld.powerMaxFromConstants(constants);
 }
 
 export function runtimePowerMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
   return defaultRuntimeResourceWorld.powerMaxForState(state, constants);
+}
+
+export function runtimeGuardPointsMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
+  return defaultRuntimeResourceWorld.guardPointsMaxForState(state, constants);
 }
 
 export function applyRuntimeControl(state: CharacterRuntimeState, value: boolean): void {
@@ -164,6 +203,14 @@ export function applyRuntimeRedLifeAdd(state: CharacterRuntimeState, value: numb
 
 export function applyRuntimeRedLifeSet(state: CharacterRuntimeState, value: number): void {
   defaultRuntimeResourceWorld.applyRedLifeSet(state, value);
+}
+
+export function applyRuntimeGuardPointsAdd(state: CharacterRuntimeState, value: number): void {
+  defaultRuntimeResourceWorld.applyGuardPointsAdd(state, value);
+}
+
+export function applyRuntimeGuardPointsSet(state: CharacterRuntimeState, value: number): void {
+  defaultRuntimeResourceWorld.applyGuardPointsSet(state, value);
 }
 
 export function applyRuntimeVariableAssignment(
@@ -268,7 +315,7 @@ function numberParam(
 
 function resourceControllerType(controller: RuntimeResourceControllerSource): ResourceControllerOp["controllerType"] | undefined {
   const normalized = controller.normalizedType.toLowerCase();
-  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "redlifeadd" || normalized === "redlifeset" || normalized === "poweradd" || normalized === "powerset") {
+  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "guardpointsadd" || normalized === "guardpointsset" || normalized === "redlifeadd" || normalized === "redlifeset" || normalized === "poweradd" || normalized === "powerset") {
     return normalized;
   }
   return undefined;

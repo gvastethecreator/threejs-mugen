@@ -488,6 +488,7 @@ import {
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
+  createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
   createSyntheticImportedDynamicResourceSetTraceArtifact,
@@ -1284,6 +1285,31 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 294, redLife: 9 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ redLife: 12 });
+  });
+
+  it("creates a synthetic imported guard-points artifact with direct guard and resource evidence", () => {
+    const artifact = createSyntheticImportedGuardPointsTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-guardpoints-golden",
+        source: "mixed",
+      },
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.executedControllers.GuardPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.GuardPointsSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:guardpointsadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:guardpointsset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 296, minGuardPoints: 900, maxGuardPoints: 900 }),
+        expect.objectContaining({ actorId: "p2", minGuardPoints: 988, maxGuardPoints: 988 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 296, guardPoints: 900 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ guardPoints: 988 });
   });
 
   it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {

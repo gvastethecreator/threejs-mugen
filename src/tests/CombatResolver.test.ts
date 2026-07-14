@@ -120,6 +120,7 @@ describe("CombatResolver", () => {
       hitVelocityY: -2,
       guardFlag: "MA",
       guardDamage: 10,
+      guardPoints: -20,
       guardPause: 4,
       guardStun: 7,
       guardSlideTime: 5,
@@ -153,6 +154,7 @@ describe("CombatResolver", () => {
       slideTime: 5,
       controlTime: 6,
       push: 5,
+      guardPoints: -15,
       hitVelocityY: -1,
       cornerPush: 6,
       powerGain: 12,
@@ -172,10 +174,11 @@ describe("CombatResolver", () => {
       guardFlag: "MA",
       guardDamage: 10,
       guardRedLife: 10,
+      guardPoints: -20,
     };
 
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({ kind: "hit", redLife: 15 });
-    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({ kind: "guard", redLife: 8 });
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({ kind: "guard", redLife: 8, guardPoints: -15 });
   });
 
   it("uses explicit air guard velocity only for airborne guards", () => {

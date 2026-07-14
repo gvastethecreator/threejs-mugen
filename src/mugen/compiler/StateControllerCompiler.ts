@@ -71,6 +71,8 @@ const controllerSupport: Record<string, ControllerSupport> = {
   selfstate: partial("custom-state return"),
   lifeadd: partial("life"),
   lifeset: partial("life"),
+  guardpointsadd: partial("guard points"),
+  guardpointsset: partial("guard points"),
   redlifeadd: partial("red life"),
   redlifeset: partial("red life"),
   poweradd: partial("power"),

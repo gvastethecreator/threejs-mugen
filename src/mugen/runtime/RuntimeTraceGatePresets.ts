@@ -787,6 +787,51 @@ export function createSyntheticImportedRedLifeTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedGuardPointsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guardpoints",
+    displayName: "Synthetic Imported Guard Points",
+    guardDamage: 5,
+    hitDefGuardPoints: -12,
+    guardFlag: "MA",
+    withGuardPointsOps: { stateNo: 296, addValue: -7, setValue: 900 },
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-guardpoints-golden",
+    targetLabel: "Synthetic imported guard-points route",
+    requiredExecutedStates: [200, 296],
+    requiredExecutedControllers: ["ChangeState", "GuardPointsAdd", "GuardPointsSet", "HitDef"],
+    requiredExecutedOperations: ["hitdef", "resource:guardpointsadd", "resource:guardpointsset"],
+    requiredActorFrames: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 296,
+        observedGuardPointsAtLeast: 900,
+        observedGuardPointsAtMost: 900,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "demo",
+        actorKind: "player",
+        observedGuardPointsAtLeast: 988,
+        observedGuardPointsAtMost: 988,
+        minFrames: 1,
+      },
+    ],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", stateNo: 296, guardPoints: 900 },
+      { actorId: "p2", source: "demo", actorKind: "player", guardPoints: 988 },
+    ],
+    notes: [
+      "Synthetic imported guard-points trace proves an explicit guarded HitDef guardpoints value and actor-local GuardPointsAdd/GuardPointsSet writes. Projectile inheritance, NoGuardPointsDamage, implicit defaults, AttackMulSet GuardPoints, helper/team sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+    ],
+  });
+}
+
 export function createSyntheticImportedControlTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -27103,6 +27148,8 @@ export function createImportedGuardTraceArtifact(
     requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
     requiredHitEffectEvents?: RuntimeTraceHitEffectEventRequirement[];
     requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredFinalActors?: RuntimeTraceGate["requiredFinalActors"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -27137,6 +27184,8 @@ export function createImportedGuardTraceArtifact(
         requiredSoundEvents: options.requiredSoundEvents,
         requiredHitEffectEvents: options.requiredHitEffectEvents,
         requiredContactEffectPackages: options.requiredContactEffectPackages,
+        requiredActorFrames: options.requiredActorFrames,
+        requiredFinalActors: options.requiredFinalActors,
       },
     ],
   });
@@ -44020,6 +44069,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefAttr?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
+  hitDefGuardPoints?: number;
   hitDefRedLife?: number;
   guardRedLife?: number;
   withHitDef?: boolean;
@@ -44361,6 +44411,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
   withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
+  withGuardPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
   withSoundControllers?: boolean;
   withDynamicSoundControllers?: boolean;
   withDynamicSoundValueControllers?: boolean;
@@ -44385,7 +44436,7 @@ export type SyntheticImportedTraceFighterOptions = {
   p2DistanceStateEntry?: { stateNo: number };
   ownerMetricsStateEntry?: { stateNo: number };
   identityEntry?: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number };
-  dataStats?: { attack?: number; defence?: number; life?: number; power?: number };
+  dataStats?: { attack?: number; defence?: number; life?: number; power?: number; guardpoints?: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
@@ -44964,6 +45015,7 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const hitDefDamage = options.hitDefDamage ?? 37;
   const withHitDef = options.withHitDef ?? true;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
+  const guardPointsLine = options.hitDefGuardPoints === undefined ? "" : `guardpoints = ${options.hitDefGuardPoints}`;
   const redLifeLine = options.hitDefRedLife === undefined
     ? ""
     : `redlife = ${options.hitDefRedLife}${options.guardRedLife === undefined ? "" : `,${options.guardRedLife}`}`;
@@ -45003,6 +45055,7 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
   const guardHitTimeLine = options.omitGuardHitTime ? "" : `guard.hittime = ${options.guardHitTime ?? 9}`;
   const guardLine =
     options.guardDamage === undefined &&
+    options.hitDefGuardPoints === undefined &&
     options.guardFlag === undefined &&
     options.guardKill === undefined &&
     options.guardHitTime === undefined &&
@@ -45047,6 +45100,7 @@ trigger1 = Time = 1
 attr = ${hitDefAttr}
 damage = ${damageLine}
 ${redLifeLine}
+${guardPointsLine}
 ${hitDefKillLine}
 ${hitVarLines}
 pausetime = 4,4
@@ -45278,6 +45332,7 @@ ${options.withDynamicResourceSetOps === undefined ? "" : dynamicResourceSetContr
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withRedLifeOps === undefined ? "" : redLifeControllerBlock(options.withRedLifeOps)}
+${options.withGuardPointsOps === undefined ? "" : guardPointsControllerBlock(options.withGuardPointsOps)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
 ${options.withDynamicSoundControllers ? dynamicSoundControllerBlock() : ""}
 ${options.withDynamicSoundValueControllers ? dynamicSoundValueControllerBlock() : ""}
@@ -45411,6 +45466,7 @@ ${options.animElemTimeExit ? simpleStateBlock(options.animElemTimeExit.stateNo, 
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
 ${options.withRedLifeOps ? simpleStateBlock(options.withRedLifeOps.stateNo, "I") : ""}
+${options.withGuardPointsOps ? simpleStateBlock(options.withGuardPointsOps.stateNo, "I") : ""}
 ${options.withDynamicLifeAddOps ? simpleStateBlock(options.withDynamicLifeAddOps.stateNo, "I") : ""}
 ${options.withDynamicResourceSetOps ? simpleStateBlock(options.withDynamicResourceSetOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
@@ -45426,6 +45482,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     activeEnd: 4,
     recovery: 18,
     damage: hitDefDamage,
+    ...(options.hitDefGuardPoints === undefined ? {} : { guardPoints: options.hitDefGuardPoints }),
     ...(options.hitDefRedLife === undefined ? {} : { redLife: options.hitDefRedLife }),
     ...(options.guardRedLife === undefined ? {} : { guardRedLife: options.guardRedLife }),
     kill: options.hitDefKill,
@@ -45581,6 +45638,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withRedLifeOps === undefined ? [] : ([[options.withRedLifeOps.stateNo, traceAction(options.withRedLifeOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withGuardPointsOps === undefined ? [] : ([[options.withGuardPointsOps.stateNo, traceAction(options.withGuardPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicLifeAddOps === undefined ? [] : ([[options.withDynamicLifeAddOps.stateNo, traceAction(options.withDynamicLifeAddOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicResourceSetOps === undefined
         ? []
@@ -46295,6 +46353,7 @@ function dataConstantsBlock(options: SyntheticImportedTraceFighterOptions): stri
   const data = {
     life: options.resourceMaxEntry?.lifeMax ?? options.dataStats?.life,
     power: options.resourceMaxEntry?.powerMax ?? options.dataStats?.power,
+    guardpoints: options.dataStats?.guardpoints,
     attack: options.dataStats?.attack,
     defence: options.dataStats?.defence,
     sparkno: options.dataSparkNo,
@@ -49226,6 +49285,28 @@ trigger1 = Time = 2
 value = ${setValue}
 
 [State 200, RedLife Branch]
+type = ChangeState
+trigger1 = Time = 2
+value = ${config.stateNo}
+ctrl = 0
+`;
+}
+
+function guardPointsControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withGuardPointsOps"]>): string {
+  const addValue = config.addValue ?? -7;
+  const setValue = config.setValue ?? 900;
+  return `
+[State 200, Guard Points Add Probe]
+type = GuardPointsAdd
+trigger1 = Time = 1
+value = ${addValue}
+
+[State 200, Guard Points Set Probe]
+type = GuardPointsSet
+trigger1 = Time = 2
+value = ${setValue}
+
+[State 200, Guard Points Branch]
 type = ChangeState
 trigger1 = Time = 2
 value = ${config.stateNo}

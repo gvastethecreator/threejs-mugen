@@ -13,6 +13,7 @@ export type HitDefControllerOp = {
   attr?: string;
   damage?: number;
   guardDamage?: number;
+  guardPoints?: number;
   redLife?: number;
   guardRedLife?: number;
   kill?: boolean;
@@ -474,6 +475,8 @@ export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
   | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
   | { kind: "resource"; controllerType: "lifeset"; value: number }
+  | { kind: "resource"; controllerType: "guardpointsadd"; value: number }
+  | { kind: "resource"; controllerType: "guardpointsset"; value: number }
   | { kind: "resource"; controllerType: "redlifeadd"; value: number; absolute?: boolean }
   | { kind: "resource"; controllerType: "redlifeset"; value: number }
   | { kind: "resource"; controllerType: "poweradd"; value: number }
@@ -1317,7 +1320,7 @@ function compileAngleDrawControllerOp(controller: MugenStateController): SpriteE
 }
 
 function isResourceController(type: string): type is ResourceControllerOp["controllerType"] {
-  return type === "ctrlset" || type === "lifeadd" || type === "lifeset" || type === "redlifeadd" || type === "redlifeset" || type === "poweradd" || type === "powerset";
+  return type === "ctrlset" || type === "lifeadd" || type === "lifeset" || type === "guardpointsadd" || type === "guardpointsset" || type === "redlifeadd" || type === "redlifeset" || type === "poweradd" || type === "powerset";
 }
 
 function compileResourceControllerOp(controller: MugenStateController, type: ResourceControllerOp["controllerType"]): ResourceControllerOp | undefined {
@@ -1551,6 +1554,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     guardDamage: damage?.[1],
     redLife: firstNumber(findParam(controller, "redlife")),
     guardRedLife: secondNumber(findParam(controller, "redlife")),
+    guardPoints: firstNumber(findParam(controller, "guardpoints")),
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     priority: firstNumber(findParam(controller, "priority")),

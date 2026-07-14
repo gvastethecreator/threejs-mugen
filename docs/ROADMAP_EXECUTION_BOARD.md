@@ -1,5 +1,18 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - guard-points ownership (2026-07-14)
+
+Entry 507 closes the bounded actor-local guard-points route. Explicit direct
+HitDef `guardpoints` values preserve signed attack/defence scaling, while
+`GuardPointsAdd`/`GuardPointsSet` use authored `[Data] guardpoints` maxima with
+life fallback and clamping. Required trace `b4942998` proves p2 `1000 -> 988`
+and p1 controller writes ending at `900`. Full verification passes 200 files /
+2052 tests, TypeScript 7 typecheck, 279-module production build, 589/589
+trace artifacts (555 required / 34 optional), boundaries, CSS QA, and diff
+hygiene. Browser smoke is N/A because no visible surface changed. Next
+auxiliary-resource decision remains read-only projection, followed by dizzy
+points, reset/persistence, and HUD as separate gates; scores remain unchanged.
+
 ## Latest planning closeout - entry 505 reconciliation (2026-07-14)
 
 Numbered backlog maximum 505 is current committed truth; the entry-505 report declares 587/587 trace artifacts and full implementation gates green. Entries 477-505 closed the complete 2026-07-13 selector plus bounded Studio source/provenance work, team round/handoff/lifebar/life-power banks, and Helper-local life/power. The scores remain unchanged.

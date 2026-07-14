@@ -18,6 +18,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       controller("HitDef", {
         attr: "S,NA",
         damage: "30,5",
+        guardpoints: "-12",
         priority: "5, Dodge",
         pausetime: "12,8",
         p1sprpriority: "3",
@@ -85,6 +86,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       priority: 5,
       priorityType: "dodge",
       guardDamage: 5,
+      guardPoints: -12,
       hitPause: 12,
       hitStun: 15,
       p1SpritePriority: 3,

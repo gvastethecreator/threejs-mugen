@@ -17,7 +17,7 @@ import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
-import { applyRuntimeControl, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
+import { applyRuntimeControl, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
 import {
   bufferRuntimeHitDefTarget,
@@ -169,6 +169,9 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardControlTime = result.controlTime ?? 0;
     defender.runtime.guarding = true;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+    if (result.guardPoints !== undefined) {
+      applyRuntimeGuardPointsAdd(defender.runtime, result.guardPoints);
+    }
     if (result.redLife !== undefined) {
       applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
     }

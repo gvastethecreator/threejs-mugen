@@ -97,6 +97,8 @@ export type RuntimeHelper = {
   physics: CharacterRuntimeState["physics"];
   lifeMax: number;
   life: number;
+  guardPointsMax?: number;
+  guardPoints?: number;
   redLife?: number;
   superPauseDefenseMultiplier?: number;
   powerMax: number;
@@ -251,6 +253,8 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     physics: "N",
     lifeMax: 1000,
     life: 1000,
+    guardPointsMax: 1000,
+    guardPoints: 1000,
     redLife: 0,
     powerMax: 3000,
     power: 0,
@@ -1249,6 +1253,8 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     frameIndex: helper.frameIndex,
     lifeMax: helper.lifeMax,
     life: helper.life,
+    guardPointsMax: helper.guardPointsMax,
+    guardPoints: helper.guardPoints,
     ...(helper.redLife === undefined ? {} : { redLife: helper.redLife }),
     ...(helper.superPauseDefenseMultiplier === undefined
       ? {}
@@ -1307,6 +1313,8 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.hitDefSpritePriority = runtime.hitDefSpritePriority ? { ...runtime.hitDefSpritePriority } : undefined;
   helper.lifeMax = runtime.lifeMax ?? helper.lifeMax;
   helper.life = runtime.life;
+  helper.guardPointsMax = runtime.guardPointsMax ?? helper.guardPointsMax;
+  helper.guardPoints = runtime.guardPoints ?? helper.guardPoints;
   helper.redLife = runtime.redLife ?? helper.redLife;
   helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;

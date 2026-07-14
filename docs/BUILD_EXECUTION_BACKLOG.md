@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 507 - Guard-points ownership/v0
+
+Done: explicit direct HitDef `guardpoints` values now compile and flow through
+guarded direct combat with signed attack/defence scaling. Actor-local
+`GuardPointsAdd` and `GuardPointsSet` use authored `[Data] guardpoints` maxima,
+life fallback, and clamps; fighter and Helper state plumbing stay local. The
+required synthetic imported trace `synthetic-imported-guardpoints` proves
+guarded p2 `1000 -> 988`, p1 `GuardPointsAdd`/`GuardPointsSet`, and final p1
+`900`. Focused coverage passes 615 tests; full verification passes 200 files /
+2052 tests, TypeScript 7, a 279-module production build, 589/589 trace
+artifacts (555 required / 34 optional), boundaries, CSS QA, and diff hygiene.
+Browser smoke is N/A because no visible surface changed. Claim allowed:
+explicit direct guard points, signed scaling, actor-local init/max,
+Add/Set/clamping, and trace evidence. Claim blocked: omitted defaults,
+`NoGuardPointsDamage`, `AttackMulSet GuardPoints`, `TargetGuardPointsAdd`,
+projectile/helper/team sharing, reset/persistence, HUD, rollback/netplay, and
+full MUGEN/IKEMEN parity. See Wayfinder 146 and the dated research/report.
+
 ## Entry 506 - Red-life ownership/v0
 
 Done: explicit direct HitDef `redlife = hit, guard` values now compile and

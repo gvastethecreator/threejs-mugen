@@ -19,6 +19,8 @@ import {
   type RuntimeControllerEvaluationContext,
 } from "./RuntimeControllerExpressionContextSystem";
 import {
+  applyRuntimeGuardPointsAdd,
+  applyRuntimeGuardPointsSet,
   applyRuntimeLifeAdd,
   applyRuntimeRedLifeAdd,
   applyRuntimeRedLifeSet,
@@ -117,6 +119,15 @@ export function executeControllerIr(
     const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       applyRuntimeResourceController(next, { kind: "resource", controllerType: "lifeset", value });
+    }
+  } else if (type === "guardpointsadd") {
+    const operation = resourceOperation(controller, "guardpointsadd");
+    applyRuntimeGuardPointsAdd(next, operation?.value ?? numberParam(controller, next, context, "value") ?? 0);
+  } else if (type === "guardpointsset") {
+    const operation = resourceOperation(controller, "guardpointsset");
+    const value = operation?.value ?? numberParam(controller, next, context, "value");
+    if (value !== undefined) {
+      applyRuntimeGuardPointsSet(next, value);
     }
   } else if (type === "redlifeadd") {
     const operation = resourceOperation(controller, "redlifeadd");

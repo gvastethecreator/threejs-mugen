@@ -3,6 +3,7 @@ import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, Run
 
 export type RuntimeCombatAttack = {
   damage: number;
+  guardPoints?: number;
   redLife?: number;
   guardRedLife?: number;
   kill?: boolean;
@@ -34,6 +35,7 @@ export type RuntimeCombatHitResult =
   | {
       kind: "guard";
       damage: number;
+      guardPoints?: number;
       redLife?: number;
       kill: boolean;
       pause: number;
@@ -168,6 +170,9 @@ export function resolveRuntimeCombatHit(input: {
         input.defender,
         scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardDamage ?? 0),
       ),
+      ...(input.attack.guardPoints === undefined
+        ? {}
+        : { guardPoints: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingAmount(input.attacker, input.attack.guardPoints)) }),
       ...(input.attack.guardRedLife === undefined
         ? {}
         : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardRedLife)) }),
@@ -300,7 +305,14 @@ export function scaleRuntimeOutgoingDamage(
   attacker: Pick<CharacterRuntimeState, "attackMultiplier">,
   damage: number,
 ): number {
-  return Math.max(0, Math.round(damage * (attacker.attackMultiplier ?? 1)));
+  return Math.max(0, scaleRuntimeOutgoingAmount(attacker, damage));
+}
+
+export function scaleRuntimeOutgoingAmount(
+  attacker: Pick<CharacterRuntimeState, "attackMultiplier">,
+  amount: number,
+): number {
+  return Math.round(amount * (attacker.attackMultiplier ?? 1));
 }
 
 function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeState["stateType"]): boolean {
