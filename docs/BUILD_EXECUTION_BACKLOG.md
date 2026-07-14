@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 499 - RuntimeTeamRoundLifebar/v0
+
+Done: `RuntimeTeamRoundLifebarWorld/v0` now publishes a renderer-independent
+IKEMEN non-Single team lifebar read model with stable per-side leader/member
+slots, plural active-root ids, explicit active/standby/KO/disabled state,
+finite life/max-life ratios, and `NoBarDisplay` visibility. Snapshots and
+trace frame summaries preserve the diagnostic outside behavior checksums, and
+the Studio debug panel uses real actor maxima rather than fixed life/power
+divisors. Aggregate closure is green: `pnpm test` 198 files / 2024 tests,
+`pnpm qa:trace` 582/582 artifacts, `pnpm build`, boundaries, CSS QA, and the
+browser smoke diagnostics all pass. Claim allowed: bounded team slot/life
+presentation data. Claim blocked: motif/AIR lifebar rendering, red-life
+interpolation, power/stun/shared resources, automatic Turns continuation,
+exact Tag switching, KO/win timers, rollback, netplay, and full MUGEN/IKEMEN
+parity. See Wayfinder 138 and the dated research/report.
+
 ## Entry 498 - Required TeamRoundHandoff trace/v0
 
 Done: the aggregate runtime gate now executes a real four-root imported IKEMEN

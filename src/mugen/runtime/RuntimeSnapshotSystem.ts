@@ -88,6 +88,7 @@ export type RuntimeMatchSnapshotInput = {
   rootPresentation?: MugenSnapshot["rootPresentation"];
   rootBodyPush?: MugenSnapshot["rootBodyPush"];
   rootHitAdmission?: MugenSnapshot["rootHitAdmission"];
+  teamRoundLifebar?: MugenSnapshot["teamRoundLifebar"];
   logs: string[];
 };
 
@@ -117,6 +118,7 @@ export class RuntimeSnapshotWorld {
       ...(input.rootPresentation ? { rootPresentation: structuredClone(input.rootPresentation) } : {}),
       ...(input.rootBodyPush ? { rootBodyPush: structuredClone(input.rootBodyPush) } : {}),
       ...(input.rootHitAdmission ? { rootHitAdmission: structuredClone(input.rootHitAdmission) } : {}),
+      ...(input.teamRoundLifebar ? { teamRoundLifebar: structuredClone(input.teamRoundLifebar) } : {}),
       logs: input.logs.slice(0, 80),
     };
   }

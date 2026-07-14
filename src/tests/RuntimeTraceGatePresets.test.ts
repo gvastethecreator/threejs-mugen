@@ -2708,6 +2708,23 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p4")?.teamStandby).toBeUndefined();
+    const finalLifebar = artifact.trace.frames[artifact.trace.frames.length - 1]?.teamRoundLifebar;
+    expect(finalLifebar).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-round-lifebar/v0",
+      mode: "turns",
+      visible: true,
+      sides: [
+        { leaderId: "p1", activeActorIds: ["p1"] },
+        {
+          leaderId: "p2",
+          activeActorIds: ["p4"],
+          slots: [
+            { actorId: "p2", role: "leader", status: "ko", ratio: 0 },
+            { actorId: "p4", role: "member", status: "active", ratio: 1 },
+          ],
+        },
+      ],
+    });
   });
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {

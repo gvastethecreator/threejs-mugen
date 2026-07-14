@@ -295,7 +295,7 @@ function renderMatchInfo(snapshot: MugenSnapshot): string {
       </div>
     </div>
     <div class="fighter-bars runtime-fighter-bars">
-      ${snapshot.actors.map(renderLifeBar).join("")}
+      ${renderMatchLifeBars(snapshot)}
     </div>
     <div class="runtime-metric-strip">
       <span><b>${escapeHtml(snapshot.stage.displayName ?? "Stage")}</b><small>stage</small></span>
@@ -307,14 +307,53 @@ function renderMatchInfo(snapshot: MugenSnapshot): string {
   `;
 }
 
+function renderMatchLifeBars(snapshot: MugenSnapshot): string {
+  const teamRoundLifebar = snapshot.teamRoundLifebar;
+  if (!teamRoundLifebar) {
+    return snapshot.actors.map(renderLifeBar).join("");
+  }
+  if (!teamRoundLifebar.visible) {
+    return `<div class="lifebar-hidden-note">Life bars hidden by NoBarDisplay</div>`;
+  }
+  return teamRoundLifebar.sides.map((side) => `
+    <div class="team-fighter-side" data-team-side="${side.side}">
+      <div class="team-fighter-side-top">
+        <span class="panel-kicker">SIDE ${side.side}</span>
+        <span class="mono">leader ${escapeHtml(side.leaderId ?? "-")}</span>
+      </div>
+      ${side.slots.map(renderTeamLifeBarSlot).join("")}
+    </div>
+  `).join("");
+}
+
+function renderTeamLifeBarSlot(
+  slot: NonNullable<MugenSnapshot["teamRoundLifebar"]>["sides"][number]["slots"][number],
+): string {
+  const lifePercent = slot.ratio * 100;
+  return `
+    <div class="fighter-bar team-fighter-bar status-${slot.status}">
+      <div class="fighter-bar-top">
+        <strong>${escapeHtml(slot.label)}</strong>
+        <span class="mono">${slot.role} / ${slot.status} / ${slot.life}</span>
+      </div>
+      <div class="meter meter-life"><span style="width: ${lifePercent}%"></span></div>
+      <small class="mono team-fighter-meta">${escapeHtml(slot.actorId)} / ${slot.life}/${slot.lifeMax}</small>
+    </div>
+  `;
+}
+
 function renderLifeBar(actor: MugenSnapshot["actors"][number]): string {
-  const lifePercent = Math.max(0, Math.min(100, actor.runtime.life / 10));
-  const powerPercent = Math.max(0, Math.min(100, actor.runtime.power / 30));
+  const lifeMaxValue = actor.runtime.lifeMax ?? 1000;
+  const powerMaxValue = actor.runtime.powerMax ?? 3000;
+  const lifeMax = lifeMaxValue > 0 ? lifeMaxValue : 1;
+  const powerMax = powerMaxValue > 0 ? powerMaxValue : 1;
+  const lifePercent = Math.max(0, Math.min(100, (actor.runtime.life / lifeMax) * 100));
+  const powerPercent = Math.max(0, Math.min(100, (actor.runtime.power / powerMax) * 100));
   return `
     <div class="fighter-bar">
       <div class="fighter-bar-top">
         <strong>${escapeHtml(actor.label)}</strong>
-        <span class="mono">${actor.runtime.life}</span>
+        <span class="mono">${actor.runtime.life}/${lifeMaxValue}</span>
       </div>
       <div class="meter meter-life"><span style="width: ${lifePercent}%"></span></div>
       <div class="meter meter-power"><span style="width: ${powerPercent}%"></span></div>

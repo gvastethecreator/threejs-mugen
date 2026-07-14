@@ -2625,6 +2625,51 @@ button.controller-chip {
   gap: 10px;
 }
 
+.team-fighter-side {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface-flat-raised);
+}
+
+.team-fighter-side-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.team-fighter-side-top .mono,
+.team-fighter-meta {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-fighter-bar.status-ko .meter-life span {
+  background: var(--danger);
+}
+
+.team-fighter-bar.status-standby {
+  opacity: 0.72;
+}
+
+.team-fighter-bar.status-disabled {
+  opacity: 0.48;
+}
+
+.lifebar-hidden-note {
+  padding: 8px;
+  border: 1px dashed var(--border-strong);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
 .fighter-bar-top {
   display: flex;
   justify-content: space-between;

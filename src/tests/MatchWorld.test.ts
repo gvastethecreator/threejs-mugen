@@ -273,6 +273,54 @@ describe("MatchWorld", () => {
     expect(registry.effectStores.map(({ ownerId }) => ownerId)).toEqual(["p1", "p2", "p3", "p4"]);
   });
 
+  it("publishes ordered team lifebar slots separately from active roots and resources", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "turns",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    expect(world.getSnapshot().teamRoundLifebar).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-round-lifebar/v0",
+      mode: "turns",
+      visible: true,
+      sides: [
+        {
+          leaderId: "p1",
+          activeActorIds: ["p1"],
+          slots: [
+            { actorId: "p1", role: "leader", status: "active", life: 1000, lifeMax: 1000, ratio: 1 },
+            { actorId: "p3", role: "member", status: "standby", life: 1000, lifeMax: 1000, ratio: 1 },
+          ],
+        },
+        {
+          leaderId: "p2",
+          activeActorIds: ["p2"],
+          slots: [
+            { actorId: "p2", role: "leader", status: "active" },
+            { actorId: "p4", role: "member", status: "standby" },
+          ],
+        },
+      ],
+    });
+
+    const promoted = world.dispatch({
+      type: "set-root-standby",
+      changes: [
+        { id: "p1", standby: true },
+        { id: "p3", standby: false },
+      ],
+    });
+    expect(promoted.teamRoundLifebar?.sides[0]).toMatchObject({
+      leaderId: "p1",
+      activeActorIds: ["p3"],
+      slots: [
+        { actorId: "p1", role: "leader", status: "standby" },
+        { actorId: "p3", role: "member", status: "active" },
+      ],
+    });
+  });
+
   it("publishes current per-phase root capabilities without widening reserve execution", () => {
     const world = new MatchWorld({
       runtimeProfile: "ikemen-go",

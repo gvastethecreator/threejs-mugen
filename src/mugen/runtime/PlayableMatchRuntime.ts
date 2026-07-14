@@ -161,6 +161,7 @@ import {
   type RuntimeTeamRoundDecision,
   type RuntimeTeamRoundMode,
 } from "./RuntimeTeamRoundDecisionSystem";
+import { RuntimeTeamRoundLifebarWorld } from "./RuntimeTeamRoundLifebarSystem";
 import type {
   RuntimeTeamRoundHandoffActor,
   RuntimeTeamRoundHandoffResult,
@@ -300,6 +301,7 @@ const runtimeActiveControllerTelemetryHooks = activeControllerTelemetryWorld.cre
   recordController: (actor, controller) => compatibilityTelemetryWorld.recordController(actor, controller),
   recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
 });
+const teamRoundLifebarWorld = new RuntimeTeamRoundLifebarWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -610,6 +612,26 @@ export class PlayableMatchRuntime {
         ...(memberNo === undefined ? {} : { memberNo }),
         teamState,
       } satisfies RuntimeTeamRoundHandoffActor;
+    });
+  }
+
+  private teamRoundLifebarActors() {
+    return this.characterRoots().map((root) => {
+      const side = runtimeTeamSide(root);
+      const teamState = root.runtime.teamState;
+      if (side === undefined || !teamState) {
+        throw new Error(`Team lifebar root ${root.id} has no valid team state`);
+      }
+      const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
+      return {
+        id: root.id,
+        label: root.label,
+        side,
+        life: root.runtime.life,
+        lifeMax: root.runtime.lifeMax ?? 1000,
+        ...(memberNo === undefined ? {} : { memberNo }),
+        teamState,
+      };
     });
   }
 
@@ -1972,6 +1994,7 @@ export class PlayableMatchRuntime {
   getSnapshot(): MugenSnapshot {
     const roots = this.characterRoots();
     const teamMode = this.tagTeamOrder ? "tag" : "single";
+    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(roots, this.tick);
     const rootPresentation = rootPresentationWorld.diagnostic({
       runtimeProfile: this.runtimeProfile,
       teamMode,
@@ -1994,6 +2017,14 @@ export class PlayableMatchRuntime {
       envColorWorld: this.envColorWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
     });
+    const teamRoundLifebar = this.runtimeProfile === "ikemen-go" && this.teamRoundMode !== "single"
+      ? teamRoundLifebarWorld.snapshot({
+          actors: this.teamRoundLifebarActors(),
+          mode: this.teamRoundMode,
+          visible: !globalAssertSpecial.activeFlags.includes("nobardisplay"),
+          tick: this.tick,
+        })
+      : undefined;
     const snapshot = this.snapshotWorld.match({
       tick: this.tick,
       playing: this.playing,
@@ -2011,6 +2042,7 @@ export class PlayableMatchRuntime {
       rootPresentation,
       rootBodyPush: this.lastRootBodyPush,
       rootHitAdmission: this.lastRootHitAdmission,
+      teamRoundLifebar,
       logs: this.logs,
     });
     const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);
