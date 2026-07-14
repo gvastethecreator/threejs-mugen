@@ -163,6 +163,10 @@ import {
   RuntimeRoundContextWorld,
   type RuntimeRoundContextSnapshot,
 } from "./RuntimeRoundContextSystem";
+import {
+  RuntimeTurnsContinuationWorld,
+  type RuntimeTurnsContinuationResult,
+} from "./RuntimeTurnsContinuationSystem";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
 import {
@@ -428,6 +432,8 @@ export class PlayableMatchRuntime {
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
   private readonly reserveRoots: FighterMatchState[];
+  private activeRoots!: [FighterMatchState, FighterMatchState];
+  private turnsContinuationActive = false;
   private characterIdentity?: RuntimeCharacterIdentityRegistry<RuntimeMatchCharacterIdentity>;
   private readonly tagTeamOrder?: RuntimeTagTeamOrder;
   private readonly stage: MugenStageDefinition;
@@ -476,8 +482,10 @@ export class PlayableMatchRuntime {
   private readonly matchOutcome: RuntimeMatchOutcomeSystem;
   private readonly roundState5900World = new RuntimeRoundState5900World();
   private readonly roundContextWorld = new RuntimeRoundContextWorld();
+  private readonly turnsContinuationWorld = new RuntimeTurnsContinuationWorld();
   private lastRoundContext: RuntimeRoundContextSnapshot;
   private lastRoundState5900?: RuntimeRoundState5900Snapshot;
+  private lastTurnsContinuation?: RuntimeTurnsContinuationResult;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
@@ -557,6 +565,7 @@ export class PlayableMatchRuntime {
           return fighter;
         }) ?? []
       : [];
+    this.activeRoots = [this.p1, this.p2];
     for (const root of this.characterRoots()) this.effectActorWorld.registerOwner(root.id);
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
@@ -619,10 +628,7 @@ export class PlayableMatchRuntime {
     for (const identityRoot of identityRoots) {
       identityRoot.fighter!.playerId = this.characterIdentity.playerIdFor(identityRoot.id);
     }
-    for (const helper of [
-      ...this.effectActorWorld.helpers(this.p1.id),
-      ...this.effectActorWorld.helpers(this.p2.id),
-    ]) {
+    for (const helper of this.characterRoots().flatMap((root) => this.effectActorWorld.helpers(root.id))) {
       this.registerHelperCharacterIdentity(helper);
     }
   }
@@ -657,6 +663,23 @@ export class PlayableMatchRuntime {
     return [this.p1, this.p2, ...this.reserveRoots];
   }
 
+  private activePair(): [FighterMatchState, FighterMatchState] {
+    return this.activeRoots;
+  }
+
+  private teamGameplayActive(): boolean {
+    return this.tagTeamOrder !== undefined || this.turnsContinuationActive;
+  }
+
+  private teamPresentationMode(): "single" | "tag" {
+    return this.teamGameplayActive() ? "tag" : "single";
+  }
+
+  private inactiveRoots(): FighterMatchState[] {
+    const active = new Set(this.activeRoots);
+    return this.characterRoots().filter((root) => !active.has(root));
+  }
+
   private teamRoundActors(): RuntimeTeamRoundHandoffActor[] {
     return this.characterRoots().map((root) => {
       const side = runtimeTeamSide(root);
@@ -678,6 +701,23 @@ export class PlayableMatchRuntime {
         teamState,
       } satisfies RuntimeTeamRoundHandoffActor;
     });
+  }
+
+  private syncTurnsActiveRoots(): boolean {
+    const next = ([1, 2] as const).map((side) => {
+      const candidates = this.characterRoots()
+        .filter((root) => runtimeTeamSide(root) === side)
+        .filter((root) => {
+          const teamState = root.runtime.teamState;
+          return teamState?.playerType && !teamState.disabled && !teamState.standby && !teamState.overKo;
+        })
+        .sort((left, right) => (left.playerNo ?? Number.MAX_SAFE_INTEGER) - (right.playerNo ?? Number.MAX_SAFE_INTEGER));
+      return candidates[0];
+    }) as [FighterMatchState | undefined, FighterMatchState | undefined];
+    if (!next[0] || !next[1]) return false;
+    this.activeRoots = [next[0], next[1]];
+    this.turnsContinuationActive = true;
+    return true;
   }
 
   private teamRoundLifebarActors() {
@@ -858,7 +898,7 @@ export class PlayableMatchRuntime {
   }
 
   private rootForHelper(helper: RuntimeHelper): FighterMatchState {
-    return this.characterRoots().find((candidate) => candidate.id === helper.rootId) ?? this.p1;
+    return this.characterRoots().find((candidate) => candidate.id === helper.rootId) ?? this.activeRoots[0];
   }
 
   private enterHelperOwnedTargetState(
@@ -880,7 +920,7 @@ export class PlayableMatchRuntime {
   }
 
   private matchRoster(): RuntimeMatchActorRoster<FighterMatchState> {
-    return matchActorRosterWorld.create({ p1: this.p1, p2: this.p2 });
+    return matchActorRosterWorld.create({ p1: this.activeRoots[0], p2: this.activeRoots[1] });
   }
 
   dispatch(command: MatchRuntimeCommand): MugenSnapshot {
@@ -944,7 +984,7 @@ export class PlayableMatchRuntime {
   }
 
   private helperRunOrderCandidates(): RuntimeActorRunOrderCandidate<FighterMatchState, RuntimeHelper>[] {
-    return [this.p1, this.p2].flatMap((owner) =>
+    return this.activeRoots.flatMap((owner) =>
       this.effectActorWorld.helpers(owner.id).map((helper) => ({
         kind: "helper" as const,
         key: `helper:${helper.serialId}`,
@@ -961,6 +1001,7 @@ export class PlayableMatchRuntime {
 
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
+    const [activeP1, activeP2] = this.activePair();
     if (this.round.snapshot().state === "ko") {
       matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
         this.playing = false;
@@ -973,21 +1014,21 @@ export class PlayableMatchRuntime {
     const p2Input = input.p2 ?? new Set<string>();
     const rootInputRoutes = rootInputRoutingWorld.routes({
       runtimeProfile: this.runtimeProfile,
-      teamMode: this.tagTeamOrder ? "tag" : "single",
+      teamMode: this.teamPresentationMode(),
       roots: this.characterRoots(),
       p1Input,
       p2Input,
     });
     this.lastP2Controlled = input.p2 !== undefined;
-    const preparedRunOrder = fighterRunOrderWorld.stamp(fighterRunOrderWorld.orderPair(this.runtimeProfile, this.p1, this.p2));
+    const preparedRunOrder = fighterRunOrderWorld.stamp(fighterRunOrderWorld.orderPair(this.runtimeProfile, activeP1, activeP2));
     const preparedActorRunOrder = actorRunOrderWorld.order(this.runtimeProfile, this.actorRunOrderCandidates());
     schedule.record("tick:stamp-input");
-    matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
+    matchTickInputWorld.stampFrame({ tick: this.tick, p1: activeP1, p2: activeP2, p1Input, p2Input });
 
     schedule.record("frame:start");
     matchFrameStartWorld.advance({
-      p1: this.p1,
-      p2: this.p2,
+      p1: activeP1,
+      p2: activeP2,
       resetFrameFlags: (fighter) => this.hitEligibilityWorld.resetFrameFlags(fighter.runtime),
       applyPreFacingAssertSpecial: (fighter, opponent) => this.applyPreFacingAssertSpecial(fighter, opponent),
       updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
@@ -997,14 +1038,14 @@ export class PlayableMatchRuntime {
     const branchResult = matchTickBranchWorld.advance({
       advanceHitPause: () => {
         schedule.record("branch:hitpause-advance");
-        if (Math.max(this.p1.hitPause, this.p2.hitPause) > 0) {
+        if (Math.max(activeP1.hitPause, activeP2.hitPause) > 0) {
           this.clearActiveRootGuardDistanceLatches();
         }
         const gameSpace = runtimeStageGameSpace(this.stage);
         const result = matchHitPauseWorld.advanceRuntime<FighterMatchState>({
           hitPauseWorld: this.hitPauseWorld,
-          p1: this.p1,
-          p2: this.p2,
+          p1: activeP1,
+          p2: activeP2,
           p1Input,
           p2Input,
           tick: this.tick,
@@ -1062,10 +1103,10 @@ export class PlayableMatchRuntime {
         ),
     });
     if (branchResult.branch !== "active") {
-      schedule.record("tick:guard-distance-latch", this.p1.id);
-      refreshRuntimeInGuardDist(this.p1, this.p2, this.guardDistanceWorld, this.tick);
-      schedule.record("tick:guard-distance-latch", this.p2.id);
-      refreshRuntimeInGuardDist(this.p2, this.p1, this.guardDistanceWorld, this.tick);
+      schedule.record("tick:guard-distance-latch", activeP1.id);
+      refreshRuntimeInGuardDist(activeP1, activeP2, this.guardDistanceWorld, this.tick);
+      schedule.record("tick:guard-distance-latch", activeP2.id);
+      refreshRuntimeInGuardDist(activeP2, activeP1, this.guardDistanceWorld, this.tick);
       this.clearActiveRootGuardDistanceLatches();
     }
     schedule.record("tick:restore-superpause-defense");
@@ -1084,13 +1125,14 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
+    const [activeP1, activeP2] = this.activePair();
     const rootAdvancePhases = rootAdvancePhaseWorld.snapshot({
       runtimeProfile: this.runtimeProfile,
-      teamMode: this.tagTeamOrder ? "tag" : "single",
+      teamMode: this.teamPresentationMode(),
       roots: this.characterRoots(),
-      playableRoots: [this.p1, this.p2],
+      playableRoots: [activeP1, activeP2],
     });
-    const activeRootGuardDefenders = this.tagTeamOrder
+    const activeRootGuardDefenders = this.teamGameplayActive()
       ? this.characterRoots().filter((root) => rootAdvancePhases.phaseOf(root) === "active-motion")
       : [];
     matchActiveWorld.advance({
@@ -1103,15 +1145,15 @@ export class PlayableMatchRuntime {
       },
       pushNormalCommandBuffers: () => {
         recordPhase("active:command-buffer");
-        const reserveRoutes = rootInputRoutes.filter(({ actor }) => actor !== this.p1 && actor !== this.p2);
+        const reserveRoutes = rootInputRoutes.filter(({ actor }) => !this.activeRoots.includes(actor));
         matchTickInputWorld.stampMappedActors({ tick: this.tick, routes: reserveRoutes });
         return matchTickInputWorld.pushMappedNormalCommandBuffers({ tick: this.tick, routes: rootInputRoutes });
       },
       applyInputControl: () => {
         recordPhase("active:input-control");
         return matchInputControlWorld.apply({
-          p1: this.p1,
-          p2: this.p2,
+          p1: activeP1,
+          p2: activeP2,
           p1Input,
           p2Input,
           p2Controlled: input.p2 !== undefined,
@@ -1194,8 +1236,8 @@ export class PlayableMatchRuntime {
           });
         }
         return matchFighterAdvanceWorld.advancePair({
-          p1: this.p1,
-          p2: this.p2,
+          p1: activeP1,
+          p2: activeP2,
           runtimeProfile: this.runtimeProfile,
           preparedRunOrder,
           advanceFighter: (fighter, opponent) =>
@@ -1234,13 +1276,13 @@ export class PlayableMatchRuntime {
       advancePostFighter: () => {
         recordPhase("active:post-fighter");
         return matchPostFighterWorld.advanceRuntime({
-          p1: this.p1,
-          p2: this.p2,
-          targetActors: this.tagTeamOrder
+          p1: activeP1,
+          p2: activeP2,
+          targetActors: this.teamGameplayActive()
             ? selectRuntimeRootTargetMaintenanceActors(this.characterRoots())
             : undefined,
-          targetResetActors: this.tagTeamOrder ? this.characterRoots() : undefined,
-          hitDefContactActors: this.tagTeamOrder ? this.characterRoots() : undefined,
+          targetResetActors: this.teamGameplayActive() ? this.characterRoots() : undefined,
+          hitDefContactActors: this.teamGameplayActive() ? this.characterRoots() : undefined,
           stage: this.stage,
           stageTime: this.tick,
           helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
@@ -1277,10 +1319,10 @@ export class PlayableMatchRuntime {
             recordPhase("tick:guard-distance-latch", defender.id);
             refreshRuntimeInGuardDist(defender, attacker, this.guardDistanceWorld, this.tick);
           },
-          refreshRootGuardDistance: this.tagTeamOrder ? () => {
+          refreshRootGuardDistance: this.teamGameplayActive() ? () => {
             this.refreshActiveRootDirectGuardDistance(recordPhase, activeRootGuardDefenders);
           } : undefined,
-          advanceBodyPush: this.tagTeamOrder ? () => {
+          advanceBodyPush: this.teamGameplayActive() ? () => {
             const roots = this.characterRoots();
             this.lastRootBodyPush = rootBodyPushWorld.advance({
               tagMode: true,
@@ -1299,15 +1341,15 @@ export class PlayableMatchRuntime {
                 mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(root.definition),
               })),
               playableRoots: [
-                { id: this.p1.id, side: 1, teamState: this.p1.runtime.teamState!, runtime: this.p1.runtime, localCoord: this.p1.definition.localCoord, weight: this.p1.definition.constants?.["size.weight"], pushFactor: this.p1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p1), hurtBoxes: frameWorld.currentHurtBoxes(this.p1), sizePushOnly: this.p1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p1.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p1.definition) },
-                { id: this.p2.id, side: 2, teamState: this.p2.runtime.teamState!, runtime: this.p2.runtime, localCoord: this.p2.definition.localCoord, weight: this.p2.definition.constants?.["size.weight"], pushFactor: this.p2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(this.p2), hurtBoxes: frameWorld.currentHurtBoxes(this.p2), sizePushOnly: this.p2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: this.p2.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(this.p2.definition) },
+                { id: activeP1.id, side: 1, teamState: activeP1.runtime.teamState!, runtime: activeP1.runtime, localCoord: activeP1.definition.localCoord, weight: activeP1.definition.constants?.["size.weight"], pushFactor: activeP1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(activeP1), hurtBoxes: frameWorld.currentHurtBoxes(activeP1), sizePushOnly: activeP1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: activeP1.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(activeP1.definition) },
+                { id: activeP2.id, side: 2, teamState: activeP2.runtime.teamState!, runtime: activeP2.runtime, localCoord: activeP2.definition.localCoord, weight: activeP2.definition.constants?.["size.weight"], pushFactor: activeP2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(activeP2), hurtBoxes: frameWorld.currentHurtBoxes(activeP2), sizePushOnly: activeP2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: activeP2.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(activeP2.definition) },
               ],
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
             });
             for (const id of this.lastRootBodyPush.rootIds) recordPhase("post-fighter:body-push", id);
           } : undefined,
-          inspectHitAdmission: this.tagTeamOrder ? () => {
+          inspectHitAdmission: this.teamGameplayActive() ? () => {
             const roots = this.characterRoots();
             this.lastRootHitAdmission = rootDirectHitAdmissionWorld.inspect({
               roots: roots.map((root) => ({
@@ -1329,7 +1371,7 @@ export class PlayableMatchRuntime {
             });
             for (const id of this.lastRootHitAdmission.rootIds) recordPhase("post-fighter:hit-admission", id);
           } : undefined,
-          resolveRootDirectCombat: this.tagTeamOrder ? (resolveDirectCombat) => {
+          resolveRootDirectCombat: this.teamGameplayActive() ? (resolveDirectCombat) => {
             const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
             for (const pairId of this.lastRootHitAdmission?.admittedPairIds ?? []) {
               const [attackerId, getterId] = pairId.split("->");
@@ -1339,7 +1381,7 @@ export class PlayableMatchRuntime {
               resolveDirectCombat(attacker, getter);
             }
           } : undefined,
-          resolveRootReversalClashes: this.tagTeamOrder ? (resolveReversalClash) => {
+          resolveRootReversalClashes: this.teamGameplayActive() ? (resolveReversalClash) => {
             const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
             for (const pairId of this.lastRootHitAdmission?.admittedReversalClashPairIds ?? []) {
               const [reverserId, getterId] = pairId.split("->");
@@ -1349,7 +1391,7 @@ export class PlayableMatchRuntime {
               resolveReversalClash(reverser, getter);
             }
           } : undefined,
-          resolveRootPriorityClashes: this.tagTeamOrder ? (resolvePriorityClash) => {
+          resolveRootPriorityClashes: this.teamGameplayActive() ? (resolvePriorityClash) => {
             const rootsById = new Map(this.characterRoots().map((root) => [root.id, root]));
             const ordered = (this.lastRootHitAdmission?.attackerIds ?? []).map((id) => {
               const root = rootsById.get(id);
@@ -1367,13 +1409,13 @@ export class PlayableMatchRuntime {
             }
           } : undefined,
           resolveRootPriorityOutcomes: (resolveEqualPriorityOutcomes) => {
-            resolveEqualPriorityOutcomes(this.tagTeamOrder ? this.characterRoots() : [this.p1, this.p2]);
+            resolveEqualPriorityOutcomes(this.teamGameplayActive() ? this.characterRoots() : [activeP1, activeP2]);
           },
-          recordTargetMaintenance: this.tagTeamOrder
+          recordTargetMaintenance: this.teamGameplayActive()
             ? (root) => recordPhase("post-fighter:target-maintenance", root.id)
             : undefined,
           commitHitDefTargets: (root) => commitRuntimeHitDefTargets(root),
-          recordHitDefContactCommit: this.tagTeamOrder
+          recordHitDefContactCommit: this.teamGameplayActive()
             ? (root) => recordPhase("post-fighter:hitdef-contact-commit", root.id)
             : undefined,
           log: (line) => this.logs.unshift(line),
@@ -1382,10 +1424,15 @@ export class PlayableMatchRuntime {
       },
       finishRoundIfNeeded: () => {
         recordPhase("active:round-finish");
+        const [activeP1, activeP2] = this.activePair();
+        if (this.teamRoundMode === "turns" && this.round.isOver) {
+          const turnsContinuation = this.tryAutomaticTurnsContinuation();
+          if (turnsContinuation !== "not-applicable") return undefined;
+        }
         return matchRoundWorld.finishIfNeeded({
           round: this.round,
-          p1: this.p1,
-          p2: this.p2,
+          p1: activeP1,
+          p2: activeP2,
           tick: this.tick,
           stopPlaying: () => {
             this.playing = false;
@@ -1405,6 +1452,7 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     const gameSpace = runtimeStageGameSpace(this.stage);
+    const [activeP1, activeP2] = this.activePair();
     if (this.runtimeProfile === "ikemen-go") {
       this.advanceIkemenPausedMatch(input, p1Input, p2Input, preparedActorRunOrder, gameSpace, recordPhase);
       return;
@@ -1412,8 +1460,8 @@ export class PlayableMatchRuntime {
     matchPausedBridgeWorld.advanceRuntime({
       pausedMatchWorld: this.pausedMatchWorld,
       pauseWorld: this.pauseWorld,
-      p1: this.p1,
-      p2: this.p2,
+      p1: activeP1,
+      p2: activeP2,
       p1Input,
       p2Input,
       p2Controlled: input.p2 !== undefined,
@@ -1465,26 +1513,27 @@ export class PlayableMatchRuntime {
   ): void {
     const pause = this.pauseWorld.current();
     if (!pause) return;
+    const [activeP1, activeP2] = this.activePair();
 
-    this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
-    this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
+    activeP1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
+    activeP2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
 
     this.pauseWorld.beginDeferredActivation();
     try {
       pausedActorAdvanceWorld.advance({
         pause,
         runOrder: preparedActorRunOrder,
-        canAdvanceRoot: (fighter) => this.reserveRoots.includes(fighter) || this.pauseWorld.canActorMove(fighter.id),
+        canAdvanceRoot: (fighter) => this.inactiveRoots().includes(fighter) || this.pauseWorld.canActorMove(fighter.id),
         advanceRoot: (fighter) => {
           const opponent = this.opponentForRoot(fighter);
-          if (this.reserveRoots.includes(fighter)) {
+          if (this.inactiveRoots().includes(fighter)) {
             this.advanceStandbyRootCns(fighter, opponent, gameSpace, recordPhase, {
               onlyIgnoreHitPause: !this.pauseWorld.canActorMove(fighter.id),
             });
             return;
           }
-          const fighterInput = fighter === this.p1 ? p1Input : p2Input;
-          if (fighter === this.p1 || input.p2 !== undefined) {
+          const fighterInput = fighter === activeP1 ? p1Input : p2Input;
+          if (fighter === activeP1 || input.p2 !== undefined) {
             handlePlayerInput(
               fighter,
               fighterInput,
@@ -1555,8 +1604,8 @@ export class PlayableMatchRuntime {
         currentPause: () => this.pauseWorld.current(),
         finalizePresentation: () => {
           for (const [fighter, opponent] of [
-            [this.p1, this.p2],
-            [this.p2, this.p1],
+            [activeP1, activeP2],
+            [activeP2, activeP1],
           ] as const) {
             this.effectLifecycleWorld.advancePausedPresentation(fighter, pause.type, this.stage, opponent, {
               gameSpace,
@@ -1980,15 +2029,15 @@ export class PlayableMatchRuntime {
       roots.map((root) => ({ id: root.id, ...root.runtime.teamState })),
     ).entries.find((entry) => entry.actorId === fighter.id);
     const selectedId = selection?.p2CandidateIds[0];
-    return roots.find((root) => root.id === selectedId) ?? (runtimeTeamSide(fighter) === 1 ? this.p2 : this.p1);
+    return roots.find((root) => root.id === selectedId) ?? (runtimeTeamSide(fighter) === 1 ? this.activeRoots[1] : this.activeRoots[0]);
   }
 
   private currentRootAdvancePhaseOf(fighter: FighterMatchState): RuntimeRootAdvancePhase {
     return rootAdvancePhaseWorld.snapshot({
       runtimeProfile: this.runtimeProfile,
-      teamMode: this.tagTeamOrder ? "tag" : "single",
+      teamMode: this.teamPresentationMode(),
       roots: this.characterRoots(),
-      playableRoots: [this.p1, this.p2],
+      playableRoots: this.activeRoots,
     }).phaseOf(fighter);
   }
 
@@ -2000,9 +2049,9 @@ export class PlayableMatchRuntime {
     const rootsById = new Map(roots.map((root) => [root.id, root]));
     const currentRootAdvancePhases = rootAdvancePhaseWorld.snapshot({
       runtimeProfile: this.runtimeProfile,
-      teamMode: this.tagTeamOrder ? "tag" : "single",
+      teamMode: this.teamPresentationMode(),
       roots,
-      playableRoots: [this.p1, this.p2],
+      playableRoots: this.activeRoots,
     });
     const selections = rootSelectionWorld.diagnostic(
       roots.map((root) => ({ id: root.id, ...root.runtime.teamState })),
@@ -2023,7 +2072,7 @@ export class PlayableMatchRuntime {
   }
 
   private clearActiveRootGuardDistanceLatches(): void {
-    if (!this.tagTeamOrder) return;
+    if (!this.teamGameplayActive()) return;
     for (const root of this.reserveRoots) delete root.runtime.inGuardDist;
   }
 
@@ -2110,7 +2159,7 @@ export class PlayableMatchRuntime {
     }
     const targets = this.runtimeProfile === "ikemen-go"
       ? this.opposingTeamDefenseActors(fighter)
-      : fighter.targetWorld.resolveCandidates(fighter, [fighter.id === this.p1.id ? this.p2 : this.p1]);
+      : fighter.targetWorld.resolveCandidates(fighter, [fighter === this.activeRoots[0] ? this.activeRoots[1] : this.activeRoots[0]]);
     return this.applyTargetDefenseMultiplierToActors(targets, multiplier, pause);
   }
 
@@ -2138,8 +2187,9 @@ export class PlayableMatchRuntime {
   ): Array<FighterMatchState | RuntimeHelper> {
     const characters = [
       ...this.matchRoster().actors.map((actor) => ({ id: actor.id, actor })),
-      ...this.effectActorWorld.helpers(this.p1.id).map((actor) => ({ id: actor.serialId, rootId: actor.rootId, actor })),
-      ...this.effectActorWorld.helpers(this.p2.id).map((actor) => ({ id: actor.serialId, rootId: actor.rootId, actor })),
+      ...this.characterRoots().flatMap((root) =>
+        this.effectActorWorld.helpers(root.id).map((actor) => ({ id: actor.serialId, rootId: actor.rootId, actor })),
+      ),
     ];
     const sourceEntry = characters.find((entry) => entry.actor === source);
     return sourceEntry
@@ -2220,13 +2270,14 @@ export class PlayableMatchRuntime {
 
   getSnapshot(): MugenSnapshot {
     const roots = this.characterRoots();
-    const teamMode = this.tagTeamOrder ? "tag" : "single";
+    const [activeP1, activeP2] = this.activePair();
+    const teamMode = this.teamPresentationMode();
     const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(roots, this.tick);
     const rootPresentation = rootPresentationWorld.diagnostic({
       runtimeProfile: this.runtimeProfile,
       teamMode,
       roots,
-      playableRoots: [this.p1, this.p2],
+      playableRoots: [activeP1, activeP2],
     });
     const rootById = new Map(roots.map((root) => [root.id, root]));
     const cameraActors = rootPresentation.cameraRootIds.map((id) => {
@@ -2237,8 +2288,8 @@ export class PlayableMatchRuntime {
     const presentationSnapshot = matchPresentationSnapshotWorld.create({
       tick: this.tick,
       stage: this.stage,
-      p1: this.p1,
-      p2: this.p2,
+      p1: activeP1,
+      p2: activeP2,
       cameraActors,
       envShakeWorld: this.envShakeWorld,
       envColorWorld: this.envColorWorld,
@@ -2283,9 +2334,9 @@ export class PlayableMatchRuntime {
       matchPause: this.pauseWorld.snapshot(),
       stage: presentationSnapshot.stage,
       round: this.snapshotRound(),
-      p1: this.p1,
-      p2: this.p2,
-      reserveActors: this.reserveRoots,
+      p1: activeP1,
+      p2: activeP2,
+      reserveActors: this.inactiveRoots(),
       effects: presentationSnapshot.effects,
       compatibilitySession: compatibilityTelemetryWorld.buildSession([...this.matchRoster().actors]),
       tickSchedule: this.lastTickSchedule,
@@ -2298,7 +2349,7 @@ export class PlayableMatchRuntime {
       runtimeAuxiliaryResources,
       logs: this.logs,
     });
-    const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);
+    const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.inactiveRoots());
     return {
       ...snapshot,
       ...(this.tagTeamOrder ? { tagTeamOrder: this.tagTeamOrder.diagnostic() } : {}),
@@ -2349,13 +2400,10 @@ export class PlayableMatchRuntime {
     });
     const result = matchRoundWorld.applyTeamRoundHandoff({ actors, decision });
     if (result.applied) {
-      const handoffLogLines = [
-        ...result.phases.map((phase) => `TeamRound ${phase}`),
-        ...result.changes.map((change) => `Team ${change.side} ${change.role} ${change.actorId}`),
-      ];
-      for (const line of handoffLogLines.reverse()) {
-        this.logs.unshift(line);
+      if (this.teamRoundMode === "turns" && !this.syncTurnsActiveRoots()) {
+        throw new Error("Turns handoff committed without one active root per side");
       }
+      this.logTeamRoundHandoff(result);
       this.reconcileTeamRedLifeShare();
     }
     return result;
@@ -2363,6 +2411,9 @@ export class PlayableMatchRuntime {
 
   reset(): void {
     this.resetRuntimeState();
+    this.activeRoots = [this.p1, this.p2];
+    this.turnsContinuationActive = false;
+    this.lastTurnsContinuation = undefined;
     this.matchOutcome.reset();
     this.lastRoundContext = this.roundContextWorld.reset(this.characterRoots().map(({ id }) => ({ id })));
     this.applyRoundContext(this.lastRoundContext);
@@ -2421,6 +2472,165 @@ export class PlayableMatchRuntime {
       this.initializeCharacterIdentity();
     }
     this.resetTeamResourceBanks();
+  }
+
+  private tryAutomaticTurnsContinuation(): "continued" | "blocked" | "not-applicable" {
+    if (this.runtimeProfile !== "ikemen-go" || this.teamRoundMode !== "turns") return "not-applicable";
+
+    const roots = this.characterRoots();
+    const actors = this.teamRoundActors();
+    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(roots, this.tick);
+    const decision = matchRoundWorld.snapshotTeamRoundDecision({
+      actors,
+      modeBySide: { 1: "turns", 2: "turns" },
+      roundNotOver: globalAssertSpecial.roundNotOver,
+      tick: this.tick,
+    });
+    const winnerId = this.turnsContinuationWinnerId(decision, actors);
+    const plan = this.turnsContinuationWorld.prepare({
+      actors,
+      modeBySide: { 1: "turns", 2: "turns" },
+      stateActors: roots.map(roundState5900Actor),
+      resourceActors: roots.map(roundResourceActor),
+      roundNotOver: globalAssertSpecial.roundNotOver,
+      winnerId,
+      nextRoundNo: this.round.currentRoundNo,
+      tick: this.tick,
+    });
+
+    if (plan.status !== "replacement-required") {
+      if (plan.status === "blocked") {
+        this.lastTurnsContinuation = { ...plan, applied: false };
+        this.playing = false;
+        this.logs.unshift(`Turns continuation blocked: ${plan.diagnostics.join(", ") || "preflight"}`);
+        return "blocked";
+      }
+      return "not-applicable";
+    }
+
+    this.lastTurnsContinuation = { ...plan, applied: false };
+    if (!plan.ready) {
+      this.playing = false;
+      this.logs.unshift(`Turns continuation blocked: ${plan.diagnostics.join(", ") || "preflight"}`);
+      return "blocked";
+    }
+
+    const handoff = matchRoundWorld.applyTeamRoundHandoff({ actors, decision: plan.decision });
+    if (!handoff.applied) {
+      const blocked = {
+        ...plan,
+        status: "blocked" as const,
+        ready: false,
+        diagnostics: [...plan.diagnostics, ...handoff.diagnostics, "handoff-commit-failed"].sort(),
+        phases: [...plan.phases, "continuation:blocked"],
+        applied: false,
+      } satisfies RuntimeTurnsContinuationResult;
+      this.lastTurnsContinuation = blocked;
+      this.playing = false;
+      this.logs.unshift(`Turns continuation blocked: ${blocked.diagnostics.join(", ")}`);
+      return "blocked";
+    }
+    this.logTeamRoundHandoff(handoff);
+
+    const desiredTeamStates = new Map(
+      roots.map((root) => [root.id, root.runtime.teamState ? { ...root.runtime.teamState } : undefined]),
+    );
+    const nextActiveRoots = ([1, 2] as const).map((side) => roots
+      .filter((root) => runtimeTeamSide(root) === side)
+      .filter((root) => {
+        const teamState = desiredTeamStates.get(root.id);
+        return teamState?.playerType && !teamState.disabled && !teamState.standby && !teamState.overKo;
+      })
+      .sort((left, right) => (left.playerNo ?? Number.MAX_SAFE_INTEGER) - (right.playerNo ?? Number.MAX_SAFE_INTEGER))[0]) as [
+        FighterMatchState | undefined,
+        FighterMatchState | undefined,
+      ];
+    if (!nextActiveRoots[0] || !nextActiveRoots[1]) {
+      const blocked = {
+        ...plan,
+        status: "blocked" as const,
+        ready: false,
+        diagnostics: [...plan.diagnostics, "active-root-missing"].sort(),
+        phases: [...plan.phases, "continuation:blocked"],
+        applied: false,
+      } satisfies RuntimeTurnsContinuationResult;
+      this.lastTurnsContinuation = blocked;
+      this.playing = false;
+      this.logs.unshift(`Turns continuation blocked: ${blocked.diagnostics.join(", ")}`);
+      return "blocked";
+    }
+
+    const persistentState = new Map(
+      roots.map((root) => [root.id, { vars: [...root.runtime.vars], fvars: [...root.runtime.fvars] }]),
+    );
+    const matchTick = this.tick;
+    const matchFrameClock = this.frameClock;
+    this.resetRuntimeState({ preserveRound: true });
+    this.tick = matchTick;
+    this.frameClock = matchFrameClock;
+    this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
+    this.round.restartCurrentRound(this.roundTimerFrames);
+    this.activeRoots = [nextActiveRoots[0], nextActiveRoots[1]];
+    this.turnsContinuationActive = true;
+    this.applyRoundContext(this.lastRoundContext);
+
+    for (const root of roots) {
+      const desired = desiredTeamStates.get(root.id);
+      if (desired && root.runtime.teamState) Object.assign(root.runtime.teamState, desired);
+      const variables = persistentState.get(root.id);
+      if (variables) {
+        root.runtime.vars = [...variables.vars];
+        root.runtime.fvars = [...variables.fvars];
+      }
+    }
+    const stateByActorId = new Map(plan.resourceReset.states.map((state) => [state.actorId, state]));
+    for (const root of roots) {
+      const state = stateByActorId.get(root.id);
+      if (!state) continue;
+      root.runtime.life = state.lifeAfter;
+      root.runtime.power = state.powerAfter;
+      root.runtime.guardPoints = state.guardPointsAfter;
+      root.runtime.dizzyPoints = state.dizzyPointsAfter;
+      root.runtime.redLife = state.redLifeAfter;
+    }
+    const availableState5900Ids = new Set(plan.state5900.availableActorIds);
+    for (const root of roots) {
+      if (!availableState5900Ids.has(root.id)) continue;
+      enterState(root, RUNTIME_ROUND_STATE_5900, undefined, { preserveAnimationWhenMissing: true });
+    }
+    this.lastRoundState5900 = plan.state5900;
+    this.resetTeamResourceBanks();
+    const applied = {
+      ...plan,
+      phases: [...plan.phases, ...handoff.phases.slice(-2), "continuation:commit", "continuation:complete"],
+      diagnostics: [],
+      applied: true,
+    } satisfies RuntimeTurnsContinuationResult;
+    this.lastTurnsContinuation = applied;
+    this.logs.unshift(`Turns continuation ${nextActiveRoots[0].id}/${nextActiveRoots[1].id}; state 5900 entered`);
+    return "continued";
+  }
+
+  private logTeamRoundHandoff(result: RuntimeTeamRoundHandoffResult): void {
+    const handoffLogLines = [
+      ...result.phases.map((phase) => `TeamRound ${phase}`),
+      ...result.changes.map((change) => `Team ${change.side} ${change.role} ${change.actorId}`),
+    ];
+    for (const line of handoffLogLines.reverse()) {
+      this.logs.unshift(line);
+    }
+  }
+
+  private turnsContinuationWinnerId(
+    decision: RuntimeTeamRoundDecision,
+    actors: readonly RuntimeTeamRoundHandoffActor[],
+  ): string | undefined {
+    const actorsById = new Map(actors.map((actor) => [actor.id, actor]));
+    const winningSides = decision.sides.filter((side) =>
+      !side.memberKo && side.aliveActorIds.some((actorId) => (actorsById.get(actorId)?.life ?? 0) > 0),
+    );
+    if (winningSides.length !== 1) return undefined;
+    return winningSides[0]!.aliveActorIds.find((actorId) => (actorsById.get(actorId)?.life ?? 0) > 0);
   }
 
   startNextRound(): RuntimeNextRoundResult {
@@ -2536,8 +2746,12 @@ export class PlayableMatchRuntime {
     if (this.lastRoundState5900) {
       round.state5900 = this.lastRoundState5900;
     }
+    if (this.lastTurnsContinuation) {
+      round.turnsContinuation = this.lastTurnsContinuation;
+    }
     if (round.match?.matchOver) {
-      const winnerLabel = round.match.winnerSide === 1 ? this.p1.label : this.p2.label;
+      const winnerLabel = this.activeRoots.find((root) => runtimeTeamSide(root) === round.match!.winnerSide)?.label ??
+        (round.match.winnerSide === 1 ? this.p1.label : this.p2.label);
       round.message = `Match over - ${winnerLabel}`;
     }
     return round;

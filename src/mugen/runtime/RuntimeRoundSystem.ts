@@ -103,6 +103,10 @@ export class RuntimeRoundSystem {
     this.resetState(timerFrames);
   }
 
+  restartCurrentRound(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES): void {
+    this.resetState(timerFrames);
+  }
+
   private resetState(timerFrames: number): void {
     this.timerFrames = boundedRoundFrames(timerFrames);
     this.state = "fight";

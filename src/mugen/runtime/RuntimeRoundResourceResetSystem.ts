@@ -34,6 +34,7 @@ export type RuntimeRoundResourceResetInput = {
   mode: RuntimeTeamRoundMode;
   winnerId?: string;
   nextRoundNo?: number;
+  preserveDefeated?: boolean;
 };
 
 export type RuntimeRoundResourceResetResult = {
@@ -73,6 +74,8 @@ export class RuntimeRoundResourceResetWorld {
       const winnerSurvives = input.mode === "turns" && actorId === input.winnerId;
       const lifeAfter = winnerSurvives
         ? clamp(Math.max(1, lifeBefore), 1, lifeMax)
+        : input.preserveDefeated && lifeBefore <= 0
+          ? 0
         : lifeMax;
 
       return [{

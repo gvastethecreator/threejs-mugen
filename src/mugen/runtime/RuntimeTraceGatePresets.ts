@@ -2377,26 +2377,39 @@ export function createSyntheticImportedRoundKoTraceArtifact(options: RuntimeTrac
 export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
-  const attacker = createSyntheticImportedTraceFighter({
+  const state5900 = parseCns(`
+[Statedef 5900]
+type = S
+movetype = I
+physics = S
+anim = 5900
+ctrl = 0
+`).states[0]!;
+  const withState5900 = (fighter: DemoFighterDefinition): DemoFighterDefinition => ({
+    ...fighter,
+    states: [...(fighter.states ?? []), state5900],
+    animations: new Map([...fighter.animations, [5900, traceAction(5900)] as const]),
+  });
+  const attacker = withState5900(createSyntheticImportedTraceFighter({
     id: "synthetic-imported-team-round-attacker",
     displayName: "Synthetic Imported Team Round Attacker",
     hitDefDamage: 1200,
-  });
-  const defender = createSyntheticImportedTraceFighter({
+  }));
+  const defender = withState5900(createSyntheticImportedTraceFighter({
     id: "synthetic-imported-team-round-defender",
     displayName: "Synthetic Imported Team Round Defender",
     withHitDef: false,
-  });
-  const reserveSideOne = createSyntheticImportedTraceFighter({
+  }));
+  const reserveSideOne = withState5900(createSyntheticImportedTraceFighter({
     id: "synthetic-imported-team-round-reserve-one",
     displayName: "Synthetic Imported Team Round Reserve One",
     withHitDef: false,
-  });
-  const reserveSideTwo = createSyntheticImportedTraceFighter({
+  }));
+  const reserveSideTwo = withState5900(createSyntheticImportedTraceFighter({
     id: "synthetic-imported-team-round-reserve-two",
     displayName: "Synthetic Imported Team Round Reserve Two",
     withHitDef: false,
-  });
+  }));
   const stage = options.stage ?? closeCombatStage();
   const script = importedTeamRoundHandoffScript();
   const world = new MatchWorld({
@@ -2407,22 +2420,10 @@ export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
     teamMode: "turns",
     reserveFighters: [reserveSideOne, reserveSideTwo],
   });
-  let handoffPending = false;
-  let handoffApplied = false;
   const trace = runRuntimeTrace(
     {
       getSnapshot: () => world.getSnapshot(),
-      step: (input, stepOptions) => {
-        const snapshot = world.step(input, stepOptions);
-        if (!handoffPending && snapshot.round?.state === "ko") {
-          handoffPending = true;
-          return snapshot;
-        }
-        if (handoffPending && !handoffApplied) {
-          handoffApplied = world.applyTeamRoundHandoff().applied;
-        }
-        return world.getSnapshot();
-      },
+      step: (input, stepOptions) => world.step(input, stepOptions),
       getActorRegistry: () => world.getActorRegistry(),
     },
     script,
@@ -2437,7 +2438,7 @@ export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
       label: "Synthetic imported team KO and replacement handoff",
       source: "imported",
       notes: [
-        "Synthetic imported IKEMEN turns trace proves a lethal active member enters KO, the typed team handoff applies an ordered outgoing/incoming transaction, and the side remains represented by a healthy standby reserve. It does not claim full tag/turns round continuation, shared life, lifebars, rollback, or exact MUGEN/IKEMEN round-flow parity.",
+        "Synthetic imported IKEMEN turns trace proves a lethal active member enters KO, the typed team handoff applies an ordered outgoing/incoming transaction, the active pair restarts through state 5900, and the side remains represented by a healthy standby reserve. It does not claim shared life, lifebars, rollback, or exact MUGEN/IKEMEN round-flow parity.",
       ],
     },
     gates: [
@@ -2453,6 +2454,7 @@ export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
           "TeamRound handoff:complete",
           "Team 2 outgoing p2",
           "Team 2 incoming p4",
+          "Turns continuation p1/p4; state 5900 entered",
         ],
         requiredCombatReasons: ["hit"],
         requiredActorFrameSequences: [
@@ -2462,13 +2464,15 @@ export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
             steps: [
               { actorId: "p2", actorKind: "player", teamStandby: false, observedLifeAtMost: 0 },
               { actorId: "p2", actorKind: "player", teamStandby: true, observedLifeAtMost: 0 },
-              { actorId: "p4", actorKind: "player", teamStandby: true, observedLifeAtLeast: 1 },
-              { actorId: "p4", actorKind: "player", teamStandby: false, observedLifeAtLeast: 1 },
+              { actorId: "p4", actorKind: "player", teamStandby: false, stateNo: 5900, observedLifeAtLeast: 1 },
             ],
           },
         ],
         requiredRoundFrames: [{ state: "ko", observedPostRoundFrameAtLeast: 1 }],
-        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 0 }],
+        requiredFinalActors: [
+          { actorId: "p2", actorKind: "player", life: 0 },
+          { actorId: "p4", actorKind: "player", stateNo: 5900, life: 1000 },
+        ],
       },
     ],
   });
@@ -44216,7 +44220,7 @@ function importedPostKoScript(frames: number): RuntimeTraceInputFrame[] {
 function importedTeamRoundHandoffScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "team-round-ko-press", frames: 1, p1: ["x"], p2: [] },
-    { label: "team-round-handoff-window", frames: 18, p1: [], p2: [] },
+    { label: "team-round-handoff-window", frames: 500, p1: [], p2: [] },
   ]);
 }
 

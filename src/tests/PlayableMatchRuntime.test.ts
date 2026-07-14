@@ -3265,6 +3265,159 @@ ctrl = 0
     expect(runtime.getSnapshot().actors.every((actor) => actor.runtime.roundsExisted === 2)).toBe(true);
   });
 
+  it("automatically continues an imported Turns fight through handoff, reset, and state 5900", () => {
+    const state5900 = parseCns(`
+[Statedef 5900]
+type = S
+movetype = I
+physics = S
+anim = 5900
+ctrl = 0
+`).states[0]!;
+    const withState5900 = (definition: DemoFighterDefinition): DemoFighterDefinition => ({
+      ...definition,
+      states: [...(definition.states ?? []), state5900],
+      animations: new Map([...definition.animations, [5900, action(5900)] as const]),
+    });
+    const attacker = withState5900(createImportedFixture({
+      id: "turns-auto-attacker",
+      displayName: "Turns Auto Attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    }));
+    const defender = withState5900(createImportedFixture({
+      id: "turns-auto-defender",
+      displayName: "Turns Auto Defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+    }));
+    const reserveOne = withState5900(createImportedFixture({ id: "turns-auto-reserve-one", withStateMove: false }));
+    const reserveTwo = withState5900(createImportedFixture({ id: "turns-auto-reserve-two", withStateMove: false }));
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "turns",
+      reserveFighters: [reserveOne, reserveTwo],
+    });
+
+    const ko = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(ko.playing).toBe(true);
+    expect(ko.round).toMatchObject({ state: "ko", postRound: { remaining: 255 } });
+    expect(ko.actors.find(({ id }) => id === "p2")).toMatchObject({
+      runtime: { life: 0, teamState: { standby: false } },
+    });
+    let continued = ko;
+    for (let frame = 0; frame < 500; frame += 1) {
+      continued = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(continued).toMatchObject({
+      playing: true,
+      actors: [
+        { id: "p1", runtime: { stateNo: 5900, life: 1000, teamState: { standby: false } } },
+        { id: "p4", runtime: { stateNo: 5900, life: 1000, teamState: { standby: false } } },
+      ],
+      round: {
+        state: "fight",
+        turnsContinuation: {
+          status: "replacement-required",
+          applied: true,
+          incomingActorIds: ["p4"],
+          state5900: { availableActorIds: ["p1", "p2", "p3", "p4"] },
+        },
+      },
+      rootPresentation: { mode: "ikemen-tag", drawRootIds: ["p1", "p4"] },
+      teamRoundLifebar: { sides: [{ activeActorIds: ["p1"] }, { activeActorIds: ["p4"] }] },
+    });
+    expect(continued.reserveActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "p2",
+          runtime: expect.objectContaining({
+            life: 0,
+            teamState: expect.objectContaining({ standby: true, overKo: true }),
+          }),
+        }),
+        expect.objectContaining({
+          id: "p3",
+          runtime: expect.objectContaining({
+            teamState: expect.objectContaining({ standby: true, overKo: false }),
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("blocks automatic Turns continuation when the incoming actor lacks state 5900", () => {
+    const state5900 = parseCns(`
+[Statedef 5900]
+type = S
+movetype = I
+physics = S
+anim = 5900
+ctrl = 0
+`).states[0]!;
+    const withState5900 = (definition: DemoFighterDefinition): DemoFighterDefinition => ({
+      ...definition,
+      states: [...(definition.states ?? []), state5900],
+      animations: new Map([...definition.animations, [5900, action(5900)] as const]),
+    });
+    const attacker = withState5900(createImportedFixture({
+      id: "turns-blocked-attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    }));
+    const defender = withState5900(createImportedFixture({
+      id: "turns-blocked-defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+    }));
+    const reserveOne = withState5900(createImportedFixture({ id: "turns-blocked-reserve-one", withStateMove: false }));
+    const reserveTwo = createImportedFixture({ id: "turns-blocked-reserve-two", withStateMove: false });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 },
+        p2: { x: 35, y: 0, facing: -1 },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "turns",
+      reserveFighters: [reserveOne, reserveTwo],
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let blocked = runtime.getSnapshot();
+    for (let frame = 0; frame < 500; frame += 1) {
+      blocked = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(blocked).toMatchObject({
+      playing: false,
+      round: {
+        state: "ko",
+        turnsContinuation: {
+          status: "blocked",
+          applied: false,
+          diagnostics: expect.arrayContaining(["state-5900-required:p4"]),
+        },
+      },
+      actors: [
+        expect.objectContaining({ id: "p1" }),
+        expect.objectContaining({ id: "p2", runtime: expect.objectContaining({ life: 0 }) }),
+      ],
+    });
+    expect(blocked.reserveActors?.find(({ id }) => id === "p4")).toMatchObject({
+      runtime: { teamState: { standby: true }, stateNo: 0 },
+    });
+  });
+
   it("stops the next-round route after the configured match win", () => {
     const attacker = createImportedFixture({
       id: "match-over-attacker",

@@ -8,6 +8,7 @@ import type { CommandInputHistorySample } from "./CommandBuffer";
 import type { RuntimeMatchOutcomeSnapshot } from "./RuntimeMatchOutcomeSystem";
 import type { RuntimeRoundContextSnapshot } from "./RuntimeRoundContextSystem";
 import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900System";
+import type { RuntimeTurnsContinuationResult } from "./RuntimeTurnsContinuationSystem";
 import type {
   RuntimeHitDefPriorityProfile,
   RuntimeHitDefSpritePrioritySource,
@@ -531,6 +532,7 @@ export type RoundSnapshot = {
   match?: RuntimeMatchOutcomeSnapshot;
   roundContext?: RuntimeRoundContextSnapshot;
   state5900?: RuntimeRoundState5900Snapshot;
+  turnsContinuation?: RuntimeTurnsContinuationResult;
   postRound?: {
     schema: "RuntimePostRound/v0";
     frame: number;
