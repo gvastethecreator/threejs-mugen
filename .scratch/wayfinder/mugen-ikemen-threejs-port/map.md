@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Implement exact red-life round reset](tickets/155-red-life-round-reset.md) - Entry 516 adds a post-KO next-round boundary with bounded life/resource carry, mandatory red-life clearing, match-tick continuity, numbered round snapshots, UI access, and a required imported trace. Match-over adjudication, state-5900 choreography, complete variable/map/remap persistence, and full parity remain separate. Next: exact round outcome ownership.
+
 - [Present red-life HUD bars](tickets/154-red-life-hud.md) - Entry 515 renders bounded runtime red-life as a secondary solo/team meter with actor/slot bindings and desktop/mobile smoke. Exact screenpack/motif ownership, animation, and multi-round persistence remain separate. Next: exact multi-round persistence.
 
 - [Close red-life lifecycle rebind](tickets/153-red-life-lifecycle-rebind.md) - Entry 514 reconciles the separate root red-life bank immediately after typed team handoff and rebinds it on match reset; exact multi-round persistence and HUD remain separate. Next: red-life/resource-bar presentation.

@@ -1,5 +1,24 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 exact red-life round reset
+
+- Entry 516 adds a verified post-KO next-round boundary. The typed reset
+  restores life, carries bounded power/guard/dizzy resources, clears red-life,
+  preserves variables and match tick continuity, and publishes round 2 through
+  `PlayableMatchRuntime`, `MatchWorld`, the toolbar, and command palette.
+- The required imported trace proves red-life is nonzero before KO and zero
+  after the next-round transition. Focused resource/round/trace coverage passes
+  592/592; the Playable/trace set passes 778/778.
+- TypeScript 7, build, 598/598 trace artifacts (564 required / 34 optional),
+  boundaries, CSS budget, and desktop/mobile/Studio smoke pass. Evidence is in
+  `.scratch/qa/qa-smoke-round-redlife/diagnostics.json`.
+- Claim ceiling: typed red-life/resource reset only. Match-over adjudication,
+  state-5900 choreography, complete variable/map/remap persistence,
+  rollback/netplay, and full parity remain separate gates; scores remain
+  unchanged.
+- See `docs/research/2026-07-14-red-life-round-reset.md` and
+  `docs/reports/2026-07-14-red-life-round-reset.md`.
+
 ## Global report - 2026-07-14 red-life HUD presentation
 
 - Entry 515 adds a separate recoverable-life meter to solo and IKEMEN team HUD

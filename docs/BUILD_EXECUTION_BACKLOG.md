@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 516 - Exact red-life round reset
+
+Added the first verified post-KO next-round boundary. `RuntimeRoundResourceResetSystem/v0`
+restores life, carries bounded power/guard/dizzy resources, and clears red-life;
+Turns keeps a bounded winner life value. `PlayableMatchRuntime` preserves
+variables and match tick continuity, exposes `MatchWorld.nextRound()` and UI
+controls, and publishes numbered rounds after the initial snapshot. Required
+artifact `synthetic-imported-red-life-round-reset` passes. Focused resource/
+round/trace coverage passes 592/592 and the Playable/trace set passes 778/778.
+TypeScript 7, build, 598/598 trace artifacts (564 required / 34 optional),
+boundaries, CSS budget, and desktop/mobile/Studio smoke pass. Claim blocked:
+match-over adjudication, state-5900 choreography, complete variable/map/remap
+persistence, rollback/netplay, and full MUGEN/IKEMEN parity. See Wayfinder 155
+and the dated research/report.
+
 ## Entry 515 - Red-life HUD presentation
 
 Added bounded runtime-owned red-life presentation. Solo fighters and IKEMEN

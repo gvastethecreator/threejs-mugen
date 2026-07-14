@@ -71,6 +71,23 @@ Playwright smoke. This gate does not claim exact screenpack/motif layout,
 animated recovery, palette/theme ownership, round persistence, native HUD
 triggers, rollback/netplay, or full MUGEN/IKEMEN parity.
 
+## Red-life round reset gate
+
+Acceptance requires a completed imported KO trace to carry nonzero root
+red-life into the post-round boundary, refuse early transition, and start the
+next numbered round only after the bounded post-KO window. The transition must
+restore life according to Single/Tag/Turns policy, preserve bounded
+power/guard/dizzy values, clear red-life, preserve match tick continuity, and
+publish the `RoundSnapshot` counter fields without an incomplete tick schedule.
+Required artifact `synthetic-imported-red-life-round-reset` proves the
+pre-transition resource values, round-2 snapshot, reset event, zero-red-life
+final actors, and schedule continuity. Entry 516 passes 592 focused
+resource/round/trace tests, 598/598 trace artifacts, TypeScript 7, build,
+boundaries, CSS budget, and desktop/mobile/Studio smoke. This gate does not
+claim match-over scoring, state-5900 intro/KO/winpose choreography, complete
+`copyVar` map/remap/dialogue persistence, rollback/netplay, native round
+triggers, or full MUGEN/IKEMEN parity.
+
 ## KO sound handoff gate
 
 Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.

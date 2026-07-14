@@ -1,4 +1,14 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 516 focal closeout
+
+Entry 516 closes the bounded imported red-life/resource transition between a
+completed round and the next numbered round. Focused resource/round/trace
+coverage passes 592/592; the Playable/trace set passes 778/778. TypeScript 7,
+build, 598/598 trace artifacts, architecture/CSS gates, and desktop/mobile/
+Studio Playwright smoke pass. Scores do not move. Match-over adjudication,
+state-5900 choreography, complete variable/map/remap persistence,
+rollback/netplay, and full MUGEN/IKEMEN parity remain separate gates.
+
 ## 2026-07-14 Entry 515 focal closeout
 
 Entry 515 adds bounded runtime-owned red-life presentation to solo and

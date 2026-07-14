@@ -1,5 +1,18 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - exact red-life round reset (2026-07-14)
+
+Entry 516 adds an explicit post-KO next-round boundary backed by
+`RuntimeRoundResourceResetSystem/v0`. Life is restored according to Single/
+Tag/Turns policy, power/guard/dizzy carry within maxima, red-life becomes zero,
+variables and match tick remain continuous, and round 2 is visible through the
+runtime API/UI. The required imported trace proves pre-KO red-life, the full
+post-KO window, round 2, zero red-life, and a complete tick schedule. Focused
+resource/round/trace coverage is 592/592; the Playable/trace set is 778/778;
+TypeScript 7, build, 598/598 traces, boundaries, CSS, and browser smoke pass.
+Next: exact match-over/round-outcome ownership and state-5900 sequencing;
+scores remain unchanged.
+
 ## Latest implementation closeout - red-life HUD presentation (2026-07-14)
 
 Entry 515 adds the bounded runtime-owned recoverable-life meter to solo and
