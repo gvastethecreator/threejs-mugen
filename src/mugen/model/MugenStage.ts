@@ -111,6 +111,7 @@ export type MugenStageDefinition = {
     startY: number;
     zoom: number;
   };
+  resetBackgroundBetweenRounds?: boolean;
   playerStart: {
     p1: { x: number; y: number; z?: number; facing: 1 | -1 };
     p2: { x: number; y: number; z?: number; facing: 1 | -1 };

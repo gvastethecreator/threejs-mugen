@@ -427,6 +427,7 @@ type RuntimeMatchCharacterIdentity = RuntimeCharacterIdentityActor & {
 
 export class PlayableMatchRuntime {
   private tick = 0;
+  private stageRoundStartTick = 0;
   private frameClock = 0;
   private playing = true;
   private speed = 1;
@@ -2318,6 +2319,7 @@ export class PlayableMatchRuntime {
     const presentationSnapshot = matchPresentationSnapshotWorld.create({
       tick: this.tick,
       stage: this.stage,
+      backgroundTick: this.stageBackgroundTick(),
       p1: activeP1,
       p2: activeP2,
       cameraActors,
@@ -2441,6 +2443,7 @@ export class PlayableMatchRuntime {
 
   reset(): void {
     this.resetRuntimeState();
+    this.stageRoundStartTick = this.tick;
     this.activeRoots = [this.p1, this.p2];
     this.turnsContinuationActive = false;
     this.lastTurnsContinuation = undefined;
@@ -2788,6 +2791,7 @@ export class PlayableMatchRuntime {
     this.resetRuntimeState({ preserveRound: true });
     this.tick = matchTick;
     this.frameClock = matchFrameClock;
+    this.stageRoundStartTick = this.tick;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
     this.round.startNextRound(this.roundTimerFrames);
     this.lastRoundContext = this.roundContextWorld.commit(roundContextPlan);
@@ -2850,6 +2854,13 @@ export class PlayableMatchRuntime {
       round.message = `Match over - ${winnerLabel}`;
     }
     return round;
+  }
+
+  private stageBackgroundTick(): number {
+    if (this.stage.resetBackgroundBetweenRounds !== true) {
+      return this.tick;
+    }
+    return Math.max(0, this.tick - this.stageRoundStartTick);
   }
 
   private applyRoundContext(context: RuntimeRoundContextSnapshot): void {

@@ -11,6 +11,7 @@ export type RuntimeMatchPresentationSnapshotActor = RuntimeSnapshotActor &
 export type RuntimeMatchPresentationSnapshotInput<TActor extends RuntimeMatchPresentationSnapshotActor> = {
   tick: number;
   stage: MugenStageDefinition;
+  backgroundTick?: number;
   p1: TActor;
   p2: TActor;
   cameraActors?: readonly TActor[];
@@ -41,6 +42,7 @@ export class RuntimeMatchPresentationSnapshotWorld {
         actors: [...(input.cameraActors ?? actors)],
         cameraShake: input.envShakeWorld.snapshotCameraShake(input.tick, actors),
         envColor: input.envColorWorld.snapshotStageFlash(input.tick),
+        ...(input.backgroundTick === undefined ? {} : { backgroundTick: input.backgroundTick }),
       },
       effects: {
         p1: input.effectLifecycleWorld.snapshotGroups(input.p1),

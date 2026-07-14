@@ -55,13 +55,14 @@ export class AxisRenderer {
     this.presentations = [];
     const stageWidth = Math.max(900, options.width * 2.4);
     const layers = options.stage.layers;
+    const backgroundTick = options.stage.backgroundTick ?? options.tick;
     if (layers?.length) {
       layers.forEach((layer, index) => {
-        const controlledLayer = resolveStageLayerForTick(layer, options.stage, options.tick);
+        const controlledLayer = resolveStageLayerForTick(layer, options.stage, backgroundTick);
         if (!controlledLayer) {
           return;
         }
-        const animatedFrame = getStageActionFrame(options.stage.animations?.get(controlledLayer.actionNo ?? Number.NaN), options.tick);
+        const animatedFrame = getStageActionFrame(options.stage.animations?.get(controlledLayer.actionNo ?? Number.NaN), backgroundTick);
         const renderLayer = animatedFrame ? layerWithFrame(controlledLayer, animatedFrame) : controlledLayer;
         const sprite = this.getLayerSprite(options.stage.id, renderLayer.spriteGroup, renderLayer.spriteIndex);
         if (sprite) {

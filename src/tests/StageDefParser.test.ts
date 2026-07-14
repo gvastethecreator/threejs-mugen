@@ -29,6 +29,7 @@ p2facing = -1
 
 [StageInfo]
 zoffset = 200
+resetBG = 1
 localcoord = 320,240
 
 [Music]
@@ -97,6 +98,7 @@ describe("parseStageDef", () => {
     expect(runtime.playerStart.p2).toMatchObject({ x: 70, z: 7, facing: -1 });
     expect(runtime.depthBounds).toEqual({ top: -30, bottom: 40 });
     expect(runtime.camera.zoom).toBe(1);
+    expect(runtime.resetBackgroundBetweenRounds).toBe(true);
     expect(parsed.animations.get(10)?.frames).toHaveLength(2);
     expect(runtime.animations?.get(10)?.frames[1]).toMatchObject({ spriteGroup: 2, spriteIndex: 1, offsetX: 4 });
     expect(runtime.layers).toHaveLength(3);
@@ -137,6 +139,12 @@ describe("parseStageDef", () => {
         },
       ],
     });
+
+    const continueBetweenRounds = stageDefToRuntime(
+      parseStageDef(kfmStageDef.replace("resetBG = 1", "resetBG = 0"), "stages/kfm-continue.def"),
+      "stage-kfm-continue",
+    );
+    expect(continueBetweenRounds.resetBackgroundBetweenRounds).toBe(false);
   });
 });
 

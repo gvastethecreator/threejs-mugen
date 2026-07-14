@@ -115,6 +115,9 @@ export function stageDefToRuntime(
       startY: cameraStartY,
       zoom: clampZoom((zoomOut + zoomIn) / 2),
     },
+    ...(booleanValue(stageInfo, "resetbg") === undefined
+      ? {}
+      : { resetBackgroundBetweenRounds: booleanValue(stageInfo, "resetbg") }),
     playerStart: {
       p1: {
         x: numberValue(player, "p1startx") ?? -70,

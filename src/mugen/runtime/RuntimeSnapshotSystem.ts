@@ -64,6 +64,7 @@ export type RuntimeStageSnapshotInput = {
   actors: RuntimeSnapshotActor[];
   cameraShake?: StageSnapshot["camera"]["shake"];
   envColor?: RuntimeStageFlash;
+  backgroundTick?: number;
 };
 
 export type RuntimeEffectSnapshotInput = {
@@ -147,6 +148,7 @@ export class RuntimeSnapshotWorld {
       layers: input.stage.layers,
       animations: input.stage.animations,
       bgControllers: input.stage.bgControllers,
+      ...(input.backgroundTick === undefined ? {} : { backgroundTick: input.backgroundTick }),
     };
   }
 

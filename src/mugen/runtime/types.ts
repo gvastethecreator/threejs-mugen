@@ -520,6 +520,7 @@ export type StageSnapshot = {
   layers?: MugenStageDefinition["layers"];
   animations?: MugenStageDefinition["animations"];
   bgControllers?: MugenStageDefinition["bgControllers"];
+  backgroundTick?: number;
 };
 
 export type RoundSnapshot = {

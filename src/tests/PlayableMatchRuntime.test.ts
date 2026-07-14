@@ -3,7 +3,7 @@ import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import { parseCmd } from "../mugen/parsers/CmdParser";
 import { parseCns } from "../mugen/parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
-import { trainingStage } from "../mugen/runtime/demoStage";
+import { bgCtrlLabStage, trainingStage } from "../mugen/runtime/demoStage";
 import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import { runtimeHelperCanDirectlyInteract } from "../mugen/runtime/HelperSystem";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
@@ -3183,6 +3183,24 @@ ctrl = 0
     expect(restarted.round).toMatchObject({ state: "fight", roundNo: 2, roundsExisted: 1 });
     expect(restarted.actors.every((actor) => actor.runtime.life === actor.runtime.lifeMax)).toBe(true);
     expect(restarted.actors.every((actor) => (actor.runtime.redLife ?? 0) === 0)).toBe(true);
+  });
+
+  it("resets stage background time between rounds only when resetBG is enabled", () => {
+    const resetStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: true };
+    const continuingStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: false };
+    const resetRuntime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, resetStage, { roundTimerFrames: 1 });
+    const continuingRuntime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, continuingStage, { roundTimerFrames: 1 });
+
+    const resetOver = resetRuntime.step({ p1: new Set(), p2: new Set() });
+    const continuingOver = continuingRuntime.step({ p1: new Set(), p2: new Set() });
+    expect(resetOver.stage.backgroundTick).toBe(1);
+    expect(continuingOver.stage.backgroundTick).toBe(1);
+
+    resetRuntime.startNextRound();
+    continuingRuntime.startNextRound();
+
+    expect(resetRuntime.getSnapshot().stage.backgroundTick).toBe(0);
+    expect(continuingRuntime.getSnapshot().stage.backgroundTick).toBe(1);
   });
 
   it("records the round outcome and routes imported roots through state 5900", () => {
