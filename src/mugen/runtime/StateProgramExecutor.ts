@@ -117,6 +117,8 @@ const runtimeControllers = new Set([
   "statetypeset",
   "lifeadd",
   "lifeset",
+  "redlifeadd",
+  "redlifeset",
   "poweradd",
   "powerset",
   "varset",

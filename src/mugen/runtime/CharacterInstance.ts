@@ -19,6 +19,7 @@ export class CharacterInstance {
       frameIndex: 0,
       lifeMax: 1000,
       life: 1000,
+      redLife: 0,
       powerMax: 3000,
       power: 0,
       ctrl: true,

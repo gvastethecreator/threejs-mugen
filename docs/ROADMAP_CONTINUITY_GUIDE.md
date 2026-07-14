@@ -1,8 +1,22 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-07-11
+Last updated: 2026-07-14
 
 This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
+
+## 2026-07-14 Daily Audit Override
+
+Entry 505 and the entry-505 report's 587/587 trace aggregate supersede the entry-476 / Wayfinder-127 selector. Do not rebuild journey-v1, M2 adjudication, the independent character routes, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, or bounded folder editing.
+
+Continue with a versioned compatibility corpus and score-band decision, then an independent legal stage/package route. In Studio, preflight a semantic draft before writing. In I2, publish auxiliary-resource ownership before mutations; red life follows the LifeShare family while guard/dizzy remain actor-local. Automatic Turns continuation waits on reset and reference-transfer semantics. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+
+## 2026-07-13 Daily Audit Override
+
+Entry 476, not 411, is the numbered committed cursor. Post-KO/`NoKOSlow`, the legal MUGEN-lite journey, and active-root admission/contact/priority/reversal/depth/HitOverride/guard are closed bounded gates. Wayfinder 127 is open dirty-tree work; preserve it. After it closes, continue with `CompatibilityJourney/v1`, explicit milestone adjudication, and independent legal-package/palette evidence. Before team KO, decide global AssertSpecial ownership. See `docs/research/2026-07-13-daily-roadmap-architecture-audit.md`.
+
+## 2026-07-12 Daily Audit Override
+
+Entry 411 closes Wayfinder 105 bounded plural X/Width body push in the current working tree with declared full gates and no score movement. Return now to R1 post-KO / `NoKOSlow`; Wayfinder 106 may map hit admission in parallel, and later executable I2 work begins with a root combat-candidate/getter-order read model before mutation. See `docs/research/2026-07-12-daily-roadmap-architecture-audit.md`.
 
 ## Current Horizon
 
@@ -44,11 +58,9 @@ The project is not currently trying to claim full MUGEN or IKEMEN parity. It is 
 
 ## Next Useful Runtime Gates
 
-Current I2 prefactor: entry 348 owns inert P3-P8 roots with six-reserve cap, side-local starts, reset, snapshot isolation, and negative schedule/effect-store proof. Next publish a versioned root-participation read model with no mutation and all executable phase owners unchanged; broader lifecycle/identity cleanup stays part of that diagnostic gate.
+Current R1 truth: bounded post-KO / `NoKOSlow` and one legal end-to-end MUGEN-format fixture journey are closed. After Wayfinder 127 closes independently, aggregate the existing route as `CompatibilityJourney/v1`, adjudicate the written MUGEN-lite milestone without documentary score inflation, then add one materially independent legal package or ACT/palette route.
 
-Current I2 follow-up: add a plural batch standby transition and active ids by side without moving storage, automatically tagging out another root, or inferring leader/member/resource ownership. Identity/Player/Partner versus Enemy/P2 eligibility and standby-root CNS scheduling with same-tick TagIn/TagOut visibility are separate later gates.
-
-Current R1 return gate: after that small I2 prefactor, close one post-KO / `NoKOSlow` timeline. The project target remains MUGEN-lite; do not let structural IKEMEN cuts become an unbounded alternate roadmap.
+Current I2 truth: entry 476 closes bounded active-root admission/contact/priority/reversal/depth/HitOverride and grounded/air guard entry. Wayfinder 127 owns the open fixture-specific air-guard landing. Before widening team KO, Helper/Projectile, lifebar, or resource consumers, decide global per-tick AssertSpecial ownership and keep the shallow motion orchestrator delegating stun semantics to `RuntimeStunWorld`.
 
 The HitDef priority policy/contact, `MugenPresentationOrder/v0`, `MatchTickSchedule/v0`, Common1 source precedence, automatic guard ordering, and subsequent IKEMEN RunOrder/Pause/team-topology gates are closed. The ledger below is historical context and must not be selected as current work.
 
@@ -71,7 +83,7 @@ These are good next implementation slices because they can be proven without pre
 - Follow it with a controlled renderer overlap oracle, keeping tie and `ontop` behavior blocked.
 - Version the actual match schedule before changing or further splitting it.
 - Prove Common1 source precedence first, then hard guard order as a separate fact.
-- Close one post-KO timeline slice or one deeper Trust Chain destination only after its dependency above is green.
+- After Wayfinder 127 is independently green, prefer the aggregate Compatibility Journey and milestone-adjudication gates before another narrow I2 matrix.
 
 Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack parity until the smaller routes above stay green.
 

@@ -21,6 +21,8 @@ export type DemoMove = {
   activeEnd: number;
   recovery: number;
   damage: number;
+  redLife?: number;
+  guardRedLife?: number;
   kill?: boolean;
   attr?: string;
   priority?: number;

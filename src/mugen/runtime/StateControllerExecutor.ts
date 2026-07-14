@@ -20,6 +20,8 @@ import {
 } from "./RuntimeControllerExpressionContextSystem";
 import {
   applyRuntimeLifeAdd,
+  applyRuntimeRedLifeAdd,
+  applyRuntimeRedLifeSet,
   applyRuntimeResourceController,
   applyRuntimeVariableAssignment,
   applyRuntimeVariableRangeAssignment,
@@ -115,6 +117,17 @@ export function executeControllerIr(
     const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       applyRuntimeResourceController(next, { kind: "resource", controllerType: "lifeset", value });
+    }
+  } else if (type === "redlifeadd") {
+    const operation = resourceOperation(controller, "redlifeadd");
+    const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
+    const absolute = operation?.absolute ?? ((numberParam(controller, next, context, "absolute") ?? 0) !== 0);
+    applyRuntimeRedLifeAdd(next, value, absolute);
+  } else if (type === "redlifeset") {
+    const operation = resourceOperation(controller, "redlifeset");
+    const value = operation?.value ?? numberParam(controller, next, context, "value");
+    if (value !== undefined) {
+      applyRuntimeRedLifeSet(next, value);
     }
   } else if (type === "poweradd") {
     const operation = resourceOperation(controller, "poweradd");

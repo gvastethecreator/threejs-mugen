@@ -160,6 +160,24 @@ describe("CombatResolver", () => {
     });
   });
 
+  it("carries explicit HitDef red life through hit and guard scaling", () => {
+    const attacker = actor({ attackMultiplier: 1.5 });
+    const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      redLife: 20,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+      guardDamage: 10,
+      guardRedLife: 10,
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({ kind: "hit", redLife: 15 });
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({ kind: "guard", redLife: 8 });
+  });
+
   it("uses explicit air guard velocity only for airborne guards", () => {
     const attack = {
       damage: 40,

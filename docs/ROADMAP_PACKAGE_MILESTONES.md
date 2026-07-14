@@ -1,6 +1,22 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package closeout - IKEMEN inert P3-P8 ownership
+## 2026-07-14 daily audit override
+
+Entry 505 supersedes the entry-476 selector. M2 remains accepted only at bounded fixture scope; palette evidence, a second legal MIT character package, Studio source identity/transaction/provenance/folder editing, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, and Helper-local life/power are closed gates. The entry-505 report declares 587/587 traces; scores do not move.
+
+The next package discriminator is not another isolated controller name. Build `CompatibilityCorpus/v0`, adjudicate the written score band against its legal/portable/optional route matrix, then add one materially independent legal stage/package route. Studio semantic preflight and the I2 auxiliary-resource read model are parallel lanes with separate claim ceilings. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+
+## 2026-07-13 daily audit override
+
+Numbered backlog maximum 476 supersedes the entry-411 queue. Entries 456-468 close bounded post-KO/`NoKOSlow` plus one legal repository-owned MUGEN-lite package through ZIP, loader, trace, browser, movement/combat/recovery, multi-frame AIR, and visible KO evidence. Entries 412-476 close the bounded active-root admission/contact/priority/reversal/depth/HitOverride/guard sequence. The current dirty Wayfinder 127 landing cut is open, not evidence.
+
+After 127 closes independently, R1 returns to evidence generalization: `CompatibilityJourney/v1`, milestone/score adjudication without docs-only inflation, then a second independent legal package or ACT/palette route. I2 pauses adjacent guard-matrix breadth until global AssertSpecial and team-round ownership are decided. See `docs/research/2026-07-13-daily-roadmap-architecture-audit.md`.
+
+## Previous 2026-07-12 daily audit override
+
+Backlog entry 411 closes Wayfinder 105 plural X/Width body push in the current working tree with declared full gates and no score movement. Return the primary lane to R1 post-KO / `NoKOSlow`; Wayfinder 106 may map hit admission in parallel, but the next executable I2 risk cut is a read-only root combat-candidate/order contract before any P3-P8 damage mutation. See `docs/research/2026-07-12-daily-roadmap-architecture-audit.md`.
+
+## Previous package closeout - IKEMEN inert P3-P8 ownership
 
 Explicit `ikemen-go` options own/reset P3-P8 in stable interleaved slots and publish them through a separate snapshot/registry path while all playable consumers remain P1/P2. Focused tests prove the six-reserve cap, side-local starts, reset, snapshot isolation, and negative schedule/effect-store boundaries. Full participation diagnostics and broader lifecycle/identity cleanup are next. No score movement and no tag gameplay claim.
 
@@ -28,7 +44,7 @@ Closed under focused contracts and 524/524 trace gates. No milestone promotion; 
 
 Closed under focused tests and 524/524 trace gates. No milestone or score promotion; next selection is Wayfinder 019.
 
-Last updated: 2026-07-11
+Last updated: 2026-07-13
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -39,12 +55,12 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 | Package | Status | Next proof | Required evidence | Blocked claim |
 | --- | --- | --- | --- | --- |
 | G1 Roadmap control | Active control layer | Keep setup-project, AGENTS, local issues, and roadmap docs synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | Any runtime, Studio, IKEMEN, or modular compatibility score movement. |
-| R1 Runtime compatibility | Active evidence lane | Return after the I2 participation prefactor to one bounded post-KO / `NoKOSlow` timeline; keep Projectile/dynamic priority as a later presentation slice. | Focused round tests plus a required ordered trace. | Full KO/round/motif/team/continue flow, exact slowdown, full CNS VM, or score movement without broader evidence. |
+| R1 Runtime compatibility | Current primary evidence lane | Aggregate the closed legal journey as `CompatibilityJourney/v1`, adjudicate the MUGEN-lite exit criteria, then add one materially independent legal package or ACT/palette route. | Existing package/trace/browser artifacts plus schema decision; new fixture or visual route needs its own trace/smoke evidence. | Broad package compatibility, exact Common1, full VM/presentation, or score movement from docs alone. |
 | R2 Runtime ownership | Active debt-reduction lane | Audit root roster/participation ownership and collapse duplicate construction/reset/side mapping before widening consumers; no more transparent wrapper-only extraction. | Invariant/deletion test, focused system coverage, stable traces. | Exact tick-order or IKEMEN team parity from architecture cleanup alone. |
 | S1 Studio source workflow | Active product lane | Shared Trust Chain/package-source drilldowns stay stable while source identity/conflict/write-reimport/invalidation/rollback becomes the next bounded contract. | Model/service tests plus `pnpm qa:smoke` and visual inspection using real evidence rows. | Undo/migration, decorative dashboard states, fake green exports, editing workflows without persistence. |
 | A1 Generated assets | Planned/active support lane | Validate permission-aware, content-addressed origin/input/tool/transform/output provenance. | Asset validator proof plus visual QA when shown in runtime or Studio. | Imported MUGEN compatibility credit or third-party permission. |
 | I1 IKEMEN scanner | Active scanner-only lane | Add versioned package-level character/stage/system/screenpack analysis. | Focused scanner tests, report snapshot, blocked runtime wording. | ZSS/Lua/runtime execution, rollback, netplay, IKEMEN system parity. |
-| I2 IKEMEN bounded runtime | Active explicit-profile lane | Publish a versioned root-participation read model over the proven inert P3-P8/cap/reset base; then define plural activation separately. | Pinned-source note, focused runtime tests, stable `pnpm qa:trace`; smoke only when visible consumers change. | Tag/simul gameplay, standby CNS scheduling, input/effects/combat/round/presentation/lifebar/resources, rollback/netplay, or full IKEMEN parity. |
+| I2 IKEMEN bounded runtime | Active explicit-profile lane, secondary to R1 | Preserve the open Wayfinder 127 landing cut; next decide global AssertSpecial ownership before a read-only team-round decision. | Pinned/current source note, focused runtime tests, stable `pnpm qa:trace`; smoke only when visible consumers change. | Generic landing, plural Projectiles/Helpers, team replacement, round/lifebar/resources, ZSS/Lua, rollback/netplay, or full IKEMEN parity. |
 | M1 Modular boundary | Guarded later architecture lane | After higher dependencies, prove one real Project/Evidence/Build contract and stronger import gate. | Focused contract/boundary tests plus stable fighting gates. | Platformer/runtime SDK claims before fighting contracts stay stable. |
 
 ## Milestone Exit Gates
@@ -60,6 +76,10 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 | M6 Modular engine seed | Shared contracts can support future non-fighting projects. | Boundary tests prove shared packages do not import MUGEN/CNS/CMD/HitDef/Common1 runtime concepts. |
 
 ## Next Recommended Slice
+
+Current override: entry 476 is the latest numbered committed gate. Wayfinder 127 is already in progress and owns the immediate dirty runtime/test diff. After its independent closeout, select `CompatibilityJourney/v1` and MUGEN-lite adjudication before another I2 behavior slice. The entry-411/body-push and older inert-root ladders below are historical.
+
+Current override: entry 411 closes Wayfinder 105 body push. Return now to R1 post-KO / `NoKOSlow`; Wayfinder 106 maps the later getter-order/combat-candidate boundary without damage mutation. The older inert-root ladder below is historical.
 
 Current cross-lane checkpoint:
 

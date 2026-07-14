@@ -121,6 +121,11 @@ async function main() {
       artifact: presets.createSyntheticImportedResourceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-redlife",
+      required: true,
+      artifact: presets.createSyntheticImportedRedLifeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control",
       required: true,
       artifact: presets.createSyntheticImportedControlTraceArtifact(),
@@ -4312,6 +4317,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitadd",
     "synthetic-imported-variable",
     "synthetic-imported-resource",
+    "synthetic-imported-redlife",
     "synthetic-imported-control",
     "synthetic-imported-control-dynamic",
     "synthetic-imported-lifeadd-dynamic",

@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 506 - Red-life ownership/v0
+
+Done: explicit direct HitDef `redlife = hit, guard` values now compile and
+flow through direct combat into defender-local red life with attack/defence
+scaling. Actor-local `RedLifeAdd` and `RedLifeSet` execute through the typed
+resource boundary, including `absolute` handling and life-max clamping. The
+required synthetic imported red-life trace proves both controller writes and
+the direct-hit value, while zero-valued red life remains absent from behavior
+checksums. Claim allowed: bounded explicit direct red-life ownership. Claim
+blocked: omitted HitDef defaults, NoRedLifeDamage, AttackMulSet RedLife,
+TargetRedLifeAdd, projectile/helper/team sharing, persistence, rollback,
+lifebar presentation, and full MUGEN/IKEMEN parity. See Wayfinder 145 and the
+dated research/report.
+
 ## Entry 505 - Studio folder source editing/v0
 
 Done: Studio Build now opens a focused required source path in a real text

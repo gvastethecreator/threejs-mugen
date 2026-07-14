@@ -76,6 +76,8 @@ export class RuntimeHitDefControllerDispatchWorld {
     const activeEnd = activeStart + Math.max(1, runtimeAnimationFrameDuration(frame) - actor.frameElapsed);
     const damage = operation?.damage ?? firstNumber(findParam(source, "damage")) ?? existing?.damage ?? 45;
     const guardDamage = operation?.guardDamage ?? secondNumber(findParam(source, "damage")) ?? existing?.guardDamage ?? 0;
+    const redLife = operation?.redLife ?? firstNumber(findParam(source, "redlife")) ?? existing?.redLife;
+    const guardRedLife = operation?.guardRedLife ?? secondNumber(findParam(source, "redlife")) ?? existing?.guardRedLife;
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
     const hitPause = operation?.pauseTime ?? firstNumber(findParam(source, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
@@ -154,6 +156,8 @@ export class RuntimeHitDefControllerDispatchWorld {
       activeEnd,
       recovery: Math.max(existing?.recovery ?? 0, activeEnd + 12),
       damage,
+      ...(redLife === undefined ? {} : { redLife }),
+      ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,
       priority,
       priorityType,

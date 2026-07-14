@@ -487,6 +487,7 @@ import {
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
+  createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
   createSyntheticImportedDynamicResourceSetTraceArtifact,
@@ -1250,6 +1251,39 @@ describe("RuntimeTraceGatePresets", () => {
       life: 750,
       power: 900,
     });
+  });
+
+  it("creates a synthetic imported red-life artifact with direct HitDef and resource evidence", () => {
+    const artifact = createSyntheticImportedRedLifeTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-redlife-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 294]));
+    expect(evidence?.executedControllers.RedLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.RedLifeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:redlifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:redlifeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 294, minRedLife: 9, maxRedLife: 9 }),
+        expect.objectContaining({ actorId: "p2", minRedLife: 12, maxRedLife: 12 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 294, redLife: 9 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ redLife: 12 });
   });
 
   it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {

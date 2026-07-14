@@ -3,6 +3,8 @@ import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, Run
 
 export type RuntimeCombatAttack = {
   damage: number;
+  redLife?: number;
+  guardRedLife?: number;
   kill?: boolean;
   attr?: string;
   hitPause: number;
@@ -32,6 +34,7 @@ export type RuntimeCombatHitResult =
   | {
       kind: "guard";
       damage: number;
+      redLife?: number;
       kill: boolean;
       pause: number;
       stun: number;
@@ -45,6 +48,7 @@ export type RuntimeCombatHitResult =
   | {
       kind: "hit";
       damage: number;
+      redLife?: number;
       kill: boolean;
       pause: number;
       stun: number;
@@ -164,6 +168,9 @@ export function resolveRuntimeCombatHit(input: {
         input.defender,
         scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardDamage ?? 0),
       ),
+      ...(input.attack.guardRedLife === undefined
+        ? {}
+        : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardRedLife)) }),
       kill: input.attack.guardKill ?? true,
       pause,
       stun,
@@ -181,6 +188,9 @@ export function resolveRuntimeCombatHit(input: {
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
+    ...(input.attack.redLife === undefined
+      ? {}
+      : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.redLife)) }),
     kill: input.attack.kill ?? true,
     pause: input.attack.hitPause,
     stun: input.attack.hitStun,
@@ -272,13 +282,17 @@ export function scaleRuntimeIncomingDamage(
   defender: Pick<CharacterRuntimeState, "defenseMultiplier" | "superPauseDefenseMultiplier">,
   damage: number,
 ): number {
-  return Math.max(
-    0,
-    Math.round(
-      damage *
-        (defender.defenseMultiplier ?? 1) *
-        (defender.superPauseDefenseMultiplier ?? 1),
-    ),
+  return Math.max(0, scaleRuntimeIncomingAmount(defender, damage));
+}
+
+export function scaleRuntimeIncomingAmount(
+  defender: Pick<CharacterRuntimeState, "defenseMultiplier" | "superPauseDefenseMultiplier">,
+  amount: number,
+): number {
+  return Math.round(
+    amount *
+      (defender.defenseMultiplier ?? 1) *
+      (defender.superPauseDefenseMultiplier ?? 1),
   );
 }
 

@@ -3,6 +3,8 @@ import {
   applyRuntimeControl,
   applyRuntimeLifeAdd,
   applyRuntimePowerDelta,
+  applyRuntimeRedLifeAdd,
+  applyRuntimeRedLifeSet,
   applyRuntimeResourceController,
   applyRuntimeStateDefControl,
   applyRuntimeVariableAssignment,
@@ -70,6 +72,19 @@ describe("RuntimeResourceSystem", () => {
 
     applyRuntimeResourceController(state, { kind: "resource", controllerType: "powerset", value: 9999 });
     expect(state.power).toBe(1200);
+  });
+
+  it("keeps red life bounded and scales non-absolute additions by defense", () => {
+    const state = runtimeState({ lifeMax: 250, redLife: 0, defenseMultiplier: 0.5, superPauseDefenseMultiplier: 0.5 });
+
+    applyRuntimeRedLifeAdd(state, 40);
+    expect(state.redLife).toBe(10);
+
+    applyRuntimeRedLifeAdd(state, 30, true);
+    expect(state.redLife).toBe(40);
+
+    applyRuntimeRedLifeSet(state, 999);
+    expect(state.redLife).toBe(250);
   });
 
   it("resolves authored max resources from constants", () => {
@@ -148,6 +163,22 @@ describe("RuntimeResourceSystem", () => {
     applyRuntimeResourceController(state, powerSet!);
     expect(state.life).toBe(750);
     expect(state.power).toBe(900);
+  });
+
+  it("resolves dynamic RedLifeAdd and RedLifeSet values with absolute mode", () => {
+    const state = runtimeState({ redLife: 4, vars: [1, 1] });
+    const redLifeAdd = resolveRuntimeResourceControllerOperation(
+      controller({ value: "IfElse(var(0), 12, 0)", absolute: "var(1)" }, "RedLifeAdd"),
+      state,
+    );
+    const redLifeSet = resolveRuntimeResourceControllerOperation(controller({ value: "IfElse(var(0), 80, 0)" }, "RedLifeSet"), state);
+
+    expect(redLifeAdd).toEqual({ kind: "resource", controllerType: "redlifeadd", value: 12, absolute: true });
+    expect(redLifeSet).toEqual({ kind: "resource", controllerType: "redlifeset", value: 80 });
+
+    applyRuntimeResourceController(state, redLifeAdd!);
+    applyRuntimeResourceController(state, redLifeSet!);
+    expect(state.redLife).toBe(80);
   });
 
   it("applies var, fvar, and sysvar assignments", () => {

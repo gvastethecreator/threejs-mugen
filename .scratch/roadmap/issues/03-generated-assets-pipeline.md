@@ -7,6 +7,12 @@ Labels: generated-assets, visual-qa, ready-for-agent
 
 Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playable without pretending generated/native assets prove imported MUGEN compatibility.
 
+## 2026-07-14 Daily Audit Override
+
+Entries 491-492 close `AssetProvenance/v0` and v1 per-file input/output digests for the current source/export session. The old v0 selector is historical.
+
+Next define `AssetProvenance/v2` as a reproducible transform chain: permission/license assertion, input digest, tool/version, config digest, ordered transforms, output hashes, and QA/collision/playtest links. Missing license or digest blocks export readiness; migration from v1 must not invent certainty. Generated/native evidence remains separate from imported-MUGEN compatibility claims.
+
 ## Next Useful Cuts
 
 - 2026-07-10 next contract: define `AssetProvenance/v0` with origin, ownership/license, input digest, tool/version, prompt/config digest, ordered transforms, output hashes, QA/playtest links, and public-path redaction. Missing permission or digest must block export readiness; tags and absolute local paths are not provenance.

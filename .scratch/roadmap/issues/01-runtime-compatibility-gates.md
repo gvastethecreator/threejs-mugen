@@ -7,6 +7,18 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## 2026-07-14 Daily Audit Override
+
+Entry 505 is current truth and the entry-505 report declares 587/587 traces. Entries 477-483 close the previously selected landing, journey-v1, bounded M2 decision, ACT/palette, and independent legal character package/routes. Do not rebuild those gates.
+
+Next create `CompatibilityCorpus/v0` with legal/portable/optional package identity, exact route coverage, and unsupported/failure taxonomy. Adjudicate the practical-MUGEN band from that envelope, then add one independent legal stage/package route. For IKEMEN resource execution, route through issue 07's auxiliary-resource sequence; do not add red/guard/dizzy to the life/power team bank.
+
+## 2026-07-13 Daily Audit Override
+
+Post-KO/`NoKOSlow` is closed by numbered entry 456. The legal repository-owned MUGEN-lite journey and ZIP/browser evidence are closed by entries 457-468. Entry 476 is current committed truth; Wayfinder 127 is open uncommitted active-root landing work.
+
+After that cut closes independently, the next R1 work is `CompatibilityJourney/v1`, milestone/score adjudication, and one materially independent legal package or ACT/palette route. The older post-KO and first-journey selectors below are historical and must not be rebuilt. Scores do not move from this docs pass.
+
 ## Latest Closed Quality Slice - IKEMEN Active-root Phase Capabilities
 
 Status: done

@@ -9,6 +9,12 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Next Useful Cuts
 
+- Current 2026-07-14 daily audit: numbered backlog maximum 505 supersedes entry 476 and Wayfinder 127. The entry-505 report declares 587/587 traces. The prior journey/milestone/independent-package/global-flag/team-round/lifebar/resource/Helper-resource queue is closed. Scores remain unchanged; the next control gate is a versioned compatibility corpus followed by explicit score-band adjudication. `CONTEXT.md` and the root milestone rule remain stale but are outside this automation's allowed edit surface.
+
+- Current 2026-07-13 daily audit: numbered backlog maximum 476 supersedes entry 411. Closed gates now include post-KO/`NoKOSlow`, the legal MUGEN-lite ZIP/loader/trace/browser journey, and active-root admission/contact/priority/reversal/depth/HitOverride/guard. Wayfinder 127 is open dirty-tree work. After it closes, route to `CompatibilityJourney/v1`, milestone adjudication, and independent package/palette evidence. `CONTEXT.md` remains stale but is outside this automation's allowed paths.
+
+- Current 2026-07-12 daily audit: backlog entry 411 closes Wayfinder 105 in the current working tree with declared full gates and no score movement. Return now to R1 post-KO / `NoKOSlow`; Wayfinder 106 maps hit admission, and later executable I2 combat begins with a candidate/getter-order read model. `CONTEXT.md` remains a known out-of-scope root-file cursor drift for this automation.
+
 - Current 2026-07-12 checkpoint: backlog entry 407 and 543/543 traces (512 required, 31 optional). Wayfinder 101 closes actor-local active-root stage-X constraints with zero interaction widening. Wayfinder 102 maps diagnostic collision projection.
 - Current lane decision: I1 remains scanner/reporting; I2 routes through issue 07. `RuntimeRootPhaseCapabilities/v2` is current machine-readable phase truth.
 - Current delivery order: source-map active-root stage constraints/body push/collision admission, then implement only the selected bounded consumer; root-key effects, combat, round, and resources remain separate gates. Direct native input/AI remains an independent policy. The bounded MUGEN-lite post-KO / `NoKOSlow` timeline remains the next competing runtime lane rather than being folded into team work.
@@ -74,7 +80,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/BUILD_EXECUTION_BACKLOG.md` records the latest closed gate, so future agents can avoid treating already-closed gates as next work.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` owns task-type execution checklists and closeout commands.
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, currently I2 inert-root evidence/participation, the R1 post-KO return gate, and later isolated I2 activation/redirect/schedule work.
-- The former `RuntimeStunWorld`-as-latest statement is retired. Current numbered-history truth is the highest numbered entry at the bottom of `docs/BUILD_EXECUTION_BACKLOG.md`; prefixed summaries at the top may lag and are lane-history convenience only. The daily audit distinguishes those ledgers explicitly.
+- The former `RuntimeStunWorld`-as-latest statement is retired. Current numbered-history truth is the highest numbered `Entry N` or numbered ledger item anywhere in `docs/BUILD_EXECUTION_BACKLOG.md`; physical top/bottom placement and convenience summaries do not override the numeric maximum. The daily audit distinguishes those ledgers explicitly.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
 - Previous implementation truth before this docs refresh came from the then-current top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. Newer runtime and Studio/UI checkpoints are recorded above it in the backlog; the latest aggregate after optional KFM presentation gates is 159/159 artifacts, 139 required, and 20 optional.

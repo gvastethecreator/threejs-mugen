@@ -6,6 +6,24 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-14 Daily Audit Override
+
+Entries 495-504 close bounded global AssertSpecial ownership, team-round decision, explicit Turns handoff and required trace, team lifebar/HUD projection, root life/power bank ownership/mutation/routes, and Helper-local life/power. They do not close automatic Turns continuation, slot/reference and resource reset, exact Simul/Tag/Turns timing, motif bars, auxiliary resources, ZSS/Lua, rollback, or netplay.
+
+Pinned `char.go` separates `redLife`, `guardPoints`, and `dizzyPoints`. Root red life mirrors under `LifeShare`; guard/dizzy setters remain actor-local, and Helpers initialize local values. Keep `RuntimeTeamResourceBank/v1` life/power-only. Next publish `RuntimeAuxiliaryResourceProjection/v0` without mutation, then land red life, guard points, and dizzy points as separate routes. Decide reset/persistence before automatic Turns continuation and add bars only after resource behavior is proven. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+
+## 2026-07-13 Daily Audit Override
+
+Entries 412-476 supersede the older multi-root combat plan: read-only admission, direct mutation, exact getter contact memory, priority/trades/classes, ReversalDef, logical Z, depth bounds/push, HitOverride, automatic guard scheduling, and exercised standing/crouching/air direct guard routes are closed bounded gates. Wayfinder 127 is open uncommitted work for a fixture-owned `154 -> 155 -> 52 -> 20` air-guard landing; it is not closed evidence yet.
+
+After Wayfinder 127, pause adjacent guard-matrix expansion and return product priority to MUGEN-lite evidence generalization. Before `046g` team KO/replacement, accept or replace a global AssertSpecial ownership ADR: current bounded `NoKOSlow` captures pair-derived state, while Helpers can assert flags and IKEMEN models the flag globally. Plural Helper/Projectile combat, team defeat/replacement, lifebar/resources, ZSS/Lua, rollback/netplay, and full parity remain blocked.
+
+## 2026-07-12 Daily Audit Override
+
+Entries 408-411 supersede the older checkpoint text below: diagnostic collision projection and bounded plural X/Width body push are closed in the current working tree. Entry 411 declares exact pair/Single fallback, fresh diagnostics, aligned `RuntimeRootPhaseCapabilities/v3`, 177 files / 1802 tests, and 543/543 traces with zero target/effect/combat widening. Scores remain unchanged.
+
+The primary product lane returns now to R1 post-KO / `NoKOSlow`. Wayfinder 106 maps the next I2 boundary; its executable follow-up is `RuntimeRootCombatCandidates/v0`, a getter-order/direct-attacker read model over stable roots before damage mutation. Pinned source excludes standby/disabled getters and attackers, applies team policy, and processes collision getters by ReversalDef/HitDef/id order after push. Direct mutation, multi-target `hasHit` semantics, Projectiles, Helpers, targets, effects, round, lifebars, resources, ZSS/Lua, rollback, netplay, and full parity remain blocked.
+
 ## 2026-07-12 Active-root constraint checkpoint
 
 Wayfinder 101 closes actor-local stage-X constraints after active-root motion. `RuntimeRootPhaseCapabilities/v2`, actor-scoped schedule evidence, checksum `870f8871`, and 543/543 traces prove exact clamp with no target/effect/combat widening. Wayfinder 102 maps diagnostic collision; plural push and combat remain blocked. No score movement.

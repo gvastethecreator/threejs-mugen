@@ -1,5 +1,41 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 daily roadmap and architecture audit
+
+- Entry 505 is the committed cursor; its report declares 587/587 traces. The complete 2026-07-13 selected sequence is now closed, including M2 bounded adjudication, independent legal character evidence, Studio folder editing, team handoff/lifebar/life-power banks, and Helper-local resources.
+- Scores remain 65/35/20/10-12/6-8/25. The next promotion decision requires `CompatibilityCorpus/v0`, not a documentation-only inference.
+- Next ordered cuts: corpus -> score adjudication -> independent legal stage/package route. Parallel bounded lanes are Studio semantic draft preflight, auxiliary-resource ownership then red life, and provenance v2.
+- Red life may mirror through LifeShare; guard and dizzy remain actor-local. Do not widen `RuntimeTeamResourceBank/v1` beyond life/power.
+- See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+
+## Global report - 2026-07-13 source handle recovery
+
+- Studio `SourceHandle/v0` now separates remembered ZIP handles from project
+  manifests, tracks permission/storage/stale/recovery state, and exposes real
+  Build Center actions through the diagnostics bridge.
+- IndexedDB is used when available; memory fallback is explicitly session-only.
+  Changed fingerprints, missing handles, folder recovery, source writes, and
+  background reacquire remain blocked.
+- This moves the Studio trust-chain lane only. Port and compatibility scores
+  remain unchanged until browser recovery evidence and a separate folder/write
+  contract are proven.
+
+## Global report - 2026-07-13 daily roadmap and architecture audit
+
+- Current committed truth: numbered backlog maximum 476 declares 576/576 traces, 545 required. Wayfinder 127 is open uncommitted air-guard-landing work and was not validated or claimed here.
+- Closed since the last successful planning cutoff: bounded post-KO/`NoKOSlow`, the legal CC0 package/ZIP/loader/trace/browser journey, and active-root admission/contact/priority/reversal/depth/HitOverride/guard breadth.
+- Product priority after 127: `CompatibilityJourney/v1`, explicit MUGEN-lite milestone/score adjudication, then an independent legal package or ACT/palette route.
+- Architecture risk: global AssertSpecial ownership must be decided before team KO, Helper/Projectile, lifebar, or resource widening.
+- Parallel lanes remain Studio source transaction, permission-aware provenance, I1 package analysis, and a real shared contract only after two adapters/consumers prove it. No score movement; no code suite run.
+
+## Previous global report - 2026-07-12 daily roadmap and architecture audit
+
+- Current truth: entry 411 closes Wayfinder 105 plural X/Width body push in the current working tree; its report declares full gates and 543/543 traces. This automation did not re-run them.
+- Product priority: return now to R1 post-KO / `NoKOSlow`, then one legal end-to-end MUGEN-format fixture journey.
+- I2 next risk boundary: getter-order/direct-attacker candidate diagnostics before P3-P8 contact mutation; Projectiles, Helpers, targets, effects, round, lifebars, and resources remain separate.
+- Parallel lanes: Studio source transaction -> permission-aware provenance; independent I1 VFS/package analyzer; M1 real shared contract only after Studio stabilizes it.
+- Evidence: pinned IKEMEN source, local owner/diff audit, entry 411/report reconciliation, roadmap/issue sync, and diff gate. No score movement; concurrent runtime evidence is declared, not re-run by this automation.
+
 ## Global report - 2026-07-12 IKEMEN active-root body-push research
 
 - Source: push is a run-order global pass before hits, with independent eligibility, AffectTeam, size-box Y/X/Z, priority/weight/factor, tie, clamp, and interpolation policy.
@@ -1235,14 +1271,14 @@ Previous runtime evidence checkpoint: required `synthetic-imported-air-hit-corne
 
 | Slot | Cut | Done when |
 | --- | --- | --- |
-| 1 | I2 inert-root evidence | P3-P8, cap/overflow, starts, lifecycle, reset identity/cleanup, and negative consumer ownership are directly proven. |
-| 2 | I2 participation read model | Owned/disabled/standby/active and scheduled/input/combat/round/presentation/effect-store participation are versioned; executable owners remain P1/P2. |
-| 3 | R1 post-KO | KO/time-over order and bounded `NoKOSlow` are trace-gated without motif/team breadth. |
-| 4 | I2 activation/redirects | Plural batch standby transition lands first; identity/Partner/Enemy/P2 matrix follows separately. |
-| 5 | I2 standby schedule | Standby roots execute explicit-profile CNS and same-tick TagIn/TagOut visibility is gated before later gameplay consumers. |
-| 6 | S1/A1/I1/M1 | Source transaction, provenance, package scanner, then one real shared product contract follow their documented gates. |
+| 1 | I2 Wayfinder 127 | Its implementation owner closes fixture-specific active-root air-guard landing with focused, full-trace, and diff evidence; no generic physics claim. |
+| 2 | R1 Compatibility Journey | Existing legal package/ZIP/loader/trace/browser evidence is aggregated behind versioned `CompatibilityJourney/v1`. |
+| 3 | R1 milestone decision | Every written MUGEN-lite exit criterion is accepted, deferred, or blocked with artifact links; scores move only if the gate is met. |
+| 4 | R1 independent breadth | A second legal package or ACT/palette route proves a materially different compatibility dimension. |
+| 5 | S1/A1/I1 | Source transaction, permission-aware provenance, and package analysis advance as independent evidence packages. |
+| 6 | I2/M1 architecture | Global AssertSpecial ownership precedes team-round widening; shared-core promotion waits for two real adapters/consumers. |
 
-Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1. After the small I2 prefactor, Slot 3 restores the stated MUGEN-lite delivery priority unless a newer dependency explicitly says otherwise. Use `docs/ROADMAP_PACKAGE_MILESTONES.md` to choose the exact package.
+Docs/setup work is Slot 0: keep future agents aligned, then preserve the owner of Slot 1. Once that cut closes independently, Slots 2-4 restore the stated MUGEN-lite product priority. Use `docs/ROADMAP_PACKAGE_MILESTONES.md` to choose the exact package.
 
 ## Historical Evidence Snapshot - 509/509 Baseline
 
@@ -1353,13 +1389,13 @@ The numbered list below is retained as implementation history. It is superseded 
 
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
-| R1 MUGEN-lite round flow | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | After the I2 participation prefactor, gate one KO/time-over frame sequence plus per-tick `NoKOSlow`; preserve KO sound behavior and keep motif/team/continue/lifebar breadth blocked. |
-| R2 root/participation ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Centralize root construction/reset/side/team-state/participation invariants and remove duplicate policy before widening consumers; require an invariant/deletion test rather than another transparent wrapper. |
-| S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Deeper target-specific trace/asset/gate/report jumps after package/source-file drilldowns. |
-| A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
-| I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Next proof can add another scanner-only source-mapped signal after `RemoveText` / `NumText`; keep findings recognized/unsupported until runtime gates exist. |
-| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Integrate standalone PlayerID ownership into P1-P8 plus `ID`/`PlayerNo` reads; Helper lifecycle and redirected Tag mutation remain separate gates. |
-| M1 Shared contract readiness | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` | One shared contract candidate proven free of fighting-specific leakage. |
+| R1 MUGEN-lite evidence | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Publish `CompatibilityJourney/v1`, adjudicate the milestone, then add an independent legal package or ACT/palette route. |
+| R2 runtime ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Keep `RuntimeRootMotionAdvanceWorld` shallow and stun semantics behind `RuntimeStunWorld`; avoid a duplicate combat-candidate seam. |
+| S1 Studio source workflow | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Source identity/fingerprint/conflict plus one atomic write/reimport/invalidation/rollback transaction. |
+| A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Permission-aware, content-addressed origin/license/input/tool/transform/output/QA record. |
+| I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | `PackageAnalysis/v0` with source-located character/stage/system/screenpack findings; runtime credit stays blocked. |
+| I2 IKEMEN bounded runtime | `.scratch/roadmap/issues/07-ikemen-runtime-topology.md` | Preserve Wayfinder 127; then decide global per-tick AssertSpecial ownership before team-round or cross-entity widening. |
+| M1 Shared contract readiness | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` | Promote one contract only after two real adapters/consumers prove it is free of fighting-specific leakage. |
 
 ## Closeout Contract
 

@@ -1,5 +1,35 @@
 ﻿# Next Build Roadmap
 
+## 2026-07-14 planning override - entry 505 and the next evidence envelope
+
+Backlog entry 505 is the committed cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, and Helper-local-resource sequence is closed. The current report declares 587/587 traces; no score moves from this reconciliation.
+
+Build next in dependency order: (1) `CompatibilityCorpus/v0`; (2) score-band adjudication against that corpus; (3) an independent legal stage/package route; (4) `StudioSemanticDraft/v0`; (5) `RuntimeAuxiliaryResourceProjection/v0`; (6) red-life mutation plus its narrow LifeShare adapter; (7) an automatic Turns continuation contract after reset/reference semantics are explicit; and (8) `AssetProvenance/v2`. Keep guard points, dizzy points, bars, persistence, scanner analysis, and modular extraction as distinct later gates. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+
+## 2026-07-13 implementation checkpoint - source handle recovery
+
+Entry 493 closes the first permission-aware source-handle slice: ZIP handles
+are modeled separately from project manifests, stored in IndexedDB when the
+browser allows it, and recovered only through the existing source fingerprint
+and transaction boundary. Continue next with browser-backed recovery evidence
+and folder-handle enumeration only if it can preserve the same identity and
+rollback guarantees. Source writes, background reacquire, and parity scores
+remain blocked.
+
+## 2026-07-13 planning override - entry 476 and evidence generalization
+
+Numbered backlog maximum 476 is current committed truth, declaring 576/576 traces with 545 required. Post-KO/`NoKOSlow`, the first legal MUGEN-lite package journey, read-only active-root admission, direct mutation, priority/reversal/depth/HitOverride, and the exercised guard matrix are closed. `RuntimeRootDirectHitAdmissionWorld` already occupies the old combat-candidate seam; do not create a duplicate `RuntimeRootCombatCandidates/v0`.
+
+Wayfinder 127 is open uncommitted work for one fixture-owned air-guard landing. Preserve it and let its implementation owner close it. Afterward, build `CompatibilityJourney/v1`, adjudicate the MUGEN-lite milestone/score criteria, and add one materially independent legal package or ACT/palette route. The next I2 architecture question is global AssertSpecial ownership before team KO, not another already-closed admission/candidate gate. See `docs/research/2026-07-13-daily-roadmap-architecture-audit.md`.
+
+## Previous 2026-07-12 planning override - 105 closed, return to MUGEN-lite
+
+Backlog entry 411 is current working-tree truth. Wayfinder 105 closes bounded plural X/Width body push with declared 177 files / 1802 tests, TypeScript/build/boundaries/diff gates, and 543/543 traces; this automation did not re-run them. Scores remain unchanged.
+
+The primary delivery lane returns now to R1 post-KO / `NoKOSlow`, followed by one legal end-to-end MUGEN-format fixture journey. Wayfinder 106 may map hit admission in parallel. The next executable I2 slice is not broad combat mutation: first publish a versioned root combat-candidate/getter-order read model, then gate one direct P3-to-P2 contact while Projectiles, Helpers, targets, effects, round, lifebars, and resources remain blocked. See `docs/research/2026-07-12-daily-roadmap-architecture-audit.md`.
+
+The older inert-root/read-model queue below is retained as historical planning and is superseded by entries 349-411 plus this override.
+
 ## Planning decision - I2 root participation before activation
 
 The 2026-07-11 daily audit selects a small I2 prefactor after inert additional-root ownership: close explicit P3-P8/cap/start/reset/lifecycle evidence and publish a versioned root-participation diagnostic before mutating standby or widening any consumer. A later plural batch transition may change standby and active-root projection without assuming one active root per side. Identity/Partner/Enemy/P2, standby CNS scheduling, input, effects, combat, round, presentation, lifebar, and resources remain separate later gates. See `docs/research/2026-07-11-daily-roadmap-architecture-audit.md` and `.scratch/roadmap/issues/07-ikemen-runtime-topology.md`.
@@ -34,7 +64,7 @@ Automatic KO sound and tick-active `NoKOSnd` suppression are closed. Historical 
 
 Contextual player/common SND banks are closed. Historical Wayfinder 019 compared runtime, Studio, renderer, and IKEMEN candidates; ticket 024 now owns selection.
 
-Last updated: 2026-07-11
+Last updated: 2026-07-13
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
 
@@ -48,16 +78,15 @@ Docs-only changes here do not move scores.
 ## Current Checkpoint
 
 ```txt
-I2 root participation - selected, not implemented
-  -> preserve current inert-root ownership and P1/P2-only playable consumers
-  -> add direct evidence for P3-P8, six-reserve cap/overflow policy, side-local starts, lifecycle, reset identity and stale-state cleanup
-  -> publish owned/disabled/standby/structurally-active and per-consumer participation under a versioned diagnostic
-  -> do not move roots between reserveActors and actors or mutate standby in this prefactor
-  -> next, add a plural batch standby transition without one-active-root or tag-mode assumptions
-  -> Wayfinder 046 and issue 07 own the I2 sequence
+Entry 476 - current numbered committed frontier
+  -> 576/576 traces declared green, 545 required
+  -> post-KO / NoKOSlow and the first legal package journey are closed
+  -> active-root admission/contact/priority/reversal/depth/HitOverride/guard entry are closed
+  -> Wayfinder 127 is open dirty-tree work for fixture-owned air-guard landing
+  -> after 127: CompatibilityJourney/v1, milestone adjudication, independent package or ACT/palette proof
 ```
 
-Historical checkpoint ledger (all older selectors below are superseded by Wayfinder 046 and issue 07 for I2, or by the current R1 post-KO return gate):
+Historical checkpoint ledger (all older selectors below are superseded by the 2026-07-13 override and the current issue ledgers):
 
 ```txt
 R1/R2 voice channel 0 hit cancellation
@@ -3147,16 +3176,16 @@ Do not reselect `RuntimeEffectActorAdvanceWorld` ownership as fresh next work; t
 
 | Order | Lane | Slice | Evidence | Score impact |
 | ---: | --- | --- | --- | --- |
-| 1 | I2 participation | Close P3-P8/cap/overflow/start/reset/lifecycle/identity evidence and add a versioned root-participation diagnostic with all phase owners still P1/P2. | Focused runtime/system tests, stable traces, explicit negative consumer assertions. | Structural confidence only; no active team gameplay. |
-| 2 | R1 round | One KO freeze/finish plus `NoKOSlow` timeline slice. | Focused round tests and required ordered KO/time-over trace. | Bounded MUGEN-lite confidence; no motif/team parity. |
-| 3 | I2 activation | Add a plural batch standby transition and derived active ids by side without moving storage or widening consumers. | Focused transition/read-model tests, stable P1/P2 schedule and traces. | Architecture/runtime state only; no tag claim. |
-| 4 | I2 redirects | Prove identity/Player/Partner remain addressable while Enemy/P2 eligibility changes with standby/over-KO. | Focused policy matrix and diagnostics. | Bounded read semantics only. |
-| 5 | I2 schedule | Admit standby roots to explicit-profile CNS scheduling and gate same-tick TagIn/TagOut visibility before collision/draw. | Schedule tests plus required IKEMEN trace; input/combat/render still isolated. | First deeper tag-scheduling evidence, not team gameplay. |
-| 6 | S1 Studio | Source handle/fingerprint/permission, conflict, write/reimport, invalidation, and rollback; defer undo/migration. | Model/service tests and browser mutation/conflict/rollback smoke. | Possible Studio movement with real persistence evidence. |
+| 1 | I2 current cut | Close Wayfinder 127 without widening generic aerial physics or modifying prior Pair/Single and guard claims. | Focused stun/root-motion/trace tests plus full implementation closeout; smoke N/A. | Bounded I2 fixture evidence only. |
+| 2 | R1 evidence | `CompatibilityJourney/v1` over existing legal package/loader/trace/browser artifacts. | Schema/aggregation tests and one serialized acceptance report. | Control/evidence only; no automatic score movement. |
+| 3 | G1 score | Adjudicate the written MUGEN-lite exit and score against the closed legal journey. | Explicit scorecard decision with linked artifact ids or one exact missing gate. | Score moves only if the evidence review says so. |
+| 4 | R1 breadth | Add a second repository-owned legal package with materially independent source assumptions. | Deterministic ZIP, report, required trace, smoke if visible. | Practical compatibility only after explicit breadth criteria. |
+| 5 | Renderer/MUGEN | One ACT/palette vertical slice through decode, runtime selection, and desktop/mobile pixel oracle. | Focused tests, `pnpm qa:smoke`, inspected screenshots. | Presentation confidence only. |
+| 6 | S1 Studio | `SourceTransaction/v0` identity/fingerprint/permission/conflict read model, then write/reimport/rollback separately. | Model/service tests and browser smoke when surfaced. | Studio only with real coherent persistence evidence. |
 | 7 | A1 assets | Permission-aware, content-addressed `AssetProvenance/v0`. | Validator fixtures; Studio visual QA only if surfaced. | Generated/native confidence only. |
-| 8 | I1 scanner | VFS/package scanner plus stage-only and system/screenpack-only signal families. | Focused scanner tests and report snapshot. | Scanner-only movement; no execution claim. |
-| 9 | Renderer/MUGEN | Choose one palette/ACT or BGCtrl vertical slice with a real fixture and browser oracle. | Focused parser/runtime tests, `pnpm qa:trace` where semantic, `pnpm qa:smoke`, inspected screenshots. | Presentation confidence only. |
-| 10 | M1 modular | Promote one real Project/Evidence/Build contract with a production consumer, MUGEN adapter, keep/delete rationale, and non-vacuous boundary test. | Contract tests, `pnpm check:boundaries`, stable fighting gates. | Modular readiness only. |
+| 8 | I1 scanner | `PackageAnalysis/v0` plus stage-only and system/screenpack-only signal families. | Focused scanner tests and report snapshots. | Scanner-only movement; no execution claim. |
+| 9 | I2 architecture | Accept or replace the global AssertSpecial ownership ADR before team KO. | Pinned/current source table; reducer tests only after a decision. | No team/runtime score from ADR alone. |
+| 10 | I2 team | Read-only `TeamRoundDecision/v0` before member-KO/replacement mutation. | Table-driven diagnostics and stable existing traces. | Bounded decision semantics only. |
 
 ## R1 Runtime Compatibility Plan
 
@@ -3164,9 +3193,9 @@ Goal: imported MUGEN-style packages execute more KFM/Common1-authored routes wit
 
 Build sequence:
 
-1. Treat HitDef policy/contact, semantic presentation order, Common1 source precedence, and the automatic guard-phase sequence as closed gates.
-2. Close one post-KO freeze/finish plus `NoKOSlow` timeline with exact phase evidence; keep motif, teams, continue flow, and broad audio out.
-3. Choose the next visual/runtime breadth cut from Projectile/dynamic priority, palette/ACT, or BGCtrl only when a fixture and falsifiable trace/browser oracle exist.
+1. Treat post-KO/`NoKOSlow`, the first legal CC0 package journey, and its ZIP/browser routes as closed gates.
+2. Aggregate those artifacts behind `CompatibilityJourney/v1`, then adjudicate the written MUGEN-lite exit without docs-only score inflation.
+3. Add one independent legal package or palette/ACT route before returning to narrow controller matrices.
 4. Continue helper/custom-state/throw and broader corpus work as separate subsystem milestones rather than one “full VM” slice.
 5. Keep equal presentation ties, `Explod ontop`, screenpack/lifebar, broad team semantics, and full parity explicit until their own gates exist.
 
@@ -3247,11 +3276,11 @@ Goal: move source-pinned IKEMEN runtime semantics through explicit, isolated gat
 
 Build sequence:
 
-1. Done: inert-root P3-P8 cap, side-local starts, reset, snapshot isolation, registry lifecycle, and negative schedule/effect-store evidence.
-2. Done: `RuntimeRootParticipation/v0` diagnostics separate owned, disabled, standby, structurally active, scheduled, input-owned, combat-owned, round-owned, presented, and effect-store-owned roots; all executable consumer lists remain P1/P2.
-3. Add a plural batch standby transition and derived active ids by side. Do not auto-tag-out another root or assume one active root per side without `teamMode`.
-4. Prove identity/Player/Partner lookup separately from Enemy/P2 eligibility across the transition.
-5. Admit standby roots to the explicit-profile CNS schedule and gate same-tick TagIn/TagOut visibility before collision/draw. Only then plan input, effects, combat, round, presentation/lifebar, leader/member order, and shared-resource policies as separate cuts.
+1. Treat participation, activation, selection, standby CNS, Tag/Helper ownership, motion, presentation, constraints, body push, direct admission/mutation, priority/reversal/depth/HitOverride, and the exercised guard routes as closed bounded gates.
+2. Preserve the already-started Wayfinder 127 fixture-owned landing and close it independently.
+3. Before team KO, decide global AssertSpecial ownership and profile sampling; do not make Projectile or a single root the implicit owner.
+4. Add a read-only team-round decision over explicit root/team state, then gate member KO and side defeat separately.
+5. Keep effects, replacement, presentation/lifebar, resource banks, ZSS/Lua, rollback/netplay, and broad Tag/Simul/Turns as separate later cuts.
 
 Done evidence:
 

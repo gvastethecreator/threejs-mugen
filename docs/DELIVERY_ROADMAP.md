@@ -1,8 +1,10 @@
 # Delivery Roadmap
 
-Last updated: 2026-07-11
+Last updated: 2026-07-14
 
 This document turns the broad MUGEN / IKEMEN-GO / Studio / modular-engine horizon into delivery checkpoints. It is an execution companion to `docs/PORT_COMPLETION_SCORECARD.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and `.scratch/roadmap/issues/`.
+
+Latest checkpoint: entry 505 is committed truth and its report declares 587/587 traces. The full entry-476 successor queue is closed through independent legal character routes, Studio folder source editing, global/team round seams, lifebar/HUD, root life/power sharing, and Helper-local resources. The next delivery ladder versions the compatibility corpus and adjudicates the score band before adding an independent legal stage/package route. Studio semantic preflight and read-only IKEMEN auxiliary-resource ownership may advance in parallel; neither moves compatibility scores by itself.
 
 Docs-only edits in this file do not move scores. Scores move only through tests, trace gates, browser visual QA, fixture evidence, or export/build evidence.
 
@@ -124,8 +126,8 @@ Required evidence:
 - Scanner recognizes ZSS, Lua hooks, IKEMEN configs, screenpack/select signals, model-stage signals, and IKEMEN-only controllers/triggers.
 - Each finding is classified as recognized, unsupported, or unknown.
 - I1 scanner remains separate from I2 runtime.
-- Current I2 evidence covers bounded root/helper RunOrder, Pause/SuperPause, team topology/eligibility/registry/live state, and inert P3-P8 ownership.
-- Root participation, activation, identity/redirect policy, standby CNS scheduling, input/effects/combat/round/presentation, lifebar, and resources advance through separate gates.
+- Current I2 evidence extends through bounded P3-P8 ownership/participation, activation and redirects, standby CNS, active-root motion/presentation/body push, direct-hit admission/contact/priority/reversal/depth/HitOverride, and grounded/air guard entry through entry 476.
+- Wayfinder 127 owns the still-open fixture-specific active-root air-guard landing. Direct native input/AI, incoming Helper/Projectile ownership, global AssertSpecial/team round behavior, lifebar, resources, and exact Tag overlap remain separate gates.
 
 Exit gate:
 
@@ -152,13 +154,15 @@ Exit gate:
 
 | Step | Work package | Evidence that moves project |
 | --- | --- | --- |
-| 1 | G1 current-truth reconciliation | Remove already-closed HitDef/presentation/schedule/Common1/guard gates from active queues and separate I1 from I2. |
-| 2 | I2 root participation - done | P3-P8/cap/reset/lifecycle breadth and `RuntimeRootParticipation/v0` diagnostics landed without activation or gameplay. |
-| 3 | R1 post-KO timeline | Required KO/time-over ordering plus bounded `NoKOSlow`, with no motif/team/continue claim. |
-| 4 | I2 activation then redirects | Plural active-root projection and batch standby transition first; identity/Partner/Enemy/P2 matrix second. |
-| 5 | I2 standby schedule | Standby roots execute CNS in the explicit profile and same-tick TagIn/TagOut visibility is trace-gated before later gameplay consumers. |
-| 6 | S1 source workflow | Identity/permission/conflict/write-reimport/invalidation/rollback smoke; undo/migration deferred. |
-| 7 | A1/I1/M1 later | Permission-aware provenance, package scanner, then a real shared product contract with boundary proof. |
+| 1 | I2 current cut | Close Wayfinder 127's fixture-owned landing without generic physics claims. |
+| 2 | R1 acceptance envelope | `CompatibilityJourney/v1` links the closed legal package, trace, report, browser, and native-regression artifacts. |
+| 3 | G1 milestone adjudication | Decide whether current evidence closes M2 or record the exact independent gate still missing; no implicit score drift. |
+| 4 | R1 independent breadth | Second repository-owned legal package or ACT/palette route with different source assumptions and no package patch. |
+| 5 | S1 source workflow | Identity/fingerprint/permission/conflict read model, then write-reimport/invalidation/rollback separately. |
+| 6 | A1 and I1 parallel | Permission-aware provenance and shared character/stage/system/screenpack VFS analysis, with no imported/runtime claim leakage. |
+| 7 | I2 global policy | Decide global AssertSpecial sampling before team KO/Helper/Projectile widening. |
+| 8 | I2 team decision | Read-only team defeat/replacement candidates before mutation, lifebar, or resources. |
+| 9 | M1 real shared contract | Promote one production Evidence/Build record only after two adapters/consumers prove the seam. |
 
 ## Closeout Template
 

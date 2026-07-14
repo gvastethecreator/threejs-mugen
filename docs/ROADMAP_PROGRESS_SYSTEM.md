@@ -1,8 +1,10 @@
 # Roadmap Progress System
 
-Last updated: 2026-07-11
+Last updated: 2026-07-14
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
+
+Current control override: numbered backlog maximum 505 is committed truth. The entry-476 / Wayfinder-127 selector and the proposed `CompatibilityJourney/v1`, milestone, independent-package, global-AssertSpecial, team-round, lifebar, resource-bank, and Helper-resource cuts are all historical because entries 477-505 closed them. The current evidence aggregate declared by the entry-505 report is 587/587 trace artifacts. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
 
 ## Source Of Truth Stack
 
@@ -151,6 +153,6 @@ Parallel docs are allowed when they reduce drift. Parallel UI is allowed when it
 
 `setup-project`, roadmap routing, issue tracker docs, and AGENTS changes are valid control work, but they are not compatibility evidence. Close them with normal build/test gates, update `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`, and keep `docs/PORT_COMPLETION_SCORECARD.md` unchanged unless runtime, visual, fixture, scanner, Studio, or package evidence also changed.
 
-Every setup/docs pass must compare the highest numbered entry at the bottom of `docs/BUILD_EXECUTION_BACKLOG.md` with `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and the linked roadmap issue. The prefixed summaries at the top are convenient lane history, not the numbered-ledger maximum. If an older "next" gate has already closed, refresh the route before selecting more code.
+Every setup/docs pass must locate the highest numbered `Entry N` or numbered ledger item in `docs/BUILD_EXECUTION_BACKLOG.md`, regardless of whether newer entries were prepended or appended, then compare it with `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and the linked roadmap issue. Convenience summaries and physical file position do not override the numeric maximum. If an older "next" gate has already closed, refresh the route before selecting more code.
 
-After any docs-only setup pass, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and `docs/NEXT_BUILD_ROADMAP.md`, then choose the next evidence-producing package. The HitDef priority policy/contact sequence, `MugenPresentationOrder/v0`, `MatchTickSchedule/v0`, Common1 source precedence, two-checkpoint automatic guard ordering, IKEMEN root/helper RunOrder, Pause/SuperPause ownership, team topology/eligibility/registry/live-state, and inert P3-P8 ownership are already closed alongside the older gates recorded in the backlog. Current default is the I2 root-participation evidence/read-model prefactor, then a return to a bounded MUGEN-lite post-KO / `NoKOSlow` gate; activation, redirects, and standby-root scheduling remain separate later I2 cuts.
+After any docs-only setup pass, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and `docs/NEXT_BUILD_ROADMAP.md`, then choose the next evidence-producing package. Entries 349-476 close the earlier inert-root, post-KO, first legal journey, and active-root admission/contact/priority/reversal/depth/HitOverride/guard queues. Preserve open Wayfinder 127, then return to MUGEN-lite evidence generalization and package/palette independence. Do not create a duplicate combat-candidate module; current admission ownership already fills that seam. Decide global AssertSpecial ownership before team KO or Helper/Projectile round widening.

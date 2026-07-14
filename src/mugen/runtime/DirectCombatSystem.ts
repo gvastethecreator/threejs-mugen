@@ -17,7 +17,7 @@ import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
-import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import { applyRuntimeControl, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
 import {
   bufferRuntimeHitDefTarget,
@@ -169,6 +169,9 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardControlTime = result.controlTime ?? 0;
     defender.runtime.guarding = true;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+    if (result.redLife !== undefined) {
+      applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
+    }
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
     applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);
@@ -211,6 +214,9 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guarding = false;
     defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+    if (result.redLife !== undefined) {
+      applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
+    }
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
     applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);

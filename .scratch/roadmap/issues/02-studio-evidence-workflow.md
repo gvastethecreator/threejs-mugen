@@ -7,6 +7,12 @@ Labels: studio, visual-qa, docs, ready-for-agent
 
 Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
 
+## 2026-07-14 Daily Audit Override
+
+Entries 484-505 close local edit history, dirty navigation, autosave, versioned project index, storage conflict, source transactions/read models, provenance v0/v1, persistent ZIP handles, folder recovery, and bounded existing-file folder editing. The old source-identity/write selector is historical.
+
+Next build `StudioSemanticDraft/v0`: parse and compile one focused document in memory against the active revision/fingerprint before opening a writable stream. Invalid drafts must not write; valid drafts may use the existing explicit write/reimport transaction. ZIP rewrite, create/delete, watch/merge, post-close rollback, and broad state/controller/collision editors remain blocked.
+
 ## Next Useful Cuts
 
 - 2026-07-10 queue reconciliation: the shared Build/Evidence Trust Chain contract and package/source-file drilldowns are closed gates. The next Trust Chain work is deeper trace/asset/gate/report destination focus. The broader Studio architecture next is a bounded source identity/fingerprint, external-conflict, write/reimport, invalidation and rollback slice before source-bound state/collision editing; undo and migration are later tasks. `pnpm qa:css:budget` is currently red at the 581,084-byte checkpoint recorded in backlog entry 331; older green CSS metrics below are historical, not the current budget truth.

@@ -108,6 +108,7 @@ function createDummyActor(): MugenSnapshot["actors"][number] {
       animTime: 0,
       frameIndex: 0,
       life: 1000,
+      redLife: 0,
       power: 0,
       ctrl: false,
       stateType: "S",

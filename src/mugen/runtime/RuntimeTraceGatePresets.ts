@@ -738,6 +738,55 @@ export function createSyntheticImportedResourceTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedRedLifeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-redlife",
+      displayName: "Synthetic Imported Red Life",
+      action200Duration: 30,
+      hitDefRedLife: 12,
+      guardRedLife: 5,
+      withRedLifeOps: { stateNo: 294, addValue: 7, setValue: 9, absolute: true },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-redlife-golden",
+      targetLabel: "Synthetic imported red-life route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 294],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "RedLifeAdd", "RedLifeSet"],
+      requiredExecutedOperations: ["hitdef", "resource:redlifeadd", "resource:redlifeset"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 294,
+          animNo: 294,
+          observedRedLifeAtLeast: 9,
+          observedRedLifeAtMost: 9,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          observedRedLifeAtLeast: 12,
+          observedRedLifeAtMost: 12,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 294, animNo: 294, redLife: 9 },
+        { actorId: "p2", source: "demo", actorKind: "player", redLife: 12 },
+      ],
+      notes: [
+        "Synthetic imported red-life trace proves explicit HitDef redlife ownership on a direct hit plus local RedLifeAdd and RedLifeSet state-controller writes. Omitted HitDef defaults, NoRedLifeDamage, AttackMulSet RedLife, TargetRedLifeAdd, projectile/helper/team ownership, rollback, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedControlTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -43971,6 +44020,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefAttr?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
+  hitDefRedLife?: number;
+  guardRedLife?: number;
   withHitDef?: boolean;
   hitDefKill?: boolean;
   hitDefTargetId?: number;
@@ -44309,6 +44360,7 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
+  withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
   withSoundControllers?: boolean;
   withDynamicSoundControllers?: boolean;
   withDynamicSoundValueControllers?: boolean;
@@ -44912,6 +44964,9 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const hitDefDamage = options.hitDefDamage ?? 37;
   const withHitDef = options.withHitDef ?? true;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
+  const redLifeLine = options.hitDefRedLife === undefined
+    ? ""
+    : `redlife = ${options.hitDefRedLife}${options.guardRedLife === undefined ? "" : `,${options.guardRedLife}`}`;
   const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
   const targetMemoryId = options.omitHitDefId ? 0 : options.hitDefTargetId ?? 77;
   const hitDefIdLine = options.omitHitDefId ? "" : `id = ${targetMemoryId}`;
@@ -44991,6 +45046,7 @@ type = HitDef
 trigger1 = Time = 1
 attr = ${hitDefAttr}
 damage = ${damageLine}
+${redLifeLine}
 ${hitDefKillLine}
 ${hitVarLines}
 pausetime = 4,4
@@ -45221,6 +45277,7 @@ ${options.withDynamicLifeAddOps === undefined ? "" : dynamicLifeAddControllerBlo
 ${options.withDynamicResourceSetOps === undefined ? "" : dynamicResourceSetControllerBlock(options.withDynamicResourceSetOps)}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
+${options.withRedLifeOps === undefined ? "" : redLifeControllerBlock(options.withRedLifeOps)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
 ${options.withDynamicSoundControllers ? dynamicSoundControllerBlock() : ""}
 ${options.withDynamicSoundValueControllers ? dynamicSoundValueControllerBlock() : ""}
@@ -45353,6 +45410,7 @@ ${options.animElemExit ? simpleStateBlock(options.animElemExit.stateNo, "I") : "
 ${options.animElemTimeExit ? simpleStateBlock(options.animElemTimeExit.stateNo, "I") : ""}
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
+${options.withRedLifeOps ? simpleStateBlock(options.withRedLifeOps.stateNo, "I") : ""}
 ${options.withDynamicLifeAddOps ? simpleStateBlock(options.withDynamicLifeAddOps.stateNo, "I") : ""}
 ${options.withDynamicResourceSetOps ? simpleStateBlock(options.withDynamicResourceSetOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
@@ -45368,6 +45426,8 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     activeEnd: 4,
     recovery: 18,
     damage: hitDefDamage,
+    ...(options.hitDefRedLife === undefined ? {} : { redLife: options.hitDefRedLife }),
+    ...(options.guardRedLife === undefined ? {} : { guardRedLife: options.guardRedLife }),
     kill: options.hitDefKill,
     priority: options.hitDefPriority ?? 4,
     attr: hitDefAttr,
@@ -45520,6 +45580,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
         : ([[options.edgeDistanceEntry.stateNo, traceAction(options.edgeDistanceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withRedLifeOps === undefined ? [] : ([[options.withRedLifeOps.stateNo, traceAction(options.withRedLifeOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicLifeAddOps === undefined ? [] : ([[options.withDynamicLifeAddOps.stateNo, traceAction(options.withDynamicLifeAddOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicResourceSetOps === undefined
         ? []
@@ -49145,6 +49206,29 @@ type = ChangeState
 trigger1 = Life = 750
 trigger1 = Power = 900
 value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function redLifeControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withRedLifeOps"]>): string {
+  const addValue = config.addValue ?? 7;
+  const setValue = config.setValue ?? 9;
+  return `
+[State 200, RedLife Add Probe]
+type = RedLifeAdd
+trigger1 = Time = 1
+value = ${addValue}
+absolute = ${config.absolute === false ? 0 : 1}
+
+[State 200, RedLife Set Probe]
+type = RedLifeSet
+trigger1 = Time = 2
+value = ${setValue}
+
+[State 200, RedLife Branch]
+type = ChangeState
+trigger1 = Time = 2
+value = ${config.stateNo}
 ctrl = 0
 `;
 }

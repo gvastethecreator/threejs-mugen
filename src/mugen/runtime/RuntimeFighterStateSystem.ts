@@ -144,6 +144,7 @@ export class RuntimeFighterStateWorld {
         frameIndex: 0,
         lifeMax,
         life: lifeMax,
+        redLife: 0,
         powerMax,
         power: 0,
         ctrl: true,

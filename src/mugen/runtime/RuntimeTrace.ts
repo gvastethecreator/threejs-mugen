@@ -55,6 +55,7 @@ export type RuntimeTraceActor = {
   frameIndex: number;
   life: number;
   power: number;
+  redLife?: number;
   superPauseDefenseMultiplier?: number;
   teamStandby?: true;
   effectiveCtrl?: false;
@@ -486,6 +487,7 @@ export type RuntimeTraceFinalActorRequirement = {
   animNo?: number;
   life?: number;
   power?: number;
+  redLife?: number;
   ctrl?: boolean;
   stateType?: string;
   moveType?: string;
@@ -524,6 +526,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedLifeAtMost?: number;
   observedPowerAtLeast?: number;
   observedPowerAtMost?: number;
+  observedRedLifeAtLeast?: number;
+  observedRedLifeAtMost?: number;
   observedSuperPauseDefenseMultiplierAtLeast?: number;
   observedSuperPauseDefenseMultiplierAtMost?: number;
   observedPosXAtLeast?: number;
@@ -624,6 +628,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxLife: number;
   minPower: number;
   maxPower: number;
+  minRedLife: number;
+  maxRedLife: number;
   minSuperPauseDefenseMultiplier?: number;
   maxSuperPauseDefenseMultiplier?: number;
   minPos: { x: number; y: number };
@@ -764,6 +770,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "animNo"
   | "life"
   | "power"
+  | "redLife"
   | "ctrl"
   | "stateType"
   | "moveType"
@@ -1794,6 +1801,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxLife: Math.max(existing.maxLife, actor.life),
               minPower: Math.min(existing.minPower, actor.power),
               maxPower: Math.max(existing.maxPower, actor.power),
+              minRedLife: Math.min(existing.minRedLife, actor.redLife ?? 0),
+              maxRedLife: Math.max(existing.maxRedLife, actor.redLife ?? 0),
               minSuperPauseDefenseMultiplier: minOptionalTraceNumber(
                 existing.minSuperPauseDefenseMultiplier,
                 actor.superPauseDefenseMultiplier,
@@ -1910,6 +1919,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxLife: actor.life,
               minPower: actor.power,
               maxPower: actor.power,
+              minRedLife: actor.redLife ?? 0,
+              maxRedLife: actor.redLife ?? 0,
               minSuperPauseDefenseMultiplier: actor.superPauseDefenseMultiplier,
               maxSuperPauseDefenseMultiplier: actor.superPauseDefenseMultiplier,
               minPos: { ...actor.pos },
@@ -2936,6 +2947,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     animNo: actor.animNo,
     life: actor.life,
     power: actor.power,
+    ...(actor.redLife === undefined ? {} : { redLife: actor.redLife }),
     ctrl: actor.ctrl,
     stateType: actor.stateType,
     moveType: actor.moveType,
@@ -3336,6 +3348,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.clsn2Count,
     `life${actor.minLife}:${actor.maxLife}`,
     `power${actor.minPower}:${actor.maxPower}`,
+    `redlife${actor.minRedLife}:${actor.maxRedLife}`,
     actor.bodyWidthFront === undefined ? "wf*" : `wf${actor.bodyWidthFront}`,
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
@@ -3415,6 +3428,8 @@ function matchesActorFrameRequirement(
     (requirement.observedLifeAtMost === undefined || actor.minLife <= requirement.observedLifeAtMost) &&
     (requirement.observedPowerAtLeast === undefined || actor.maxPower >= requirement.observedPowerAtLeast) &&
     (requirement.observedPowerAtMost === undefined || actor.minPower <= requirement.observedPowerAtMost) &&
+    (requirement.observedRedLifeAtLeast === undefined || actor.maxRedLife >= requirement.observedRedLifeAtLeast) &&
+    (requirement.observedRedLifeAtMost === undefined || actor.minRedLife <= requirement.observedRedLifeAtMost) &&
     (requirement.observedSuperPauseDefenseMultiplierAtLeast === undefined ||
       (actor.maxSuperPauseDefenseMultiplier ?? Number.NEGATIVE_INFINITY) >=
         requirement.observedSuperPauseDefenseMultiplierAtLeast) &&
@@ -3798,6 +3813,9 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     frameIndex: actor.runtime.frameIndex,
     life: actor.runtime.life,
     power: actor.runtime.power,
+    ...(actor.runtime.redLife === undefined || actor.runtime.redLife === 0
+      ? {}
+      : { redLife: roundTraceNumber(actor.runtime.redLife) }),
     superPauseDefenseMultiplier:
       actor.runtime.superPauseDefenseMultiplier === undefined
         ? undefined

@@ -1,5 +1,21 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-14 Entry 505 evidence reconciliation
+
+Numbered committed truth is entry 505. Its closeout report declares 587/587 trace artifacts plus 200 files / 2045 tests, build, boundaries, CSS QA, and browser smoke. This audit does not rerun those implementation gates. Entries 477-505 close every previously selected gate through independent legal character evidence, Studio folder editing, team round/handoff/lifebar/life-power resources, and Helper-local life/power.
+
+Scores remain 65 / 35 / 20 / 10-12 / 6-8 / 25. Entry 479 accepted M2 only at bounded fixture scope, and entry 481 supplied the independent legal package. Before any practical-MUGEN promotion, `CompatibilityCorpus/v0` must make the denominator, route coverage, package diversity, optional/unavailable policy, and unsupported density reproducible. Auxiliary-resource, semantic-editor, provenance, scanner, and modular-planning work does not move compatibility scores without executable evidence. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+
+## 2026-07-13 Entry 476 evidence reconciliation
+
+Numbered committed truth is entry 476: 576/576 traces, 545 required. Entries 456-468 close bounded post-KO/`NoKOSlow` plus one repository-owned legal package through ZIP, loader, runtime, browser movement/combat/recovery, multi-frame AIR, and visible KO. Entries 412-476 close bounded active-root admission/contact/priority/reversal/depth/HitOverride/guard breadth. Wayfinder 127 is open uncommitted work and is not evidence here.
+
+Scores remain unchanged in this docs-only audit. The demonstrated legal journey now overlaps the written M2/36-55 evidence language, so a dedicated adjudication must either accept the existing artifacts or name the exact independent package/palette/corpus gate still missing.
+
+## 2026-07-12 Active-root plural body-push evidence note
+
+Entry 411 declares bounded explicit-Tag plural X/Width body push under `RuntimeRootPhaseCapabilities/v3`, exact pair/Single fallback, fresh reset/tick diagnostics, 177 files / 1802 tests, and 543/543 traces with no target/effect/combat widening. This automation did not re-run those concurrent gates. Scores remain unchanged because exact IKEMEN AffectTeam/geometry/priority/tie behavior and hit admission/combat remain blocked.
+
 ## 2026-07-12 Active-root diagnostic collision evidence note
 
 `RuntimeRootPresentation/v1`, 543/543 traces, and desktop/mobile smoke now prove bounded active-root Clsn1/Clsn2 diagnostic handoff with strict pair/reserve resolution and stale cleanup. Scores remain unchanged because body push, hit admission, targets, exact standby Clsn2 classes, and multi-root combat remain blocked.
@@ -56,11 +72,11 @@ Automatic common KO sound and tick-active `NoKOSnd` suppression are green under 
 
 Contextual player/common SND routing is green under focused tests and 524/524 traces. Score unchanged because broader ownership and full audio parity remain open.
 
-Last updated: 2026-07-12
+Last updated: 2026-07-13
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
-Latest evidence note: `RuntimeRootPresentation/v1` plus 543/543 traces and desktop/mobile smoke now prove bounded active-root body/shadow/camera and diagnostic collision handoff with stable P1/P2 gameplay/HUD ownership. This improves the explicit IKEMEN runtime but does not move scores until plural push, collision admission/combat, root-key effects, exact Tag choreography, and later gameplay owners are closed.
+Latest evidence note: entry 476 declares 576/576 traces, 545 required, after bounded active-root admission/contact/priority/reversal/depth/HitOverride/guard execution. Scores remain unchanged because generic Common1/landing, plural Helper/Projectile combat, team round/replacement, lifebars/resources, exact Tag choreography, and broad parity remain open.
 
 Latest evidence note: numbered Web Audio playback channels are now actor-local, so matching P1/P2/helper channel numbers do not cross-interrupt. This is meaningful playable-audio correctness but does not move scores until broader imported corpus, free-channel allocation, voice-channel cancellation, common/system audio ownership, and perceptual/browser evidence are closed.
 
@@ -74,7 +90,7 @@ Latest evidence note: five required first-generation helper direct-HitDef/persis
 | Practical MUGEN compatibility | 35 / 100 | DEF/AIR/CMD/CNS/SFF/SND/stage paths exist and many controller/trigger families have bounded gates, but broad character compatibility is still partial. |
 | MUGEN 1.0/1.1 MVP port | 20 / 100 | Enough parser/runtime/render infrastructure exists to keep marching toward KFM/Common1-style compatibility, but exact VM, combat, helpers, screenpack, palette, audio, and tick-order parity remain open. |
 | Full MUGEN-compatible engine | 10-12 / 100 | Foundation and evidence discipline exist. Complete behavior parity across real characters/stages/screenpacks is still a large engine project. |
-| Full IKEMEN-GO-class port | 6-8 / 100 | Scanner/reporting plus bounded explicit-profile RunOrder, Pause/SuperPause, team topology/eligibility/registry/live state, Tag command/CNS/motion, and active-root body/shadow/camera presentation exist. Direct input/AI, stage constraints, collision/combat, root-key effects, round/lifebars/resources, exact Tag ZSS/Lua choreography, screenpacks, rollback/netplay, and broad team semantics remain absent. |
+| Full IKEMEN-GO-class port | 6-8 / 100 | Scanner/reporting plus bounded explicit-profile scheduling/topology/Tag/Helper, active-root motion/presentation/constraints/push, and exercised direct admission/contact/priority/reversal/depth/HitOverride/guard routes exist. Direct native input/AI, plural Helper/Projectile combat, team defeat/replacement, round/lifebars/resources, exact Tag ZSS/Lua choreography, screenpacks, rollback/netplay, and broad team semantics remain absent. |
 | Creator Studio / modular engine | 25 / 100 | Studio workbench/evidence/build/assets surfaces exist. Real authoring, persistent asset DB, export pipeline, and non-fighting modules are still early. |
 
 ## What "Usable" Means Next
@@ -107,7 +123,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Evidence Ledger
 
-Current aggregate override: entry 407 declares 543/543 artifacts, 512 required and 31 optional. Required active-root constraint checksum `870f8871` supersedes the entry 405 presentation aggregate while preserving every historical gate. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
+Current aggregate override: entry 476 declares 576/576 artifacts, 545 required and 31 optional. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |

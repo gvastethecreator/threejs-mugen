@@ -1,6 +1,6 @@
 import type { ResourceControllerOp, VariableControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
-import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
+import { applyRuntimeDamage, canRuntimeDamageKill, scaleRuntimeIncomingAmount } from "./CombatResolver";
 import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
@@ -64,6 +64,14 @@ export class RuntimeResourceWorld {
       state.life = clampRuntimeResource(operation.value, 0, state.lifeMax);
       return;
     }
+    if (operation.controllerType === "redlifeadd") {
+      this.applyRedLifeAdd(state, operation.value, operation.absolute ?? false);
+      return;
+    }
+    if (operation.controllerType === "redlifeset") {
+      this.applyRedLifeSet(state, operation.value);
+      return;
+    }
     if (operation.controllerType === "poweradd") {
       state.power = clampRuntimeResource(state.power + operation.value, 0, state.powerMax);
       return;
@@ -76,6 +84,15 @@ export class RuntimeResourceWorld {
       value < 0
         ? applyRuntimeDamage(state.life, Math.abs(value), canRuntimeDamageKill(state, kill))
         : clampRuntimeResource(state.life + value, 0, state.lifeMax);
+  }
+
+  applyRedLifeAdd(state: CharacterRuntimeState, value: number, absolute = false): void {
+    const delta = absolute ? value : scaleRuntimeIncomingAmount(state, value);
+    state.redLife = clampRuntimeResource((state.redLife ?? 0) + delta, 0, state.lifeMax);
+  }
+
+  applyRedLifeSet(state: CharacterRuntimeState, value: number): void {
+    state.redLife = clampRuntimeResource(value, 0, state.lifeMax);
   }
 
   applyVariableAssignment(state: CharacterRuntimeState, assignment: RuntimeVariableAssignment, additive: boolean): void {
@@ -141,6 +158,14 @@ export function applyRuntimeLifeAdd(state: CharacterRuntimeState, value: number,
   defaultRuntimeResourceWorld.applyLifeAdd(state, value, kill);
 }
 
+export function applyRuntimeRedLifeAdd(state: CharacterRuntimeState, value: number, absolute = false): void {
+  defaultRuntimeResourceWorld.applyRedLifeAdd(state, value, absolute);
+}
+
+export function applyRuntimeRedLifeSet(state: CharacterRuntimeState, value: number): void {
+  defaultRuntimeResourceWorld.applyRedLifeSet(state, value);
+}
+
 export function applyRuntimeVariableAssignment(
   state: CharacterRuntimeState,
   assignment: RuntimeVariableAssignment,
@@ -197,6 +222,15 @@ export function resolveRuntimeResourceControllerOperation(
       kill: staticLifeAdd?.kill ?? (numberParam(controller, state, context, "kill") ?? 1) !== 0,
     };
   }
+  if (controllerType === "redlifeadd") {
+    const staticRedLifeAdd = operation?.controllerType === "redlifeadd" ? operation : undefined;
+    return {
+      kind: "resource",
+      controllerType: "redlifeadd",
+      value,
+      absolute: staticRedLifeAdd?.absolute ?? (numberParam(controller, state, context, "absolute") ?? 0) !== 0,
+    };
+  }
   return { kind: "resource", controllerType, value };
 }
 
@@ -234,7 +268,7 @@ function numberParam(
 
 function resourceControllerType(controller: RuntimeResourceControllerSource): ResourceControllerOp["controllerType"] | undefined {
   const normalized = controller.normalizedType.toLowerCase();
-  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "poweradd" || normalized === "powerset") {
+  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "redlifeadd" || normalized === "redlifeset" || normalized === "poweradd" || normalized === "powerset") {
     return normalized;
   }
   return undefined;
