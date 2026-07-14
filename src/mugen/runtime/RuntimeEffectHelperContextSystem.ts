@@ -24,12 +24,13 @@ export type RuntimeEffectHelperContextOpponent = {
 
 export type RuntimeEffectHelperContextOptions = Pick<
   RuntimeHelperAdvanceOptions,
-  "gameSpace" | "stageTime" | "runtimeTick" | "opponentRoster" | "pauseKind"
+  "constants" | "gameSpace" | "stageTime" | "runtimeTick" | "opponentRoster" | "pauseKind"
 > & {
   opponents?: readonly RuntimeEffectHelperContextOpponent[];
 };
 
 export type RuntimeEffectHelperContext = {
+  constants?: RuntimeHelperAdvanceOptions["constants"];
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentId?: string;

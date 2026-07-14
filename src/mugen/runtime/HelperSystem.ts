@@ -804,7 +804,7 @@ export function activateRuntimeHelperHitDef(
     frameElapsed: helper.frameElapsed,
     hasHit: helper.hasHit,
     firedHitDefs: helper.firedHitDefs,
-    constants: options.constants,
+    constants: options?.constants,
   };
   const result = hitDefWorld.apply({
     actor,
