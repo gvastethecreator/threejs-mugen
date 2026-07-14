@@ -1,5 +1,35 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 match outcome and state 5900
+
+- Entry 517 closes the reserved match-outcome/state-5900 slice. Bounded side
+  wins and draws, terminal match-over blocking, imported state-5900 preflight,
+  score HUD/control state, and the required trace are implemented.
+- Aggregate evidence is 599/599 artifacts: 565 required and 34 optional.
+  TypeScript 7, build, boundaries, CSS budget, and desktop/mobile/Studio smoke
+  pass. Scores remain unchanged.
+- The next runtime gate is atomic 1 -> 2 -> 3 continuity with per-actor
+  `RoundsExisted`, then automatic Turns decision -> handoff -> state-5900 ->
+  continuation. Exact winpose/motif ownership remains separate.
+- See `docs/research/2026-07-14-match-outcome-state-5900.md` and
+  `docs/reports/2026-07-14-match-outcome-state-5900.md`.
+
+## Planning report - 2026-07-14 entry-516 reconciliation
+
+- Since the prior automation cutoff, 19 commits advanced the numbered frontier
+  to entry 516. Entries 506-516 close guard/dizzy/red-life behavior, LifeShare,
+  lifecycle, HUD, and the first post-KO resource reset. The entry declares
+  598/598 traces; this planning pass did not re-run gates or move scores.
+- Product priority remains `CompatibilityCorpus/v0 -> score-band adjudication
+  -> independent legal stage/package`. Documentation is not corpus evidence.
+- Match-outcome/state-5900 is now closed as Entry 517. The next runtime risk
+  gate is 1 -> 2 -> 3 continuity with per-actor `RoundsExisted`, then automatic
+  Turns continuation.
+- Studio semantic preflight, provenance v2, package analysis, and later shared
+  contract promotion are parallel lanes with independent acceptance gates.
+- See
+  `docs/research/2026-07-14-match-outcome-state-5900.md`.
+
 ## Global report - 2026-07-14 exact red-life round reset
 
 - Entry 516 adds a verified post-KO next-round boundary. The typed reset

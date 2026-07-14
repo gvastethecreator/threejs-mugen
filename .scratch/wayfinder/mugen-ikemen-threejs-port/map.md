@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Implement match outcome and state 5900](tickets/156-match-outcome-state-5900.md) - Entry 517 adds bounded side wins/draws, terminal match-over blocking, imported state-5900 preflight and entry, score HUD/control state, and the required trace. Exact winpose/motif choreography, per-actor round context, and automatic Turns continuation remain separate. Next: atomic 1 -> 2 -> 3 continuity.
+
 - [Implement exact red-life round reset](tickets/155-red-life-round-reset.md) - Entry 516 adds a post-KO next-round boundary with bounded life/resource carry, mandatory red-life clearing, match-tick continuity, numbered round snapshots, UI access, and a required imported trace. Match-over adjudication, state-5900 choreography, complete variable/map/remap persistence, and full parity remain separate. Next: exact round outcome ownership.
 
 - [Present red-life HUD bars](tickets/154-red-life-hud.md) - Entry 515 renders bounded runtime red-life as a secondary solo/team meter with actor/slot bindings and desktop/mobile smoke. Exact screenpack/motif ownership, animation, and multi-round persistence remain separate. Next: exact multi-round persistence.

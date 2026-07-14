@@ -1,5 +1,20 @@
 ﻿# QA And Acceptance Gates
 
+## Match outcome and state 5900 gate
+
+Acceptance requires the imported required artifact
+`synthetic-imported-match-outcome-state-5900` to prove a completed round,
+bounded match score/draw state, available root state 5900 data, state-entry
+telemetry for every participating root, and a published next-round snapshot.
+The gate must also prove a configured match-win threshold blocks the next-round
+route while preserving terminal round state and exposing the winner. Missing,
+duplicate, or malformed state-5900 roots must fail closed. Entry 517 passes
+599/599 artifacts (565 required / 34 optional), focused runtime coverage,
+TypeScript 7, build, boundaries, CSS budget, and desktop/mobile/Studio smoke.
+Exact winpose/motif choreography, complete state-5900 controller breadth,
+per-actor `RoundsExisted`, Turns continuation, rollback/netplay, and full
+MUGEN/IKEMEN parity remain outside this gate.
+
 ## Active-root diagnostic collision gate
 
 Acceptance requires `RuntimeRootPresentation/v1` exact collision ids, strict pair/reserve resolution, no duplicate/unknown-id fallback, unchanged effect overlays, stable behavior checksums, and desktop/mobile `[p1,p2] -> [p3,p2] -> [p1,p2]` handoff/reset proof with nonzero Clsn boxes and stale cleanup. Collision ids must not be consumed by push, hit admission, targets, effects, round, HUD/audio, or resources.

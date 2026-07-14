@@ -1,5 +1,16 @@
 # Build Execution Backlog
 
+## Entry 517 - Match outcome and state 5900
+
+Added typed match score/draw ownership, terminal match-over blocking, imported
+state-5900 preflight and entry at the successful next-round boundary, score HUD
+and control state, and required Runtime Trace evidence. Focused coverage,
+TypeScript 7, build, boundaries, CSS budget, 599/599 trace artifacts, and
+desktop/mobile/Studio smoke pass. Claim ceiling: exact winpose/motif
+choreography, per-actor round context, automatic Turns continuation, and full
+MUGEN/IKEMEN parity remain open. See Wayfinder 156 and the dated research and
+report.
+
 ## Entry 516 - Exact red-life round reset
 
 Added the first verified post-KO next-round boundary. `RuntimeRoundResourceResetSystem/v0`

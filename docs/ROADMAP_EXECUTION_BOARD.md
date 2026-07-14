@@ -1,5 +1,32 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - match outcome and state 5900 (2026-07-14)
+
+Entry 517 closes the reserved match-outcome/state-5900 slice. The runtime now
+tracks bounded side wins and draws, blocks next-round application after the
+configured match-win threshold, preflights imported state 5900, enters
+available roots after a successful reset, and exposes score/control state in
+Runtime. Required traces pass 599/599 (565 required / 34 optional), with
+TypeScript 7, build, boundaries, CSS budget, and desktop/mobile/Studio smoke
+green. Scores do not move. The next I2 gate is atomic 1 -> 2 -> 3 continuity
+with per-actor `RoundsExisted`, followed by automatic Turns continuation.
+
+## Latest planning reconciliation - entry 516 (2026-07-14)
+
+Entry 517 is the latest committed closeout and declares 599/599 traces with no
+score movement. Entries 511-517 close the formerly selected dizzy defaults,
+scaling and break work plus red-life LifeShare, lifecycle, HUD, and first
+post-KO resource reset, match outcome, and state-5900 transition. Do not select
+those gates again.
+
+The product lane remains `CompatibilityCorpus/v0 -> score adjudication ->
+independent legal stage/package`. Match-outcome and state-5900 are now closed by
+Entry 517. The next I2 successor is an atomic 1 -> 2 -> 3 transition with
+per-actor `RoundsExisted`, followed by automatic Turns continuation. Studio
+semantic preflight, provenance v2, package analysis, and modular extraction
+remain separate lanes. See
+`docs/reports/2026-07-14-match-outcome-state-5900.md`.
+
 ## Latest implementation closeout - exact red-life round reset (2026-07-14)
 
 Entry 516 adds an explicit post-KO next-round boundary backed by

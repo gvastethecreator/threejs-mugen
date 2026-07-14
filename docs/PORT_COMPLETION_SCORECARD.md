@@ -1,4 +1,24 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 517 focal closeout
+
+Entry 517 closes bounded match outcome and imported state-5900 next-round
+sequencing. Focused outcome/state/Playable/round/trace coverage, TypeScript 7,
+build, architecture/CSS gates, 599/599 trace artifacts, and desktop/mobile/
+Studio smoke pass. Scores remain unchanged: this is a runtime evidence
+boundary, not full tournament or compatibility parity. Exact winpose/motif,
+per-actor round context, automatic Turns continuation, rollback/netplay, and
+full MUGEN/IKEMEN parity remain open.
+
+## 2026-07-14 Entry 516 planning reconciliation
+
+The committed evidence frontier remains entry 517: 599/599 declared traces,
+565 required and 34 optional, with scores unchanged at 65 / 35 / 20 / 10-12 /
+6-8 / 25. This audit changes no score. `CompatibilityCorpus/v0` must expose the
+legal/portable/optional denominator and unsupported/failure density before an
+adjudicator can move a compatibility band. Match-outcome/state-5900 is now
+evidence-backed by Entry 517; the score still does not move. See
+`docs/reports/2026-07-14-match-outcome-state-5900.md`.
+
 ## 2026-07-14 Entry 516 focal closeout
 
 Entry 516 closes the bounded imported red-life/resource transition between a
@@ -214,7 +234,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Evidence Ledger
 
-Current aggregate override: entry 476 declares 576/576 artifacts, 545 required and 31 optional. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
+Current aggregate override: entry 517 declares 599/599 artifacts, 565 required and 34 optional. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |
