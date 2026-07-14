@@ -9,8 +9,12 @@
 - Double effective loss can close the match as a draw with no fabricated
   winner. The snapshot includes the configured draw limits and the terminal
   message is `Match over - Draw`.
-- Focal outcome/decision/continuation/Playable coverage passes 222 tests and
-  TypeScript 7 typecheck passes. Broad closeout evidence remains pending.
+- Focal outcome/decision/continuation/Playable coverage passes 230 tests and
+  TypeScript 7 typecheck passes. The full suite passes 209 test files / 2118
+  tests; build, boundaries, CSS budget, and 600/600 trace artifacts are green.
+  Runtime/Tag/Studio browser smoke passes with 64 screenshots, zero console
+  issues, and zero page errors. The optional Code Fu Man fixture is absent and
+  explicitly skipped.
 - See `docs/research/2026-07-14-turns-draw-effective-loss.md` and
   `docs/reports/2026-07-14-turns-draw-effective-loss.md`.
 

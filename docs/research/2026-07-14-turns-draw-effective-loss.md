@@ -45,7 +45,13 @@ effective loss to the next draw.
   replacement to the effective-loss side.
 - `PlayableMatchRuntime.test.ts` covers automatic ordinary DKO restart and
   terminal double effective-loss draw.
-- Focal slice: 222 tests passed; TypeScript 7 typecheck passed.
+- Focal slice: 230 tests passed after the bilateral handoff regression was
+  qualified with explicit effective-loss input; TypeScript 7 typecheck passed.
+- Broad evidence: 209 test files / 2118 tests, 289-module production build,
+  boundaries, CSS budget, and 600/600 trace artifacts passed. Browser smoke
+  passed across Runtime, Tag, and Studio with 64 screenshots, zero console
+  issues, and zero page errors. The optional Code Fu Man fixture was absent and
+  skipped.
 
 ## Claim ceiling
 

@@ -6,9 +6,13 @@ Entry 522 closes the bounded Turns draw/effective-loss boundary. A simultaneous
 KO without a reached draw limit records a neutral draw and starts the ordinary
 next round; a reached per-side limit exposes effective loss, awards the
 opposing side, and limits reserve replacement to the affected side. Focal
-outcome/decision/continuation/Playable coverage passes 222 tests and
-TypeScript 7 typecheck is green. Next: run the broad closeout gate, then select
-the next source-backed runtime slice.
+coverage passes 230 tests and TypeScript 7 typecheck is green. The full suite
+passes 209 test files / 2118 tests, the 289-module build, boundaries, CSS
+budget, 600/600 trace artifacts, and the Runtime/Tag/Studio browser smoke with
+zero console issues and page errors. The optional Code Fu Man fixture is
+absent and explicitly skipped. Next: select the next independent
+source-backed runtime slice; keep exact Lua mutation breadth, winpose/motif
+timing, rollback/netplay, and full parity outside the claim ceiling.
 
 Entry 521 closes the bounded automatic Turns terminal and score-ownership
 boundary. The runtime derives side-specific `matchWins` from the opposing live
