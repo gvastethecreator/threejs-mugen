@@ -2,6 +2,11 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 538 closes the accumulated stage quality checkpoint. Native 211/2140,
+focal stage 4/28, TypeScript 7, build, boundaries, CSS, official browser, and
+trace 600/600 are green; scores remain unchanged. The next frontier is an
+independent runtime or Studio slice.
+
 Entry 537 closes the bounded legacy stage vertical-scale slice. Imported
 `yscalestart`/`yscaledelta` now use the official reciprocal formula when
 general scale is absent; focal coverage passes 25 tests and TypeScript 7

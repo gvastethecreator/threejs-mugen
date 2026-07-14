@@ -1,5 +1,18 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Stage quality checkpoint Entry 538
+
+- Entries 535-537 pass the accumulated closeout: native 211/2140, focal stage
+  4/28, TypeScript 7, 289-module build, boundaries, CSS budget, official stage
+  browser, and trace 600/600 (566 required / 34 optional / 0 skipped).
+- Browser evidence keeps Training Room at 2 decoded sprites and 2 rendered
+  backgrounds with nonblank desktop/mobile canvases and zero page/console
+  issues. The existing large-chunk advisory remains tracked.
+- No score movement. Exact parallax, camera/window/mask, shared BGCtrl state,
+  localcoord normalization, and full stage parity remain outside the claim.
+- See `docs/research/2026-07-14-stage-quality-checkpoint-entry-538.md` and
+  `docs/reports/2026-07-14-stage-quality-checkpoint-entry-538.md`.
+
 ## Global report - 2026-07-14 Legacy stage vertical scale
 
 - Entry 537 preserves and projects deprecated `yscalestart`/`yscaledelta`
