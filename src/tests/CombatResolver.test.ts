@@ -201,6 +201,14 @@ describe("CombatResolver", () => {
       kind: "hit",
       dizzyPoints: 15,
     });
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: { ...defender, assertSpecial: { flags: ["nodizzypointsdamage"], globalFlags: [], noDizzyPointsDamage: true } },
+        attack,
+        holdingBack: false,
+      }),
+    ).not.toHaveProperty("dizzyPoints");
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).not.toHaveProperty("dizzyPoints");
     expect(
       resolveRuntimeCombatHit({ attacker, defender, attack: { ...attack, dizzyPoints: -20 }, holdingBack: false }),

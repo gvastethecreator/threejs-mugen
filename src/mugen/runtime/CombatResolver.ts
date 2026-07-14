@@ -195,7 +195,7 @@ export function resolveRuntimeCombatHit(input: {
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
-    ...(input.attack.dizzyPoints === undefined
+    ...(input.attack.dizzyPoints === undefined || input.defender.assertSpecial?.noDizzyPointsDamage === true
       ? {}
       : { dizzyPoints: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingAmount(input.attacker, input.attack.dizzyPoints)) }),
     ...(input.attack.redLife === undefined

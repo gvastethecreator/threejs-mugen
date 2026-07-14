@@ -1,4 +1,14 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 510 focal closeout
+
+Entry 510 closes defender-owned `AssertSpecial NoDizzyPointsDamage` for
+explicit direct HitDef `dizzypoints`. The required suppression artifact passes
+with checksum `29e75f2a` inside 591/591 traces, with 23 focal tests green.
+Full repository gates are batched for the next implementation round. Omitted
+defaults, `AttackMulSet` dizzy scaling, break transitions, sharing,
+reset/persistence, HUD bars, and full parity remain separate gates. Scores do
+not move.
+
 ## 2026-07-14 Entry 509 non-score closeout
 
 Entry 509 closes bounded actor-local dizzy points: authored maximum/life

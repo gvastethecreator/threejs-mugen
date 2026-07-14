@@ -527,6 +527,7 @@ function applyAssertSpecialController(
     if (flag.name === "nostandguard") current.noStandGuard = true;
     if (flag.name === "nocrouchguard") current.noCrouchGuard = true;
     if (flag.name === "noairguard") current.noAirGuard = true;
+    if (flag.name === "nodizzypointsdamage") current.noDizzyPointsDamage = true;
     if (flag.name === "unguardable") current.unguardable = true;
     if (flag.name === "noko" || flag.name === "globalnoko") current.noKo = true;
     if (flag.name === "nokoslow") current.noKoSlow = true;

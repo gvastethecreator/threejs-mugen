@@ -1,6 +1,15 @@
 ﻿# Roadmap Execution Board
 
-## Latest implementation closeout - dizzy-points runtime (2026-07-14)
+## Latest implementation closeout - dizzy-points suppression (2026-07-14)
+
+Entry 510 closes defender-owned `AssertSpecial NoDizzyPointsDamage` for
+explicit direct HitDef `dizzypoints`. Required checksum `29e75f2a` passes inside
+591/591 traces; 23 focal tests pass across four files. Full repository gates
+remain batched for the next implementation round. Scores remain unchanged.
+Next: omitted dizzy defaults and `AttackMulSet` dizzy scaling, then dizzy break
+policy and red-life LifeShare as separate gates.
+
+## Previous implementation closeout - dizzy-points runtime (2026-07-14)
 
 Entry 509 closes bounded actor-local dizzy points: authored max/life fallback,
 fighter/Helper initialization, `DizzyPointsAdd`/`DizzyPointsSet`, explicit

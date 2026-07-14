@@ -80,7 +80,7 @@ export type RuntimeAuxiliaryResourceProjectionDiagnostic = {
   suppression: {
     redLife: "unimplemented";
     guardPoints: "unimplemented";
-    dizzyPoints: "unimplemented";
+    dizzyPoints: "bounded";
   };
   excludedActorKinds: ["projectile", "explod"];
   actors: RuntimeAuxiliaryResourceProjectionActor[];
@@ -199,7 +199,7 @@ export class RuntimeAuxiliaryResourceProjectionWorld {
       suppression: {
         redLife: "unimplemented",
         guardPoints: "unimplemented",
-        dizzyPoints: "unimplemented",
+        dizzyPoints: "bounded",
       },
       excludedActorKinds: ["projectile", "explod"],
       actors: normalizedActors,

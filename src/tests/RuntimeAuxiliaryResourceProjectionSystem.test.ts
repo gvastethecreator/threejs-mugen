@@ -73,7 +73,7 @@ describe("RuntimeAuxiliaryResourceProjectionWorld", () => {
         dizzyPoints: { owner: "actor", share: "none" },
       },
       mutation: { redLife: "bounded", guardPoints: "bounded", dizzyPoints: "bounded" },
-      suppression: { redLife: "unimplemented", guardPoints: "unimplemented", dizzyPoints: "unimplemented" },
+      suppression: { redLife: "unimplemented", guardPoints: "unimplemented", dizzyPoints: "bounded" },
       excludedActorKinds: ["projectile", "explod"],
       diagnostics: [],
     });

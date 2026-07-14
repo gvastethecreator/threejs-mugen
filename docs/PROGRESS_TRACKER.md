@@ -1,6 +1,22 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-14 dizzy-points runtime
+## Global report - 2026-07-14 dizzy-points suppression
+
+- Entry 510 closes defender-owned `AssertSpecial NoDizzyPointsDamage` for
+  explicit direct HitDef `dizzypoints`; guard and explicit resource writes stay
+  independent.
+- Required artifact `synthetic-imported-dizzypoints-suppression` passes with
+  checksum `29e75f2a`; global coverage is 591/591 artifacts, 557 required and
+  34 optional. Scores remain unchanged.
+- Focal coverage is 23 tests across four files. Full repository gates are
+  intentionally batched into the next implementation round.
+- Claim ceiling: explicit direct-hit suppression only. Omitted defaults,
+  `AttackMulSet DizzyPoints`, break transitions, sharing, reset/persistence,
+  HUD, and full parity remain blocked.
+- See `docs/research/2026-07-14-dizzy-points-suppression.md` and
+  `docs/reports/2026-07-14-dizzy-points-suppression.md`.
+
+## Previous global report - 2026-07-14 dizzy-points runtime
 
 - Entry 509 closes bounded actor-local dizzy points: authored max/life fallback,
   fighter/Helper state, `DizzyPointsAdd`/`DizzyPointsSet`, explicit direct

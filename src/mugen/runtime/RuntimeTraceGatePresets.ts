@@ -879,6 +879,68 @@ export function createSyntheticImportedDizzyPointsTraceArtifact(options: Runtime
   );
 }
 
+export function createSyntheticImportedDizzyPointsSuppressionTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dizzypoints-suppression-attacker",
+    displayName: "Synthetic Imported Dizzy Points Suppression Attacker",
+    hitDefDizzyPoints: -12,
+    dataStats: { dizzypoints: 1000 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dizzypoints-suppression-defender",
+    displayName: "Synthetic Imported Dizzy Points Suppression Defender",
+    passiveAssertSpecialFlags: ["NoDizzyPointsDamage"],
+    dataStats: { dizzypoints: 1000 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-dizzypoints-suppression-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-dizzypoints-suppression-golden",
+      label: "Synthetic imported dizzy-points suppression route",
+      source: "imported",
+      notes: [
+        "Synthetic imported dizzy-points suppression trace proves defender-owned NoDizzyPointsDamage prevents an explicit direct HitDef dizzypoints amount from mutating the defender. DizzyPointsAdd/Set, positive omitted defaults, AttackMulSet DizzyPoints, break transitions, sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-dizzypoints-suppression-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["AssertSpecial", "ChangeState", "HitDef"],
+        requiredExecutedOperations: ["assertspecial", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            observedDizzyPointsAtLeast: 1000,
+            observedDizzyPointsAtMost: 1000,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", dizzyPoints: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedControlTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({

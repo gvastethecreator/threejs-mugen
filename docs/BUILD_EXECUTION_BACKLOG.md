@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 510 - Dizzy-points suppression/v0
+
+Done: defender-owned `AssertSpecial NoDizzyPointsDamage` now compiles into typed
+runtime state and suppresses only explicit direct HitDef `dizzypoints`. The
+auxiliary projection reports bounded dizzy suppression while red-life and
+guard-point suppression remain deferred. Required trace
+`synthetic-imported-dizzypoints-suppression` passes with checksum `29e75f2a`;
+the corpus is 591/591 artifacts (557 required / 34 optional). Focal coverage
+passes 23 tests across four files. Full repository gates are intentionally
+batched into the next implementation round. Claim blocked: omitted defaults,
+`AttackMulSet DizzyPoints`, break transitions, sharing, reset/persistence, HUD,
+rollback, netplay, and full MUGEN/IKEMEN parity. See Wayfinder 149 and the
+dated research/report.
+
 ## Entry 509 - Dizzy-points runtime/v0
 
 Done: actor-local `dizzyPoints` state now uses authored `[Data] dizzypoints`

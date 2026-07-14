@@ -490,6 +490,7 @@ import {
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
+  createSyntheticImportedDizzyPointsSuppressionTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
   createSyntheticImportedDynamicResourceSetTraceArtifact,
@@ -1336,6 +1337,27 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 298, dizzyPoints: 900 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 988 });
+  });
+
+  it("creates a synthetic imported dizzy-points suppression artifact", () => {
+    const artifact = createSyntheticImportedDizzyPointsSuppressionTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dizzypoints-suppression-golden",
+        source: "imported",
+      },
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.assertspecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", minDizzyPoints: 1000, maxDizzyPoints: 1000 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 1000 });
   });
 
   it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {

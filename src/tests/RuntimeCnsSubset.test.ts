@@ -732,7 +732,7 @@ describe("StateControllerExecutor", () => {
     const compiledAssertSpecial = compileControllerIr(
       controller("AssertSpecial", {
         flag: "NoAutoTurn",
-        flag2: "NoWalk, Invisible, TimerFreeze, RoundNotOver, NoKOSlow, Intro",
+        flag2: "NoWalk, Invisible, TimerFreeze, RoundNotOver, NoKOSlow, Intro, NoDizzyPointsDamage",
         flag3: "NoJuggleCheck, NoGetUpFromLieDown, NoFastRecoverFromLieDown",
       }),
     );
@@ -766,12 +766,13 @@ describe("StateControllerExecutor", () => {
     expect(state.power).toBe(1234);
     expect(state.vars.slice(2, 5)).toEqual([9, 9, 9]);
     expect(state.assertSpecial).toMatchObject({
-      flags: ["noautoturn", "nowalk", "invisible", "nojugglecheck", "nogetupfromliedown", "nofastrecoverfromliedown"],
+      flags: ["noautoturn", "nowalk", "invisible", "nodizzypointsdamage", "nojugglecheck", "nogetupfromliedown", "nofastrecoverfromliedown"],
       globalFlags: ["timerfreeze", "roundnotover", "nokoslow", "intro"],
       noAutoTurn: true,
       noWalk: true,
       invisible: true,
       noKoSlow: true,
+      noDizzyPointsDamage: true,
       timerFreeze: true,
       roundNotOver: true,
       intro: true,
@@ -781,7 +782,7 @@ describe("StateControllerExecutor", () => {
     });
     expect(compiledAssertSpecial.operation).toEqual({
       kind: "assertspecial",
-      flags: ["noautoturn", "nowalk", "invisible", "nojugglecheck", "nogetupfromliedown", "nofastrecoverfromliedown"],
+      flags: ["noautoturn", "nowalk", "invisible", "nodizzypointsdamage", "nojugglecheck", "nogetupfromliedown", "nofastrecoverfromliedown"],
       globalFlags: ["timerfreeze", "roundnotover", "nokoslow", "intro"],
     });
     expect(state.renderOpacity).toBe(0);

@@ -136,6 +136,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDizzyPointsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dizzypoints-suppression",
+      required: true,
+      artifact: presets.createSyntheticImportedDizzyPointsSuppressionTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control",
       required: true,
       artifact: presets.createSyntheticImportedControlTraceArtifact(),
