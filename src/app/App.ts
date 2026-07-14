@@ -98,6 +98,13 @@ import {
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import {
+  commitStudioSourceDocumentDraft,
+  createStudioSourceDocumentDraft,
+  discardStudioSourceDocumentDraft,
+  updateStudioSourceDocumentDraft,
+  type StudioSourceDocumentDraft,
+} from "./StudioSourceDocument";
+import {
   createIndexedDbSourceHandleStore,
   createMemorySourceHandleStore,
   createSourceHandleRecord,
@@ -107,8 +114,10 @@ import {
   readSourceHandleFolder,
   readSourceHandleFile,
   requestSourceHandlePermission,
+  requestSourceHandleWritePermission,
   type SourceHandleBrowserHost,
   type SourceHandleCapability,
+  type SourceHandleLike,
   type SourceHandleRecord,
   type SourceHandleStore,
   type SourceHandleStoreEntry,
@@ -122,6 +131,11 @@ import {
   type SourceTransactionRecord,
   type SourceImportTransaction,
 } from "./StudioSourceTransaction";
+import {
+  createSourceWritePlan,
+  writeSourceHandleText,
+  type SourceWritePlan,
+} from "./StudioSourceWrite";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
@@ -704,6 +718,7 @@ type SourceImportRollbackState = {
   inspectorRuntime: MugenRuntime;
   pendingSourceRelinkPackageId?: string;
   sourceImportTransaction?: SourceImportTransaction;
+  studioSourceDocument?: StudioSourceDocumentDraft;
   lastCompiledProject?: CompiledRuntimeManifest;
   lastProjectBundle?: ProjectExportBundleSummary;
   lastTraceArtifact?: RuntimeTraceArtifact;
@@ -723,6 +738,10 @@ type AtlasMotionQaReport = {
 };
 
 type RuntimeQaScenario = "ikemen-tag-presentation";
+type SourceImportOptions = {
+  allowChangedSource?: boolean;
+  skipNavigationGuard?: boolean;
+};
 
 const TRACE_ARTIFACT_HISTORY_LIMIT = 8;
 
@@ -757,6 +776,7 @@ export class App {
   private studioSelectedActorId?: string;
   private pendingSourceRelinkPackageId?: string;
   private sourceImportTransaction?: SourceImportTransaction;
+  private studioSourceDocument?: StudioSourceDocumentDraft;
   private readonly memorySourceHandleStore = createMemorySourceHandleStore();
   private sourceHandleStore: SourceHandleStore = this.memorySourceHandleStore;
   private sourceHandleEntries: SourceHandleStoreEntry[] = [];
@@ -922,7 +942,7 @@ export class App {
 
   private installNavigationGuard(): void {
     window.addEventListener("beforeunload", (event) => {
-      if (!needsStudioProjectNavigationGuard(this.mode, this.projectDirty)) {
+      if (!needsStudioProjectNavigationGuard(this.mode, this.projectDirty || this.studioSourceDocument?.dirty === true)) {
         return;
       }
       event.preventDefault();
@@ -960,7 +980,7 @@ export class App {
   }
 
   private confirmStudioProjectNavigation(destination: string): boolean {
-    if (!needsStudioProjectNavigationGuard(this.mode, this.projectDirty)) {
+    if (!needsStudioProjectNavigationGuard(this.mode, this.projectDirty || this.studioSourceDocument?.dirty === true)) {
       return true;
     }
     return window.confirm(studioProjectDiscardMessage(destination));
@@ -1065,6 +1085,10 @@ export class App {
       } else if (action === "link-source-handle" || action === "request-source-handle-permission" || action === "recover-source-handle") {
         const sourcePackageId = target.closest<HTMLElement>("[data-source-package-id]")?.dataset.sourcePackageId;
         void this.handleSourceHandleAction(sourcePackageId, action);
+      } else if (action === "save-source-document") {
+        void this.saveStudioSourceDocument();
+      } else if (action === "discard-source-document") {
+        this.discardStudioSourceDocument();
       } else if (action === "load-zip") {
         this.root.querySelector<HTMLInputElement>("#zip-input")?.click();
       } else if (action === "load-folder") {
@@ -1087,6 +1111,7 @@ export class App {
       if (sourcePath) {
         this.studioFocusedSourcePackageId = sourcePathNode?.dataset.sourcePackageId;
         this.studioFocusedSourcePath = sourcePath;
+        this.openStudioSourceDocument(this.studioFocusedSourcePackageId, sourcePath);
         this.mode = "studio";
         this.studioTab = "build";
         this.writeUrlState();
@@ -1337,6 +1362,14 @@ export class App {
 
     this.root.addEventListener("input", (event) => {
       const target = event.target as HTMLInputElement;
+      if (target.dataset.sourceEditor !== undefined) {
+        const draft = this.studioSourceDocument;
+        if (draft) {
+          this.studioSourceDocument = updateStudioSourceDocumentDraft(draft, target.value);
+          this.refreshStudioSourceEditorStatus();
+        }
+        return;
+      }
       if (target.dataset.commandPaletteSearch !== undefined) {
         this.commandPaletteQuery = target.value;
         this.commandPaletteActiveIndex = 0;
@@ -1600,8 +1633,8 @@ export class App {
     window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
   }
 
-  private async loadZip(file: File): Promise<boolean> {
-    if (!this.confirmStudioProjectNavigation("load a new source package")) {
+  private async loadZip(file: File, options: SourceImportOptions = {}): Promise<boolean> {
+    if (!options.skipNavigationGuard && !this.confirmStudioProjectNavigation("load a new source package")) {
       return false;
     }
     this.log(`Loading ZIP ${file.name}`);
@@ -1612,7 +1645,7 @@ export class App {
       const stages = await this.stageLoader.loadAll(source.name, vfs);
       const fingerprint = await fingerprintVirtualFileSystem(vfs);
       const sourceBundle = { sourceName: source.name, sourceKind: "zip" as const, vfs, fileCount: vfs.listFiles().length, fingerprint };
-      const transaction = this.prepareSourceImportTransaction(sourceBundle);
+      const transaction = this.prepareSourceImportTransaction(sourceBundle, options);
       if (transaction.status === "rejected") {
         this.rejectSourceImportTransaction(transaction);
         return false;
@@ -1626,8 +1659,11 @@ export class App {
     }
   }
 
-  private async loadFolder(files: FileList | readonly (File | FolderCharacterSourceFile)[]): Promise<boolean> {
-    if (!this.confirmStudioProjectNavigation("load a new source package")) {
+  private async loadFolder(
+    files: FileList | readonly (File | FolderCharacterSourceFile)[],
+    options: SourceImportOptions = {},
+  ): Promise<boolean> {
+    if (!options.skipNavigationGuard && !this.confirmStudioProjectNavigation("load a new source package")) {
       return false;
     }
     this.log(`Loading folder (${files.length} files)`);
@@ -1638,7 +1674,7 @@ export class App {
       const stages = await this.stageLoader.loadAll(source.name, vfs);
       const fingerprint = await fingerprintVirtualFileSystem(vfs);
       const sourceBundle = { sourceName: source.name, sourceKind: "folder" as const, vfs, fileCount: vfs.listFiles().length, fingerprint };
-      const transaction = this.prepareSourceImportTransaction(sourceBundle);
+      const transaction = this.prepareSourceImportTransaction(sourceBundle, options);
       if (transaction.status === "rejected") {
         this.rejectSourceImportTransaction(transaction);
         return false;
@@ -1652,7 +1688,10 @@ export class App {
     }
   }
 
-  private prepareSourceImportTransaction(sourceBundle: ImportedSourceBundle): SourceImportTransaction {
+  private prepareSourceImportTransaction(
+    sourceBundle: ImportedSourceBundle,
+    options: SourceImportOptions = {},
+  ): SourceImportTransaction {
     return prepareSourceImportTransaction(
       this.importedProjectManifest,
       {
@@ -1665,6 +1704,7 @@ export class App {
         fileDigests: sourceBundle.fingerprint.files,
       },
       this.pendingSourceRelinkPackageId,
+      { allowChangedSource: options.allowChangedSource },
     );
   }
 
@@ -1807,6 +1847,155 @@ export class App {
       this.log(`Source handle recovery failed: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
     }
+  }
+
+  private openStudioSourceDocument(sourcePackageId: string | undefined, sourcePath: string): void {
+    if (!sourcePackageId) {
+      return;
+    }
+    const current = this.studioSourceDocument;
+    if (
+      current?.dirty &&
+      (current.sourcePackageId !== sourcePackageId || current.path !== sourcePath) &&
+      !window.confirm(studioProjectDiscardMessage("open another source file"))
+    ) {
+      return;
+    }
+    const vfsPath = this.resolveStudioSourceVfsPath(sourcePath);
+    const text = vfsPath ? this.importedSourceBundle?.vfs.readText(vfsPath) : undefined;
+    if (text === undefined) {
+      this.studioSourceDocument = undefined;
+      this.log(`Source file ${sourcePath} is not available in the active VFS.`);
+      return;
+    }
+    this.studioSourceDocument = createStudioSourceDocumentDraft({
+      sourcePackageId,
+      path: vfsPath ?? sourcePath,
+      text,
+    });
+  }
+
+  private resolveStudioSourceVfsPath(sourcePath: string): string | undefined {
+    const vfs = this.importedSourceBundle?.vfs;
+    if (!vfs) {
+      return undefined;
+    }
+    if (vfs.readText(sourcePath) !== undefined) {
+      return sourcePath;
+    }
+    const suffix = `/${sourcePath.toLowerCase()}`;
+    return vfs.listFiles().find((candidate) => candidate.toLowerCase().endsWith(suffix));
+  }
+
+  private getStudioSourceWriteContext(draft: StudioSourceDocumentDraft): {
+    sourcePackage: GameProjectSourcePackage;
+    sourceTransaction: SourceTransactionRecord | undefined;
+    sourceHandle: SourceHandleRecord | undefined;
+    handle: SourceHandleLike | undefined;
+    plan: SourceWritePlan;
+  } | undefined {
+    const sourcePackage = this.getProjectSourcePackages().find((item) => item.id === draft.sourcePackageId);
+    if (!sourcePackage) {
+      return undefined;
+    }
+    const sourceTransaction = this.getSourceTransactionRecords().find((item) => item.sourcePackageId === sourcePackage.id);
+    const sourceHandle = this.getSourceHandleRecords().find((item) => item.sourcePackageId === sourcePackage.id);
+    const entry = this.sourceHandleEntries.find((item) => item.record.sourcePackageId === sourcePackage.id);
+    return {
+      sourcePackage,
+      sourceTransaction,
+      sourceHandle,
+      handle: entry?.handle,
+      plan: createSourceWritePlan({
+        sourcePackage,
+        sourceTransaction,
+        sourceHandle,
+        handle: entry?.handle,
+        path: draft.path,
+      }),
+    };
+  }
+
+  private async saveStudioSourceDocument(): Promise<void> {
+    const draft = this.studioSourceDocument;
+    if (!draft?.dirty) {
+      return;
+    }
+    const context = this.getStudioSourceWriteContext(draft);
+    if (!context || context.plan.status !== "ready" || !context.handle) {
+      this.log(context?.plan.detail ?? "Source document save is unavailable for the current package.");
+      this.updateUi();
+      return;
+    }
+    try {
+      const writePermission = await requestSourceHandleWritePermission(context.handle);
+      if (writePermission !== "granted") {
+        await this.persistSourceHandle(
+          context.sourcePackage,
+          context.handle,
+          writePermission,
+          context.sourceHandle?.observedFingerprint,
+          context.sourceHandle?.observedByteLength,
+        );
+        this.log(`Source write permission for ${context.sourcePackage.name} remains ${writePermission}.`);
+        this.updateUi();
+        return;
+      }
+      const result = await writeSourceHandleText(context.handle, draft.path, draft.text);
+      this.studioSourceDocument = commitStudioSourceDocumentDraft(draft);
+      this.invalidateBuildOutputs();
+      this.pendingSourceRelinkPackageId = context.sourcePackage.id;
+      const accepted = await this.loadFolder(await readSourceHandleFolder(context.handle), {
+        allowChangedSource: true,
+        skipNavigationGuard: true,
+      });
+      if (accepted) {
+        const activePackage = this.getProjectSourcePackages().find((item) => item.id === context.sourcePackage.id) ?? context.sourcePackage;
+        const fingerprint = this.importedSourceBundle?.fingerprint;
+        await this.persistSourceHandle(
+          activePackage,
+          context.handle,
+          "granted",
+          fingerprint?.digest,
+          fingerprint?.byteLength,
+        );
+        const refreshedText = this.importedSourceBundle?.vfs.readText(draft.path);
+        this.studioSourceDocument = refreshedText === undefined
+          ? undefined
+          : createStudioSourceDocumentDraft({ sourcePackageId: activePackage.id, path: draft.path, text: refreshedText });
+        this.log(`Saved ${draft.path} (${result.byteLength} bytes) and explicitly reimported ${activePackage.name}.`);
+      } else {
+        this.log(`Saved ${draft.path}, but explicit source reimport was rejected; the current runtime session was retained.`);
+      }
+    } catch (error) {
+      this.log(`Source document save failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+    this.updateUi();
+  }
+
+  private discardStudioSourceDocument(): void {
+    const draft = this.studioSourceDocument;
+    if (!draft) {
+      return;
+    }
+    this.studioSourceDocument = discardStudioSourceDocumentDraft(draft);
+    this.updateUi();
+  }
+
+  private refreshStudioSourceEditorStatus(): void {
+    const draft = this.studioSourceDocument;
+    const status = this.root.querySelector<HTMLElement>("[data-source-editor-status]");
+    const save = this.root.querySelector<HTMLButtonElement>('[data-action="save-source-document"]');
+    const discard = this.root.querySelector<HTMLButtonElement>('[data-action="discard-source-document"]');
+    if (!draft || !status || !save || !discard) {
+      return;
+    }
+    const plan = this.getStudioSourceWriteContext(draft)?.plan;
+    status.textContent = draft.dirty
+      ? plan?.status === "ready" ? "Unsaved local edit" : plan?.detail ?? "Unsaved local edit"
+      : plan?.detail ?? "Source document loaded";
+    save.disabled = !draft.dirty || plan?.status !== "ready";
+    discard.disabled = !draft.dirty;
   }
 
   private async persistSourceHandle(
@@ -2114,6 +2303,7 @@ export class App {
       rollback,
       (acceptedTransaction) => {
         this.studioAutosave.cancel();
+        this.studioSourceDocument = undefined;
         this.character = character;
         this.importedStages = stages;
         this.importedSourceBundle = sourceBundle;
@@ -2194,6 +2384,7 @@ export class App {
       inspectorRuntime: this.inspectorRuntime,
       pendingSourceRelinkPackageId: this.pendingSourceRelinkPackageId,
       sourceImportTransaction: this.sourceImportTransaction,
+      studioSourceDocument: this.studioSourceDocument,
       lastCompiledProject: this.lastCompiledProject,
       lastProjectBundle: this.lastProjectBundle,
       lastTraceArtifact: this.lastTraceArtifact,
@@ -2220,6 +2411,7 @@ export class App {
     this.inspectorRuntime = previousState.inspectorRuntime;
     this.pendingSourceRelinkPackageId = previousState.pendingSourceRelinkPackageId;
     this.sourceImportTransaction = previousState.sourceImportTransaction;
+    this.studioSourceDocument = previousState.studioSourceDocument;
     this.lastCompiledProject = previousState.lastCompiledProject;
     this.lastProjectBundle = previousState.lastProjectBundle;
     this.lastTraceArtifact = previousState.lastTraceArtifact;
@@ -7098,8 +7290,8 @@ export class App {
       <div class="section">
         <h2>Source Packages</h2>
         ${this.renderSourceImportTransactionNotice()}
-        ${
-          sourcePackages.length
+      ${
+        sourcePackages.length
             ? `<div class="list compact-list">
                 ${sourcePackages
                   .map((sourcePackage) => this.renderSourcePackageRow(sourcePackage, sourceTransactions.get(sourcePackage.id)))
@@ -7107,6 +7299,7 @@ export class App {
               </div>`
             : `<div class="empty-state">No imported source package is required for the current local/generated project.</div>`
         }
+        ${this.renderStudioSourceDocumentEditor()}
       </div>
     `;
   }
@@ -7194,6 +7387,39 @@ export class App {
         <span class="mono">${escapeHtml(sourcePath)}</span>
         <small>${sourcePackage.status === "linked" ? "linked" : "required"}</small>
       </button>
+    `;
+  }
+
+  private renderStudioSourceDocumentEditor(): string {
+    const draft = this.studioSourceDocument;
+    if (!draft) {
+      return "";
+    }
+    const context = this.getStudioSourceWriteContext(draft);
+    const plan = context?.plan ?? {
+      status: "blocked" as const,
+      reason: "missing-source" as const,
+      sourcePackageId: draft.sourcePackageId,
+      path: draft.path,
+      detail: "The source package is no longer active in this Studio session.",
+    } satisfies SourceWritePlan;
+    const editable = plan.status === "ready";
+    return `
+      <section class="studio-source-editor" aria-label="Source document editor">
+        <div class="studio-source-editor-head">
+          <span>
+            <strong>Source document</strong>
+            <small>${escapeHtml(context?.sourcePackage.name ?? draft.sourcePackageId)} / ${escapeHtml(draft.path)}</small>
+          </span>
+          ${this.statusBadge(editable ? draft.dirty ? "warn" : "ok" : "blocked")}
+        </div>
+        <textarea data-source-editor="true" aria-label="Source document text" spellcheck="false"${editable ? "" : " readonly"}>${escapeHtml(draft.text)}</textarea>
+        <div class="studio-source-editor-status" data-source-editor-status>${escapeHtml(draft.dirty && editable ? "Unsaved local edit" : plan.detail)}</div>
+        <div class="row-actions studio-source-editor-actions">
+          <button type="button" data-action="save-source-document"${!draft.dirty || !editable ? " disabled" : ""}>Save &amp; Reimport</button>
+          <button type="button" data-action="discard-source-document"${!draft.dirty ? " disabled" : ""}>Discard</button>
+        </div>
+      </section>
     `;
   }
 

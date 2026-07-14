@@ -6,7 +6,9 @@ import {
   querySourceHandlePermission,
   readSourceHandleFolder,
   readSourceHandleFile,
+  querySourceHandleWritePermission,
   requestSourceHandlePermission,
+  requestSourceHandleWritePermission,
   SOURCE_HANDLE_SCHEMA,
   type SourceHandleLike,
 } from "../app/StudioSourceHandle";
@@ -85,6 +87,18 @@ describe("StudioSourceHandle", () => {
     expect(await querySourceHandlePermission(handle)).toBe("prompt");
     expect(await requestSourceHandlePermission(handle)).toBe("granted");
     expect(handle.requestPermission).toHaveBeenCalledWith({ mode: "read" });
+  });
+
+  it("requests readwrite permission separately before a source write", async () => {
+    const handle: SourceHandleLike = {
+      kind: "directory",
+      queryPermission: vi.fn(async ({ mode }: { mode?: "read" | "readwrite" } = {}) => mode === "readwrite" ? "prompt" : "granted"),
+      requestPermission: vi.fn(async ({ mode }: { mode?: "read" | "readwrite" } = {}) => mode === "readwrite" ? "granted" : "granted"),
+    };
+
+    expect(await querySourceHandleWritePermission(handle)).toBe("prompt");
+    expect(await requestSourceHandleWritePermission(handle)).toBe("granted");
+    expect(handle.requestPermission).toHaveBeenCalledWith({ mode: "readwrite" });
   });
 
   it("keeps handles separate from project manifests in the memory fallback store", async () => {

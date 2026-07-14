@@ -11,6 +11,7 @@ export type SourceImportTransactionReason =
   | "new-source"
   | "matched-relink"
   | "legacy-baseline"
+  | "explicit-reimport"
   | "changed-source"
   | "missing-source"
   | "source-mismatch";
@@ -161,6 +162,7 @@ export function prepareSourceImportTransaction(
   manifest: GameProjectManifest | undefined,
   source: GameProjectSourceRelinkSource,
   targetId?: string,
+  options: { allowChangedSource?: boolean } = {},
 ): SourceImportTransaction {
   const base = {
     targetId,
@@ -192,7 +194,17 @@ export function prepareSourceImportTransaction(
     };
   }
 
-  const result = relinkGameProjectSourcePackages(manifest.sourcePackages, source, targetId);
+  const sourceIdentityChanged = (targetId
+    ? manifest.sourcePackages.filter((sourcePackage) => sourcePackage.id === targetId)
+    : manifest.sourcePackages
+  ).some((sourcePackage) => Boolean(
+    sourcePackage.fingerprint &&
+      source.fingerprint &&
+      sourcePackage.fingerprint.toLowerCase() !== source.fingerprint.toLowerCase(),
+  ));
+  const result = relinkGameProjectSourcePackages(manifest.sourcePackages, source, targetId, {
+    allowChangedFingerprint: options.allowChangedSource,
+  });
   const relevantPackages = targetId
     ? result.sourcePackages.filter((sourcePackage) => sourcePackage.id === targetId)
     : result.sourcePackages;
@@ -224,7 +236,11 @@ export function prepareSourceImportTransaction(
   return {
     ...base,
     status: "accepted",
-    reason: expectedFingerprint ? "matched-relink" : "legacy-baseline",
+    reason: sourceIdentityChanged && options.allowChangedSource
+      ? "explicit-reimport"
+      : expectedFingerprint
+        ? "matched-relink"
+        : "legacy-baseline",
     sourcePackages: result.sourcePackages,
     linkedIds: result.linkedIds,
     warnings: result.warnings,

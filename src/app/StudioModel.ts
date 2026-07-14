@@ -334,6 +334,7 @@ export function relinkGameProjectSourcePackages(
   sourcePackages: GameProjectSourcePackage[],
   source: GameProjectSourceRelinkSource,
   targetId?: string,
+  options: { allowChangedFingerprint?: boolean } = {},
 ): GameProjectSourceRelinkResult {
   const sourcePaths = source.paths.map(normalizeSourcePackagePath).filter(Boolean);
   const sourcePathSet = new Set(sourcePaths);
@@ -355,7 +356,7 @@ export function relinkGameProjectSourcePackages(
     const nameMatches = normalizeSourcePackageName(sourcePackage.name) === normalizedSourceName;
     const kindMatches = sourcePackage.kind === source.kind;
     const identityStatus = classifySourceIdentity(sourcePackage.fingerprint, source.fingerprint, true);
-    const fingerprintMatches = identityStatus !== "changed";
+    const fingerprintMatches = identityStatus !== "changed" || options.allowChangedFingerprint === true;
     const canRelink = (pathsMatch || (nameMatches && kindMatches)) && fingerprintMatches;
 
     if (!canRelink) {
@@ -379,17 +380,17 @@ export function relinkGameProjectSourcePackages(
     }
 
     linkedIds.push(sourcePackage.id);
-    const resolvedIdentityStatus = source.fingerprint && !sourcePackage.fingerprint ? "matched" : identityStatus;
+    const resolvedIdentityStatus = source.fingerprint ? "matched" : identityStatus;
     return {
       ...sourcePackage,
       name: source.name,
       kind: source.kind,
       fileCount: source.fileCount,
       status: "linked" as const,
-      fingerprint: sourcePackage.fingerprint ?? source.fingerprint,
+      fingerprint: options.allowChangedFingerprint ? source.fingerprint : sourcePackage.fingerprint ?? source.fingerprint,
       fingerprintAlgorithm: sourcePackage.fingerprintAlgorithm ?? (source.fingerprint ? SOURCE_FINGERPRINT_ALGORITHM : undefined),
-      byteLength: sourcePackage.byteLength ?? source.byteLength,
-      ...(sourcePackage.fileDigests ?? source.fileDigests ? { fileDigests: sourcePackage.fileDigests ?? source.fileDigests } : {}),
+      byteLength: options.allowChangedFingerprint ? source.byteLength : sourcePackage.byteLength ?? source.byteLength,
+      ...(sourcePackage.fileDigests ?? source.fileDigests ? { fileDigests: options.allowChangedFingerprint ? source.fileDigests : sourcePackage.fileDigests ?? source.fileDigests } : {}),
       observedFingerprint: source.fingerprint,
       observedByteLength: source.byteLength,
       identityStatus: resolvedIdentityStatus,

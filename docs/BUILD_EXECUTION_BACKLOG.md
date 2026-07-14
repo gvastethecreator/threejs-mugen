@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 505 - Studio folder source editing/v0
+
+Done: Studio Build now opens a focused required source path in a real text
+editor when the active package is linked through a matched folder handle. The
+write plan rejects ZIP sources, stale/unknown fingerprints, project revision
+conflicts, missing permission, unsafe paths, and unsupported handles. Accepted
+folder writes use an exclusive staged writable stream; Save & Reimport then
+parses the edited folder and replaces the fingerprint baseline only after the
+explicit transaction succeeds. Focused source-write and transaction tests
+pass. Claim allowed: bounded existing-file folder authoring. Claim blocked:
+ZIP rewrite, file creation/deletion, watchers, merge/rollback, and semantic
+state/controller/collision editing.
+
 ## Entry 504 - Helper-local resource boundary/v1
 
 Done: helper-local `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` routes now

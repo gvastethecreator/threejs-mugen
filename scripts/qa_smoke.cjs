@@ -553,7 +553,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     check();
   }));
   let qcfObserved = false;
-  for (let attempt = 0; attempt < 2 && !qcfObserved; attempt += 1) {
+  for (let attempt = 0; attempt < 3 && !qcfObserved; attempt += 1) {
     const pauseOnQcf = waitForQcf();
     await pressCodeFuManQcfX(page);
     try {
@@ -587,32 +587,43 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
   await page.waitForTimeout(80);
   await resetCodeFuManRound(page);
 
-  const pauseOnUpper = page.evaluate(() => new Promise((resolve, reject) => {
-    let lastSnapshot = {};
-    const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man upper_x frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
-    const check = () => {
-      const bridge = window.__MUGEN_WEB_SANDBOX__;
-      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-      lastSnapshot = actor ? {
-        stateNo: actor.runtime?.stateNo,
-        moveType: actor.runtime?.moveType,
-        ctrl: actor.runtime?.ctrl,
-        frame: actor.frame,
-        activeCommands: actor.runtime?.activeCommands,
-        playing: bridge?.snapshot?.playing,
-      } : {};
-      if (actor?.runtime?.stateNo === 1100) {
-        window.clearTimeout(timeout);
-        document.querySelector('[data-action="play-pause"]')?.click();
-        resolve(undefined);
-        return;
+  let upperObserved = false;
+  for (let attempt = 0; attempt < 2 && !upperObserved; attempt += 1) {
+    const pauseOnUpper = page.evaluate(() => new Promise((resolve, reject) => {
+      let lastSnapshot = {};
+      const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man upper_x frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+      const check = () => {
+        const bridge = window.__MUGEN_WEB_SANDBOX__;
+        const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+        lastSnapshot = actor ? {
+          stateNo: actor.runtime?.stateNo,
+          moveType: actor.runtime?.moveType,
+          ctrl: actor.runtime?.ctrl,
+          frame: actor.frame,
+          activeCommands: actor.runtime?.activeCommands,
+          playing: bridge?.snapshot?.playing,
+        } : {};
+        if (actor?.runtime?.stateNo === 1100) {
+          window.clearTimeout(timeout);
+          document.querySelector('[data-action="play-pause"]')?.click();
+          resolve(undefined);
+          return;
+        }
+        window.setTimeout(check, 4);
+      };
+      check();
+    }));
+    await pressCodeFuManUpperX(page);
+    try {
+      await pauseOnUpper;
+      upperObserved = true;
+    } catch (error) {
+      if (attempt === 1) {
+        throw error;
       }
-      window.setTimeout(check, 4);
-    };
-    check();
-  }));
-  await pressCodeFuManUpperX(page);
-  await pauseOnUpper;
+      await resetCodeFuManRound(page);
+    }
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const upper = await captureMugenLiteVisualState(
     page,
@@ -1970,6 +1981,16 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
         values: async function* () {
           for (const child of directory.children) yield child;
         },
+        getDirectoryHandle: async (childName) => {
+          const child = directory.children.find((candidate) => candidate.kind === "directory" && candidate.name === childName);
+          if (!child) throw new DOMException(`Missing directory ${childName}`, "NotFoundError");
+          return child;
+        },
+        getFileHandle: async (childName) => {
+          const child = directory.children.find((candidate) => candidate.kind === "file" && candidate.name === childName);
+          if (!child) throw new DOMException(`Missing file ${childName}`, "NotFoundError");
+          return child;
+        },
         queryPermission: async () => "granted",
         requestPermission: async () => "granted",
       };
@@ -1992,13 +2013,25 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
         directory = child;
       }
       const name = segments.at(-1) ?? "source.bin";
-      const bytes = Uint8Array.from(atob(entry.base64), (character) => character.charCodeAt(0));
-      const file = new File([bytes], name, { type: "application/octet-stream" });
-      directory.children.push({
+      const fileEntry = {
         kind: "file",
         name,
-        getFile: async () => file,
-      });
+        bytes: Uint8Array.from(atob(entry.base64), (character) => character.charCodeAt(0)),
+        getFile: async () => new File([fileEntry.bytes], name, { type: "application/octet-stream" }),
+        createWritable: async () => {
+          let staged = fileEntry.bytes.slice();
+          return {
+            write: async (value) => {
+              staged = new TextEncoder().encode(String(value));
+            },
+            close: async () => {
+              fileEntry.bytes = staged;
+            },
+            abort: async () => {},
+          };
+        },
+      };
+      directory.children.push(fileEntry);
     }
     Object.defineProperty(window, "showDirectoryPicker", {
       configurable: true,
@@ -2033,6 +2066,17 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
   await selectStudioTab(page, "build");
   await scrollLiveSelectorIntoView(page, '[data-source-package-id="kfm-folder"].source-package-row');
+  await page.locator('[data-source-package-id="kfm-folder"] .source-package-path-row').first().click();
+  await page.waitForSelector('[data-source-editor]');
+  const sourceEditor = page.locator('[data-source-editor]');
+  const originalSourceText = await sourceEditor.inputValue();
+  await sourceEditor.fill(`${originalSourceText}\n; qa explicit source edit`);
+  await page.locator('[data-action="save-source-document"]').click();
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.sourceImportTransaction?.reason === "explicit-reimport");
+  await page.locator('[data-mode="studio"]').first().click();
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
+  await selectStudioTab(page, "build");
+  await scrollLiveSelectorIntoView(page, '[data-source-package-id="kfm-folder"].source-package-row');
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "studio-source-folder-handle.png"), fullPage: true });
   const after = await evaluateWithStableBridge(page, () => {
@@ -2051,6 +2095,9 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
       bodyHasSourcePackages: bodyText.includes("Source Packages"),
       bodyHasLinkedCopy: bodyText.includes("Source files are available for package export"),
       bodyHasFolderHandle: bodyText.toLowerCase().includes("folder") && bodyText.includes("Handle: granted"),
+      bodyHasSourceEditor: bodyText.includes("Source document") && bodyText.includes("Save & Reimport"),
+      sourceEditorVisible: Boolean(document.querySelector("[data-source-editor]")),
+      explicitReimport: bridge?.sourceImportTransaction?.reason === "explicit-reimport",
     };
   });
   return { skipped: false, projectPath, before, after, fixtureEntries: entries.length };
@@ -3900,7 +3947,10 @@ function assertSmoke(diagnostics) {
       studioFolderHandleRecovery.after?.sourceTransaction?.canWrite !== false ||
       !studioFolderHandleRecovery.after?.bodyHasSourcePackages ||
       !studioFolderHandleRecovery.after?.bodyHasLinkedCopy ||
-      !studioFolderHandleRecovery.after?.bodyHasFolderHandle)
+      !studioFolderHandleRecovery.after?.bodyHasFolderHandle ||
+      !studioFolderHandleRecovery.after?.bodyHasSourceEditor ||
+      !studioFolderHandleRecovery.after?.sourceEditorVisible ||
+      studioFolderHandleRecovery.after?.explicitReimport !== true)
   ) {
     failures.push("studio-folder-handle: directory enumeration did not recover the real fixture through SourceHandle/v0 and SourceTransaction/v0");
   }

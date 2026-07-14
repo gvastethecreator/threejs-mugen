@@ -98,6 +98,13 @@ Goal: make the project editable and understandable, not just playable.
 | C5 Build Center | Project manifest, runtime manifest, trace artifact, package bundle, readiness gates. | Exported ZIP contains versioned contracts, evidence, and browser-fetchable local assets/checksums. |
 | C6 Repair/Generation tools | Sprite replacement, atlas QA, manifest fixes, missing-reference repair. | Generated assets can be traced from prompt/source to runtime entry and QA report. |
 
+Current authoring checkpoint: Studio Build now has a bounded source-document
+editor for existing files in a matched local folder handle. Save uses the
+browser's exclusive staged writable stream and performs an explicit reimport
+before replacing the source fingerprint baseline. ZIP packages, stale sources,
+file creation/deletion, background watching, merge/rollback, and semantic
+state/controller/collision editing remain blocked.
+
 Studio construction order for the approved horizon:
 
 1. Preserve the central playable/preview viewport.

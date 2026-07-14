@@ -36,6 +36,39 @@ describe("StudioSourceTransaction", () => {
     });
   });
 
+  it("accepts an explicit folder reimport and replaces the fingerprint baseline", () => {
+    const transaction = prepareSourceImportTransaction(
+      {
+        ...manifestWithFingerprint("a".repeat(64)),
+        sourcePackages: [{
+          ...manifestWithFingerprint("a".repeat(64)).sourcePackages[0]!,
+          name: "kfm",
+          kind: "folder",
+          requiredPaths: requiredPaths(),
+        }],
+      },
+      {
+        ...source("b".repeat(64)),
+        name: "kfm",
+        kind: "folder",
+      },
+      "kfm-official",
+      { allowChangedSource: true },
+    );
+
+    expect(transaction).toMatchObject({
+      status: "accepted",
+      reason: "explicit-reimport",
+      linkedIds: ["kfm-official"],
+    });
+    expect(transaction.sourcePackages[0]).toMatchObject({
+      status: "linked",
+      fingerprint: "b".repeat(64),
+      observedFingerprint: "b".repeat(64),
+      identityStatus: "matched",
+    });
+  });
+
   it("rolls back the previous session when the commit callback fails", () => {
     const transaction = acceptedTransaction();
     const rollback = vi.fn();

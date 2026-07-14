@@ -141,9 +141,18 @@ export type SourceHandleLike = {
   kind?: SourceHandleKind;
   name?: string;
   getFile?: () => Promise<File>;
+  getDirectoryHandle?: (name: string, options?: { create?: boolean }) => Promise<SourceHandleLike>;
+  getFileHandle?: (name: string, options?: { create?: boolean }) => Promise<SourceHandleLike>;
+  createWritable?: (options?: { keepExistingData?: boolean; mode?: "siloed" | "exclusive" }) => Promise<SourceWritableLike>;
   values?: () => AsyncIterable<SourceHandleLike>;
   queryPermission?: (descriptor?: { mode?: "read" | "readwrite" }) => Promise<string>;
   requestPermission?: (descriptor?: { mode?: "read" | "readwrite" }) => Promise<string>;
+};
+
+export type SourceWritableLike = {
+  write: (data: string) => Promise<void> | void;
+  close: () => Promise<void> | void;
+  abort?: () => Promise<void> | void;
 };
 
 export type SourceHandleBrowserHost = {
@@ -200,6 +209,32 @@ export async function requestSourceHandlePermission(handle: SourceHandleLike): P
   }
   try {
     return normalizePermission(await handle.requestPermission({ mode: "read" }));
+  } catch (error) {
+    return classifyPermissionError(error);
+  }
+}
+
+export async function querySourceHandleWritePermission(handle: SourceHandleLike): Promise<SourceHandlePermission> {
+  if (typeof handle.queryPermission !== "function") {
+    return "not-requested";
+  }
+  try {
+    return normalizePermission(await handle.queryPermission({ mode: "readwrite" }));
+  } catch (error) {
+    return classifyPermissionError(error);
+  }
+}
+
+export async function requestSourceHandleWritePermission(handle: SourceHandleLike): Promise<SourceHandlePermission> {
+  const current = await querySourceHandleWritePermission(handle);
+  if (current === "granted" || current === "denied" || current === "revoked") {
+    return current;
+  }
+  if (typeof handle.requestPermission !== "function") {
+    return current;
+  }
+  try {
+    return normalizePermission(await handle.requestPermission({ mode: "readwrite" }));
   } catch (error) {
     return classifyPermissionError(error);
   }
@@ -467,7 +502,13 @@ function parseRecord(value: unknown): SourceHandleRecord | undefined {
 
 function isSourceHandleLike(value: unknown): value is SourceHandleLike {
   return isRecord(value) &&
-    (typeof value.getFile === "function" || typeof value.values === "function" || typeof value.queryPermission === "function" || typeof value.requestPermission === "function");
+    (typeof value.getFile === "function" ||
+      typeof value.getDirectoryHandle === "function" ||
+      typeof value.getFileHandle === "function" ||
+      typeof value.createWritable === "function" ||
+      typeof value.values === "function" ||
+      typeof value.queryPermission === "function" ||
+      typeof value.requestPermission === "function");
 }
 
 function isPermission(value: unknown): value is SourceHandlePermission {
