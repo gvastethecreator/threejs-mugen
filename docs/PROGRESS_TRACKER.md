@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 sequential round context
+
+- Entry 518 closes the bounded per-root round-context gap. The reset transaction
+  now preserves the live counter, CNS receives `RoundNo`/`RoundsExisted`/
+  `MatchOver`, and an imported two-KO trace publishes rounds 1 -> 2 -> 3.
+- Focal round-context/Playable coverage passes 202 tests; the full suite passes
+  207 files / 2102 tests with `--maxWorkers=4`. TypeScript 7, build,
+  boundaries, CSS budget, and desktop/mobile/Studio smoke pass. The aggregate
+  corpus is 600/600 artifacts: 566 required and 34 optional.
+  Required artifact: `synthetic-imported-round-context-sequence` (`f2529cc2`).
+- Scores remain unchanged. Next runtime gate: automatic Turns decision ->
+  handoff -> resource reset -> state 5900 -> continuation.
+- See `docs/research/2026-07-14-round-context-sequence.md` and
+  `docs/reports/2026-07-14-round-context-sequence.md`.
+
 ## Global report - 2026-07-14 match outcome and state 5900
 
 - Entry 517 closes the reserved match-outcome/state-5900 slice. Bounded side

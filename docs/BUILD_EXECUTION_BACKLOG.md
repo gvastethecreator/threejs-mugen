@@ -1,5 +1,17 @@
 # Build Execution Backlog
 
+## Entry 518 - Sequential round context
+
+Added typed per-root `RuntimeRoundContext/v0`, preserved the live round
+counter during next-round fighter reset, routed `RoundNo`/`RoundsExisted`/
+`MatchOver` into CNS expressions, and added a required imported 1 -> 2 -> 3
+trace. Focal coverage passes 202 tests; the full suite passes 207 files / 2102
+tests with `--maxWorkers=4`; TypeScript 7, build, boundaries, CSS budget,
+desktop/mobile/Studio smoke, and the trace corpus pass 600/600 artifacts (566
+required / 34 optional). Claim ceiling: Turns
+continuation, exact state-5900 controller breadth, winpose/motif ownership,
+rollback/netplay, and full MUGEN/IKEMEN parity remain separate.
+
 ## Entry 517 - Match outcome and state 5900
 
 Added typed match score/draw ownership, terminal match-over blocking, imported

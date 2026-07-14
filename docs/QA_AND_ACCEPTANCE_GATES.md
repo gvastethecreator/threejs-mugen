@@ -1,5 +1,20 @@
 ﻿# QA And Acceptance Gates
 
+## Sequential round context gate
+
+Acceptance requires the imported artifact
+`synthetic-imported-round-context-sequence` to perform two completed KO
+transitions and publish rounds 2 and 3 with bounded match score, while both
+participating roots expose `roundNo = 3`, `roundsExisted = 2`, and
+`matchOver = false`. The gate must also prove the reset does not rewind the
+live counter, CNS can evaluate `RoundNo`/`RoundsExisted`/`MatchOver`, and state
+5900 is entered at each successful boundary. Malformed or non-sequential
+context plans fail closed. Entry 518 passes 600/600 artifacts (566 required /
+34 optional), 207 files / 2102 full-suite tests, TypeScript 7, build,
+boundaries, CSS budget, and desktop/mobile/Studio smoke. Turns continuation, complete
+entrant/roster semantics, exact winpose/motif ownership, rollback/netplay, and
+full MUGEN/IKEMEN parity remain outside this gate.
+
 ## Match outcome and state 5900 gate
 
 Acceptance requires the imported required artifact
