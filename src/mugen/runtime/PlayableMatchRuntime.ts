@@ -162,6 +162,7 @@ import {
   type RuntimeTeamRoundMode,
 } from "./RuntimeTeamRoundDecisionSystem";
 import { RuntimeTeamRoundLifebarWorld } from "./RuntimeTeamRoundLifebarSystem";
+import { RuntimeTeamResourceBankWorld } from "./RuntimeTeamResourceBankSystem";
 import type {
   RuntimeTeamRoundHandoffActor,
   RuntimeTeamRoundHandoffResult,
@@ -302,6 +303,7 @@ const runtimeActiveControllerTelemetryHooks = activeControllerTelemetryWorld.cre
   recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
 });
 const teamRoundLifebarWorld = new RuntimeTeamRoundLifebarWorld();
+const teamResourceBankWorld = new RuntimeTeamResourceBankWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -330,6 +332,8 @@ export type PlayableMatchRuntimeOptions = {
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
   teamMode?: RuntimeTeamRoundMode;
+  teamLifeShare?: boolean;
+  teamPowerShare?: boolean;
 };
 
 type PauseControllerHandler = (
@@ -423,6 +427,8 @@ export class PlayableMatchRuntime {
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
+  private readonly teamLifeShare: boolean;
+  private readonly teamPowerShare: boolean;
   private lastP2Controlled = false;
   private readonly superPauseTargetDefenseValue?: number;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
@@ -442,6 +448,8 @@ export class PlayableMatchRuntime {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
     this.teamRoundMode = options.teamMode ?? "single";
+    this.teamLifeShare = options.teamLifeShare === true;
+    this.teamPowerShare = options.teamPowerShare === true;
     this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
       this.runtimeProfile,
       options.superPauseTargetDefenseValue,
@@ -629,6 +637,25 @@ export class PlayableMatchRuntime {
         side,
         life: root.runtime.life,
         lifeMax: root.runtime.lifeMax ?? 1000,
+        ...(memberNo === undefined ? {} : { memberNo }),
+        teamState,
+      };
+    });
+  }
+
+  private teamResourceBankActors() {
+    return this.characterRoots().map((root) => {
+      const side = runtimeTeamSide(root);
+      const teamState = root.runtime.teamState;
+      if (side === undefined || !teamState) {
+        throw new Error(`Team resource root ${root.id} has no valid team state`);
+      }
+      const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
+      return {
+        id: root.id,
+        side,
+        life: root.runtime.life,
+        power: root.runtime.power,
         ...(memberNo === undefined ? {} : { memberNo }),
         teamState,
       };
@@ -2025,6 +2052,15 @@ export class PlayableMatchRuntime {
           tick: this.tick,
         })
       : undefined;
+    const teamRoundResourceBanks = this.runtimeProfile === "ikemen-go" && this.teamRoundMode !== "single"
+      ? teamResourceBankWorld.snapshot({
+          actors: this.teamResourceBankActors(),
+          mode: this.teamRoundMode,
+          lifeShare: this.teamLifeShare,
+          powerShare: this.teamPowerShare,
+          tick: this.tick,
+        })
+      : undefined;
     const snapshot = this.snapshotWorld.match({
       tick: this.tick,
       playing: this.playing,
@@ -2043,6 +2079,7 @@ export class PlayableMatchRuntime {
       rootBodyPush: this.lastRootBodyPush,
       rootHitAdmission: this.lastRootHitAdmission,
       teamRoundLifebar,
+      teamRoundResourceBanks,
       logs: this.logs,
     });
     const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);

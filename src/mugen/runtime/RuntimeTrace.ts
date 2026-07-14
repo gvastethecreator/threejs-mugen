@@ -214,6 +214,7 @@ export type RuntimeTraceFrame = {
   rootBodyPush?: MugenSnapshot["rootBodyPush"];
   rootHitAdmission?: MugenSnapshot["rootHitAdmission"];
   teamRoundLifebar?: MugenSnapshot["teamRoundLifebar"];
+  teamRoundResourceBanks?: MugenSnapshot["teamRoundResourceBanks"];
   world?: RuntimeTraceWorldSummary;
   checksum: string;
 };
@@ -3639,10 +3640,11 @@ function summarizeTraceSnapshot(
     ...(snapshot.rootBodyPush ? { rootBodyPush: structuredClone(snapshot.rootBodyPush) } : {}),
     ...(snapshot.rootHitAdmission ? { rootHitAdmission: structuredClone(snapshot.rootHitAdmission) } : {}),
     ...(snapshot.teamRoundLifebar ? { teamRoundLifebar: structuredClone(snapshot.teamRoundLifebar) } : {}),
+    ...(snapshot.teamRoundResourceBanks ? { teamRoundResourceBanks: structuredClone(snapshot.teamRoundResourceBanks) } : {}),
     world: summarizeWorld(actorRegistry),
     checksum: "",
   };
-  // World lifecycle, schedule, root presentation, and body-push diagnostics stay outside the behavior checksum projection.
+  // World, schedule, presentation, lifebar, and resource-owner diagnostics stay outside the behavior checksum projection.
   frame.checksum = hashStableJson({
     tick: frame.tick,
     input: frame.input,

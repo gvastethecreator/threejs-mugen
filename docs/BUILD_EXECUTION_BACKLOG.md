@@ -1,5 +1,17 @@
 # Build Execution Backlog
 
+## Entry 501 - RuntimeTeamResourceBank/v0 ownership
+
+Done: `RuntimeTeamResourceBankWorld/v0` publishes explicit life/power bank
+identity for IKEMEN non-Single snapshots. Root-local policy maps each resource
+to its actor id; `teamLifeShare` and `teamPowerShare` independently map the
+side to `team:1` / `team:2`; Tag active/standby changes do not silently move
+ownership. Snapshot, trace, and artifact evidence stays outside behavior
+checksums. Claim allowed: bounded resource-owner resolution. Claim blocked:
+shared mutation, damage/power routing, reset, Pause/SuperPause, target/helper
+redirects, red-life/guard/stun sharing, variable-map sharing, rollback, netplay,
+and full parity. See Wayfinder 140 and the dated research/report.
+
 ## Entry 500 - RuntimeTeamRoundLifebar HUD Projection/v0
 
 Done: the main match HUD now consumes the versioned team lifebar snapshot for

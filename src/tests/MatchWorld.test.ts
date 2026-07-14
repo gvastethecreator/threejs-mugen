@@ -321,6 +321,43 @@ describe("MatchWorld", () => {
     });
   });
 
+  it("publishes explicit root resource owners and independent sharing policy", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    expect(world.getSnapshot().teamRoundResourceBanks).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v0",
+      mode: "tag",
+      sharing: { life: false, power: false },
+      actors: [
+        { actorId: "p1", life: { resourceOwnerId: "p1", shared: false }, power: { resourceOwnerId: "p1", shared: false } },
+        { actorId: "p3", life: { resourceOwnerId: "p3", shared: false }, power: { resourceOwnerId: "p3", shared: false } },
+        { actorId: "p2", life: { resourceOwnerId: "p2", shared: false }, power: { resourceOwnerId: "p2", shared: false } },
+        { actorId: "p4", life: { resourceOwnerId: "p4", shared: false }, power: { resourceOwnerId: "p4", shared: false } },
+      ],
+    });
+
+    const shared = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      teamLifeShare: true,
+      teamPowerShare: true,
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    }).getSnapshot().teamRoundResourceBanks;
+    expect(shared).toMatchObject({
+      sharing: { life: true, power: true },
+      actors: [
+        { actorId: "p1", life: { resourceOwnerId: "team:1" }, power: { resourceOwnerId: "team:1" } },
+        { actorId: "p3", life: { resourceOwnerId: "team:1" }, power: { resourceOwnerId: "team:1" } },
+        { actorId: "p2", life: { resourceOwnerId: "team:2" }, power: { resourceOwnerId: "team:2" } },
+        { actorId: "p4", life: { resourceOwnerId: "team:2" }, power: { resourceOwnerId: "team:2" } },
+      ],
+    });
+  });
+
   it("publishes current per-phase root capabilities without widening reserve execution", () => {
     const world = new MatchWorld({
       runtimeProfile: "ikemen-go",

@@ -2725,6 +2725,18 @@ describe("RuntimeTraceGatePresets", () => {
         },
       ],
     });
+    const finalResourceBanks = artifact.trace.frames[artifact.trace.frames.length - 1]?.teamRoundResourceBanks;
+    expect(finalResourceBanks).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v0",
+      mode: "turns",
+      sharing: { life: false, power: false },
+      actors: [
+        { actorId: "p1", life: { resourceOwnerId: "p1" }, power: { resourceOwnerId: "p1" } },
+        { actorId: "p3", life: { resourceOwnerId: "p3" }, power: { resourceOwnerId: "p3" } },
+        { actorId: "p2", life: { resourceOwnerId: "p2" }, power: { resourceOwnerId: "p2" } },
+        { actorId: "p4", life: { resourceOwnerId: "p4" }, power: { resourceOwnerId: "p4" } },
+      ],
+    });
   });
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {

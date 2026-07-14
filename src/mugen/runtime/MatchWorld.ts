@@ -56,6 +56,8 @@ export type MatchWorldOptions = {
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
   teamMode?: RuntimeTeamRoundMode;
+  teamLifeShare?: boolean;
+  teamPowerShare?: boolean;
 };
 
 export type MatchWorldActorRecord = {
@@ -128,6 +130,8 @@ export class MatchWorld {
         superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
         reserveFighters: options.reserveFighters,
         teamMode: options.teamMode,
+        teamLifeShare: options.teamLifeShare,
+        teamPowerShare: options.teamPowerShare,
       },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);
