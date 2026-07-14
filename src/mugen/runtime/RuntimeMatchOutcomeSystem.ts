@@ -29,7 +29,7 @@ export type RuntimeMatchOutcomeResult = RuntimeMatchOutcomeSnapshot & {
 
 export class RuntimeMatchOutcomeSystem {
   private readonly mode: RuntimeTeamRoundMode;
-  private readonly matchWins: number;
+  private matchWins: number;
   private readonly matchWinsBySide: { 1: number; 2: number };
   private readonly maxDrawsBySide: { 1: number; 2: number };
   private wins: [number, number] = [0, 0];
@@ -82,6 +82,13 @@ export class RuntimeMatchOutcomeSystem {
 
   setMaxDraws(side: RuntimeTeamSide, count: number): RuntimeMatchOutcomeSnapshot {
     this.maxDrawsBySide[side] = boundedMaxDraws(count);
+    return this.snapshot();
+  }
+
+  setMatchWins(side: RuntimeTeamSide, count: number): RuntimeMatchOutcomeSnapshot {
+    this.matchWinsBySide[side] = boundedMatchWins(count);
+    this.matchWins = Math.max(this.matchWinsBySide[1], this.matchWinsBySide[2]);
+    if (!this.matchClosed) this.closeForReachedScore();
     return this.snapshot();
   }
 
@@ -208,6 +215,15 @@ export class RuntimeMatchOutcomeSystem {
   private closeForWinnerIfReached(side: RuntimeTeamSide): void {
     if (this.wins[side - 1] < this.matchWinsBySide[side]) return;
     this.winnerSide = side;
+    this.matchClosed = true;
+  }
+
+  private closeForReachedScore(): void {
+    const reachedSides = ([1, 2] as const).filter((side) =>
+      this.wins[side - 1] > 0 && this.wins[side - 1] >= this.matchWinsBySide[side],
+    );
+    if (reachedSides.length === 0) return;
+    this.winnerSide = reachedSides.length === 1 ? reachedSides[0] : undefined;
     this.matchClosed = true;
   }
 

@@ -122,4 +122,20 @@ describe("RuntimeMatchOutcomeSystem", () => {
     expect(outcome.setMaxDraws(1, Number.NaN).maxDrawsBySide).toBeUndefined();
     expect(outcome.effectiveLossBySideForNextDraw()).toEqual({ 1: false, 2: false });
   });
+
+  it("closes a live match when an official win target is lowered to the score", () => {
+    const outcome = new RuntimeMatchOutcomeSystem("turns", 3);
+    outcome.recordRound(1);
+
+    expect(outcome.setMatchWins(1, 1)).toMatchObject({
+      matchWins: 3,
+      matchWinsBySide: { 1: 1, 2: 3 },
+      matchOver: true,
+      winnerSide: 1,
+    });
+    expect(outcome.recordRound(2)).toMatchObject({
+      outcome: "match-over",
+      diagnostics: ["match-already-over"],
+    });
+  });
 });

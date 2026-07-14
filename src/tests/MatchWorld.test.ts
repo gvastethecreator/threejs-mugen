@@ -146,6 +146,12 @@ describe("MatchWorld", () => {
     expect(updated.round?.match).toMatchObject({
       maxDrawsBySide: { 1: 2, 2: 0 },
     });
+
+    const updatedWins = world.dispatch({ type: "set-match-wins", side: 1, count: 3 });
+    expect(updatedWins.round?.match).toMatchObject({
+      matchWins: 3,
+      matchWinsBySide: { 1: 3, 2: 1 },
+    });
   });
 
   it("blocks the IKEMEN draw-limit command outside the explicit profile", () => {
@@ -153,6 +159,9 @@ describe("MatchWorld", () => {
 
     expect(() => world.dispatch({ type: "set-match-max-draws", side: 1, count: 0 })).toThrow(
       "Match draw limits require the ikemen-go runtime profile",
+    );
+    expect(() => world.dispatch({ type: "set-match-wins", side: 1, count: 1 })).toThrow(
+      "Match win targets require the ikemen-go runtime profile",
     );
   });
 
