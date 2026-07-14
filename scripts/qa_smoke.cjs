@@ -2073,11 +2073,14 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
   await selectStudioTab(page, "build");
   await scrollLiveSelectorIntoView(page, '[data-source-package-id="kfm-folder"].source-package-row');
-  await page.locator('[data-source-package-id="kfm-folder"] .source-package-path-row').first().click();
+  await page.locator('[data-source-package-id="kfm-folder"] .source-package-path-row[data-source-path$=".cns"]').first().click();
   await page.waitForSelector('[data-source-editor]');
   const sourceEditor = page.locator('[data-source-editor]');
   const originalSourceText = await sourceEditor.inputValue();
+  await sourceEditor.fill(`${originalSourceText}\nnot-a-key-value`);
+  await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === true);
   await sourceEditor.fill(`${originalSourceText}\n; qa explicit source edit`);
+  await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === false);
   await page.locator('[data-action="save-source-document"]').click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.sourceImportTransaction?.reason === "explicit-reimport");
   await page.locator('[data-mode="studio"]').first().click();
@@ -2103,6 +2106,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
       bodyHasLinkedCopy: bodyText.includes("Source files are available for package export"),
       bodyHasFolderHandle: bodyText.toLowerCase().includes("folder") && bodyText.includes("Handle: granted"),
       bodyHasSourceEditor: bodyText.includes("Source document") && bodyText.includes("Save & Reimport"),
+      bodyHasSemanticPreflight: bodyText.includes("Semantic ready"),
       sourceEditorVisible: Boolean(document.querySelector("[data-source-editor]")),
       explicitReimport: bridge?.sourceImportTransaction?.reason === "explicit-reimport",
     };
@@ -3967,6 +3971,7 @@ function assertSmoke(diagnostics) {
       !studioFolderHandleRecovery.after?.bodyHasLinkedCopy ||
       !studioFolderHandleRecovery.after?.bodyHasFolderHandle ||
       !studioFolderHandleRecovery.after?.bodyHasSourceEditor ||
+      !studioFolderHandleRecovery.after?.bodyHasSemanticPreflight ||
       !studioFolderHandleRecovery.after?.sourceEditorVisible ||
       studioFolderHandleRecovery.after?.explicitReimport !== true)
   ) {
