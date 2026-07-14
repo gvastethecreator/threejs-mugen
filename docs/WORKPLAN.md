@@ -2,6 +2,18 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 521 closes the bounded automatic Turns terminal and score-ownership
+boundary. The runtime derives side-specific `matchWins` from the opposing live
+roster, commits one winner-owned score event after each successful replacement
+transaction, and stops playback with `matchOver` when no replacement remains.
+Focal outcome/Playable coverage passes 206 tests and TypeScript 7 typecheck is
+green. The full suite passes 209 test files / 2112 tests, the build passes with
+289 modules, boundaries/CSS budget pass, the trace corpus is 600/600, and the
+core Runtime/Studio Playwright smoke passes with zero console issues and page
+errors. The optional Code Fu Man browser fixture was absent and is explicitly
+skipped. Next: resolve the official draw/effective-loss boundary before
+expanding broader Turns claims.
+
 Entry 520 is the current implementation frontier: automatic IKEMEN Turns
 continuation now exposes the source-backed fallback recovery calculation from
 remaining round ticks and an ordered active/standby/defeated/remaining roster

@@ -1,5 +1,27 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Turns terminal outcome and score ownership
+
+- Entry 521 closes bounded automatic Turns score ownership and terminal
+  playback. Side 1 and side 2 targets derive from the opposing live roster;
+  successful replacement and terminal side-defeat events each commit one
+  winner-owned score event.
+- No-replacement side defeat now publishes `matchOver`, terminal winner, and a
+  stopped playable loop. Asymmetric targets remain explicit through optional
+  `matchWinsBySide` while the scalar HUD summary stays compatible.
+- Focal outcome/Playable coverage passes 206 tests and TypeScript 7 typecheck
+  passes. The full suite passes 209 files / 2112 tests, the build passes with
+  289 modules, boundaries and CSS budget pass, and the trace corpus is 600/600
+  (566 required / 34 optional).
+- Core Playwright smoke passes under
+  `.scratch/qa/qa-smoke-turns-terminal-outcome-score-core-rerun/` with zero
+  console issues and page errors across Runtime, Tag, Studio, relink, stage,
+  evidence, debug, and storage-conflict flows. The optional Code Fu Man
+  browser fixture was absent and explicitly skipped.
+- Next runtime risk: official draw-limit/effective-loss semantics.
+- See `docs/research/2026-07-14-turns-terminal-outcome-score.md` and
+  `docs/reports/2026-07-14-turns-terminal-outcome-score.md`.
+
 ## Global report - 2026-07-14 Turns roster and recovery
 
 - Entry 520 extends automatic Turns continuation with the source-backed
