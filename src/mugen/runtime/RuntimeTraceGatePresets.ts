@@ -2014,6 +2014,106 @@ export function createSyntheticImportedRoundKoTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-team-round-attacker",
+    displayName: "Synthetic Imported Team Round Attacker",
+    hitDefDamage: 1200,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-team-round-defender",
+    displayName: "Synthetic Imported Team Round Defender",
+    withHitDef: false,
+  });
+  const reserveSideOne = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-team-round-reserve-one",
+    displayName: "Synthetic Imported Team Round Reserve One",
+    withHitDef: false,
+  });
+  const reserveSideTwo = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-team-round-reserve-two",
+    displayName: "Synthetic Imported Team Round Reserve Two",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTeamRoundHandoffScript();
+  const world = new MatchWorld({
+    p1: attacker,
+    p2: defender,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "turns",
+    reserveFighters: [reserveSideOne, reserveSideTwo],
+  });
+  let handoffPending = false;
+  let handoffApplied = false;
+  const trace = runRuntimeTrace(
+    {
+      getSnapshot: () => world.getSnapshot(),
+      step: (input, stepOptions) => {
+        const snapshot = world.step(input, stepOptions);
+        if (!handoffPending && snapshot.round?.state === "ko") {
+          handoffPending = true;
+          return snapshot;
+        }
+        if (handoffPending && !handoffApplied) {
+          handoffApplied = world.applyTeamRoundHandoff().applied;
+        }
+        return world.getSnapshot();
+      },
+      getActorRegistry: () => world.getActorRegistry(),
+    },
+    script,
+    { label: "synthetic-imported-team-round-handoff-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-team-round-handoff-golden",
+      label: "Synthetic imported team KO and replacement handoff",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN turns trace proves a lethal active member enters KO, the typed team handoff applies an ordered outgoing/incoming transaction, and the side remains represented by a healthy standby reserve. It does not claim full tag/turns round continuation, shared life, lifebars, rollback, or exact MUGEN/IKEMEN round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-team-round-handoff-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEventCategories: ["hit", "runtime"],
+        requiredEventSubstrings: [
+          "TeamRound decision:replacement-required",
+          "TeamRound handoff:preflight",
+          "TeamRound handoff:commit",
+          "TeamRound handoff:complete",
+          "Team 2 outgoing p2",
+          "Team 2 incoming p4",
+        ],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrameSequences: [
+          {
+            label: "ko-then-team-replacement",
+            allowSameTick: true,
+            steps: [
+              { actorId: "p2", actorKind: "player", teamStandby: false, observedLifeAtMost: 0 },
+              { actorId: "p2", actorKind: "player", teamStandby: true, observedLifeAtMost: 0 },
+              { actorId: "p4", actorKind: "player", teamStandby: true, observedLifeAtLeast: 1 },
+              { actorId: "p4", actorKind: "player", teamStandby: false, observedLifeAtLeast: 1 },
+            ],
+          },
+        ],
+        requiredRoundFrames: [{ state: "ko", observedPostRoundFrameAtLeast: 1 }],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 0 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedRoundNoKoSlowTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -42887,6 +42987,13 @@ function importedPostKoScript(frames: number): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-ko-press", frames: 1, p1: ["x"], p2: [] },
     { label: "post-ko-timeline", frames, p1: [], p2: [] },
+  ]);
+}
+
+function importedTeamRoundHandoffScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "team-round-ko-press", frames: 1, p1: ["x"], p2: [] },
+    { label: "team-round-handoff-window", frames: 18, p1: [], p2: [] },
   ]);
 }
 

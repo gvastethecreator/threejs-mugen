@@ -341,6 +341,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRoundKoTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-team-round-handoff",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamRoundHandoffTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-round-nokoslow",
       required: true,
       artifact: presets.createSyntheticImportedRoundNoKoSlowTraceArtifact(),
@@ -4306,6 +4311,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-round-ko",
+    "synthetic-imported-team-round-handoff",
     "synthetic-imported-round-nokoslow",
     "synthetic-imported-round-timeover",
     "synthetic-imported-match-context",

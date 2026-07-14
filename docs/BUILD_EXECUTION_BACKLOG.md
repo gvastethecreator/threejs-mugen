@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 498 - Required TeamRoundHandoff trace/v0
+
+Done: the aggregate runtime gate now executes a real four-root imported IKEMEN
+Turns scenario through `MatchWorld`, preserves the lethal KO sample before
+promotion, and applies the public typed handoff on the next trace step. The
+required trace proves ordered `decision:replacement-required`, preflight,
+commit, completion, outgoing p2 standby/over-KO, and incoming p4 active state;
+the production pair-owned round scheduler remains unchanged. Focused preset
+coverage passes; full `pnpm qa:trace` passes `582/582` artifacts (`548`
+required, `34` optional), with new checksum `150f1d03`. Claim allowed: required
+aggregate KO/handoff ordering evidence. Claim blocked: automatic KO scheduling,
+slot/reference remapping, life/resource reset, round continuation, lifebars,
+win poses, rollback, netplay, and full MUGEN/IKEMEN parity. See Wayfinder 137,
+the dated research, and the progress report.
+
 ## Entry 497 - RuntimeTeamRoundHandoff/v0 transaction
 
 Done: `RuntimeTeamRoundHandoffWorld/v0` now consumes the bounded team-round

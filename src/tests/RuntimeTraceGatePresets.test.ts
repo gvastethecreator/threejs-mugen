@@ -579,6 +579,7 @@ import {
   createSyntheticImportedVariableTraceArtifact,
   createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedRoundKoTraceArtifact,
+  createSyntheticImportedTeamRoundHandoffTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
@@ -2670,6 +2671,43 @@ describe("RuntimeTraceGatePresets", () => {
     const koTimeline = evidence?.roundFrames.find((frame) => frame.state === "ko");
     expect(koTimeline?.frames ?? 0).toBeGreaterThan(((koTimeline?.lastTick ?? 0) - (koTimeline?.firstTick ?? 0)) * 1.3);
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.life).toBe(0);
+  });
+
+  it("creates a synthetic imported team round handoff artifact with ordered KO and replacement evidence", () => {
+    const artifact = createSyntheticImportedTeamRoundHandoffTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-team-round-handoff-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-team-round-handoff-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.eventLines).toEqual(
+      expect.arrayContaining([
+        "TeamRound decision:replacement-required",
+        "TeamRound handoff:preflight",
+        "TeamRound handoff:commit",
+        "TeamRound handoff:complete",
+        "Team 2 outgoing p2",
+        "Team 2 incoming p4",
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", teamStandby: true, minLife: 0 }),
+        expect.objectContaining({ actorId: "p4", teamStandby: false, minLife: 1000 }),
+      ]),
+    );
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p4")?.teamStandby).toBeUndefined();
   });
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {

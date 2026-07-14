@@ -2064,8 +2064,12 @@ export class PlayableMatchRuntime {
     });
     const result = matchRoundWorld.applyTeamRoundHandoff({ actors, decision });
     if (result.applied) {
-      for (const change of result.changes) {
-        this.logs.unshift(`Team ${change.side} ${change.role} ${change.actorId}`);
+      const handoffLogLines = [
+        ...result.phases.map((phase) => `TeamRound ${phase}`),
+        ...result.changes.map((change) => `Team ${change.side} ${change.role} ${change.actorId}`),
+      ];
+      for (const line of handoffLogLines.reverse()) {
+        this.logs.unshift(line);
       }
     }
     return result;
