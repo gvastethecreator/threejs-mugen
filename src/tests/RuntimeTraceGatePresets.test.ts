@@ -582,6 +582,8 @@ import {
   createSyntheticImportedTeamRoundHandoffTraceArtifact,
   createSyntheticImportedTeamResourceLocalTraceArtifact,
   createSyntheticImportedTeamResourceShareTraceArtifact,
+  createSyntheticImportedTeamResourceSuperPauseTraceArtifact,
+  createSyntheticImportedTeamResourceTargetTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
@@ -2781,6 +2783,49 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ bankId: "p1:power", resourceOwnerId: "p1", value: 900, max: 3000, actorIds: ["p1"] }),
     ]));
     expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 1000, power: 0 });
+  });
+
+  it("proves SuperPause poweradd reaches only the shared power bank", () => {
+    const artifact = createSyntheticImportedTeamResourceSuperPauseTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-resource-superpause-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-team-resource-superpause-golden", passed: true, failures: [] }],
+    });
+    const final = artifact.trace.frames.at(-1);
+    expect(final?.teamRoundResourceBanks).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v1",
+      mode: "tag",
+      sharing: { life: false, power: true },
+    });
+    expect(final?.teamRoundResourceBanks?.banks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ bankId: "team:1:power", resourceOwnerId: "team:1", value: 100, max: 3000, actorIds: ["p1", "p3"] }),
+      expect.objectContaining({ bankId: "p1:life", resourceOwnerId: "p1", value: 1000, max: 1000, actorIds: ["p1"] }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 1000, power: 100 });
+  });
+
+  it("proves TargetLifeAdd and TargetPowerAdd share life without sharing power", () => {
+    const artifact = createSyntheticImportedTeamResourceTargetTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-resource-target-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-team-resource-target-golden", passed: true, failures: [] }],
+    });
+    const final = artifact.trace.frames.at(-1);
+    expect(final?.teamRoundResourceBanks).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v1",
+      mode: "tag",
+      sharing: { life: true, power: false },
+    });
+    expect(final?.teamRoundResourceBanks?.banks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ bankId: "team:2:life", resourceOwnerId: "team:2", value: 943, max: 1000, actorIds: ["p2", "p4"] }),
+      expect.objectContaining({ bankId: "p2:power", resourceOwnerId: "p2", value: 40, max: 3000, actorIds: ["p2"] }),
+      expect.objectContaining({ bankId: "p4:power", resourceOwnerId: "p4", value: 0, max: 3000, actorIds: ["p4"] }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p4")).toMatchObject({ life: 943, power: 0 });
   });
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {

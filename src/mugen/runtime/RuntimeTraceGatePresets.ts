@@ -2218,6 +2218,140 @@ function createSyntheticImportedTeamResourceTraceArtifact(
   });
 }
 
+export function createSyntheticImportedTeamResourceSuperPauseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedTeamResourceBoundaryTraceArtifact(options, "superpause");
+}
+
+export function createSyntheticImportedTeamResourceTargetTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedTeamResourceBoundaryTraceArtifact(options, "target");
+}
+
+function createSyntheticImportedTeamResourceBoundaryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions,
+  route: "superpause" | "target",
+): RuntimeTraceArtifact {
+  const isSuperPause = route === "superpause";
+  const targetId = `synthetic-imported-team-resource-${route}-golden`;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${route}-attacker`,
+    displayName: `Synthetic Imported Team Resource ${isSuperPause ? "SuperPause" : "Target"} Attacker`,
+    withHitDef: !isSuperPause,
+    withTargetControllers: !isSuperPause,
+    withSuperPause: isSuperPause,
+    superPauseDynamicParams: isSuperPause ? { time: 3, moveTime: 0, darken: 0, powerAdd: 100 } : undefined,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${route}-defender`,
+    displayName: `Synthetic Imported Team Resource ${isSuperPause ? "SuperPause" : "Target"} Defender`,
+    withHitDef: false,
+  });
+  const reserveSideOne = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${route}-reserve-one`,
+    displayName: `Synthetic Imported Team Resource ${isSuperPause ? "SuperPause" : "Target"} Reserve One`,
+    withHitDef: false,
+  });
+  const reserveSideTwo = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${route}-reserve-two`,
+    displayName: `Synthetic Imported Team Resource ${isSuperPause ? "SuperPause" : "Target"} Reserve Two`,
+    withHitDef: false,
+  });
+  const script = isSuperPause ? importedSuperPauseScript() : importedTargetScript();
+  const world = new MatchWorld({
+    p1: attacker,
+    p2: defender,
+    stage: options.stage ?? (isSuperPause ? farCombatStage() : closeCombatStage()),
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    teamLifeShare: !isSuperPause,
+    teamPowerShare: isSuperPause,
+    reserveFighters: [reserveSideOne, reserveSideTwo],
+  });
+  const trace = runRuntimeTrace(world, script, { label: targetId });
+  const requirements: Omit<RuntimeTraceGate, "label" | "requiredActorSources" | "requiredActorKinds" | "requiredActiveCommands"> = isSuperPause
+    ? {
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "SuperPause"],
+        requiredExecutedOperations: ["variable:varset", "pause:superpause"],
+        requiredEventCategories: ["pause", "runtime"],
+        requiredEventSubstrings: ["TeamResource power team:1"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported" as const,
+            actorKind: "player" as const,
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            observedPowerAtLeast: 100,
+            observedPowerAtMost: 100,
+            minFrames: 1,
+          },
+          {
+            actorId: "p3",
+            source: "imported" as const,
+            actorKind: "player" as const,
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            observedPowerAtLeast: 100,
+            observedPowerAtMost: 100,
+            minFrames: 1,
+          },
+        ],
+        requiredMatchPauses: [{ type: "SuperPause" as const, actorId: "p1", sourceStateNo: 200, minFrames: 2, minRemaining: 3 }],
+        requiredMatchPauseFreezes: [{ type: "SuperPause" as const, actorId: "p2", minFrozenFrames: 2 }],
+        requiredFinalActors: [{ actorId: "p1", source: "imported" as const, actorKind: "player" as const, power: 100 }],
+      }
+    : {
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetLifeAdd", "TargetPowerAdd"],
+        requiredExecutedOperations: ["hitdef", "target:targetlifeadd", "target:targetpoweradd"],
+        requiredEventCategories: ["hit", "runtime"],
+        requiredEventSubstrings: ["TeamResource life team:2"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported" as const,
+            actorKind: "player" as const,
+            observedLifeAtLeast: 943,
+            observedLifeAtMost: 943,
+            observedPowerAtLeast: 40,
+            observedPowerAtMost: 40,
+            minFrames: 1,
+          },
+          {
+            actorId: "p4",
+            source: "imported" as const,
+            actorKind: "player" as const,
+            observedLifeAtLeast: 943,
+            observedLifeAtMost: 943,
+            observedPowerAtLeast: 0,
+            observedPowerAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p2", source: "imported" as const, actorKind: "player" as const, life: 943, power: 40 }],
+      };
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: `Synthetic imported Tag resource ${isSuperPause ? "SuperPause power" : "Target life"} boundary`,
+      source: "imported",
+      notes: [
+        `Synthetic imported IKEMEN Tag trace proves ${isSuperPause ? "SuperPause poweradd reaches a PowerShare bank while LifeShare stays disabled" : "TargetLifeAdd/TargetPowerAdd reaches a LifeShare bank while PowerShare stays disabled"}. It does not claim exact multi-write ordering, red-life, guard/stun, helper/projectile ownership, persistence, rollback/netplay, or full MUGEN/IKEMEN resource parity.`,
+      ],
+    },
+    gates: [{ label: targetId, requiredActorSources: ["imported"], requiredActorKinds: ["player"], requiredActiveCommands: ["x"], ...requirements }],
+  });
+}
+
 export function createSyntheticImportedRoundNoKoSlowTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({

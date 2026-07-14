@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 503 - RuntimeTeamResourceBank/v1 route promotion
+
+Done: required imported Tag traces now exercise the existing root-bank boundary
+through `SuperPause.poweradd` and `TargetLifeAdd`/`TargetPowerAdd`. The first
+fixture isolates PowerShare and mirrors P1's power to standby P3 while life
+stays local; the second isolates LifeShare and mirrors P2's target damage to
+standby P4 while target power stays local. Trace checksums are `31f427d5` and
+`22c7d56a`. Focused verification passes 570 tests, TypeScript 7 typecheck, and
+`pnpm qa:trace` passes 586/586 artifacts (552 required, 34 optional). No
+browser smoke is required because the visible HUD contract did not change.
+Claim allowed: exercised root `SuperPause`/Target resource routes agree with
+the v1 bank owner and independent share switches. Claim blocked: exact
+upstream multi-write ordering, helper/projectile resources, red-life,
+guard/stun, persistence, rollback, netplay, and full parity.
+
 ## Entry 502 - RuntimeTeamResourceBank/v1 root mutation
 
 Done: `RuntimeTeamResourceBankRuntime/v1` now consumes root runtime deltas after

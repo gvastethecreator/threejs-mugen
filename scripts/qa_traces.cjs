@@ -356,6 +356,16 @@ async function main() {
       artifact: presets.createSyntheticImportedTeamResourceLocalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-team-resource-superpause",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamResourceSuperPauseTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-team-resource-target",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamResourceTargetTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-round-nokoslow",
       required: true,
       artifact: presets.createSyntheticImportedRoundNoKoSlowTraceArtifact(),
