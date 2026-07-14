@@ -349,6 +349,19 @@
   background: var(--accent);
 }
 
+.hud-redlife {
+  height: 4px;
+  border-color: rgba(196, 106, 99, 0.42);
+}
+
+.hud-redlife span {
+  background: var(--danger);
+}
+
+.hud-fighter.right .hud-meter span {
+  margin-left: auto;
+}
+
 .hud-power span {
   background: var(--surface-accent);
 }
@@ -439,6 +452,10 @@
 
 .hud-team-slot.is-ko .hud-life span {
   background: var(--danger);
+}
+
+.hud-team-slot .hud-redlife {
+  height: 3px;
 }
 
 .hud-team-slot.is-disabled {

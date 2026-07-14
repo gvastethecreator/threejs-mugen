@@ -11,6 +11,7 @@ export type RuntimeTeamRoundLifebarActor = {
   memberNo?: number;
   life: number;
   lifeMax: number;
+  redLife?: number;
   teamState: RuntimeTeamState;
 };
 
@@ -26,6 +27,8 @@ export type RuntimeTeamRoundLifebarSlot = {
   life: number;
   lifeMax: number;
   ratio: number;
+  redLife: number;
+  redLifeRatio: number;
 };
 
 export type RuntimeTeamRoundLifebarSide = {
@@ -109,6 +112,7 @@ function createSide(
   const slots = orderedActors.map((actor, slot) => {
     const life = Number.isFinite(actor.life) ? actor.life : 0;
     const lifeMax = Number.isFinite(actor.lifeMax) && actor.lifeMax > 0 ? actor.lifeMax : 0;
+    const redLife = Number.isFinite(actor.redLife) ? Math.max(0, actor.redLife!) : 0;
     return {
       slot,
       ...(actor.memberNo === undefined ? {} : { memberNo: actor.memberNo }),
@@ -119,6 +123,8 @@ function createSide(
       life,
       lifeMax,
       ratio: lifeMax > 0 ? clampRatio(life / lifeMax) : 0,
+      redLife,
+      redLifeRatio: lifeMax > 0 ? clampRatio(redLife / lifeMax) : 0,
     } satisfies RuntimeTeamRoundLifebarSlot;
   });
 

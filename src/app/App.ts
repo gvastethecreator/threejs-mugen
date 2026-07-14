@@ -11008,6 +11008,12 @@ export class App {
             <span class="mono">${slot.life}/${slot.lifeMax}</span>
           </div>
           <div class="hud-meter hud-life"><span style="width: ${slot.ratio * 100}%"></span></div>
+          <div
+            class="hud-meter hud-redlife"
+            data-hud-redlife-bar="${escapeHtml(slot.actorId)}"
+            data-hud-redlife-visible="${slot.redLife > 0 ? "true" : "false"}"
+            aria-label="Recoverable life ${slot.redLife}/${slot.lifeMax}"
+          ><span style="width: ${slot.redLifeRatio * 100}%"></span></div>
         </div>
       `)
       .join("");
@@ -11030,6 +11036,8 @@ export class App {
     const lifeMax = lifeMaxValue > 0 ? lifeMaxValue : 1;
     const powerMax = powerMaxValue > 0 ? powerMaxValue : 1;
     const lifePercent = Math.max(0, Math.min(100, (actor.runtime.life / lifeMax) * 100));
+    const redLifeValue = Number.isFinite(actor.runtime.redLife) ? Math.max(0, actor.runtime.redLife ?? 0) : 0;
+    const redLifePercent = Math.max(0, Math.min(100, (redLifeValue / lifeMax) * 100));
     const powerPercent = Math.max(0, Math.min(100, (actor.runtime.power / powerMax) * 100));
     return `
       <div class="hud-fighter ${side}">
@@ -11039,6 +11047,12 @@ export class App {
           <span class="mono">${actor.runtime.life}/${lifeMaxValue}</span>
         </div>
         <div class="hud-meter hud-life"><span style="width: ${lifePercent}%"></span></div>
+        <div
+          class="hud-meter hud-redlife"
+          data-hud-redlife-bar="${escapeHtml(actor.id)}"
+          data-hud-redlife-visible="${redLifeValue > 0 ? "true" : "false"}"
+          aria-label="Recoverable life ${redLifeValue}/${lifeMaxValue}"
+        ><span style="width: ${redLifePercent}%"></span></div>
         <div class="hud-meter hud-power"><span style="width: ${powerPercent}%"></span></div>
       </div>
     `;

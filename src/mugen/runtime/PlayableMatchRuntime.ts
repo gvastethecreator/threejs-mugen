@@ -657,6 +657,7 @@ export class PlayableMatchRuntime {
         side,
         life: root.runtime.life,
         lifeMax: root.runtime.lifeMax ?? 1000,
+        redLife: root.runtime.redLife ?? 0,
         ...(memberNo === undefined ? {} : { memberNo }),
         teamState,
       };

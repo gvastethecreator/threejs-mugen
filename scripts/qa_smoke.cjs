@@ -393,6 +393,12 @@ async function captureRuntime(page, baseUrl, options) {
           life: actor.runtime.life,
           hitEffects: actor.hitEffectEvents?.length ?? 0,
         })),
+        hudRedLifeBars: [...document.querySelectorAll("[data-hud-redlife-bar]")].map((node) => ({
+          actorId: node.getAttribute("data-hud-redlife-bar"),
+          visible: node.getAttribute("data-hud-redlife-visible"),
+          ariaLabel: node.getAttribute("aria-label"),
+          width: node.querySelector("span")?.getAttribute("style") ?? "",
+        })),
         renderer,
         characterPresentations: renderer?.characters ?? [],
         stagePresentations: renderer?.stage ?? [],
@@ -1281,6 +1287,7 @@ async function readTagPresentationState(page, canvasPixels) {
         mode: bridge?.snapshot?.teamRoundLifebar?.mode,
         visible: bridge?.snapshot?.teamRoundLifebar?.visible,
         slotIds: [...document.querySelectorAll("[data-hud-team-slot]")].map((node) => node.getAttribute("data-hud-team-slot") ?? ""),
+        redLifeBarIds: [...document.querySelectorAll("[data-hud-redlife-bar]")].map((node) => node.getAttribute("data-hud-redlife-bar") ?? ""),
         slotStatuses: Object.fromEntries(
           [...document.querySelectorAll("[data-hud-team-slot]")].map((node) => [
             node.getAttribute("data-hud-team-slot") ?? "",
@@ -3191,6 +3198,15 @@ function assertSmoke(diagnostics) {
     if (runtime.actorCount < 2) {
       failures.push(`${runtime.label}: expected at least two actors`);
     }
+    const hudActorIds = runtime.hudRedLifeBars.map((bar) => bar.actorId);
+    const expectedHudActorIds = runtime.actors.map((actor) => actor.id);
+    if (
+      runtime.hudRedLifeBars.length < runtime.actorCount ||
+      !expectedHudActorIds.every((actorId) => hudActorIds.includes(actorId)) ||
+      runtime.hudRedLifeBars.some((bar) => !bar.ariaLabel?.startsWith("Recoverable life "))
+    ) {
+      failures.push(`${runtime.label}: red-life HUD bars were missing an actor binding or accessible value`);
+    }
     if (
       runtime.tickSchedule?.schema !== "MatchTickSchedule/v0" ||
       runtime.tickSchedule?.behaviorChecksumProjection !== "excluded" ||
@@ -3576,6 +3592,7 @@ function assertSmoke(diagnostics) {
     tagPresentation.baseline.teamLifebar.mode !== "tag" ||
     tagPresentation.baseline.teamLifebar.visible !== true ||
     tagPresentation.baseline.teamLifebar.slotIds.join(",") !== "p1,p3,p2,p4" ||
+    tagPresentation.baseline.teamLifebar.redLifeBarIds.join(",") !== "p1,p3,p2,p4" ||
     tagPresentation.baseline.teamLifebar.slotStatuses.p1 !== "active" ||
     tagPresentation.baseline.teamLifebar.slotStatuses.p3 !== "standby" ||
     tagPresentation.baseline.teamLifebar.slotStatuses.p2 !== "active" ||
@@ -3597,6 +3614,7 @@ function assertSmoke(diagnostics) {
       state.teamLifebar.mode !== "tag" ||
       state.teamLifebar.visible !== true ||
       state.teamLifebar.slotIds.join(",") !== "p1,p3,p2,p4" ||
+      state.teamLifebar.redLifeBarIds.join(",") !== "p1,p3,p2,p4" ||
       state.teamLifebar.slotStatuses.p1 !== "standby" ||
       state.teamLifebar.slotStatuses.p3 !== "active" ||
       state.teamLifebar.slotStatuses.p2 !== "active" ||

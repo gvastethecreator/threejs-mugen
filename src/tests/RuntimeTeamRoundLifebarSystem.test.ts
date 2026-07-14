@@ -14,9 +14,9 @@ const activeTeamState = {
 describe("RuntimeTeamRoundLifebarWorld", () => {
   it("orders leader and member slots while preserving active, standby, and KO states", () => {
     const actors: RuntimeTeamRoundLifebarActor[] = [
-      { id: "p3", label: "Reserve", side: 1, memberNo: 1, life: 750, lifeMax: 1500, teamState: { ...activeTeamState, standby: true } },
+      { id: "p3", label: "Reserve", side: 1, memberNo: 1, life: 750, lifeMax: 1500, redLife: 450, teamState: { ...activeTeamState, standby: true } },
       { id: "p2", label: "KO", side: 2, memberNo: 0, life: 0, lifeMax: 2000, teamState: { ...activeTeamState, overKo: true } },
-      { id: "p1", label: "Leader", side: 1, memberNo: 0, life: 500, lifeMax: 1000, teamState: activeTeamState },
+      { id: "p1", label: "Leader", side: 1, memberNo: 0, life: 500, lifeMax: 1000, redLife: 300, teamState: activeTeamState },
     ];
 
     const diagnostic = new RuntimeTeamRoundLifebarWorld().snapshot({
@@ -38,8 +38,8 @@ describe("RuntimeTeamRoundLifebarWorld", () => {
           leaderId: "p1",
           activeActorIds: ["p1"],
           slots: [
-            { slot: 0, actorId: "p1", role: "leader", status: "active", life: 500, lifeMax: 1000, ratio: 0.5 },
-            { slot: 1, actorId: "p3", role: "member", status: "standby", life: 750, lifeMax: 1500, ratio: 0.5 },
+            { slot: 0, actorId: "p1", role: "leader", status: "active", life: 500, lifeMax: 1000, ratio: 0.5, redLife: 300, redLifeRatio: 0.3 },
+            { slot: 1, actorId: "p3", role: "member", status: "standby", life: 750, lifeMax: 1500, ratio: 0.5, redLife: 450, redLifeRatio: 0.3 },
           ],
         },
         {
@@ -66,5 +66,19 @@ describe("RuntimeTeamRoundLifebarWorld", () => {
     expect(diagnostic.visible).toBe(false);
     expect(diagnostic.sides[0]?.slots[0]).toMatchObject({ status: "active", life: 0, lifeMax: 0, ratio: 0 });
     expect(diagnostic.sides[1]?.slots[0]).toMatchObject({ status: "disabled", ratio: 0.5 });
+  });
+
+  it("clamps recoverable red-life presentation to a non-negative normalized range", () => {
+    const diagnostic = new RuntimeTeamRoundLifebarWorld().snapshot({
+      actors: [
+        { id: "over", label: "Over", side: 1, life: 500, lifeMax: 1000, redLife: 1500, teamState: activeTeamState },
+        { id: "negative", label: "Negative", side: 2, life: 500, lifeMax: 1000, redLife: -20, teamState: activeTeamState },
+      ],
+      mode: "tag",
+      visible: true,
+    });
+
+    expect(diagnostic.sides[0]?.slots[0]).toMatchObject({ redLife: 1500, redLifeRatio: 1 });
+    expect(diagnostic.sides[1]?.slots[0]).toMatchObject({ redLife: 0, redLifeRatio: 0 });
   });
 });

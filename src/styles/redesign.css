@@ -341,6 +341,7 @@ details.section + .section {
 .hud-team-hidden-label,
 .hud-team-empty { font-family: var(--mono); }
 .hud-meter { height: 9px; border-radius: 1px; }
+.hud-redlife { height: 3px; }
 .hud-power { height: 3px; }
 .round-center strong { color: var(--text-warm); font-size: 26px; }
 
