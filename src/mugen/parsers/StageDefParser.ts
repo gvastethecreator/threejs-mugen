@@ -154,6 +154,9 @@ function buildPlaceholderLayers(
     const start = pairValue(values, "start") ?? [0, index < 2 ? 88 - index * 40 : -42 + (index % 3) * 16];
     const delta = pairValue(values, "delta") ?? [1, 1];
     const velocity = pairValue(values, "velocity");
+    const scaleStart = pairOrScalarValue(values, "scalestart");
+    const scaleDelta = pairOrScalarValue(values, "scaledelta");
+    const zoomDelta = pairOrScalarValue(values, "zoomdelta");
     const sprite = pairValue(values, "spriteno");
     const spriteLabel = getValue(values, "spriteno") ?? `${index},0`;
     const actionNo = numberValue(values, "actionno");
@@ -184,6 +187,9 @@ function buildPlaceholderLayers(
       spriteIndex: sprite?.[1],
       actionNo,
       ...(velocity ? { velocity: { x: velocity[0], y: velocity[1] } } : {}),
+      ...(scaleStart ? { scaleStart: { x: scaleStart[0], y: scaleStart[1] } } : {}),
+      ...(scaleDelta ? { scaleDelta: { x: scaleDelta[0], y: scaleDelta[1] } } : {}),
+      ...(zoomDelta ? { zoomDelta: { x: zoomDelta[0], y: zoomDelta[1] } } : {}),
       trans,
       clip,
       mask,
@@ -323,6 +329,14 @@ function pairValue(section: Record<string, string>, key: string): [number, numbe
     return undefined;
   }
   return [left, right];
+}
+
+function pairOrScalarValue(section: Record<string, string>, key: string): [number, number] | undefined {
+  const values = numberListValue(section, key);
+  if (!values?.length || values[0] === undefined) {
+    return undefined;
+  }
+  return [values[0], values[1] ?? values[0]];
 }
 
 function stageLayerTrans(values: Record<string, string>): MugenStageLayerTrans | undefined {

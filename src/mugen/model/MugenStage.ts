@@ -27,6 +27,21 @@ export type MugenStageLayer = {
     x: number;
     y: number;
   };
+  /** Authored BG scale before the global Three.js camera zoom is applied. */
+  scaleStart?: {
+    x: number;
+    y: number;
+  };
+  /** Scale change per camera movement in the bounded stage projection. */
+  scaleDelta?: {
+    x: number;
+    y: number;
+  };
+  /** Authored share of the global camera zoom, duplicated for one-value input. */
+  zoomDelta?: {
+    x: number;
+    y: number;
+  };
   trans?: MugenStageLayerTrans;
   clip?: MugenStageLayerClip;
   mask?: boolean;

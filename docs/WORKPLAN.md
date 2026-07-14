@@ -2,6 +2,14 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 535 closes the bounded stage layer scale slice. Imported
+`scalestart`/`scaledelta`/`zoomdelta` now reach the model, report, Studio
+details, and normal/animated/asset/placeholder projection. Focal coverage
+passes 21 tests and TypeScript 7 passes. Exact parallax, legacy scale,
+window/mask zoom, and camera/localcoord parity remain separate. Next: select
+the next independent runtime or Studio slice, then accumulate another quality
+checkpoint.
+
 Entry 534 closes the accumulated stage quality checkpoint. Native regression,
 TypeScript 7, build, boundaries, CSS, trace, and official browser evidence are
 green; the score remains unchanged. The next frontier is an independent

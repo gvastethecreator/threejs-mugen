@@ -1,5 +1,17 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Stage layer scaling
+
+- Entry 535 parses and projects `scalestart`, `scaledelta`, and scalar-or-pair
+  `zoomdelta` through normal, animated, asset, and placeholder stage layers.
+- Focal stage/parser/report coverage passes 3 files / 21 tests and TypeScript 7
+  passes. The compatibility report and Studio layer detail expose authored
+  scale values.
+- No score movement. Exact parallax, legacy scale paths, window/mask zoom,
+  camera-anchor/localcoord normalization, and full stage parity remain open.
+- See `docs/research/2026-07-14-bg-layer-scaling.md` and
+  `docs/reports/2026-07-14-bg-layer-scaling.md`.
+
 ## Global report - 2026-07-14 Stage quality checkpoint
 
 - Entry 534 audits the three accumulated BGCtrl slices. Native 211/2134,

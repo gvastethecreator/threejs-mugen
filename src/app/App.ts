@@ -5674,6 +5674,7 @@ export class App {
           layer.action ? `act ${layer.action.id} ${layer.action.decodedFrames}/${layer.action.frames}` : undefined,
           `start ${formatStageNumber(layer.start.x)},${formatStageNumber(layer.start.y)}`,
           `delta ${formatStageNumber(layer.delta.x)},${formatStageNumber(layer.delta.y)}`,
+          layer.scale ? formatStageScale(layer.scale) : undefined,
           layer.trans ? formatStageTrans(layer.trans) : undefined,
           layer.clip ? formatStageClip(layer.clip) : undefined,
           layer.mask === undefined ? undefined : `mask ${layer.mask ? 1 : 0}`,
@@ -5697,6 +5698,13 @@ export class App {
         layer.actionNo !== undefined ? `act ${layer.actionNo}` : undefined,
         `layer ${index}`,
         `delta ${formatStageNumber(layer.deltaX)},${formatStageNumber(layer.deltaY ?? 1)}`,
+        layer.scaleStart || layer.scaleDelta || layer.zoomDelta
+          ? formatStageScale({
+              start: layer.scaleStart ?? { x: 1, y: 1 },
+              delta: layer.scaleDelta ?? { x: 0, y: 0 },
+              zoomDelta: layer.zoomDelta,
+            })
+          : undefined,
         layer.trans ? formatStageTrans(layer.trans) : undefined,
         layer.clip ? formatStageClip(layer.clip) : undefined,
         layer.mask === undefined ? undefined : `mask ${layer.mask ? 1 : 0}`,
@@ -12228,6 +12236,15 @@ function formatStageNumber(value: number): string {
 function formatStageTrans(trans: { mode: string; alpha?: { source: number; destination: number } }): string {
   const alpha = trans.alpha ? ` ${formatStageNumber(trans.alpha.source)},${formatStageNumber(trans.alpha.destination)}` : "";
   return `trans ${trans.mode}${alpha}`;
+}
+
+function formatStageScale(scale: {
+  start: { x: number; y: number };
+  delta: { x: number; y: number };
+  zoomDelta?: { x: number; y: number };
+}): string {
+  const zoom = scale.zoomDelta ? ` z${formatStageNumber(scale.zoomDelta.x)},${formatStageNumber(scale.zoomDelta.y)}` : "";
+  return `scale ${formatStageNumber(scale.start.x)},${formatStageNumber(scale.start.y)} d${formatStageNumber(scale.delta.x)},${formatStageNumber(scale.delta.y)}${zoom}`;
 }
 
 function formatStageClip(clip: {

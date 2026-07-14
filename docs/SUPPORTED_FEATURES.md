@@ -1,4 +1,12 @@
 ﻿# Supported Features
+- Imported stage layers expose bounded `scalestart`, `scaledelta`, and
+  scalar-or-pair `zoomdelta` projection for normal, animated, asset, and
+  placeholder backgrounds. Sprite dimensions scale around the authored SFF
+  axis; explicit zoomdelta is compensated against the global Three.js camera.
+  Exact parallax deformation, legacy `xscale`/`yscalestart`, window/mask zoom,
+  camera-anchor/localcoord normalization, and full MUGEN/IKEMEN stage parity
+  remain unsupported.
+
 - Explicit IKEMEN snapshots and trace frames publish
   `RuntimeAuxiliaryResourceProjection/v0` for roots and live Helpers with
   actor-local owner ids, red-life, guard-point, and dizzy-point values/maxima,

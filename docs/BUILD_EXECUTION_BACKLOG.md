@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 535 - Stage layer scaling
+
+Added bounded `scalestart`/`scaledelta`/`zoomdelta` parsing, compatibility
+reporting, Studio detail output, and Three.js projection for normal, animated,
+asset, and placeholder layers. Sprite placement scales around the authored SFF
+axis; explicit zoomdelta is compensated against the global Three.js camera.
+Focal stage/parser/report coverage passes 3 files / 21 tests and TypeScript 7
+passes. See `docs/reports/2026-07-14-bg-layer-scaling.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/174-bg-layer-scaling.md`.
+
 ## Entry 534 - Stage quality checkpoint
 
 Audited the accumulated stage slices: native 211 files / 2134 tests, TypeScript

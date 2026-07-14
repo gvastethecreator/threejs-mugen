@@ -5,7 +5,7 @@ import type { MugenStageLayer } from "../mugen/model/MugenStage";
 import type { StageSnapshot } from "../mugen/runtime/types";
 import { AxisRenderer, stageLayerMaterialParameters } from "../game/render/AxisRenderer";
 import type { TextureStore } from "../game/render/TextureStore";
-import { clipStagePlacement, projectStageLayerClip, projectStageSpriteLayer, resolveStageLayerForTick } from "../game/render/stageProjection";
+import { clipStagePlacement, projectStageLayerClip, projectStageSpriteLayer, resolveStageLayerForTick, resolveStageLayerScale } from "../game/render/stageProjection";
 import { bgCtrlLabStage } from "../mugen/runtime/demoStage";
 
 const sprite: MugenSprite = {
@@ -90,6 +90,48 @@ describe("projectStageSpriteLayer", () => {
       height: 15,
       uv: { u1: 0.2, v1: 0, u2: 0.8, v2: 0.375 },
     });
+  });
+
+  it("scales sprite placement around its authored axis and compensates explicit zoomdelta", () => {
+    const layer: MugenStageLayer = {
+      id: "BG scaled",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 1,
+      opacity: 1,
+      startX: 20,
+      startY: 30,
+      scaleStart: { x: 2, y: 1.5 },
+      zoomDelta: { x: 1, y: 1 },
+    };
+
+    const [placement] = projectStageSpriteLayer(layer, sprite, { ...stage, camera: { ...stage.camera, zoom: 1 } }, 640);
+
+    expect(placement).toMatchObject({ x: 100, y: 147.5, width: 200, height: 60 });
+  });
+
+  it("resolves camera movement scale and keeps zoomdelta=0 screen-stable", () => {
+    const scale = resolveStageLayerScale(
+      {
+        id: "BG scale contract",
+        color: "#000",
+        y: 0,
+        width: 100,
+        height: 50,
+        deltaX: 1,
+        deltaY: 1,
+        opacity: 1,
+        scaleStart: { x: 1.2, y: 0.8 },
+        scaleDelta: { x: 0.01, y: 0.002 },
+        zoomDelta: { x: 0.5, y: 0 },
+      },
+      { ...stage, camera: { x: 20, y: 10, zoom: 0.8 } },
+    );
+
+    expect(scale.x).toBeCloseTo(1.575);
+    expect(scale.y).toBeCloseTo(1.025);
   });
 });
 

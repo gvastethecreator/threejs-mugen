@@ -14,6 +14,11 @@ export type StageBackgroundLayerReport = {
   start: { x: number; y: number };
   delta: { x: number; y: number };
   velocity?: { x: number; y: number };
+  scale?: {
+    start: { x: number; y: number };
+    delta: { x: number; y: number };
+    zoomDelta?: { x: number; y: number };
+  };
   tiled: boolean;
   trans?: {
     mode: string;
@@ -242,6 +247,15 @@ function describeBackgroundLayer(
       y: layer.deltaY ?? 1,
     },
     ...(layer.velocity ? { velocity: layer.velocity } : {}),
+    ...(hasLayerScale(layer)
+      ? {
+          scale: {
+            start: layer.scaleStart ?? { x: 1, y: 1 },
+            delta: layer.scaleDelta ?? { x: 0, y: 0 },
+            ...(layer.zoomDelta ? { zoomDelta: layer.zoomDelta } : {}),
+          },
+        }
+      : {}),
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
     ...(layer.clip ? { clip: layer.clip } : {}),
@@ -357,6 +371,11 @@ function collectUnsupportedStageFeatures(stagePackage: MugenStagePackage): Unsup
     "Renderer has bounded rectangular clipping for window/maskwindow, but exact zoom/windowdelta/render-mode parity remains partial",
   );
   push(
+    "exact stage layer scale parity",
+    stagePackage.stage.layers.filter(hasLayerScale).length,
+    "Renderer applies bounded scalestart/scaledelta/zoomdelta projection; exact localcoord, window, parallax, and camera parity remains partial",
+  );
+  push(
     "mask color-key semantics",
     rawSections.filter(([, values]) => hasKey(values, "mask")).length,
     "Stage SFF sprites currently keep transparent palette-index handoff; exact mask=0/1 color-zero behavior remains partial",
@@ -410,6 +429,10 @@ function uniqueStrings(values: string[]): string[] {
 
 function hasKey(values: Record<string, string>, key: string): boolean {
   return Object.keys(values).some((candidate) => candidate.toLowerCase() === key.toLowerCase());
+}
+
+function hasLayerScale(layer: MugenStageLayer): boolean {
+  return Boolean(layer.scaleStart || layer.scaleDelta || layer.zoomDelta);
 }
 
 function formatStageDiagnostic(file: string | undefined, line: number | undefined, message: string): string {

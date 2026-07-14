@@ -14,6 +14,7 @@ import {
   projectStageLayerClip,
   projectStageSpriteLayer,
   resolveStageLayerForTick,
+  resolveStageLayerScale,
   type StageSpritePlacement,
   type StageSpritePlacementUv,
 } from "./stageProjection";
@@ -91,12 +92,16 @@ export class AxisRenderer {
           }
           return;
         }
+        const fallbackScale = resolveStageLayerScale(renderLayer, options.stage);
+        if (fallbackScale.x <= 0 || fallbackScale.y <= 0) {
+          return;
+        }
         const placement = clipPlacement(
           {
             x: renderLayer.x ?? 0,
             y: renderLayer.y,
-            width: Math.max(stageWidth, renderLayer.width),
-            height: renderLayer.height,
+            width: Math.max(stageWidth, renderLayer.width) * fallbackScale.x,
+            height: renderLayer.height * fallbackScale.y,
           },
           renderLayer,
           options.stage,
@@ -330,6 +335,10 @@ function createAssetLayer(
   index: number,
 ): THREE.Mesh | undefined {
   const deltaX = layer.deltaX ?? 1;
+  const scale = resolveStageLayerScale(layer, stage);
+  if (scale.x <= 0 || scale.y <= 0) {
+    return undefined;
+  }
   const image = texture.image as { width?: number } | undefined;
   const textureLoaded = texture.userData.loaded === true || Boolean(image?.width);
   const materialOptions: THREE.MeshBasicMaterialParameters = {
@@ -343,8 +352,8 @@ function createAssetLayer(
     {
       x: (layer.x ?? 0) + stage.camera.x * (1 - deltaX),
       y: layer.y,
-      width: layer.width,
-      height: layer.height,
+      width: layer.width * scale.x,
+      height: layer.height * scale.y,
     },
     layer,
     stage,

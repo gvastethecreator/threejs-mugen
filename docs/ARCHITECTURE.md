@@ -57,7 +57,7 @@ Stage DEF
   -> MugenStageLoader + StageDefParser
   -> MugenStageDefinition
   -> MatchWorld / PlayableMatchRuntime stage bounds/camera/starts
-  -> stageProjection + AxisRenderer static/tiled/action-backed BG sprite adapter plus bounded BGCtrl executor when stage SFF is decoded
+  -> stageProjection + AxisRenderer static/tiled/action-backed BG sprite adapter with bounded layer scale projection plus bounded BGCtrl executor when stage SFF is decoded
   -> StageCompatibilityReport for UI/export coverage
 ```
 

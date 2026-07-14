@@ -22,6 +22,9 @@ trans = addalpha
 alpha = 128,256
 window = 0,0,320,240
 mask = 1
+scalestart = 1.1,.9
+scaledelta = .001,.002
+zoomdelta = .5
 
 [BG Animated]
 type = anim
@@ -118,6 +121,11 @@ describe("createStageCompatibilityReport", () => {
         trans: { mode: "addalpha", alpha: { source: 128, destination: 256 } },
         clip: { source: "window", x1: -160, y1: 0, x2: 160, y2: 240 },
         mask: true,
+        scale: {
+          start: { x: 1.1, y: 0.9 },
+          delta: { x: 0.001, y: 0.002 },
+          zoomDelta: { x: 0.5, y: 0.5 },
+        },
         unsupported: ["mask color-key semantics"],
       }),
       expect.objectContaining({

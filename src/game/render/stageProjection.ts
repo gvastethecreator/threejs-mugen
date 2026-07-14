@@ -24,32 +24,43 @@ export type StageLayerClipRect = {
   bottom: number;
 };
 
+export type StageLayerScale = {
+  x: number;
+  y: number;
+};
+
 export function projectStageSpriteLayer(
   layer: MugenStageLayer,
   sprite: MugenSprite,
   stage: StageSnapshot,
   viewportWidth: number,
 ): StageSpritePlacement[] {
-  const centerX = projectStageSpriteX(layer, sprite, stage);
-  const centerY = projectStageSpriteY(layer, sprite, stage);
+  const scale = resolveStageLayerScale(layer, stage);
+  const width = sprite.width * scale.x;
+  const height = sprite.height * scale.y;
+  if (width <= 0 || height <= 0) {
+    return [];
+  }
+  const centerX = projectStageSpriteX(layer, sprite, stage, scale);
+  const centerY = projectStageSpriteY(layer, sprite, stage, scale);
   const base: StageSpritePlacement = {
     x: centerX,
     y: centerY,
-    width: sprite.width,
-    height: sprite.height,
+    width,
+    height,
   };
 
   if (!layer.tile || (layer.tile.x === 0 && layer.tile.y === 0)) {
     return clipStagePlacements([base], layer, stage);
   }
 
-  const xStep = Math.max(1, sprite.width + (layer.tile.spacingX ?? 0));
-  const yStep = Math.max(1, sprite.height + (layer.tile.spacingY ?? 0));
+  const xStep = Math.max(1, width + (layer.tile.spacingX ?? 0) * scale.x);
+  const yStep = Math.max(1, height + (layer.tile.spacingY ?? 0) * scale.y);
   const cameraX = stage.camera.x;
   const left = cameraX - viewportWidth;
   const right = cameraX + viewportWidth;
   const xOffsets = layer.tile.x === 0 ? [0] : boundedTileOffsets(centerX, xStep, left, right);
-  const yOffsets = layer.tile.y === 0 ? [0] : boundedTileOffsets(centerY, yStep, -sprite.height * 2, sprite.height * 3);
+  const yOffsets = layer.tile.y === 0 ? [0] : boundedTileOffsets(centerY, yStep, -height * 2, height * 3);
 
   return clipStagePlacements(
     xOffsets.flatMap((xOffset) =>
@@ -262,6 +273,29 @@ function offsetStageLayer(layer: MugenStageLayer, x: number, y: number): MugenSt
   };
 }
 
+export function resolveStageLayerScale(layer: MugenStageLayer, stage: StageSnapshot): StageLayerScale {
+  const scaleStart = layer.scaleStart ?? { x: 1, y: 1 };
+  const scaleDelta = layer.scaleDelta ?? { x: 0, y: 0 };
+  const deltaX = layer.deltaX ?? 1;
+  const deltaY = layer.deltaY ?? 1;
+  const cameraScale = {
+    x: scaleStart.x + scaleDelta.x * stage.camera.x * deltaX,
+    y: scaleStart.y + scaleDelta.y * stage.camera.y * deltaY,
+  };
+  const zoom = Number.isFinite(stage.camera.zoom) && stage.camera.zoom > 0 ? stage.camera.zoom : 1;
+  const zoomScale = layer.zoomDelta
+    ? {
+        // The Three.js camera already applies the default zoomdelta=1 globally.
+        x: Math.max(0, 1 + (zoom - 1) * layer.zoomDelta.x) / zoom,
+        y: Math.max(0, 1 + (zoom - 1) * layer.zoomDelta.y) / zoom,
+      }
+    : { x: 1, y: 1 };
+  return {
+    x: Math.max(0, cameraScale.x * zoomScale.x),
+    y: Math.max(0, cameraScale.y * zoomScale.y),
+  };
+}
+
 function controllerPair(
   controller: MugenStageBgCtrl,
   keys: [string, string, string],
@@ -314,14 +348,14 @@ function parseControllerNumber(value: string | undefined): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-function projectStageSpriteX(layer: MugenStageLayer, sprite: MugenSprite, stage: StageSnapshot): number {
+function projectStageSpriteX(layer: MugenStageLayer, sprite: MugenSprite, stage: StageSnapshot, scale: StageLayerScale): number {
   const startX = layer.startX ?? layer.x ?? 0;
   const deltaX = layer.deltaX ?? 1;
-  return startX + sprite.width / 2 - sprite.axisX + stage.camera.x * (1 - deltaX);
+  return startX + (sprite.width / 2 - sprite.axisX) * scale.x + stage.camera.x * (1 - deltaX);
 }
 
-function projectStageSpriteY(layer: MugenStageLayer, sprite: MugenSprite, stage: StageSnapshot): number {
-  return (stage.zOffset ?? 200) - (layer.startY ?? 0) + sprite.axisY - sprite.height / 2;
+function projectStageSpriteY(layer: MugenStageLayer, sprite: MugenSprite, stage: StageSnapshot, scale: StageLayerScale): number {
+  return (stage.zOffset ?? 200) - (layer.startY ?? 0) + (sprite.axisY - sprite.height / 2) * scale.y;
 }
 
 export function projectStageLayerClip(layer: Pick<MugenStageLayer, "clip">, stage: StageSnapshot): StageLayerClipRect | undefined {
