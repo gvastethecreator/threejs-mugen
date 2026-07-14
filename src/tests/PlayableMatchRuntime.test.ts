@@ -3352,6 +3352,21 @@ ctrl = 0
         }),
       ]),
     );
+    const turnsContinuation = continued.round?.turnsContinuation;
+    expect(turnsContinuation?.recovery).toMatchObject({ winnerId: "p1", timeTicks: expect.any(Number) });
+    expect(turnsContinuation?.recovery.timeTicks).toBeGreaterThan(0);
+    expect(turnsContinuation?.recovery.states.find(({ actorId }) => actorId === "p1")).toMatchObject({
+      lifeBefore: 1000,
+      lifeAfter: 1000,
+      eligible: true,
+    });
+    expect(turnsContinuation?.roster.sides[1]).toMatchObject({
+      actorIds: ["p2", "p4"],
+      activeActorIds: ["p2"],
+      defeatedActorIds: ["p2"],
+      replacementCandidateIds: ["p4"],
+      nextIncomingActorId: "p4",
+    });
   });
 
   it("blocks automatic Turns continuation when the incoming actor lacks state 5900", () => {

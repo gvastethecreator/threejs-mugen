@@ -48,6 +48,10 @@ export class RuntimeRoundSystem {
     return Math.max(0, this.roundNo - 1);
   }
 
+  get remainingTimerFrames(): number {
+    return this.timerFrames;
+  }
+
   get playbackRate(): number {
     if (this.state !== "ko" || this.noKoSlow || this.koSlowRemaining <= 0) return 1;
     if (this.koSlowRemaining >= DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES) return DEFAULT_RUNTIME_KO_SLOW_RATE;

@@ -696,7 +696,10 @@ export class PlayableMatchRuntime {
         standby: teamState.standby,
         overKo: teamState.overKo,
         playerType: teamState.playerType,
-        replacementEligible: this.teamRoundMode === "turns" && root !== this.p1 && root !== this.p2,
+        replacementEligible: this.teamRoundMode === "turns" &&
+          root !== this.p1 &&
+          root !== this.p2 &&
+          teamState.standby === true,
         ...(memberNo === undefined ? {} : { memberNo }),
         teamState,
       } satisfies RuntimeTeamRoundHandoffActor;
@@ -2494,6 +2497,8 @@ export class PlayableMatchRuntime {
       resourceActors: roots.map(roundResourceActor),
       roundNotOver: globalAssertSpecial.roundNotOver,
       winnerId,
+      recoveryTimeTicks: this.round.remainingTimerFrames,
+      matchOver: this.matchOutcome.isOver,
       nextRoundNo: this.round.currentRoundNo,
       tick: this.tick,
     });
