@@ -3325,6 +3325,7 @@ ctrl = 0
       ],
       round: {
         state: "fight",
+        match: { matchWins: 2, wins: { 1: 1, 2: 0 }, matchOver: false },
         turnsContinuation: {
           status: "replacement-required",
           applied: true,
@@ -3366,6 +3367,49 @@ ctrl = 0
       defeatedActorIds: ["p2"],
       replacementCandidateIds: ["p4"],
       nextIncomingActorId: "p4",
+    });
+  });
+
+  it("closes an imported Turns match when the losing side has no remaining member", () => {
+    const attacker = createImportedFixture({
+      id: "turns-terminal-attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    });
+    const defender = createImportedFixture({
+      id: "turns-terminal-defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 },
+        p2: { x: 35, y: 0, facing: -1 },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "turns",
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let terminal = runtime.getSnapshot();
+    for (let frame = 0; frame < 500 && terminal.playing; frame += 1) {
+      terminal = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(terminal).toMatchObject({
+      playing: false,
+      round: {
+        state: "ko",
+        match: { matchWins: 1, wins: { 1: 1, 2: 0 }, matchOver: true, winnerSide: 1 },
+        turnsContinuation: {
+          status: "side-defeat",
+          applied: false,
+          matchOutcome: { outcome: "match-win", matchOver: true, winnerSide: 1 },
+        },
+      },
+      actors: [{ id: "p1" }, { id: "p2", runtime: { life: 0 } }],
     });
   });
 

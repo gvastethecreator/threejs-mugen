@@ -9,6 +9,7 @@ export type RuntimeMatchOutcomeSnapshot = {
   schema: typeof RUNTIME_MATCH_OUTCOME_SCHEMA;
   mode: RuntimeTeamRoundMode;
   matchWins: number;
+  matchWinsBySide?: { 1: number; 2: number };
   wins: { 1: number; 2: number };
   roundsExisted: number;
   draws: number;
@@ -27,14 +28,24 @@ export type RuntimeMatchOutcomeResult = RuntimeMatchOutcomeSnapshot & {
 export class RuntimeMatchOutcomeSystem {
   private readonly mode: RuntimeTeamRoundMode;
   private readonly matchWins: number;
+  private readonly matchWinsBySide: { 1: number; 2: number };
   private wins: [number, number] = [0, 0];
   private completedRounds = 0;
   private draws = 0;
   private winnerSide?: RuntimeTeamSide;
 
-  constructor(mode: RuntimeTeamRoundMode = "single", matchWins = 2) {
+  constructor(
+    mode: RuntimeTeamRoundMode = "single",
+    matchWins = 2,
+    matchWinsBySide?: Partial<{ 1: number; 2: number }>,
+  ) {
     this.mode = mode;
-    this.matchWins = boundedMatchWins(matchWins);
+    const defaultMatchWins = boundedMatchWins(matchWins);
+    this.matchWinsBySide = {
+      1: boundedMatchWins(matchWinsBySide?.[1] ?? defaultMatchWins),
+      2: boundedMatchWins(matchWinsBySide?.[2] ?? defaultMatchWins),
+    };
+    this.matchWins = Math.max(this.matchWinsBySide[1], this.matchWinsBySide[2]);
   }
 
   get isOver(): boolean {
@@ -57,6 +68,9 @@ export class RuntimeMatchOutcomeSystem {
       schema: RUNTIME_MATCH_OUTCOME_SCHEMA,
       mode: this.mode,
       matchWins: this.matchWins,
+      ...(this.matchWinsBySide[1] === this.matchWinsBySide[2]
+        ? {}
+        : { matchWinsBySide: { ...this.matchWinsBySide } }),
       wins: this.scoreObject(),
       roundsExisted: this.completedRounds,
       draws: this.draws,
@@ -101,7 +115,7 @@ export class RuntimeMatchOutcomeSystem {
     }
 
     this.wins[roundWinnerSide - 1] += 1;
-    if (this.wins[roundWinnerSide - 1] >= this.matchWins) {
+    if (this.wins[roundWinnerSide - 1] >= this.matchWinsBySide[roundWinnerSide]) {
       this.winnerSide = roundWinnerSide;
     }
     const outcome: RuntimeMatchOutcomeKind = this.isOver ? "match-win" : "round-win";

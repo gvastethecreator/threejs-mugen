@@ -24,6 +24,7 @@ import {
   type RuntimeTurnsRecoveryResult,
 } from "./RuntimeTurnsRecoverySystem";
 import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
+import type { RuntimeMatchOutcomeResult } from "./RuntimeMatchOutcomeSystem";
 
 export const RUNTIME_TURNS_CONTINUATION_SCHEMA = "mugen-web-sandbox/runtime-turns-continuation/v0";
 export const RUNTIME_TURNS_ROSTER_SCHEMA = "mugen-web-sandbox/runtime-turns-roster/v0";
@@ -83,6 +84,7 @@ export type RuntimeTurnsContinuationPlan = {
 
 export type RuntimeTurnsContinuationResult = RuntimeTurnsContinuationPlan & {
   applied: boolean;
+  matchOutcome?: RuntimeMatchOutcomeResult;
 };
 
 export class RuntimeTurnsContinuationWorld {

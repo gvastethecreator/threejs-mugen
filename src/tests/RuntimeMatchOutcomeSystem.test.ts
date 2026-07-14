@@ -57,4 +57,23 @@ describe("RuntimeMatchOutcomeSystem", () => {
       matchOver: false,
     });
   });
+
+  it("supports side-specific Turns targets without moving score ownership", () => {
+    const outcome = new RuntimeMatchOutcomeSystem("turns", 9, { 1: 2, 2: 1 });
+
+    expect(outcome.recordRound(1)).toMatchObject({
+      matchOver: false,
+      wins: { 1: 1, 2: 0 },
+      matchWins: 2,
+      matchWinsBySide: { 1: 2, 2: 1 },
+    });
+
+    expect(outcome.recordRound(2)).toMatchObject({
+      outcome: "match-win",
+      matchOver: true,
+      winnerSide: 2,
+      wins: { 1: 1, 2: 1 },
+      matchWinsBySide: { 1: 2, 2: 1 },
+    });
+  });
 });

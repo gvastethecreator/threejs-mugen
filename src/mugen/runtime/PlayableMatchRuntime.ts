@@ -99,7 +99,7 @@ import { RuntimeMatchActorAdvanceWorld } from "./RuntimeMatchActorAdvanceSystem"
 import { RuntimePausedActorAdvanceWorld } from "./RuntimePausedActorAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { defaultSuperPauseTargetDefenseValue } from "./SuperPauseTargetDefensePolicy";
-import { runtimeTeamSide, RuntimeTeamTopologyWorld } from "./RuntimeTeamTopologySystem";
+import { runtimeTeamSide, RuntimeTeamTopologyWorld, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import {
   RuntimeFighterRunOrderWorld,
   type RuntimeRootRunOrderResult,
@@ -511,7 +511,6 @@ export class PlayableMatchRuntime {
     this.teamRoundMode = options.teamMode ?? "single";
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
-    this.matchOutcome = new RuntimeMatchOutcomeSystem(this.teamRoundMode, options.matchWins);
     this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
       this.runtimeProfile,
       options.superPauseTargetDefenseValue,
@@ -565,6 +564,16 @@ export class PlayableMatchRuntime {
           return fighter;
         }) ?? []
       : [];
+    const turnsMatchWinsBySide = this.teamRoundMode === "turns"
+      ? deriveTurnsMatchWinsBySide([this.p1, this.p2, ...this.reserveRoots])
+      : undefined;
+    this.matchOutcome = new RuntimeMatchOutcomeSystem(
+      this.teamRoundMode,
+      turnsMatchWinsBySide === undefined
+        ? options.matchWins
+        : Math.max(turnsMatchWinsBySide[1], turnsMatchWinsBySide[2]),
+      turnsMatchWinsBySide,
+    );
     this.activeRoots = [this.p1, this.p2];
     for (const root of this.characterRoots()) this.effectActorWorld.registerOwner(root.id);
     if (this.runtimeProfile === "ikemen-go") {
@@ -2477,7 +2486,7 @@ export class PlayableMatchRuntime {
     this.resetTeamResourceBanks();
   }
 
-  private tryAutomaticTurnsContinuation(): "continued" | "blocked" | "not-applicable" {
+  private tryAutomaticTurnsContinuation(): "continued" | "terminal" | "blocked" | "not-applicable" {
     if (this.runtimeProfile !== "ikemen-go" || this.teamRoundMode !== "turns") return "not-applicable";
 
     const roots = this.characterRoots();
@@ -2509,6 +2518,17 @@ export class PlayableMatchRuntime {
         this.playing = false;
         this.logs.unshift(`Turns continuation blocked: ${plan.diagnostics.join(", ") || "preflight"}`);
         return "blocked";
+      }
+      if (plan.status === "side-defeat" || plan.status === "draw") {
+        const matchOutcome = this.matchOutcome.recordRound(this.turnsContinuationWinnerSide(plan.decision, actors));
+        this.lastTurnsContinuation = { ...plan, matchOutcome, applied: false };
+        if (matchOutcome.matchOver) {
+          this.lastRoundContext = this.roundContextWorld.snapshot(true, ["match-over"]);
+          this.applyRoundContext(this.lastRoundContext);
+          this.logs.unshift(`Turns match over; side ${matchOutcome.winnerSide} wins`);
+        }
+        this.playing = false;
+        return "terminal";
       }
       return "not-applicable";
     }
@@ -2605,10 +2625,12 @@ export class PlayableMatchRuntime {
     }
     this.lastRoundState5900 = plan.state5900;
     this.resetTeamResourceBanks();
+    const matchOutcome = this.matchOutcome.recordRound(this.turnsContinuationWinnerSide(plan.decision, actors));
     const applied = {
       ...plan,
       phases: [...plan.phases, ...handoff.phases.slice(-2), "continuation:commit", "continuation:complete"],
       diagnostics: [],
+      matchOutcome,
       applied: true,
     } satisfies RuntimeTurnsContinuationResult;
     this.lastTurnsContinuation = applied;
@@ -2636,6 +2658,15 @@ export class PlayableMatchRuntime {
     );
     if (winningSides.length !== 1) return undefined;
     return winningSides[0]!.aliveActorIds.find((actorId) => (actorsById.get(actorId)?.life ?? 0) > 0);
+  }
+
+  private turnsContinuationWinnerSide(
+    decision: RuntimeTeamRoundDecision,
+    actors: readonly RuntimeTeamRoundHandoffActor[],
+  ): RuntimeTeamSide | undefined {
+    if (decision.winnerSide !== undefined) return decision.winnerSide;
+    const winnerId = this.turnsContinuationWinnerId(decision, actors);
+    return actors.find(({ id }) => id === winnerId)?.side;
   }
 
   startNextRound(): RuntimeNextRoundResult {
@@ -4575,4 +4606,13 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function deriveTurnsMatchWinsBySide(roots: readonly FighterMatchState[]): { 1: number; 2: number } {
+  const sideOneMembers = roots.filter((root) => runtimeTeamSide(root) === 1).length;
+  const sideTwoMembers = roots.filter((root) => runtimeTeamSide(root) === 2).length;
+  return {
+    1: Math.max(1, sideTwoMembers),
+    2: Math.max(1, sideOneMembers),
+  };
 }
