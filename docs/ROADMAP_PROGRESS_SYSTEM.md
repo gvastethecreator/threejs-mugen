@@ -4,7 +4,7 @@ Last updated: 2026-07-14
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
-Current control override: numbered backlog maximum 505 is committed truth. The entry-476 / Wayfinder-127 selector and the proposed `CompatibilityJourney/v1`, milestone, independent-package, global-AssertSpecial, team-round, lifebar, resource-bank, and Helper-resource cuts are all historical because entries 477-505 closed them. The current evidence aggregate declared by the entry-505 report is 587/587 trace artifacts. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+Current control override: numbered backlog maximum 508 is the active implementation cursor. Entries 477-507 closed or bounded the compatibility journey, milestone/package, global-AssertSpecial, team-round, lifebar, resource-bank, Helper-resource, red-life, and guard-point sequence. Entry 508 closes the read-only auxiliary-resource projection with 589/589 trace artifacts and full repository gates. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 ## Source Of Truth Stack
 

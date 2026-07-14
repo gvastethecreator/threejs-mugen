@@ -84,6 +84,26 @@ describe("PlayableMatchRuntime", () => {
     );
   });
 
+  it("publishes auxiliary resource ownership for explicit IKEMEN roots without widening behavior state", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const projection = runtime.getSnapshot().runtimeAuxiliaryResources;
+    expect(projection).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-auxiliary-resource-projection/v0",
+      tick: 0,
+      mutation: { redLife: "bounded", guardPoints: "bounded", dizzyPoints: "unimplemented" },
+      excludedActorKinds: ["projectile", "explod"],
+    });
+    expect(projection?.actors.map(({ id }) => id)).toEqual(["p1", "p3", "p2", "p4"]);
+    expect(projection?.actors.every(({ resources }) => resources.dizzyPoints.status === "unimplemented")).toBe(true);
+    projection!.actors[0]!.teamState!.standby = true;
+    expect(runtime.getSnapshot().runtimeAuxiliaryResources?.actors[0]?.teamState?.standby).toBe(false);
+    expect(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!).getSnapshot().runtimeAuxiliaryResources).toBeUndefined();
+  });
+
   it("routes explicit IKEMEN Tag side commands into standby root CNS without direct gameplay ownership", () => {
     const reserveStateNo = 2788;
     const reserve = createTagSideCommandReserve("x", reserveStateNo);

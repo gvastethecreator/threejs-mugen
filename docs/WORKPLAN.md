@@ -2,9 +2,9 @@
 
 ## Active frontier - 2026-07-14
 
-Entry 505 is the numbered committed frontier. Its report declares 587/587 traces after the full entry-476 successor queue, Studio source/provenance/folder-editing slices, global/team round ownership, explicit Turns handoff, team lifebar/HUD, root life/power banks, and Helper-local resources.
+Entry 508 is the active implementation frontier. Entry 507 closed guard-point ownership; this cut adds the read-only auxiliary-resource projection before dizzy mutation, reset/persistence, and automatic Turns continuation. Scores remain unchanged until the independent corpus/adjudication lane moves them.
 
-Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. Parallel work may add `StudioSemanticDraft/v0`, `RuntimeAuxiliaryResourceProjection/v0`, and `AssetProvenance/v2`. Red life is the first auxiliary mutation and alone may adapt to LifeShare; guard/dizzy, bars, reset/persistence, and automatic Turns continuation remain separate gates. Scores remain unchanged. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. Parallel work may add `StudioSemanticDraft/v0`, dizzy-point mutation, and `AssetProvenance/v2`. Red life is the first auxiliary mutation and alone may adapt to LifeShare; suppression, bars, reset/persistence, and automatic Turns continuation remain separate gates. Scores remain unchanged. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 

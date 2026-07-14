@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 auxiliary resource projection
+
+- Entry 508 is the active implementation cut: explicit IKEMEN snapshots/traces
+  publish `RuntimeAuxiliaryResourceProjection/v0` for roots and live Helpers.
+- The projection is read-only and outside behavior checksums. It records
+  actor-local red-life/guard-point owners and maxima, dizzy-point
+  unavailability, suppression status, deterministic ordering, finite clamps,
+  and orphan diagnostics; Projectile/Explod actors are excluded.
+- Claim ceiling: ownership/value projection only. Dizzy mutation, red-life
+  LifeShare, suppression, team/projectile sharing, HUD, reset/persistence,
+  rollback/netplay, and full parity remain blocked. Scores remain unchanged.
+- Verification: 201 files / 2056 tests, TypeScript 7, 280-module build,
+  589/589 traces, boundaries, CSS QA, and diff check all pass. Browser smoke
+  is N/A.
+
 ## Global report - 2026-07-14 guard-points ownership
 
 - Entry 507 closes explicit direct `HitDef guardpoints` plus actor-local
@@ -18,9 +33,9 @@
 - See `docs/research/2026-07-14-guard-points-ownership.md` and
   `docs/reports/2026-07-14-guard-points-ownership.md`.
 
-## Global report - 2026-07-14 daily roadmap and architecture audit
+## Previous global report - 2026-07-14 daily roadmap and architecture audit
 
-- Entry 505 is the committed cursor; its report declares 587/587 traces. The complete 2026-07-13 selected sequence is now closed, including M2 bounded adjudication, independent legal character evidence, Studio folder editing, team handoff/lifebar/life-power banks, and Helper-local resources.
+- Entry 505 was the committed cursor for this historical audit; its report declares 587/587 traces. The complete 2026-07-13 selected sequence was closed, including M2 bounded adjudication, independent legal character evidence, Studio folder editing, team handoff/lifebar/life-power banks, and Helper-local resources.
 - Scores remain 65/35/20/10-12/6-8/25. The next promotion decision requires `CompatibilityCorpus/v0`, not a documentation-only inference.
 - Next ordered cuts: corpus -> score adjudication -> independent legal stage/package route. Parallel bounded lanes are Studio semantic draft preflight, auxiliary-resource ownership then red life, and provenance v2.
 - Red life may mirror through LifeShare; guard and dizzy remain actor-local. Do not widen `RuntimeTeamResourceBank/v1` beyond life/power.

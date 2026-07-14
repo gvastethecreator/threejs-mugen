@@ -4,7 +4,7 @@ Last updated: 2026-07-14
 
 This document turns the broad MUGEN / IKEMEN-GO / Studio / modular-engine horizon into delivery checkpoints. It is an execution companion to `docs/PORT_COMPLETION_SCORECARD.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and `.scratch/roadmap/issues/`.
 
-Latest checkpoint: entry 505 is committed truth and its report declares 587/587 traces. The full entry-476 successor queue is closed through independent legal character routes, Studio folder source editing, global/team round seams, lifebar/HUD, root life/power sharing, and Helper-local resources. The next delivery ladder versions the compatibility corpus and adjudicates the score band before adding an independent legal stage/package route. Studio semantic preflight and read-only IKEMEN auxiliary-resource ownership may advance in parallel; neither moves compatibility scores by itself.
+Latest checkpoint: entry 508 is committed truth and its report declares 589/589 traces. The full entry-476 successor queue is closed through independent legal character routes, Studio folder source editing, global/team round seams, lifebar/HUD, root life/power sharing, Helper-local resources, red-life, guard points, and read-only auxiliary-resource ownership. The next delivery ladder versions the compatibility corpus and adjudicates the score band before adding an independent legal stage/package route. Studio semantic preflight and dizzy-point mutation may advance in parallel; neither moves compatibility scores by itself.
 
 Docs-only edits in this file do not move scores. Scores move only through tests, trace gates, browser visual QA, fixture evidence, or export/build evidence.
 

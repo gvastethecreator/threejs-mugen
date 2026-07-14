@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - auxiliary resource projection (2026-07-14)
+
+Entry 508 adds `RuntimeAuxiliaryResourceProjection/v0` to explicit IKEMEN
+snapshots/traces. Roots and Helpers publish actor-local red-life and guard-point
+owners/maxima, dizzy-point unavailability, suppression status, deterministic
+identity ordering, and normalization diagnostics. Projectile/Explod actors are
+excluded and the contract stays outside behavior checksums. Full verification
+passes 201 files / 2056 tests, TypeScript 7, a 280-module build, 589/589 traces,
+boundaries, CSS QA, and diff hygiene. Scores remain unchanged. Next:
+dizzy-point state/mutation as a separate gate, then reset/persistence before
+automatic Turns continuation.
+
 ## Latest implementation closeout - guard-points ownership (2026-07-14)
 
 Entry 507 closes the bounded actor-local guard-points route. Explicit direct
@@ -13,11 +25,11 @@ hygiene. Browser smoke is N/A because no visible surface changed. Next
 auxiliary-resource decision remains read-only projection, followed by dizzy
 points, reset/persistence, and HUD as separate gates; scores remain unchanged.
 
-## Latest planning closeout - entry 505 reconciliation (2026-07-14)
+## Previous planning closeout - entry 505 reconciliation (2026-07-14)
 
 Numbered backlog maximum 505 is current committed truth; the entry-505 report declares 587/587 trace artifacts and full implementation gates green. Entries 477-505 closed the complete 2026-07-13 selector plus bounded Studio source/provenance work, team round/handoff/lifebar/life-power banks, and Helper-local life/power. The scores remain unchanged.
 
-Primary order now: `CompatibilityCorpus/v0` -> explicit score-band adjudication -> one independent legal stage/package route. In parallel, Studio may add an in-memory semantic source-draft preflight over the existing folder transaction. I2 starts with a read-only auxiliary-resource projection; red life, guard points, dizzy points, HUD, reset/persistence, and automatic Turns continuation remain separate dependent gates. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+Primary order now: `CompatibilityCorpus/v0` -> explicit score-band adjudication -> one independent legal stage/package route. In parallel, Studio may add an in-memory semantic source-draft preflight over the existing folder transaction. I2 has closed the read-only auxiliary-resource projection; dizzy points, red life, HUD, reset/persistence, and automatic Turns continuation remain separate dependent gates. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 ## Latest implementation closeout - persistent source handle recovery (2026-07-13)
 

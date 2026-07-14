@@ -6,9 +6,9 @@ This guide exists so the project can keep moving without losing the thread. It d
 
 ## 2026-07-14 Daily Audit Override
 
-Entry 505 and the entry-505 report's 587/587 trace aggregate supersede the entry-476 / Wayfinder-127 selector. Do not rebuild journey-v1, M2 adjudication, the independent character routes, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, or bounded folder editing.
+Entry 508 supersedes the entry-505 implementation cursor. Do not rebuild journey-v1, M2 adjudication, the independent character routes, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, or bounded folder editing.
 
-Continue with a versioned compatibility corpus and score-band decision, then an independent legal stage/package route. In Studio, preflight a semantic draft before writing. In I2, publish auxiliary-resource ownership before mutations; red life follows the LifeShare family while guard/dizzy remain actor-local. Automatic Turns continuation waits on reset and reference-transfer semantics. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+Continue with a versioned compatibility corpus and score-band decision, then an independent legal stage/package route. In Studio, preflight a semantic draft before writing. In I2, close the auxiliary projection, then land dizzy mutation and red-life LifeShare as separate adapters. Automatic Turns continuation waits on reset and reference-transfer semantics. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 ## 2026-07-13 Daily Audit Override
 

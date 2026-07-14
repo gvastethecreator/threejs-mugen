@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 508 - Auxiliary resource projection/v0
+
+Done: explicit IKEMEN snapshots and trace frames now publish a read-only
+`RuntimeAuxiliaryResourceProjection/v0` for roots and live Helpers. The
+projection carries owner/root/parent identity, actor-local red-life and guard
+points with maxima, explicit dizzy-point unavailability, suppression status,
+stable ordering, finite normalization, and orphan/max diagnostics. Projectile
+and Explod actors are excluded, and the projection remains outside behavior
+checksums. Focused coverage passes 198 tests; full verification passes 201
+files / 2056 tests, TypeScript 7, a 280-module production build, 589/589 trace
+artifacts (555 required / 34 optional), boundaries, CSS QA, and diff hygiene.
+Browser smoke is N/A because no visible surface changed. Claim allowed:
+read-only auxiliary-resource ownership and value
+projection. Claim blocked: dizzy mutation/break state, red-life LifeShare
+mutation, suppression, projectile/team sharing, HUD bars, reset/persistence,
+rollback/netplay, and full MUGEN/IKEMEN parity. See Wayfinder 147 and the dated
+research/report.
+
 ## Entry 507 - Guard-points ownership/v0
 
 Done: explicit direct HitDef `guardpoints` values now compile and flow through

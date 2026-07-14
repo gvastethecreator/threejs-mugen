@@ -1,4 +1,11 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 508 non-score closeout
+
+Entry 508 closes the read-only `RuntimeAuxiliaryResourceProjection/v0` with
+201 files / 2056 tests, TypeScript 7, a 280-module build, and 589/589 trace
+artifacts. It adds no compatibility-score movement: dizzy mutation, red-life
+LifeShare mutation, suppression, HUD bars, reset/persistence, and full parity
+remain separate gates.
 
 ## 2026-07-14 Entry 505 evidence reconciliation
 

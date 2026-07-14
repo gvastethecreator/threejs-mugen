@@ -2,9 +2,9 @@
 
 ## 2026-07-14 daily audit override
 
-Entry 505 supersedes the entry-476 selector. M2 remains accepted only at bounded fixture scope; palette evidence, a second legal MIT character package, Studio source identity/transaction/provenance/folder editing, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, and Helper-local life/power are closed gates. The entry-505 report declares 587/587 traces; scores do not move.
+Entry 508 supersedes the entry-505 selector. M2 remains accepted only at bounded fixture scope; palette evidence, a second legal MIT character package, Studio source identity/transaction/provenance/folder editing, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, and the read-only auxiliary-resource projection are closed or bounded gates. Entry 508 closes with 589/589 traces; scores do not move.
 
-The next package discriminator is not another isolated controller name. Build `CompatibilityCorpus/v0`, adjudicate the written score band against its legal/portable/optional route matrix, then add one materially independent legal stage/package route. Studio semantic preflight and the I2 auxiliary-resource read model are parallel lanes with separate claim ceilings. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+The next package discriminator is not another isolated controller name. Build `CompatibilityCorpus/v0`, adjudicate the written score band against its legal/portable/optional route matrix, then add one materially independent legal stage/package route. Studio semantic preflight and I2 dizzy-point mutation are parallel lanes with separate claim ceilings. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 ## 2026-07-13 daily audit override
 

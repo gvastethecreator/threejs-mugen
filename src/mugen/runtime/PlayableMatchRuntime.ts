@@ -163,6 +163,10 @@ import {
 } from "./RuntimeTeamRoundDecisionSystem";
 import { RuntimeTeamRoundLifebarWorld } from "./RuntimeTeamRoundLifebarSystem";
 import {
+  RuntimeAuxiliaryResourceProjectionWorld,
+  type RuntimeAuxiliaryResourceProjectionInputActor,
+} from "./RuntimeAuxiliaryResourceProjectionSystem";
+import {
   RuntimeTeamResourceBankRuntime,
   RuntimeTeamResourceBankWorld,
   type RuntimeTeamResourceBankActor,
@@ -309,6 +313,7 @@ const runtimeActiveControllerTelemetryHooks = activeControllerTelemetryWorld.cre
 });
 const teamRoundLifebarWorld = new RuntimeTeamRoundLifebarWorld();
 const teamResourceBankWorld = new RuntimeTeamResourceBankWorld();
+const auxiliaryResourceProjectionWorld = new RuntimeAuxiliaryResourceProjectionWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -678,6 +683,48 @@ export class PlayableMatchRuntime {
       ...(memberNo === undefined ? {} : { memberNo }),
       teamState,
     } satisfies RuntimeTeamResourceBankActor;
+  }
+
+  private auxiliaryResourceProjectionActors(): RuntimeAuxiliaryResourceProjectionInputActor[] {
+    return this.characterRoots().flatMap((root, rootOrder) => {
+      const side = runtimeTeamSide(root);
+      if (side === undefined) {
+        throw new Error(`Auxiliary resource root ${root.id} has no valid team side`);
+      }
+      const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
+      const rootActor: RuntimeAuxiliaryResourceProjectionInputActor = {
+        id: root.id,
+        actorKind: "root",
+        rootId: root.id,
+        parentId: root.id,
+        resourceOwnerId: root.id,
+        side,
+        ...(memberNo === undefined ? {} : { memberNo }),
+        rootOrder,
+        teamState: root.runtime.teamState,
+        runtime: root.runtime,
+      };
+      const helperActors = this.effectActorWorld.helpers(root.id).map((helper) => ({
+        id: helper.serialId,
+        actorKind: "helper" as const,
+        rootId: helper.rootId,
+        parentId: helper.parentId,
+        resourceOwnerId: helper.serialId,
+        side,
+        rootOrder,
+        runOrder: helper.runOrder ?? helper.runOrderId,
+        teamState: helper.teamState,
+        runtime: {
+          life: helper.life,
+          lifeMax: helper.lifeMax,
+          redLife: helper.redLife,
+          guardPoints: helper.guardPoints,
+          guardPointsMax: helper.guardPointsMax,
+          assertSpecial: helper.assertSpecial,
+        },
+      } satisfies RuntimeAuxiliaryResourceProjectionInputActor));
+      return [rootActor, ...helperActors];
+    });
   }
 
   private teamResourceBankRuntimeEnabled(): boolean {
@@ -2113,6 +2160,12 @@ export class PlayableMatchRuntime {
           tick: this.tick,
         })
       : undefined;
+    const runtimeAuxiliaryResources = this.runtimeProfile === "ikemen-go"
+      ? auxiliaryResourceProjectionWorld.snapshot({
+          actors: this.auxiliaryResourceProjectionActors(),
+          tick: this.tick,
+        })
+      : undefined;
     const snapshot = this.snapshotWorld.match({
       tick: this.tick,
       playing: this.playing,
@@ -2132,6 +2185,7 @@ export class PlayableMatchRuntime {
       rootHitAdmission: this.lastRootHitAdmission,
       teamRoundLifebar,
       teamRoundResourceBanks,
+      runtimeAuxiliaryResources,
       logs: this.logs,
     });
     const reserveCompatibilitySession = compatibilityTelemetryWorld.buildSession(this.reserveRoots);

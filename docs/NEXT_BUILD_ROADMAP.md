@@ -1,10 +1,10 @@
 ﻿# Next Build Roadmap
 
-## 2026-07-14 planning override - entry 505 and the next evidence envelope
+## 2026-07-14 implementation override - entry 508 and the next evidence envelope
 
-Backlog entry 505 is the committed cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, and Helper-local-resource sequence is closed. The current report declares 587/587 traces; no score moves from this reconciliation.
+Backlog entry 508 is the active cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, Helper-local-resource, red-life, and guard-point sequence is closed or bounded. The auxiliary projection is read-only and does not move scores.
 
-Build next in dependency order: (1) `CompatibilityCorpus/v0`; (2) score-band adjudication against that corpus; (3) an independent legal stage/package route; (4) `StudioSemanticDraft/v0`; (5) `RuntimeAuxiliaryResourceProjection/v0`; (6) red-life mutation plus its narrow LifeShare adapter; (7) an automatic Turns continuation contract after reset/reference semantics are explicit; and (8) `AssetProvenance/v2`. Keep guard points, dizzy points, bars, persistence, scanner analysis, and modular extraction as distinct later gates. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+Build next in dependency order: (1) `CompatibilityCorpus/v0`; (2) score-band adjudication against that corpus; (3) an independent legal stage/package route; (4) `StudioSemanticDraft/v0`; (5) close this projection with gates; (6) dizzy-point state/mutation; (7) red-life LifeShare mutation; (8) reset/persistence before automatic Turns continuation; and (9) `AssetProvenance/v2`. Keep suppression, bars, scanner analysis, and modular extraction distinct. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 ## 2026-07-13 implementation checkpoint - source handle recovery
 

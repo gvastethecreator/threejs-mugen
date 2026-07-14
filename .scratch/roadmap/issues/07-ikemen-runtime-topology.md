@@ -8,9 +8,9 @@ Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
 ## 2026-07-14 Daily Audit Override
 
-Entries 495-506 close bounded global AssertSpecial ownership, team-round decision, explicit Turns handoff and required trace, team lifebar/HUD projection, root life/power bank ownership/mutation/routes, Helper-local life/power, and explicit direct red-life/guard-points routes. They do not close automatic Turns continuation, slot/reference and resource reset, exact Simul/Tag/Turns timing, motif bars, auxiliary resources, ZSS/Lua, rollback, or netplay.
+Entries 495-508 close bounded global AssertSpecial ownership, team-round decision, explicit Turns handoff and required trace, team lifebar/HUD projection, root life/power bank ownership/mutation/routes, Helper-local life/power, explicit direct red-life/guard-points routes, and the read-only auxiliary-resource projection. They do not close dizzy mutation/break policy, red-life LifeShare mutation, suppression, automatic Turns continuation, slot/reference and resource reset, exact Simul/Tag/Turns timing, motif bars, ZSS/Lua, rollback, or netplay.
 
-Pinned `char.go` separates `redLife`, `guardPoints`, and `dizzyPoints`. Root red life mirrors under `LifeShare`; guard/dizzy setters remain actor-local, and Helpers initialize local values. Keep `RuntimeTeamResourceBank/v1` life/power-only. Explicit red-life and guard-points routes are now closed as separate bounded gates; next publish `RuntimeAuxiliaryResourceProjection/v0` without mutation, then land dizzy points. Decide reset/persistence before automatic Turns continuation and add bars only after resource behavior is proven. See `docs/research/2026-07-14-daily-roadmap-architecture-audit.md`.
+Pinned `char.go` separates `redLife`, `guardPoints`, and `dizzyPoints`. Root red life mirrors under `LifeShare`; guard/dizzy setters remain actor-local, and Helpers initialize local values. Keep `RuntimeTeamResourceBank/v1` life/power-only. Explicit red-life and guard-points routes plus `RuntimeAuxiliaryResourceProjection/v0` are now bounded gates; next land dizzy points and red-life LifeShare as separate mutations. Decide reset/persistence before automatic Turns continuation and add bars only after resource behavior is proven. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
 
 ## 2026-07-13 Daily Audit Override
 

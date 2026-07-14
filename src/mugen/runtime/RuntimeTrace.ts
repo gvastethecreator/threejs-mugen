@@ -217,6 +217,7 @@ export type RuntimeTraceFrame = {
   rootHitAdmission?: MugenSnapshot["rootHitAdmission"];
   teamRoundLifebar?: MugenSnapshot["teamRoundLifebar"];
   teamRoundResourceBanks?: MugenSnapshot["teamRoundResourceBanks"];
+  runtimeAuxiliaryResources?: MugenSnapshot["runtimeAuxiliaryResources"];
   world?: RuntimeTraceWorldSummary;
   checksum: string;
 };
@@ -3671,6 +3672,7 @@ function summarizeTraceSnapshot(
     ...(snapshot.rootHitAdmission ? { rootHitAdmission: structuredClone(snapshot.rootHitAdmission) } : {}),
     ...(snapshot.teamRoundLifebar ? { teamRoundLifebar: structuredClone(snapshot.teamRoundLifebar) } : {}),
     ...(snapshot.teamRoundResourceBanks ? { teamRoundResourceBanks: structuredClone(snapshot.teamRoundResourceBanks) } : {}),
+    ...(snapshot.runtimeAuxiliaryResources ? { runtimeAuxiliaryResources: structuredClone(snapshot.runtimeAuxiliaryResources) } : {}),
     world: summarizeWorld(actorRegistry),
     checksum: "",
   };
