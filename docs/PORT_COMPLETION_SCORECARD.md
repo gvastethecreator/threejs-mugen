@@ -1,4 +1,15 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 530 score-band adjudication
+
+Entry 530 applies the written `36-55` practical MVP criterion to the expanded
+compatibility corpus. Passed local official KFM movement, attack/special,
+guard, get-hit, fall, and recovery traces plus visible loader/Studio reports
+meet the bounded criterion for the first point in that band. Practical MUGEN
+compatibility moves from **35 to 36 / 100**. The private sandbox remains 65,
+MUGEN 1.0/1.1 MVP remains 20, full MUGEN remains 10-12, IKEMEN remains 6-8,
+and Creator Studio remains 25. This is a minimum threshold promotion, not
+public breadth, commercial redistribution, or full MUGEN/IKEMEN parity.
+
 ## 2026-07-14 Entry 517 focal closeout
 
 Entry 517 closes bounded match outcome and imported state-5900 next-round
@@ -198,7 +209,7 @@ Latest evidence note: five required first-generation helper direct-HitDef/persis
 | Horizon | Score | Current truth |
 | --- | ---: | --- |
 | Playable private sandbox | 65 / 100 | Usable local Three.js match exists with native/generated fighters, original stage, HUD, hit/hurt boxes, debug panels, Studio surfaces, and trace/smoke QA. |
-| Practical MUGEN compatibility | 35 / 100 | DEF/AIR/CMD/CNS/SFF/SND/stage paths exist and many controller/trigger families have bounded gates, but broad character compatibility is still partial. |
+| Practical MUGEN compatibility | 36 / 100 | The written practical MVP threshold is met by passed local official KFM common routes, visible reports, the legal journey, and one optional-private official stage route; broad character compatibility remains partial. |
 | MUGEN 1.0/1.1 MVP port | 20 / 100 | Enough parser/runtime/render infrastructure exists to keep marching toward KFM/Common1-style compatibility, but exact VM, combat, helpers, screenpack, palette, audio, and tick-order parity remain open. |
 | Full MUGEN-compatible engine | 10-12 / 100 | Foundation and evidence discipline exist. Complete behavior parity across real characters/stages/screenpacks is still a large engine project. |
 | Full IKEMEN-GO-class port | 6-8 / 100 | Scanner/reporting plus bounded explicit-profile scheduling/topology/Tag/Helper, active-root motion/presentation/constraints/push, and exercised direct admission/contact/priority/reversal/depth/HitOverride/guard routes exist. Direct native input/AI, plural Helper/Projectile combat, team defeat/replacement, round/lifebars/resources, exact Tag ZSS/Lua choreography, screenpacks, rollback/netplay, and broad team semantics remain absent. |
@@ -234,7 +245,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Evidence Ledger
 
-Current aggregate override: entry 517 declares 599/599 artifacts, 565 required and 34 optional. Scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
+Current aggregate override: entry 529 declares 600/600 artifacts, 566 required and 34 optional. Entry 530 promotes only Practical MUGEN compatibility to 36/100; all other scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |

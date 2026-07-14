@@ -1,4 +1,12 @@
 ﻿# Roadmap Execution Board
+## Latest score adjudication - Entry 530 (2026-07-14)
+
+Entry 530 applies the written `36-55` practical MVP criterion to the expanded
+corpus. Passed local official KFM common movement/attack/guard/get-hit/fall/
+recovery routes plus visible reports meet the bounded threshold, so Practical
+MUGEN compatibility moves from 35 to 36/100. All other scores remain
+unchanged. This is the first point of the band, not public breadth or parity.
+See `docs/reports/2026-07-14-score-band-adjudication-entry-530.md`.
 
 ## Latest implementation closeout - match outcome and state 5900 (2026-07-14)
 

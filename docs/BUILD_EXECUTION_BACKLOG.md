@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 530 - Score-band adjudication
+
+Adjudicated the written `36-55` practical MVP band against the expanded
+compatibility corpus. Passed local official KFM movement, attack/special,
+guard, get-hit, fall, and recovery traces plus visible loader/Studio reports
+meet the bounded entry criterion. Practical MUGEN compatibility moves from
+35 to 36/100, the minimum band threshold; all other scores remain unchanged.
+See `docs/reports/2026-07-14-score-band-adjudication-entry-530.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/169-score-band-adjudication-entry-530.md`.
+
 ## Entry 529 - Promote official stage route into compatibility corpus
 
 Extended `CompatibilityCorpus/v0` to accept both character and stage journey

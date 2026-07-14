@@ -2,6 +2,14 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 530 adjudicates the written score band against the expanded corpus and
+promotes only Practical MUGEN compatibility from `35` to `36 / 100`, the
+minimum point inside the `36-55` practical MVP band. The decision is backed by
+passed local official KFM movement/attack/guard/get-hit/fall/recovery traces,
+the repository-owned legal journey, and the independent optional-private
+Training Room route. All other scores remain unchanged. Next: select the next
+source-backed stage/runtime gap without inferring another score movement.
+
 Entry 529 promotes the official Training Room route into
 `CompatibilityCorpus/v0` as `optional-private`. The corpus now accepts both
 `CompatibilityJourney/v1` and `StageCompatibilityJourney/v1`, preserves the

@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Score-band adjudication
+
+- Entry 530 applies the written `36-55` practical MVP criterion to the
+  expanded corpus. Passed local official KFM movement, attack/special, guard,
+  get-hit, fall, and recovery traces plus visible compatibility/Studio reports
+  satisfy the bounded entry gate.
+- Practical MUGEN compatibility moves conservatively from `35` to `36 / 100`,
+  the first point inside the band. Private sandbox `65`, MUGEN MVP `20`, full
+  MUGEN `10-12`, IKEMEN `6-8`, and Studio `25` remain unchanged.
+- This is not public breadth or parity: local optional KFM and optional-private
+  Training Room evidence retain their claim ceilings. Scores do not move again
+  without a new written criterion and independent evidence.
+- Next: select the next source-backed stage/runtime gap.
+- See `docs/research/2026-07-14-score-band-adjudication-entry-530.md` and
+  `docs/reports/2026-07-14-score-band-adjudication-entry-530.md`.
+
 ## Global report - 2026-07-14 Official stage corpus promotion
 
 - Entry 529 extends `CompatibilityCorpus/v0` to index both character and stage
