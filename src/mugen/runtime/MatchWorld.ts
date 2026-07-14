@@ -52,6 +52,7 @@ export type MatchWorldOptions = {
   p2?: DemoFighterDefinition;
   stage?: MugenStageDefinition;
   roundTimerFrames?: number;
+  matchWins?: number;
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
@@ -126,6 +127,7 @@ export class MatchWorld {
         effectActorWorld: this.effectActorWorld,
         targetWorld: this.targetWorld,
         roundTimerFrames: options.roundTimerFrames,
+        matchWins: options.matchWins,
         runtimeProfile: options.runtimeProfile,
         superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
         reserveFighters: options.reserveFighters,

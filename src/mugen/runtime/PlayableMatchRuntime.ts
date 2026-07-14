@@ -150,6 +150,15 @@ import {
   type RuntimeRoundResourceActor,
   type RuntimeRoundResourceResetResult,
 } from "./RuntimeRoundResourceResetSystem";
+import {
+  RuntimeMatchOutcomeSystem,
+  type RuntimeMatchOutcomeResult,
+} from "./RuntimeMatchOutcomeSystem";
+import {
+  RUNTIME_ROUND_STATE_5900,
+  RuntimeRoundState5900World,
+  type RuntimeRoundState5900Snapshot,
+} from "./RuntimeRoundState5900System";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
 import {
@@ -242,6 +251,7 @@ import { trainingStage } from "./demoStage";
 import type {
   CharacterRuntimeState,
   MugenSnapshot,
+  RoundSnapshot,
 } from "./types";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 
@@ -342,6 +352,8 @@ export type MatchRuntimeCommand =
 
 export type RuntimeNextRoundResult = RuntimeRoundResourceResetResult & {
   applied: boolean;
+  matchOutcome: RuntimeMatchOutcomeResult;
+  state5900: RuntimeRoundState5900Snapshot;
 };
 
 export type MatchStepOptions = {
@@ -355,6 +367,7 @@ export type PlayableMatchRuntimeOptions = {
   effectSpawnWorld?: RuntimeEffectSpawnWorld;
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
+  matchWins?: number;
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
@@ -455,6 +468,9 @@ export class PlayableMatchRuntime {
   private readonly teamResourceBankRuntime = new RuntimeTeamResourceBankRuntime();
   private readonly redLifeShareRuntime = new RuntimeRedLifeShareRuntime();
   private readonly roundResourceResetWorld = new RuntimeRoundResourceResetWorld();
+  private readonly matchOutcome: RuntimeMatchOutcomeSystem;
+  private readonly roundState5900World = new RuntimeRoundState5900World();
+  private lastRoundState5900?: RuntimeRoundState5900Snapshot;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
@@ -480,6 +496,7 @@ export class PlayableMatchRuntime {
     this.teamRoundMode = options.teamMode ?? "single";
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
+    this.matchOutcome = new RuntimeMatchOutcomeSystem(this.teamRoundMode, options.matchWins);
     this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
       this.runtimeProfile,
       options.superPauseTargetDefenseValue,
@@ -2256,7 +2273,7 @@ export class PlayableMatchRuntime {
       toggles: this.toggles,
       matchPause: this.pauseWorld.snapshot(),
       stage: presentationSnapshot.stage,
-      round: this.round.snapshot(),
+      round: this.snapshotRound(),
       p1: this.p1,
       p2: this.p2,
       reserveActors: this.reserveRoots,
@@ -2336,6 +2353,11 @@ export class PlayableMatchRuntime {
   }
 
   reset(): void {
+    this.resetRuntimeState();
+    this.matchOutcome.reset();
+  }
+
+  private resetRuntimeState(): void {
     this.restoreExpiredSuperPauseTargetDefense(true);
     this.tagTeamOrder?.reset();
     const resetState = this.matchResetWorld.reset({
@@ -2382,6 +2404,7 @@ export class PlayableMatchRuntime {
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
+    this.lastRoundState5900 = undefined;
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
     }
@@ -2391,18 +2414,35 @@ export class PlayableMatchRuntime {
   startNextRound(): RuntimeNextRoundResult {
     const roundSnapshot = this.round.snapshot();
     const roots = this.characterRoots();
-    const winnerId = roots.find((root) => root.label === roundSnapshot.winner)?.id;
+    const winnerRoot = roots.find((root) => root.label === roundSnapshot.winner);
+    const winnerId = winnerRoot?.id;
     const plan = this.roundResourceResetWorld.prepare({
       actors: roots.map((root) => roundResourceActor(root)),
       mode: this.teamRoundMode,
       winnerId,
       nextRoundNo: this.round.currentRoundNo + 1,
     });
+    const state5900 = this.roundState5900World.prepare(roots.map(roundState5900Actor));
     if (!this.round.isOver) {
+      const matchOutcome = this.matchOutcome.blocked("round-not-over");
       return {
         ...plan,
         applied: false,
         diagnostics: [...plan.diagnostics, "round-not-over"],
+        matchOutcome,
+        state5900,
+      };
+    }
+
+    const matchOutcome = this.matchOutcome.recordRound(winnerRoot ? runtimeTeamSide(winnerRoot) : undefined);
+    if (matchOutcome.matchOver) {
+      this.logs.unshift(`Match over; side ${matchOutcome.winnerSide} wins`);
+      return {
+        ...plan,
+        applied: false,
+        diagnostics: [...plan.diagnostics, "match-over"],
+        matchOutcome,
+        state5900,
       };
     }
 
@@ -2414,7 +2454,7 @@ export class PlayableMatchRuntime {
     );
     const matchTick = this.tick;
     const matchFrameClock = this.frameClock;
-    this.reset();
+    this.resetRuntimeState();
     this.tick = matchTick;
     this.frameClock = matchFrameClock;
     this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
@@ -2435,12 +2475,38 @@ export class PlayableMatchRuntime {
         root.runtime.fvars = [...variables.fvars];
       }
     }
+    const availableState5900Ids = new Set(state5900.availableActorIds);
+    for (const root of this.characterRoots()) {
+      if (!availableState5900Ids.has(root.id)) continue;
+      enterState(root, RUNTIME_ROUND_STATE_5900, undefined, { preserveAnimationWhenMissing: true });
+    }
+    this.lastRoundState5900 = state5900;
     this.resetTeamResourceBanks();
-    this.logs.unshift(`Round ${plan.nextRoundNo} started; red life reset`);
+    const state5900Log = state5900.availableActorIds.length > 0
+      ? `state 5900 entered for ${state5900.availableActorIds.join(",")}`
+      : `state 5900 unavailable for ${state5900.unavailableActorIds.join(",") || "all roots"}`;
+    this.logs.unshift(`Round ${plan.nextRoundNo} started; red life reset; ${state5900Log}`);
     return {
       ...plan,
       applied: true,
+      matchOutcome,
+      state5900,
     };
+  }
+
+  private snapshotRound(): RoundSnapshot {
+    const round = this.round.snapshot();
+    if (this.matchOutcome.roundsExisted > 0 || this.matchOutcome.isOver) {
+      round.match = this.matchOutcome.snapshot();
+    }
+    if (this.lastRoundState5900) {
+      round.state5900 = this.lastRoundState5900;
+    }
+    if (round.match?.matchOver) {
+      const winnerLabel = round.match.winnerSide === 1 ? this.p1.label : this.p2.label;
+      round.message = `Match over - ${winnerLabel}`;
+    }
+    return round;
   }
 
   private createFighterState(
@@ -2498,6 +2564,17 @@ function roundResourceActor(root: FighterMatchState): RuntimeRoundResourceActor 
     dizzyPoints: root.runtime.dizzyPoints ?? 0,
     dizzyPointsMax: root.runtime.dizzyPointsMax,
     redLife: root.runtime.redLife,
+  };
+}
+
+function roundState5900Actor(root: FighterMatchState) {
+  return {
+    id: root.id,
+    stateIds: [
+      ...(root.runtimeProgram?.states.map(({ id }) => id) ?? []),
+      ...(root.definition.states?.map(({ id }) => id) ?? []),
+      ...(root.definition.animations.has(RUNTIME_ROUND_STATE_5900) ? [RUNTIME_ROUND_STATE_5900] : []),
+    ],
   };
 }
 

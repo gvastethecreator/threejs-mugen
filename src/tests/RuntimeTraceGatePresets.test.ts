@@ -595,6 +595,7 @@ import {
   createSyntheticImportedTeamRedLifeLocalTraceArtifact,
   createSyntheticImportedTeamRedLifeShareTraceArtifact,
   createSyntheticImportedRedLifeRoundResetTraceArtifact,
+  createSyntheticImportedMatchOutcomeState5900TraceArtifact,
   createSyntheticImportedHelperLocalResourceTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
@@ -3042,6 +3043,22 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.redLife).toBeUndefined();
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.redLife).toBeUndefined();
+  });
+
+  it("proves match score and state 5900 sequencing at the next-round boundary", () => {
+    const artifact = createSyntheticImportedMatchOutcomeState5900TraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-match-outcome-state-5900-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-match-outcome-state-5900-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.frames.at(-1)?.round).toMatchObject({
+      roundNo: 2,
+      roundsExisted: 1,
+      match: { matchWins: 2, wins: { 1: 1, 2: 0 }, matchOver: false },
+    });
+    expect(artifact.trace.finalActors.map((actor) => actor.stateNo)).toEqual([5900, 5900]);
   });
 
   it("proves SuperPause poweradd reaches only the shared power bank", () => {

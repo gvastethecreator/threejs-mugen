@@ -411,6 +411,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRedLifeRoundResetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-match-outcome-state-5900",
+      required: true,
+      artifact: presets.createSyntheticImportedMatchOutcomeState5900TraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-team-resource-superpause",
       required: true,
       artifact: presets.createSyntheticImportedTeamResourceSuperPauseTraceArtifact(),

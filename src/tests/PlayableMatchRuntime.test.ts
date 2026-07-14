@@ -3185,6 +3185,96 @@ ctrl = 0
     expect(restarted.actors.every((actor) => (actor.runtime.redLife ?? 0) === 0)).toBe(true);
   });
 
+  it("records the round outcome and routes imported roots through state 5900", () => {
+    const state5900 = parseCns(`
+[Statedef 5900]
+type = S
+movetype = I
+physics = S
+anim = 5900
+ctrl = 0
+`).states[0]!;
+    const base = createImportedFixture({ withStateMove: false });
+    const imported = {
+      ...base,
+      states: [...(base.states ?? []), state5900],
+      animations: new Map([...base.animations, [5900, action(5900)] as const]),
+    };
+    const runtime = new PlayableMatchRuntime(imported, imported, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 1,
+      matchWins: 2,
+    });
+
+    const over = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(over.round).toMatchObject({ state: "timeover", winner: "Draw" });
+
+    const next = runtime.startNextRound();
+    expect(next.matchOutcome).toMatchObject({
+      outcome: "draw",
+      roundsExisted: 1,
+      wins: { 1: 0, 2: 0 },
+      matchOver: false,
+    });
+    expect(next.state5900).toMatchObject({ availableActorIds: ["p1", "p2"], unavailableActorIds: [] });
+    expect(runtime.getSnapshot().round).toMatchObject({
+      state: "fight",
+      roundNo: 2,
+      roundsExisted: 1,
+      match: { roundsExisted: 1, draws: 1, wins: { 1: 0, 2: 0 } },
+      state5900: { stateNo: 5900, availableActorIds: ["p1", "p2"] },
+    });
+    expect(runtime.getSnapshot().actors.map((actor) => actor.runtime.stateNo)).toEqual([5900, 5900]);
+
+    runtime.reset();
+    expect(runtime.getSnapshot().round).not.toHaveProperty("match");
+    expect(runtime.getSnapshot().round).not.toHaveProperty("state5900");
+  });
+
+  it("stops the next-round route after the configured match win", () => {
+    const attacker = createImportedFixture({
+      id: "match-over-attacker",
+      displayName: "Match Over Attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, closeStage, {
+      runtimeProfile: "ikemen-go",
+      matchWins: 1,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.round).toMatchObject({ state: "ko", winner: "Match Over Attacker" });
+    while (snapshot.round?.postRound?.remaining !== 0) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    const next = runtime.startNextRound();
+    expect(next).toMatchObject({
+      applied: false,
+      diagnostics: expect.arrayContaining(["match-over"]),
+      matchOutcome: {
+        outcome: "match-win",
+        matchWins: 1,
+        wins: { 1: 1, 2: 0 },
+        matchOver: true,
+        winnerSide: 1,
+      },
+    });
+    expect(runtime.getSnapshot().round).toMatchObject({
+      state: "ko",
+      match: { matchOver: true, winnerSide: 1, wins: { 1: 1, 2: 0 } },
+      message: "Match over - Match Over Attacker",
+    });
+  });
+
   it("keeps the match paused during normal loop steps but supports forced frame stepping", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const paused = runtime.dispatch({ type: "set-playing", playing: false });

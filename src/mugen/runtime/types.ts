@@ -5,6 +5,8 @@ import type { MugenPresentationOrder } from "./PresentationOrder";
 import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
 import type { RuntimeCollisionOverride } from "./RuntimeCollisionOverrideSystem";
 import type { CommandInputHistorySample } from "./CommandBuffer";
+import type { RuntimeMatchOutcomeSnapshot } from "./RuntimeMatchOutcomeSystem";
+import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900System";
 import type {
   RuntimeHitDefPriorityProfile,
   RuntimeHitDefSpritePrioritySource,
@@ -522,6 +524,8 @@ export type RoundSnapshot = {
   roundsExisted?: number;
   winner?: string;
   message: string;
+  match?: RuntimeMatchOutcomeSnapshot;
+  state5900?: RuntimeRoundState5900Snapshot;
   postRound?: {
     schema: "RuntimePostRound/v0";
     frame: number;

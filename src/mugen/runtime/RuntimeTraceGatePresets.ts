@@ -2915,6 +2915,113 @@ export function createSyntheticImportedRedLifeRoundResetTraceArtifact(
   });
 }
 
+export function createSyntheticImportedMatchOutcomeState5900TraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = "synthetic-imported-match-outcome-state-5900-golden";
+  const state5900 = parseCns(`
+[Statedef 5900]
+type = S
+movetype = I
+physics = S
+anim = 5900
+ctrl = 0
+`).states[0]!;
+  const withState5900 = (fighter: DemoFighterDefinition): DemoFighterDefinition => ({
+    ...fighter,
+    states: [...(fighter.states ?? []), state5900],
+    animations: new Map([...fighter.animations, [5900, traceAction(5900)] as const]),
+  });
+  const p1 = withState5900(createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-match-outcome-state-5900-p1",
+    displayName: "Synthetic Imported Match Outcome State 5900 P1",
+    hitDefDamage: 1200,
+  }));
+  const p2 = withState5900(createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-match-outcome-state-5900-p2",
+    displayName: "Synthetic Imported Match Outcome State 5900 P2",
+    withHitDef: false,
+  }));
+  const script = importedPostKoScript(400);
+  const world = new MatchWorld({
+    p1,
+    p2,
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+    matchWins: 2,
+  });
+  let nextRoundApplied = false;
+  const trace = runRuntimeTrace(
+    {
+      getSnapshot: () => world.getSnapshot(),
+      step: (input, stepOptions) => {
+        const snapshot = world.step(input, stepOptions);
+        if (!nextRoundApplied && snapshot.round?.state === "ko" && snapshot.round.postRound?.remaining === 0) {
+          nextRoundApplied = true;
+          world.nextRound();
+        }
+        return snapshot;
+      },
+      getActorRegistry: () => world.getActorRegistry(),
+    },
+    script,
+    { label: targetId },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: "Synthetic imported match outcome and state 5900",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves a completed KO increments the bounded match score, permits the next numbered round, and enters available common state 5900 for both roots after resource reset. Match-over winpose, motif ownership, state-5900 controller breadth, rollback/netplay, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5900],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit", "runtime"],
+      requiredEventSubstrings: ["Round 2 started; red life reset; state 5900 entered for p1,p2"],
+      requiredCombatReasons: ["hit"],
+      requiredRoundFrames: [
+        {
+          state: "ko",
+          winner: "Synthetic Imported Match Outcome State 5900 P1",
+          message: "Synthetic Imported Match Outcome State 5900 P1 wins",
+          observedPostRoundFrameAtLeast: 45,
+        },
+        {
+          state: "fight",
+          roundNo: 2,
+          roundsExisted: 1,
+          matchWins: 2,
+          wins: { 1: 1, 2: 0 },
+          draws: 0,
+          matchOver: false,
+          message: "Fight",
+          minFrames: 1,
+        },
+      ],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 5900, minFrames: 1 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5900, minFrames: 1 },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 5900, life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5900, life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedTeamResourceTargetTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

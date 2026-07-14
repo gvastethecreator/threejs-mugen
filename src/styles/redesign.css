@@ -344,6 +344,8 @@ details.section + .section {
 .hud-redlife { height: 3px; }
 .hud-power { height: 3px; }
 .round-center strong { color: var(--text-warm); font-size: 26px; }
+.round-number,
+.round-score { font-size: 9px; }
 
 .stage-toolbar {
   right: 12px;

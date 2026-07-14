@@ -886,7 +886,7 @@ export class App {
               <button type="button" data-action="play-pause" data-runtime-state="pause" aria-label="Pause or resume simulation" title="Pause or resume simulation">${runtimeControlContent("pause", "Pause")}</button>
               <button type="button" data-action="step" aria-label="Advance one frame" title="Advance one frame">${runtimeControlContent("step", "1F")}</button>
               <button type="button" data-action="reset-round" aria-label="Reset current round" title="Reset current round">${runtimeControlContent("reset", "Reset")}</button>
-              <button type="button" data-action="next-round" aria-label="Start next round" title="Start next round" ${this.isInspectorRuntimeSurface() || !this.snapshot.round || this.snapshot.round.state === "fight" || (this.snapshot.round.state === "ko" && (this.snapshot.round.postRound?.remaining ?? 1) > 0) ? "disabled" : ""}>${runtimeControlContent("step", "Next")}</button>
+              <button type="button" data-action="next-round" aria-label="Start next round" title="${this.snapshot.round?.match?.matchOver ? "Match over" : "Start next round"}" ${this.isInspectorRuntimeSurface() || !this.snapshot.round || this.snapshot.round.match?.matchOver || this.snapshot.round.state === "fight" || (this.snapshot.round.state === "ko" && (this.snapshot.round.postRound?.remaining ?? 1) > 0) ? "disabled" : ""}>${runtimeControlContent("step", "Next")}</button>
               <label class="speed-control" title="Playback speed">${runtimeControlContent("activity", "Speed")}
                 <select data-action="speed">
                   <option value="0.5">0.5x</option>
@@ -1052,7 +1052,7 @@ export class App {
         }
         this.updateUi();
       } else if (action === "next-round") {
-        if (!this.isInspectorRuntimeSurface()) {
+        if (!this.isInspectorRuntimeSurface() && !this.snapshot.round?.match?.matchOver) {
           this.audio.stopAll();
           this.snapshot = this.matchRuntime.dispatch({ type: "next-round" });
           this.updateUi();
@@ -3505,7 +3505,7 @@ export class App {
         keywords: ["match", "round", "continue", "red life"],
         tone: this.snapshot.round?.state && this.snapshot.round.state !== "fight" ? "active" : "neutral",
         run: () => {
-          if (!this.isInspectorRuntimeSurface()) {
+          if (!this.isInspectorRuntimeSurface() && !this.snapshot.round?.match?.matchOver) {
             this.audio.stopAll();
             this.snapshot = this.matchRuntime.dispatch({ type: "next-round" });
           }
@@ -10994,6 +10994,7 @@ export class App {
           <span class="round-state ${round?.state ?? "fight"}">${escapeHtml(round?.message ?? "Fight")}</span>
           <strong>${round?.timer ?? 99}</strong>
           ${round?.roundNo ? `<span class="round-number">Round ${round.roundNo}</span>` : ""}
+          ${round?.match ? `<span class="round-score" aria-label="Match score">${round.match.wins[1]}-${round.match.wins[2]} / ${round.match.matchWins}</span>` : ""}
           ${this.snapshot.matchPause ? `<span>${escapeHtml(formatHudMatchPause(this.snapshot.matchPause))}</span>` : ""}
           <span class="round-stage">${escapeHtml(this.snapshot.stage.displayName ?? "Stage")}</span>
         </div>

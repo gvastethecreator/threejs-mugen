@@ -748,6 +748,11 @@ export type RuntimeTraceRoundFrameRequirement = {
   state?: RoundSnapshot["state"];
   roundNo?: number;
   roundsExisted?: number;
+  matchWins?: number;
+  wins?: { 1?: number; 2?: number };
+  draws?: number;
+  matchOver?: boolean;
+  matchWinnerSide?: 1 | 2;
   winner?: string;
   message?: string;
   minFrames?: number;
@@ -763,6 +768,11 @@ export type RuntimeTraceGateRoundFrameEvidence = {
   state: RoundSnapshot["state"];
   roundNo?: number;
   roundsExisted?: number;
+  matchWins?: number;
+  wins?: { 1: number; 2: number };
+  draws?: number;
+  matchOver?: boolean;
+  matchWinnerSide?: 1 | 2;
   winner?: string;
   message: string;
   minTimer: number;
@@ -3095,6 +3105,11 @@ function summarizeRoundFrameEvidence(round: RoundSnapshot, tick: number): Runtim
     state: round.state,
     roundNo: round.roundNo,
     roundsExisted: round.roundsExisted,
+    matchWins: round.match?.matchWins,
+    wins: round.match?.wins,
+    draws: round.match?.draws,
+    matchOver: round.match?.matchOver,
+    matchWinnerSide: round.match?.winnerSide,
     winner: round.winner,
     message: round.message,
     minTimer: round.timer,
@@ -3117,6 +3132,11 @@ function mergeRoundFrameEvidence(
 ): RuntimeTraceGateRoundFrameEvidence {
   return {
     ...current,
+    matchWins: round.match?.matchWins ?? current.matchWins,
+    wins: round.match?.wins ?? current.wins,
+    draws: round.match?.draws ?? current.draws,
+    matchOver: round.match?.matchOver ?? current.matchOver,
+    matchWinnerSide: round.match?.winnerSide ?? current.matchWinnerSide,
     minTimer: Math.min(current.minTimer, round.timer),
     maxTimer: Math.max(current.maxTimer, round.timer),
     minPostRoundFrame: round.postRound
@@ -3138,11 +3158,35 @@ function mergeRoundFrameEvidence(
 }
 
 function roundFrameEvidenceKey(round: RoundSnapshot): string {
-  return [round.roundNo ?? 1, round.roundsExisted ?? 0, round.state, round.winner ?? "", round.message].join(":");
+  return [
+    round.roundNo ?? 1,
+    round.roundsExisted ?? 0,
+    round.state,
+    round.winner ?? "",
+    round.message,
+    round.match?.matchWins ?? "",
+    round.match?.wins[1] ?? "",
+    round.match?.wins[2] ?? "",
+    round.match?.draws ?? "",
+    round.match?.matchOver ?? "",
+    round.match?.winnerSide ?? "",
+  ].join(":");
 }
 
 function roundFrameGateEvidenceKey(round: RuntimeTraceGateRoundFrameEvidence): string {
-  return [round.roundNo ?? 1, round.roundsExisted ?? 0, round.state, round.winner ?? "", round.message].join(":");
+  return [
+    round.roundNo ?? 1,
+    round.roundsExisted ?? 0,
+    round.state,
+    round.winner ?? "",
+    round.message,
+    round.matchWins ?? "",
+    round.wins?.[1] ?? "",
+    round.wins?.[2] ?? "",
+    round.draws ?? "",
+    round.matchOver ?? "",
+    round.matchWinnerSide ?? "",
+  ].join(":");
 }
 
 function matchesRoundFrameRequirement(
@@ -3153,6 +3197,12 @@ function matchesRoundFrameRequirement(
     (requirement.state === undefined || round.state === requirement.state) &&
     (requirement.roundNo === undefined || round.roundNo === requirement.roundNo) &&
     (requirement.roundsExisted === undefined || round.roundsExisted === requirement.roundsExisted) &&
+    (requirement.matchWins === undefined || round.matchWins === requirement.matchWins) &&
+    (requirement.wins?.[1] === undefined || round.wins?.[1] === requirement.wins[1]) &&
+    (requirement.wins?.[2] === undefined || round.wins?.[2] === requirement.wins[2]) &&
+    (requirement.draws === undefined || round.draws === requirement.draws) &&
+    (requirement.matchOver === undefined || round.matchOver === requirement.matchOver) &&
+    (requirement.matchWinnerSide === undefined || round.matchWinnerSide === requirement.matchWinnerSide) &&
     (requirement.winner === undefined || round.winner === requirement.winner) &&
     (requirement.message === undefined || round.message === requirement.message) &&
     (requirement.minFrames === undefined || round.frames >= requirement.minFrames) &&

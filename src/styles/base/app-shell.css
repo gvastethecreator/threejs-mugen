@@ -494,6 +494,14 @@
   color: var(--warn);
 }
 
+.round-number,
+.round-score {
+  color: var(--subtle);
+  font-size: 10px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
 .toolbar-group {
   display: inline-flex;
   flex: 0 0 auto;
