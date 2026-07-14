@@ -12976,6 +12976,86 @@ export function createSyntheticImportedIkemenHelperSuperPauseTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHelperLocalResourceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? trainingStage;
+  const script = expandRuntimeTraceScript([
+    { label: "spawn helper local resources", p1: ["x"], p2: [], frames: 1 },
+    { label: "settle helper local resources", p1: [], p2: [], frames: 4 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-local-resource-p1",
+    displayName: "Synthetic Imported Helper Local Resources P1",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPos: [0, 0],
+    helperResourceRoute: {
+      stateNo: 1210,
+      lifeAdd: -100,
+      lifeSet: 750,
+      powerAdd: 200,
+      powerSet: 900,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-helper-local-resource-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-local-resource-golden",
+      label: "Synthetic imported IKEMEN helper-local resource controllers",
+      source: "mixed",
+      notes: [
+        "Required ikemen-go trace proves LifeAdd, LifeSet, PowerAdd, and PowerSet execute against the helper runtime actor, settle at helper-local life 750 and power 900, and leave the owning root at life 1000 and power 0. Projectiles remain resource-less effect actors and team banks remain root-only; exact helper resource maxima, damage ownership, and broader auxiliary-resource semantics remain bounded separately.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-local-resource-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
+        requiredExecutedOperations: ["helper", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, helperStateNo: 1210, minAge: 1 },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            observedLifeAtLeast: 1000,
+            observedLifeAtMost: 1000,
+            observedPowerAtLeast: 0,
+            observedPowerAtMost: 0,
+            minFrames: 1,
+          },
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            stateNo: 1210,
+            observedLifeAtLeast: 750,
+            observedLifeAtMost: 750,
+            observedPowerAtLeast: 900,
+            observedPowerAtMost: 900,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 0 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -44303,6 +44383,13 @@ export type SyntheticImportedTraceFighterOptions = {
   helperTriggerTime?: number;
   helperPos?: [number, number];
   helperPostype?: string;
+  helperResourceRoute?: {
+    stateNo: number;
+    lifeAdd: number;
+    lifeSet: number;
+    powerAdd: number;
+    powerSet: number;
+  };
   helperPauseRoute?: boolean;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperRunOrderRoute?: { expected: number; stateNo: number };
@@ -45234,6 +45321,7 @@ ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperR
 ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
 ${options.helperSelfTagRoute ? helperSelfTagRouteBlock(options.helperSelfTagRoute) : ""}
 ${options.helperPauseRoute ? helperPauseRouteBlock() : ""}
+${options.helperResourceRoute ? helperResourceRouteBlock(options.helperResourceRoute, options.helperPauseRoute !== true) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
@@ -45589,6 +45677,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.withHelper
         ? ([
             [920, helperTraceAction(920)],
+            ...(options.helperResourceRoute === undefined
+              ? []
+              : ([[options.helperResourceRoute.stateNo, helperTraceAction(options.helperResourceRoute.stateNo)]] as Array<[
+                  number,
+                  MugenAnimationAction,
+                ]>)),
             ...(options.helperIsHelperRoute?.animNo === undefined
               ? []
               : ([[options.helperIsHelperRoute.animNo, helperTraceAction(options.helperIsHelperRoute.animNo)]] as Array<[
@@ -50033,6 +50127,58 @@ ${scaleLine}
 ${pauseMoveTimeLine}
 ${superMoveTimeLine}
 ${ignoreHitPauseLine}
+`;
+}
+
+function helperResourceRouteBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["helperResourceRoute"]>,
+  includeStateDef = true,
+): string {
+  const lifeAfterAdd = Math.max(0, Math.min(1000, 1000 + route.lifeAdd));
+  const powerAfterAdd = Math.max(0, Math.min(3000, route.powerAdd));
+  return `
+${includeStateDef ? `[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+` : ""}
+
+[State 1200, Helper LifeAdd Probe]
+type = LifeAdd
+trigger1 = Time = 0
+value = ${route.lifeAdd}
+kill = 0
+
+[State 1200, Helper LifeSet Probe]
+type = LifeSet
+trigger1 = Life = ${lifeAfterAdd}
+value = ${route.lifeSet}
+
+[State 1200, Helper PowerAdd Probe]
+type = PowerAdd
+trigger1 = Life = ${route.lifeSet}
+value = ${route.powerAdd}
+
+[State 1200, Helper PowerSet Probe]
+type = PowerSet
+trigger1 = Power = ${powerAfterAdd}
+value = ${route.powerSet}
+
+[State 1200, Helper Resource Branch]
+type = ChangeState
+trigger1 = Life = ${route.lifeSet}
+trigger1 = Power = ${route.powerSet}
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${route.stateNo}
+ctrl = 0
 `;
 }
 

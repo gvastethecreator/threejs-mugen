@@ -584,6 +584,7 @@ import {
   createSyntheticImportedTeamResourceShareTraceArtifact,
   createSyntheticImportedTeamResourceSuperPauseTraceArtifact,
   createSyntheticImportedTeamResourceTargetTraceArtifact,
+  createSyntheticImportedHelperLocalResourceTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
@@ -2826,6 +2827,30 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ bankId: "p4:power", resourceOwnerId: "p4", value: 0, max: 3000, actorIds: ["p4"] }),
     ]));
     expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p4")).toMatchObject({ life: 943, power: 0 });
+  });
+
+  it("proves helper resource controllers remain local to the helper actor", () => {
+    const artifact = createSyntheticImportedHelperLocalResourceTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-local-resource-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-local-resource-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalEffects).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "p1-helper-0",
+          actorKind: "helper",
+          stateNo: 1210,
+          life: 750,
+          power: 900,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p1", life: 1000, power: 0 })]),
+    );
   });
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {

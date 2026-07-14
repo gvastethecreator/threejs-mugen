@@ -62,6 +62,24 @@ describe("RuntimeHelperTelemetryWorld", () => {
     expect(states).toEqual([300, 300]);
   });
 
+  it("records helper-local resource telemetry against the helper state", () => {
+    const world = new RuntimeHelperTelemetryWorld();
+    const owner = ownerState(500);
+    const records: string[] = [];
+    const source = controllerSource("LifeAdd");
+    const operation = { kind: "resource", controllerType: "lifeadd", value: -100, kill: false } as ControllerOp;
+
+    world.attachControllerTelemetry([owner], {
+      recordController: (_owner, controller, context) => records.push(`${controller.type}:${context.stateNo}`),
+      recordOperation: (_owner, recordedOperation, context) => records.push(`${recordedOperation.kind}:${context.stateNo}`),
+    });
+
+    owner.onHelperController?.(helperState(1210), controllerIr(source, operation));
+    owner.onHelperOperation?.(helperState(1210), operation);
+
+    expect(records).toEqual(["LifeAdd:1210", "resource:1210"]);
+  });
+
   it("ignores non-projectile helper telemetry and replaces stale handlers", () => {
     const world = new RuntimeHelperTelemetryWorld();
     const owner = ownerState(400);

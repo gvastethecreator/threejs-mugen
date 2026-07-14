@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 504 - Helper-local resource boundary/v1
+
+Done: helper-local `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` routes now
+feed the shared helper telemetry boundary, so the imported compatibility
+session records controller and `resource:*` operation evidence with the
+helper's state number. A required IKEMEN trace proves a Helper settles at life
+`750` / power `900` while its owning root remains life `1000` / power `0`.
+Projectiles remain effect actors with no mutable life/power fields and are not
+eligible for root/team resource banks. Focused helper telemetry and trace gate
+coverage pass; browser smoke is not required because no visible surface
+changed. Claim allowed: bounded Helper-local resource ownership and telemetry.
+Claim blocked: helper maxima/damage ownership, projectile resources, red-life,
+guard/stun, persistence, rollback, netplay, and full MUGEN/IKEMEN parity.
+
 ## Entry 503 - RuntimeTeamResourceBank/v1 route promotion
 
 Done: required imported Tag traces now exercise the existing root-bank boundary
