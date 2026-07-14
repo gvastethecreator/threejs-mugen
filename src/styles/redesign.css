@@ -336,6 +336,10 @@ details.section + .section {
   overflow-wrap: normal;
   white-space: nowrap;
 }
+.hud-team-slot-top { font-family: var(--display); font-size: 11px; }
+.hud-team-slot-state,
+.hud-team-hidden-label,
+.hud-team-empty { font-family: var(--mono); }
 .hud-meter { height: 9px; border-radius: 1px; }
 .hud-power { height: 3px; }
 .round-center strong { color: var(--text-warm); font-size: 26px; }
@@ -761,6 +765,12 @@ details > summary {
   .round-hud { top: 8px; right: 7px; left: 7px; }
   .round-hud-panel { max-width: 100%; gap: 7px; padding: 6px 7px; }
   .hud-fighter-top { font-size: 10px; }
+  .hud-team-side { gap: 4px; }
+  .hud-team-slot-top { font-size: 9px; }
+  .hud-team-slot-state,
+  .hud-team-hidden-label,
+  .hud-team-empty,
+  .hud-team-slot-top > .mono { font-size: 8px; }
   .round-center { min-width: 54px; font-size: 9px; }
   .round-center strong { font-size: 20px; }
 

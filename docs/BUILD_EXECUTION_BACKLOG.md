@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 500 - RuntimeTeamRoundLifebar HUD Projection/v0
+
+Done: the main match HUD now consumes the versioned team lifebar snapshot for
+IKEMEN non-Single routes. It renders stable `p1,p3,p2,p4` leader/member slots,
+life/max ratios, active/standby/KO/disabled state, actor ids, and plural active
+ids without changing Three.js root selection or resource ownership. The legacy
+pair HUD uses actor maxima. Required Tag smoke proves baseline active ids
+`p1,p2`, handoff active ids `p3,p2`, stable slots on desktop/mobile, clean
+browser diagnostics, and non-blank canvases. Claim allowed: exercised visible
+team slot/life presentation. Claim blocked: motif/AIR animation, red-life,
+shared resources, automatic Turns continuation, exact Tag choreography,
+KO/win timing, screenpack parity, rollback, netplay, and full parity. See
+Wayfinder 139 and the dated research/report.
+
 ## Entry 499 - RuntimeTeamRoundLifebar/v0
 
 Done: `RuntimeTeamRoundLifebarWorld/v0` now publishes a renderer-independent

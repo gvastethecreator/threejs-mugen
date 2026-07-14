@@ -1266,6 +1266,18 @@ async function readTagPresentationState(page, canvasPixels) {
       collisionActorIds: bridge?.renderer?.collision?.actorIds ?? [],
       collisionBoxCount: (bridge?.renderer?.collision?.hitBoxCount ?? 0) + (bridge?.renderer?.collision?.hurtBoxCount ?? 0),
       hudNames: [...document.querySelectorAll(".hud-fighter-name")].map((node) => node.textContent?.trim() ?? ""),
+      teamLifebar: {
+        mode: bridge?.snapshot?.teamRoundLifebar?.mode,
+        visible: bridge?.snapshot?.teamRoundLifebar?.visible,
+        slotIds: [...document.querySelectorAll("[data-hud-team-slot]")].map((node) => node.getAttribute("data-hud-team-slot") ?? ""),
+        slotStatuses: Object.fromEntries(
+          [...document.querySelectorAll("[data-hud-team-slot]")].map((node) => [
+            node.getAttribute("data-hud-team-slot") ?? "",
+            node.getAttribute("data-hud-team-status") ?? "",
+          ]),
+        ),
+        activeBySide: [...document.querySelectorAll("[data-hud-team-side]")].map((node) => node.getAttribute("data-hud-team-active") ?? ""),
+      },
       presentedRoots:
         bridge?.actorRegistry?.rootParticipation?.roots
           ?.filter((root) => root.presented)
@@ -3514,6 +3526,14 @@ function assertSmoke(diagnostics) {
     tagPresentation.baseline.drawRootIds.join(",") !== expectedPair ||
     tagPresentation.baseline.cameraRootIds.join(",") !== expectedPair ||
     tagPresentation.baseline.collisionRootIds.join(",") !== expectedPair ||
+    tagPresentation.baseline.teamLifebar.mode !== "tag" ||
+    tagPresentation.baseline.teamLifebar.visible !== true ||
+    tagPresentation.baseline.teamLifebar.slotIds.join(",") !== "p1,p3,p2,p4" ||
+    tagPresentation.baseline.teamLifebar.slotStatuses.p1 !== "active" ||
+    tagPresentation.baseline.teamLifebar.slotStatuses.p3 !== "standby" ||
+    tagPresentation.baseline.teamLifebar.slotStatuses.p2 !== "active" ||
+    tagPresentation.baseline.teamLifebar.slotStatuses.p4 !== "standby" ||
+    tagPresentation.baseline.teamLifebar.activeBySide.join(",") !== "p1,p2" ||
     !sameIdSet(tagPresentation.baseline.collisionActorIds, ["p1", "p2"]) ||
     !sameIdSet(tagPresentation.baseline.rendererActorIds, ["p1", "p2"])
   ) {
@@ -3527,12 +3547,19 @@ function assertSmoke(diagnostics) {
       state.drawRootIds.join(",") !== expectedHandoff ||
       state.cameraRootIds.join(",") !== expectedHandoff ||
       state.collisionRootIds.join(",") !== expectedHandoff ||
+      state.teamLifebar.mode !== "tag" ||
+      state.teamLifebar.visible !== true ||
+      state.teamLifebar.slotIds.join(",") !== "p1,p3,p2,p4" ||
+      state.teamLifebar.slotStatuses.p1 !== "standby" ||
+      state.teamLifebar.slotStatuses.p3 !== "active" ||
+      state.teamLifebar.slotStatuses.p2 !== "active" ||
+      state.teamLifebar.slotStatuses.p4 !== "standby" ||
+      state.teamLifebar.activeBySide.join(",") !== "p3,p2" ||
       !sameIdSet(state.collisionActorIds, ["p3", "p2"]) ||
       state.collisionActorIds.includes("p1") ||
       state.collisionBoxCount < 1 ||
       !sameIdSet(state.rendererActorIds, ["p3", "p2"]) ||
       state.rendererActorIds.includes("p1") ||
-      state.hudNames.join(",") !== "Nova Boxer,Mira Volt" ||
       !sameIdSet(state.presentedRoots, ["p3", "p2"]) ||
       !sameIdSet(state.presentationCapabilities, ["p3", "p2"]) ||
       !state.canvasPixels?.nonBlank ||

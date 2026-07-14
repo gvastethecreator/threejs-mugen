@@ -10737,29 +10737,80 @@ export class App {
     }
 
     const round = renderSnapshot.round;
+    const teamRoundLifebar = renderSnapshot.teamRoundLifebar;
     return `
       <div class="round-hud-panel">
-        ${this.renderHudFighter(p1, "left")}
+        ${teamRoundLifebar
+          ? this.renderHudTeamSide(teamRoundLifebar.sides[0], "left", teamRoundLifebar.visible)
+          : this.renderHudFighter(p1, "left")}
         <div class="round-center">
           <span class="round-state ${round?.state ?? "fight"}">${escapeHtml(round?.message ?? "Fight")}</span>
           <strong>${round?.timer ?? 99}</strong>
           ${this.snapshot.matchPause ? `<span>${escapeHtml(formatHudMatchPause(this.snapshot.matchPause))}</span>` : ""}
           <span class="round-stage">${escapeHtml(this.snapshot.stage.displayName ?? "Stage")}</span>
         </div>
-        ${this.renderHudFighter(p2, "right")}
+        ${teamRoundLifebar
+          ? this.renderHudTeamSide(teamRoundLifebar.sides[1], "right", teamRoundLifebar.visible)
+          : this.renderHudFighter(p2, "right")}
+      </div>
+    `;
+  }
+
+  private renderHudTeamSide(
+    side: NonNullable<MugenSnapshot["teamRoundLifebar"]>["sides"][number],
+    position: "left" | "right",
+    visible: boolean,
+  ): string {
+    if (!visible) {
+      return `
+        <div class="hud-team-side ${position} is-hidden" data-hud-team-side="${side.side}" data-hud-team-lifebar="true" data-hud-team-lifebar-visible="false">
+          <span class="hud-team-hidden-label">Team bars hidden</span>
+        </div>
+      `;
+    }
+    const slots = side.slots
+      .map((slot) => `
+        <div
+          class="hud-team-slot is-${slot.status}"
+          data-hud-team-slot="${escapeHtml(slot.actorId)}"
+          data-hud-team-role="${slot.role}"
+          data-hud-team-status="${slot.status}"
+        >
+          <div class="hud-team-slot-top">
+            <strong class="hud-team-slot-name">${escapeHtml(slot.label)}</strong>
+            <span class="hud-team-slot-state">${slot.role} / ${slot.status}</span>
+            <span class="mono">${slot.life}/${slot.lifeMax}</span>
+          </div>
+          <div class="hud-meter hud-life"><span style="width: ${slot.ratio * 100}%"></span></div>
+        </div>
+      `)
+      .join("");
+    return `
+      <div
+        class="hud-team-side ${position}"
+        data-hud-team-side="${side.side}"
+        data-hud-team-lifebar="true"
+        data-hud-team-lifebar-visible="true"
+        data-hud-team-active="${escapeHtml(side.activeActorIds.join(","))}"
+      >
+        ${slots || `<span class="hud-team-empty">No team slots</span>`}
       </div>
     `;
   }
 
   private renderHudFighter(actor: MugenSnapshot["actors"][number], side: "left" | "right"): string {
-    const lifePercent = Math.max(0, Math.min(100, actor.runtime.life / 10));
-    const powerPercent = Math.max(0, Math.min(100, actor.runtime.power / 30));
+    const lifeMaxValue = actor.runtime.lifeMax ?? 1000;
+    const powerMaxValue = actor.runtime.powerMax ?? 3000;
+    const lifeMax = lifeMaxValue > 0 ? lifeMaxValue : 1;
+    const powerMax = powerMaxValue > 0 ? powerMaxValue : 1;
+    const lifePercent = Math.max(0, Math.min(100, (actor.runtime.life / lifeMax) * 100));
+    const powerPercent = Math.max(0, Math.min(100, (actor.runtime.power / powerMax) * 100));
     return `
       <div class="hud-fighter ${side}">
         <div class="hud-fighter-top">
           <strong class="hud-fighter-name">${escapeHtml(actor.label)}</strong>
           <strong class="hud-fighter-role">${side === "left" ? "P1" : "P2"}</strong>
-          <span class="mono">${actor.runtime.life}</span>
+          <span class="mono">${actor.runtime.life}/${lifeMaxValue}</span>
         </div>
         <div class="hud-meter hud-life"><span style="width: ${lifePercent}%"></span></div>
         <div class="hud-meter hud-power"><span style="width: ${powerPercent}%"></span></div>
