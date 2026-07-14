@@ -2,6 +2,15 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 528 closes the browser half of the official Training Room
+`StageCompatibilityJourney/v1`: `pnpm qa:stage` imports the temporary legal
+package through the real ZIP input, selects `stage-training-room` in Studio,
+and proves nonblank desktop/mobile Three.js output, two rendered layers, stage
+diagnostics, no horizontal overflow, and zero browser errors. The journey
+remains `partial` until native regression/build/boundary closeout. Next: run the
+broad closeout, then promote the route into `CompatibilityCorpus/v0` as
+`optional-private` without committing external binaries.
+
 Entry 527 adds `StageCompatibilityJourney/v1` around the local official
 Elecbyte MUGEN 1.1b1 Training Room stage. The route loads the real DEF/SFF
 through `MugenStageLoader`, verifies the readme's noncommercial license

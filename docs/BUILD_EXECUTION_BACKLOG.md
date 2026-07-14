@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 528 - Official stage browser compatibility gate
+
+Added `pnpm qa:stage` as a focused Playwright gate for the official MUGEN 1.1b1
+Training Room route. The gate generates a temporary package from the external
+stage sample plus the existing KFM fixture, imports it through the real ZIP
+input, opens Studio Stage, selects Training Room, and captures desktop/mobile
+screenshots and canvas evidence. It passes with 2 decoded sprites, 2 rendered
+background layers, nonblank 106/213-color canvas samples, no horizontal
+overflow, and zero page/console errors. Native closeout remains open and no
+binary fixture is committed.
+See `docs/reports/2026-07-14-official-stage-browser-gate.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/167-official-stage-browser-gate.md`.
+
 ## Entry 527 - Official stage compatibility journey
 
 Added `StageCompatibilityJourney/v1` and a reproducible manifest for the

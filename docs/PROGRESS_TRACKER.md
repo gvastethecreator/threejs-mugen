@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Official stage browser compatibility gate
+
+- Entry 528 adds `pnpm qa:stage`, a focused Playwright route that imports the
+  external official Training Room sample through the production ZIP input and
+  opens the real Studio Stage surface.
+- The browser gate passes Training Room DEF/SFF evidence, 2 decoded sprites, 2
+  rendered/tiled layers, nonblank desktop/mobile canvases (106/213 sampled
+  colors), no horizontal overflow, and zero page/console errors.
+- Evidence lives in `.scratch/qa/official-stage-compatibility-browser/`; the
+  generated binary is temporary and not committed. Native regression/build/
+  boundary closeout remains open, so the aggregate journey stays `partial`.
+- Next: broad native closeout, then optional-private corpus promotion. Scores
+  remain unchanged.
+- See `docs/research/2026-07-14-official-stage-browser-gate.md` and
+  `docs/reports/2026-07-14-official-stage-browser-gate.md`.
+
 ## Global report - 2026-07-14 Official stage compatibility journey
 
 - Entry 527 adds `StageCompatibilityJourney/v1` and the official local

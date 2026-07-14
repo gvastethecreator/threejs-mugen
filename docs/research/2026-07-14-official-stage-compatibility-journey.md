@@ -24,17 +24,19 @@ Use the local `.scratch/external/mugen-1.1b1` checkout as a reproducible source
 fixture. `ExternalStageFixtureManifest/v1` records the source, required files,
 license expression, and expected metadata. `StageCompatibilityJourney/v1`
 records only references and normalized report/runtime claims; it does not embed
-DEF/SFF/readme payloads.
+DEF/SFF/readme payloads. Entry 528 adds a separate browser diagnostic artifact
+for the real ZIP-input and Studio Stage route.
 
 The route loads the real `stage0.def` and `stage0.sff` through
 `MugenStageLoader`, checks `StageCompatibilityReport`, runs the playable
-`resetBG` round clock, and leaves browser/native states explicit until their
-respective gates run.
+`resetBG` round clock, and now proves browser import/render behavior through
+`pnpm qa:stage`. Native state remains explicit until its closeout gate runs.
 
 ## Evidence and limits
 
 The local route passes 213 tests across StageJourney, StageReport, StageDefParser,
-and PlayableMatchRuntime plus TypeScript 7 typecheck. Its journey status is
-`partial` because browser stage render proof and native closeout were not run.
+and PlayableMatchRuntime plus TypeScript 7 typecheck. The browser gate passes
+desktop/mobile canvas and Studio diagnostics; the journey status remains
+`partial` because native closeout was not run.
 Full BGCtrl semantics, exact animation/camera/window/mask/motif/music behavior,
 and full MUGEN/IKEMEN parity remain blocked.

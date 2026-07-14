@@ -3,9 +3,11 @@
 ## Result
 
 Entry 527 adds `StageCompatibilityJourney/v1` around the official MUGEN 1.1b1
-Training Room stage held in the local external fixture checkout. The route is
-legal for noncommercial evidence use under the distribution's Creative Commons
-Noncommercial sample-content notice, with no binary asset committed here.
+Training Room stage held in the local external fixture checkout. Entry 528 now
+passes the browser render gate through the production ZIP input and Studio
+Stage surface. The route is legal for noncommercial evidence use under the
+distribution's Creative Commons Noncommercial sample-content notice, with no
+binary asset committed here.
 
 ## Verified route
 
@@ -21,12 +23,13 @@ Noncommercial sample-content notice, with no binary asset committed here.
 
 - Focal Vitest: 4 files, 213 tests passed.
 - TypeScript 7: `pnpm exec tsc -p tsconfig.json --noEmit` passed.
-- Browser stage smoke: not run yet.
+- Browser stage smoke: passed through `pnpm qa:stage` at desktop and mobile;
+  see `docs/reports/2026-07-14-official-stage-browser-gate.md`.
 - Native regression/build/boundary closeout for this journey: not run yet.
 
 ## Claim ceiling
 
-Journey status is `partial` by design. This proves an official noncommercial
-stage loader/report/runtime route, not complete MUGEN/IKEMEN stage parity or
-commercial redistribution. Next gate is browser stage rendering, followed by
-native closeout and optional-private corpus promotion.
+Journey status remains `partial` by design. This proves an official
+noncommercial stage loader/report/runtime/browser route, not complete
+MUGEN/IKEMEN stage parity or commercial redistribution. Next gate is native
+closeout followed by optional-private corpus promotion.
