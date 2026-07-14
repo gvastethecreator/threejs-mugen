@@ -1,5 +1,16 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Turns match-wins runtime command
+
+- Entry 524 adds a typed, profile-gated `set-match-wins` command backed by the
+  official IKEMEN `setMatchWins(teamSide, wins)` contract.
+- The live mutation changes one bounded side target, keeps the aggregate target
+  coherent, and closes an already reached positive score.
+- Focal verification passes 2 files / 24 tests and TypeScript 7 typecheck.
+  Broad suite, trace, build, and browser evidence is batched with Entry 523.
+- See `docs/research/2026-07-14-turns-match-wins-runtime-command.md` and
+  `docs/reports/2026-07-14-turns-match-wins-runtime-command.md`.
+
 ## Global report - 2026-07-14 Turns max-draws runtime command
 
 - Entry 523 adds a typed, profile-gated `set-match-max-draws` command backed by

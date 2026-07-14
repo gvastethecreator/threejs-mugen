@@ -2,6 +2,12 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 524 adds the typed IKEMEN `setMatchWins` runtime seam beside Entry 523's
+draw-limit setter. The profile-gated command mutates one bounded win target,
+recomputes the aggregate target, and closes an already reached positive score;
+focal coverage passes 24 tests with TypeScript 7 green. Entries 523-524 now
+share one batched broad gate.
+
 Entry 523 adds the typed IKEMEN `setMatchMaxDrawGames` runtime seam. The
 profile-gated `set-match-max-draws` command mutates one bounded side limit,
 `MatchWorldOptions` forwards initial limits, and focal coverage passes 23 tests
