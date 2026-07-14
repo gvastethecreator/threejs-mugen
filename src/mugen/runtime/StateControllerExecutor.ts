@@ -21,6 +21,8 @@ import {
 import {
   applyRuntimeGuardPointsAdd,
   applyRuntimeGuardPointsSet,
+  applyRuntimeDizzyPointsAdd,
+  applyRuntimeDizzyPointsSet,
   applyRuntimeLifeAdd,
   applyRuntimeRedLifeAdd,
   applyRuntimeRedLifeSet,
@@ -128,6 +130,15 @@ export function executeControllerIr(
     const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       applyRuntimeGuardPointsSet(next, value);
+    }
+  } else if (type === "dizzypointsadd") {
+    const operation = resourceOperation(controller, "dizzypointsadd");
+    applyRuntimeDizzyPointsAdd(next, operation?.value ?? numberParam(controller, next, context, "value") ?? 0);
+  } else if (type === "dizzypointsset") {
+    const operation = resourceOperation(controller, "dizzypointsset");
+    const value = operation?.value ?? numberParam(controller, next, context, "value");
+    if (value !== undefined) {
+      applyRuntimeDizzyPointsSet(next, value);
     }
   } else if (type === "redlifeadd") {
     const operation = resourceOperation(controller, "redlifeadd");

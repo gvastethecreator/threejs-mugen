@@ -119,6 +119,8 @@ const runtimeControllers = new Set([
   "lifeset",
   "guardpointsadd",
   "guardpointsset",
+  "dizzypointsadd",
+  "dizzypointsset",
   "redlifeadd",
   "redlifeset",
   "poweradd",

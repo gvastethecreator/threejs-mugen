@@ -1,19 +1,18 @@
 ﻿# Supported Features
 - Explicit IKEMEN snapshots and trace frames publish
   `RuntimeAuxiliaryResourceProjection/v0` for roots and live Helpers with
-  actor-local owner ids, red-life and guard-point values/maxima, explicit
-  dizzy-point unavailability, suppression status, deterministic ordering, and
-  finite/max diagnostics. Projectile/Explod actors are excluded and the
-  projection is outside behavior checksums. Dizzy mutation, red-life LifeShare,
-  suppression behavior, HUD bars, reset/persistence, and full parity remain
-  separate gates.
+  actor-local owner ids, red-life, guard-point, and dizzy-point values/maxima,
+  suppression status, deterministic ordering, and finite/max diagnostics.
+  Projectile/Explod actors are excluded and the projection is outside behavior
+  checksums. Red-life LifeShare, suppression behavior, HUD bars,
+  reset/persistence, and full parity remain separate gates.
 
 - Imported runtime supports the bounded explicit direct HitDef `redlife` and
-  `guardpoints` routes plus actor-local `RedLifeAdd`/`RedLifeSet` and
-  `GuardPointsAdd`/`GuardPointsSet`, including authored-max/life fallback,
-  signed guard scaling, clamps, and required trace evidence. Omitted defaults,
-  suppression, target/projectile/team sharing, persistence, and full parity
-  remain unsupported.
+  `guardpoints`/`dizzypoints` routes plus actor-local `RedLifeAdd`/`RedLifeSet`,
+  `GuardPointsAdd`/`GuardPointsSet`, and `DizzyPointsAdd`/`DizzyPointsSet`,
+  including authored-max/life fallback, signed scaling, clamps, and required
+  trace evidence. Omitted dizzy defaults, suppression, target/projectile/team
+  sharing, persistence, and full parity remain unsupported.
 
 - Legal-fixture browser smoke proves one lethal imported `AssertSpecial NoKOSlow` route: physical `d -> z` enters imported state/action `210`, asserts `nokoslow` on the KO tick, defeats demo Nova Boxer from `1000` to `0`, retains post-round playback `1`, and returns to a healthy `fight` round after Reset. Desktop/mobile captures require the imported identity, action-specific palette/mask, `RuntimePostRound.noKoSlow`, progress, and normal playback. Required `mugen-lite-journey-nokoslow` trace checksum `ceac9f37` independently proves the legal ZIP command/state/AIR/SFF path. Exact slowdown curve/duration, motif/lifebar behavior, KO echoes, win/continue flow, teams, broad audio parity, and full round parity remain separate gates.
 

@@ -4,6 +4,7 @@ import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, Run
 export type RuntimeCombatAttack = {
   damage: number;
   guardPoints?: number;
+  dizzyPoints?: number;
   redLife?: number;
   guardRedLife?: number;
   kill?: boolean;
@@ -50,6 +51,7 @@ export type RuntimeCombatHitResult =
   | {
       kind: "hit";
       damage: number;
+      dizzyPoints?: number;
       redLife?: number;
       kill: boolean;
       pause: number;
@@ -193,6 +195,9 @@ export function resolveRuntimeCombatHit(input: {
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
+    ...(input.attack.dizzyPoints === undefined
+      ? {}
+      : { dizzyPoints: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingAmount(input.attacker, input.attack.dizzyPoints)) }),
     ...(input.attack.redLife === undefined
       ? {}
       : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.redLife)) }),

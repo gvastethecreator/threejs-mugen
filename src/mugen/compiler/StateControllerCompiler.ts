@@ -73,6 +73,8 @@ const controllerSupport: Record<string, ControllerSupport> = {
   lifeset: partial("life"),
   guardpointsadd: partial("guard points"),
   guardpointsset: partial("guard points"),
+  dizzypointsadd: partial("dizzy points"),
+  dizzypointsset: partial("dizzy points"),
   redlifeadd: partial("red life"),
   redlifeset: partial("red life"),
   poweradd: partial("power"),

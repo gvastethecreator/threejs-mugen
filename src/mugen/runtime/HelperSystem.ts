@@ -99,6 +99,8 @@ export type RuntimeHelper = {
   life: number;
   guardPointsMax?: number;
   guardPoints?: number;
+  dizzyPointsMax?: number;
+  dizzyPoints?: number;
   redLife?: number;
   superPauseDefenseMultiplier?: number;
   powerMax: number;
@@ -255,6 +257,8 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     life: 1000,
     guardPointsMax: 1000,
     guardPoints: 1000,
+    dizzyPointsMax: 1000,
+    dizzyPoints: 1000,
     redLife: 0,
     powerMax: 3000,
     power: 0,
@@ -1255,6 +1259,8 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     life: helper.life,
     guardPointsMax: helper.guardPointsMax,
     guardPoints: helper.guardPoints,
+    dizzyPointsMax: helper.dizzyPointsMax,
+    dizzyPoints: helper.dizzyPoints,
     ...(helper.redLife === undefined ? {} : { redLife: helper.redLife }),
     ...(helper.superPauseDefenseMultiplier === undefined
       ? {}
@@ -1315,6 +1321,8 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.life = runtime.life;
   helper.guardPointsMax = runtime.guardPointsMax ?? helper.guardPointsMax;
   helper.guardPoints = runtime.guardPoints ?? helper.guardPoints;
+  helper.dizzyPointsMax = runtime.dizzyPointsMax ?? helper.dizzyPointsMax;
+  helper.dizzyPoints = runtime.dizzyPoints ?? helper.dizzyPoints;
   helper.redLife = runtime.redLife ?? helper.redLife;
   helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;

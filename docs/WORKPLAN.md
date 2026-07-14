@@ -2,9 +2,9 @@
 
 ## Active frontier - 2026-07-14
 
-Entry 508 is the active implementation frontier. Entry 507 closed guard-point ownership; this cut adds the read-only auxiliary-resource projection before dizzy mutation, reset/persistence, and automatic Turns continuation. Scores remain unchanged until the independent corpus/adjudication lane moves them.
+Entry 509 is the active implementation frontier. Entry 508 closed the read-only auxiliary-resource projection; this cut adds bounded actor-local dizzy-point initialization, mutation, direct HitDef scaling, and evidence projection. Scores remain unchanged until the independent corpus/adjudication lane moves them.
 
-Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. Parallel work may add `StudioSemanticDraft/v0`, dizzy-point mutation, and `AssetProvenance/v2`. Red life is the first auxiliary mutation and alone may adapt to LifeShare; suppression, bars, reset/persistence, and automatic Turns continuation remain separate gates. Scores remain unchanged. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
+Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. In the I2 runtime lane, close `NoDizzyPointsDamage` suppression and omitted dizzy defaults before red-life `LifeShare`; reset/persistence and HUD resource bars remain separate gates. Parallel work may add `StudioSemanticDraft/v0` and `AssetProvenance/v2`. Scores remain unchanged. See `docs/research/2026-07-14-dizzy-points-runtime.md`.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 

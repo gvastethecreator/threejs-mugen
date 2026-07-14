@@ -114,6 +114,7 @@ describe("CombatResolver", () => {
     const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });
     const attack = {
       damage: 40,
+      dizzyPoints: 20,
       hitPause: 8,
       hitStun: 20,
       push: 12,
@@ -143,6 +144,7 @@ describe("CombatResolver", () => {
       hitVelocityY: -2,
       cornerPush: 13,
       powerGain: 35,
+      dizzyPoints: 15,
       kill: true,
     });
 
@@ -179,6 +181,30 @@ describe("CombatResolver", () => {
 
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({ kind: "hit", redLife: 15 });
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({ kind: "guard", redLife: 8, guardPoints: -15 });
+  });
+
+  it("carries explicit HitDef dizzy points through direct-hit scaling only", () => {
+    const attacker = actor({ attackMultiplier: 1.5 });
+    const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      dizzyPoints: 20,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+      guardDamage: 10,
+      guardPoints: -20,
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      dizzyPoints: 15,
+    });
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).not.toHaveProperty("dizzyPoints");
+    expect(
+      resolveRuntimeCombatHit({ attacker, defender, attack: { ...attack, dizzyPoints: -20 }, holdingBack: false }),
+    ).toMatchObject({ kind: "hit", dizzyPoints: -15 });
   });
 
   it("uses explicit air guard velocity only for airborne guards", () => {

@@ -17,7 +17,7 @@ import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
-import { applyRuntimeControl, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
+import { applyRuntimeControl, applyRuntimeDizzyPointsAdd, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
 import {
   bufferRuntimeHitDefTarget,
@@ -217,6 +217,9 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guarding = false;
     defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+    if (result.dizzyPoints !== undefined) {
+      applyRuntimeDizzyPointsAdd(defender.runtime, result.dizzyPoints);
+    }
     if (result.redLife !== undefined) {
       applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
     }

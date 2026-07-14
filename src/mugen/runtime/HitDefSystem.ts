@@ -77,6 +77,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const damage = operation?.damage ?? firstNumber(findParam(source, "damage")) ?? existing?.damage ?? 45;
     const guardDamage = operation?.guardDamage ?? secondNumber(findParam(source, "damage")) ?? existing?.guardDamage ?? 0;
     const guardPoints = operation?.guardPoints ?? firstNumber(findParam(source, "guardpoints")) ?? existing?.guardPoints;
+    const dizzyPoints = operation?.dizzyPoints ?? firstNumber(findParam(source, "dizzypoints")) ?? existing?.dizzyPoints;
     const redLife = operation?.redLife ?? firstNumber(findParam(source, "redlife")) ?? existing?.redLife;
     const guardRedLife = operation?.guardRedLife ?? secondNumber(findParam(source, "redlife")) ?? existing?.guardRedLife;
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
@@ -158,6 +159,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       recovery: Math.max(existing?.recovery ?? 0, activeEnd + 12),
       damage,
       ...(guardPoints === undefined ? {} : { guardPoints }),
+      ...(dizzyPoints === undefined ? {} : { dizzyPoints }),
       ...(redLife === undefined ? {} : { redLife }),
       ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,

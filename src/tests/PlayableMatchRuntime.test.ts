@@ -94,11 +94,11 @@ describe("PlayableMatchRuntime", () => {
     expect(projection).toMatchObject({
       schema: "mugen-web-sandbox/runtime-auxiliary-resource-projection/v0",
       tick: 0,
-      mutation: { redLife: "bounded", guardPoints: "bounded", dizzyPoints: "unimplemented" },
+      mutation: { redLife: "bounded", guardPoints: "bounded", dizzyPoints: "bounded" },
       excludedActorKinds: ["projectile", "explod"],
     });
     expect(projection?.actors.map(({ id }) => id)).toEqual(["p1", "p3", "p2", "p4"]);
-    expect(projection?.actors.every(({ resources }) => resources.dizzyPoints.status === "unimplemented")).toBe(true);
+    expect(projection?.actors.every(({ resources }) => resources.dizzyPoints.status === "available")).toBe(true);
     projection!.actors[0]!.teamState!.standby = true;
     expect(runtime.getSnapshot().runtimeAuxiliaryResources?.actors[0]?.teamState?.standby).toBe(false);
     expect(new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!).getSnapshot().runtimeAuxiliaryResources).toBeUndefined();

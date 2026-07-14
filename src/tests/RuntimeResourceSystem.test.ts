@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   applyRuntimeControl,
+  applyRuntimeDizzyPointsAdd,
+  applyRuntimeDizzyPointsSet,
   applyRuntimeGuardPointsAdd,
   applyRuntimeGuardPointsSet,
   applyRuntimeLifeAdd,
@@ -15,6 +17,7 @@ import {
   resolveRuntimeResourceControllerOperation,
   RuntimeResourceWorld,
   runtimeLifeMaxFromConstants,
+  runtimeDizzyPointsMaxFromConstants,
   runtimeGuardPointsMaxFromConstants,
   runtimePowerMaxForState,
   runtimePowerMaxFromConstants,
@@ -100,6 +103,18 @@ describe("RuntimeResourceSystem", () => {
 
     applyRuntimeGuardPointsSet(state, 999);
     expect(state.guardPoints).toBe(500);
+  });
+
+  it("keeps dizzy points actor-local and bounded by authored max or life", () => {
+    expect(runtimeDizzyPointsMaxFromConstants({ "data.life": 750 })).toBe(750);
+    expect(runtimeDizzyPointsMaxFromConstants({ "data.life": 750, "data.dizzypoints": 1200 })).toBe(1200);
+
+    const state = runtimeState({ lifeMax: 750, dizzyPointsMax: 500, dizzyPoints: 100 });
+    applyRuntimeDizzyPointsAdd(state, -140);
+    expect(state.dizzyPoints).toBe(0);
+
+    applyRuntimeDizzyPointsSet(state, 999);
+    expect(state.dizzyPoints).toBe(500);
   });
 
   it("resolves authored max resources from constants", () => {
@@ -213,6 +228,25 @@ describe("RuntimeResourceSystem", () => {
     applyRuntimeResourceController(state, guardPointsAdd!);
     applyRuntimeResourceController(state, guardPointsSet!);
     expect(state.guardPoints).toBe(800);
+  });
+
+  it("resolves dynamic DizzyPointsAdd and DizzyPointsSet values", () => {
+    const state = runtimeState({ dizzyPoints: 500, dizzyPointsMax: 1000, vars: [1] });
+    const dizzyPointsAdd = resolveRuntimeResourceControllerOperation(
+      controller({ value: "IfElse(var(0), -25, 0)" }, "DizzyPointsAdd"),
+      state,
+    );
+    const dizzyPointsSet = resolveRuntimeResourceControllerOperation(
+      controller({ value: "IfElse(var(0), 800, 0)" }, "DizzyPointsSet"),
+      state,
+    );
+
+    expect(dizzyPointsAdd).toEqual({ kind: "resource", controllerType: "dizzypointsadd", value: -25 });
+    expect(dizzyPointsSet).toEqual({ kind: "resource", controllerType: "dizzypointsset", value: 800 });
+
+    applyRuntimeResourceController(state, dizzyPointsAdd!);
+    applyRuntimeResourceController(state, dizzyPointsSet!);
+    expect(state.dizzyPoints).toBe(800);
   });
 
   it("applies var, fvar, and sysvar assignments", () => {

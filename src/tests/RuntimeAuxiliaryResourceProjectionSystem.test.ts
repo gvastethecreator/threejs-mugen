@@ -30,6 +30,8 @@ function actor(
       redLife: 25,
       guardPointsMax: 800,
       guardPoints: 700,
+      dizzyPointsMax: 900,
+      dizzyPoints: 800,
     },
     ...overrides,
   };
@@ -70,7 +72,7 @@ describe("RuntimeAuxiliaryResourceProjectionWorld", () => {
         guardPoints: { owner: "actor", share: "none" },
         dizzyPoints: { owner: "actor", share: "none" },
       },
-      mutation: { redLife: "bounded", guardPoints: "bounded", dizzyPoints: "unimplemented" },
+      mutation: { redLife: "bounded", guardPoints: "bounded", dizzyPoints: "bounded" },
       suppression: { redLife: "unimplemented", guardPoints: "unimplemented", dizzyPoints: "unimplemented" },
       excludedActorKinds: ["projectile", "explod"],
       diagnostics: [],
@@ -79,7 +81,7 @@ describe("RuntimeAuxiliaryResourceProjectionWorld", () => {
     expect(diagnostic.actors[0]?.resources).toEqual({
       redLife: { status: "available", ownerId: "p1", scope: "actor-local", value: 25, max: 1000 },
       guardPoints: { status: "available", ownerId: "p1", scope: "actor-local", value: 700, max: 800 },
-      dizzyPoints: { status: "unimplemented", ownerId: "p1", scope: "actor-local" },
+      dizzyPoints: { status: "available", ownerId: "p1", scope: "actor-local", value: 800, max: 900 },
     });
     expect(diagnostic.actors[1]?.resources.redLife.ownerId).toBe("helper-p1");
     expect(diagnostic.actors[1]?.resources.guardPoints.scope).toBe("actor-local");

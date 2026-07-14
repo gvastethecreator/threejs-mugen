@@ -170,6 +170,7 @@ function buildStateMoves(
       buildMove(animations.get(actionId), state.id, numberParam(hitDef.params.damage, 45), fallbackHitbox, {
         attr: hitDef.params.attr,
         guardPoints: firstNumber(hitDef.params.guardpoints) ?? undefined,
+        dizzyPoints: firstNumber(hitDef.params.dizzypoints) ?? undefined,
         kill: boolParam(hitDef.params.kill),
         redLife: firstNumber(hitDef.params.redlife) ?? undefined,
         guardRedLife: secondNumber(hitDef.params.redlife) ?? undefined,
@@ -281,6 +282,7 @@ function buildMove(
       | "redLife"
       | "guardRedLife"
       | "guardPoints"
+      | "dizzyPoints"
       | "targetId"
       | "requiresHitDef"
       | "hitPause"
@@ -333,6 +335,7 @@ function buildMove(
     recovery,
     damage,
     guardPoints: overrides.guardPoints,
+    dizzyPoints: overrides.dizzyPoints,
     attr: overrides.attr,
     redLife: overrides.redLife,
     guardRedLife: overrides.guardRedLife,

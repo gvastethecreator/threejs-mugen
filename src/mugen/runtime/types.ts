@@ -94,6 +94,8 @@ export type CharacterRuntimeState = {
   life: number;
   guardPointsMax?: number;
   guardPoints?: number;
+  dizzyPointsMax?: number;
+  dizzyPoints?: number;
   redLife?: number;
   powerMax?: number;
   power: number;

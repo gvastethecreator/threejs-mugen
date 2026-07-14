@@ -228,6 +228,8 @@ describe("DirectCombatSystem", () => {
     });
     const defender = actor("p2", "Defender", {
       life: 80,
+      dizzyPoints: 50,
+      dizzyPointsMax: 100,
       receivedHitSequence: 4,
       currentMove: move(),
       guardStun: 9,
@@ -239,6 +241,7 @@ describe("DirectCombatSystem", () => {
     });
     const transitions: string[] = [];
     const combatMove = move({
+      dizzyPoints: 20,
       guardKill: false,
       hitVars: { hitId: 77, chainId: 43, hitCount: 3, hitOffset: { x: 16, y: -24 }, animType: 3, groundType: 2, airType: 4, yAccel: 0.62 },
       fall: {
@@ -255,6 +258,7 @@ describe("DirectCombatSystem", () => {
     const outcome = world.applyResolvedHit(attacker, defender, combatMove, {
       kind: "hit",
       damage: 30,
+      dizzyPoints: 20,
       kill: true,
       pause: 6,
       stun: 13,
@@ -283,6 +287,7 @@ describe("DirectCombatSystem", () => {
     expect(defender.hitPause).toBe(6);
     expect(defender.hitStun).toBe(13);
     expect(defender.runtime.life).toBe(50);
+    expect(defender.runtime.dizzyPoints).toBe(70);
     expect(defender.runtime.guardStun).toBe(0);
     expect(defender.runtime.guardSlideTime).toBe(0);
     expect(defender.runtime.guardControlTime).toBe(0);

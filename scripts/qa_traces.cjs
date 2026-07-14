@@ -131,6 +131,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGuardPointsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dizzypoints",
+      required: true,
+      artifact: presets.createSyntheticImportedDizzyPointsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control",
       required: true,
       artifact: presets.createSyntheticImportedControlTraceArtifact(),

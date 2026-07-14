@@ -10,7 +10,7 @@ import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import type { RuntimeHelper, RuntimeHelperAdvanceOptions } from "./HelperSystem";
 import { createRuntimeRandomSeed } from "./RuntimeRandomSystem";
-import { runtimeGuardPointsMaxFromConstants, runtimeLifeMaxFromConstants, runtimePowerMaxFromConstants } from "./RuntimeResourceSystem";
+import { runtimeDizzyPointsMaxFromConstants, runtimeGuardPointsMaxFromConstants, runtimeLifeMaxFromConstants, runtimePowerMaxFromConstants } from "./RuntimeResourceSystem";
 import type {
   CharacterRuntimeState,
   RuntimeControllerTraceEvent,
@@ -107,6 +107,7 @@ export class RuntimeFighterStateWorld {
     const runtimeProgram = getRuntimeProgram(input.definition);
     const lifeMax = runtimeLifeMaxFromConstants(input.definition.constants);
     const guardPointsMax = runtimeGuardPointsMaxFromConstants(input.definition.constants);
+    const dizzyPointsMax = runtimeDizzyPointsMaxFromConstants(input.definition.constants);
     const powerMax = runtimePowerMaxFromConstants(input.definition.constants);
     const attackMultiplier = runtimeAttackMultiplier(input.definition);
     const defenseMultiplier = runtimeDefenseMultiplier(input.definition);
@@ -147,6 +148,8 @@ export class RuntimeFighterStateWorld {
         life: lifeMax,
         guardPointsMax,
         guardPoints: guardPointsMax,
+        dizzyPointsMax,
+        dizzyPoints: dizzyPointsMax,
         redLife: 0,
         powerMax,
         power: 0,

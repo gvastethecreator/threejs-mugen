@@ -56,6 +56,7 @@ export type RuntimeTraceActor = {
   life: number;
   power: number;
   guardPoints?: number;
+  dizzyPoints?: number;
   redLife?: number;
   superPauseDefenseMultiplier?: number;
   teamStandby?: true;
@@ -490,6 +491,7 @@ export type RuntimeTraceFinalActorRequirement = {
   life?: number;
   power?: number;
   guardPoints?: number;
+  dizzyPoints?: number;
   redLife?: number;
   ctrl?: boolean;
   stateType?: string;
@@ -531,6 +533,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedPowerAtMost?: number;
   observedGuardPointsAtLeast?: number;
   observedGuardPointsAtMost?: number;
+  observedDizzyPointsAtLeast?: number;
+  observedDizzyPointsAtMost?: number;
   observedRedLifeAtLeast?: number;
   observedRedLifeAtMost?: number;
   observedSuperPauseDefenseMultiplierAtLeast?: number;
@@ -635,6 +639,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxPower: number;
   minGuardPoints: number;
   maxGuardPoints: number;
+  minDizzyPoints: number;
+  maxDizzyPoints: number;
   minRedLife: number;
   maxRedLife: number;
   minSuperPauseDefenseMultiplier?: number;
@@ -778,6 +784,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "life"
   | "power"
   | "guardPoints"
+  | "dizzyPoints"
   | "redLife"
   | "ctrl"
   | "stateType"
@@ -1811,6 +1818,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxPower: Math.max(existing.maxPower, actor.power),
               minGuardPoints: Math.min(existing.minGuardPoints, actor.guardPoints ?? 0),
               maxGuardPoints: Math.max(existing.maxGuardPoints, actor.guardPoints ?? 0),
+              minDizzyPoints: Math.min(existing.minDizzyPoints, actor.dizzyPoints ?? 0),
+              maxDizzyPoints: Math.max(existing.maxDizzyPoints, actor.dizzyPoints ?? 0),
               minRedLife: Math.min(existing.minRedLife, actor.redLife ?? 0),
               maxRedLife: Math.max(existing.maxRedLife, actor.redLife ?? 0),
               minSuperPauseDefenseMultiplier: minOptionalTraceNumber(
@@ -1931,6 +1940,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxPower: actor.power,
               minGuardPoints: actor.guardPoints ?? 0,
               maxGuardPoints: actor.guardPoints ?? 0,
+              minDizzyPoints: actor.dizzyPoints ?? 0,
+              maxDizzyPoints: actor.dizzyPoints ?? 0,
               minRedLife: actor.redLife ?? 0,
               maxRedLife: actor.redLife ?? 0,
               minSuperPauseDefenseMultiplier: actor.superPauseDefenseMultiplier,
@@ -2960,6 +2971,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     life: actor.life,
     power: actor.power,
     ...(actor.guardPoints === undefined ? {} : { guardPoints: actor.guardPoints }),
+    ...(actor.dizzyPoints === undefined ? {} : { dizzyPoints: actor.dizzyPoints }),
     ...(actor.redLife === undefined ? {} : { redLife: actor.redLife }),
     ctrl: actor.ctrl,
     stateType: actor.stateType,
@@ -3362,6 +3374,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     `life${actor.minLife}:${actor.maxLife}`,
     `power${actor.minPower}:${actor.maxPower}`,
     `guardpoints${actor.minGuardPoints}:${actor.maxGuardPoints}`,
+    `dizzypoints${actor.minDizzyPoints}:${actor.maxDizzyPoints}`,
     `redlife${actor.minRedLife}:${actor.maxRedLife}`,
     actor.bodyWidthFront === undefined ? "wf*" : `wf${actor.bodyWidthFront}`,
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
@@ -3444,6 +3457,8 @@ function matchesActorFrameRequirement(
     (requirement.observedPowerAtMost === undefined || actor.minPower <= requirement.observedPowerAtMost) &&
     (requirement.observedGuardPointsAtLeast === undefined || actor.maxGuardPoints >= requirement.observedGuardPointsAtLeast) &&
     (requirement.observedGuardPointsAtMost === undefined || actor.minGuardPoints <= requirement.observedGuardPointsAtMost) &&
+    (requirement.observedDizzyPointsAtLeast === undefined || actor.maxDizzyPoints >= requirement.observedDizzyPointsAtLeast) &&
+    (requirement.observedDizzyPointsAtMost === undefined || actor.minDizzyPoints <= requirement.observedDizzyPointsAtMost) &&
     (requirement.observedRedLifeAtLeast === undefined || actor.maxRedLife >= requirement.observedRedLifeAtLeast) &&
     (requirement.observedRedLifeAtMost === undefined || actor.minRedLife <= requirement.observedRedLifeAtMost) &&
     (requirement.observedSuperPauseDefenseMultiplierAtLeast === undefined ||
@@ -3833,6 +3848,9 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     ...(actor.runtime.guardPoints === undefined || actor.runtime.guardPoints === 0
       ? {}
       : { guardPoints: roundTraceNumber(actor.runtime.guardPoints) }),
+    ...(actor.runtime.dizzyPoints === undefined || actor.runtime.dizzyPoints === 0
+      ? {}
+      : { dizzyPoints: roundTraceNumber(actor.runtime.dizzyPoints) }),
     ...(actor.runtime.redLife === undefined || actor.runtime.redLife === 0
       ? {}
       : { redLife: roundTraceNumber(actor.runtime.redLife) }),
@@ -3989,6 +4007,7 @@ function summarizeActorForChecksum(
     runOrder: _runOrder,
     hitPause: _hitPause,
     guardPoints,
+    dizzyPoints,
     targetCount: _targetCount,
     effect: _effect,
     bodyWidth: _bodyWidth,
@@ -4011,6 +4030,7 @@ function summarizeActorForChecksum(
   return {
     ...checksumActor,
     ...(guardPoints === undefined || guardPoints === 1000 ? {} : { guardPoints }),
+    ...(dizzyPoints === undefined || dizzyPoints === 1000 ? {} : { dizzyPoints }),
   };
 }
 

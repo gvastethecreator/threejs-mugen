@@ -720,6 +720,8 @@ export class PlayableMatchRuntime {
           redLife: helper.redLife,
           guardPoints: helper.guardPoints,
           guardPointsMax: helper.guardPointsMax,
+          dizzyPoints: helper.dizzyPoints,
+          dizzyPointsMax: helper.dizzyPointsMax,
           assertSpecial: helper.assertSpecial,
         },
       } satisfies RuntimeAuxiliaryResourceProjectionInputActor));

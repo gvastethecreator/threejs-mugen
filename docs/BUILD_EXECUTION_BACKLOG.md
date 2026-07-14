@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 509 - Dizzy-points runtime/v0
+
+Done: actor-local `dizzyPoints` state now uses authored `[Data] dizzypoints`
+with life fallback, bounded `DizzyPointsAdd`/`DizzyPointsSet`, explicit direct
+HitDef `dizzypoints`, signed attack/defence scaling, Helper plumbing, and
+available auxiliary projection. Required trace
+`synthetic-imported-dizzypoints` passes with checksum `00d3b052`. Full
+verification passes 201 files / 2061 tests, TypeScript 7, a 280-module build,
+590/590 trace artifacts (556 required / 34 optional), boundaries, CSS QA, and
+diff hygiene. Browser smoke is N/A because no visible surface changed. Claim
+allowed: bounded actor-local dizzy state and explicit direct-hit/controller
+routes. Claim blocked: omitted defaults, `NoDizzyPointsDamage`, `AttackMulSet
+DizzyPoints`, break transitions, sharing, reset/persistence, HUD, rollback,
+netplay, and full MUGEN/IKEMEN parity. See Wayfinder 148 and the dated
+research/report.
+
 ## Entry 508 - Auxiliary resource projection/v0
 
 Done: explicit IKEMEN snapshots and trace frames now publish a read-only

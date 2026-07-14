@@ -56,6 +56,8 @@ describe("RuntimeFighterStateWorld", () => {
         animNo: definition.idleAction,
         lifeMax: 750,
         life: 750,
+        dizzyPointsMax: 750,
+        dizzyPoints: 750,
         powerMax: 1200,
         power: 0,
         attackMultiplier: 1.5,

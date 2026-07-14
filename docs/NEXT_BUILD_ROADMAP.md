@@ -1,10 +1,10 @@
 ﻿# Next Build Roadmap
 
-## 2026-07-14 implementation override - entry 508 and the next evidence envelope
+## 2026-07-14 implementation override - entry 509 and the next evidence envelope
 
-Backlog entry 508 is the active cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, Helper-local-resource, red-life, and guard-point sequence is closed or bounded. The auxiliary projection is read-only and does not move scores.
+Backlog entry 509 is the active cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, Helper-local-resource, red-life, guard-point, and auxiliary-projection sequence is closed or bounded. Actor-local dizzy-point mutation is now closed only for explicit authored inputs and does not move scores.
 
-Build next in dependency order: (1) `CompatibilityCorpus/v0`; (2) score-band adjudication against that corpus; (3) an independent legal stage/package route; (4) `StudioSemanticDraft/v0`; (5) close this projection with gates; (6) dizzy-point state/mutation; (7) red-life LifeShare mutation; (8) reset/persistence before automatic Turns continuation; and (9) `AssetProvenance/v2`. Keep suppression, bars, scanner analysis, and modular extraction distinct. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
+Build next in dependency order: (1) `CompatibilityCorpus/v0`; (2) score-band adjudication against that corpus; (3) an independent legal stage/package route; (4) `StudioSemanticDraft/v0`; (5) `NoDizzyPointsDamage` suppression; (6) omitted dizzy defaults and `AttackMulSet` dizzy scaling; (7) red-life `LifeShare`; (8) reset/persistence before automatic Turns continuation; and (9) `AssetProvenance/v2`. Keep HUD bars, scanner analysis, and modular extraction distinct. See `docs/research/2026-07-14-dizzy-points-runtime.md`.
 
 ## 2026-07-13 implementation checkpoint - source handle recovery
 

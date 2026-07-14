@@ -75,7 +75,7 @@ export type RuntimeAuxiliaryResourceProjectionDiagnostic = {
   mutation: {
     redLife: "bounded";
     guardPoints: "bounded";
-    dizzyPoints: "unimplemented";
+    dizzyPoints: "bounded";
   };
   suppression: {
     redLife: "unimplemented";
@@ -194,7 +194,7 @@ export class RuntimeAuxiliaryResourceProjectionWorld {
       mutation: {
         redLife: "bounded",
         guardPoints: "bounded",
-        dizzyPoints: "unimplemented",
+        dizzyPoints: "bounded",
       },
       suppression: {
         redLife: "unimplemented",

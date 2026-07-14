@@ -33,6 +33,10 @@ export class RuntimeResourceWorld {
     return boundedRuntimeResourceMax(constants?.["data.guardpoints"], this.lifeMaxFromConstants(constants));
   }
 
+  dizzyPointsMaxFromConstants(constants?: RuntimeResourceConstants): number {
+    return boundedRuntimeResourceMax(constants?.["data.dizzypoints"], this.lifeMaxFromConstants(constants));
+  }
+
   powerMaxFromConstants(constants?: RuntimeResourceConstants): number {
     return boundedRuntimeResourceMax(constants?.["data.power"], 3000);
   }
@@ -44,6 +48,13 @@ export class RuntimeResourceWorld {
   guardPointsMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
     return boundedRuntimeResourceMax(
       state.guardPointsMax ?? constants?.["data.guardpoints"],
+      state.lifeMax ?? this.lifeMaxFromConstants(constants),
+    );
+  }
+
+  dizzyPointsMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
+    return boundedRuntimeResourceMax(
+      state.dizzyPointsMax ?? constants?.["data.dizzypoints"],
       state.lifeMax ?? this.lifeMaxFromConstants(constants),
     );
   }
@@ -81,6 +92,14 @@ export class RuntimeResourceWorld {
     }
     if (operation.controllerType === "guardpointsset") {
       this.applyGuardPointsSet(state, operation.value);
+      return;
+    }
+    if (operation.controllerType === "dizzypointsadd") {
+      this.applyDizzyPointsAdd(state, operation.value);
+      return;
+    }
+    if (operation.controllerType === "dizzypointsset") {
+      this.applyDizzyPointsSet(state, operation.value);
       return;
     }
     if (operation.controllerType === "redlifeadd") {
@@ -126,6 +145,18 @@ export class RuntimeResourceWorld {
     state.guardPoints = clampRuntimeResource(value, 0, this.guardPointsMaxForState(state));
   }
 
+  applyDizzyPointsAdd(state: CharacterRuntimeState, value: number): void {
+    state.dizzyPoints = clampRuntimeResource(
+      (state.dizzyPoints ?? this.dizzyPointsMaxForState(state)) + value,
+      0,
+      this.dizzyPointsMaxForState(state),
+    );
+  }
+
+  applyDizzyPointsSet(state: CharacterRuntimeState, value: number): void {
+    state.dizzyPoints = clampRuntimeResource(value, 0, this.dizzyPointsMaxForState(state));
+  }
+
   applyVariableAssignment(state: CharacterRuntimeState, assignment: RuntimeVariableAssignment, additive: boolean): void {
     if (assignment.index < 0) {
       return;
@@ -158,6 +189,10 @@ export function runtimeGuardPointsMaxFromConstants(constants?: RuntimeResourceCo
   return defaultRuntimeResourceWorld.guardPointsMaxFromConstants(constants);
 }
 
+export function runtimeDizzyPointsMaxFromConstants(constants?: RuntimeResourceConstants): number {
+  return defaultRuntimeResourceWorld.dizzyPointsMaxFromConstants(constants);
+}
+
 export function runtimePowerMaxFromConstants(constants?: RuntimeResourceConstants): number {
   return defaultRuntimeResourceWorld.powerMaxFromConstants(constants);
 }
@@ -168,6 +203,10 @@ export function runtimePowerMaxForState(state: CharacterRuntimeState, constants?
 
 export function runtimeGuardPointsMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
   return defaultRuntimeResourceWorld.guardPointsMaxForState(state, constants);
+}
+
+export function runtimeDizzyPointsMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
+  return defaultRuntimeResourceWorld.dizzyPointsMaxForState(state, constants);
 }
 
 export function applyRuntimeControl(state: CharacterRuntimeState, value: boolean): void {
@@ -211,6 +250,14 @@ export function applyRuntimeGuardPointsAdd(state: CharacterRuntimeState, value: 
 
 export function applyRuntimeGuardPointsSet(state: CharacterRuntimeState, value: number): void {
   defaultRuntimeResourceWorld.applyGuardPointsSet(state, value);
+}
+
+export function applyRuntimeDizzyPointsAdd(state: CharacterRuntimeState, value: number): void {
+  defaultRuntimeResourceWorld.applyDizzyPointsAdd(state, value);
+}
+
+export function applyRuntimeDizzyPointsSet(state: CharacterRuntimeState, value: number): void {
+  defaultRuntimeResourceWorld.applyDizzyPointsSet(state, value);
 }
 
 export function applyRuntimeVariableAssignment(
@@ -315,7 +362,7 @@ function numberParam(
 
 function resourceControllerType(controller: RuntimeResourceControllerSource): ResourceControllerOp["controllerType"] | undefined {
   const normalized = controller.normalizedType.toLowerCase();
-  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "guardpointsadd" || normalized === "guardpointsset" || normalized === "redlifeadd" || normalized === "redlifeset" || normalized === "poweradd" || normalized === "powerset") {
+  if (normalized === "ctrlset" || normalized === "lifeadd" || normalized === "lifeset" || normalized === "guardpointsadd" || normalized === "guardpointsset" || normalized === "dizzypointsadd" || normalized === "dizzypointsset" || normalized === "redlifeadd" || normalized === "redlifeset" || normalized === "poweradd" || normalized === "powerset") {
     return normalized;
   }
   return undefined;

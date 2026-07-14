@@ -832,6 +832,53 @@ export function createSyntheticImportedGuardPointsTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedDizzyPointsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-dizzypoints",
+      displayName: "Synthetic Imported Dizzy Points",
+      hitDefDizzyPoints: -12,
+      dataStats: { dizzypoints: 1000 },
+      withDizzyPointsOps: { stateNo: 298, addValue: -7, setValue: 900 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-dizzypoints-golden",
+      targetLabel: "Synthetic imported dizzy-points route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 298],
+      requiredExecutedControllers: ["ChangeState", "DizzyPointsAdd", "DizzyPointsSet", "HitDef"],
+      requiredExecutedOperations: ["hitdef", "resource:dizzypointsadd", "resource:dizzypointsset"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 298,
+          observedDizzyPointsAtLeast: 900,
+          observedDizzyPointsAtMost: 900,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          observedDizzyPointsAtLeast: 988,
+          observedDizzyPointsAtMost: 988,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 298, dizzyPoints: 900 },
+        { actorId: "p2", source: "demo", actorKind: "player", dizzyPoints: 988 },
+      ],
+      notes: [
+        "Synthetic imported dizzy-points trace proves an explicit HitDef dizzypoints amount plus actor-local DizzyPointsAdd/DizzyPointsSet writes. Positive omitted HitDef defaults, NoDizzyPointsDamage, AttackMulSet DizzyPoints, dizzy-state transitions, helper/team sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedControlTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -44070,6 +44117,7 @@ export type SyntheticImportedTraceFighterOptions = {
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
   hitDefGuardPoints?: number;
+  hitDefDizzyPoints?: number;
   hitDefRedLife?: number;
   guardRedLife?: number;
   withHitDef?: boolean;
@@ -44412,6 +44460,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withResourceOps?: { stateNo: number };
   withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
   withGuardPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
+  withDizzyPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
   withSoundControllers?: boolean;
   withDynamicSoundControllers?: boolean;
   withDynamicSoundValueControllers?: boolean;
@@ -44436,7 +44485,7 @@ export type SyntheticImportedTraceFighterOptions = {
   p2DistanceStateEntry?: { stateNo: number };
   ownerMetricsStateEntry?: { stateNo: number };
   identityEntry?: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number };
-  dataStats?: { attack?: number; defence?: number; life?: number; power?: number; guardpoints?: number };
+  dataStats?: { attack?: number; defence?: number; life?: number; power?: number; guardpoints?: number; dizzypoints?: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
@@ -45016,6 +45065,7 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const withHitDef = options.withHitDef ?? true;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
   const guardPointsLine = options.hitDefGuardPoints === undefined ? "" : `guardpoints = ${options.hitDefGuardPoints}`;
+  const dizzyPointsLine = options.hitDefDizzyPoints === undefined ? "" : `dizzypoints = ${options.hitDefDizzyPoints}`;
   const redLifeLine = options.hitDefRedLife === undefined
     ? ""
     : `redlife = ${options.hitDefRedLife}${options.guardRedLife === undefined ? "" : `,${options.guardRedLife}`}`;
@@ -45101,6 +45151,7 @@ attr = ${hitDefAttr}
 damage = ${damageLine}
 ${redLifeLine}
 ${guardPointsLine}
+${dizzyPointsLine}
 ${hitDefKillLine}
 ${hitVarLines}
 pausetime = 4,4
@@ -45333,6 +45384,7 @@ ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.w
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withRedLifeOps === undefined ? "" : redLifeControllerBlock(options.withRedLifeOps)}
 ${options.withGuardPointsOps === undefined ? "" : guardPointsControllerBlock(options.withGuardPointsOps)}
+${options.withDizzyPointsOps === undefined ? "" : dizzyPointsControllerBlock(options.withDizzyPointsOps)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
 ${options.withDynamicSoundControllers ? dynamicSoundControllerBlock() : ""}
 ${options.withDynamicSoundValueControllers ? dynamicSoundValueControllerBlock() : ""}
@@ -45467,6 +45519,7 @@ ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
 ${options.withRedLifeOps ? simpleStateBlock(options.withRedLifeOps.stateNo, "I") : ""}
 ${options.withGuardPointsOps ? simpleStateBlock(options.withGuardPointsOps.stateNo, "I") : ""}
+${options.withDizzyPointsOps ? simpleStateBlock(options.withDizzyPointsOps.stateNo, "I") : ""}
 ${options.withDynamicLifeAddOps ? simpleStateBlock(options.withDynamicLifeAddOps.stateNo, "I") : ""}
 ${options.withDynamicResourceSetOps ? simpleStateBlock(options.withDynamicResourceSetOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
@@ -45483,6 +45536,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     recovery: 18,
     damage: hitDefDamage,
     ...(options.hitDefGuardPoints === undefined ? {} : { guardPoints: options.hitDefGuardPoints }),
+    ...(options.hitDefDizzyPoints === undefined ? {} : { dizzyPoints: options.hitDefDizzyPoints }),
     ...(options.hitDefRedLife === undefined ? {} : { redLife: options.hitDefRedLife }),
     ...(options.guardRedLife === undefined ? {} : { guardRedLife: options.guardRedLife }),
     kill: options.hitDefKill,
@@ -45639,6 +45693,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withRedLifeOps === undefined ? [] : ([[options.withRedLifeOps.stateNo, traceAction(options.withRedLifeOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withGuardPointsOps === undefined ? [] : ([[options.withGuardPointsOps.stateNo, traceAction(options.withGuardPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withDizzyPointsOps === undefined ? [] : ([[options.withDizzyPointsOps.stateNo, traceAction(options.withDizzyPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicLifeAddOps === undefined ? [] : ([[options.withDynamicLifeAddOps.stateNo, traceAction(options.withDynamicLifeAddOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicResourceSetOps === undefined
         ? []
@@ -46354,6 +46409,7 @@ function dataConstantsBlock(options: SyntheticImportedTraceFighterOptions): stri
     life: options.resourceMaxEntry?.lifeMax ?? options.dataStats?.life,
     power: options.resourceMaxEntry?.powerMax ?? options.dataStats?.power,
     guardpoints: options.dataStats?.guardpoints,
+    dizzypoints: options.dataStats?.dizzypoints,
     attack: options.dataStats?.attack,
     defence: options.dataStats?.defence,
     sparkno: options.dataSparkNo,
@@ -49307,6 +49363,28 @@ trigger1 = Time = 2
 value = ${setValue}
 
 [State 200, Guard Points Branch]
+type = ChangeState
+trigger1 = Time = 2
+value = ${config.stateNo}
+ctrl = 0
+`;
+}
+
+function dizzyPointsControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withDizzyPointsOps"]>): string {
+  const addValue = config.addValue ?? -7;
+  const setValue = config.setValue ?? 900;
+  return `
+[State 200, Dizzy Points Add Probe]
+type = DizzyPointsAdd
+trigger1 = Time = 1
+value = ${addValue}
+
+[State 200, Dizzy Points Set Probe]
+type = DizzyPointsSet
+trigger1 = Time = 2
+value = ${setValue}
+
+[State 200, Dizzy Points Branch]
 type = ChangeState
 trigger1 = Time = 2
 value = ${config.stateNo}

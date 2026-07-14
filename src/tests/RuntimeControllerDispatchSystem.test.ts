@@ -192,6 +192,29 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(results.every((result) => result.recordedOperation)).toBe(true);
   });
 
+  it("records bounded dynamic DizzyPointsAdd and DizzyPointsSet as typed resource telemetry", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ dizzyPoints: 500, dizzyPointsMax: 1000, vars: [1, 1] });
+    const recordedOperations: ControllerOp[] = [];
+    const controllers = [
+      compileControllerIr(controllerSource("DizzyPointsAdd", { value: "IfElse(var(0), -25, 0)" })),
+      compileControllerIr(controllerSource("DizzyPointsSet", { value: "IfElse(var(1), 800, 0)" })),
+    ];
+
+    const results = controllers.map((controller) =>
+      world.apply(actor, controller, {
+        recordOperation: (_actor, operation) => recordedOperations.push(operation),
+      }),
+    );
+
+    expect(actor.runtime.dizzyPoints).toBe(800);
+    expect(recordedOperations).toEqual([
+      { kind: "resource", controllerType: "dizzypointsadd", value: -25 },
+      { kind: "resource", controllerType: "dizzypointsset", value: 800 },
+    ]);
+    expect(results.every((result) => result.recordedOperation)).toBe(true);
+  });
+
   it("reports unsupported controllers without mutating runtime state", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 777 });

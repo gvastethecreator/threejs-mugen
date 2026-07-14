@@ -1,6 +1,22 @@
 ﻿# Progress Tracker
 
-## Global report - 2026-07-14 auxiliary resource projection
+## Global report - 2026-07-14 dizzy-points runtime
+
+- Entry 509 closes bounded actor-local dizzy points: authored max/life fallback,
+  fighter/Helper state, `DizzyPointsAdd`/`DizzyPointsSet`, explicit direct
+  HitDef `dizzypoints`, signed scaling, projection, and trace evidence.
+- Required artifact `synthetic-imported-dizzypoints` passes with checksum
+  `00d3b052`; global coverage is 590/590 artifacts, 556 required and 34
+  optional. Scores remain unchanged.
+- Claim ceiling: explicit actor-local mutation and projection. Omitted defaults,
+  `NoDizzyPointsDamage`, `AttackMulSet DizzyPoints`, break transitions,
+  sharing, reset/persistence, HUD, and full parity remain blocked.
+- Full gates: 201 files / 2061 tests, TypeScript 7, 280-module build,
+  boundaries, CSS QA, and diff check. Browser smoke N/A.
+- See `docs/research/2026-07-14-dizzy-points-runtime.md` and
+  `docs/reports/2026-07-14-dizzy-points-runtime.md`.
+
+## Previous global report - 2026-07-14 auxiliary resource projection
 
 - Entry 508 is the active implementation cut: explicit IKEMEN snapshots/traces
   publish `RuntimeAuxiliaryResourceProjection/v0` for roots and live Helpers.

@@ -6,9 +6,9 @@ This guide exists so the project can keep moving without losing the thread. It d
 
 ## 2026-07-14 Daily Audit Override
 
-Entry 508 supersedes the entry-505 implementation cursor. Do not rebuild journey-v1, M2 adjudication, the independent character routes, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, or bounded folder editing.
+Entry 509 supersedes the entry-505 implementation cursor. Do not rebuild journey-v1, M2 adjudication, the independent character routes, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, auxiliary projection, or bounded folder editing.
 
-Continue with a versioned compatibility corpus and score-band decision, then an independent legal stage/package route. In Studio, preflight a semantic draft before writing. In I2, close the auxiliary projection, then land dizzy mutation and red-life LifeShare as separate adapters. Automatic Turns continuation waits on reset and reference-transfer semantics. See `docs/research/2026-07-14-auxiliary-resource-projection.md`.
+Continue with a versioned compatibility corpus and score-band decision, then an independent legal stage/package route. In Studio, preflight a semantic draft before writing. In I2, close `NoDizzyPointsDamage` and omitted dizzy defaults, then land red-life `LifeShare` as a separate adapter. Automatic Turns continuation waits on reset and reference-transfer semantics. See `docs/research/2026-07-14-dizzy-points-runtime.md`.
 
 ## 2026-07-13 Daily Audit Override
 

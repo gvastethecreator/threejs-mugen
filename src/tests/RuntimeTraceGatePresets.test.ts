@@ -489,6 +489,7 @@ import {
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
+  createSyntheticImportedDizzyPointsTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
   createSyntheticImportedDynamicResourceSetTraceArtifact,
@@ -1310,6 +1311,31 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 296, guardPoints: 900 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ guardPoints: 988 });
+  });
+
+  it("creates a synthetic imported dizzy-points artifact with direct hit and resource evidence", () => {
+    const artifact = createSyntheticImportedDizzyPointsTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dizzypoints-golden",
+        source: "mixed",
+      },
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.executedControllers.DizzyPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.DizzyPointsSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:dizzypointsadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:dizzypointsset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 298, minDizzyPoints: 900, maxDizzyPoints: 900 }),
+        expect.objectContaining({ actorId: "p2", minDizzyPoints: 988, maxDizzyPoints: 988 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 298, dizzyPoints: 900 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 988 });
   });
 
   it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {

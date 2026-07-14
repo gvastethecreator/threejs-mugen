@@ -1,4 +1,14 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 509 non-score closeout
+
+Entry 509 closes bounded actor-local dizzy points: authored maximum/life
+fallback, fighter/Helper state, `DizzyPointsAdd`/`DizzyPointsSet`, explicit
+direct HitDef `dizzypoints` signed scaling, projection, and required trace
+evidence. Verification is 201 files / 2061 tests, TypeScript 7, a 280-module
+build, and 590/590 trace artifacts. `NoDizzyPointsDamage`, omitted defaults,
+`AttackMulSet` dizzy scaling, break transitions, sharing, reset/persistence,
+HUD bars, and full parity remain separate gates. Scores do not move.
+
 ## 2026-07-14 Entry 508 non-score closeout
 
 Entry 508 closes the read-only `RuntimeAuxiliaryResourceProjection/v0` with

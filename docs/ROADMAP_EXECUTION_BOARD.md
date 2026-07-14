@@ -1,6 +1,16 @@
 ﻿# Roadmap Execution Board
 
-## Latest implementation closeout - auxiliary resource projection (2026-07-14)
+## Latest implementation closeout - dizzy-points runtime (2026-07-14)
+
+Entry 509 closes bounded actor-local dizzy points: authored max/life fallback,
+fighter/Helper initialization, `DizzyPointsAdd`/`DizzyPointsSet`, explicit
+direct HitDef values, signed scaling, projection, and trace evidence. Required
+checksum `00d3b052` passes inside 590/590 traces. Full verification passes 201
+files / 2061 tests, TypeScript 7, a 280-module build, boundaries, CSS QA, and
+diff hygiene. Scores remain unchanged. Next: default/suppression and break
+policy, then red-life LifeShare and reset/persistence as separate gates.
+
+## Previous implementation closeout - auxiliary resource projection (2026-07-14)
 
 Entry 508 adds `RuntimeAuxiliaryResourceProjection/v0` to explicit IKEMEN
 snapshots/traces. Roots and Helpers publish actor-local red-life and guard-point
