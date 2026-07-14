@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 dizzy-points defaults and AttackMulSet
+
+- Entry 511 closes omitted direct HitDef dizzy defaults using authored
+  `Default.LifeToDizzyPointsMul` / `Super.LifeToDizzyPointsMul` constants and
+  dedicated signed `AttackMulSet.DizzyPoints` scaling before defender
+  defence scaling.
+- Required artifacts `synthetic-imported-dizzypoints-default` and
+  `synthetic-imported-dizzypoints-attack-scale` pass their focused gates.
+- Full trace-corpus regeneration and repository gates remain intentionally
+  batched for the next accumulated checkpoint.
+- Claim ceiling: direct imported HitDef defaults and AttackMulSet scaling only.
+  Break transitions, sharing, reset/persistence, HUD, rollback/netplay, and
+  full parity remain separate gates.
+- See `docs/research/2026-07-14-dizzy-points-defaults-attack-scale.md` and
+  `docs/reports/2026-07-14-dizzy-points-defaults-attack-scale.md`.
+
 ## Global report - 2026-07-14 dizzy-points suppression
 
 - Entry 510 closes defender-owned `AssertSpecial NoDizzyPointsDamage` for

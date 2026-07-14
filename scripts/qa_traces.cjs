@@ -136,6 +136,16 @@ async function main() {
       artifact: presets.createSyntheticImportedDizzyPointsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dizzypoints-default",
+      required: true,
+      artifact: presets.createSyntheticImportedDizzyPointsDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-dizzypoints-attack-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedDizzyPointsAttackScaleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-dizzypoints-suppression",
       required: true,
       artifact: presets.createSyntheticImportedDizzyPointsSuppressionTraceArtifact(),

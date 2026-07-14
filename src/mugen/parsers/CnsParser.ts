@@ -99,6 +99,8 @@ export function parseCns(text: string, file?: string): MugenStateFile {
       applySectionConstant(constants, "velocity", pair.key, pair.value);
     } else if (currentSection === "size") {
       applySectionConstant(constants, "size", pair.key, pair.value);
+    } else if (currentSection === "constants") {
+      applyCustomConstant(constants, pair.key, pair.value);
     }
   }
 
@@ -169,5 +171,13 @@ function applySectionConstant(constants: Record<string, number>, section: "data"
     constants[`${name}.top`] = values[1]!;
     constants[`${name}.right`] = values[2]!;
     constants[`${name}.bottom`] = values[3]!;
+  }
+}
+
+function applyCustomConstant(constants: Record<string, number>, key: string, value: string): void {
+  const name = key.trim().toLowerCase();
+  const parsed = Number(value.split(",")[0]?.trim());
+  if (name && Number.isFinite(parsed)) {
+    constants[name] = parsed;
   }
 }

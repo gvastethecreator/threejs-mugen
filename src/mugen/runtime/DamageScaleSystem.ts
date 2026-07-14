@@ -9,6 +9,7 @@ export type RuntimeDamageScaleControllerSource = Pick<ControllerIr, "params" | "
 export type RuntimeDamageScaleControllerResult = {
   applied: boolean;
   multiplier?: number;
+  dizzyPointsMultiplier?: number;
 };
 
 export function resolveRuntimeDamageScaleControllerOperation(
@@ -18,13 +19,15 @@ export function resolveRuntimeDamageScaleControllerOperation(
   context: RuntimeControllerEvaluationContext = {},
 ): DamageScaleControllerOp | undefined {
   const value = numberParam(controller, state, context, "value");
-  if (value === undefined) {
+  const dizzyPoints = controllerType === "attackmulset" ? numberParam(controller, state, context, "dizzypoints") : undefined;
+  if (value === undefined && dizzyPoints === undefined) {
     return undefined;
   }
   return {
     kind: "damage-scale",
     controllerType,
-    multiplier: clampDamageScaleMultiplier(value),
+    ...(value === undefined ? {} : { multiplier: clampDamageScaleMultiplier(value) }),
+    ...(dizzyPoints === undefined ? {} : { dizzyPointsMultiplier: clampDamageScaleMultiplier(dizzyPoints) }),
   };
 }
 
@@ -37,17 +40,31 @@ export class RuntimeDamageScaleWorld {
     context: RuntimeControllerEvaluationContext = {},
   ): RuntimeDamageScaleControllerResult {
     const value = operation?.multiplier ?? numberParam(controller, state, context, "value");
-    if (value === undefined) {
+    const dizzyPoints =
+      controllerType === "attackmulset"
+        ? operation?.dizzyPointsMultiplier ?? numberParam(controller, state, context, "dizzypoints")
+        : undefined;
+    if (value === undefined && dizzyPoints === undefined) {
       return { applied: false };
     }
 
-    const multiplier = clampDamageScaleMultiplier(value);
+    const multiplier = value === undefined ? undefined : clampDamageScaleMultiplier(value);
+    const dizzyPointsMultiplier = dizzyPoints === undefined ? undefined : clampDamageScaleMultiplier(dizzyPoints);
     if (controllerType === "attackmulset") {
-      state.attackMultiplier = multiplier;
-    } else {
+      if (multiplier !== undefined) {
+        state.attackMultiplier = multiplier;
+      }
+      if (dizzyPointsMultiplier !== undefined) {
+        state.dizzyPointsAttackMultiplier = dizzyPointsMultiplier;
+      }
+    } else if (multiplier !== undefined) {
       state.defenseMultiplier = multiplier;
     }
-    return { applied: true, multiplier };
+    return {
+      applied: true,
+      ...(multiplier === undefined ? {} : { multiplier }),
+      ...(dizzyPointsMultiplier === undefined ? {} : { dizzyPointsMultiplier }),
+    };
   }
 }
 

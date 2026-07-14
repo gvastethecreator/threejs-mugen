@@ -550,7 +550,8 @@ export type ReversalDefControllerOp = {
 export type DamageScaleControllerOp = {
   kind: "damage-scale";
   controllerType: "attackmulset" | "defencemulset";
-  multiplier: number;
+  multiplier?: number;
+  dizzyPointsMultiplier?: number;
 };
 
 export type ContactControllerOp =
@@ -1530,13 +1531,15 @@ function compileDamageScaleControllerOp(
   type: DamageScaleControllerOp["controllerType"],
 ): DamageScaleControllerOp | undefined {
   const value = staticOptionalNumberParam(controller, "value");
-  if (value === true || value === false) {
+  const dizzyPoints = type === "attackmulset" ? staticOptionalNumberParam(controller, "dizzypoints") : true;
+  if ((value === true || value === false) && (dizzyPoints === true || dizzyPoints === false)) {
     return undefined;
   }
   return {
     kind: "damage-scale",
     controllerType: type,
-    multiplier: Math.max(0, Math.min(10, value)),
+    ...(typeof value === "number" ? { multiplier: Math.max(0, Math.min(10, value)) } : {}),
+    ...(typeof dizzyPoints === "number" ? { dizzyPointsMultiplier: Math.max(0, Math.min(10, dizzyPoints)) } : {}),
   };
 }
 

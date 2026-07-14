@@ -10,10 +10,11 @@
 - Imported runtime supports the bounded explicit direct HitDef `redlife` and
   `guardpoints`/`dizzypoints` routes plus actor-local `RedLifeAdd`/`RedLifeSet`,
   `GuardPointsAdd`/`GuardPointsSet`, and `DizzyPointsAdd`/`DizzyPointsSet`,
-  including authored-max/life fallback, signed scaling, clamps, and required
-  trace evidence. Omitted dizzy defaults, AttackMulSet dizzy scaling,
-  target/projectile/team sharing, persistence, and full parity remain
-  unsupported; defender-owned `NoDizzyPointsDamage` suppression is bounded.
+  including authored-max/life fallback, omitted normal/Super HitDef defaults,
+  dedicated `AttackMulSet.DizzyPoints` scaling, signed scaling, clamps, and
+  required trace evidence. Target/projectile/team sharing, break transitions,
+  persistence, HUD presentation, and full parity remain unsupported;
+  defender-owned `NoDizzyPointsDamage` suppression is bounded.
 
 - Legal-fixture browser smoke proves one lethal imported `AssertSpecial NoKOSlow` route: physical `d -> z` enters imported state/action `210`, asserts `nokoslow` on the KO tick, defeats demo Nova Boxer from `1000` to `0`, retains post-round playback `1`, and returns to a healthy `fight` round after Reset. Desktop/mobile captures require the imported identity, action-specific palette/mask, `RuntimePostRound.noKoSlow`, progress, and normal playback. Required `mugen-lite-journey-nokoslow` trace checksum `ceac9f37` independently proves the legal ZIP command/state/AIR/SFF path. Exact slowdown curve/duration, motif/lifebar behavior, KO echoes, win/continue flow, teams, broad audio parity, and full round parity remain separate gates.
 

@@ -873,10 +873,106 @@ export function createSyntheticImportedDizzyPointsTraceArtifact(options: Runtime
         { actorId: "p2", source: "demo", actorKind: "player", dizzyPoints: 988 },
       ],
       notes: [
-        "Synthetic imported dizzy-points trace proves an explicit HitDef dizzypoints amount plus actor-local DizzyPointsAdd/DizzyPointsSet writes. Positive omitted HitDef defaults, NoDizzyPointsDamage, AttackMulSet DizzyPoints, dizzy-state transitions, helper/team sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+        "Synthetic imported dizzy-points trace proves an explicit HitDef dizzypoints amount plus actor-local DizzyPointsAdd/DizzyPointsSet writes. Omitted defaults, NoDizzyPointsDamage, and AttackMulSet DizzyPoints have separate artifacts; dizzy-state transitions, helper/team sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
       ],
     },
   );
+}
+
+export function createSyntheticImportedDizzyPointsDefaultTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-dizzypoints-default",
+      displayName: "Synthetic Imported Dizzy Points Default",
+      hitDefDamage: 40,
+      dizzyPointMultipliers: { default: 1.25 },
+      dataStats: { dizzypoints: 1000 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-dizzypoints-default-golden",
+      targetLabel: "Synthetic imported omitted dizzy-points default route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          observedDizzyPointsAtLeast: 950,
+          observedDizzyPointsAtMost: 950,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [{ actorId: "p2", source: "demo", actorKind: "player", dizzyPoints: 950 }],
+      notes: [
+        "Synthetic imported omitted dizzy-points trace proves damage * Default.LifeToDizzyPointsMul through authored [Constants] parsing. The dedicated Super multiplier and explicit authored amounts remain separate bounded routes; break transitions, sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedDizzyPointsAttackScaleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dizzypoints-attack-scale-attacker",
+    displayName: "Synthetic Imported Dizzy Points Attack Scale Attacker",
+    hitDefDizzyPoints: -20,
+    attackDizzyPointsMultiplier: 0.5,
+    dataStats: { dizzypoints: 1000 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dizzypoints-attack-scale-defender",
+    displayName: "Synthetic Imported Dizzy Points Attack Scale Defender",
+    defenseMultiplier: 0.5,
+    dataStats: { dizzypoints: 1000 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-dizzypoints-attack-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-dizzypoints-attack-scale-golden",
+      label: "Synthetic imported AttackMulSet DizzyPoints route",
+      source: "imported",
+      notes: [
+        "Synthetic imported AttackMulSet DizzyPoints trace proves the dedicated attacker multiplier scales explicit signed direct HitDef dizzy points before defender defence scaling. Omitted defaults and authored constants are covered by the neighboring trace; guard/red-life multipliers, helper/projectile ownership, break transitions, sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-dizzypoints-attack-scale-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AttackMulSet", "HitDef"],
+        requiredExecutedOperations: ["damage-scale:attackmulset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            observedDizzyPointsAtLeast: 995,
+            observedDizzyPointsAtMost: 995,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", dizzyPoints: 995 }],
+      },
+    ],
+  });
 }
 
 export function createSyntheticImportedDizzyPointsSuppressionTraceArtifact(
@@ -908,7 +1004,7 @@ export function createSyntheticImportedDizzyPointsSuppressionTraceArtifact(
       label: "Synthetic imported dizzy-points suppression route",
       source: "imported",
       notes: [
-        "Synthetic imported dizzy-points suppression trace proves defender-owned NoDizzyPointsDamage prevents an explicit direct HitDef dizzypoints amount from mutating the defender. DizzyPointsAdd/Set, positive omitted defaults, AttackMulSet DizzyPoints, break transitions, sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+        "Synthetic imported dizzy-points suppression trace proves defender-owned NoDizzyPointsDamage prevents an explicit direct HitDef dizzypoints amount from mutating the defender. DizzyPointsAdd/Set, omitted defaults, and AttackMulSet DizzyPoints are covered by separate artifacts; break transitions, sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
       ],
     },
     gates: [
@@ -44180,6 +44276,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefDamage?: number;
   hitDefGuardPoints?: number;
   hitDefDizzyPoints?: number;
+  dizzyPointMultipliers?: { default?: number; super?: number };
   hitDefRedLife?: number;
   guardRedLife?: number;
   withHitDef?: boolean;
@@ -44222,6 +44319,7 @@ export type SyntheticImportedTraceFighterOptions = {
   }>;
   defenseMultiplier?: number;
   attackMultiplier?: number;
+  attackDizzyPointsMultiplier?: number;
   dynamicDefenseMultiplier?: SyntheticDynamicDamageScale;
   dynamicAttackMultiplier?: SyntheticDynamicDamageScale;
   guardDamage?: number;
@@ -45333,7 +45431,7 @@ anim = 200
 ctrl = 0
 
 ${assertSpecialLine}
-${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
+${options.attackMultiplier !== undefined || options.attackDizzyPointsMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier, options.attackDizzyPointsMultiplier) : ""}
 ${options.dynamicAttackMultiplier !== undefined ? dynamicAttackMultiplierController(options.dynamicAttackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
@@ -46480,13 +46578,23 @@ function dataConstantsBlock(options: SyntheticImportedTraceFighterOptions): stri
   const lines = Object.entries(data)
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key} = ${value}`);
-  if (lines.length === 0) {
+  const customConstants = {
+    "Default.LifeToDizzyPointsMul": options.dizzyPointMultipliers?.default,
+    "Super.LifeToDizzyPointsMul": options.dizzyPointMultipliers?.super,
+  };
+  const constantLines = Object.entries(customConstants)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key} = ${value}`);
+  if (lines.length === 0 && constantLines.length === 0) {
     return "";
   }
-  return `
+  return `${lines.length === 0 ? "" : `
 [Data]
 ${lines.join("\n")}
-`;
+`}${constantLines.length === 0 ? "" : `
+[Constants]
+${constantLines.join("\n")}
+`}`;
 }
 
 function commonGetHitFallData(): NonNullable<DemoMove["fall"]> {
@@ -46661,12 +46769,13 @@ value = ${value}
 `;
 }
 
-function attackMultiplierController(value: number): string {
+function attackMultiplierController(value?: number, dizzyPoints?: number): string {
   return `
 [State 200, Attack Scale]
 type = AttackMulSet
 trigger1 = Time = 0
-value = ${value}
+${value === undefined ? "" : `value = ${value}`}
+${dizzyPoints === undefined ? "" : `DizzyPoints = ${dizzyPoints}`}
 `;
 }
 

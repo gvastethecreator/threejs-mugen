@@ -141,6 +141,40 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.targetId).toBe(0);
   });
 
+  it("derives omitted dizzy points from damage and the authored normal multiplier", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.constants = { "default.lifetodizzypointsmul": 1.25 };
+
+    world.apply({ actor, controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "40" })), frame: activeFrame() });
+
+    expect(actor.currentMove).toMatchObject({ damage: 40, dizzyPoints: -50 });
+  });
+
+  it("accepts runtime constants from the dispatch contract", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "40" })),
+      frame: activeFrame(),
+      constants: { "default.lifetodizzypointsmul": 1.25 },
+    });
+
+    expect(actor.currentMove).toMatchObject({ damage: 40, dizzyPoints: -50 });
+  });
+
+  it("uses the Super multiplier for hyper attributes when dizzypoints is omitted", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.constants = { "default.lifetodizzypointsmul": 1.25, "super.lifetodizzypointsmul": 0.5 };
+
+    world.apply({ actor, controller: compileControllerIr(controller("HitDef", { attr: "S,HA", damage: "40" })), frame: activeFrame() });
+
+    expect(actor.currentMove).toMatchObject({ damage: 40, dizzyPoints: -20 });
+  });
+
   it("defaults each omitted HitDef priority to 4 Hit instead of inheriting the previous move", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

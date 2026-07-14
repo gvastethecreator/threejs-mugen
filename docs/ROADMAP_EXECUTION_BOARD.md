@@ -1,5 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - dizzy-points defaults and AttackMulSet (2026-07-14)
+
+Entry 511 closes omitted direct HitDef dizzy defaults from authored normal and
+Super multipliers, plus dedicated `AttackMulSet.DizzyPoints` scaling before
+defender defence scaling. The two required focused artifacts are green; the
+global corpus and full repository gates remain batched for the next checkpoint.
+Next: dizzy break transition policy, then red-life `LifeShare`, reset/persistence,
+and presentation as separate gates.
+
 ## Latest implementation closeout - dizzy-points suppression (2026-07-14)
 
 Entry 510 closes defender-owned `AssertSpecial NoDizzyPointsDamage` for

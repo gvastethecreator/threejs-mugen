@@ -1178,6 +1178,8 @@ function defaultConst(name: string): number | undefined {
     "movement.down.bounce.yaccel": 0.4,
     "movement.down.bounce.groundlevel": 12,
     "data.liedown.time": 60,
+    "default.lifetodizzypointsmul": 1.8,
+    "super.lifetodizzypointsmul": 0,
   };
   return constants[name];
 }

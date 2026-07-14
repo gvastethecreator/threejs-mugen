@@ -490,6 +490,8 @@ import {
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
+  createSyntheticImportedDizzyPointsDefaultTraceArtifact,
+  createSyntheticImportedDizzyPointsAttackScaleTraceArtifact,
   createSyntheticImportedDizzyPointsSuppressionTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
@@ -1358,6 +1360,46 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 1000 });
+  });
+
+  it("creates a synthetic imported omitted dizzy-points default artifact", () => {
+    const artifact = createSyntheticImportedDizzyPointsDefaultTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dizzypoints-default-golden",
+        source: "mixed",
+      },
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", minDizzyPoints: 950, maxDizzyPoints: 950 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 950 });
+  });
+
+  it("creates a synthetic imported AttackMulSet dizzy-points artifact", () => {
+    const artifact = createSyntheticImportedDizzyPointsAttackScaleTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dizzypoints-attack-scale-golden",
+        source: "imported",
+      },
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AttackMulSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["damage-scale:attackmulset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", minDizzyPoints: 995, maxDizzyPoints: 995 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 995 });
   });
 
   it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {

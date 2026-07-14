@@ -43,6 +43,7 @@ export type CharacterRuntimeState = {
   defenseMultiplier?: number;
   superPauseDefenseMultiplier?: number;
   attackMultiplier?: number;
+  dizzyPointsAttackMultiplier?: number;
   paletteRemap?: RuntimePaletteRemap;
   spritePriority?: number;
   hitDefSpritePriority?: {

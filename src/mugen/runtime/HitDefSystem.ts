@@ -8,11 +8,13 @@ import type { DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
 import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeResolvedSoundRef } from "./types";
+import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
 
 export type RuntimeHitDefControllerDispatchActor = {
   runtime: CharacterRuntimeState;
@@ -24,12 +26,14 @@ export type RuntimeHitDefControllerDispatchActor = {
   hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
   pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   firedHitDefs: Set<string>;
+  constants?: RuntimeResourceConstants;
 };
 
 export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefControllerDispatchActor> = {
   actor: TActor;
   controller: ControllerIr;
   frame?: MugenAnimationFrame;
+  constants?: RuntimeResourceConstants;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: HitDefControllerOp) => void;
@@ -49,6 +53,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     actor,
     controller,
     frame,
+    constants,
     resolveSoundValue,
     recordController,
     recordOperation,
@@ -77,7 +82,11 @@ export class RuntimeHitDefControllerDispatchWorld {
     const damage = operation?.damage ?? firstNumber(findParam(source, "damage")) ?? existing?.damage ?? 45;
     const guardDamage = operation?.guardDamage ?? secondNumber(findParam(source, "damage")) ?? existing?.guardDamage ?? 0;
     const guardPoints = operation?.guardPoints ?? firstNumber(findParam(source, "guardpoints")) ?? existing?.guardPoints;
-    const dizzyPoints = operation?.dizzyPoints ?? firstNumber(findParam(source, "dizzypoints")) ?? existing?.dizzyPoints;
+    const attr = operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA";
+    const dizzyPoints =
+      operation?.dizzyPoints ??
+      firstNumber(findParam(source, "dizzypoints")) ??
+      runtimeDizzyPointsFromHitDef(damage, attr, actor.constants ?? constants);
     const redLife = operation?.redLife ?? firstNumber(findParam(source, "redlife")) ?? existing?.redLife;
     const guardRedLife = operation?.guardRedLife ?? secondNumber(findParam(source, "redlife")) ?? existing?.guardRedLife;
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
@@ -108,7 +117,6 @@ export class RuntimeHitDefControllerDispatchWorld {
       operation?.guardDistance ?? firstNumber(findParam(source, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
     const guardPush = Math.abs(guardVelocityX ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
     const airGuardPush = airGuardVelocity ? Math.abs(airGuardVelocity[0]) : existing?.airGuardPush;
-    const attr = operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA";
     const cornerPush = resolveHitDefCornerPush({
       attr,
       guardVelocityX: guardVelocityX ?? existing?.guardPush,

@@ -2,9 +2,9 @@
 
 ## Active frontier - 2026-07-14
 
-Entry 510 is the active implementation frontier. Entry 509 closed bounded actor-local dizzy-point initialization, mutation, direct HitDef scaling, and evidence projection; this cut adds defender-owned direct HitDef suppression. Scores remain unchanged until the independent corpus/adjudication lane moves them.
+Entry 511 is the active implementation frontier. Entry 509 closed bounded actor-local dizzy-point initialization, mutation, direct HitDef scaling, and evidence projection; Entry 510 added defender-owned direct HitDef suppression; this cut adds omitted normal/Super defaults and dedicated `AttackMulSet.DizzyPoints` scaling. Scores remain unchanged until the independent corpus/adjudication lane moves them.
 
-Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. In the I2 runtime lane, close omitted dizzy defaults and `AttackMulSet` dizzy scaling before dizzy break policy and red-life `LifeShare`; reset/persistence and HUD resource bars remain separate gates. Parallel work may add `StudioSemanticDraft/v0` and `AssetProvenance/v2`. Scores remain unchanged. See `docs/research/2026-07-14-dizzy-points-suppression.md`.
+Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. In the I2 runtime lane, close dizzy break policy before red-life `LifeShare`; reset/persistence and HUD resource bars remain separate gates. Parallel work may add `StudioSemanticDraft/v0` and `AssetProvenance/v2`. Scores remain unchanged. See `docs/research/2026-07-14-dizzy-points-defaults-attack-scale.md`.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 

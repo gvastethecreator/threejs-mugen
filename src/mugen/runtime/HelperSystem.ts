@@ -47,6 +47,7 @@ import {
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent, RuntimeTeamState } from "./types";
+import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
@@ -136,6 +137,7 @@ export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
 export type RuntimeHelperOpponentEntry = RuntimeOpponentRosterEntry<CharacterRuntimeState>;
 
 export type RuntimeHelperAdvanceOptions = {
+  constants?: RuntimeResourceConstants;
   pauseKind?: RuntimeHelperPauseKind;
   stageBounds?: MugenStageDefinition["bounds"];
   gameSpace?: ExpressionGameSpace;
@@ -789,7 +791,7 @@ export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
   controller: ControllerIr,
   hitDefWorld: RuntimeHitDefControllerDispatchWorld = helperHitDefWorld,
-  options?: Parameters<typeof resolveHelperNumber>[3],
+  options?: Parameters<typeof resolveHelperNumber>[3] & Pick<RuntimeHelperAdvanceOptions, "constants">,
 ): boolean {
   const runtime = helperRuntimeState(helper);
   const actor = {
@@ -800,6 +802,7 @@ export function activateRuntimeHelperHitDef(
     frameElapsed: helper.frameElapsed,
     hasHit: helper.hasHit,
     firedHitDefs: helper.firedHitDefs,
+    constants: options.constants,
   };
   const result = hitDefWorld.apply({
     actor,

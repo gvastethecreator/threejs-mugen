@@ -171,8 +171,11 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Implement auxiliary resource projection](tickets/147-auxiliary-resource-projection.md) - resolved bounded read-only runtime evidence: explicit IKEMEN snapshots/traces now have a root/Helper ownership projection for red life, guard points, and dizzy points, with maxima diagnostics, suppression status, and Projectile/Explod exclusion; mutation, HUD, and persistence remain blocked.
 - [Implement dizzy points runtime](tickets/148-dizzy-points-runtime.md) - resolved bounded actor-local initialization, `DizzyPointsAdd`/`DizzyPointsSet`, explicit direct HitDef signed scaling, Helper/projection/trace evidence, and required checksum `00d3b052`; default/suppression/break/sharing/reset/HUD remain blocked. Next: `NoDizzyPointsDamage`, omitted defaults, and red-life `LifeShare`.
 - [Implement dizzy points suppression](tickets/149-dizzy-points-suppression.md) - resolved defender-owned `AssertSpecial NoDizzyPointsDamage` for explicit direct HitDef `dizzypoints`; required checksum `29e75f2a` passes in 591/591 traces. Next: omitted defaults, `AttackMulSet` dizzy scaling, break policy, and red-life `LifeShare`.
+- [Implement dizzy points defaults and AttackMulSet scaling](tickets/150-dizzy-points-defaults-attack-scale.md) - resolved omitted normal/Super direct HitDef defaults and dedicated signed `AttackMulSet.DizzyPoints` scaling before defender defence scaling; focused default and attack-scale artifacts pass. Next: dizzy break policy.
 
 ## Frontier
+
+- [Implement dizzy break transition](tickets/151-dizzy-break-transition.md) - next: enter an available common dizzy state only when the actor-local resource crosses to zero; preserve explicit non-break routes and keep sharing/reset/HUD separate.
 
 - [Map Code Fu Man special route](tickets/132-map-codefuman-special-route.md) - resolved: authored `QCF_x` (`~D, DF, F, x`) reaches state `1000` / AIR `1000`, executes three `PosAdd` steps plus `HitDef`, and passes optional trace `5540d52b` with browser input and idle return. Broad special/corpus parity remains blocked.
 

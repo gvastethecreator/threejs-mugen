@@ -1239,6 +1239,7 @@ time = 20
 
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
+    const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));
     const defence = compileControllerIr(controller(0, "DefenceMulSet", [], { value: "0.5" }));
     const dynamic = compileControllerIr(controller(200, "AttackMulSet", [], { value: "Const(data.attack)" }));
 
@@ -1251,6 +1252,11 @@ time = 20
       kind: "damage-scale",
       controllerType: "defencemulset",
       multiplier: 0.5,
+    });
+    expect(dizzyOnly.operation).toEqual({
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      dizzyPointsMultiplier: 0.75,
     });
     expect(dynamic.operation).toBeUndefined();
   });

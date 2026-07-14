@@ -215,6 +215,25 @@ describe("CombatResolver", () => {
     ).toMatchObject({ kind: "hit", dizzyPoints: -15 });
   });
 
+  it("uses the dedicated AttackMulSet dizzy-points multiplier when present", () => {
+    const attacker = actor({ attackMultiplier: 1.5, dizzyPointsAttackMultiplier: 0.5 });
+    const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      dizzyPoints: -20,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      damage: 30,
+      dizzyPoints: -5,
+    });
+  });
+
   it("uses explicit air guard velocity only for airborne guards", () => {
     const attack = {
       damage: 40,

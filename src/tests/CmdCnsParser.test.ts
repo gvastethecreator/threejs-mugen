@@ -234,6 +234,19 @@ stand.sizebox = -18,-70,20,2
     expect(parsed.constants["size.stand.sizebox.bottom"]).toBe(2);
   });
 
+  it("indexes custom Constants with case-insensitive names", () => {
+    const parsed = parseCns(`
+[Constants]
+Default.LifeToDizzyPointsMul = 1.25
+Super.LifeToDizzyPointsMul = 0
+`);
+
+    expect(parsed.constants).toMatchObject({
+      "default.lifetodizzypointsmul": 1.25,
+      "super.lifetodizzypointsmul": 0,
+    });
+  });
+
   it("indexes triggerall in command state-entry controllers", () => {
     const parsed = parseCns(`
 [State -1, Stand Light Punch]

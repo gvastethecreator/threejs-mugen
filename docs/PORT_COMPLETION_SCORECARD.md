@@ -1,4 +1,13 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 511 focal closeout
+
+Entry 511 closes omitted direct HitDef dizzy defaults from authored normal and
+Super multipliers plus dedicated `AttackMulSet.DizzyPoints` scaling before
+defender defence scaling. Both required focused artifacts pass. Full corpus
+regeneration and repository gates are batched for the next checkpoint. Break
+transitions, sharing, reset/persistence, HUD bars, and full parity remain
+separate gates. Scores do not move.
+
 ## 2026-07-14 Entry 510 focal closeout
 
 Entry 510 closes defender-owned `AssertSpecial NoDizzyPointsDamage` for

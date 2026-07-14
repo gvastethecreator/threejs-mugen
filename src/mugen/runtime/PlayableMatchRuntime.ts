@@ -1076,6 +1076,7 @@ export class PlayableMatchRuntime {
                 stageTime: this.tick,
                 runtimeTick: this.tick,
                 opponents: [opponent],
+                constants: owner.definition.constants,
               });
             },
             discoverHelpers: () => this.helperRunOrderCandidates(),
@@ -1450,6 +1451,7 @@ export class PlayableMatchRuntime {
             stageTime: this.tick,
             runtimeTick: this.tick,
             opponents: [opponent],
+            constants: owner.definition.constants,
           });
         },
         discoverHelpers: () => this.helperRunOrderCandidates(),
@@ -2644,6 +2646,7 @@ function runActiveStateControllers(
         actor,
         controller,
         frame: getCurrentCollisionFrame(actor),
+        constants: actor.definition.constants,
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });

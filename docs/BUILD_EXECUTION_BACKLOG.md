@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 511 - Dizzy-points defaults and AttackMulSet scaling
+
+Implemented omitted direct HitDef dizzy defaults from authored
+`Default.LifeToDizzyPointsMul` / `Super.LifeToDizzyPointsMul` constants,
+including negative receiver deltas, plus the dedicated
+`AttackMulSet.DizzyPoints` multiplier before defender scaling. Required
+focused artifacts `synthetic-imported-dizzypoints-default` and
+`synthetic-imported-dizzypoints-attack-scale` are green. The global trace
+corpus and full repository gates remain batched until the next checkpoint.
+Break transitions, sharing, reset/persistence, HUD, rollback/netplay, and
+full MUGEN/IKEMEN parity remain separate gates. See Wayfinder 150 and the
+dated research/report.
+
 ## Entry 510 - Dizzy-points suppression/v0
 
 Done: defender-owned `AssertSpecial NoDizzyPointsDamage` now compiles into typed

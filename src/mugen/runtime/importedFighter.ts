@@ -6,6 +6,7 @@ import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 
 type FrameWindow = {
@@ -165,12 +166,13 @@ function buildStateMoves(
       guardCornerPush: firstNumber(hitDef.params["guard.cornerpush.veloff"]) ?? undefined,
       airGuardCornerPush: firstNumber(hitDef.params["airguard.cornerpush.veloff"]) ?? undefined,
     });
+    const damage = numberParam(hitDef.params.damage, 45);
     result.set(
       state.id,
-      buildMove(animations.get(actionId), state.id, numberParam(hitDef.params.damage, 45), fallbackHitbox, {
+      buildMove(animations.get(actionId), state.id, damage, fallbackHitbox, {
         attr: hitDef.params.attr,
         guardPoints: firstNumber(hitDef.params.guardpoints) ?? undefined,
-        dizzyPoints: firstNumber(hitDef.params.dizzypoints) ?? undefined,
+        dizzyPoints: firstNumber(hitDef.params.dizzypoints) ?? runtimeDizzyPointsFromHitDef(damage, hitDef.params.attr, constants),
         kill: boolParam(hitDef.params.kill),
         redLife: firstNumber(hitDef.params.redlife) ?? undefined,
         guardRedLife: secondNumber(hitDef.params.redlife) ?? undefined,
