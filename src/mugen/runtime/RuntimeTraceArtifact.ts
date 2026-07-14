@@ -99,6 +99,7 @@ export type RuntimeTraceArtifactFrameSummary = {
   rootHitAdmission?: RuntimeTraceFrame["rootHitAdmission"];
   teamRoundLifebar?: RuntimeTraceFrame["teamRoundLifebar"];
   teamRoundResourceBanks?: RuntimeTraceFrame["teamRoundResourceBanks"];
+  teamRoundRedLifeShare?: RuntimeTraceFrame["teamRoundRedLifeShare"];
   tickSchedule?: RuntimeTraceArtifactTickScheduleFrame;
   eventCategories: RuntimeTraceFrame["events"][number]["category"][];
   combatReasons: RuntimeTraceFrame["combatReasons"][number]["reason"][];
@@ -306,6 +307,7 @@ function summarizeArtifactFrame(frame: RuntimeTraceFrame, previous: RuntimeTrace
     rootHitAdmission: frame.rootHitAdmission ? structuredClone(frame.rootHitAdmission) : undefined,
     teamRoundLifebar: frame.teamRoundLifebar ? structuredClone(frame.teamRoundLifebar) : undefined,
     teamRoundResourceBanks: frame.teamRoundResourceBanks ? structuredClone(frame.teamRoundResourceBanks) : undefined,
+    teamRoundRedLifeShare: frame.teamRoundRedLifeShare ? structuredClone(frame.teamRoundRedLifeShare) : undefined,
     tickSchedule: frame.tickSchedule ? summarizeArtifactTickSchedule(frame.tickSchedule) : undefined,
     eventCategories: [...new Set(frame.events.map((event) => event.category))],
     combatReasons: [...new Set(frame.combatReasons.map((reason) => reason.reason))],

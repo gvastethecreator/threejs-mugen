@@ -763,22 +763,22 @@ export function createSyntheticImportedRedLifeTraceArtifact(options: RuntimeTrac
           actorKind: "player",
           stateNo: 294,
           animNo: 294,
-          observedRedLifeAtLeast: 9,
-          observedRedLifeAtMost: 9,
+          observedRedLifeAtLeast: 1000,
+          observedRedLifeAtMost: 1000,
           minFrames: 1,
         },
         {
           actorId: "p2",
           source: "demo",
           actorKind: "player",
-          observedRedLifeAtLeast: 12,
-          observedRedLifeAtMost: 12,
+          observedRedLifeAtLeast: 963,
+          observedRedLifeAtMost: 963,
           minFrames: 1,
         },
       ],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 294, animNo: 294, redLife: 9 },
-        { actorId: "p2", source: "demo", actorKind: "player", redLife: 12 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 294, animNo: 294, redLife: 1000 },
+        { actorId: "p2", source: "demo", actorKind: "player", redLife: 963 },
       ],
       notes: [
         "Synthetic imported red-life trace proves explicit HitDef redlife ownership on a direct hit plus local RedLifeAdd and RedLifeSet state-controller writes. Omitted HitDef defaults, NoRedLifeDamage, AttackMulSet RedLife, TargetRedLifeAdd, projectile/helper/team ownership, rollback, and full MUGEN/IKEMEN parity remain future work.",
@@ -2582,6 +2582,223 @@ export function createSyntheticImportedTeamResourceSuperPauseTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
   return createSyntheticImportedTeamResourceBoundaryTraceArtifact(options, "superpause");
+}
+
+export function createSyntheticImportedTeamRedLifeShareTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedTeamRedLifeTraceArtifact(options, true);
+}
+
+export function createSyntheticImportedTeamRedLifeLocalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedTeamRedLifeTraceArtifact(options, false);
+}
+
+function createSyntheticImportedTeamRedLifeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions,
+  lifeShare: boolean,
+): RuntimeTraceArtifact {
+  const variant = lifeShare ? "shared" : "local";
+  const targetId = `synthetic-imported-team-red-life-${variant}-golden`;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-red-life-${variant}-attacker`,
+    displayName: `Synthetic Imported Team Red Life ${lifeShare ? "Shared" : "Local"} Attacker`,
+    withResourceOps: {
+      stateNo: 303,
+      redLife: { addValue: 50, setValue: 800, absolute: true },
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-red-life-${variant}-defender`,
+    displayName: `Synthetic Imported Team Red Life ${lifeShare ? "Shared" : "Local"} Defender`,
+    withHitDef: false,
+  });
+  const reserveSideOne = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-red-life-${variant}-reserve-one`,
+    displayName: `Synthetic Imported Team Red Life ${lifeShare ? "Shared" : "Local"} Reserve One`,
+    withHitDef: false,
+  });
+  const reserveSideTwo = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-red-life-${variant}-reserve-two`,
+    displayName: `Synthetic Imported Team Red Life ${lifeShare ? "Shared" : "Local"} Reserve Two`,
+    withHitDef: false,
+  });
+  const script = importedXScript();
+  const world = new MatchWorld({
+    p1: attacker,
+    p2: defender,
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    teamLifeShare: lifeShare,
+    teamPowerShare: false,
+    reserveFighters: [reserveSideOne, reserveSideTwo],
+  });
+  const trace = runRuntimeTrace(world, script, { label: targetId });
+  const reserveLife = lifeShare ? 750 : 1000;
+  const reserveRedLife = lifeShare ? 800 : 0;
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: `Synthetic imported team red-life ${variant} mutation`,
+      source: "imported",
+      notes: [
+        `Synthetic imported IKEMEN tag trace proves RedLifeAdd/RedLifeSet on a root ${lifeShare ? "reconcile through the separate root-only LifeShare adapter and mirror the standby root" : "remain local while the standby root stays at zero red life"}. Helpers, projectiles, round reset/persistence, HUD, rollback/netplay, and full MUGEN/IKEMEN red-life parity remain blocked.`,
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 303],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "RedLifeAdd", "RedLifeSet"],
+      requiredExecutedOperations: [
+        "hitdef",
+        "resource:lifeadd",
+        "resource:lifeset",
+        "resource:poweradd",
+        "resource:powerset",
+        "resource:redlifeadd",
+        "resource:redlifeset",
+      ],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: lifeShare ? ["hit", "runtime"] : ["hit"],
+      requiredEventSubstrings: lifeShare ? ["TeamResource life team:1", "TeamRedLife team:1"] : undefined,
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedRedLifeAtLeast: 800,
+          observedRedLifeAtMost: 800,
+          minFrames: 1,
+        },
+        {
+          actorId: "p3",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: reserveLife,
+          observedLifeAtMost: reserveLife,
+          observedRedLifeAtLeast: reserveRedLife,
+          observedRedLifeAtMost: reserveRedLife,
+          minFrames: 1,
+        },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedTeamRedLifeHelperTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = "synthetic-imported-team-red-life-helper-golden";
+  const script = expandRuntimeTraceScript([
+    { label: "spawn helper red life", p1: ["x"], p2: [], frames: 1 },
+    { label: "settle helper red life", p1: [], p2: [], frames: 5 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-team-red-life-helper-p1",
+    displayName: "Synthetic Imported Team Red Life Helper P1",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPos: [0, 0],
+    helperResourceRoute: {
+      stateNo: 1211,
+      lifeAdd: -100,
+      lifeSet: 750,
+      powerAdd: 200,
+      powerSet: 900,
+      redLifeAdd: 0,
+      redLifeSet: 800,
+    },
+  });
+  const world = new MatchWorld({
+    p1,
+    p2: demoFighters[1]!,
+    stage: options.stage ?? trainingStage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    teamLifeShare: true,
+    teamPowerShare: false,
+    reserveFighters: [
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-team-red-life-helper-reserve-one",
+        withHitDef: false,
+      }),
+      createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-team-red-life-helper-reserve-two",
+        withHitDef: false,
+      }),
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, { label: targetId });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: "Synthetic imported helper-local red-life under team LifeShare",
+      source: "mixed",
+      notes: [
+        "Required IKEMEN tag trace proves RedLifeAdd/RedLifeSet execute against the helper runtime actor while the root-only LifeShare adapter leaves the owning root and standby root at zero red life. Helper red-life sharing, projectile ownership, round reset/persistence, HUD, rollback/netplay, and full MUGEN/IKEMEN auxiliary-resource parity remain blocked.",
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Helper", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "RedLifeAdd", "RedLifeSet"],
+      requiredExecutedOperations: [
+        "helper",
+        "resource:lifeadd",
+        "resource:lifeset",
+        "resource:poweradd",
+        "resource:powerset",
+        "resource:redlifeadd",
+        "resource:redlifeset",
+      ],
+      requiredEffectPayloads: [
+        { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, helperStateNo: 1211, minAge: 1 },
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: 1000,
+          observedLifeAtMost: 1000,
+          observedRedLifeAtLeast: 0,
+          observedRedLifeAtMost: 0,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          stateNo: 1211,
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedRedLifeAtLeast: 800,
+          observedRedLifeAtMost: 800,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", life: 1000 }],
+    }],
+  });
 }
 
 export function createSyntheticImportedTeamResourceTargetTraceArtifact(
@@ -44679,7 +44896,10 @@ export type SyntheticImportedTraceFighterOptions = {
     stateNo: number;
   };
   withVariableOps?: { stateNo: number };
-  withResourceOps?: { stateNo: number };
+  withResourceOps?: {
+    stateNo: number;
+    redLife?: { addValue?: number; setValue?: number; absolute?: boolean };
+  };
   withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
   withGuardPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
   withDizzyPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
@@ -44763,6 +44983,8 @@ export type SyntheticImportedTraceFighterOptions = {
     lifeSet: number;
     powerAdd: number;
     powerSet: number;
+    redLifeAdd?: number;
+    redLifeSet?: number;
   };
   helperPauseRoute?: boolean;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
@@ -45603,7 +45825,7 @@ ${options.withDynamicControlOps === undefined ? "" : dynamicControlControllerBlo
 ${options.withDynamicLifeAddOps === undefined ? "" : dynamicLifeAddControllerBlock(options.withDynamicLifeAddOps)}
 ${options.withDynamicResourceSetOps === undefined ? "" : dynamicResourceSetControllerBlock(options.withDynamicResourceSetOps)}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
-${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
+${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps)}
 ${options.withRedLifeOps === undefined ? "" : redLifeControllerBlock(options.withRedLifeOps)}
 ${options.withGuardPointsOps === undefined ? "" : guardPointsControllerBlock(options.withGuardPointsOps)}
 ${options.withDizzyPointsOps === undefined ? "" : dizzyPointsControllerBlock(options.withDizzyPointsOps)}
@@ -49530,7 +49752,27 @@ ctrl = 0
 `;
 }
 
-function resourceControllerBlock(stateNo: number): string {
+function resourceControllerBlock(
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withResourceOps"]>,
+): string {
+  const redLife = config.redLife;
+  const redLifeAdd = redLife?.addValue ?? 50;
+  const redLifeSet = redLife?.setValue ?? 800;
+  const redLifeControllers = redLife === undefined
+    ? ""
+    : `
+[State 200, RedLife Add Probe]
+type = RedLifeAdd
+trigger1 = Power = 900
+value = ${redLifeAdd}
+absolute = ${redLife.absolute === false ? 0 : 1}
+
+[State 200, RedLife Set Probe]
+type = RedLifeSet
+trigger1 = Power = 900
+value = ${redLifeSet}
+`;
+  const redLifeBranch = "";
   return `
 [State 200, Life Add Probe]
 type = LifeAdd
@@ -49552,12 +49794,14 @@ value = 200
 type = PowerSet
 trigger1 = Power >= 200
 value = 900
+${redLifeControllers}
 
 [State 200, Resource Branch]
 type = ChangeState
 trigger1 = Life = 750
 trigger1 = Power = 900
-value = ${stateNo}
+${redLifeBranch}
+value = ${config.stateNo}
 ctrl = 0
 `;
 }
@@ -50629,6 +50873,21 @@ function helperResourceRouteBlock(
 ): string {
   const lifeAfterAdd = Math.max(0, Math.min(1000, 1000 + route.lifeAdd));
   const powerAfterAdd = Math.max(0, Math.min(3000, route.powerAdd));
+  const redLifeControllers = route.redLifeAdd === undefined && route.redLifeSet === undefined
+    ? ""
+    : `
+[State 1200, Helper RedLife Add Probe]
+type = RedLifeAdd
+trigger1 = Life = ${route.lifeSet}
+value = ${route.redLifeAdd ?? 0}
+absolute = 1
+
+[State 1200, Helper RedLife Set Probe]
+type = RedLifeSet
+trigger1 = Life = ${route.lifeSet}
+value = ${route.redLifeSet ?? 0}
+`;
+  const redLifeBranch = "";
   return `
 ${includeStateDef ? `[Statedef 1200]
 type = S
@@ -50658,11 +50917,13 @@ value = ${route.powerAdd}
 type = PowerSet
 trigger1 = Power = ${powerAfterAdd}
 value = ${route.powerSet}
+${redLifeControllers}
 
 [State 1200, Helper Resource Branch]
 type = ChangeState
 trigger1 = Life = ${route.lifeSet}
 trigger1 = Power = ${route.powerSet}
+${redLifeBranch}
 value = ${route.stateNo}
 ctrl = 0
 

@@ -4,10 +4,13 @@
   actor-local owner ids, red-life, guard-point, and dizzy-point values/maxima,
   suppression status, deterministic ordering, and finite/max diagnostics.
   Projectile/Explod actors are excluded and the projection is outside behavior
-  checksums. The imported direct-hit dizzy break route can enter the available
-  common `StateDizzy` state after a positive-to-zero crossing. Red-life
-  LifeShare, HUD bars, reset/persistence, and full parity remain separate
-  gates.
+  checksums. The separate `RuntimeRedLifeShareSystem/v0` adapter now mirrors
+  imported root red-life through a team bank when IKEMEN `TeamLifeShare` is
+  enabled, while local mode stays actor-owned; positive values clamp from
+  current life to life max and KO clears the side. The imported direct-hit
+  dizzy break route can enter the available common `StateDizzy` state after a
+  positive-to-zero crossing. Red-life triggers, projectile/Explod/team-helper
+  sharing, HUD bars, reset/persistence, and full parity remain separate gates.
 
 - Imported runtime supports the bounded explicit direct HitDef `redlife` and
   `guardpoints`/`dizzypoints` routes plus actor-local `RedLifeAdd`/`RedLifeSet`,
@@ -16,9 +19,11 @@
   dedicated `AttackMulSet.DizzyPoints` scaling, signed scaling, clamps, and
   required trace evidence. A bounded imported direct HitDef crossing can enter
   the available common `StateDizzy` route when no explicit `p2stateno` owns the
-  hit. Target/projectile/team sharing, reset/persistence, HUD presentation,
-  and full parity remain unsupported; defender-owned `NoDizzyPointsDamage`
-  suppression is bounded.
+  hit. Root `TeamLifeShare` is covered only by the separate imported adapter;
+  Helpers retain local controller ownership. Native red-life triggers,
+  target/projectile sharing, reset/persistence, HUD presentation, and full
+  parity remain unsupported; defender-owned `NoDizzyPointsDamage` suppression
+  is bounded.
 
 - Legal-fixture browser smoke proves one lethal imported `AssertSpecial NoKOSlow` route: physical `d -> z` enters imported state/action `210`, asserts `nokoslow` on the KO tick, defeats demo Nova Boxer from `1000` to `0`, retains post-round playback `1`, and returns to a healthy `fight` round after Reset. Desktop/mobile captures require the imported identity, action-specific palette/mask, `RuntimePostRound.noKoSlow`, progress, and normal playback. Required `mugen-lite-journey-nokoslow` trace checksum `ceac9f37` independently proves the legal ZIP command/state/AIR/SFF path. Exact slowdown curve/duration, motif/lifebar behavior, KO echoes, win/continue flow, teams, broad audio parity, and full round parity remain separate gates.
 

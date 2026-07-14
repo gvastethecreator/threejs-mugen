@@ -577,6 +577,7 @@ export type MugenSnapshot = {
   rootHitAdmission?: import("./RuntimeRootDirectHitAdmissionSystem").RuntimeRootDirectHitAdmissionDiagnostic;
   teamRoundLifebar?: import("./RuntimeTeamRoundLifebarSystem").RuntimeTeamRoundLifebarDiagnostic;
   teamRoundResourceBanks?: import("./RuntimeTeamResourceBankSystem").RuntimeTeamResourceBankDiagnostic;
+  teamRoundRedLifeShare?: import("./RuntimeRedLifeShareSystem").RuntimeRedLifeShareDiagnostic;
   runtimeAuxiliaryResources?: import("./RuntimeAuxiliaryResourceProjectionSystem").RuntimeAuxiliaryResourceProjectionDiagnostic;
   logs: string[];
 };

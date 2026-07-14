@@ -172,6 +172,12 @@ import {
   type RuntimeTeamResourceBankActor,
   type RuntimeTeamResourceBankRuntimeActor,
 } from "./RuntimeTeamResourceBankSystem";
+import {
+  RuntimeRedLifeShareRuntime,
+  RuntimeRedLifeShareWorld,
+  type RuntimeRedLifeShareActor,
+  type RuntimeRedLifeShareRuntimeActor,
+} from "./RuntimeRedLifeShareSystem";
 import type {
   RuntimeTeamRoundHandoffActor,
   RuntimeTeamRoundHandoffResult,
@@ -313,6 +319,7 @@ const runtimeActiveControllerTelemetryHooks = activeControllerTelemetryWorld.cre
 });
 const teamRoundLifebarWorld = new RuntimeTeamRoundLifebarWorld();
 const teamResourceBankWorld = new RuntimeTeamResourceBankWorld();
+const redLifeShareWorld = new RuntimeRedLifeShareWorld();
 const auxiliaryResourceProjectionWorld = new RuntimeAuxiliaryResourceProjectionWorld();
 
 export type MatchInput = {
@@ -436,6 +443,7 @@ export class PlayableMatchRuntime {
   private lastRootHitAdmission?: RuntimeRootDirectHitAdmissionDiagnostic;
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly teamResourceBankRuntime = new RuntimeTeamResourceBankRuntime();
+  private readonly redLifeShareRuntime = new RuntimeRedLifeShareRuntime();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
@@ -685,6 +693,31 @@ export class PlayableMatchRuntime {
     } satisfies RuntimeTeamResourceBankActor;
   }
 
+  private redLifeShareRuntimeActors(): RuntimeRedLifeShareRuntimeActor[] {
+    return this.characterRoots().map((root) => ({
+      ...this.redLifeShareActor(root),
+      runtime: root.runtime,
+    }));
+  }
+
+  private redLifeShareActor(root: FighterMatchState): RuntimeRedLifeShareActor {
+    const side = runtimeTeamSide(root);
+    const teamState = root.runtime.teamState;
+    if (side === undefined || !teamState) {
+      throw new Error(`Red-life share root ${root.id} has no valid team state`);
+    }
+    const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
+    return {
+      id: root.id,
+      side,
+      life: root.runtime.life,
+      lifeMax: root.runtime.lifeMax,
+      redLife: root.runtime.redLife ?? 0,
+      ...(memberNo === undefined ? {} : { memberNo }),
+      teamState,
+    } satisfies RuntimeRedLifeShareActor;
+  }
+
   private auxiliaryResourceProjectionActors(): RuntimeAuxiliaryResourceProjectionInputActor[] {
     return this.characterRoots().flatMap((root, rootOrder) => {
       const side = runtimeTeamSide(root);
@@ -742,6 +775,12 @@ export class PlayableMatchRuntime {
       powerShare: this.teamPowerShare,
       tick: this.tick,
     });
+    this.redLifeShareRuntime.reset({
+      actors: this.redLifeShareRuntimeActors(),
+      mode: this.teamRoundMode,
+      lifeShare: this.teamLifeShare,
+      tick: this.tick,
+    });
   }
 
   private reconcileTeamResourceBanks(): void {
@@ -758,6 +797,19 @@ export class PlayableMatchRuntime {
       const sign = change.delta > 0 ? "+" : "";
       this.logs.unshift(
         `TeamResource ${change.kind} ${change.resourceOwnerId} delta ${sign}${change.delta} value ${change.value}/${change.max} actors ${change.actorIds.join(",")}`,
+      );
+    }
+    const redLifeResult = this.redLifeShareRuntime.reconcile({
+      actors: this.redLifeShareRuntimeActors(),
+      mode: this.teamRoundMode,
+      lifeShare: this.teamLifeShare,
+      tick: this.tick,
+    });
+    for (const change of redLifeResult.changes) {
+      if (!change.shared || change.delta === 0) continue;
+      const sign = change.delta > 0 ? "+" : "";
+      this.logs.unshift(
+        `TeamRedLife ${change.resourceOwnerId} delta ${sign}${change.delta} value ${change.value}/${change.max} actors ${change.actorIds.join(",")}`,
       );
     }
   }
@@ -2164,6 +2216,14 @@ export class PlayableMatchRuntime {
           tick: this.tick,
         })
       : undefined;
+    const teamRoundRedLifeShare = this.runtimeProfile === "ikemen-go" && this.teamRoundMode !== "single"
+      ? redLifeShareWorld.snapshot({
+          actors: this.redLifeShareRuntimeActors(),
+          mode: this.teamRoundMode,
+          lifeShare: this.teamLifeShare,
+          tick: this.tick,
+        })
+      : undefined;
     const runtimeAuxiliaryResources = this.runtimeProfile === "ikemen-go"
       ? auxiliaryResourceProjectionWorld.snapshot({
           actors: this.auxiliaryResourceProjectionActors(),
@@ -2189,6 +2249,7 @@ export class PlayableMatchRuntime {
       rootHitAdmission: this.lastRootHitAdmission,
       teamRoundLifebar,
       teamRoundResourceBanks,
+      teamRoundRedLifeShare,
       runtimeAuxiliaryResources,
       logs: this.logs,
     });

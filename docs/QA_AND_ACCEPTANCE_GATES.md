@@ -31,6 +31,20 @@ of explicit `p2stateno`, and fail-closed behavior when the common state is
 unavailable. This gate does not claim sharing, reset/persistence, HUD,
 rollback/netplay, native breadth, or full MUGEN/IKEMEN parity.
 
+## Red-life LifeShare gate
+
+Acceptance requires `RuntimeRedLifeShareSystem/v0` to keep shared red-life in a
+separate team bank for imported root actors when explicit IKEMEN
+`TeamLifeShare` is enabled, preserve actor-local values when sharing is off,
+apply the current-life/life-max clamp, clear a KO side to zero, and publish
+deterministic snapshot/trace diagnostics. Required artifacts are
+`synthetic-imported-team-red-life-share`,
+`synthetic-imported-team-red-life-local`, and
+`synthetic-imported-team-red-life-helper`; Helper red-life remains local even
+under a shared root topology. This gate does not claim native red-life
+triggers, projectile/Explod/team-helper sharing, reset/persistence, HUD bars,
+exact round semantics, rollback/netplay, or full MUGEN/IKEMEN parity.
+
 ## KO sound handoff gate
 
 Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.

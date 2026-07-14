@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - red-life LifeShare root adapter (2026-07-14)
+
+Entry 513 closes the bounded imported IKEMEN `TeamLifeShare` red-life route.
+`RuntimeRedLifeShareSystem/v0` keeps shared team red-life separate from the
+existing life/power bank, mirrors root mutations only in explicit shared
+IKEMEN matches, preserves actor-local values in local mode, applies the
+current-life/life-max clamp, and clears a KO side's red-life. Required shared,
+local, and Helper-local artifacts pass inside the focal 611/611 test set. The
+global corpus, TypeScript 7, build, and repository gates remain batched. Next:
+red-life reset/persistence, then HUD/resource-bar presentation as independent
+gates.
+
 ## Latest implementation closeout - dizzy break transition (2026-07-14)
 
 Entry 512 closes the bounded imported direct-hit transition from a positive

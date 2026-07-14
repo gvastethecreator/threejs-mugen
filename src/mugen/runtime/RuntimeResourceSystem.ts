@@ -126,11 +126,11 @@ export class RuntimeResourceWorld {
 
   applyRedLifeAdd(state: CharacterRuntimeState, value: number, absolute = false): void {
     const delta = absolute ? value : scaleRuntimeIncomingAmount(state, value);
-    state.redLife = clampRuntimeResource((state.redLife ?? 0) + delta, 0, state.lifeMax);
+    state.redLife = clampRuntimeRedLife((state.redLife ?? 0) + delta, state);
   }
 
   applyRedLifeSet(state: CharacterRuntimeState, value: number): void {
-    state.redLife = clampRuntimeResource(value, 0, state.lifeMax);
+    state.redLife = clampRuntimeRedLife(value, state);
   }
 
   applyGuardPointsAdd(state: CharacterRuntimeState, value: number): void {
@@ -375,6 +375,14 @@ function clampIndex(value: number, max: number): number {
 function clampRuntimeResource(value: number, min: number, max?: number): number {
   const lowerBounded = Math.max(min, value);
   return max === undefined ? lowerBounded : Math.min(max, lowerBounded);
+}
+
+function clampRuntimeRedLife(value: number, state: CharacterRuntimeState): number {
+  const max = state.lifeMax === undefined ? undefined : Math.max(0, state.lifeMax);
+  const currentLife = Math.max(0, Number.isFinite(state.life) ? state.life : 0);
+  const min = max === undefined ? currentLife : Math.min(max, currentLife);
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return clampRuntimeResource(value, min, max);
 }
 
 function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {

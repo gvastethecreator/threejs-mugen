@@ -1,4 +1,16 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 513 focal closeout
+
+Entry 513 closes bounded imported root red-life `TeamLifeShare` behavior through
+`RuntimeRedLifeShareSystem/v0`. Shared IKEMEN roots mirror a separate team
+bank, local mode remains actor-owned, positive values clamp from current life
+to life max, and KO sides clear red-life. Required shared, local, and
+Helper-local artifacts pass inside the focal 611/611 test set. Full corpus,
+TypeScript 7, build, and repository gates are batched; scores do not move.
+Native triggers, projectile/Explod/team-helper sharing, reset/persistence, HUD
+bars, rollback/netplay, exact round semantics, and full parity remain separate
+gates.
+
 ## 2026-07-14 Entry 512 focal closeout
 
 Entry 512 closes the bounded imported direct-hit dizzy break transition into

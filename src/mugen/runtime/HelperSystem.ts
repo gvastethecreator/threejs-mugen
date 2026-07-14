@@ -770,6 +770,8 @@ const helperRuntimeControllers = new Set([
   "ctrlset",
   "lifeadd",
   "lifeset",
+  "redlifeadd",
+  "redlifeset",
   "poweradd",
   "powerset",
   "statetypeset",

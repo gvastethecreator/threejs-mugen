@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 513 - Red-life LifeShare root adapter
+
+Implemented the bounded imported IKEMEN `TeamLifeShare` red-life adapter.
+`RuntimeRedLifeShareSystem/v0` keeps team red-life ownership separate from the
+existing life/power bank and mirrors positive root mutations through a shared
+team bank only when explicit IKEMEN sharing is enabled. Local mode remains
+actor-owned. Positive values use the current-life to life-max clamp, and a KO
+side clears red-life to zero. Required shared, local, and Helper-local trace
+artifacts are green; focused coverage is 611/611 tests. Full trace-corpus
+regeneration, typecheck, build, and repository gates remain batched for the
+next accumulated checkpoint. Claim blocked: native red-life triggers,
+projectile/Explod/team-helper sharing, reset/persistence, HUD bars,
+rollback/netplay, exact round semantics, and full MUGEN/IKEMEN parity. See
+Wayfinder 152 and the dated research/report.
+
 ## Entry 512 - Dizzy break transition
 
 Implemented the bounded imported direct-hit dizzy break route. When a

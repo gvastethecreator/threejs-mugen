@@ -2,9 +2,9 @@
 
 ## Active frontier - 2026-07-14
 
-Entry 512 is the active implementation frontier. Entry 509 closed bounded actor-local dizzy-point initialization, mutation, direct HitDef scaling, and evidence projection; Entry 510 added defender-owned direct HitDef suppression; Entry 511 added omitted normal/Super defaults and dedicated `AttackMulSet.DizzyPoints` scaling; this cut adds the available common `StateDizzy` transition on a positive-to-zero direct-hit crossing. Scores remain unchanged until the independent corpus/adjudication lane moves them.
+Entry 513 is the active implementation frontier. Entry 509 closed bounded actor-local dizzy-point initialization, mutation, direct HitDef scaling, and evidence projection; Entry 510 added defender-owned direct HitDef suppression; Entry 511 added omitted normal/Super defaults and dedicated `AttackMulSet.DizzyPoints` scaling; Entry 512 added the available common `StateDizzy` transition on a positive-to-zero direct-hit crossing; this cut adds bounded imported root red-life `LifeShare` with a separate shared bank, local fallback, current-life/life-max clamps, and KO clearing. Scores remain unchanged until the independent corpus/adjudication lane moves them.
 
-Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. In the I2 runtime lane, close red-life `LifeShare` next; dizzy reset/persistence and HUD resource bars remain separate gates. Parallel work may add `StudioSemanticDraft/v0` and `AssetProvenance/v2`. Scores remain unchanged. See `docs/research/2026-07-14-dizzy-break-transition.md`.
+Execute next by evidence dependency: `CompatibilityCorpus/v0`, score-band adjudication, then one independent legal stage/package route. In the I2 runtime lane, close red-life reset/persistence next; HUD resource bars remain a separate presentation gate. Parallel work may add `StudioSemanticDraft/v0` and `AssetProvenance/v2`. Scores remain unchanged. See `docs/research/2026-07-14-red-life-lifeshare.md`.
 
 This is the operating ledger for building the whole approved direction without losing the playable prototype. It is intentionally narrower than the vision docs: if a task is not here, it is either already done, blocked by a gate, or belongs in a later planning update.
 

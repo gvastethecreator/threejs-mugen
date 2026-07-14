@@ -391,6 +391,21 @@ async function main() {
       artifact: presets.createSyntheticImportedTeamResourceLocalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-team-red-life-share",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamRedLifeShareTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-team-red-life-local",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamRedLifeLocalTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-team-red-life-helper",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamRedLifeHelperTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-team-resource-superpause",
       required: true,
       artifact: presets.createSyntheticImportedTeamResourceSuperPauseTraceArtifact(),

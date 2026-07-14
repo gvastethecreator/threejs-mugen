@@ -1,5 +1,25 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 red-life LifeShare root adapter
+
+- Entry 513 closes the bounded imported IKEMEN `TeamLifeShare` red-life route.
+  `RuntimeRedLifeShareSystem/v0` owns a separate shared-team bank for root
+  actors, mirrors positive mutations only when sharing is enabled, preserves
+  local mode, clamps positive values to current life through life max, and
+  clears red-life for KO sides.
+- Required artifacts
+  `synthetic-imported-team-red-life-share`,
+  `synthetic-imported-team-red-life-local`, and
+  `synthetic-imported-team-red-life-helper` pass. Focal coverage is 611/611
+  tests; `git diff --check` is clean. Full corpus regeneration, typecheck,
+  build, and repository gates remain intentionally batched.
+- Claim ceiling: imported root LifeShare and Helper-local routing only.
+  Native red-life triggers, projectile/Explod/team-helper sharing,
+  reset/persistence, HUD bars, exact round semantics, rollback/netplay, and
+  full parity remain separate gates. Scores remain unchanged.
+- See `docs/research/2026-07-14-red-life-lifeshare.md` and
+  `docs/reports/2026-07-14-red-life-lifeshare.md`.
+
 ## Global report - 2026-07-14 dizzy break transition
 
 - Entry 512 closes the bounded imported direct-hit dizzy break transition.

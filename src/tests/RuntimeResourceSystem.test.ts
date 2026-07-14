@@ -81,13 +81,13 @@ describe("RuntimeResourceSystem", () => {
   });
 
   it("keeps red life bounded and scales non-absolute additions by defense", () => {
-    const state = runtimeState({ lifeMax: 250, redLife: 0, defenseMultiplier: 0.5, superPauseDefenseMultiplier: 0.5 });
+    const state = runtimeState({ life: 100, lifeMax: 250, redLife: 0, defenseMultiplier: 0.5, superPauseDefenseMultiplier: 0.5 });
 
     applyRuntimeRedLifeAdd(state, 40);
-    expect(state.redLife).toBe(10);
+    expect(state.redLife).toBe(100);
 
     applyRuntimeRedLifeAdd(state, 30, true);
-    expect(state.redLife).toBe(40);
+    expect(state.redLife).toBe(130);
 
     applyRuntimeRedLifeSet(state, 999);
     expect(state.redLife).toBe(250);
@@ -196,7 +196,7 @@ describe("RuntimeResourceSystem", () => {
   });
 
   it("resolves dynamic RedLifeAdd and RedLifeSet values with absolute mode", () => {
-    const state = runtimeState({ redLife: 4, vars: [1, 1] });
+    const state = runtimeState({ life: 40, lifeMax: 250, redLife: 4, vars: [1, 1] });
     const redLifeAdd = resolveRuntimeResourceControllerOperation(
       controller({ value: "IfElse(var(0), 12, 0)", absolute: "var(1)" }, "RedLifeAdd"),
       state,

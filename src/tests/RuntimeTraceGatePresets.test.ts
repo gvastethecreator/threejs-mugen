@@ -591,6 +591,9 @@ import {
   createSyntheticImportedTeamResourceShareTraceArtifact,
   createSyntheticImportedTeamResourceSuperPauseTraceArtifact,
   createSyntheticImportedTeamResourceTargetTraceArtifact,
+  createSyntheticImportedTeamRedLifeHelperTraceArtifact,
+  createSyntheticImportedTeamRedLifeLocalTraceArtifact,
+  createSyntheticImportedTeamRedLifeShareTraceArtifact,
   createSyntheticImportedHelperLocalResourceTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
@@ -1284,12 +1287,12 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["resource:redlifeset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 294, minRedLife: 9, maxRedLife: 9 }),
-        expect.objectContaining({ actorId: "p2", minRedLife: 12, maxRedLife: 12 }),
+        expect.objectContaining({ actorId: "p1", stateNo: 294, minRedLife: 1000, maxRedLife: 1000 }),
+        expect.objectContaining({ actorId: "p2", minRedLife: 963, maxRedLife: 963 }),
       ]),
     );
-    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 294, redLife: 9 });
-    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ redLife: 12 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 294, redLife: 1000 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ redLife: 963 });
   });
 
   it("creates a synthetic imported guard-points artifact with direct guard and resource evidence", () => {
@@ -2955,6 +2958,72 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ bankId: "p1:power", resourceOwnerId: "p1", value: 900, max: 3000, actorIds: ["p1"] }),
     ]));
     expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 1000, power: 0 });
+  });
+
+  it("creates a required shared team red-life trace with standby mirroring", () => {
+    const artifact = createSyntheticImportedTeamRedLifeShareTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-red-life-shared-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-team-red-life-shared-golden", passed: true, failures: [] }],
+    });
+    const final = artifact.trace.frames.at(-1);
+    expect(final?.teamRoundRedLifeShare).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-red-life-share/v0",
+      mode: "tag",
+      sharing: true,
+    });
+    expect(final?.teamRoundRedLifeShare?.banks).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        bankId: "team:1:red-life",
+        resourceOwnerId: "team:1",
+        shared: true,
+        value: 800,
+        actorIds: ["p1", "p3"],
+      }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 750, redLife: 800 });
+  });
+
+  it("creates a required local team red-life trace without standby mirroring", () => {
+    const artifact = createSyntheticImportedTeamRedLifeLocalTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-red-life-local-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-team-red-life-local-golden", passed: true, failures: [] }],
+    });
+    const final = artifact.trace.frames.at(-1);
+    expect(final?.teamRoundRedLifeShare).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-red-life-share/v0",
+      mode: "tag",
+      sharing: false,
+    });
+    expect(final?.teamRoundRedLifeShare?.banks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ bankId: "p1:red-life", resourceOwnerId: "p1", shared: false, value: 800 }),
+      expect.objectContaining({ bankId: "p3:red-life", resourceOwnerId: "p3", shared: false, value: 0 }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 1000 });
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")?.redLife).toBeUndefined();
+  });
+
+  it("proves helper red life remains local under root LifeShare", () => {
+    const artifact = createSyntheticImportedTeamRedLifeHelperTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-red-life-helper-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-team-red-life-helper-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalEffects).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1-helper-0", stateNo: 1211, life: 750, redLife: 800 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p1", life: 1000 })]),
+    );
   });
 
   it("proves SuperPause poweradd reaches only the shared power bank", () => {
