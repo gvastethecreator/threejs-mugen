@@ -2,6 +2,14 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 525 adds `CompatibilityCorpus/v0`, a deterministic immutable index over
+the existing journey evidence. Required legal, portable legal, and optional
+private routes are distinct; binary payloads are not copied; missing required
+evidence and checksum/status/summary drift fail closed. Focal 3/3 tests and the
+broad 210-file / 2125-test, build, boundary, CSS, and 600/600 trace gates pass.
+Scores remain unchanged. Next: adjudicate the written score band, then add one
+independent legal stage/package route.
+
 Entry 524 adds the typed IKEMEN `setMatchWins` runtime seam beside Entry 523's
 draw-limit setter. The profile-gated command mutates one bounded win target,
 recomputes the aggregate target, and closes an already reached positive score;

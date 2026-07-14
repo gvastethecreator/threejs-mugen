@@ -1,5 +1,19 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 CompatibilityCorpus/v0
+
+- Entry 525 adds a deterministic `CompatibilityCorpus/v0` index over existing
+  journey evidence, with `required-legal`, `portable-legal`, and
+  `optional-private` classes.
+- The aggregate stores package identity, routes, unsupported-feature density,
+  claims, diagnostics, and checksum without copying ZIP or browser payloads.
+- Focal 3/3 tests and the broad 210-file / 2125-test suite pass. TypeScript 7,
+  build, boundaries, CSS budget, and 600/600 trace artifacts are green.
+- Scores remain unchanged. Next: written score-band adjudication, then one
+  independent legal stage/package route.
+- See `docs/research/2026-07-14-compatibility-corpus-v0.md` and
+  `docs/reports/2026-07-14-compatibility-corpus-v0.md`.
+
 ## Global report - 2026-07-14 Turns match-wins runtime command
 
 - Entry 524 adds a typed, profile-gated `set-match-wins` command backed by the

@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Implement CompatibilityCorpus/v0](tickets/164-compatibility-corpus-v0.md) - Entry 525 adds a deterministic immutable index over `CompatibilityJourney/v1`, separates required legal/portable legal/optional private routes, preserves route and unsupported-feature density, rejects missing/tampered evidence, and keeps binary payloads out of the corpus. Focal 3/3 tests plus the broad 210/2125 suite, build, boundaries, CSS budget, and 600/600 traces pass. Scores remain unchanged. Next: score-band adjudication, then one independent legal stage/package route.
+
 - [Expose Turns match-wins runtime mutation](tickets/163-turns-match-wins-runtime-command.md) - Entry 524 adds a typed `set-match-wins` seam for the official IKEMEN per-side setter, closes an already reached positive score, and rejects the command outside the explicit IKEMEN profile. Focal coverage passes 24 tests; Entries 523-524 pass 209 files / 2122 tests, 600/600 traces, build/boundaries/CSS budget, and the browser command probe with zero console/page errors. Lua/ZSS execution remains outside the claim ceiling.
 
 - [Expose Turns max-draws runtime mutation](tickets/162-turns-max-draws-runtime-command.md) - Entry 523 adds a typed `set-match-max-draws` seam for the official IKEMEN per-side setter, forwards initial limits through `MatchWorld`, and rejects the command outside the explicit IKEMEN profile. Focal coverage passes 23 tests; its broad closeout is shared with Entry 524 above. Lua/ZSS execution remains outside the claim ceiling.

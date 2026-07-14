@@ -1,5 +1,51 @@
 # Build Execution Backlog
 
+## Entry 525 - CompatibilityCorpus/v0
+
+Added the normalized `CompatibilityCorpus/v0` index over journey evidence.
+Required legal, portable legal, and optional private routes remain distinct;
+duplicate identities, missing required evidence, unverified licenses, claim
+drift, and checksum tampering fail closed. Focused 3/3 tests, the full 210-file
+/ 2125-test suite, TypeScript 7 build, boundaries, CSS budget, and 600/600
+trace artifacts pass. Scores remain unchanged. See
+`docs/reports/2026-07-14-compatibility-corpus-v0.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/164-compatibility-corpus-v0.md`.
+
+## Entry 524 - Turns match-win runtime command
+
+Added the profile-gated typed equivalent of IKEMEN `setMatchWins`, including
+side-specific target mutation, aggregate target coherence, and immediate
+closure when a positive existing score reaches the new target. See
+`docs/reports/2026-07-14-turns-match-wins-runtime-command.md`.
+
+## Entry 523 - Turns max-draw runtime command
+
+Added the profile-gated typed equivalent of IKEMEN `setMatchMaxDrawGames`,
+including initial `MatchWorld` forwarding and side-isolated live mutation. See
+`docs/reports/2026-07-14-turns-max-draws-runtime-command.md`.
+
+## Entry 522 - Turns draw and effective loss
+
+Closed the bounded automatic Turns draw/effective-loss boundary while keeping
+neutral DKO, per-side draw limits, bilateral effective loss, and terminal draw
+states distinct. See `docs/reports/2026-07-14-turns-draw-effective-loss.md`.
+
+## Entry 521 - Turns terminal outcome and score ownership
+
+Closed bounded automatic Turns terminal outcome and winner-owned score
+ownership. See `docs/reports/2026-07-14-turns-terminal-outcome-score.md`.
+
+## Entry 520 - Turns roster and recovery
+
+Closed ordered roster projection and source-backed recovery at the automatic
+Turns continuation boundary. See `docs/reports/2026-07-14-turns-roster-recovery.md`.
+
+## Entry 519 - Automatic Turns continuation
+
+Connected the typed KO/post-round handoff, resource reset, state-5900 entry,
+and resumed pair without incrementing the numbered round context. See
+`docs/reports/2026-07-14-automatic-turns-continuation.md`.
+
 ## Entry 518 - Sequential round context
 
 Added typed per-root `RuntimeRoundContext/v0`, preserved the live round
