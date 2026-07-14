@@ -2,24 +2,32 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 529 promotes the official Training Room route into
+`CompatibilityCorpus/v0` as `optional-private`. The corpus now accepts both
+`CompatibilityJourney/v1` and `StageCompatibilityJourney/v1`, preserves the
+journey schema discriminator, carries stage unsupported-feature density, and
+keeps external binaries out of the aggregate. The route's browser gate and
+native closeout are green; the corpus promotion is a deterministic contract
+test rather than a committed generated JSON artifact. Next: adjudicate the
+written score band, then choose the next source-backed stage/runtime gap.
+
 Entry 528 closes the browser half of the official Training Room
 `StageCompatibilityJourney/v1`: `pnpm qa:stage` imports the temporary legal
 package through the real ZIP input, selects `stage-training-room` in Studio,
 and proves nonblank desktop/mobile Three.js output, two rendered layers, stage
-diagnostics, no horizontal overflow, and zero browser errors. The journey
-remains `partial` until native regression/build/boundary closeout. Next: run the
-broad closeout, then promote the route into `CompatibilityCorpus/v0` as
-`optional-private` without committing external binaries.
+diagnostics, no horizontal overflow, and zero browser errors. Native
+regression/build/boundary closeout is now green; the route remains
+`optional-private` and does not commit external binaries.
 
 Entry 527 adds `StageCompatibilityJourney/v1` around the local official
 Elecbyte MUGEN 1.1b1 Training Room stage. The route loads the real DEF/SFF
 through `MugenStageLoader`, verifies the readme's noncommercial license
 provenance, records `StageCompatibilityReport`, and proves `resetBG` round
 clock behavior through `PlayableMatchRuntime`. The envelope is intentionally
-`partial` until the official stage browser smoke and native closeout are run.
-Focal coverage passes 213 tests and TypeScript 7 typecheck. Next: execute the
-browser/runtime visual gate, then promote the stage route into the corpus as an
-optional-private legal package without copying binary assets.
+`partial` in its deferred-gate fixture scenario, while the executed browser
+and native evidence is recorded by Entries 528-529. Focal coverage passes 213
+tests and TypeScript 7 typecheck. Full stage parity remains outside the claim
+ceiling.
 
 Entry 526 adds the first source-backed stage lifecycle clock. `StageInfo.resetBG`
 is parsed into `resetBackgroundBetweenRounds`; the runtime keeps gameplay tick

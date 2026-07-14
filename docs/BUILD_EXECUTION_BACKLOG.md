@@ -1,5 +1,17 @@
 # Build Execution Backlog
 
+## Entry 529 - Promote official stage route into compatibility corpus
+
+Extended `CompatibilityCorpus/v0` to accept both character and stage journey
+schemas. Stage entries retain `journeySchema`, package identity, route IDs,
+unsupported `stage:*` density, evidence references, and `optional-private`
+availability without copying DEF/SFF/readme payloads. The parser rejects an
+unknown journey schema. Focal corpus coverage passes 4/4 tests; TypeScript 7
+typecheck passes. The live stage browser and native closeout evidence remains
+separate and score movement is deferred. See
+`docs/reports/2026-07-14-official-stage-corpus-promotion.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/168-official-stage-corpus-promotion.md`.
+
 ## Entry 528 - Official stage browser compatibility gate
 
 Added `pnpm qa:stage` as a focused Playwright gate for the official MUGEN 1.1b1
@@ -8,8 +20,8 @@ stage sample plus the existing KFM fixture, imports it through the real ZIP
 input, opens Studio Stage, selects Training Room, and captures desktop/mobile
 screenshots and canvas evidence. It passes with 2 decoded sprites, 2 rendered
 background layers, nonblank 106/213-color canvas samples, no horizontal
-overflow, and zero page/console errors. Native closeout remains open and no
-binary fixture is committed.
+overflow, and zero page/console errors. Native closeout is green from Entry
+529 and no binary fixture is committed.
 See `docs/reports/2026-07-14-official-stage-browser-gate.md` and
 `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/167-official-stage-browser-gate.md`.
 
@@ -20,8 +32,9 @@ official Elecbyte MUGEN 1.1b1 Training Room stage. The production stage loader
 now has a typed package-evidence envelope covering license provenance, DEF/SFF
 report output, runtime stage-clock checks, and explicit browser/native gates.
 The local official fixture route passes 4 focal files / 213 tests and
-TypeScript 7 typecheck; the journey remains `partial` until browser and native
-closeout evidence is executed. No binary fixture is copied into the repository.
+TypeScript 7 typecheck; its deferred-gate fixture scenario remains `partial`,
+while the executed browser/native evidence is recorded by Entries 528-529. No
+binary fixture is copied into the repository.
 See `docs/reports/2026-07-14-official-stage-compatibility-journey.md` and
 `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/166-official-stage-compatibility-journey.md`.
 

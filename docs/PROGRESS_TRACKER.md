@@ -1,5 +1,23 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Official stage corpus promotion
+
+- Entry 529 extends `CompatibilityCorpus/v0` to index both character and stage
+  journeys. The official Training Room route is represented as
+  `optional-private`, with its journey schema, package identity, expected
+  routes, `stage:*` unsupported density, and evidence references preserved.
+- The corpus remains reference-only: no DEF/SFF/readme payload is copied, and
+  the parser rejects an unknown journey schema. The promotion is covered by
+  4/4 focal tests and TypeScript 7 typecheck.
+- Native closeout is green: 211 test files / 2129 tests, typecheck, build,
+  boundaries, CSS budget, and 600/600 trace artifacts. The official stage
+  browser gate is green at desktop/mobile. Scores remain unchanged.
+- Next: adjudicate the written score band, then select the next source-backed
+  stage/runtime gap. Full MUGEN/IKEMEN stage parity and commercial
+  redistribution remain blocked.
+- See `docs/research/2026-07-14-official-stage-corpus-promotion.md` and
+  `docs/reports/2026-07-14-official-stage-corpus-promotion.md`.
+
 ## Global report - 2026-07-14 Official stage browser compatibility gate
 
 - Entry 528 adds `pnpm qa:stage`, a focused Playwright route that imports the
@@ -10,9 +28,9 @@
   colors), no horizontal overflow, and zero page/console errors.
 - Evidence lives in `.scratch/qa/official-stage-compatibility-browser/`; the
   generated binary is temporary and not committed. Native regression/build/
-  boundary closeout remains open, so the aggregate journey stays `partial`.
-- Next: broad native closeout, then optional-private corpus promotion. Scores
-  remain unchanged.
+  boundary closeout is green in Entry 529, and the optional-private corpus
+  promotion is recorded there.
+- Scores remain unchanged; exact stage parity remains blocked.
 - See `docs/research/2026-07-14-official-stage-browser-gate.md` and
   `docs/reports/2026-07-14-official-stage-browser-gate.md`.
 
@@ -25,11 +43,12 @@
   `resetBG` round-local clock.
 - The package provenance is classified as legal noncommercial sample content;
   no binary asset is copied into the repository. Browser and native gates are
-  explicit `not-run`, so the journey status is `partial`, not passed.
+  explicit `not-run`, so the deferred-gate fixture scenario remains `partial`;
+  executed browser/native evidence is recorded by Entries 528-529.
 - Focal StageJourney/StageReport/StageDefParser/Playable coverage passes 4
   files / 213 tests; TypeScript 7 typecheck passes. Scores remain unchanged.
-- Next: execute browser stage render proof, native closeout, then promote this
-  optional-private package route into `CompatibilityCorpus/v0`.
+- Next: keep the route optional-private and adjudicate the written score band;
+  exact stage parity remains outside the claim ceiling.
 - Sources: [official MUGEN 1.1b1 distribution](https://www.elecbyte.com/mugenfiles/1.1/mugen-1.1b1.zip),
   [Elecbyte 1.1b1 background docs](https://www.elecbyte.com/mugendocs-11b1/bgs.html), and
   [Elecbyte stage tutorial](https://www.elecbyte.com/mugendocs/bg-tut.html).
