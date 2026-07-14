@@ -1,4 +1,13 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 515 focal closeout
+
+Entry 515 adds bounded runtime-owned red-life presentation to solo and
+IKEMEN team HUD paths through normalized lifebar slot data. Focused 17/17
+tests, TypeScript 7, build, 597/597 trace artifacts, architecture/CSS gates,
+and desktop/mobile Playwright smoke pass. Scores do not move. Exact
+screenpack/motif ownership, animated recovery, round persistence,
+rollback/netplay, native HUD triggers, and full parity remain separate gates.
+
 ## 2026-07-14 Entry 514 focal closeout
 
 Entry 514 closes bounded imported red-life reset/rebind lifecycle. Typed team

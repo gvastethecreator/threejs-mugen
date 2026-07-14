@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 515 - Red-life HUD presentation
+
+Added bounded runtime-owned red-life presentation. Solo fighters and IKEMEN
+team slots now render a separate recoverable-life meter backed by normalized
+`redLife`/`redLifeRatio` data, with stable actor/slot bindings, accessible
+values, and right-aligned P2 meters. Focused lifebar/match coverage passes
+17/17 tests. TypeScript 7, build, 597/597 trace artifacts, architecture
+boundaries, CSS budget, and desktop/mobile Playwright smoke pass; evidence is
+under `.scratch/qa/qa-smoke-redlife-hud/`. Claim blocked: exact
+screenpack/motif layout, animated recovery, round persistence, native HUD
+triggers, rollback/netplay, and full MUGEN/IKEMEN parity. See Wayfinder 154
+and the dated research/report.
+
 ## Entry 514 - Red-life lifecycle rebind
 
 Closed the bounded imported red-life lifecycle edge. Explicit team handoff now

@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Present red-life HUD bars](tickets/154-red-life-hud.md) - Entry 515 renders bounded runtime red-life as a secondary solo/team meter with actor/slot bindings and desktop/mobile smoke. Exact screenpack/motif ownership, animation, and multi-round persistence remain separate. Next: exact multi-round persistence.
+
 - [Close red-life lifecycle rebind](tickets/153-red-life-lifecycle-rebind.md) - Entry 514 reconciles the separate root red-life bank immediately after typed team handoff and rebinds it on match reset; exact multi-round persistence and HUD remain separate. Next: red-life/resource-bar presentation.
 
 - [Implement root red-life LifeShare adapter](tickets/152-red-life-lifeshare-root-adapter.md) - Entry 513 adds a separate `RuntimeRedLifeShareSystem/v0` for imported root actors: shared IKEMEN team bank, local fallback, current-life/life-max clamp, KO clearing, and Helper-local evidence. Next: reset/persistence; native triggers, projectile/Explod/team-helper sharing, HUD, and full parity remain blocked.

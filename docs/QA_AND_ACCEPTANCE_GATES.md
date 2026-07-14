@@ -60,6 +60,17 @@ the reproducible gate. This gate does not claim exact multi-round persistence,
 native triggers, projectile/Explod/team-helper sharing, HUD bars,
 rollback/netplay, or full MUGEN/IKEMEN parity.
 
+## Red-life HUD presentation gate
+
+Acceptance requires solo and IKEMEN team HUD paths to render a separate
+recoverable-life meter from normalized runtime red-life values, preserve
+actor/slot identity through Tag standby/active handoff, expose an accessible
+value, align P2 meters from the right, and remain within desktop/mobile
+viewport bounds. Entry 515 proves this through focused lifebar/match tests and
+Playwright smoke. This gate does not claim exact screenpack/motif layout,
+animated recovery, palette/theme ownership, round persistence, native HUD
+triggers, rollback/netplay, or full MUGEN/IKEMEN parity.
+
 ## KO sound handoff gate
 
 Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.

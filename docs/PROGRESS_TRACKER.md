@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 red-life HUD presentation
+
+- Entry 515 adds a separate recoverable-life meter to solo and IKEMEN team HUD
+  paths. Root red-life is forwarded through `RuntimeTeamRoundLifebar/v0` as
+  normalized `redLife`/`redLifeRatio`; P2 and mobile layout remain bounded.
+- Focused lifebar/match coverage passes 17/17 tests. TypeScript 7, build,
+  597/597 trace artifacts, architecture boundaries, CSS budget, and
+  desktop/mobile Playwright smoke pass. Evidence is under
+  `.scratch/qa/qa-smoke-redlife-hud/`.
+- Claim ceiling: runtime-owned red-life presentation only. Exact screenpack,
+  motif, animation, round persistence, rollback/netplay, native HUD triggers,
+  and full parity remain separate gates. Scores remain unchanged.
+- See `docs/research/2026-07-14-red-life-hud.md` and
+  `docs/reports/2026-07-14-red-life-hud.md`.
+
 ## Global report - 2026-07-14 red-life lifecycle rebind
 
 - Entry 514 closes the bounded imported red-life lifecycle edge. Typed team

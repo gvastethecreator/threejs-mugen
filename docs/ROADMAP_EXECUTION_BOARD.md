@@ -1,5 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - red-life HUD presentation (2026-07-14)
+
+Entry 515 adds the bounded runtime-owned recoverable-life meter to solo and
+IKEMEN team HUD paths. `RuntimeTeamRoundLifebar/v0` emits normalized red-life
+values per slot, the App binds every bar to its actor/slot id, and P2 meters
+remain right-aligned. Focused 17/17 tests, TypeScript 7, build, 597/597 trace
+artifacts, architecture/CSS gates, and desktop/mobile Playwright smoke pass.
+Next: exact multi-round persistence and independent compatibility adjudication;
+screenpack/motif ownership and full HUD parity remain separate.
+
 ## Latest implementation closeout - red-life lifecycle rebind (2026-07-14)
 
 Entry 514 closes the bounded imported red-life lifecycle edge. Typed team
@@ -11,8 +21,8 @@ the representative root. Focused lifecycle, handoff, and trace coverage is
 build, 597/597 trace artifacts, architecture boundaries, CSS budget, and
 desktop/mobile Playwright smoke. The default unconstrained ZIP round-trip
 test remains a worker-level nondeterminism risk; the bounded worker command is
-the reproducible gate. Next: HUD/resource-bar presentation and exact
-multi-round persistence as independent gates.
+the reproducible gate. Next: exact multi-round persistence as an independent
+gate.
 
 ## Latest implementation closeout - red-life LifeShare root adapter (2026-07-14)
 
