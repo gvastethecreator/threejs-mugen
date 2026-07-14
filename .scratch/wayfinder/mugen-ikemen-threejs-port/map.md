@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Implement Turns roster and recovery](tickets/159-turns-roster-recovery.md) - Entry 520 adds the official fallback recovery formula from remaining round ticks, ordered active/standby/defeated/remaining roster facts, and fixes repeated reserve promotion after `p2 -> p4 -> p6`. External Lua recovery, preloaded asset swaps, exact score/winpose choreography, and full parity remain separate. Next: terminal Turns outcome and score ownership.
+
 - [Implement sequential round context](tickets/157-round-context-sequence.md) - Entry 518 preserves the live counter during the fighter reset, exposes bounded `RoundNo`/`RoundsExisted`/`MatchOver` CNS context, and proves two KO transitions through rounds 1 -> 2 -> 3 with required per-root evidence. Turns continuation, exact state-5900 breadth, rollback/netplay, and full parity remain separate. Next: decision -> handoff -> reset -> state 5900 -> continuation.
 
 - [Implement match outcome and state 5900](tickets/156-match-outcome-state-5900.md) - Entry 517 adds bounded side wins/draws, terminal match-over blocking, imported state-5900 preflight and entry, score HUD/control state, and the required trace. Exact winpose/motif choreography, per-actor round context, and automatic Turns continuation remain separate. Next: atomic 1 -> 2 -> 3 continuity.

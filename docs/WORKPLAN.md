@@ -2,20 +2,18 @@
 
 ## Active frontier - 2026-07-14
 
-Entry 519 is the current implementation frontier: automatic IKEMEN Turns
-continuation now connects the post-round decision, typed handoff, resource
-reset, active-root identity switch, and state 5900 preflight. The route waits
-for the real KO/post-round boundary, preserves the current round context, and
-fails closed when an incoming root lacks state 5900. Focal coverage passes the
-new continuation and blocked-route cases; the aggregate trace corpus is
-600/600 (566 required / 34 optional), with the updated handoff trace at
-`4ec7e0a3` / final `21bc628b`. The Entry 519 broad gate passes 208 test files /
-2107 tests, TypeScript 7, a 288-module build, boundaries, CSS budget, and core
-desktop/mobile Runtime plus Studio smoke under
-`.scratch/qa/qa-smoke-automatic-turns-continuation-core/`. The optional browser
+Entry 520 is the current implementation frontier: automatic IKEMEN Turns
+continuation now exposes the source-backed fallback recovery calculation from
+remaining round ticks and an ordered active/standby/defeated/remaining roster
+projection. The production route no longer treats a promoted active reserve as
+replacement-eligible, so `p2 -> p4 -> p6` remains admissible. Entry 520 focal
+coverage passes recovery, timer, continuation, multi-roster, and production
+automatic-route assertions. The Entry 520 broad gate now passes 209 test files
+/ 2110 tests, TypeScript 7, a 289-module build, boundaries, CSS budget, and
+600/600 trace artifacts. Core desktop/mobile Runtime plus Studio smoke passes
+under `.scratch/qa/qa-smoke-turns-roster-recovery-core/`. The optional browser
 Code Fu Man upper_x smoke remains flaky while its deterministic trace passes.
-Next: audit the full post-replacement round outcome and the bounded Turns
-recovery/roster semantics.
+Next: audit terminal Turns outcome and score ownership.
 
 Entry 518 was the prior implementation frontier: per-root
 `RuntimeRoundContext/v0` preserves the live counter across the reset, exposes

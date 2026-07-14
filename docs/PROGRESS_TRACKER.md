@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Turns roster and recovery
+
+- Entry 520 extends automatic Turns continuation with the source-backed
+  fallback recovery formula from remaining round ticks and an ordered
+  `RuntimeTurnsRoster/v0` projection. Repeated `p2 -> p4 -> p6` promotion is
+  accepted; promoted active roots are no longer invalid standby candidates.
+- Entry 520 passes 209 test files / 2110 tests, TypeScript 7, a 289-module
+  build, boundaries, CSS budget, 600/600 traces, and core desktop/mobile plus
+  Studio smoke under `.scratch/qa/qa-smoke-turns-roster-recovery-core/`.
+- The optional Code Fu Man `upper_x` browser oracle remains a residual risk
+  outside this runtime slice. Next runtime audit: terminal Turns outcome and
+  score ownership.
+- See `docs/research/2026-07-14-turns-roster-recovery.md` and
+  `docs/reports/2026-07-14-turns-roster-recovery.md`.
+
 ## Global report - 2026-07-14 sequential round context
 
 - Entry 518 closes the bounded per-root round-context gap. The reset transaction
