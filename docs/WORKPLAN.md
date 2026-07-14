@@ -2,6 +2,14 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 522 closes the bounded Turns draw/effective-loss boundary. A simultaneous
+KO without a reached draw limit records a neutral draw and starts the ordinary
+next round; a reached per-side limit exposes effective loss, awards the
+opposing side, and limits reserve replacement to the affected side. Focal
+outcome/decision/continuation/Playable coverage passes 222 tests and
+TypeScript 7 typecheck is green. Next: run the broad closeout gate, then select
+the next source-backed runtime slice.
+
 Entry 521 closes the bounded automatic Turns terminal and score-ownership
 boundary. The runtime derives side-specific `matchWins` from the opposing live
 roster, commits one winner-owned score event after each successful replacement

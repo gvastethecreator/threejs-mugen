@@ -1,5 +1,19 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Turns draw and effective loss
+
+- Entry 522 closes the bounded automatic Turns draw boundary. A simultaneous
+  KO without an active draw limit records a neutral draw and starts the next
+  round; a reached per-side limit exposes effective loss, awards the opposing
+  side, and limits reserve replacement to that side.
+- Double effective loss can close the match as a draw with no fabricated
+  winner. The snapshot includes the configured draw limits and the terminal
+  message is `Match over - Draw`.
+- Focal outcome/decision/continuation/Playable coverage passes 222 tests and
+  TypeScript 7 typecheck passes. Broad closeout evidence remains pending.
+- See `docs/research/2026-07-14-turns-draw-effective-loss.md` and
+  `docs/reports/2026-07-14-turns-draw-effective-loss.md`.
+
 ## Global report - 2026-07-14 Turns terminal outcome and score ownership
 
 - Entry 521 closes bounded automatic Turns score ownership and terminal

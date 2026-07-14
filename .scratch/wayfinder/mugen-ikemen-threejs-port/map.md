@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Implement Turns draw and effective loss](tickets/161-turns-draw-effective-loss.md) - Entry 522 distinguishes normal simultaneous KO from official draw-limit effective loss. Neutral DKO starts a normal round; reached per-side limits award the opposing side and restrict reserve promotion to the affected side; double effective loss may close as a draw. Focal slice passes 222 tests and TypeScript 7. Broad gate pending.
+
 - [Implement Turns terminal outcome and score ownership](tickets/160-turns-terminal-outcome-score.md) - Entry 521 derives source-backed per-side Turns targets from the opposing roster, commits winner-owned score exactly once after a successful continuation transaction, and closes no-replacement side defeat with `matchOver`. Full suite, 600/600 traces, build, boundaries, CSS budget, and core Runtime/Studio Playwright smoke pass; the optional Code Fu Man browser fixture is explicitly skipped. Exact Lua draw/effective-loss configuration, winpose/motif timing, preloading, rollback/netplay, and full parity remain separate. Next: draw/effective-loss boundary.
 
 - [Implement Turns roster and recovery](tickets/159-turns-roster-recovery.md) - Entry 520 adds the official fallback recovery formula from remaining round ticks, ordered active/standby/defeated/remaining roster facts, and fixes repeated reserve promotion after `p2 -> p4 -> p6`. External Lua recovery, preloaded asset swaps, exact score/winpose choreography, and full parity remain separate. Next: terminal Turns outcome and score ownership.
