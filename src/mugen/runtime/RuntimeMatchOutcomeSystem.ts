@@ -80,6 +80,11 @@ export class RuntimeMatchOutcomeSystem {
     };
   }
 
+  setMaxDraws(side: RuntimeTeamSide, count: number): RuntimeMatchOutcomeSnapshot {
+    this.maxDrawsBySide[side] = boundedMaxDraws(count);
+    return this.snapshot();
+  }
+
   snapshot(): RuntimeMatchOutcomeSnapshot {
     return {
       schema: RUNTIME_MATCH_OUTCOME_SCHEMA,

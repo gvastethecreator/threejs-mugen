@@ -30,6 +30,7 @@ import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile"
 import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
 import type { RuntimeTeamRoundDecision } from "./RuntimeTeamRoundDecisionSystem";
 import type { RuntimeTeamRoundHandoffResult } from "./RuntimeTeamRoundHandoffSystem";
+import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
 import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
 import type { RuntimeHitDefContactMemoryDiagnostic } from "./RuntimeHitDefContactMemorySystem";
@@ -53,6 +54,8 @@ export type MatchWorldOptions = {
   stage?: MugenStageDefinition;
   roundTimerFrames?: number;
   matchWins?: number;
+  maxDraws?: number;
+  maxDrawsBySide?: Partial<Record<RuntimeTeamSide, number>>;
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
@@ -128,6 +131,8 @@ export class MatchWorld {
         targetWorld: this.targetWorld,
         roundTimerFrames: options.roundTimerFrames,
         matchWins: options.matchWins,
+        maxDraws: options.maxDraws,
+        maxDrawsBySide: options.maxDrawsBySide,
         runtimeProfile: options.runtimeProfile,
         superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
         reserveFighters: options.reserveFighters,

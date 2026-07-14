@@ -108,4 +108,18 @@ describe("RuntimeMatchOutcomeSystem", () => {
       effectiveLossBySide: { 1: true, 2: false },
     });
   });
+
+  it("mutates one official draw limit without changing the other side", () => {
+    const outcome = new RuntimeMatchOutcomeSystem("turns", 2);
+
+    expect(outcome.setMaxDraws(1, 1)).toMatchObject({
+      maxDrawsBySide: { 1: 1, 2: -1 },
+    });
+    expect(outcome.effectiveLossBySideForNextDraw()).toEqual({ 1: false, 2: false });
+    outcome.recordRound();
+    expect(outcome.effectiveLossBySideForNextDraw()).toEqual({ 1: true, 2: false });
+
+    expect(outcome.setMaxDraws(1, Number.NaN).maxDrawsBySide).toBeUndefined();
+    expect(outcome.effectiveLossBySideForNextDraw()).toEqual({ 1: false, 2: false });
+  });
 });

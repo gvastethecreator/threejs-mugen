@@ -355,6 +355,7 @@ export type MatchRuntimeCommand =
   | { type: "set-speed"; speed: number }
   | { type: "toggle"; key: "showClsn1" | "showClsn2" | "showAxis" | "showGrid"; value: boolean }
   | { type: "set-root-standby"; changes: readonly RuntimeRootStandbyChange[] }
+  | { type: "set-match-max-draws"; side: RuntimeTeamSide; count: number }
   | { type: "next-round" }
   | { type: "reset" };
 
@@ -953,6 +954,11 @@ export class PlayableMatchRuntime {
         throw new Error("Root standby transitions require the ikemen-go runtime profile");
       }
       rootStandbyTransitionWorld.apply([this.p1, this.p2, ...this.reserveRoots], command.changes);
+    } else if (command.type === "set-match-max-draws") {
+      if (this.runtimeProfile !== "ikemen-go") {
+        throw new Error("Match draw limits require the ikemen-go runtime profile");
+      }
+      this.matchOutcome.setMaxDraws(command.side, command.count);
     } else if (command.type === "next-round") {
       this.startNextRound();
     } else if (command.type === "reset") {

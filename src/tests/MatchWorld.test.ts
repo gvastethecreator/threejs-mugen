@@ -128,6 +128,34 @@ describe("MatchWorld", () => {
     expect(controllerOrder).toEqual(["p2", "p1"]);
   });
 
+  it("forwards official per-side draw limits and accepts live IKEMEN updates", () => {
+    const world = new MatchWorld({
+      runtimeProfile: "ikemen-go",
+      teamMode: "turns",
+      roundTimerFrames: 0,
+      maxDrawsBySide: { 1: 2 },
+    });
+
+    world.step({ p1: new Set(), p2: new Set() });
+    const initialRound = world.dispatch({ type: "next-round" });
+    expect(initialRound.round?.match).toMatchObject({
+      maxDrawsBySide: { 1: 2, 2: -1 },
+    });
+
+    const updated = world.dispatch({ type: "set-match-max-draws", side: 2, count: 0 });
+    expect(updated.round?.match).toMatchObject({
+      maxDrawsBySide: { 1: 2, 2: 0 },
+    });
+  });
+
+  it("blocks the IKEMEN draw-limit command outside the explicit profile", () => {
+    const world = new MatchWorld();
+
+    expect(() => world.dispatch({ type: "set-match-max-draws", side: 1, count: 0 })).toThrow(
+      "Match draw limits require the ikemen-go runtime profile",
+    );
+  });
+
   it("publishes inert P3-P8 roots and participation through the live MatchWorld registry only", () => {
     const world = new MatchWorld({
       p1: demoFighters[0]!,
