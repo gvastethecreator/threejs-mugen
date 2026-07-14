@@ -49,6 +49,14 @@ Render/Audio Adapters
 
 The studio is allowed to be opinionated, but the engine should stay modular.
 
+The first writable source loop is deliberately narrow: `StudioSemanticDraft/v0`
+preflights one CNS/ST document in memory against the active source
+fingerprint/project revision, then permits the existing folder write/reimport
+transaction only after a fresh folder fingerprint check. The UI keeps invalid
+drafts repairable and stale drafts visibly blocked. ZIP rewrite, create/delete,
+watch/merge, post-close rollback, and broad structured authoring are separate
+future contracts.
+
 The Studio object model is:
 
 ```txt

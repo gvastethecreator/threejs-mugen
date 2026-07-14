@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 539 - StudioSemanticDraft/v0
+
+Added an in-memory semantic preflight for one existing CNS/ST source document.
+The draft records source package/path, base and active revision/fingerprint,
+compiler profile/version, deterministic source/diagnostic digests, parser
+diagnostics, and Runtime IR compile counts. Invalid syntax and unsupported
+formats remain editable for repair but cannot save; stale source/revision state
+pauses editing until explicit reimport or conflict resolution. Before
+`createWritable()`, Studio requests write permission, fingerprints the remembered
+folder again, and fails closed on drift. After explicit reimport it verifies the
+edited document digest. Focused coverage passes 1 file / 5 tests and TypeScript
+7 passes. ZIP rewrite, create/delete, watch/merge, post-close rollback, and
+broad structured editors remain blocked. See
+`docs/reports/2026-07-14-studio-semantic-draft-v0.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/178-studio-semantic-draft-v0.md`.
+
 ## Entry 538 - Stage quality checkpoint
 
 Closed Entries 535-537 with native 211 files / 2140 tests, TypeScript 7,

@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 StudioSemanticDraft/v0
+
+- Studio source editing now preflights one CNS/ST document in memory through
+  parsing and Runtime IR compilation before a write stream can open.
+- Invalid syntax and unsupported formats keep a repairable editor state but
+  disable Save; source fingerprint or project revision drift becomes stale and
+  blocks editing until explicit recovery.
+- The write path re-requests permission, re-fingerprints the physical folder
+  immediately before `createWritable()`, explicitly reimports, and verifies the
+  final edited-document digest after close.
+- Focal coverage passes 1 file / 5 tests and TypeScript 7 passes. Broad native,
+  build, and browser evidence is accumulated at the next closeout.
+- No score movement. ZIP rewrite, create/delete, watch/merge, post-close
+  rollback, and broad structured editors remain outside the claim.
+- See `docs/research/2026-07-14-studio-semantic-draft-v0.md` and
+  `docs/reports/2026-07-14-studio-semantic-draft-v0.md`.
+
 ## Global report - 2026-07-14 Stage quality checkpoint Entry 538
 
 - Entries 535-537 pass the accumulated closeout: native 211/2140, focal stage

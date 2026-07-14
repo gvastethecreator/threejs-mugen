@@ -2,6 +2,16 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 539 implements `StudioSemanticDraft/v0`. Existing folder source editing
+now parses and compiles CNS/ST text in memory, binds the draft to source
+fingerprint/project revision, exposes deterministic diagnostic evidence, blocks
+invalid/stale saves, re-fingerprints the physical folder before the writable
+stream, and verifies the final reimported text digest. Focal coverage passes
+5 tests and TypeScript 7 passes. Next: run the accumulated Studio/browser
+closeout, then choose the next independent Studio trust slice. ZIP rewrite,
+create/delete, watch/merge, post-close rollback, and broad structured editors
+remain blocked.
+
 Entry 538 closes the accumulated stage quality checkpoint. Native 211/2140,
 focal stage 4/28, TypeScript 7, build, boundaries, CSS, official browser, and
 trace 600/600 are green; scores remain unchanged. The next frontier is an

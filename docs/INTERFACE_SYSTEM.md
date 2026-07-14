@@ -44,6 +44,7 @@ The current visual direction is **Fight Lab / Frame Ledger**. The playable artif
 - On single-column/mobile layouts, the stage owns a complete row before navigation/debug panels begin, including Studio mode. No pane should visually overlap the runtime viewport or bury the playtest preview under long workbench panels.
 - Evidence Trace Frame Scrubber should make frame-local trace data explainable. When `RuntimeTraceArtifact.world` exists, the selected frame must show compact world deltas for live actors, effect stores, target links, and lifecycle events instead of only checksum text.
 - Stage Studio is a first-class diagnostic surface, not yet an editor. It must show selected stage source, floor/bounds/zoffset/camera/player starts, available stages, BG layer status, bounded/unsupported BG controller diagnostics, imported-stage file coverage, layer/controller fallback reasons, and unsupported stage features from `StageCompatibilityReport.backgrounds`.
+- The focused Studio source document surface is a semantic draft editor, not a general text editor: `.cns`/`.st` input shows parser/compiler diagnostics and deterministic digest evidence, invalid drafts remain repairable but cannot save, and stale source/revision state pauses editing until explicit reimport or conflict resolution. Unsupported formats stay readable but save-disabled. ZIP rewrite, create/delete, watch/merge, post-close rollback, and broad structured editors remain blocked.
 
 ## Component Direction
 

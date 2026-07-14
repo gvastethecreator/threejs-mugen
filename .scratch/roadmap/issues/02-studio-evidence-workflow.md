@@ -1,6 +1,6 @@
 # 02 - Studio Evidence Workflow
 
-Status: ready-for-agent
+Status: ready-for-review
 Labels: studio, visual-qa, docs, ready-for-agent
 
 ## Objective
@@ -11,7 +11,9 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 
 Entries 484-505 close local edit history, dirty navigation, autosave, versioned project index, storage conflict, source transactions/read models, provenance v0/v1, persistent ZIP handles, folder recovery, and bounded existing-file folder editing. The old source-identity/write selector is historical.
 
-Next build `StudioSemanticDraft/v0`: parse and compile one focused document in memory against the active revision/fingerprint before opening a writable stream. Invalid drafts must not write; valid drafts may use the existing explicit write/reimport transaction. ZIP rewrite, create/delete, watch/merge, post-close rollback, and broad state/controller/collision editors remain blocked.
+Implemented `StudioSemanticDraft/v0`: one CNS/ST document is parsed and compiled in memory against the active revision/fingerprint before opening a writable stream. Invalid and stale drafts cannot write; valid drafts revalidate permission and the physical folder fingerprint before the existing explicit write/reimport transaction, then verify the final document digest. ZIP rewrite, create/delete, watch/merge, post-close rollback, and broad state/controller/collision editors remain blocked.
+
+Next build: accumulate the Studio/browser closeout, then choose the next independent Studio trust slice. Provenance v2 and package analysis remain the leading candidates; this issue no longer owns the source-editor preflight gap.
 
 ## Next Useful Cuts
 

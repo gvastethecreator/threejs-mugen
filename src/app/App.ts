@@ -71,6 +71,7 @@ import { createImportedFighterDefinition } from "../mugen/runtime/importedFighte
 import { MatchWorld, type MatchWorldActorRegistrySnapshot } from "../mugen/runtime/MatchWorld";
 import { MugenRuntime } from "../mugen/runtime/MugenRuntime";
 import { createMatchSmokeTraceArtifact } from "../mugen/runtime/RuntimeTracePresets";
+import { fingerprintMugenStateSource } from "../mugen/compiler/StateSourceResolver";
 import type { RuntimeTraceArtifact } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { RuntimeTraceArtifactFrameSummary } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { MugenSnapshot } from "../mugen/runtime/types";
@@ -104,6 +105,12 @@ import {
   updateStudioSourceDocumentDraft,
   type StudioSourceDocumentDraft,
 } from "./StudioSourceDocument";
+import {
+  canWriteStudioSemanticDraft,
+  createStudioSemanticDraftPreflight,
+  describeStudioSemanticDraft,
+  type StudioSemanticDraftPreflight,
+} from "./StudioSemanticDraft";
 import {
   createIndexedDbSourceHandleStore,
   createMemorySourceHandleStore,
@@ -1373,6 +1380,7 @@ export class App {
         const draft = this.studioSourceDocument;
         if (draft) {
           this.studioSourceDocument = updateStudioSourceDocumentDraft(draft, target.value);
+          this.refreshStudioSourceSemanticDraft();
           this.refreshStudioSourceEditorStatus();
         }
         return;
@@ -1875,11 +1883,15 @@ export class App {
       this.log(`Source file ${sourcePath} is not available in the active VFS.`);
       return;
     }
+    const sourcePackage = this.getProjectSourcePackages().find((item) => item.id === sourcePackageId);
     this.studioSourceDocument = createStudioSourceDocumentDraft({
       sourcePackageId,
       path: vfsPath ?? sourcePath,
       text,
+      baseSourceFingerprint: this.getActiveStudioSourceFingerprint(sourcePackage),
+      baseProjectRevision: this.getActiveStudioProjectRevision(),
     });
+    this.refreshStudioSourceSemanticDraft();
   }
 
   private resolveStudioSourceVfsPath(sourcePath: string): string | undefined {
@@ -1924,8 +1936,15 @@ export class App {
   }
 
   private async saveStudioSourceDocument(): Promise<void> {
+    this.refreshStudioSourceSemanticDraft();
     const draft = this.studioSourceDocument;
     if (!draft?.dirty) {
+      return;
+    }
+    const semanticPreflight = draft.semanticPreflight;
+    if (!semanticPreflight || !canWriteStudioSemanticDraft(semanticPreflight)) {
+      this.log(describeStudioSemanticDraft(semanticPreflight));
+      this.updateUi();
       return;
     }
     const context = this.getStudioSourceWriteContext(draft);
@@ -1948,29 +1967,77 @@ export class App {
         this.updateUi();
         return;
       }
-      const result = await writeSourceHandleText(context.handle, draft.path, draft.text);
+      const latestContext = this.getStudioSourceWriteContext(draft);
+      if (!latestContext || latestContext.plan.status !== "ready" || !latestContext.handle) {
+        this.log(latestContext?.plan.detail ?? "Source document save is no longer available for the current package.");
+        this.updateUi();
+        return;
+      }
+      const activeRevision = this.getActiveStudioProjectRevision();
+      if (draft.baseProjectRevision !== undefined && draft.baseProjectRevision !== activeRevision) {
+        this.log("The project revision changed before the writable stream opened; resolve the conflict and reload the source draft.");
+        this.refreshStudioSourceSemanticDraft();
+        this.updateUi();
+        return;
+      }
+      const observedFingerprint = await this.readSourceHandleFingerprint(latestContext.handle);
+      const expectedFingerprint = draft.baseSourceFingerprint ?? latestContext.sourcePackage.fingerprint;
+      if (!expectedFingerprint || observedFingerprint.digest.toLowerCase() !== expectedFingerprint.toLowerCase()) {
+        await this.persistSourceHandle(
+          latestContext.sourcePackage,
+          latestContext.handle,
+          "granted",
+          observedFingerprint.digest,
+          observedFingerprint.byteLength,
+        );
+        this.log("The source fingerprint changed before the writable stream opened; save paused until explicit reimport.");
+        this.refreshStudioSourceSemanticDraft();
+        this.updateUi();
+        return;
+      }
+      const result = await writeSourceHandleText(latestContext.handle, draft.path, draft.text);
       this.studioSourceDocument = commitStudioSourceDocumentDraft(draft);
       this.invalidateBuildOutputs();
-      this.pendingSourceRelinkPackageId = context.sourcePackage.id;
-      const accepted = await this.loadFolder(await readSourceHandleFolder(context.handle), {
+      this.pendingSourceRelinkPackageId = latestContext.sourcePackage.id;
+      const accepted = await this.loadFolder(await readSourceHandleFolder(latestContext.handle), {
         allowChangedSource: true,
         skipNavigationGuard: true,
       });
       if (accepted) {
-        const activePackage = this.getProjectSourcePackages().find((item) => item.id === context.sourcePackage.id) ?? context.sourcePackage;
+        const activePackage = this.getProjectSourcePackages().find((item) => item.id === latestContext.sourcePackage.id) ?? latestContext.sourcePackage;
         const fingerprint = this.importedSourceBundle?.fingerprint;
         await this.persistSourceHandle(
           activePackage,
-          context.handle,
+          latestContext.handle,
           "granted",
           fingerprint?.digest,
           fingerprint?.byteLength,
         );
         const refreshedText = this.importedSourceBundle?.vfs.readText(draft.path);
-        this.studioSourceDocument = refreshedText === undefined
-          ? undefined
-          : createStudioSourceDocumentDraft({ sourcePackageId: activePackage.id, path: draft.path, text: refreshedText });
-        this.log(`Saved ${draft.path} (${result.byteLength} bytes) and explicitly reimported ${activePackage.name}.`);
+        if (refreshedText === undefined) {
+          this.studioSourceDocument = undefined;
+          this.log(`Saved ${draft.path}, but the reimported source no longer exposes the edited path.`);
+        } else if (fingerprintMugenStateSource(refreshedText) !== semanticPreflight.draftDigest) {
+          this.studioSourceDocument = createStudioSourceDocumentDraft({
+            sourcePackageId: activePackage.id,
+            path: draft.path,
+            text: refreshedText,
+            baseSourceFingerprint: fingerprint?.digest,
+            baseProjectRevision: this.getActiveStudioProjectRevision(),
+          });
+          this.refreshStudioSourceSemanticDraft();
+          this.log(`Saved ${draft.path}, but the reimported text digest differs from the semantic draft; inspect before continuing.`);
+        } else {
+          this.studioSourceDocument = createStudioSourceDocumentDraft({
+            sourcePackageId: activePackage.id,
+            path: draft.path,
+            text: refreshedText,
+            baseSourceFingerprint: fingerprint?.digest,
+            baseProjectRevision: this.getActiveStudioProjectRevision(),
+          });
+          this.refreshStudioSourceSemanticDraft();
+          this.log(`Saved ${draft.path} (${result.byteLength} bytes) and explicitly reimported ${activePackage.name}.`);
+        }
       } else {
         this.log(`Saved ${draft.path}, but explicit source reimport was rejected; the current runtime session was retained.`);
       }
@@ -1997,12 +2064,55 @@ export class App {
     if (!draft || !status || !save || !discard) {
       return;
     }
-    const plan = this.getStudioSourceWriteContext(draft)?.plan;
+    const context = this.getStudioSourceWriteContext(draft);
+    const plan = context?.plan;
+    const preflight = this.createStudioSourceSemanticPreflight(draft, context);
     status.textContent = draft.dirty
-      ? plan?.status === "ready" ? "Unsaved local edit" : plan?.detail ?? "Unsaved local edit"
-      : plan?.detail ?? "Source document loaded";
-    save.disabled = !draft.dirty || plan?.status !== "ready";
+      ? plan?.status === "ready" ? describeStudioSemanticDraft(preflight) : plan?.detail ?? "Unsaved local edit"
+      : plan?.detail ?? describeStudioSemanticDraft(preflight);
+    save.disabled = !draft.dirty || plan?.status !== "ready" || !canWriteStudioSemanticDraft(preflight);
     discard.disabled = !draft.dirty;
+  }
+
+  private refreshStudioSourceSemanticDraft(): void {
+    const draft = this.studioSourceDocument;
+    if (!draft) {
+      return;
+    }
+    const context = this.getStudioSourceWriteContext(draft);
+    this.studioSourceDocument = {
+      ...draft,
+      semanticPreflight: this.createStudioSourceSemanticPreflight(draft, context),
+    };
+  }
+
+  private createStudioSourceSemanticPreflight(
+    draft: StudioSourceDocumentDraft,
+    context: ReturnType<App["getStudioSourceWriteContext"]>,
+  ): StudioSemanticDraftPreflight {
+    return createStudioSemanticDraftPreflight({
+      sourcePackageId: draft.sourcePackageId,
+      path: draft.path,
+      text: draft.text,
+      baseFingerprint: draft.baseSourceFingerprint,
+      activeFingerprint: this.getActiveStudioSourceFingerprint(context?.sourcePackage),
+      baseRevision: draft.baseProjectRevision,
+      activeRevision: this.getActiveStudioProjectRevision(),
+    });
+  }
+
+  private getActiveStudioSourceFingerprint(sourcePackage: GameProjectSourcePackage | undefined): string | undefined {
+    return this.importedSourceBundle?.fingerprint.digest ?? sourcePackage?.observedFingerprint ?? sourcePackage?.fingerprint;
+  }
+
+  private getActiveStudioProjectRevision(): number | undefined {
+    return this.projectStorageConflict?.actualRevision ?? this.projectStorageRevision;
+  }
+
+  private async readSourceHandleFingerprint(handle: SourceHandleLike): Promise<SourceFingerprint> {
+    const files = await readSourceHandleFolder(handle);
+    const vfs = await new FolderCharacterSource(files).load();
+    return fingerprintVirtualFileSystem(vfs);
   }
 
   private async persistSourceHandle(
@@ -7440,7 +7550,16 @@ export class App {
       path: draft.path,
       detail: "The source package is no longer active in this Studio session.",
     } satisfies SourceWritePlan;
-    const editable = plan.status === "ready";
+    const preflight = this.createStudioSourceSemanticPreflight(draft, context);
+    const editable = plan.status === "ready" && preflight.status !== "stale";
+    const editorStatus = draft.dirty
+      ? plan.status !== "ready" ? plan.detail : describeStudioSemanticDraft(preflight)
+      : plan.status !== "ready" ? plan.detail : describeStudioSemanticDraft(preflight);
+    const badgeStatus: StudioStatus = plan.status !== "ready"
+      ? "blocked"
+      : preflight.status === "ready"
+        ? draft.dirty ? "warn" : "ok"
+        : preflight.status === "stale" ? "blocked" : "warn";
     return `
       <section class="studio-source-editor" aria-label="Source document editor">
         <div class="studio-source-editor-head">
@@ -7448,12 +7567,13 @@ export class App {
             <strong>Source document</strong>
             <small>${escapeHtml(context?.sourcePackage.name ?? draft.sourcePackageId)} / ${escapeHtml(draft.path)}</small>
           </span>
-          ${this.statusBadge(editable ? draft.dirty ? "warn" : "ok" : "blocked")}
+          ${this.statusBadge(badgeStatus)}
         </div>
         <textarea data-source-editor="true" aria-label="Source document text" spellcheck="false"${editable ? "" : " readonly"}>${escapeHtml(draft.text)}</textarea>
-        <div class="studio-source-editor-status" data-source-editor-status>${escapeHtml(draft.dirty && editable ? "Unsaved local edit" : plan.detail)}</div>
+        <div class="studio-source-editor-status" data-source-editor-status>${escapeHtml(editorStatus)}</div>
+        <small class="list-meta">Semantic ${escapeHtml(preflight.status)} / digest ${escapeHtml(preflight.draftDigest)} / diagnostics ${preflight.diagnostics.length}</small>
         <div class="row-actions studio-source-editor-actions">
-          <button type="button" data-action="save-source-document"${!draft.dirty || !editable ? " disabled" : ""}>Save &amp; Reimport</button>
+          <button type="button" data-action="save-source-document"${!draft.dirty || !editable || !canWriteStudioSemanticDraft(preflight) ? " disabled" : ""}>Save &amp; Reimport</button>
           <button type="button" data-action="discard-source-document"${!draft.dirty ? " disabled" : ""}>Discard</button>
         </div>
       </section>
