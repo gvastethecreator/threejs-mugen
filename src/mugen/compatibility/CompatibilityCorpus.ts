@@ -296,6 +296,7 @@ function isCorpusEntry(value: unknown): value is CompatibilityCorpusEntry {
   if (!Array.isArray(value.evidenceIds) || !value.evidenceIds.every((evidenceId) => typeof evidenceId === "string")) return false;
   if (!Array.isArray(value.unsupportedFeatures) || !value.unsupportedFeatures.every((feature) => typeof feature === "string")) return false;
   if (value.journeyId !== undefined && typeof value.journeyId !== "string") return false;
+  if (value.journeySchema !== undefined && !isJourneySchema(value.journeySchema)) return false;
   if (value.unavailableReason !== undefined && typeof value.unavailableReason !== "string") return false;
   return value.package === undefined || isCorpusPackage(value.package);
 }
@@ -330,6 +331,10 @@ function isCorpusSummary(value: Record<string, unknown>): value is Compatibility
 
 function isCorpusAvailability(value: unknown): value is CompatibilityCorpusAvailability {
   return value === "required-legal" || value === "portable-legal" || value === "optional-private";
+}
+
+function isJourneySchema(value: unknown): value is CompatibilityCorpusEntry["journeySchema"] {
+  return value === COMPATIBILITY_JOURNEY_SCHEMA || value === STAGE_COMPATIBILITY_JOURNEY_SCHEMA;
 }
 
 function isCorpusEntryStatus(value: unknown): value is CompatibilityCorpusEntryStatus {

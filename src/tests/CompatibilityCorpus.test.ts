@@ -55,6 +55,12 @@ describe("CompatibilityCorpus/v0", () => {
     expect(parseCompatibilityCorpus({ ...first, checksum: "00000000" }).errors).toContain(
       "compatibility corpus checksum mismatch",
     );
+    expect(
+      parseCompatibilityCorpus({
+        ...first,
+        entries: first.entries.map((entry) => ({ ...entry, journeySchema: "unknown-journey/v0" })),
+      }).errors,
+    ).toContain("compatibility corpus result metadata is invalid");
   });
 
   it("fails closed for missing required journeys and duplicate packages", () => {
