@@ -5,15 +5,18 @@
 Entry 524 adds the typed IKEMEN `setMatchWins` runtime seam beside Entry 523's
 draw-limit setter. The profile-gated command mutates one bounded win target,
 recomputes the aggregate target, and closes an already reached positive score;
-focal coverage passes 24 tests with TypeScript 7 green. Entries 523-524 now
-share one batched broad gate.
+focal coverage passes 24 tests with TypeScript 7 green. Entries 523-524 pass the
+full suite at 209 test files / 2122 tests, TypeScript 7, the 289-module build,
+boundaries, CSS budget, 600/600 trace artifacts, and the focused browser rule
+probe with zero console/page errors. The optional Code Fu Man fixture remains
+absent from the separate visual smoke. Next: select the next independent
+source-backed lifecycle or corpus slice.
 
 Entry 523 adds the typed IKEMEN `setMatchMaxDrawGames` runtime seam. The
 profile-gated `set-match-max-draws` command mutates one bounded side limit,
 `MatchWorldOptions` forwards initial limits, and focal coverage passes 23 tests
-with TypeScript 7 green. Broad gates are batched for the next checkpoint.
-Next: run the aggregate gates, then select the next independent source-backed
-runtime or corpus slice without claiming Lua/ZSS execution.
+with TypeScript 7 green. It shares the Entry 524 broad closeout above. Lua/ZSS
+execution remains outside the claim ceiling.
 
 Entry 522 closes the bounded Turns draw/effective-loss boundary. A simultaneous
 KO without a reached draw limit records a neutral draw and starts the ordinary

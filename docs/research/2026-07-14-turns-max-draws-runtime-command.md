@@ -37,9 +37,12 @@ side effects outside the match outcome owner.
   fail-closed profile gating.
 - Focal verification: 2 test files / 23 tests passed; TypeScript 7 typecheck
   passed; `git diff --check` passed.
+- Batched verification: 209 test files / 2122 tests, 289-module build,
+  boundaries, CSS budget, and 600/600 trace artifacts passed. The focused
+  browser command probe passed with zero console/page errors; the optional Code
+  Fu Man fixture remains absent from the separate full visual smoke.
 
 ## Open boundary
 
-The next gate must run the aggregate suite, trace corpus, build, boundaries,
-CSS budget, and browser smoke. Lua/ZSS execution, dynamic script registration,
-and exact unbounded count semantics remain outside this slice.
+Lua/ZSS execution, dynamic script registration, and exact unbounded count
+semantics remain outside this slice.

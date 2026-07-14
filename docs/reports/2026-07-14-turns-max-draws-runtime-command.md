@@ -14,11 +14,21 @@ mutation without widening team, score, or Lua ownership.
 ## Evidence
 
 - Focal suite: 2 files / 23 tests passed.
+- Full suite: 209 test files / 2122 tests passed with
+  `pnpm test -- --maxWorkers=4`.
 - TypeScript 7 typecheck: passed.
+- Production build passed: 289 modules, 1,782.11 kB JavaScript output / 447.37
+  kB gzip. The existing large-chunk advisory remains open.
+- Boundaries and CSS budget passed with zero duplicate selector keys, zero
+  exact duplicate rules, and zero fully shadowed cross-file rules.
+- Aggregate trace passed 600/600 artifacts: 566 required and 34 optional.
+- Focused browser command probe passed at
+  `.scratch/qa/qa-smoke-turns-rules-command-browser/diagnostics.json`, with
+  both live mutations visible in snapshots and zero console/page errors. The
+  full Runtime/Tag/Studio visual smoke from Entry 522 remains the UI baseline;
+  this entry changes no visible surface.
 - `git diff --check`: passed.
 - Code commit: `646fa705 feat: expose IKEMEN match draw limit mutation`.
-- Aggregate and browser gates are intentionally queued for the next batched
-  checkpoint.
 
 ## Quality audit
 

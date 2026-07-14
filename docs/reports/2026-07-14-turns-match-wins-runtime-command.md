@@ -13,10 +13,21 @@ without claiming Lua/ZSS execution.
 ## Evidence
 
 - Focal suite: 2 files / 24 tests passed.
+- Full suite: 209 test files / 2122 tests passed with
+  `pnpm test -- --maxWorkers=4`.
 - TypeScript 7 typecheck: passed.
+- Production build passed: 289 modules, 1,782.11 kB JavaScript output / 447.37
+  kB gzip. The existing large-chunk advisory remains open.
+- Boundaries and CSS budget passed with zero duplicate selector keys, zero
+  exact duplicate rules, and zero fully shadowed cross-file rules.
+- Aggregate trace passed 600/600 artifacts: 566 required and 34 optional.
+- Focused browser command probe passed at
+  `.scratch/qa/qa-smoke-turns-rules-command-browser/diagnostics.json`, with
+  both live mutations visible in snapshots and zero console/page errors. The
+  full Runtime/Tag/Studio visual smoke from Entry 522 remains the UI baseline;
+  this entry changes no visible surface.
 - `git diff --check`: passed.
 - Code commit: `19220794 feat: expose IKEMEN match win target mutation`.
-- Broad gates are batched with the preceding draw-limit command.
 
 ## Quality audit
 
@@ -34,5 +45,5 @@ execution, script registration, rollback/netplay, or full MUGEN/IKEMEN parity.
 
 ## Next
 
-Run the batched broad gates for Entries 523-524, then select the next
+Entries 523-524 have passed the batched broad gates. Select the next
 independent source-backed lifecycle or compatibility-corpus slice.

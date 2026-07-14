@@ -31,9 +31,12 @@ wins)` mutation without conflating it with Lua/ZSS execution?
 ## Evidence
 
 - `RuntimeMatchOutcomeSystem.test.ts` and `MatchWorld.test.ts`: 24 tests passed.
+- Broad suite: 209 test files / 2122 tests, 289-module build, boundaries, CSS
+  budget, and 600/600 trace artifacts passed.
+- Browser command probe passed with zero console/page errors at
+  `.scratch/qa/qa-smoke-turns-rules-command-browser/diagnostics.json`.
 - TypeScript 7 typecheck and `git diff --check`: passed.
 - Code commit: `19220794 feat: expose IKEMEN match win target mutation`.
-- Broad test, trace, build, and browser gates are batched with Entry 523.
 
 ## Claim ceiling
 

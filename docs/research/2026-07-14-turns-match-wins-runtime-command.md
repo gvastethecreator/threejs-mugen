@@ -34,9 +34,12 @@ round, team, renderer, Studio, or script ownership.
 - `MatchWorld.test.ts` proves command forwarding and non-IKEMEN rejection.
 - Focal verification: 2 test files / 24 tests passed; TypeScript 7 typecheck
   and `git diff --check` passed.
+- Batched verification: 209 test files / 2122 tests, 289-module build,
+  boundaries, CSS budget, and 600/600 trace artifacts passed. The focused
+  browser command probe passed with zero console/page errors; the optional Code
+  Fu Man fixture remains absent from the separate full visual smoke.
 
 ## Open boundary
 
-Batch verification remains: full tests, trace corpus, build, boundaries, CSS
-budget, and browser smoke. Lua/ZSS execution, zero-win training behavior,
-rollback/netplay, and full match-flow parity remain open.
+Lua/ZSS execution, zero-win training behavior, rollback/netplay, and full
+match-flow parity remain open.

@@ -7,7 +7,10 @@
 - The live mutation changes one bounded side target, keeps the aggregate target
   coherent, and closes an already reached positive score.
 - Focal verification passes 2 files / 24 tests and TypeScript 7 typecheck.
-  Broad suite, trace, build, and browser evidence is batched with Entry 523.
+- Broad verification passes 209 test files / 2122 tests, 289-module build,
+  boundaries, CSS budget, and 600/600 trace artifacts. The focused browser
+  command probe passes with zero console/page errors; the optional Code Fu Man
+  visual fixture remains absent.
 - See `docs/research/2026-07-14-turns-match-wins-runtime-command.md` and
   `docs/reports/2026-07-14-turns-match-wins-runtime-command.md`.
 
@@ -18,8 +21,8 @@
 - `MatchWorldOptions` now forwards scalar and side-specific initial limits;
   live mutation changes only the selected side and is visible in the outcome
   snapshot.
-- Focal verification passes 2 files / 23 tests and TypeScript 7 typecheck.
-  Broad suite, trace, build, and browser evidence is queued for the next batch.
+- Focal verification passes 2 files / 23 tests and TypeScript 7 typecheck; the
+  broad verification is shared with Entry 524 above.
 - See `docs/research/2026-07-14-turns-max-draws-runtime-command.md` and
   `docs/reports/2026-07-14-turns-max-draws-runtime-command.md`.
 
