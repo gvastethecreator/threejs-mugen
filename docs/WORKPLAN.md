@@ -2,6 +2,13 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 537 closes the bounded legacy stage vertical-scale slice. Imported
+`yscalestart`/`yscaledelta` now use the official reciprocal formula when
+general scale is absent; focal coverage passes 25 tests and TypeScript 7
+passes. Exact parallax mesh deformation, legacy xscale, and camera/window/mask
+parity remain separate. Next: choose the next independent slice, then run the
+accumulated stage gate.
+
 Entry 536 closes the bounded stage `positionlink` slice. Linked layers retain
 their authored target and offset, inherit the linked delta, and follow bounded
 target motion at the same background tick through immutable resolution. Focal

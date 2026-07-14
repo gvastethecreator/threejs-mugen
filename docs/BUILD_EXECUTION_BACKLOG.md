@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 537 - Legacy stage vertical scale
+
+Added bounded legacy `yscalestart`/`yscaledelta` parsing, report/Studio
+visibility, and reciprocal vertical scale resolution. General authored scale
+takes precedence. Focal stage/parser/report coverage passes 3 files / 25 tests
+and TypeScript 7 passes. See
+`docs/reports/2026-07-14-stage-legacy-vertical-scale.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/176-stage-legacy-vertical-scale.md`.
+
 ## Entry 536 - Stage positionlink
 
 Preserved typed `positionlink` target/offset metadata, inherited linked delta,

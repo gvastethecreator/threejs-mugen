@@ -40,6 +40,8 @@ spriteno = 9,9
 [BG Parallax]
 type = parallax
 start = 0,120
+yscalestart = 100
+yscaledelta = 1.2
 
 [Begin Action 10]
 2,0,0,0,4
@@ -148,6 +150,11 @@ describe("createStageCompatibilityReport", () => {
         section: "BG Parallax",
         status: "unsupported",
         type: "parallax",
+        scale: {
+          start: { x: 1, y: 1 },
+          delta: { x: 0, y: 0 },
+          legacyYScale: { start: 100, delta: 1.2 },
+        },
         unsupported: ["type:parallax"],
       }),
     ]);

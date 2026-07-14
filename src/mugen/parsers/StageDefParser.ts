@@ -159,6 +159,8 @@ function buildPlaceholderLayers(
     const velocity = pairValue(values, "velocity");
     const scaleStart = pairOrScalarValue(values, "scalestart");
     const scaleDelta = pairOrScalarValue(values, "scaledelta");
+    const yScaleStart = numberValue(values, "yscalestart");
+    const yScaleDelta = numberValue(values, "yscaledelta");
     const zoomDelta = pairOrScalarValue(values, "zoomdelta");
     const sprite = pairValue(values, "spriteno");
     const spriteLabel = getValue(values, "spriteno") ?? `${index},0`;
@@ -198,6 +200,8 @@ function buildPlaceholderLayers(
       ...(velocity ? { velocity: { x: velocity[0], y: velocity[1] } } : {}),
       ...(scaleStart ? { scaleStart: { x: scaleStart[0], y: scaleStart[1] } } : {}),
       ...(scaleDelta ? { scaleDelta: { x: scaleDelta[0], y: scaleDelta[1] } } : {}),
+      ...(yScaleStart === undefined ? {} : { yScaleStart }),
+      ...(yScaleDelta === undefined ? {} : { yScaleDelta }),
       ...(zoomDelta ? { zoomDelta: { x: zoomDelta[0], y: zoomDelta[1] } } : {}),
       ...(linkTarget
         ? { positionLink: { targetId: linkTarget.id, offsetX: start[0] ?? 0, offsetY: start[1] ?? 0 } }

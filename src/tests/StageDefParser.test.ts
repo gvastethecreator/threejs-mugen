@@ -211,6 +211,23 @@ delta = 9,9
       positionLink: { targetId: expect.stringContaining("BG Base"), offsetX: 3, offsetY: 4 },
     });
   });
+
+  it("preserves deprecated vertical parallax scale fields", () => {
+    const runtime = stageDefToRuntime(
+      parseStageDef(`
+[BGDef]
+
+[BG Parallax]
+type = parallax
+spriteno = 0,0
+yscalestart = 100
+yscaledelta = 1.2
+`, "stages/legacy-scale.def"),
+      "stage-legacy-scale",
+    );
+
+    expect(runtime.layers[0]).toMatchObject({ yScaleStart: 100, yScaleDelta: 1.2 });
+  });
 });
 
 describe("MugenStageLoader", () => {

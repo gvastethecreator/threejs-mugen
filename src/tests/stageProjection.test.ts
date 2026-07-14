@@ -134,6 +134,27 @@ describe("projectStageSpriteLayer", () => {
     expect(scale.y).toBeCloseTo(1.025);
   });
 
+  it("applies deprecated vertical parallax scale when general scale is absent", () => {
+    const scale = resolveStageLayerScale(
+      {
+        id: "BG legacy scale",
+        color: "#000",
+        y: 0,
+        width: 100,
+        height: 50,
+        deltaX: 1,
+        deltaY: 1,
+        opacity: 1,
+        yScaleStart: 100,
+        yScaleDelta: 1.2,
+      },
+      { ...stage, camera: { ...stage.camera, y: 10, zoom: 1 } },
+    );
+
+    expect(scale.x).toBe(1);
+    expect(scale.y).toBeCloseTo(1 / 1.12);
+  });
+
   it("follows a linked layer after the target's bounded controller motion", () => {
     const baseLayer: MugenStageLayer = {
       id: "BG link base",

@@ -37,6 +37,9 @@ export type MugenStageLayer = {
     x: number;
     y: number;
   };
+  /** Deprecated MUGEN parallax vertical scale parameters. */
+  yScaleStart?: number;
+  yScaleDelta?: number;
   /** Authored share of the global camera zoom, duplicated for one-value input. */
   zoomDelta?: {
     x: number;

@@ -5699,10 +5699,13 @@ export class App {
         layer.actionNo !== undefined ? `act ${layer.actionNo}` : undefined,
         `layer ${index}`,
         `delta ${formatStageNumber(layer.deltaX)},${formatStageNumber(layer.deltaY ?? 1)}`,
-        layer.scaleStart || layer.scaleDelta || layer.zoomDelta
+        layer.scaleStart || layer.scaleDelta || layer.yScaleStart !== undefined || layer.yScaleDelta !== undefined || layer.zoomDelta
           ? formatStageScale({
               start: layer.scaleStart ?? { x: 1, y: 1 },
               delta: layer.scaleDelta ?? { x: 0, y: 0 },
+              legacyYScale: layer.yScaleStart !== undefined || layer.yScaleDelta !== undefined
+                ? { start: layer.yScaleStart, delta: layer.yScaleDelta }
+                : undefined,
               zoomDelta: layer.zoomDelta,
           })
           : undefined,
@@ -12243,10 +12246,14 @@ function formatStageTrans(trans: { mode: string; alpha?: { source: number; desti
 function formatStageScale(scale: {
   start: { x: number; y: number };
   delta: { x: number; y: number };
+  legacyYScale?: { start?: number; delta?: number };
   zoomDelta?: { x: number; y: number };
 }): string {
+  const legacy = scale.legacyYScale
+    ? ` y${formatStageNumber(scale.legacyYScale.start ?? 100)},${formatStageNumber(scale.legacyYScale.delta ?? 0)}`
+    : "";
   const zoom = scale.zoomDelta ? ` z${formatStageNumber(scale.zoomDelta.x)},${formatStageNumber(scale.zoomDelta.y)}` : "";
-  return `scale ${formatStageNumber(scale.start.x)},${formatStageNumber(scale.start.y)} d${formatStageNumber(scale.delta.x)},${formatStageNumber(scale.delta.y)}${zoom}`;
+  return `scale ${formatStageNumber(scale.start.x)},${formatStageNumber(scale.start.y)} d${formatStageNumber(scale.delta.x)},${formatStageNumber(scale.delta.y)}${legacy}${zoom}`;
 }
 
 function formatStagePositionLink(link: { targetId: string; offsetX: number; offsetY: number }): string {

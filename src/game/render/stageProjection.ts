@@ -328,6 +328,9 @@ export function resolveStageLayerScale(layer: MugenStageLayer, stage: StageSnaps
     x: scaleStart.x + scaleDelta.x * stage.camera.x * deltaX,
     y: scaleStart.y + scaleDelta.y * stage.camera.y * deltaY,
   };
+  const legacyYScale = layer.scaleStart || layer.scaleDelta
+    ? 1
+    : legacyVerticalScale(layer, stage.camera.y);
   const zoom = Number.isFinite(stage.camera.zoom) && stage.camera.zoom > 0 ? stage.camera.zoom : 1;
   const zoomScale = layer.zoomDelta
     ? {
@@ -338,8 +341,19 @@ export function resolveStageLayerScale(layer: MugenStageLayer, stage: StageSnaps
     : { x: 1, y: 1 };
   return {
     x: Math.max(0, cameraScale.x * zoomScale.x),
-    y: Math.max(0, cameraScale.y * zoomScale.y),
+    y: Math.max(0, cameraScale.y * legacyYScale * zoomScale.y),
   };
+}
+
+function legacyVerticalScale(layer: MugenStageLayer, cameraY: number): number {
+  if (layer.yScaleStart === undefined && layer.yScaleDelta === undefined) {
+    return 1;
+  }
+  const denominator = (layer.yScaleStart ?? 100) / 100 + ((layer.yScaleDelta ?? 0) / 100) * cameraY;
+  if (denominator === 0) {
+    return 0;
+  }
+  return Math.max(0, 1 / denominator);
 }
 
 function controllerPair(

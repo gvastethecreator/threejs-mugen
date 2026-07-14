@@ -1,5 +1,16 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Legacy stage vertical scale
+
+- Entry 537 preserves and projects deprecated `yscalestart`/`yscaledelta`
+  values with the documented reciprocal formula when general scale is absent.
+- Focal stage/parser/report coverage passes 3 files / 25 tests and TypeScript 7
+  passes. Exact parallax mesh deformation remains outside the claim.
+- No score movement. Legacy `xscale`, camera/window/mask behavior,
+  localcoord normalization, and full stage parity remain open.
+- See `docs/research/2026-07-14-stage-legacy-vertical-scale.md` and
+  `docs/reports/2026-07-14-stage-legacy-vertical-scale.md`.
+
 ## Global report - 2026-07-14 Stage positionlink
 
 - Entry 536 preserves typed `positionlink` offsets and inherited delta through

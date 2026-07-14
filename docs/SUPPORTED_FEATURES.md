@@ -1,9 +1,11 @@
 ﻿# Supported Features
 - Imported stage layers expose bounded `scalestart`, `scaledelta`, and
   scalar-or-pair `zoomdelta` projection for normal, animated, asset, and
-  placeholder backgrounds. Sprite dimensions scale around the authored SFF
-  axis; explicit zoomdelta is compensated against the global Three.js camera.
-  Exact parallax deformation, legacy `xscale`/`yscalestart`, window/mask zoom,
+  placeholder backgrounds. Deprecated `yscalestart`/`yscaledelta` use the
+  documented bounded reciprocal vertical scale when general scale is absent.
+  Sprite dimensions scale around the authored SFF axis; explicit zoomdelta is
+  compensated against the global Three.js camera. Exact parallax deformation,
+  legacy `xscale`, window/mask zoom,
   camera-anchor/localcoord normalization, and full MUGEN/IKEMEN stage parity
   remain unsupported.
 - Imported stage layers preserve bounded `positionlink` target/offset metadata,

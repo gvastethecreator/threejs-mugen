@@ -17,6 +17,7 @@ export type StageBackgroundLayerReport = {
   scale?: {
     start: { x: number; y: number };
     delta: { x: number; y: number };
+    legacyYScale?: { start?: number; delta?: number };
     zoomDelta?: { x: number; y: number };
   };
   positionLink?: {
@@ -257,6 +258,9 @@ function describeBackgroundLayer(
           scale: {
             start: layer.scaleStart ?? { x: 1, y: 1 },
             delta: layer.scaleDelta ?? { x: 0, y: 0 },
+            ...((layer.yScaleStart !== undefined || layer.yScaleDelta !== undefined)
+              ? { legacyYScale: { start: layer.yScaleStart, delta: layer.yScaleDelta } }
+              : {}),
             ...(layer.zoomDelta ? { zoomDelta: layer.zoomDelta } : {}),
           },
         }
@@ -438,7 +442,7 @@ function hasKey(values: Record<string, string>, key: string): boolean {
 }
 
 function hasLayerScale(layer: MugenStageLayer): boolean {
-  return Boolean(layer.scaleStart || layer.scaleDelta || layer.zoomDelta);
+  return Boolean(layer.scaleStart || layer.scaleDelta || layer.yScaleStart !== undefined || layer.yScaleDelta !== undefined || layer.zoomDelta);
 }
 
 function formatStageDiagnostic(file: string | undefined, line: number | undefined, message: string): string {
