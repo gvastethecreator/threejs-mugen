@@ -1,5 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Latest implementation closeout - dizzy break transition (2026-07-14)
+
+Entry 512 closes the bounded imported direct-hit transition from a positive
+dizzy resource to the available common `StateDizzy` `6565300` / `AnimDizzy`
+`5300`. Explicit `p2stateno`, unavailable states, repeated zero-floor hits,
+sharing, reset/persistence, HUD, and full parity remain separate gates. The
+required focused artifact and transition tests are green; the global corpus
+and full repository gates remain batched. Next: red-life `LifeShare`, then
+dizzy reset/persistence and presentation as independent gates.
+
 ## Latest implementation closeout - dizzy-points defaults and AttackMulSet (2026-07-14)
 
 Entry 511 closes omitted direct HitDef dizzy defaults from authored normal and

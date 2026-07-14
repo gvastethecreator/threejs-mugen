@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 dizzy break transition
+
+- Entry 512 closes the bounded imported direct-hit dizzy break transition.
+  A positive-to-zero actor-local dizzy resource now requests the available
+  common `StateDizzy` `6565300` / `AnimDizzy` `5300` route after generic get-hit
+  resolution.
+- The route preserves explicit `p2stateno`, fails closed when the common state
+  is unavailable, and does not re-trigger on repeated hits at zero.
+- Required artifact `synthetic-imported-dizzy-state` and the focused dizzy
+  transition tests pass. Full trace-corpus regeneration and repository gates
+  remain intentionally batched for the next accumulated checkpoint.
+- Claim ceiling: bounded imported direct-hit transition only. Red-life
+  `LifeShare`, dizzy sharing/reset/persistence, HUD, rollback/netplay, and full
+  parity remain separate gates.
+- See `docs/research/2026-07-14-dizzy-break-transition.md` and
+  `docs/reports/2026-07-14-dizzy-break-transition.md`.
+
 ## Global report - 2026-07-14 dizzy-points defaults and AttackMulSet
 
 - Entry 511 closes omitted direct HitDef dizzy defaults using authored

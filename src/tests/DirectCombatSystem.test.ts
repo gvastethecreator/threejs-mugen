@@ -340,6 +340,42 @@ describe("DirectCombatSystem", () => {
     expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(30);
   });
 
+  it("requests the dizzy transition only when a direct hit crosses the resource floor", () => {
+    const world = new RuntimeDirectCombatWorld(new RuntimeContactMemoryWorld());
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", { dizzyPoints: 20, dizzyPointsMax: 20 });
+    const transitions: string[] = [];
+
+    world.applyResolvedHit(attacker, defender, move(), {
+      kind: "hit",
+      damage: 0,
+      kill: true,
+      pause: 1,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+      dizzyPoints: -20,
+    }, hooks({
+      applyDizzyState: (target, moveArg) => transitions.push(`${target.id}:${moveArg.actionId}`),
+    }));
+
+    world.applyResolvedHit(attacker, defender, move(), {
+      kind: "hit",
+      damage: 0,
+      kill: true,
+      pause: 1,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+      dizzyPoints: -20,
+    }, hooks({
+      applyDizzyState: () => transitions.push("unexpected"),
+    }));
+
+    expect(defender.runtime.dizzyPoints).toBe(0);
+    expect(transitions).toEqual(["p2:200"]);
+  });
+
   it("applies guarded cornerpush to the attacker at stage bounds", () => {
     const world = new RuntimeDirectCombatWorld(new RuntimeContactMemoryWorld());
     const attacker = actor("p1", "Attacker", { facing: 1, pos: { x: 220, y: 0 }, vel: { x: 0, y: 0 } });

@@ -175,7 +175,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Frontier
 
-- [Implement dizzy break transition](tickets/151-dizzy-break-transition.md) - next: enter an available common dizzy state only when the actor-local resource crosses to zero; preserve explicit non-break routes and keep sharing/reset/HUD separate.
+- [Implement dizzy break transition](tickets/151-dizzy-break-transition.md) - resolved: imported direct HitDef contact now enters available common `StateDizzy` `6565300` / `AnimDizzy` `5300` only on a positive-to-zero actor-local crossing, after generic get-hit resolution; explicit `p2stateno`, unavailable states, repeated zero-floor hits, sharing/reset/persistence, HUD, and full parity remain blocked. Next: red-life `LifeShare`.
 
 - [Map Code Fu Man special route](tickets/132-map-codefuman-special-route.md) - resolved: authored `QCF_x` (`~D, DF, F, x`) reaches state `1000` / AIR `1000`, executes three `PosAdd` steps plus `HitDef`, and passes optional trace `5540d52b` with browser input and idle return. Broad special/corpus parity remains blocked.
 

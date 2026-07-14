@@ -1,4 +1,13 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 512 focal closeout
+
+Entry 512 closes the bounded imported direct-hit dizzy break transition into
+the available common `StateDizzy` `6565300` / `AnimDizzy` `5300` route after a
+positive-to-zero resource crossing. Explicit `p2stateno`, unavailable common
+states, repeated zero-floor hits, sharing, reset/persistence, HUD bars, and
+full parity remain separate gates. The required focused artifact and tests
+pass; the global corpus and repository gates are batched. Scores do not move.
+
 ## 2026-07-14 Entry 511 focal closeout
 
 Entry 511 closes omitted direct HitDef dizzy defaults from authored normal and

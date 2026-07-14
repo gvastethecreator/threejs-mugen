@@ -492,6 +492,7 @@ import {
   createSyntheticImportedDizzyPointsTraceArtifact,
   createSyntheticImportedDizzyPointsDefaultTraceArtifact,
   createSyntheticImportedDizzyPointsAttackScaleTraceArtifact,
+  createSyntheticImportedDizzyStateTraceArtifact,
   createSyntheticImportedDizzyPointsSuppressionTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
@@ -1400,6 +1401,26 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ dizzyPoints: 995 });
+  });
+
+  it("creates a synthetic imported dizzy-state transition artifact", () => {
+    const artifact = createSyntheticImportedDizzyStateTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dizzy-state-golden",
+        source: "imported",
+      },
+    });
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 6565300]);
+    expect(artifact.gates[0]?.evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", stateNo: 6565300, minDizzyPoints: 0, maxDizzyPoints: 0 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ stateNo: 6565300 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.dizzyPoints ?? 0).toBe(0);
   });
 
   it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {

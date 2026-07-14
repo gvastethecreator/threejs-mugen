@@ -20,6 +20,17 @@ Acceptance requires authored name/P1/CPU/stage mutations to mark dirty, invalida
 
 Acceptance requires model normalization, empty rejection, 80-character cap, build-output invalidation, manifest propagation, local save, reload/reopen recovery, accessible labeling, and desktop/tablet no-overflow browser proof.
 
+## Dizzy break transition gate
+
+Acceptance requires required artifact `synthetic-imported-dizzy-state` to prove
+an imported direct `HitDef` crossing from positive dizzy points to zero enters
+available common `StateDizzy` `6565300` with `AnimDizzy` `5300`. The gate must
+also prove actor-frame dizzy evidence at zero, `HitDef` plus state-entry
+telemetry, no repeated transition from an already-zero resource, preservation
+of explicit `p2stateno`, and fail-closed behavior when the common state is
+unavailable. This gate does not claim sharing, reset/persistence, HUD,
+rollback/netplay, native breadth, or full MUGEN/IKEMEN parity.
+
 ## KO sound handoff gate
 
 Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.

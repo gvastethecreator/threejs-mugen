@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 512 - Dizzy break transition
+
+Implemented the bounded imported direct-hit dizzy break route. When a
+defender's actor-local dizzy points cross from positive to zero, and no
+explicit `p2stateno` owns the hit, the runtime enters the available common
+`StateDizzy` (`6565300`) with `AnimDizzy` (`5300`). The transition is gated by
+state availability, does not re-trigger from an already-zero resource, and
+does not widen native, sharing, reset/persistence, HUD, rollback/netplay, or
+full-parity behavior. Required artifact
+`synthetic-imported-dizzy-state` and focused transition tests are green. The
+global trace corpus and full repository gates remain batched for the next
+checkpoint. See Wayfinder 151 and the dated research/report.
+
 ## Entry 511 - Dizzy-points defaults and AttackMulSet scaling
 
 Implemented omitted direct HitDef dizzy defaults from authored

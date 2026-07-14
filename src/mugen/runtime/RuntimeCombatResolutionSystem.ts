@@ -19,6 +19,7 @@ import {
 } from "./DirectCombatSystem";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
+import { RuntimeDizzyStateWorld } from "./DizzyStateSystem";
 import type { RuntimeGuardWorld } from "./GuardSystem";
 import type { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import type {
@@ -157,6 +158,7 @@ export type RuntimeDirectCombatSkipReason =
   | "hitoverride-custom-state-miss";
 
 export class RuntimeCombatResolutionWorld {
+  private readonly dizzyStateWorld = new RuntimeDizzyStateWorld();
   private readonly equalPriorityCandidates = new Map<string, {
     leftId: string;
     rightId: string;
@@ -366,6 +368,7 @@ export class RuntimeCombatResolutionWorld {
         ),
       applyDefaultGetHit: (target, moveArg) =>
         this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
+      applyDizzyState: (target, moveArg) => this.applyDefaultDizzyState(target, moveArg, input.stateHooks),
     }, {
       stageBounds: input.stageBounds,
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
@@ -493,6 +496,7 @@ export class RuntimeCombatResolutionWorld {
         ),
       applyDefaultGetHit: (target, moveArg) =>
         this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
+      applyDizzyState: (target, moveArg) => this.applyDefaultDizzyState(target, moveArg, input.stateHooks),
     }, {
       stageBounds: input.stageBounds,
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
@@ -613,6 +617,21 @@ export class RuntimeCombatResolutionWorld {
     const stateNo =
       move.defaultTargetStateNo ??
       getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => stateHooks.canEnterState(defender, candidate));
+    if (stateNo === undefined || !stateHooks.canEnterState(defender, stateNo)) {
+      return;
+    }
+    stateHooks.enterState(defender, stateNo, { clearStateOwner: true });
+  }
+
+  private applyDefaultDizzyState<TActor extends RuntimeCombatResolutionActor>(
+    defender: TActor,
+    move: DemoMove,
+    stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
+  ): void {
+    if (move.p2StateNo !== undefined || defender.definition.source !== "imported" || defender.runtime.dizzyPoints !== 0) {
+      return;
+    }
+    const stateNo = this.dizzyStateWorld.defaultDizzyStateNo((candidate) => stateHooks.canEnterState(defender, candidate));
     if (stateNo === undefined || !stateHooks.canEnterState(defender, stateNo)) {
       return;
     }

@@ -975,6 +975,67 @@ export function createSyntheticImportedDizzyPointsAttackScaleTraceArtifact(
   });
 }
 
+export function createSyntheticImportedDizzyStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dizzy-state-attacker",
+    displayName: "Synthetic Imported Dizzy State Attacker",
+    hitDefDizzyPoints: -1000,
+    dataStats: { dizzypoints: 1000 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dizzy-state-defender",
+    displayName: "Synthetic Imported Dizzy State Defender",
+    dataStats: { dizzypoints: 1000 },
+    dizzyState: {},
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-dizzy-state-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-dizzy-state-golden",
+      label: "Synthetic imported dizzy-state transition route",
+      source: "imported",
+      notes: [
+        "Synthetic imported dizzy-state trace proves a direct HitDef crossing from positive to zero dizzy points enters the available common StateDizzy 6565300 / AnimDizzy 5300 route. Explicit p2stateno, unavailable common states, repeated zero-floor hits, sharing, persistence, HUD bars, and full MUGEN/IKEMEN parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-dizzy-state-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 6565300],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 6565300,
+            observedDizzyPointsAtLeast: 0,
+            observedDizzyPointsAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 6565300 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDizzyPointsSuppressionTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -44277,6 +44338,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefGuardPoints?: number;
   hitDefDizzyPoints?: number;
   dizzyPointMultipliers?: { default?: number; super?: number };
+  dizzyState?: { stateNo?: number; animNo?: number };
   hitDefRedLife?: number;
   guardRedLife?: number;
   withHitDef?: boolean;
@@ -45680,6 +45742,7 @@ ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I
 ${options.withRedLifeOps ? simpleStateBlock(options.withRedLifeOps.stateNo, "I") : ""}
 ${options.withGuardPointsOps ? simpleStateBlock(options.withGuardPointsOps.stateNo, "I") : ""}
 ${options.withDizzyPointsOps ? simpleStateBlock(options.withDizzyPointsOps.stateNo, "I") : ""}
+${options.dizzyState ? dizzyStateBlock(options.dizzyState) : ""}
 ${options.withDynamicLifeAddOps ? simpleStateBlock(options.withDynamicLifeAddOps.stateNo, "I") : ""}
 ${options.withDynamicResourceSetOps ? simpleStateBlock(options.withDynamicResourceSetOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
@@ -45854,6 +45917,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.withRedLifeOps === undefined ? [] : ([[options.withRedLifeOps.stateNo, traceAction(options.withRedLifeOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withGuardPointsOps === undefined ? [] : ([[options.withGuardPointsOps.stateNo, traceAction(options.withGuardPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDizzyPointsOps === undefined ? [] : ([[options.withDizzyPointsOps.stateNo, traceAction(options.withDizzyPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.dizzyState === undefined
+        ? []
+        : ([[options.dizzyState.animNo ?? 5300, traceAction(options.dizzyState.animNo ?? 5300)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicLifeAddOps === undefined ? [] : ([[options.withDynamicLifeAddOps.stateNo, traceAction(options.withDynamicLifeAddOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicResourceSetOps === undefined
         ? []
@@ -50485,6 +50551,19 @@ type = S
 movetype = ${moveType}
 physics = S
 anim = ${stateNo}
+ctrl = 0
+`;
+}
+
+function dizzyStateBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["dizzyState"]>): string {
+  const stateNo = config.stateNo ?? 6565300;
+  const animNo = config.animNo ?? 5300;
+  return `
+[Statedef ${stateNo}]
+type = S
+movetype = H
+physics = N
+anim = ${animNo}
 ctrl = 0
 `;
 }

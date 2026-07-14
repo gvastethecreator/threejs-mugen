@@ -46,6 +46,7 @@ export type RuntimeDirectCombatHooks<TActor extends RuntimeDirectCombatActor = R
   applyGuardHit: (defender: TActor) => void;
   applyHitStateTransitions: (attacker: TActor, defender: TActor, move: DemoMove) => void;
   applyDefaultGetHit: (defender: TActor, move: DemoMove) => void;
+  applyDizzyState?: (defender: TActor, move: DemoMove) => void;
 };
 
 export type RuntimeDirectCombatOutcome = {
@@ -217,6 +218,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guarding = false;
     defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+    const previousDizzyPoints = defender.runtime.dizzyPoints ?? defender.runtime.dizzyPointsMax ?? 1000;
     if (result.dizzyPoints !== undefined) {
       applyRuntimeDizzyPointsAdd(defender.runtime, result.dizzyPoints);
     }
@@ -240,6 +242,9 @@ export class RuntimeDirectCombatWorld {
     applyRuntimePowerDelta(attacker.runtime, result.powerGain, attacker.definition.constants);
     hooks.applyHitStateTransitions(attacker, defender, move);
     hooks.applyDefaultGetHit(defender, move);
+    if (result.dizzyPoints !== undefined && previousDizzyPoints > 0 && defender.runtime.dizzyPoints === 0) {
+      hooks.applyDizzyState?.(defender, move);
+    }
     this.contactWorld.markReceivedDamage(defender.contact, defender.runtime.stateNo, result.damage);
     return {
       kind: "hit",
