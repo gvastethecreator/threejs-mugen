@@ -3159,6 +3159,32 @@ ctrl = 0
     });
   });
 
+  it("blocks next-round until the round is over and then starts a numbered round", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 1,
+      teamMode: "tag",
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const blocked = runtime.startNextRound();
+    expect(blocked.applied).toBe(false);
+    expect(blocked.diagnostics).toContain("round-not-over");
+    expect(runtime.getSnapshot().round).not.toHaveProperty("roundNo");
+
+    const over = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(over.round).toMatchObject({ state: "timeover", winner: "Draw" });
+    expect(over.playing).toBe(false);
+
+    const next = runtime.startNextRound();
+    expect(next).toMatchObject({ applied: true, nextRoundNo: 2, roundsExisted: 1, states: expect.any(Array) });
+    const restarted = runtime.getSnapshot();
+    expect(restarted.tick).toBe(over.tick);
+    expect(restarted.round).toMatchObject({ state: "fight", roundNo: 2, roundsExisted: 1 });
+    expect(restarted.actors.every((actor) => actor.runtime.life === actor.runtime.lifeMax)).toBe(true);
+    expect(restarted.actors.every((actor) => (actor.runtime.redLife ?? 0) === 0)).toBe(true);
+  });
+
   it("keeps the match paused during normal loop steps but supports forced frame stepping", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const paused = runtime.dispatch({ type: "set-playing", playing: false });

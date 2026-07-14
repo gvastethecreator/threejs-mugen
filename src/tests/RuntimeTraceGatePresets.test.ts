@@ -594,6 +594,7 @@ import {
   createSyntheticImportedTeamRedLifeHelperTraceArtifact,
   createSyntheticImportedTeamRedLifeLocalTraceArtifact,
   createSyntheticImportedTeamRedLifeShareTraceArtifact,
+  createSyntheticImportedRedLifeRoundResetTraceArtifact,
   createSyntheticImportedHelperLocalResourceTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
@@ -3024,6 +3025,23 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p1", life: 1000 })]),
     );
+  });
+
+  it("proves red life is cleared by the explicit next-round transition", () => {
+    const artifact = createSyntheticImportedRedLifeRoundResetTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-red-life-round-reset-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-red-life-round-reset-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.frames.at(-1)?.round).toMatchObject({ state: "fight", roundNo: 2, roundsExisted: 1 });
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", life: 1000 }),
+      expect.objectContaining({ id: "p2", life: 1000 }),
+    ]));
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.redLife).toBeUndefined();
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.redLife).toBeUndefined();
   });
 
   it("proves SuperPause poweradd reaches only the shared power bank", () => {

@@ -406,6 +406,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTeamRedLifeHelperTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-red-life-round-reset",
+      required: true,
+      artifact: presets.createSyntheticImportedRedLifeRoundResetTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-team-resource-superpause",
       required: true,
       artifact: presets.createSyntheticImportedTeamResourceSuperPauseTraceArtifact(),

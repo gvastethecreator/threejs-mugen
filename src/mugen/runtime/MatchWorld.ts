@@ -182,6 +182,10 @@ export class MatchWorld {
     return this.dispatch({ type: "reset" });
   }
 
+  nextRound(): MugenSnapshot {
+    return this.dispatch({ type: "next-round" });
+  }
+
   private refreshActorRegistry(snapshot: MugenSnapshot, resetLifecycle = false): MatchWorldActorRegistrySnapshot {
     const effectStores = this.effectActorStoreSummaries();
     const key = matchWorldActorRegistryFingerprint(snapshot, effectStores);

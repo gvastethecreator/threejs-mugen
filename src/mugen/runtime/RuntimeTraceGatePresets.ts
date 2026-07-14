@@ -2801,6 +2801,120 @@ export function createSyntheticImportedTeamRedLifeHelperTraceArtifact(
   });
 }
 
+export function createSyntheticImportedRedLifeRoundResetTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = "synthetic-imported-red-life-round-reset-golden";
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-red-life-round-reset-p1",
+    displayName: "Synthetic Imported Red Life Round Reset P1",
+    hitDefDamage: 1200,
+    withResourceOps: {
+      stateNo: 303,
+      redLife: { addValue: 50, setValue: 800, absolute: true },
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-red-life-round-reset-p2",
+    displayName: "Synthetic Imported Red Life Round Reset P2",
+    withHitDef: false,
+  });
+  const script = importedPostKoScript(400);
+  const world = new MatchWorld({
+    p1,
+    p2,
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+  });
+  let nextRoundApplied = false;
+  const trace = runRuntimeTrace(
+    {
+      getSnapshot: () => world.getSnapshot(),
+      step: (input, stepOptions) => {
+        const snapshot = world.step(input, stepOptions);
+        if (!nextRoundApplied && snapshot.round?.state === "ko" && snapshot.round.postRound?.remaining === 0) {
+          nextRoundApplied = true;
+          world.nextRound();
+        }
+        return snapshot;
+      },
+      getActorRegistry: () => world.getActorRegistry(),
+    },
+    script,
+    { label: targetId },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: "Synthetic imported red-life round reset",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves a root can carry nonzero red life into a completed KO round and the explicit next-round transition clears it while restoring life and preserving the bounded round-resource contract. Match-over scoring, motifs, winposes, rollback/netplay, and broader variable/map/remap persistence remain future work.",
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 303],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "RedLifeAdd", "RedLifeSet"],
+      requiredExecutedOperations: [
+        "hitdef",
+        "resource:lifeadd",
+        "resource:lifeset",
+        "resource:poweradd",
+        "resource:powerset",
+        "resource:redlifeadd",
+        "resource:redlifeset",
+      ],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit", "runtime"],
+      requiredEventSubstrings: ["Round 2 started; red life reset"],
+      requiredCombatReasons: ["hit"],
+      requiredRoundFrames: [
+        {
+          state: "ko",
+          winner: "Synthetic Imported Red Life Round Reset P1",
+          message: "Synthetic Imported Red Life Round Reset P1 wins",
+          observedPostRoundFrameAtLeast: 45,
+        },
+        { state: "fight", roundNo: 2, roundsExisted: 1, message: "Fight", minFrames: 1 },
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 303,
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedRedLifeAtLeast: 800,
+          observedRedLifeAtMost: 800,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 0,
+          observedLifeAtLeast: 1000,
+          observedLifeAtMost: 1000,
+          observedRedLifeAtMost: 0,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, redLife: 0 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000, redLife: 0 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedTeamResourceTargetTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

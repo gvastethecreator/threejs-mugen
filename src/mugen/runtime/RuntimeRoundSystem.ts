@@ -30,6 +30,7 @@ export class RuntimeRoundSystem {
   private postRoundRemaining = 0;
   private koSlowRemaining = 0;
   private noKoSlow = false;
+  private roundNo = 1;
 
   constructor(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES) {
     this.timerFrames = boundedRoundFrames(timerFrames);
@@ -37,6 +38,14 @@ export class RuntimeRoundSystem {
 
   get isOver(): boolean {
     return this.over;
+  }
+
+  get currentRoundNo(): number {
+    return this.roundNo;
+  }
+
+  get roundsExisted(): number {
+    return Math.max(0, this.roundNo - 1);
   }
 
   get playbackRate(): number {
@@ -85,6 +94,16 @@ export class RuntimeRoundSystem {
   }
 
   reset(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES): void {
+    this.roundNo = 1;
+    this.resetState(timerFrames);
+  }
+
+  startNextRound(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES): void {
+    this.roundNo += 1;
+    this.resetState(timerFrames);
+  }
+
+  private resetState(timerFrames: number): void {
     this.timerFrames = boundedRoundFrames(timerFrames);
     this.state = "fight";
     this.winner = undefined;
@@ -102,6 +121,10 @@ export class RuntimeRoundSystem {
       winner: this.winner,
       message: this.message(),
     };
+    if (this.roundNo > 1) {
+      snapshot.roundNo = this.roundNo;
+      snapshot.roundsExisted = this.roundsExisted;
+    }
     if (this.state === "ko") {
       snapshot.postRound = {
         schema: "RuntimePostRound/v0",

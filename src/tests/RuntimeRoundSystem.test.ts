@@ -105,4 +105,23 @@ describe("RuntimeRoundSystem", () => {
       message: "Fight",
     });
   });
+
+  it("tracks the next round without changing the initial-round snapshot contract", () => {
+    const round = new RuntimeRoundSystem(1);
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 100 }, { label: "P2", life: 100 });
+    expect(round.isOver).toBe(true);
+
+    round.startNextRound(120);
+
+    expect(round.isOver).toBe(false);
+    expect(round.currentRoundNo).toBe(2);
+    expect(round.roundsExisted).toBe(1);
+    expect(round.snapshot()).toMatchObject({
+      state: "fight",
+      timer: 2,
+      roundNo: 2,
+      roundsExisted: 1,
+    });
+  });
 });

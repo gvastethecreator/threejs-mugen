@@ -145,6 +145,11 @@ import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionCo
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
+import {
+  RuntimeRoundResourceResetWorld,
+  type RuntimeRoundResourceActor,
+  type RuntimeRoundResourceResetResult,
+} from "./RuntimeRoundResourceResetSystem";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
 import {
@@ -332,7 +337,12 @@ export type MatchRuntimeCommand =
   | { type: "set-speed"; speed: number }
   | { type: "toggle"; key: "showClsn1" | "showClsn2" | "showAxis" | "showGrid"; value: boolean }
   | { type: "set-root-standby"; changes: readonly RuntimeRootStandbyChange[] }
+  | { type: "next-round" }
   | { type: "reset" };
+
+export type RuntimeNextRoundResult = RuntimeRoundResourceResetResult & {
+  applied: boolean;
+};
 
 export type MatchStepOptions = {
   force?: boolean;
@@ -444,6 +454,7 @@ export class PlayableMatchRuntime {
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly teamResourceBankRuntime = new RuntimeTeamResourceBankRuntime();
   private readonly redLifeShareRuntime = new RuntimeRedLifeShareRuntime();
+  private readonly roundResourceResetWorld = new RuntimeRoundResourceResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
@@ -858,6 +869,8 @@ export class PlayableMatchRuntime {
         throw new Error("Root standby transitions require the ikemen-go runtime profile");
       }
       rootStandbyTransitionWorld.apply([this.p1, this.p2, ...this.reserveRoots], command.changes);
+    } else if (command.type === "next-round") {
+      this.startNextRound();
     } else if (command.type === "reset") {
       this.reset();
     }
@@ -2375,6 +2388,61 @@ export class PlayableMatchRuntime {
     this.resetTeamResourceBanks();
   }
 
+  startNextRound(): RuntimeNextRoundResult {
+    const roundSnapshot = this.round.snapshot();
+    const roots = this.characterRoots();
+    const winnerId = roots.find((root) => root.label === roundSnapshot.winner)?.id;
+    const plan = this.roundResourceResetWorld.prepare({
+      actors: roots.map((root) => roundResourceActor(root)),
+      mode: this.teamRoundMode,
+      winnerId,
+      nextRoundNo: this.round.currentRoundNo + 1,
+    });
+    if (!this.round.isOver) {
+      return {
+        ...plan,
+        applied: false,
+        diagnostics: [...plan.diagnostics, "round-not-over"],
+      };
+    }
+
+    const persistentState = new Map(
+      roots.map((root) => [root.id, {
+        vars: [...root.runtime.vars],
+        fvars: [...root.runtime.fvars],
+      }]),
+    );
+    const matchTick = this.tick;
+    const matchFrameClock = this.frameClock;
+    this.reset();
+    this.tick = matchTick;
+    this.frameClock = matchFrameClock;
+    this.lastTickSchedule = createIdleMatchTickSchedule(this.tick);
+    this.round.startNextRound(this.roundTimerFrames);
+
+    const stateByActorId = new Map(plan.states.map((state) => [state.actorId, state]));
+    for (const root of this.characterRoots()) {
+      const state = stateByActorId.get(root.id);
+      if (!state) continue;
+      root.runtime.life = state.lifeAfter;
+      root.runtime.power = state.powerAfter;
+      root.runtime.guardPoints = state.guardPointsAfter;
+      root.runtime.dizzyPoints = state.dizzyPointsAfter;
+      root.runtime.redLife = state.redLifeAfter;
+      const variables = persistentState.get(root.id);
+      if (variables) {
+        root.runtime.vars = [...variables.vars];
+        root.runtime.fvars = [...variables.fvars];
+      }
+    }
+    this.resetTeamResourceBanks();
+    this.logs.unshift(`Round ${plan.nextRoundNo} started; red life reset`);
+    return {
+      ...plan,
+      applied: true,
+    };
+  }
+
   private createFighterState(
     id: string,
     definition: DemoFighterDefinition,
@@ -2416,6 +2484,21 @@ export class PlayableMatchRuntime {
     });
   }
 
+}
+
+function roundResourceActor(root: FighterMatchState): RuntimeRoundResourceActor {
+  return {
+    id: root.id,
+    life: root.runtime.life,
+    lifeMax: root.runtime.lifeMax,
+    power: root.runtime.power ?? 0,
+    powerMax: root.runtime.powerMax,
+    guardPoints: root.runtime.guardPoints ?? 0,
+    guardPointsMax: root.runtime.guardPointsMax,
+    dizzyPoints: root.runtime.dizzyPoints ?? 0,
+    dizzyPointsMax: root.runtime.dizzyPointsMax,
+    redLife: root.runtime.redLife,
+  };
 }
 
 function nextRuntimeRandom(fighter: FighterMatchState): number {

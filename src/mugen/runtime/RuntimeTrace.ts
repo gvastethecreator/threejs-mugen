@@ -746,6 +746,8 @@ export type RuntimeTraceGateStageFrameEvidence = {
 
 export type RuntimeTraceRoundFrameRequirement = {
   state?: RoundSnapshot["state"];
+  roundNo?: number;
+  roundsExisted?: number;
   winner?: string;
   message?: string;
   minFrames?: number;
@@ -759,6 +761,8 @@ export type RuntimeTraceRoundFrameRequirement = {
 
 export type RuntimeTraceGateRoundFrameEvidence = {
   state: RoundSnapshot["state"];
+  roundNo?: number;
+  roundsExisted?: number;
   winner?: string;
   message: string;
   minTimer: number;
@@ -1412,8 +1416,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
         }
         continue;
       }
-      if (actor[field] !== expected) {
-        failures.push(`Final actor ${actor.id} ${field} expected ${String(expected)} (actual ${String(actor[field])})`);
+      const actual = field === "guardPoints" || field === "dizzyPoints" || field === "redLife"
+        ? actor[field] ?? 0
+        : actor[field];
+      if (actual !== expected) {
+        failures.push(`Final actor ${actor.id} ${field} expected ${String(expected)} (actual ${String(actual)})`);
       }
     }
   }
@@ -3086,6 +3093,8 @@ function describeTargetLinkRequirement(requirement: RuntimeTraceTargetLinkRequir
 function summarizeRoundFrameEvidence(round: RoundSnapshot, tick: number): RuntimeTraceGateRoundFrameEvidence {
   return {
     state: round.state,
+    roundNo: round.roundNo,
+    roundsExisted: round.roundsExisted,
     winner: round.winner,
     message: round.message,
     minTimer: round.timer,
@@ -3129,11 +3138,11 @@ function mergeRoundFrameEvidence(
 }
 
 function roundFrameEvidenceKey(round: RoundSnapshot): string {
-  return [round.state, round.winner ?? "", round.message].join(":");
+  return [round.roundNo ?? 1, round.roundsExisted ?? 0, round.state, round.winner ?? "", round.message].join(":");
 }
 
 function roundFrameGateEvidenceKey(round: RuntimeTraceGateRoundFrameEvidence): string {
-  return [round.state, round.winner ?? "", round.message].join(":");
+  return [round.roundNo ?? 1, round.roundsExisted ?? 0, round.state, round.winner ?? "", round.message].join(":");
 }
 
 function matchesRoundFrameRequirement(
@@ -3142,6 +3151,8 @@ function matchesRoundFrameRequirement(
 ): boolean {
   return (
     (requirement.state === undefined || round.state === requirement.state) &&
+    (requirement.roundNo === undefined || round.roundNo === requirement.roundNo) &&
+    (requirement.roundsExisted === undefined || round.roundsExisted === requirement.roundsExisted) &&
     (requirement.winner === undefined || round.winner === requirement.winner) &&
     (requirement.message === undefined || round.message === requirement.message) &&
     (requirement.minFrames === undefined || round.frames >= requirement.minFrames) &&

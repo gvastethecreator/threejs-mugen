@@ -886,6 +886,7 @@ export class App {
               <button type="button" data-action="play-pause" data-runtime-state="pause" aria-label="Pause or resume simulation" title="Pause or resume simulation">${runtimeControlContent("pause", "Pause")}</button>
               <button type="button" data-action="step" aria-label="Advance one frame" title="Advance one frame">${runtimeControlContent("step", "1F")}</button>
               <button type="button" data-action="reset-round" aria-label="Reset current round" title="Reset current round">${runtimeControlContent("reset", "Reset")}</button>
+              <button type="button" data-action="next-round" aria-label="Start next round" title="Start next round" ${this.isInspectorRuntimeSurface() || !this.snapshot.round || this.snapshot.round.state === "fight" || (this.snapshot.round.state === "ko" && (this.snapshot.round.postRound?.remaining ?? 1) > 0) ? "disabled" : ""}>${runtimeControlContent("step", "Next")}</button>
               <label class="speed-control" title="Playback speed">${runtimeControlContent("activity", "Speed")}
                 <select data-action="speed">
                   <option value="0.5">0.5x</option>
@@ -1050,6 +1051,12 @@ export class App {
           this.snapshot = this.getActiveSnapshot();
         }
         this.updateUi();
+      } else if (action === "next-round") {
+        if (!this.isInspectorRuntimeSurface()) {
+          this.audio.stopAll();
+          this.snapshot = this.matchRuntime.dispatch({ type: "next-round" });
+          this.updateUi();
+        }
       } else if (action === "export-report") {
         this.exportCompatibilityReport();
       } else if (action === "export-project") {
@@ -3487,6 +3494,20 @@ export class App {
             this.audio.stopAll();
             this.matchRuntime.dispatch({ type: "reset" });
             this.snapshot = this.getActiveSnapshot();
+          }
+        },
+      },
+      {
+        id: "next-round",
+        group: "Runtime",
+        label: "Start Next Round",
+        detail: "Continue the match with official round resource reset rules.",
+        keywords: ["match", "round", "continue", "red life"],
+        tone: this.snapshot.round?.state && this.snapshot.round.state !== "fight" ? "active" : "neutral",
+        run: () => {
+          if (!this.isInspectorRuntimeSurface()) {
+            this.audio.stopAll();
+            this.snapshot = this.matchRuntime.dispatch({ type: "next-round" });
           }
         },
       },
@@ -10972,6 +10993,7 @@ export class App {
         <div class="round-center">
           <span class="round-state ${round?.state ?? "fight"}">${escapeHtml(round?.message ?? "Fight")}</span>
           <strong>${round?.timer ?? 99}</strong>
+          ${round?.roundNo ? `<span class="round-number">Round ${round.roundNo}</span>` : ""}
           ${this.snapshot.matchPause ? `<span>${escapeHtml(formatHudMatchPause(this.snapshot.matchPause))}</span>` : ""}
           <span class="round-stage">${escapeHtml(this.snapshot.stage.displayName ?? "Stage")}</span>
         </div>

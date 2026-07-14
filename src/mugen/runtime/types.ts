@@ -518,6 +518,8 @@ export type StageSnapshot = {
 export type RoundSnapshot = {
   state: "fight" | "ko" | "timeover";
   timer: number;
+  roundNo?: number;
+  roundsExisted?: number;
   winner?: string;
   message: string;
   postRound?: {
