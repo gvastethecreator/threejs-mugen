@@ -3413,6 +3413,84 @@ ctrl = 0
     });
   });
 
+  it("restarts a normal Turns round after a simultaneous KO without effective loss", () => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ id: "turns-draw-p1", withStateMove: false }),
+      createImportedFixture({ id: "turns-draw-p2", withStateMove: false }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go", teamMode: "turns" },
+    );
+    const internals = runtime as unknown as {
+      p1: { runtime: { life: number } };
+      p2: { runtime: { life: number } };
+    };
+    internals.p1.runtime.life = 0;
+    internals.p2.runtime.life = 0;
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    for (let frame = 0; frame < 500 && snapshot.round?.state === "ko"; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot).toMatchObject({
+      playing: true,
+      round: {
+        state: "fight",
+        roundNo: 2,
+        match: { draws: 1, wins: { 1: 0, 2: 0 }, matchOver: false },
+        turnsContinuation: {
+          status: "draw",
+          applied: true,
+          phases: expect.arrayContaining(["draw:normal-round", "continuation:complete"]),
+          matchOutcome: { outcome: "draw", draws: 1, effectiveLossBySide: { 1: false, 2: false } },
+        },
+      },
+    });
+  });
+
+  it("closes a Turns draw as a draw when both official limits are reached", () => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ id: "turns-limited-draw-p1", withStateMove: false }),
+      createImportedFixture({ id: "turns-limited-draw-p2", withStateMove: false }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go", teamMode: "turns", maxDraws: 0 },
+    );
+    const internals = runtime as unknown as {
+      p1: { runtime: { life: number } };
+      p2: { runtime: { life: number } };
+    };
+    internals.p1.runtime.life = 0;
+    internals.p2.runtime.life = 0;
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    for (let frame = 0; frame < 500 && snapshot.round?.state === "ko"; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot).toMatchObject({
+      playing: false,
+      round: {
+        state: "ko",
+        match: {
+          maxDrawsBySide: { 1: 0, 2: 0 },
+          draws: 1,
+          wins: { 1: 1, 2: 1 },
+          matchOver: true,
+        },
+        turnsContinuation: {
+          status: "draw",
+          applied: false,
+          matchOutcome: {
+            outcome: "draw",
+            matchOver: true,
+            diagnostics: expect.arrayContaining(["draw-effective-loss:both", "draw-match-over"]),
+          },
+        },
+        message: "Match over - Draw",
+      },
+    });
+  });
+
   it("blocks automatic Turns continuation when the incoming actor lacks state 5900", () => {
     const state5900 = parseCns(`
 [Statedef 5900]

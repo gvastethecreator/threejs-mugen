@@ -62,6 +62,7 @@ export type RuntimeTurnsContinuationInput = {
   winnerId?: string;
   recoveryTimeTicks?: number;
   matchOver?: boolean;
+  effectiveLossBySide?: Partial<Record<RuntimeTeamSide, boolean>>;
   nextRoundNo?: number;
   tick?: number;
 };
@@ -100,6 +101,7 @@ export class RuntimeTurnsContinuationWorld {
     const decision = this.decisionWorld.snapshot({
       actors: input.actors,
       modeBySide: input.modeBySide,
+      effectiveLossBySide: input.effectiveLossBySide,
       roundNotOver: input.roundNotOver,
       tick: input.tick,
     });

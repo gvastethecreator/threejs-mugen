@@ -10,6 +10,7 @@ export type RuntimeMatchOutcomeSnapshot = {
   mode: RuntimeTeamRoundMode;
   matchWins: number;
   matchWinsBySide?: { 1: number; 2: number };
+  maxDrawsBySide?: { 1: number; 2: number };
   wins: { 1: number; 2: number };
   roundsExisted: number;
   draws: number;
@@ -22,6 +23,7 @@ export type RuntimeMatchOutcomeResult = RuntimeMatchOutcomeSnapshot & {
   roundWinnerSide?: RuntimeTeamSide;
   winsBefore: { 1: number; 2: number };
   winsAfter: { 1: number; 2: number };
+  effectiveLossBySide?: { 1: boolean; 2: boolean };
   diagnostics: string[];
 };
 
@@ -29,15 +31,18 @@ export class RuntimeMatchOutcomeSystem {
   private readonly mode: RuntimeTeamRoundMode;
   private readonly matchWins: number;
   private readonly matchWinsBySide: { 1: number; 2: number };
+  private readonly maxDrawsBySide: { 1: number; 2: number };
   private wins: [number, number] = [0, 0];
   private completedRounds = 0;
   private draws = 0;
   private winnerSide?: RuntimeTeamSide;
+  private matchClosed = false;
 
   constructor(
     mode: RuntimeTeamRoundMode = "single",
     matchWins = 2,
     matchWinsBySide?: Partial<{ 1: number; 2: number }>,
+    maxDrawsBySide?: Partial<{ 1: number; 2: number }>,
   ) {
     this.mode = mode;
     const defaultMatchWins = boundedMatchWins(matchWins);
@@ -46,10 +51,14 @@ export class RuntimeMatchOutcomeSystem {
       2: boundedMatchWins(matchWinsBySide?.[2] ?? defaultMatchWins),
     };
     this.matchWins = Math.max(this.matchWinsBySide[1], this.matchWinsBySide[2]);
+    this.maxDrawsBySide = {
+      1: boundedMaxDraws(maxDrawsBySide?.[1]),
+      2: boundedMaxDraws(maxDrawsBySide?.[2]),
+    };
   }
 
   get isOver(): boolean {
-    return this.winnerSide !== undefined;
+    return this.matchClosed;
   }
 
   get roundsExisted(): number {
@@ -61,6 +70,14 @@ export class RuntimeMatchOutcomeSystem {
     this.completedRounds = 0;
     this.draws = 0;
     this.winnerSide = undefined;
+    this.matchClosed = false;
+  }
+
+  effectiveLossBySideForNextDraw(): { 1: boolean; 2: boolean } {
+    return {
+      1: this.maxDrawsReached(1),
+      2: this.maxDrawsReached(2),
+    };
   }
 
   snapshot(): RuntimeMatchOutcomeSnapshot {
@@ -71,6 +88,9 @@ export class RuntimeMatchOutcomeSystem {
       ...(this.matchWinsBySide[1] === this.matchWinsBySide[2]
         ? {}
         : { matchWinsBySide: { ...this.matchWinsBySide } }),
+      ...(this.maxDrawsBySide[1] < 0 && this.maxDrawsBySide[2] < 0
+        ? {}
+        : { maxDrawsBySide: { ...this.maxDrawsBySide } }),
       wins: this.scoreObject(),
       roundsExisted: this.completedRounds,
       draws: this.draws,
@@ -104,20 +124,52 @@ export class RuntimeMatchOutcomeSystem {
 
     this.completedRounds += 1;
     if (roundWinnerSide === undefined) {
+      const effectiveLossBySide = this.effectiveLossBySideForNextDraw();
       this.draws += 1;
+      const effectiveLossSides = ([1, 2] as const).filter((side) => effectiveLossBySide[side]);
+      if (effectiveLossSides.length === 1) {
+        const winnerSide = effectiveLossSides[0] === 1 ? 2 : 1;
+        return this.recordEffectiveLossWin(
+          winnerSide,
+          winsBefore,
+          effectiveLossBySide,
+          [`draw-effective-loss:side-${effectiveLossSides[0]}`],
+        );
+      }
+      if (effectiveLossSides.length === 2) {
+        this.wins[0] += 1;
+        this.wins[1] += 1;
+        const reachedSides = ([1, 2] as const).filter((side) =>
+          this.wins[side - 1] >= this.matchWinsBySide[side],
+        );
+        if (reachedSides.length === 1) {
+          this.winnerSide = reachedSides[0];
+          this.matchClosed = true;
+        } else if (reachedSides.length === 2) {
+          this.matchClosed = true;
+        }
+        return {
+          ...this.snapshot(),
+          outcome: this.matchClosed && this.winnerSide === undefined ? "draw" : this.isOver ? "match-win" : "draw",
+          ...(this.winnerSide === undefined ? {} : { roundWinnerSide: this.winnerSide }),
+          winsBefore,
+          winsAfter: this.scoreObject(),
+          effectiveLossBySide,
+          diagnostics: ["draw-effective-loss:both", ...(this.matchClosed ? ["draw-match-over"] : [])],
+        };
+      }
       return {
         ...this.snapshot(),
         outcome: "draw",
         winsBefore,
         winsAfter: this.scoreObject(),
+        effectiveLossBySide,
         diagnostics: ["draw-does-not-increment-score"],
       };
     }
 
     this.wins[roundWinnerSide - 1] += 1;
-    if (this.wins[roundWinnerSide - 1] >= this.matchWinsBySide[roundWinnerSide]) {
-      this.winnerSide = roundWinnerSide;
-    }
+    this.closeForWinnerIfReached(roundWinnerSide);
     const outcome: RuntimeMatchOutcomeKind = this.isOver ? "match-win" : "round-win";
     return {
       ...this.snapshot(),
@@ -129,6 +181,36 @@ export class RuntimeMatchOutcomeSystem {
     };
   }
 
+  private recordEffectiveLossWin(
+    roundWinnerSide: RuntimeTeamSide,
+    winsBefore: { 1: number; 2: number },
+    effectiveLossBySide: { 1: boolean; 2: boolean },
+    diagnostics: string[],
+  ): RuntimeMatchOutcomeResult {
+    this.wins[roundWinnerSide - 1] += 1;
+    this.closeForWinnerIfReached(roundWinnerSide);
+    return {
+      ...this.snapshot(),
+      outcome: this.isOver ? "match-win" : "round-win",
+      roundWinnerSide,
+      winsBefore,
+      winsAfter: this.scoreObject(),
+      effectiveLossBySide,
+      diagnostics,
+    };
+  }
+
+  private closeForWinnerIfReached(side: RuntimeTeamSide): void {
+    if (this.wins[side - 1] < this.matchWinsBySide[side]) return;
+    this.winnerSide = side;
+    this.matchClosed = true;
+  }
+
+  private maxDrawsReached(side: RuntimeTeamSide): boolean {
+    const limit = this.maxDrawsBySide[side];
+    return limit >= 0 && this.draws >= limit;
+  }
+
   private scoreObject(): { 1: number; 2: number } {
     return { 1: this.wins[0], 2: this.wins[1] };
   }
@@ -137,4 +219,9 @@ export class RuntimeMatchOutcomeSystem {
 function boundedMatchWins(value: number): number {
   if (!Number.isFinite(value)) return 2;
   return Math.max(1, Math.min(99, Math.round(value)));
+}
+
+function boundedMaxDraws(value: number | undefined): number {
+  if (value === undefined || !Number.isFinite(value)) return -1;
+  return Math.max(-1, Math.min(99, Math.round(value)));
 }

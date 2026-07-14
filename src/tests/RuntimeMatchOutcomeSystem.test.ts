@@ -76,4 +76,36 @@ describe("RuntimeMatchOutcomeSystem", () => {
       matchWinsBySide: { 1: 2, 2: 1 },
     });
   });
+
+  it("keeps draws neutral until the configured official limit is active", () => {
+    const outcome = new RuntimeMatchOutcomeSystem("turns", 3, undefined, { 1: 1, 2: 1 });
+
+    expect(outcome.effectiveLossBySideForNextDraw()).toEqual({ 1: false, 2: false });
+    expect(outcome.recordRound()).toMatchObject({
+      outcome: "draw",
+      draws: 1,
+      wins: { 1: 0, 2: 0 },
+      effectiveLossBySide: { 1: false, 2: false },
+    });
+    expect(outcome.effectiveLossBySideForNextDraw()).toEqual({ 1: true, 2: true });
+
+    expect(outcome.recordRound()).toMatchObject({
+      outcome: "draw",
+      draws: 2,
+      wins: { 1: 1, 2: 1 },
+      effectiveLossBySide: { 1: true, 2: true },
+    });
+  });
+
+  it("awards an effective-loss draw to the opposing side", () => {
+    const outcome = new RuntimeMatchOutcomeSystem("turns", 2, undefined, { 1: 1, 2: 99 });
+    outcome.recordRound();
+
+    expect(outcome.recordRound()).toMatchObject({
+      outcome: "round-win",
+      roundWinnerSide: 2,
+      wins: { 1: 0, 2: 1 },
+      effectiveLossBySide: { 1: true, 2: false },
+    });
+  });
 });

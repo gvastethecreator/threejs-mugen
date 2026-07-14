@@ -152,6 +152,43 @@ describe("RuntimeTeamRoundDecisionWorld", () => {
     expect(decision.diagnostics).toContain("missing-current:1");
   });
 
+  it("treats a simultaneous Turns KO as a normal draw without effective loss", () => {
+    const decision = new RuntimeTeamRoundDecisionWorld().snapshot({
+      actors: [
+        { id: "p1", side: 1, life: 0, memberNo: 0 },
+        { id: "p3", side: 1, life: 900, standby: true, replacementEligible: true, memberNo: 1 },
+        { id: "p2", side: 2, life: 0, memberNo: 0 },
+        { id: "p4", side: 2, life: 900, standby: true, replacementEligible: true, memberNo: 1 },
+      ],
+      modeBySide: { 1: "turns", 2: "turns" },
+      effectiveLossBySide: { 1: false, 2: false },
+    });
+
+    expect(decision).toMatchObject({ outcome: "draw" });
+    expect(decision.winnerSide).toBeUndefined();
+    expect(decision.sides).toEqual([
+      expect.objectContaining({ needsReplacement: false, sideDefeated: false }),
+      expect.objectContaining({ needsReplacement: false, sideDefeated: false }),
+    ]);
+  });
+
+  it("limits simultaneous Turns draw replacement to the effective-loss side", () => {
+    const decision = new RuntimeTeamRoundDecisionWorld().snapshot({
+      actors: [
+        { id: "p1", side: 1, life: 0, memberNo: 0 },
+        { id: "p3", side: 1, life: 900, standby: true, replacementEligible: true, memberNo: 1 },
+        { id: "p2", side: 2, life: 0, memberNo: 0 },
+        { id: "p4", side: 2, life: 900, standby: true, replacementEligible: true, memberNo: 1 },
+      ],
+      modeBySide: { 1: "turns", 2: "turns" },
+      effectiveLossBySide: { 1: true, 2: false },
+    });
+
+    expect(decision).toMatchObject({ outcome: "replacement-required", winnerSide: 2 });
+    expect(decision.sides[0]).toMatchObject({ effectiveLoss: true, needsReplacement: true });
+    expect(decision.sides[1]).toMatchObject({ needsReplacement: false, sideDefeated: false });
+  });
+
   it("keeps side facts observable while RoundNotOver blocks the global outcome", () => {
     const actors: RuntimeTeamRoundActor[] = [
       { id: "p1", side: 1, life: 0 },

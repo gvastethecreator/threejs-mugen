@@ -21,6 +21,7 @@ export type RuntimeTeamRoundDecisionInput = {
   actors: readonly RuntimeTeamRoundActor[];
   modeBySide: Record<RuntimeTeamSide, RuntimeTeamRoundMode>;
   loseOnKoBySide?: Partial<Record<RuntimeTeamSide, boolean>>;
+  effectiveLossBySide?: Partial<Record<RuntimeTeamSide, boolean>>;
   roundNotOver?: boolean;
   tick?: number;
 };
@@ -38,6 +39,7 @@ export type RuntimeTeamRoundSideDecision = {
   memberKo: boolean;
   needsReplacement: boolean;
   sideDefeated: boolean;
+  effectiveLoss?: true;
 };
 
 export type RuntimeTeamRoundDecisionOutcome =
@@ -96,11 +98,24 @@ export class RuntimeTeamRoundDecisionWorld {
       createSideDecision(1, actorsBySide[1], input, diagnostics),
       createSideDecision(2, actorsBySide[2], input, diagnostics),
     ];
+    const simultaneousTurnsKo = sides.every((side) =>
+      side.mode === "turns" && side.memberKo && side.aliveActorIds.length === 0,
+    );
+    const effectiveLossSides = sides.filter((side) => side.effectiveLoss === true);
+    const normalizedSides: [RuntimeTeamRoundSideDecision, RuntimeTeamRoundSideDecision] =
+      simultaneousTurnsKo
+        ? sides.map((side) => effectiveLossSides.length === 0 || side.effectiveLoss !== true
+          ? { ...side, needsReplacement: false, sideDefeated: false }
+          : side) as [RuntimeTeamRoundSideDecision, RuntimeTeamRoundSideDecision]
+        : sides;
     const roundNotOver = input.roundNotOver === true;
-    const defeated = sides.filter((side) => side.sideDefeated);
-    const replacement = sides.some((side) => side.needsReplacement);
+    const defeated = normalizedSides.filter((side) => side.sideDefeated);
+    const replacement = normalizedSides.some((side) => side.needsReplacement);
+    const simultaneousDraw = simultaneousTurnsKo && effectiveLossSides.length === 0;
     const outcome: RuntimeTeamRoundDecisionOutcome = roundNotOver
       ? "round-not-over"
+      : simultaneousDraw
+        ? "draw"
       : defeated.length === 2
         ? "draw"
         : defeated.length === 1
@@ -109,13 +124,20 @@ export class RuntimeTeamRoundDecisionWorld {
             ? "replacement-required"
             : "ongoing";
 
+    const winnerSide = outcome === "side-defeat" || outcome === "replacement-required"
+      ? effectiveLossSides.length === 1
+        ? effectiveLossSides[0]!.side === 1 ? 2 : 1
+        : defeated.length === 1
+          ? defeated[0]!.side === 1 ? 2 : 1
+          : undefined
+      : undefined;
     return {
       schema: RUNTIME_TEAM_ROUND_DECISION_SCHEMA,
       tick: normalizeTick(input.tick),
       roundNotOver,
       outcome,
-      ...(outcome === "side-defeat" ? { winnerSide: defeated[0]!.side === 1 ? 2 : 1 } : {}),
-      sides,
+      ...(winnerSide === undefined ? {} : { winnerSide }),
+      sides: normalizedSides,
       diagnostics: [...new Set(diagnostics)].sort(compareStableStrings),
     };
   }
@@ -129,6 +151,7 @@ function createSideDecision(
 ): RuntimeTeamRoundSideDecision {
   const mode = input.modeBySide[side];
   const loseOnKo = input.loseOnKoBySide?.[side] === true;
+  const effectiveLoss = input.effectiveLossBySide?.[side] === true;
   const orderedActors = [...actors].sort(compareActors);
   const participating = orderedActors.filter(isParticipating);
   const current = participating.filter((actor) => actor.standby !== true);
@@ -148,7 +171,7 @@ function createSideDecision(
     : [];
   const memberKo = mode === "turns" && ko.length > 0;
   const missingCurrentTurnsActor = mode === "turns" && orderedActors.length > 0 && current.length === 0;
-  const turnsNeedsReplacement = mode === "turns" && (memberKo || missingCurrentTurnsActor);
+  const turnsNeedsReplacement = mode === "turns" && (memberKo || missingCurrentTurnsActor || effectiveLoss);
   const sideDefeated = mode === "turns"
     ? turnsNeedsReplacement && replacementCandidates.length === 0
     : considered.length > 0 && (loseOnKo ? ko.length > 0 : alive.length === 0);
@@ -173,6 +196,7 @@ function createSideDecision(
     memberKo,
     needsReplacement: turnsNeedsReplacement && replacementCandidates.length > 0,
     sideDefeated,
+    ...(effectiveLoss ? { effectiveLoss: true } : {}),
   };
 }
 

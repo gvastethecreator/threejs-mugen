@@ -377,6 +377,8 @@ export type PlayableMatchRuntimeOptions = {
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
   matchWins?: number;
+  maxDraws?: number;
+  maxDrawsBySide?: Partial<Record<RuntimeTeamSide, number>>;
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
@@ -567,12 +569,16 @@ export class PlayableMatchRuntime {
     const turnsMatchWinsBySide = this.teamRoundMode === "turns"
       ? deriveTurnsMatchWinsBySide([this.p1, this.p2, ...this.reserveRoots])
       : undefined;
+    const configuredMaxDrawsBySide = options.maxDrawsBySide ?? (options.maxDraws === undefined
+      ? undefined
+      : { 1: options.maxDraws, 2: options.maxDraws });
     this.matchOutcome = new RuntimeMatchOutcomeSystem(
       this.teamRoundMode,
       turnsMatchWinsBySide === undefined
         ? options.matchWins
         : Math.max(turnsMatchWinsBySide[1], turnsMatchWinsBySide[2]),
       turnsMatchWinsBySide,
+      configuredMaxDrawsBySide,
     );
     this.activeRoots = [this.p1, this.p2];
     for (const root of this.characterRoots()) this.effectActorWorld.registerOwner(root.id);
@@ -2492,12 +2498,27 @@ export class PlayableMatchRuntime {
     const roots = this.characterRoots();
     const actors = this.teamRoundActors();
     const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(roots, this.tick);
-    const decision = matchRoundWorld.snapshotTeamRoundDecision({
+    const baseDecision = matchRoundWorld.snapshotTeamRoundDecision({
       actors,
       modeBySide: { 1: "turns", 2: "turns" },
       roundNotOver: globalAssertSpecial.roundNotOver,
       tick: this.tick,
     });
+    const isSimultaneousTurnsDraw = baseDecision.sides.every((side) =>
+      side.mode === "turns" && side.memberKo && side.aliveActorIds.length === 0,
+    );
+    const effectiveLossBySide = isSimultaneousTurnsDraw
+      ? this.matchOutcome.effectiveLossBySideForNextDraw()
+      : { 1: false, 2: false };
+    const decision = isSimultaneousTurnsDraw
+      ? matchRoundWorld.snapshotTeamRoundDecision({
+          actors,
+          modeBySide: { 1: "turns", 2: "turns" },
+          effectiveLossBySide,
+          roundNotOver: globalAssertSpecial.roundNotOver,
+          tick: this.tick,
+        })
+      : baseDecision;
     const winnerId = this.turnsContinuationWinnerId(decision, actors);
     const plan = this.turnsContinuationWorld.prepare({
       actors,
@@ -2508,6 +2529,7 @@ export class PlayableMatchRuntime {
       winnerId,
       recoveryTimeTicks: this.round.remainingTimerFrames,
       matchOver: this.matchOutcome.isOver,
+      effectiveLossBySide,
       nextRoundNo: this.round.currentRoundNo,
       tick: this.tick,
     });
@@ -2519,7 +2541,28 @@ export class PlayableMatchRuntime {
         this.logs.unshift(`Turns continuation blocked: ${plan.diagnostics.join(", ") || "preflight"}`);
         return "blocked";
       }
-      if (plan.status === "side-defeat" || plan.status === "draw") {
+      if (plan.status === "draw") {
+        const nextRound = this.startNextRound();
+        const drawContinuation = {
+          ...plan,
+          phases: [
+            ...plan.phases,
+            "draw:normal-round",
+            nextRound.applied ? "continuation:complete" : "continuation:terminal",
+          ],
+          diagnostics: [...plan.diagnostics, ...nextRound.diagnostics],
+          matchOutcome: nextRound.matchOutcome,
+          applied: nextRound.applied,
+        } satisfies RuntimeTurnsContinuationResult;
+        this.lastTurnsContinuation = drawContinuation;
+        if (!nextRound.applied) {
+          this.playing = false;
+          return "terminal";
+        }
+        this.logs.unshift(`Turns draw; round ${nextRound.nextRoundNo} started`);
+        return "continued";
+      }
+      if (plan.status === "side-defeat") {
         const matchOutcome = this.matchOutcome.recordRound(this.turnsContinuationWinnerSide(plan.decision, actors));
         this.lastTurnsContinuation = { ...plan, matchOutcome, applied: false };
         if (matchOutcome.matchOver) {
@@ -2709,7 +2752,9 @@ export class PlayableMatchRuntime {
     if (matchOutcome.matchOver) {
       this.lastRoundContext = this.roundContextWorld.snapshot(true, ["match-over"]);
       this.applyRoundContext(this.lastRoundContext);
-      this.logs.unshift(`Match over; side ${matchOutcome.winnerSide} wins`);
+      this.logs.unshift(matchOutcome.winnerSide === undefined
+        ? "Match over; draw"
+        : `Match over; side ${matchOutcome.winnerSide} wins`);
       return {
         ...plan,
         applied: false,
@@ -2785,7 +2830,9 @@ export class PlayableMatchRuntime {
     if (this.lastTurnsContinuation) {
       round.turnsContinuation = this.lastTurnsContinuation;
     }
-    if (round.match?.matchOver) {
+    if (round.match?.matchOver && round.match.winnerSide === undefined) {
+      round.message = "Match over - Draw";
+    } else if (round.match?.matchOver) {
       const winnerLabel = this.activeRoots.find((root) => runtimeTeamSide(root) === round.match!.winnerSide)?.label ??
         (round.match.winnerSide === 1 ? this.p1.label : this.p2.label);
       round.message = `Match over - ${winnerLabel}`;
