@@ -2,6 +2,13 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 533 closes the bounded recognized stage motion slice. Initial
+`velocity` survives parsing/reporting, and authored-order
+`VelSet`/`VelAdd`/`PosSet`/`PosAdd` are resolved from immutable layer
+data at the requested background tick. Focal coverage passes 17 tests and
+TypeScript 7 passes. Next: accumulated stage quality gate and a new
+independent compatibility slice.
+
 Entry 532 adds the bounded `Enabled` animation clock. Action-backed stage
 layers now pause their animation time only while a targeted `Enabled = 0`
 controller is active; `Visible` remains clock-neutral. Focal projection

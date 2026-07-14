@@ -23,6 +23,10 @@ export type MugenStageLayer = {
   actionNo?: number;
   /** Runtime-only animation clock after bounded Enabled controller pauses. */
   animationTick?: number;
+  velocity?: {
+    x: number;
+    y: number;
+  };
   trans?: MugenStageLayerTrans;
   clip?: MugenStageLayerClip;
   mask?: boolean;

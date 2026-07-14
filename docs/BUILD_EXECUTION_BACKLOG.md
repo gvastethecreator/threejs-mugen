@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 533 - Stateful BGCtrl motion
+
+Added imported initial layer velocity plus bounded authored-order
+`VelSet`/`VelAdd`/`PosSet`/`PosAdd` motion resolution with loop-aware
+reset origin. Focused stage/parser coverage passes 2 files / 17 tests and
+TypeScript 7 passes. See
+`docs/reports/2026-07-14-bgctrl-stateful-motion.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/172-bgctrl-stateful-motion.md`.
+
 ## Entry 532 - BGCtrl Enabled animation clock
 
 Resolved stage layers now carry a runtime-only action clock that pauses while a

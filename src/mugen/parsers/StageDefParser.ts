@@ -153,6 +153,7 @@ function buildPlaceholderLayers(
   return bgSections.slice(0, 8).map(([section, values], index) => {
     const start = pairValue(values, "start") ?? [0, index < 2 ? 88 - index * 40 : -42 + (index % 3) * 16];
     const delta = pairValue(values, "delta") ?? [1, 1];
+    const velocity = pairValue(values, "velocity");
     const sprite = pairValue(values, "spriteno");
     const spriteLabel = getValue(values, "spriteno") ?? `${index},0`;
     const actionNo = numberValue(values, "actionno");
@@ -182,6 +183,7 @@ function buildPlaceholderLayers(
       spriteGroup: sprite?.[0],
       spriteIndex: sprite?.[1],
       actionNo,
+      ...(velocity ? { velocity: { x: velocity[0], y: velocity[1] } } : {}),
       trans,
       clip,
       mask,

@@ -1,5 +1,18 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Stateful BGCtrl motion
+
+- Entry 533 retains imported initial layer velocity and resolves bounded
+  authored-order `VelSet`, `VelAdd`, `PosSet`, and `PosAdd` motion from
+  immutable stage data.
+- Focal stage/parser coverage passes 2 files / 17 tests and TypeScript 7 passes.
+- Broad regression, build, trace, and browser gates remain deferred until the
+  next accumulated stage quality checkpoint.
+- Independent multi-group state, exact pause ordering, zoom/window/mask/parallax
+  parity, and full stage parity remain open.
+- See `docs/research/2026-07-14-bgctrl-stateful-motion.md` and
+  `docs/reports/2026-07-14-bgctrl-stateful-motion.md`.
+
 ## Global report - 2026-07-14 BGCtrl Enabled animation clock
 
 - Entry 532 pauses action-backed stage animation while a targeted

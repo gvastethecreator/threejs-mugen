@@ -13,6 +13,7 @@ export type StageBackgroundLayerReport = {
   controlId?: number;
   start: { x: number; y: number };
   delta: { x: number; y: number };
+  velocity?: { x: number; y: number };
   tiled: boolean;
   trans?: {
     mode: string;
@@ -240,6 +241,7 @@ function describeBackgroundLayer(
       x: layer.deltaX ?? 1,
       y: layer.deltaY ?? 1,
     },
+    ...(layer.velocity ? { velocity: layer.velocity } : {}),
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
     ...(layer.clip ? { clip: layer.clip } : {}),

@@ -65,13 +65,17 @@ export function projectStageSpriteLayer(
 }
 
 export function resolveStageLayerForTick(layer: MugenStageLayer, stage: StageSnapshot, tick: number): MugenStageLayer | undefined {
-  let resolved: MugenStageLayer = { ...layer };
   const controllers = stage.bgControllers?.flatMap((group) => group.controllers) ?? [];
+  const targetedControllers = controllers.filter((controller) => targetsLayer(controller, layer));
+  const motionControllers = targetedControllers.filter((controller) => isMotionController(controller.type));
+  let resolved = motionControllers.length > 0
+    ? resolveStageMotion(layer, motionControllers, tick)
+    : { ...layer };
   const enabledControllers = controllers.filter((controller) =>
     controller.type.toLowerCase() === "enabled" && targetsLayer(controller, layer),
   );
   for (const controller of controllers) {
-    if (!targetsLayer(controller, layer) || !isControllerActive(controller, tick)) {
+    if (!targetsLayer(controller, layer) || !isControllerActive(controller, tick) || isMotionController(controller.type)) {
       continue;
     }
     const next = applyStageBgController(resolved, controller, tick);
@@ -84,6 +88,70 @@ export function resolveStageLayerForTick(layer: MugenStageLayer, stage: StageSna
     resolved.animationTick = countEnabledTicks(enabledControllers, tick);
   }
   return resolved;
+}
+
+function isMotionController(type: string): boolean {
+  return ["velset", "veladd", "posset", "posadd"].includes(type.toLowerCase());
+}
+
+function resolveStageMotion(
+  layer: MugenStageLayer,
+  controllers: readonly MugenStageBgCtrl[],
+  tick: number,
+): MugenStageLayer {
+  const safeTick = Math.max(0, Math.trunc(tick));
+  const simulationStart = stageMotionSimulationStart(controllers, safeTick);
+  const baseY = layer.startY ?? 0;
+  let x = layer.startX ?? layer.x ?? 0;
+  let y = baseY;
+  let velocityX = layer.velocity?.x ?? 0;
+  let velocityY = layer.velocity?.y ?? 0;
+
+  for (let cursor = simulationStart; cursor <= safeTick; cursor += 1) {
+    for (const controller of controllers) {
+      if (!isControllerActive(controller, cursor)) continue;
+      const [valueX, valueY] = controllerPair(controller, ["x", "y", "value"], [Number.NaN, Number.NaN]);
+      switch (controller.type.toLowerCase()) {
+        case "velset":
+          if (Number.isFinite(valueX)) velocityX = valueX;
+          if (Number.isFinite(valueY)) velocityY = valueY;
+          break;
+        case "veladd":
+          if (Number.isFinite(valueX)) velocityX += valueX;
+          if (Number.isFinite(valueY)) velocityY += valueY;
+          break;
+        case "posset":
+          if (Number.isFinite(valueX)) x = valueX;
+          if (Number.isFinite(valueY)) y = valueY;
+          break;
+        case "posadd":
+          if (Number.isFinite(valueX)) x += valueX;
+          if (Number.isFinite(valueY)) y += valueY;
+          break;
+      }
+    }
+    x += velocityX;
+    y += velocityY;
+  }
+
+  return {
+    ...layer,
+    x,
+    startX: x,
+    startY: y,
+    y: layer.y - (y - baseY),
+  };
+}
+
+function stageMotionSimulationStart(controllers: readonly MugenStageBgCtrl[], tick: number): number {
+  const resetPeriods = controllers
+    .map((controller) => positiveLoopTime(controller.timing.groupLoopTime ?? controller.timing.loopTime))
+    .filter((period): period is number => period !== undefined);
+  const firstPeriod = resetPeriods[0];
+  if (firstPeriod === undefined || resetPeriods.some((period) => period !== firstPeriod)) {
+    return 0;
+  }
+  return Math.floor(tick / firstPeriod) * firstPeriod;
 }
 
 function applyStageBgController(layer: MugenStageLayer, controller: MugenStageBgCtrl, tick: number): MugenStageLayer | undefined {

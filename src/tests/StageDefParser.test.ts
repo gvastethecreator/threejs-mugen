@@ -50,6 +50,7 @@ id = 4
 spriteno = 1,0
 start = 0,170
 delta = 1,1
+velocity = .5,1
 layerno = 1
 
 [BG Animated]
@@ -104,7 +105,14 @@ describe("parseStageDef", () => {
     expect(runtime.layers).toHaveLength(3);
     expect(runtime.layers[0]?.id).toContain("BG 0");
     expect(runtime.layers[0]).toMatchObject({ sectionName: "BG 0", type: "normal", spriteGroup: 0, spriteIndex: 0, startX: 0, startY: 0, deltaX: 0.5 });
-    expect(runtime.layers[1]).toMatchObject({ sectionName: "BG Floor", type: "normal", spriteGroup: 1, spriteIndex: 0, layerNo: 1 });
+    expect(runtime.layers[1]).toMatchObject({
+      sectionName: "BG Floor",
+      type: "normal",
+      spriteGroup: 1,
+      spriteIndex: 0,
+      layerNo: 1,
+      velocity: { x: 0.5, y: 1 },
+    });
     expect(runtime.layers[2]).toMatchObject({
       sectionName: "BG Animated",
       type: "anim",

@@ -192,6 +192,35 @@ describe("resolveStageLayerForTick", () => {
     expect(other).toMatchObject({ startX: 10, startY: 20 });
   });
 
+  it("keeps initial velocity when VelSet updates only one axis", () => {
+    const movingLayer = { ...layer, velocity: { x: 0, y: 1 } };
+    const resolved = resolveStageLayerForTick(
+      movingLayer,
+      {
+        ...stage,
+        bgControllers: [
+          {
+            name: "motion",
+            controllers: [
+              {
+                name: "horizontal",
+                type: "velset",
+                timing: { start: 0, end: 0 },
+                ctrlIds: [7],
+                params: { x: "3" },
+                rawParams: { type: "VelSet", time: "0", x: "3" },
+              },
+            ],
+            rawParams: {},
+          },
+        ],
+      },
+      2,
+    );
+
+    expect(resolved).toMatchObject({ startX: 19, startY: 23 });
+  });
+
   it("supports looped SinX and Anim controllers for action-backed backgrounds", () => {
     const resolved = resolveStageLayerForTick(
       layer,
