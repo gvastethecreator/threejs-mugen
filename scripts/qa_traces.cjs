@@ -346,6 +346,16 @@ async function main() {
       artifact: presets.createSyntheticImportedTeamRoundHandoffTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-team-resource-share",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamResourceShareTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-team-resource-local",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamResourceLocalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-round-nokoslow",
       required: true,
       artifact: presets.createSyntheticImportedRoundNoKoSlowTraceArtifact(),

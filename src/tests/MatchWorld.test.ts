@@ -329,7 +329,7 @@ describe("MatchWorld", () => {
     });
 
     expect(world.getSnapshot().teamRoundResourceBanks).toMatchObject({
-      schema: "mugen-web-sandbox/runtime-team-resource-bank/v0",
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v1",
       mode: "tag",
       sharing: { life: false, power: false },
       actors: [

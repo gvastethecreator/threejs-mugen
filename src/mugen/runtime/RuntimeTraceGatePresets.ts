@@ -2114,6 +2114,110 @@ export function createSyntheticImportedTeamRoundHandoffTraceArtifact(
   });
 }
 
+export function createSyntheticImportedTeamResourceShareTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedTeamResourceTraceArtifact(options, true, true);
+}
+
+export function createSyntheticImportedTeamResourceLocalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedTeamResourceTraceArtifact(options, false, false);
+}
+
+function createSyntheticImportedTeamResourceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions,
+  lifeShare: boolean,
+  powerShare: boolean,
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${lifeShare ? "shared" : "local"}-attacker`,
+    displayName: `Synthetic Imported Team Resource ${lifeShare ? "Shared" : "Local"} Attacker`,
+    withResourceOps: { stateNo: 289 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${lifeShare ? "shared" : "local"}-defender`,
+    displayName: `Synthetic Imported Team Resource ${lifeShare ? "Shared" : "Local"} Defender`,
+    withHitDef: false,
+  });
+  const reserveSideOne = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${lifeShare ? "shared" : "local"}-reserve-one`,
+    displayName: `Synthetic Imported Team Resource ${lifeShare ? "Shared" : "Local"} Reserve One`,
+    withHitDef: false,
+  });
+  const reserveSideTwo = createSyntheticImportedTraceFighter({
+    id: `synthetic-imported-team-resource-${lifeShare ? "shared" : "local"}-reserve-two`,
+    displayName: `Synthetic Imported Team Resource ${lifeShare ? "Shared" : "Local"} Reserve Two`,
+    withHitDef: false,
+  });
+  const targetId = `synthetic-imported-team-resource-${lifeShare ? "shared" : "local"}-golden`;
+  const script = importedXScript();
+  const world = new MatchWorld({
+    p1: attacker,
+    p2: defender,
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    teamLifeShare: lifeShare,
+    teamPowerShare: powerShare,
+    reserveFighters: [reserveSideOne, reserveSideTwo],
+  });
+  const trace = runRuntimeTrace(world, script, { label: targetId });
+  const reserveValues = lifeShare
+    ? { life: 750, power: 900 }
+    : { life: 1000, power: 0 };
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: `Synthetic imported team resource ${lifeShare ? "share" : "root-local"} mutation`,
+      source: "imported",
+      notes: [
+        `Synthetic imported IKEMEN tag trace proves LifeSet/PowerSet mutation ${lifeShare ? "reconciles into side-owned shared banks and mirrors the standby root" : "remains root-local while the standby root keeps its initial values"}. It does not claim red-life, guard/stun, variable-map, helper/redirect, persistence, rollback/netplay, motif, or full MUGEN/IKEMEN resource parity.`,
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 289],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
+      requiredExecutedOperations: ["hitdef", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: lifeShare ? ["hit", "runtime"] : ["hit"],
+      requiredEventSubstrings: lifeShare
+        ? ["TeamResource life team:1", "TeamResource power team:1"]
+        : undefined,
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          minFrames: 1,
+        },
+        {
+          actorId: "p3",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: reserveValues.life,
+          observedLifeAtMost: reserveValues.life,
+          observedPowerAtLeast: reserveValues.power,
+          observedPowerAtMost: reserveValues.power,
+          minFrames: 1,
+        },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedRoundNoKoSlowTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({

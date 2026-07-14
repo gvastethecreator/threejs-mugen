@@ -1,15 +1,17 @@
 import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
 import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
-import type { RuntimeTeamState } from "./types";
+import type { CharacterRuntimeState, RuntimeTeamState } from "./types";
 
-export const RUNTIME_TEAM_RESOURCE_BANK_SCHEMA = "mugen-web-sandbox/runtime-team-resource-bank/v0";
+export const RUNTIME_TEAM_RESOURCE_BANK_SCHEMA = "mugen-web-sandbox/runtime-team-resource-bank/v1";
 
 export type RuntimeTeamResourceBankActor = {
   id: string;
   side: RuntimeTeamSide;
   memberNo?: number;
   life: number;
+  lifeMax?: number;
   power: number;
+  powerMax?: number;
   teamState: RuntimeTeamState;
 };
 
@@ -35,6 +37,8 @@ export type RuntimeTeamResourceBank = {
   shared: boolean;
   actorIds: string[];
   representativeActorId: string;
+  value: number;
+  max: number;
 };
 
 export type RuntimeTeamResourceBankDiagnostic = {
@@ -56,6 +60,37 @@ export type RuntimeTeamResourceBankInput = {
   lifeShare: boolean;
   powerShare: boolean;
   tick?: number;
+};
+
+export type RuntimeTeamResourceBankRuntimeActor = RuntimeTeamResourceBankActor & {
+  runtime: Pick<CharacterRuntimeState, "life" | "lifeMax" | "power" | "powerMax">;
+};
+
+export type RuntimeTeamResourceBankRuntimeInput = {
+  actors: readonly RuntimeTeamResourceBankRuntimeActor[];
+  mode: RuntimeTeamRoundMode;
+  lifeShare: boolean;
+  powerShare: boolean;
+  tick?: number;
+};
+
+export type RuntimeTeamResourceBankMutation = {
+  bankId: string;
+  kind: "life" | "power";
+  resourceOwnerId: string;
+  shared: boolean;
+  actorIds: string[];
+  delta: number;
+  value: number;
+  max: number;
+};
+
+export type RuntimeTeamResourceBankRuntimeResult = {
+  schema: typeof RUNTIME_TEAM_RESOURCE_BANK_SCHEMA;
+  tick: number;
+  reset: boolean;
+  changes: RuntimeTeamResourceBankMutation[];
+  diagnostics: string[];
 };
 
 export class RuntimeTeamResourceBankWorld {
@@ -124,6 +159,105 @@ export class RuntimeTeamResourceBankWorld {
   }
 }
 
+export class RuntimeTeamResourceBankRuntime {
+  private readonly bankWorld = new RuntimeTeamResourceBankWorld();
+  private banks = new Map<string, RuntimeTeamResourceBank>();
+  private baselines = new Map<string, number>();
+  private topologyKey = "";
+
+  reset(input: RuntimeTeamResourceBankRuntimeInput): RuntimeTeamResourceBankRuntimeResult {
+    const diagnostic = this.bankWorld.snapshot(input);
+    const actorsById = indexRuntimeActors(input.actors);
+    this.banks = new Map(
+      diagnostic.banks.map((bank) => [bank.bankId, { ...bank, actorIds: [...bank.actorIds] }]),
+    );
+    this.baselines.clear();
+    for (const bank of this.banks.values()) {
+      const representative = actorsById.get(bank.representativeActorId);
+      if (!representative) continue;
+      bank.value = clampResource(readRuntimeResource(representative, bank.kind), 0, bank.max);
+      for (const actorId of bank.actorIds) {
+        const actor = actorsById.get(actorId);
+        if (!actor) continue;
+        if (bank.shared) {
+          writeRuntimeResource(actor, bank.kind, bank.value, bank.max);
+        }
+        this.baselines.set(baselineKey(bank.bankId, actorId), readRuntimeResource(actor, bank.kind));
+      }
+    }
+    this.topologyKey = resourceBankTopologyKey(diagnostic);
+    return {
+      schema: RUNTIME_TEAM_RESOURCE_BANK_SCHEMA,
+      tick: normalizeTick(input.tick),
+      reset: true,
+      changes: [],
+      diagnostics: diagnostic.diagnostics,
+    };
+  }
+
+  reconcile(input: RuntimeTeamResourceBankRuntimeInput): RuntimeTeamResourceBankRuntimeResult {
+    const diagnostic = this.bankWorld.snapshot(input);
+    const topologyKey = resourceBankTopologyKey(diagnostic);
+    if (this.banks.size === 0 || this.topologyKey !== topologyKey) {
+      return this.reset(input);
+    }
+
+    const actorsById = indexRuntimeActors(input.actors);
+    const changes: RuntimeTeamResourceBankMutation[] = [];
+    for (const bank of this.banks.values()) {
+      const previousValue = bank.value;
+      const delta = bank.actorIds.reduce((total, actorId) => {
+        const actor = actorsById.get(actorId);
+        if (!actor) return total;
+        const current = readRuntimeResource(actor, bank.kind);
+        const baseline = this.baselines.get(baselineKey(bank.bankId, actorId)) ?? current;
+        return total + (current - baseline);
+      }, 0);
+
+      if (bank.shared) {
+        bank.value = clampResource(bank.value + delta, 0, bank.max);
+        for (const actorId of bank.actorIds) {
+          const actor = actorsById.get(actorId);
+          if (!actor) continue;
+          writeRuntimeResource(actor, bank.kind, bank.value, bank.max);
+        }
+      } else {
+        const representative = actorsById.get(bank.representativeActorId);
+        if (representative) {
+          bank.value = clampResource(readRuntimeResource(representative, bank.kind), 0, bank.max);
+        }
+      }
+
+      for (const actorId of bank.actorIds) {
+        const actor = actorsById.get(actorId);
+        if (actor) {
+          this.baselines.set(baselineKey(bank.bankId, actorId), readRuntimeResource(actor, bank.kind));
+        }
+      }
+      if (bank.value !== previousValue) {
+        changes.push({
+          bankId: bank.bankId,
+          kind: bank.kind,
+          resourceOwnerId: bank.resourceOwnerId,
+          shared: bank.shared,
+          actorIds: [...bank.actorIds],
+          delta: bank.value - previousValue,
+          value: bank.value,
+          max: bank.max,
+        });
+      }
+    }
+
+    return {
+      schema: RUNTIME_TEAM_RESOURCE_BANK_SCHEMA,
+      tick: normalizeTick(input.tick),
+      reset: false,
+      changes,
+      diagnostics: diagnostic.diagnostics,
+    };
+  }
+}
+
 function createBanks(
   side: RuntimeTeamSide,
   kind: "life" | "power",
@@ -140,9 +274,12 @@ function createBanks(
       shared: false,
       actorIds: [actor.id],
       representativeActorId: actor.id,
+      value: resourceValue(actor, kind),
+      max: resourceMax(actor, kind),
     }));
   }
   const resourceOwnerId = `team:${side}`;
+  const representativeActorId = actors.find((actor) => !actor.teamState.disabled)?.id ?? actors[0]!.id;
   return [{
     bankId: `${resourceOwnerId}:${kind}`,
     kind,
@@ -150,8 +287,74 @@ function createBanks(
     resourceOwnerId,
     shared: true,
     actorIds: actors.map((actor) => actor.id),
-    representativeActorId: actors.find((actor) => !actor.teamState.disabled)?.id ?? actors[0]!.id,
+    representativeActorId,
+    value: resourceValue(actors.find((actor) => actor.id === representativeActorId) ?? actors[0]!, kind),
+    max: Math.min(...actors.map((actor) => resourceMax(actor, kind))),
   }];
+}
+
+function indexRuntimeActors(
+  actors: readonly RuntimeTeamResourceBankRuntimeActor[],
+): Map<string, RuntimeTeamResourceBankRuntimeActor> {
+  const byId = new Map<string, RuntimeTeamResourceBankRuntimeActor>();
+  for (const actor of actors) {
+    const actorId = actor.id.trim();
+    if (actorId && !byId.has(actorId)) byId.set(actorId, { ...actor, id: actorId });
+  }
+  return byId;
+}
+
+function resourceBankTopologyKey(diagnostic: RuntimeTeamResourceBankDiagnostic): string {
+  return JSON.stringify({
+    mode: diagnostic.mode,
+    sharing: diagnostic.sharing,
+    banks: diagnostic.banks.map((bank) => ({
+      bankId: bank.bankId,
+      kind: bank.kind,
+      side: bank.side,
+      resourceOwnerId: bank.resourceOwnerId,
+      shared: bank.shared,
+      actorIds: bank.actorIds,
+    })),
+  });
+}
+
+function baselineKey(bankId: string, actorId: string): string {
+  return `${bankId}:${actorId}`;
+}
+
+function readRuntimeResource(actor: RuntimeTeamResourceBankRuntimeActor, kind: "life" | "power"): number {
+  return kind === "life" ? actor.runtime.life : actor.runtime.power;
+}
+
+function writeRuntimeResource(
+  actor: RuntimeTeamResourceBankRuntimeActor,
+  kind: "life" | "power",
+  value: number,
+  max: number,
+): void {
+  const actorMax = kind === "life" ? actor.runtime.lifeMax : actor.runtime.powerMax;
+  const boundedMax = Math.min(max, resourceMax(actor, kind), actorMax ?? max);
+  const boundedValue = clampResource(value, 0, boundedMax);
+  if (kind === "life") actor.runtime.life = boundedValue;
+  else actor.runtime.power = boundedValue;
+}
+
+function resourceValue(actor: RuntimeTeamResourceBankActor, kind: "life" | "power"): number {
+  return clampResource(kind === "life" ? actor.life : actor.power, 0, resourceMax(actor, kind));
+}
+
+function resourceMax(actor: RuntimeTeamResourceBankActor, kind: "life" | "power"): number {
+  const value = kind === "life" ? actor.lifeMax : actor.powerMax;
+  return value !== undefined && Number.isFinite(value) && value > 0
+    ? Math.round(value)
+    : kind === "life"
+      ? 1000
+      : 3000;
+}
+
+function clampResource(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, Number.isFinite(value) ? value : min));
 }
 
 function bindingFor(bank: RuntimeTeamResourceBank): RuntimeTeamResourceBinding {
@@ -173,7 +376,7 @@ function compareActors(left: RuntimeTeamResourceBankActor, right: RuntimeTeamRes
 }
 
 function normalizeTick(tick: number | undefined): number {
-  return Number.isFinite(tick) ? Math.max(0, Math.round(tick!)) : 0;
+  return tick !== undefined && Number.isFinite(tick) ? Math.max(0, Math.round(tick)) : 0;
 }
 
 function compareStableStrings(left: string, right: string): number {

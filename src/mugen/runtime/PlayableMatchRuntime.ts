@@ -162,7 +162,12 @@ import {
   type RuntimeTeamRoundMode,
 } from "./RuntimeTeamRoundDecisionSystem";
 import { RuntimeTeamRoundLifebarWorld } from "./RuntimeTeamRoundLifebarSystem";
-import { RuntimeTeamResourceBankWorld } from "./RuntimeTeamResourceBankSystem";
+import {
+  RuntimeTeamResourceBankRuntime,
+  RuntimeTeamResourceBankWorld,
+  type RuntimeTeamResourceBankActor,
+  type RuntimeTeamResourceBankRuntimeActor,
+} from "./RuntimeTeamResourceBankSystem";
 import type {
   RuntimeTeamRoundHandoffActor,
   RuntimeTeamRoundHandoffResult,
@@ -425,6 +430,7 @@ export class PlayableMatchRuntime {
   private lastRootBodyPush?: RuntimeRootBodyPushDiagnostic;
   private lastRootHitAdmission?: RuntimeRootDirectHitAdmissionDiagnostic;
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
+  private readonly teamResourceBankRuntime = new RuntimeTeamResourceBankRuntime();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
@@ -515,6 +521,7 @@ export class PlayableMatchRuntime {
       [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
       this.runtimeProfile === "ikemen-go" && this.teamRoundMode === "tag" ? "tag" : "single",
     );
+    this.resetTeamResourceBanks();
     this.attachHelperHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
@@ -644,22 +651,66 @@ export class PlayableMatchRuntime {
   }
 
   private teamResourceBankActors() {
-    return this.characterRoots().map((root) => {
-      const side = runtimeTeamSide(root);
-      const teamState = root.runtime.teamState;
-      if (side === undefined || !teamState) {
-        throw new Error(`Team resource root ${root.id} has no valid team state`);
-      }
-      const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
-      return {
-        id: root.id,
-        side,
-        life: root.runtime.life,
-        power: root.runtime.power,
-        ...(memberNo === undefined ? {} : { memberNo }),
-        teamState,
-      };
+    return this.characterRoots().map((root) => this.teamResourceBankActor(root));
+  }
+
+  private teamResourceBankRuntimeActors(): RuntimeTeamResourceBankRuntimeActor[] {
+    return this.characterRoots().map((root) => ({
+      ...this.teamResourceBankActor(root),
+      runtime: root.runtime,
+    }));
+  }
+
+  private teamResourceBankActor(root: FighterMatchState): RuntimeTeamResourceBankActor {
+    const side = runtimeTeamSide(root);
+    const teamState = root.runtime.teamState;
+    if (side === undefined || !teamState) {
+      throw new Error(`Team resource root ${root.id} has no valid team state`);
+    }
+    const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
+    return {
+      id: root.id,
+      side,
+      life: root.runtime.life,
+      lifeMax: root.runtime.lifeMax,
+      power: root.runtime.power,
+      powerMax: root.runtime.powerMax,
+      ...(memberNo === undefined ? {} : { memberNo }),
+      teamState,
+    } satisfies RuntimeTeamResourceBankActor;
+  }
+
+  private teamResourceBankRuntimeEnabled(): boolean {
+    return this.runtimeProfile === "ikemen-go" && this.teamRoundMode !== "single";
+  }
+
+  private resetTeamResourceBanks(): void {
+    if (!this.teamResourceBankRuntimeEnabled()) return;
+    this.teamResourceBankRuntime.reset({
+      actors: this.teamResourceBankRuntimeActors(),
+      mode: this.teamRoundMode,
+      lifeShare: this.teamLifeShare,
+      powerShare: this.teamPowerShare,
+      tick: this.tick,
     });
+  }
+
+  private reconcileTeamResourceBanks(): void {
+    if (!this.teamResourceBankRuntimeEnabled()) return;
+    const result = this.teamResourceBankRuntime.reconcile({
+      actors: this.teamResourceBankRuntimeActors(),
+      mode: this.teamRoundMode,
+      lifeShare: this.teamLifeShare,
+      powerShare: this.teamPowerShare,
+      tick: this.tick,
+    });
+    for (const change of result.changes) {
+      if (!change.shared || change.delta === 0) continue;
+      const sign = change.delta > 0 ? "+" : "";
+      this.logs.unshift(
+        `TeamResource ${change.kind} ${change.resourceOwnerId} delta ${sign}${change.delta} value ${change.value}/${change.max} actors ${change.actorIds.join(",")}`,
+      );
+    }
   }
 
   private rootForHelper(helper: RuntimeHelper): FighterMatchState {
@@ -873,6 +924,7 @@ export class PlayableMatchRuntime {
     }
     schedule.record("tick:restore-superpause-defense");
     this.restoreExpiredSuperPauseTargetDefense();
+    this.reconcileTeamResourceBanks();
     this.lastTickSchedule = schedule.complete(branchResult.branch);
   }
 
@@ -2194,6 +2246,7 @@ export class PlayableMatchRuntime {
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
     }
+    this.resetTeamResourceBanks();
   }
 
   private createFighterState(

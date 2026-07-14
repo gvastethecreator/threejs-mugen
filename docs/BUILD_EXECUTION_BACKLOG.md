@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 502 - RuntimeTeamResourceBank/v1 root mutation
+
+Done: `RuntimeTeamResourceBankRuntime/v1` now consumes root runtime deltas after
+completed IKEMEN non-Single ticks. Independent LifeShare and PowerShare options
+either apply a clamped delta to one side bank and mirror all side roots, or keep
+each resource root-local. Construction and match reset rebind baselines, and
+Tag active/standby changes preserve bank ids and `resourceOwnerId`. Required
+imported Tag traces prove shared standby mirroring and non-shared local values.
+Aggregate closure is green: 199 files / 2035 tests, TypeScript 7 typecheck,
+584/584 trace artifacts (550 required, 34 optional), 277-module production
+build, boundaries, CSS QA, and diff hygiene. Claim allowed: bounded root
+LifeShare/PowerShare mutation. Claim blocked: exact Set conflict ordering,
+helpers/projectiles, red-life, guard/stun, variable maps, round persistence,
+rollback, netplay, and full MUGEN/IKEMEN resource parity. See Wayfinder 141 and
+the dated research/report.
+
 ## Entry 501 - RuntimeTeamResourceBank/v0 ownership
 
 Done: `RuntimeTeamResourceBankWorld/v0` publishes explicit life/power bank

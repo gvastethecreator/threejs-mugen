@@ -580,6 +580,8 @@ import {
   createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedRoundKoTraceArtifact,
   createSyntheticImportedTeamRoundHandoffTraceArtifact,
+  createSyntheticImportedTeamResourceLocalTraceArtifact,
+  createSyntheticImportedTeamResourceShareTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
@@ -2727,7 +2729,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const finalResourceBanks = artifact.trace.frames[artifact.trace.frames.length - 1]?.teamRoundResourceBanks;
     expect(finalResourceBanks).toMatchObject({
-      schema: "mugen-web-sandbox/runtime-team-resource-bank/v0",
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v1",
       mode: "turns",
       sharing: { life: false, power: false },
       actors: [
@@ -2737,6 +2739,48 @@ describe("RuntimeTraceGatePresets", () => {
         { actorId: "p4", life: { resourceOwnerId: "p4" }, power: { resourceOwnerId: "p4" } },
       ],
     });
+  });
+
+  it("creates a required shared team resource trace with standby bank mirroring", () => {
+    const artifact = createSyntheticImportedTeamResourceShareTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-resource-shared-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-team-resource-shared-golden", passed: true, failures: [] }],
+    });
+    const final = artifact.trace.frames.at(-1);
+    expect(final?.teamRoundResourceBanks).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v1",
+      mode: "tag",
+      sharing: { life: true, power: true },
+    });
+    expect(final?.teamRoundResourceBanks?.banks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ bankId: "team:1:life", resourceOwnerId: "team:1", value: 750, max: 1000, actorIds: ["p1", "p3"] }),
+      expect.objectContaining({ bankId: "team:1:power", resourceOwnerId: "team:1", value: 900, max: 3000, actorIds: ["p1", "p3"] }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 750, power: 900 });
+  });
+
+  it("creates a required local team resource trace without standby transfer", () => {
+    const artifact = createSyntheticImportedTeamResourceLocalTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-team-resource-local-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-team-resource-local-golden", passed: true, failures: [] }],
+    });
+    const final = artifact.trace.frames.at(-1);
+    expect(final?.teamRoundResourceBanks).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-team-resource-bank/v1",
+      mode: "tag",
+      sharing: { life: false, power: false },
+    });
+    expect(final?.teamRoundResourceBanks?.banks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ bankId: "p1:life", resourceOwnerId: "p1", value: 750, max: 1000, actorIds: ["p1"] }),
+      expect.objectContaining({ bankId: "p1:power", resourceOwnerId: "p1", value: 900, max: 3000, actorIds: ["p1"] }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p3")).toMatchObject({ life: 1000, power: 0 });
   });
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {
