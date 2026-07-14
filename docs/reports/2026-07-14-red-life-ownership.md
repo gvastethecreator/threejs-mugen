@@ -40,6 +40,10 @@ MUGEN/IKEMEN parity.
 
 ## Verification record
 
-The focused red-life trace and resource/combat tests are the first evidence
-pass. Full repository gates are recorded after the implementation audit and
-commit.
+The required trace `synthetic-imported-redlife` passes with checksum
+`c3cec112`. Focused resource/combat/HitDef/trace coverage passes 612 tests;
+the full suite passes 200 files / 2049 tests. `pnpm typecheck`, `pnpm build`
+(279 modules), `pnpm check:boundaries`, `pnpm qa:css`, `pnpm qa:trace`
+(588/588 artifacts, 554 required / 34 optional), and `git diff --check` all
+pass. Browser smoke is not required because this feature changes no visible
+surface.
