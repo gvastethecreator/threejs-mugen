@@ -42,6 +42,12 @@ export type MugenStageLayer = {
     x: number;
     y: number;
   };
+  /** Link position and scroll delta to the last non-linked authored layer. */
+  positionLink?: {
+    targetId: string;
+    offsetX: number;
+    offsetY: number;
+  };
   trans?: MugenStageLayerTrans;
   clip?: MugenStageLayerClip;
   mask?: boolean;

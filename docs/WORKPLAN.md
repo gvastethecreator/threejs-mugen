@@ -2,6 +2,13 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 536 closes the bounded stage `positionlink` slice. Linked layers retain
+their authored target and offset, inherit the linked delta, and follow bounded
+target motion at the same background tick through immutable resolution. Focal
+coverage passes 23 tests and TypeScript 7 passes after the final Studio helper
+addition. Exact shared BGCtrl state, all-target ordering, parallax, and
+camera/window/mask parity remain separate. Next: rerun the accumulated gate.
+
 Entry 535 closes the bounded stage layer scale slice. Imported
 `scalestart`/`scaledelta`/`zoomdelta` now reach the model, report, Studio
 details, and normal/animated/asset/placeholder projection. Focal coverage

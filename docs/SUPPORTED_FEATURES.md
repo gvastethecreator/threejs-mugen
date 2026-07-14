@@ -6,6 +6,11 @@
   Exact parallax deformation, legacy `xscale`/`yscalestart`, window/mask zoom,
   camera-anchor/localcoord normalization, and full MUGEN/IKEMEN stage parity
   remain unsupported.
+- Imported stage layers preserve bounded `positionlink` target/offset metadata,
+  inherit the linked scroll delta, and follow the target's same-tick bounded
+  motion/visibility in the immutable stage projection. Exact shared BGCtrl
+  state across linked groups, all-target ordering, and full stage parity remain
+  unsupported.
 
 - Explicit IKEMEN snapshots and trace frames publish
   `RuntimeAuxiliaryResourceProjection/v0` for roots and live Helpers with

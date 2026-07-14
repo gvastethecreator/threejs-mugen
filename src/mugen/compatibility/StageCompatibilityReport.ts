@@ -19,6 +19,11 @@ export type StageBackgroundLayerReport = {
     delta: { x: number; y: number };
     zoomDelta?: { x: number; y: number };
   };
+  positionLink?: {
+    targetId: string;
+    offsetX: number;
+    offsetY: number;
+  };
   tiled: boolean;
   trans?: {
     mode: string;
@@ -256,6 +261,7 @@ function describeBackgroundLayer(
           },
         }
       : {}),
+    ...(layer.positionLink ? { positionLink: layer.positionLink } : {}),
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
     ...(layer.clip ? { clip: layer.clip } : {}),

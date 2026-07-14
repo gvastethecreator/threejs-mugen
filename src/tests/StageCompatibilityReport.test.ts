@@ -30,6 +30,8 @@ zoomdelta = .5
 type = anim
 id = 20
 actionno = 10
+positionlink = 1
+start = 2,3
 
 [BG Missing]
 type = normal
@@ -134,6 +136,7 @@ describe("createStageCompatibilityReport", () => {
         type: "anim",
         controlId: 20,
         action: { id: 10, frames: 2, decodedFrames: 2, missingFrameRefs: [] },
+        positionLink: { targetId: expect.stringContaining("BG Wall"), offsetX: 2, offsetY: 3 },
       }),
       expect.objectContaining({
         section: "BG Missing",

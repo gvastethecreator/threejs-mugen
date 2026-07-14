@@ -5675,6 +5675,7 @@ export class App {
           `start ${formatStageNumber(layer.start.x)},${formatStageNumber(layer.start.y)}`,
           `delta ${formatStageNumber(layer.delta.x)},${formatStageNumber(layer.delta.y)}`,
           layer.scale ? formatStageScale(layer.scale) : undefined,
+          layer.positionLink ? formatStagePositionLink(layer.positionLink) : undefined,
           layer.trans ? formatStageTrans(layer.trans) : undefined,
           layer.clip ? formatStageClip(layer.clip) : undefined,
           layer.mask === undefined ? undefined : `mask ${layer.mask ? 1 : 0}`,
@@ -5703,8 +5704,9 @@ export class App {
               start: layer.scaleStart ?? { x: 1, y: 1 },
               delta: layer.scaleDelta ?? { x: 0, y: 0 },
               zoomDelta: layer.zoomDelta,
-            })
+          })
           : undefined,
+        layer.positionLink ? formatStagePositionLink(layer.positionLink) : undefined,
         layer.trans ? formatStageTrans(layer.trans) : undefined,
         layer.clip ? formatStageClip(layer.clip) : undefined,
         layer.mask === undefined ? undefined : `mask ${layer.mask ? 1 : 0}`,
@@ -12245,6 +12247,10 @@ function formatStageScale(scale: {
 }): string {
   const zoom = scale.zoomDelta ? ` z${formatStageNumber(scale.zoomDelta.x)},${formatStageNumber(scale.zoomDelta.y)}` : "";
   return `scale ${formatStageNumber(scale.start.x)},${formatStageNumber(scale.start.y)} d${formatStageNumber(scale.delta.x)},${formatStageNumber(scale.delta.y)}${zoom}`;
+}
+
+function formatStagePositionLink(link: { targetId: string; offsetX: number; offsetY: number }): string {
+  return `link ${link.targetId} +${formatStageNumber(link.offsetX)},${formatStageNumber(link.offsetY)}`;
 }
 
 function formatStageClip(clip: {

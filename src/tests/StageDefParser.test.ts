@@ -181,6 +181,36 @@ value = 0
       groupLoopTime: 10,
     });
   });
+
+  it("preserves positionlink offsets and inherits the linked layer delta", () => {
+    const runtime = stageDefToRuntime(
+      parseStageDef(`
+[BGDef]
+
+[BG Base]
+type = normal
+spriteno = 0,0
+start = 10,20
+delta = .5,.75
+
+[BG Linked]
+type = normal
+spriteno = 1,0
+positionlink = 1
+start = 3,4
+delta = 9,9
+`, "stages/positionlink.def"),
+      "stage-positionlink",
+    );
+
+    expect(runtime.layers[1]).toMatchObject({
+      startX: 13,
+      startY: 24,
+      deltaX: 0.5,
+      deltaY: 0.75,
+      positionLink: { targetId: expect.stringContaining("BG Base"), offsetX: 3, offsetY: 4 },
+    });
+  });
 });
 
 describe("MugenStageLoader", () => {

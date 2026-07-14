@@ -76,6 +76,19 @@ export function projectStageSpriteLayer(
 }
 
 export function resolveStageLayerForTick(layer: MugenStageLayer, stage: StageSnapshot, tick: number): MugenStageLayer | undefined {
+  return resolveStageLayerForTickInternal(layer, stage, tick, new Set());
+}
+
+function resolveStageLayerForTickInternal(
+  authoredLayer: MugenStageLayer,
+  stage: StageSnapshot,
+  tick: number,
+  linkStack: ReadonlySet<string>,
+): MugenStageLayer | undefined {
+  const layer = resolveLinkedStageLayer(authoredLayer, stage, tick, linkStack);
+  if (!layer) {
+    return undefined;
+  }
   const controllers = stage.bgControllers?.flatMap((group) => group.controllers) ?? [];
   const targetedControllers = controllers.filter((controller) => targetsLayer(controller, layer));
   const motionControllers = targetedControllers.filter((controller) => isMotionController(controller.type));
@@ -99,6 +112,39 @@ export function resolveStageLayerForTick(layer: MugenStageLayer, stage: StageSna
     resolved.animationTick = countEnabledTicks(enabledControllers, tick);
   }
   return resolved;
+}
+
+function resolveLinkedStageLayer(
+  layer: MugenStageLayer,
+  stage: StageSnapshot,
+  tick: number,
+  linkStack: ReadonlySet<string>,
+): MugenStageLayer | undefined {
+  const link = layer.positionLink;
+  if (!link || linkStack.has(layer.id)) {
+    return { ...layer };
+  }
+  const target = stage.layers?.find((candidate) => candidate.id === link.targetId);
+  if (!target) {
+    return { ...layer };
+  }
+  const nextStack = new Set(linkStack);
+  nextStack.add(layer.id);
+  const resolvedTarget = resolveStageLayerForTickInternal(target, stage, tick, nextStack);
+  if (!resolvedTarget) {
+    return undefined;
+  }
+  const targetX = resolvedTarget.startX ?? resolvedTarget.x ?? 0;
+  const targetY = resolvedTarget.startY ?? 0;
+  return {
+    ...layer,
+    x: targetX + link.offsetX,
+    y: resolvedTarget.y - link.offsetY,
+    startX: targetX + link.offsetX,
+    startY: targetY + link.offsetY,
+    deltaX: resolvedTarget.deltaX,
+    deltaY: resolvedTarget.deltaY,
+  };
 }
 
 function isMotionController(type: string): boolean {

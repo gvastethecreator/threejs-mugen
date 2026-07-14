@@ -133,6 +133,56 @@ describe("projectStageSpriteLayer", () => {
     expect(scale.x).toBeCloseTo(1.575);
     expect(scale.y).toBeCloseTo(1.025);
   });
+
+  it("follows a linked layer after the target's bounded controller motion", () => {
+    const baseLayer: MugenStageLayer = {
+      id: "BG link base",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 1,
+      opacity: 1,
+      startX: 10,
+      startY: 20,
+      controlId: 7,
+    };
+    const linkedLayer: MugenStageLayer = {
+      id: "BG link child",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 1,
+      opacity: 1,
+      startX: 13,
+      startY: 24,
+      controlId: 8,
+      positionLink: { targetId: baseLayer.id, offsetX: 3, offsetY: 4 },
+    };
+    const linkedStage: StageSnapshot = {
+      ...stage,
+      layers: [baseLayer, linkedLayer],
+      bgControllers: [
+        {
+          name: "link-motion",
+          controllers: [
+            {
+              name: "base-position",
+              type: "posset",
+              timing: { start: 0, end: 0 },
+              ctrlIds: [7],
+              params: { value: "12,23" },
+              rawParams: { type: "PosSet", time: "0", value: "12,23" },
+            },
+          ],
+          rawParams: {},
+        },
+      ],
+    };
+
+    expect(resolveStageLayerForTick(linkedLayer, linkedStage, 1)).toMatchObject({ startX: 15, startY: 27 });
+  });
 });
 
 describe("stage layer clipping", () => {

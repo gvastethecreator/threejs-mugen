@@ -1,5 +1,18 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Stage positionlink
+
+- Entry 536 preserves typed `positionlink` offsets and inherited delta through
+  import, the compatibility report, Studio details, and same-tick stage
+  projection. Linked layers follow bounded target motion without mutable
+  renderer state.
+- Focal stage/parser/report coverage passes 3 files / 23 tests and TypeScript 7
+  passes after the final Studio formatting helper addition.
+- No score movement. Exact shared BGCtrl state, all-target ordering, parallax,
+  camera/window/mask behavior, and full stage parity remain open.
+- See `docs/research/2026-07-14-stage-positionlink.md` and
+  `docs/reports/2026-07-14-stage-positionlink.md`.
+
 ## Global report - 2026-07-14 Stage layer scaling
 
 - Entry 535 parses and projects `scalestart`, `scaledelta`, and scalar-or-pair

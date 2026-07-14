@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 536 - Stage positionlink
+
+Preserved typed `positionlink` target/offset metadata, inherited linked delta,
+same-tick target resolution, cycle protection, compatibility reporting, and
+Studio detail output. Focal stage/parser/report coverage passes 3 files / 23
+tests and TypeScript 7 passes after the final Studio formatting helper.
+See `docs/reports/2026-07-14-stage-positionlink.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/175-stage-positionlink.md`.
+
 ## Entry 535 - Stage layer scaling
 
 Added bounded `scalestart`/`scaledelta`/`zoomdelta` parsing, compatibility

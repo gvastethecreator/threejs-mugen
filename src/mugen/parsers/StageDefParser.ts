@@ -150,7 +150,10 @@ function buildPlaceholderLayers(
     ];
   }
 
-  return bgSections.slice(0, 8).map(([section, values], index) => {
+  const layers: MugenStageLayer[] = [];
+  let positionLinkBase: MugenStageLayer | undefined;
+  for (const [section, values] of bgSections.slice(0, 8)) {
+    const index = layers.length;
     const start = pairValue(values, "start") ?? [0, index < 2 ? 88 - index * 40 : -42 + (index % 3) * 16];
     const delta = pairValue(values, "delta") ?? [1, 1];
     const velocity = pairValue(values, "velocity");
@@ -167,22 +170,28 @@ function buildPlaceholderLayers(
     const trans = stageLayerTrans(values);
     const clip = stageLayerClip(values, localcoord);
     const mask = booleanValue(values, "mask");
-    return {
+    const positionLink = booleanValue(values, "positionlink") === true;
+    const linkTarget = positionLink ? positionLinkBase : undefined;
+    const effectiveStart = linkTarget
+      ? [(linkTarget.startX ?? linkTarget.x ?? 0) + (start[0] ?? 0), (linkTarget.startY ?? 0) + (start[1] ?? 0)]
+      : start;
+    const effectiveDelta = linkTarget ? [linkTarget.deltaX, linkTarget.deltaY ?? 1] : delta;
+    const layer: MugenStageLayer = {
       id: `${section} ${spriteLabel}`.trim(),
       sectionName: section,
       type: getValue(values, "type"),
       controlId,
       color: stageLayerColor(index, layerNo),
-      x: start[0] ?? 0,
-      y: localcoord[1] - (start[1] ?? 0) - 40,
+      x: effectiveStart[0] ?? 0,
+      y: localcoord[1] - (effectiveStart[1] ?? 0) - 40,
       width: Math.max(640, localcoord[0] * 3),
       height: index === 0 ? 360 : 72 + (index % 3) * 18,
-      deltaX: delta[0] ?? 1,
-      deltaY: delta[1] ?? 1,
+      deltaX: effectiveDelta[0] ?? 1,
+      deltaY: effectiveDelta[1] ?? 1,
       opacity: layerNo > 0 ? 0.72 : 0.92,
       layerNo,
-      startX: start[0] ?? 0,
-      startY: start[1] ?? 0,
+      startX: effectiveStart[0] ?? 0,
+      startY: effectiveStart[1] ?? 0,
       spriteGroup: sprite?.[0],
       spriteIndex: sprite?.[1],
       actionNo,
@@ -190,6 +199,9 @@ function buildPlaceholderLayers(
       ...(scaleStart ? { scaleStart: { x: scaleStart[0], y: scaleStart[1] } } : {}),
       ...(scaleDelta ? { scaleDelta: { x: scaleDelta[0], y: scaleDelta[1] } } : {}),
       ...(zoomDelta ? { zoomDelta: { x: zoomDelta[0], y: zoomDelta[1] } } : {}),
+      ...(linkTarget
+        ? { positionLink: { targetId: linkTarget.id, offsetX: start[0] ?? 0, offsetY: start[1] ?? 0 } }
+        : {}),
       trans,
       clip,
       mask,
@@ -202,7 +214,12 @@ function buildPlaceholderLayers(
           }
         : undefined,
     };
-  });
+    layers.push(layer);
+    if (!positionLink) {
+      positionLinkBase = layer;
+    }
+  }
+  return layers;
 }
 
 function parseStageBgControllers(rawSections: Record<string, Record<string, string>>): MugenStageBgCtrlDef[] {
