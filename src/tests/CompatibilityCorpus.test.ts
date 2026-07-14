@@ -5,6 +5,8 @@ import {
   parseCompatibilityCorpus,
   type CompatibilityCorpusInput,
 } from "../mugen/compatibility/CompatibilityCorpus";
+import { createStageCompatibilityJourney, type StageCompatibilityJourneyInput } from "../mugen/compatibility/StageCompatibilityJourney";
+import type { StageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
 
 describe("CompatibilityCorpus/v0", () => {
   it("aggregates journey references without copying package payloads", () => {
@@ -74,6 +76,46 @@ describe("CompatibilityCorpus/v0", () => {
     expect(duplicate.status).toBe("failed");
     expect(duplicate.diagnostics).toContain("duplicate corpus package:package-a");
   });
+
+  it("promotes a passed stage journey as optional-private evidence", () => {
+    const characterJourney = createCompatibilityJourney(journeyInput("journey-a", "package-a"));
+    const stageJourney = createStageCompatibilityJourney(stageJourneyInput());
+    const corpus = createCompatibilityCorpus({
+      generatedAt: "2026-07-14T00:00:00.000Z",
+      entries: [
+        { id: "required-character", availability: "required-legal", journey: characterJourney },
+        {
+          id: "optional-official-stage",
+          availability: "optional-private",
+          journey: stageJourney,
+          evidenceIds: ["qa:stage", "native:closeout"],
+        },
+      ],
+      claims: {
+        allowed: ["character and stage evidence are separately indexed"],
+        blocked: ["full MUGEN/IKEMEN stage parity"],
+      },
+    });
+
+    expect(corpus.status).toBe("passed");
+    expect(corpus.summary).toMatchObject({
+      entryCount: 2,
+      requiredCount: 1,
+      optionalCount: 1,
+      passedCount: 2,
+      packageIds: ["package-a", "stage-package"],
+      routeIds: ["attack", "idle", "stage-loader", "stage-render"],
+      unsupportedFeatureIds: ["cns:JourneyUnknownController", "stage:BGCtrl.sinx"],
+    });
+    expect(corpus.entries.find((entry) => entry.id === "optional-official-stage")).toMatchObject({
+      journeyId: "stage-journey",
+      journeySchema: "mugen-web-sandbox/stage-compatibility-journey/v1",
+      availability: "optional-private",
+      evidenceIds: expect.arrayContaining(["qa:stage", "native:closeout"]),
+      unsupportedFeatures: ["stage:BGCtrl.sinx"],
+    });
+    expect(JSON.stringify(corpus)).not.toContain("stage0.sff");
+  });
 });
 
 function corpusInput(journey: ReturnType<typeof createCompatibilityJourney>): CompatibilityCorpusInput {
@@ -138,5 +180,86 @@ function journeyInput(id: string, packageId: string): CompatibilityJourneyInput 
       build: { status: "passed", warnings: [] },
     },
     claims: { allowed: ["bounded journey"], blocked: ["full parity"] },
+  };
+}
+
+function stageJourneyInput(): StageCompatibilityJourneyInput {
+  const report: StageCompatibilityReport = {
+    stage: "Training Room",
+    loaded: true,
+    files: { def: true, sff: true, music: false },
+    backgrounds: {
+      total: 2,
+      withSpriteRefs: 2,
+      renderedSprites: 2,
+      tiled: 1,
+      clipped: 0,
+      animated: 0,
+      renderedAnimated: 0,
+      placeholderFallback: 0,
+      layers: [],
+      controllers: {
+        groups: 1,
+        total: 1,
+        parsed: 1,
+        bounded: 1,
+        unsupported: 0,
+        targetedLayers: 1,
+        unsupportedTypes: {},
+        items: [],
+      },
+    },
+    sff: { decodedSprites: 2, totalSprites: 2, formats: { RLE8: 2 }, unsupportedFormats: {} },
+    unsupported: [{ format: "stage", feature: "BGCtrl.sinx", severity: "warning", count: 1 }],
+    warnings: [],
+    errors: [],
+  };
+
+  return {
+    id: "stage-journey",
+    generatedAt: "2026-07-14T00:00:00.000Z",
+    package: {
+      id: "stage-package",
+      name: "Training Room",
+      license: "CC-BY-NC-3.0",
+      licenseFile: "readme.txt",
+      provenance: "https://www.elecbyte.com/mugenfiles/1.1/mugen-1.1b1.zip",
+      entry: "stages/stage0.def",
+      packageDigest: "sha256:stage-package",
+      files: ["readme.txt", "stages/stage0.def", "stages/stage0.sff"],
+      expectedRoutes: ["stage-render", "stage-loader"],
+      licenseVerified: true,
+    },
+    loader: {
+      status: "passed",
+      sourceName: "mugen-official-stage0",
+      loaded: true,
+      presentFiles: ["readme.txt", "stages/stage0.def", "stages/stage0.sff"],
+      report,
+    },
+    runtime: {
+      status: "passed",
+      checks: [{ id: "stage-loader", status: "passed", detail: "official stage loaded" }],
+      artifacts: [{ id: "stage-runtime", status: "passed", path: "stage-runtime.json", detail: "stage runtime" }],
+    },
+    browser: {
+      status: "passed",
+      diagnosticsPath: ".scratch/qa/official-stage-compatibility-browser/browser-diagnostics.json",
+      viewports: [
+        { id: "desktop", status: "passed", artifacts: ["desktop.png"], detail: "desktop stage render" },
+        { id: "mobile", status: "passed", artifacts: ["mobile.png"], detail: "mobile stage render" },
+      ],
+    },
+    nativeRegression: {
+      status: "passed",
+      tests: { status: "passed", files: 211, assertions: 2129 },
+      typecheck: "passed",
+      boundaries: "passed",
+      build: { status: "passed", warnings: [] },
+    },
+    claims: {
+      allowed: ["official stage browser and native evidence"],
+      blocked: ["full MUGEN/IKEMEN stage parity"],
+    },
   };
 }

@@ -1,15 +1,17 @@
-import type { CompatibilityJourneyResult } from "./CompatibilityJourney";
+import { STAGE_COMPATIBILITY_JOURNEY_SCHEMA, type StageCompatibilityJourneyResult } from "./StageCompatibilityJourney";
+import { COMPATIBILITY_JOURNEY_SCHEMA, type CompatibilityJourneyResult } from "./CompatibilityJourney";
 
 export const COMPATIBILITY_CORPUS_SCHEMA = "mugen-web-sandbox/compatibility-corpus/v0" as const;
 
 export type CompatibilityCorpusAvailability = "required-legal" | "portable-legal" | "optional-private";
 export type CompatibilityCorpusEntryStatus = "passed" | "partial" | "failed" | "unavailable";
 export type CompatibilityCorpusStatus = "passed" | "partial" | "failed";
+export type CompatibilityCorpusJourney = CompatibilityJourneyResult | StageCompatibilityJourneyResult;
 
 export type CompatibilityCorpusEntryInput = {
   id: string;
   availability: CompatibilityCorpusAvailability;
-  journey?: CompatibilityJourneyResult;
+  journey?: CompatibilityCorpusJourney;
   evidenceIds?: readonly string[];
   unavailableReason?: string;
 };
@@ -28,6 +30,7 @@ export type CompatibilityCorpusEntry = {
   availability: CompatibilityCorpusAvailability;
   status: CompatibilityCorpusEntryStatus;
   journeyId?: string;
+  journeySchema?: typeof COMPATIBILITY_JOURNEY_SCHEMA | typeof STAGE_COMPATIBILITY_JOURNEY_SCHEMA;
   package?: {
     id: string;
     name: string;
@@ -134,6 +137,8 @@ export function parseCompatibilityCorpus(value: unknown): CompatibilityCorpusPar
 
 function normalizeEntry(input: CompatibilityCorpusEntryInput): CompatibilityCorpusEntry {
   const journey = input.journey;
+  const stageJourney = journey?.schemaVersion === STAGE_COMPATIBILITY_JOURNEY_SCHEMA ? journey : undefined;
+  const characterJourney = journey?.schemaVersion === COMPATIBILITY_JOURNEY_SCHEMA ? journey : undefined;
   const evidenceIds = uniqueSorted([
     ...(input.evidenceIds ?? []),
     ...(journey?.runtime.artifacts.map((artifact) => artifact.id) ?? []),
@@ -144,6 +149,7 @@ function normalizeEntry(input: CompatibilityCorpusEntryInput): CompatibilityCorp
     availability: input.availability,
     status: journey?.status ?? "unavailable",
     ...(journey ? { journeyId: journey.id } : {}),
+    ...(journey ? { journeySchema: journey.schemaVersion } : {}),
     ...(journey
       ? {
           package: {
@@ -159,7 +165,9 @@ function normalizeEntry(input: CompatibilityCorpusEntryInput): CompatibilityCorp
     expectedRoutes: uniqueSorted(journey?.package.expectedRoutes ?? []),
     evidenceIds,
     unsupportedFeatures: uniqueSorted(
-      journey?.loader.compatibility.unsupported.map((item) => `${item.format}:${item.feature}`) ?? [],
+      stageJourney
+        ? stageJourney.loader.report.unsupported.map((item) => `${item.format}:${item.feature}`)
+        : (characterJourney?.loader.compatibility.unsupported.map((item) => `${item.format}:${item.feature}`) ?? []),
     ),
     ...(input.unavailableReason?.trim() ? { unavailableReason: input.unavailableReason.trim() } : {}),
   };
