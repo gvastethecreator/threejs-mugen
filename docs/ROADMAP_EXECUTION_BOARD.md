@@ -6,9 +6,13 @@ Entry 514 closes the bounded imported red-life lifecycle edge. Typed team
 handoff now reconciles the root-only red-life bank immediately, standby/active
 changes preserve the bank topology, and match reset rebinds shared value from
 the representative root. Focused lifecycle, handoff, and trace coverage is
-588/588 tests. The global corpus, TypeScript 7, build, and repository gates
-remain batched. Next: HUD/resource-bar presentation and exact multi-round
-persistence as independent gates.
+588/588 tests. The accumulated gate is green with 203/203 test files and
+2082/2082 tests under `--maxWorkers=4`, TypeScript 7 typecheck, production
+build, 597/597 trace artifacts, architecture boundaries, CSS budget, and
+desktop/mobile Playwright smoke. The default unconstrained ZIP round-trip
+test remains a worker-level nondeterminism risk; the bounded worker command is
+the reproducible gate. Next: HUD/resource-bar presentation and exact
+multi-round persistence as independent gates.
 
 ## Latest implementation closeout - red-life LifeShare root adapter (2026-07-14)
 

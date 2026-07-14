@@ -32,8 +32,12 @@ claim that a KO round can continue with a shared life pool.
 `RuntimeRedLifeShareSystem` tests prove shared-value preservation across a
 standby handoff and representative-root rebind on reset. Existing typed team
 handoff trace coverage exercises the runtime handoff branch. The focused
-lifecycle, handoff, and trace suites pass 588/588 tests. Full corpus,
-TypeScript 7, build, and repository gates remain batched.
+lifecycle, handoff, and trace suites pass 588/588 tests. The accumulated
+checkpoint passes 203 test files / 2082 tests under `--maxWorkers=4`, TypeScript
+7 typecheck, build, 597/597 trace artifacts, architecture boundaries, CSS
+budget, and desktop/mobile Playwright smoke. The unconstrained default Vitest
+run exposed one byte-level JSZip round-trip nondeterminism; the bounded worker
+command is the reproducible gate while that harness issue is isolated.
 
 ## Blocked
 

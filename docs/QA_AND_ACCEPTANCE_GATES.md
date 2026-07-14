@@ -51,9 +51,14 @@ Acceptance requires the typed team handoff boundary to reconcile the separate
 root red-life bank immediately, preserve its topology across standby/active
 changes, and let match `reset()` rebind the shared value from the representative
 root. Focused evidence must cover a shared value before and after the handoff,
-the reset result, and local-mode isolation. This gate does not claim exact
-multi-round persistence, native triggers, projectile/Explod/team-helper
-sharing, HUD bars, rollback/netplay, or full MUGEN/IKEMEN parity.
+the reset result, and local-mode isolation. Entry 514 evidence passes the
+focused 588-test lifecycle set, the accumulated 597/597 trace corpus, the
+bounded-worker full test gate, TypeScript 7, build, architecture/CSS gates,
+and desktop/mobile smoke. The default unconstrained ZIP round-trip test has a
+known byte-level worker nondeterminism; use `pnpm test -- --maxWorkers=4` for
+the reproducible gate. This gate does not claim exact multi-round persistence,
+native triggers, projectile/Explod/team-helper sharing, HUD bars,
+rollback/netplay, or full MUGEN/IKEMEN parity.
 
 ## KO sound handoff gate
 
@@ -88,7 +93,7 @@ Latest runtime acceptance checkpoint: required helper direct-HitDef, `hitdefpers
 Run these at the end of a focused implementation round:
 
 ```bash
-pnpm test
+pnpm test -- --maxWorkers=4
 pnpm typecheck
 pnpm build
 ```

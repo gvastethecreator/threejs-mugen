@@ -7,11 +7,18 @@ reconciles the root-only red-life bank immediately after the typed handoff, so
 standby/active replacement does not wait for a later tick. The adapter keeps
 its bank topology across standby changes, and match `reset()` rebinds the
 shared value from the representative root. Focused lifecycle, handoff, and
-trace coverage passes 588/588 tests; full corpus, TypeScript 7, build, and
-repository gates remain batched. Claim blocked: exact multi-round persistence,
-native triggers, projectile/Explod/team-helper sharing, HUD bars,
-rollback/netplay, and full MUGEN/IKEMEN parity. See Wayfinder 153 and the
-dated research/report.
+trace coverage passes 588/588 tests. The accumulated checkpoint passes
+`pnpm test -- --maxWorkers=4` with 203 files and 2082 tests, `pnpm typecheck`,
+`pnpm build` (283 modules), `pnpm qa:trace` with 597/597 artifacts (563
+required, 34 optional), `pnpm check:boundaries`, `pnpm qa:css:budget`, and
+`pnpm qa:smoke` with desktop/mobile runtime and Studio evidence at
+`.scratch/qa/qa-smoke-entry514/diagnostics.json`. The default unconstrained
+Vitest run showed one byte-level JSZip round-trip nondeterminism; the bounded
+worker gate is the reproducible repository command until that harness issue is
+isolated. Build still reports the existing 1.75 MB minified JS chunk warning.
+Claim blocked: exact multi-round persistence, native triggers,
+projectile/Explod/team-helper sharing, HUD bars, rollback/netplay, and full
+MUGEN/IKEMEN parity. See Wayfinder 153 and the dated research/report.
 
 ## Entry 513 - Red-life LifeShare root adapter
 

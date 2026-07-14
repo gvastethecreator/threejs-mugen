@@ -6,9 +6,15 @@
   handoff now reconciles the root-only red-life bank immediately; standby and
   active-root changes preserve bank topology; match `reset()` rebinds shared
   value from the representative root.
-- Focused lifecycle, handoff, and trace coverage passes 588/588 tests. Full
-  corpus regeneration, TypeScript 7, build, and repository gates remain
-  intentionally batched. Scores remain unchanged.
+- Focused lifecycle, handoff, and trace coverage passes 588/588 tests. The
+  accumulated gate passes 203 test files / 2082 tests with `--maxWorkers=4`,
+  TypeScript 7 typecheck, build, 597/597 trace artifacts, architecture
+  boundaries, CSS budget, and desktop/mobile Playwright smoke. Scores remain
+  unchanged.
+- The unconstrained default Vitest run exposed one byte-level JSZip round-trip
+  nondeterminism; the bounded worker command remains the reproducible gate.
+  The build keeps the existing large-JS-chunk warning. Smoke evidence is in
+  `.scratch/qa/qa-smoke-entry514/diagnostics.json`.
 - Claim ceiling: bounded reset/rebind lifecycle only. Exact multi-round
   persistence, native triggers, projectile/Explod/team-helper sharing, HUD,
   rollback/netplay, and full MUGEN/IKEMEN parity remain separate gates.

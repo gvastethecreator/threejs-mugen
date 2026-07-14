@@ -5,8 +5,12 @@ Entry 514 closes bounded imported red-life reset/rebind lifecycle. Typed team
 handoff reconciles the root-only bank immediately, standby/active changes do
 not rebuild its topology, and match reset rebinds shared value from the
 representative root. Focused lifecycle, handoff, and trace coverage passes
-588/588 tests. Full corpus, TypeScript 7, build, and repository gates are
-batched; scores do not move. Exact multi-round persistence, native triggers,
+588/588 tests. The accumulated gate passes 203 test files / 2082 tests under
+`--maxWorkers=4`, TypeScript 7 typecheck, build, 597/597 trace artifacts,
+architecture boundaries, CSS budget, and desktop/mobile Playwright smoke;
+scores do not move. The unconstrained default Vitest run still has one
+byte-level JSZip round-trip nondeterminism, so the bounded worker command is
+the reproducible gate. Exact multi-round persistence, native triggers,
 projectile/Explod/team-helper sharing, HUD bars, rollback/netplay, and full
 parity remain separate gates.
 
