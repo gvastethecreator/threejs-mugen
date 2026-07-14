@@ -1,5 +1,19 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Stage quality checkpoint
+
+- Entry 534 audits the three accumulated BGCtrl slices. Native 211/2134,
+  TypeScript 7, build 289 modules, boundaries, CSS budget, official stage
+  browser, and trace 600/600 all pass.
+- Trace coverage is 566 required / 34 optional with no skipped fixtures. The
+  first five-minute shell window timed out; the 15-minute rerun passed in
+  294.5s, so no compatibility failure is recorded.
+- No score movement. Exact multi-group BGCtrl state, advanced camera/window/mask
+  behavior, and full stage parity remain outside the claim.
+- Next: select the next independent runtime or Studio slice.
+- See `docs/research/2026-07-14-stage-quality-checkpoint-entry-534.md` and
+  `docs/reports/2026-07-14-stage-quality-checkpoint-entry-534.md`.
+
 ## Global report - 2026-07-14 Stateful BGCtrl motion
 
 - Entry 533 retains imported initial layer velocity and resolves bounded

@@ -2,6 +2,12 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 534 closes the accumulated stage quality checkpoint. Native regression,
+TypeScript 7, build, boundaries, CSS, trace, and official browser evidence are
+green; the score remains unchanged. The next frontier is an independent
+runtime or Studio slice, while exact multi-group BGCtrl and advanced stage
+camera/window/mask semantics remain separately gated.
+
 Entry 533 closes the bounded recognized stage motion slice. Initial
 `velocity` survives parsing/reporting, and authored-order
 `VelSet`/`VelAdd`/`PosSet`/`PosAdd` are resolved from immutable layer
