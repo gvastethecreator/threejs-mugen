@@ -2,6 +2,12 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 532 adds the bounded `Enabled` animation clock. Action-backed stage
+layers now pause their animation time only while a targeted `Enabled = 0`
+controller is active; `Visible` remains clock-neutral. Focal projection
+coverage passes 12 tests. Next: stateful controller motion, then the batched
+TypeScript and regression gate.
+
 Entry 531 closes the composed `BGCtrl` timing boundary. The stage model keeps
 explicit controller and parent `BGCtrlDef` loop periods separately, and the
 projection clock honors the most recent applicable reset. Focused stage/parser

@@ -66,7 +66,11 @@ export function projectStageSpriteLayer(
 
 export function resolveStageLayerForTick(layer: MugenStageLayer, stage: StageSnapshot, tick: number): MugenStageLayer | undefined {
   let resolved: MugenStageLayer = { ...layer };
-  for (const controller of stage.bgControllers?.flatMap((group) => group.controllers) ?? []) {
+  const controllers = stage.bgControllers?.flatMap((group) => group.controllers) ?? [];
+  const enabledControllers = controllers.filter((controller) =>
+    controller.type.toLowerCase() === "enabled" && targetsLayer(controller, layer),
+  );
+  for (const controller of controllers) {
     if (!targetsLayer(controller, layer) || !isControllerActive(controller, tick)) {
       continue;
     }
@@ -75,6 +79,9 @@ export function resolveStageLayerForTick(layer: MugenStageLayer, stage: StageSna
       return undefined;
     }
     resolved = next;
+  }
+  if (enabledControllers.length > 0) {
+    resolved.animationTick = countEnabledTicks(enabledControllers, tick);
   }
   return resolved;
 }
@@ -133,6 +140,21 @@ function isControllerActive(controller: MugenStageBgCtrl, tick: number): boolean
   const localTick = loopedTick(controller, tick);
   const { start, end } = controller.timing;
   return (start < 0 || localTick >= start) && (end < 0 || localTick <= end);
+}
+
+function countEnabledTicks(controllers: readonly MugenStageBgCtrl[], tick: number): number {
+  const safeTick = Math.max(0, Math.trunc(tick));
+  let enabledTicks = 0;
+  for (let cursor = 0; cursor <= safeTick; cursor += 1) {
+    let enabled = true;
+    for (const controller of controllers) {
+      if (!isControllerActive(controller, cursor)) continue;
+      const value = firstControllerNumber(controller, ["value"]);
+      if (value !== undefined) enabled = value !== 0;
+    }
+    if (enabled) enabledTicks += 1;
+  }
+  return enabledTicks;
 }
 
 function activeElapsedTicks(controller: MugenStageBgCtrl, tick: number): number {

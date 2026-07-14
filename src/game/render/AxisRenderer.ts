@@ -62,7 +62,10 @@ export class AxisRenderer {
         if (!controlledLayer) {
           return;
         }
-        const animatedFrame = getStageActionFrame(options.stage.animations?.get(controlledLayer.actionNo ?? Number.NaN), backgroundTick);
+        const animatedFrame = getStageActionFrame(
+          options.stage.animations?.get(controlledLayer.actionNo ?? Number.NaN),
+          controlledLayer.animationTick ?? backgroundTick,
+        );
         const renderLayer = animatedFrame ? layerWithFrame(controlledLayer, animatedFrame) : controlledLayer;
         const sprite = this.getLayerSprite(options.stage.id, renderLayer.spriteGroup, renderLayer.spriteIndex);
         if (sprite) {

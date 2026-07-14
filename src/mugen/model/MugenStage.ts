@@ -21,6 +21,8 @@ export type MugenStageLayer = {
   spriteGroup?: number;
   spriteIndex?: number;
   actionNo?: number;
+  /** Runtime-only animation clock after bounded Enabled controller pauses. */
+  animationTick?: number;
   trans?: MugenStageLayerTrans;
   clip?: MugenStageLayerClip;
   mask?: boolean;

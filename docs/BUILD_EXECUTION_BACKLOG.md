@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 532 - BGCtrl Enabled animation clock
+
+Resolved stage layers now carry a runtime-only action clock that pauses while a
+targeted `Enabled = 0` controller is active; `Visible` keeps advancing time.
+The focused stage projection gate passes 1 file / 12 tests. Stateful motion and
+full stage parity remain open. See
+`docs/reports/2026-07-14-bgctrl-enabled-animation-clock.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/171-bgctrl-enabled-animation-clock.md`.
+
 ## Entry 531 - Composed BGCtrl timing
 
 Preserved explicit controller and parent `BGCtrlDef` loop periods separately in

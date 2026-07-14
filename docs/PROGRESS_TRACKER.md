@@ -1,5 +1,16 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 BGCtrl Enabled animation clock
+
+- Entry 532 pauses action-backed stage animation while a targeted
+  `Enabled = 0` controller is active; `Visible` continues advancing its clock.
+- Focused stage projection coverage passes 1 file / 12 tests. TypeScript 7 and
+  broad gates stay deferred until the accumulated stage slices are complete.
+- Stateful controller motion, multi-group ordering, exact window/zoom/mask
+  behavior, and full stage parity remain open.
+- See `docs/research/2026-07-14-bgctrl-enabled-animation-clock.md` and
+  `docs/reports/2026-07-14-bgctrl-enabled-animation-clock.md`.
+
 ## Global report - 2026-07-14 Composed BGCtrl timing
 
 - Entry 531 preserves explicit controller `looptime` and parent

@@ -453,7 +453,7 @@
 - All active local runtime fighters are atlas-backed through `public/characters/<fighter>/sprite-sheet-alpha.png` and `manifest.json.frame_layout`.
 - Original Rooftop Dojo native PNG stage with floor, camera, side bounds, parallax asset layer, grid, and axis overlay.
 - Training Grid fallback stage with floor, camera, side bounds, background layers, grid, and axis overlay.
-- Imported stage `.def` packages can be selected in Runtime Mode and drive simple match bounds, camera, starts, static SFF-backed normal BG sprites, action-backed BG animations, basic BG tiling/parallax, bounded BG layer transparency, bounded `window`/`maskwindow` clipping, composed `BGCtrl` start/end/controller-loop/parent-loop timing for recognized controller types, and fallback placeholder layers.
+- Imported stage `.def` packages can be selected in Runtime Mode and drive simple match bounds, camera, starts, static SFF-backed normal BG sprites, action-backed BG animations, basic BG tiling/parallax, bounded BG layer transparency, bounded `window`/`maskwindow` clipping, composed `BGCtrl` start/end/controller-loop/parent-loop timing, a bounded `Enabled` animation clock pause, and fallback placeholder layers for recognized controller types.
 - Native `BGCtrl Lab` is included as a smoke-test stage to prove bounded BGCtrl rows and visible nonblank renderer output without relying on external assets; it is QA evidence for the renderer path, not imported-stage parity by itself.
 - Keyboard control for P1: arrows, A/S/D, Z/X/C, Enter mapped to distinct MUGEN-style input tokens.
 - Touch control overlay on narrow/mobile layouts using the same runtime input tokens.

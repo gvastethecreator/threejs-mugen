@@ -257,6 +257,32 @@ describe("resolveStageLayerForTick", () => {
     expect(resolveStageLayerForTick(layer, timedStage, 10)).toMatchObject({ id: layer.id });
   });
 
+  it("pauses the action clock while an Enabled controller disables the layer", () => {
+    const enabledStage: StageSnapshot = {
+      ...stage,
+      bgControllers: [
+        {
+          name: "pause-animation",
+          controllers: [
+            {
+              name: "pause",
+              type: "enabled",
+              timing: { start: 2, end: 3 },
+              ctrlIds: [7],
+              params: { value: "0" },
+              rawParams: { type: "Enabled", time: "2,3", value: "0" },
+            },
+          ],
+          rawParams: {},
+        },
+      ],
+    };
+
+    expect(resolveStageLayerForTick(layer, enabledStage, 1)).toMatchObject({ animationTick: 2 });
+    expect(resolveStageLayerForTick(layer, enabledStage, 2)).toBeUndefined();
+    expect(resolveStageLayerForTick(layer, enabledStage, 4)).toMatchObject({ animationTick: 3 });
+  });
+
   it("moves the native BGCtrl Lab controlled layers deterministically", () => {
     const ribbon = bgCtrlLabStage.layers.find((candidate) => candidate.id === "lab-sine-ribbon");
     const cloud = bgCtrlLabStage.layers.find((candidate) => candidate.id === "lab-cloud-drift");
