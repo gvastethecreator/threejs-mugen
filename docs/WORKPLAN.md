@@ -2,6 +2,13 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 523 adds the typed IKEMEN `setMatchMaxDrawGames` runtime seam. The
+profile-gated `set-match-max-draws` command mutates one bounded side limit,
+`MatchWorldOptions` forwards initial limits, and focal coverage passes 23 tests
+with TypeScript 7 green. Broad gates are batched for the next checkpoint.
+Next: run the aggregate gates, then select the next independent source-backed
+runtime or corpus slice without claiming Lua/ZSS execution.
+
 Entry 522 closes the bounded Turns draw/effective-loss boundary. A simultaneous
 KO without a reached draw limit records a neutral draw and starts the ordinary
 next round; a reached per-side limit exposes effective loss, awards the

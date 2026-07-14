@@ -1,5 +1,17 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Turns max-draws runtime command
+
+- Entry 523 adds a typed, profile-gated `set-match-max-draws` command backed by
+  the official IKEMEN `setMatchMaxDrawGames(teamSide, count)` contract.
+- `MatchWorldOptions` now forwards scalar and side-specific initial limits;
+  live mutation changes only the selected side and is visible in the outcome
+  snapshot.
+- Focal verification passes 2 files / 23 tests and TypeScript 7 typecheck.
+  Broad suite, trace, build, and browser evidence is queued for the next batch.
+- See `docs/research/2026-07-14-turns-max-draws-runtime-command.md` and
+  `docs/reports/2026-07-14-turns-max-draws-runtime-command.md`.
+
 ## Global report - 2026-07-14 Turns draw and effective loss
 
 - Entry 522 closes the bounded automatic Turns draw boundary. A simultaneous
