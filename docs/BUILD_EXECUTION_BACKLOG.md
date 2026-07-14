@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## Entry 497 - RuntimeTeamRoundHandoff/v0 transaction
+
+Done: `RuntimeTeamRoundHandoffWorld/v0` now consumes the bounded team-round
+decision and owns ordered Turns promotion preflight plus atomic `standby` /
+`overKo` commit. One-side, two-side, missing-current, `RoundNotOver`,
+side-defeat, stale-replacement, malformed-decision, and public
+`PlayableMatchRuntime` / `MatchWorld` boundary coverage are green. The public
+options now accept `teamMode: "turns"` while the existing Tag scheduler path
+remains unchanged. Focused verification passes 4 files / 26 tests and
+TypeScript 7 typecheck. Full closeout gates are recorded after this entry is
+validated. Claim allowed: bounded ordered team-state promotion for explicit
+Turns actors. Claim blocked: automatic KO scheduling, slot/reference remap,
+life/resource reset, P1/P2 ownership transfer, round continuation, lifebars,
+input/effects/presentation transfer, rollback, and full MUGEN/IKEMEN parity.
+Focused verification passes 4 files / 27 tests; full verification passes 197
+files / 2019 tests, TypeScript 7 typecheck, production build (275 modules; JS
+1,712.70 kB / gzip 430.89 kB), `qa:trace` 581/581 artifacts (547 required, 34
+optional), module boundaries, and `git diff --check`. Browser smoke is N/A;
+no visible surface changed. The final adversarial pass fixed fail-closed
+preflight for unrelated disabled roots and malformed side decisions. No
+independent reviewer was available. See Wayfinder 136, ADR 0005, and the
+research/report dated 2026-07-13.
+
 ## Entry 496 - RuntimeTeamRoundDecision/v0 read model
 
 Done: `RuntimeTeamRoundDecisionWorld/v0` now exposes explicit Single/Simul/Tag/Turns

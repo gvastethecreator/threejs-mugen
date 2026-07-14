@@ -9,6 +9,11 @@ import {
   type RuntimeTeamRoundDecision,
   type RuntimeTeamRoundDecisionInput,
 } from "./RuntimeTeamRoundDecisionSystem";
+import {
+  RuntimeTeamRoundHandoffWorld,
+  type RuntimeTeamRoundHandoffInput,
+  type RuntimeTeamRoundHandoffResult,
+} from "./RuntimeTeamRoundHandoffSystem";
 
 export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
   label: string;
@@ -35,6 +40,7 @@ export class RuntimeMatchRoundWorld {
   constructor(
     private readonly globalAssertSpecialWorld = new RuntimeGlobalAssertSpecialWorld(),
     private readonly teamRoundDecisionWorld = new RuntimeTeamRoundDecisionWorld(),
+    private readonly teamRoundHandoffWorld = new RuntimeTeamRoundHandoffWorld(),
   ) {}
 
   snapshotGlobalAssertSpecial(
@@ -46,6 +52,10 @@ export class RuntimeMatchRoundWorld {
 
   snapshotTeamRoundDecision(input: RuntimeTeamRoundDecisionInput): RuntimeTeamRoundDecision {
     return this.teamRoundDecisionWorld.snapshot(input);
+  }
+
+  applyTeamRoundHandoff(input: RuntimeTeamRoundHandoffInput): RuntimeTeamRoundHandoffResult {
+    return this.teamRoundHandoffWorld.apply(input);
   }
 
   tickTimer(

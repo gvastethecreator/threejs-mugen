@@ -27,7 +27,9 @@ import type {
   RuntimeTargetSnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
-import type { RuntimeTagTeamMode } from "./RuntimeTagTeamOrderSystem";
+import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
+import type { RuntimeTeamRoundDecision } from "./RuntimeTeamRoundDecisionSystem";
+import type { RuntimeTeamRoundHandoffResult } from "./RuntimeTeamRoundHandoffSystem";
 import { RuntimeMatchActorRosterWorld } from "./RuntimeMatchActorRosterSystem";
 import type { RuntimeTeamRosterDiagnostic } from "./RuntimeTeamTopologySystem";
 import type { RuntimeHitDefContactMemoryDiagnostic } from "./RuntimeHitDefContactMemorySystem";
@@ -53,7 +55,7 @@ export type MatchWorldOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
-  teamMode?: RuntimeTagTeamMode;
+  teamMode?: RuntimeTeamRoundMode;
 };
 
 export type MatchWorldActorRecord = {
@@ -160,6 +162,16 @@ export class MatchWorld {
 
   getHitDefContactMemory(): RuntimeHitDefContactMemoryDiagnostic {
     return structuredClone(this.runtime.getHitDefContactMemory());
+  }
+
+  getTeamRoundDecision(): RuntimeTeamRoundDecision {
+    return structuredClone(this.runtime.getTeamRoundDecision());
+  }
+
+  applyTeamRoundHandoff(): RuntimeTeamRoundHandoffResult {
+    const result = this.runtime.applyTeamRoundHandoff();
+    this.refreshActorRegistry(this.runtime.getSnapshot());
+    return structuredClone(result);
   }
 
   reset(): MugenSnapshot {

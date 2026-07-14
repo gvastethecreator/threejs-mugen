@@ -157,6 +157,14 @@ import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
+import {
+  type RuntimeTeamRoundDecision,
+  type RuntimeTeamRoundMode,
+} from "./RuntimeTeamRoundDecisionSystem";
+import type {
+  RuntimeTeamRoundHandoffActor,
+  RuntimeTeamRoundHandoffResult,
+} from "./RuntimeTeamRoundHandoffSystem";
 import { RuntimeFighterAdvanceHookSetWorld } from "./RuntimeFighterAdvanceHookSetSystem";
 import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
@@ -319,7 +327,7 @@ export type PlayableMatchRuntimeOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
-  teamMode?: "single" | "tag";
+  teamMode?: RuntimeTeamRoundMode;
 };
 
 type PauseControllerHandler = (
@@ -412,6 +420,7 @@ export class PlayableMatchRuntime {
   private lastRootHitAdmission?: RuntimeRootDirectHitAdmissionDiagnostic;
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
+  private readonly teamRoundMode: RuntimeTeamRoundMode;
   private lastP2Controlled = false;
   private readonly superPauseTargetDefenseValue?: number;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
@@ -430,6 +439,7 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
+    this.teamRoundMode = options.teamMode ?? "single";
     this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
       this.runtimeProfile,
       options.superPauseTargetDefenseValue,
@@ -493,7 +503,7 @@ export class PlayableMatchRuntime {
     }
     this.tagTeamOrder = tagTeamOrderWorld.create(
       [this.p1, this.p2, ...this.reserveRoots].map((root) => ({ id: root.id, playerType: root.runtime.teamState?.playerType ?? true })),
-      this.runtimeProfile === "ikemen-go" ? options.teamMode ?? "single" : "single",
+      this.runtimeProfile === "ikemen-go" && this.teamRoundMode === "tag" ? "tag" : "single",
     );
     this.attachHelperHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
@@ -578,6 +588,29 @@ export class PlayableMatchRuntime {
 
   private characterRoots(): FighterMatchState[] {
     return [this.p1, this.p2, ...this.reserveRoots];
+  }
+
+  private teamRoundActors(): RuntimeTeamRoundHandoffActor[] {
+    return this.characterRoots().map((root) => {
+      const side = runtimeTeamSide(root);
+      const teamState = root.runtime.teamState;
+      if (side === undefined || !teamState) {
+        throw new Error(`Team round root ${root.id} has no valid team state`);
+      }
+      const memberNo = root.playerNo === undefined ? undefined : Math.floor((root.playerNo - 1) / 2);
+      return {
+        id: root.id,
+        side,
+        life: root.runtime.life,
+        disabled: teamState.disabled,
+        standby: teamState.standby,
+        overKo: teamState.overKo,
+        playerType: teamState.playerType,
+        replacementEligible: this.teamRoundMode === "turns" && root !== this.p1 && root !== this.p2,
+        ...(memberNo === undefined ? {} : { memberNo }),
+        teamState,
+      } satisfies RuntimeTeamRoundHandoffActor;
+    });
   }
 
   private rootForHelper(helper: RuntimeHelper): FighterMatchState {
@@ -2008,6 +2041,34 @@ export class PlayableMatchRuntime {
 
   getCharacterIdentity(): RuntimeCharacterIdentityDiagnostic | undefined {
     return this.characterIdentity?.diagnostic();
+  }
+
+  getTeamRoundDecision(): RuntimeTeamRoundDecision {
+    const actors = this.teamRoundActors();
+    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(this.characterRoots(), this.tick);
+    return matchRoundWorld.snapshotTeamRoundDecision({
+      actors,
+      modeBySide: { 1: this.teamRoundMode, 2: this.teamRoundMode },
+      roundNotOver: globalAssertSpecial.roundNotOver,
+      tick: this.tick,
+    });
+  }
+
+  applyTeamRoundHandoff(): RuntimeTeamRoundHandoffResult {
+    const actors = this.teamRoundActors();
+    const decision = matchRoundWorld.snapshotTeamRoundDecision({
+      actors,
+      modeBySide: { 1: this.teamRoundMode, 2: this.teamRoundMode },
+      roundNotOver: matchRoundWorld.snapshotGlobalAssertSpecial(this.characterRoots(), this.tick).roundNotOver,
+      tick: this.tick,
+    });
+    const result = matchRoundWorld.applyTeamRoundHandoff({ actors, decision });
+    if (result.applied) {
+      for (const change of result.changes) {
+        this.logs.unshift(`Team ${change.side} ${change.role} ${change.actorId}`);
+      }
+    }
+    return result;
   }
 
   reset(): void {
