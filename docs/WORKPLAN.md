@@ -2,13 +2,26 @@
 
 ## Active frontier - 2026-07-14
 
-Entry 518 is the current implementation frontier: per-root
+Entry 519 is the current implementation frontier: automatic IKEMEN Turns
+continuation now connects the post-round decision, typed handoff, resource
+reset, active-root identity switch, and state 5900 preflight. The route waits
+for the real KO/post-round boundary, preserves the current round context, and
+fails closed when an incoming root lacks state 5900. Focal coverage passes the
+new continuation and blocked-route cases; the aggregate trace corpus is
+600/600 (566 required / 34 optional), with the updated handoff trace at
+`4ec7e0a3` / final `21bc628b`. The Entry 519 broad gate passes 208 test files /
+2107 tests, TypeScript 7, a 288-module build, boundaries, CSS budget, and core
+desktop/mobile Runtime plus Studio smoke under
+`.scratch/qa/qa-smoke-automatic-turns-continuation-core/`. The optional browser
+Code Fu Man upper_x smoke remains flaky while its deterministic trace passes.
+Next: audit the full post-replacement round outcome and the bounded Turns
+recovery/roster semantics.
+
+Entry 518 was the prior implementation frontier: per-root
 `RuntimeRoundContext/v0` preserves the live counter across the reset, exposes
 `RoundNo`/`RoundsExisted`/`MatchOver` to CNS, and proves an imported 1 -> 2 ->
 3 sequence. Focal coverage passes 202 tests and the aggregate trace corpus is
-600/600 (566 required / 34 optional). Next: automatic Turns decision ->
-handoff -> resource reset -> state 5900 -> continuation. Scores remain
-unchanged.
+600/600 (566 required / 34 optional). Scores remain unchanged.
 
 Entry 517 is the prior closeout. Entry 509 closed bounded actor-local dizzy-point initialization, mutation, direct HitDef scaling, and evidence projection; Entry 510 added defender-owned direct HitDef suppression; Entry 511 added omitted normal/Super defaults and dedicated `AttackMulSet.DizzyPoints` scaling; Entry 512 added the available common `StateDizzy` transition on a positive-to-zero direct-hit crossing; Entry 513 added bounded imported root red-life `LifeShare` with a separate shared bank, local fallback, current-life/life-max clamps, and KO clearing; Entry 514 closed immediate handoff reconciliation and reset rebinding; Entry 515 adds bounded runtime-owned solo/team red-life HUD meters with desktop/mobile proof; Entry 516 adds the post-KO next-round resource reset, numbered round snapshot, UI route, and required trace; Entry 517 adds bounded match outcome, terminal match-over blocking, imported state-5900 preflight/entry, score presentation, and the required trace. Entry 518 now adds per-root round context through 1 -> 2 -> 3. Scores remain unchanged until the independent corpus/adjudication lane moves them.
 
