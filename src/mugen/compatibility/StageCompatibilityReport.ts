@@ -60,6 +60,7 @@ export type StageBackgroundControllerReport = {
     start: number;
     end: number;
     loopTime?: number;
+    groupLoopTime?: number;
   };
   ctrlIds?: number[];
   targetLayers: string[];

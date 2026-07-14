@@ -69,6 +69,8 @@ export type MugenStageBgCtrlTiming = {
   start: number;
   end: number;
   loopTime?: number;
+  /** Parent BGCtrlDef reset period, kept separate from an explicit controller loop. */
+  groupLoopTime?: number;
 };
 
 export type MugenStageBgCtrl = {

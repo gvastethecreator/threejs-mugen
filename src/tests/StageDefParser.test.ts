@@ -146,6 +146,27 @@ describe("parseStageDef", () => {
     );
     expect(continueBetweenRounds.resetBackgroundBetweenRounds).toBe(false);
   });
+
+  it("preserves parent and controller BGCtrl loop periods separately", () => {
+    const parsed = parseStageDef(`
+[BGDef]
+
+[BGCtrlDef Independent]
+looptime = 10
+
+[BGCtrl Pulse]
+type = Visible
+time = 4,4,6
+value = 0
+`, "stages/loops.def");
+
+    expect(parsed.bgControllers?.[0]?.controllers[0]?.timing).toEqual({
+      start: 4,
+      end: 4,
+      loopTime: 6,
+      groupLoopTime: 10,
+    });
+  });
 });
 
 describe("MugenStageLoader", () => {

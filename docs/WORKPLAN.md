@@ -2,6 +2,13 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 531 closes the composed `BGCtrl` timing boundary. The stage model keeps
+explicit controller and parent `BGCtrlDef` loop periods separately, and the
+projection clock honors the most recent applicable reset. Focused stage/parser
+coverage passes 15 tests. Stateful velocity/position history, `Enabled`
+animation pause semantics, and exact stage parity remain open; continue with
+the next stage-runtime slice after the next batched quality gate.
+
 Entry 530 adjudicates the written score band against the expanded corpus and
 promotes only Practical MUGEN compatibility from `35` to `36 / 100`, the
 minimum point inside the `36-55` practical MVP band. The decision is backed by

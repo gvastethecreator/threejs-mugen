@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 531 - Composed BGCtrl timing
+
+Preserved explicit controller and parent `BGCtrlDef` loop periods separately in
+the stage model, parser, compatibility report, Studio row, and projection clock.
+The focused stage/parser gate passes 2 files / 15 tests. Exact mutable motion,
+enabled animation pause, and full stage parity remain open. See
+`docs/reports/2026-07-14-bgctrl-composed-timing.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/170-bgctrl-composed-timing.md`.
+
 ## Entry 530 - Score-band adjudication
 
 Adjudicated the written `36-55` practical MVP band against the expanded

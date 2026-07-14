@@ -246,6 +246,7 @@ function parseStageBgCtrl(
       start: time[0] ?? 0,
       end: time[1] ?? time[0] ?? 0,
       loopTime: time[2] ?? group.loopTime,
+      ...(group.loopTime === undefined ? {} : { groupLoopTime: group.loopTime }),
     },
     ctrlIds: numberListValue(values, "ctrlid") ?? group.ctrlIds,
     params,

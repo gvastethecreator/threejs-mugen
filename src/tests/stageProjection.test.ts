@@ -231,6 +231,32 @@ describe("resolveStageLayerForTick", () => {
     expect(Math.round(resolved?.startX ?? 0)).toBe(20);
   });
 
+  it("honors a parent BGCtrlDef reset when it differs from the controller loop", () => {
+    const timedStage: StageSnapshot = {
+      ...stage,
+      bgControllers: [
+        {
+          name: "independent-loops",
+          loopTime: 10,
+          controllers: [
+            {
+              name: "pulse",
+              type: "visible",
+              timing: { start: 4, end: 4, loopTime: 6, groupLoopTime: 10 },
+              ctrlIds: [7],
+              params: { value: "0" },
+              rawParams: { type: "Visible", time: "4,4,6", value: "0" },
+            },
+          ],
+          rawParams: { looptime: "10" },
+        },
+      ],
+    };
+
+    expect(resolveStageLayerForTick(layer, timedStage, 4)).toBeUndefined();
+    expect(resolveStageLayerForTick(layer, timedStage, 10)).toMatchObject({ id: layer.id });
+  });
+
   it("moves the native BGCtrl Lab controlled layers deterministically", () => {
     const ribbon = bgCtrlLabStage.layers.find((candidate) => candidate.id === "lab-sine-ribbon");
     const cloud = bgCtrlLabStage.layers.find((candidate) => candidate.id === "lab-cloud-drift");

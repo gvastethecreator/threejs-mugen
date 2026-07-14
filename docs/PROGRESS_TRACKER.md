@@ -1,5 +1,18 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Composed BGCtrl timing
+
+- Entry 531 preserves explicit controller `looptime` and parent
+  `BGCtrlDef looptime` independently, then resolves the latest applicable reset
+  in the stage projection clock.
+- Focused stage/parser coverage passes 2 files / 15 tests. TypeScript 7 and
+  broad gates are intentionally deferred to the next implementation batch.
+- This is bounded timing evidence only: stateful velocity/position history,
+  `Enabled` animation pause, exact window/zoom/mask behavior, and full stage
+  parity remain open.
+- See `docs/research/2026-07-14-bgctrl-composed-timing.md` and
+  `docs/reports/2026-07-14-bgctrl-composed-timing.md`.
+
 ## Global report - 2026-07-14 Score-band adjudication
 
 - Entry 530 applies the written `36-55` practical MVP criterion to the

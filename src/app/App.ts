@@ -5743,6 +5743,9 @@ export class App {
               controller.group ? `group ${controller.group}` : undefined,
               `time ${formatStageNumber(controller.timing.start)}..${formatStageNumber(controller.timing.end)}`,
               controller.timing.loopTime === undefined ? undefined : `loop ${formatStageNumber(controller.timing.loopTime)}`,
+              controller.timing.groupLoopTime === undefined || controller.timing.groupLoopTime === controller.timing.loopTime
+                ? undefined
+                : `group loop ${formatStageNumber(controller.timing.groupLoopTime)}`,
               controller.ctrlIds?.length ? `ctrl ${controller.ctrlIds.join(",")}` : "all layers",
             ]
               .filter(Boolean)

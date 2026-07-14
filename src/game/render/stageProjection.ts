@@ -144,8 +144,20 @@ function activeElapsedTicks(controller: MugenStageBgCtrl, tick: number): number 
 }
 
 function loopedTick(controller: MugenStageBgCtrl, tick: number): number {
-  const loopTime = controller.timing.loopTime;
-  return loopTime && loopTime > 0 ? tick % loopTime : tick;
+  const safeTick = Math.max(0, Math.trunc(tick));
+  const controllerLoopTime = positiveLoopTime(controller.timing.loopTime);
+  const groupLoopTime = positiveLoopTime(controller.timing.groupLoopTime);
+  if (controllerLoopTime && groupLoopTime && controllerLoopTime !== groupLoopTime) {
+    const controllerReset = Math.floor(safeTick / controllerLoopTime) * controllerLoopTime;
+    const groupReset = Math.floor(safeTick / groupLoopTime) * groupLoopTime;
+    return safeTick - Math.max(controllerReset, groupReset);
+  }
+  const loopTime = controllerLoopTime ?? groupLoopTime;
+  return loopTime === undefined ? safeTick : safeTick % loopTime;
+}
+
+function positiveLoopTime(value: number | undefined): number | undefined {
+  return value !== undefined && Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
 }
 
 function offsetStageLayer(layer: MugenStageLayer, x: number, y: number): MugenStageLayer {
