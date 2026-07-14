@@ -2,6 +2,16 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 526 adds the first source-backed stage lifecycle clock. `StageInfo.resetBG`
+is parsed into `resetBackgroundBetweenRounds`; the runtime keeps gameplay tick
+global while publishing a round-local `backgroundTick`, and the renderer uses
+that clock for stage BGCtrl/action projection. A real numbered round resets the
+background clock only when `resetBG = 1`; Turns continuation does not. Focal
+stage/parser/runtime coverage passes 218 tests and TypeScript 7 typecheck.
+The broad suite/build/trace/browser closeout is intentionally deferred until
+the next implementation rounds. Next: complete the independent legal stage
+package route around this runtime contract, then adjudicate the score band.
+
 Entry 525 adds `CompatibilityCorpus/v0`, a deterministic immutable index over
 the existing journey evidence. Required legal, portable legal, and optional
 private routes are distinct; binary payloads are not copied; missing required

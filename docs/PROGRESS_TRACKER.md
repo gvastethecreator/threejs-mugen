@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 Stage resetBG round clock
+
+- Entry 526 closes a bounded stage lifecycle gap from the official MUGEN stage contract: `StageInfo.resetBG = 1` resets stage animation/BGCtrl time at a real numbered round boundary, while `resetBG = 0` continues the global tick.
+- `MugenStageDefinition`, `StageSnapshot`, the runtime presentation bridge, and `AxisRenderer` share explicit `backgroundTick`; Turns continuation keeps the current round clock and full reset returns it to zero.
+- Focal parser/stage projection/Playable coverage passes 3 files / 218 tests; TypeScript 7 typecheck passes. Broad regression, build, trace, and browser closeout is deferred until the next implementation batch.
+- Scores remain unchanged. Exact BGCtrl timing, stage zoom, window/mask, motif, and complete MUGEN/IKEMEN stage parity remain open. Sources: [Elecbyte 1.1b1 background docs](https://www.elecbyte.com/mugendocs-11b1/bgs.html), [Elecbyte stage tutorial](https://www.elecbyte.com/mugendocs/bg-tut.html), and [Elecbyte 1.1b1 state-controller reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html).
+- See `docs/research/2026-07-14-stage-resetbg-round-clock.md` and `docs/reports/2026-07-14-stage-resetbg-round-clock.md`.
+
 ## Global report - 2026-07-14 CompatibilityCorpus/v0
 
 - Entry 525 adds a deterministic `CompatibilityCorpus/v0` index over existing

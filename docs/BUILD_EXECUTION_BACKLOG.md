@@ -1,5 +1,17 @@
 # Build Execution Backlog
 
+## Entry 526 - Stage resetBG round clock
+
+Added the source-backed `StageInfo.resetBG` slice. Stage parsing now preserves
+whether background animation/controllers reset between rounds; the playable
+runtime publishes a separate `backgroundTick`, resets it at a real numbered
+round boundary, keeps Turns continuation inside the current round, and the
+Three.js stage renderer consumes it for BGCtrl and action-backed layers. The
+focal stage/parser/runtime set passes 3 files / 218 tests and TypeScript 7
+typecheck. Exact stage controller, zoom, window, and motif parity remain open.
+See `docs/reports/2026-07-14-stage-resetbg-round-clock.md` and
+`.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/165-stage-resetbg-round-clock.md`.
+
 ## Entry 525 - CompatibilityCorpus/v0
 
 Added the normalized `CompatibilityCorpus/v0` index over journey evidence.
