@@ -36,7 +36,7 @@ describe("RuntimeTeamRoundHandoffWorld", () => {
 
   it("commits both side promotions in stable side order", () => {
     const actors = turnsActors({ p1Life: 0, p2Life: 0 });
-    const result = apply(actors);
+    const result = apply(actors, { 1: true, 2: true });
 
     expect(result.applied).toBe(true);
     expect(result.changes.map(({ actorId }) => actorId)).toEqual(["p1", "p3", "p2", "p4"]);
@@ -120,15 +120,23 @@ type TurnsActorOptions = {
   includeP3?: boolean;
 };
 
-function apply(actors: RuntimeTeamRoundHandoffActor[]) {
-  return new RuntimeTeamRoundHandoffWorld().apply({ actors, decision: decisionFor(actors) });
+function apply(
+  actors: RuntimeTeamRoundHandoffActor[],
+  effectiveLossBySide?: Partial<Record<1 | 2, boolean>>,
+) {
+  return new RuntimeTeamRoundHandoffWorld().apply({ actors, decision: decisionFor(actors, false, effectiveLossBySide) });
 }
 
-function decisionFor(actors: readonly RuntimeTeamRoundHandoffActor[], roundNotOver = false) {
+function decisionFor(
+  actors: readonly RuntimeTeamRoundHandoffActor[],
+  roundNotOver = false,
+  effectiveLossBySide?: Partial<Record<1 | 2, boolean>>,
+) {
   return new RuntimeTeamRoundDecisionWorld().snapshot({
     actors,
     modeBySide: { 1: "turns", 2: "turns" },
     roundNotOver,
+    effectiveLossBySide,
     tick: 12,
   });
 }
