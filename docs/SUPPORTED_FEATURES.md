@@ -9,8 +9,10 @@
   enabled, while local mode stays actor-owned; positive values clamp from
   current life to life max and KO clears the side. The imported direct-hit
   dizzy break route can enter the available common `StateDizzy` state after a
-  positive-to-zero crossing. Red-life triggers, projectile/Explod/team-helper
-  sharing, HUD bars, reset/persistence, and full parity remain separate gates.
+  positive-to-zero crossing. Typed team handoff reconciles the red-life bank
+  immediately and match reset rebinds it from the representative root.
+  Red-life triggers, projectile/Explod/team-helper sharing, exact multi-round
+  persistence, HUD bars, and full parity remain separate gates.
 
 - Imported runtime supports the bounded explicit direct HitDef `redlife` and
   `guardpoints`/`dizzypoints` routes plus actor-local `RedLifeAdd`/`RedLifeSet`,
@@ -21,9 +23,9 @@
   the available common `StateDizzy` route when no explicit `p2stateno` owns the
   hit. Root `TeamLifeShare` is covered only by the separate imported adapter;
   Helpers retain local controller ownership. Native red-life triggers,
-  target/projectile sharing, reset/persistence, HUD presentation, and full
-  parity remain unsupported; defender-owned `NoDizzyPointsDamage` suppression
-  is bounded.
+  target/projectile sharing, exact multi-round persistence, HUD presentation,
+  and full parity remain unsupported; defender-owned `NoDizzyPointsDamage`
+  suppression is bounded.
 
 - Legal-fixture browser smoke proves one lethal imported `AssertSpecial NoKOSlow` route: physical `d -> z` enters imported state/action `210`, asserts `nokoslow` on the KO tick, defeats demo Nova Boxer from `1000` to `0`, retains post-round playback `1`, and returns to a healthy `fight` round after Reset. Desktop/mobile captures require the imported identity, action-specific palette/mask, `RuntimePostRound.noKoSlow`, progress, and normal playback. Required `mugen-lite-journey-nokoslow` trace checksum `ceac9f37` independently proves the legal ZIP command/state/AIR/SFF path. Exact slowdown curve/duration, motif/lifebar behavior, KO echoes, win/continue flow, teams, broad audio parity, and full round parity remain separate gates.
 

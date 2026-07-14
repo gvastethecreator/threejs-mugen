@@ -81,6 +81,36 @@ describe("RuntimeRedLifeShareSystem", () => {
     expect(diagnostic.banks.map((bank) => bank.bankId)).toEqual(["p1:red-life", "p3:red-life"]);
     expect(diagnostic.diagnostics).toEqual([]);
   });
+
+  it("preserves the shared value across standby handoff and rebinds it on reset", () => {
+    const actors = [
+      redLifeActor("p1", 1, 1000, 0),
+      redLifeActor("p3", 1, 1000, 0),
+    ];
+    const runtime = new RuntimeRedLifeShareRuntime();
+
+    runtime.reset({ actors, mode: "turns", lifeShare: true, tick: 0 });
+    actors[0]!.life = 750;
+    actors[0]!.runtime.life = 750;
+    actors[0]!.runtime.redLife = 800;
+    actors[1]!.life = 750;
+    actors[1]!.runtime.life = 750;
+    runtime.reconcile({ actors, mode: "turns", lifeShare: true, tick: 1 });
+
+    actors[0]!.teamState.standby = true;
+    actors[1]!.teamState.standby = false;
+    const handoff = runtime.reconcile({ actors, mode: "turns", lifeShare: true, tick: 2 });
+
+    expect(handoff.reset).toBe(false);
+    expect(actors[1]!.runtime.redLife).toBe(800);
+
+    actors[1]!.runtime.redLife = 0;
+    const reset = runtime.reset({ actors, mode: "turns", lifeShare: true, tick: 3 });
+
+    expect(reset.reset).toBe(true);
+    expect(actors[0]!.runtime.redLife).toBe(800);
+    expect(actors[1]!.runtime.redLife).toBe(800);
+  });
 });
 
 function redLifeActor(

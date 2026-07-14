@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Close red-life lifecycle rebind](tickets/153-red-life-lifecycle-rebind.md) - Entry 514 reconciles the separate root red-life bank immediately after typed team handoff and rebinds it on match reset; exact multi-round persistence and HUD remain separate. Next: red-life/resource-bar presentation.
+
 - [Implement root red-life LifeShare adapter](tickets/152-red-life-lifeshare-root-adapter.md) - Entry 513 adds a separate `RuntimeRedLifeShareSystem/v0` for imported root actors: shared IKEMEN team bank, local fallback, current-life/life-max clamp, KO clearing, and Helper-local evidence. Next: reset/persistence; native triggers, projectile/Explod/team-helper sharing, HUD, and full parity remain blocked.
 
 - [Map active-root diagnostic collision projection](tickets/102-map-active-root-diagnostic-collision-projection.md) - presentation v1 adds independent collision ids; push/combat remain blocked. Next: Wayfinder 103.

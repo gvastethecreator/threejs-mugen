@@ -799,6 +799,11 @@ export class PlayableMatchRuntime {
         `TeamResource ${change.kind} ${change.resourceOwnerId} delta ${sign}${change.delta} value ${change.value}/${change.max} actors ${change.actorIds.join(",")}`,
       );
     }
+    this.reconcileTeamRedLifeShare();
+  }
+
+  private reconcileTeamRedLifeShare(): void {
+    if (!this.teamResourceBankRuntimeEnabled()) return;
     const redLifeResult = this.redLifeShareRuntime.reconcile({
       actors: this.redLifeShareRuntimeActors(),
       mode: this.teamRoundMode,
@@ -2311,6 +2316,7 @@ export class PlayableMatchRuntime {
       for (const line of handoffLogLines.reverse()) {
         this.logs.unshift(line);
       }
+      this.reconcileTeamRedLifeShare();
     }
     return result;
   }

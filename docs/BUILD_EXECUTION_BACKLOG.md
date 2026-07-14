@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 514 - Red-life lifecycle rebind
+
+Closed the bounded imported red-life lifecycle edge. Explicit team handoff now
+reconciles the root-only red-life bank immediately after the typed handoff, so
+standby/active replacement does not wait for a later tick. The adapter keeps
+its bank topology across standby changes, and match `reset()` rebinds the
+shared value from the representative root. Focused lifecycle, handoff, and
+trace coverage passes 588/588 tests; full corpus, TypeScript 7, build, and
+repository gates remain batched. Claim blocked: exact multi-round persistence,
+native triggers, projectile/Explod/team-helper sharing, HUD bars,
+rollback/netplay, and full MUGEN/IKEMEN parity. See Wayfinder 153 and the
+dated research/report.
+
 ## Entry 513 - Red-life LifeShare root adapter
 
 Implemented the bounded imported IKEMEN `TeamLifeShare` red-life adapter.

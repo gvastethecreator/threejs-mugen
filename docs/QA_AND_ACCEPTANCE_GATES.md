@@ -45,6 +45,16 @@ under a shared root topology. This gate does not claim native red-life
 triggers, projectile/Explod/team-helper sharing, reset/persistence, HUD bars,
 exact round semantics, rollback/netplay, or full MUGEN/IKEMEN parity.
 
+## Red-life lifecycle gate
+
+Acceptance requires the typed team handoff boundary to reconcile the separate
+root red-life bank immediately, preserve its topology across standby/active
+changes, and let match `reset()` rebind the shared value from the representative
+root. Focused evidence must cover a shared value before and after the handoff,
+the reset result, and local-mode isolation. This gate does not claim exact
+multi-round persistence, native triggers, projectile/Explod/team-helper
+sharing, HUD bars, rollback/netplay, or full MUGEN/IKEMEN parity.
+
 ## KO sound handoff gate
 
 Acceptance requires one common `f:11,0` event per defeated player on the first KO transition, no event on time-over, global `NoKOSnd` suppression, and required round/audio trace evidence.

@@ -1,4 +1,15 @@
 ﻿# Port Completion Scorecard
+## 2026-07-14 Entry 514 focal closeout
+
+Entry 514 closes bounded imported red-life reset/rebind lifecycle. Typed team
+handoff reconciles the root-only bank immediately, standby/active changes do
+not rebuild its topology, and match reset rebinds shared value from the
+representative root. Focused lifecycle, handoff, and trace coverage passes
+588/588 tests. Full corpus, TypeScript 7, build, and repository gates are
+batched; scores do not move. Exact multi-round persistence, native triggers,
+projectile/Explod/team-helper sharing, HUD bars, rollback/netplay, and full
+parity remain separate gates.
+
 ## 2026-07-14 Entry 513 focal closeout
 
 Entry 513 closes bounded imported root red-life `TeamLifeShare` behavior through

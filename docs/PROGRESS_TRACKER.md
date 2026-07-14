@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 red-life lifecycle rebind
+
+- Entry 514 closes the bounded imported red-life lifecycle edge. Typed team
+  handoff now reconciles the root-only red-life bank immediately; standby and
+  active-root changes preserve bank topology; match `reset()` rebinds shared
+  value from the representative root.
+- Focused lifecycle, handoff, and trace coverage passes 588/588 tests. Full
+  corpus regeneration, TypeScript 7, build, and repository gates remain
+  intentionally batched. Scores remain unchanged.
+- Claim ceiling: bounded reset/rebind lifecycle only. Exact multi-round
+  persistence, native triggers, projectile/Explod/team-helper sharing, HUD,
+  rollback/netplay, and full MUGEN/IKEMEN parity remain separate gates.
+- See `docs/research/2026-07-14-red-life-lifecycle.md` and
+  `docs/reports/2026-07-14-red-life-lifecycle.md`.
+
 ## Global report - 2026-07-14 red-life LifeShare root adapter
 
 - Entry 513 closes the bounded imported IKEMEN `TeamLifeShare` red-life route.
