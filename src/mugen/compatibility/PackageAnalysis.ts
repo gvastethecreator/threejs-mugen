@@ -24,6 +24,7 @@ export type PackageAnalysisFinding = {
   category: PackageAnalysisFindingCategory;
   feature: string;
   location: PackageAnalysisLocation;
+  dependency?: string;
   raw?: string;
   detail: string;
   fallback?: string;
@@ -45,11 +46,25 @@ export type PackageAnalysisSummary = {
   byCategory: Record<PackageAnalysisFindingCategory, number>;
 };
 
+export type PackageAnalysisProfiles = {
+  mugen: {
+    profile: "mugen-1.0" | "mugen-1.1" | "unknown";
+    versions: string[];
+  };
+  ikemen: {
+    profile: "ikemen-go-scan";
+    detected: boolean;
+    findingCount: number;
+    claim: "scanner-only";
+  };
+};
+
 export type PackageAnalysisResult = {
   schemaVersion: typeof PACKAGE_ANALYSIS_SCHEMA;
   sourceName: string;
   generatedAt: string;
   status: "recognized" | "partial" | "unknown";
+  profiles: PackageAnalysisProfiles;
   files: PackageAnalysisFile[];
   findings: PackageAnalysisFinding[];
   summary: PackageAnalysisSummary;
@@ -207,11 +222,13 @@ export function createPackageAnalysis(input: {
     .map((finding) => ({ ...finding, id: findingId(finding) }))
     .sort(compareFindings);
   const summary = summarizePackage(paths, files, normalizedFindings, recognizedDefinitions);
+  const profiles = createProfiles(definitions, ikemen);
   const payload = {
     schemaVersion: PACKAGE_ANALYSIS_SCHEMA,
     sourceName: input.sourceName?.trim() || "virtual-package",
     generatedAt: input.generatedAt.trim(),
     status: resolveOverallStatus(summary),
+    profiles,
     files: files.map((file) => ({ ...file, roles: [...file.roles].sort() })),
     findings: normalizedFindings,
     summary,
@@ -328,6 +345,7 @@ function analyzeSelectDefinition(
           category,
           feature: `select.def ${section} entry`,
           location: { path, line: line.number },
+          dependency: target ?? entry,
           raw: line.raw,
           detail: `Entry resolves to ${target}.`,
         }
@@ -336,6 +354,7 @@ function analyzeSelectDefinition(
           category,
           feature: `select.def ${section} entry`,
           location: { path, line: line.number },
+          dependency: target ?? entry,
           raw: line.raw,
           detail: `Entry '${entry}' does not resolve to a package definition.`,
           fallback: "Keep the entry visible and do not create a runnable roster claim.",
@@ -417,6 +436,7 @@ function reportReference(
         category,
         feature: `Referenced ${assignment.key} file`,
         location: { path: basePath, line: assignment.line },
+        dependency: target,
         raw: assignment.raw,
         detail: `Reference resolves to ${target}.`,
       }
@@ -425,6 +445,7 @@ function reportReference(
         category,
         feature: `Referenced ${assignment.key} file`,
         location: { path: basePath, line: assignment.line },
+        dependency: unquote(assignment.value),
         raw: assignment.raw,
         detail: `Reference '${unquote(assignment.value)}' is not present in the package VFS.`,
         fallback: "Keep the reference unresolved and block a complete package claim.",
@@ -586,6 +607,7 @@ function addFinding(findings: Array<Omit<PackageAnalysisFinding, "id">>, finding
 
 function findingId(finding: Omit<PackageAnalysisFinding, "id">): string {
   const suffix = hashStableJson({
+    dependency: finding.dependency,
     raw: finding.raw,
     detail: finding.detail,
     fallback: finding.fallback,
@@ -678,9 +700,32 @@ function isPackageAnalysisPayload(value: Record<string, unknown>): value is Pack
   return typeof value.sourceName === "string" &&
     typeof value.generatedAt === "string" &&
     (value.status === "recognized" || value.status === "partial" || value.status === "unknown") &&
-    Array.isArray(value.files) && Array.isArray(value.findings) && isRecord(value.summary) &&
+    isRecord(value.profiles) && Array.isArray(value.files) && Array.isArray(value.findings) && isRecord(value.summary) &&
     isRecord(value.claims) && Array.isArray(value.diagnostics) &&
     typeof value.checksum === "string";
+}
+
+function createProfiles(definitions: readonly DefinitionRecord[], ikemen: { detected: boolean; findings: readonly IkemenScanFinding[] }): PackageAnalysisProfiles {
+  const versions = uniqueSorted(
+    definitions
+      .map((definition) => definition.character.info.mugenVersion)
+      .filter((version): version is string => Boolean(version))
+      .map((version) => version.trim()),
+  );
+  const profile = versions.some((version) => /\b1\.1\b|1\.1b/i.test(version))
+    ? "mugen-1.1"
+    : versions.some((version) => /\b1\.0\b/i.test(version))
+      ? "mugen-1.0"
+      : "unknown";
+  return {
+    mugen: { profile, versions },
+    ikemen: {
+      profile: "ikemen-go-scan",
+      detected: ikemen.detected,
+      findingCount: ikemen.findings.length,
+      claim: "scanner-only",
+    },
+  };
 }
 
 const FILE_REFERENCE_EXTENSIONS = /\.(?:act|air|cns|cmd|def|fnt|json|lua|mp3|ogg|sff|snd|st|ttf|wav|zss)$/i;

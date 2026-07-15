@@ -18,6 +18,10 @@ describe("PackageAnalysis/v0", () => {
       schemaVersion: "mugen-web-sandbox/package-analysis/v0",
       sourceName: "fixture-package",
       status: "partial",
+      profiles: {
+        mugen: { profile: "mugen-1.1", versions: ["1.1"] },
+        ikemen: { profile: "ikemen-go-scan", detected: true, claim: "scanner-only" },
+      },
       summary: {
         fileCount: 12,
         recognizedFileCount: 12,
@@ -36,11 +40,13 @@ describe("PackageAnalysis/v0", () => {
         status: "recognized",
         feature: "Referenced cns file",
         location: { path: "chars/kfm/kfm.def", line: 7 },
+        dependency: "chars/kfm/kfm.cns",
       }),
       expect.objectContaining({
         status: "unknown",
         feature: "Referenced bgmusic file",
         location: { path: "stages/dojo.def", line: 8 },
+        dependency: "audio/stage.ogg",
       }),
       expect.objectContaining({
         status: "recognized",
@@ -51,6 +57,7 @@ describe("PackageAnalysis/v0", () => {
         status: "unknown",
         feature: "select.def characters entry",
         location: { path: "data/select.def", line: 3 },
+        dependency: "missing-character",
       }),
       expect.objectContaining({
         status: "unsupported",
@@ -94,6 +101,27 @@ describe("PackageAnalysis/v0", () => {
     expect(report.findings).toEqual(expect.arrayContaining([
       expect.objectContaining({ category: "package", status: "unknown", feature: "MUGEN entrypoint coverage" }),
     ]));
+  });
+
+  it("uses the same VFS contract for stage-only and system-only packages", () => {
+    const stageVfs = new VirtualFileSystem();
+    stageVfs.addFile("stages/only.def", textBytes("[Info]\nname = Only Stage\n[BGDef]\nspr = only.sff\n"));
+    stageVfs.addFile("stages/only.sff", textBytes("stage"));
+    const stage = createPackageAnalysis({ vfs: stageVfs, generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    const systemVfs = new VirtualFileSystem();
+    systemVfs.addFile("data/system.def", textBytes("[Info]\nname = Only System\n[Files]\nsff = system.sff\n"));
+    systemVfs.addFile("data/system.sff", textBytes("system"));
+    const system = createPackageAnalysis({ vfs: systemVfs, generatedAt: "2026-07-14T00:00:00.000Z" });
+
+    expect(stage.findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ category: "stage", status: "recognized", feature: "Referenced spr file", dependency: "stages/only.sff" }),
+    ]));
+    expect(system.findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ category: "screenpack", status: "recognized", feature: "Referenced sff file", dependency: "data/system.sff" }),
+    ]));
+    expect(stage.profiles.ikemen.profile).toBe("ikemen-go-scan");
+    expect(system.profiles.mugen.profile).toBe("unknown");
   });
 });
 
