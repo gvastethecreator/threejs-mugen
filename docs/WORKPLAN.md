@@ -2,6 +2,15 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 540 closes the accumulated StudioSemanticDraft/v0 gate. The official KFM
+browser route proves 58 states / 318 controllers, invalid-to-valid repair,
+explicit reimport, matched source identity, and a clean final draft. Native
+verification passes 212 files / 2145 tests, TypeScript 7, build, boundaries,
+CSS, `qa:trace` 600/600, and `qa:stage`. The global smoke gate remains open at
+the pre-existing MUGEN Lite attack-frame route; choose the next independent
+Studio trust slice after this audit, with `PackageAnalysis/v0` and
+`AssetProvenance/v2` as candidates.
+
 Entry 539 implements `StudioSemanticDraft/v0`. Existing folder source editing
 now parses and compiles CNS/ST text in memory, binds the draft to source
 fingerprint/project revision, exposes deterministic diagnostic evidence, blocks

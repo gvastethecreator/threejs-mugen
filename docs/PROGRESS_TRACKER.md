@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 StudioSemanticDraft/v0 closeout
+
+- The official KFM Studio browser route proves 58 states / 318 controllers
+  compiled, invalid semantic input blocked, repaired CNS accepted, explicit
+  reimport completed, and the final draft clean with matched source identity.
+- Accumulated verification passes 212 test files / 2145 tests, TypeScript 7,
+  290-module build, boundaries, CSS budget, `qa:trace` 600/600, and
+  `qa:stage` desktop/mobile browser evidence.
+- The complete smoke gate remains open: automatic startup timed out once and a
+  stable-server rerun stopped at the pre-existing MUGEN Lite attack-frame
+  route before Studio. This does not lower the Studio claim, but it prevents a
+  global smoke-green report.
+- No score movement. ZIP rewrite, create/delete, watch/merge, rollback, and
+  broad structured editors remain blocked. Next candidates: `PackageAnalysis/v0`
+  or `AssetProvenance/v2`.
+- See `docs/reports/2026-07-14-studio-semantic-draft-v0-closeout.md`.
+
 ## Global report - 2026-07-14 StudioSemanticDraft/v0
 
 - Studio source editing now preflights one CNS/ST document in memory through

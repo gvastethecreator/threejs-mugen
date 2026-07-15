@@ -16,11 +16,16 @@ revalidation, final reimport digest check, and Studio status copy.
 
 - `src/tests/StudioSemanticDraft.test.ts`: 5 focused tests pass.
 - `pnpm typecheck`: pass.
-- The accumulated native/build/browser closeout is recorded separately after
-  this feature checkpoint.
+- Official KFM browser route: 58 states / 318 controllers compiled, invalid
+  edit blocked, repaired CNS reimported explicitly, final draft clean and
+  source identity matched.
+- Accumulated closeout: 212 test files / 2145 tests, TypeScript 7, 290-module
+  build, boundaries, CSS budget, `qa:trace` 600/600, and `qa:stage` pass.
+- The complete smoke gate remains open at the pre-existing MUGEN Lite
+  attack-frame route before Studio.
 
 ## Next
 
-Run the accumulated Studio/browser gate, then continue with provenance v2 or
-package analysis only after selecting the next independent product slice.
-
+Continue with `PackageAnalysis/v0` or `AssetProvenance/v2` only after selecting
+the next independent product slice. The current source-editor claim is closed
+at its bounded existing-file CNS/ST ceiling.

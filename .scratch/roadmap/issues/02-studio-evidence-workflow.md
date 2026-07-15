@@ -11,9 +11,11 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 
 Entries 484-505 close local edit history, dirty navigation, autosave, versioned project index, storage conflict, source transactions/read models, provenance v0/v1, persistent ZIP handles, folder recovery, and bounded existing-file folder editing. The old source-identity/write selector is historical.
 
-Implemented `StudioSemanticDraft/v0`: one CNS/ST document is parsed and compiled in memory against the active revision/fingerprint before opening a writable stream. Invalid and stale drafts cannot write; valid drafts revalidate permission and the physical folder fingerprint before the existing explicit write/reimport transaction, then verify the final document digest. ZIP rewrite, create/delete, watch/merge, post-close rollback, and broad state/controller/collision editors remain blocked.
+Implemented and closed the accumulated `StudioSemanticDraft/v0` gate: one CNS/ST document is parsed and compiled in memory against the active revision/fingerprint before opening a writable stream. The official KFM browser route proves invalid-to-valid repair, explicit reimport, matched source identity, and a clean final draft. Invalid and stale drafts cannot write; valid drafts revalidate permission and the physical folder fingerprint before the existing explicit write/reimport transaction, then verify the final document digest. ZIP rewrite, create/delete, watch/merge, post-close rollback, and broad state/controller/collision editors remain blocked.
 
-Next build: accumulate the Studio/browser closeout, then choose the next independent Studio trust slice. Provenance v2 and package analysis remain the leading candidates; this issue no longer owns the source-editor preflight gap.
+Next build: choose the next independent Studio trust slice. `PackageAnalysis/v0`
+and `AssetProvenance/v2` remain the leading candidates; this issue no longer
+owns the source-editor preflight gap.
 
 ## Next Useful Cuts
 

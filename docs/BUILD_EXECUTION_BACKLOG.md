@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 540 - StudioSemanticDraft/v0 closeout
+
+Closed the accumulated Studio source-editing gate. The official KFM browser
+route compiles 58 states / 318 controllers, rejects one invalid semantic edit,
+accepts the repaired CNS edit, reimports explicitly, and leaves the draft clean
+with matched source identity. Native verification passes 212 files / 2145
+tests, TypeScript 7, 290-module build, boundaries, CSS budget, `qa:trace`
+600/600, and `qa:stage`. The complete smoke gate remains open because its
+automatic server startup timed out once and its stable-server rerun stops in
+the pre-existing MUGEN Lite attack-frame route before Studio. The next
+independent candidates are `PackageAnalysis/v0` or `AssetProvenance/v2`.
+See `docs/reports/2026-07-14-studio-semantic-draft-v0-closeout.md`.
+
 ## Entry 539 - StudioSemanticDraft/v0
 
 Added an in-memory semantic preflight for one existing CNS/ST source document.
