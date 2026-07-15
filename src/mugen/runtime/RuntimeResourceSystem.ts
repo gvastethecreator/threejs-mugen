@@ -298,6 +298,13 @@ export function resolveRuntimeResourceControllerOperation(
   if (!controllerType) {
     return undefined;
   }
+  const redirectPlayerIdExpression =
+    controllerType === "ctrlset"
+      ? undefined
+      : operation && "redirectPlayerIdExpression" in operation
+        ? operation.redirectPlayerIdExpression
+        : findParam(controller, "redirectid")?.trim();
+  const redirect = redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression };
   if (controllerType === "ctrlset") {
     const value = operation?.controllerType === "ctrlset" ? operation.value : numberParam(controller, state, context, "value");
     return value === undefined ? undefined : { kind: "resource", controllerType: "ctrlset", value: value !== 0 };
@@ -314,6 +321,7 @@ export function resolveRuntimeResourceControllerOperation(
       controllerType: "lifeadd",
       value,
       kill: staticLifeAdd?.kill ?? (numberParam(controller, state, context, "kill") ?? 1) !== 0,
+      ...redirect,
     };
   }
   if (controllerType === "redlifeadd") {
@@ -323,9 +331,10 @@ export function resolveRuntimeResourceControllerOperation(
       controllerType: "redlifeadd",
       value,
       absolute: staticRedLifeAdd?.absolute ?? (numberParam(controller, state, context, "absolute") ?? 0) !== 0,
+      ...redirect,
     };
   }
-  return { kind: "resource", controllerType, value };
+  return { kind: "resource", controllerType, value, ...redirect };
 }
 
 function runtimeVariableTarget(state: CharacterRuntimeState, variableType: RuntimeVariableType): number[] {

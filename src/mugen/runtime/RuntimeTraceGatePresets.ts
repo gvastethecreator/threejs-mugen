@@ -827,6 +827,94 @@ export function createSyntheticImportedResourceStateEntryRedirectTraceArtifact(o
   );
 }
 
+export function createSyntheticImportedResourceAuxiliaryRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resource-auxiliary-redirect",
+      displayName: "Synthetic Imported Auxiliary Resource Redirect",
+      action200Duration: 30,
+      hitDefDamage: 0,
+      withRedirectedResourceOps: { stateNo: 292, redirectId: 57, sourcePowerSeed: 150, includeAuxiliary: true },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-resource-auxiliary-redirect-golden",
+      targetLabel: "Synthetic imported auxiliary resource RedirectID route",
+      requireHitEvent: true,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 292],
+      requiredExecutedControllers: [
+        "ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet",
+        "GuardPointsAdd", "GuardPointsSet", "DizzyPointsAdd", "DizzyPointsSet", "RedLifeAdd", "RedLifeSet",
+      ],
+      requiredExecutedOperations: [
+        "hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset",
+        "resource:guardpointsadd", "resource:guardpointsset", "resource:dizzypointsadd", "resource:dizzypointsset",
+        "resource:redlifeadd", "resource:redlifeset",
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          observedGuardPointsAtLeast: 650,
+          observedGuardPointsAtMost: 650,
+          observedDizzyPointsAtLeast: 650,
+          observedDizzyPointsAtMost: 650,
+          observedRedLifeAtLeast: 800,
+          observedRedLifeAtMost: 800,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 292, life: 1000, power: 35 },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, guardPoints: 650, dizzyPoints: 650, redLife: 800 },
+      ],
+      notes: [
+        "Synthetic imported IKEMEN trace extends root RedirectID to GuardPointsAdd/Set, DizzyPointsAdd/Set, and RedLifeAdd/Set while all dynamic values remain owned by the caller. Exact scaling, KO/recovery, team/shared banks, helpers, and full MUGEN/IKEMEN resource parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resource-auxiliary-state-entry-redirect",
+      displayName: "Synthetic Imported Auxiliary Resource State Entry Redirect",
+      action200Duration: 30,
+      hitDefDamage: 0,
+      withRedirectedResourceStateEntry: { redirectId: 57, sourcePowerSeed: 150, includeAuxiliary: true },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-resource-auxiliary-state-entry-redirect-golden",
+      targetLabel: "Synthetic imported auxiliary resource state-entry RedirectID route",
+      requireHitEvent: true,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: [
+        "ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet",
+        "GuardPointsAdd", "GuardPointsSet", "DizzyPointsAdd", "DizzyPointsSet", "RedLifeAdd", "RedLifeSet",
+      ],
+      requiredExecutedOperations: [
+        "hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset",
+        "resource:guardpointsadd", "resource:guardpointsset", "resource:dizzypointsadd", "resource:dizzypointsset",
+        "resource:redlifeadd", "resource:redlifeset",
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 35 },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, guardPoints: 650, dizzyPoints: 650, redLife: 800 },
+      ],
+      notes: [
+        "Synthetic imported IKEMEN trace extends the state-entry RedirectID path to auxiliary resource controllers with caller-owned dynamic values. Active-state routing, exact red-life/point scaling, team/shared banks, helpers, and full parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedRedLifeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -45416,10 +45504,12 @@ export type SyntheticImportedTraceFighterOptions = {
     stateNo: number;
     redirectId: SyntheticNumberExpression;
     sourcePowerSeed?: number;
+    includeAuxiliary?: boolean;
   };
   withRedirectedResourceStateEntry?: {
     redirectId: SyntheticNumberExpression;
     sourcePowerSeed?: number;
+    includeAuxiliary?: boolean;
   };
   withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
   withGuardPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
@@ -50355,6 +50445,96 @@ function redirectedResourceControllerBlock(
   config: NonNullable<SyntheticImportedTraceFighterOptions["withRedirectedResourceOps"]>,
 ): string {
   const sourcePowerSeed = config.sourcePowerSeed ?? 150;
+  const includeAuxiliary = config.includeAuxiliary === true;
+  const finalGate = includeAuxiliary ? 20 : 14;
+  const auxiliaryControllers = includeAuxiliary
+    ? `
+[State 200, Redirect Guard Points Add Probe]
+type = GuardPointsAdd
+trigger1 = var(14) = 1
+trigger1 = var(15) = 0
+value = 850 - var(9)
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Guard Points Add Gate]
+type = VarSet
+trigger1 = var(14) = 1
+trigger1 = var(15) = 0
+v = 15
+value = 1
+
+[State 200, Redirect Guard Points Set Probe]
+type = GuardPointsSet
+trigger1 = var(15) = 1
+trigger1 = var(16) = 0
+value = var(9) + 500
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Guard Points Set Gate]
+type = VarSet
+trigger1 = var(15) = 1
+trigger1 = var(16) = 0
+v = 16
+value = 1
+
+[State 200, Redirect Dizzy Points Add Probe]
+type = DizzyPointsAdd
+trigger1 = var(16) = 1
+trigger1 = var(17) = 0
+value = 850 - var(9)
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Dizzy Points Add Gate]
+type = VarSet
+trigger1 = var(16) = 1
+trigger1 = var(17) = 0
+v = 17
+value = 1
+
+[State 200, Redirect Dizzy Points Set Probe]
+type = DizzyPointsSet
+trigger1 = var(17) = 1
+trigger1 = var(18) = 0
+value = var(9) + 500
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Dizzy Points Set Gate]
+type = VarSet
+trigger1 = var(17) = 1
+trigger1 = var(18) = 0
+v = 18
+value = 1
+
+[State 200, Redirect Red Life Add Probe]
+type = RedLifeAdd
+trigger1 = var(18) = 1
+trigger1 = var(19) = 0
+value = var(9)
+absolute = 1
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Red Life Add Gate]
+type = VarSet
+trigger1 = var(18) = 1
+trigger1 = var(19) = 0
+v = 19
+value = 1
+
+[State 200, Redirect Red Life Set Probe]
+type = RedLifeSet
+trigger1 = var(19) = 1
+trigger1 = var(20) = 0
+value = var(9) + 650
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Red Life Set Gate]
+type = VarSet
+trigger1 = var(19) = 1
+trigger1 = var(20) = 0
+v = 20
+value = 1
+`
+    : "";
   return `
 [State 200, Redirect Resource Value Seed]
 type = VarSet
@@ -50427,9 +50607,11 @@ trigger1 = var(14) = 0
 v = 14
 value = 1
 
+${auxiliaryControllers}
+
 [State 200, Redirect Resource Branch]
 type = ChangeState
-trigger1 = var(14) = 1
+trigger1 = var(${finalGate}) = 1
 value = ${config.stateNo}
 ctrl = 0
 `;
@@ -51073,6 +51255,105 @@ function redirectedResourceStateEntryBlock(
   config: NonNullable<SyntheticImportedTraceFighterOptions["withRedirectedResourceStateEntry"]>,
 ): string {
   const sourcePowerSeed = config.sourcePowerSeed ?? 150;
+  const includeAuxiliary = config.includeAuxiliary === true;
+  const auxiliaryControllers = includeAuxiliary
+    ? `
+[State -1, Redirect Entry Guard Points Add]
+type = GuardPointsAdd
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(16) = 0
+value = 850 - var(15)
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Guard Points Add Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(16) = 0
+v = 16
+value = 1
+
+[State -1, Redirect Entry Guard Points Set]
+type = GuardPointsSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(16) = 1
+trigger1 = var(17) = 0
+value = var(15) + 500
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Guard Points Set Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(16) = 1
+trigger1 = var(17) = 0
+v = 17
+value = 1
+
+[State -1, Redirect Entry Dizzy Points Add]
+type = DizzyPointsAdd
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(17) = 1
+trigger1 = var(18) = 0
+value = 850 - var(15)
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Dizzy Points Add Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(17) = 1
+trigger1 = var(18) = 0
+v = 18
+value = 1
+
+[State -1, Redirect Entry Dizzy Points Set]
+type = DizzyPointsSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(18) = 1
+trigger1 = var(19) = 0
+value = var(15) + 500
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Dizzy Points Set Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(18) = 1
+trigger1 = var(19) = 0
+v = 19
+value = 1
+
+[State -1, Redirect Entry Red Life Add]
+type = RedLifeAdd
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(19) = 1
+trigger1 = var(20) = 0
+value = var(15)
+absolute = 1
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Red Life Add Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(19) = 1
+trigger1 = var(20) = 0
+v = 20
+value = 1
+
+[State -1, Redirect Entry Red Life Set]
+type = RedLifeSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(20) = 1
+trigger1 = var(21) = 0
+value = var(15) + 650
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Red Life Set Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(20) = 1
+trigger1 = var(21) = 0
+v = 21
+value = 1
+`
+    : "";
   return `
 [State -1, Redirect Entry Resource Value Seed]
 type = VarSet
@@ -51104,6 +51385,8 @@ type = PowerSet
 trigger1 = var(15) = ${sourcePowerSeed}
 value = var(15) + 750
 RedirectID = ${config.redirectId}
+
+${auxiliaryControllers}
 
 [State -1, Redirect Entry Resource Complete]
 type = VarSet

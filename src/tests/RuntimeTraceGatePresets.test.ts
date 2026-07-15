@@ -489,6 +489,8 @@ import {
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedResourceRedirectTraceArtifact,
   createSyntheticImportedResourceStateEntryRedirectTraceArtifact,
+  createSyntheticImportedResourceAuxiliaryRedirectTraceArtifact,
+  createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1356,6 +1358,66 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, life: 1000, power: 35 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900 });
+  });
+
+  it("creates a required imported auxiliary resource RedirectID artifact", () => {
+    const artifact = createSyntheticImportedResourceAuxiliaryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-resource-auxiliary-redirect-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 292]));
+    expect(evidence?.executedControllers).toMatchObject({
+      GuardPointsAdd: 1,
+      GuardPointsSet: 1,
+      DizzyPointsAdd: 1,
+      DizzyPointsSet: 1,
+      RedLifeAdd: 1,
+      RedLifeSet: 1,
+    });
+    expect(evidence?.executedOperations).toMatchObject({
+      "resource:guardpointsadd": 1,
+      "resource:guardpointsset": 1,
+      "resource:dizzypointsadd": 1,
+      "resource:dizzypointsset": 1,
+      "resource:redlifeadd": 1,
+      "resource:redlifeset": 1,
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      life: 750,
+      power: 900,
+      guardPoints: 650,
+      dizzyPoints: 650,
+      redLife: 800,
+    });
+  });
+
+  it("creates a required imported auxiliary state-entry resource RedirectID artifact", () => {
+    const artifact = createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-resource-auxiliary-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "resource:guardpointsadd": 1,
+      "resource:guardpointsset": 1,
+      "resource:dizzypointsadd": 1,
+      "resource:dizzypointsset": 1,
+      "resource:redlifeadd": 1,
+      "resource:redlifeset": 1,
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      life: 750,
+      power: 900,
+      guardPoints: 650,
+      dizzyPoints: 650,
+      redLife: 800,
+    });
   });
 
   it("creates a synthetic imported guard-points artifact with direct guard and resource evidence", () => {

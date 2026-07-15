@@ -131,6 +131,16 @@ async function main() {
       artifact: presets.createSyntheticImportedResourceStateEntryRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-resource-auxiliary-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedResourceAuxiliaryRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-resource-auxiliary-state-entry-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-redlife",
       required: true,
       artifact: presets.createSyntheticImportedRedLifeTraceArtifact(),
@@ -4404,6 +4414,8 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-resource",
     "synthetic-imported-resource-redirect",
     "synthetic-imported-resource-state-entry-redirect",
+    "synthetic-imported-resource-auxiliary-redirect",
+    "synthetic-imported-resource-auxiliary-state-entry-redirect",
     "synthetic-imported-redlife",
     "synthetic-imported-guardpoints",
     "synthetic-imported-control",

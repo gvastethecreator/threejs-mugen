@@ -2007,6 +2007,73 @@ ctrl = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBeUndefined();
   });
 
+  it("fails closed for an invalid active resource RedirectID before mutation", () => {
+    const caller = createImportedFixture({
+      id: "invalid-resource-redirect",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Invalid Resource Redirect]
+type = GuardPointsSet
+trigger1 = 1
+value = 650
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.guardPoints).toBe(1000);
+    expect(snapshot.actors[1]?.runtime.guardPoints).toBe(1000);
+    expect(snapshot.logs).toContain("Blocked guardpointsset RedirectID 999 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:guardpointsset"]).toBeUndefined();
+  });
+
+  it("keeps an omitted resource RedirectID local to the caller", () => {
+    const caller = createImportedFixture({
+      id: "local-resource-without-redirect",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Local Resource]
+type = GuardPointsSet
+trigger1 = 1
+value = 650
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.guardPoints).toBe(650);
+    expect(snapshot.actors[1]?.runtime.guardPoints).toBe(1000);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:guardpointsset"]).toBe(1);
+  });
+
+  it("fails closed for an invalid state-entry resource RedirectID", () => {
+    const caller = createImportedFixture({
+      id: "invalid-state-entry-resource-redirect",
+      withStateMove: false,
+      stateEntryResourceController: `
+[State -1, Invalid Entry Resource Redirect]
+type = LifeSet
+trigger1 = 1
+value = 500
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.life).toBe(1000);
+    expect(snapshot.actors[1]?.runtime.life).toBe(1000);
+    expect(snapshot.logs).toContain("Blocked lifeset RedirectID 999 for p1");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:lifeset"]).toBeUndefined();
+  });
+
   it("rejects redirected Tag execution outside the explicit IKEMEN profile", () => {
     const caller = createImportedFixture({
       id: "legacy-redirected-tagout",
@@ -5737,6 +5804,8 @@ function createImportedFixture(
     passiveTagMemberNo?: number | string;
     passiveTagLeader?: number | string;
     passiveVarSet?: { trigger: string; index: number; value: number | string };
+    passiveResourceController?: string;
+    stateEntryResourceController?: string;
     passivePreTagVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
     attackMultiplier?: number;
@@ -6021,6 +6090,7 @@ v = ${options.passiveVarSet.index}
 value = ${options.passiveVarSet.value}
 `
       : "",
+    options.passiveResourceController ?? "",
     options.passiveRemoveOnGetHitExplod
       ? `
 [State 0, Passive RemoveOnGetHit Explod]
@@ -6693,6 +6763,7 @@ triggerall = command = "x"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
+${options.stateEntryResourceController ?? ""}
 `).controllers;
   const stateFile = parseCns(`
 [Data]

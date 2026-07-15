@@ -1179,6 +1179,9 @@ time = 20
   it("compiles bounded resource RedirectID expressions and rejects malformed targets", () => {
     const life = compileControllerIr(controller(200, "LifeAdd", [], { value: "-25", kill: "0", redirectid: "57" }));
     const power = compileControllerIr(controller(200, "PowerSet", [], { value: "900", redirectid: "PlayerID(57)" }));
+    const guard = compileControllerIr(controller(200, "GuardPointsSet", [], { value: "650", redirectid: "57" }));
+    const dizzy = compileControllerIr(controller(200, "DizzyPointsAdd", [], { value: "-25", redirectid: "57" }));
+    const redLife = compileControllerIr(controller(200, "RedLifeAdd", [], { value: "25", absolute: "1", redirectid: "57" }));
     const invalid = compileControllerIr(controller(200, "LifeSet", [], { value: "750", redirectid: "57, 0" }));
 
     expect(life.operation).toEqual({
@@ -1193,6 +1196,25 @@ time = 20
       controllerType: "powerset",
       value: 900,
       redirectPlayerIdExpression: "PlayerID(57)",
+    });
+    expect(guard.operation).toEqual({
+      kind: "resource",
+      controllerType: "guardpointsset",
+      value: 650,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dizzy.operation).toEqual({
+      kind: "resource",
+      controllerType: "dizzypointsadd",
+      value: -25,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(redLife.operation).toEqual({
+      kind: "resource",
+      controllerType: "redlifeadd",
+      value: 25,
+      absolute: true,
+      redirectPlayerIdExpression: "57",
     });
     expect(invalid.operation).toBeUndefined();
   });

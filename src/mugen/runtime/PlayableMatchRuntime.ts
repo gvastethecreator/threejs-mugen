@@ -419,7 +419,17 @@ type RootControllerRedirectHandler = (
     | "playerpush"
     | RedirectableResourceControllerType,
 ) => FighterMatchState | undefined;
-type RedirectableResourceControllerType = "lifeadd" | "lifeset" | "poweradd" | "powerset";
+type RedirectableResourceControllerType =
+  | "lifeadd"
+  | "lifeset"
+  | "guardpointsadd"
+  | "guardpointsset"
+  | "dizzypointsadd"
+  | "dizzypointsset"
+  | "redlifeadd"
+  | "redlifeset"
+  | "poweradd"
+  | "powerset";
 type PlayerIdTargetResolver = (
   caller: FighterMatchState,
   playerId: number,
@@ -3063,7 +3073,11 @@ function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options:
 
 function redirectableResourceControllerType(controller: ControllerIr): RedirectableResourceControllerType | undefined {
   const normalizedType = controller.normalizedType as RedirectableResourceControllerType;
-  return normalizedType === "lifeadd" || normalizedType === "lifeset" || normalizedType === "poweradd" || normalizedType === "powerset"
+  return normalizedType === "lifeadd" || normalizedType === "lifeset" ||
+    normalizedType === "guardpointsadd" || normalizedType === "guardpointsset" ||
+    normalizedType === "dizzypointsadd" || normalizedType === "dizzypointsset" ||
+    normalizedType === "redlifeadd" || normalizedType === "redlifeset" ||
+    normalizedType === "poweradd" || normalizedType === "powerset"
     ? normalizedType
     : undefined;
 }
@@ -3076,7 +3090,14 @@ function resourceControllerRedirectExpression(controller: ControllerIr): string 
   const compiledExpression = operation?.kind === "resource" && "redirectPlayerIdExpression" in operation
     ? operation.redirectPlayerIdExpression
     : undefined;
-  return compiledExpression ?? findControllerParam(controller, "redirectid")?.trim();
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller, "redirectid");
+  if (rawExpression === undefined) {
+    return undefined;
+  }
+  return rawExpression.trim() || "invalid";
 }
 
 function resolveRedirectedResourceController(
