@@ -754,9 +754,21 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
   }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const attack = await captureMugenLiteVisualState(page, options.attackScreenshotPath, options.attackCanvasPath);
-  const pauseOnAttackFollowThrough = pauseWhenMugenLiteActorFrameAppears(page, "p1", 200, 200, 1, "attack-follow-through");
-  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
-  await pauseOnAttackFollowThrough;
+  const followThroughStep = page.locator('[data-action="step"]').first();
+  let followThroughObserved = false;
+  for (let count = 0; count < 12; count += 1) {
+    await followThroughStep.evaluate((button) => button.click());
+    followThroughObserved = await page.evaluate(() => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      return actor?.runtime?.stateNo === 200 && actor.frame?.spriteGroup === 200 && actor.frame.spriteIndex === 1;
+    });
+    if (followThroughObserved) {
+      break;
+    }
+  }
+  if (!followThroughObserved) {
+    throw new Error("MUGEN-lite attack-follow-through frame was not observed after 12 forced steps");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
   const attackFollowThrough = await captureMugenLiteVisualState(
@@ -1149,24 +1161,6 @@ function pauseWhenMugenLiteActorStateAppears(page, actorId, stateNo, action, lab
     };
     check();
   }), { actorId, stateNo, action, label, pause: options.pause !== false });
-}
-
-function pauseWhenMugenLiteActorFrameAppears(page, actorId, stateNo, action, spriteIndex, label) {
-  return page.evaluate(({ actorId, stateNo, action, spriteIndex, label }) => new Promise((resolve, reject) => {
-    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite ${label} frame was not observed for ${actorId}`)), 5000);
-    const check = () => {
-      const bridge = window.__MUGEN_WEB_SANDBOX__;
-      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === actorId);
-      if (actor?.runtime?.stateNo === stateNo && actor?.frame?.spriteGroup === action && actor.frame.spriteIndex === spriteIndex) {
-        window.clearTimeout(timeout);
-        if (bridge?.snapshot?.playing) document.querySelector('[data-action="play-pause"]')?.click();
-        resolve(undefined);
-        return;
-      }
-      window.setTimeout(check, 4);
-    };
-    check();
-  }), { actorId, stateNo, action, spriteIndex, label });
 }
 
 async function captureMugenLiteDrivenState(page, transition, paths) {
