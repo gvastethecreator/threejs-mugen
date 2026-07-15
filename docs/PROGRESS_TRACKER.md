@@ -1,5 +1,37 @@
 ﻿# Progress Tracker
 
+## Daily roadmap report - 2026-07-15 Entry 554
+
+- Entry 554 and 617/617 traces are the committed evidence frontier. Active CNS
+  and imported State -1 TargetFacing now have required root RedirectID routes
+  with checksums `85d7fa7b` and `63d2ec84`.
+- Full affected runtime suites pass 5 files / 898 tests; TypeScript 7, trace
+  syntax, and `git diff --check` pass.
+- The live PlayerID destination owns remembered-target facing mutation while
+  the caller retains typed value/ID and RedirectID expressions. Invalid routes
+  fail closed; no score movement or browser smoke is claimed.
+- Next runtime cut: research one independent Target* family. TargetBind,
+  TargetState, helpers, projectiles, teams, exact multi-target ordering,
+  persistence, rollback/netplay, presentation, and full parity remain blocked.
+- See `docs/reports/2026-07-15-target-facing-redirectid-v1-closeout.md`.
+
+## Global report - 2026-07-15 TargetFacing RedirectID v1 closeout
+
+- Imported active-CNS and State -1 TargetFacing RedirectID now route
+  target-memory facing mutation through a live root PlayerID destination while
+  preserving caller-owned typed expressions.
+- Paired required traces prove reciprocal target links, destination-owned
+  mutation, target ID filtering, and controller/operation telemetry. Checksums:
+  active `85d7fa7b`, State -1 `63d2ec84`.
+- Verification passes 5 files / 898 tests, TypeScript 7, trace-script syntax,
+  `git diff --check`, and full `qa:trace` 617/617 (583 required / 34 optional /
+  0 skipped).
+- TargetBind, TargetState, helper/projectile/team ownership, exact multi-target
+  ordering, persistence, rollback/netplay, presentation, score, and full
+  parity remain bounded separately.
+- See `docs/reports/2026-07-15-target-facing-redirectid-v1-closeout.md` and
+  `docs/research/2026-07-15-target-facing-redirectid-selection.md`.
+
 ## Daily roadmap report - 2026-07-15 Entry 553
 
 - Entry 553 and 615/615 traces are the committed evidence frontier. Active

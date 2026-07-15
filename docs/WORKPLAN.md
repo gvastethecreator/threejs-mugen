@@ -1,5 +1,25 @@
 # Workplan
 
+## Daily architecture plan - 2026-07-15 Entry 554
+
+Entry 554 closes the bounded root-only TargetFacing RedirectID route for
+active CNS and imported State -1 setup. Next, research and select one
+independent Target* family boundary; keep TargetBind/TargetState,
+helper/projectile/team ownership, exact multi-target ordering, persistence,
+rollback/netplay, and presentation outside that boundary. Product lanes remain
+materialized corpus, Studio evidence-backed greens, one complete asset release
+record, SourceWriteReceipt, and first shared Evidence contract. Scores do not
+move. See
+`docs/reports/2026-07-15-target-facing-redirectid-v1-closeout.md`.
+
+## Active frontier - 2026-07-15 Entry 554
+
+Required checksums `85d7fa7b` (active) and `63d2ec84` (State -1) prove paired
+TargetFacing routes, typed telemetry, reciprocal target links, and distinct
+caller/destination target memory. Global QA passes 617/617 (583 required, 34
+optional). The next runtime cut is an independent Target* family; broader
+ownership and parity remain blocked.
+
 ## Daily architecture plan - 2026-07-15 Entry 553
 
 Entry 553 closes the bounded root-only TargetVelAdd/TargetVelSet RedirectID

@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 554 - bounded TargetFacing RedirectID
+
+Closed the root-only IKEMEN `RedirectID` route for `TargetFacing` across active
+CNS and imported State -1 setup. The live root PlayerID destination owns
+remembered-target facing mutation while the caller retains typed value/ID and
+RedirectID expression context. Missing RedirectID stays local; invalid,
+unavailable, disabled, destroyed, negative, empty, malformed, and legacy routes
+fail closed. Required active and State -1 traces prove reciprocal target links,
+destination ownership, target-facing mutation, target ID filtering, and typed
+controller/operation telemetry with checksums `85d7fa7b` and `63d2ec84`.
+Affected suites pass 5 files / 898 tests; TypeScript 7, trace syntax,
+`git diff --check`, and full `pnpm qa:trace` pass 617/617 (583 required, 34
+optional, 0 skipped). No score movement. TargetBind, TargetState,
+helpers, projectiles, teams, exact multi-target ordering, persistence,
+rollback/netplay, presentation, and full parity remain bounded separately. See
+`docs/reports/2026-07-15-target-facing-redirectid-v1-closeout.md` and
+`docs/research/2026-07-15-target-facing-redirectid-selection.md`.
+
 ## Entry 553 - bounded TargetVelAdd/TargetVelSet RedirectID
 
 Closed the root-only IKEMEN `RedirectID` route for imported

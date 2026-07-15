@@ -48,18 +48,20 @@ identity, or team aggregation.
 - no helper, projectile, team, binding, target-state, persistence,
   rollback/netplay, presentation, or score claim.
 
-## Evidence plan
+## Evidence delivered
 
-Use paired required imported traces. Active routing must prove the destination
-owner changes its remembered target's facing while the caller's target memory
-would select the other fighter. State -1 routing must prove the same ownership
-boundary after both reciprocal target memories exist. Compiler, state-entry
-classification, runtime, trace-preset, and invalid RedirectID tests must cover
-typed lowering and fail-closed behavior.
+Paired required imported traces now prove the destination owner changes its
+remembered target's facing while the caller's target memory selects the other
+fighter. Active checksum is `85d7fa7b`; State -1 checksum is `63d2ec84`.
+Compiler, state-entry classification, runtime, trace-preset, and invalid
+RedirectID tests cover typed lowering and fail-closed behavior. Full trace QA
+passes 617/617 artifacts (583 required, 34 optional, 0 skipped); the affected
+runtime batch passes 898/898 tests.
 
 ## Remaining uncertainty
 
 IKEMEN documents RedirectID broadly but leaves its incompatible-controller list
-unfinished. The implementation must claim only root TargetFacing and preserve
-the existing target-world facing contract; it must not generalize to
-TargetBind, TargetState, helpers, or teams.
+unfinished. The implementation claims only root TargetFacing and preserves the
+existing target-world facing contract. It does not generalize to TargetBind,
+TargetState, helpers, or teams. The next action is a separate primary-source
+selection pass for one independent Target* family.
