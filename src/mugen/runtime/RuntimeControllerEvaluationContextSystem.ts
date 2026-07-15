@@ -21,6 +21,7 @@ export type RuntimeControllerEvaluationContextInput<TActor extends RuntimeContro
   parent?: RuntimeControllerEvaluationRedirectActor;
   root?: RuntimeControllerEvaluationRedirectActor;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
   localCoord?: [number, number];
@@ -59,6 +60,7 @@ export class RuntimeControllerEvaluationContextWorld {
       rootPlayerId: input.root?.playerId,
       rootPlayerNo: input.root?.playerNo,
       target: input.target,
+      playerIdTarget: input.playerIdTarget,
     };
   }
 }

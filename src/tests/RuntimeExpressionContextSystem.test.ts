@@ -84,6 +84,14 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("ID * 100 + PlayerNo", { actor, opponent })).toBe(5601);
     expect(world.evaluateNumber("EnemyNear, ID * 100 + PlayerNo", { actor, opponent })).toBe(5802);
     expect(world.evaluateNumber("Target(77), ID * 100 + PlayerNo", { actor, opponent })).toBe(5802);
+    expect(world.evaluateNumber("PlayerID(58), ID * 100 + PlayerNo", { actor, opponent, characters: [actor, opponent] })).toBe(5802);
+    actor.runtime.vars = [58];
+    expect(world.evaluateNumber("PlayerID(var(0)), Life", { actor, opponent, characters: [actor, opponent] })).toBe(1000);
+    expect(world.resolvePlayerIdRedirect(actor, [actor, opponent], 58)).toMatchObject({
+      self: opponent.runtime,
+      playerId: 58,
+      opponent: actor.runtime,
+    });
   });
 
   it("passes stage bounds into edge-distance expression reads", () => {

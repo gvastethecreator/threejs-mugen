@@ -121,6 +121,9 @@ export class RuntimeExpressionContextWorld {
       rootPlayerId: actor.playerId,
       rootPlayerNo: actor.playerNo,
       target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId),
+      playerIdTarget: input.characters
+        ? (playerId) => this.resolvePlayerIdRedirect(actor, input.characters ?? [], playerId)
+        : undefined,
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
       random: input.random,
@@ -189,6 +192,19 @@ export class RuntimeExpressionContextWorld {
     return {
       ...this.createRedirectTarget(actor, opponent, includeWidth),
     };
+  }
+
+  resolvePlayerIdRedirect<TActor extends RuntimeExpressionContextActor>(
+    actor: TActor,
+    characters: readonly TActor[],
+    playerId: number,
+  ): ExpressionRedirectTarget | undefined {
+    const redirected = characters.find((candidate) => candidate.playerId === playerId);
+    if (!redirected) {
+      return undefined;
+    }
+    const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
+    return this.createRedirectTarget(actor, redirected, includeWidth);
   }
 
   resolveEnemyNearRedirect<TActor extends RuntimeExpressionContextActor>(

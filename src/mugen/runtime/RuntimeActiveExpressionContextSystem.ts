@@ -8,6 +8,7 @@ export type RuntimeActiveExpressionContextRequest<TActor extends RuntimeExpressi
   actor: TActor;
   opponent: TActor;
   opponents?: readonly TActor[];
+  characters?: readonly TActor[];
   owner: TActor;
   tick?: number;
 };
@@ -31,6 +32,7 @@ export class RuntimeActiveExpressionContextWorld {
       actor: input.actor,
       opponent: input.opponent,
       opponents: input.opponents,
+      characters: input.characters ?? [input.actor, input.opponent, ...(input.opponents ?? [])],
       owner: input.owner,
       stageBounds: input.stageBounds,
       gameSpace: input.gameSpace,

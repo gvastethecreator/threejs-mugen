@@ -49,6 +49,7 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
       parent,
       root,
       target: (targetId) => (targetId === 77 ? { self: opponent.runtime, opponent: runtimeState({ life: 1000 }) } : undefined),
+      playerIdTarget: (playerId) => (playerId === 58 ? { self: opponent.runtime, playerId: 58, playerNo: 2 } : undefined),
       tick: 42,
       getConst: () => undefined,
       nextRandom: () => 0,
@@ -63,6 +64,8 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
     expect([context.rootPlayerId, context.rootPlayerNo]).toEqual([56, 1]);
     expect(context.target?.(77)?.self.life).toBe(963);
     expect(context.target?.(999)).toBeUndefined();
+    expect(context.playerIdTarget?.(58)?.self.life).toBe(963);
+    expect(context.playerIdTarget?.(999)).toBeUndefined();
   });
 });
 

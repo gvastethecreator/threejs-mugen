@@ -55,6 +55,9 @@ time = 20
     const rootRedirect = compileExpression("Root,Vel X = 4");
     const targetRedirect = compileExpression("Target(77), Life < 1000 && Target, StateNo >= 5000");
     const dynamicTargetRedirect = compileExpression("Target(var(0) + 1), Life > 0");
+    const playerIdRedirect = compileExpression("PlayerID(58), Life < 1000");
+    const dynamicPlayerIdRedirect = compileExpression("PlayerID(var(0)), Life > 0");
+    const playerIdParameter = compileExpression("PlayerID(58)");
     const nestedRedirect = compileExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4");
     const p2Metrics = compileExpression(
       'NumEnemy && TeamSide = 1 && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
@@ -69,6 +72,7 @@ time = 20
     const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
     const unsupportedTargetDynamic = compileExpression("Target(enemynear(1), stateno), Life > 0");
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
+    const unsupportedPlayerIdNegative = compileExpression("PlayerID(-1), Life > 0");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -131,6 +135,14 @@ time = 20
     expect(dynamicTargetRedirect.supportLevel).toBe("executable");
     expect(dynamicTargetRedirect.functions).toEqual(["var"]);
     expect(dynamicTargetRedirect.identifiers).toEqual(["Life"]);
+    expect(playerIdRedirect.supportLevel).toBe("executable");
+    expect(playerIdRedirect.identifiers).toEqual(["Life"]);
+    expect(dynamicPlayerIdRedirect.supportLevel).toBe("executable");
+    expect(dynamicPlayerIdRedirect.functions).toEqual(["var"]);
+    expect(dynamicPlayerIdRedirect.identifiers).toEqual(["Life"]);
+    expect(playerIdParameter.supportLevel).toBe("executable");
+    expect(playerIdParameter.functions).toEqual(["PlayerID"]);
+    expect(playerIdParameter.identifiers).toEqual([]);
     expect(nestedRedirect.supportLevel).toBe("executable");
     expect(nestedRedirect.functions).toEqual(["Var"]);
     expect(nestedRedirect.identifiers).toEqual(["Time", "velx"]);
@@ -168,6 +180,8 @@ time = 20
     expect(unsupportedTargetDynamic.identifiers).toEqual(["Life", "stateno"]);
     expect(unsupportedTargetNegative.supportLevel).toBe("unsupported");
     expect(unsupportedTargetNegative.unsupportedFeatures).toEqual(["target(negative)"]);
+    expect(unsupportedPlayerIdNegative.supportLevel).toBe("unsupported");
+    expect(unsupportedPlayerIdNegative.unsupportedFeatures).toEqual(["playerid(negative)"]);
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

@@ -33,6 +33,7 @@ export type ExpressionContext = {
   rootPlayerId?: number;
   rootPlayerNo?: number;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   name?: string;
   authorName?: string;
   opponentName?: string;
@@ -211,7 +212,7 @@ function rewriteAnimElemTriggerSyntax(expression: string): string {
 }
 
 function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
-  const redirect = /^(enemynear|partner|enemy|parent|root|target)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+  const redirect = /^(enemynear|partner|enemy|parent|root|target|playerid)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
   if (!redirect) {
     return undefined;
   }
@@ -241,6 +242,20 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
     }
     const redirected = context.target?.(targetId);
     if (!redirected) {
+      return 0;
+    }
+    return evaluateExpression(expressionBody, redirectedTargetContext(context, redirected));
+  }
+  if (target === "playerid") {
+    const playerId = resolvePlayerIdIndex(index, context);
+    if (playerId === "unsupported") {
+      return 0;
+    }
+    const redirected = context.playerIdTarget?.(playerId);
+    if (!redirected) {
+      if (!context.playerIdTarget) {
+        context.reportUnsupported?.("playerid");
+      }
       return 0;
     }
     return evaluateExpression(expressionBody, redirectedTargetContext(context, redirected));
@@ -454,7 +469,8 @@ class ExpressionParser {
       target !== "enemy" &&
       target !== "parent" &&
       target !== "root" &&
-      target !== "target"
+      target !== "target" &&
+      target !== "playerid"
     ) {
       return undefined;
     }
@@ -477,6 +493,20 @@ class ExpressionParser {
       }
       const redirected = this.context.target?.(targetId);
       if (!redirected) {
+        return "fail";
+      }
+      return redirectedTargetContext(this.context, redirected);
+    }
+    if (target === "playerid") {
+      const playerId = resolvePlayerIdIndex(index, this.context);
+      if (playerId === "unsupported") {
+        return "fail";
+      }
+      const redirected = this.context.playerIdTarget?.(playerId);
+      if (!redirected) {
+        if (!this.context.playerIdTarget) {
+          this.context.reportUnsupported?.("playerid");
+        }
         return "fail";
       }
       return redirectedTargetContext(this.context, redirected);
@@ -825,6 +855,9 @@ class ExpressionParser {
     }
     if (lower === "const") {
       return this.constValue(String(args[0] ?? ""));
+    }
+    if (lower === "playerid") {
+      return numeric(args[0] ?? 0);
     }
     if (lower === "const240p") {
       return this.constCoordinateValue(args[0] ?? 0, 320);
@@ -1327,6 +1360,29 @@ function resolveRedirectTargetId(index: string | undefined, context: ExpressionC
   return normalizeRedirectTargetId(numeric(value), context);
 }
 
+function resolvePlayerIdIndex(index: string | undefined, context: ExpressionContext): number | "unsupported" {
+  if (!index || index.trim() === "") {
+    context.reportUnsupported?.("playerid");
+    return "unsupported";
+  }
+  const trimmed = index.trim();
+  if (/^-?\d+$/.test(trimmed)) {
+    return normalizePlayerId(Number(trimmed), context);
+  }
+  let indexUnsupported = false;
+  const value = evaluateExpression(trimmed, {
+    ...context,
+    reportUnsupported: (feature) => {
+      indexUnsupported = true;
+      context.reportUnsupported?.(feature);
+    },
+  });
+  if (indexUnsupported || isFailedRedirect(value)) {
+    return "unsupported";
+  }
+  return normalizePlayerId(numeric(value), context);
+}
+
 function containsUnavailableEnemyNearIndex(expression: string): boolean {
   return /\benemynear\s*\(\s*[1-9]\d*(?:\s*\)|\s*$)/i.test(expression);
 }
@@ -1504,6 +1560,19 @@ function normalizeRedirectTargetId(value: number, context: ExpressionContext): n
     return "unsupported";
   }
   return targetId;
+}
+
+function normalizePlayerId(value: number, context: ExpressionContext): number | "unsupported" {
+  if (!Number.isFinite(value)) {
+    context.reportUnsupported?.("playerid(dynamic-invalid)");
+    return "unsupported";
+  }
+  const playerId = Math.trunc(value);
+  if (playerId < 0) {
+    context.reportUnsupported?.("playerid(negative)");
+    return "unsupported";
+  }
+  return playerId;
 }
 
 function numeric(value: ExpressionValue): number {

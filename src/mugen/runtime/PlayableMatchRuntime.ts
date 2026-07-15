@@ -261,7 +261,7 @@ import type {
   MugenSnapshot,
   RoundSnapshot,
 } from "./types";
-import type { ExpressionGameSpace } from "./ExpressionEvaluator";
+import type { ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
 
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
@@ -412,6 +412,10 @@ type RootControllerRedirectHandler = (
   context: ReturnType<typeof runtimeControllerContext>,
   controllerType: "depth" | "height" | "overrideclsn" | "screenbound" | "playerpush",
 ) => FighterMatchState | undefined;
+type PlayerIdTargetResolver = (
+  caller: FighterMatchState,
+  playerId: number,
+) => ExpressionRedirectTarget | undefined;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
@@ -675,6 +679,14 @@ export class PlayableMatchRuntime {
   private unregisterHelperCharacterIdentity(helper: RuntimeHelper): void {
     helper.destroyed = true;
     this.characterIdentity?.unregister(helper.serialId);
+  }
+
+  private resolvePlayerIdTarget(caller: FighterMatchState, playerId: number): ExpressionRedirectTarget | undefined {
+    if (this.runtimeProfile !== "ikemen-go") return undefined;
+    const identity = this.characterIdentity?.findByPlayerId(playerId);
+    return identity?.fighter
+      ? expressionContextWorld.resolvePlayerIdRedirect(caller, this.characterRoots(), playerId)
+      : undefined;
   }
 
   private characterRoots(): FighterMatchState[] {
@@ -1103,6 +1115,7 @@ export class PlayableMatchRuntime {
               (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
               (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
             ),
         });
         return { paused: result.paused, result };
@@ -1189,7 +1202,16 @@ export class PlayableMatchRuntime {
           p2Input,
           p2Controlled: input.p2 !== undefined,
           handlePlayerInput: (fighter, fighterInput, opponent) =>
-            handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, gameSpace, this.tick, this.inputControlWorld),
+            handlePlayerInput(
+              fighter,
+              fighterInput,
+              opponent,
+              this.stage.bounds,
+              gameSpace,
+              this.tick,
+              this.inputControlWorld,
+              (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
+            ),
           handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
         });
       },
@@ -1235,6 +1257,7 @@ export class PlayableMatchRuntime {
                 (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
                 (caller, expression, context, controllerType) =>
                   this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+                (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               );
             },
             advanceHelper: (helper) => {
@@ -1297,6 +1320,7 @@ export class PlayableMatchRuntime {
               (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
               (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -1502,7 +1526,16 @@ export class PlayableMatchRuntime {
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
       handlePlayerInput: (actor, actorInput, opponent) =>
-        handlePlayerInput(actor, actorInput, opponent, this.stage.bounds, gameSpace, this.tick, this.inputControlWorld),
+        handlePlayerInput(
+          actor,
+          actorInput,
+          opponent,
+          this.stage.bounds,
+          gameSpace,
+          this.tick,
+          this.inputControlWorld,
+          (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
+        ),
       handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
       advanceFighter: (actor, opponent) =>
         advanceFighter(
@@ -1530,6 +1563,7 @@ export class PlayableMatchRuntime {
           undefined,
           (caller, expression, context, controllerType) =>
             this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+          (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
         ),
     });
   }
@@ -1573,6 +1607,7 @@ export class PlayableMatchRuntime {
               gameSpace,
               this.tick,
               this.inputControlWorld,
+              (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
             );
           } else {
             handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld);
@@ -1603,6 +1638,7 @@ export class PlayableMatchRuntime {
             (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
             (caller, expression, context, controllerType) =>
               this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+            (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -1689,6 +1725,7 @@ export class PlayableMatchRuntime {
         onTeamStandby: (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
         onRootRedirect: (caller, expression, context, controllerType) =>
           this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+        playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
       },
     );
   }
@@ -1732,6 +1769,7 @@ export class PlayableMatchRuntime {
               onTeamStandby: (caller, operation, context) => this.applyTeamStandbyController(caller, operation, context),
               onRootRedirect: (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
             },
           );
         },
@@ -3000,11 +3038,12 @@ function handlePlayerInput(
   gameSpace: ExpressionGameSpace,
   tick: number,
   inputControlWorld: RuntimeInputControlWorld,
+  playerIdTarget?: PlayerIdTargetResolver,
 ): void {
   inputControlWorld.handlePlayerInput(fighter, input, {
     hasStun: hasRuntimeStun(fighter),
     preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
-    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, stageBounds, gameSpace, tick),
+    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, stageBounds, gameSpace, tick, playerIdTarget),
     tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, gameSpace, tick),
     startMove: (move) => startMove(fighter, move),
     changeAction: (actionId) => changeAction(fighter, actionId),
@@ -3051,6 +3090,7 @@ function advanceFighter(
   recordSchedulePhase?: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   onTeamStandby?: TeamStandbyControllerHandler,
   onRootRedirect?: RootControllerRedirectHandler,
+  playerIdTarget?: PlayerIdTargetResolver,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -3105,7 +3145,7 @@ function advanceFighter(
         tick,
         onPauseController,
         onEnvColorController,
-        { onTeamStandby, onRootRedirect, runtimeProfile },
+        { onTeamStandby, onRootRedirect, playerIdTarget, runtimeProfile },
       );
     },
     advanceImportedGroundRecoveryLanding: (actor) => {
@@ -3184,6 +3224,7 @@ function runHitPauseIgnoredControllers(
   onEnvColorController?: EnvColorControllerHandler,
   onTeamStandby?: TeamStandbyControllerHandler,
   onRootRedirect?: RootControllerRedirectHandler,
+  playerIdTarget?: PlayerIdTargetResolver,
 ): void {
   runActiveStateControllers(
     fighter,
@@ -3197,7 +3238,7 @@ function runHitPauseIgnoredControllers(
     tick,
     onPauseController,
     onEnvColorController,
-    { onlyIgnoreHitPause: true, onTeamStandby, onRootRedirect, runtimeProfile },
+    { onlyIgnoreHitPause: true, onTeamStandby, onRootRedirect, playerIdTarget, runtimeProfile },
   );
 }
 
@@ -3207,6 +3248,7 @@ type ActiveControllerRunOptions = {
   onBlocked?: (controller: ControllerIr, route: string) => void;
   onTeamStandby?: TeamStandbyControllerHandler;
   onRootRedirect?: RootControllerRedirectHandler;
+  playerIdTarget?: PlayerIdTargetResolver;
   runtimeProfile?: RuntimeCompatibilityProfile;
 };
 
@@ -3224,6 +3266,8 @@ function runActiveStateControllers(
   onEnvColorController?: EnvColorControllerHandler,
   options: ActiveControllerRunOptions = {},
 ): void {
+  const createPlayerIdTarget = (actor: FighterMatchState) =>
+    options.playerIdTarget ? (playerId: number) => options.playerIdTarget!(actor, playerId) : undefined;
   const hookSet = activeControllerHookSetWorld.create<FighterMatchState>({
     resolveNumber: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
       resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick, gameSpace),
@@ -3265,7 +3309,15 @@ function runActiveStateControllers(
       });
     },
     height: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
-      const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
       const redirectExpression =
         (controller.operation?.kind === "collision" && controller.operation.controllerType === "height"
           ? controller.operation.redirectPlayerIdExpression
@@ -3294,7 +3346,15 @@ function runActiveStateControllers(
       const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
         ? controller.operation
         : undefined;
-      const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
       const redirectExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
       const target = redirectExpression
         ? options.onRootRedirect?.(fighter, redirectExpression, context, "overrideclsn")
@@ -3316,7 +3376,15 @@ function runActiveStateControllers(
       if (applied) runtimeActiveControllerTelemetryHooks.recordOperation(target, applied);
     },
     depth: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
-      const context = runtimeControllerContext(actor, stateOwner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
       const redirectExpression =
         (controller.operation?.kind === "collision" && controller.operation.controllerType === "depth"
           ? controller.operation.redirectPlayerIdExpression
@@ -3554,6 +3622,7 @@ function runActiveStateControllers(
           stageBounds,
           targetOpponent,
           gameSpace,
+          createPlayerIdTarget(actor),
         );
         const operation = options.onTeamStandby?.(
           fighter,
@@ -3568,7 +3637,15 @@ function runActiveStateControllers(
         }
         return;
       }
-      const context = runtimeControllerContext(actor, owner, activeTick, stageBounds, targetOpponent, gameSpace);
+      const context = runtimeControllerContext(
+        actor,
+        owner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
       const redirectableBoundsController = dispatch.controller.normalizedType === "screenbound" || dispatch.controller.normalizedType === "playerpush";
       const redirectExpression = redirectableBoundsController
         ? (((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound") ||
@@ -3693,6 +3770,7 @@ function runtimeControllerContext(
   stageBounds: MugenStageDefinition["bounds"],
   opponent?: FighterMatchState,
   gameSpace?: ExpressionGameSpace,
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined,
 ) {
   return controllerEvaluationContextWorld.create({
     actor: fighter,
@@ -3700,6 +3778,7 @@ function runtimeControllerContext(
     opponent,
     root: fighter,
     target: opponent ? (targetId) => expressionContextWorld.resolveTargetRedirect(fighter, opponent, targetId) : undefined,
+    playerIdTarget,
     stageBounds,
     gameSpace,
     localCoord: fighter.definition.localCoord,
@@ -3877,6 +3956,7 @@ function runStateEntrySetupControllers(
   stageBounds: MugenStageDefinition["bounds"],
   gameSpace: ExpressionGameSpace,
   tick: number,
+  playerIdTarget?: PlayerIdTargetResolver,
 ): void {
   stateEntrySetupWorld.apply({
     actor: fighter,
@@ -3886,7 +3966,15 @@ function runStateEntrySetupControllers(
       triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds, gameSpace),
     executeController: (controller, actor, stageTime) => {
       controllerDispatchWorld.apply(actor, controller, {
-        context: runtimeControllerContext(actor, actor, stageTime, stageBounds, opponent, gameSpace),
+        context: runtimeControllerContext(
+          actor,
+          actor,
+          stageTime,
+          stageBounds,
+          opponent,
+          gameSpace,
+          playerIdTarget ? (playerId) => playerIdTarget(actor, playerId) : undefined,
+        ),
         recordController: (target, recordedController) => compatibilityTelemetryWorld.recordController(target, recordedController),
       });
       return actor.runtime;

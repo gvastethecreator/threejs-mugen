@@ -101,6 +101,16 @@ describe("ExpressionEvaluator", () => {
             opponentPlayerNo: 1,
           }
         : undefined,
+      playerIdTarget: (playerId: number) => playerId === 58
+        ? {
+            self: opponent,
+            playerId: 58,
+            playerNo: 2,
+            opponent: self,
+            opponentPlayerId: 56,
+            opponentPlayerNo: 1,
+          }
+        : undefined,
     };
 
     expect(evaluateExpression("ID = 56 && PlayerNo = 1", context)).toBe(1);
@@ -108,6 +118,15 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("Target(77), ID = 58 && PlayerNo = 2", context)).toBe(1);
     expect(evaluateExpression("Parent, ID = 60 && PlayerNo = 3", context)).toBe(1);
     expect(evaluateExpression("Root, ID = 56 && PlayerNo = 1", context)).toBe(1);
+    expect(evaluateExpression("PlayerID(58), ID = 58 && PlayerNo = 2", context)).toBe(1);
+    expect(evaluateExpression("PlayerID(4)", context)).toBe(4);
+
+    self.vars = [58];
+    expect(evaluateExpression("PlayerID(var(0)), Life = 900", context)).toBe(1);
+    self.vars = [-1];
+    const invalidPlayerId: string[] = [];
+    expect(evaluateExpression("PlayerID(var(0)), Life", { ...context, reportUnsupported: (feature) => invalidPlayerId.push(feature) })).toBe(0);
+    expect(invalidPlayerId).toEqual(["playerid(negative)"]);
 
     const unsupported: string[] = [];
     expect(evaluateExpression("ID + PlayerNo", { self, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(0);

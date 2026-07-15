@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "../mugen/runtime/ContactMemorySystem";
+import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
 import { RuntimeActiveExpressionContextWorld } from "../mugen/runtime/RuntimeActiveExpressionContextSystem";
 import type { RuntimeExpressionContextActor } from "../mugen/runtime/RuntimeExpressionContextSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
@@ -10,6 +11,8 @@ describe("RuntimeActiveExpressionContextWorld", () => {
     const world = new RuntimeActiveExpressionContextWorld();
     const actor = runtimeActor("p1", { animTime: 9 });
     const opponent = runtimeActor("p2");
+    actor.playerId = 56;
+    opponent.playerId = 58;
     const owner = runtimeActor("owner");
     owner.definition.constants = { "data.attack": 300 };
     const randomActors: string[] = [];
@@ -51,6 +54,9 @@ describe("RuntimeActiveExpressionContextWorld", () => {
     expect(context.animElemTime?.(3)).toBe(5);
     expect(context.inGuardDist?.()).toBe(true);
     expect(context.numEnemy?.()).toBe(1);
+    expect(evaluateExpression("PlayerID(58), Life", context)).toBe(1000);
+    actor.runtime.vars = [58];
+    expect(evaluateExpression("PlayerID(var(0)), Life", context)).toBe(1000);
     expect(randomActors).toEqual(["p1"]);
     expect(elemReads).toEqual([{ actorId: "p1", elementNumber: 3 }]);
     expect(guardReads).toEqual([{ actorId: "p1", opponentId: "p2" }]);

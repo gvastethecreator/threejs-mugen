@@ -28,6 +28,7 @@ export type RuntimeControllerEvaluationContext = {
   rootPlayerId?: number;
   rootPlayerNo?: number;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   teamSide?: number;
   opponentTeamSide?: number;
   parentTeamSide?: number;
@@ -55,6 +56,7 @@ export function createRuntimeControllerExpressionContext(
     rootPlayerId: context.rootPlayerId,
     rootPlayerNo: context.rootPlayerNo,
     target: context.target,
+    playerIdTarget: context.playerIdTarget,
     getConst: context.getConst,
     getHitVar: (name) => runtimeHitVar(state, name),
     hitPauseTime: context.hitPauseTime,

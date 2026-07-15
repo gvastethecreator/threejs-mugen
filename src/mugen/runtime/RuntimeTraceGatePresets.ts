@@ -29,6 +29,7 @@ import { MugenCharacterLoader } from "../loader/MugenCharacterLoader";
 import { ZipCharacterSource } from "../loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "./importedFighter";
 import { createMugenLiteJourneyZipBytes, MUGEN_LITE_JOURNEY_MANIFEST } from "./MugenLiteJourneyFixture";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 
 export type RuntimeTraceGatePresetArtifact = RuntimeTraceArtifact & {
   presetId: string;
@@ -37,6 +38,7 @@ export type RuntimeTraceGatePresetArtifact = RuntimeTraceArtifact & {
 export type RuntimeTraceGatePresetOptions = {
   generatedAt?: string;
   stage?: MugenStageDefinition;
+  runtimeProfile?: RuntimeCompatibilityProfile;
 };
 
 export async function createMugenLiteJourneyTraceArtifact(
@@ -1858,6 +1860,30 @@ export function createSyntheticImportedEnemyTraceArtifact(options: RuntimeTraceG
       requiredExecutedOperations: [],
       notes: [
         "Synthetic imported Enemy trace proves a bounded Enemy, StateNo redirect can evaluate against the stable current opponent roster in State -1 routing. Partner/team rosters, Enemy(n), helpers, and full MUGEN/IKEMEN redirect parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedPlayerIdTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-playerid",
+      displayName: "Synthetic Imported PlayerID",
+      playerIdStateEntry: { playerId: 57, stateNo: 271 },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-playerid-golden",
+      targetLabel: "Synthetic imported PlayerID redirect route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [271],
+      requiredExecutedStates: [271],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported PlayerID trace proves a bounded PlayerID(id), trigger redirect can read the live opposing root through State -1 routing. Numeric PlayerID parameters, dynamic id expressions, helpers, roster-wide lookup, mutation ownership, and full MUGEN/IKEMEN redirect parity remain future work.",
       ],
     },
   );
@@ -3802,7 +3828,7 @@ export function createImportedXTraceArtifact(
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = options.script ?? importedXScript();
-  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage }), script, {
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage, runtimeProfile: options.runtimeProfile }), script, {
     label: `${imported.id}-x-golden`,
   });
   return createRuntimeTraceArtifact({
@@ -45271,6 +45297,7 @@ export type SyntheticImportedTraceFighterOptions = {
   prevStateTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyStateEntry?: { opponentStateNo: number; stateNo: number };
+  playerIdStateEntry?: { playerId: number; stateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   enemyNearIndexedStateEntry?: { opponentStateNo: number; stateNo: number; trapStateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
@@ -46003,6 +46030,7 @@ time = 5
 `).commands;
 const stateEntryControllers = parseCns(`
 ${options.enemyStateEntry === undefined ? "" : enemyStateEntryBlock(options.enemyStateEntry)}
+${options.playerIdStateEntry === undefined ? "" : playerIdStateEntryBlock(options.playerIdStateEntry)}
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.enemyNearIndexedStateEntry === undefined ? "" : enemyNearIndexedStateEntryBlock(options.enemyNearIndexedStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
@@ -46241,6 +46269,7 @@ ${options.prevAnimRoute ? prevAnimRouteBlock(options.prevAnimRoute) : ""}
 ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRoute) : ""}
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyStateEntry ? simpleStateBlock(options.enemyStateEntry.stateNo, "I") : ""}
+${options.playerIdStateEntry ? simpleStateBlock(options.playerIdStateEntry.stateNo, "I") : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.trapStateNo, "I") : ""}
 ${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.stateNo, "I") : ""}
@@ -46558,6 +46587,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.enemyStateEntry === undefined
         ? []
         : ([[options.enemyStateEntry.stateNo, traceAction(options.enemyStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.playerIdStateEntry === undefined
+        ? []
+        : ([[options.playerIdStateEntry.stateNo, traceAction(options.playerIdStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.enemyNearStateEntry === undefined
         ? []
         : ([[options.enemyNearStateEntry.stateNo, traceAction(options.enemyNearStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -50784,6 +50816,16 @@ type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = Enemy, StateNo = ${route.opponentStateNo}
+`;
+}
+
+function playerIdStateEntryBlock(route: { playerId: number; stateNo: number }): string {
+  return `
+[State -1, PlayerID State Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = PlayerID(${route.playerId}), StateNo = 0
 `;
 }
 

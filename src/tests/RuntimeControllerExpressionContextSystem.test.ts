@@ -23,10 +23,14 @@ describe("RuntimeControllerExpressionContextSystem", () => {
       stageTime: 42,
       target: (targetId?: number) =>
         targetId === 77 || targetId === undefined ? { self: target, opponent: self } : undefined,
+      playerIdTarget: (playerId: number) =>
+        playerId === 58 ? { self: target, playerId: 58, playerNo: 2, opponent: self } : undefined,
     };
 
     expect(evaluateRuntimeControllerNumber("Target(77), Life - 960", self, context)).toBe(3);
     expect(evaluateRuntimeControllerNumber("Target, Vel Y", self, context)).toBe(-5);
+    expect(evaluateRuntimeControllerNumber("PlayerID(58), Life", self, context)).toBe(963);
+    expect(evaluateRuntimeControllerNumber("PlayerID(4)", self, context)).toBe(4);
     expect(evaluateRuntimeControllerNumber("Parent, Vel X", self, context)).toBe(4);
     expect(evaluateRuntimeControllerNumber("Root, Vel Y", self, context)).toBe(-7);
     expect(evaluateRuntimeControllerNumber("Const(data.attack) + HitPauseTime + StageTime", self, context)).toBe(139);
