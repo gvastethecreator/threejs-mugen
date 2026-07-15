@@ -672,7 +672,8 @@ async function pressCodeFuManQcfX(page) {
     } finally {
       for (const key of [...keys].reverse()) await page.keyboard.up(key);
     }
-    await page.waitForTimeout(16);
+    const releasedAtTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
+    await waitForRuntimeTicks(page, releasedAtTick + 1);
   };
   await hold(["ArrowDown"]);
   await hold(["ArrowDown", "ArrowRight"]);
@@ -693,7 +694,8 @@ async function pressCodeFuManUpperX(page) {
     } finally {
       for (const key of [...keys].reverse()) await page.keyboard.up(key);
     }
-    await page.waitForTimeout(8);
+    const releasedAtTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
+    await waitForRuntimeTicks(page, releasedAtTick + 1);
   };
   await hold(["ArrowRight"]);
   await hold(["ArrowDown"]);
