@@ -2,6 +2,15 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 542 closes the bounded `AssetProvenance/v2` Studio gate. Asset records
+carry explicit license state, input/output digests, ordered transforms, config
+digests, QA links, migration warnings, redacted paths, and deterministic
+canonical JSON. Build `asset-validation` blocks release readiness when the
+evidence is incomplete, while ZIP download remains diagnostic-only. Focal 8/8,
+TypeScript 7, and the focused browser/ZIP gate pass: 6 records, 6 blocked,
+12 transforms, zero path leaks, and no browser errors. No runtime or score
+claim moves. See `docs/reports/2026-07-14-asset-provenance-v2-closeout.md`.
+
 Entry 541 closes the bounded `PackageAnalysis/v0` I1 gate. The shared VFS
 contract classifies character, stage, system, and screenpack files, retains
 source-located dependencies and parser diagnostics, records MUGEN profile/version

@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 542 - AssetProvenance/v2 closeout
+
+Added the versioned Studio asset provenance record and wired it into Build,
+Assets, ZIP manifests, and `studio/asset-provenance.json`. Records preserve
+explicit SPDX license state, input/output digests, ordered transform evidence,
+config digests, QA links, migration warnings, and redacted paths. Missing
+license or evidence blocks release readiness but leaves a diagnostic snapshot
+available. Focal 8/8, TypeScript 7, and the focused browser/ZIP gate pass with
+6 records, 6 blocked, 12 transforms, zero path leaks, and no browser errors.
+The broad smoke wrapper timed out later and is not counted as global green. No
+score movement. See
+`docs/reports/2026-07-14-asset-provenance-v2-closeout.md` and
+`docs/research/2026-07-14-asset-provenance-v2.md`.
+
 ## Entry 541 - PackageAnalysis/v0 closeout
 
 Added `mugen-web-sandbox/package-analysis/v0` over the existing VirtualFileSystem.

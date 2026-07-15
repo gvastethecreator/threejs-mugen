@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 AssetProvenance/v2 closeout
+
+- Studio now emits deterministic, redacted `asset-provenance/v2` records with
+  explicit license state, input/output digests, ordered transforms, config
+  digests, QA links, and safe v1 migration.
+- Build `asset-validation` blocks release readiness for incomplete legal or
+  technical evidence. ZIP export remains available only as a diagnostic-only
+  snapshot and reports the blocking count.
+- Focal coverage passes 1 file / 8 tests, TypeScript 7, smoke-script syntax,
+  and the focused browser/ZIP gate: 6 records, 6 blocked, 12 transforms, zero
+  path leaks, and no browser errors. The broad smoke wrapper timed out later
+  and is not counted as global smoke green.
+- No score movement. Automatic license discovery, legal approval, full package
+  parity, and runtime/IKEMEN claims remain blocked.
+- See `docs/reports/2026-07-14-asset-provenance-v2-closeout.md` and
+  `docs/research/2026-07-14-asset-provenance-v2.md`.
+
 ## Global report - 2026-07-14 PackageAnalysis/v0 closeout
 
 - I1 now has a versioned VFS/package report for character, stage, system, and
