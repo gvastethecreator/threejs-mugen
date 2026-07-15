@@ -923,6 +923,9 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     await page.keyboard.up("ArrowRight");
   }
 
+  const pauseOnAttack = pauseWhenMugenLiteAttackAppears(page, "guard-attack");
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await pauseOnAttack;
   const pauseOnGuard = page.evaluate(() => new Promise((resolve, reject) => {
     const timeout = window.setTimeout(() => reject(new Error("MUGEN-lite guarded contact was not observed")), 5000);
     const check = () => {
@@ -1205,6 +1208,32 @@ function pauseWhenMugenLiteContactAppears(page, label) {
         p2: p2 ? { stateNo: p2.runtime?.stateNo, x: p2.runtime?.pos?.x, facing: p2.runtime?.facing } : undefined,
       };
       if (p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100) {
+        window.clearTimeout(timeout);
+        if (bridge?.snapshot?.playing) document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.setTimeout(check, 4);
+    };
+    check();
+  }), label);
+}
+
+function pauseWhenMugenLiteAttackAppears(page, label) {
+  return page.evaluate((attackLabel) => new Promise((resolve, reject) => {
+    let lastSnapshot = {};
+    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite ${attackLabel} was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+    const check = () => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
+      lastSnapshot = actor ? {
+        tick: bridge?.snapshot?.tick,
+        playing: bridge?.snapshot?.playing,
+        stateNo: actor.runtime?.stateNo,
+        frame: actor.frame?.spriteGroup,
+        life: actor.runtime?.life,
+      } : {};
+      if (actor?.runtime?.stateNo === 200 || actor?.runtime?.stateNo === 210) {
         window.clearTimeout(timeout);
         if (bridge?.snapshot?.playing) document.querySelector('[data-action="play-pause"]')?.click();
         resolve(undefined);
