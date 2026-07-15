@@ -662,57 +662,52 @@ async function resetCodeFuManRound(page) {
 }
 
 async function pressCodeFuManQcfX(page) {
-  const hold = async (keys, minTicks = 3) => {
-    const startTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
-    for (const key of keys) await page.keyboard.down(key);
-    try {
-      await page.waitForFunction(
-        (minimumTick) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0) >= minimumTick,
-        startTick + minTicks,
-        { timeout: 1500 },
-      );
-    } finally {
-      for (const key of [...keys].reverse()) await page.keyboard.up(key);
-    }
-    const releasedAtTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
-    await waitForRuntimeTicks(page, releasedAtTick + 1);
-  };
-  await hold(["ArrowDown"]);
-  await hold(["ArrowDown", "ArrowRight"]);
-  await hold(["ArrowRight"]);
+  await pauseCodeFuManRuntime(page);
+  await stepCodeFuManInput(page, ["ArrowDown"]);
+  await stepCodeFuManInput(page, ["ArrowDown", "ArrowRight"]);
+  await stepCodeFuManInput(page, ["ArrowRight"]);
   await holdCodeFuManAttackUntilState(page, 1000);
 }
 
 async function pressCodeFuManUpperX(page) {
-  const hold = async (keys, minTicks = 3) => {
-    const startTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
-    for (const key of keys) await page.keyboard.down(key);
-    try {
-      await page.waitForFunction(
-        (minimumTick) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0) >= minimumTick,
-        startTick + minTicks,
-        { timeout: 1500 },
-      );
-    } finally {
-      for (const key of [...keys].reverse()) await page.keyboard.up(key);
-    }
-    const releasedAtTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
-    await waitForRuntimeTicks(page, releasedAtTick + 1);
-  };
-  await hold(["ArrowRight"]);
-  await hold(["ArrowDown"]);
-  await hold(["ArrowDown", "ArrowRight"]);
+  await pauseCodeFuManRuntime(page);
+  await stepCodeFuManInput(page, ["ArrowRight"]);
+  await stepCodeFuManInput(page, ["ArrowDown"]);
+  await stepCodeFuManInput(page, ["ArrowDown", "ArrowRight"]);
   await holdCodeFuManAttackUntilState(page, 1100);
 }
 
+async function pauseCodeFuManRuntime(page) {
+  await page.evaluate(() => {
+    if (window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+}
+
+async function stepCodeFuManInput(page, keys) {
+  const step = page.locator('[data-action="step"]').first();
+  for (const key of keys) await page.keyboard.down(key);
+  try {
+    await step.evaluate((button) => button.click());
+  } finally {
+    for (const key of [...keys].reverse()) await page.keyboard.up(key);
+  }
+  await step.evaluate((button) => button.click());
+}
+
 async function holdCodeFuManAttackUntilState(page, stateNo) {
+  const step = page.locator('[data-action="step"]').first();
   await page.keyboard.down("a");
   try {
-    await page
-      .waitForFunction((expectedStateNo) => window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p1")?.runtime?.stateNo === expectedStateNo, stateNo, {
-        timeout: 3000,
-      })
-      .catch(() => undefined);
+    for (let count = 0; count < 24; count += 1) {
+      await step.evaluate((button) => button.click());
+      const observed = await page.evaluate((expectedStateNo) => {
+        return window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p1")?.runtime?.stateNo === expectedStateNo;
+      }, stateNo);
+      if (observed) return;
+    }
   } finally {
     await page.keyboard.up("a");
   }
