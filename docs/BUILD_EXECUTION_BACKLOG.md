@@ -1,5 +1,22 @@
 # Build Execution Backlog
 
+## Entry 551 - bounded TargetLifeAdd RedirectID
+
+Closed the explicit IKEMEN root RedirectID route for imported active-CNS
+TargetLifeAdd. The live PlayerID destination owns remembered-target life
+mutation while the caller retains typed `ID`, value, `absolute`, and `kill`
+context; missing RedirectID stays local and invalid, unavailable, disabled,
+destroyed, negative, empty, malformed, and legacy routes fail closed. Required
+trace checksum `74f63e7d` proves both target links, PlayerID 57 ownership, final
+p1/p2 life `980/1000`, and target count `1` each. Affected suites pass 3 files /
+860 tests; TypeScript 7, trace syntax, `git diff --check`, and full
+`pnpm qa:trace` pass 612/612 (578 required, 34 optional, 0 skipped). No score
+movement. State-entry TargetLifeAdd, helpers, projectiles, teams, exact
+multi-target ordering, persistence, rollback/netplay, presentation, and full
+parity remain blocked. See
+`docs/reports/2026-07-15-target-life-redirectid-v1-closeout.md` and
+`docs/research/2026-07-15-target-life-redirectid-v1.md`.
+
 ## Entry 550 - bounded TargetPowerAdd state-entry RedirectID
 
 Closed the explicit IKEMEN root RedirectID route for imported State -1

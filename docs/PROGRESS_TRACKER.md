@@ -1,5 +1,35 @@
 ﻿# Progress Tracker
 
+## Daily roadmap report - 2026-07-15 Entry 551
+
+- Entry 551 and 612/612 traces are the committed evidence frontier. Active
+  TargetLifeAdd now has a required imported RedirectID route with checksum
+  `74f63e7d`.
+- Full affected runtime suites pass 3 files / 860 tests; TypeScript 7, trace
+  syntax, and `git diff --check` pass.
+- Next runtime cut: State -1 TargetLifeAdd scheduling. Helpers, projectiles,
+  teams, exact multi-target ordering, persistence, rollback/netplay,
+  presentation, and full parity remain blocked.
+- No browser smoke or score movement claimed; no visible renderer or Studio
+  path changed.
+- See `docs/reports/2026-07-15-target-life-redirectid-v1-closeout.md`.
+
+## Global report - 2026-07-15 TargetLifeAdd RedirectID v1 closeout
+
+- Imported active-CNS TargetLifeAdd RedirectID now routes target-memory life
+  mutation through a live root PlayerID destination while the caller retains
+  typed target operation context.
+- Required trace proves PlayerID 57, target id 77, both target links, final
+  p1/p2 life `980/1000`, target count `1` each, and checksum `74f63e7d`.
+- Verification passes 3 files / 860 tests, TypeScript 7, trace-script syntax,
+  `git diff --check`, and full `qa:trace` 612/612 (578 required / 34 optional /
+  0 skipped).
+- State-entry TargetLifeAdd, helper/projectile/team ownership, exact
+  multi-target ordering, persistence, rollback/netplay, presentation, score,
+  and full parity remain blocked.
+- See docs/reports/2026-07-15-target-life-redirectid-v1-closeout.md and
+  docs/research/2026-07-15-target-life-redirectid-v1.md.
+
 ## Daily roadmap report - 2026-07-15 Entry 550
 
 - Entry 550 and 611/611 traces are the committed evidence frontier. State -1

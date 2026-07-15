@@ -1,5 +1,22 @@
 # Workplan
 
+## Daily architecture plan - 2026-07-15 Entry 551
+
+Entry 551 closes active-CNS TargetLifeAdd RedirectID for live root fighters.
+Next, isolate State -1 TargetLifeAdd scheduling; keep helper/projectile/team
+ownership, exact multi-target ordering, persistence, rollback/netplay, and
+presentation outside that boundary. Product lanes remain materialized corpus,
+Studio evidence-backed greens, one complete asset release record,
+SourceWriteReceipt, and first shared Evidence contract. Scores do not move.
+See `docs/reports/2026-07-15-target-life-redirectid-v1-closeout.md`.
+
+## Active frontier - 2026-07-15 Entry 551
+
+Required trace `74f63e7d` proves PlayerID 57 target-memory ownership, links
+`p1 -> p2 / 77` and `p2 -> p1 / 77`, final p1/p2 life `980/1000`, and global QA
+612/612 (578 required, 34 optional). The next runtime cut is state-entry
+TargetLifeAdd; broader Target* ownership and parity remain blocked.
+
 ## Daily architecture plan - 2026-07-15
 
 Entry 550 closes the bounded IKEMEN State -1 TargetPowerAdd RedirectID route.
