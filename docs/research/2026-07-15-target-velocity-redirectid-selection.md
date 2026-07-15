@@ -1,0 +1,70 @@
+# TargetVelAdd/TargetVelSet RedirectID selection research
+
+Date: 2026-07-15
+
+## Question
+
+Which independent `Target*` family should follow the closed root-only
+`TargetLifeAdd` and `TargetPowerAdd` RedirectID slices?
+
+## Answer
+
+Select the velocity pair: `TargetVelAdd` and `TargetVelSet`. They share target
+memory lookup, target-id filtering, and signed x/y velocity semantics, while
+remaining independent from resource mutation, target state entry, binding, and
+team ownership.
+
+## Official source basis
+
+- [IKEMEN state-controller RedirectID documentation](https://github.com/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28new%29#redirectid)
+  says the optional parameter routes a state-controller execution to a
+  designated PlayerID, while warning that processing order can limit some
+  controllers.
+- [Elecbyte TargetVelAdd documentation](https://www.elecbyte.com/mugendocs-11b1/sctrls.html)
+  defines additive target velocity, target-facing x direction, downward y
+  direction, optional x/y values, and optional target `ID` filtering.
+- [Elecbyte TargetVelSet documentation](https://www.elecbyte.com/mugendocs-11b1/sctrls.html)
+  defines replacement target velocity with the same target-facing x direction,
+  downward y direction, optional x/y values, and optional `ID` filtering.
+
+## Repository findings
+
+1. `ControllerOps` already lowers both controllers into typed target
+   operations, so RedirectID can preserve authored x/y values without a new
+   parameter parser.
+2. `RuntimeTargetControllerDispatchWorld` already routes target operations
+   through the selected actor's `RuntimeTargetWorld`; the missing piece is
+   root PlayerID ownership in active and State -1 dispatch.
+3. `TargetVelAdd` already uses the target's facing for x. `TargetVelSet` must
+   use the target's facing as well, matching the official controller contract;
+   the bounded feature will lock that behavior with a regression test.
+
+## Bounded implementation
+
+- profile: `ikemen-go`;
+- owners: live root fighters only;
+- paths: active CNS and imported State -1 setup;
+- controllers: `TargetVelAdd`, `TargetVelSet`;
+- destination: live root selected by PlayerID;
+- target: destination remembered target filtered by authored `ID`;
+- values: caller-owned typed x/y expressions and optional `ID`;
+- missing RedirectID: preserve local behavior;
+- invalid, negative, unavailable, disabled, destroyed, malformed, and legacy
+  redirects: fail closed before mutation;
+- no helper, projectile, team, binding, target-state, persistence,
+  rollback/netplay, presentation, or score claim.
+
+## Evidence plan
+
+Add one required imported trace that seeds reciprocal target links, executes both
+velocity controllers through a live PlayerID 56 destination, proves the caller
+and destination target memories remain distinct, and captures active plus
+state-entry controller/operation telemetry. Focused compiler, runtime, and
+trace-preset tests will cover the typed RedirectID and the target-facing
+`TargetVelSet` regression.
+
+## Remaining uncertainty
+
+IKEMEN documents RedirectID as broadly available but leaves a controller
+compatibility list unfinished. The trace therefore claims only this root-only
+pair and does not generalize to the remaining `Target*` controllers.
