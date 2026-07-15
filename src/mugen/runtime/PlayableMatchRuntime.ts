@@ -432,7 +432,7 @@ type RedirectableResourceControllerType =
   | "redlifeset"
   | "poweradd"
   | "powerset";
-type RedirectableTargetControllerType = "targetlifeadd" | "targetpoweradd";
+type RedirectableTargetControllerType = "targetlifeadd" | "targetpoweradd" | "targetveladd" | "targetvelset";
 type PlayerIdTargetResolver = (
   caller: FighterMatchState,
   playerId: number,
@@ -3124,7 +3124,10 @@ function targetControllerRedirectExpression(controller: ControllerIr): string | 
 }
 
 function redirectableTargetControllerType(controller: ControllerIr): RedirectableTargetControllerType | undefined {
-  return controller.normalizedType === "targetlifeadd" || controller.normalizedType === "targetpoweradd"
+  return controller.normalizedType === "targetlifeadd" ||
+    controller.normalizedType === "targetpoweradd" ||
+    controller.normalizedType === "targetveladd" ||
+    controller.normalizedType === "targetvelset"
     ? controller.normalizedType
     : undefined;
 }

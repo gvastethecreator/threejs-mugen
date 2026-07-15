@@ -497,6 +497,8 @@ import {
   createSyntheticImportedTargetLifeRedirectTraceArtifact,
   createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetLifeStateEntryRedirectTraceArtifact,
+  createSyntheticImportedTargetVelocityRedirectTraceArtifact,
+  createSyntheticImportedTargetVelocityStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1519,6 +1521,46 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", life: 1000, targetCount: 1 }),
         expect.objectContaining({ id: "p2", life: 980, targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported TargetVelAdd/TargetVelSet RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetVelocityRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-velocity-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-velocity-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetVelAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetVelSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetveladd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetvelset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", targetCount: 1 }),
+        expect.objectContaining({ id: "p2", targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported State -1 TargetVelAdd/TargetVelSet RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetVelocityStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-velocity-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-velocity-state-entry-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetVelAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetVelSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetveladd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetvelset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", targetCount: 1 }),
+        expect.objectContaining({ id: "p2", targetCount: 1 }),
       ]),
     );
   });

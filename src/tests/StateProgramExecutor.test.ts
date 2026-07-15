@@ -80,6 +80,12 @@ describe("StateProgramExecutor dispatch", () => {
     const targetLife = dispatchStateProgramController(
       compileControllerIr(controller("TargetLifeAdd", { id: "77", value: "-20", absolute: "1", RedirectID: "56" })),
     );
+    const targetVelocityAdd = dispatchStateProgramController(
+      compileControllerIr(controller("TargetVelAdd", { id: "77", x: "2", y: "-1", RedirectID: "56" })),
+    );
+    const targetVelocitySet = dispatchStateProgramController(
+      compileControllerIr(controller("TargetVelSet", { id: "77", x: "3", RedirectID: "56" })),
+    );
     const movement = dispatchStateProgramController(compileControllerIr(controller("VelAdd", { x: "1" })));
 
     expect(isStateEntrySetupDispatch(setup)).toBe(true);
@@ -88,6 +94,10 @@ describe("StateProgramExecutor dispatch", () => {
     expect(isStateEntrySetupDispatch(targetPower)).toBe(true);
     expect(targetLife).toMatchObject({ kind: "side-effect", effect: "target" });
     expect(isStateEntrySetupDispatch(targetLife)).toBe(true);
+    expect(targetVelocityAdd).toMatchObject({ kind: "side-effect", effect: "target" });
+    expect(isStateEntrySetupDispatch(targetVelocityAdd)).toBe(true);
+    expect(targetVelocitySet).toMatchObject({ kind: "side-effect", effect: "target" });
+    expect(isStateEntrySetupDispatch(targetVelocitySet)).toBe(true);
     expect(isStateEntrySetupDispatch(movement)).toBe(false);
   });
 });

@@ -5006,6 +5006,83 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes active TargetVelAdd and TargetVelSet RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-velocity-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      passiveTargetController: `
+[State 0, Redirected Target Velocity Set]
+type = TargetVelSet
+triggerall = var(33) = 0
+trigger1 = 1
+id = 77
+x = 3
+y = -4
+RedirectID = 57
+
+[State 0, Redirected Target Velocity Add]
+type = TargetVelAdd
+triggerall = var(33) = 0
+trigger1 = 1
+id = 77
+x = 2
+y = 1
+RedirectID = 57
+
+[State 0, Redirected Target Velocity Gate]
+type = VarSet
+triggerall = var(33) = 0
+trigger1 = 1
+v = 33
+value = 1
+`,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-velocity-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    let routedSnapshot: typeof snapshot | undefined;
+    const rememberRoutedSnapshot = () => {
+      if (!routedSnapshot && (snapshot.compatibilitySession?.actors ?? []).some((actor) => actor.executedControllers.TargetVelSet)) {
+        routedSnapshot = snapshot;
+      }
+    };
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 12; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+
+    expect(routedSnapshot?.actors[0]?.runtime.vel.x ?? 0).toBeLessThan(0);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetVelSet).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetVelAdd).toBeGreaterThanOrEqual(1);
+  });
+
   it("routes state-entry TargetLifeAdd RedirectID through the target owner target memory", () => {
     const redirectedCaller = createImportedFixture({
       id: "target-life-state-entry-redirect-caller",
@@ -5076,6 +5153,99 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes state-entry TargetVelAdd and TargetVelSet RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-velocity-state-entry-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-velocity-state-entry-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+      stateEntryResourceController: `
+[State -1, Redirected Entry Target Velocity Set]
+type = TargetVelSet
+triggerall = var(32) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+x = 3
+y = -4
+RedirectID = 56
+
+[State -1, Redirected Entry Target Velocity Add]
+type = TargetVelAdd
+triggerall = var(32) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+x = 2
+y = 1
+RedirectID = 56
+
+[State -1, Redirected Entry Target Velocity Gate]
+type = VarSet
+triggerall = var(32) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+v = 32
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let routedSnapshot: typeof snapshot | undefined;
+    const rememberRoutedSnapshot = () => {
+      if (!routedSnapshot && (snapshot.compatibilitySession?.actors ?? []).some((actor) => actor.executedControllers.TargetVelSet)) {
+        routedSnapshot = snapshot;
+      }
+    };
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+      rememberRoutedSnapshot();
+    }
+    for (let frame = 0; frame < 80; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    rememberRoutedSnapshot();
+
+    expect(routedSnapshot?.actors[1]?.runtime.vel.y).toBe(-3);
+    expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetVelSet).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetVelAdd).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetvelset"]).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetveladd"]).toBeGreaterThanOrEqual(1);
+  });
+
   it("fails closed for an invalid TargetPowerAdd RedirectID", () => {
     const caller = createImportedFixture({
       withStateMove: true,
@@ -5120,6 +5290,29 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetLifeAdd).toBeUndefined();
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetlifeadd"]).toBeUndefined();
     expect(snapshot.logs.some((line) => line.includes("Blocked targetlifeadd RedirectID 999"))).toBe(true);
+  });
+
+  it("fails closed for an invalid TargetVelSet RedirectID", () => {
+    const caller = createImportedFixture({
+      withStateMove: true,
+      passiveTargetController: `
+[State 0, Invalid Target Velocity Redirect]
+type = TargetVelSet
+trigger1 = 1
+x = 3
+y = -4
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.vel).toEqual({ x: 0, y: 0 });
+    expect(snapshot.actors[1]?.runtime.vel).toEqual({ x: 0, y: 0 });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetVelSet).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked targetvelset RedirectID 999"))).toBe(true);
   });
 
   it("keeps TargetBind offsets applied while the owner advances during SuperPause movetime", () => {

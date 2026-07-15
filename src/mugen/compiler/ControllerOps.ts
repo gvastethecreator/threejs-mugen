@@ -81,8 +81,8 @@ export type TargetControllerOp =
   | ({ kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | { kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number }
-  | { kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number }
-  | { kind: "target"; controllerType: "targetvelset"; requestedId?: number; x?: number; y?: number }
+  | ({ kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number } & RedirectableTargetControllerOp)
+  | ({ kind: "target"; controllerType: "targetvelset"; requestedId?: number; x?: number; y?: number } & RedirectableTargetControllerOp)
   | { kind: "target"; controllerType: "targetbind"; requestedId?: number; pos: [number, number, number?]; time: number }
   | { kind: "target"; controllerType: "targetstate"; requestedId?: number; stateNo?: number };
 
@@ -1698,21 +1698,27 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
     return { kind: "target", controllerType: "targetfacing", requestedId, value: firstNumber(findParam(controller, "value")) ?? 1 };
   }
   if (type === "targetveladd") {
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+    if (redirectPlayerIdExpression === "invalid") return undefined;
     return {
       kind: "target",
       controllerType: "targetveladd",
       requestedId,
       x: firstNumber(findParam(controller, "x")) ?? 0,
       y: firstNumber(findParam(controller, "y")) ?? 0,
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     };
   }
   if (type === "targetvelset") {
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+    if (redirectPlayerIdExpression === "invalid") return undefined;
     return definedObject({
       kind: "target" as const,
       controllerType: "targetvelset" as const,
       requestedId,
       x: firstNumber(findParam(controller, "x")),
       y: firstNumber(findParam(controller, "y")),
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     });
   }
   if (type === "targetbind") {

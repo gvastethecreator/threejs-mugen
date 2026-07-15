@@ -166,6 +166,16 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetLifeStateEntryRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-target-velocity-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetVelocityRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-target-velocity-state-entry-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetVelocityStateEntryRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control-state-entry-redirect",
       required: true,
       artifact: presets.createSyntheticImportedControlStateEntryRedirectTraceArtifact(),
@@ -4451,6 +4461,8 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-target-life-redirect",
     "synthetic-imported-target-power-state-entry-redirect",
     "synthetic-imported-target-life-state-entry-redirect",
+    "synthetic-imported-target-velocity-redirect",
+    "synthetic-imported-target-velocity-state-entry-redirect",
     "synthetic-imported-control-state-entry-redirect",
     "synthetic-imported-redlife",
     "synthetic-imported-guardpoints",
