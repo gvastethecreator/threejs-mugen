@@ -2,6 +2,20 @@
 
 ## Active frontier - 2026-07-15
 
+Entry 549 closes the bounded IKEMEN root TargetPowerAdd RedirectID route.
+Active CNS now resolves the live PlayerID destination and mutates that
+destination's remembered target power while the caller owns the controller
+value and RedirectID expression. The required imported trace passes with
+PlayerID 57, target id 77, caller power 35, and redirected target power 75.
+Focused 3 files / 855 tests, TypeScript 7, trace syntax, git diff --check,
+and full qa:trace 610/610 (576 required, 34 optional) pass; the required
+artifact checksum is bf1cb5ce. No score movement. State-entry controllers,
+helpers, projectiles, neutral identity, aggregate/team targets, persistent
+timing, rollback, netplay, presentation, and full parity remain blocked. See
+docs/reports/2026-07-15-target-power-redirectid-v1-closeout.md.
+
+## Active frontier - 2026-07-15
+
 Entry 548 closes root-only IKEMEN `CtrlSet` RedirectID. Active CNS and
 state-entry setup now route the control flag to the live PlayerID target while
 the caller retains its own control and resource ownership. Focused 3 files /

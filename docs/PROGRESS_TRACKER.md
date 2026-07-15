@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 TargetPowerAdd RedirectID v1 closeout
+
+- Root-only IKEMEN TargetPowerAdd RedirectID now routes active CNS target
+  power mutation through the live PlayerID destination's target memory.
+- The caller retains ownership of the controller value and RedirectID
+  expression context; missing RedirectID stays local, while invalid,
+  unavailable, and legacy routes fail closed before mutation.
+- Verification passes 3 focused files / 855 tests, TypeScript 7, trace-script
+  syntax, git diff --check, and full qa:trace 610/610 (576 required / 34
+  optional / 0 skipped). Required checksum: bf1cb5ce.
+- State-entry controllers, helpers, projectiles, neutral identity,
+  aggregate/team target semantics, persistent timing, rollback/netplay,
+  presentation, and full parity remain blocked. No browser smoke or score
+  movement.
+- See docs/reports/2026-07-15-target-power-redirectid-v1-closeout.md and
+  docs/research/2026-07-15-target-power-redirectid-v1.md.
+
 ## Global report - 2026-07-15 CtrlSet RedirectID v1 closeout
 
 - Root-only IKEMEN `CtrlSet` RedirectID now routes active CNS and state-entry

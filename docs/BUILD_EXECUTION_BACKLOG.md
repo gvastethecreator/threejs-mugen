@@ -1,5 +1,22 @@
 # Build Execution Backlog
 
+## Entry 549 - bounded TargetPowerAdd RedirectID
+
+Extended the explicit IKEMEN root RedirectID route to TargetPowerAdd in
+active CNS. The live PlayerID destination owns the target-memory mutation:
+the destination applies the amount to its remembered target while the caller
+retains the controller value and RedirectID expression context. Missing
+RedirectID stays local, while empty, malformed, negative, missing, disabled,
+destroyed, and legacy-profile routes fail closed before mutation. Focused
+coverage passes 3 files / 855 tests, TypeScript 7, trace syntax,
+git diff --check, and full pnpm qa:trace 610/610 (576 required, 34 optional,
+0 skipped), with required checksum bf1cb5ce. No score movement. State-entry
+controllers, helpers, projectiles, neutral identity, aggregate/team targets,
+persistent timing, rollback/netplay, presentation, and full parity remain
+blocked. See
+docs/reports/2026-07-15-target-power-redirectid-v1-closeout.md and
+docs/research/2026-07-15-target-power-redirectid-v1.md.
+
 ## Entry 548 - bounded CtrlSet RedirectID
 
 Extended the explicit IKEMEN root RedirectID route to `CtrlSet` in active CNS
