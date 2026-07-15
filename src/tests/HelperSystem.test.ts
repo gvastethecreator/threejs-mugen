@@ -188,6 +188,53 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("routes Helper TargetPowerAdd RedirectID through a live root target memory", () => {
+    const redirectedTarget = {
+      id: "p2",
+      runtime: helperRuntimeState(helper({ serialId: "p2", power: 35 })),
+      targets: [{ actorId: "p1", targetId: 77, age: 0 }],
+      targetBindings: [],
+    };
+    const rememberedTarget = {
+      id: "p1",
+      runtime: helperRuntimeState(helper({ serialId: "p1", power: 10 })),
+      targets: [],
+      targetBindings: [],
+    };
+    const controller = {
+      ...controllerIr(6000, "TargetPowerAdd", { id: "77", value: "40", redirectid: "57" }),
+      operation: {
+        kind: "target",
+        controllerType: "targetpoweradd",
+        requestedId: 77,
+        value: 40,
+        redirectPlayerIdExpression: "57",
+      },
+    } satisfies ControllerIr;
+    const redirectedControllers: string[] = [];
+    const redirectedOperations: string[] = [];
+    const actor = helper({
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [controller])] },
+      stateNo: 6000,
+      animNo: 6100,
+    });
+
+    advanceRuntimeHelpers([actor], stage, {
+      resolveTargetRedirect: (_helper, playerId) =>
+        playerId === 57 ? { actor: redirectedTarget, candidateTargets: [rememberedTarget] } : undefined,
+      onRedirectedController: (_helper, target, item) => redirectedControllers.push(`${target.id}:${item.type}`),
+      onRedirectedOperation: (_helper, target, operation) => {
+        if (operation.kind === "target") redirectedOperations.push(`${target.id}:${operation.controllerType}`);
+      },
+    });
+
+    expect(actor.targets).toEqual([]);
+    expect(redirectedTarget.runtime.power).toBe(35);
+    expect(rememberedTarget.runtime.power).toBe(50);
+    expect(redirectedControllers).toEqual(["p2:TargetPowerAdd"]);
+    expect(redirectedOperations).toEqual(["p2:targetpoweradd"]);
+  });
+
   it("keeps standby Helper CNS and projectile dispatch active while projecting Ctrl as false", () => {
     const standby = helper({
       ctrl: true,

@@ -6248,6 +6248,51 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetDrop).toBe(1);
   });
 
+  it("routes a Helper TargetPowerAdd RedirectID through the destination root target memory", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Helper Target Power]
+type = TargetPowerAdd
+trigger1 = Time = 1
+id = 77
+value = 40
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "helper-target-redirect-destination",
+      multiFrameAction: { id: 200, durations: [48] },
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, { runtimeProfile: "ikemen-go" });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20 && snapshot.actors[1]?.runtime.targetCount !== 1; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[1]?.runtime.targetCount).toBe(1);
+
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && snapshot.actors[0]?.runtime.power !== 75; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[0]?.runtime.power).toBe(75);
+    expect(snapshot.actors[1]?.runtime.power).toBe(35);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked TargetPowerAdd RedirectID"))).toBe(false);
+  });
+
   it("buffers imported CMD inputs entered during hit pause when buffer.hitpause is enabled", () => {
     const imported = createHitPauseBufferFixture(true);
     const closeStage = {

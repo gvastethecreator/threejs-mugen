@@ -348,6 +348,7 @@ import {
   createSyntheticImportedHelperDefaultTargetTraceArtifact,
   createSyntheticImportedHelperBareTargetTraceArtifact,
   createSyntheticImportedHelperTargetControllersTraceArtifact,
+  createSyntheticImportedHelperTargetRedirectTraceArtifact,
   createSyntheticImportedHelperTargetStateTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
@@ -8586,6 +8587,52 @@ describe("RuntimeTraceGatePresets", () => {
             assetTotalDuration: 11,
             offset: { x: 16, y: -52 },
           }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Target RedirectID artifact with root-owned target evidence", () => {
+    const artifact = createSyntheticImportedHelperTargetRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-redirect-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetDrop).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetdrop"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8881 }),
+        expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 77 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", life: 981, power: 75 }),
+        expect.objectContaining({ id: "p2", life: 926, targetCount: 0 }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          actorKind: "helper",
+          effect: expect.objectContaining({ stateNo: 1234, targetCount: 1 }),
         }),
       ]),
     );
