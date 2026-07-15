@@ -536,36 +536,10 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
   await page.waitForTimeout(80);
   await resetCodeFuManRound(page);
 
-  const waitForQcf = () => page.evaluate(() => new Promise((resolve, reject) => {
-    let lastSnapshot = {};
-    const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man QCF_x special frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 3000);
-    const check = () => {
-      const bridge = window.__MUGEN_WEB_SANDBOX__;
-      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-      lastSnapshot = actor ? {
-        stateNo: actor.runtime?.stateNo,
-        moveType: actor.runtime?.moveType,
-        ctrl: actor.runtime?.ctrl,
-        frame: actor.frame,
-        activeCommands: actor.runtime?.activeCommands,
-        playing: bridge?.snapshot?.playing,
-      } : {};
-      if (actor?.runtime?.stateNo === 1000) {
-        window.clearTimeout(timeout);
-        document.querySelector('[data-action="play-pause"]')?.click();
-        resolve(undefined);
-        return;
-      }
-      window.setTimeout(check, 4);
-    };
-    check();
-  }));
   let qcfObserved = false;
   for (let attempt = 0; attempt < 3 && !qcfObserved; attempt += 1) {
-    const pauseOnQcf = waitForQcf();
-    await pressCodeFuManQcfX(page);
     try {
-      await pauseOnQcf;
+      await pressCodeFuManQcfX(page);
       qcfObserved = true;
     } catch (error) {
       if (attempt === 1) {
@@ -597,33 +571,8 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
 
   let upperObserved = false;
   for (let attempt = 0; attempt < 2 && !upperObserved; attempt += 1) {
-    const pauseOnUpper = page.evaluate(() => new Promise((resolve, reject) => {
-      let lastSnapshot = {};
-      const timeout = window.setTimeout(() => reject(new Error(`Code Fu Man upper_x frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
-      const check = () => {
-        const bridge = window.__MUGEN_WEB_SANDBOX__;
-        const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-        lastSnapshot = actor ? {
-          stateNo: actor.runtime?.stateNo,
-          moveType: actor.runtime?.moveType,
-          ctrl: actor.runtime?.ctrl,
-          frame: actor.frame,
-          activeCommands: actor.runtime?.activeCommands,
-          playing: bridge?.snapshot?.playing,
-        } : {};
-        if (actor?.runtime?.stateNo === 1100) {
-          window.clearTimeout(timeout);
-          document.querySelector('[data-action="play-pause"]')?.click();
-          resolve(undefined);
-          return;
-        }
-        window.setTimeout(check, 4);
-      };
-      check();
-    }));
-    await pressCodeFuManUpperX(page);
     try {
-      await pauseOnUpper;
+      await pressCodeFuManUpperX(page);
       upperObserved = true;
     } catch (error) {
       if (attempt === 1) {
@@ -632,6 +581,11 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
       await resetCodeFuManRound(page);
     }
   }
+  await page.evaluate(() => {
+    if (window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const upper = await captureMugenLiteVisualState(
     page,
@@ -687,23 +641,29 @@ async function pauseCodeFuManRuntime(page) {
 }
 
 async function stepCodeFuManInput(page, keys) {
-  const step = page.locator('[data-action="step"]').first();
   for (const key of keys) await page.keyboard.down(key);
   try {
-    await step.evaluate((button) => button.click());
+    await stepCodeFuManTick(page);
   } finally {
     for (const key of [...keys].reverse()) await page.keyboard.up(key);
   }
+  await stepCodeFuManTick(page);
+}
+
+async function stepCodeFuManTick(page) {
+  const step = page.locator('[data-action="step"]').first();
+  const previousTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? -1);
   await step.evaluate((button) => button.click());
+  await page.waitForFunction((tick) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? -1) > tick, previousTick);
 }
 
 async function holdCodeFuManAttackUntilState(page, stateNo) {
-  const step = page.locator('[data-action="step"]').first();
   await page.keyboard.down("a");
+  let observed = false;
   try {
     for (let count = 0; count < 24; count += 1) {
-      await step.evaluate((button) => button.click());
-      const observed = await page.evaluate((expectedStateNo) => {
+      await stepCodeFuManTick(page);
+      observed = await page.evaluate((expectedStateNo) => {
         return window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p1")?.runtime?.stateNo === expectedStateNo;
       }, stateNo);
       if (observed) return;
@@ -711,6 +671,17 @@ async function holdCodeFuManAttackUntilState(page, stateNo) {
   } finally {
     await page.keyboard.up("a");
   }
+  const snapshot = await page.evaluate(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return {
+      stateNo: actor?.runtime?.stateNo,
+      frame: actor?.frame,
+      activeCommands: actor?.runtime?.activeCommands,
+      playing: bridge?.snapshot?.playing,
+    };
+  });
+  throw new Error(`Code Fu Man state ${stateNo} was not observed: ${JSON.stringify(snapshot)}`);
 }
 
 async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, options) {
