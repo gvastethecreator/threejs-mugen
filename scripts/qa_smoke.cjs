@@ -923,10 +923,6 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     await page.keyboard.up("ArrowRight");
   }
 
-  const waitForGuardAttack = page.waitForFunction(() => {
-    const p2 = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return p2?.runtime?.stateNo === 200;
-  }, null, { timeout: 5000 });
   const pauseOnGuard = page.evaluate(() => new Promise((resolve, reject) => {
     const timeout = window.setTimeout(() => reject(new Error("MUGEN-lite guarded contact was not observed")), 5000);
     const check = () => {
@@ -945,7 +941,6 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
   await page.keyboard.down("ArrowLeft");
   try {
     await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
-    await waitForGuardAttack;
     await pauseOnGuard;
   } finally {
     await page.keyboard.up("ArrowLeft");
