@@ -283,6 +283,34 @@ describe("HelperSystem", () => {
     expect(rememberedTarget.bindToTarget).toBeUndefined();
   });
 
+  it("fails closed for an invalid Helper BindToTarget RedirectID", () => {
+    const controller = {
+      ...controllerIr(6000, "BindToTarget", { id: "77", pos: "20,-8,Foot", time: "4", redirectid: "999" }),
+      operation: {
+        kind: "bindtotarget",
+        requestedId: 77,
+        pos: [20, -8] as [number, number],
+        postype: "foot",
+        time: 4,
+        redirectPlayerIdExpression: "999",
+      },
+    } satisfies ControllerIr;
+    const actor = helper({
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [controller])] },
+      stateNo: 6000,
+      animNo: 6100,
+    });
+    const blocked: Array<number | "invalid"> = [];
+
+    advanceRuntimeHelpers([actor], stage, {
+      resolveTargetRedirect: () => undefined,
+      onTargetRedirectBlocked: (_helper, _controller, playerId) => blocked.push(playerId),
+    });
+
+    expect(actor.bindToTarget).toBeUndefined();
+    expect(blocked).toEqual([999]);
+  });
+
   it("keeps standby Helper CNS and projectile dispatch active while projecting Ctrl as false", () => {
     const standby = helper({
       ctrl: true,
