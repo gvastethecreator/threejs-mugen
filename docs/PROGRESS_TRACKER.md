@@ -2145,6 +2145,15 @@ Every compatibility milestone should leave:
 - Full gates: 170 files / 1748 tests, TypeScript 7 build, 538/538 traces, boundaries, and diff check.
 - Global status: Wayfinder 091 is closed without browser or score movement; Wayfinder 092 promotes the behavior to required trace evidence.
 
+### 2026-07-14 - Browser smoke gate closeout
+
+- Fresh external-server smoke passed with `status=passed`, `0` console issues, `0` page errors, and `64` capture paths.
+- Desktop/mobile MUGEN Lite evidence covers combat, recovery, guard, NoKOSlow, palette remap, movement, nonblank canvas, and idle return.
+- Imported Code Fu Man evidence covers normal `200`, QCF `1000`, upper `1100`, and idle return.
+- Studio workbench, build, debug, source relink, stage, assets, and IKEMEN scan journeys completed.
+- Commits: `9a19bd9e`, `ea50030e`.
+- Global status: browser smoke is closed; the batched TypeScript 7, tests, trace, boundaries, CSS, and production build gate remains next.
+
 ## Not Done
 
 - Full MUGEN VM

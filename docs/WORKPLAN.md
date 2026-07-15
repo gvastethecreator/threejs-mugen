@@ -1532,6 +1532,8 @@ Wayfinder 098 is now closed as source-backed research. Pinned IKEMEN keeps stand
 
 Wayfinder 099 is now closed. `RuntimeRootPresentation/v0` publishes independent draw/camera reasons and exact ids while `snapshot.actors` remains P1/P2; Three.js changes only character bodies/shadows and camera roots. Required checksum `97255586` passes inside 542/542 artifacts. Desktop/mobile smoke proves `[p1,p2] -> [p3,p2] -> [p1,p2]`, stable HUD/pair/reserve ownership, 994/1173-color nonblank canvases, matching phase capabilities, and stale-mesh cleanup. Full gates pass 176 files / 1794 tests, TypeScript 7, build, boundaries, and diff. Wayfinder 100 now maps stage constraints, body push, collision, and combat admission before implementation; scores remain unchanged.
 
+Browser smoke closeout 2026-07-14: the fresh external-server run passed with `status=passed`, `0` console issues, `0` page errors, and `64` capture paths. Desktop/mobile MUGEN Lite covered direct combat, recovery, guard, NoKOSlow, palette remap, movement, and canvas nonblank checks. Imported Code Fu Man covered `200`, `1000`, and `1100` with idle return. Studio workbench/build/debug, source relink, stage, assets, and IKEMEN scan journeys completed. Evidence: `docs/reports/2026-07-14-mugen-smoke-gate-closeout.md` and `.scratch/qa/qa-smoke/diagnostics.json`. The next gate is the batched TypeScript 7/typecheck/build/test/trace/boundary/CSS checkpoint.
+
 ## Current Non-Goals
 
 - Full MUGEN/IKEMEN parity claim.
