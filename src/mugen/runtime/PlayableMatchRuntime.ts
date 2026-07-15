@@ -420,6 +420,7 @@ type RootControllerRedirectHandler = (
     | RedirectableResourceControllerType,
 ) => FighterMatchState | undefined;
 type RedirectableResourceControllerType =
+  | "ctrlset"
   | "lifeadd"
   | "lifeset"
   | "guardpointsadd"
@@ -3073,7 +3074,8 @@ function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options:
 
 function redirectableResourceControllerType(controller: ControllerIr): RedirectableResourceControllerType | undefined {
   const normalizedType = controller.normalizedType as RedirectableResourceControllerType;
-  return normalizedType === "lifeadd" || normalizedType === "lifeset" ||
+  return normalizedType === "ctrlset" ||
+    normalizedType === "lifeadd" || normalizedType === "lifeset" ||
     normalizedType === "guardpointsadd" || normalizedType === "guardpointsset" ||
     normalizedType === "dizzypointsadd" || normalizedType === "dizzypointsset" ||
     normalizedType === "redlifeadd" || normalizedType === "redlifeset" ||

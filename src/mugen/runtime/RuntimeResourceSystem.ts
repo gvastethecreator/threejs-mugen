@@ -299,15 +299,13 @@ export function resolveRuntimeResourceControllerOperation(
     return undefined;
   }
   const redirectPlayerIdExpression =
-    controllerType === "ctrlset"
-      ? undefined
-      : operation && "redirectPlayerIdExpression" in operation
-        ? operation.redirectPlayerIdExpression
-        : findParam(controller, "redirectid")?.trim();
+    operation && "redirectPlayerIdExpression" in operation
+      ? operation.redirectPlayerIdExpression
+      : findParam(controller, "redirectid")?.trim();
   const redirect = redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression };
   if (controllerType === "ctrlset") {
     const value = operation?.controllerType === "ctrlset" ? operation.value : numberParam(controller, state, context, "value");
-    return value === undefined ? undefined : { kind: "resource", controllerType: "ctrlset", value: value !== 0 };
+    return value === undefined ? undefined : { kind: "resource", controllerType: "ctrlset", value: value !== 0, ...redirect };
   }
 
   const value = operation?.controllerType === controllerType ? operation.value : numberParam(controller, state, context, "value");

@@ -2051,6 +2051,38 @@ value = 650
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:guardpointsset"]).toBe(1);
   });
 
+  it("routes CtrlSet RedirectID to the target without changing caller control", () => {
+    const caller = createImportedFixture({
+      id: "redirected-control-resource",
+      withStateMove: false,
+      passiveResourceController: "[State 0, Redirected CtrlSet]\ntype = CtrlSet\ntrigger1 = 1\nvalue = 0\nRedirectID = 57\n",
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.actors[1]?.runtime.ctrl).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:ctrlset"]).toBe(1);
+  });
+
+  it("routes state-entry CtrlSet RedirectID to the target", () => {
+    const caller = createImportedFixture({
+      id: "redirected-entry-control-resource",
+      withStateMove: false,
+      stateEntryResourceController: "[State -1, Redirected Entry CtrlSet]\ntype = CtrlSet\ntrigger1 = 1\nvalue = 0\nRedirectID = 57\n",
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.ctrl).toBe(true);
+    expect(snapshot.actors[1]?.runtime.ctrl).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:ctrlset"]).toBe(1);
+  });
+
   it("fails closed for an invalid state-entry resource RedirectID", () => {
     const caller = createImportedFixture({
       id: "invalid-state-entry-resource-redirect",

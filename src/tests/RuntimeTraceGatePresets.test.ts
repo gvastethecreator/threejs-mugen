@@ -491,6 +491,8 @@ import {
   createSyntheticImportedResourceStateEntryRedirectTraceArtifact,
   createSyntheticImportedResourceAuxiliaryRedirectTraceArtifact,
   createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceArtifact,
+  createSyntheticImportedControlRedirectTraceArtifact,
+  createSyntheticImportedControlStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1418,6 +1420,31 @@ describe("RuntimeTraceGatePresets", () => {
       dizzyPoints: 650,
       redLife: 800,
     });
+  });
+
+  it("creates a required imported CtrlSet RedirectID artifact", () => {
+    const artifact = createSyntheticImportedControlRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-control-redirect-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900, ctrl: false });
+  });
+
+  it("creates a required imported state-entry CtrlSet RedirectID artifact", () => {
+    const artifact = createSyntheticImportedControlStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-control-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900, ctrl: false });
   });
 
   it("creates a synthetic imported guard-points artifact with direct guard and resource evidence", () => {

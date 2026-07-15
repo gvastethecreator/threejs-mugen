@@ -477,7 +477,7 @@ type RedirectableResourceControllerOp = {
 };
 
 export type ResourceControllerOp =
-  | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
+  | ({ kind: "resource"; controllerType: "ctrlset"; value: boolean } & RedirectableResourceControllerOp)
   | ({ kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean } & RedirectableResourceControllerOp)
   | ({ kind: "resource"; controllerType: "lifeset"; value: number } & RedirectableResourceControllerOp)
   | ({ kind: "resource"; controllerType: "guardpointsadd"; value: number } & RedirectableResourceControllerOp)
@@ -1337,15 +1337,13 @@ function compileResourceControllerOp(controller: MugenStateController, type: Res
     return undefined;
   }
   const redirectPlayerIdExpression =
-    type !== "ctrlset"
-      ? compileRedirectPlayerIdExpression(controller)
-      : undefined;
+    compileRedirectPlayerIdExpression(controller);
   if (redirectPlayerIdExpression === "invalid") {
     return undefined;
   }
   const redirect = redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression };
   if (type === "ctrlset") {
-    return { kind: "resource", controllerType: "ctrlset", value: value !== 0 };
+    return { kind: "resource", controllerType: "ctrlset", value: value !== 0, ...redirect };
   }
   if (type === "lifeadd") {
     return definedObject({

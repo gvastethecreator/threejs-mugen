@@ -964,6 +964,66 @@ export function createSyntheticImportedRedLifeTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedControlRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-control-redirect",
+      displayName: "Synthetic Imported Control Redirect",
+      action200Duration: 30,
+      hitDefDamage: 0,
+      withRedirectedResourceOps: { stateNo: 293, redirectId: 57, sourcePowerSeed: 150, includeControl: true },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-control-redirect-golden",
+      targetLabel: "Synthetic imported CtrlSet RedirectID route",
+      requireHitEvent: true,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 293],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "CtrlSet"],
+      requiredExecutedOperations: ["hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset", "resource:ctrlset"],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 293, life: 1000, power: 35 },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, ctrl: false },
+      ],
+      notes: [
+        "Synthetic imported IKEMEN trace proves root RedirectID routes CtrlSet to PlayerID 57 while p1 retains caller-owned resource and state control. Helper targets, aggregate control, team scheduling, and full parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedControlStateEntryRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-control-state-entry-redirect",
+      displayName: "Synthetic Imported Control State Entry Redirect",
+      action200Duration: 30,
+      hitDefDamage: 0,
+      withRedirectedResourceStateEntry: { redirectId: 57, sourcePowerSeed: 150, includeControl: true },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-control-state-entry-redirect-golden",
+      targetLabel: "Synthetic imported state-entry CtrlSet RedirectID route",
+      requireHitEvent: true,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "CtrlSet"],
+      requiredExecutedOperations: ["hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset", "resource:ctrlset"],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 35 },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, ctrl: false },
+      ],
+      notes: [
+        "Synthetic imported IKEMEN trace proves state-entry RedirectID routes CtrlSet to PlayerID 57 while the imported caller retains its own state-entry resource sequence. Helper targets, aggregate control, team scheduling, and full parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedGuardPointsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-guardpoints",
@@ -45505,11 +45565,13 @@ export type SyntheticImportedTraceFighterOptions = {
     redirectId: SyntheticNumberExpression;
     sourcePowerSeed?: number;
     includeAuxiliary?: boolean;
+    includeControl?: boolean;
   };
   withRedirectedResourceStateEntry?: {
     redirectId: SyntheticNumberExpression;
     sourcePowerSeed?: number;
     includeAuxiliary?: boolean;
+    includeControl?: boolean;
   };
   withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
   withGuardPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
@@ -50445,8 +50507,26 @@ function redirectedResourceControllerBlock(
   config: NonNullable<SyntheticImportedTraceFighterOptions["withRedirectedResourceOps"]>,
 ): string {
   const sourcePowerSeed = config.sourcePowerSeed ?? 150;
+  const includeControl = config.includeControl === true;
   const includeAuxiliary = config.includeAuxiliary === true;
-  const finalGate = includeAuxiliary ? 20 : 14;
+  const finalGate = includeAuxiliary ? 20 : includeControl ? 15 : 14;
+  const controlController = includeControl
+    ? `
+[State 200, Redirect CtrlSet Probe]
+type = CtrlSet
+trigger1 = var(14) = 1
+trigger1 = var(15) = 0
+value = 0
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect CtrlSet Gate]
+type = VarSet
+trigger1 = var(14) = 1
+trigger1 = var(15) = 0
+v = 15
+value = 1
+`
+    : "";
   const auxiliaryControllers = includeAuxiliary
     ? `
 [State 200, Redirect Guard Points Add Probe]
@@ -50607,7 +50687,10 @@ trigger1 = var(14) = 0
 v = 14
 value = 1
 
+${controlController}
+
 ${auxiliaryControllers}
+
 
 [State 200, Redirect Resource Branch]
 type = ChangeState
@@ -51255,7 +51338,25 @@ function redirectedResourceStateEntryBlock(
   config: NonNullable<SyntheticImportedTraceFighterOptions["withRedirectedResourceStateEntry"]>,
 ): string {
   const sourcePowerSeed = config.sourcePowerSeed ?? 150;
+  const includeControl = config.includeControl === true;
   const includeAuxiliary = config.includeAuxiliary === true;
+  const controlController = includeControl
+    ? `
+[State -1, Redirect Entry CtrlSet]
+type = CtrlSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(16) = 0
+value = 0
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry CtrlSet Gate]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+trigger1 = var(16) = 0
+v = 16
+value = 1
+`
+    : "";
   const auxiliaryControllers = includeAuxiliary
     ? `
 [State -1, Redirect Entry Guard Points Add]
@@ -51386,6 +51487,7 @@ trigger1 = var(15) = ${sourcePowerSeed}
 value = var(15) + 750
 RedirectID = ${config.redirectId}
 
+${controlController}
 ${auxiliaryControllers}
 
 [State -1, Redirect Entry Resource Complete]
