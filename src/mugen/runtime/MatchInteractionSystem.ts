@@ -2,7 +2,11 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
-import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type {
+  RuntimeEffectLifecycleActor,
+  RuntimeEffectLifecycleAdvanceOptions,
+  RuntimeEffectLifecycleWorld,
+} from "./EffectLifecycleSystem";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
@@ -86,6 +90,10 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     targetResetActors?: readonly TFighter[];
     hitDefContactActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
+    resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
+    onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
+    onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
+    onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
     resolveRootPriorityOutcomes?: (resolveEqualPriorityOutcomes: (actors: readonly TFighter[]) => number) => void;
@@ -195,6 +203,10 @@ export class RuntimeMatchInteractionWorld {
           runtimeTick: input.runtimeTick,
           opponents: context.opponents,
           skipHelpers: input.helpersAdvancedInActorOrder,
+          resolveTargetRedirect: input.resolveHelperTargetRedirect,
+          onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
+          onRedirectedController: input.onHelperRedirectedController,
+          onRedirectedOperation: input.onHelperRedirectedOperation,
         });
       },
       resolveProjectileClashes: (left, right) =>

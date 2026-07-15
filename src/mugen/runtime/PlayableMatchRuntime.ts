@@ -1,5 +1,6 @@
 import type {
   AudioControllerOp,
+  ControllerOp,
   EnvColorControllerOp,
   PauseControllerOp,
   TeamStandbyControllerOp,
@@ -56,6 +57,7 @@ import {
   hasRuntimeHelperState,
   helperRuntimeState,
   type RuntimeHelper,
+  type RuntimeHelperTargetRedirect,
 } from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
@@ -720,6 +722,40 @@ export class PlayableMatchRuntime {
       : undefined;
   }
 
+  private resolveHelperTargetRedirect(
+    _helper: RuntimeHelper,
+    playerId: number,
+    _controller: ControllerIr,
+  ): RuntimeHelperTargetRedirect | undefined {
+    if (this.runtimeProfile !== "ikemen-go") return undefined;
+    const identity = this.characterIdentity?.findByPlayerId(playerId);
+    const targetCandidate = identity?.fighter;
+    const target = targetCandidate === undefined
+      ? undefined
+      : this.characterRoots().find((root) => root.id === targetCandidate.id);
+    if (!target) return undefined;
+    return {
+      actor: target,
+      candidateTargets: this.characterRoots(),
+    };
+  }
+
+  private recordHelperRedirectedController(
+    target: RuntimeHelperTargetRedirect["actor"],
+    controller: MugenStateController,
+  ): void {
+    const root = this.characterRoots().find((candidate) => candidate.id === target.id);
+    if (root) compatibilityTelemetryWorld.recordController(root, controller);
+  }
+
+  private recordHelperRedirectedOperation(
+    target: RuntimeHelperTargetRedirect["actor"],
+    operation: ControllerOp,
+  ): void {
+    const root = this.characterRoots().find((candidate) => candidate.id === target.id);
+    if (root) compatibilityTelemetryWorld.recordOperation(root, operation);
+  }
+
   private characterRoots(): FighterMatchState[] {
     return [this.p1, this.p2, ...this.reserveRoots];
   }
@@ -1128,6 +1164,14 @@ export class PlayableMatchRuntime {
           stageTime: this.tick,
           runtimeTick: this.tick,
           effectLifecycleWorld: this.effectLifecycleWorld,
+          resolveHelperTargetRedirect: (helper, playerId, controller) =>
+            this.resolveHelperTargetRedirect(helper, playerId, controller),
+          onHelperTargetRedirectBlocked: (helper, controller, playerId) =>
+            this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+          onHelperRedirectedController: (_helper, target, controller) =>
+            this.recordHelperRedirectedController(target, controller),
+          onHelperRedirectedOperation: (_helper, target, operation) =>
+            this.recordHelperRedirectedOperation(target, operation),
           runIgnoredControllers: (fighter, opponent) =>
             runHitPauseIgnoredControllers(
               fighter,
@@ -1306,6 +1350,14 @@ export class PlayableMatchRuntime {
                 runtimeTick: this.tick,
                 opponents: [opponent],
                 constants: owner.definition.constants,
+                resolveTargetRedirect: (helper, playerId, controller) =>
+                  this.resolveHelperTargetRedirect(helper, playerId, controller),
+                onTargetRedirectBlocked: (helper, controller, playerId) =>
+                  this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+                onRedirectedController: (_helper, target, controller) =>
+                  this.recordHelperRedirectedController(target, controller),
+                onRedirectedOperation: (_helper, target, operation) =>
+                  this.recordHelperRedirectedOperation(target, operation),
               });
             },
             discoverHelpers: () => this.helperRunOrderCandidates(),
@@ -1378,6 +1430,14 @@ export class PlayableMatchRuntime {
           stage: this.stage,
           stageTime: this.tick,
           helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
+          resolveHelperTargetRedirect: (helper, playerId, controller) =>
+            this.resolveHelperTargetRedirect(helper, playerId, controller),
+          onHelperTargetRedirectBlocked: (helper, controller, playerId) =>
+            this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+          onHelperRedirectedController: (_helper, target, controller) =>
+            this.recordHelperRedirectedController(target, controller),
+          onHelperRedirectedOperation: (_helper, target, operation) =>
+            this.recordHelperRedirectedOperation(target, operation),
           actorConstraintWorld: this.actorConstraintWorld,
           effectLifecycleWorld: this.effectLifecycleWorld,
           combatResolutionWorld: this.combatResolutionWorld,
@@ -1710,6 +1770,14 @@ export class PlayableMatchRuntime {
             runtimeTick: this.tick,
             opponents: [opponent],
             constants: owner.definition.constants,
+            resolveTargetRedirect: (helper, playerId, controller) =>
+              this.resolveHelperTargetRedirect(helper, playerId, controller),
+            onTargetRedirectBlocked: (helper, controller, playerId) =>
+              this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+            onRedirectedController: (_helper, target, controller) =>
+              this.recordHelperRedirectedController(target, controller),
+            onRedirectedOperation: (_helper, target, operation) =>
+              this.recordHelperRedirectedOperation(target, operation),
           });
         },
         discoverHelpers: () => this.helperRunOrderCandidates(),

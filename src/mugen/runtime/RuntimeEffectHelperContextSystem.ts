@@ -24,7 +24,16 @@ export type RuntimeEffectHelperContextOpponent = {
 
 export type RuntimeEffectHelperContextOptions = Pick<
   RuntimeHelperAdvanceOptions,
-  "constants" | "gameSpace" | "stageTime" | "runtimeTick" | "opponentRoster" | "pauseKind"
+  | "constants"
+  | "gameSpace"
+  | "stageTime"
+  | "runtimeTick"
+  | "opponentRoster"
+  | "pauseKind"
+  | "resolveTargetRedirect"
+  | "onTargetRedirectBlocked"
+  | "onRedirectedController"
+  | "onRedirectedOperation"
 > & {
   opponents?: readonly RuntimeEffectHelperContextOpponent[];
 };
@@ -41,6 +50,10 @@ export type RuntimeEffectHelperContext = {
   runtimeTick?: number;
   pauseKind?: RuntimeHelperAdvanceOptions["pauseKind"];
   targetCandidates?: RuntimeTargetWorldActor[];
+  resolveTargetRedirect?: RuntimeHelperAdvanceOptions["resolveTargetRedirect"];
+  onTargetRedirectBlocked?: RuntimeHelperAdvanceOptions["onTargetRedirectBlocked"];
+  onRedirectedController?: RuntimeHelperAdvanceOptions["onRedirectedController"];
+  onRedirectedOperation?: RuntimeHelperAdvanceOptions["onRedirectedOperation"];
   enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
   onController?: RuntimeHelperAdvanceOptions["onController"];
   onOperation?: RuntimeHelperAdvanceOptions["onOperation"];

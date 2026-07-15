@@ -1,7 +1,9 @@
 import type {
+  BindToTargetControllerOp,
   ControllerOp,
   HelperControllerOp,
   PauseControllerOp,
+  TargetControllerOp,
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
@@ -136,6 +138,11 @@ export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
 
 export type RuntimeHelperOpponentEntry = RuntimeOpponentRosterEntry<CharacterRuntimeState>;
 
+export type RuntimeHelperTargetRedirect = {
+  actor: RuntimeTargetWorldActor;
+  candidateTargets: RuntimeTargetWorldActor[];
+};
+
 export type RuntimeHelperAdvanceOptions = {
   constants?: RuntimeResourceConstants;
   pauseKind?: RuntimeHelperPauseKind;
@@ -156,6 +163,26 @@ export type RuntimeHelperAdvanceOptions = {
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
   projectileCancelTime?: (helper: RuntimeHelper, projectileId?: number) => number;
   targetCandidates?: RuntimeTargetWorldActor[];
+  resolveTargetRedirect?: (
+    helper: RuntimeHelper,
+    playerId: number,
+    controller: ControllerIr,
+  ) => RuntimeHelperTargetRedirect | undefined;
+  onTargetRedirectBlocked?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    playerId: number | "invalid",
+  ) => void;
+  onRedirectedController?: (
+    helper: RuntimeHelper,
+    target: RuntimeTargetWorldActor,
+    controller: MugenStateController,
+  ) => void;
+  onRedirectedOperation?: (
+    helper: RuntimeHelper,
+    target: RuntimeTargetWorldActor,
+    operation: TargetControllerOp | BindToTargetControllerOp,
+  ) => void;
   enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -335,6 +362,10 @@ export function runRuntimeHelperStateControllers(
     | "projectileContact"
     | "projectileContactTime"
     | "targetCandidates"
+    | "resolveTargetRedirect"
+    | "onTargetRedirectBlocked"
+    | "onRedirectedController"
+    | "onRedirectedOperation"
     | "enterTargetState"
     | "onSpawnExplod"
     | "onSpawnProjectile"
@@ -907,25 +938,84 @@ function applyRuntimeHelperTargetController(
   helper: RuntimeHelper,
   controller: ControllerIr,
   effect: "target" | "bindtotarget",
-  options: Pick<RuntimeHelperAdvanceOptions, "targetCandidates" | "enterTargetState" | "onOperation" | "scaleTargetDamage">,
+  options: Pick<
+    RuntimeHelperAdvanceOptions,
+    | "stageBounds"
+    | "gameSpace"
+    | "stageTime"
+    | "opponentId"
+    | "parentState"
+    | "rootState"
+    | "opponentState"
+    | "opponentStates"
+    | "opponentRoster"
+    | "countExplods"
+    | "countHelpers"
+    | "countProjectiles"
+    | "projectileContact"
+    | "projectileContactTime"
+    | "targetCandidates"
+    | "resolveTargetRedirect"
+    | "onTargetRedirectBlocked"
+    | "onRedirectedController"
+    | "onRedirectedOperation"
+    | "enterTargetState"
+    | "onOperation"
+    | "scaleTargetDamage"
+  >,
 ): boolean {
   if (controller.normalizedType === "targetstate" && !options.enterTargetState) {
     return false;
   }
-  const actor = runtimeHelperTargetActor(helper);
+  const redirectExpression = helperTargetControllerRedirectExpression(controller);
+  const redirectPlayerId = redirectExpression === undefined
+    ? undefined
+    : resolveHelperNumber(helper, undefined, redirectExpression, options);
+  const redirect = redirectExpression === undefined || redirectPlayerId === undefined
+    ? undefined
+    : options.resolveTargetRedirect?.(helper, Math.trunc(redirectPlayerId), controller);
+  if (redirectExpression !== undefined && !redirect) {
+    options.onTargetRedirectBlocked?.(
+      helper,
+      controller,
+      redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
+    );
+    return false;
+  }
+  const actor = redirect?.actor ?? runtimeHelperTargetActor(helper);
   const result = helperTargetControllerDispatchWorld.apply({
     actor,
-    candidateTargets: options.targetCandidates ?? [],
+    candidateTargets: redirect?.candidateTargets ?? options.targetCandidates ?? [],
     controller,
     effect,
     targetWorld: helperTargetWorld,
-    recordOperation: (_actor, operation) => options.onOperation?.(helper, operation),
+    recordController: redirect
+      ? (_actor, source) => options.onRedirectedController?.(helper, actor, source)
+      : undefined,
+    recordOperation: (_actor, operation) => {
+      options.onOperation?.(helper, operation);
+      if (redirect) options.onRedirectedOperation?.(helper, actor, operation);
+    },
     scaleIncomingDamage: options.scaleTargetDamage,
     enterTargetState: (target, stateId) => options.enterTargetState?.(helper, target, stateId),
   });
-  applyRuntimeStateToHelper(helper, actor.runtime);
-  syncRuntimeHelperTargetActor(helper, actor);
+  if (!redirect) {
+    applyRuntimeStateToHelper(helper, actor.runtime);
+    syncRuntimeHelperTargetActor(helper, actor);
+  }
   return result.matchedTargets > 0 || result.operationExecuted;
+}
+
+function helperTargetControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  const operation = controller.operation;
+  const compiledExpression = operation !== undefined && "redirectPlayerIdExpression" in operation
+    ? operation.redirectPlayerIdExpression
+    : undefined;
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller.source, "redirectid");
+  return rawExpression === undefined ? undefined : rawExpression.trim() || "invalid";
 }
 
 function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {

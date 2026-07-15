@@ -1,6 +1,6 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
-import type { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type { RuntimeEffectLifecycleAdvanceOptions, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import { RuntimeMatchInteractionWorld, type RuntimeMatchInteractionRuntimeActor } from "./MatchInteractionSystem";
 import {
@@ -24,6 +24,10 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   targetActors?: readonly TActor[];
   targetResetActors?: readonly TActor[];
   hitDefContactActors?: readonly TActor[];
+  resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
+  onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
+  onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
+  onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
   recordSchedulePhase?: (phase: "post-fighter:combat" | "post-fighter:presentation-effects") => void;
@@ -63,6 +67,10 @@ export class RuntimeMatchPostFighterWorld {
       targetResetActors: input.targetResetActors,
       hitDefContactActors: input.hitDefContactActors,
       helpersAdvancedInActorOrder: input.helpersAdvancedInActorOrder,
+      resolveHelperTargetRedirect: input.resolveHelperTargetRedirect,
+      onHelperTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
+      onHelperRedirectedController: input.onHelperRedirectedController,
+      onHelperRedirectedOperation: input.onHelperRedirectedOperation,
       actorConstraintWorld: input.actorConstraintWorld,
       effectLifecycleWorld: input.effectLifecycleWorld,
       resolvePriorityClash: combatResolvers.resolvePriorityClash,

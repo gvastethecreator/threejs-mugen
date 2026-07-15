@@ -1,6 +1,10 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { CommandBuffer } from "./CommandBuffer";
-import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type {
+  RuntimeEffectLifecycleActor,
+  RuntimeEffectLifecycleAdvanceOptions,
+  RuntimeEffectLifecycleWorld,
+} from "./EffectLifecycleSystem";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 
@@ -34,6 +38,10 @@ export type RuntimeHitPauseRuntimeWorldInput<TActor extends RuntimeHitPauseRunti
   stageTime?: number;
   runtimeTick?: number;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advancePausedPresentation">;
+  resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
+  onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
+  onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
+  onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
   runIgnoredControllers: (actor: TActor, opponent: TActor) => void;
 };
 
@@ -97,6 +105,10 @@ export class RuntimeHitPauseWorld {
           stageTime: input.stageTime ?? input.tick,
           runtimeTick: input.runtimeTick ?? input.tick,
           opponents: context.opponents,
+          resolveTargetRedirect: input.resolveHelperTargetRedirect,
+          onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
+          onRedirectedController: input.onHelperRedirectedController,
+          onRedirectedOperation: input.onHelperRedirectedOperation,
         });
       },
     });
