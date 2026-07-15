@@ -281,6 +281,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPlayerIdTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-playerid-root-roster",
+      required: true,
+      artifact: presets.createSyntheticImportedPlayerIdRootRosterTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-enemynear-index",
       required: true,
       artifact: presets.createSyntheticImportedEnemyNearIndexTraceArtifact(),
@@ -4407,6 +4412,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-noop",
     "synthetic-imported-enemynear-index",
     "synthetic-imported-playerid",
+    "synthetic-imported-playerid-root-roster",
     "synthetic-imported-p2-state-context",
     "synthetic-imported-p2-distance",
     "synthetic-imported-owner-metrics",

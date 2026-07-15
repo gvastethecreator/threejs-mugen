@@ -612,6 +612,7 @@ import {
   createSyntheticImportedEnemyNearIndexTraceArtifact,
   createSyntheticImportedEnemyTraceArtifact,
   createSyntheticImportedPlayerIdTraceArtifact,
+  createSyntheticImportedPlayerIdRootRosterTraceArtifact,
   createSyntheticImportedNumHelperTraceArtifact,
   createSyntheticImportedNumProjTraceArtifact,
   createSyntheticImportedNumTargetTraceArtifact,
@@ -2278,6 +2279,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([271]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([271]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 271)).toBe(true);
+  });
+
+  it("creates a synthetic imported PlayerID root-roster artifact with standby evidence", () => {
+    const artifact = createSyntheticImportedPlayerIdRootRosterTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-playerid-root-roster-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.routedStates).toContain(200);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 2794]));
+    expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p3", stateNo: 2794, teamStandby: true }),
+    ]));
+    expect(artifact.trace.finalReserveActors?.some((actor) => actor.id === "p3" && actor.stateNo === 2794)).toBe(true);
   });
 
   it("creates a synthetic imported EnemyNear indexed artifact with fail-closed evidence", () => {

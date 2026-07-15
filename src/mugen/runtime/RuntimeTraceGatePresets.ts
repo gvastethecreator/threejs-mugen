@@ -30,6 +30,7 @@ import { ZipCharacterSource } from "../loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "./importedFighter";
 import { createMugenLiteJourneyZipBytes, MUGEN_LITE_JOURNEY_MANIFEST } from "./MugenLiteJourneyFixture";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
 
 export type RuntimeTraceGatePresetArtifact = RuntimeTraceArtifact & {
   presetId: string;
@@ -39,6 +40,8 @@ export type RuntimeTraceGatePresetOptions = {
   generatedAt?: string;
   stage?: MugenStageDefinition;
   runtimeProfile?: RuntimeCompatibilityProfile;
+  teamMode?: RuntimeTeamRoundMode;
+  reserveFighters?: readonly DemoFighterDefinition[];
 };
 
 export async function createMugenLiteJourneyTraceArtifact(
@@ -1884,6 +1887,47 @@ export function createSyntheticImportedPlayerIdTraceArtifact(options: RuntimeTra
       requiredExecutedOperations: [],
       notes: [
         "Synthetic imported PlayerID trace proves a bounded PlayerID(id), trigger redirect can read the live opposing root through State -1 routing. Numeric PlayerID parameters, dynamic id expressions, helpers, roster-wide lookup, mutation ownership, and full MUGEN/IKEMEN redirect parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedPlayerIdRootRosterTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const standby = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-playerid-root-roster",
+    displayName: "Synthetic Imported PlayerID Root Roster",
+    standbyPlayerIdStateEntry: { playerId: 56, stateNo: 2794, trigger: "Life > 0" },
+  });
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-playerid-root-roster-active",
+      displayName: "Synthetic Imported PlayerID Root Roster Active",
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [standby],
+      targetId: "synthetic-imported-playerid-root-roster-golden",
+      targetLabel: "Synthetic imported PlayerID root roster redirect route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 2794],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      requiredActorFrames: [{
+        actorId: "p3",
+        actorKind: "player",
+        stateNo: 2794,
+        teamStandby: true,
+        effectiveCtrl: false,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p3", actorKind: "player", stateNo: 2794 }],
+      notes: [
+        "Synthetic imported PlayerID root-roster trace proves a standby root can evaluate PlayerID(id), trigger against the live full root roster and route itself without widening the behavior checksum. Generic RedirectID mutation, helper/team ownership, dynamic ids, and full MUGEN/IKEMEN redirect parity remain future work.",
       ],
     },
   );
@@ -3828,7 +3872,14 @@ export function createImportedXTraceArtifact(
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = options.script ?? importedXScript();
-  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage, runtimeProfile: options.runtimeProfile }), script, {
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: imported,
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: options.runtimeProfile,
+    teamMode: options.teamMode,
+    reserveFighters: options.reserveFighters,
+  }), script, {
     label: `${imported.id}-x-golden`,
   });
   return createRuntimeTraceArtifact({
@@ -45297,7 +45348,8 @@ export type SyntheticImportedTraceFighterOptions = {
   prevStateTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyStateEntry?: { opponentStateNo: number; stateNo: number };
-  playerIdStateEntry?: { playerId: number; stateNo: number };
+  playerIdStateEntry?: { playerId: number; stateNo: number; trigger?: string };
+  standbyPlayerIdStateEntry?: { playerId: number; stateNo: number; trigger?: string };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   enemyNearIndexedStateEntry?: { opponentStateNo: number; stateNo: number; trapStateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
@@ -46073,6 +46125,7 @@ movetype = I
 physics = S
 anim = 0
 ctrl = 1
+${options.standbyPlayerIdStateEntry === undefined ? "" : playerIdStateEntryBlock(options.standbyPlayerIdStateEntry, 0)}
 ${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandRoute) : ""}
 ${options.activeRootMotionRoute ? activeRootMotionRouteBlock(options.activeRootMotionRoute) : ""}
 ${options.activeRootHitDefRoute ? activeRootHitDefRouteBlock(options.activeRootHitDefRoute) : ""}
@@ -46270,6 +46323,7 @@ ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRout
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyStateEntry ? simpleStateBlock(options.enemyStateEntry.stateNo, "I") : ""}
 ${options.playerIdStateEntry ? simpleStateBlock(options.playerIdStateEntry.stateNo, "I") : ""}
+${options.standbyPlayerIdStateEntry ? simpleStateBlock(options.standbyPlayerIdStateEntry.stateNo, "I") : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.trapStateNo, "I") : ""}
 ${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.stateNo, "I") : ""}
@@ -46590,6 +46644,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.playerIdStateEntry === undefined
         ? []
         : ([[options.playerIdStateEntry.stateNo, traceAction(options.playerIdStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.standbyPlayerIdStateEntry === undefined
+        ? []
+        : ([[options.standbyPlayerIdStateEntry.stateNo, traceAction(options.standbyPlayerIdStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.enemyNearStateEntry === undefined
         ? []
         : ([[options.enemyNearStateEntry.stateNo, traceAction(options.enemyNearStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -50819,13 +50876,13 @@ trigger1 = Enemy, StateNo = ${route.opponentStateNo}
 `;
 }
 
-function playerIdStateEntryBlock(route: { playerId: number; stateNo: number }): string {
+function playerIdStateEntryBlock(route: { playerId: number; stateNo: number; trigger?: string }, stateNo = -1): string {
   return `
-[State -1, PlayerID State Route]
+[State ${stateNo}, PlayerID State Route]
 type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
-trigger1 = PlayerID(${route.playerId}), StateNo = 0
+trigger1 = PlayerID(${route.playerId}), ${route.trigger ?? "StateNo = 0"}
 `;
 }
 

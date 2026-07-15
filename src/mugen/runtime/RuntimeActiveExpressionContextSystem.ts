@@ -1,4 +1,4 @@
-import type { ExpressionContext, ExpressionGameSpace } from "./ExpressionEvaluator";
+import type { ExpressionContext, ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import {
   RuntimeExpressionContextWorld,
   type RuntimeExpressionContextActor,
@@ -9,6 +9,7 @@ export type RuntimeActiveExpressionContextRequest<TActor extends RuntimeExpressi
   opponent: TActor;
   opponents?: readonly TActor[];
   characters?: readonly TActor[];
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   owner: TActor;
   tick?: number;
 };
@@ -20,6 +21,8 @@ export type RuntimeActiveExpressionContextFactoryInput<TActor extends RuntimeExp
   animTimeRemaining: (actor: TActor) => number;
   animElemTime: (actor: TActor, elementNumber: number) => number | undefined;
   inGuardDist: (actor: TActor, opponent: TActor) => boolean;
+  characters?: readonly TActor[];
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
 };
 
 export class RuntimeActiveExpressionContextWorld {
@@ -33,6 +36,7 @@ export class RuntimeActiveExpressionContextWorld {
       opponent: input.opponent,
       opponents: input.opponents,
       characters: input.characters ?? [input.actor, input.opponent, ...(input.opponents ?? [])],
+      playerIdTarget: input.playerIdTarget,
       owner: input.owner,
       stageBounds: input.stageBounds,
       gameSpace: input.gameSpace,

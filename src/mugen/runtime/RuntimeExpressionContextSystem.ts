@@ -59,6 +59,7 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   opponent: TActor;
   opponents?: readonly TActor[];
   characters?: readonly TActor[];
+  playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   rootSelection?: RuntimeRootSelectionEntry;
   owner?: TActor;
   stageBounds?: { left: number; right: number };
@@ -121,9 +122,9 @@ export class RuntimeExpressionContextWorld {
       rootPlayerId: actor.playerId,
       rootPlayerNo: actor.playerNo,
       target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId),
-      playerIdTarget: input.characters
-        ? (playerId) => this.resolvePlayerIdRedirect(actor, input.characters ?? [], playerId)
-        : undefined,
+      playerIdTarget:
+        input.playerIdTarget ??
+        (input.characters ? (playerId) => this.resolvePlayerIdRedirect(actor, input.characters ?? [], playerId) : undefined),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
       random: input.random,

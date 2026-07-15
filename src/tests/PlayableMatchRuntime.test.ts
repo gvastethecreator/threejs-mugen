@@ -84,6 +84,22 @@ describe("PlayableMatchRuntime", () => {
     );
   });
 
+  it("resolves PlayerID trigger redirects through the live root roster for standby roots", () => {
+    const stateNo = 2794;
+    const reserve = createPlayerIdRootReadReserve(stateNo);
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      reserveFighters: [reserve],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.reserveActors?.find(({ id }) => id === "p3")?.runtime.stateNo).toBe(stateNo);
+    expect(snapshot.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p3")?.executedControllers.ChangeState)
+      .toBe(1);
+  });
+
   it("publishes auxiliary resource ownership for explicit IKEMEN roots without widening behavior state", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
       runtimeProfile: "ikemen-go",
@@ -6982,6 +6998,32 @@ value = ${stateNo}
 `).states[0]!;
   reserve.states = reserve.states?.map((state) =>
     state.id === 0 ? { ...state, controllers: [...commandState.controllers, ...state.controllers] } : state,
+  );
+  return reserve;
+}
+
+function createPlayerIdRootReadReserve(stateNo: number): DemoFighterDefinition {
+  const reserve = createImportedFixture({
+    id: "ikemen-playerid-root-read",
+    displayName: "IKEMEN PlayerID Root Read",
+    withStateMove: false,
+    extraStateNos: [stateNo],
+  });
+  const routeState = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[State 0, PlayerID Root Read]
+type = ChangeState
+trigger1 = PlayerID(56), StateNo = 0
+value = ${stateNo}
+`).states[0]!;
+  reserve.states = reserve.states?.map((state) =>
+    state.id === 0 ? { ...state, controllers: [...routeState.controllers, ...state.controllers] } : state,
   );
   return reserve;
 }
