@@ -9,6 +9,7 @@ metadata, and keeps IKEMEN signals scanner-only. Mixed, stage-only, and
 system-only fixtures pass the same report snapshot/checksum path; focal 4/4 and
 TypeScript 7 pass. No runtime or score claim moves. Next: continue the Studio
 trust lane or choose the next independent compatibility slice.
+See `docs/reports/2026-07-14-package-analysis-v0-closeout.md`.
 
 Entry 540 closes the accumulated StudioSemanticDraft/v0 gate. The official KFM
 browser route proves 58 states / 318 controllers, invalid-to-valid repair,

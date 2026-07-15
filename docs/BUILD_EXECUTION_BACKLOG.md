@@ -11,7 +11,8 @@ maps the existing IKEMEN scanner to explicit `recognized` / `unsupported` /
 stage-only, and system-only fixtures use the same VFS entrypoint. Focal coverage
 passes 1 file / 4 tests and TypeScript 7 passes. No score movement; runtime,
 ZSS/Lua, license, screenpack parity, rollback, and netplay claims remain
-blocked. See `docs/research/2026-07-14-package-analysis-v0.md`.
+blocked. See `docs/reports/2026-07-14-package-analysis-v0-closeout.md` and
+`docs/research/2026-07-14-package-analysis-v0.md`.
 
 ## Entry 540 - StudioSemanticDraft/v0 closeout
 

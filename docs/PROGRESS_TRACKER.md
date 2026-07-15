@@ -9,7 +9,8 @@
   checksum-protected report path: 1 focal file / 4 tests; TypeScript 7 passes.
 - `ikemen-go-scan` remains explicitly scanner-only. No runtime, screenpack
   parity, license, rollback, netplay, or score claim moved.
-- See `docs/research/2026-07-14-package-analysis-v0.md`.
+- See `docs/reports/2026-07-14-package-analysis-v0-closeout.md` and
+  `docs/research/2026-07-14-package-analysis-v0.md`.
 
 ## Global report - 2026-07-14 StudioSemanticDraft/v0 closeout
 
