@@ -1261,6 +1261,84 @@ export function createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifac
   });
 }
 
+export function createSyntheticImportedTargetLifeStateEntryRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "target-life-state-entry-seed-p1-target", frames: 8, p1: ["x"], p2: [] },
+    { label: "target-life-state-entry-seed-p2-target", frames: 20, p1: [], p2: ["x"] },
+    { label: "target-life-state-entry-recover", frames: 80, p1: [], p2: [] },
+    { label: "target-life-state-entry-trigger", frames: 1, p1: [], p2: ["x"] },
+    { label: "target-life-state-entry-settle", frames: 0, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-life-state-entry-redirect-attacker",
+    displayName: "Synthetic Imported Target Life State Entry Redirect Attacker",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-life-state-entry-redirect-defender",
+    displayName: "Synthetic Imported Target Life State Entry Redirect Defender",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    withTargetLifeStateEntry: { redirectId: 56, targetId: 77, value: -20, absolute: true, kill: false },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-target-life-state-entry-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-life-state-entry-redirect-golden",
+      label: "Synthetic imported TargetLifeAdd state-entry RedirectID route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported IKEMEN trace proves state-entry RedirectID routes TargetLifeAdd to PlayerID 56 target memory while the caller retains its own target memory. Active-state routing, helper/projectile/team targets, and full parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-life-state-entry-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetLifeAdd"],
+        requiredExecutedOperations: ["hitdef", "target:targetlifeadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", observedLifeAtLeast: 1000, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", observedLifeAtMost: 980, minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 980, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedGuardPointsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-guardpoints",
@@ -45812,6 +45890,13 @@ export type SyntheticImportedTraceFighterOptions = {
     includeAuxiliary?: boolean;
     includeControl?: boolean;
   };
+  withTargetLifeStateEntry?: {
+    redirectId: SyntheticNumberExpression;
+    targetId?: number;
+    value?: number;
+    absolute?: boolean;
+    kill?: boolean;
+  };
   withTargetPowerStateEntry?: {
     redirectId: SyntheticNumberExpression;
     targetId?: number;
@@ -46573,6 +46658,7 @@ const stateEntryControllers = parseCns(`
 ${options.enemyStateEntry === undefined ? "" : enemyStateEntryBlock(options.enemyStateEntry)}
 ${options.playerIdStateEntry === undefined ? "" : playerIdStateEntryBlock(options.playerIdStateEntry)}
 ${options.withRedirectedResourceStateEntry === undefined ? "" : redirectedResourceStateEntryBlock(options.withRedirectedResourceStateEntry)}
+${options.withTargetLifeStateEntry === undefined ? "" : targetLifeStateEntryBlock(targetMemoryId, options.withTargetLifeStateEntry)}
 ${options.withTargetPowerStateEntry === undefined ? "" : targetPowerStateEntryBlock(targetMemoryId, options.withTargetPowerStateEntry)}
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.enemyNearIndexedStateEntry === undefined ? "" : enemyNearIndexedStateEntryBlock(options.enemyNearIndexedStateEntry)}
@@ -51585,6 +51671,35 @@ type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = PlayerID(${route.playerId}), ${route.trigger ?? "StateNo = 0"}
+`;
+}
+
+function targetLifeStateEntryBlock(
+  targetMemoryId: number,
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withTargetLifeStateEntry"]>,
+): string {
+  const targetId = config.targetId ?? targetMemoryId;
+  return `
+[State -1, Target Life Redirect Entry]
+type = TargetLifeAdd
+triggerall = var(31) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+id = ${targetId}
+value = ${config.value ?? -20}
+absolute = ${config.absolute === false ? 0 : 1}
+kill = ${config.kill === false ? 0 : 1}
+RedirectID = ${config.redirectId}
+
+[State -1, Target Life Redirect Entry Gate]
+type = VarSet
+triggerall = var(31) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+v = 31
+value = 1
 `;
 }
 

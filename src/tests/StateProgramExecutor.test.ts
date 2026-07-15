@@ -77,12 +77,17 @@ describe("StateProgramExecutor dispatch", () => {
     const targetPower = dispatchStateProgramController(
       compileControllerIr(controller("TargetPowerAdd", { id: "77", value: "40", RedirectID: "57" })),
     );
+    const targetLife = dispatchStateProgramController(
+      compileControllerIr(controller("TargetLifeAdd", { id: "77", value: "-20", absolute: "1", RedirectID: "56" })),
+    );
     const movement = dispatchStateProgramController(compileControllerIr(controller("VelAdd", { x: "1" })));
 
     expect(isStateEntrySetupDispatch(setup)).toBe(true);
     expect(isStateEntrySetupDispatch(randomSetup)).toBe(true);
     expect(targetPower).toMatchObject({ kind: "side-effect", effect: "target" });
     expect(isStateEntrySetupDispatch(targetPower)).toBe(true);
+    expect(targetLife).toMatchObject({ kind: "side-effect", effect: "target" });
+    expect(isStateEntrySetupDispatch(targetLife)).toBe(true);
     expect(isStateEntrySetupDispatch(movement)).toBe(false);
   });
 });
