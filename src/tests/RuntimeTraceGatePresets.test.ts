@@ -503,6 +503,8 @@ import {
   createSyntheticImportedTargetFacingStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetDropRedirectTraceArtifact,
   createSyntheticImportedTargetDropStateEntryRedirectTraceArtifact,
+  createSyntheticImportedTargetBindRedirectTraceArtifact,
+  createSyntheticImportedTargetBindStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1645,6 +1647,41 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", targetCount: 0 }),
         expect.objectContaining({ id: "p2", targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported TargetBind RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetBindRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-bind-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-bind-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetBind).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetbind"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 77, hasBinding: true }),
+      ]),
+    );
+  });
+
+  it("creates a required imported State -1 TargetBind RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetBindStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-bind-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-bind-state-entry-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetBind).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetbind"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true }),
       ]),
     );
   });

@@ -83,7 +83,7 @@ export type TargetControllerOp =
   | ({ kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetvelset"; requestedId?: number; x?: number; y?: number } & RedirectableTargetControllerOp)
-  | { kind: "target"; controllerType: "targetbind"; requestedId?: number; pos: [number, number, number?]; time: number }
+  | ({ kind: "target"; controllerType: "targetbind"; requestedId?: number; pos: [number, number, number?]; time: number } & RedirectableTargetControllerOp)
   | { kind: "target"; controllerType: "targetstate"; requestedId?: number; stateNo?: number };
 
 export type BindToTargetControllerOp = {
@@ -1738,12 +1738,15 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
     });
   }
   if (type === "targetbind") {
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+    if (redirectPlayerIdExpression === "invalid") return undefined;
     return {
       kind: "target",
       controllerType: "targetbind",
       requestedId,
       pos: numberTriple(findParam(controller, "pos")) ?? [0, 0],
       time: firstNumber(findParam(controller, "time")) ?? 1,
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     };
   }
   if (type === "targetstate") {
