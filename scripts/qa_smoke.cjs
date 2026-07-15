@@ -961,9 +961,11 @@ async function captureMugenLiteNoKoSlowJourney(page, options, importedId) {
     check();
   }));
   await page.keyboard.down("d");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("d");
-  await pauseOnNoKoSlow;
+  try {
+    await pauseOnNoKoSlow;
+  } finally {
+    await page.keyboard.up("d");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
   const finisher = await captureMugenLiteVisualState(
