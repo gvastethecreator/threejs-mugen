@@ -440,7 +440,8 @@ type RedirectableTargetControllerType =
   | "targetbind"
   | "targetstate"
   | "targetveladd"
-  | "targetvelset";
+  | "targetvelset"
+  | "bindtotarget";
 type PlayerIdTargetResolver = (
   caller: FighterMatchState,
   playerId: number,
@@ -3118,7 +3119,7 @@ function targetControllerRedirectExpression(controller: ControllerIr): string | 
     return undefined;
   }
   const operation = controller.operation;
-  const compiledExpression = operation?.kind === "target" && "redirectPlayerIdExpression" in operation
+  const compiledExpression = operation !== undefined && "redirectPlayerIdExpression" in operation
     ? operation.redirectPlayerIdExpression
     : undefined;
   if (compiledExpression !== undefined) {
@@ -3139,7 +3140,8 @@ function redirectableTargetControllerType(controller: ControllerIr): Redirectabl
     controller.normalizedType === "targetbind" ||
     controller.normalizedType === "targetstate" ||
     controller.normalizedType === "targetveladd" ||
-    controller.normalizedType === "targetvelset"
+    controller.normalizedType === "targetvelset" ||
+    controller.normalizedType === "bindtotarget"
     ? controller.normalizedType
     : undefined;
 }
@@ -4263,7 +4265,7 @@ function runStateEntrySetupControllers(
           actor: target,
           candidateTargets,
           controller,
-          effect: "target",
+          effect: controller.normalizedType === "bindtotarget" ? "bindtotarget" : "target",
           targetWorld: target.targetWorld,
           recordController: (recordedTarget, recordedController) => {
             compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);

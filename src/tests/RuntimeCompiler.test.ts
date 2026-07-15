@@ -722,6 +722,9 @@ time = 20
     const redirectedState = compileControllerIr(
       controller(200, "TargetState", [], { id: "3", value: "5300", redirectid: "57" }),
     );
+    const redirectedBindToTarget = compileControllerIr(
+      controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Head", posz: "7", time: "6", redirectid: "56" }),
+    );
     const bind = compileControllerIr(controller(200, "TargetBind", [], { id: "3", pos: "12,-8,5", time: "6" }));
     const bindToTarget = compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", posz: "7", time: "6" }));
     const state = compileControllerIr(controller(200, "TargetState", [], { id: "3", value: "5300" }));
@@ -741,6 +744,9 @@ time = 20
     );
     const invalidStateRedirect = compileControllerIr(
       controller(200, "TargetState", [], { id: "3", value: "5300", redirectid: "57, 0" }),
+    );
+    const invalidBindToTargetRedirect = compileControllerIr(
+      controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", time: "6", redirectid: "57, 0" }),
     );
 
     expect(life.operation).toMatchObject({
@@ -803,11 +809,21 @@ time = 20
       stateNo: 5300,
       redirectPlayerIdExpression: "57",
     });
+    expect(redirectedBindToTarget.operation).toEqual({
+      kind: "bindtotarget",
+      requestedId: 3,
+      pos: [12, -8],
+      posZ: 7,
+      postype: "head",
+      time: 6,
+      redirectPlayerIdExpression: "56",
+    });
     expect(invalidLifeRedirect.operation).toBeUndefined();
     expect(invalidFacingRedirect.operation).toBeUndefined();
     expect(invalidDropRedirect.operation).toBeUndefined();
     expect(invalidBindRedirect.operation).toBeUndefined();
     expect(invalidStateRedirect.operation).toBeUndefined();
+    expect(invalidBindToTargetRedirect.operation).toBeUndefined();
     expect(bind.operation).toMatchObject({
       kind: "target",
       controllerType: "targetbind",

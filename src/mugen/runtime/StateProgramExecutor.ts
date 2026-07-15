@@ -214,8 +214,8 @@ export function dispatchStateProgramController(controller: ControllerIr): StateP
 
 export function isStateEntrySetupDispatch(dispatch: StateProgramDispatch): boolean {
   if (dispatch.kind === "side-effect") {
-    return dispatch.effect === "target" &&
-      (
+    return (
+      (dispatch.effect === "target" && (
         dispatch.controller.normalizedType === "targetlifeadd" ||
         dispatch.controller.normalizedType === "targetpoweradd" ||
         dispatch.controller.normalizedType === "targetfacing" ||
@@ -224,7 +224,9 @@ export function isStateEntrySetupDispatch(dispatch: StateProgramDispatch): boole
         dispatch.controller.normalizedType === "targetstate" ||
         dispatch.controller.normalizedType === "targetveladd" ||
         dispatch.controller.normalizedType === "targetvelset"
-      );
+      )) ||
+      (dispatch.effect === "bindtotarget" && dispatch.controller.normalizedType === "bindtotarget")
+    );
   }
   if (dispatch.kind !== "runtime-controller") {
     return false;

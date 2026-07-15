@@ -93,7 +93,7 @@ export type BindToTargetControllerOp = {
   posZ?: number;
   postype: "foot" | "mid" | "head";
   time: number;
-};
+} & RedirectableTargetControllerOp;
 
 export type PauseControllerOp = {
   kind: "pause";
@@ -1763,8 +1763,10 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
   return undefined;
 }
 
-function compileBindToTargetControllerOp(controller: MugenStateController): BindToTargetControllerOp {
+function compileBindToTargetControllerOp(controller: MugenStateController): BindToTargetControllerOp | undefined {
   const pos = posWithPostype(findParam(controller, "pos"));
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (redirectPlayerIdExpression === "invalid") return undefined;
   return {
     kind: "bindtotarget",
     requestedId: firstNumber(findParam(controller, "id")),
@@ -1772,6 +1774,7 @@ function compileBindToTargetControllerOp(controller: MugenStateController): Bind
     posZ: firstNumber(findParam(controller, "posz")),
     postype: pos?.postype ?? "foot",
     time: firstNumber(findParam(controller, "time")) ?? 1,
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }
 

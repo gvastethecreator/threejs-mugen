@@ -5311,6 +5311,61 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes active BindToTarget RedirectID through the destination target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "bind-to-target-redirect-caller",
+      withStateMove: true,
+      withBindToTarget: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      bindToTargetRedirectId: 57,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "bind-to-target-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    let routedSnapshot: typeof snapshot | undefined;
+    const rememberRoutedSnapshot = () => {
+      if (!routedSnapshot && (snapshot.compatibilitySession?.actors ?? []).some((actor) => actor.executedControllers.BindToTarget)) {
+        routedSnapshot = snapshot;
+      }
+    };
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+
+    expect(routedSnapshot).toBeDefined();
+    expect(routedSnapshot?.actors[1]?.runtime.bindToTarget).toMatchObject({ actorId: "p1", targetId: 77, remaining: 3 });
+    expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
+  });
+
   it("routes state-entry TargetLifeAdd RedirectID through the target owner target memory", () => {
     const redirectedCaller = createImportedFixture({
       id: "target-life-state-entry-redirect-caller",
@@ -5786,6 +5841,86 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes state-entry BindToTarget RedirectID through the destination target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "bind-to-target-state-entry-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "bind-to-target-state-entry-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+      stateEntryResourceController: `
+[State -1, Redirected Entry Bind To Target]
+type = BindToTarget
+triggerall = var(25) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+pos = 20,-8,Foot
+time = 4
+RedirectID = 56
+
+[State -1, Redirected Entry Bind To Target Gate]
+type = VarSet
+triggerall = var(25) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+v = 25
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let routedSnapshot: typeof snapshot | undefined;
+    const rememberRoutedSnapshot = () => {
+      if (!routedSnapshot && (snapshot.compatibilitySession?.actors ?? []).some((actor) => actor.executedControllers.BindToTarget)) {
+        routedSnapshot = snapshot;
+      }
+    };
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+      rememberRoutedSnapshot();
+    }
+    for (let frame = 0; frame < 80; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+
+    expect(routedSnapshot).toBeDefined();
+    expect(routedSnapshot?.actors[0]?.runtime.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 3 });
+    expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
+  });
+
   it("fails closed for an invalid TargetFacing RedirectID", () => {
     const caller = createImportedFixture({
       withStateMove: true,
@@ -5902,6 +6037,31 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetState).toBeUndefined();
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetstate"]).toBeUndefined();
     expect(snapshot.logs.some((line) => line.includes("Blocked targetstate RedirectID 999"))).toBe(true);
+  });
+
+  it("fails closed for an invalid BindToTarget RedirectID", () => {
+    const caller = createImportedFixture({
+      withStateMove: true,
+      withBindToTarget: true,
+      passiveTargetController: `
+[State 0, Invalid Bind To Target Redirect]
+type = BindToTarget
+trigger1 = 1
+id = 77
+pos = 20,-8,Foot
+time = 4
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.bindToTarget).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.BindToTarget).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.bindtotarget).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked bindtotarget RedirectID 999"))).toBe(true);
   });
 
   it("fails closed for an invalid TargetLifeAdd RedirectID", () => {
@@ -6978,6 +7138,7 @@ function createImportedFixture(
     withTargetControllers?: boolean;
     withBindToTarget?: boolean;
     bindToTargetPostype?: "Foot" | "Mid" | "Head";
+    bindToTargetRedirectId?: number | string;
     withTargetDrop?: boolean;
     targetDropRedirectId?: number | string;
     targetBindRedirectId?: number | string;
@@ -7532,6 +7693,7 @@ trigger1 = Time = 1
 id = ${hitDefTargetId}
 pos = 20,-8,${options.bindToTargetPostype ?? "Foot"}
 time = 4
+${options.bindToTargetRedirectId === undefined ? "" : `RedirectID = ${options.bindToTargetRedirectId}`}
 `
     : "";
   const prePauseTargetBind = options.withPrePauseTargetBind

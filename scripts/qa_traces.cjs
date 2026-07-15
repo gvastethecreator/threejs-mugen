@@ -216,6 +216,16 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetStateStateEntryRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-bind-to-target-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedBindToTargetRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-bind-to-target-state-entry-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedBindToTargetStateEntryRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control-state-entry-redirect",
       required: true,
       artifact: presets.createSyntheticImportedControlStateEntryRedirectTraceArtifact(),
