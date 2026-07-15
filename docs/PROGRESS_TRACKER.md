@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 root resource RedirectID v0 closeout
+
+- IKEMEN root `RedirectID` now mutates `LifeAdd`, `LifeSet`, `PowerAdd`, and
+  `PowerSet` destinations through the live PlayerID registry in active CNS and
+  state-entry setup paths.
+- Dynamic resource values resolve against the imported caller before dispatch;
+  malformed, negative, missing, and legacy-profile routes fail closed, with
+  imported telemetry preserved for non-imported targets.
+- Verification passes 3 focused files / 843 tests, TypeScript 7, trace syntax,
+  `git diff --check`, and full `qa:trace` 605/605 (571 required / 34 optional /
+  0 skipped). Required checksums: `a10bfbff` and `6adde9e8`.
+- Helpers, projectiles, neutral identity, shared banks, auxiliary resource
+  families, exact `LifeAdd absolute`, KO/persistence/rollback/netplay, and full
+  parity remain blocked. No browser smoke or score movement.
+- See `docs/reports/2026-07-15-resource-redirectid-v0-closeout.md` and
+  `docs/research/2026-07-15-resource-redirectid-v0.md`.
+
 ## Global report - 2026-07-15 PlayerID root-roster trigger v1 closeout
 
 - Active expression contexts now project the full live root roster for bounded

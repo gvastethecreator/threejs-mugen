@@ -204,6 +204,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Frontier
 
+- [Implement root resource RedirectID basic resources](tickets/179-resource-redirectid-basic-resources.md) - resolved bounded IKEMEN root mutation for `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` across active CNS and state-entry setup, with caller-owned dynamic values, imported telemetry, and required checksums `a10bfbff` / `6adde9e8`; Helpers, projectiles, neutral actors, shared banks, auxiliary resources, exact `LifeAdd absolute`, and full parity remain blocked. Next: audit invalid/missing resource RedirectID behavior as an independent corpus boundary.
 - [Implement dizzy break transition](tickets/151-dizzy-break-transition.md) - resolved: imported direct HitDef contact now enters available common `StateDizzy` `6565300` / `AnimDizzy` `5300` only on a positive-to-zero actor-local crossing, after generic get-hit resolution; explicit `p2stateno`, unavailable states, repeated zero-floor hits, sharing/reset/persistence, HUD, and full parity remain blocked. Next: red-life `LifeShare`.
 
 - [Map Code Fu Man special route](tickets/132-map-codefuman-special-route.md) - resolved: authored `QCF_x` (`~D, DF, F, x`) reaches state `1000` / AIR `1000`, executes three `PosAdd` steps plus `HitDef`, and passes optional trace `5540d52b` with browser input and idle return. Broad special/corpus parity remains blocked.

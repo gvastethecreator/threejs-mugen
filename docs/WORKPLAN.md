@@ -2,6 +2,18 @@
 
 ## Active frontier - 2026-07-15
 
+Entry 546 closes the bounded IKEMEN root resource `RedirectID` slice for
+`LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet`. Active CNS and state-entry
+setup now resolve live root destinations while dynamic values stay caller-owned;
+the required active and state-entry traces pass. Focused 3 files / 843 tests,
+TypeScript 7, trace syntax, `git diff --check`, and full `qa:trace` 605/605
+(571 required, 34 optional) pass. No score movement. Helpers, projectiles,
+neutral identity, shared banks, auxiliary resources, exact `LifeAdd absolute`,
+and full parity remain blocked. See
+`docs/reports/2026-07-15-resource-redirectid-v0-closeout.md`.
+
+## Active frontier - 2026-07-15
+
 Entry 545 closes the bounded PlayerID root-roster trigger extension. Active
 expression contexts now receive the live root roster and match-owned resolver,
 so a standby P3 can read P1 through `PlayerID(id), trigger`; the required tag

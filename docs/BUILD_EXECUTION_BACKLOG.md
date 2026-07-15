@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 546 - bounded root resource RedirectID
+
+Added IKEMEN root `RedirectID` execution for `LifeAdd`, `LifeSet`, `PowerAdd`,
+and `PowerSet` in active CNS and state-entry setup paths. Destination lookup
+uses the live identity registry; dynamic `value`/`kill` parameters resolve in
+the caller context before target dispatch, and imported telemetry remains
+visible for demo destinations. Focused coverage passes 3 files / 843 tests,
+TypeScript 7, trace syntax, `git diff --check`, and full `pnpm qa:trace` 605/605
+(571 required, 34 optional, 0 skipped), with checksums `a10bfbff` and
+`6adde9e8`. No score movement. Helpers, projectiles, neutral identity,
+shared/auxiliary resource families, exact `LifeAdd absolute`, and full parity
+remain blocked. See `docs/reports/2026-07-15-resource-redirectid-v0-closeout.md`
+and `docs/research/2026-07-15-resource-redirectid-v0.md`.
+
 ## Entry 545 - bounded PlayerID root-roster trigger extension
 
 Active PlayerID trigger contexts now receive the match-owned live root roster
