@@ -1150,9 +1150,11 @@ async function captureMugenLiteCombatJourney(page, options) {
 
   const getHitPause = pauseWhenMugenLiteActorStateAppears(page, "p2", 5000, 5000, "get-hit");
   await page.keyboard.down("a");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("a");
-  await getHitPause;
+  try {
+    await getHitPause;
+  } finally {
+    await page.keyboard.up("a");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
   const capture = (id) => captureMugenLiteVisualState(
