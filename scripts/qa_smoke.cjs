@@ -715,9 +715,18 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
     return actor?.runtime?.stateNo === 0 && actor.runtime.ctrl === true;
   });
   const pauseOnAttack = page.evaluate(() => new Promise((resolve, reject) => {
-    const timeout = window.setTimeout(() => reject(new Error("MUGEN-lite attack frame was not observed")), 5000);
+    let lastSnapshot = {};
+    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite attack frame was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
     const check = () => {
-      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      lastSnapshot = actor ? {
+        stateNo: actor.runtime?.stateNo,
+        ctrl: actor.runtime?.ctrl,
+        frame: actor.frame,
+        activeCommands: actor.runtime?.activeCommands,
+        playing: bridge?.snapshot?.playing,
+      } : {};
       if (actor?.runtime?.stateNo === 200 && actor?.frame?.spriteGroup === 200 && actor.frame.spriteIndex === 0) {
         window.clearTimeout(timeout);
         document.querySelector('[data-action="play-pause"]')?.click();
@@ -728,10 +737,12 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
     };
     check();
   }));
-  await page.keyboard.down("x");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("x");
-  await pauseOnAttack;
+  await page.keyboard.down("a");
+  try {
+    await pauseOnAttack;
+  } finally {
+    await page.keyboard.up("a");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const attack = await captureMugenLiteVisualState(page, options.attackScreenshotPath, options.attackCanvasPath);
   const pauseOnAttackFollowThrough = pauseWhenMugenLiteActorFrameAppears(page, "p1", 200, 200, 1, "attack-follow-through");
