@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 553 - bounded TargetVelAdd/TargetVelSet RedirectID
+
+Closed the root-only IKEMEN `RedirectID` route for imported
+`TargetVelAdd`/`TargetVelSet` across active CNS and State -1 setup. The live
+root PlayerID destination owns remembered-target velocity mutation while the
+caller retains typed x/y/ID and RedirectID expression context. Missing
+RedirectID stays local; invalid, unavailable, disabled, destroyed, negative,
+empty, malformed, and legacy routes fail closed. Required active and
+state-entry traces prove target links, destination ownership, velocity
+mutation, and typed controller/operation telemetry with checksums `4f62267d`
+and `dedf1499`. Affected suites pass 5 files / 893 tests; TypeScript 7, trace
+syntax, `git diff --check`, and full `pnpm qa:trace` pass 615/615 (581
+required, 34 optional, 0 skipped). No score movement. TargetFacing,
+TargetBind, TargetState, helpers, projectiles, teams, exact multi-target
+ordering, persistence, rollback/netplay, presentation, and full parity remain
+bounded separately. See
+`docs/reports/2026-07-15-target-velocity-redirectid-v1-closeout.md` and
+`docs/research/2026-07-15-target-velocity-redirectid-selection.md`.
+
 ## Entry 552 - bounded TargetLifeAdd state-entry RedirectID
 
 Closed the explicit IKEMEN root RedirectID route for imported State -1

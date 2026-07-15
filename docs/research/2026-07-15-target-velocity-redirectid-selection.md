@@ -55,14 +55,23 @@ team ownership.
 - no helper, projectile, team, binding, target-state, persistence,
   rollback/netplay, presentation, or score claim.
 
-## Evidence plan
+## Evidence delivered
 
-Add one required imported trace that seeds reciprocal target links, executes both
-velocity controllers through a live PlayerID 56 destination, proves the caller
-and destination target memories remain distinct, and captures active plus
-state-entry controller/operation telemetry. Focused compiler, runtime, and
-trace-preset tests will cover the typed RedirectID and the destination-owned
-`TargetVelSet` direction behavior.
+The implementation uses paired required imported traces so active CNS and State
+-1 scheduling remain independently observable:
+
+- `synthetic-imported-target-velocity-redirect` / `4f62267d` covers active
+  `TargetVelAdd` and `TargetVelSet` routing, target links, velocity mutation,
+  and destination-owned controller telemetry.
+- `synthetic-imported-target-velocity-state-entry-redirect` / `dedf1499` covers
+  State -1 setup routing, target links, y-velocity mutation, and typed
+  controller/operation telemetry.
+
+Focused compiler, runtime, and trace-preset tests cover typed RedirectID,
+invalid fail-closed behavior, and the current destination-owned
+`TargetVelSet` direction contract. Full trace QA records both artifacts as
+required; this slice does not generalize RedirectID compatibility to other
+Target* controllers.
 
 ## Remaining uncertainty
 

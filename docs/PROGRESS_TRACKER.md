@@ -1,5 +1,38 @@
 ﻿# Progress Tracker
 
+## Daily roadmap report - 2026-07-15 Entry 553
+
+- Entry 553 and 615/615 traces are the committed evidence frontier. Active
+  CNS and imported State -1 TargetVelAdd/TargetVelSet now have required root
+  RedirectID routes with checksums `4f62267d` and `dedf1499`.
+- Full affected runtime suites pass 5 files / 893 tests; TypeScript 7, trace
+  syntax, and `git diff --check` pass.
+- The live PlayerID destination owns remembered-target velocity mutation while
+  the caller retains typed x/y/ID and RedirectID expressions. Invalid routes
+  fail closed; no score movement or browser smoke is claimed.
+- Next runtime cut: select an independent Target* family. TargetFacing,
+  TargetBind, TargetState, helpers, projectiles, teams, exact multi-target
+  ordering, persistence, rollback/netplay, presentation, and full parity
+  remain blocked.
+- See `docs/reports/2026-07-15-target-velocity-redirectid-v1-closeout.md`.
+
+## Global report - 2026-07-15 TargetVelAdd/TargetVelSet RedirectID v1 closeout
+
+- Imported active-CNS and State -1 TargetVelAdd/TargetVelSet RedirectID now
+  route target-memory velocity mutation through a live root PlayerID
+  destination while preserving caller-owned typed expressions.
+- Paired required traces prove reciprocal target links, destination-owned
+  mutation, target ID filtering, and controller/operation telemetry. Checksums:
+  active `4f62267d`, State -1 `dedf1499`.
+- Verification passes 5 files / 893 tests, TypeScript 7, trace-script syntax,
+  `git diff --check`, and full `qa:trace` 615/615 (581 required / 34 optional /
+  0 skipped).
+- TargetFacing, TargetBind, TargetState, helper/projectile/team ownership,
+  exact multi-target ordering, persistence, rollback/netplay, presentation,
+  score, and full parity remain bounded separately.
+- See `docs/reports/2026-07-15-target-velocity-redirectid-v1-closeout.md` and
+  `docs/research/2026-07-15-target-velocity-redirectid-selection.md`.
+
 ## Daily roadmap report - 2026-07-15 Entry 552
 
 - Entry 552 and 613/613 traces are the committed evidence frontier. State -1

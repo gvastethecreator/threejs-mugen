@@ -1,5 +1,25 @@
 # Workplan
 
+## Daily architecture plan - 2026-07-15 Entry 553
+
+Entry 553 closes the bounded root-only TargetVelAdd/TargetVelSet RedirectID
+route for active CNS and imported State -1 setup. Next, select one independent
+Target* family boundary; keep TargetFacing/TargetBind/TargetState,
+helper/projectile/team ownership, exact multi-target ordering, persistence,
+rollback/netplay, and presentation outside that boundary. Product lanes remain
+materialized corpus, Studio evidence-backed greens, one complete asset release
+record, SourceWriteReceipt, and first shared Evidence contract. Scores do not
+move. See
+`docs/reports/2026-07-15-target-velocity-redirectid-v1-closeout.md`.
+
+## Active frontier - 2026-07-15 Entry 553
+
+Required traces `4f62267d` (active) and `dedf1499` (State -1) prove the paired
+velocity routes, typed telemetry, and distinct caller/destination target
+memory. Global QA passes 615/615 (581 required, 34 optional). The next runtime
+cut is an independent Target* family; broader ownership and parity remain
+blocked.
+
 ## Daily architecture plan - 2026-07-15 Entry 552
 
 Entry 552 closes State -1 TargetLifeAdd RedirectID for live root fighters.
