@@ -1,5 +1,36 @@
 ﻿# Progress Tracker
 
+## Daily roadmap report - 2026-07-15 Entry 550
+
+- Entry 550 and 611/611 traces are the committed evidence frontier. State -1
+  TargetPowerAdd now has a required imported RedirectID route with checksum
+  `e531fcdc`.
+- Entries 539-542 close the old StudioSemanticDraft, PackageAnalysis/v0, and
+  AssetProvenance/v2 selectors. No score changes in this planning pass.
+- Next evidence cuts are a materialized corpus snapshot, target-family dispatch
+  seam, atomic Turns plan, phase-aware RoundState, evidence-backed Studio greens,
+  one complete asset release record, and a real scanner consumer.
+- `CONTEXT.md` is a known stale cursor outside this automation's allowed write
+  surface.
+- See `docs/reports/2026-07-15-target-power-state-entry-redirectid-v1-closeout.md`.
+
+## Global report - 2026-07-15 TargetPowerAdd state-entry RedirectID v1 closeout
+
+- Imported State -1 TargetPowerAdd RedirectID now routes target-memory power
+  mutation through a live root PlayerID destination while the caller retains
+  value and RedirectID expression ownership.
+- The required trace proves PlayerID 56, target id 77, both target links, one
+  target controller and operation, final p1/p2 power 35/110, and checksum
+  `e531fcdc`.
+- Verification passes 3 files / 814 tests, TypeScript 7, trace-script syntax,
+  `git diff --check`, and full `qa:trace` 611/611 (577 required / 34
+  optional / 0 skipped). No browser smoke or score movement.
+- Helpers, projectiles, neutral identity, team/simul targets, other Target*
+  families, persistent timing, rollback/netplay, presentation, and full
+  parity remain blocked.
+- See docs/reports/2026-07-15-target-power-state-entry-redirectid-v1-closeout.md
+  and docs/research/2026-07-15-target-power-state-entry-redirectid-v1.md.
+
 ## Global report - 2026-07-15 TargetPowerAdd RedirectID v1 closeout
 
 - Root-only IKEMEN TargetPowerAdd RedirectID now routes active CNS target

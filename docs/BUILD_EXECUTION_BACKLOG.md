@@ -1,5 +1,22 @@
 # Build Execution Backlog
 
+## Entry 550 - bounded TargetPowerAdd state-entry RedirectID
+
+Closed the explicit IKEMEN root RedirectID route for imported State -1
+TargetPowerAdd. The live PlayerID destination owns the target-memory
+mutation while the caller retains value and RedirectID expression context;
+missing RedirectID stays local and invalid, unavailable, disabled, destroyed,
+negative, empty, malformed, and legacy routes fail closed. A required
+imported trace proves the state-entry schedule, both target links, PlayerID 56
+ownership, target id 77, and checksum `e531fcdc`. Affected runtime suites pass
+3 files / 814 tests; TypeScript 7, trace syntax, `git diff --check`, and full
+`pnpm qa:trace` pass 611/611 (577 required, 34 optional, 0 skipped). No score
+movement. Helpers, projectiles, neutral identity, team/simul targets, other
+Target* families, persistence, rollback/netplay, presentation, and full parity
+remain blocked. See
+`docs/reports/2026-07-15-target-power-state-entry-redirectid-v1-closeout.md`
+and `docs/research/2026-07-15-target-power-state-entry-redirectid-v1.md`.
+
 ## Entry 549 - bounded TargetPowerAdd RedirectID
 
 Extended the explicit IKEMEN root RedirectID route to TargetPowerAdd in

@@ -1,5 +1,28 @@
 # Workplan
 
+## Daily architecture plan - 2026-07-15
+
+Entry 550 closes the bounded IKEMEN State -1 TargetPowerAdd RedirectID route.
+After this close, select the next independent Target* family boundary before
+any generic target refactor. The materialized compatibility corpus snapshot,
+redirected-target dispatch seam, active TargetLifeAdd, atomic Turns
+preflight/commit, and phase-aware RoundState remain the next runtime lanes.
+Product lanes select evidence-backed Trust Chain results, PackageAnalysis
+production surfacing, one complete asset release record, SourceWriteReceipt,
+and then the first shared Evidence contract. Scores do not move from this
+docs-only plan. See
+`docs/reports/2026-07-15-target-power-state-entry-redirectid-v1-closeout.md`.
+
+## Active frontier - 2026-07-15
+
+Entry 550 closes State -1 TargetPowerAdd RedirectID for live root fighters.
+The required imported trace proves PlayerID 56 destination ownership, target
+id 77, final p1/p2 power 35/110, and checksum `e531fcdc`; global QA passes
+611/611 (577 required, 34 optional). Helpers, projectiles, neutral identity,
+team/simul aggregation, other Target* families, persistence, rollback/netplay,
+presentation, score movement, and full parity remain blocked. See
+`docs/reports/2026-07-15-target-power-state-entry-redirectid-v1-closeout.md`.
+
 ## Active frontier - 2026-07-15
 
 Entry 549 closes the bounded IKEMEN root TargetPowerAdd RedirectID route.
