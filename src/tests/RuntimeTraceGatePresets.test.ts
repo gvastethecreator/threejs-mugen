@@ -610,6 +610,7 @@ import {
   createSyntheticImportedNumExplodTraceArtifact,
   createSyntheticImportedEnemyNearTraceArtifact,
   createSyntheticImportedEnemyNearIndexTraceArtifact,
+  createSyntheticImportedEnemyTraceArtifact,
   createSyntheticImportedNumHelperTraceArtifact,
   createSyntheticImportedNumProjTraceArtifact,
   createSyntheticImportedNumTargetTraceArtifact,
@@ -2226,6 +2227,31 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([269]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([269]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 269)).toBe(true);
+  });
+
+  it("creates a synthetic imported Enemy artifact with redirect branch evidence", () => {
+    const artifact = createSyntheticImportedEnemyTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-enemy-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.routedStates).toContain(270);
+    expect(evidence?.executedStates).toContain(270);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([270]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([270]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 270)).toBe(true);
   });
 
   it("creates a synthetic imported EnemyNear indexed artifact with fail-closed evidence", () => {

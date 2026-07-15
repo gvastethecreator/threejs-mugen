@@ -372,6 +372,32 @@ describe("RuntimeExpressionContextWorld", () => {
     ).toBe(0);
   });
 
+  it("routes Partner, Enemy, and P3/P4 identity through ordered root rosters", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "P1 Author", { vars: [0, 0, 1] });
+    const primaryEnemy = runtimeActor("p2", "P2 Author", { life: 900, pos: { x: 180, y: 0 } });
+    const partner = runtimeActor("p3", "P3 Author", { life: 700, pos: { x: -40, y: 0 } });
+    const secondaryEnemy = runtimeActor("p4", "P4 Author", { life: 600, pos: { x: 20, y: 0 } });
+    const input = {
+      actor,
+      opponent: primaryEnemy,
+      characters: [actor, primaryEnemy, partner, secondaryEnemy],
+      rootSelection: {
+        actorId: actor.id,
+        side: 1 as const,
+        partnerIds: [partner.id],
+        enemyIds: [primaryEnemy.id, secondaryEnemy.id],
+        p2CandidateIds: [primaryEnemy.id],
+      },
+    };
+
+    expect(world.evaluateNumber("NumPartner + Partner, Life + Enemy, Life + Enemy(1), Life + P2Life", input)).toBe(3101);
+    expect(world.evaluateNumber('P3Name = "p3" && P4Name = "p4"', input)).toBe(1);
+    expect(world.evaluateNumber("EnemyNear, Life", input)).toBe(600);
+    expect(world.evaluateNumber("Enemy(var(2)), Life", input)).toBe(600);
+    expect(world.evaluateNumber("Partner(1), Life", input)).toBe(0);
+  });
+
   it("fails P2 reads closed when an explicit selection has no candidate", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

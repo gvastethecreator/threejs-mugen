@@ -12,6 +12,8 @@ export type ExpressionContext = {
   opponentPlayerNo?: number;
   enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
   enemyNearFallbackToOpponent?: boolean;
+  partner?: (index: number) => ExpressionRedirectTarget | undefined;
+  enemy?: (index: number) => ExpressionRedirectTarget | undefined;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
   localCoord?: [number, number];
@@ -35,6 +37,8 @@ export type ExpressionContext = {
   authorName?: string;
   opponentName?: string;
   opponentAuthorName?: string;
+  p3Name?: string;
+  p4Name?: string;
   teamSide?: number;
   opponentTeamSide?: number;
   parentTeamSide?: number;
@@ -57,6 +61,7 @@ export type ExpressionContext = {
   moveGuarded?: () => boolean | number;
   moveReversed?: () => boolean | number;
   numEnemy?: () => number;
+  numPartner?: () => number;
   numExplod?: (explodId?: number) => number;
   numHelper?: (helperId?: number) => number;
   numProj?: (projectileId?: number) => number;
@@ -206,7 +211,7 @@ function rewriteAnimElemTriggerSyntax(expression: string): string {
 }
 
 function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
-  const redirect = /^(enemynear|parent|root|target)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+  const redirect = /^(enemynear|partner|enemy|parent|root|target)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
   if (!redirect) {
     return undefined;
   }
@@ -221,6 +226,13 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
     return evaluateExpression(expressionBody, {
       ...redirected,
     });
+  }
+  if (target === "partner" || target === "enemy") {
+    const redirected = rosterRedirectContext(target, index, context);
+    if (redirected === "fail") {
+      return 0;
+    }
+    return evaluateExpression(expressionBody, redirected);
   }
   if (target === "target") {
     const targetId = resolveRedirectTargetId(index, context);
@@ -436,7 +448,14 @@ class ExpressionParser {
 
   private tryConsumeRedirectContext(identifier: string): ExpressionContext | "fail" | undefined {
     const target = identifier.toLowerCase();
-    if (target !== "enemynear" && target !== "parent" && target !== "root" && target !== "target") {
+    if (
+      target !== "enemynear" &&
+      target !== "partner" &&
+      target !== "enemy" &&
+      target !== "parent" &&
+      target !== "root" &&
+      target !== "target"
+    ) {
       return undefined;
     }
     const cursorBeforeRedirect = this.cursor;
@@ -447,6 +466,9 @@ class ExpressionParser {
     }
     if (target === "enemynear") {
       return enemyNearRedirectContext(index, this.context);
+    }
+    if (target === "partner" || target === "enemy") {
+      return rosterRedirectContext(target, index, this.context);
     }
     if (target === "target") {
       const targetId = resolveRedirectTargetId(index, this.context);
@@ -565,6 +587,12 @@ class ExpressionParser {
     }
     if (lower === "p2name") {
       return this.context.opponentName ?? "";
+    }
+    if (lower === "p3name") {
+      return this.context.p3Name ?? "";
+    }
+    if (lower === "p4name") {
+      return this.context.p4Name ?? "";
     }
     if (lower === "authorname") {
       return this.context.authorName ?? "";
@@ -752,6 +780,9 @@ class ExpressionParser {
     }
     if (lower === "numenemy") {
       return this.numEnemy();
+    }
+    if (lower === "numpartner") {
+      return this.context.numPartner?.() ?? 0;
     }
     if (lower === "numproj" || lower === "numprojid") {
       return this.numProj();
@@ -1343,6 +1374,23 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
   };
 }
 
+function rosterRedirectContext(target: "partner" | "enemy", index: string | undefined, context: ExpressionContext): ExpressionContext | "fail" {
+  const rosterIndex = resolveRosterIndex(target, index, context);
+  if (rosterIndex === "unsupported") {
+    return "fail";
+  }
+  const redirected = target === "partner" ? context.partner?.(rosterIndex) : context.enemy?.(rosterIndex);
+  if (!redirected) {
+    if (!context.partner && target === "partner") {
+      context.reportUnsupported?.("partner");
+    } else if (!context.enemy && target === "enemy") {
+      context.reportUnsupported?.("enemy");
+    }
+    return "fail";
+  }
+  return redirectedTargetContext(context, redirected);
+}
+
 function redirectedTargetContext(context: ExpressionContext, redirected: ExpressionRedirectTarget): ExpressionContext {
   return {
     ...context,
@@ -1393,6 +1441,32 @@ function resolveEnemyNearIndex(index: string | undefined, context: ExpressionCon
   return normalizeEnemyNearIndex(numeric(value), context);
 }
 
+function resolveRosterIndex(
+  target: "partner" | "enemy",
+  index: string | undefined,
+  context: ExpressionContext,
+): number | "unsupported" {
+  if (!index || index.trim() === "") {
+    return 0;
+  }
+  const trimmed = index.trim();
+  if (/^-?\d+$/.test(trimmed)) {
+    return normalizeRosterIndex(target, Number(trimmed), context);
+  }
+  let indexUnsupported = false;
+  const value = evaluateExpression(trimmed, {
+    ...context,
+    reportUnsupported: (feature) => {
+      indexUnsupported = true;
+      context.reportUnsupported?.(feature);
+    },
+  });
+  if (indexUnsupported || isFailedRedirect(value)) {
+    return "unsupported";
+  }
+  return normalizeRosterIndex(target, numeric(value), context);
+}
+
 function normalizeEnemyNearIndex(value: number, context: ExpressionContext): number | "unsupported" {
   if (!Number.isFinite(value)) {
     context.reportUnsupported?.("enemynear(dynamic-invalid)");
@@ -1404,6 +1478,19 @@ function normalizeEnemyNearIndex(value: number, context: ExpressionContext): num
     return "unsupported";
   }
   return enemyIndex;
+}
+
+function normalizeRosterIndex(target: "partner" | "enemy", value: number, context: ExpressionContext): number | "unsupported" {
+  if (!Number.isFinite(value)) {
+    context.reportUnsupported?.(`${target}(dynamic-invalid)`);
+    return "unsupported";
+  }
+  const rosterIndex = Math.trunc(value);
+  if (rosterIndex < 0) {
+    context.reportUnsupported?.(`${target}(negative)`);
+    return "unsupported";
+  }
+  return rosterIndex;
 }
 
 function normalizeRedirectTargetId(value: number, context: ExpressionContext): number | "unsupported" {

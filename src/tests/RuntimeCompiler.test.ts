@@ -59,9 +59,13 @@ time = 20
     const p2Metrics = compileExpression(
       'NumEnemy && TeamSide = 1 && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
     );
+    const rosterIdentity = compileExpression(
+      'NumPartner = 1 && P3Name = "Partner" && P4Name = "Enemy 2" && Partner, Life > 0 && Enemy(var(0)), Life > 0',
+    );
     const enemyNearIndexed = compileExpression("enemynear(1), stateno = 5000");
     const enemyNearDynamicIndex = compileExpression("enemynear(var(0)), stateno = 5000");
     const unsupportedEnemyNearNegative = compileExpression("enemynear(-1), stateno = 5000");
+    const unsupportedPartnerNegative = compileExpression("partner(-1), life > 0");
     const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
     const unsupportedTargetDynamic = compileExpression("Target(enemynear(1), stateno), Life > 0");
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
@@ -146,6 +150,9 @@ time = 20
       "PrevStateType",
       "TeamSide",
     ]);
+    expect(rosterIdentity.supportLevel).toBe("executable");
+    expect(rosterIdentity.functions).toEqual(["var"]);
+    expect(rosterIdentity.identifiers).toEqual(["Life", "NumPartner", "P3Name", "P4Name"]);
     expect(enemyNearIndexed.supportLevel).toBe("executable");
     expect(enemyNearIndexed.identifiers).toEqual(["stateno"]);
     expect(enemyNearDynamicIndex.supportLevel).toBe("executable");
@@ -153,6 +160,8 @@ time = 20
     expect(enemyNearDynamicIndex.identifiers).toEqual(["stateno"]);
     expect(unsupportedEnemyNearNegative.supportLevel).toBe("unsupported");
     expect(unsupportedEnemyNearNegative.unsupportedFeatures).toEqual(["enemynear(negative)"]);
+    expect(unsupportedPartnerNegative.supportLevel).toBe("unsupported");
+    expect(unsupportedPartnerNegative.unsupportedFeatures).toEqual(["partner(negative)"]);
     expect(unsupportedParentIndex.supportLevel).toBe("unsupported");
     expect(unsupportedParentIndex.unsupportedFeatures).toEqual(["parent(index)"]);
     expect(unsupportedTargetDynamic.supportLevel).toBe("executable");

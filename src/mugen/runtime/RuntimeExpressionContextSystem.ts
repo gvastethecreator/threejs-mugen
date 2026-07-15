@@ -78,7 +78,11 @@ export class RuntimeExpressionContextWorld {
     const { actor } = input;
     const owner = input.owner ?? actor;
     const opponentRoster = this.opponentRoster(input);
+    const enemyRoster = this.enemyRoster(input);
+    const partnerRoster = this.partnerRoster(input);
     const selectedP2 = this.selectedP2(input);
+    const selectedP3 = partnerRoster[0];
+    const selectedP4 = enemyRoster[1];
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
 
     return {
@@ -90,10 +94,14 @@ export class RuntimeExpressionContextWorld {
       opponentPlayerNo: selectedP2?.playerNo,
       enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index),
       enemyNearFallbackToOpponent: input.rootSelection ? false : undefined,
+      partner: (index) => this.resolveRosterRedirect(actor, partnerRoster, index),
+      enemy: (index) => this.resolveRosterRedirect(actor, enemyRoster, index),
       name: actor.definition.displayName,
       authorName: actor.definition.authorName,
       opponentName: selectedP2?.definition.displayName,
       opponentAuthorName: selectedP2?.definition.authorName,
+      p3Name: selectedP3?.definition.displayName,
+      p4Name: selectedP4?.definition.displayName,
       teamSide: runtimeActorTeamSide(actor),
       opponentTeamSide: selectedP2 ? runtimeActorTeamSide(selectedP2) : undefined,
       stageBounds: input.stageBounds,
@@ -136,6 +144,7 @@ export class RuntimeExpressionContextWorld {
       receivedDamage: () => this.receivedDamageValue(actor),
       receivedHits: () => this.receivedHitsValue(actor),
       numEnemy: () => opponentRoster.length,
+      numPartner: () => partnerRoster.length,
       numExplod: (explodId) => this.countEffectActors(actor, "explod", explodId),
       numHelper: (helperId) => this.countEffectActors(actor, "helper", helperId),
       numProj: (projectileId) => this.countEffectActors(actor, "projectile", projectileId),
@@ -178,24 +187,7 @@ export class RuntimeExpressionContextWorld {
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
-      self: opponent.runtime,
-      playerId: opponent.playerId,
-      playerNo: opponent.playerNo,
-      opponent: actor.runtime,
-      opponentPlayerId: actor.playerId,
-      opponentPlayerNo: actor.playerNo,
-      localCoord: opponent.definition.localCoord,
-      opponentLocalCoord: actor.definition.localCoord,
-      sizeBoxX: runtimeExpressionSizeBoxX(opponent, includeWidth),
-      opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
-      sizeBoxY: runtimeExpressionSizeBoxY(opponent, includeWidth),
-      opponentSizeBoxY: runtimeExpressionSizeBoxY(actor, includeWidth),
-      name: opponent.definition.displayName,
-      authorName: opponent.definition.authorName,
-      opponentName: actor.definition.displayName,
-      opponentAuthorName: actor.definition.authorName,
-      teamSide: runtimeActorTeamSide(opponent),
-      opponentTeamSide: runtimeActorTeamSide(actor),
+      ...this.createRedirectTarget(actor, opponent, includeWidth),
     };
   }
 
@@ -210,24 +202,7 @@ export class RuntimeExpressionContextWorld {
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
-      self: opponent.runtime,
-      playerId: opponent.playerId,
-      playerNo: opponent.playerNo,
-      opponent: actor.runtime,
-      opponentPlayerId: actor.playerId,
-      opponentPlayerNo: actor.playerNo,
-      localCoord: opponent.definition.localCoord,
-      opponentLocalCoord: actor.definition.localCoord,
-      sizeBoxX: runtimeExpressionSizeBoxX(opponent, includeWidth),
-      opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
-      sizeBoxY: runtimeExpressionSizeBoxY(opponent, includeWidth),
-      opponentSizeBoxY: runtimeExpressionSizeBoxY(actor, includeWidth),
-      name: opponent.definition.displayName,
-      authorName: opponent.definition.authorName,
-      opponentName: actor.definition.displayName,
-      opponentAuthorName: actor.definition.authorName,
-      teamSide: runtimeActorTeamSide(opponent),
-      opponentTeamSide: runtimeActorTeamSide(actor),
+      ...this.createRedirectTarget(actor, opponent, includeWidth),
     };
   }
 
@@ -284,6 +259,64 @@ export class RuntimeExpressionContextWorld {
     }
     const opponents = input.opponents ?? [input.opponent];
     return this.opponentSelectionWorld.orderByNearest(input.actor, opponents);
+  }
+
+  private enemyRoster<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): readonly TActor[] {
+    if (input.rootSelection) {
+      return this.actorsForIds(input, input.rootSelection.enemyIds);
+    }
+    return input.opponents ?? [input.opponent];
+  }
+
+  private partnerRoster<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): readonly TActor[] {
+    if (!input.rootSelection) {
+      return [];
+    }
+    return this.actorsForIds(input, input.rootSelection.partnerIds);
+  }
+
+  private actorsForIds<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>, ids: readonly string[]): readonly TActor[] {
+    const byId = new Map(input.characters?.map((actor) => [actor.id, actor]) ?? []);
+    return ids.flatMap((id) => {
+      const actor = byId.get(id);
+      return actor ? [actor] : [];
+    });
+  }
+
+  private resolveRosterRedirect<TActor extends RuntimeExpressionContextActor>(
+    actor: TActor,
+    roster: readonly TActor[],
+    index: number,
+  ): ExpressionRedirectTarget | undefined {
+    const redirected = roster[index];
+    return redirected ? this.createRedirectTarget(actor, redirected) : undefined;
+  }
+
+  private createRedirectTarget<TActor extends RuntimeExpressionContextActor>(
+    actor: TActor,
+    redirected: TActor,
+    includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition),
+  ): ExpressionRedirectTarget {
+    return {
+      self: redirected.runtime,
+      playerId: redirected.playerId,
+      playerNo: redirected.playerNo,
+      opponent: actor.runtime,
+      opponentPlayerId: actor.playerId,
+      opponentPlayerNo: actor.playerNo,
+      localCoord: redirected.definition.localCoord,
+      opponentLocalCoord: actor.definition.localCoord,
+      sizeBoxX: runtimeExpressionSizeBoxX(redirected, includeWidth),
+      opponentSizeBoxX: runtimeExpressionSizeBoxX(actor, includeWidth),
+      sizeBoxY: runtimeExpressionSizeBoxY(redirected, includeWidth),
+      opponentSizeBoxY: runtimeExpressionSizeBoxY(actor, includeWidth),
+      name: redirected.definition.displayName,
+      authorName: redirected.definition.authorName,
+      opponentName: actor.definition.displayName,
+      opponentAuthorName: actor.definition.authorName,
+      teamSide: runtimeActorTeamSide(redirected),
+      opponentTeamSide: runtimeActorTeamSide(actor),
+    };
   }
 
   private selectedP2<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): TActor | undefined {

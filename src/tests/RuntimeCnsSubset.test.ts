@@ -246,6 +246,33 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression('P1Name = "Kung Fu Man"', { self: state, name: "Kung Fu Man" })).toBe(1);
     expect(evaluateExpression('P2Name = "Mira Volt"', { self: state, opponent, opponentName: "Mira Volt" })).toBe(1);
     expect(evaluateExpression('AuthorName = "Elecbyte"', { self: state, authorName: "Elecbyte" })).toBe(1);
+    const partner = runtimeState({ life: 700, stateNo: 7001 });
+    const secondaryEnemy = runtimeState({ life: 600, stateNo: 7002 });
+    const rosterContext = {
+      self: state,
+      opponent,
+      p3Name: "Partner",
+      p4Name: "Secondary Rival",
+      numPartner: () => 1,
+      partner: (index: number) => (index === 0 ? { self: partner, opponent: state, name: "Partner" } : undefined),
+      enemy: (index: number) => {
+        if (index === 0) return { self: opponent, opponent: state, name: "Mira Volt" };
+        if (index === 1) return { self: secondaryEnemy, opponent: state, name: "Secondary Rival" };
+        return undefined;
+      },
+    };
+    expect(evaluateExpression('NumPartner = 1 && P3Name = "Partner" && P4Name = "Secondary Rival"', rosterContext)).toBe(1);
+    expect(evaluateExpression("Partner, Life = 700 && Enemy, Life = 1000 && Enemy(1), Life = 600", rosterContext)).toBe(1);
+    const dynamicEnemyContext = { ...rosterContext, self: runtimeState({ vars: [1] }) };
+    expect(evaluateExpression("Enemy(var(0)), StateNo = 7002", dynamicEnemyContext)).toBe(1);
+    const negativeRosterIndexUnsupported: string[] = [];
+    expect(
+      evaluateExpression("Partner(-1), Life = 700", {
+        ...rosterContext,
+        reportUnsupported: (feature) => negativeRosterIndexUnsupported.push(feature),
+      }),
+    ).toBe(0);
+    expect(negativeRosterIndexUnsupported).toEqual(["partner(negative)"]);
     expect(
       evaluateExpression('EnemyNear, AuthorName = "Mugen Sandbox"', {
         self: state,

@@ -271,6 +271,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnemyNearTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-enemy",
+      required: true,
+      artifact: presets.createSyntheticImportedEnemyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-enemynear-index",
       required: true,
       artifact: presets.createSyntheticImportedEnemyNearIndexTraceArtifact(),

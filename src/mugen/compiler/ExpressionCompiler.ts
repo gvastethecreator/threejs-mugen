@@ -99,7 +99,7 @@ function stripRawFunctionArguments(expression: string): string {
 }
 
 function stripRedirectContextsForSupportScan(expression: string, unsupportedFeatures: Set<string>): string {
-  const redirectPattern = /\b(enemynear|parent|root|target)\b/gi;
+  const redirectPattern = /\b(enemynear|partner|enemy|parent|root|target)\b/gi;
   let output = "";
   let cursor = 0;
   let match: RegExpExecArray | null;
@@ -138,10 +138,10 @@ function stripRedirectContextsForSupportScan(expression: string, unsupportedFeat
       continue;
     }
 
-    if (target === "enemynear" && index) {
+    if ((target === "enemynear" || target === "partner" || target === "enemy") && index) {
       if (/^-?\d+$/.test(index)) {
         if (Number(index) < 0) {
-          unsupportedFeatures.add("enemynear(negative)");
+          unsupportedFeatures.add(`${target}(negative)`);
         }
       } else {
         const indexScan = expressionForSupportScan(index);
@@ -232,6 +232,7 @@ const supportedExpressionIdentifiers = new Set([
   "numproj",
   "numprojid",
   "numenemy",
+  "numpartner",
   "numtarget",
   "p2bodydistx",
   "p2bodydisty",
@@ -242,6 +243,8 @@ const supportedExpressionIdentifiers = new Set([
   "p2life",
   "p2movetype",
   "p2name",
+  "p3name",
+  "p4name",
   "p2power",
   "p2statetype",
   "physics",

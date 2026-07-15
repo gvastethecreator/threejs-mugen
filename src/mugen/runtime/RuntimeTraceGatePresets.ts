@@ -1840,6 +1840,29 @@ export function createSyntheticImportedEnemyNearTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedEnemyTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-enemy",
+      displayName: "Synthetic Imported Enemy",
+      enemyStateEntry: { opponentStateNo: 0, stateNo: 270 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-enemy-golden",
+      targetLabel: "Synthetic imported Enemy redirect route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [270],
+      requiredExecutedStates: [270],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported Enemy trace proves a bounded Enemy, StateNo redirect can evaluate against the stable current opponent roster in State -1 routing. Partner/team rosters, Enemy(n), helpers, and full MUGEN/IKEMEN redirect parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedEnemyNearIndexTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -45247,6 +45270,7 @@ export type SyntheticImportedTraceFighterOptions = {
   prevAnimRoute?: { previousAnimNo: number; intermediateStateNo: number; finalStateNo: number };
   prevStateTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
+  enemyStateEntry?: { opponentStateNo: number; stateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   enemyNearIndexedStateEntry?: { opponentStateNo: number; stateNo: number; trapStateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
@@ -45978,6 +46002,7 @@ command = x+y
 time = 5
 `).commands;
 const stateEntryControllers = parseCns(`
+${options.enemyStateEntry === undefined ? "" : enemyStateEntryBlock(options.enemyStateEntry)}
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.enemyNearIndexedStateEntry === undefined ? "" : enemyNearIndexedStateEntryBlock(options.enemyNearIndexedStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
@@ -46215,6 +46240,7 @@ ${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
 ${options.prevAnimRoute ? prevAnimRouteBlock(options.prevAnimRoute) : ""}
 ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRoute) : ""}
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
+${options.enemyStateEntry ? simpleStateBlock(options.enemyStateEntry.stateNo, "I") : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.trapStateNo, "I") : ""}
 ${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.stateNo, "I") : ""}
@@ -46529,6 +46555,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
             [options.prevStateTypeRoute.intermediateStateNo, traceAction(options.prevStateTypeRoute.intermediateStateNo)],
             [options.prevStateTypeRoute.finalStateNo, traceAction(options.prevStateTypeRoute.finalStateNo)],
           ] as Array<[number, MugenAnimationAction]>)),
+      ...(options.enemyStateEntry === undefined
+        ? []
+        : ([[options.enemyStateEntry.stateNo, traceAction(options.enemyStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.enemyNearStateEntry === undefined
         ? []
         : ([[options.enemyNearStateEntry.stateNo, traceAction(options.enemyNearStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -50745,6 +50774,16 @@ movetype = I
 physics = S
 anim = ${route.finalStateNo}
 ctrl = 1
+`;
+}
+
+function enemyStateEntryBlock(route: { opponentStateNo: number; stateNo: number }): string {
+  return `
+[State -1, Enemy State Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = Enemy, StateNo = ${route.opponentStateNo}
 `;
 }
 
