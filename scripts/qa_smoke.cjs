@@ -1151,6 +1151,7 @@ async function captureMugenLiteCombatJourney(page, options) {
   const getHitPause = pauseWhenMugenLiteActorStateAppears(page, "p2", 5000, 5000, "get-hit");
   await page.keyboard.down("a");
   try {
+    await page.waitForTimeout(80);
     await getHitPause;
   } finally {
     await page.keyboard.up("a");
