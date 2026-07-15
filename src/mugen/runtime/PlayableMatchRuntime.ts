@@ -417,6 +417,7 @@ type RootControllerRedirectHandler = (
     | "overrideclsn"
     | "screenbound"
     | "playerpush"
+    | RedirectableTargetControllerType
     | RedirectableResourceControllerType,
 ) => FighterMatchState | undefined;
 type RedirectableResourceControllerType =
@@ -431,6 +432,7 @@ type RedirectableResourceControllerType =
   | "redlifeset"
   | "poweradd"
   | "powerset";
+type RedirectableTargetControllerType = "targetpoweradd";
 type PlayerIdTargetResolver = (
   caller: FighterMatchState,
   playerId: number,
@@ -1963,6 +1965,7 @@ export class PlayableMatchRuntime {
       | "overrideclsn"
       | "screenbound"
       | "playerpush"
+      | RedirectableTargetControllerType
       | RedirectableResourceControllerType,
   ): FighterMatchState | undefined {
     const block = (value: number | "invalid"): undefined => {
@@ -3102,6 +3105,28 @@ function resourceControllerRedirectExpression(controller: ControllerIr): string 
   return rawExpression.trim() || "invalid";
 }
 
+function targetControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  if (controller.normalizedType !== "targetpoweradd") {
+    return undefined;
+  }
+  const operation = controller.operation;
+  const compiledExpression = operation?.kind === "target" && "redirectPlayerIdExpression" in operation
+    ? operation.redirectPlayerIdExpression
+    : undefined;
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller, "redirectid");
+  if (rawExpression === undefined) {
+    return undefined;
+  }
+  return rawExpression.trim() || "invalid";
+}
+
+function redirectableTargetControllerType(controller: ControllerIr): RedirectableTargetControllerType | undefined {
+  return controller.normalizedType === "targetpoweradd" ? "targetpoweradd" : undefined;
+}
+
 function resolveRedirectedResourceController(
   controller: ControllerIr,
   caller: FighterMatchState,
@@ -3629,14 +3654,52 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    target: ({ controller, effect }) => {
+    target: ({ controller, effect, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectControllerType = redirectableTargetControllerType(controller);
+      const redirectExpression = targetControllerRedirectExpression(controller);
+      const target = redirectExpression && redirectControllerType !== undefined
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "target-redirect");
+        return;
+      }
+      const candidateTargets = target === fighter
+        ? [targetOpponent]
+        : [...new Map(
+            [...(options.characters ?? []), targetOpponent].map((candidate) => [candidate.id, candidate] as const),
+          ).values()].filter((candidate) => candidate.id !== target.id);
+      const mirrorRedirectedTargetTelemetry =
+        redirectControllerType !== undefined &&
+        target !== fighter &&
+        !compatibilityTelemetryWorld.isImportedActor(target);
       targetControllerDispatchWorld.apply({
-        actor: fighter,
-        candidateTargets: [opponent],
+        actor: target,
+        candidateTargets,
         controller,
         effect,
-        targetWorld: fighter.targetWorld,
-        ...runtimeActiveControllerTelemetryHooks,
+        targetWorld: target.targetWorld,
+        recordController: (recordedTarget, recordedController) => {
+          runtimeActiveControllerTelemetryHooks.recordController(recordedTarget, recordedController);
+          if (mirrorRedirectedTargetTelemetry) {
+            runtimeActiveControllerTelemetryHooks.recordController(fighter, recordedController);
+          }
+        },
+        recordOperation: (recordedTarget, operation) => {
+          runtimeActiveControllerTelemetryHooks.recordOperation(recordedTarget, operation);
+          if (mirrorRedirectedTargetTelemetry) {
+            runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
+          }
+        },
         scaleIncomingDamage: scaleRuntimeIncomingDamage,
         enterTargetState: (target, stateId) => {
           targetStateEntryWorld.enter({

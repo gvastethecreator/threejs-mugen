@@ -79,7 +79,7 @@ export type HitDefFallOp = {
 export type TargetControllerOp =
   | { kind: "target"; controllerType: "targetdrop"; excludeId?: number; keepOne: boolean }
   | { kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean }
-  | { kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number }
+  | ({ kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | { kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number }
   | { kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number }
   | { kind: "target"; controllerType: "targetvelset"; requestedId?: number; x?: number; y?: number }
@@ -473,6 +473,10 @@ export type SpriteEffectControllerOp =
     };
 
 type RedirectableResourceControllerOp = {
+  redirectPlayerIdExpression?: string;
+};
+
+type RedirectableTargetControllerOp = {
   redirectPlayerIdExpression?: string;
 };
 
@@ -1677,7 +1681,15 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
     };
   }
   if (type === "targetpoweradd") {
-    return { kind: "target", controllerType: "targetpoweradd", requestedId, value: firstNumber(findParam(controller, "value")) ?? 0 };
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+    if (redirectPlayerIdExpression === "invalid") return undefined;
+    return {
+      kind: "target",
+      controllerType: "targetpoweradd",
+      requestedId,
+      value: firstNumber(findParam(controller, "value")) ?? 0,
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
+    };
   }
   if (type === "targetfacing") {
     return { kind: "target", controllerType: "targetfacing", requestedId, value: firstNumber(findParam(controller, "value")) ?? 1 };

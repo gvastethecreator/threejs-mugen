@@ -701,6 +701,9 @@ time = 20
 
   it("compiles Target controllers into typed target operations", () => {
     const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0" }));
+    const redirectedPower = compileControllerIr(
+      controller(200, "TargetPowerAdd", [], { id: "3", value: "40", redirectid: "57" }),
+    );
     const bind = compileControllerIr(controller(200, "TargetBind", [], { id: "3", pos: "12,-8,5", time: "6" }));
     const bindToTarget = compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", posz: "7", time: "6" }));
     const state = compileControllerIr(controller(200, "TargetState", [], { id: "3", value: "5300" }));
@@ -714,6 +717,13 @@ time = 20
       value: -20,
       absolute: true,
       kill: false,
+    });
+    expect(redirectedPower.operation).toEqual({
+      kind: "target",
+      controllerType: "targetpoweradd",
+      requestedId: 3,
+      value: 40,
+      redirectPlayerIdExpression: "57",
     });
     expect(bind.operation).toMatchObject({
       kind: "target",

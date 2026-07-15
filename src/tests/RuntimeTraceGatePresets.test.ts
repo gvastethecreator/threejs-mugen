@@ -493,6 +493,7 @@ import {
   createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceArtifact,
   createSyntheticImportedControlRedirectTraceArtifact,
   createSyntheticImportedControlStateEntryRedirectTraceArtifact,
+  createSyntheticImportedTargetPowerRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1445,6 +1446,24 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900, ctrl: false });
+  });
+
+  it("creates a required imported TargetPowerAdd RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetPowerRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-power-redirect-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-target-power-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", power: 75, targetCount: 1 }),
+        expect.objectContaining({ id: "p2", power: 35, targetCount: 1 }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported guard-points artifact with direct guard and resource evidence", () => {

@@ -4836,6 +4836,79 @@ ctrl = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetState).toBe(1);
   });
 
+  it("routes TargetPowerAdd RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      passiveTargetController: `
+[State 0, Redirected Target Power]
+type = TargetPowerAdd
+trigger1 = Time = 0
+id = 77
+value = 40
+RedirectID = 57
+`,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && (snapshot.actors[0]?.runtime.power ?? 0) < 40; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.power).toBe(75);
+    expect(snapshot.actors[1]?.runtime.power).toBe(35);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+  });
+
+  it("fails closed for an invalid TargetPowerAdd RedirectID", () => {
+    const caller = createImportedFixture({
+      withStateMove: true,
+      passiveTargetController: `
+[State 0, Invalid Target Power Redirect]
+type = TargetPowerAdd
+trigger1 = 1
+value = 40
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.power).toBe(0);
+    expect(snapshot.actors[1]?.runtime.power).toBe(0);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetPowerAdd).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked targetpoweradd RedirectID 999"))).toBe(true);
+  });
+
   it("keeps TargetBind offsets applied while the owner advances during SuperPause movetime", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -5837,6 +5910,7 @@ function createImportedFixture(
     passiveTagLeader?: number | string;
     passiveVarSet?: { trigger: string; index: number; value: number | string };
     passiveResourceController?: string;
+    passiveTargetController?: string;
     stateEntryResourceController?: string;
     passivePreTagVarSet?: { trigger: string; index: number; value: number };
     defenseMultiplier?: number;
@@ -6123,6 +6197,7 @@ value = ${options.passiveVarSet.value}
 `
       : "",
     options.passiveResourceController ?? "",
+    options.passiveTargetController ?? "",
     options.passiveRemoveOnGetHitExplod
       ? `
 [State 0, Passive RemoveOnGetHit Explod]
