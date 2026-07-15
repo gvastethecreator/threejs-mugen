@@ -709,6 +709,11 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
   });
   await page.waitForTimeout(250);
   const probe = await captureMugenLiteVisualState(page, options.screenshotPath, options.canvasPath);
+  await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => {
+    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+    return actor?.runtime?.stateNo === 0 && actor.runtime.ctrl === true;
+  });
   const pauseOnAttack = page.evaluate(() => new Promise((resolve, reject) => {
     const timeout = window.setTimeout(() => reject(new Error("MUGEN-lite attack frame was not observed")), 5000);
     const check = () => {
