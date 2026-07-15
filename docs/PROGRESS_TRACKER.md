@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 auxiliary resource RedirectID v1 closeout
+
+- Root-only IKEMEN `RedirectID` now covers GuardPointsAdd/Set,
+  DizzyPointsAdd/Set, and RedLifeAdd/Set in active CNS and state-entry setup,
+  in addition to the basic life/power resource slice.
+- Dynamic values and `absolute` remain caller-owned; omitted RedirectID stays
+  local, while empty/malformed/negative/missing/disabled/destroyed/legacy
+  routes fail closed before resource mutation.
+- Verification passes 3 focused files / 848 tests, TypeScript 7, trace syntax,
+  `git diff --check`, and full `qa:trace` 607/607 (573 required / 34 optional /
+  0 skipped). Required checksums: `79f60677` and `0e280069`.
+- CtrlSet, helpers, projectiles, neutral identity, shared/team banks, exact
+  red-life recovery, KO/persistence/rollback/netplay, and full parity remain
+  blocked. No browser smoke or score movement.
+- See `docs/reports/2026-07-15-resource-redirectid-auxiliary-v1-closeout.md`
+  and `docs/research/2026-07-15-resource-redirectid-auxiliary-v1.md`.
+
 ## Global report - 2026-07-15 root resource RedirectID v0 closeout
 
 - IKEMEN root `RedirectID` now mutates `LifeAdd`, `LifeSet`, `PowerAdd`, and

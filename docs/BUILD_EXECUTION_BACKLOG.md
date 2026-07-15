@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 547 - bounded auxiliary resource RedirectID
+
+Extended root-only IKEMEN `RedirectID` to GuardPointsAdd/Set, DizzyPointsAdd/Set,
+and RedLifeAdd/Set across active CNS and state-entry setup. Destination lookup
+uses the live PlayerID registry; dynamic values and `absolute` resolve in the
+caller context, missing RedirectID stays local, and empty/malformed/negative/
+missing/legacy targets fail closed before mutation. Focused coverage passes
+3 files / 848 tests, TypeScript 7, trace syntax, `git diff --check`, and full
+`pnpm qa:trace` 607/607 (573 required, 34 optional, 0 skipped), with checksums
+`79f60677` and `0e280069`. No score movement. `CtrlSet`, helpers, projectiles,
+neutral identity, shared/team banks, exact red-life recovery, and full parity
+remain blocked. See
+`docs/reports/2026-07-15-resource-redirectid-auxiliary-v1-closeout.md` and
+`docs/research/2026-07-15-resource-redirectid-auxiliary-v1.md`.
+
 ## Entry 546 - bounded root resource RedirectID
 
 Added IKEMEN root `RedirectID` execution for `LifeAdd`, `LifeSet`, `PowerAdd`,

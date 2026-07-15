@@ -2,6 +2,19 @@
 
 ## Active frontier - 2026-07-15
 
+Entry 547 closes the bounded IKEMEN root resource `RedirectID` extension for
+`GuardPointsAdd`, `GuardPointsSet`, `DizzyPointsAdd`, `DizzyPointsSet`,
+`RedLifeAdd`, and `RedLifeSet`. Active CNS and state-entry setup now share the
+live root destination route while dynamic values and `absolute` remain
+caller-owned. Focused 3 files / 848 tests, TypeScript 7, trace syntax,
+`git diff --check`, and full `qa:trace` 607/607 (573 required, 34 optional)
+pass; auxiliary checksums are `79f60677` and `0e280069`. No score movement.
+`CtrlSet`, helpers, projectiles, neutral identity, shared banks, exact red-life
+recovery, and full parity remain blocked. See
+`docs/reports/2026-07-15-resource-redirectid-auxiliary-v1-closeout.md`.
+
+## Active frontier - 2026-07-15
+
 Entry 546 closes the bounded IKEMEN root resource `RedirectID` slice for
 `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet`. Active CNS and state-entry
 setup now resolve live root destinations while dynamic values stay caller-owned;
