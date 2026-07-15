@@ -46,7 +46,17 @@ The harness now waits for the runtime snapshot tick after forced steps, drives a
 
 ## Follow-up Gates
 
-This checkpoint covers the browser smoke boundary. The post-round code gate remains separate and should run the TypeScript 7 typecheck, production build, focused tests, trace, boundaries, CSS budget, and diff hygiene together before claiming the broader checkpoint closed.
+The post-round code gate is now closed:
+
+- TypeScript `7.0.2`: `pnpm typecheck` passed.
+- Production build: passed; Vite emitted the existing large-chunk advisory at `1,795.31 kB`.
+- Full suite: `213/213` files and `2149/2149` tests passed with `--testTimeout=30000`. The default 5000 ms run had two timeout-only failures in the same slow trace file; the extended run passed both without assertion changes.
+- Trace gate: `600/600` artifacts passed (`566` required, `34` optional).
+- Boundaries: passed.
+- CSS budget: passed at `324085/536051` bytes, `1519/2364` rules, `80/119` repeated declaration groups, and `55/108` cross-file overlaps.
+- `git diff --check`: passed.
+
+The browser smoke and code gates now form a complete checkpoint for this QA slice; this does not widen the full MUGEN/IKEMEN parity claim.
 
 ## Source Notes
 

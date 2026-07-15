@@ -2152,7 +2152,7 @@ Every compatibility milestone should leave:
 - Imported Code Fu Man evidence covers normal `200`, QCF `1000`, upper `1100`, and idle return.
 - Studio workbench, build, debug, source relink, stage, assets, and IKEMEN scan journeys completed.
 - Commits: `9a19bd9e`, `ea50030e`.
-- Global status: browser smoke is closed; the batched TypeScript 7, tests, trace, boundaries, CSS, and production build gate remains next.
+- Global status: browser smoke and the batched TypeScript 7, tests, trace, boundaries, CSS, production build, and diff gate are closed; full parity remains out of scope.
 
 ## Not Done
 
