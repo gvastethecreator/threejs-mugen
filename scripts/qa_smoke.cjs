@@ -660,10 +660,18 @@ async function resetCodeFuManRound(page) {
 }
 
 async function pressCodeFuManQcfX(page) {
-  const hold = async (keys, durationMs = 52) => {
+  const hold = async (keys, minTicks = 3) => {
+    const startTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
     for (const key of keys) await page.keyboard.down(key);
-    await page.waitForTimeout(durationMs);
-    for (const key of [...keys].reverse()) await page.keyboard.up(key);
+    try {
+      await page.waitForFunction(
+        (minimumTick) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0) >= minimumTick,
+        startTick + minTicks,
+        { timeout: 1500 },
+      );
+    } finally {
+      for (const key of [...keys].reverse()) await page.keyboard.up(key);
+    }
     await page.waitForTimeout(16);
   };
   await hold(["ArrowDown"]);
@@ -673,10 +681,18 @@ async function pressCodeFuManQcfX(page) {
 }
 
 async function pressCodeFuManUpperX(page) {
-  const hold = async (keys, durationMs = 36) => {
+  const hold = async (keys, minTicks = 3) => {
+    const startTick = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0);
     for (const key of keys) await page.keyboard.down(key);
-    await page.waitForTimeout(durationMs);
-    for (const key of [...keys].reverse()) await page.keyboard.up(key);
+    try {
+      await page.waitForFunction(
+        (minimumTick) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? 0) >= minimumTick,
+        startTick + minTicks,
+        { timeout: 1500 },
+      );
+    } finally {
+      for (const key of [...keys].reverse()) await page.keyboard.up(key);
+    }
     await page.waitForTimeout(8);
   };
   await hold(["ArrowRight"]);
