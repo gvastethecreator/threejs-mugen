@@ -723,9 +723,9 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
     };
     check();
   }));
-  await page.keyboard.down("a");
+  await page.keyboard.down("x");
   await page.waitForTimeout(80);
-  await page.keyboard.up("a");
+  await page.keyboard.up("x");
   await pauseOnAttack;
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const attack = await captureMugenLiteVisualState(page, options.attackScreenshotPath, options.attackCanvasPath);
