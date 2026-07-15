@@ -784,6 +784,7 @@ export class App {
   private pendingSourceRelinkPackageId?: string;
   private sourceImportTransaction?: SourceImportTransaction;
   private studioSourceDocument?: StudioSourceDocumentDraft;
+  private studioSourceSemanticPreflightTimer?: number;
   private readonly memorySourceHandleStore = createMemorySourceHandleStore();
   private sourceHandleStore: SourceHandleStore = this.memorySourceHandleStore;
   private sourceHandleEntries: SourceHandleStoreEntry[] = [];
@@ -1380,8 +1381,8 @@ export class App {
         const draft = this.studioSourceDocument;
         if (draft) {
           this.studioSourceDocument = updateStudioSourceDocumentDraft(draft, target.value);
-          this.refreshStudioSourceSemanticDraft();
           this.refreshStudioSourceEditorStatus();
+          this.scheduleStudioSourceSemanticPreflight();
         }
         return;
       }
@@ -1876,6 +1877,7 @@ export class App {
     ) {
       return;
     }
+    this.cancelStudioSourceSemanticPreflight();
     const vfsPath = this.resolveStudioSourceVfsPath(sourcePath);
     const text = vfsPath ? this.importedSourceBundle?.vfs.readText(vfsPath) : undefined;
     if (text === undefined) {
@@ -1936,6 +1938,7 @@ export class App {
   }
 
   private async saveStudioSourceDocument(): Promise<void> {
+    this.cancelStudioSourceSemanticPreflight();
     this.refreshStudioSourceSemanticDraft();
     const draft = this.studioSourceDocument;
     if (!draft?.dirty) {
@@ -2052,8 +2055,26 @@ export class App {
     if (!draft) {
       return;
     }
+    this.cancelStudioSourceSemanticPreflight();
     this.studioSourceDocument = discardStudioSourceDocumentDraft(draft);
     this.updateUi();
+  }
+
+  private scheduleStudioSourceSemanticPreflight(): void {
+    this.cancelStudioSourceSemanticPreflight();
+    this.studioSourceSemanticPreflightTimer = window.setTimeout(() => {
+      this.studioSourceSemanticPreflightTimer = undefined;
+      this.refreshStudioSourceSemanticDraft();
+      this.refreshStudioSourceEditorStatus();
+    }, 180);
+  }
+
+  private cancelStudioSourceSemanticPreflight(): void {
+    if (this.studioSourceSemanticPreflightTimer === undefined) {
+      return;
+    }
+    window.clearTimeout(this.studioSourceSemanticPreflightTimer);
+    this.studioSourceSemanticPreflightTimer = undefined;
   }
 
   private refreshStudioSourceEditorStatus(): void {
@@ -2066,11 +2087,10 @@ export class App {
     }
     const context = this.getStudioSourceWriteContext(draft);
     const plan = context?.plan;
-    const preflight = this.createStudioSourceSemanticPreflight(draft, context);
-    status.textContent = draft.dirty
-      ? plan?.status === "ready" ? describeStudioSemanticDraft(preflight) : plan?.detail ?? "Unsaved local edit"
-      : plan?.detail ?? describeStudioSemanticDraft(preflight);
-    save.disabled = !draft.dirty || plan?.status !== "ready" || !canWriteStudioSemanticDraft(preflight);
+    const preflight = draft.semanticPreflight;
+    const semanticDetail = preflight ? describeStudioSemanticDraft(preflight) : "Semantic preflight pending...";
+    status.textContent = plan?.status === "ready" ? semanticDetail : plan?.detail ?? "Unsaved local edit";
+    save.disabled = !draft.dirty || plan?.status !== "ready" || !preflight || !canWriteStudioSemanticDraft(preflight);
     discard.disabled = !draft.dirty;
   }
 
@@ -11751,6 +11771,7 @@ export class App {
         sourceImportTransaction?: SourceImportTransaction;
         sourceTransactions: SourceTransactionRecord[];
         sourceHandles: SourceHandleRecord[];
+        studioSourceDocument?: StudioSourceDocumentDraft;
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
         projectStorageRevision?: number;
@@ -11808,6 +11829,7 @@ export class App {
       sourceImportTransaction: this.sourceImportTransaction,
       sourceTransactions: this.getSourceTransactionRecords(),
       sourceHandles: this.getSourceHandleRecords(),
+      studioSourceDocument: this.studioSourceDocument ? structuredClone(this.studioSourceDocument) : undefined,
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,

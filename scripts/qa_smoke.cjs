@@ -2075,11 +2075,35 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   await scrollLiveSelectorIntoView(page, '[data-source-package-id="kfm-folder"].source-package-row');
   await page.locator('[data-source-package-id="kfm-folder"] .source-package-path-row[data-source-path$=".cns"]').first().click();
   await page.waitForSelector('[data-source-editor]');
+  await page.waitForFunction(() => {
+    const editor = document.querySelector('[data-source-editor]');
+    const draft = window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument;
+    return editor && !editor.hasAttribute('readonly') && draft?.semanticPreflight?.status === 'ready';
+  }, null, { timeout: 15000 });
   const sourceEditor = page.locator('[data-source-editor]');
   const originalSourceText = await sourceEditor.inputValue();
-  await sourceEditor.fill(`${originalSourceText}\nnot-a-key-value`);
+  const sourceDraftState = await page.evaluate(() => ({
+    readOnly: document.querySelector('[data-source-editor]')?.hasAttribute('readonly') ?? true,
+    draft: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument,
+    sourceTransaction: window.__MUGEN_WEB_SANDBOX__?.sourceTransactions?.find((candidate) => candidate.sourcePackageId === 'kfm-folder'),
+  }));
+  if (sourceDraftState.readOnly) {
+    throw new Error(`Studio semantic draft was readonly before edit: ${JSON.stringify(sourceDraftState)}`);
+  }
+  const setSourceEditorText = async (text) => {
+    // The real KFM CNS is large enough that Playwright fill can time out before dispatching the paste event.
+    await sourceEditor.evaluate((element, value) => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set;
+      if (!setter) {
+        throw new Error("HTMLTextAreaElement value setter is unavailable");
+      }
+      setter.call(element, value);
+      element.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertFromPaste" }));
+    }, text);
+  };
+  await setSourceEditorText(`${originalSourceText}\nnot-a-key-value`);
   await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === true);
-  await sourceEditor.fill(`${originalSourceText}\n; qa explicit source edit`);
+  await setSourceEditorText(`${originalSourceText}\n; qa explicit source edit`);
   await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === false);
   await page.locator('[data-action="save-source-document"]').click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.sourceImportTransaction?.reason === "explicit-reimport");
@@ -2102,6 +2126,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
       sourcePackage,
       sourceHandle,
       sourceTransaction,
+      sourceDraft: bridge?.studioSourceDocument,
       bodyHasSourcePackages: bodyText.includes("Source Packages"),
       bodyHasLinkedCopy: bodyText.includes("Source files are available for package export"),
       bodyHasFolderHandle: bodyText.toLowerCase().includes("folder") && bodyText.includes("Handle: granted"),
