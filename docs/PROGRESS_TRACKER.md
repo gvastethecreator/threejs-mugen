@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 PlayerID trigger redirection v0 closeout
+
+- Runtime/compiler support now resolves static and dynamic non-negative
+  `PlayerID(id), trigger` reads through the live root identity registry.
+- The resolver is present in active, paused, standby, and state-entry
+  controller contexts; legacy profiles fail closed. A required imported trace
+  proves the opposing-root state route.
+- Verification passes 7 focused files / 685 tests, TypeScript 7, trace-script
+  syntax, `git diff --check`, and `qa:trace` 602/602 (568 required / 34
+  optional / 0 skipped). No browser smoke was needed and no score moved.
+- Helper/neutral identity, generic controller `RedirectID` mutation, exact
+  roster lifecycle, input/combat/effect ownership, and full MUGEN/IKEMEN parity
+  remain blocked.
+- See `docs/reports/2026-07-15-playerid-trigger-redirection-v0-closeout.md`
+  and `docs/research/2026-07-15-playerid-trigger-redirection-v0.md`.
+
 ## Global report - 2026-07-15 Identity and roster redirection v0 closeout
 
 - Runtime expression contexts now project bounded `Partner`/`Enemy` rosters

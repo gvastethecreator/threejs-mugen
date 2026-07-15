@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 544 - bounded PlayerID trigger redirection
+
+Added static and dynamic non-negative `PlayerID(id), trigger` redirects to the
+existing live root identity registry. The resolver is propagated through active,
+paused, standby, and state-entry controller contexts; legacy profiles fail
+closed. Numeric `PlayerID(x)` values are supported as expressions, but generic
+controller `RedirectID` mutation is intentionally outside this slice. Focal
+coverage passes 7 files / 685 tests, TypeScript 7, trace syntax,
+`git diff --check`, and full `pnpm qa:trace` 602/602 (568 required, 34
+optional, 0 skipped), including the required
+`synthetic-imported-playerid` artifact. No score movement. See
+`docs/reports/2026-07-15-playerid-trigger-redirection-v0-closeout.md` and
+`docs/research/2026-07-15-playerid-trigger-redirection-v0.md`.
+
 ## Entry 543 - bounded identity and roster redirection
 
 Added `partner`, `enemy`, and indexed roster redirection over the existing

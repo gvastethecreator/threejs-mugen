@@ -2,6 +2,18 @@
 
 ## Active frontier - 2026-07-15
 
+Entry 544 closes the bounded IKEMEN `PlayerID(id), trigger` read-redirection
+slice. Static and dynamic non-negative IDs now resolve through the live root
+identity registry in active, paused, standby, and state-entry contexts; the
+required imported PlayerID trace passes. Focused 7 files / 685 tests,
+TypeScript 7, trace syntax, `git diff --check`, and full `qa:trace` 602/602
+(568 required, 34 optional) pass. No score movement. Helper/neutral identity,
+generic controller `RedirectID` mutation, exact roster lifecycle, input/combat/
+effect ownership, and full parity remain blocked. See
+`docs/reports/2026-07-15-playerid-trigger-redirection-v0-closeout.md`.
+
+## Active frontier - 2026-07-15
+
 Entry 543 closes the bounded runtime/compiler `partner`/`enemy` identity
 redirection slice. Stable root-selection rosters now feed `Partner`, `Enemy`,
 indexed reads, `NumPartner`, `P3Name`, and `P4Name`; `EnemyNear` remains nearest
