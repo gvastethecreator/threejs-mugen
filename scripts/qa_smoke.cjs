@@ -915,16 +915,15 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
       actors: bridge?.snapshot?.actors?.map((actor) => ({ id: actor.id, label: actor.label, source: actor.source, life: actor.runtime.life })) ?? [],
     };
   });
+  const pauseOnContact = pauseWhenMugenLiteContactAppears(page, "guard-contact");
   await page.keyboard.down("ArrowRight");
-  await page.waitForFunction(() => {
-    const actors = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors ?? [];
-    const p1 = actors.find((actor) => actor.id === "p1");
-    const p2 = actors.find((actor) => actor.id === "p2");
-    return p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100;
-  }, null, { timeout: 5000 });
-  await page.keyboard.up("ArrowRight");
+  try {
+    await pauseOnContact;
+  } finally {
+    await page.keyboard.up("ArrowRight");
+  }
 
-  await page.waitForFunction(() => {
+  const waitForGuardAttack = page.waitForFunction(() => {
     const p2 = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p2");
     return p2?.runtime?.stateNo === 200;
   }, null, { timeout: 5000 });
@@ -944,8 +943,13 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     check();
   }));
   await page.keyboard.down("ArrowLeft");
-  await pauseOnGuard;
-  await page.keyboard.up("ArrowLeft");
+  try {
+    await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+    await waitForGuardAttack;
+    await pauseOnGuard;
+  } finally {
+    await page.keyboard.up("ArrowLeft");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
   const guarded = await captureMugenLiteVisualState(
@@ -1075,16 +1079,16 @@ async function captureMugenLiteRecoveryJourney(page, options, importedId) {
       actors: bridge?.snapshot?.actors?.map((actor) => ({ id: actor.id, label: actor.label, source: actor.source, life: actor.runtime.life })) ?? [],
     };
   });
+  const pauseOnContact = pauseWhenMugenLiteContactAppears(page, "recovery-contact");
   await page.keyboard.down("ArrowRight");
-  await page.waitForFunction(() => {
-    const actors = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors ?? [];
-    const p1 = actors.find((actor) => actor.id === "p1");
-    const p2 = actors.find((actor) => actor.id === "p2");
-    return p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100;
-  }, null, { timeout: 5000 });
-  await page.keyboard.up("ArrowRight");
+  try {
+    await pauseOnContact;
+  } finally {
+    await page.keyboard.up("ArrowRight");
+  }
 
   const getHitPause = pauseWhenMugenLiteActorStateAppears(page, "p1", 5000, 5000, "recovery-get-hit");
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
   await getHitPause;
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const viewportLabel = options.viewport.width < 600 ? "mobile" : "desktop";
@@ -1139,18 +1143,18 @@ async function captureMugenLiteCombatJourney(page, options) {
     };
   });
 
+  const pauseOnContact = pauseWhenMugenLiteContactAppears(page, "combat-contact");
   await page.keyboard.down("ArrowRight");
-  await page.waitForFunction(() => {
-    const actors = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors ?? [];
-    const p1 = actors.find((actor) => actor.id === "p1");
-    const p2 = actors.find((actor) => actor.id === "p2");
-    return p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100;
-  }, null, { timeout: 5000 });
-  await page.keyboard.up("ArrowRight");
+  try {
+    await pauseOnContact;
+  } finally {
+    await page.keyboard.up("ArrowRight");
+  }
 
   const getHitPause = pauseWhenMugenLiteActorStateAppears(page, "p2", 5000, 5000, "get-hit");
   await page.keyboard.down("a");
   try {
+    await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
     await page.waitForTimeout(80);
     await getHitPause;
   } finally {
@@ -1188,6 +1192,33 @@ async function stepAndCaptureMugenLiteActorState(page, actorId, stateNo, action,
     }
   }
   throw new Error(`MUGEN-lite ${label} frame was not observed for ${actorId} within ${maxSteps} visible steps`);
+}
+
+function pauseWhenMugenLiteContactAppears(page, label) {
+  return page.evaluate((contactLabel) => new Promise((resolve, reject) => {
+    let lastSnapshot = {};
+    const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite ${contactLabel} was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
+    const check = () => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actors = bridge?.snapshot?.actors ?? [];
+      const p1 = actors.find((actor) => actor.id === "p1");
+      const p2 = actors.find((actor) => actor.id === "p2");
+      lastSnapshot = {
+        tick: bridge?.snapshot?.tick,
+        playing: bridge?.snapshot?.playing,
+        p1: p1 ? { stateNo: p1.runtime?.stateNo, x: p1.runtime?.pos?.x, facing: p1.runtime?.facing } : undefined,
+        p2: p2 ? { stateNo: p2.runtime?.stateNo, x: p2.runtime?.pos?.x, facing: p2.runtime?.facing } : undefined,
+      };
+      if (p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100) {
+        window.clearTimeout(timeout);
+        if (bridge?.snapshot?.playing) document.querySelector('[data-action="play-pause"]')?.click();
+        resolve(undefined);
+        return;
+      }
+      window.setTimeout(check, 4);
+    };
+    check();
+  }), label);
 }
 
 function pauseWhenMugenLiteActorStateAppears(page, actorId, stateNo, action, label, options = {}) {
