@@ -2,6 +2,18 @@
 
 ## Active frontier - 2026-07-15
 
+Entry 545 closes the bounded PlayerID root-roster trigger extension. Active
+expression contexts now receive the live root roster and match-owned resolver,
+so a standby P3 can read P1 through `PlayerID(id), trigger`; the required tag
+trace passes with reserve/effective-control evidence. Focused 7 files / 845
+tests, TypeScript 7, trace syntax, `git diff --check`, and full `qa:trace`
+603/603 (569 required, 34 optional) pass. No score movement. Helper/neutral
+identity, generic controller `RedirectID` mutation, exact tag scheduling/input
+ownership, lifecycle promotion, and full parity remain blocked. See
+`docs/reports/2026-07-15-playerid-root-roster-trigger-v1-closeout.md`.
+
+## Active frontier - 2026-07-15
+
 Entry 544 closes the bounded IKEMEN `PlayerID(id), trigger` read-redirection
 slice. Static and dynamic non-negative IDs now resolve through the live root
 identity registry in active, paused, standby, and state-entry contexts; the

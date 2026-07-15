@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 545 - bounded PlayerID root-roster trigger extension
+
+Active PlayerID trigger contexts now receive the match-owned live root roster
+and caller-bound identity resolver, closing the pair-only gap for standby roots.
+The required `synthetic-imported-playerid-root-roster` trace proves P3 reads P1
+in tag mode and reaches state 2794 while retaining reserve/effective-control
+evidence. Focal coverage passes 7 files / 845 tests, TypeScript 7, trace syntax,
+`git diff --check`, and full `pnpm qa:trace` 603/603 (569 required, 34
+optional, 0 skipped), with checksum `ac6f6a4b`. No score movement. Helper/
+neutral identity, generic `RedirectID` mutation, exact tag scheduling/input
+ownership, lifecycle promotion, and full MUGEN/IKEMEN parity remain blocked.
+See `docs/reports/2026-07-15-playerid-root-roster-trigger-v1-closeout.md` and
+`docs/research/2026-07-15-playerid-root-roster-trigger-v1.md`.
+
 ## Entry 544 - bounded PlayerID trigger redirection
 
 Added static and dynamic non-negative `PlayerID(id), trigger` redirects to the

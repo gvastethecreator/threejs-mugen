@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 PlayerID root-roster trigger v1 closeout
+
+- Active expression contexts now project the full live root roster for bounded
+  `PlayerID(id), trigger` reads while retaining the caller-bound identity
+  resolver and legacy-profile fail-closed behavior.
+- A required imported tag trace proves standby P3 reads P1 and reaches state
+  2794 with reserve/effective-control evidence; `Enemy` and `EnemyNear` keep
+  their existing opponent projection.
+- Verification passes 7 focused files / 845 tests, TypeScript 7, trace-script
+  syntax, `git diff --check`, and `qa:trace` 603/603 (569 required / 34
+  optional / 0 skipped). No browser smoke was needed and no score moved.
+- Helper/neutral identity, generic `RedirectID` mutation, exact tag
+  scheduling/input ownership, lifecycle promotion, and full MUGEN/IKEMEN parity
+  remain blocked.
+- See `docs/reports/2026-07-15-playerid-root-roster-trigger-v1-closeout.md`
+  and `docs/research/2026-07-15-playerid-root-roster-trigger-v1.md`.
+
 ## Global report - 2026-07-15 PlayerID trigger redirection v0 closeout
 
 - Runtime/compiler support now resolves static and dynamic non-negative
