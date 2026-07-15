@@ -710,6 +710,9 @@ time = 20
     const redirectedVelocitySet = compileControllerIr(
       controller(200, "TargetVelSet", [], { id: "3", x: "3", redirectid: "56" }),
     );
+    const redirectedFacing = compileControllerIr(
+      controller(200, "TargetFacing", [], { id: "3", value: "-1", redirectid: "56" }),
+    );
     const bind = compileControllerIr(controller(200, "TargetBind", [], { id: "3", pos: "12,-8,5", time: "6" }));
     const bindToTarget = compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", posz: "7", time: "6" }));
     const state = compileControllerIr(controller(200, "TargetState", [], { id: "3", value: "5300" }));
@@ -717,6 +720,9 @@ time = 20
     const defaultDrop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3" }));
     const invalidLifeRedirect = compileControllerIr(
       controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", redirectid: "57, 0" }),
+    );
+    const invalidFacingRedirect = compileControllerIr(
+      controller(200, "TargetFacing", [], { id: "3", value: "1", redirectid: "57, 0" }),
     );
 
     expect(life.operation).toMatchObject({
@@ -750,7 +756,15 @@ time = 20
       x: 3,
       redirectPlayerIdExpression: "56",
     });
+    expect(redirectedFacing.operation).toEqual({
+      kind: "target",
+      controllerType: "targetfacing",
+      requestedId: 3,
+      value: -1,
+      redirectPlayerIdExpression: "56",
+    });
     expect(invalidLifeRedirect.operation).toBeUndefined();
+    expect(invalidFacingRedirect.operation).toBeUndefined();
     expect(bind.operation).toMatchObject({
       kind: "target",
       controllerType: "targetbind",

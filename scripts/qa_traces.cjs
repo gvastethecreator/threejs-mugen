@@ -176,6 +176,16 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetVelocityStateEntryRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-target-facing-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetFacingRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-target-facing-state-entry-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetFacingStateEntryRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control-state-entry-redirect",
       required: true,
       artifact: presets.createSyntheticImportedControlStateEntryRedirectTraceArtifact(),

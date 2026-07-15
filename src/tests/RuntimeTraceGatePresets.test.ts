@@ -499,6 +499,8 @@ import {
   createSyntheticImportedTargetLifeStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetVelocityRedirectTraceArtifact,
   createSyntheticImportedTargetVelocityStateEntryRedirectTraceArtifact,
+  createSyntheticImportedTargetFacingRedirectTraceArtifact,
+  createSyntheticImportedTargetFacingStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1557,6 +1559,48 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedControllers.TargetVelSet).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations["target:targetveladd"]).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations["target:targetvelset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", targetCount: 1 }),
+        expect.objectContaining({ id: "p2", targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported TargetFacing RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetFacingRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-facing-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-facing-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetFacing).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetfacing"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p1", facing: -1 })]),
+    );
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", targetCount: 1 }),
+        expect.objectContaining({ id: "p2", targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported State -1 TargetFacing RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetFacingStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-facing-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-facing-state-entry-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetFacing).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetfacing"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p2", facing: 1 })]),
+    );
     expect(artifact.trace.finalActors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", targetCount: 1 }),

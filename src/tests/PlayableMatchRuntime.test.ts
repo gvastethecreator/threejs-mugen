@@ -5083,6 +5083,79 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetVelAdd).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes active TargetFacing RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-facing-redirect-caller",
+      withStateMove: true,
+      withAssertSpecial: true,
+      passiveAssertSpecialFlags: ["NoAutoTurn"],
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      passiveTargetController: `
+[State 0, Redirected Target Facing]
+type = TargetFacing
+triggerall = var(33) = 0
+trigger1 = 1
+id = 77
+value = 1
+RedirectID = 57
+
+[State 0, Redirected Target Facing Gate]
+type = VarSet
+triggerall = var(33) = 0
+trigger1 = 1
+v = 33
+value = 1
+`,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-facing-redirect-target",
+      withStateMove: true,
+      withAssertSpecial: true,
+      passiveAssertSpecialFlags: ["NoAutoTurn"],
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    let routedSnapshot: typeof snapshot | undefined;
+    const rememberRoutedSnapshot = () => {
+      if (!routedSnapshot && (snapshot.compatibilitySession?.actors ?? []).some((actor) => actor.executedControllers.TargetFacing)) {
+        routedSnapshot = snapshot;
+      }
+    };
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 12; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+
+    expect(routedSnapshot).toBeDefined();
+    expect(routedSnapshot?.actors[1]?.runtime.targetRefs).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p1", targetId: 77 })]),
+    );
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetFacing).toBeGreaterThanOrEqual(1);
+  });
+
   it("routes state-entry TargetLifeAdd RedirectID through the target owner target memory", () => {
     const redirectedCaller = createImportedFixture({
       id: "target-life-state-entry-redirect-caller",
@@ -5244,6 +5317,110 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetVelAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetvelset"]).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetveladd"]).toBeGreaterThanOrEqual(1);
+  });
+
+  it("routes state-entry TargetFacing RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-facing-state-entry-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-facing-state-entry-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+      stateEntryResourceController: `
+[State -1, Redirected Entry Target Facing]
+type = TargetFacing
+triggerall = var(29) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+value = 1
+RedirectID = 56
+
+[State -1, Redirected Entry Target Facing Gate]
+type = VarSet
+triggerall = var(29) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+v = 29
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let routedSnapshot: typeof snapshot | undefined;
+    const rememberRoutedSnapshot = () => {
+      if (!routedSnapshot && (snapshot.compatibilitySession?.actors ?? []).some((actor) => actor.executedControllers.TargetFacing)) {
+        routedSnapshot = snapshot;
+      }
+    };
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    rememberRoutedSnapshot();
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+      rememberRoutedSnapshot();
+    }
+    for (let frame = 0; frame < 80; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      rememberRoutedSnapshot();
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    rememberRoutedSnapshot();
+
+    expect(routedSnapshot?.actors[1]?.runtime.facing).toBe(1);
+    expect(snapshot.actors[0]?.runtime.facing).toBe(1);
+    expect(snapshot.actors[1]?.runtime.facing).toBe(-1);
+    expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetFacing).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetfacing"]).toBeGreaterThanOrEqual(1);
+  });
+
+  it("fails closed for an invalid TargetFacing RedirectID", () => {
+    const caller = createImportedFixture({
+      withStateMove: true,
+      passiveTargetController: `
+[State 0, Invalid Target Facing Redirect]
+type = TargetFacing
+trigger1 = 1
+value = 1
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.facing).toBe(1);
+    expect(snapshot.actors[1]?.runtime.facing).toBe(-1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetFacing).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetfacing"]).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked targetfacing RedirectID 999"))).toBe(true);
   });
 
   it("fails closed for an invalid TargetPowerAdd RedirectID", () => {
