@@ -129,7 +129,7 @@ async function main() {
     const bgCtrlStagePage = await context.newPage();
     const studioBgCtrlStage = await captureStudioBgCtrlStage(bgCtrlStagePage, server.baseUrl, outDir);
     await bgCtrlStagePage.close();
-    await page.goto(`${server.baseUrl}${studioAssetsRoute}`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}${studioAssetsRoute}`, { waitUntil: "domcontentloaded" });
     await waitForBridge(page);
     const studioAssets = await captureStudioAssets(page, outDir);
     const studioReplacement = await captureStudioAssetReplacement(context, server.baseUrl, outDir);
@@ -344,7 +344,7 @@ async function evaluateWithStableBridge(page, callback, arg) {
 
 async function captureRuntime(page, baseUrl, options) {
   await page.setViewportSize(options.viewport);
-  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await warmRuntimeRenderer(page);
   const drivenHitSparks = await driveRuntimeHitSpark(page);
@@ -432,7 +432,7 @@ async function captureRuntime(page, baseUrl, options) {
 
 async function captureMugenLiteVisual(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   const fixtureBytes = await page.evaluate(async () => {
     const fixture = await import("/src/mugen/runtime/MugenLiteJourneyFixture.ts");
@@ -467,7 +467,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
   }
 
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.locator("#zip-input").setInputFiles(fixturePath);
   await page.waitForFunction(() => {
@@ -718,7 +718,7 @@ async function holdCodeFuManAttackUntilState(page, stateNo) {
 
 async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, options) {
   await page.setViewportSize(options.viewport);
-  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.locator("#zip-input").setInputFiles({
     name: "mugen-lite-journey.zip",
@@ -1293,7 +1293,7 @@ async function captureMugenLiteVisualState(page, screenshotPath, canvasPath, act
 
 async function captureTagPresentation(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${tagPresentationRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${tagPresentationRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await warmRuntimeRenderer(page);
   await waitForTagPresentationState(page, ["p1", "p2"]);
@@ -1313,7 +1313,7 @@ async function captureTagPresentation(page, baseUrl, outDir) {
   const reset = await readTagPresentationState(page);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(`${baseUrl}${tagPresentationRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${tagPresentationRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await warmRuntimeRenderer(page);
   await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.qa?.tagPresentationHandoff());
@@ -1475,7 +1475,7 @@ async function readHitSparkDiagnostics(page) {
 
 async function captureStudioWorkbench(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.waitForTimeout(500);
   await page.screenshot({ path: path.join(outDir, "studio-workbench.png"), fullPage: true });
@@ -1592,7 +1592,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
         entry.manifest?.entry?.stage === "training-grid",
     );
   }, { key: "mugen-web-sandbox:projects:v0", authoredName });
-  await page.reload({ waitUntil: "networkidle" });
+  await page.reload({ waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.locator('[data-stored-project-id="qa-authored-fight-project"]').first().evaluate((element) => element.click());
   await page.waitForTimeout(600);
@@ -1635,7 +1635,7 @@ async function changeHiddenSelect(page, selector, value) {
 
 async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.waitForTimeout(300);
   await page.screenshot({ path: path.join(outDir, "studio-workbench-tablet.png"), fullPage: true });
@@ -1661,7 +1661,7 @@ async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
 
 async function captureCommandPaletteA11y(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.waitForTimeout(200);
 
@@ -1767,7 +1767,7 @@ async function downloadFromButton(page, button, label, options = {}) {
 
 async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   let importedFixtureLoaded = false;
   let importedFixtureName;
@@ -1955,7 +1955,7 @@ async function captureStudioModules(page, outDir) {
 
 async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   if (!importedFixturePath) {
     return { skipped: true, reason: "imported fixture not found" };
@@ -2121,7 +2121,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   }, { entries });
 
   const projectPath = writeFolderHandleRecoveryProject(outDir);
-  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.locator("#project-input").setInputFiles(projectPath);
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.sourcePackages?.some((sourcePackage) => sourcePackage.status === "missing"));
@@ -2236,7 +2236,7 @@ async function writeChangedSourceRelinkFixture(outDir, importedFixturePath) {
 async function captureIkemenScan(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1440, height: 960 });
   const zipPath = await writeIkemenScanFixture(outDir);
-  await page.goto(`${baseUrl}/?mode=studio&studio=evidence&${routeParams}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/?mode=studio&studio=evidence&${routeParams}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.locator("#zip-input").setInputFiles(zipPath);
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compatibility?.profiles?.ikemen?.detected));
@@ -2737,8 +2737,8 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
   const projectId = "qa-authored-fight-project";
   try {
     await Promise.all([
-      primary.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" }),
-      remote.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" }),
+      primary.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "domcontentloaded" }),
+      remote.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "domcontentloaded" }),
     ]);
     await Promise.all([waitForBridge(primary), waitForBridge(remote)]);
     for (const candidate of [primary, remote]) {
@@ -2925,7 +2925,7 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
     }
   }
   if (!(await studioTabLocator(page, "debug").isVisible().catch(() => false))) {
-    await page.goto(`${baseUrl}${studioDebugRoute}`, { waitUntil: "networkidle" });
+    await page.goto(`${baseUrl}${studioDebugRoute}`, { waitUntil: "domcontentloaded" });
     await waitForBridge(page);
   }
   await selectStudioTab(page, "debug");
