@@ -3007,6 +3007,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperTargetRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-bind-to-target-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperBindToTargetRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-targetstate",
       required: true,
       artifact: presets.createSyntheticImportedHelperTargetStateTraceArtifact(),
@@ -4349,6 +4354,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-bare-target",
     "synthetic-imported-helper-target-controllers",
     "synthetic-imported-helper-target-redirect",
+    "synthetic-imported-helper-bind-to-target-redirect",
     "synthetic-imported-helper-targetstate",
     "synthetic-imported-helper-numproj",
     "synthetic-imported-modifyexplod",

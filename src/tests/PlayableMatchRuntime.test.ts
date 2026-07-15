@@ -6293,6 +6293,62 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked TargetPowerAdd RedirectID"))).toBe(false);
   });
 
+  it("routes a Helper BindToTarget RedirectID through the destination root target memory", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Helper BindToTarget]
+type = BindToTarget
+trigger1 = Time = 1
+id = 77
+pos = 20,-8,Mid
+posz = 6
+time = 4
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "helper-bind-to-target-redirect-destination",
+      multiFrameAction: { id: 200, durations: [48] },
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, { runtimeProfile: "ikemen-go" });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20 && snapshot.actors[1]?.runtime.targetCount !== 1; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[1]?.runtime.targetCount).toBe(1);
+
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let routedSnapshot: typeof snapshot | undefined;
+    for (let frame = 0; frame < 20; frame += 1) {
+      if (!routedSnapshot && snapshot.actors[1]?.runtime.bindToTarget) routedSnapshot = snapshot;
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    if (!routedSnapshot && snapshot.actors[1]?.runtime.bindToTarget) routedSnapshot = snapshot;
+
+    expect(routedSnapshot?.actors[1]?.runtime.bindToTarget).toMatchObject({
+      actorId: "p1",
+      targetId: 77,
+      remaining: 3,
+      offset: { x: 20, y: -8, z: 6 },
+    });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked bindtotarget RedirectID"))).toBe(false);
+  });
+
   it("buffers imported CMD inputs entered during hit pause when buffer.hitpause is enabled", () => {
     const imported = createHitPauseBufferFixture(true);
     const closeStage = {

@@ -44579,6 +44579,119 @@ export function createSyntheticImportedHelperTargetRedirectTraceArtifact(options
   });
 }
 
+export function createSyntheticImportedHelperBindToTargetRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-bind-to-target-redirect-seed-p2-target", frames: 8, p1: [], p2: ["x"] },
+    { label: "helper-bind-to-target-redirect-recover", frames: 24, p1: [], p2: [] },
+    { label: "helper-bind-to-target-redirect-attack-p1", frames: 1, p1: ["x"], p2: [] },
+    { label: "helper-bind-to-target-redirect-settle", frames: 12, p1: [], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-bind-to-target-redirect-caller",
+    displayName: "Synthetic Imported Helper BindToTarget Redirect Caller",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1235,
+      branchAnimNo: 966,
+      damage: 37,
+      targetId: 8882,
+      branchTrigger: "NumTarget(8882) > 0 && Target(8882), Life <= 963",
+      targetControllers: {
+        mode: "bindtotarget",
+        redirectId: 57,
+        controllerTargetId: 77,
+        bindToTargetPostype: "Mid",
+        bindToTargetPosZ: 6,
+        bindToTargetTime: 4,
+      },
+    },
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-bind-to-target-redirect-target",
+    displayName: "Synthetic Imported Helper BindToTarget Redirect Target",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: caller, p2: target, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-helper-bind-to-target-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-bind-to-target-redirect-golden",
+      label: "Synthetic imported helper BindToTarget RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves a helper caller can route BindToTarget through live root PlayerID 57 target memory while preserving the authored ID, Mid anchor, logical Z, and duration. Helper TargetState, helper destinations, projectile/team ownership, and full helper RedirectID parity remain outside this bounded route.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-bind-to-target-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "BindToTarget"],
+        requiredExecutedOperations: ["hitdef", "helper", "bindtotarget"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8882, minFrames: 1 },
+          {
+            ownerId: "p2",
+            actorId: "p1",
+            targetId: 77,
+            hasBinding: true,
+            minFrames: 1,
+            minAge: 1,
+            minBindingRemaining: 1,
+            maxBindingRemaining: 3,
+            bindingOffsetX: 20,
+            bindingOffsetY: -8,
+            bindingOffsetZ: 6,
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920, moveType: "A", clsn1Count: 1, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1235, animNo: 966, moveType: "I", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", targetCount: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1235, targetCount: 1, minAge: 3 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperTargetStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedOneShotXScript();
@@ -46556,11 +46669,15 @@ export function importedAssertSpecialShadowTelemetryScript(): RuntimeTraceInputF
 }
 
 type SyntheticHelperTargetControllerOptions = {
+  mode?: "all" | "bindtotarget";
   lifeAddValue?: number;
   withDrop?: boolean;
   dropTriggerTime?: number;
   redirectId?: number;
   controllerTargetId?: number;
+  bindToTargetPostype?: "Foot" | "Mid" | "Head";
+  bindToTargetPosZ?: number;
+  bindToTargetTime?: number;
 };
 
 type SyntheticImportedGetHitVarBranchOptions = {
@@ -55251,6 +55368,18 @@ function helperTargetControllerBlock(
   const dropTriggerTime = options.dropTriggerTime ?? 2;
   const controllerTargetId = options.controllerTargetId ?? targetId;
   const redirectIdLine = options.redirectId === undefined ? "" : `RedirectID = ${options.redirectId}`;
+  if (options.mode === "bindtotarget") {
+    return `
+[State ${stateNo}, Helper Bind To Target]
+type = BindToTarget
+trigger1 = Time = 1
+id = ${controllerTargetId}
+pos = 20,-8,${options.bindToTargetPostype ?? "Foot"}
+${options.bindToTargetPosZ === undefined ? "" : `posz = ${options.bindToTargetPosZ}`}
+time = ${options.bindToTargetTime ?? 4}
+${redirectIdLine}
+`;
+  }
   return `
 [State ${stateNo}, Helper Target Damage]
 type = TargetLifeAdd

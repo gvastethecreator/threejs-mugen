@@ -349,6 +349,7 @@ import {
   createSyntheticImportedHelperBareTargetTraceArtifact,
   createSyntheticImportedHelperTargetControllersTraceArtifact,
   createSyntheticImportedHelperTargetRedirectTraceArtifact,
+  createSyntheticImportedHelperBindToTargetRedirectTraceArtifact,
   createSyntheticImportedHelperTargetStateTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
@@ -8633,6 +8634,40 @@ describe("RuntimeTraceGatePresets", () => {
           actorId: "p1-helper-0",
           actorKind: "helper",
           effect: expect.objectContaining({ stateNo: 1234, targetCount: 1 }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper BindToTarget RedirectID artifact with destination-owned binding evidence", () => {
+    const artifact = createSyntheticImportedHelperBindToTargetRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-bind-to-target-redirect-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-bind-to-target-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8882 }),
+        expect.objectContaining({
+          ownerId: "p2",
+          actorId: "p1",
+          targetId: 77,
+          hasBinding: true,
+          bindingOffset: { x: 20, y: -8, z: 6 },
         }),
       ]),
     );
