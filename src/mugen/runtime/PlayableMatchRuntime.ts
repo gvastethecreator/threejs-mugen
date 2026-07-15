@@ -4225,6 +4225,44 @@ function runStateEntrySetupControllers(
         gameSpace,
         playerIdTarget ? (playerId) => playerIdTarget(actor, playerId) : undefined,
       );
+      const targetRedirectControllerType = redirectableTargetControllerType(controller);
+      if (targetRedirectControllerType !== undefined) {
+        const redirectExpression = targetControllerRedirectExpression(controller);
+        const target = redirectExpression
+          ? onRootRedirect?.(fighter, redirectExpression, context, targetRedirectControllerType)
+          : actor;
+        if (!target) {
+          return actor.runtime;
+        }
+        const candidateTargets = target === actor
+          ? [opponent]
+          : [...new Map(
+              [...(characters ?? []), opponent].map((candidate) => [candidate.id, candidate] as const),
+            ).values()].filter((candidate) => candidate.id !== target.id);
+        const mirrorRedirectedTargetTelemetry =
+          target !== actor &&
+          !compatibilityTelemetryWorld.isImportedActor(target);
+        targetControllerDispatchWorld.apply({
+          actor: target,
+          candidateTargets,
+          controller,
+          effect: "target",
+          targetWorld: target.targetWorld,
+          recordController: (recordedTarget, recordedController) => {
+            compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);
+            if (mirrorRedirectedTargetTelemetry) {
+              compatibilityTelemetryWorld.recordController(fighter, recordedController);
+            }
+          },
+          recordOperation: (recordedTarget, operation) => {
+            compatibilityTelemetryWorld.recordOperation(recordedTarget, operation);
+            if (mirrorRedirectedTargetTelemetry) {
+              compatibilityTelemetryWorld.recordOperation(fighter, operation);
+            }
+          },
+        });
+        return actor.runtime;
+      }
       const redirectExpression = resourceControllerRedirectExpression(controller);
       const redirectControllerType = redirectableResourceControllerType(controller);
       const target = redirectExpression && redirectControllerType !== undefined

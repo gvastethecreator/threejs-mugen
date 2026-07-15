@@ -151,6 +151,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetPowerRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-target-power-state-entry-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-control-state-entry-redirect",
       required: true,
       artifact: presets.createSyntheticImportedControlStateEntryRedirectTraceArtifact(),
@@ -4433,6 +4438,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-resource-auxiliary-state-entry-redirect",
     "synthetic-imported-control-redirect",
     "synthetic-imported-target-power-redirect",
+    "synthetic-imported-target-power-state-entry-redirect",
     "synthetic-imported-control-state-entry-redirect",
     "synthetic-imported-redlife",
     "synthetic-imported-guardpoints",

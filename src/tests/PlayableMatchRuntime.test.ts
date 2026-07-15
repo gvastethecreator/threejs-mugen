@@ -4886,6 +4886,74 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes state-entry TargetPowerAdd RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-state-entry-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-state-entry-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+      stateEntryResourceController: `
+[State -1, Redirected Entry Target Power]
+type = TargetPowerAdd
+triggerall = var(30) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+value = 40
+RedirectID = 56
+
+[State -1, Redirected Entry Target Power Gate]
+type = VarSet
+triggerall = var(30) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+v = 30
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    }
+    for (let frame = 0; frame < 80; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+
+    expect(snapshot.actors[0]?.runtime.power).toBe(35);
+    expect(snapshot.actors[1]?.runtime.power).toBe(75);
+    expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+  });
+
   it("fails closed for an invalid TargetPowerAdd RedirectID", () => {
     const caller = createImportedFixture({
       withStateMove: true,

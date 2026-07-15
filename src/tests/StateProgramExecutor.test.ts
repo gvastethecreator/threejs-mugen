@@ -74,10 +74,15 @@ describe("StateProgramExecutor dispatch", () => {
   it("marks State -1 setup controllers explicitly", () => {
     const setup = dispatchStateProgramController(compileControllerIr(controller("VarSet", { v: "1", value: "3" })));
     const randomSetup = dispatchStateProgramController(compileControllerIr(controller("VarRandom", { v: "2", range: "4,6" })));
+    const targetPower = dispatchStateProgramController(
+      compileControllerIr(controller("TargetPowerAdd", { id: "77", value: "40", RedirectID: "57" })),
+    );
     const movement = dispatchStateProgramController(compileControllerIr(controller("VelAdd", { x: "1" })));
 
     expect(isStateEntrySetupDispatch(setup)).toBe(true);
     expect(isStateEntrySetupDispatch(randomSetup)).toBe(true);
+    expect(targetPower).toMatchObject({ kind: "side-effect", effect: "target" });
+    expect(isStateEntrySetupDispatch(targetPower)).toBe(true);
     expect(isStateEntrySetupDispatch(movement)).toBe(false);
   });
 });
