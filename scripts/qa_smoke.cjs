@@ -515,9 +515,11 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     check();
   }));
   await page.keyboard.down("a");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("a");
-  await pauseOnAttack;
+  try {
+    await pauseOnAttack;
+  } finally {
+    await page.keyboard.up("a");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const attack = await captureMugenLiteVisualState(
     page,
