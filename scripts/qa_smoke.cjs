@@ -876,7 +876,7 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
     const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return bridge?.snapshot?.round?.state === "fight" && p1?.runtime?.life === 1000 && p2?.runtime?.life === 1000 &&
+    return bridge?.snapshot?.playing === true && p1?.runtime?.life === 1000 && p2?.runtime?.life === 1000 &&
       p1.runtime.stateNo === 0 && p2.runtime.stateNo === 0;
   }, null, { timeout: 5000 });
   await changeHiddenSelect(page, '[data-fighter-select="p1"]', importedId);
