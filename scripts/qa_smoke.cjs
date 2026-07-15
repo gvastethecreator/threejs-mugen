@@ -853,9 +853,11 @@ async function captureMugenLitePaletteJourney(page, options) {
     check();
   }));
   await page.keyboard.down("s");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("s");
-  await pauseOnPalette;
+  try {
+    await pauseOnPalette;
+  } finally {
+    await page.keyboard.up("s");
+  }
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
   const palette = await captureMugenLiteVisualState(
     page,
