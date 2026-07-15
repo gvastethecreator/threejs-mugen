@@ -871,14 +871,29 @@ async function captureMugenLitePaletteJourney(page, options) {
 }
 
 async function captureMugenLiteGuardJourney(page, options, importedId) {
-  await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
-  await page.waitForFunction(() => {
+  const resetSnapshot = await page.locator('[data-action="reset-round"]').first().evaluate((button) => {
+    button.click();
     const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
-    const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return bridge?.snapshot?.playing === true && p1?.runtime?.life === 1000 && p2?.runtime?.life === 1000 &&
-      p1.runtime.stateNo === 0 && p2.runtime.stateNo === 0;
-  }, null, { timeout: 5000 });
+    const actors = bridge?.snapshot?.actors ?? [];
+    const p1 = actors.find((actor) => actor.id === "p1");
+    const p2 = actors.find((actor) => actor.id === "p2");
+    return {
+      playing: bridge?.snapshot?.playing,
+      tick: bridge?.snapshot?.tick,
+      p1: p1 ? { life: p1.runtime?.life, stateNo: p1.runtime?.stateNo } : undefined,
+      p2: p2 ? { life: p2.runtime?.life, stateNo: p2.runtime?.stateNo } : undefined,
+    };
+  });
+  if (
+    resetSnapshot.playing !== true ||
+    resetSnapshot.tick !== 0 ||
+    resetSnapshot.p1?.life !== 1000 ||
+    resetSnapshot.p2?.life !== 1000 ||
+    resetSnapshot.p1?.stateNo !== 0 ||
+    resetSnapshot.p2?.stateNo !== 0
+  ) {
+    throw new Error(`MUGEN-lite guard reset did not produce a fresh round: ${JSON.stringify(resetSnapshot)}`);
+  }
   await changeHiddenSelect(page, '[data-fighter-select="p1"]', importedId);
   await changeHiddenSelect(page, '[data-fighter-select="p2"]', "nova-boxer");
   await page.waitForFunction((importedId) => {
