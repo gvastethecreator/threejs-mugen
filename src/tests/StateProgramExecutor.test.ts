@@ -89,6 +89,9 @@ describe("StateProgramExecutor dispatch", () => {
     const targetFacing = dispatchStateProgramController(
       compileControllerIr(controller("TargetFacing", { id: "77", value: "1", RedirectID: "56" })),
     );
+    const targetDrop = dispatchStateProgramController(
+      compileControllerIr(controller("TargetDrop", { id: "77", excludeID: "-1", keepone: "0", RedirectID: "56" })),
+    );
     const movement = dispatchStateProgramController(compileControllerIr(controller("VelAdd", { x: "1" })));
 
     expect(isStateEntrySetupDispatch(setup)).toBe(true);
@@ -103,6 +106,8 @@ describe("StateProgramExecutor dispatch", () => {
     expect(isStateEntrySetupDispatch(targetVelocitySet)).toBe(true);
     expect(targetFacing).toMatchObject({ kind: "side-effect", effect: "target" });
     expect(isStateEntrySetupDispatch(targetFacing)).toBe(true);
+    expect(targetDrop).toMatchObject({ kind: "side-effect", effect: "target" });
+    expect(isStateEntrySetupDispatch(targetDrop)).toBe(true);
     expect(isStateEntrySetupDispatch(movement)).toBe(false);
   });
 });

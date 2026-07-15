@@ -77,7 +77,7 @@ export type HitDefFallOp = {
 };
 
 export type TargetControllerOp =
-  | { kind: "target"; controllerType: "targetdrop"; excludeId?: number; keepOne: boolean }
+  | ({ kind: "target"; controllerType: "targetdrop"; excludeId?: number; keepOne: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
@@ -1668,7 +1668,15 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
   const requestedId = firstNumber(findParam(controller, "id"));
   if (type === "targetdrop") {
     const excludeId = firstNumber(findParam(controller, "excludeid") ?? findParam(controller, "id"));
-    return { kind: "target", controllerType: "targetdrop", excludeId, keepOne: (firstNumber(findParam(controller, "keepone")) ?? 1) !== 0 };
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+    if (redirectPlayerIdExpression === "invalid") return undefined;
+    return {
+      kind: "target",
+      controllerType: "targetdrop",
+      excludeId,
+      keepOne: (firstNumber(findParam(controller, "keepone")) ?? 1) !== 0,
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
+    };
   }
   if (type === "targetlifeadd") {
     const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);

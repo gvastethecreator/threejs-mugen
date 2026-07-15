@@ -219,6 +219,7 @@ export function isStateEntrySetupDispatch(dispatch: StateProgramDispatch): boole
         dispatch.controller.normalizedType === "targetlifeadd" ||
         dispatch.controller.normalizedType === "targetpoweradd" ||
         dispatch.controller.normalizedType === "targetfacing" ||
+        dispatch.controller.normalizedType === "targetdrop" ||
         dispatch.controller.normalizedType === "targetveladd" ||
         dispatch.controller.normalizedType === "targetvelset"
       );

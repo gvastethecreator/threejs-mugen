@@ -5156,6 +5156,49 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetFacing).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes active TargetDrop RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-drop-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      withTargetDrop: true,
+      targetDropRedirectId: 57,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-drop-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBe(0);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetDrop).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetdrop"]).toBeGreaterThanOrEqual(1);
+  });
+
   it("routes state-entry TargetLifeAdd RedirectID through the target owner target memory", () => {
     const redirectedCaller = createImportedFixture({
       id: "target-life-state-entry-redirect-caller",
@@ -5400,6 +5443,74 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetfacing"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes state-entry TargetDrop RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-drop-state-entry-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-drop-state-entry-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+      stateEntryResourceController: `
+[State -1, Redirected Entry Target Drop]
+type = TargetDrop
+triggerall = var(28) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+excludeID = -1
+keepone = 0
+RedirectID = 56
+
+[State -1, Redirected Entry Target Drop Gate]
+type = VarSet
+triggerall = var(28) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+v = 28
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    }
+    for (let frame = 0; frame < 80; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+
+    expect(snapshot.actors[0]?.runtime.targetCount).toBe(0);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetDrop).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetdrop"]).toBeGreaterThanOrEqual(1);
+  });
+
   it("fails closed for an invalid TargetFacing RedirectID", () => {
     const caller = createImportedFixture({
       withStateMove: true,
@@ -5444,6 +5555,30 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetPowerAdd).toBeUndefined();
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeUndefined();
     expect(snapshot.logs.some((line) => line.includes("Blocked targetpoweradd RedirectID 999"))).toBe(true);
+  });
+
+  it("fails closed for an invalid TargetDrop RedirectID", () => {
+    const caller = createImportedFixture({
+      withStateMove: true,
+      passiveTargetController: `
+[State 0, Invalid Target Drop Redirect]
+type = TargetDrop
+trigger1 = 1
+excludeID = -1
+keepone = 0
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.targetCount).toBe(0);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBe(0);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetDrop).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetdrop"]).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked targetdrop RedirectID 999"))).toBe(true);
   });
 
   it("fails closed for an invalid TargetLifeAdd RedirectID", () => {
@@ -6521,6 +6656,7 @@ function createImportedFixture(
     withBindToTarget?: boolean;
     bindToTargetPostype?: "Foot" | "Mid" | "Head";
     withTargetDrop?: boolean;
+    targetDropRedirectId?: number | string;
     withPrePauseTargetBind?: boolean;
     withPause?: boolean;
     withSuperPause?: boolean;
@@ -7038,6 +7174,7 @@ type = TargetDrop
 trigger1 = Time = 1
 excludeID = -1
 keepone = 0
+${options.targetDropRedirectId === undefined ? "" : `RedirectID = ${options.targetDropRedirectId}`}
 `
     : "";
   const bindToTarget = options.withBindToTarget

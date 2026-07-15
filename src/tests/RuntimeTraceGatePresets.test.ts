@@ -501,6 +501,8 @@ import {
   createSyntheticImportedTargetVelocityStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetFacingRedirectTraceArtifact,
   createSyntheticImportedTargetFacingStateEntryRedirectTraceArtifact,
+  createSyntheticImportedTargetDropRedirectTraceArtifact,
+  createSyntheticImportedTargetDropStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1604,6 +1606,44 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", targetCount: 1 }),
+        expect.objectContaining({ id: "p2", targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported TargetDrop RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetDropRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-drop-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-drop-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetDrop).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetdrop"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", targetCount: 1 }),
+        expect.objectContaining({ id: "p2", targetCount: 0 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported State -1 TargetDrop RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetDropStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-drop-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-drop-state-entry-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetDrop).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetdrop"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", targetCount: 0 }),
         expect.objectContaining({ id: "p2", targetCount: 1 }),
       ]),
     );
