@@ -91,8 +91,12 @@ import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHist
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
 import {
+  ASSET_PROVENANCE_EXPORT_CONFIG_DIGEST,
+  ASSET_PROVENANCE_IMPORT_CONFIG_DIGEST,
+  ASSET_PROVENANCE_TOOL_VERSION,
   createAssetProvenanceRecord,
   type AssetProvenanceFileInput,
+  type AssetProvenanceQaLink,
   type AssetProvenancePermission,
   type AssetProvenanceRecord,
 } from "./StudioAssetProvenance";
@@ -662,6 +666,9 @@ type ProjectExportBundleManifest = {
     binaryFailed: number;
     binaryBytes: number;
     binaryBundlingStatus: "metadata-only" | "partial" | "bundled";
+    provenanceRecords: number;
+    provenanceReady: number;
+    provenanceBlocked: number;
     records: ProjectExportBundleAssetRecord[];
   };
   diagnostics: {
@@ -4970,9 +4977,13 @@ export class App {
           <dt>Detail</dt><dd>${escapeHtml(asset.detail)}</dd>
           <dt>Impact</dt><dd>${escapeHtml(asset.impact)}</dd>
           <dt>Next action</dt><dd>${escapeHtml(asset.nextAction.label)}</dd>
-          <dt>Export</dt><dd>${this.statusBadge(asset.canExport ? "ok" : "blocked")}</dd>
-          <dt>Provenance</dt><dd>${library.selectedProvenance ? this.statusBadge(library.selectedProvenance.status === "complete" ? "ok" : library.selectedProvenance.status === "blocked" ? "blocked" : "warn") : this.statusBadge("unknown")}</dd>
-          <dt>Input digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.inputDigest?.digest ?? "missing")}</dd>
+           <dt>Export</dt><dd>${this.statusBadge(asset.canExport ? "ok" : "blocked")}</dd>
+           <dt>Provenance</dt><dd>${library.selectedProvenance ? this.statusBadge(library.selectedProvenance.status === "complete" ? "ok" : library.selectedProvenance.status === "blocked" ? "blocked" : "warn") : this.statusBadge("unknown")}</dd>
+           <dt>Provenance schema</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.schemaVersion ?? "missing")}</dd>
+           <dt>License</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.license.expression ?? "unknown")} / ${library.selectedProvenance?.license.status ?? "unknown"}</dd>
+           <dt>Transforms</dt><dd>${library.selectedProvenance ? `${library.selectedProvenance.transforms.length} ordered` : "missing"}</dd>
+           <dt>QA links</dt><dd>${library.selectedProvenance?.qaLinks.length ?? 0}</dd>
+           <dt>Input digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.inputDigest?.digest ?? "missing")}</dd>
           <dt>Output digest</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.outputDigest?.digest ?? "missing")}</dd>
           <dt>Input files</dt><dd>${library.selectedProvenance ? `${library.selectedProvenance.inputFiles.filter((file) => file.digest).length}/${library.selectedProvenance.inputFiles.length} hashed` : "missing"}</dd>
           <dt>Output files</dt><dd>${library.selectedProvenance ? `${library.selectedProvenance.outputFiles.filter((file) => file.digest).length}/${library.selectedProvenance.outputFiles.length} hashed` : "missing"}</dd>
@@ -4980,10 +4991,11 @@ export class App {
           <dt>Evidence</dt><dd>${asset.evidenceIds.length ? asset.evidenceIds.map((id) => `<span class="badge">${escapeHtml(id)}</span>`).join(" ") : "none linked yet"}</dd>
         </dl>
         <div class="badge-row">
-          ${asset.tags.map((tag) => `<span class="badge">${escapeHtml(tag)}</span>`).join("")}
-          <span class="badge">${escapeHtml(asset.severity)}</span>
-          ${asset.blockedBy.map((id) => `<span class="badge warn">blocked by ${escapeHtml(id)}</span>`).join("")}
-        </div>
+           ${asset.tags.map((tag) => `<span class="badge">${escapeHtml(tag)}</span>`).join("")}
+           <span class="badge">${escapeHtml(asset.severity)}</span>
+           ${asset.blockedBy.map((id) => `<span class="badge warn">blocked by ${escapeHtml(id)}</span>`).join("")}
+           ${(library.selectedProvenance?.warnings ?? []).slice(0, 4).map((warning) => `<span class="badge warn">${escapeHtml(warning)}</span>`).join("")}
+         </div>
       </section>
       ${replacementFlow}
       ${sourceRuntimeMap}
@@ -8810,10 +8822,12 @@ export class App {
     };
   }
 
-  private getStudioAssetProvenance(assets: StudioAssetRecord[]): AssetProvenanceRecord[] {
+  private getStudioAssetProvenance(
+    assets: StudioAssetRecord[],
+    bundledRecords: ProjectExportBundleAssetRecord[] = this.lastProjectBundle?.manifest.assets.records ?? [],
+  ): AssetProvenanceRecord[] {
     const sourcePackages = this.getProjectSourcePackages();
     const sourceTransactions = this.getSourceTransactionRecords();
-    const bundledRecords = this.lastProjectBundle?.manifest.assets.records ?? [];
     return assets.map((asset) => {
       const sourcePackage = asset.source === "mugen-import"
         ? sourcePackages.find((candidate) => candidate.characterId === asset.id) ?? sourcePackages[0]
@@ -8843,15 +8857,54 @@ export class App {
           ...(record.sha256 ? { digest: record.sha256 } : {}),
           ...(record.bytes !== undefined ? { byteLength: record.bytes } : {}),
         }));
+      const inputPaths = inputFiles.length > 0
+        ? inputFiles.map((file) => file.path)
+        : [sourceRecord?.path ?? `assets/${asset.id}`];
+      const outputPaths = outputFiles.length > 0
+        ? outputFiles.map((file) => file.path)
+        : [`runtime/${asset.id}`];
+      const tool = asset.source === "mugen-import"
+        ? "mugen-loader"
+        : asset.source === "generated" && asset.tags.includes("sprite-atlas-builder")
+          ? "sprite-atlas-builder"
+          : "studio-asset-pipeline";
+      const qaLinks: AssetProvenanceQaLink[] = asset.evidenceIds.map((id) => ({
+        id,
+        kind: id.includes("collision") ? "collision" : id.includes("trace") || id.includes("runtime") ? "playtest" : "qa",
+        status: "unknown",
+        reference: id,
+      }));
       return createAssetProvenanceRecord({
         asset,
         sourceFingerprint: sourcePackage?.fingerprint,
         inputFiles,
         outputFiles,
         sourcePath: sourceRecord?.path,
-        tool: asset.source === "generated" && asset.tags.includes("sprite-atlas-builder") ? "sprite-atlas-builder" : undefined,
+        tool,
+        toolVersion: ASSET_PROVENANCE_TOOL_VERSION,
         permission,
         requiresDurablePermission: false,
+        transforms: [
+          {
+            id: `${asset.id}:source-import`,
+            kind: "source-import",
+            tool,
+            version: ASSET_PROVENANCE_TOOL_VERSION,
+            configDigest: ASSET_PROVENANCE_IMPORT_CONFIG_DIGEST,
+            inputPaths,
+            outputPaths: [`runtime/${asset.id}`],
+          },
+          {
+            id: `${asset.id}:bundle`,
+            kind: "bundle",
+            tool: "browser-export",
+            version: ASSET_PROVENANCE_TOOL_VERSION,
+            configDigest: ASSET_PROVENANCE_EXPORT_CONFIG_DIGEST,
+            inputPaths: [`runtime/${asset.id}`],
+            outputPaths,
+          },
+        ],
+        qaLinks,
       });
     });
   }
@@ -9444,6 +9497,8 @@ export class App {
     const sourcePackages = this.getProjectSourcePackages();
     const missingSourcePackages = sourcePackages.filter((sourcePackage) => sourcePackage.status !== "linked");
     const linkedSourcePackages = sourcePackages.length - missingSourcePackages.length;
+    const provenanceRecords = this.getStudioAssetProvenance(summary.assets);
+    const blockedProvenance = provenanceRecords.filter((record) => !record.canExport);
     const tracePassed = this.lastTraceArtifact?.status === "passed";
     const compileErrors = compiled?.diagnostics.errors.length ?? 0;
     const compileWarnings = compiled?.diagnostics.warnings.length ?? 0;
@@ -9511,18 +9566,30 @@ export class App {
       {
         id: "asset-validation",
         label: "Asset validation",
-        status: assetAttention.some((asset) => asset.status === "fail") ? "fail" : assetAttention.length ? "warn" : "ok",
-        state: assetAttention.some((asset) => asset.status === "fail") ? "blocked" : assetAttention.length ? "partial" : "exportable",
-        detail: assetAttention.length ? `${assetAttention.length} asset records need attention` : "All current asset records are clean",
+        status: assetAttention.some((asset) => asset.status === "fail") || blockedProvenance.length ? "fail" : assetAttention.length ? "warn" : "ok",
+        state: assetAttention.some((asset) => asset.status === "fail") || blockedProvenance.length ? "blocked" : assetAttention.length ? "partial" : "exportable",
+        detail: blockedProvenance.length
+          ? `${blockedProvenance.length}/${provenanceRecords.length} provenance records block release readiness`
+          : assetAttention.length
+            ? `${assetAttention.length} asset records need attention`
+            : "All current asset records are clean",
         affectedSystem: "studio",
-        impact: assetAttention.length
-          ? "Some assets can still be playable, but their warnings must stay visible in exported evidence."
-          : "Asset inventory has no current warning or failure states.",
-        evidenceIds: assetAttention.map((asset) => `asset:${asset.id}`),
-        blockedBy: assetAttention.filter((asset) => asset.status === "fail").map((asset) => asset.id),
-        canExport: !assetAttention.some((asset) => asset.status === "fail"),
-        nextAction: assetAttention.length
-          ? { kind: "open-evidence", label: "Open asset attention queue", targetId: "asset-validation" }
+        impact: blockedProvenance.length
+          ? "The Studio can export a diagnostic package, but release readiness stays blocked until every asset has explicit license, digest, and transform evidence."
+          : assetAttention.length
+            ? "Some assets can still be playable, but their warnings must stay visible in exported evidence."
+            : "Asset inventory has no current warning or failure states.",
+        evidenceIds: [
+          ...assetAttention.map((asset) => `asset:${asset.id}`),
+          ...blockedProvenance.map((record) => `provenance:${record.assetId}`),
+        ],
+        blockedBy: [
+          ...assetAttention.filter((asset) => asset.status === "fail").map((asset) => asset.id),
+          ...blockedProvenance.map((record) => `provenance:${record.assetId}`),
+        ],
+        canExport: !assetAttention.some((asset) => asset.status === "fail") && blockedProvenance.length === 0,
+        nextAction: blockedProvenance.length || assetAttention.length
+          ? { kind: "open-evidence", label: "Review asset provenance", targetId: "asset-validation" }
           : { kind: "open-build", label: "Review export package", targetId: "asset-validation" },
       },
       {
@@ -11345,6 +11412,9 @@ export class App {
       this.addJsonToZip(zip, "qa/latest-trace-artifact.json", traceArtifact);
     }
     const assetRecords = await this.addProjectBundleAssetsToZip(zip, studio.assets);
+    const provenance = this.getStudioAssetProvenance(studio.assets, assetRecords);
+    const provenanceReady = provenance.filter((record) => record.canExport).length;
+    const provenanceBlocked = provenance.length - provenanceReady;
     const bundledAssets = assetRecords.filter((record) => record.status === "bundled");
     const failedAssets = assetRecords.filter((record) => record.status === "failed");
     const skippedAssets = assetRecords.filter((record) => record.status === "skipped");
@@ -11355,6 +11425,7 @@ export class App {
       { path: "runtime/runtime-manifest.json", kind: "runtime", required: true },
       { path: "studio/studio-summary.json", kind: "studio", required: true },
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
+      { path: "studio/asset-provenance.json", kind: "studio", required: true },
       { path: "studio/evidence.json", kind: "qa", required: true },
       { path: "studio/build-readiness.json", kind: "qa", required: true },
       { path: "reports/compatibility-report.json", kind: "report", required: true },
@@ -11380,6 +11451,9 @@ export class App {
         binaryFailed: failedAssets.length,
         binaryBytes: bundledAssets.reduce((total, asset) => total + (asset.bytes ?? 0), 0),
         binaryBundlingStatus,
+        provenanceRecords: provenance.length,
+        provenanceReady,
+        provenanceBlocked,
         records: assetRecords,
       },
       diagnostics: {
@@ -11387,6 +11461,7 @@ export class App {
           ...compiled.diagnostics.warnings,
           ...(binaryBundlingStatus === "metadata-only" ? ["No browser-fetchable binary assets were embedded in this package export."] : []),
           ...(binaryBundlingStatus === "partial" ? ["Some local/source assets could not be embedded; see assets/package-assets.json."] : []),
+          ...(provenanceBlocked > 0 ? [`${provenanceBlocked} asset provenance record(s) block release readiness; this package remains diagnostic-only.`] : []),
           ...(traceArtifact ? [] : ["No runtime trace artifact was included because none has been exported in this session."]),
         ],
         errors: [...compiled.diagnostics.errors],
@@ -11397,6 +11472,7 @@ export class App {
     const readiness = this.getBuildReadinessRecords(studio);
     this.addJsonToZip(zip, "package-manifest.json", manifest);
     this.addJsonToZip(zip, "studio/build-readiness.json", readiness);
+    this.addJsonToZip(zip, "studio/asset-provenance.json", provenance);
     this.addJsonToZip(zip, "assets/package-assets.json", assetRecords);
     zip.file("README.txt", this.createProjectBundleReadme(manifest));
     const blob = await zip.generateAsync({ type: "blob" });

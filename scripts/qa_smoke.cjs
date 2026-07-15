@@ -1937,6 +1937,9 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       provenanceInputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0) ?? 0,
       provenanceOutputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0) ?? 0,
       provenanceCompleteRecords: bridge?.studioAssets?.provenance?.filter((record) => record.status === "complete").length ?? 0,
+      provenanceBlocked: bridge?.studioAssets?.provenance?.filter((record) => !record.canExport).length ?? 0,
+      provenanceLicenseUnknown: bridge?.studioAssets?.provenance?.filter((record) => record.license?.status === "unknown").length ?? 0,
+      provenanceTransformCount: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.transforms?.length ?? 0), 0) ?? 0,
       provenanceFilePathLeaks: (bridge?.studioAssets?.provenance ?? []).flatMap((record) => [
         ...(record.inputFiles ?? []),
         ...(record.outputFiles ?? []),
@@ -2454,6 +2457,7 @@ async function inspectPackageZip(packagePath) {
   const project = JSON.parse(await zip.file("project/project.json").async("string"));
   const runtime = JSON.parse(await zip.file("runtime/runtime-manifest.json").async("string"));
   const sourceRuntimeMap = JSON.parse(await zip.file("studio/asset-source-runtime-map.json").async("string"));
+  const assetProvenance = JSON.parse(await zip.file("studio/asset-provenance.json").async("string"));
   const packageAssets = JSON.parse(await zip.file("assets/package-assets.json").async("string"));
   const bundledAssets = packageAssets.filter((asset) => asset.status === "bundled");
   const importedAssets = bundledAssets.filter((asset) => asset.packagePath.startsWith("assets/imported/"));
@@ -2469,6 +2473,12 @@ async function inspectPackageZip(packagePath) {
     binarySkipped: manifest.assets?.binarySkipped,
     binaryFailed: manifest.assets?.binaryFailed,
     binaryBytes: manifest.assets?.binaryBytes,
+    provenanceSchema: assetProvenance?.[0]?.schemaVersion,
+    provenanceRecords: assetProvenance?.length ?? 0,
+    provenanceReady: manifest.assets?.provenanceReady,
+    provenanceBlocked: manifest.assets?.provenanceBlocked,
+    provenanceLicenseUnknown: assetProvenance?.filter((record) => record.license?.status === "unknown").length ?? 0,
+    provenanceAbsolutePathLeaks: assetProvenance?.filter((record) => /^(?:[a-z]:\\|[a-z]:\/|file:|\\\\)/i.test(record.sourceRef ?? "")).length ?? 0,
     projectSourcePackages: project.sourcePackages?.length ?? 0,
     linkedProjectSourcePackages: project.sourcePackages?.filter((sourcePackage) => sourcePackage.status === "linked").length ?? 0,
     projectSourceRequiredPaths: project.sourcePackages?.reduce((total, sourcePackage) => total + (sourcePackage.requiredPaths?.length ?? 0), 0) ?? 0,
@@ -2499,6 +2509,7 @@ async function inspectPackageZip(packagePath) {
     sourceRuntimeAssetCount: Object.keys(sourceRuntimeMap).length,
     hasTrace: files.includes("qa/latest-trace-artifact.json"),
     hasAssetManifest: files.includes("assets/package-assets.json"),
+    hasAssetProvenance: files.includes("studio/asset-provenance.json"),
     hasRuntimeAtlas: files.some((file) => file.endsWith("sprite-sheet-alpha.png")),
     hasStageArt: files.some((file) => file.endsWith("rooftop-dojo.png")),
   };
@@ -3977,11 +3988,17 @@ function assertSmoke(diagnostics) {
     (studioBuild.downloadedPackage?.binaryBundled ?? 0) < 20 ||
     (studioBuild.downloadedPackage?.binaryBytes ?? 0) <= 0 ||
     !studioBuild.downloadedPackage?.hasAssetManifest ||
+    !studioBuild.downloadedPackage?.hasAssetProvenance ||
     !studioBuild.downloadedPackage?.hasRuntimeAtlas ||
     !studioBuild.downloadedPackage?.hasStageArt ||
     (studioBuild.downloadedPackage?.missingBundledFiles?.length ?? 0) > 0 ||
     (studioBuild.downloadedPackage?.bundledWithoutChecksum?.length ?? 0) > 0 ||
     (studioBuild.downloadedPackage?.sourceRuntimeAssetCount ?? 0) < 3 ||
+    studioBuild.downloadedPackage?.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v2" ||
+    (studioBuild.downloadedPackage?.provenanceRecords ?? 0) < 1 ||
+    (studioBuild.downloadedPackage?.provenanceBlocked ?? 0) < 1 ||
+    (studioBuild.downloadedPackage?.provenanceLicenseUnknown ?? 0) < 1 ||
+    (studioBuild.downloadedPackage?.provenanceAbsolutePathLeaks ?? 0) !== 0 ||
     !studioBuild.downloadedPackage?.hasTrace
   ) {
     failures.push("studio-build: downloaded project package did not include required contracts/evidence");
@@ -4004,11 +4021,13 @@ function assertSmoke(diagnostics) {
   }
   if (
     studioBuild.importedFixtureLoaded &&
-    (studioBuild.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v1" ||
+    (studioBuild.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v2" ||
       studioBuild.provenanceRecords < 1 ||
       studioBuild.provenanceInputFiles < 5 ||
       studioBuild.provenanceOutputFiles < 5 ||
-      studioBuild.provenanceCompleteRecords < 1 ||
+      studioBuild.provenanceBlocked < 1 ||
+      studioBuild.provenanceLicenseUnknown < 1 ||
+      studioBuild.provenanceTransformCount < studioBuild.provenanceRecords * 2 ||
       studioBuild.provenanceFilePathLeaks !== 0)
   ) {
     failures.push("studio-build: imported asset provenance did not join per-file source and bundled output hashes");
@@ -4200,10 +4219,13 @@ function assertSmoke(diagnostics) {
     (studioAssets.sourceRuntimeLanes?.runtime ?? 0) < 1 ||
     (studioAssets.sourceRuntimeLanes?.qa ?? 0) < 1 ||
     (studioAssets.sourceRuntimeLanes?.export ?? 0) < 1 ||
-    studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v1" ||
-    studioAssets.provenanceRecords < studioAssets.assetTotal ||
-    studioAssets.provenanceFilePathLeaks !== 0 ||
-    studioAssets.selectedProvenanceStatus !== "partial" ||
+    studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v2" ||
+      studioAssets.provenanceRecords < studioAssets.assetTotal ||
+      studioAssets.provenanceFilePathLeaks !== 0 ||
+      studioAssets.provenanceBlocked < 1 ||
+      studioAssets.provenanceLicenseUnknown < 1 ||
+      studioAssets.provenanceTransformCount < studioAssets.provenanceRecords * 2 ||
+      studioAssets.selectedProvenanceStatus !== "blocked" ||
     studioAssets.provenanceAbsolutePathLeaks !== 0 ||
     studioAssets.relatedEvidence < 1 ||
     studioAssets.assetTotal < 3 ||
@@ -4656,6 +4678,9 @@ function summarizeDiagnostics(diagnostics) {
       provenanceOutputFiles: diagnostics.checks.studioBuild.provenanceOutputFiles,
       provenanceCompleteRecords: diagnostics.checks.studioBuild.provenanceCompleteRecords,
       provenanceFilePathLeaks: diagnostics.checks.studioBuild.provenanceFilePathLeaks,
+      provenanceBlocked: diagnostics.checks.studioBuild.provenanceBlocked,
+      provenanceLicenseUnknown: diagnostics.checks.studioBuild.provenanceLicenseUnknown,
+      provenanceTransformCount: diagnostics.checks.studioBuild.provenanceTransformCount,
       architectureGateStatus: diagnostics.checks.studioBuild.architectureGateStatus,
       architectureEvidenceRecord: diagnostics.checks.studioBuild.architectureEvidenceRecord,
       bodyHasArchitectureBoundaries: diagnostics.checks.studioBuild.bodyHasArchitectureBoundaries,
@@ -4672,6 +4697,9 @@ function summarizeDiagnostics(diagnostics) {
       provenanceInputFiles: diagnostics.checks.studioAssets.provenanceInputFiles,
       provenanceOutputFiles: diagnostics.checks.studioAssets.provenanceOutputFiles,
       provenanceFilePathLeaks: diagnostics.checks.studioAssets.provenanceFilePathLeaks,
+      provenanceBlocked: diagnostics.checks.studioAssets.provenanceBlocked,
+      provenanceLicenseUnknown: diagnostics.checks.studioAssets.provenanceLicenseUnknown,
+      provenanceTransformCount: diagnostics.checks.studioAssets.provenanceTransformCount,
       selectedProvenanceStatus: diagnostics.checks.studioAssets.selectedProvenanceStatus,
       provenanceAbsolutePathLeaks: diagnostics.checks.studioAssets.provenanceAbsolutePathLeaks,
     },
