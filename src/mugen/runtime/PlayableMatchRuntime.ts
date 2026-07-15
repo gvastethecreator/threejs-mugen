@@ -438,6 +438,7 @@ type RedirectableTargetControllerType =
   | "targetfacing"
   | "targetdrop"
   | "targetbind"
+  | "targetstate"
   | "targetveladd"
   | "targetvelset";
 type PlayerIdTargetResolver = (
@@ -3136,6 +3137,7 @@ function redirectableTargetControllerType(controller: ControllerIr): Redirectabl
     controller.normalizedType === "targetfacing" ||
     controller.normalizedType === "targetdrop" ||
     controller.normalizedType === "targetbind" ||
+    controller.normalizedType === "targetstate" ||
     controller.normalizedType === "targetveladd" ||
     controller.normalizedType === "targetvelset"
     ? controller.normalizedType
@@ -3716,10 +3718,10 @@ function runActiveStateControllers(
           }
         },
         scaleIncomingDamage: scaleRuntimeIncomingDamage,
-        enterTargetState: (target, stateId) => {
+        enterTargetState: (selectedTarget, stateId) => {
           targetStateEntryWorld.enter({
-            actor: fighter,
-            target,
+            actor: target,
+            target: selectedTarget,
             stateId,
             hooks: {
               canEnterState: (targetActor, targetStateId, stateOwner) =>
@@ -4274,6 +4276,19 @@ function runStateEntrySetupControllers(
             if (mirrorRedirectedTargetTelemetry) {
               compatibilityTelemetryWorld.recordOperation(fighter, operation);
             }
+          },
+          enterTargetState: (selectedTarget, stateId) => {
+            targetStateEntryWorld.enter({
+              actor: target,
+              target: selectedTarget,
+              stateId,
+              hooks: {
+                canEnterState: (targetActor, targetStateId, stateOwner) =>
+                  canEnterState(targetActor, targetStateId, stateOwner),
+                enterState: (targetActor, targetStateId, targetOptions) =>
+                  enterState(targetActor, targetStateId, undefined, targetOptions),
+              },
+            });
           },
         });
         return actor.runtime;

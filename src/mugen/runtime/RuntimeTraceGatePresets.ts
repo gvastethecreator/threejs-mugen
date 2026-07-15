@@ -1957,6 +1957,171 @@ export function createSyntheticImportedTargetBindStateEntryRedirectTraceArtifact
   });
 }
 
+export function createSyntheticImportedTargetStateRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "target-state-redirect-seed-p1-target", frames: 8, p1: ["x"], p2: [] },
+    { label: "target-state-redirect-active", frames: 20, p1: [], p2: ["x"] },
+    { label: "target-state-redirect-recover", frames: 80, p1: [], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-state-redirect-caller",
+    displayName: "Synthetic Imported TargetState Redirect Caller",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    targetStateControllerRedirectId: 57,
+    targetStateRoute: {
+      startStateNo: 888,
+      chainStateNo: 889,
+      changeStateAfter: 1,
+      selfStateAfter: 2,
+    },
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-state-redirect-target",
+    displayName: "Synthetic Imported TargetState Redirect Target",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: target, p2: caller, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-target-state-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-state-redirect-golden",
+      label: "Synthetic imported TargetState RedirectID route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported IKEMEN trace proves active TargetState RedirectID selects a live root PlayerID 57 as the state owner while the caller's target memory remains distinct and the selected target executes the owner's custom state. State -1 routing, helper/projectile/team ownership, and full parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-state-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 889],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetState", "SelfState"],
+        requiredExecutedOperations: ["hitdef", "target:targetstate"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", customOwnerId: "p2", animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", customOwnerId: "p2", animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, moveType: "I", targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, moveType: "I", targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedTargetStateStateEntryRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "target-state-state-entry-seed-p1-target", frames: 8, p1: ["x"], p2: [] },
+    { label: "target-state-state-entry-seed-p2-target", frames: 20, p1: [], p2: ["x"] },
+    { label: "target-state-state-entry-recover", frames: 80, p1: [], p2: [] },
+  ]);
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-state-state-entry-redirect-target",
+    displayName: "Synthetic Imported TargetState State Entry Redirect Target",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    targetStateTriggerTime: 1000,
+    targetStateRoute: {
+      startStateNo: 888,
+      chainStateNo: 889,
+      changeStateAfter: 1,
+      selfStateAfter: 2,
+    },
+  });
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-state-state-entry-redirect-caller",
+    displayName: "Synthetic Imported TargetState State Entry Redirect Caller",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    withTargetStateStateEntry: { redirectId: 56, targetId: 77, stateNo: 888 },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: target, p2: caller, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-target-state-state-entry-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-state-state-entry-redirect-golden",
+      label: "Synthetic imported State -1 TargetState RedirectID route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported IKEMEN trace proves State -1 TargetState RedirectID selects PlayerID 56 as the state owner after both imported roots have target memories, then returns the selected target through the owner's custom state route. Active-state routing, helper/projectile/team ownership, and full parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-state-state-entry-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 889],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetState", "SelfState", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "target:targetstate", "variable:varset"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, moveType: "I", targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedGuardPointsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-guardpoints",
@@ -46313,6 +46478,7 @@ export type SyntheticImportedTraceFighterOptions = {
   targetFacingControllerRedirectId?: SyntheticNumberExpression;
   targetDropControllerRedirectId?: SyntheticNumberExpression;
   targetBindControllerRedirectId?: SyntheticNumberExpression;
+  targetStateControllerRedirectId?: SyntheticNumberExpression;
   targetVelocityControllerRedirectId?: SyntheticNumberExpression;
   targetLifeAddValue?: number;
   targetControllerTriggerTime?: number;
@@ -46531,6 +46697,11 @@ export type SyntheticImportedTraceFighterOptions = {
     redirectId: SyntheticNumberExpression;
     targetId?: number;
     value?: number;
+  };
+  withTargetStateStateEntry?: {
+    redirectId: SyntheticNumberExpression;
+    targetId?: number;
+    stateNo?: number;
   };
   withTargetDropStateEntry?: {
     redirectId: SyntheticNumberExpression;
@@ -47308,6 +47479,7 @@ ${options.withRedirectedResourceStateEntry === undefined ? "" : redirectedResour
 ${options.withTargetLifeStateEntry === undefined ? "" : targetLifeStateEntryBlock(targetMemoryId, options.withTargetLifeStateEntry)}
 ${options.withTargetVelocityStateEntry === undefined ? "" : targetVelocityStateEntryBlock(targetMemoryId, options.withTargetVelocityStateEntry)}
 ${options.withTargetFacingStateEntry === undefined ? "" : targetFacingStateEntryBlock(targetMemoryId, options.withTargetFacingStateEntry)}
+${options.withTargetStateStateEntry === undefined ? "" : targetStateStateEntryBlock(targetMemoryId, options.withTargetStateStateEntry)}
 ${options.withTargetDropStateEntry === undefined ? "" : targetDropStateEntryBlock(targetMemoryId, options.withTargetDropStateEntry)}
 ${options.withTargetBindStateEntry === undefined ? "" : targetBindStateEntryBlock(targetMemoryId, options.withTargetBindStateEntry)}
 ${options.withTargetPowerStateEntry === undefined ? "" : targetPowerStateEntryBlock(targetMemoryId, options.withTargetPowerStateEntry)}
@@ -47428,7 +47600,7 @@ ${options.targetFacingControllerRedirectId === undefined ? "" : targetFacingRedi
 ${options.targetDropControllerRedirectId === undefined ? "" : targetDropRedirectControllerBlock(options.targetDropControllerRedirectId)}
 ${options.targetBindControllerRedirectId === undefined ? "" : targetBindRedirectControllerBlock(options.targetBindControllerRedirectId)}
 ${options.targetVelocityControllerRedirectId === undefined ? "" : targetVelocityRedirectControllerBlock(targetMemoryId, options.targetVelocityControllerRedirectId)}
-${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo, options.targetStateTriggerTime) : ""}
+${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo, options.targetStateTriggerTime, options.targetStateControllerRedirectId) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype, options.bindToTargetPosZ) : ""}
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
@@ -49609,13 +49781,19 @@ time = 4
 `;
 }
 
-function targetStateControllerBlock(targetId: number, stateNo: number, triggerTime = 2): string {
+function targetStateControllerBlock(
+  targetId: number,
+  stateNo: number,
+  triggerTime = 2,
+  redirectId?: SyntheticNumberExpression,
+): string {
   return `
 [State 200, Target Custom State]
 type = TargetState
 trigger1 = Time = ${triggerTime}
 id = ${targetId}
 value = ${stateNo}
+${redirectId === undefined ? "" : `RedirectID = ${redirectId}`}
 `;
 }
 
@@ -52420,6 +52598,33 @@ triggerall = StageTime >= 40
 triggerall = NumTarget(${targetId}) > 0
 trigger1 = 1
 v = 29
+value = 1
+`;
+}
+
+function targetStateStateEntryBlock(
+  targetMemoryId: number,
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withTargetStateStateEntry"]>,
+): string {
+  const targetId = config.targetId ?? targetMemoryId;
+  return `
+[State -1, Target State Redirect Entry]
+type = TargetState
+triggerall = var(26) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+id = ${targetId}
+value = ${config.stateNo ?? 888}
+RedirectID = ${config.redirectId}
+
+[State -1, Target State Redirect Entry Gate]
+type = VarSet
+triggerall = var(26) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+v = 26
 value = 1
 `;
 }

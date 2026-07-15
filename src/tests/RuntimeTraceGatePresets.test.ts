@@ -505,6 +505,8 @@ import {
   createSyntheticImportedTargetDropStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetBindRedirectTraceArtifact,
   createSyntheticImportedTargetBindStateEntryRedirectTraceArtifact,
+  createSyntheticImportedTargetStateRedirectTraceArtifact,
+  createSyntheticImportedTargetStateStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1682,6 +1684,45 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.targetLinks).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true }),
+      ]),
+    );
+  });
+
+  it("creates a required imported TargetState RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetStateRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-state-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-state-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetState).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", customOwnerId: "p2", animNo: 888 }),
+        expect.objectContaining({ actorId: "p1", customOwnerId: "p2", animNo: 889 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported State -1 TargetState RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetStateStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-state-state-entry-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-target-state-state-entry-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetState).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 888 }),
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 889 }),
       ]),
     );
   });
