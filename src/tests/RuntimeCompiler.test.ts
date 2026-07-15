@@ -1176,6 +1176,27 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles bounded resource RedirectID expressions and rejects malformed targets", () => {
+    const life = compileControllerIr(controller(200, "LifeAdd", [], { value: "-25", kill: "0", redirectid: "57" }));
+    const power = compileControllerIr(controller(200, "PowerSet", [], { value: "900", redirectid: "PlayerID(57)" }));
+    const invalid = compileControllerIr(controller(200, "LifeSet", [], { value: "750", redirectid: "57, 0" }));
+
+    expect(life.operation).toEqual({
+      kind: "resource",
+      controllerType: "lifeadd",
+      value: -25,
+      kill: false,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(power.operation).toEqual({
+      kind: "resource",
+      controllerType: "powerset",
+      value: 900,
+      redirectPlayerIdExpression: "PlayerID(57)",
+    });
+    expect(invalid.operation).toBeUndefined();
+  });
+
   it("compiles static hit eligibility controllers into typed operations", () => {
     const hitBy = compileControllerIr(controller(200, "HitBy", [], { value: "S,NA", value2: "A,SA", time: "8" }));
     const notHitBy = compileControllerIr(controller(200, "NotHitBy", [], { value: "SCA", time: "12" }));

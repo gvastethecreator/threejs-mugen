@@ -472,18 +472,22 @@ export type SpriteEffectControllerOp =
       scale?: [number, number];
     };
 
+type RedirectableResourceControllerOp = {
+  redirectPlayerIdExpression?: string;
+};
+
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
-  | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
-  | { kind: "resource"; controllerType: "lifeset"; value: number }
+  | ({ kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean } & RedirectableResourceControllerOp)
+  | ({ kind: "resource"; controllerType: "lifeset"; value: number } & RedirectableResourceControllerOp)
   | { kind: "resource"; controllerType: "guardpointsadd"; value: number }
   | { kind: "resource"; controllerType: "guardpointsset"; value: number }
   | { kind: "resource"; controllerType: "dizzypointsadd"; value: number }
   | { kind: "resource"; controllerType: "dizzypointsset"; value: number }
   | { kind: "resource"; controllerType: "redlifeadd"; value: number; absolute?: boolean }
   | { kind: "resource"; controllerType: "redlifeset"; value: number }
-  | { kind: "resource"; controllerType: "poweradd"; value: number }
-  | { kind: "resource"; controllerType: "powerset"; value: number };
+  | ({ kind: "resource"; controllerType: "poweradd"; value: number } & RedirectableResourceControllerOp)
+  | ({ kind: "resource"; controllerType: "powerset"; value: number } & RedirectableResourceControllerOp);
 
 export type VariableControllerOp =
   | {
@@ -1332,6 +1336,14 @@ function compileResourceControllerOp(controller: MugenStateController, type: Res
   if (value === undefined) {
     return undefined;
   }
+  const redirectPlayerIdExpression =
+    type === "lifeadd" || type === "lifeset" || type === "poweradd" || type === "powerset"
+      ? compileRedirectPlayerIdExpression(controller)
+      : undefined;
+  if (redirectPlayerIdExpression === "invalid") {
+    return undefined;
+  }
+  const redirect = redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression };
   if (type === "ctrlset") {
     return { kind: "resource", controllerType: "ctrlset", value: value !== 0 };
   }
@@ -1341,6 +1353,7 @@ function compileResourceControllerOp(controller: MugenStateController, type: Res
       controllerType: "lifeadd" as const,
       value,
       kill: booleanNumber(findParam(controller, "kill")),
+      ...redirect,
     });
   }
   if (type === "redlifeadd") {
@@ -1351,7 +1364,9 @@ function compileResourceControllerOp(controller: MugenStateController, type: Res
       absolute: booleanNumber(findParam(controller, "absolute")),
     });
   }
-  return { kind: "resource", controllerType: type, value };
+  return type === "lifeset" || type === "poweradd" || type === "powerset"
+    ? { kind: "resource", controllerType: type, value, ...redirect }
+    : { kind: "resource", controllerType: type, value };
 }
 
 function isVariableController(type: string): type is VariableControllerOp["controllerType"] {

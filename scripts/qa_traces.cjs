@@ -121,6 +121,16 @@ async function main() {
       artifact: presets.createSyntheticImportedResourceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-resource-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedResourceRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-resource-state-entry-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedResourceStateEntryRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-redlife",
       required: true,
       artifact: presets.createSyntheticImportedRedLifeTraceArtifact(),
@@ -4392,6 +4402,8 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitadd",
     "synthetic-imported-variable",
     "synthetic-imported-resource",
+    "synthetic-imported-resource-redirect",
+    "synthetic-imported-resource-state-entry-redirect",
     "synthetic-imported-redlife",
     "synthetic-imported-guardpoints",
     "synthetic-imported-control",

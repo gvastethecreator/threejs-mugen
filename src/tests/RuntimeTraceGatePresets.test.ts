@@ -487,6 +487,8 @@ import {
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
+  createSyntheticImportedResourceRedirectTraceArtifact,
+  createSyntheticImportedResourceStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
   createSyntheticImportedDizzyPointsTraceArtifact,
@@ -1299,6 +1301,61 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 294, redLife: 1000 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ redLife: 963 });
+  });
+
+  it("creates a required imported resource RedirectID artifact with caller-owned dynamic values", () => {
+    const artifact = createSyntheticImportedResourceRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-resource-redirect-golden",
+        source: "mixed",
+      },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 290]));
+    expect(evidence?.executedControllers.LifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.LifeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:poweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", minLife: 750, maxLife: 750, minPower: 900, maxPower: 900 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 290, life: 1000, power: 35 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900 });
+  });
+
+  it("creates a required imported state-entry resource RedirectID artifact", () => {
+    const artifact = createSyntheticImportedResourceStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-resource-state-entry-redirect-golden",
+        source: "mixed",
+      },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(200);
+    expect(evidence?.executedControllers.LifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.LifeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:poweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, life: 1000, power: 35 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900 });
   });
 
   it("creates a synthetic imported guard-points artifact with direct guard and resource evidence", () => {

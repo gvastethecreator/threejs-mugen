@@ -743,6 +743,90 @@ export function createSyntheticImportedResourceTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedResourceRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resource-redirect",
+      displayName: "Synthetic Imported Resource Redirect",
+      action200Duration: 30,
+      hitDefDamage: 0,
+      withRedirectedResourceOps: { stateNo: 290, redirectId: 57, sourcePowerSeed: 150 },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-resource-redirect-golden",
+      targetLabel: "Synthetic imported resource RedirectID route",
+      requireHitEvent: true,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 290],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
+      requiredExecutedOperations: ["hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 290, life: 1000, power: 35 },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900 },
+      ],
+      notes: [
+        "Synthetic imported IKEMEN trace proves root RedirectID routes LifeAdd, LifeSet, PowerAdd, and PowerSet to the PlayerID 57 destination while dynamic values resolve from the caller's var(9). Auxiliary actors, team banks, KO exactness, helpers, and full MUGEN/IKEMEN RedirectID parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedResourceStateEntryRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resource-state-entry-redirect",
+      displayName: "Synthetic Imported Resource State Entry Redirect",
+      action200Duration: 30,
+      hitDefDamage: 0,
+      withRedirectedResourceStateEntry: { redirectId: 57, sourcePowerSeed: 150 },
+    }),
+    {
+      ...options,
+      runtimeProfile: "ikemen-go",
+      targetId: "synthetic-imported-resource-state-entry-redirect-golden",
+      targetLabel: "Synthetic imported resource state-entry RedirectID route",
+      requireHitEvent: true,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
+      requiredExecutedOperations: ["hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 35 },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900 },
+      ],
+      notes: [
+        "Synthetic imported IKEMEN trace proves the same root RedirectID resource contract during state-entry setup: p1 owns dynamic var(15) evaluation while p2 receives LifeAdd, LifeSet, PowerAdd, and PowerSet. Active-state routing, auxiliary actors, teams, KO exactness, helpers, and full parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedRedLifeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -45328,6 +45412,15 @@ export type SyntheticImportedTraceFighterOptions = {
     stateNo: number;
     redLife?: { addValue?: number; setValue?: number; absolute?: boolean };
   };
+  withRedirectedResourceOps?: {
+    stateNo: number;
+    redirectId: SyntheticNumberExpression;
+    sourcePowerSeed?: number;
+  };
+  withRedirectedResourceStateEntry?: {
+    redirectId: SyntheticNumberExpression;
+    sourcePowerSeed?: number;
+  };
   withRedLifeOps?: { stateNo: number; addValue?: number; setValue?: number; absolute?: boolean };
   withGuardPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
   withDizzyPointsOps?: { stateNo: number; addValue?: number; setValue?: number };
@@ -46083,6 +46176,7 @@ time = 5
 const stateEntryControllers = parseCns(`
 ${options.enemyStateEntry === undefined ? "" : enemyStateEntryBlock(options.enemyStateEntry)}
 ${options.playerIdStateEntry === undefined ? "" : playerIdStateEntryBlock(options.playerIdStateEntry)}
+${options.withRedirectedResourceStateEntry === undefined ? "" : redirectedResourceStateEntryBlock(options.withRedirectedResourceStateEntry)}
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.enemyNearIndexedStateEntry === undefined ? "" : enemyNearIndexedStateEntryBlock(options.enemyNearIndexedStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
@@ -46260,6 +46354,7 @@ ${options.withDynamicLifeAddOps === undefined ? "" : dynamicLifeAddControllerBlo
 ${options.withDynamicResourceSetOps === undefined ? "" : dynamicResourceSetControllerBlock(options.withDynamicResourceSetOps)}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps)}
+${options.withRedirectedResourceOps === undefined ? "" : redirectedResourceControllerBlock(options.withRedirectedResourceOps)}
 ${options.withRedLifeOps === undefined ? "" : redLifeControllerBlock(options.withRedLifeOps)}
 ${options.withGuardPointsOps === undefined ? "" : guardPointsControllerBlock(options.withGuardPointsOps)}
 ${options.withDizzyPointsOps === undefined ? "" : dizzyPointsControllerBlock(options.withDizzyPointsOps)}
@@ -46398,6 +46493,7 @@ ${options.animElemExit ? simpleStateBlock(options.animElemExit.stateNo, "I") : "
 ${options.animElemTimeExit ? simpleStateBlock(options.animElemTimeExit.stateNo, "I") : ""}
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
+${options.withRedirectedResourceOps ? simpleStateBlock(options.withRedirectedResourceOps.stateNo, "I") : ""}
 ${options.withRedLifeOps ? simpleStateBlock(options.withRedLifeOps.stateNo, "I") : ""}
 ${options.withGuardPointsOps ? simpleStateBlock(options.withGuardPointsOps.stateNo, "I") : ""}
 ${options.withDizzyPointsOps ? simpleStateBlock(options.withDizzyPointsOps.stateNo, "I") : ""}
@@ -46573,6 +46669,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
         : ([[options.edgeDistanceEntry.stateNo, traceAction(options.edgeDistanceEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withRedirectedResourceOps === undefined
+        ? []
+        : ([[options.withRedirectedResourceOps.stateNo, traceAction(options.withRedirectedResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withRedLifeOps === undefined ? [] : ([[options.withRedLifeOps.stateNo, traceAction(options.withRedLifeOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withGuardPointsOps === undefined ? [] : ([[options.withGuardPointsOps.stateNo, traceAction(options.withGuardPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDizzyPointsOps === undefined ? [] : ([[options.withDizzyPointsOps.stateNo, traceAction(options.withDizzyPointsOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -50252,6 +50351,90 @@ ctrl = 0
 `;
 }
 
+function redirectedResourceControllerBlock(
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withRedirectedResourceOps"]>,
+): string {
+  const sourcePowerSeed = config.sourcePowerSeed ?? 150;
+  return `
+[State 200, Redirect Resource Value Seed]
+type = VarSet
+trigger1 = MoveHit >= 1
+trigger1 = var(10) = 0
+v = 9
+value = ${sourcePowerSeed}
+
+[State 200, Redirect Resource Start]
+type = VarSet
+trigger1 = MoveHit >= 1
+trigger1 = var(10) = 0
+v = 10
+value = 1
+
+[State 200, Redirect Life Add Probe]
+type = LifeAdd
+trigger1 = var(10) = 1
+trigger1 = var(11) = 0
+value = -100
+kill = 0
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Life Add Gate]
+type = VarSet
+trigger1 = var(10) = 1
+trigger1 = var(11) = 0
+v = 11
+value = 1
+
+[State 200, Redirect Life Set Probe]
+type = LifeSet
+trigger1 = var(11) = 1
+trigger1 = var(12) = 0
+value = 600 + var(9)
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Life Set Gate]
+type = VarSet
+trigger1 = var(11) = 1
+trigger1 = var(12) = 0
+v = 12
+value = 1
+
+[State 200, Redirect Power Add Probe]
+type = PowerAdd
+trigger1 = var(12) = 1
+trigger1 = var(13) = 0
+value = var(9)
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Power Add Gate]
+type = VarSet
+trigger1 = var(12) = 1
+trigger1 = var(13) = 0
+v = 13
+value = 1
+
+[State 200, Redirect Power Set Probe]
+type = PowerSet
+trigger1 = var(13) = 1
+trigger1 = var(14) = 0
+value = var(9) + 750
+RedirectID = ${config.redirectId}
+
+[State 200, Redirect Power Set Gate]
+type = VarSet
+trigger1 = var(13) = 1
+trigger1 = var(14) = 0
+v = 14
+value = 1
+
+[State 200, Redirect Resource Branch]
+type = ChangeState
+trigger1 = var(14) = 1
+value = ${config.stateNo}
+ctrl = 0
+`;
+}
+
 function redLifeControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withRedLifeOps"]>): string {
   const addValue = config.addValue ?? 7;
   const setValue = config.setValue ?? 9;
@@ -50883,6 +51066,50 @@ type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = PlayerID(${route.playerId}), ${route.trigger ?? "StateNo = 0"}
+`;
+}
+
+function redirectedResourceStateEntryBlock(
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withRedirectedResourceStateEntry"]>,
+): string {
+  const sourcePowerSeed = config.sourcePowerSeed ?? 150;
+  return `
+[State -1, Redirect Entry Resource Value Seed]
+type = VarSet
+trigger1 = var(15) = 0
+v = 15
+value = ${sourcePowerSeed}
+
+[State -1, Redirect Entry Life Add]
+type = LifeAdd
+trigger1 = var(15) = ${sourcePowerSeed}
+value = -100
+kill = 0
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Life Set]
+type = LifeSet
+trigger1 = var(15) = ${sourcePowerSeed}
+value = 600 + var(15)
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Power Add]
+type = PowerAdd
+trigger1 = var(15) = ${sourcePowerSeed}
+value = var(15)
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Power Set]
+type = PowerSet
+trigger1 = var(15) = ${sourcePowerSeed}
+value = var(15) + 750
+RedirectID = ${config.redirectId}
+
+[State -1, Redirect Entry Resource Complete]
+type = VarSet
+trigger1 = var(15) = ${sourcePowerSeed}
+v = 15
+value = ${sourcePowerSeed + 1}
 `;
 }
 

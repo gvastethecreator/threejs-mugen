@@ -172,6 +172,7 @@ import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairPar
 import {
   applyRuntimeControl,
   applyRuntimePowerDelta,
+  resolveRuntimeResourceControllerOperation,
 } from "./RuntimeResourceSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
@@ -410,8 +411,15 @@ type RootControllerRedirectHandler = (
   caller: FighterMatchState,
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
-  controllerType: "depth" | "height" | "overrideclsn" | "screenbound" | "playerpush",
+  controllerType:
+    | "depth"
+    | "height"
+    | "overrideclsn"
+    | "screenbound"
+    | "playerpush"
+    | RedirectableResourceControllerType,
 ) => FighterMatchState | undefined;
+type RedirectableResourceControllerType = "lifeadd" | "lifeset" | "poweradd" | "powerset";
 type PlayerIdTargetResolver = (
   caller: FighterMatchState,
   playerId: number,
@@ -1214,6 +1222,8 @@ export class PlayableMatchRuntime {
               this.inputControlWorld,
               (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               this.characterRoots(),
+              (caller, expression, context, controllerType) =>
+                this.resolveRootControllerRedirect(caller, expression, context, controllerType),
             ),
           handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
         });
@@ -1541,6 +1551,8 @@ export class PlayableMatchRuntime {
           this.inputControlWorld,
           (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
           this.characterRoots(),
+          (caller, expression, context, controllerType) =>
+            this.resolveRootControllerRedirect(caller, expression, context, controllerType),
         ),
       handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
       advanceFighter: (actor, opponent) =>
@@ -1616,6 +1628,8 @@ export class PlayableMatchRuntime {
               this.inputControlWorld,
               (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               this.characterRoots(),
+              (caller, expression, context, controllerType) =>
+                this.resolveRootControllerRedirect(caller, expression, context, controllerType),
             );
           } else {
             handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld);
@@ -1932,7 +1946,13 @@ export class PlayableMatchRuntime {
     caller: FighterMatchState,
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
-    controllerType: "depth" | "height" | "overrideclsn" | "screenbound" | "playerpush",
+    controllerType:
+      | "depth"
+      | "height"
+      | "overrideclsn"
+      | "screenbound"
+      | "playerpush"
+      | RedirectableResourceControllerType,
   ): FighterMatchState | undefined {
     const block = (value: number | "invalid"): undefined => {
       this.logs.unshift(`Blocked ${controllerType} RedirectID ${value} for ${caller.id}`);
@@ -3041,6 +3061,44 @@ function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options:
   stateEntryWorld.setStateNo(fighter, stateNo, options);
 }
 
+function redirectableResourceControllerType(controller: ControllerIr): RedirectableResourceControllerType | undefined {
+  const normalizedType = controller.normalizedType as RedirectableResourceControllerType;
+  return normalizedType === "lifeadd" || normalizedType === "lifeset" || normalizedType === "poweradd" || normalizedType === "powerset"
+    ? normalizedType
+    : undefined;
+}
+
+function resourceControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  if (redirectableResourceControllerType(controller) === undefined) {
+    return undefined;
+  }
+  const operation = controller.operation;
+  const compiledExpression = operation?.kind === "resource" && "redirectPlayerIdExpression" in operation
+    ? operation.redirectPlayerIdExpression
+    : undefined;
+  return compiledExpression ?? findControllerParam(controller, "redirectid")?.trim();
+}
+
+function resolveRedirectedResourceController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr | undefined {
+  const controllerType = redirectableResourceControllerType(controller);
+  if (controllerType === undefined) {
+    return undefined;
+  }
+  const staticOperation = controller.operation;
+  const operation =
+    staticOperation?.kind === "resource" && staticOperation.controllerType === controllerType
+      ? staticOperation
+      : resolveRuntimeResourceControllerOperation(controller, caller.runtime, context);
+  if (operation?.kind !== "resource" || operation.controllerType !== controllerType) {
+    return undefined;
+  }
+  return controller.operation === operation ? controller : { ...controller, operation };
+}
+
 function handlePlayerInput(
   fighter: FighterMatchState,
   input: Set<string>,
@@ -3051,12 +3109,13 @@ function handlePlayerInput(
   inputControlWorld: RuntimeInputControlWorld,
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
+  onRootRedirect?: RootControllerRedirectHandler,
 ): void {
   inputControlWorld.handlePlayerInput(fighter, input, {
     hasStun: hasRuntimeStun(fighter),
     preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
     runStateEntrySetup: () =>
-      runStateEntrySetupControllers(fighter, opponent, stageBounds, gameSpace, tick, playerIdTarget, characters),
+      runStateEntrySetupControllers(fighter, opponent, stageBounds, gameSpace, tick, playerIdTarget, characters, onRootRedirect),
     tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, gameSpace, tick, characters, playerIdTarget),
     startMove: (move) => startMove(fighter, move),
     changeAction: (actionId) => changeAction(fighter, actionId),
@@ -3687,28 +3746,49 @@ function runActiveStateControllers(
         createPlayerIdTarget(actor),
       );
       const redirectableBoundsController = dispatch.controller.normalizedType === "screenbound" || dispatch.controller.normalizedType === "playerpush";
-      const redirectExpression = redirectableBoundsController
-        ? (((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound") ||
-              (dispatch.controller.operation?.kind === "collision" && dispatch.controller.operation.controllerType === "playerpush")
-            ? dispatch.controller.operation.redirectPlayerIdExpression
-            : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
-        : undefined;
+      const redirectableResourceType = redirectableResourceControllerType(dispatch.controller);
+      const redirectExpression = redirectableResourceType !== undefined
+        ? resourceControllerRedirectExpression(dispatch.controller)
+        : redirectableBoundsController
+          ? (((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound") ||
+                (dispatch.controller.operation?.kind === "collision" && dispatch.controller.operation.controllerType === "playerpush")
+              ? dispatch.controller.operation.redirectPlayerIdExpression
+              : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
+          : undefined;
+      const redirectControllerType = redirectableResourceType ??
+        (redirectableBoundsController
+          ? dispatch.controller.normalizedType as "screenbound" | "playerpush"
+          : undefined);
       const target = redirectExpression
-        ? options.onRootRedirect?.(
-            fighter,
-            redirectExpression,
-            context,
-            dispatch.controller.normalizedType as "screenbound" | "playerpush",
-          )
+        ? redirectControllerType === undefined
+          ? undefined
+          : options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
         : fighter;
       if (!target) {
-        options.onBlocked?.(dispatch.controller, "screenbound-redirect");
+        options.onBlocked?.(dispatch.controller, `${redirectControllerType ?? "root"}-redirect`);
         return;
       }
-      controllerDispatchWorld.apply(target, dispatch.controller, {
+      const redirectedController = redirectableResourceType !== undefined && redirectExpression
+        ? resolveRedirectedResourceController(dispatch.controller, actor, context)
+        : dispatch.controller;
+      if (!redirectedController) {
+        options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);
+        return;
+      }
+      const mirrorRedirectedResourceTelemetry =
+        redirectableResourceType !== undefined &&
+        target !== fighter &&
+        !compatibilityTelemetryWorld.isImportedActor(target);
+      if (mirrorRedirectedResourceTelemetry) {
+        runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
+      }
+      controllerDispatchWorld.apply(target, redirectedController, {
         context,
         ...runtimeActiveControllerTelemetryHooks,
       });
+      if (mirrorRedirectedResourceTelemetry && redirectedController.operation) {
+        runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
+      }
     },
   });
 
@@ -4031,6 +4111,7 @@ function runStateEntrySetupControllers(
   tick: number,
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
+  onRootRedirect?: RootControllerRedirectHandler,
 ): void {
   stateEntrySetupWorld.apply({
     actor: fighter,
@@ -4047,19 +4128,49 @@ function runStateEntrySetupControllers(
         gameSpace,
         characters,
         playerIdTarget,
-      ),
+    ),
     executeController: (controller, actor, stageTime) => {
-      controllerDispatchWorld.apply(actor, controller, {
-        context: runtimeControllerContext(
-          actor,
-          actor,
-          stageTime,
-          stageBounds,
-          opponent,
-          gameSpace,
-          playerIdTarget ? (playerId) => playerIdTarget(actor, playerId) : undefined,
-        ),
-        recordController: (target, recordedController) => compatibilityTelemetryWorld.recordController(target, recordedController),
+      const context = runtimeControllerContext(
+        actor,
+        actor,
+        stageTime,
+        stageBounds,
+        opponent,
+        gameSpace,
+        playerIdTarget ? (playerId) => playerIdTarget(actor, playerId) : undefined,
+      );
+      const redirectExpression = resourceControllerRedirectExpression(controller);
+      const redirectControllerType = redirectableResourceControllerType(controller);
+      const target = redirectExpression && redirectControllerType !== undefined
+        ? onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
+        : actor;
+      if (!target) {
+        return actor.runtime;
+      }
+      const redirectedController = target === actor && redirectExpression === undefined
+        ? controller
+        : resolveRedirectedResourceController(controller, actor, context);
+      if (!redirectedController) {
+        return actor.runtime;
+      }
+      const mirrorRedirectedResourceTelemetry =
+        redirectControllerType !== undefined &&
+        target !== actor &&
+        !compatibilityTelemetryWorld.isImportedActor(target);
+      controllerDispatchWorld.apply(target, redirectedController, {
+        context,
+        recordController: (recordedTarget, recordedController) => {
+          compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);
+          if (mirrorRedirectedResourceTelemetry) {
+            compatibilityTelemetryWorld.recordController(fighter, recordedController);
+          }
+        },
+        recordOperation: (recordedTarget, operation) => {
+          compatibilityTelemetryWorld.recordOperation(recordedTarget, operation);
+          if (mirrorRedirectedResourceTelemetry) {
+            compatibilityTelemetryWorld.recordOperation(fighter, operation);
+          }
+        },
       });
       return actor.runtime;
     },
