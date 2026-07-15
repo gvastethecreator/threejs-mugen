@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 Identity and roster redirection v0 closeout
+
+- Runtime expression contexts now project bounded `Partner`/`Enemy` rosters
+  from `RuntimeRootSelection/v0`, with stable `Enemy` order kept distinct from
+  nearest `EnemyNear` order.
+- `NumPartner`, `P3Name`, `P4Name`, dynamic non-negative indices, compiler
+  support scanning, typed invalid-index diagnostics, and fail-closed missing
+  destinations are covered by focused tests and a required synthetic trace.
+- Verification passes 4 focused files / 95 tests, TypeScript 7, trace-script
+  syntax, new Enemy trace, and full `qa:trace` 601/601 (567 required / 34
+  optional / 0 skipped). No browser smoke was needed and no score moved.
+- Exact Simul/Tag/P3-P8 lifecycle, helper/neutral/playerid redirects,
+  input/combat/effect ownership, and full MUGEN/IKEMEN parity remain blocked.
+- See `docs/reports/2026-07-15-identity-redirection-v0-closeout.md` and
+  `docs/research/2026-07-15-identity-redirection-v0.md`.
+
 ## Global report - 2026-07-14 AssetProvenance/v2 closeout
 
 - Studio now emits deterministic, redacted `asset-provenance/v2` records with

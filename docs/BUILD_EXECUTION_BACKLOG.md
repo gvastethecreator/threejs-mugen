@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 543 - bounded identity and roster redirection
+
+Added `partner`, `enemy`, and indexed roster redirection over the existing
+`RuntimeRootSelection/v0` projection, plus `NumPartner`, `P3Name`, and
+`P4Name`. `EnemyNear` keeps nearest ordering while `Enemy` keeps stable root
+ordering; explicit P2 selection still fails closed. Focused compiler/evaluator/
+context/root coverage passes 4 files / 95 tests, TypeScript 7, trace syntax, a
+new synthetic Enemy artifact, and full `pnpm qa:trace` 601/601 (567 required,
+34 optional, 0 skipped). No score movement. Exact team lifecycle, helper/neutral
+redirects, input/combat/effect ownership, and full MUGEN/IKEMEN parity remain
+blocked. See `docs/reports/2026-07-15-identity-redirection-v0-closeout.md` and
+`docs/research/2026-07-15-identity-redirection-v0.md`.
+
 ## Entry 542 - AssetProvenance/v2 closeout
 
 Added the versioned Studio asset provenance record and wired it into Build,

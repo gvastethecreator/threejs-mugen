@@ -1,5 +1,15 @@
 # Workplan
 
+## Active frontier - 2026-07-15
+
+Entry 543 closes the bounded runtime/compiler `partner`/`enemy` identity
+redirection slice. Stable root-selection rosters now feed `Partner`, `Enemy`,
+indexed reads, `NumPartner`, `P3Name`, and `P4Name`; `EnemyNear` remains nearest
+ordered. Focused 95/95, TypeScript 7, the new `Enemy` trace, and full 601/601
+trace gates pass. No score movement. Teams/Simul/Tag lifecycle, helper/neutral
+redirects, input/combat/effect ownership, and full parity remain blocked. See
+`docs/reports/2026-07-15-identity-redirection-v0-closeout.md`.
+
 ## Active frontier - 2026-07-14
 
 Entry 542 closes the bounded `AssetProvenance/v2` Studio gate. Asset records
