@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Entry 541 - PackageAnalysis/v0 closeout
+
+Added `mugen-web-sandbox/package-analysis/v0` over the existing VirtualFileSystem.
+The report classifies character, stage, system, and screenpack files, resolves
+or preserves missing dependencies, reads `select.def` entries, carries
+source-located parser diagnostics, exposes MUGEN profile/version metadata, and
+maps the existing IKEMEN scanner to explicit `recognized` / `unsupported` /
+`unknown` findings. The result is deterministic and checksum-protected. Mixed,
+stage-only, and system-only fixtures use the same VFS entrypoint. Focal coverage
+passes 1 file / 4 tests and TypeScript 7 passes. No score movement; runtime,
+ZSS/Lua, license, screenpack parity, rollback, and netplay claims remain
+blocked. See `docs/research/2026-07-14-package-analysis-v0.md`.
+
 ## Entry 540 - StudioSemanticDraft/v0 closeout
 
 Closed the accumulated Studio source-editing gate. The official KFM browser

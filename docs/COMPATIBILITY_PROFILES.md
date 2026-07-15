@@ -101,6 +101,8 @@ Current report contract:
 - `CompatibilityReport.profiles.active` lists active profiles for the loaded package.
 - `CompatibilityReport.profiles.ikemen` carries the `ikemen-go-scan` findings, feature counts, claim-allowed wording, and blocked-claim wording.
 - Studio Evidence exposes the same scanner result as `compat:ikemen-scan` when findings exist.
+- `PackageAnalysisResult` (`mugen-web-sandbox/package-analysis/v0`) is the package-level report contract. It preserves source locations, unresolved/resolved dependencies, MUGEN profile/version metadata, and report-only `ikemen-go-scan` findings across character, stage, system, and screenpack VFS inputs.
+- Package analysis remains a scanner/reporting contract; it does not promote parsing or recognition to runtime execution, rendering parity, license validation, or score credit.
 
 The scanner should recognize and report:
 

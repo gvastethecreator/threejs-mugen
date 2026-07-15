@@ -2,6 +2,14 @@
 
 ## Active frontier - 2026-07-14
 
+Entry 541 closes the bounded `PackageAnalysis/v0` I1 gate. The shared VFS
+contract classifies character, stage, system, and screenpack files, retains
+source-located dependencies and parser diagnostics, records MUGEN profile/version
+metadata, and keeps IKEMEN signals scanner-only. Mixed, stage-only, and
+system-only fixtures pass the same report snapshot/checksum path; focal 4/4 and
+TypeScript 7 pass. No runtime or score claim moves. Next: continue the Studio
+trust lane or choose the next independent compatibility slice.
+
 Entry 540 closes the accumulated StudioSemanticDraft/v0 gate. The official KFM
 browser route proves 58 states / 318 controllers, invalid-to-valid repair,
 explicit reimport, matched source identity, and a clean final draft. Native

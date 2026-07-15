@@ -1,5 +1,16 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-14 PackageAnalysis/v0 closeout
+
+- I1 now has a versioned VFS/package report for character, stage, system, and
+  screenpack inputs. Findings preserve source path/line, dependency, profile or
+  version, and `recognized` / `unsupported` / `unknown` status.
+- Mixed, stage-only, and system-only fixtures pass the same deterministic
+  checksum-protected report path: 1 focal file / 4 tests; TypeScript 7 passes.
+- `ikemen-go-scan` remains explicitly scanner-only. No runtime, screenpack
+  parity, license, rollback, netplay, or score claim moved.
+- See `docs/research/2026-07-14-package-analysis-v0.md`.
+
 ## Global report - 2026-07-14 StudioSemanticDraft/v0 closeout
 
 - The official KFM Studio browser route proves 58 states / 318 controllers
