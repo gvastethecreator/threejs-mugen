@@ -494,6 +494,7 @@ import {
   createSyntheticImportedControlRedirectTraceArtifact,
   createSyntheticImportedControlStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetPowerRedirectTraceArtifact,
+  createSyntheticImportedTargetLifeRedirectTraceArtifact,
   createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifact,
   createSyntheticImportedRedLifeTraceArtifact,
   createSyntheticImportedGuardPointsTraceArtifact,
@@ -1463,6 +1464,24 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", power: 75, targetCount: 1 }),
         expect.objectContaining({ id: "p2", power: 35, targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported TargetLifeAdd RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetLifeRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-life-redirect-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-target-life-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", life: 980, targetCount: 1 }),
+        expect.objectContaining({ id: "p2", life: 1000, targetCount: 1 }),
       ]),
     );
   });

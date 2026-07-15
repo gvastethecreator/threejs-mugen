@@ -4886,6 +4886,58 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("routes TargetLifeAdd RedirectID through the target owner target memory", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-life-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      passiveTargetController: `
+[State 0, Redirected Target Life]
+type = TargetLifeAdd
+trigger1 = Time = 0
+id = 77
+value = -40
+absolute = 1
+kill = 0
+RedirectID = 57
+`,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-life-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && (snapshot.actors[0]?.runtime.life ?? 1000) >= 960; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(960);
+    expect(snapshot.actors[1]?.runtime.life).toBe(1000);
+    expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
+  });
+
   it("routes state-entry TargetPowerAdd RedirectID through the target owner target memory", () => {
     const redirectedCaller = createImportedFixture({
       id: "target-state-entry-redirect-caller",
@@ -4975,6 +5027,29 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetPowerAdd).toBeUndefined();
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeUndefined();
     expect(snapshot.logs.some((line) => line.includes("Blocked targetpoweradd RedirectID 999"))).toBe(true);
+  });
+
+  it("fails closed for an invalid TargetLifeAdd RedirectID", () => {
+    const caller = createImportedFixture({
+      withStateMove: true,
+      passiveTargetController: `
+[State 0, Invalid Target Life Redirect]
+type = TargetLifeAdd
+trigger1 = 1
+value = -40
+RedirectID = 999
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(1000);
+    expect(snapshot.actors[1]?.runtime.life).toBe(1000);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetLifeAdd).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetlifeadd"]).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked targetlifeadd RedirectID 999"))).toBe(true);
   });
 
   it("keeps TargetBind offsets applied while the owner advances during SuperPause movetime", () => {

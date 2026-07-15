@@ -1103,6 +1103,86 @@ export function createSyntheticImportedTargetPowerRedirectTraceArtifact(
   });
 }
 
+export function createSyntheticImportedTargetLifeRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "target-life-redirect-seed-p2-target", frames: 8, p1: [], p2: ["x"] },
+    { label: "target-life-redirect-recover", frames: 24, p1: [], p2: [] },
+    { label: "target-life-redirect-attack-p1", frames: 8, p1: ["x"], p2: [] },
+    { label: "target-life-redirect-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-life-redirect-attacker",
+    displayName: "Synthetic Imported Target Life Redirect Attacker",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    withTargetControllers: true,
+    targetControllerTriggerTime: 2,
+    targetLifeAddValue: -20,
+    targetLifeControllerRedirectId: 57,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-life-redirect-defender",
+    displayName: "Synthetic Imported Target Life Redirect Defender",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-target-life-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-life-redirect-golden",
+      label: "Synthetic imported TargetLifeAdd RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves root RedirectID routes TargetLifeAdd to PlayerID 57 target memory: the redirected owner applies -20 to its remembered P1 target while the caller's target memory remains distinct. State-entry, helper/projectile/team targets, and full parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-life-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetLifeAdd"],
+        requiredExecutedOperations: ["hitdef", "target:targetlifeadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", observedLifeAtMost: 980, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", observedLifeAtLeast: 1000, minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 980, targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000, targetCount: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -45537,6 +45617,7 @@ export type SyntheticImportedTraceFighterOptions = {
   targetLifeAddValue?: number;
   targetControllerTriggerTime?: number;
   targetControllerRedirectId?: number;
+  targetLifeControllerRedirectId?: number;
   targetBindPosZ?: number;
   targetStateTriggerTime?: number;
   targetRedirectStateNo?: number;
@@ -46605,7 +46686,7 @@ ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevSt
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
-${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime, options.targetBindPosZ, options.targetControllerRedirectId) : ""}
+${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime, options.targetBindPosZ, options.targetControllerRedirectId, options.targetLifeControllerRedirectId) : ""}
 ${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo, options.targetStateTriggerTime) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype, options.bindToTargetPosZ) : ""}
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
@@ -48735,13 +48816,21 @@ trigger1 = Time >= 0
 ${timeLine}${valueLine}`;
 }
 
-function targetControllerBlock(targetId: number, lifeAddValue = -20, triggerTime = 2, posZ?: number, redirectPowerId?: number): string {
+function targetControllerBlock(
+  targetId: number,
+  lifeAddValue = -20,
+  triggerTime = 2,
+  posZ?: number,
+  redirectPowerId?: number,
+  redirectLifeId?: number,
+): string {
   return `
 [State 200, Target Damage]
 type = TargetLifeAdd
 trigger1 = Time = ${triggerTime}
 id = ${targetId}
 value = ${lifeAddValue}
+${redirectLifeId === undefined ? "" : `RedirectID = ${redirectLifeId}`}
 
 [State 200, Target Meter]
 type = TargetPowerAdd

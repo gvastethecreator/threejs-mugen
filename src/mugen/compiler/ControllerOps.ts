@@ -78,7 +78,7 @@ export type HitDefFallOp = {
 
 export type TargetControllerOp =
   | { kind: "target"; controllerType: "targetdrop"; excludeId?: number; keepOne: boolean }
-  | { kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean }
+  | ({ kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | { kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number }
   | { kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number }
@@ -1671,6 +1671,8 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
     return { kind: "target", controllerType: "targetdrop", excludeId, keepOne: (firstNumber(findParam(controller, "keepone")) ?? 1) !== 0 };
   }
   if (type === "targetlifeadd") {
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+    if (redirectPlayerIdExpression === "invalid") return undefined;
     return {
       kind: "target",
       controllerType: "targetlifeadd",
@@ -1678,6 +1680,7 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
       value: firstNumber(findParam(controller, "value")) ?? 0,
       absolute: (firstNumber(findParam(controller, "absolute")) ?? 0) !== 0,
       kill: (firstNumber(findParam(controller, "kill")) ?? 1) !== 0,
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     };
   }
   if (type === "targetpoweradd") {

@@ -700,7 +700,7 @@ time = 20
   });
 
   it("compiles Target controllers into typed target operations", () => {
-    const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0" }));
+    const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0", redirectid: "57" }));
     const redirectedPower = compileControllerIr(
       controller(200, "TargetPowerAdd", [], { id: "3", value: "40", redirectid: "57" }),
     );
@@ -709,6 +709,9 @@ time = 20
     const state = compileControllerIr(controller(200, "TargetState", [], { id: "3", value: "5300" }));
     const drop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3", keepone: "1" }));
     const defaultDrop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3" }));
+    const invalidLifeRedirect = compileControllerIr(
+      controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", redirectid: "57, 0" }),
+    );
 
     expect(life.operation).toMatchObject({
       kind: "target",
@@ -717,6 +720,7 @@ time = 20
       value: -20,
       absolute: true,
       kill: false,
+      redirectPlayerIdExpression: "57",
     });
     expect(redirectedPower.operation).toEqual({
       kind: "target",
@@ -725,6 +729,7 @@ time = 20
       value: 40,
       redirectPlayerIdExpression: "57",
     });
+    expect(invalidLifeRedirect.operation).toBeUndefined();
     expect(bind.operation).toMatchObject({
       kind: "target",
       controllerType: "targetbind",
