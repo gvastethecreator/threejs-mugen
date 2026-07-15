@@ -7,7 +7,7 @@ Blocked by: None
 ## Question
 
 Can the root-only IKEMEN RedirectID route cover the target velocity pair while
-preserving target-facing x semantics and State -1 scheduling boundaries?
+preserving x-direction ownership and State -1 scheduling boundaries?
 
 ## Answer
 
@@ -17,7 +17,7 @@ live root PlayerID destination's remembered target; the caller retains authored
 x/y/ID context. Missing redirects remain local, and invalid or unavailable
 destinations fail closed. The trace must prove reciprocal target links,
 distinct caller/destination target memory, typed controller/operation telemetry,
-and target-facing `TargetVelSet` behavior.
+and destination-owned `TargetVelSet` direction behavior.
 
 Official basis and implementation risks are recorded in
 `docs/research/2026-07-15-target-velocity-redirectid-selection.md`.

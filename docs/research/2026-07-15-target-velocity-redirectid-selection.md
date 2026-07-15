@@ -24,7 +24,7 @@ team ownership.
   defines additive target velocity, target-facing x direction, downward y
   direction, optional x/y values, and optional target `ID` filtering.
 - [Elecbyte TargetVelSet documentation](https://www.elecbyte.com/mugendocs-11b1/sctrls.html)
-  defines replacement target velocity with the same target-facing x direction,
+  defines replacement target velocity with the executing player's x direction,
   downward y direction, optional x/y values, and optional `ID` filtering.
 
 ## Repository findings
@@ -35,9 +35,10 @@ team ownership.
 2. `RuntimeTargetControllerDispatchWorld` already routes target operations
    through the selected actor's `RuntimeTargetWorld`; the missing piece is
    root PlayerID ownership in active and State -1 dispatch.
-3. `TargetVelAdd` already uses the target's facing for x. `TargetVelSet` must
-   use the target's facing as well, matching the official controller contract;
-   the bounded feature will lock that behavior with a regression test.
+3. `TargetVelAdd` already uses the target's facing for x. `TargetVelSet` uses
+   the executing target-owner actor's facing for x in the current target-world
+   contract, matching the source controller's "player" wording; the redirect
+   destination therefore becomes the velocity-set direction owner.
 
 ## Bounded implementation
 
@@ -60,8 +61,8 @@ Add one required imported trace that seeds reciprocal target links, executes bot
 velocity controllers through a live PlayerID 56 destination, proves the caller
 and destination target memories remain distinct, and captures active plus
 state-entry controller/operation telemetry. Focused compiler, runtime, and
-trace-preset tests will cover the typed RedirectID and the target-facing
-`TargetVelSet` regression.
+trace-preset tests will cover the typed RedirectID and the destination-owned
+`TargetVelSet` direction behavior.
 
 ## Remaining uncertainty
 
