@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 548 - bounded CtrlSet RedirectID
+
+Extended the explicit IKEMEN root RedirectID route to `CtrlSet` in active CNS
+and state-entry setup. The live PlayerID target receives the control flag while
+the caller retains its own control and resource state; values and RedirectID
+expressions remain caller-owned, missing RedirectID stays local, and invalid
+or legacy routes fail closed before mutation. Focused coverage passes 3 files /
+852 tests, TypeScript 7, trace syntax, `git diff --check`, and full
+`pnpm qa:trace` 609/609 (575 required, 34 optional, 0 skipped), with checksums
+`9c62ad5b` and `2f21266e`. No score movement. Helpers, projectiles, neutral
+identity, aggregate/team control, persistent-controller timing, rollback,
+netplay, presentation, and full parity remain blocked. See
+`docs/reports/2026-07-15-control-redirectid-v1-closeout.md` and
+`docs/research/2026-07-15-control-redirectid-v1.md`.
+
 ## Entry 547 - bounded auxiliary resource RedirectID
 
 Extended root-only IKEMEN `RedirectID` to GuardPointsAdd/Set, DizzyPointsAdd/Set,

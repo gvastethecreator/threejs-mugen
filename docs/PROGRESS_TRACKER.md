@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Global report - 2026-07-15 CtrlSet RedirectID v1 closeout
+
+- Root-only IKEMEN `CtrlSet` RedirectID now routes active CNS and state-entry
+  control mutation to the live PlayerID destination while the caller keeps its
+  own control and resource ownership.
+- Missing RedirectID remains local. Empty, malformed, negative, missing,
+  disabled, destroyed, and legacy-profile targets fail closed before mutation;
+  dynamic value and RedirectID expression evaluation remain caller-owned.
+- Verification passes 3 focused files / 852 tests, TypeScript 7, trace-script
+  syntax, `git diff --check`, and full `qa:trace` 609/609 (575 required / 34
+  optional / 0 skipped). Required checksums: `9c62ad5b` and `2f21266e`.
+- Helpers, projectiles, neutral identity, aggregate/team control, persistent
+  controller timing, rollback/netplay, presentation, and full parity remain
+  blocked. No browser smoke or score movement.
+- See `docs/reports/2026-07-15-control-redirectid-v1-closeout.md` and
+  `docs/research/2026-07-15-control-redirectid-v1.md`.
+
 ## Global report - 2026-07-15 auxiliary resource RedirectID v1 closeout
 
 - Root-only IKEMEN `RedirectID` now covers GuardPointsAdd/Set,

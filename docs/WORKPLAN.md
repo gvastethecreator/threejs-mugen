@@ -2,6 +2,16 @@
 
 ## Active frontier - 2026-07-15
 
+Entry 548 closes root-only IKEMEN `CtrlSet` RedirectID. Active CNS and
+state-entry setup now route the control flag to the live PlayerID target while
+the caller retains its own control and resource ownership. Focused 3 files /
+852 tests, TypeScript 7, trace syntax, `git diff --check`, and full
+`qa:trace` 609/609 (575 required, 34 optional) pass; CtrlSet checksums are
+`9c62ad5b` and `2f21266e`. No score movement. Helpers, projectiles, neutral
+identity, aggregate/team control, persistent-controller timing, rollback,
+netplay, presentation, and full parity remain blocked. See
+`docs/reports/2026-07-15-control-redirectid-v1-closeout.md`.
+
 Entry 547 closes the bounded IKEMEN root resource `RedirectID` extension for
 `GuardPointsAdd`, `GuardPointsSet`, `DizzyPointsAdd`, `DizzyPointsSet`,
 `RedLifeAdd`, and `RedLifeSet`. Active CNS and state-entry setup now share the
