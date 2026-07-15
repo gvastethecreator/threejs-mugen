@@ -1,5 +1,22 @@
 # Workplan
 
+## Daily architecture plan - 2026-07-15 Entry 552
+
+Entry 552 closes State -1 TargetLifeAdd RedirectID for live root fighters.
+Next, select one independent Target* family boundary; keep
+helper/projectile/team ownership, exact multi-target ordering, persistence,
+rollback/netplay, and presentation outside that boundary. Product lanes remain
+materialized corpus, Studio evidence-backed greens, one complete asset release
+record, SourceWriteReceipt, and first shared Evidence contract. Scores do not
+move. See `docs/reports/2026-07-15-target-life-state-entry-redirectid-v1-closeout.md`.
+
+## Active frontier - 2026-07-15 Entry 552
+
+Required trace `2e4c8c1b` proves PlayerID 56 target-memory ownership, links
+`p1 -> p2 / 77` and `p2 -> p1 / 77`, final p1/p2 life `1000/980`, and global QA
+613/613 (579 required, 34 optional). The next runtime cut is an independent
+Target* family; broader ownership and parity remain blocked.
+
 ## Daily architecture plan - 2026-07-15 Entry 551
 
 Entry 551 closes active-CNS TargetLifeAdd RedirectID for live root fighters.
