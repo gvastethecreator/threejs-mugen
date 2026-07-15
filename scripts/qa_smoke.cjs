@@ -669,9 +669,7 @@ async function pressCodeFuManQcfX(page) {
   await hold(["ArrowDown"]);
   await hold(["ArrowDown", "ArrowRight"]);
   await hold(["ArrowRight"]);
-  await page.keyboard.down("a");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("a");
+  await holdCodeFuManAttackUntilState(page, 1000);
 }
 
 async function pressCodeFuManUpperX(page) {
@@ -684,9 +682,20 @@ async function pressCodeFuManUpperX(page) {
   await hold(["ArrowRight"]);
   await hold(["ArrowDown"]);
   await hold(["ArrowDown", "ArrowRight"]);
+  await holdCodeFuManAttackUntilState(page, 1100);
+}
+
+async function holdCodeFuManAttackUntilState(page, stateNo) {
   await page.keyboard.down("a");
-  await page.waitForTimeout(80);
-  await page.keyboard.up("a");
+  try {
+    await page
+      .waitForFunction((expectedStateNo) => window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((actor) => actor.id === "p1")?.runtime?.stateNo === expectedStateNo, stateNo, {
+        timeout: 3000,
+      })
+      .catch(() => undefined);
+  } finally {
+    await page.keyboard.up("a");
+  }
 }
 
 async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, options) {
