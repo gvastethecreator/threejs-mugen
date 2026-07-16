@@ -255,6 +255,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Harden CompatibilityCorpusSnapshot/v1.1](tickets/216-compatibility-corpus-snapshot-v1-1.md) - completed in `eb85b809`: live Git revision/reference time, required max-age, expected revision, SHA-256 artifact probes, standalone drift verification, and stale/revision/missing/tamper failure paths are covered. Focused `7/7`, TypeScript 7, materializer, syntax, and diff gates pass. Snapshot remains one required legal route; no score movement.
 
 - [Add repository-authored CC0 stage fixture](tickets/217-repository-cc0-stage-fixture.md) - completed in `134fb3d2`: deterministic Skyline Relay MUGEN stage package with CC0 provenance, relative paths, stable SHA-256 package identity, SFF v1 loader/report, 640x480 localcoord, 1280x720 game space, depth bounds, animated/tiled BG, and BGCtrl. Focused `2/2` and TypeScript 7 pass. Journey/browser/native aggregation remains open; no score movement.
+- [Execute repository-authored Skyline Relay stage journey](tickets/218-repository-stage-journey.md) - resolved in `ad060bd8` / `ac5d7ba4`: typed package digest, production loader/report journey, bounded runtime checks for depth, animated BGCtrl, and `resetBG = 0` round-clock preservation. Focused `3/3`, full `2289/2289`, TypeScript 7/build/boundaries, and trace `633/633` pass. Folder/ZIP application loading, browser/native proof, and snapshot aggregation remain open; no score movement.
 
 ## Not Yet Specified
 
