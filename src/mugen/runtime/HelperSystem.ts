@@ -141,6 +141,7 @@ export type RuntimeHelperOpponentEntry = RuntimeOpponentRosterEntry<CharacterRun
 export type RuntimeHelperTargetRedirect = {
   actor: RuntimeTargetWorldActor;
   candidateTargets: RuntimeTargetWorldActor[];
+  commitActor?: (actor: RuntimeTargetWorldActor) => void;
 };
 
 export type RuntimeHelperAdvanceOptions = {
@@ -1016,6 +1017,11 @@ function applyRuntimeHelperTargetController(
   if (!redirect) {
     applyRuntimeStateToHelper(helper, actor.runtime);
     syncRuntimeHelperTargetActor(helper, actor);
+  } else if (redirect.commitActor) {
+    const committedActors = new Set<RuntimeTargetWorldActor>([actor, ...redirect.candidateTargets]);
+    for (const committedActor of committedActors) {
+      redirect.commitActor(committedActor);
+    }
   }
   return result.matchedTargets > 0 || result.operationExecuted;
 }
@@ -1550,7 +1556,7 @@ function helperTargetRedirect(
   };
 }
 
-function runtimeHelperTargetActor(helper: RuntimeHelper): RuntimeTargetWorldActor {
+export function runtimeHelperTargetActor(helper: RuntimeHelper): RuntimeTargetWorldActor {
   return {
     id: helper.serialId,
     runtime: helperRuntimeState(helper),
@@ -1560,7 +1566,7 @@ function runtimeHelperTargetActor(helper: RuntimeHelper): RuntimeTargetWorldActo
   };
 }
 
-function syncRuntimeHelperTargetActor(helper: RuntimeHelper, actor: RuntimeTargetWorldActor): void {
+export function syncRuntimeHelperTargetActor(helper: RuntimeHelper, actor: RuntimeTargetWorldActor): void {
   helper.targets = actor.targets;
   helper.targetBindings = actor.targetBindings;
   helper.bindToTarget = actor.bindToTarget;

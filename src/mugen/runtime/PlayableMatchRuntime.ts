@@ -52,10 +52,13 @@ import {
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
 import {
+  applyRuntimeStateToHelper,
   applyRuntimeHelperTagStateControl,
   canAdvanceRuntimeHelper,
   hasRuntimeHelperState,
   helperRuntimeState,
+  runtimeHelperTargetActor,
+  syncRuntimeHelperTargetActor,
   type RuntimeHelper,
   type RuntimeHelperTargetRedirect,
 } from "./HelperSystem";
@@ -725,26 +728,54 @@ export class PlayableMatchRuntime {
   private resolveHelperTargetRedirect(
     _helper: RuntimeHelper,
     playerId: number,
-    _controller: ControllerIr,
+    controller: ControllerIr,
   ): RuntimeHelperTargetRedirect | undefined {
     if (this.runtimeProfile !== "ikemen-go") return undefined;
     const identity = this.characterIdentity?.findByPlayerId(playerId);
-    const targetCandidate = identity?.fighter;
-    const target = targetCandidate === undefined
-      ? undefined
-      : this.characterRoots().find((root) => root.id === targetCandidate.id);
+    const roots = this.characterRoots();
+    const helperEntries = roots
+      .flatMap((root) => this.effectActorWorld.helpers(root.id))
+      .filter((helper) => helper.destroyed !== true && helper.teamState?.disabled !== true)
+      .map((helper) => ({ helper, actor: runtimeHelperTargetActor(helper) }));
+    const helperById = new Map(helperEntries.map((entry) => [entry.helper.serialId, entry]));
+    const target = identity?.fighter
+      ? roots.find((root) => root.id === identity.fighter!.id)
+      : identity?.helper
+        ? helperById.get(identity.helper.serialId)?.actor
+        : undefined;
     if (!target) return undefined;
+    if (
+      identity?.helper &&
+      (controller.normalizedType === "targetstate" || controller.normalizedType === "bindtotarget")
+    ) {
+      return undefined;
+    }
     return {
       actor: target,
-      candidateTargets: this.characterRoots(),
+      candidateTargets: [...roots, ...helperEntries.map((entry) => entry.actor)],
+      commitActor: (actor) => {
+        const targetHelper = helperById.get(actor.id)?.helper;
+        if (!targetHelper) return;
+        applyRuntimeStateToHelper(targetHelper, actor.runtime);
+        syncRuntimeHelperTargetActor(targetHelper, actor);
+      },
     };
+  }
+
+  private rootForRedirectedTarget(target: RuntimeHelperTargetRedirect["actor"]): FighterMatchState | undefined {
+    const root = this.characterRoots().find((candidate) => candidate.id === target.id);
+    if (root) return root;
+    const helper = this.characterRoots()
+      .flatMap((candidate) => this.effectActorWorld.helpers(candidate.id))
+      .find((candidate) => candidate.serialId === target.id);
+    return helper ? this.rootForHelper(helper) : undefined;
   }
 
   private recordHelperRedirectedController(
     target: RuntimeHelperTargetRedirect["actor"],
     controller: MugenStateController,
   ): void {
-    const root = this.characterRoots().find((candidate) => candidate.id === target.id);
+    const root = this.rootForRedirectedTarget(target);
     if (root) compatibilityTelemetryWorld.recordController(root, controller);
   }
 
@@ -752,7 +783,7 @@ export class PlayableMatchRuntime {
     target: RuntimeHelperTargetRedirect["actor"],
     operation: ControllerOp,
   ): void {
-    const root = this.characterRoots().find((candidate) => candidate.id === target.id);
+    const root = this.rootForRedirectedTarget(target);
     if (root) compatibilityTelemetryWorld.recordOperation(root, operation);
   }
 
