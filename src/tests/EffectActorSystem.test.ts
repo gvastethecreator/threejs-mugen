@@ -1344,6 +1344,44 @@ describe("EffectActorSystem", () => {
     expect(store.projectiles[0]?.hitSoundValue).toEqual({ group: 7, index: 2 });
   });
 
+  it("resolves helper-owned Projectile P2 depth from the opponent runtime origin", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "44", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", {
+                projid: "8852",
+                projanim: "930",
+                postype: "p2",
+                offset: "0,0,4",
+                velocity: "0,0,0",
+              }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      opponentState: actor("p2", "Opponent", {
+        combatDepth: { position: -7, velocity: 0, size: [3, 3], attack: [4, 4] },
+      }).runtime,
+    });
+
+    expect(store.projectiles[0]).toMatchObject({
+      projectileId: 8852,
+      parentId: "p1-helper-0",
+      pos: { z: -3 },
+    });
+  });
+
   it("modifies only helper-parented Projectile actors by id from the helper-local micro-VM", () => {
     const store = createRuntimeEffectActorStore();
     spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8860", projanim: "930", velocity: "1,0", projpriority: "2", projhits: "1" }));
