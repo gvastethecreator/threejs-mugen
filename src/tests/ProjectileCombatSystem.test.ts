@@ -96,6 +96,62 @@ describe("ProjectileCombatSystem", () => {
     expect(touching).toEqual([]);
   });
 
+  it("applies the same depth admission to helper-parented root-store projectiles", () => {
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    }));
+    let separated = [projectile({
+      parentId: "p1-helper-0",
+      rootId: "p1",
+      pos: { x: 0, y: 0, z: 20 },
+    })];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles: separated,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        separated = separated.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1000);
+    expect(separated[0]?.parentId).toBe("p1-helper-0");
+    expect(separated[0]?.removalReason).toBeUndefined();
+
+    let touching = [projectile({
+      serialId: "helper-projectile-1",
+      parentId: "p1-helper-0",
+      rootId: "p1",
+      pos: { x: 0, y: 0, z: 7 },
+    })];
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles: touching,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        touching = touching.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(969);
+    expect(touching).toEqual([]);
+  });
+
   it("applies projectile depth to HitFlag P cancellation", () => {
     let projectiles = [projectile({ action: projectileTradeAction, pos: { x: 0, y: 0, z: 20 } })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
