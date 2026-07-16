@@ -163,6 +163,7 @@ export type RuntimeModifyProjectileNumberParam =
   | "projid"
   | "projedgebound"
   | "projstagebound"
+  | "projdepthbound"
   | "projremovetime"
   | "sprpriority"
   | "projpriority"
@@ -350,6 +351,7 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const scale = operation?.scale ?? resolveModifyProjectilePairParam(input, "projscale", scalePair);
   const edgeBound = operation?.edgeBound ?? resolveModifyProjectileNumberParam(input, "projedgebound");
   const stageBound = operation?.stageBound ?? resolveModifyProjectileNumberParam(input, "projstagebound");
+  const depthBound = operation?.depthBound ?? resolveModifyProjectileNumberParam(input, "projdepthbound");
   const heightBound = operation?.heightBound ?? resolveModifyProjectileHeightBoundParam(input);
   const removeTime = operation?.removeTime ?? resolveModifyProjectileNumberParam(input, "projremovetime");
   const spritePriority = operation?.spritePriority ?? resolveModifyProjectileNumberParam(input, "sprpriority");
@@ -392,6 +394,9 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     }
     if (stageBound !== undefined) {
       projectile.stageBound = clampProjectileStageBound(stageBound);
+    }
+    if (depthBound !== undefined) {
+      projectile.depthBound = normalizeProjectileDepthBound(depthBound);
     }
     if (heightBound !== undefined) {
       projectile.heightBound = optionalProjectileHeightBound(heightBound);

@@ -797,8 +797,9 @@ describe("ProjectileSystem", () => {
     const matching = projectile({ projectileId: 77, facing: -1, vel: { x: -2, y: 0 }, hitsRemaining: 1 });
     const other = projectile({ serialId: "other", projectileId: 88, vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
     const terminal = projectile({ serialId: "terminal", projectileId: 77, terminalPlayback: { reason: "hit", age: 0, duration: 2 } });
+    const removed = projectile({ serialId: "removed", projectileId: 77, removalReason: "bounds", depthBound: 4 });
 
-    const changed = modifyRuntimeProjectiles([matching, other, terminal], {
+    const changed = modifyRuntimeProjectiles([matching, other, terminal, removed], {
       controller: controller({
         projid: "77",
         velocity: "6,-1",
@@ -807,6 +808,7 @@ describe("ProjectileSystem", () => {
         projscale: "1.5,0.75",
         projedgebound: "48",
         projstagebound: "32",
+        projdepthbound: "12",
         projheightbound: "-96,64",
         teamside: "2",
         projremovetime: "18",
@@ -826,6 +828,7 @@ describe("ProjectileSystem", () => {
       scale: { x: 1.5, y: 0.75 },
       edgeBound: 48,
       stageBound: 32,
+      depthBound: 12,
       heightBound: { low: -96, high: 64 },
       teamSide: 2,
       removeTime: 18,
@@ -838,6 +841,8 @@ describe("ProjectileSystem", () => {
     });
     expect(other).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
     expect(terminal).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
+    expect(terminal.depthBound).toBeUndefined();
+    expect(removed).toMatchObject({ removalReason: "bounds", depthBound: 4 });
   });
 
   it("resolves dynamic ModifyProjectile bounds through the bounded runtime resolver", () => {
@@ -849,6 +854,7 @@ describe("ProjectileSystem", () => {
         projid: "77",
         projedgebound: "var(0)",
         projstagebound: "var(1)",
+        projdepthbound: "var(4)",
         projheightbound: "var(2),var(3)",
       }),
       resolveModifyProjectile: {
@@ -864,12 +870,25 @@ describe("ProjectileSystem", () => {
     });
 
     expect(changed).toBe(1);
-    expect(resolvedKeys).toEqual(["projedgebound", "projstagebound", "projheightbound"]);
+    expect(resolvedKeys).toEqual(["projedgebound", "projstagebound", "projdepthbound", "projheightbound"]);
     expect(matching).toMatchObject({
       edgeBound: 52,
       stageBound: 36,
+      depthBound: 36,
       heightBound: { low: -144, high: 72 },
     });
+  });
+
+  it("normalizes negative ModifyProjectile depth bounds to zero", () => {
+    const matching = projectile({ projectileId: 77, depthBound: 12 });
+
+    expect(
+      modifyRuntimeProjectiles([matching], {
+        controller: controller({ projid: "77", projdepthbound: "-4" }),
+      }),
+    ).toBe(1);
+
+    expect(matching.depthBound).toBe(0);
   });
 
   it("resolves dynamic ModifyProjectile selection and non-bound params through the bounded runtime resolver", () => {
