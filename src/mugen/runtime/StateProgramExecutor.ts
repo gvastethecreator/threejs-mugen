@@ -217,6 +217,9 @@ export function isStateEntrySetupDispatch(dispatch: StateProgramDispatch): boole
     return (
       (dispatch.effect === "target" && (
         dispatch.controller.normalizedType === "targetlifeadd" ||
+        dispatch.controller.normalizedType === "targetredlifeadd" ||
+        dispatch.controller.normalizedType === "targetguardpointsadd" ||
+        dispatch.controller.normalizedType === "targetdizzypointsadd" ||
         dispatch.controller.normalizedType === "targetpoweradd" ||
         dispatch.controller.normalizedType === "targetfacing" ||
         dispatch.controller.normalizedType === "targetdrop" ||

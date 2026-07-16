@@ -1,7 +1,13 @@
 import type { BindToTargetControllerOp, TargetControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
-import { applyRuntimeLifeAdd, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import {
+  applyRuntimeDizzyPointsAdd,
+  applyRuntimeGuardPointsAdd,
+  applyRuntimeLifeAdd,
+  applyRuntimePowerDelta,
+  applyRuntimeRedLifeAdd,
+} from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState, RuntimeTargetBindingSnapshot, RuntimeTargetSnapshot } from "./types";
 
 export type RuntimeTarget = {
@@ -288,6 +294,23 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       const scaledDamage = options.scaleIncomingDamage ?? ((_runtime, damage) => Math.round(damage));
       const delta = value < 0 && !absolute ? -scaledDamage(target.runtime, Math.abs(value)) : Math.round(value);
       applyRuntimeLifeAdd(target.runtime, delta, kill);
+    } else if (type === "targetredlifeadd") {
+      const typed = options.operation?.controllerType === "targetredlifeadd" ? options.operation : undefined;
+      const value = typed?.value ?? firstNumber(findControllerParam(options.controller, "value")) ?? 0;
+      const absolute = typed?.absolute ?? (firstNumber(findControllerParam(options.controller, "absolute")) ?? 0) !== 0;
+      applyRuntimeRedLifeAdd(target.runtime, value, absolute);
+    } else if (type === "targetguardpointsadd") {
+      const value =
+        options.operation?.controllerType === "targetguardpointsadd"
+          ? options.operation.value
+          : firstNumber(findControllerParam(options.controller, "value")) ?? 0;
+      applyRuntimeGuardPointsAdd(target.runtime, value);
+    } else if (type === "targetdizzypointsadd") {
+      const value =
+        options.operation?.controllerType === "targetdizzypointsadd"
+          ? options.operation.value
+          : firstNumber(findControllerParam(options.controller, "value")) ?? 0;
+      applyRuntimeDizzyPointsAdd(target.runtime, value);
     } else if (type === "targetpoweradd") {
       const value =
         options.operation?.controllerType === "targetpoweradd"

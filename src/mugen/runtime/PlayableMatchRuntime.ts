@@ -439,6 +439,9 @@ type RedirectableResourceControllerType =
   | "powerset";
 type RedirectableTargetControllerType =
   | "targetlifeadd"
+  | "targetredlifeadd"
+  | "targetguardpointsadd"
+  | "targetdizzypointsadd"
   | "targetpoweradd"
   | "targetfacing"
   | "targetdrop"
@@ -3263,6 +3266,9 @@ function targetControllerRedirectExpression(controller: ControllerIr): string | 
 
 function redirectableTargetControllerType(controller: ControllerIr): RedirectableTargetControllerType | undefined {
   return controller.normalizedType === "targetlifeadd" ||
+    controller.normalizedType === "targetredlifeadd" ||
+    controller.normalizedType === "targetguardpointsadd" ||
+    controller.normalizedType === "targetdizzypointsadd" ||
     controller.normalizedType === "targetpoweradd" ||
     controller.normalizedType === "targetfacing" ||
     controller.normalizedType === "targetdrop" ||
