@@ -1,7 +1,7 @@
 # Research: IKEMEN projectile depth Z runtime
 
 Date: 2026-07-16
-Status: selected for implementation (Wayfinder 211)
+Status: implementation completed (Wayfinder 211)
 
 ## Primary-source findings
 
@@ -66,5 +66,12 @@ and complete upstream parity.
 
 ## Implementation evidence
 
-Pending Wayfinder 211 implementation.
+Commit `723f9a4a` implements the bounded contract. Focused runtime/compiler
+coverage passes `147/147` tests across six files. The accumulated checkpoint
+passes the TypeScript 7 typecheck, full suite (`216/216` files,
+`2279/2279` tests), production build, boundary check, and trace QA
+(`633/633`, no skipped artifacts).
 
+The implementation intentionally keeps helper/projectile proxy depth,
+depth-bound removal, presentation ordering, cancel tick ordering, and full
+upstream parity outside this ticket.

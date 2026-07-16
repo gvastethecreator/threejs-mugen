@@ -1,6 +1,6 @@
 # Implement projectile depth Z collision policy/v1
 
-Status: active
+Status: resolved
 
 ## Question
 
@@ -57,3 +57,45 @@ participate in player contact, HitFlag P cancellation, and projectile trades?
   contract.
 - Source note: `docs/research/2026-07-16-projectile-depth-z-runtime.md`.
 
+## Answer
+
+Implement the bounded root/player projectile depth contract. Preserve optional
+Z offset, velocity, and acceleration through compiler and runtime state; carry
+localcoord and attack depth; admit projectile/player contact, HitFlag P
+cancellation, and current-frame projectile trades only after inclusive Z
+overlap. Preserve legacy XY-only fixture shapes when no authored Z data exists.
+
+## Implementation result
+
+- `ControllerOps` now lowers triple projectile vectors and `attack.depth`.
+- Root projectile spawn carries actor combat depth, localcoord, Z position, Z
+  velocity, and attack depth into `RuntimeProjectile`.
+- Projectile advance, snapshots, player contact, HitFlag P, and projectile
+  trade paths use the shared runtime depth oracle.
+- Existing helper projectile paths remain XY-only and are explicitly deferred
+  from the claim boundary.
+
+## Verification
+
+- Focused batch: 6 files, `147/147` tests passed.
+- TypeScript 7: `pnpm typecheck` passed.
+- Accumulated suite: `216/216` files, `2279/2279` tests passed.
+- Production build: `pnpm build` passed; existing chunk-size warning remains.
+- Boundary check: `pnpm check:boundaries` passed.
+- Trace QA: `pnpm qa:trace` passed, `633/633` artifacts, `0` skipped.
+- Browser/renderer smoke: N/A; this slice changes runtime/compiler contracts,
+  not a visible UI or renderer surface.
+
+## Commits
+
+- `723f9a4a feat(runtime): implement projectile depth admission`
+
+## Claim ceiling
+
+Verified: authored root/player projectile Z position and velocity, localcoord
+scaling, attack depth, inclusive depth admission for projectile/player contact,
+HitFlag P, and current-frame Clsn2 projectile trades.
+
+Still open: helper/proxy-owned depth, exact depth-bound removal, perspective or
+render ordering, cancel tick ordering, rollback/netplay, score, renderer/audio,
+and complete MUGEN/IKEMEN parity.
