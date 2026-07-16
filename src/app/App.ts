@@ -150,6 +150,7 @@ import {
   createSourceTransactionRecord,
   prepareSourceImportTransaction,
   runSourceImportTransaction,
+  SOURCE_TRANSACTION_INVALIDATED_OUTPUTS,
   type SourceTransactionPermission,
   type SourceTransactionRecord,
   type SourceImportTransaction,
@@ -159,6 +160,13 @@ import {
   writeSourceHandleText,
   type SourceWritePlan,
 } from "./StudioSourceWrite";
+import {
+  createSourceWriteReceipt,
+  isSourceWriteReceiptCommitted,
+  type SourceWriteReceipt,
+  type SourceWriteReceiptReason,
+  type SourceWriteReceiptStatus,
+} from "./StudioSourceWriteReceipt";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
@@ -189,7 +197,7 @@ type CommandPaletteAction = {
   disabled?: boolean;
   run(): void;
 };
-type StudioEvidenceCategory = "gate" | "asset" | "trace" | "compile" | "compatibility" | "diagnostic";
+type StudioEvidenceCategory = "gate" | "asset" | "trace" | "compile" | "compatibility" | "diagnostic" | "source";
 type StudioEvidenceFilter = "all" | "attention" | StudioEvidenceCategory;
 type StudioAssetFilter = "all" | "attention" | "characters" | "stages" | "generated" | "imported" | "reports" | "selected";
 type StudioDebugFilter = "overview" | "targets" | "effects" | "pause" | "audio";
@@ -755,6 +763,7 @@ type SourceImportRollbackState = {
   pendingSourceRelinkPackageId?: string;
   sourceImportTransaction?: SourceImportTransaction;
   studioSourceDocument?: StudioSourceDocumentDraft;
+  studioSourceWriteReceipt?: SourceWriteReceipt;
   lastCompiledProject?: CompiledRuntimeManifest;
   lastProjectBundle?: ProjectExportBundleSummary;
   lastTraceArtifact?: RuntimeTraceArtifact;
@@ -813,6 +822,7 @@ export class App {
   private pendingSourceRelinkPackageId?: string;
   private sourceImportTransaction?: SourceImportTransaction;
   private studioSourceDocument?: StudioSourceDocumentDraft;
+  private studioSourceWriteReceipt?: SourceWriteReceipt;
   private studioSourceSemanticPreflightTimer?: number;
   private readonly memorySourceHandleStore = createMemorySourceHandleStore();
   private sourceHandleStore: SourceHandleStore = this.memorySourceHandleStore;
@@ -1966,6 +1976,46 @@ export class App {
     };
   }
 
+  private recordStudioSourceWriteReceipt(
+    draft: StudioSourceDocumentDraft,
+    input: {
+      status: SourceWriteReceiptStatus;
+      reason: SourceWriteReceiptReason;
+      diagnostics?: string[];
+      permission?: SourceTransactionPermission;
+      observedSourceFingerprint?: string;
+      committedSourceFingerprint?: string;
+      observedProjectRevision?: number;
+      committedDigest?: string;
+      byteLength?: number;
+    },
+  ): SourceWriteReceipt {
+    const sourcePackage = this.getProjectSourcePackages().find((item) => item.id === draft.sourcePackageId);
+    const receipt = createSourceWriteReceipt({
+      id: `source-write:${draft.sourcePackageId}:${draft.path}`,
+      sourcePackageId: draft.sourcePackageId,
+      sourceName: sourcePackage?.name ?? draft.sourcePackageId,
+      path: draft.path,
+      status: input.status,
+      reason: input.reason,
+      observedAt: new Date().toISOString(),
+      operation: "directory-exclusive-write-and-reimport",
+      ...(input.permission ? { permission: input.permission } : {}),
+      ...(draft.baseSourceFingerprint ? { baseSourceFingerprint: draft.baseSourceFingerprint } : {}),
+      ...(input.observedSourceFingerprint ? { observedSourceFingerprint: input.observedSourceFingerprint } : {}),
+      ...(input.committedSourceFingerprint ? { committedSourceFingerprint: input.committedSourceFingerprint } : {}),
+      ...(draft.baseProjectRevision !== undefined ? { baseProjectRevision: draft.baseProjectRevision } : {}),
+      ...(input.observedProjectRevision !== undefined ? { observedProjectRevision: input.observedProjectRevision } : {}),
+      ...(draft.semanticPreflight?.draftDigest ? { draftDigest: draft.semanticPreflight.draftDigest } : {}),
+      ...(input.committedDigest ? { committedDigest: input.committedDigest } : {}),
+      ...(input.byteLength !== undefined ? { byteLength: input.byteLength } : {}),
+      invalidatedOutputs: [...SOURCE_TRANSACTION_INVALIDATED_OUTPUTS],
+      diagnostics: [...new Set(input.diagnostics ?? [])],
+    });
+    this.studioSourceWriteReceipt = receipt;
+    return receipt;
+  }
+
   private async saveStudioSourceDocument(): Promise<void> {
     this.cancelStudioSourceSemanticPreflight();
     this.refreshStudioSourceSemanticDraft();
@@ -1975,12 +2025,25 @@ export class App {
     }
     const semanticPreflight = draft.semanticPreflight;
     if (!semanticPreflight || !canWriteStudioSemanticDraft(semanticPreflight)) {
+      this.recordStudioSourceWriteReceipt(draft, {
+        status: "blocked",
+        reason: "semantic-preflight",
+        diagnostics: semanticPreflight?.diagnostics.map((diagnostic) => `${diagnostic.code}: ${diagnostic.message}`) ?? ["Semantic preflight has not run yet."],
+        observedProjectRevision: this.getActiveStudioProjectRevision(),
+      });
       this.log(describeStudioSemanticDraft(semanticPreflight));
       this.updateUi();
       return;
     }
     const context = this.getStudioSourceWriteContext(draft);
     if (!context || context.plan.status !== "ready" || !context.handle) {
+      this.recordStudioSourceWriteReceipt(draft, {
+        status: "blocked",
+        reason: context?.plan.reason === "project-conflict" ? "project-conflict" : context?.plan.reason === "permission-denied" ? "permission" : "plan-blocked",
+        permission: context?.sourceTransaction?.permission,
+        diagnostics: [context?.plan.detail ?? "Source document save is unavailable for the current package."],
+        observedProjectRevision: this.getActiveStudioProjectRevision(),
+      });
       this.log(context?.plan.detail ?? "Source document save is unavailable for the current package.");
       this.updateUi();
       return;
@@ -1995,18 +2058,37 @@ export class App {
           context.sourceHandle?.observedFingerprint,
           context.sourceHandle?.observedByteLength,
         );
+        this.recordStudioSourceWriteReceipt(draft, {
+          status: "blocked",
+          reason: "permission",
+          permission: writePermission,
+          diagnostics: [`Source write permission remains ${writePermission}.`],
+          observedProjectRevision: this.getActiveStudioProjectRevision(),
+        });
         this.log(`Source write permission for ${context.sourcePackage.name} remains ${writePermission}.`);
         this.updateUi();
         return;
       }
       const latestContext = this.getStudioSourceWriteContext(draft);
       if (!latestContext || latestContext.plan.status !== "ready" || !latestContext.handle) {
+        this.recordStudioSourceWriteReceipt(draft, {
+          status: "blocked",
+          reason: "plan-blocked",
+          diagnostics: [latestContext?.plan.detail ?? "Source document save is no longer available for the current package."],
+          observedProjectRevision: this.getActiveStudioProjectRevision(),
+        });
         this.log(latestContext?.plan.detail ?? "Source document save is no longer available for the current package.");
         this.updateUi();
         return;
       }
       const activeRevision = this.getActiveStudioProjectRevision();
       if (draft.baseProjectRevision !== undefined && draft.baseProjectRevision !== activeRevision) {
+        this.recordStudioSourceWriteReceipt(draft, {
+          status: "blocked",
+          reason: "project-conflict",
+          diagnostics: ["The project revision changed before the writable stream opened."],
+          observedProjectRevision: activeRevision,
+        });
         this.log("The project revision changed before the writable stream opened; resolve the conflict and reload the source draft.");
         this.refreshStudioSourceSemanticDraft();
         this.updateUi();
@@ -2022,6 +2104,13 @@ export class App {
           observedFingerprint.digest,
           observedFingerprint.byteLength,
         );
+        this.recordStudioSourceWriteReceipt(draft, {
+          status: "blocked",
+          reason: "source-changed",
+          observedSourceFingerprint: observedFingerprint.digest,
+          diagnostics: ["The source fingerprint changed before the writable stream opened."],
+          observedProjectRevision: activeRevision,
+        });
         this.log("The source fingerprint changed before the writable stream opened; save paused until explicit reimport.");
         this.refreshStudioSourceSemanticDraft();
         this.updateUi();
@@ -2048,6 +2137,14 @@ export class App {
         const refreshedText = this.importedSourceBundle?.vfs.readText(draft.path);
         if (refreshedText === undefined) {
           this.studioSourceDocument = undefined;
+          this.recordStudioSourceWriteReceipt(draft, {
+            status: "rejected",
+            reason: "reimport-rejected",
+            observedSourceFingerprint: fingerprint?.digest,
+            byteLength: result.byteLength,
+            diagnostics: [`Saved ${draft.path}, but the reimported source no longer exposes the edited path.`],
+            observedProjectRevision: this.getActiveStudioProjectRevision(),
+          });
           this.log(`Saved ${draft.path}, but the reimported source no longer exposes the edited path.`);
         } else if (fingerprintMugenStateSource(refreshedText) !== semanticPreflight.draftDigest) {
           this.studioSourceDocument = createStudioSourceDocumentDraft({
@@ -2058,7 +2155,24 @@ export class App {
             baseProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.refreshStudioSourceSemanticDraft();
+          this.recordStudioSourceWriteReceipt(draft, {
+            status: "rejected",
+            reason: "reimport-rejected",
+            observedSourceFingerprint: fingerprint?.digest,
+            byteLength: result.byteLength,
+            diagnostics: ["The reimported text digest differs from the semantic draft."],
+            observedProjectRevision: this.getActiveStudioProjectRevision(),
+          });
           this.log(`Saved ${draft.path}, but the reimported text digest differs from the semantic draft; inspect before continuing.`);
+        } else if (!fingerprint?.digest) {
+          this.recordStudioSourceWriteReceipt(draft, {
+            status: "rejected",
+            reason: "reimport-rejected",
+            byteLength: result.byteLength,
+            diagnostics: ["The reimported source did not expose a source fingerprint."],
+            observedProjectRevision: this.getActiveStudioProjectRevision(),
+          });
+          this.log(`Saved ${draft.path}, but the reimported source fingerprint is unavailable.`);
         } else {
           this.studioSourceDocument = createStudioSourceDocumentDraft({
             sourcePackageId: activePackage.id,
@@ -2068,12 +2182,35 @@ export class App {
             baseProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.refreshStudioSourceSemanticDraft();
+          this.recordStudioSourceWriteReceipt(draft, {
+            status: "committed",
+            reason: "write-and-reimport",
+            permission: "granted",
+            observedSourceFingerprint: fingerprint.digest,
+            committedSourceFingerprint: fingerprint.digest,
+            committedDigest: semanticPreflight.draftDigest,
+            byteLength: result.byteLength,
+            observedProjectRevision: this.getActiveStudioProjectRevision(),
+          });
           this.log(`Saved ${draft.path} (${result.byteLength} bytes) and explicitly reimported ${activePackage.name}.`);
         }
       } else {
+        this.recordStudioSourceWriteReceipt(draft, {
+          status: "rejected",
+          reason: "reimport-rejected",
+          byteLength: result.byteLength,
+          diagnostics: ["Explicit source reimport was rejected; the current runtime session was retained."],
+          observedProjectRevision: this.getActiveStudioProjectRevision(),
+        });
         this.log(`Saved ${draft.path}, but explicit source reimport was rejected; the current runtime session was retained.`);
       }
     } catch (error) {
+      this.recordStudioSourceWriteReceipt(draft, {
+        status: "failed",
+        reason: "write-failed",
+        diagnostics: [error instanceof Error ? error.message : String(error)],
+        observedProjectRevision: this.getActiveStudioProjectRevision(),
+      });
       this.log(`Source document save failed: ${error instanceof Error ? error.message : String(error)}`);
     }
     this.updateUi();
@@ -2551,6 +2688,7 @@ export class App {
       pendingSourceRelinkPackageId: this.pendingSourceRelinkPackageId,
       sourceImportTransaction: this.sourceImportTransaction,
       studioSourceDocument: this.studioSourceDocument,
+      studioSourceWriteReceipt: this.studioSourceWriteReceipt,
       lastCompiledProject: this.lastCompiledProject,
       lastProjectBundle: this.lastProjectBundle,
       lastTraceArtifact: this.lastTraceArtifact,
@@ -2578,6 +2716,7 @@ export class App {
     this.pendingSourceRelinkPackageId = previousState.pendingSourceRelinkPackageId;
     this.sourceImportTransaction = previousState.sourceImportTransaction;
     this.studioSourceDocument = previousState.studioSourceDocument;
+    this.studioSourceWriteReceipt = previousState.studioSourceWriteReceipt;
     this.lastCompiledProject = previousState.lastCompiledProject;
     this.lastProjectBundle = previousState.lastProjectBundle;
     this.lastTraceArtifact = previousState.lastTraceArtifact;
@@ -7607,6 +7746,9 @@ export class App {
       detail: "The source package is no longer active in this Studio session.",
     } satisfies SourceWritePlan;
     const preflight = this.createStudioSourceSemanticPreflight(draft, context);
+    const receipt = this.studioSourceWriteReceipt?.sourcePackageId === draft.sourcePackageId && this.studioSourceWriteReceipt.path === draft.path
+      ? this.studioSourceWriteReceipt
+      : undefined;
     const editable = plan.status === "ready" && preflight.status !== "stale";
     const editorStatus = draft.dirty
       ? plan.status !== "ready" ? plan.detail : describeStudioSemanticDraft(preflight)
@@ -7628,6 +7770,7 @@ export class App {
         <textarea data-source-editor="true" aria-label="Source document text" spellcheck="false"${editable ? "" : " readonly"}>${escapeHtml(draft.text)}</textarea>
         <div class="studio-source-editor-status" data-source-editor-status>${escapeHtml(editorStatus)}</div>
         <small class="list-meta">Semantic ${escapeHtml(preflight.status)} / digest ${escapeHtml(preflight.draftDigest)} / diagnostics ${preflight.diagnostics.length}</small>
+        ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / ${escapeHtml(receipt.digest)}</small>` : ""}
         <div class="row-actions studio-source-editor-actions">
           <button type="button" data-action="save-source-document"${!draft.dirty || !editable || !canWriteStudioSemanticDraft(preflight) ? " disabled" : ""}>Save &amp; Reimport</button>
           <button type="button" data-action="discard-source-document"${!draft.dirty ? " disabled" : ""}>Discard</button>
@@ -8630,7 +8773,7 @@ export class App {
         persistedTraceArtifacts: this.storedTraceEvidence.length,
       },
       activeFilter: this.studioEvidenceFilter,
-      filters: ["all", "attention", "trace", "compile", "gate", "asset", "compatibility", "diagnostic"],
+      filters: ["all", "attention", "trace", "compile", "gate", "asset", "compatibility", "source", "diagnostic"],
       topAction: topRecord?.nextAction,
       topRecordId: topRecord?.id,
       topImpact: topRecord?.impact,
@@ -9817,6 +9960,24 @@ export class App {
       },
       this.getCompatibilitySnapshotBuildReadinessRecord(),
     ];
+    const sourceWriteReceipt = this.studioSourceWriteReceipt;
+    if (sourceWriteReceipt) {
+      const receiptEvidence = this.getSourceWriteReceiptEvidenceRecord(sourceWriteReceipt);
+      const committed = isSourceWriteReceiptCommitted(sourceWriteReceipt);
+      records.push({
+        id: "source-write-receipt",
+        label: "Source write receipt",
+        status: receiptEvidence.status,
+        state: committed ? "exportable" : receiptEvidence.status === "fail" || receiptEvidence.status === "blocked" ? "blocked" : "partial",
+        detail: receiptEvidence.detail,
+        affectedSystem: "studio",
+        impact: receiptEvidence.impact ?? receiptEvidence.detail,
+        evidenceIds: receiptEvidence.evidenceIds ?? [],
+        blockedBy: receiptEvidence.blockedBy ?? [],
+        canExport: committed,
+        nextAction: receiptEvidence.nextAction ?? { kind: "open-evidence", label: "Review source write receipt", targetId: sourceWriteReceipt.id },
+      });
+    }
     return records.map((record) => this.withBuildReadinessAction(record));
   }
 
@@ -9853,6 +10014,7 @@ export class App {
       { id: "compatibility-gates", lane: "compat" },
       { id: "compatibility-snapshot", lane: "compat" },
       { id: "architecture-boundaries", lane: "architecture" },
+      ...(this.studioSourceWriteReceipt ? [{ id: "source-write-receipt", lane: "source" as const }] : []),
     ];
     return lanes.flatMap(({ id, lane }) => {
       const record = readinessById.get(id);
@@ -9917,6 +10079,12 @@ export class App {
     }
     if (record.id === "architecture-boundaries") {
       return { kind: "contract", id: "test:architecture-boundaries" };
+    }
+    if (record.id === "source-write-receipt") {
+      const receipt = this.studioSourceWriteReceipt;
+      return receipt
+        ? { kind: "source-file", id: receipt.path, targetPackageId: receipt.sourcePackageId, targetPath: receipt.path }
+        : { kind: "source-package", id: "source-write-receipt" };
     }
     return { kind: "gate", id: record.id };
   }
@@ -10005,6 +10173,16 @@ export class App {
           : assessment.detail,
       };
     }
+    if (record.id === "source-write-receipt") {
+      const receipt = this.studioSourceWriteReceipt;
+      if (!receipt) {
+        return { label: "missing", delta: "source write receipt not recorded" };
+      }
+      return {
+        label: isSourceWriteReceiptCommitted(receipt) ? "current" : receipt.status,
+        delta: `${receipt.reason} / ${receipt.digest}`,
+      };
+    }
     return { label: record.state, delta: record.blockedBy.length ? `${record.blockedBy.length} blocker(s)` : "no blockers" };
   }
 
@@ -10055,6 +10233,12 @@ export class App {
       return assessment.evidence
         ? `${assessment.evidence.tool.name} / ${assessment.evidence.command} / ${assessment.evidence.digest}`
         : "GateEvidenceResult/v0 missing";
+    }
+    if (record.id === "source-write-receipt") {
+      const receipt = this.studioSourceWriteReceipt;
+      return receipt
+        ? `${receipt.status} / ${receipt.reason} / ${receipt.digest}`
+        : "SourceWriteReceipt/v0 missing";
     }
     return record.evidenceIds.slice(0, 2).join(" / ") || record.id;
   }
@@ -10309,8 +10493,44 @@ export class App {
     records.push(...this.getTraceEvidenceRecords());
     records.push(...this.getCompatibilityEvidenceRecords());
     records.push(this.getCompatibilitySnapshotEvidenceRecord());
+    if (this.studioSourceWriteReceipt) {
+      records.push(this.getSourceWriteReceiptEvidenceRecord(this.studioSourceWriteReceipt));
+    }
     records.push(...this.getDiagnosticsEvidenceRecords());
     return records;
+  }
+
+  private getSourceWriteReceiptEvidenceRecord(receipt: SourceWriteReceipt): StudioEvidenceRecord {
+    const committed = isSourceWriteReceiptCommitted(receipt);
+    const status: StudioStatus = committed
+      ? "ok"
+      : receipt.status === "failed"
+        ? "fail"
+        : receipt.status === "blocked"
+          ? "blocked"
+          : "warn";
+    return {
+      id: receipt.id,
+      label: "Source Write Receipt",
+      category: "source",
+      status,
+      detail: `${receipt.sourceName} / ${receipt.path} / ${receipt.status} / ${receipt.reason} / ${receipt.digest}`,
+      tags: ["source-write-receipt/v0", receipt.status, receipt.reason, receipt.sourcePackageId, receipt.digest],
+      level: committed ? "Committed" : "Guarded",
+      severity: this.severityForStatus(status),
+      affectedSystem: "studio",
+      impact: committed
+        ? "The edited source bytes were written through the directory handle and explicitly reimported into the active project."
+        : "The source write did not reach a committed write-and-reimport state; the receipt keeps the blocking reason exportable as diagnostic evidence.",
+      evidenceIds: [receipt.id, `source-write-digest:${receipt.digest}`, `source-package:${receipt.sourcePackageId}`],
+      blockedBy: committed ? [] : [`source-write:${receipt.reason}`],
+      canExport: committed,
+      nextAction: {
+        kind: committed ? "open-build" : "open-evidence",
+        label: committed ? "Review source write receipt" : "Review source write blocker",
+        targetId: receipt.id,
+      },
+    };
   }
 
   private getCompileEvidenceRecords(): StudioEvidenceRecord[] {
@@ -11661,6 +11881,9 @@ export class App {
     this.addJsonToZip(zip, "studio/studio-summary.json", studio);
     this.addJsonToZip(zip, "studio/asset-source-runtime-map.json", sourceRuntimeMaps);
     this.addJsonToZip(zip, "studio/gate-evidence.json", STUDIO_GATE_EVIDENCE_DOCUMENT);
+    if (this.studioSourceWriteReceipt) {
+      this.addJsonToZip(zip, "studio/source-write-receipt.json", this.studioSourceWriteReceipt);
+    }
     this.addJsonToZip(zip, "studio/evidence.json", evidence);
     this.addJsonToZip(zip, "reports/compatibility-report.json", this.getCompatibilityExportPayload());
     this.addJsonToZip(
@@ -11690,6 +11913,7 @@ export class App {
       { path: "studio/studio-summary.json", kind: "studio", required: true },
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
       { path: "studio/gate-evidence.json", kind: "studio", required: true },
+      ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
       { path: "studio/evidence.json", kind: "qa", required: true },
       { path: "studio/build-readiness.json", kind: "qa", required: true },
@@ -12114,6 +12338,7 @@ export class App {
         sourceTransactions: SourceTransactionRecord[];
         sourceHandles: SourceHandleRecord[];
         studioSourceDocument?: StudioSourceDocumentDraft;
+        studioSourceWriteReceipt?: SourceWriteReceipt;
         storedProjects: StoredProjectEntry[];
         projectDirty: boolean;
         projectStorageRevision?: number;
@@ -12172,6 +12397,7 @@ export class App {
       sourceTransactions: this.getSourceTransactionRecords(),
       sourceHandles: this.getSourceHandleRecords(),
       studioSourceDocument: this.studioSourceDocument ? structuredClone(this.studioSourceDocument) : undefined,
+      studioSourceWriteReceipt: this.studioSourceWriteReceipt ? structuredClone(this.studioSourceWriteReceipt) : undefined,
       storedProjects: this.storedProjects,
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,
