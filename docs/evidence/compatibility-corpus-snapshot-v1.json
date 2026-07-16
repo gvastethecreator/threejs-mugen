@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "mugen-web-sandbox/compatibility-corpus-snapshot/v1",
+  "snapshotId": "compatibility-corpus-v1",
+  "source": {
+    "corpusSchema": "mugen-web-sandbox/compatibility-corpus/v0",
+    "sourceRevision": "post-entry-554:05d85137",
+    "tool": {
+      "id": "compatibility-snapshot-materializer",
+      "version": "1.0.0"
+    },
+    "ruleset": {
+      "id": "mugen-compatibility",
+      "version": "v1"
+    }
+  },
+  "freshness": {
+    "policy": "rebuild-and-verify",
+    "maxAgeHours": 24,
+    "requiredArtifactIds": [
+      "browser:mugen-lite-journey-v1",
+      "mugen-lite-journey",
+      "mugen-lite-journey-nokoslow",
+      "mugen-lite-journey-palette",
+      "native:mugen-lite-journey-v1"
+    ]
+  },
+  "status": "passed",
+  "entries": [
+    {
+      "id": "mugen-lite-journey",
+      "availability": "required-legal",
+      "status": "passed",
+      "journey": {
+        "id": "mugen-lite-journey-v1",
+        "schemaVersion": "mugen-web-sandbox/compatibility-journey/v1"
+      },
+      "package": {
+        "id": "mugen-lite-journey",
+        "name": "MUGEN Lite Journey",
+        "provenance": "Repository-authored deterministic test fixture",
+        "entry": "chars/mugen-lite-journey/journey.def",
+        "licenseSpdx": "CC0-1.0",
+        "licenseFile": "chars/mugen-lite-journey/LICENSE.txt",
+        "licenseVerified": true,
+        "packageDigest": "sha256:b8e917e9b968f86765db017388823e897779d46041b3738a47c702ce57adfc50"
+      },
+      "routeIds": [
+        "attack",
+        "crouch",
+        "fall",
+        "get-hit",
+        "guard",
+        "idle",
+        "jump",
+        "no-ko-slow",
+        "palette",
+        "recovery",
+        "walk"
+      ],
+      "unsupportedFeatureIds": [
+        "controller:JourneyUnknownController"
+      ],
+      "artifactRefs": [
+        {
+          "id": "browser:mugen-lite-journey-v1",
+          "status": "passed",
+          "path": ".scratch/qa/qa-smoke/diagnostics.json",
+          "detail": "desktop/mobile browser diagnostics"
+        },
+        {
+          "id": "mugen-lite-journey",
+          "status": "passed",
+          "path": ".scratch/qa/trace-gates/mugen-lite-journey.json",
+          "checksum": "80881f71",
+          "finalChecksum": "b5ae36cc",
+          "detail": "runtime trace"
+        },
+        {
+          "id": "mugen-lite-journey-nokoslow",
+          "status": "passed",
+          "path": ".scratch/qa/trace-gates/mugen-lite-journey-nokoslow.json",
+          "checksum": "ceac9f37",
+          "finalChecksum": "1d5b25e4",
+          "detail": "NoKOSlow trace"
+        },
+        {
+          "id": "mugen-lite-journey-palette",
+          "status": "passed",
+          "path": ".scratch/qa/trace-gates/mugen-lite-journey-palette.json",
+          "checksum": "1291909d",
+          "finalChecksum": "380400cf",
+          "detail": "RemapPal trace"
+        },
+        {
+          "id": "native:mugen-lite-journey-v1",
+          "status": "passed",
+          "path": "docs/reports/2026-07-13-compatibility-journey-v1.md",
+          "detail": "native regression report"
+        }
+      ],
+      "evidenceIds": [
+        "browser:mugen-lite-journey-v1",
+        "mugen-lite-journey",
+        "mugen-lite-journey-nokoslow",
+        "mugen-lite-journey-palette",
+        "native:mugen-lite-journey-v1"
+      ]
+    },
+    {
+      "id": "official-training-room",
+      "availability": "optional-private",
+      "status": "unavailable",
+      "routeIds": [],
+      "unsupportedFeatureIds": [],
+      "artifactRefs": [],
+      "evidenceIds": [],
+      "unavailableReason": "stage journey machine record requires a fresh external-fixture materialization"
+    }
+  ],
+  "summary": {
+    "entryCount": 2,
+    "requiredCount": 1,
+    "portableCount": 0,
+    "optionalCount": 1,
+    "passedCount": 1,
+    "partialCount": 0,
+    "failedCount": 0,
+    "unavailableOptionalCount": 1,
+    "packageIds": [
+      "mugen-lite-journey"
+    ],
+    "routeIds": [
+      "attack",
+      "crouch",
+      "fall",
+      "get-hit",
+      "guard",
+      "idle",
+      "jump",
+      "no-ko-slow",
+      "palette",
+      "recovery",
+      "walk"
+    ],
+    "unsupportedFeatureIds": [
+      "controller:JourneyUnknownController"
+    ],
+    "artifactIds": [
+      "browser:mugen-lite-journey-v1",
+      "mugen-lite-journey",
+      "mugen-lite-journey-nokoslow",
+      "mugen-lite-journey-palette",
+      "native:mugen-lite-journey-v1"
+    ],
+    "artifactCount": 5
+  },
+  "claims": {
+    "allowed": [
+      "one repository-owned legal journey is materialized with exact evidence references"
+    ],
+    "blocked": [
+      "commercial redistribution",
+      "full MUGEN/IKEMEN parity",
+      "independent legal package breadth"
+    ]
+  },
+  "diagnostics": [],
+  "observedAt": "2026-07-16T00:00:00.000Z",
+  "semanticDigest": "b288c845",
+  "checksum": "63598806"
+}

@@ -14,6 +14,7 @@
     "qa:stage": "node scripts/qa_stage_compatibility.cjs",
     "qa:smoke": "node scripts/qa_smoke.cjs",
     "qa:trace": "node scripts/qa_traces.cjs",
+    "materialize:compatibility-snapshot": "node scripts/materialize_compatibility_corpus_snapshot.cjs",
     "check:boundaries": "node scripts/check_boundaries.cjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
