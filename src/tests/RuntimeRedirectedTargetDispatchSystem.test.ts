@@ -88,6 +88,36 @@ describe("RuntimeRedirectedTargetDispatchWorld", () => {
     expect(aborted?.status).toBe("aborted");
   });
 
+  it("carries helper caller, destination store, and state-owner metadata", () => {
+    const world = new RuntimeRedirectedTargetDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const destination = { id: "p2-helper-0" };
+    const candidate = { id: "p1-helper-target" };
+    const lease = world.resolve({
+      phase: "helper",
+      callerId: "p1-helper-caller",
+      redirectExpression: "57",
+      redirectPlayerId: 57,
+      destination,
+      candidateTargets: [destination, candidate],
+      targetWorld,
+      stateOwnerId: "p2-helper-0",
+      destinationRevision: "57:p2-helper-0",
+      resolveCurrentDestination: () => destination,
+    });
+
+    expect(lease).toMatchObject({
+      phase: "helper",
+      callerId: "p1-helper-caller",
+      destinationId: "p2-helper-0",
+      stateOwnerId: "p2-helper-0",
+      destinationRevision: "57:p2-helper-0",
+      targetWorld,
+      status: "open",
+    });
+    expect(lease?.candidateTargets).toEqual([candidate]);
+  });
+
   it("rejects invalid player ids, missing destinations, and dead destinations", () => {
     const world = new RuntimeRedirectedTargetDispatchWorld();
     const targetWorld = new RuntimeTargetWorld();

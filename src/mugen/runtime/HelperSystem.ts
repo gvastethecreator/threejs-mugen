@@ -49,6 +49,10 @@ import {
   type RuntimeTargetBinding,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
+import {
+  RuntimeRedirectedTargetDispatchWorld,
+  type RuntimeRedirectedTargetDispatchLease,
+} from "./RuntimeRedirectedTargetDispatchSystem";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent, RuntimeTeamState } from "./types";
 import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
 
@@ -143,6 +147,7 @@ export type RuntimeHelperTargetRedirect = {
   actor: RuntimeTargetWorldActor;
   candidateTargets: RuntimeTargetWorldActor[];
   commitActor?: (actor: RuntimeTargetWorldActor) => void;
+  lease?: RuntimeRedirectedTargetDispatchLease<RuntimeTargetWorldActor>;
 };
 
 export type RuntimeHelperAdvanceOptions = {
@@ -833,8 +838,9 @@ const helperRuntimeControllers = new Set([
 
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
 const helperControllerDispatchWorld = new RuntimeControllerDispatchWorld();
-const helperTargetWorld = new RuntimeTargetWorld();
+export const helperTargetWorld = new RuntimeTargetWorld();
 const helperTargetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
+const redirectedTargetDispatchWorld = new RuntimeRedirectedTargetDispatchWorld();
 const helperOpponentSelectionWorld = new RuntimeOpponentSelectionWorld();
 
 export function activateRuntimeHelperHitDef(
@@ -1004,44 +1010,57 @@ function applyRuntimeHelperTargetController(
   ) {
     return false;
   }
-  const actor = redirect?.actor ?? runtimeHelperTargetActor(helper);
-  const result = helperTargetControllerDispatchWorld.apply({
-    actor,
-    candidateTargets: redirect?.candidateTargets ?? options.targetCandidates ?? [],
-    controller,
-    effect,
-    targetWorld: helperTargetWorld,
-    recordController: redirect
-      ? (_actor, source) => options.onRedirectedController?.(helper, actor, source)
-      : undefined,
-    recordOperation: (_actor, operation) => {
-      options.onOperation?.(helper, operation);
-      if (redirect) options.onRedirectedOperation?.(helper, actor, operation);
-    },
-    recordDispatch: (selection) => {
-      if (redirect && redirectPlayerId !== undefined) {
-        options.onRedirectedTargetDispatch?.(helper, actor, selection, Math.trunc(redirectPlayerId), redirectExpression!);
+  const actor = redirect?.lease?.destination ?? redirect?.actor ?? runtimeHelperTargetActor(helper);
+  const candidateTargets = redirect?.lease
+    ? [...redirect.lease.candidateTargets]
+    : redirect?.candidateTargets ?? options.targetCandidates ?? [];
+  const targetWorld = redirect?.lease?.targetWorld ?? helperTargetWorld;
+  const applyDispatch = () => {
+    const result = helperTargetControllerDispatchWorld.apply({
+      actor,
+      candidateTargets,
+      controller,
+      effect,
+      targetWorld,
+      recordController: redirect
+        ? (_actor, source) => options.onRedirectedController?.(helper, actor, source)
+        : undefined,
+      recordOperation: (_actor, operation) => {
+        options.onOperation?.(helper, operation);
+        if (redirect) options.onRedirectedOperation?.(helper, actor, operation);
+      },
+      recordDispatch: (selection) => {
+        if (redirect && redirectPlayerId !== undefined) {
+          options.onRedirectedTargetDispatch?.(helper, actor, selection, Math.trunc(redirectPlayerId), redirectExpression!);
+        }
+      },
+      scaleIncomingDamage: options.scaleTargetDamage,
+      enterTargetState: (target, stateId) =>
+        redirect
+          ? options.enterRedirectedTargetState?.(helper, actor, target, stateId)
+          : options.enterTargetState?.(helper, target, stateId),
+    });
+    if (redirect?.commitActor) {
+      const committedActors = new Set<RuntimeTargetWorldActor>([actor, ...candidateTargets]);
+      for (const committedActor of committedActors) {
+        redirect.commitActor(committedActor);
       }
-    },
-    scaleIncomingDamage: options.scaleTargetDamage,
-    enterTargetState: (target, stateId) =>
-      redirect
-        ? options.enterRedirectedTargetState?.(helper, actor, target, stateId)
-        : options.enterTargetState?.(helper, target, stateId),
-  });
+    }
+    return result;
+  };
+  const dispatch = redirect?.lease
+    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch)
+    : { executed: true, value: applyDispatch() };
+  if (!dispatch.executed || !dispatch.value) return false;
+  const result = dispatch.value;
   if (!redirect) {
     applyRuntimeStateToHelper(helper, actor.runtime);
     syncRuntimeHelperTargetActor(helper, actor);
-  } else if (redirect.commitActor) {
-    const committedActors = new Set<RuntimeTargetWorldActor>([actor, ...redirect.candidateTargets]);
-    for (const committedActor of committedActors) {
-      redirect.commitActor(committedActor);
-    }
   }
   return result.matchedTargets > 0 || result.operationExecuted;
 }
 
-function helperTargetControllerRedirectExpression(controller: ControllerIr): string | undefined {
+export function helperTargetControllerRedirectExpression(controller: ControllerIr): string | undefined {
   const operation = controller.operation;
   const compiledExpression = operation !== undefined && "redirectPlayerIdExpression" in operation
     ? operation.redirectPlayerIdExpression

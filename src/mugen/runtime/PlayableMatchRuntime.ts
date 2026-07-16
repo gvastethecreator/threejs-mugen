@@ -56,6 +56,8 @@ import {
   applyRuntimeHelperTagStateControl,
   canAdvanceRuntimeHelper,
   hasRuntimeHelperState,
+  helperTargetControllerRedirectExpression,
+  helperTargetWorld,
   helperRuntimeState,
   runtimeHelperTargetActor,
   syncRuntimeHelperTargetActor,
@@ -785,11 +787,13 @@ export class PlayableMatchRuntime {
   }
 
   private resolveHelperTargetRedirect(
-    _helper: RuntimeHelper,
+    helper: RuntimeHelper,
     playerId: number,
     controller: ControllerIr,
   ): RuntimeHelperTargetRedirect | undefined {
     if (this.runtimeProfile !== "ikemen-go") return undefined;
+    const redirectExpression = helperTargetControllerRedirectExpression(controller);
+    if (redirectExpression === undefined) return undefined;
     const identity = this.characterIdentity?.findByPlayerId(playerId);
     const roots = this.characterRoots();
     const helperEntries = roots
@@ -797,11 +801,28 @@ export class PlayableMatchRuntime {
       .filter((helper) => helper.destroyed !== true && helper.teamState?.disabled !== true)
       .map((helper) => ({ helper, actor: runtimeHelperTargetActor(helper) }));
     const helperById = new Map(helperEntries.map((entry) => [entry.helper.serialId, entry]));
-    const target = identity?.fighter
+    const destinationRoot = identity?.fighter
       ? roots.find((root) => root.id === identity.fighter!.id)
-      : identity?.helper
-        ? helperById.get(identity.helper.serialId)?.actor
-        : undefined;
+      : undefined;
+    const destinationHelper = identity?.helper
+      ? helperById.get(identity.helper.serialId)?.helper
+      : undefined;
+    const target = destinationRoot ?? (destinationHelper ? runtimeHelperTargetActor(destinationHelper) : undefined);
+    const findCurrentHelper = (serialId: string): RuntimeHelper | undefined => this.characterRoots()
+      .flatMap((root) => this.effectActorWorld.helpers(root.id))
+      .filter((candidate) => candidate.destroyed !== true && candidate.teamState?.disabled !== true)
+      .find((candidate) => candidate.serialId === serialId);
+    const resolveCurrentDestination = (): RuntimeTargetWorldActor | undefined => {
+      const currentIdentity = this.characterIdentity?.findByPlayerId(playerId);
+      if (currentIdentity?.fighter) {
+        return this.characterRoots().find((root) => root.id === currentIdentity.fighter!.id);
+      }
+      if (currentIdentity?.helper) {
+        const currentHelper = findCurrentHelper(currentIdentity.helper.serialId);
+        return currentHelper === destinationHelper ? target : undefined;
+      }
+      return undefined;
+    };
     if (!target) return undefined;
     if (
       identity?.helper &&
@@ -809,9 +830,24 @@ export class PlayableMatchRuntime {
     ) {
       return undefined;
     }
+    const candidateTargets = [...roots, ...helperEntries.map((entry) => entry.actor)];
+    const lease = redirectedTargetDispatchWorld.resolve<RuntimeTargetWorldActor>({
+      phase: "helper",
+      callerId: helper.serialId,
+      redirectExpression,
+      redirectPlayerId: playerId,
+      destination: target,
+      candidateTargets,
+      targetWorld: destinationRoot?.targetWorld ?? helperTargetWorld,
+      stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
+      destinationRevision: `${playerId}:${target.id}`,
+      resolveCurrentDestination,
+    });
+    if (!lease) return undefined;
     return {
       actor: target,
-      candidateTargets: [...roots, ...helperEntries.map((entry) => entry.actor)],
+      candidateTargets,
+      lease,
       commitActor: (actor) => {
         const targetHelper = helperById.get(actor.id)?.helper;
         if (!targetHelper) return;
