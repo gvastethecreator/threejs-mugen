@@ -1,6 +1,6 @@
 {
     "ok":  true,
-    "source":  "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\dist\\characters\\nova-boxer\\source\\nova-boxer-imagegen-sheet.png",
+    "source":  "characters/nova-boxer/source/nova-boxer-imagegen-sheet.png",
     "manifest":  "manifest.json",
     "detected_components":  32,
     "scale_policy":  {

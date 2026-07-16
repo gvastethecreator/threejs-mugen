@@ -334,11 +334,12 @@ export function redactAssetSourcePath(value: string | undefined): string | undef
     return undefined;
   }
   const normalized = trimmed.replace(/\\/g, "/");
-  if (/^\/(?:characters|stages|audio|assets)\//i.test(normalized)) {
-    return normalized.slice(1);
-  }
-  if (/^(?:[a-z]:\/|\/\/|\/|file:)/i.test(normalized) || normalized.split("/").includes("..")) {
+  const isPublicPath = /^\/(?:characters|stages|audio|assets)\//i.test(normalized);
+  if (normalized.split("/").includes("..") || /^(?:[a-z]:|\/\/|file:)/i.test(normalized) || (/^\//.test(normalized) && !isPublicPath)) {
     return "[local-path-redacted]";
+  }
+  if (isPublicPath) {
+    return normalized.slice(1);
   }
   return normalized;
 }

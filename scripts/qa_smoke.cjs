@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const crypto = require("crypto");
 const fs = require("fs");
 const JSZip = require("jszip");
 const net = require("net");
@@ -1952,6 +1953,8 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       provenanceInputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0) ?? 0,
       provenanceOutputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0) ?? 0,
       provenanceCompleteRecords: bridge?.studioAssets?.provenance?.filter((record) => record.status === "complete").length ?? 0,
+      provenanceReadyAssetIds: bridge?.studioAssets?.provenance?.filter((record) => record.canExport).map((record) => record.assetId) ?? [],
+      provenanceDeclaredLicenses: bridge?.studioAssets?.provenance?.filter((record) => record.license?.status === "declared").map((record) => record.assetId) ?? [],
       provenanceBlocked: bridge?.studioAssets?.provenance?.filter((record) => !record.canExport).length ?? 0,
       provenanceLicenseUnknown: bridge?.studioAssets?.provenance?.filter((record) => record.license?.status === "unknown").length ?? 0,
       provenanceTransformCount: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.transforms?.length ?? 0), 0) ?? 0,
@@ -2491,6 +2494,41 @@ function writeFolderHandleRecoveryProject(outDir) {
   return projectPath;
 }
 
+function unsafePackagePath(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return undefined;
+  }
+  const normalized = value.trim().replace(/\\/g, "/");
+  if (normalized.split("/").includes("..")) {
+    return "path traversal segment";
+  }
+  if (/^(?:[a-z]:|\/\/|file:)/i.test(normalized)) {
+    return "local absolute or file URI";
+  }
+  if (/^\//.test(normalized) && !/^\/(?:characters|stages|audio|assets)\//i.test(normalized)) {
+    return "unapproved absolute route";
+  }
+  return undefined;
+}
+
+function provenancePathEntries(record) {
+  return [
+    ["sourceRef", record.sourceRef],
+    ["license.sourceRef", record.license?.sourceRef],
+    ...(record.inputFiles ?? []).map((file) => ["inputFiles.path", file.path]),
+    ...(record.outputFiles ?? []).map((file) => ["outputFiles.path", file.path]),
+    ...(record.transforms ?? []).flatMap((transform) => [
+      ...(transform.inputPaths ?? []).map((value) => ["transforms.inputPaths", value]),
+      ...(transform.outputPaths ?? []).map((value) => ["transforms.outputPaths", value]),
+    ]),
+    ...(record.qaLinks ?? []).map((link) => ["qaLinks.reference", link.reference]),
+  ];
+}
+
+function sha256Buffer(buffer) {
+  return crypto.createHash("sha256").update(buffer).digest("hex");
+}
+
 async function inspectPackageZip(packagePath) {
   const zip = await JSZip.loadAsync(fs.readFileSync(packagePath));
   const files = Object.keys(zip.files).filter((name) => !zip.files[name].dir).sort();
@@ -2514,6 +2552,50 @@ async function inspectPackageZip(packagePath) {
   const missingBundledFiles = bundledAssets.filter((asset) => !files.includes(asset.packagePath));
   const bundledWithoutChecksum = bundledAssets.filter((asset) => !asset.sha256 || !asset.bytes);
   const importedLowerPaths = importedAssets.map((asset) => asset.packagePath.toLowerCase());
+  const packageAssetByPath = new Map(packageAssets.map((asset) => [asset.packagePath, asset]));
+  const provenanceReadyAssetIds = assetProvenance.filter((record) => record.canExport).map((record) => record.assetId);
+  const provenanceDeclaredLicenses = assetProvenance
+    .filter((record) => record.license?.status === "declared")
+    .map((record) => record.assetId);
+  const provenancePathViolations = assetProvenance.flatMap((record) => provenancePathEntries(record)
+    .map(([field, value]) => {
+      const token = unsafePackagePath(value);
+      return token ? { assetId: record.assetId, field, value, token } : undefined;
+    })
+    .filter(Boolean));
+  const packageAssetPathViolations = packageAssets.flatMap((asset) => [
+    ["sourcePath", asset.sourcePath],
+    ["packagePath", asset.packagePath],
+  ].map(([field, value]) => {
+    const token = unsafePackagePath(value);
+    return token ? { assetId: asset.assetId, field, value, token } : undefined;
+  }).filter(Boolean));
+  const provenanceDigestMismatches = assetProvenance.flatMap((record) => (record.outputFiles ?? []).flatMap((file) => {
+    const packageAsset = packageAssetByPath.get(file.path);
+    if (!file.digest?.digest || !packageAsset || packageAsset.status !== "bundled" || packageAsset.sha256?.toLowerCase() !== file.digest.digest.toLowerCase() || (file.bytes !== undefined && packageAsset.bytes !== file.bytes)) {
+      return [{ assetId: record.assetId, path: file.path, expected: file.digest?.digest, actual: packageAsset?.sha256, expectedBytes: file.bytes, actualBytes: packageAsset?.bytes }];
+    }
+    return [];
+  }));
+  const firstPartyPermissionPath = "assets/characters/nova-boxer/asset-permission.json";
+  const firstPartyPermission = files.includes(firstPartyPermissionPath)
+    ? JSON.parse(await zip.file(firstPartyPermissionPath).async("string"))
+    : undefined;
+  const firstPartyPermissionDigestMismatches = [];
+  for (const file of [...(firstPartyPermission?.sourceFiles ?? []), ...(firstPartyPermission?.outputFiles ?? [])]) {
+    const packagePath = "assets/characters/nova-boxer/" + String(file.path).replace(/\\/g, "/");
+    const entry = zip.file(packagePath);
+    if (!entry) {
+      firstPartyPermissionDigestMismatches.push({ path: packagePath, reason: "missing from ZIP" });
+      continue;
+    }
+    const buffer = await entry.async("nodebuffer");
+    const actualBytes = buffer.byteLength;
+    const actualSha256 = sha256Buffer(buffer);
+    if (actualBytes !== file.bytes || actualSha256 !== String(file.sha256).toLowerCase()) {
+      firstPartyPermissionDigestMismatches.push({ path: packagePath, expectedBytes: file.bytes, actualBytes, expectedSha256: file.sha256, actualSha256 });
+    }
+  }
   return {
     fileCount: files.length,
     files,
@@ -2528,7 +2610,19 @@ async function inspectPackageZip(packagePath) {
     provenanceReady: manifest.assets?.provenanceReady,
     provenanceBlocked: manifest.assets?.provenanceBlocked,
     provenanceLicenseUnknown: assetProvenance?.filter((record) => record.license?.status === "unknown").length ?? 0,
-    provenanceAbsolutePathLeaks: assetProvenance?.filter((record) => /^(?:[a-z]:\\|[a-z]:\/|file:|\\\\)/i.test(record.sourceRef ?? "")).length ?? 0,
+    provenanceAbsolutePathLeaks: provenancePathViolations.length,
+    provenancePathViolations,
+    provenanceDigestMismatches,
+    provenanceReadyAssetIds,
+    provenanceDeclaredLicenses,
+    packageAssetPathViolations,
+    hasFirstPartyPermission: Boolean(firstPartyPermission),
+    firstPartyPermissionSchema: firstPartyPermission?.schemaVersion,
+    firstPartyPermissionAssetId: firstPartyPermission?.assetId,
+    firstPartyPermissionOwnership: firstPartyPermission?.ownership,
+    firstPartyPermissionLicense: firstPartyPermission?.license,
+    firstPartyPermissionDigestMismatches,
+    hasFirstPartyLicense: files.includes("assets/characters/nova-boxer/LICENSE.txt"),
     projectSourcePackages: project.sourcePackages?.length ?? 0,
     linkedProjectSourcePackages: project.sourcePackages?.filter((sourcePackage) => sourcePackage.status === "linked").length ?? 0,
     projectSourceRequiredPaths: project.sourcePackages?.reduce((total, sourcePackage) => total + (sourcePackage.requiredPaths?.length ?? 0), 0) ?? 0,
@@ -2754,6 +2848,11 @@ async function captureStudioEvidence(page, outDir) {
 
 async function captureStudioAssets(page, outDir) {
   await selectStudioTab(page, "assets");
+  await page.waitForFunction(
+    () => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.provenance?.some((record) => record.assetId === "nova-boxer" && record.license?.status === "declared"),
+    undefined,
+    { timeout: 5000 },
+  );
   const generatedFilter = page.locator('[data-asset-filter="generated"]').first();
   if (await generatedFilter.isVisible()) {
     await generatedFilter.evaluate((button) => button.click());
@@ -2767,6 +2866,21 @@ async function captureStudioAssets(page, outDir) {
   await page.screenshot({ path: path.join(outDir, "studio-assets.png"), fullPage: true });
   return page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const provenance = bridge?.studioAssets?.provenance ?? [];
+    const hasUnsafePath = (value) => {
+      const normalized = String(value ?? "").trim().replace(/\\/g, "/");
+      return normalized.split("/").includes("..") ||
+        /^(?:[a-z]:|\/\/|file:)/i.test(normalized) ||
+        (/^\//.test(normalized) && !/^\/(?:characters|stages|audio|assets)\//i.test(normalized));
+    };
+    const provenancePathValues = provenance.flatMap((record) => [
+      record.sourceRef,
+      record.license?.sourceRef,
+      ...(record.inputFiles ?? []).map((file) => file.path),
+      ...(record.outputFiles ?? []).map((file) => file.path),
+      ...(record.transforms ?? []).flatMap((transform) => [...(transform.inputPaths ?? []), ...(transform.outputPaths ?? [])]),
+      ...(record.qaLinks ?? []).map((link) => link.reference),
+    ]);
     return {
       title: document.title,
       mode: bridge?.mode,
@@ -2796,14 +2910,17 @@ async function captureStudioAssets(page, outDir) {
       sourceRuntimeRecords: bridge?.studioAssets?.sourceRuntimeMap?.records?.length ?? 0,
       sourceRuntimeLanes: bridge?.studioAssets?.sourceRuntimeMap?.lanes,
       provenanceSchema: bridge?.studioAssets?.provenance?.[0]?.schemaVersion,
-      provenanceRecords: bridge?.studioAssets?.provenance?.length ?? 0,
-      provenanceReady: bridge?.studioAssets?.provenance?.filter((record) => record.canExport).length ?? 0,
-      provenanceInputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0) ?? 0,
-      provenanceOutputFiles: bridge?.studioAssets?.provenance?.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0) ?? 0,
-      provenanceFilePathLeaks: (bridge?.studioAssets?.provenance ?? []).flatMap((record) => [
+      provenanceRecords: provenance.length,
+      provenanceReady: provenance.filter((record) => record.canExport).length,
+      provenanceReadyAssetIds: provenance.filter((record) => record.canExport).map((record) => record.assetId),
+      provenanceDeclaredLicenses: provenance.filter((record) => record.license?.status === "declared").map((record) => record.assetId),
+      provenanceInputFiles: provenance.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0),
+      provenanceOutputFiles: provenance.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0),
+      provenanceFilePathLeaks: provenance.flatMap((record) => [
         ...(record.inputFiles ?? []),
         ...(record.outputFiles ?? []),
       ]).filter((file) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(file.path ?? "")).length,
+      provenancePathViolations: provenancePathValues.filter(hasUnsafePath).length,
       selectedProvenanceStatus: bridge?.studioAssets?.selectedProvenance?.status,
       provenanceAbsolutePathLeaks: (bridge?.studioAssets?.provenance ?? []).filter((record) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(record.sourceRef ?? "")).length,
       missingReferences: bridge?.studioAssets?.missingReferences?.length ?? 0,
@@ -4170,6 +4287,20 @@ function assertSmoke(diagnostics) {
     (studioBuild.downloadedPackage?.provenanceBlocked ?? 0) < 1 ||
     (studioBuild.downloadedPackage?.provenanceLicenseUnknown ?? 0) < 1 ||
     (studioBuild.downloadedPackage?.provenanceAbsolutePathLeaks ?? 0) !== 0 ||
+    (studioBuild.downloadedPackage?.provenanceReady ?? 0) < 1 ||
+    !studioBuild.downloadedPackage?.provenanceReadyAssetIds?.includes("nova-boxer") ||
+    !studioBuild.downloadedPackage?.provenanceDeclaredLicenses?.includes("nova-boxer") ||
+    (studioBuild.downloadedPackage?.provenancePathViolations?.length ?? 0) !== 0 ||
+    (studioBuild.downloadedPackage?.provenanceDigestMismatches?.length ?? 0) !== 0 ||
+    (studioBuild.downloadedPackage?.packageAssetPathViolations?.length ?? 0) !== 0 ||
+    !studioBuild.downloadedPackage?.hasFirstPartyPermission ||
+    studioBuild.downloadedPackage?.firstPartyPermissionSchema !== "mugen-web-sandbox/asset-permission/v0" ||
+    studioBuild.downloadedPackage?.firstPartyPermissionAssetId !== "nova-boxer" ||
+    studioBuild.downloadedPackage?.firstPartyPermissionOwnership !== "repository-owned" ||
+    studioBuild.downloadedPackage?.firstPartyPermissionLicense?.expression !== "CC0-1.0" ||
+    studioBuild.downloadedPackage?.firstPartyPermissionLicense?.verified !== true ||
+    !studioBuild.downloadedPackage?.hasFirstPartyLicense ||
+    (studioBuild.downloadedPackage?.firstPartyPermissionDigestMismatches?.length ?? 0) !== 0 ||
     !studioBuild.downloadedPackage?.hasTrace
     || !studioBuild.downloadedPackage?.hasCompatibilitySnapshot
     || studioBuild.downloadedPackage?.compatibilitySnapshotSchema !== "mugen-web-sandbox/compatibility-corpus-snapshot/v1.1"
@@ -4227,7 +4358,9 @@ function assertSmoke(diagnostics) {
       studioBuild.provenanceBlocked < 1 ||
       studioBuild.provenanceLicenseUnknown < 1 ||
       studioBuild.provenanceTransformCount < studioBuild.provenanceRecords * 2 ||
-      studioBuild.provenanceFilePathLeaks !== 0)
+      studioBuild.provenanceFilePathLeaks !== 0 ||
+      !studioBuild.provenanceReadyAssetIds?.includes("nova-boxer") ||
+      !studioBuild.provenanceDeclaredLicenses?.includes("nova-boxer"))
   ) {
     failures.push("studio-build: imported asset provenance did not join per-file source and bundled output hashes");
   }
@@ -4449,11 +4582,15 @@ function assertSmoke(diagnostics) {
     (studioAssets.sourceRuntimeLanes?.export ?? 0) < 1 ||
     studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v2" ||
       studioAssets.provenanceRecords < studioAssets.assetTotal ||
+      studioAssets.provenanceReady < 1 ||
+      !studioAssets.provenanceReadyAssetIds?.includes("nova-boxer") ||
+      !studioAssets.provenanceDeclaredLicenses?.includes("nova-boxer") ||
       studioAssets.provenanceFilePathLeaks !== 0 ||
+      studioAssets.provenancePathViolations !== 0 ||
       studioAssets.provenanceBlocked < 1 ||
       studioAssets.provenanceLicenseUnknown < 1 ||
       studioAssets.provenanceTransformCount < studioAssets.provenanceRecords * 2 ||
-      studioAssets.selectedProvenanceStatus !== "blocked" ||
+      studioAssets.selectedProvenanceStatus !== "complete" ||
     studioAssets.provenanceAbsolutePathLeaks !== 0 ||
     studioAssets.relatedEvidence < 1 ||
     studioAssets.assetTotal < 3 ||

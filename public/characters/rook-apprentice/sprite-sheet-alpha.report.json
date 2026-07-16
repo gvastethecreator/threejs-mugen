@@ -1,6 +1,6 @@
 {
     "ok":  true,
-    "source":  "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\dist\\characters\\rook-apprentice\\source\\rook-apprentice-imagegen-sheet.png",
+    "source":  "characters/rook-apprentice/source/rook-apprentice-imagegen-sheet.png",
     "manifest":  "manifest.json",
     "detected_components":  32,
     "scale_policy":  {

@@ -118,6 +118,12 @@ import {
   type AssetProvenancePermission,
   type AssetProvenanceRecord,
 } from "./StudioAssetProvenance";
+import {
+  FIRST_PARTY_ASSET_PERMISSION_PATHS,
+  getAssetPermissionMetadataPath,
+  parseAssetPermissionMetadata,
+  type AssetPermissionMetadata,
+} from "./StudioAssetPermission";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import {
@@ -859,6 +865,8 @@ export class App {
   private projectStorageConflict?: ProjectStorageConflict;
   private readonly studioEditHistory = new StudioEditHistory();
   private readonly studioAutosave = new StudioAutosave();
+  private readonly assetPermissionMetadata = new Map<string, AssetPermissionMetadata>();
+  private assetPermissionMetadataLoad?: Promise<void>;
   private projectImportWarnings: string[] = [];
   private storedProjects: StoredProjectEntry[] = [];
   private lastCompiledProject?: CompiledRuntimeManifest;
@@ -904,7 +912,41 @@ export class App {
     this.installAudioUnlock();
     this.updateUi();
     this.loop.start();
+    void this.loadAssetPermissionMetadata();
     void this.installRuntimeAtlases();
+  }
+
+  private loadAssetPermissionMetadata(): Promise<void> {
+    if (this.assetPermissionMetadataLoad) {
+      return this.assetPermissionMetadataLoad;
+    }
+    this.assetPermissionMetadataLoad = Promise.all(
+      Object.entries(FIRST_PARTY_ASSET_PERMISSION_PATHS).map(async ([assetId, path]) => {
+        if (this.assetPermissionMetadata.has(assetId)) {
+          return;
+        }
+        try {
+          const response = await fetch(path, { cache: "no-store" });
+          if (!response.ok) {
+            this.log("Asset permission metadata unavailable for " + assetId + ": HTTP " + response.status);
+            return;
+          }
+          const metadata = parseAssetPermissionMetadata(await response.json());
+          if (!metadata || metadata.assetId !== assetId || getAssetPermissionMetadataPath(assetId) !== path) {
+            this.log("Asset permission metadata rejected for " + assetId + ": invalid v0 declaration");
+            return;
+          }
+          this.assetPermissionMetadata.set(assetId, metadata);
+        } catch (error) {
+          this.log("Asset permission metadata failed for " + assetId + ": " + (error instanceof Error ? error.message : String(error)));
+        }
+      }),
+    ).then(() => {
+      this.updateUi();
+    }).finally(() => {
+      this.assetPermissionMetadataLoad = undefined;
+    });
+    return this.assetPermissionMetadataLoad;
   }
 
   private template(): string {
@@ -9166,9 +9208,15 @@ export class App {
         ? sourceTransactions.find((candidate) => candidate.sourcePackageId === sourcePackage.id)
         : undefined;
       const sourceRecord = this.getAssetSourceRecords(asset).find((record) => record.lane === "source" && record.path);
+      const permissionMetadata = this.assetPermissionMetadata.get(asset.id);
       const permission: AssetProvenancePermission = sourcePackage
         ? sourceTransaction?.permission ?? "unsupported"
         : "not-required";
+      const permissionInputFiles: AssetProvenanceFileInput[] = permissionMetadata?.sourceFiles.map((file) => ({
+        path: file.path,
+        digest: file.sha256,
+        byteLength: file.bytes,
+      })) ?? [];
       const inputFiles: AssetProvenanceFileInput[] = sourcePackage?.fileDigests
         ? this.getProjectBundleAssetCandidates(asset)
           .filter((candidate) => candidate.sourceKind === "vfs")
@@ -9179,14 +9227,21 @@ export class App {
               ...(file ? { digest: file.digest, byteLength: file.byteLength } : {}),
             };
           })
-        : [];
-      const outputFiles: AssetProvenanceFileInput[] = bundledRecords
+        : permissionInputFiles;
+      const bundledOutputFiles: AssetProvenanceFileInput[] = bundledRecords
         .filter((record) => record.assetId === asset.id && record.status === "bundled")
         .map((record) => ({
           path: record.packagePath,
           ...(record.sha256 ? { digest: record.sha256 } : {}),
           ...(record.bytes !== undefined ? { byteLength: record.bytes } : {}),
         }));
+      const outputFiles: AssetProvenanceFileInput[] = bundledOutputFiles.length > 0
+        ? bundledOutputFiles
+        : permissionMetadata?.outputFiles.map((file) => ({
+            path: `assets/characters/${sanitizePackageSegment(asset.id)}/${file.path}`,
+            digest: file.sha256,
+            byteLength: file.bytes,
+          })) ?? [];
       const inputPaths = inputFiles.length > 0
         ? inputFiles.map((file) => file.path)
         : [sourceRecord?.path ?? `assets/${asset.id}`];
@@ -9214,6 +9269,13 @@ export class App {
         toolVersion: ASSET_PROVENANCE_TOOL_VERSION,
         permission,
         requiresDurablePermission: false,
+        license: permissionMetadata
+          ? {
+              expression: permissionMetadata.license.expression,
+              sourceRef: permissionMetadata.license.sourceRef,
+              verified: permissionMetadata.license.verified,
+            }
+          : undefined,
         transforms: [
           {
             id: `${asset.id}:source-import`,
@@ -12041,6 +12103,7 @@ export class App {
     const project = this.getGameProjectManifest();
     const compiled = this.lastCompiledProject ?? compileGameProjectManifest(project);
     this.lastCompiledProject = compiled;
+    await this.loadAssetPermissionMetadata();
     const studio = this.getStudioProjectSummary();
     const sourceRuntimeMaps = this.getAssetSourceRuntimeMaps(studio.assets);
     const evidence = this.getStudioEvidenceSummary();
@@ -12300,6 +12363,14 @@ export class App {
       add(`${sourceRoot}/qa/motion-variation-report.json`, `${packageRoot}/qa/motion-variation-report.json`, "Motion QA report");
       add(`${sourceRoot}/qa/all-contact.png`, `${packageRoot}/qa/all-contact.png`, "Collision/contact QA sheet", false);
       add(`${sourceRoot}/README.md`, `${packageRoot}/README.md`, "Character asset README", false);
+      const permissionMetadata = this.assetPermissionMetadata.get(asset.id);
+      if (permissionMetadata) {
+        add(`${sourceRoot}/asset-permission.json`, `${packageRoot}/asset-permission.json`, "Asset permission metadata");
+        add(`${sourceRoot}/${permissionMetadata.license.sourceRef}`, `${packageRoot}/${permissionMetadata.license.sourceRef}`, "Asset license");
+        for (const sourceFile of permissionMetadata.sourceFiles) {
+          add(`${sourceRoot}/${sourceFile.path}`, `${packageRoot}/${sourceFile.path}`, "Source file " + sourceFile.path);
+        }
+      }
       for (const extension of ["def", "air", "cmd", "cns"]) {
         add(`${sourceRoot}/mugen/${mugenPrefix}.${extension}`, `${packageRoot}/mugen/${mugenPrefix}.${extension}`, `MUGEN-lite ${extension.toUpperCase()} template`, false);
       }

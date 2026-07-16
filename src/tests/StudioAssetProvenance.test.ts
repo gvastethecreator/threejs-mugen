@@ -163,6 +163,10 @@ describe("StudioAssetProvenance", () => {
     });
 
     expect(redactAssetSourcePath("C:\\Users\\cristian\\source\\kfm.def")).toBe("[local-path-redacted]");
+    expect(redactAssetSourcePath("C:relative\\kfm.def")).toBe("[local-path-redacted]");
+    expect(redactAssetSourcePath("/characters/../secret/kfm.def")).toBe("[local-path-redacted]");
+    expect(redactAssetSourcePath("assets/../secret/kfm.def")).toBe("[local-path-redacted]");
+    expect(redactAssetSourcePath("/characters/nova-boxer/manifest.json")).toBe("characters/nova-boxer/manifest.json");
     expect(record.sourceRef).toBe("[local-path-redacted]");
     expect(record.transforms[1]?.inputPaths).toEqual(["[local-path-redacted]"]);
     expect(canonicalizeAssetProvenanceRecord(reordered)).not.toBe("");

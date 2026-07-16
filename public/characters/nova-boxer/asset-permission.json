@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "mugen-web-sandbox/asset-permission/v0",
+  "assetId": "nova-boxer",
+  "ownership": "repository-owned",
+  "permission": "repository-owned",
+  "license": {
+    "expression": "CC0-1.0",
+    "sourceRef": "LICENSE.txt",
+    "verified": true
+  },
+  "sourceFiles": [
+    {
+      "path": "source/nova-boxer-imagegen-sheet.png",
+      "bytes": 1721169,
+      "sha256": "e683c66998675d03684e927973dc3b15e8b2641c5af6c8aa6e4627206d4334a5"
+    },
+    {
+      "path": "source/nova-boxer-walk-forward-imagegen-row.png",
+      "bytes": 1348642,
+      "sha256": "1b4da4d7d2c2e65e5c18d03cf6b79049985288105f1935ea367e4c987c5cb929"
+    }
+  ],
+  "outputFiles": [
+    {
+      "path": "README.md",
+      "bytes": 845,
+      "sha256": "8be5e8dfdc82025a54285d841da01a9a8ec65faea24b22dbf2d5825c55ddef02"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 17024,
+      "sha256": "c3f7cb9deac56f74547bab44bc4e88a662c3607abf202e3ee5ce0bd90ffa4bd1"
+    },
+    {
+      "path": "mugen/nova.air",
+      "bytes": 2047,
+      "sha256": "a0d12d60a43d8098f1b3bb814eb8a59dffba60e4cf854dbd4441a722e03a62d1"
+    },
+    {
+      "path": "mugen/nova.cns",
+      "bytes": 852,
+      "sha256": "ba369f5815fb4cf62ceed8528c6a807fc40f9491e44f3a2c98199c81781f560c"
+    },
+    {
+      "path": "mugen/nova.cmd",
+      "bytes": 428,
+      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+    },
+    {
+      "path": "mugen/nova.def",
+      "bytes": 387,
+      "sha256": "6334228b8724db4c7239f84d128d3e7169a5275a0869b3b28fc8863e606b9054"
+    },
+    {
+      "path": "qa/motion-variation-report.json",
+      "bytes": 1007,
+      "sha256": "8236a289d544888877c91a201b84140c7afc14f0bf7c41aeaa3512e20f85aa86"
+    },
+    {
+      "path": "runtime-states.json",
+      "bytes": 3286,
+      "sha256": "0db2e6605d5b6d7a9464ba96b201e7cf9426d624a77aafd7aa1fade9bfb1bf41"
+    },
+    {
+      "path": "sprite-sheet-alpha.png",
+      "bytes": 341273,
+      "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+    },
+    {
+      "path": "sprite-sheet-alpha.report.json",
+      "bytes": 18148,
+      "sha256": "9ed147ed5bd1f8a3425f550468d353d17fa8f358c6a9eeedc99aabef13ca0505"
+    },
+    {
+      "path": "states.contract.json",
+      "bytes": 823,
+      "sha256": "84cfb7b1fd398a617bc9b54367d576772055040fdcf12fc5027126b940de18b2"
+    }
+  ]
+}

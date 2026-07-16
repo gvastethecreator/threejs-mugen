@@ -17,6 +17,7 @@
     "qa:studio:compatibility-snapshot": "node scripts/qa_studio_compatibility_snapshot.cjs",
     "qa:studio:project-reopen": "node scripts/qa_studio_project_reopen.cjs",
     "qa:studio:gate-evidence": "node scripts/qa_studio_gate_evidence.cjs",
+    "qa:assets:hygiene": "node scripts/qa_asset_path_hygiene.cjs",
     "materialize:studio:gate-evidence": "node scripts/materialize_studio_gate_evidence.cjs",
     "materialize:repository-stage-journey": "node scripts/materialize_repository_stage_journey.cjs",
     "materialize:repository-stage-journey:native": "node scripts/materialize_repository_stage_journey_native.cjs",

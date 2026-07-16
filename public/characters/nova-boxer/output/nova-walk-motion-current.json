@@ -1,7 +1,7 @@
 {
   "ok": true,
   "engine": "motion-variation-heuristic",
-  "run_dir": "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\public\\characters\\nova-boxer",
+  "run_dir": "characters/nova-boxer",
   "states_mode": "walk-forward",
   "checked_states": [
     "walk-forward"

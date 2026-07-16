@@ -1,7 +1,7 @@
 {
   "ok": true,
   "engine": "motion-variation-heuristic",
-  "run_dir": "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\public\\characters\\rook-apprentice",
+  "run_dir": "characters/rook-apprentice",
   "states_mode": "walk-forward",
   "checked_states": [
     "walk-forward"
