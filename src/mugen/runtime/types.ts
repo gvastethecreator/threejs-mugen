@@ -482,6 +482,30 @@ export type ActorCompatibilitySession = {
   lastExecutedState?: number;
   executedOperations: Record<string, number>;
   controllerEvents?: RuntimeControllerTraceEvent[];
+  redirectedTargetDispatches?: RuntimeRedirectedTargetDispatchObservation[];
+};
+
+export type RuntimeRedirectedTargetDispatchRoute =
+  | "root-active"
+  | "root-state-minus-one"
+  | "helper-to-root"
+  | "helper-to-helper";
+
+export type RuntimeRedirectedTargetDispatchObservation = {
+  route: RuntimeRedirectedTargetDispatchRoute;
+  callerId: string;
+  destinationId: string;
+  stateOwnerId: string;
+  controllerType: string;
+  effect: "target" | "bindtotarget";
+  redirectExpression?: string;
+  redirectPlayerId?: number;
+  sourceStateNo?: number;
+  requestedId?: number;
+  selectedTargetIds: string[];
+  mutatedActorIds: string[];
+  matchedTargets: number;
+  operationExecuted: boolean;
 };
 
 export type RuntimeControllerTraceEvent = {

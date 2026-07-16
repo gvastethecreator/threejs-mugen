@@ -98,6 +98,17 @@ export type RuntimeTargetControllerDispatchEffect = "target" | "bindtotarget";
 
 export type RuntimeTargetControllerDispatchOperation = TargetControllerOp | BindToTargetControllerOp;
 
+export type RuntimeTargetControllerDispatchSelection = {
+  destinationId: string;
+  controllerType: string;
+  effect: RuntimeTargetControllerDispatchEffect;
+  requestedId?: number;
+  selectedTargetIds: string[];
+  mutatedActorIds: string[];
+  matchedTargets: number;
+  operationExecuted: boolean;
+};
+
 export type RuntimeTargetControllerDispatchOptions<TActor extends RuntimeTargetWorldActor> = {
   actor: TActor;
   candidateTargets: TActor[];
@@ -106,6 +117,7 @@ export type RuntimeTargetControllerDispatchOptions<TActor extends RuntimeTargetW
   targetWorld: RuntimeTargetWorld;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: RuntimeTargetControllerDispatchOperation) => void;
+  recordDispatch?: (selection: RuntimeTargetControllerDispatchSelection) => void;
   scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   enterTargetState?: (target: TActor, stateId: number) => void;
   getTargetConst?: (target: TActor, name: string) => number | undefined;
@@ -205,6 +217,11 @@ export class RuntimeTargetControllerDispatchWorld {
     options: RuntimeTargetControllerDispatchOptions<TActor>,
   ): RuntimeTargetControllerDispatchResult {
     let recordedOperation = false;
+    const beforeTargets = options.actor.targets.map((target) => ({ ...target }));
+    const beforeBindings = options.actor.targetBindings.map((binding) => ({ ...binding, offset: { ...binding.offset } }));
+    const beforeBindingSubjects = new Map(
+      options.candidateTargets.map((candidate) => [candidate.id, candidate.runtime.hitVars?.isBound] as const),
+    );
     options.recordController?.(options.actor, options.controller.source);
 
     if (options.effect === "target") {
@@ -220,6 +237,15 @@ export class RuntimeTargetControllerDispatchWorld {
         scaleIncomingDamage: options.scaleIncomingDamage,
         enterTargetState: options.enterTargetState,
       });
+      options.recordDispatch?.(
+        createRuntimeTargetControllerDispatchSelection(
+          options,
+          result,
+          beforeTargets,
+          beforeBindings,
+          beforeBindingSubjects,
+        ),
+      );
       return {
         ...result,
         recordedController: Boolean(options.recordController),
@@ -238,12 +264,89 @@ export class RuntimeTargetControllerDispatchWorld {
       },
       getTargetConst: options.getTargetConst,
     });
+    options.recordDispatch?.(
+      createRuntimeTargetControllerDispatchSelection(
+        options,
+        result,
+        beforeTargets,
+        beforeBindings,
+        beforeBindingSubjects,
+      ),
+    );
     return {
       ...result,
       recordedController: Boolean(options.recordController),
       recordedOperation,
     };
   }
+}
+
+function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTargetWorldActor>(
+  options: RuntimeTargetControllerDispatchOptions<TActor>,
+  result: RuntimeTargetControllerResult,
+  beforeTargets: RuntimeTarget[],
+  beforeBindings: RuntimeTargetBinding[],
+  beforeBindingSubjects: ReadonlyMap<string, boolean | undefined>,
+): RuntimeTargetControllerDispatchSelection {
+  const operation = options.controller.operation;
+  const controllerType = result.controllerType;
+  const requestedId =
+    (operation && "requestedId" in operation ? operation.requestedId : undefined) ??
+    (controllerType === "targetdrop" ? undefined : firstNumber(findControllerParam(options.controller.source, "id")));
+  const selectedTargetIds = controllerType === "targetdrop"
+    ? droppedRuntimeTargetActorIds(beforeTargets, options.actor.targets)
+    : options.effect === "bindtotarget"
+      ? selectedBindToTargetActorIds(beforeTargets, options.candidateTargets, requestedId)
+      : matchingRuntimeTargetActors(beforeTargets, options.candidateTargets, requestedId).map(({ id }) => id);
+  const changedBindingSubjects = options.candidateTargets
+    .filter((candidate) => beforeBindingSubjects.get(candidate.id) !== candidate.runtime.hitVars?.isBound)
+    .map(({ id }) => id);
+  const mutatedActorIds = uniqueRuntimeActorIds([
+    ...(options.effect === "bindtotarget" || controllerType === "targetbind" || controllerType === "targetdrop"
+      ? [options.actor.id]
+      : []),
+    ...selectedTargetIds,
+    ...changedBindingSubjects,
+    ...(
+      controllerType === "targetdrop"
+        ? beforeBindings
+            .filter((binding) => !hasRuntimeTargetBindingTarget(options.actor.targets, binding))
+            .map(({ actorId }) => actorId)
+        : []
+    ),
+  ]);
+  return {
+    destinationId: options.actor.id,
+    controllerType,
+    effect: options.effect,
+    ...(requestedId === undefined ? {} : { requestedId }),
+    selectedTargetIds: uniqueRuntimeActorIds(selectedTargetIds),
+    mutatedActorIds,
+    matchedTargets: result.matchedTargets,
+    operationExecuted: result.operationExecuted,
+  };
+}
+
+function droppedRuntimeTargetActorIds(beforeTargets: RuntimeTarget[], afterTargets: RuntimeTarget[]): string[] {
+  const afterKeys = new Set(afterTargets.map(runtimeTargetKey));
+  return beforeTargets.filter((target) => !afterKeys.has(runtimeTargetKey(target))).map(({ actorId }) => actorId);
+}
+
+function selectedBindToTargetActorIds<TActor extends RuntimeTargetWorldActor>(
+  beforeTargets: RuntimeTarget[],
+  candidates: TActor[],
+  requestedId: number | undefined,
+): string[] {
+  const target = candidates.find((candidate) => hasRuntimeTarget(beforeTargets, candidate.id, requestedId));
+  return target ? [target.id] : [];
+}
+
+function runtimeTargetKey(target: RuntimeTarget): string {
+  return `${target.actorId}:${target.targetId ?? "*"}`;
+}
+
+function uniqueRuntimeActorIds(ids: string[]): string[] {
+  return [...new Set(ids)];
 }
 
 export function isRuntimeTargetControllerDispatchEffect(effect: string): effect is RuntimeTargetControllerDispatchEffect {

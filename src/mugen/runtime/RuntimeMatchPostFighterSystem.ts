@@ -28,6 +28,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
   onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
   onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
+  onHelperRedirectedTargetDispatch?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedTargetDispatch"];
   enterHelperRedirectedTargetState?: RuntimeEffectLifecycleAdvanceOptions["enterRedirectedTargetState"];
   actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation" | "markGetHit">;
@@ -72,6 +73,7 @@ export class RuntimeMatchPostFighterWorld {
       onHelperTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
       onHelperRedirectedController: input.onHelperRedirectedController,
       onHelperRedirectedOperation: input.onHelperRedirectedOperation,
+      onHelperRedirectedTargetDispatch: input.onHelperRedirectedTargetDispatch,
       enterHelperRedirectedTargetState: input.enterHelperRedirectedTargetState,
       actorConstraintWorld: input.actorConstraintWorld,
       effectLifecycleWorld: input.effectLifecycleWorld,

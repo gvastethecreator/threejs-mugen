@@ -42,6 +42,7 @@ export type RuntimeHitPauseRuntimeWorldInput<TActor extends RuntimeHitPauseRunti
   onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
   onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
   onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
+  onHelperRedirectedTargetDispatch?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedTargetDispatch"];
   enterHelperRedirectedTargetState?: RuntimeEffectLifecycleAdvanceOptions["enterRedirectedTargetState"];
   runIgnoredControllers: (actor: TActor, opponent: TActor) => void;
 };
@@ -110,6 +111,7 @@ export class RuntimeHitPauseWorld {
           onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
           onRedirectedController: input.onHelperRedirectedController,
           onRedirectedOperation: input.onHelperRedirectedOperation,
+          onRedirectedTargetDispatch: input.onHelperRedirectedTargetDispatch,
           enterRedirectedTargetState: input.enterHelperRedirectedTargetState,
         });
       },

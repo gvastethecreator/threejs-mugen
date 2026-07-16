@@ -44,6 +44,7 @@ import {
   isRuntimeTargetControllerDispatchEffect,
   RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
+  type RuntimeTargetControllerDispatchSelection,
   type RuntimeTarget,
   type RuntimeTargetBinding,
   type RuntimeTargetWorldActor,
@@ -183,6 +184,13 @@ export type RuntimeHelperAdvanceOptions = {
     helper: RuntimeHelper,
     target: RuntimeTargetWorldActor,
     operation: TargetControllerOp | BindToTargetControllerOp,
+  ) => void;
+  onRedirectedTargetDispatch?: (
+    helper: RuntimeHelper,
+    target: RuntimeTargetWorldActor,
+    selection: RuntimeTargetControllerDispatchSelection,
+    redirectPlayerId: number,
+    redirectExpression: string,
   ) => void;
   enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   enterRedirectedTargetState?: (
@@ -373,6 +381,7 @@ export function runRuntimeHelperStateControllers(
     | "onTargetRedirectBlocked"
     | "onRedirectedController"
     | "onRedirectedOperation"
+    | "onRedirectedTargetDispatch"
     | "enterTargetState"
     | "enterRedirectedTargetState"
     | "onSpawnExplod"
@@ -967,6 +976,7 @@ function applyRuntimeHelperTargetController(
     | "onTargetRedirectBlocked"
     | "onRedirectedController"
     | "onRedirectedOperation"
+    | "onRedirectedTargetDispatch"
     | "enterTargetState"
     | "enterRedirectedTargetState"
     | "onOperation"
@@ -1007,6 +1017,11 @@ function applyRuntimeHelperTargetController(
     recordOperation: (_actor, operation) => {
       options.onOperation?.(helper, operation);
       if (redirect) options.onRedirectedOperation?.(helper, actor, operation);
+    },
+    recordDispatch: (selection) => {
+      if (redirect && redirectPlayerId !== undefined) {
+        options.onRedirectedTargetDispatch?.(helper, actor, selection, Math.trunc(redirectPlayerId), redirectExpression!);
+      }
     },
     scaleIncomingDamage: options.scaleTargetDamage,
     enterTargetState: (target, stateId) =>

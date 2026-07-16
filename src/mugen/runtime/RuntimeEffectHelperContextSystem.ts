@@ -34,6 +34,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "onTargetRedirectBlocked"
   | "onRedirectedController"
   | "onRedirectedOperation"
+  | "onRedirectedTargetDispatch"
   | "enterRedirectedTargetState"
 > & {
   opponents?: readonly RuntimeEffectHelperContextOpponent[];
@@ -55,6 +56,7 @@ export type RuntimeEffectHelperContext = {
   onTargetRedirectBlocked?: RuntimeHelperAdvanceOptions["onTargetRedirectBlocked"];
   onRedirectedController?: RuntimeHelperAdvanceOptions["onRedirectedController"];
   onRedirectedOperation?: RuntimeHelperAdvanceOptions["onRedirectedOperation"];
+  onRedirectedTargetDispatch?: RuntimeHelperAdvanceOptions["onRedirectedTargetDispatch"];
   enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
   enterRedirectedTargetState?: RuntimeHelperAdvanceOptions["enterRedirectedTargetState"];
   onController?: RuntimeHelperAdvanceOptions["onController"];

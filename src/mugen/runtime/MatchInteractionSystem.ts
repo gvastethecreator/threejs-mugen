@@ -94,6 +94,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
     onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
     onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
+    onHelperRedirectedTargetDispatch?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedTargetDispatch"];
     enterHelperRedirectedTargetState?: RuntimeEffectLifecycleAdvanceOptions["enterRedirectedTargetState"];
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveRootPriorityClashes?: (resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined) => void;
@@ -208,6 +209,7 @@ export class RuntimeMatchInteractionWorld {
           onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
           onRedirectedController: input.onHelperRedirectedController,
           onRedirectedOperation: input.onHelperRedirectedOperation,
+          onRedirectedTargetDispatch: input.onHelperRedirectedTargetDispatch,
           enterRedirectedTargetState: input.enterHelperRedirectedTargetState,
         });
       },

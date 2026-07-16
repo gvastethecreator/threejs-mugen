@@ -255,6 +255,7 @@ import {
 import {
   RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
+  type RuntimeTargetControllerDispatchSelection,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
 import { RuntimeTargetStateEntryWorld } from "./RuntimeTargetStateEntrySystem";
@@ -790,6 +791,27 @@ export class PlayableMatchRuntime {
     if (root) compatibilityTelemetryWorld.recordOperation(root, operation);
   }
 
+  private recordHelperRedirectedTargetDispatch(
+    helper: RuntimeHelper,
+    target: RuntimeTargetWorldActor,
+    selection: RuntimeTargetControllerDispatchSelection,
+    redirectPlayerId: number,
+    redirectExpression: string,
+  ): void {
+    const callerRoot = this.rootForHelper(helper);
+    if (!callerRoot) return;
+    const destinationRoot = this.characterRoots().find((candidate) => candidate.id === target.id);
+    compatibilityTelemetryWorld.recordRedirectedTargetDispatch(callerRoot, {
+      ...selection,
+      route: destinationRoot ? "helper-to-root" : "helper-to-helper",
+      callerId: helper.serialId,
+      stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
+      redirectExpression,
+      redirectPlayerId,
+      ...(helper.stateNo === undefined ? {} : { sourceStateNo: helper.stateNo }),
+    });
+  }
+
   private characterRoots(): FighterMatchState[] {
     return [this.p1, this.p2, ...this.reserveRoots];
   }
@@ -1226,6 +1248,8 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (_helper, target, operation) =>
             this.recordHelperRedirectedOperation(target, operation),
+          onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
+            this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
           enterHelperRedirectedTargetState: (helper, stateOwner, target, stateId) =>
             this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           runIgnoredControllers: (fighter, opponent) =>
@@ -1414,6 +1438,8 @@ export class PlayableMatchRuntime {
                   this.recordHelperRedirectedController(target, controller),
                 onRedirectedOperation: (_helper, target, operation) =>
                   this.recordHelperRedirectedOperation(target, operation),
+                onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
+                  this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
                 enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
                   this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
               });
@@ -1496,6 +1522,8 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (_helper, target, operation) =>
             this.recordHelperRedirectedOperation(target, operation),
+          onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
+            this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
           enterHelperRedirectedTargetState: (helper, stateOwner, target, stateId) =>
             this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           actorConstraintWorld: this.actorConstraintWorld,
@@ -1838,6 +1866,8 @@ export class PlayableMatchRuntime {
               this.recordHelperRedirectedController(target, controller),
             onRedirectedOperation: (_helper, target, operation) =>
               this.recordHelperRedirectedOperation(target, operation),
+            onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
+              this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
             enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
               this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           });
@@ -3854,6 +3884,17 @@ function runActiveStateControllers(
             runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
           }
         },
+        recordDispatch: (selection) => {
+          if (redirectExpression === undefined) return;
+          compatibilityTelemetryWorld.recordRedirectedTargetDispatch(fighter, {
+            ...selection,
+            route: "root-active",
+            callerId: fighter.id,
+            stateOwnerId: target.stateOwner?.id ?? target.id,
+            redirectExpression,
+            sourceStateNo: actor.runtime.stateNo,
+          });
+        },
         scaleIncomingDamage: scaleRuntimeIncomingDamage,
         enterTargetState: (selectedTarget, stateId) => {
           targetStateEntryWorld.enter({
@@ -4413,6 +4454,17 @@ function runStateEntrySetupControllers(
             if (mirrorRedirectedTargetTelemetry) {
               compatibilityTelemetryWorld.recordOperation(fighter, operation);
             }
+          },
+          recordDispatch: (selection) => {
+            if (redirectExpression === undefined) return;
+            compatibilityTelemetryWorld.recordRedirectedTargetDispatch(fighter, {
+              ...selection,
+              route: "root-state-minus-one",
+              callerId: fighter.id,
+              stateOwnerId: target.stateOwner?.id ?? target.id,
+              redirectExpression,
+              sourceStateNo: -1,
+            });
           },
           enterTargetState: (selectedTarget, stateId) => {
             targetStateEntryWorld.enter({

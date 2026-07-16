@@ -2,7 +2,11 @@ import type { ControllerOp } from "../compiler/ControllerOps";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController } from "../model/MugenState";
 import type { CommandInputHistorySample } from "./CommandBuffer";
-import type { ActorCompatibilitySession, RuntimeControllerTraceEvent } from "./types";
+import type {
+  ActorCompatibilitySession,
+  RuntimeControllerTraceEvent,
+  RuntimeRedirectedTargetDispatchObservation,
+} from "./types";
 
 export type RuntimeCompatibilityTelemetryActor = {
   id: string;
@@ -33,6 +37,7 @@ export type RuntimeCompatibilityTelemetryActor = {
   controllerEvents: RuntimeControllerTraceEvent[];
   nextControllerEventSequence: number;
   compatibilityTick: number;
+  redirectedTargetDispatches?: RuntimeRedirectedTargetDispatchObservation[];
 };
 
 export type RuntimeCompatibilityTelemetryEventOptions = {
@@ -102,6 +107,24 @@ export class RuntimeCompatibilityTelemetryWorld {
     this.appendControllerEvent(actor, undefined, key, options);
   }
 
+  recordRedirectedTargetDispatch(
+    actor: RuntimeCompatibilityTelemetryActor,
+    observation: RuntimeRedirectedTargetDispatchObservation,
+  ): void {
+    if (!this.isImportedActor(actor)) {
+      return;
+    }
+    const observations = actor.redirectedTargetDispatches ?? (actor.redirectedTargetDispatches = []);
+    observations.push({
+      ...observation,
+      selectedTargetIds: [...observation.selectedTargetIds],
+      mutatedActorIds: [...observation.mutatedActorIds],
+    });
+    while (observations.length > 160) {
+      observations.shift();
+    }
+  }
+
   buildSession(actors: RuntimeCompatibilityTelemetryActor[]): { actors: ActorCompatibilitySession[] } | undefined {
     const importedActors = actors
       .filter((actor) => this.isImportedActor(actor))
@@ -119,6 +142,13 @@ export class RuntimeCompatibilityTelemetryWorld {
           activeCommands: this.activeCommands(actor),
           commandHistory: actor.commandBuffer.getHistory(24),
         };
+        if (actor.redirectedTargetDispatches && actor.redirectedTargetDispatches.length > 0) {
+          session.redirectedTargetDispatches = actor.redirectedTargetDispatches.map((observation) => ({
+            ...observation,
+            selectedTargetIds: [...observation.selectedTargetIds],
+            mutatedActorIds: [...observation.mutatedActorIds],
+          }));
+        }
         if (actor.lastRoutedState) {
           session.lastRoutedState = { ...actor.lastRoutedState };
         }
