@@ -1633,8 +1633,10 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   }, { key: "mugen-web-sandbox:projects:v0", authoredName });
   await page.reload({ waitUntil: "domcontentloaded" });
   await waitForBridge(page);
+  await page.waitForSelector('[data-stored-project-id="qa-authored-fight-project"]', { state: "attached", timeout: 15_000 });
+  await page.waitForTimeout(250);
   await page.locator('[data-stored-project-id="qa-authored-fight-project"]').first().evaluate((element) => element.click());
-  await page.waitForTimeout(600);
+  await page.waitForFunction((expectedName) => window.__MUGEN_WEB_SANDBOX__?.project?.name === expectedName, authoredName, { timeout: 15_000 });
   const reopenedName = await page.locator("[data-project-name]").first().inputValue();
   const reopened = await page.evaluate(() => ({
     name: window.__MUGEN_WEB_SANDBOX__?.project?.name,
