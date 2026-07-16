@@ -258,6 +258,11 @@ import {
   type RuntimeTargetControllerDispatchSelection,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
+import {
+  RuntimeRedirectedTargetDispatchWorld,
+  type RuntimeRedirectedTargetDispatchLease,
+  type RuntimeRedirectedTargetDispatchPhase,
+} from "./RuntimeRedirectedTargetDispatchSystem";
 import { RuntimeTargetStateEntryWorld } from "./RuntimeTargetStateEntrySystem";
 import { RuntimeTriggerEvaluationWorld } from "./RuntimeTriggerEvaluationSystem";
 import { RuntimeTriggerGateWorld } from "./RuntimeTriggerGateSystem";
@@ -301,6 +306,7 @@ const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
 const targetStateEntryWorld = new RuntimeTargetStateEntryWorld();
 const actorConstraintControllerDispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
 const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
+const redirectedTargetDispatchWorld = new RuntimeRedirectedTargetDispatchWorld();
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
 const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
 const envColorControllerDispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
@@ -426,6 +432,14 @@ type RootControllerRedirectHandler = (
     | RedirectableTargetControllerType
     | RedirectableResourceControllerType,
 ) => FighterMatchState | undefined;
+type RootTargetDispatchLeaseHandler = (
+  caller: FighterMatchState,
+  expression: string,
+  context: ReturnType<typeof runtimeControllerContext>,
+  controllerType: RedirectableTargetControllerType,
+  phase: Extract<RuntimeRedirectedTargetDispatchPhase, "root-active" | "root-state-minus-one">,
+  candidateTargets: readonly FighterMatchState[],
+) => RuntimeRedirectedTargetDispatchLease<FighterMatchState> | undefined;
 type RedirectableResourceControllerType =
   | "ctrlset"
   | "lifeadd"
@@ -727,6 +741,47 @@ export class PlayableMatchRuntime {
     return identity?.fighter
       ? expressionContextWorld.resolvePlayerIdRedirect(caller, this.characterRoots(), playerId)
       : undefined;
+  }
+
+  private resolveRootTargetDispatchLease(
+    caller: FighterMatchState,
+    expression: string,
+    context: ReturnType<typeof runtimeControllerContext>,
+    controllerType: RedirectableTargetControllerType,
+    phase: Extract<RuntimeRedirectedTargetDispatchPhase, "root-active" | "root-state-minus-one">,
+    candidateTargets: readonly FighterMatchState[],
+  ): RuntimeRedirectedTargetDispatchLease<FighterMatchState> | undefined {
+    const block = (playerId: number | "invalid"): undefined => {
+      this.logs.unshift(`Blocked ${controllerType} RedirectID ${playerId} for ${caller.id}`);
+      return undefined;
+    };
+    if (this.runtimeProfile !== "ikemen-go") return block("invalid");
+    const resolved = evaluateRuntimeControllerNumber(expression, caller.runtime, context);
+    const playerId = resolved === undefined ? undefined : Math.trunc(resolved);
+    if (playerId === undefined || playerId < 0) return block(playerId ?? "invalid");
+    const identity = this.characterIdentity?.findByPlayerId(playerId);
+    const destination = identity?.fighter
+      ? this.characterRoots().find((root) => root.id === identity.fighter!.id)
+      : undefined;
+    if (!destination) return block(playerId);
+    const lease = redirectedTargetDispatchWorld.resolve({
+      phase,
+      callerId: caller.id,
+      redirectExpression: expression,
+      redirectPlayerId: playerId,
+      destination,
+      candidateTargets,
+      targetWorld: destination.targetWorld,
+      stateOwnerId: destination.stateOwner?.id ?? destination.id,
+      destinationRevision: `${playerId}:${destination.id}`,
+      resolveCurrentDestination: () => {
+        const currentIdentity = this.characterIdentity?.findByPlayerId(playerId);
+        return currentIdentity?.fighter
+          ? this.characterRoots().find((root) => root.id === currentIdentity.fighter!.id)
+          : undefined;
+      },
+    });
+    return lease ?? block(playerId);
   }
 
   private resolveHelperTargetRedirect(
@@ -1270,6 +1325,8 @@ export class PlayableMatchRuntime {
               (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
               (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              (caller, expression, context, controllerType, phase, candidates) =>
+                this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               this.characterRoots(),
             ),
@@ -1370,6 +1427,8 @@ export class PlayableMatchRuntime {
               this.characterRoots(),
               (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              (caller, expression, context, controllerType, phase, candidates) =>
+                this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
             ),
           handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
         });
@@ -1416,6 +1475,8 @@ export class PlayableMatchRuntime {
                 (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
                 (caller, expression, context, controllerType) =>
                   this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+                (caller, expression, context, controllerType, phase, candidates) =>
+                  this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
                 (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
                 this.characterRoots(),
               );
@@ -1492,6 +1553,8 @@ export class PlayableMatchRuntime {
               (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
               (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              (caller, expression, context, controllerType, phase, candidates) =>
+                this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               this.characterRoots(),
             ),
@@ -1723,6 +1786,8 @@ export class PlayableMatchRuntime {
           this.characterRoots(),
           (caller, expression, context, controllerType) =>
             this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+          (caller, expression, context, controllerType, phase, candidates) =>
+            this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
         ),
       handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
       advanceFighter: (actor, opponent) =>
@@ -1751,6 +1816,8 @@ export class PlayableMatchRuntime {
           undefined,
           (caller, expression, context, controllerType) =>
             this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+          (caller, expression, context, controllerType, phase, candidates) =>
+            this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
           (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
           this.characterRoots(),
         ),
@@ -1800,6 +1867,8 @@ export class PlayableMatchRuntime {
               this.characterRoots(),
               (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              (caller, expression, context, controllerType, phase, candidates) =>
+                this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
             );
           } else {
             handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld);
@@ -1830,6 +1899,8 @@ export class PlayableMatchRuntime {
             (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
             (caller, expression, context, controllerType) =>
               this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+            (caller, expression, context, controllerType, phase, candidates) =>
+              this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
             (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
             this.characterRoots(),
           );
@@ -1932,6 +2003,8 @@ export class PlayableMatchRuntime {
         onTeamStandby: (actor, operation, context) => this.applyTeamStandbyController(actor, operation, context),
         onRootRedirect: (caller, expression, context, controllerType) =>
           this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+        onRootTargetDispatchLease: (caller, expression, context, controllerType, phase, candidates) =>
+          this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
         playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
         characters: this.characterRoots(),
       },
@@ -1977,6 +2050,8 @@ export class PlayableMatchRuntime {
               onTeamStandby: (caller, operation, context) => this.applyTeamStandbyController(caller, operation, context),
               onRootRedirect: (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              onRootTargetDispatchLease: (caller, expression, context, controllerType, phase, candidates) =>
+                this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               characters: this.characterRoots(),
             },
@@ -3342,12 +3417,23 @@ function handlePlayerInput(
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
   onRootRedirect?: RootControllerRedirectHandler,
+  onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
 ): void {
   inputControlWorld.handlePlayerInput(fighter, input, {
     hasStun: hasRuntimeStun(fighter),
     preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
     runStateEntrySetup: () =>
-      runStateEntrySetupControllers(fighter, opponent, stageBounds, gameSpace, tick, playerIdTarget, characters, onRootRedirect),
+      runStateEntrySetupControllers(
+        fighter,
+        opponent,
+        stageBounds,
+        gameSpace,
+        tick,
+        playerIdTarget,
+        characters,
+        onRootRedirect,
+        onRootTargetDispatchLease,
+      ),
     tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, gameSpace, tick, characters, playerIdTarget),
     startMove: (move) => startMove(fighter, move),
     changeAction: (actionId) => changeAction(fighter, actionId),
@@ -3394,6 +3480,7 @@ function advanceFighter(
   recordSchedulePhase?: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   onTeamStandby?: TeamStandbyControllerHandler,
   onRootRedirect?: RootControllerRedirectHandler,
+  onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
 ): void {
@@ -3450,7 +3537,7 @@ function advanceFighter(
         tick,
         onPauseController,
         onEnvColorController,
-        { onTeamStandby, onRootRedirect, playerIdTarget, characters, runtimeProfile },
+        { onTeamStandby, onRootRedirect, onRootTargetDispatchLease, playerIdTarget, characters, runtimeProfile },
       );
     },
     advanceImportedGroundRecoveryLanding: (actor) => {
@@ -3529,6 +3616,7 @@ function runHitPauseIgnoredControllers(
   onEnvColorController?: EnvColorControllerHandler,
   onTeamStandby?: TeamStandbyControllerHandler,
   onRootRedirect?: RootControllerRedirectHandler,
+  onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
 ): void {
@@ -3544,7 +3632,15 @@ function runHitPauseIgnoredControllers(
     tick,
     onPauseController,
     onEnvColorController,
-    { onlyIgnoreHitPause: true, onTeamStandby, onRootRedirect, playerIdTarget, characters, runtimeProfile },
+    {
+      onlyIgnoreHitPause: true,
+      onTeamStandby,
+      onRootRedirect,
+      onRootTargetDispatchLease,
+      playerIdTarget,
+      characters,
+      runtimeProfile,
+    },
   );
 }
 
@@ -3554,6 +3650,7 @@ type ActiveControllerRunOptions = {
   onBlocked?: (controller: ControllerIr, route: string) => void;
   onTeamStandby?: TeamStandbyControllerHandler;
   onRootRedirect?: RootControllerRedirectHandler;
+  onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler;
   playerIdTarget?: PlayerIdTargetResolver;
   characters?: readonly FighterMatchState[];
   runtimeProfile?: RuntimeCompatibilityProfile;
@@ -3850,14 +3947,30 @@ function runActiveStateControllers(
       );
       const redirectControllerType = redirectableTargetControllerType(controller);
       const redirectExpression = targetControllerRedirectExpression(controller);
-      const target = redirectExpression && redirectControllerType !== undefined
-        ? options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
+      const redirectLease = redirectExpression && redirectControllerType !== undefined
+        ? options.onRootTargetDispatchLease?.(
+            fighter,
+            redirectExpression,
+            context,
+            redirectControllerType,
+            "root-active",
+            [...(options.characters ?? []), targetOpponent],
+          )
+        : undefined;
+      const target = redirectExpression
+        ? options.onRootTargetDispatchLease
+          ? redirectLease?.destination
+          : redirectControllerType === undefined
+            ? undefined
+            : options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
         : fighter;
       if (!target) {
         options.onBlocked?.(controller, "target-redirect");
         return;
       }
-      const candidateTargets = target === fighter
+      const candidateTargets = redirectLease
+        ? [...redirectLease.candidateTargets]
+        : target === fighter
         ? [targetOpponent]
         : [...new Map(
             [...(options.characters ?? []), targetOpponent].map((candidate) => [candidate.id, candidate] as const),
@@ -3866,12 +3979,12 @@ function runActiveStateControllers(
         redirectControllerType !== undefined &&
         target !== fighter &&
         !compatibilityTelemetryWorld.isImportedActor(target);
-      targetControllerDispatchWorld.apply({
+      const applyDispatch = () => targetControllerDispatchWorld.apply({
         actor: target,
         candidateTargets,
         controller,
         effect,
-        targetWorld: target.targetWorld,
+        targetWorld: redirectLease?.targetWorld ?? target.targetWorld,
         recordController: (recordedTarget, recordedController) => {
           runtimeActiveControllerTelemetryHooks.recordController(recordedTarget, recordedController);
           if (mirrorRedirectedTargetTelemetry) {
@@ -3890,7 +4003,7 @@ function runActiveStateControllers(
             ...selection,
             route: "root-active",
             callerId: fighter.id,
-            stateOwnerId: target.stateOwner?.id ?? target.id,
+            stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
             redirectExpression,
             sourceStateNo: actor.runtime.stateNo,
           });
@@ -3911,6 +4024,11 @@ function runActiveStateControllers(
         },
         getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
       });
+      if (redirectLease) {
+        redirectedTargetDispatchWorld.execute(redirectLease, applyDispatch);
+      } else {
+        applyDispatch();
+      }
     },
     pause: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       pauseControllerDispatchWorld.apply({
@@ -4393,6 +4511,7 @@ function runStateEntrySetupControllers(
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
   onRootRedirect?: RootControllerRedirectHandler,
+  onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
 ): void {
   stateEntrySetupWorld.apply({
     actor: fighter,
@@ -4423,13 +4542,27 @@ function runStateEntrySetupControllers(
       const targetRedirectControllerType = redirectableTargetControllerType(controller);
       if (targetRedirectControllerType !== undefined) {
         const redirectExpression = targetControllerRedirectExpression(controller);
+        const redirectLease = redirectExpression
+          ? onRootTargetDispatchLease?.(
+              fighter,
+              redirectExpression,
+              context,
+              targetRedirectControllerType,
+              "root-state-minus-one",
+              [...(characters ?? []), opponent],
+            )
+          : undefined;
         const target = redirectExpression
-          ? onRootRedirect?.(fighter, redirectExpression, context, targetRedirectControllerType)
+          ? onRootTargetDispatchLease
+            ? redirectLease?.destination
+            : onRootRedirect?.(fighter, redirectExpression, context, targetRedirectControllerType)
           : actor;
         if (!target) {
           return actor.runtime;
         }
-        const candidateTargets = target === actor
+        const candidateTargets = redirectLease
+          ? [...redirectLease.candidateTargets]
+          : target === actor
           ? [opponent]
           : [...new Map(
               [...(characters ?? []), opponent].map((candidate) => [candidate.id, candidate] as const),
@@ -4437,12 +4570,12 @@ function runStateEntrySetupControllers(
         const mirrorRedirectedTargetTelemetry =
           target !== actor &&
           !compatibilityTelemetryWorld.isImportedActor(target);
-        targetControllerDispatchWorld.apply({
+        const applyDispatch = () => targetControllerDispatchWorld.apply({
           actor: target,
           candidateTargets,
           controller,
           effect: controller.normalizedType === "bindtotarget" ? "bindtotarget" : "target",
-          targetWorld: target.targetWorld,
+          targetWorld: redirectLease?.targetWorld ?? target.targetWorld,
           recordController: (recordedTarget, recordedController) => {
             compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);
             if (mirrorRedirectedTargetTelemetry) {
@@ -4461,7 +4594,7 @@ function runStateEntrySetupControllers(
               ...selection,
               route: "root-state-minus-one",
               callerId: fighter.id,
-              stateOwnerId: target.stateOwner?.id ?? target.id,
+              stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
               redirectExpression,
               sourceStateNo: -1,
             });
@@ -4480,6 +4613,11 @@ function runStateEntrySetupControllers(
             });
           },
         });
+        if (redirectLease) {
+          redirectedTargetDispatchWorld.execute(redirectLease, applyDispatch);
+        } else {
+          applyDispatch();
+        }
         return actor.runtime;
       }
       const redirectExpression = resourceControllerRedirectExpression(controller);
