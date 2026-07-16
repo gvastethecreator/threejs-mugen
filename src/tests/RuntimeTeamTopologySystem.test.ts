@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   RuntimeTeamTopologyWorld,
+  runtimeAffectTeamAllows,
   runtimeTeamSideFromId,
 } from "../mugen/runtime/RuntimeTeamTopologySystem";
 
@@ -74,5 +75,13 @@ describe("RuntimeTeamTopologyWorld", () => {
         { id: "neutral", side: null, kind: "root", disabled: false, standby: false, overKo: false, playerType: true, enemyBaseEligible: false, enemyNearCandidate: false, p2Candidate: false },
       ],
     });
+  });
+
+  it("evaluates AffectTeam policies while keeping unknown topology permissive", () => {
+    expect(runtimeAffectTeamAllows(1, 2, 1)).toBe(true);
+    expect(runtimeAffectTeamAllows(1, 1, 1)).toBe(false);
+    expect(runtimeAffectTeamAllows(1, 1, 0)).toBe(true);
+    expect(runtimeAffectTeamAllows(1, 1, -1)).toBe(true);
+    expect(runtimeAffectTeamAllows(undefined, undefined, 1)).toBe(true);
   });
 });

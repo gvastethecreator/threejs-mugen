@@ -18,6 +18,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       controller("HitDef", {
         attr: "S,NA",
         hitflag: "H,L,A,F,P",
+        affectteam: "F",
+        teamside: "2",
         p2clsncheck: "Size",
         p2clsnrequire: "Clsn1",
         damage: "30,5",
@@ -88,6 +90,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       recovery: 18,
       damage: 30,
       hitFlag: "H,L,A,F,P",
+      affectTeam: -1,
+      teamSide: 2,
       p2ClsnCheck: "size",
       p2ClsnRequire: "clsn1",
       priority: 5,

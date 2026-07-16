@@ -1,6 +1,7 @@
 import type { MugenStateController } from "../model/MugenState";
 import { compileExpression } from "./ExpressionCompiler";
 import { normalizeMugenCollisionBoxType, type MugenCollisionBoxType } from "../model/CollisionBox";
+import { normalizeMugenAffectTeam, normalizeMugenTeamSide, type MugenAffectTeam } from "../model/MugenTeam";
 
 export type ControllerCompileContext = {
   constants?: Record<string, number>;
@@ -13,6 +14,8 @@ export type HitDefControllerOp = {
   hitCount?: number;
   attr?: string;
   hitFlag?: string;
+  affectTeam?: MugenAffectTeam;
+  teamSide?: 1 | 2;
   p2ClsnCheck?: MugenCollisionBoxType;
   p2ClsnRequire?: MugenCollisionBoxType;
   damage?: number;
@@ -156,6 +159,7 @@ export type ProjectileControllerOp = {
   targetId?: number;
   chainId?: number;
   hitDefHitCount?: number;
+  affectTeam?: MugenAffectTeam;
   teamSide?: 1 | 2;
   projAnim?: number;
   offset?: [number, number];
@@ -1588,6 +1592,8 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     hitCount: firstNumber(findParam(controller, "numhits")),
     attr: stripMugenString(findParam(controller, "attr")),
     hitFlag: stripMugenString(findParam(controller, "hitflag")),
+    affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
+    teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
     p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
     damage: damage?.[0],
@@ -1946,7 +1952,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     targetId: firstNumber(findParam(controller, "id")),
     chainId: firstNumber(findParam(controller, "chainid")),
     hitDefHitCount: firstNumber(findParam(controller, "numhits")),
-    teamSide: parseProjectileTeamSide(findParam(controller, "teamside")),
+    affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
+    teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
     offset: pairWithDefaultOrUndefined(numberPair(findParam(controller, "offset"))),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
@@ -2016,7 +2023,7 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     kind: "modifyprojectile" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
-    teamSide: parseProjectileTeamSide(findParam(controller, "teamside")),
+    teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
     acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
     velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
@@ -2031,11 +2038,6 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     missTime: firstNumber(findParam(controller, "projmisstime")),
     removeOnHit: booleanNumber(findParam(controller, "projremove")),
   });
-}
-
-function parseProjectileTeamSide(raw: string | undefined): 1 | 2 | undefined {
-  const value = firstNumber(raw);
-  return value === 1 || value === 2 ? value : undefined;
 }
 
 function compileHelperControllerOp(controller: MugenStateController): HelperControllerOp | undefined {

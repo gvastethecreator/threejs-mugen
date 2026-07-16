@@ -35,6 +35,7 @@ import type { CharacterRuntimeState } from "./types";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
+import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import {
   bufferRuntimeHitDefTarget,
   hasRuntimeHitDefTarget,
@@ -158,6 +159,7 @@ export type RuntimeDirectCombatSkipReason =
   | "no-contact"
   | "superpause-unhittable"
   | "hitby-rejected"
+  | "affectteam-rejected"
   | "priority-no-hit"
   | "hitoverride-custom-state-miss";
 
@@ -294,6 +296,9 @@ export class RuntimeCombatResolutionWorld {
     }
     if (!runtimeMoveIsActive(move, attacker.moveTick)) {
       return { kind: "skipped", reason: "inactive" };
+    }
+    if (!runtimeMoveAffectTeamAllows(attacker, move, defender)) {
+      return { kind: "skipped", reason: "affectteam-rejected" };
     }
 
     const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
@@ -488,6 +493,9 @@ export class RuntimeCombatResolutionWorld {
       || !runtimeMoveIsActive(move, attacker.moveTick)) {
       return undefined;
     }
+    if (!runtimeMoveAffectTeamAllows(attacker, move, defender)) {
+      return undefined;
+    }
     const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
     if (input.reversalWorld.findActive(defender, move, attackBox, {
       isMoveActive: runtimeMoveIsActive,
@@ -583,6 +591,8 @@ export class RuntimeCombatResolutionWorld {
       projectileDefense: projectileDefenseMove
         ? {
             collisionBoxes: projectileCollisionMode ? hurtBoxes : [projectileDefenseMove.hitbox],
+            affectTeam: projectileDefenseMove.affectTeam,
+            teamSide: projectileDefenseMove.teamSide ?? runtimeTeamSideFromId(input.defender.id),
             onCancel: (projectile) => {
               input.defender.hasHit = true;
               input.defender.contactWorld.markProjectileCancel(
@@ -773,6 +783,7 @@ function hasExplicitHitDefContactMemory(actor: RuntimeCombatResolutionActor): bo
 }
 
 type RuntimeMoveCollisionActor = {
+  id: string;
   runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "assertSpecial">;
 };
 
@@ -784,6 +795,9 @@ function resolveRuntimePriorityContact<TActor extends RuntimeMoveCollisionActor>
   getHurtBoxes: ((actor: TActor) => CollisionBox[] | undefined) | undefined,
   getCollisionBoxes: ((actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined) | undefined,
 ): boolean {
+  if (!runtimeMoveAffectTeamAllows(left, leftMove, right) || !runtimeMoveAffectTeamAllows(right, rightMove, left)) {
+    return false;
+  }
   if (usesRuntimeProjectileCollisionPair(left, right)) {
     const leftBoxes = getCollisionBoxes?.(left, "clsn2") ?? getHurtBoxes?.(left) ?? defaultHurtBoxes;
     const rightBoxes = getCollisionBoxes?.(right, "clsn2") ?? getHurtBoxes?.(right) ?? defaultHurtBoxes;
@@ -806,6 +820,18 @@ function resolveRuntimePriorityContact<TActor extends RuntimeMoveCollisionActor>
   return Boolean(
     (leftTargetBoxes && hasRuntimeBoxContact(runtimeWorldBox(left.runtime, leftMove.hitbox), right.runtime, leftTargetBoxes)) ||
     (rightTargetBoxes && hasRuntimeBoxContact(runtimeWorldBox(right.runtime, rightMove.hitbox), left.runtime, rightTargetBoxes)),
+  );
+}
+
+function runtimeMoveAffectTeamAllows(
+  attacker: RuntimeMoveCollisionActor,
+  move: DemoMove,
+  defender: RuntimeMoveCollisionActor,
+): boolean {
+  return runtimeAffectTeamAllows(
+    move.teamSide ?? runtimeTeamSideFromId(attacker.id),
+    runtimeTeamSideFromId(defender.id),
+    move.affectTeam,
   );
 }
 

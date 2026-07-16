@@ -107,7 +107,7 @@ import { RuntimeMatchActorAdvanceWorld } from "./RuntimeMatchActorAdvanceSystem"
 import { RuntimePausedActorAdvanceWorld } from "./RuntimePausedActorAdvanceSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { defaultSuperPauseTargetDefenseValue } from "./SuperPauseTargetDefensePolicy";
-import { runtimeTeamSide, RuntimeTeamTopologyWorld, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
+import { runtimeAffectTeamAllows, runtimeTeamSide, RuntimeTeamTopologyWorld, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import {
   RuntimeFighterRunOrderWorld,
   type RuntimeRootRunOrderResult,
@@ -1778,7 +1778,11 @@ export class PlayableMatchRuntime {
               const left = ordered[leftIndex]!;
               for (let rightIndex = leftIndex + 1; rightIndex < ordered.length; rightIndex += 1) {
                 const right = ordered[rightIndex]!;
-                if (runtimeTeamSide(left) === runtimeTeamSide(right)) continue;
+                const leftMove = left.currentMove;
+                const rightMove = right.currentMove;
+                if (!leftMove || !rightMove) continue;
+                if (!runtimeAffectTeamAllows(runtimeTeamSide(left), runtimeTeamSide(right), leftMove.affectTeam)
+                  || !runtimeAffectTeamAllows(runtimeTeamSide(right), runtimeTeamSide(left), rightMove.affectTeam)) continue;
                 const message = resolvePriorityClash(left, right);
                 if (message) this.logs.unshift(message);
               }

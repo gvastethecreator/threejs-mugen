@@ -2,6 +2,7 @@ import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox"
 import { canRuntimeBeHitBy, hasRuntimeBoxContact, hitAttributeMatches, runtimeWorldBox } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
+import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import type { CharacterRuntimeState, RuntimeTeamState } from "./types";
 import { hasRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 
@@ -14,6 +15,7 @@ export type RuntimeRootDirectHitAdmissionReason =
   | "reversal-move"
   | "inactive"
   | "hitby-rejected"
+  | "affectteam-rejected"
   | "missing-hurt-box"
   | "no-contact";
 
@@ -128,9 +130,10 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   getter: TActor,
   input: RuntimeRootDirectHitAdmissionInput<TActor>,
 ): RuntimeRootDirectHitAdmissionReason {
-  if (attacker.side === getter.side) return "same-side";
   const move = attacker.currentMove;
+  if (attacker.side === getter.side && (!move || !runtimeRootMoveAffectTeamAllows(attacker, move, getter))) return "same-side";
   if (!move) return "missing-move";
+  if (!runtimeRootMoveAffectTeamAllows(attacker, move, getter)) return "affectteam-rejected";
   if (hasExplicitHitDefContactMemory(attacker)) {
     if (hasRuntimeHitDefTarget(attacker, getter.id)) return "already-hit";
   } else if (attacker.hasHit) return "already-hit";
@@ -152,6 +155,18 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, move.hitbox), getter.runtime, [...targetBoxes])
     ? "admitted"
     : "no-contact";
+}
+
+function runtimeRootMoveAffectTeamAllows(
+  attacker: RuntimeRootDirectHitAdmissionActor,
+  move: DemoMove,
+  getter: RuntimeRootDirectHitAdmissionActor,
+): boolean {
+  return runtimeAffectTeamAllows(
+    move.teamSide ?? attacker.side ?? runtimeTeamSideFromId(attacker.id),
+    getter.side ?? runtimeTeamSideFromId(getter.id),
+    move.affectTeam,
+  );
 }
 
 function resolveRootTargetBoxes<TActor extends RuntimeRootDirectHitAdmissionActor>(

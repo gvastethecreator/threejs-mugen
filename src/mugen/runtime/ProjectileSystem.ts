@@ -3,11 +3,12 @@ import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../co
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
+import { normalizeMugenAffectTeam, normalizeMugenTeamSide } from "../model/MugenTeam";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
-import { runtimeTeamSideFromId, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
+import { runtimeAffectTeamAllows, runtimeTeamSideFromId, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { ActorSnapshot, RuntimeResolvedSoundRef } from "./types";
 
 const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
@@ -57,6 +58,7 @@ export type RuntimeProjectile = {
   kill: boolean;
   guardKill: boolean;
   attr?: string;
+  affectTeam?: -1 | 0 | 1;
   targetId?: number;
   chainId?: number;
   hitDefHitCount?: number;
@@ -174,7 +176,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const targetId = operation?.targetId ?? firstNumber(findControllerParam(input.controller, "id")) ?? projectileId;
   const chainId = operation?.chainId ?? firstNumber(findControllerParam(input.controller, "chainid"));
   const hitDefHitCount = operation?.hitDefHitCount ?? firstNumber(findControllerParam(input.controller, "numhits")) ?? 1;
-  const teamSide = operation?.teamSide ?? normalizeRuntimeProjectileTeamSide(firstNumber(findControllerParam(input.controller, "teamside")));
+  const affectTeam = operation?.affectTeam ?? normalizeMugenAffectTeam(findControllerParam(input.controller, "affectteam"));
+  const teamSide = operation?.teamSide ?? normalizeMugenTeamSide(firstNumber(findControllerParam(input.controller, "teamside")));
   const baseDamage = Math.max(0, operation?.damage ?? firstNumber(findControllerParam(input.controller, "damage")) ?? 30);
   const hitPause = Math.max(0, Math.round(operation?.hitPause ?? firstNumber(findControllerParam(input.controller, "pausetime")) ?? 6));
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
@@ -260,6 +263,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     kill,
     guardKill,
     attr,
+    affectTeam,
     targetId,
     chainId,
     hitDefHitCount: Math.max(0, Math.trunc(hitDefHitCount)),
@@ -528,6 +532,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           guardStun: projectile.guardStun,
           guardDistance: projectile.guardDistance,
           guardFlag: projectile.guardFlag,
+          ...(projectile.affectTeam === undefined ? {} : { affectTeam: projectile.affectTeam }),
           ...(projectile.teamSide === undefined ? {} : { teamSide: projectile.teamSide }),
           p2StateNo: projectile.p2StateNo,
           p2GetP1State: projectile.p2GetP1State,
@@ -635,7 +640,19 @@ export function runtimeProjectileHasOppositeTeamSide(
   ownerId = projectile.ownerId,
 ): boolean {
   const ownerTeamSide = runtimeTeamSideFromId(ownerId);
-  return ownerTeamSide !== undefined && projectile.teamSide !== undefined && projectile.teamSide !== ownerTeamSide;
+  return ownerTeamSide !== undefined && runtimeProjectileTeamSide(projectile) !== undefined && runtimeProjectileTeamSide(projectile) !== ownerTeamSide;
+}
+
+export function runtimeProjectileTeamSide(projectile: RuntimeProjectile): RuntimeTeamSide | undefined {
+  return projectile.teamSide ?? runtimeTeamSideFromId(projectile.ownerId);
+}
+
+export function runtimeProjectileAffectTeamAllows(projectile: RuntimeProjectile, targetId: string): boolean {
+  return runtimeAffectTeamAllows(
+    runtimeProjectileTeamSide(projectile),
+    runtimeTeamSideFromId(targetId),
+    projectile.affectTeam,
+  );
 }
 
 export function recordRuntimeProjectileContact(projectile: RuntimeProjectile, kind: Exclude<RuntimeProjectileContactKind, "contact"> | undefined = undefined): void {

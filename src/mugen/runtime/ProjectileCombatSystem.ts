@@ -16,12 +16,15 @@ import {
   getRuntimeProjectileHitboxes,
   markRuntimeProjectileForRemoval,
   recordRuntimeProjectileContact,
-  runtimeProjectileHasOppositeTeamSide,
+  runtimeProjectileAffectTeamAllows,
+  runtimeProjectileTeamSide,
   runtimeProjectileWorldBox,
   type RuntimeProjectile,
 } from "./ProjectileSystem";
 import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
+import type { MugenAffectTeam } from "../model/MugenTeam";
+import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 
 export type RuntimeProjectileCombatActor = {
   id: string;
@@ -70,6 +73,8 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   projectileCollisionMode?: boolean;
   projectileDefense?: {
     collisionBoxes: CollisionBox[];
+    affectTeam?: MugenAffectTeam;
+    teamSide?: RuntimeTeamSide;
     onCancel?: (projectile: RuntimeProjectile) => void;
   };
 };
@@ -94,7 +99,14 @@ export class RuntimeProjectileCombatWorld {
         if (!canRuntimeProjectileContact(projectile)) {
           continue;
         }
-        if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
+        if (!runtimeProjectileAffectTeamAllows(projectile, defender.id)) {
+          continue;
+        }
+        if (!runtimeAffectTeamAllows(
+          input.projectileDefense.teamSide ?? undefined,
+          runtimeProjectileTeamSide(projectile),
+          input.projectileDefense.affectTeam,
+        )) {
           continue;
         }
         if (!projectileTargetRequirementSatisfied(input, projectile, defender, hurtBoxes)) {
@@ -114,7 +126,7 @@ export class RuntimeProjectileCombatWorld {
       if (!canRuntimeProjectileContact(projectile)) {
         continue;
       }
-      if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
+      if (!runtimeProjectileAffectTeamAllows(projectile, defender.id)) {
         continue;
       }
       const targetBoxes = resolveProjectileTargetBoxes(input, projectile, defender, hurtBoxes);
@@ -249,9 +261,7 @@ export class RuntimeProjectileCombatWorld {
           if (!right || !canRuntimeProjectileContact(right)) {
             continue;
           }
-          if (!runtimeProjectileHasOppositeTeamSide(left) && !runtimeProjectileHasOppositeTeamSide(right)) {
-            continue;
-          }
+          if (!projectilesCanClash(left, right)) continue;
           this.resolveClashPair(left, right, leftLabel, rightLabel, input, log);
         }
       }
@@ -269,6 +279,7 @@ export class RuntimeProjectileCombatWorld {
         if (!canRuntimeProjectileContact(right)) {
           continue;
         }
+        if (!projectilesCanClash(left, right)) continue;
         this.resolveClashPair(left, right, leftLabel, rightLabel, input, log);
       }
     }
@@ -283,6 +294,7 @@ export class RuntimeProjectileCombatWorld {
     input: RuntimeProjectileClashInput,
     log: (line: string) => void,
   ): void {
+    if (!projectilesCanClash(left, right)) return;
     if (!projectilesIntersect(left, right)) {
       return;
     }
@@ -406,4 +418,9 @@ function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile)
       collisionBoxesIntersect(runtimeProjectileWorldBox(left, leftBox), runtimeProjectileWorldBox(right, rightBox)),
     ),
   );
+}
+
+function projectilesCanClash(left: RuntimeProjectile, right: RuntimeProjectile): boolean {
+  return runtimeAffectTeamAllows(runtimeProjectileTeamSide(left), runtimeProjectileTeamSide(right), left.affectTeam)
+    && runtimeAffectTeamAllows(runtimeProjectileTeamSide(right), runtimeProjectileTeamSide(left), right.affectTeam);
 }

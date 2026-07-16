@@ -94,6 +94,7 @@ describe("ProjectileSystem", () => {
         projedgebound: "48",
         projstagebound: "32",
         projheightbound: "-96,64",
+        affectteam: "B",
         teamside: "2",
         projremovetime: "9999",
         projpriority: "12",
@@ -164,6 +165,7 @@ describe("ProjectileSystem", () => {
       targetId: 78,
       chainId: 43,
       hitDefHitCount: 3,
+      affectTeam: 0,
       teamSide: 2,
       hitPause: 9,
       hitStun: 21,
@@ -185,7 +187,7 @@ describe("ProjectileSystem", () => {
       removeOnHit: false,
       hasHit: false,
     });
-    expect(runtimeProjectilesToSnapshots([projectile], 1000)[0]?.effect).toMatchObject({ teamSide: 2 });
+    expect(runtimeProjectilesToSnapshots([projectile], 1000)[0]?.effect).toMatchObject({ affectTeam: 0, teamSide: 2 });
   });
 
   it("defaults missing Projectile id to target id 0", () => {

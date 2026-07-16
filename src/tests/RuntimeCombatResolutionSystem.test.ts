@@ -32,6 +32,30 @@ import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeCombatResolutionSystem", () => {
+  it.each([
+    ["enemy-only", 1, false],
+    ["both-teams", 0, true],
+    ["friendly-only", -1, true],
+  ] as const)("gates direct same-side HitDef contact through AffectTeam %s", (_label, affectTeam, shouldHit) => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ affectTeam, damage: 25 }),
+      moveTick: 1,
+    });
+    const defender = actor("p3", "P3", contactWorld, {
+      runtime: runtimeState({ life: 100 }),
+    });
+    const result = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker,
+      defender,
+      ...directInputBase(contactWorld, directCombatWorld, []),
+    });
+
+    expect(result).toMatchObject(shouldHit ? { kind: "hit", damage: 25 } : { kind: "skipped", reason: "affectteam-rejected" });
+    expect(defender.runtime.life).toBe(shouldHit ? 75 : 100);
+  });
+
   it("applies equal-priority Hit versus Hit as one bilateral transaction", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();
@@ -188,9 +212,9 @@ describe("RuntimeCombatResolutionSystem", () => {
     const world = new RuntimeCombatResolutionWorld();
     const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
     const actors = [
-      actor("p1", "P1", contactWorld, { currentMove: move({ priority: 4, damage: 10 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
-      actor("p2", "P2", contactWorld, { currentMove: move({ priority: 4, damage: 20 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
-      actor("p3", "P3", contactWorld, { currentMove: move({ priority: 4, damage: 30 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
+      actor("p1", "P1", contactWorld, { currentMove: move({ priority: 4, damage: 10, affectTeam: 0 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
+      actor("p2", "P2", contactWorld, { currentMove: move({ priority: 4, damage: 20, affectTeam: 0 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
+      actor("p3", "P3", contactWorld, { currentMove: move({ priority: 4, damage: 30, affectTeam: 0 }), moveTick: 1, hitDefTargets: [], pendingHitDefTargets: [] }),
     ];
     for (let leftIndex = 0; leftIndex < actors.length; leftIndex += 1) {
       for (let rightIndex = leftIndex + 1; rightIndex < actors.length; rightIndex += 1) {

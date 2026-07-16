@@ -71,6 +71,29 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "no-contact" });
   });
 
+  it("applies HitDef AffectTeam before root collision admission", () => {
+    const sameSideDefault = actor("p1", 1, 1, 0, { move: true });
+    const sameSideFriendly = actor("p3", 3, 1, 0, { move: true, affectTeam: -1 });
+    const enemy = actor("p2", 2, 2, 0);
+
+    const defaultResult = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [sameSideDefault, sameSideFriendly],
+      getHurtBoxes: () => hurt,
+    });
+    const friendlyResult = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [sameSideFriendly, sameSideDefault],
+      getHurtBoxes: () => hurt,
+    });
+    const enemyResult = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [sameSideFriendly, enemy],
+      getHurtBoxes: () => hurt,
+    });
+
+    expect(defaultResult.decisions).toContainEqual({ attackerId: "p1", getterId: "p3", reason: "same-side" });
+    expect(friendlyResult.admittedPairIds).toContain("p3->p1");
+    expect(enemyResult.decisions).toContainEqual({ attackerId: "p3", getterId: "p2", reason: "affectteam-rejected" });
+  });
+
   it("uses attack depth on both sides of ReversalDef clashes with localcoord scaling", () => {
     const getter = actor("p1", 1, 1, 0, { reversal: true });
     const attacker = actor("p2", 2, 2, 0, { reversal: true });
@@ -166,6 +189,8 @@ function actor(
     hasHit?: boolean;
     requiresHitDef?: boolean;
     isReversal?: boolean;
+    affectTeam?: -1 | 0 | 1;
+    teamSide?: 1 | 2;
     moveTick?: number;
     denyHit?: boolean;
     noHurt?: boolean;
@@ -201,6 +226,8 @@ function actor(
       hitbox: { x1: 0, y1: -20, x2: 20, y2: 0 },
       requiresHitDef: options.requiresHitDef,
       isReversal: options.isReversal,
+      affectTeam: options.affectTeam,
+      teamSide: options.teamSide,
     } : undefined,
     moveTick: options.moveTick ?? 1,
     hasHit: options.hasHit ?? false,

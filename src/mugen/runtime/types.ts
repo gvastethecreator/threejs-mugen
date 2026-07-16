@@ -418,6 +418,7 @@ export type ActorEffectSnapshot =
       heightBound?: { low: number; high: number };
       spritePriority: number;
       priority: number;
+      affectTeam?: -1 | 0 | 1;
       teamSide?: 1 | 2;
       hitsRemaining: number;
       missTime: number;

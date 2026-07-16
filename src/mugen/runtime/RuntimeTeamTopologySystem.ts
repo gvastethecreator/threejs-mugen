@@ -1,3 +1,5 @@
+import type { MugenAffectTeam } from "../model/MugenTeam";
+
 export type RuntimeTeamSide = 1 | 2;
 
 export type RuntimeTeamTopologyActor = {
@@ -116,4 +118,20 @@ export function runtimeTeamSideFromId(id: string): RuntimeTeamSide | undefined {
     return undefined;
   }
   return playerNumber % 2 === 1 ? 1 : 2;
+}
+
+export function runtimeAffectTeamAllows(
+  attackerSide: RuntimeTeamSide | undefined,
+  targetSide: RuntimeTeamSide | undefined,
+  affectTeam: MugenAffectTeam | undefined,
+): boolean {
+  if (attackerSide === undefined || targetSide === undefined) {
+    return true;
+  }
+  const policy = affectTeam ?? 1;
+  if (policy === 0) {
+    return true;
+  }
+  const friendly = attackerSide === targetSide;
+  return policy > 0 ? !friendly : friendly;
 }

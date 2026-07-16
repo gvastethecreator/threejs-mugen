@@ -170,6 +170,47 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles).toEqual([]);
   });
 
+  it("applies the defending HitFlag P AffectTeam policy independently from projectile admission", () => {
+    const attacker = actor("p2", "P2", runtimeState({ pos: { x: 0, y: 0 }, facing: -1 }));
+    const defender = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, life: 1000 }));
+    const collisionBoxes = [{ x1: -24, y1: -24, x2: 24, y2: 12 }];
+    let canceledProjectiles = [projectile({ action: projTypeCollisionAction, ownerId: "p2", teamSide: 2, affectTeam: 1 })];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles: canceledProjectiles,
+      hurtBoxes: collisionBoxes,
+      projectileDefense: { collisionBoxes, teamSide: 1, affectTeam: 1 },
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        canceledProjectiles = canceledProjectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1000);
+    expect(canceledProjectiles).toEqual([]);
+
+    const friendlyOnlyDefense = [projectile({ ownerId: "p2", teamSide: 2, affectTeam: 1 })];
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles: friendlyOnlyDefense,
+      hurtBoxes: collisionBoxes,
+      projectileDefense: { collisionBoxes, teamSide: 1, affectTeam: -1 },
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => undefined,
+    });
+
+    expect(defender.runtime.life).toBe(969);
+  });
+
   it("owns bounded projectile hit mutation behind RuntimeProjectileCombatWorld", () => {
     let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42, targetId: 78, chainId: 43, hitDefHitCount: 3 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 10, powerMax: 40 }));
@@ -470,6 +511,31 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
   });
 
+  it.each([
+    ["enemy-only", 1, false],
+    ["both-teams", 0, true],
+    ["friendly-only", -1, true],
+  ] as const)("applies Projectile AffectTeam %s against a same-side target", (_label, affectTeam, shouldHit) => {
+    let projectiles = [projectile({ affectTeam, teamSide: 1, damage: 42, pos: { x: 0, y: 0 } })];
+    const fighter = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker: fighter,
+      defender: fighter,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(fighter.runtime.life).toBe(shouldHit ? 958 : 1000);
+  });
+
   it("clashes overlapping same-owner Projectiles when one opts into the opposite side", () => {
     let projectiles = [
       projectile({ action: projectileTradeAction, serialId: "p1-projectile-0", ownerId: "p1", teamSide: 2, priority: 5 }),
@@ -495,6 +561,27 @@ describe("ProjectileCombatSystem", () => {
       "Projectile clash: P1 p1-projectile-0 traded with P1 p1-projectile-1 at priority 5; p1-projectile-0 cancel removal anim none; p1-projectile-1 cancel removal anim none",
     ]);
     expect(projectiles).toEqual([]);
+  });
+
+  it("rejects same-side Projectile clashes unless both projectiles admit that team", () => {
+    let projectiles = [
+      projectile({ action: projectileTradeAction, serialId: "p1-projectile-0", ownerId: "p1", teamSide: 1, affectTeam: 1, priority: 5 }),
+      projectile({ action: projectileTradeAction, serialId: "p1-projectile-1", ownerId: "p1", teamSide: 1, affectTeam: -1, priority: 5 }),
+    ];
+
+    new RuntimeProjectileCombatWorld().resolveClashes({
+      leftLabel: "P1",
+      rightLabel: "P1",
+      leftProjectiles: projectiles,
+      rightProjectiles: projectiles,
+      log: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(projectiles).toHaveLength(2);
+    expect(projectiles.every((entry) => !entry.removalReason)).toBe(true);
   });
 
   it("routes projectile get-hit through an owner callback when provided", () => {

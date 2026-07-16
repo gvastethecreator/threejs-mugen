@@ -6,6 +6,7 @@ import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
+import type { MugenAffectTeam, MugenTeamSide } from "../model/MugenTeam";
 
 export type HitSparkLibrarySource = "common" | "fightfx";
 export type RuntimeHitDefPriorityType = "hit" | "miss" | "dodge";
@@ -29,6 +30,8 @@ export type DemoMove = {
   kill?: boolean;
   attr?: string;
   hitFlag?: string;
+  affectTeam?: MugenAffectTeam;
+  teamSide?: MugenTeamSide;
   p2ClsnCheck?: MugenCollisionBoxType;
   p2ClsnRequire?: MugenCollisionBoxType;
   priority?: number;

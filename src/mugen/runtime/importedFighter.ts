@@ -1,5 +1,6 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import { normalizeMugenCollisionBoxType } from "../model/CollisionBox";
+import { normalizeMugenAffectTeam, normalizeMugenTeamSide } from "../model/MugenTeam";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCharacter } from "../model/MugenCharacter";
 import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
@@ -173,6 +174,8 @@ function buildStateMoves(
       buildMove(animations.get(actionId), state.id, damage, fallbackHitbox, {
         attr: hitDef.params.attr,
         hitFlag: stripMugenString(hitDef.params.hitflag),
+        affectTeam: normalizeMugenAffectTeam(hitDef.params.affectteam),
+        teamSide: normalizeMugenTeamSide(firstNumber(hitDef.params.teamside)),
         p2ClsnCheck: normalizeMugenCollisionBoxType(hitDef.params.p2clsncheck),
         p2ClsnRequire: normalizeMugenCollisionBoxType(hitDef.params.p2clsnrequire),
         guardPoints: firstNumber(hitDef.params.guardpoints) ?? undefined,
@@ -285,6 +288,8 @@ function buildMove(
       DemoMove,
       | "attr"
       | "hitFlag"
+      | "affectTeam"
+      | "teamSide"
       | "p2ClsnCheck"
       | "p2ClsnRequire"
       | "kill"
@@ -347,6 +352,8 @@ function buildMove(
     dizzyPoints: overrides.dizzyPoints,
     attr: overrides.attr,
     hitFlag: overrides.hitFlag,
+    affectTeam: overrides.affectTeam,
+    teamSide: overrides.teamSide,
     p2ClsnCheck: overrides.p2ClsnCheck,
     p2ClsnRequire: overrides.p2ClsnRequire,
     redLife: overrides.redLife,
