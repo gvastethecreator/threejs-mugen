@@ -2823,8 +2823,13 @@ async function captureStudioAssetReplacement(context, baseUrl, outDir) {
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "assets");
     const generatedFilter = page.locator('[data-asset-filter="generated"]:visible').first();
     if (await generatedFilter.isVisible()) {
-      await generatedFilter.evaluate((button) => button.click());
-      await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.activeFilter === "generated", undefined, { timeout: 5000 });
+      await generatedFilter.dispatchEvent("click");
+      try {
+        await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.activeFilter === "generated", undefined, { timeout: 5000 });
+      } catch (error) {
+        await page.locator('[data-asset-filter="generated"]:visible').first().evaluate((button) => button.click());
+        await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.activeFilter === "generated", undefined, { timeout: 5000 });
+      }
     }
     const firstAsset = page.locator("[data-studio-asset-id]:visible").first();
     if (await firstAsset.isVisible()) {
