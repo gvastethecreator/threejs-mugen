@@ -16,7 +16,7 @@ Yes. The stage journey is now `passed` with checksum `22f0770e`, its native
 report is linked at `docs/evidence/repository-stage-native-regression-v1.json`,
 and the tracked snapshot contains two passed required-legal entries: MUGEN
 Lite Journey and repository Skyline Relay. Snapshot status is `passed`, with
-semantic digest `0b883961` and transport checksum `e02868f3`.
+semantic digest `2e3d7305` and transport checksum `d7ddacc9`.
 
 ## Authority
 

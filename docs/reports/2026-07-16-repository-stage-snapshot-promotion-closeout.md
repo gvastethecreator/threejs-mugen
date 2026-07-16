@@ -22,7 +22,7 @@ probe accept all required artifact identities.
 | Browser diagnostics | `0` page errors, `0` console issues, no horizontal overflow |
 | Snapshot | `passed`, `3` entries, `2` required-legal, `1` optional-private unavailable |
 | Snapshot artifacts | `8` passed refs with content digests |
-| Snapshot semantic/transport identity | `0b883961` / `e02868f3` |
+| Snapshot semantic/transport identity | `2e3d7305` / `d7ddacc9` |
 | Full test suite | `220/220` files, `2294/2294` tests passed |
 | TypeScript 7 / build / boundaries | passed; existing large-chunk warning remains |
 
