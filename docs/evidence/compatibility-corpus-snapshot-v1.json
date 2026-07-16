@@ -3,7 +3,7 @@
   "snapshotId": "compatibility-corpus-v1.1",
   "source": {
     "corpusSchema": "mugen-web-sandbox/compatibility-corpus/v0",
-    "sourceRevision": "eb85b80920c6839a7d9ce997d0a632fd19116a45",
+    "sourceRevision": "3db9368fa50ebfb5d38285ead7a6adea3b7ce73e",
     "tool": {
       "id": "compatibility-snapshot-materializer",
       "version": "1.1.0"
@@ -16,13 +16,16 @@
   "freshness": {
     "policy": "rebuild-and-verify",
     "maxAgeHours": 24,
-    "expectedSourceRevision": "eb85b80920c6839a7d9ce997d0a632fd19116a45",
+    "expectedSourceRevision": "3db9368fa50ebfb5d38285ead7a6adea3b7ce73e",
     "requiredArtifactIds": [
       "browser:mugen-lite-journey-v1",
+      "browser:repository-skyline-relay-v1",
       "mugen-lite-journey",
       "mugen-lite-journey-nokoslow",
       "mugen-lite-journey-palette",
-      "native:mugen-lite-journey-v1"
+      "native:mugen-lite-journey-v1",
+      "native:repository-skyline-relay-v1",
+      "repository-skyline-relay-runtime"
     ]
   },
   "status": "passed",
@@ -75,7 +78,7 @@
           "path": ".scratch/qa/trace-gates/mugen-lite-journey.json",
           "checksum": "80881f71",
           "finalChecksum": "b5ae36cc",
-          "contentDigest": "sha256:35aee3fc0ed7fb9112f3a0cd2977609ea79fd59d490d1c8f97de5401c19615d1",
+          "contentDigest": "sha256:936cd5df97b10134c9c631387f9b8307a1fa198f23f3ef5d0e00d05c39b5ccfa",
           "detail": "runtime trace"
         },
         {
@@ -84,7 +87,7 @@
           "path": ".scratch/qa/trace-gates/mugen-lite-journey-nokoslow.json",
           "checksum": "ceac9f37",
           "finalChecksum": "1d5b25e4",
-          "contentDigest": "sha256:678e2c583debae70f621a3ee5cff14c04a8adcce19ffeefe2d7d7e12fd21f587",
+          "contentDigest": "sha256:d7875dc978cdebadd0662d90c924deeb68f3aa885b24d53587d77c7afca9246e",
           "detail": "NoKOSlow trace"
         },
         {
@@ -93,7 +96,7 @@
           "path": ".scratch/qa/trace-gates/mugen-lite-journey-palette.json",
           "checksum": "1291909d",
           "finalChecksum": "380400cf",
-          "contentDigest": "sha256:391d0e09d8d9fd523aaeaa78426b47a153af5290f50d01c8b0e58415c4c8a151",
+          "contentDigest": "sha256:e8606a73235b3f51f7280677a513a5333ca34f899b432cce6c7bf5a2c8775213",
           "detail": "RemapPal trace"
         },
         {
@@ -121,21 +124,86 @@
       "artifactRefs": [],
       "evidenceIds": [],
       "unavailableReason": "stage journey machine record requires a fresh external-fixture materialization"
+    },
+    {
+      "id": "repository-skyline-relay",
+      "availability": "required-legal",
+      "status": "passed",
+      "journey": {
+        "id": "repository-skyline-relay-v1",
+        "schemaVersion": "mugen-web-sandbox/stage-compatibility-journey/v1"
+      },
+      "package": {
+        "id": "repository-skyline-relay",
+        "name": "Skyline Relay Package",
+        "provenance": "Repository-authored deterministic character and stage package",
+        "entry": "stages/skyline-relay/skyline.def",
+        "licenseSpdx": "CC0-1.0",
+        "licenseFile": "stages/skyline-relay/LICENSE.txt",
+        "licenseVerified": true,
+        "packageDigest": "sha256:9c8a0b7cbd8d298eda5450518045e8d67e5d9a4a409e3186c5eef33a7183b456"
+      },
+      "routeIds": [
+        "application-folder-import",
+        "application-zip-import",
+        "package-folder-zip-equivalence",
+        "stage-bgctrl",
+        "stage-depth",
+        "stage-loader",
+        "stage-report",
+        "stage-round-reset"
+      ],
+      "unsupportedFeatureIds": [
+        "stage:exact BGCtrl parity",
+        "stage:exact window/maskwindow clipping",
+        "stage:mask color-key semantics"
+      ],
+      "artifactRefs": [
+        {
+          "id": "browser:repository-skyline-relay-v1",
+          "status": "passed",
+          "path": ".scratch/qa/repository-skyline-relay-browser/browser-diagnostics.json",
+          "contentDigest": "sha256:244c0137572668a94007f341a2acf530f313dcec3872ba8ce98bfcb9cc83e392",
+          "detail": "repository stage browser diagnostics"
+        },
+        {
+          "id": "native:repository-skyline-relay-v1",
+          "status": "passed",
+          "path": "docs/evidence/repository-stage-native-regression-v1.json",
+          "contentDigest": "sha256:53e3dc7a4a3e5ab1935705fcd25e9005cdd02e38bd6a4f70d929afa7e9e7feaf",
+          "detail": "repository stage native regression report"
+        },
+        {
+          "id": "repository-skyline-relay-runtime",
+          "status": "passed",
+          "path": ".scratch/qa/repository-skyline-relay-browser/runtime.json",
+          "contentDigest": "sha256:0ec9117c514f0260d0721a2bd456094f5377ee0ce6595a47a15aec20bc4c0db2",
+          "detail": "repository stage runtime artifact"
+        }
+      ],
+      "evidenceIds": [
+        "browser:repository-skyline-relay-v1",
+        "native:repository-skyline-relay-v1",
+        "repository-skyline-relay-runtime"
+      ]
     }
   ],
   "summary": {
-    "entryCount": 2,
-    "requiredCount": 1,
+    "entryCount": 3,
+    "requiredCount": 2,
     "portableCount": 0,
     "optionalCount": 1,
-    "passedCount": 1,
+    "passedCount": 2,
     "partialCount": 0,
     "failedCount": 0,
     "unavailableOptionalCount": 1,
     "packageIds": [
-      "mugen-lite-journey"
+      "mugen-lite-journey",
+      "repository-skyline-relay"
     ],
     "routeIds": [
+      "application-folder-import",
+      "application-zip-import",
       "attack",
       "crouch",
       "fall",
@@ -144,21 +212,33 @@
       "idle",
       "jump",
       "no-ko-slow",
+      "package-folder-zip-equivalence",
       "palette",
       "recovery",
+      "stage-bgctrl",
+      "stage-depth",
+      "stage-loader",
+      "stage-report",
+      "stage-round-reset",
       "walk"
     ],
     "unsupportedFeatureIds": [
-      "controller:JourneyUnknownController"
+      "controller:JourneyUnknownController",
+      "stage:exact BGCtrl parity",
+      "stage:exact window/maskwindow clipping",
+      "stage:mask color-key semantics"
     ],
     "artifactIds": [
       "browser:mugen-lite-journey-v1",
+      "browser:repository-skyline-relay-v1",
       "mugen-lite-journey",
       "mugen-lite-journey-nokoslow",
       "mugen-lite-journey-palette",
-      "native:mugen-lite-journey-v1"
+      "native:mugen-lite-journey-v1",
+      "native:repository-skyline-relay-v1",
+      "repository-skyline-relay-runtime"
     ],
-    "artifactCount": 5
+    "artifactCount": 8
   },
   "claims": {
     "allowed": [
@@ -171,8 +251,8 @@
     ]
   },
   "diagnostics": [],
-  "observedAt": "2026-07-16T15:09:03.577Z",
-  "referenceAt": "2026-07-16T15:09:03.577Z",
-  "semanticDigest": "083429c4",
-  "checksum": "623e5bba"
+  "observedAt": "2026-07-16T16:52:40.593Z",
+  "referenceAt": "2026-07-16T16:52:40.593Z",
+  "semanticDigest": "2e3d7305",
+  "checksum": "d7ddacc9"
 }
