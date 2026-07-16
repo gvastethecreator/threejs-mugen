@@ -790,6 +790,7 @@ export class PlayableMatchRuntime {
     helper: RuntimeHelper,
     playerId: number,
     controller: ControllerIr,
+    candidateProjection?: readonly RuntimeTargetWorldActor[],
   ): RuntimeHelperTargetRedirect | undefined {
     if (this.runtimeProfile !== "ikemen-go") return undefined;
     const redirectExpression = helperTargetControllerRedirectExpression(controller);
@@ -830,7 +831,9 @@ export class PlayableMatchRuntime {
     ) {
       return undefined;
     }
-    const candidateTargets = [...roots, ...helperEntries.map((entry) => entry.actor)];
+    const candidateTargets = candidateProjection
+      ? [...candidateProjection]
+      : [...roots, ...helperEntries.map((entry) => entry.actor)];
     const lease = redirectedTargetDispatchWorld.resolve<RuntimeTargetWorldActor>({
       phase: "helper",
       callerId: helper.serialId,
@@ -855,6 +858,14 @@ export class PlayableMatchRuntime {
         syncRuntimeHelperTargetActor(targetHelper, actor);
       },
     };
+  }
+
+  private resolveHelperResourceRedirect(
+    helper: RuntimeHelper,
+    playerId: number,
+    controller: ControllerIr,
+  ): RuntimeHelperTargetRedirect | undefined {
+    return this.resolveHelperTargetRedirect(helper, playerId, controller, []);
   }
 
   private rootForRedirectedTarget(target: RuntimeHelperTargetRedirect["actor"]): FighterMatchState | undefined {
@@ -1333,7 +1344,11 @@ export class PlayableMatchRuntime {
           effectLifecycleWorld: this.effectLifecycleWorld,
           resolveHelperTargetRedirect: (helper, playerId, controller) =>
             this.resolveHelperTargetRedirect(helper, playerId, controller),
+          resolveHelperResourceRedirect: (helper, playerId, controller) =>
+            this.resolveHelperResourceRedirect(helper, playerId, controller),
           onHelperTargetRedirectBlocked: (helper, controller, playerId) =>
+            this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+          onHelperResourceRedirectBlocked: (helper, controller, playerId) =>
             this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
           onHelperRedirectedController: (_helper, target, controller) =>
             this.recordHelperRedirectedController(target, controller),
@@ -1529,7 +1544,11 @@ export class PlayableMatchRuntime {
                 constants: owner.definition.constants,
                 resolveTargetRedirect: (helper, playerId, controller) =>
                   this.resolveHelperTargetRedirect(helper, playerId, controller),
+                resolveResourceRedirect: (helper, playerId, controller) =>
+                  this.resolveHelperResourceRedirect(helper, playerId, controller),
                 onTargetRedirectBlocked: (helper, controller, playerId) =>
+                  this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+                onResourceRedirectBlocked: (helper, controller, playerId) =>
                   this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
                 onRedirectedController: (_helper, target, controller) =>
                   this.recordHelperRedirectedController(target, controller),
@@ -1615,7 +1634,11 @@ export class PlayableMatchRuntime {
           helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
           resolveHelperTargetRedirect: (helper, playerId, controller) =>
             this.resolveHelperTargetRedirect(helper, playerId, controller),
+          resolveHelperResourceRedirect: (helper, playerId, controller) =>
+            this.resolveHelperResourceRedirect(helper, playerId, controller),
           onHelperTargetRedirectBlocked: (helper, controller, playerId) =>
+            this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+          onHelperResourceRedirectBlocked: (helper, controller, playerId) =>
             this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
           onHelperRedirectedController: (_helper, target, controller) =>
             this.recordHelperRedirectedController(target, controller),
@@ -1967,7 +1990,11 @@ export class PlayableMatchRuntime {
             constants: owner.definition.constants,
             resolveTargetRedirect: (helper, playerId, controller) =>
               this.resolveHelperTargetRedirect(helper, playerId, controller),
+            resolveResourceRedirect: (helper, playerId, controller) =>
+              this.resolveHelperResourceRedirect(helper, playerId, controller),
             onTargetRedirectBlocked: (helper, controller, playerId) =>
+              this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
+            onResourceRedirectBlocked: (helper, controller, playerId) =>
               this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
             onRedirectedController: (_helper, target, controller) =>
               this.recordHelperRedirectedController(target, controller),

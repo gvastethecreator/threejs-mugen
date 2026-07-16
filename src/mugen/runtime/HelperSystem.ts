@@ -1,9 +1,7 @@
 import type {
-  BindToTargetControllerOp,
   ControllerOp,
   HelperControllerOp,
   PauseControllerOp,
-  TargetControllerOp,
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
@@ -54,6 +52,7 @@ import {
   type RuntimeRedirectedTargetDispatchLease,
 } from "./RuntimeRedirectedTargetDispatchSystem";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent, RuntimeTeamState } from "./types";
+import { resolveRuntimeResourceControllerOperation } from "./RuntimeResourceSystem";
 import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
@@ -150,6 +149,8 @@ export type RuntimeHelperTargetRedirect = {
   lease?: RuntimeRedirectedTargetDispatchLease<RuntimeTargetWorldActor>;
 };
 
+export type RuntimeHelperResourceRedirect = RuntimeHelperTargetRedirect;
+
 export type RuntimeHelperAdvanceOptions = {
   constants?: RuntimeResourceConstants;
   pauseKind?: RuntimeHelperPauseKind;
@@ -175,7 +176,17 @@ export type RuntimeHelperAdvanceOptions = {
     playerId: number,
     controller: ControllerIr,
   ) => RuntimeHelperTargetRedirect | undefined;
+  resolveResourceRedirect?: (
+    helper: RuntimeHelper,
+    playerId: number,
+    controller: ControllerIr,
+  ) => RuntimeHelperResourceRedirect | undefined;
   onTargetRedirectBlocked?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    playerId: number | "invalid",
+  ) => void;
+  onResourceRedirectBlocked?: (
     helper: RuntimeHelper,
     controller: ControllerIr,
     playerId: number | "invalid",
@@ -188,7 +199,7 @@ export type RuntimeHelperAdvanceOptions = {
   onRedirectedOperation?: (
     helper: RuntimeHelper,
     target: RuntimeTargetWorldActor,
-    operation: TargetControllerOp | BindToTargetControllerOp,
+    operation: ControllerOp,
   ) => void;
   onRedirectedTargetDispatch?: (
     helper: RuntimeHelper,
@@ -383,7 +394,9 @@ export function runRuntimeHelperStateControllers(
     | "projectileContactTime"
     | "targetCandidates"
     | "resolveTargetRedirect"
+    | "resolveResourceRedirect"
     | "onTargetRedirectBlocked"
+    | "onResourceRedirectBlocked"
     | "onRedirectedController"
     | "onRedirectedOperation"
     | "onRedirectedTargetDispatch"
@@ -460,35 +473,83 @@ export function runRuntimeHelperStateControllers(
         emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
         continue;
       }
+      const redirectExpression = helperControllerRedirectExpression(controller);
+      const redirectPlayerId = redirectExpression === undefined
+        ? undefined
+        : resolveHelperNumber(helper, undefined, redirectExpression, options);
+      const redirect = redirectExpression === undefined || redirectPlayerId === undefined
+        ? undefined
+        : options.resolveResourceRedirect?.(helper, Math.trunc(redirectPlayerId), controller);
+      if (redirectExpression !== undefined && !redirect) {
+        options.onResourceRedirectBlocked?.(
+          helper,
+          controller,
+          redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
+        );
+        options.onUnsupportedController?.(helper, controller);
+        continue;
+      }
       const expressionContext = helperExpressionContext(helper, options);
-      const actor = { runtime: helperRuntimeState(helper) };
-      helperControllerDispatchWorld.apply(actor, controller, {
-        context: {
-          self: expressionContext.self,
-          playerId: expressionContext.playerId,
-          playerNo: expressionContext.playerNo,
-          stageBounds: options.stageBounds,
-          stageTime: options.stageTime,
-          opponent: expressionContext.opponent,
-          parent: expressionContext.parent,
-          parentPlayerId: expressionContext.parentPlayerId,
-          parentPlayerNo: expressionContext.parentPlayerNo,
-          root: expressionContext.root,
-          rootPlayerId: expressionContext.rootPlayerId,
-          rootPlayerNo: expressionContext.rootPlayerNo,
-          target: expressionContext.target,
-          teamSide: expressionContext.teamSide,
-          opponentTeamSide: expressionContext.opponentTeamSide,
-          parentTeamSide: expressionContext.parentTeamSide,
-          rootTeamSide: expressionContext.rootTeamSide,
-          isHelper: expressionContext.isHelper,
-          helperId: expressionContext.helperId,
-          stateTime: expressionContext.stateTime,
-        },
-        recordController: () => options.onController?.(helper, controller),
-        recordOperation: (_actor, operation) => options.onOperation?.(helper, operation),
-      });
-      applyRuntimeStateToHelper(helper, actor.runtime);
+      const actor = redirect?.lease?.destination ?? redirect?.actor ?? runtimeHelperTargetActor(helper);
+      const candidateTargets = redirect?.lease
+        ? [...redirect.lease.candidateTargets]
+        : redirect?.candidateTargets ?? [];
+      const context = {
+        self: expressionContext.self,
+        playerId: expressionContext.playerId,
+        playerNo: expressionContext.playerNo,
+        stageBounds: options.stageBounds,
+        stageTime: options.stageTime,
+        opponent: expressionContext.opponent,
+        parent: expressionContext.parent,
+        parentPlayerId: expressionContext.parentPlayerId,
+        parentPlayerNo: expressionContext.parentPlayerNo,
+        root: expressionContext.root,
+        rootPlayerId: expressionContext.rootPlayerId,
+        rootPlayerNo: expressionContext.rootPlayerNo,
+        target: expressionContext.target,
+        teamSide: expressionContext.teamSide,
+        opponentTeamSide: expressionContext.opponentTeamSide,
+        parentTeamSide: expressionContext.parentTeamSide,
+        rootTeamSide: expressionContext.rootTeamSide,
+        isHelper: expressionContext.isHelper,
+        helperId: expressionContext.helperId,
+        stateTime: expressionContext.stateTime,
+      };
+      const redirectedController = redirect
+        ? resolveHelperResourceController(controller, helper, context)
+        : controller;
+      if (!redirectedController) {
+        options.onUnsupportedController?.(helper, controller);
+        continue;
+      }
+      const applyDispatch = () => {
+        const result = helperControllerDispatchWorld.apply(actor, redirectedController, {
+          context,
+          recordController: () => redirect
+            ? options.onRedirectedController?.(helper, actor, controller.source)
+            : options.onController?.(helper, controller),
+          recordOperation: (_actor, operation) => redirect
+            ? options.onRedirectedOperation?.(helper, actor, operation)
+            : options.onOperation?.(helper, operation),
+        });
+        if (redirect?.commitActor) {
+          const committedActors = new Set<RuntimeTargetWorldActor>([actor, ...candidateTargets]);
+          for (const committedActor of committedActors) {
+            redirect.commitActor(committedActor);
+          }
+        } else if (!redirect) {
+          applyRuntimeStateToHelper(helper, actor.runtime);
+          syncRuntimeHelperTargetActor(helper, actor);
+        }
+        return result;
+      };
+      const dispatch = redirect?.lease
+        ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch)
+        : { executed: true, value: applyDispatch() };
+      if (!dispatch.executed || !dispatch.value) {
+        options.onUnsupportedController?.(helper, controller);
+      }
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "sound") {
@@ -1060,7 +1121,7 @@ function applyRuntimeHelperTargetController(
   return result.matchedTargets > 0 || result.operationExecuted;
 }
 
-export function helperTargetControllerRedirectExpression(controller: ControllerIr): string | undefined {
+export function helperControllerRedirectExpression(controller: ControllerIr): string | undefined {
   const operation = controller.operation;
   const compiledExpression = operation !== undefined && "redirectPlayerIdExpression" in operation
     ? operation.redirectPlayerIdExpression
@@ -1070,6 +1131,22 @@ export function helperTargetControllerRedirectExpression(controller: ControllerI
   }
   const rawExpression = findControllerParam(controller.source, "redirectid");
   return rawExpression === undefined ? undefined : rawExpression.trim() || "invalid";
+}
+
+export function helperTargetControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  return helperControllerRedirectExpression(controller);
+}
+
+function resolveHelperResourceController(
+  controller: ControllerIr,
+  helper: RuntimeHelper,
+  context: Parameters<typeof resolveRuntimeResourceControllerOperation>[2],
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "resource"
+    ? controller.operation
+    : resolveRuntimeResourceControllerOperation(controller, helperRuntimeState(helper), context);
+  if (operation?.kind !== "resource") return undefined;
+  return controller.operation === operation ? controller : { ...controller, operation };
 }
 
 function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {

@@ -6296,6 +6296,116 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetDrop).toBe(1);
   });
 
+  it("routes a Helper LifeAdd RedirectID through a destination root resource lease", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Helper Life Value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = -125
+
+[State 1200, Redirected Helper Life]
+type = LifeAdd
+trigger1 = Time = 1
+value = Var(0)
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({ id: "helper-resource-redirect-destination" });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 24 && snapshot.actors[1]?.runtime.life !== 875; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(1000);
+    expect(snapshot.actors[1]?.runtime.life).toBe(875);
+    expect(snapshot.logs.some((line) => line.includes("Blocked LifeAdd RedirectID"))).toBe(false);
+  });
+
+  it("routes a Helper PowerSet RedirectID through a destination helper resource lease", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Helper-to-Helper Power]
+type = PowerSet
+trigger1 = Time = 1
+value = 777
+RedirectID = ID + 1
+`,
+    });
+    const destination = createImportedFixture({ id: "helper-resource-helper-destination", withHelper: true });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(effectActorWorld.helpers("p2")[0]?.power).toBe(777);
+    expect(snapshot.logs.some((line) => line.includes("Blocked PowerSet RedirectID"))).toBe(false);
+  });
+
+  it("keeps a Helper resource without RedirectID local", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Local Helper Power]
+type = PowerSet
+trigger1 = Time = 1
+value = 333
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 24 && effectActorWorld.helpers("p1")[0]?.power !== 333; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(effectActorWorld.helpers("p1")[0]?.power).toBe(333);
+    expect(snapshot.actors[0]?.runtime.power).toBe(0);
+  });
+
+  it("fails closed for an invalid Helper resource RedirectID", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Invalid Helper Resource]
+type = LifeSet
+trigger1 = Time = 1
+value = 321
+RedirectID = 999
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(effectActorWorld.helpers("p1")[0]?.life).toBe(1000);
+    expect(snapshot.logs.some((line) => line.includes("Blocked lifeset RedirectID 999"))).toBe(true);
+  });
+
   it("routes a Helper TargetPowerAdd RedirectID through the destination root target memory", () => {
     const caller = createImportedFixture({
       withHelper: true,

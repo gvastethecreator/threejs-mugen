@@ -31,7 +31,9 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "opponentRoster"
   | "pauseKind"
   | "resolveTargetRedirect"
+  | "resolveResourceRedirect"
   | "onTargetRedirectBlocked"
+  | "onResourceRedirectBlocked"
   | "onRedirectedController"
   | "onRedirectedOperation"
   | "onRedirectedTargetDispatch"
@@ -53,7 +55,9 @@ export type RuntimeEffectHelperContext = {
   pauseKind?: RuntimeHelperAdvanceOptions["pauseKind"];
   targetCandidates?: RuntimeTargetWorldActor[];
   resolveTargetRedirect?: RuntimeHelperAdvanceOptions["resolveTargetRedirect"];
+  resolveResourceRedirect?: RuntimeHelperAdvanceOptions["resolveResourceRedirect"];
   onTargetRedirectBlocked?: RuntimeHelperAdvanceOptions["onTargetRedirectBlocked"];
+  onResourceRedirectBlocked?: RuntimeHelperAdvanceOptions["onResourceRedirectBlocked"];
   onRedirectedController?: RuntimeHelperAdvanceOptions["onRedirectedController"];
   onRedirectedOperation?: RuntimeHelperAdvanceOptions["onRedirectedOperation"];
   onRedirectedTargetDispatch?: RuntimeHelperAdvanceOptions["onRedirectedTargetDispatch"];

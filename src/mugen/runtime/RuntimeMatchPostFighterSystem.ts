@@ -25,7 +25,9 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   targetResetActors?: readonly TActor[];
   hitDefContactActors?: readonly TActor[];
   resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
+  resolveHelperResourceRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveResourceRedirect"];
   onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
+  onHelperResourceRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onResourceRedirectBlocked"];
   onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
   onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
   onHelperRedirectedTargetDispatch?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedTargetDispatch"];
@@ -70,7 +72,9 @@ export class RuntimeMatchPostFighterWorld {
       hitDefContactActors: input.hitDefContactActors,
       helpersAdvancedInActorOrder: input.helpersAdvancedInActorOrder,
       resolveHelperTargetRedirect: input.resolveHelperTargetRedirect,
+      resolveHelperResourceRedirect: input.resolveHelperResourceRedirect,
       onHelperTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
+      onHelperResourceRedirectBlocked: input.onHelperResourceRedirectBlocked,
       onHelperRedirectedController: input.onHelperRedirectedController,
       onHelperRedirectedOperation: input.onHelperRedirectedOperation,
       onHelperRedirectedTargetDispatch: input.onHelperRedirectedTargetDispatch,

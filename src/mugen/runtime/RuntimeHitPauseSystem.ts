@@ -39,7 +39,9 @@ export type RuntimeHitPauseRuntimeWorldInput<TActor extends RuntimeHitPauseRunti
   runtimeTick?: number;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advancePausedPresentation">;
   resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
+  resolveHelperResourceRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveResourceRedirect"];
   onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
+  onHelperResourceRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onResourceRedirectBlocked"];
   onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
   onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
   onHelperRedirectedTargetDispatch?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedTargetDispatch"];
@@ -108,7 +110,9 @@ export class RuntimeHitPauseWorld {
           runtimeTick: input.runtimeTick ?? input.tick,
           opponents: context.opponents,
           resolveTargetRedirect: input.resolveHelperTargetRedirect,
+          resolveResourceRedirect: input.resolveHelperResourceRedirect,
           onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
+          onResourceRedirectBlocked: input.onHelperResourceRedirectBlocked,
           onRedirectedController: input.onHelperRedirectedController,
           onRedirectedOperation: input.onHelperRedirectedOperation,
           onRedirectedTargetDispatch: input.onHelperRedirectedTargetDispatch,

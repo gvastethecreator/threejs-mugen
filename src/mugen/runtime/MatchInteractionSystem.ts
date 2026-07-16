@@ -91,7 +91,9 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     hitDefContactActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
     resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
+    resolveHelperResourceRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveResourceRedirect"];
     onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
+    onHelperResourceRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onResourceRedirectBlocked"];
     onHelperRedirectedController?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedController"];
     onHelperRedirectedOperation?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedOperation"];
     onHelperRedirectedTargetDispatch?: RuntimeEffectLifecycleAdvanceOptions["onRedirectedTargetDispatch"];
@@ -206,7 +208,9 @@ export class RuntimeMatchInteractionWorld {
           opponents: context.opponents,
           skipHelpers: input.helpersAdvancedInActorOrder,
           resolveTargetRedirect: input.resolveHelperTargetRedirect,
+          resolveResourceRedirect: input.resolveHelperResourceRedirect,
           onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,
+          onResourceRedirectBlocked: input.onHelperResourceRedirectBlocked,
           onRedirectedController: input.onHelperRedirectedController,
           onRedirectedOperation: input.onHelperRedirectedOperation,
           onRedirectedTargetDispatch: input.onHelperRedirectedTargetDispatch,
