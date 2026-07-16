@@ -58,6 +58,11 @@ import type { CompatibilityReport } from "../mugen/compatibility/CompatibilityRe
 import { analyzeControllerTriggers, createCompatibilityProfiles, createEmptyCompileReport, isRuntimeSupportedController } from "../mugen/compatibility/CompatibilityReport";
 import { createStageCompatibilityReport, summarizeStageBackgroundControllers } from "../mugen/compatibility/StageCompatibilityReport";
 import type { StageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
+import {
+  createPackageAnalysis,
+  parsePackageAnalysis,
+  type PackageAnalysisResult,
+} from "../mugen/compatibility/PackageAnalysis";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenCharacter } from "../mugen/model/MugenCharacter";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
@@ -197,7 +202,7 @@ type CommandPaletteAction = {
   disabled?: boolean;
   run(): void;
 };
-type StudioEvidenceCategory = "gate" | "asset" | "trace" | "compile" | "compatibility" | "diagnostic" | "source";
+type StudioEvidenceCategory = "gate" | "asset" | "trace" | "compile" | "compatibility" | "analysis" | "diagnostic" | "source";
 type StudioEvidenceFilter = "all" | "attention" | StudioEvidenceCategory;
 type StudioAssetFilter = "all" | "attention" | "characters" | "stages" | "generated" | "imported" | "reports" | "selected";
 type StudioDebugFilter = "overview" | "targets" | "effects" | "pause" | "audio";
@@ -762,6 +767,7 @@ type SourceImportRollbackState = {
   inspectorRuntime: MugenRuntime;
   pendingSourceRelinkPackageId?: string;
   sourceImportTransaction?: SourceImportTransaction;
+  importedPackageAnalysis?: PackageAnalysisResult;
   studioSourceDocument?: StudioSourceDocumentDraft;
   studioSourceWriteReceipt?: SourceWriteReceipt;
   lastCompiledProject?: CompiledRuntimeManifest;
@@ -821,6 +827,7 @@ export class App {
   private studioSelectedActorId?: string;
   private pendingSourceRelinkPackageId?: string;
   private sourceImportTransaction?: SourceImportTransaction;
+  private importedPackageAnalysis?: PackageAnalysisResult;
   private studioSourceDocument?: StudioSourceDocumentDraft;
   private studioSourceWriteReceipt?: SourceWriteReceipt;
   private studioSourceSemanticPreflightTimer?: number;
@@ -2607,6 +2614,7 @@ export class App {
       (acceptedTransaction) => {
         this.studioAutosave.cancel();
         this.studioSourceDocument = undefined;
+        this.importedPackageAnalysis = this.analyzeImportedSourceBundle(sourceBundle);
         this.character = character;
         this.importedStages = stages;
         this.importedSourceBundle = sourceBundle;
@@ -2642,6 +2650,20 @@ export class App {
     }
     this.studioEditHistory.reset();
     this.updateUi();
+  }
+
+  private analyzeImportedSourceBundle(sourceBundle: ImportedSourceBundle): PackageAnalysisResult | undefined {
+    const candidate = createPackageAnalysis({
+      vfs: sourceBundle.vfs,
+      sourceName: sourceBundle.sourceName,
+      generatedAt: new Date().toISOString(),
+    });
+    const parsed = parsePackageAnalysis(candidate);
+    if (!parsed.report) {
+      this.log(`Package analysis rejected: ${parsed.errors.join("; ") || "invalid analysis result"}`);
+      return undefined;
+    }
+    return parsed.report;
   }
 
   private applySourceImportTransaction(transaction: SourceImportTransaction): void {
@@ -2687,6 +2709,7 @@ export class App {
       inspectorRuntime: this.inspectorRuntime,
       pendingSourceRelinkPackageId: this.pendingSourceRelinkPackageId,
       sourceImportTransaction: this.sourceImportTransaction,
+      importedPackageAnalysis: this.importedPackageAnalysis,
       studioSourceDocument: this.studioSourceDocument,
       studioSourceWriteReceipt: this.studioSourceWriteReceipt,
       lastCompiledProject: this.lastCompiledProject,
@@ -2715,6 +2738,7 @@ export class App {
     this.inspectorRuntime = previousState.inspectorRuntime;
     this.pendingSourceRelinkPackageId = previousState.pendingSourceRelinkPackageId;
     this.sourceImportTransaction = previousState.sourceImportTransaction;
+    this.importedPackageAnalysis = previousState.importedPackageAnalysis;
     this.studioSourceDocument = previousState.studioSourceDocument;
     this.studioSourceWriteReceipt = previousState.studioSourceWriteReceipt;
     this.lastCompiledProject = previousState.lastCompiledProject;
@@ -7585,6 +7609,7 @@ export class App {
         </div>
       </div>
       ${this.renderStudioCompatibilitySnapshotPanel()}
+      ${this.renderStudioPackageAnalysisPanel()}
       <div class="section">
         <h2>Recent Projects</h2>
         ${
@@ -7615,6 +7640,7 @@ export class App {
       ${this.renderStudioTrustContract(trustRows, "build")}
       ${this.renderBuildReadinessPanel(summary)}
       ${this.renderStudioCompatibilitySnapshotPanel()}
+      ${this.renderStudioPackageAnalysisPanel()}
       ${this.renderSourcePackagePanel()}
       ${this.renderProjectBundlePanel()}
       ${this.renderRuntimeManifestPanel()}
@@ -7965,6 +7991,49 @@ export class App {
     `;
   }
 
+  private renderStudioPackageAnalysisPanel(): string {
+    const report = this.importedPackageAnalysis;
+    if (!report) {
+      return "";
+    }
+    const ikemen = report.profiles.ikemen;
+    const status: StudioStatus = report.status === "recognized" ? "ok" : report.status === "partial" ? "warn" : "pending";
+    return `
+      <div class="section studio-package-analysis" data-package-analysis="${escapeHtml(report.checksum)}">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Scanner-only contract</span>
+            <h2>Package Analysis</h2>
+          </div>
+          ${this.statusBadge(status)}
+        </div>
+        <dl class="kv studio-kv">
+          <dt>Schema</dt><dd class="mono">${escapeHtml(report.schemaVersion)}</dd>
+          <dt>Source</dt><dd class="mono">${escapeHtml(report.sourceName)}</dd>
+          <dt>Files</dt><dd class="mono">${report.summary.recognizedFileCount}/${report.summary.fileCount} recognized</dd>
+          <dt>Findings</dt><dd class="mono">${report.summary.findingCount}</dd>
+          <dt>Checksum</dt><dd class="mono">${escapeHtml(report.checksum)}</dd>
+          <dt>IKEMEN</dt><dd>${ikemen.detected ? `${ikemen.findingCount} findings / scanner-only` : "not detected"}</dd>
+        </dl>
+        <div class="list compact-list">
+          ${report.findings.slice(0, 8).map((finding) => `
+            <div class="list-item">
+              <span>
+                <span class="list-title">${escapeHtml(finding.feature)}</span>
+                <span class="list-meta">${escapeHtml(finding.status)} / ${escapeHtml(finding.category)} / ${escapeHtml(finding.location.path)}${finding.location.line ? `:${finding.location.line}` : ""}</span>
+                <span class="list-meta">${escapeHtml(finding.detail)}</span>
+              </span>
+              ${this.statusBadge(finding.status === "recognized" ? "ok" : finding.status === "unsupported" ? "blocked" : "pending")}
+            </div>
+          `).join("")}
+        </div>
+        <div class="row-actions">
+          ${studioActionButton("Analysis evidence", 'data-evidence-filter="analysis"')}
+        </div>
+      </div>
+    `;
+  }
+
   private renderStudioEvidenceNavigator(): string {
     const evidence = this.getStudioEvidenceSummary();
     const records = this.getFilteredEvidenceRecords(evidence);
@@ -8016,6 +8085,7 @@ export class App {
         </div>
       </div>
       ${this.renderStudioCompatibilitySnapshotPanel()}
+      ${this.renderStudioPackageAnalysisPanel()}
       <div class="section">
         <div class="section-heading-row">
           <h2>Evidence Filters</h2>
@@ -8078,6 +8148,7 @@ export class App {
         </div>
       </div>
       ${this.renderStudioCompatibilitySnapshotPanel()}
+      ${this.renderStudioPackageAnalysisPanel()}
       ${this.renderTraceEvidencePanel()}
       ${this.renderTraceComparisonReviewPanel(evidence)}
       ${this.renderTraceFrameScrubberPanel()}
@@ -8773,7 +8844,7 @@ export class App {
         persistedTraceArtifacts: this.storedTraceEvidence.length,
       },
       activeFilter: this.studioEvidenceFilter,
-      filters: ["all", "attention", "trace", "compile", "gate", "asset", "compatibility", "source", "diagnostic"],
+      filters: ["all", "attention", "trace", "compile", "gate", "asset", "compatibility", "analysis", "source", "diagnostic"],
       topAction: topRecord?.nextAction,
       topRecordId: topRecord?.id,
       topImpact: topRecord?.impact,
@@ -9960,6 +10031,22 @@ export class App {
       },
       this.getCompatibilitySnapshotBuildReadinessRecord(),
     ];
+    if (this.importedPackageAnalysis) {
+      const packageAnalysisEvidence = this.getPackageAnalysisEvidenceRecord(this.importedPackageAnalysis);
+      records.push({
+        id: "package-analysis",
+        label: "Package analysis",
+        status: packageAnalysisEvidence.status,
+        state: this.importedPackageAnalysis.status === "recognized" ? "exportable" : "partial",
+        detail: packageAnalysisEvidence.detail,
+        affectedSystem: "parser",
+        impact: packageAnalysisEvidence.impact ?? packageAnalysisEvidence.detail,
+        evidenceIds: packageAnalysisEvidence.evidenceIds ?? [],
+        blockedBy: packageAnalysisEvidence.blockedBy ?? [],
+        canExport: true,
+        nextAction: packageAnalysisEvidence.nextAction ?? { kind: "open-evidence", label: "Review package analysis", targetId: "package-analysis" },
+      });
+    }
     const sourceWriteReceipt = this.studioSourceWriteReceipt;
     if (sourceWriteReceipt) {
       const receiptEvidence = this.getSourceWriteReceiptEvidenceRecord(sourceWriteReceipt);
@@ -10013,6 +10100,7 @@ export class App {
       { id: "source-packages", lane: "source" },
       { id: "compatibility-gates", lane: "compat" },
       { id: "compatibility-snapshot", lane: "compat" },
+      ...(this.importedPackageAnalysis ? [{ id: "package-analysis", lane: "compat" as const }] : []),
       { id: "architecture-boundaries", lane: "architecture" },
       ...(this.studioSourceWriteReceipt ? [{ id: "source-write-receipt", lane: "source" as const }] : []),
     ];
@@ -10076,6 +10164,12 @@ export class App {
     }
     if (record.id === "compatibility-snapshot") {
       return { kind: "gate", id: "compat:snapshot" };
+    }
+    if (record.id === "package-analysis") {
+      const report = this.importedPackageAnalysis;
+      return report
+        ? { kind: "package", id: `package-analysis:${report.checksum}` }
+        : { kind: "package", id: "package-analysis" };
     }
     if (record.id === "architecture-boundaries") {
       return { kind: "contract", id: "test:architecture-boundaries" };
@@ -10164,6 +10258,12 @@ export class App {
         ? { label: "promoted", delta: `semantic ${snapshot.semanticDigest} / source ${snapshot.source.sourceRevision.slice(0, 8)}` }
         : { label: "invalid", delta: STUDIO_COMPATIBILITY_SNAPSHOT.diagnostics.join("; ") || "snapshot unavailable" };
     }
+    if (record.id === "package-analysis") {
+      const report = this.importedPackageAnalysis;
+      return report
+        ? { label: "current", delta: `${report.summary.findingCount} findings / ${report.checksum}` }
+        : { label: "missing", delta: "package analysis not materialized" };
+    }
     if (record.id === "architecture-boundaries") {
       const assessment = this.getStudioGateEvidenceAssessment(record.id);
       return {
@@ -10227,6 +10327,12 @@ export class App {
       return snapshot
         ? `${snapshot.summary.passedCount}/${snapshot.summary.entryCount} entries / ${snapshot.summary.requiredCount} required / ${snapshot.summary.artifactCount} artifacts`
         : "tracked snapshot unavailable";
+    }
+    if (record.id === "package-analysis") {
+      const report = this.importedPackageAnalysis;
+      return report
+        ? `${report.schemaVersion} / ${report.sourceName} / ${report.checksum}`
+        : "PackageAnalysis/v0 missing";
     }
     if (record.id === "architecture-boundaries") {
       const assessment = this.getStudioGateEvidenceAssessment(record.id);
@@ -10493,11 +10599,42 @@ export class App {
     records.push(...this.getTraceEvidenceRecords());
     records.push(...this.getCompatibilityEvidenceRecords());
     records.push(this.getCompatibilitySnapshotEvidenceRecord());
+    if (this.importedPackageAnalysis) {
+      records.push(this.getPackageAnalysisEvidenceRecord(this.importedPackageAnalysis));
+    }
     if (this.studioSourceWriteReceipt) {
       records.push(this.getSourceWriteReceiptEvidenceRecord(this.studioSourceWriteReceipt));
     }
     records.push(...this.getDiagnosticsEvidenceRecords());
     return records;
+  }
+
+  private getPackageAnalysisEvidenceRecord(report: PackageAnalysisResult): StudioEvidenceRecord {
+    const status: StudioStatus = report.status === "recognized" ? "ok" : report.status === "partial" ? "warn" : "pending";
+    const ikemen = report.profiles.ikemen;
+    return {
+      id: "package-analysis",
+      label: "Package Analysis",
+      category: "analysis",
+      status,
+      detail: `${report.summary.recognizedFileCount}/${report.summary.fileCount} recognized files / ${report.summary.findingCount} findings / ${ikemen.detected ? `${ikemen.findingCount} IKEMEN scanner findings` : "no IKEMEN profile"} / ${report.checksum}`,
+      tags: ["package-analysis/v0", report.status, report.checksum, ikemen.claim, ...(ikemen.detected ? ["ikemen-go-scan"] : [])],
+      level: "Scanner-only",
+      severity: this.severityForStatus(status),
+      affectedSystem: "parser",
+      impact: "Package findings are source-located scanner evidence; they do not claim IKEMEN runtime execution or rendering parity.",
+      evidenceIds: [
+        `package-analysis:${report.checksum}`,
+        ...report.findings.slice(0, 4).map((finding) => `package-analysis:${finding.location.path}`),
+      ],
+      blockedBy: report.status === "unknown" ? ["package-analysis-entrypoint"] : [],
+      canExport: true,
+      nextAction: {
+        kind: status === "ok" ? "open-build" : "open-evidence",
+        label: status === "ok" ? "Review package analysis" : "Review scanner findings",
+        targetId: "package-analysis",
+      },
+    };
   }
 
   private getSourceWriteReceiptEvidenceRecord(receipt: SourceWriteReceipt): StudioEvidenceRecord {
@@ -11881,6 +12018,9 @@ export class App {
     this.addJsonToZip(zip, "studio/studio-summary.json", studio);
     this.addJsonToZip(zip, "studio/asset-source-runtime-map.json", sourceRuntimeMaps);
     this.addJsonToZip(zip, "studio/gate-evidence.json", STUDIO_GATE_EVIDENCE_DOCUMENT);
+    if (this.importedPackageAnalysis) {
+      this.addJsonToZip(zip, "studio/package-analysis.json", this.importedPackageAnalysis);
+    }
     if (this.studioSourceWriteReceipt) {
       this.addJsonToZip(zip, "studio/source-write-receipt.json", this.studioSourceWriteReceipt);
     }
@@ -11913,6 +12053,7 @@ export class App {
       { path: "studio/studio-summary.json", kind: "studio", required: true },
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
       { path: "studio/gate-evidence.json", kind: "studio", required: true },
+      ...(this.importedPackageAnalysis ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
       ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
       { path: "studio/evidence.json", kind: "qa", required: true },
@@ -12335,6 +12476,7 @@ export class App {
         storedTraceEvidence: StoredTraceEvidenceEntry[];
         projectImportWarnings: string[];
         sourceImportTransaction?: SourceImportTransaction;
+        packageAnalysis?: PackageAnalysisResult;
         sourceTransactions: SourceTransactionRecord[];
         sourceHandles: SourceHandleRecord[];
         studioSourceDocument?: StudioSourceDocumentDraft;
@@ -12394,6 +12536,7 @@ export class App {
       storedTraceEvidence: this.storedTraceEvidence.map((entry) => structuredClone(entry)),
       projectImportWarnings: [...this.projectImportWarnings],
       sourceImportTransaction: this.sourceImportTransaction,
+      packageAnalysis: this.importedPackageAnalysis ? structuredClone(this.importedPackageAnalysis) : undefined,
       sourceTransactions: this.getSourceTransactionRecords(),
       sourceHandles: this.getSourceHandleRecords(),
       studioSourceDocument: this.studioSourceDocument ? structuredClone(this.studioSourceDocument) : undefined,
