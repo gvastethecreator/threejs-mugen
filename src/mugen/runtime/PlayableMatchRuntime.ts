@@ -438,7 +438,7 @@ type RootTargetDispatchLeaseHandler = (
   caller: FighterMatchState,
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
-  controllerType: RedirectableTargetControllerType,
+  controllerType: RedirectableTargetControllerType | RedirectableResourceControllerType,
   phase: Extract<RuntimeRedirectedTargetDispatchPhase, "root-active" | "root-state-minus-one">,
   candidateTargets: readonly FighterMatchState[],
 ) => RuntimeRedirectedTargetDispatchLease<FighterMatchState> | undefined;
@@ -749,7 +749,7 @@ export class PlayableMatchRuntime {
     caller: FighterMatchState,
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
-    controllerType: RedirectableTargetControllerType,
+    controllerType: RedirectableTargetControllerType | RedirectableResourceControllerType,
     phase: Extract<RuntimeRedirectedTargetDispatchPhase, "root-active" | "root-state-minus-one">,
     candidateTargets: readonly FighterMatchState[],
   ): RuntimeRedirectedTargetDispatchLease<FighterMatchState> | undefined {
@@ -4194,35 +4194,54 @@ function runActiveStateControllers(
         (redirectableBoundsController
           ? dispatch.controller.normalizedType as "screenbound" | "playerpush"
           : undefined);
+      const resourceRedirectLease = redirectExpression && redirectableResourceType !== undefined
+        ? options.onRootTargetDispatchLease?.(
+            fighter,
+            redirectExpression,
+            context,
+            redirectableResourceType,
+            "root-active",
+            [],
+          )
+        : undefined;
       const target = redirectExpression
-        ? redirectControllerType === undefined
-          ? undefined
-          : options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
+        ? redirectableResourceType !== undefined && options.onRootTargetDispatchLease
+          ? resourceRedirectLease?.destination
+          : redirectControllerType === undefined
+            ? undefined
+            : options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
         : fighter;
       if (!target) {
         options.onBlocked?.(dispatch.controller, `${redirectControllerType ?? "root"}-redirect`);
         return;
       }
-      const redirectedController = redirectableResourceType !== undefined && redirectExpression
-        ? resolveRedirectedResourceController(dispatch.controller, actor, context)
-        : dispatch.controller;
-      if (!redirectedController) {
-        options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);
-        return;
-      }
-      const mirrorRedirectedResourceTelemetry =
-        redirectableResourceType !== undefined &&
-        target !== fighter &&
-        !compatibilityTelemetryWorld.isImportedActor(target);
-      if (mirrorRedirectedResourceTelemetry) {
-        runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
-      }
-      controllerDispatchWorld.apply(target, redirectedController, {
-        context,
-        ...runtimeActiveControllerTelemetryHooks,
-      });
-      if (mirrorRedirectedResourceTelemetry && redirectedController.operation) {
-        runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
+      const applyDispatch = () => {
+        const redirectedController = redirectableResourceType !== undefined && redirectExpression
+          ? resolveRedirectedResourceController(dispatch.controller, actor, context)
+          : dispatch.controller;
+        if (!redirectedController) {
+          options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);
+          return;
+        }
+        const mirrorRedirectedResourceTelemetry =
+          redirectableResourceType !== undefined &&
+          target !== fighter &&
+          !compatibilityTelemetryWorld.isImportedActor(target);
+        if (mirrorRedirectedResourceTelemetry) {
+          runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
+        }
+        controllerDispatchWorld.apply(target, redirectedController, {
+          context,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+        if (mirrorRedirectedResourceTelemetry && redirectedController.operation) {
+          runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
+        }
+      };
+      if (resourceRedirectLease) {
+        redirectedTargetDispatchWorld.execute(resourceRedirectLease, applyDispatch);
+      } else {
+        applyDispatch();
       }
     },
   });
@@ -4658,37 +4677,56 @@ function runStateEntrySetupControllers(
       }
       const redirectExpression = resourceControllerRedirectExpression(controller);
       const redirectControllerType = redirectableResourceControllerType(controller);
+      const resourceRedirectLease = redirectExpression && redirectControllerType !== undefined
+        ? onRootTargetDispatchLease?.(
+            fighter,
+            redirectExpression,
+            context,
+            redirectControllerType,
+            "root-state-minus-one",
+            [],
+          )
+        : undefined;
       const target = redirectExpression && redirectControllerType !== undefined
-        ? onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
+        ? onRootTargetDispatchLease
+          ? resourceRedirectLease?.destination
+          : onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
         : actor;
       if (!target) {
         return actor.runtime;
       }
-      const redirectedController = target === actor && redirectExpression === undefined
-        ? controller
-        : resolveRedirectedResourceController(controller, actor, context);
-      if (!redirectedController) {
-        return actor.runtime;
+      const applyDispatch = () => {
+        const redirectedController = target === actor && redirectExpression === undefined
+          ? controller
+          : resolveRedirectedResourceController(controller, actor, context);
+        if (!redirectedController) {
+          return;
+        }
+        const mirrorRedirectedResourceTelemetry =
+          redirectControllerType !== undefined &&
+          target !== actor &&
+          !compatibilityTelemetryWorld.isImportedActor(target);
+        controllerDispatchWorld.apply(target, redirectedController, {
+          context,
+          recordController: (recordedTarget, recordedController) => {
+            compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);
+            if (mirrorRedirectedResourceTelemetry) {
+              compatibilityTelemetryWorld.recordController(fighter, recordedController);
+            }
+          },
+          recordOperation: (recordedTarget, operation) => {
+            compatibilityTelemetryWorld.recordOperation(recordedTarget, operation);
+            if (mirrorRedirectedResourceTelemetry) {
+              compatibilityTelemetryWorld.recordOperation(fighter, operation);
+            }
+          },
+        });
+      };
+      if (resourceRedirectLease) {
+        redirectedTargetDispatchWorld.execute(resourceRedirectLease, applyDispatch);
+      } else {
+        applyDispatch();
       }
-      const mirrorRedirectedResourceTelemetry =
-        redirectControllerType !== undefined &&
-        target !== actor &&
-        !compatibilityTelemetryWorld.isImportedActor(target);
-      controllerDispatchWorld.apply(target, redirectedController, {
-        context,
-        recordController: (recordedTarget, recordedController) => {
-          compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);
-          if (mirrorRedirectedResourceTelemetry) {
-            compatibilityTelemetryWorld.recordController(fighter, recordedController);
-          }
-        },
-        recordOperation: (recordedTarget, operation) => {
-          compatibilityTelemetryWorld.recordOperation(recordedTarget, operation);
-          if (mirrorRedirectedResourceTelemetry) {
-            compatibilityTelemetryWorld.recordOperation(fighter, operation);
-          }
-        },
-      });
       return actor.runtime;
     },
   });

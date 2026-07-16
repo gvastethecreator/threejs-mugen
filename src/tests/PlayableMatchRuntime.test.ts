@@ -2083,6 +2083,26 @@ value = 650
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["resource:ctrlset"]).toBe(1);
   });
 
+  it("routes active and state-entry resource RedirectID through the destination lease", () => {
+    const caller = createImportedFixture({
+      id: "redirected-resource-lease",
+      passiveResourceController: "[State 0, Redirected LifeAdd]\ntype = LifeAdd\ntrigger1 = 1\nvalue = -125\nRedirectID = 57\n",
+      stateEntryResourceController: "[State -1, Redirected Entry PowerSet]\ntype = PowerSet\ntrigger1 = 1\nvalue = 777\nRedirectID = 57\n",
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.life).toBe(1000);
+    expect(snapshot.actors[0]?.runtime.power).toBe(0);
+    expect(snapshot.actors[1]?.runtime.life).toBe(875);
+    expect(snapshot.actors[1]?.runtime.power).toBe(777);
+    expect(snapshot.logs.some((line) => line.includes("Blocked LifeAdd RedirectID"))).toBe(false);
+    expect(snapshot.compatibilitySession?.actors.some((actor) => (actor.executedOperations["resource:lifeadd"] ?? 0) >= 1)).toBe(true);
+    expect(snapshot.compatibilitySession?.actors.some((actor) => (actor.executedOperations["resource:powerset"] ?? 0) >= 1)).toBe(true);
+  });
+
   it("fails closed for an invalid state-entry resource RedirectID", () => {
     const caller = createImportedFixture({
       id: "invalid-state-entry-resource-redirect",
