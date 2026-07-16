@@ -13,10 +13,11 @@ export class FolderCharacterSource {
   async load(): Promise<VirtualFileSystem> {
     const vfs = new VirtualFileSystem();
     const files = Array.from(this.files, toFolderSourceFile);
+    const selectedRoot = isBrowserFileList(this.files) ? commonSelectedRoot(files) : undefined;
 
     await Promise.all(
       files.map(async (file) => {
-        vfs.addFile(file.relativePath, await file.file.arrayBuffer());
+        vfs.addFile(stripSelectedRoot(file.relativePath, selectedRoot), await file.file.arrayBuffer());
       }),
     );
 
@@ -43,4 +44,22 @@ function isFolderCharacterSourceFile(value: File | FolderCharacterSourceFile): v
 function getRelativePath(file: File): string {
   const withWebkit = file as File & { webkitRelativePath?: string };
   return withWebkit.webkitRelativePath || file.name;
+}
+
+function isBrowserFileList(value: FolderCharacterSourceInput): value is FileList {
+  return !Array.isArray(value) && typeof value === "object" && typeof (value as { item?: unknown }).item === "function";
+}
+
+function commonSelectedRoot(files: readonly FolderCharacterSourceFile[]): string | undefined {
+  const segments = files.map((file) => file.relativePath.replace(/\\/g, "/").split("/").filter(Boolean));
+  const root = segments[0]?.[0];
+  if (!root || segments.some((parts) => parts.length < 2 || parts[0] !== root)) return undefined;
+  return root;
+}
+
+function stripSelectedRoot(relativePath: string, selectedRoot: string | undefined): string {
+  if (!selectedRoot) return relativePath;
+  const normalized = relativePath.replace(/\\/g, "/");
+  const prefix = `${selectedRoot}/`;
+  return normalized.startsWith(prefix) ? normalized.slice(prefix.length) : relativePath;
 }

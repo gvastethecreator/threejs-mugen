@@ -265,7 +265,10 @@ export class MugenCharacterLoader {
       return undefined;
     }
     const sourceBase = sourceName.replace(/\.(zip|def)$/i, "").toLowerCase();
-    const characterDefs = defs.filter((path) => path.toLowerCase().includes("/chars/"));
+    const characterDefs = defs.filter((path) => {
+      const lowerPath = path.toLowerCase();
+      return lowerPath.startsWith("chars/") || lowerPath.includes("/chars/");
+    });
     const preferredPool = characterDefs.length > 0 ? characterDefs : defs;
     return (
       preferredPool.find((path) => path.toLowerCase().endsWith(`/${sourceBase}.def`)) ??

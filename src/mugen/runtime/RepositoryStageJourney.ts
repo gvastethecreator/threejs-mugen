@@ -7,10 +7,10 @@ import { MugenStageLoader } from "../loader/MugenStageLoader";
 import { demoFighters } from "./demoFighters";
 import { PlayableMatchRuntime } from "./PlayableMatchRuntime";
 import {
-  createRepositoryStageFixturePackageDigest,
-  createRepositoryStageFixtureVfs,
-  REPOSITORY_STAGE_FIXTURE_MANIFEST,
-} from "./RepositoryStageFixture";
+  createRepositoryStagePackageDigest,
+  createRepositoryStagePackageVfs,
+  REPOSITORY_STAGE_PACKAGE_MANIFEST,
+} from "./RepositoryStagePackage";
 import type { VirtualFileSystem } from "../loader/VirtualFileSystem";
 import type { MugenStagePackage } from "../model/MugenStagePackage";
 
@@ -31,9 +31,9 @@ export type RepositoryStageJourneyEvidence = {
 export async function createRepositoryStageJourney(
   options: RepositoryStageJourneyOptions = {},
 ): Promise<RepositoryStageJourneyEvidence> {
-  const vfs = createRepositoryStageFixtureVfs();
-  const packageDigest = await createRepositoryStageFixturePackageDigest(vfs);
-  const [stagePackage] = await new MugenStageLoader().loadAll(REPOSITORY_STAGE_FIXTURE_MANIFEST.id, vfs);
+  const vfs = createRepositoryStagePackageVfs();
+  const packageDigest = await createRepositoryStagePackageDigest(vfs);
+  const [stagePackage] = await new MugenStageLoader().loadAll(REPOSITORY_STAGE_PACKAGE_MANIFEST.id, vfs);
   if (!stagePackage) throw new Error("repository Skyline Relay fixture did not produce a stage package");
 
   const report = createStageCompatibilityReport(stagePackage);
@@ -75,20 +75,20 @@ export async function createRepositoryStageJourney(
     id: "repository-skyline-relay-v1",
     generatedAt: options.generatedAt ?? new Date().toISOString(),
     package: {
-      id: REPOSITORY_STAGE_FIXTURE_MANIFEST.id,
-      name: REPOSITORY_STAGE_FIXTURE_MANIFEST.displayName,
-      license: REPOSITORY_STAGE_FIXTURE_MANIFEST.license,
-      licenseFile: REPOSITORY_STAGE_FIXTURE_MANIFEST.licenseFile,
-      provenance: REPOSITORY_STAGE_FIXTURE_MANIFEST.provenance,
-      entry: REPOSITORY_STAGE_FIXTURE_MANIFEST.entry,
+      id: REPOSITORY_STAGE_PACKAGE_MANIFEST.id,
+      name: REPOSITORY_STAGE_PACKAGE_MANIFEST.displayName,
+      license: REPOSITORY_STAGE_PACKAGE_MANIFEST.license,
+      licenseFile: REPOSITORY_STAGE_PACKAGE_MANIFEST.licenseFile,
+      provenance: REPOSITORY_STAGE_PACKAGE_MANIFEST.provenance,
+      entry: REPOSITORY_STAGE_PACKAGE_MANIFEST.stageEntry,
       packageDigest,
       files: vfs.listFiles(),
-      expectedRoutes: [...REPOSITORY_STAGE_FIXTURE_MANIFEST.expectedRoutes],
+      expectedRoutes: [...REPOSITORY_STAGE_PACKAGE_MANIFEST.expectedRoutes],
       licenseVerified: true,
     },
     loader: {
       status: "passed",
-      sourceName: REPOSITORY_STAGE_FIXTURE_MANIFEST.id,
+      sourceName: REPOSITORY_STAGE_PACKAGE_MANIFEST.id,
       loaded: true,
       presentFiles: vfs.listFiles(),
       report,
