@@ -1,6 +1,6 @@
 # Wayfinder 210: HitDef and Projectile AffectTeam
 
-Status: selected
+Status: completed
 
 ## Goal
 
@@ -32,3 +32,26 @@ Primary sources:
 - Focused compiler/runtime tests pass.
 - TypeScript 7, build, boundaries, and trace gate pass at the next broad checkpoint.
 - Any unrelated full-suite failures remain named and unclaimed.
+
+## Result
+
+Implemented in `8de2bb3a`, with projectile owner identity hardening in
+`9b3f434b` and the post-fighter bridge fixture alignment in `80e69138`.
+The typed compiler/runtime now carries `affectteam` and HitDef `teamside`
+through imported/static and active moves, applies the policy to direct/root
+admission and priority contact, filters projectile player contact and
+projectile clashes, and keeps defending `HitFlag = P` policy separate from the
+incoming projectile policy. PlayerPush remains its own contract.
+
+Focused coverage is `165/165`; the full suite is `216/216` files and
+`2273/2273` tests. TypeScript 7, build, boundaries, and `qa:trace` all pass;
+trace coverage is `633/633` with no skipped fixtures.
+
+Allowed claim: bounded typed AffectTeam/TeamSide filtering for known `p1`-`p8`
+team identities, explicit projectile sides, root/direct priority contact,
+projectile player contact, HitFlag P cancellation, and projectile clashes.
+
+Blocked claim: exact proxy/helper identity beyond the existing owner/root
+mapping, neutral/platform actor policy, every legacy owner exception, depth
+ordering, rollback/netplay, score, renderer/audio parity, and full
+MUGEN/IKEMEN parity.

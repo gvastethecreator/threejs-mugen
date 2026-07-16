@@ -1,7 +1,7 @@
 # Research: IKEMEN AffectTeam Runtime Team Filtering
 
 Date: 2026-07-16
-Status: implementation selected (Wayfinder 210)
+Status: implementation completed (Wayfinder 210)
 
 ## Primary-source findings
 
@@ -33,4 +33,18 @@ Deferred: Helpers/proxy identity beyond the existing owner/root mapping, neutral
 
 ## Implementation evidence
 
-Pending until the feature commit and broad checkpoint. The closeout must list focused counts, TypeScript/build/boundary/trace results, and unrelated failures separately.
+Implementation commit: `8de2bb3a`.
+
+Related hardening commits: `9b3f434b` preserves root/helper/projectile owner
+identity at the effect-actor spawn boundary; `80e69138` aligns the
+post-fighter bridge fixture with its explicit same-owner scheduling hooks.
+
+Focused coverage: `165/165` tests passed. Broad evidence: TypeScript 7,
+production build, boundary checks, and `qa:trace` pass; the trace gate reports
+`633/633` artifacts with `0` skipped. The full suite reports `216/216` files
+and `2273/2273` tests.
+
+The policy remains bounded to known `p1`-`p8` identities. Unknown legacy IDs
+stay permissive so existing synthetic/helper fixtures do not silently acquire
+a false team assignment. Proxy/helper/neutral/platform parity and the exact
+upstream owner-exception matrix remain residuals.
