@@ -1930,6 +1930,9 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       architectureGateStatus: bridge?.studio?.gates?.find((gate) => gate.id === "architecture-boundaries")?.status,
       architectureGateEvidenceIds: bridge?.studio?.gates?.find((gate) => gate.id === "architecture-boundaries")?.evidenceIds ?? [],
       architectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
+      architectureEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.status,
+      architectureEvidenceDetail: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.detail,
+      architectureEvidenceCanExport: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.canExport,
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
       compatibilitySnapshotRecord: bridge?.studioEvidence?.records?.find((record) => record.id === "compat:snapshot"),
@@ -2466,6 +2469,8 @@ async function inspectPackageZip(packagePath) {
   const assetProvenance = JSON.parse(await zip.file("studio/asset-provenance.json").async("string"));
   const packageAssets = JSON.parse(await zip.file("assets/package-assets.json").async("string"));
   const compatibilitySnapshot = JSON.parse(await zip.file("qa/compatibility-corpus-snapshot-v1.json").async("string"));
+  const gateEvidence = JSON.parse(await zip.file("studio/gate-evidence.json").async("string"));
+  const architectureGateEvidence = gateEvidence.results?.find((result) => result.gateId === "architecture-boundaries");
   const bundledAssets = packageAssets.filter((asset) => asset.status === "bundled");
   const importedAssets = bundledAssets.filter((asset) => asset.packagePath.startsWith("assets/imported/"));
   const missingBundledFiles = bundledAssets.filter((asset) => !files.includes(asset.packagePath));
@@ -2525,6 +2530,14 @@ async function inspectPackageZip(packagePath) {
     compatibilitySnapshotRequiredEntries: compatibilitySnapshot.summary?.requiredCount ?? 0,
     compatibilitySnapshotPassedEntries: compatibilitySnapshot.summary?.passedCount ?? 0,
     compatibilitySnapshotArtifacts: compatibilitySnapshot.summary?.artifactCount ?? 0,
+    hasGateEvidence: files.includes("studio/gate-evidence.json"),
+    manifestListsGateEvidence: manifest.files?.some((file) => file.path === "studio/gate-evidence.json" && file.required === true) ?? false,
+    gateEvidenceSchema: gateEvidence.schemaVersion,
+    gateEvidenceIntent: architectureGateEvidence?.intent,
+    gateEvidenceStatus: architectureGateEvidence?.status,
+    gateEvidenceSourceRevision: architectureGateEvidence?.sourceRevision,
+    gateEvidenceDigest: architectureGateEvidence?.digest,
+    gateEvidenceTarget: architectureGateEvidence?.target?.id,
     hasRuntimeAtlas: files.some((file) => file.endsWith("sprite-sheet-alpha.png")),
     hasStageArt: files.some((file) => file.endsWith("rooftop-dojo.png")),
   };
@@ -2653,6 +2666,8 @@ async function captureStudioEvidence(page, outDir) {
       hasArchitectureGateRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "gate:architecture-boundaries")),
       hasArchitectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
       architectureEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.status,
+      architectureEvidenceDetail: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.detail,
+      architectureEvidenceCanExport: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.canExport,
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
       hasCompatibilitySnapshotRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "compat:snapshot" && record.status === "ok")),
@@ -3995,7 +4010,10 @@ function assertSmoke(diagnostics) {
     !studioBuild.bodyHasArchitectureBoundaries ||
     studioBuild.architectureGateStatus !== "ok" ||
     !studioBuild.architectureGateEvidenceIds?.includes("test:architecture-boundaries") ||
-    !studioBuild.architectureEvidenceRecord
+    !studioBuild.architectureEvidenceRecord ||
+    studioBuild.architectureEvidenceStatus !== "ok" ||
+    studioBuild.architectureEvidenceCanExport !== true ||
+    !String(studioBuild.architectureEvidenceDetail ?? "").includes("check_boundaries.cjs")
   ) {
     failures.push("studio-build: architecture boundary gate was not visible or linked to Studio evidence");
   }
@@ -4034,6 +4052,13 @@ function assertSmoke(diagnostics) {
     || (studioBuild.downloadedPackage?.compatibilitySnapshotRequiredEntries ?? 0) < 2
     || (studioBuild.downloadedPackage?.compatibilitySnapshotPassedEntries ?? 0) < 2
     || (studioBuild.downloadedPackage?.compatibilitySnapshotArtifacts ?? 0) < 8
+    || !studioBuild.downloadedPackage?.hasGateEvidence
+    || !studioBuild.downloadedPackage?.manifestListsGateEvidence
+    || studioBuild.downloadedPackage?.gateEvidenceSchema !== "mugen-web-sandbox/gate-evidence/v0"
+    || studioBuild.downloadedPackage?.gateEvidenceIntent !== "release"
+    || studioBuild.downloadedPackage?.gateEvidenceStatus !== "passed"
+    || studioBuild.downloadedPackage?.gateEvidenceTarget !== "test:architecture-boundaries"
+    || !studioBuild.downloadedPackage?.gateEvidenceDigest
   ) {
     failures.push("studio-build: downloaded project package did not include required contracts/evidence");
   }
@@ -4293,7 +4318,13 @@ function assertSmoke(diagnostics) {
   if ((studioBuild.trustChainTargets ?? []).join("|") !== (studioEvidence.trustChainTargets ?? []).join("|")) {
     failures.push("studio-evidence: Trust Chain targets drifted from Studio Build");
   }
-  if (!studioEvidence.hasArchitectureGateRecord || !studioEvidence.hasArchitectureEvidenceRecord || studioEvidence.architectureEvidenceStatus !== "ok") {
+  if (
+    !studioEvidence.hasArchitectureGateRecord ||
+    !studioEvidence.hasArchitectureEvidenceRecord ||
+    studioEvidence.architectureEvidenceStatus !== "ok" ||
+    studioEvidence.architectureEvidenceCanExport !== true ||
+    !String(studioEvidence.architectureEvidenceDetail ?? "").includes("check_boundaries.cjs")
+  ) {
     failures.push("studio-evidence: architecture boundary gate/evidence records were not exposed through the Evidence Browser bridge");
   }
   if ((studioEvidence.traceArtifacts ?? 0) < 1 || studioEvidence.latestTraceStatus !== "passed") {
@@ -4720,7 +4751,17 @@ function summarizeDiagnostics(diagnostics) {
       provenanceTransformCount: diagnostics.checks.studioBuild.provenanceTransformCount,
       architectureGateStatus: diagnostics.checks.studioBuild.architectureGateStatus,
       architectureEvidenceRecord: diagnostics.checks.studioBuild.architectureEvidenceRecord,
+      architectureEvidenceStatus: diagnostics.checks.studioBuild.architectureEvidenceStatus,
+      architectureEvidenceCanExport: diagnostics.checks.studioBuild.architectureEvidenceCanExport,
       bodyHasArchitectureBoundaries: diagnostics.checks.studioBuild.bodyHasArchitectureBoundaries,
+      gateEvidencePackage: {
+        hasFile: diagnostics.checks.studioBuild.downloadedPackage?.hasGateEvidence,
+        manifestRequired: diagnostics.checks.studioBuild.downloadedPackage?.manifestListsGateEvidence,
+        schema: diagnostics.checks.studioBuild.downloadedPackage?.gateEvidenceSchema,
+        intent: diagnostics.checks.studioBuild.downloadedPackage?.gateEvidenceIntent,
+        status: diagnostics.checks.studioBuild.downloadedPackage?.gateEvidenceStatus,
+        digest: diagnostics.checks.studioBuild.downloadedPackage?.gateEvidenceDigest,
+      },
       trustChainRows: diagnostics.checks.studioBuild.trustChainRows,
       trustChainIds: diagnostics.checks.studioBuild.trustChainIds,
       trustChainTargets: diagnostics.checks.studioBuild.trustChainTargets,
@@ -4877,6 +4918,7 @@ function summarizeDiagnostics(diagnostics) {
       architectureGateRecord: diagnostics.checks.studioEvidence.hasArchitectureGateRecord,
       architectureEvidenceRecord: diagnostics.checks.studioEvidence.hasArchitectureEvidenceRecord,
       architectureEvidenceStatus: diagnostics.checks.studioEvidence.architectureEvidenceStatus,
+      architectureEvidenceCanExport: diagnostics.checks.studioEvidence.architectureEvidenceCanExport,
       trustChainRows: diagnostics.checks.studioEvidence.trustChainRows,
       trustChainIds: diagnostics.checks.studioEvidence.trustChainIds,
       trustChainTargets: diagnostics.checks.studioEvidence.trustChainTargets,

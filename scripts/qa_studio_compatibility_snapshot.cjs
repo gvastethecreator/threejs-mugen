@@ -7,6 +7,8 @@ const { chromium } = require("playwright");
 const OUT_DIR = path.resolve(process.cwd(), ".scratch/qa/studio-compatibility-snapshot");
 const SNAPSHOT_PATH = "qa/compatibility-corpus-snapshot-v1.json";
 const SNAPSHOT_SCHEMA = "mugen-web-sandbox/compatibility-corpus-snapshot/v1.1";
+const GATE_EVIDENCE_PATH = "studio/gate-evidence.json";
+const GATE_EVIDENCE_SCHEMA = "mugen-web-sandbox/gate-evidence/v0";
 
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -62,6 +64,8 @@ async function main() {
     const files = Object.keys(zip.files).filter((file) => !zip.files[file].dir).sort();
     const manifest = JSON.parse(await zip.file("package-manifest.json").async("string"));
     const snapshot = JSON.parse(await zip.file(SNAPSHOT_PATH).async("string"));
+    const gateEvidence = JSON.parse(await zip.file(GATE_EVIDENCE_PATH).async("string"));
+    const architectureGateEvidence = gateEvidence.results?.find((result) => result.gateId === "architecture-boundaries");
     const packageEvidence = {
       hasSnapshotFile: files.includes(SNAPSHOT_PATH),
       manifestListsSnapshot: manifest.files.some((file) => file.path === SNAPSHOT_PATH && file.required === true),
@@ -72,11 +76,26 @@ async function main() {
       requiredCount: snapshot.summary?.requiredCount,
       passedCount: snapshot.summary?.passedCount,
       artifactCount: snapshot.summary?.artifactCount,
+      hasGateEvidenceFile: files.includes(GATE_EVIDENCE_PATH),
+      manifestListsGateEvidence: manifest.files.some((file) => file.path === GATE_EVIDENCE_PATH && file.required === true),
+      gateEvidenceSchema: gateEvidence.schemaVersion,
+      gateEvidenceIntent: architectureGateEvidence?.intent,
+      gateEvidenceStatus: architectureGateEvidence?.status,
+      gateEvidenceTarget: architectureGateEvidence?.target?.id,
+      gateEvidenceDigest: architectureGateEvidence?.digest,
       fileCount: files.length,
     };
     if (!packageEvidence.hasSnapshotFile || !packageEvidence.manifestListsSnapshot) failures.push("project package omitted the required snapshot file");
     if (packageEvidence.schema !== SNAPSHOT_SCHEMA || packageEvidence.status !== "passed") failures.push("project package snapshot schema/status was invalid");
     if (packageEvidence.requiredCount !== 2 || packageEvidence.passedCount !== 2 || packageEvidence.artifactCount !== 8) failures.push("project package snapshot coverage drifted");
+    if (!packageEvidence.hasGateEvidenceFile || !packageEvidence.manifestListsGateEvidence) failures.push("project package omitted the required GateEvidence document");
+    if (
+      packageEvidence.gateEvidenceSchema !== GATE_EVIDENCE_SCHEMA ||
+      packageEvidence.gateEvidenceIntent !== "release" ||
+      packageEvidence.gateEvidenceStatus !== "passed" ||
+      packageEvidence.gateEvidenceTarget !== "test:architecture-boundaries" ||
+      !packageEvidence.gateEvidenceDigest
+    ) failures.push("project package GateEvidence document was invalid or not release-intent");
 
     await page.locator('.studio-tab-section [data-studio-tab="evidence"]:visible').first().click();
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "evidence");

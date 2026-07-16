@@ -91,6 +91,13 @@ import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHist
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
 import {
+  assessGateEvidenceFreshness,
+  isGateEvidenceExportable,
+  type GateEvidenceFreshnessAssessment,
+  type GateEvidenceResult,
+} from "./GateEvidence";
+import { STUDIO_GATE_EVIDENCE_DIAGNOSTICS, STUDIO_GATE_EVIDENCE_DOCUMENT } from "./StudioGateEvidence";
+import {
   STUDIO_COMPATIBILITY_SNAPSHOT,
   STUDIO_COMPATIBILITY_SNAPSHOT_ARTIFACT_PATH,
   type StudioCompatibilitySnapshotState,
@@ -626,6 +633,15 @@ type BuildReadinessBaseRecord = {
   detail: string;
 };
 type BuildReadinessRecord = BuildReadinessBaseRecord & StudioActionableFields;
+type StudioGateEvidenceAssessment = {
+  evidence?: GateEvidenceResult;
+  freshness: GateEvidenceFreshnessAssessment;
+  status: StudioStatus;
+  detail: string;
+  evidenceIds: string[];
+  blockedBy: string[];
+  canExport: boolean;
+};
 type StudioTrustLane = "runtime" | "source" | "assets" | "qa" | "build" | "compat" | "architecture";
 type StudioTrustTargetKind = "compile" | "trace" | "package" | "package-file" | "asset" | "source-package" | "source-file" | "gate" | "contract";
 type StudioTrustTarget = {
@@ -9565,11 +9581,60 @@ export class App {
     return "converted runtime/report artifact derived from current import state";
   }
 
+  private getStudioGateEvidenceAssessment(gateId: string): StudioGateEvidenceAssessment {
+    const evidence = STUDIO_GATE_EVIDENCE_DOCUMENT.results.find((candidate) => candidate.gateId === gateId);
+    if (!evidence) {
+      const detail = STUDIO_GATE_EVIDENCE_DIAGNOSTICS.length
+        ? STUDIO_GATE_EVIDENCE_DIAGNOSTICS.join("; ")
+        : `No GateEvidenceResult/v0 record exists for ${gateId}.`;
+      return {
+        freshness: { state: "missing", detail },
+        status: "pending",
+        detail,
+        evidenceIds: [],
+        blockedBy: ["gate-evidence-missing"],
+        canExport: false,
+      };
+    }
+    const freshness = assessGateEvidenceFreshness(evidence);
+    const status: StudioStatus = evidence.status === "failed"
+      ? "fail"
+      : evidence.status === "unsupported"
+        ? "unsupported"
+        : evidence.status === "missing"
+          ? "pending"
+          : freshness.state === "current"
+            ? "ok"
+            : "warn";
+    const evidenceIds = [`gate-evidence:${evidence.gateId}`, `gate-digest:${evidence.digest}`, `gate-target:${evidence.target.id}`];
+    const blockedBy = [
+      ...(evidence.status === "failed" ? ["gate-evidence-failed"] : []),
+      ...(evidence.status === "unsupported" ? ["gate-evidence-unsupported"] : []),
+      ...(freshness.state !== "current" ? [`gate-evidence-${freshness.state}`] : []),
+    ];
+    return {
+      evidence,
+      freshness,
+      status,
+      detail: `${evidence.label} / ${evidence.status} / ${freshness.detail} / ${evidence.tool.name} / ${evidence.command} / ${evidence.digest}`,
+      evidenceIds,
+      blockedBy,
+      canExport: isGateEvidenceExportable(evidence, freshness),
+    };
+  }
+
   private getBuildReadinessRecords(summary: StudioProjectSummary): BuildReadinessRecord[] {
     const compiled = this.lastCompiledProject;
     const assetAttention = summary.assets.filter((asset) => isAttentionStatus(asset.status));
-    const gateFailures = summary.gates.filter((gate) => gate.status === "fail");
-    const gateWarnings = summary.gates.filter((gate) => isAttentionStatus(gate.status));
+    const architectureEvidence = this.getStudioGateEvidenceAssessment("architecture-boundaries");
+    const gateFailures = [
+      ...summary.gates.filter((gate) => gate.status === "fail"),
+      ...(architectureEvidence.status === "fail" ? [{ id: "architecture-boundaries" }] : []),
+    ];
+    const gateWarnings = [
+      ...summary.gates.filter((gate) => isAttentionStatus(gate.status)),
+      ...(isAttentionStatus(architectureEvidence.status) ? [{ id: "architecture-boundaries", status: architectureEvidence.status }] : []),
+    ];
     const sourcePackages = this.getProjectSourcePackages();
     const missingSourcePackages = sourcePackages.filter((sourcePackage) => sourcePackage.status !== "linked");
     const linkedSourcePackages = sourcePackages.length - missingSourcePackages.length;
@@ -9629,14 +9694,18 @@ export class App {
       {
         id: "architecture-boundaries",
         label: "Architecture boundaries",
-        status: "ok",
-        state: "exportable",
-        detail: "Shared engine, MUGEN compatibility, renderer, Studio, and future module boundaries are covered by the import-boundary gate.",
+        status: architectureEvidence.status,
+        state: architectureEvidence.status === "fail" || architectureEvidence.status === "unsupported" || architectureEvidence.status === "pending"
+          ? "blocked"
+          : architectureEvidence.status === "ok" && architectureEvidence.canExport
+            ? "exportable"
+            : "partial",
+        detail: architectureEvidence.detail,
         affectedSystem: "module",
         impact: "Keeps renderer-independent engine contracts portable while MUGEN-specific parser/runtime code stays behind compatibility adapters.",
-        evidenceIds: ["test:architecture-boundaries", "module-contracts"],
-        blockedBy: [],
-        canExport: true,
+        evidenceIds: ["test:architecture-boundaries", "module-contracts", ...architectureEvidence.evidenceIds],
+        blockedBy: architectureEvidence.blockedBy,
+        canExport: architectureEvidence.canExport,
         nextAction: { kind: "open-evidence", label: "Review boundary evidence", targetId: "test:architecture-boundaries" },
       },
       {
@@ -9928,7 +9997,13 @@ export class App {
         : { label: "invalid", delta: STUDIO_COMPATIBILITY_SNAPSHOT.diagnostics.join("; ") || "snapshot unavailable" };
     }
     if (record.id === "architecture-boundaries") {
-      return { label: "guarded", delta: "pnpm check:boundaries" };
+      const assessment = this.getStudioGateEvidenceAssessment(record.id);
+      return {
+        label: assessment.freshness.state === "current" && assessment.status === "ok" ? "current" : assessment.freshness.state,
+        delta: assessment.evidence
+          ? `${assessment.evidence.digest} / ${assessment.evidence.sourceRevision.slice(0, 8)}`
+          : assessment.detail,
+      };
     }
     return { label: record.state, delta: record.blockedBy.length ? `${record.blockedBy.length} blocker(s)` : "no blockers" };
   }
@@ -9976,10 +10051,10 @@ export class App {
         : "tracked snapshot unavailable";
     }
     if (record.id === "architecture-boundaries") {
-      const compiled = this.lastCompiledProject;
-      return compiled
-        ? `${compiled.contracts.sharedContracts.length} contracts / ${compiled.contracts.verificationCommands.boundary}`
-        : "test:architecture-boundaries / module-contracts";
+      const assessment = this.getStudioGateEvidenceAssessment(record.id);
+      return assessment.evidence
+        ? `${assessment.evidence.tool.name} / ${assessment.evidence.command} / ${assessment.evidence.digest}`
+        : "GateEvidenceResult/v0 missing";
     }
     return record.evidenceIds.slice(0, 2).join(" / ") || record.id;
   }
@@ -10188,22 +10263,27 @@ export class App {
     const summary = this.getStudioProjectSummary();
     const records: StudioEvidenceRecord[] = [];
     for (const gate of summary.gates) {
+      const gateEvidence = gate.id === "architecture-boundaries"
+        ? this.getStudioGateEvidenceAssessment(gate.id)
+        : undefined;
       records.push({
         id: `gate:${gate.id}`,
         label: gate.label,
         category: "gate",
-        status: gate.status,
-        detail: gate.detail,
+        status: gateEvidence?.status ?? gate.status,
+        detail: gateEvidence?.detail ?? gate.detail,
         tags: ["acceptance-gate", gate.id],
-        severity: gate.severity,
+        severity: gateEvidence ? this.severityForStatus(gateEvidence.status) : gate.severity,
         affectedAssetId: gate.affectedAssetId,
         affectedSystem: gate.affectedSystem,
         impact: gate.impact,
-        evidenceIds: gate.evidenceIds,
-        blockedBy: gate.blockedBy,
-        staleBecause: gate.staleBecause,
-        canExport: gate.canExport,
-        nextAction: gate.nextAction,
+        evidenceIds: [...gate.evidenceIds, ...(gateEvidence?.evidenceIds ?? [])],
+        blockedBy: gateEvidence?.blockedBy ?? gate.blockedBy,
+        staleBecause: gateEvidence?.freshness.state === "stale" ? gateEvidence.freshness.detail : gate.staleBecause,
+        canExport: gateEvidence?.canExport ?? gate.canExport,
+        nextAction: gateEvidence?.status === "ok"
+          ? gate.nextAction
+          : { kind: "open-evidence", label: "Review boundary evidence", targetId: "test:architecture-boundaries" },
       });
     }
     for (const asset of summary.assets) {
@@ -10235,21 +10315,27 @@ export class App {
 
   private getCompileEvidenceRecords(): StudioEvidenceRecord[] {
     const compiled = this.lastCompiledProject;
+    const architectureEvidence = this.getStudioGateEvidenceAssessment("architecture-boundaries");
     const architectureBoundaryEvidence: StudioEvidenceRecord = {
       id: "test:architecture-boundaries",
       label: "Architecture Boundaries",
       category: "compile",
-      status: "ok",
-      detail: "Vitest import-boundary gate protects shared engine, MUGEN compatibility, renderer, Studio, and future modules.",
-      tags: ["architecture-boundaries", "module-contracts", "renderer-independent", "vitest"],
+      status: architectureEvidence.status,
+      detail: architectureEvidence.detail,
+      tags: ["architecture-boundaries", "module-contracts", "renderer-independent", "vitest", "gate-evidence/v0"],
       level: "Guarded",
-      severity: "notice",
+      severity: this.severityForStatus(architectureEvidence.status),
       affectedSystem: "module",
       impact: "Makes the modular port strategy visible in Studio Evidence instead of only living in test output.",
-      evidenceIds: ["src/tests/ArchitectureBoundaries.test.ts", "src/engine/ModuleContracts.ts"],
-      blockedBy: [],
-      canExport: true,
-      nextAction: { kind: "open-build", label: "Review Build readiness", targetId: "architecture-boundaries" },
+      evidenceIds: ["src/tests/ArchitectureBoundaries.test.ts", "src/engine/ModuleContracts.ts", ...architectureEvidence.evidenceIds],
+      blockedBy: architectureEvidence.blockedBy,
+      staleBecause: architectureEvidence.freshness.state === "stale" ? architectureEvidence.freshness.detail : undefined,
+      canExport: architectureEvidence.canExport,
+      nextAction: {
+        kind: architectureEvidence.status === "ok" ? "open-build" : "open-evidence",
+        label: architectureEvidence.status === "ok" ? "Review Build readiness" : "Review gate evidence",
+        targetId: "architecture-boundaries",
+      },
     };
     if (!compiled) {
       return [
@@ -11574,6 +11660,7 @@ export class App {
     this.addJsonToZip(zip, "runtime/runtime-manifest.json", compiled);
     this.addJsonToZip(zip, "studio/studio-summary.json", studio);
     this.addJsonToZip(zip, "studio/asset-source-runtime-map.json", sourceRuntimeMaps);
+    this.addJsonToZip(zip, "studio/gate-evidence.json", STUDIO_GATE_EVIDENCE_DOCUMENT);
     this.addJsonToZip(zip, "studio/evidence.json", evidence);
     this.addJsonToZip(zip, "reports/compatibility-report.json", this.getCompatibilityExportPayload());
     this.addJsonToZip(
@@ -11602,6 +11689,7 @@ export class App {
       { path: "runtime/runtime-manifest.json", kind: "runtime", required: true },
       { path: "studio/studio-summary.json", kind: "studio", required: true },
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
+      { path: "studio/gate-evidence.json", kind: "studio", required: true },
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
       { path: "studio/evidence.json", kind: "qa", required: true },
       { path: "studio/build-readiness.json", kind: "qa", required: true },

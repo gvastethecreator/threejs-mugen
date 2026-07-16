@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "mugen-web-sandbox/gate-evidence/v0",
+  "generatedAt": "2026-07-16T18:44:14.146Z",
+  "sourceRevision": "d69d12a4058c5654b99787a23499a60925b9d85c",
+  "results": [
+    {
+      "schemaVersion": "mugen-web-sandbox/gate-evidence/v0",
+      "id": "gate-evidence:architecture-boundaries",
+      "gateId": "architecture-boundaries",
+      "label": "Architecture Boundaries",
+      "status": "passed",
+      "intent": "release",
+      "command": "pnpm run check:boundaries",
+      "tool": {
+        "name": "check_boundaries.cjs",
+        "version": "repository-script/v1"
+      },
+      "observedAt": "2026-07-16T18:44:14.146Z",
+      "sourceRevision": "d69d12a4058c5654b99787a23499a60925b9d85c",
+      "target": {
+        "kind": "contract",
+        "id": "test:architecture-boundaries"
+      },
+      "freshness": {
+        "maxAgeMs": 604800000
+      },
+      "diagnostics": [],
+      "digest": "fnv1a32:c4be5cf8"
+    }
+  ]
+}
