@@ -91,6 +91,11 @@ import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHist
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
 import {
+  STUDIO_COMPATIBILITY_SNAPSHOT,
+  STUDIO_COMPATIBILITY_SNAPSHOT_ARTIFACT_PATH,
+  type StudioCompatibilitySnapshotState,
+} from "./StudioCompatibilitySnapshot";
+import {
   ASSET_PROVENANCE_EXPORT_CONFIG_DIGEST,
   ASSET_PROVENANCE_IMPORT_CONFIG_DIGEST,
   ASSET_PROVENANCE_TOOL_VERSION,
@@ -417,6 +422,7 @@ type StudioEvidenceRecord = {
 } & Partial<StudioActionableFields>;
 type StudioEvidenceSummary = {
   records: StudioEvidenceRecord[];
+  compatibilitySnapshot: StudioCompatibilitySnapshotState;
   stats: {
     total: number;
     ok: number;
@@ -7423,6 +7429,7 @@ export class App {
           ${readiness.map((record) => this.renderBuildReadinessRecord(record)).join("")}
         </div>
       </div>
+      ${this.renderStudioCompatibilitySnapshotPanel()}
       <div class="section">
         <h2>Recent Projects</h2>
         ${
@@ -7452,6 +7459,7 @@ export class App {
     return `
       ${this.renderStudioTrustContract(trustRows, "build")}
       ${this.renderBuildReadinessPanel(summary)}
+      ${this.renderStudioCompatibilitySnapshotPanel()}
       ${this.renderSourcePackagePanel()}
       ${this.renderProjectBundlePanel()}
       ${this.renderRuntimeManifestPanel()}
@@ -7736,6 +7744,68 @@ export class App {
     `;
   }
 
+  private renderStudioCompatibilitySnapshotPanel(): string {
+    const state = STUDIO_COMPATIBILITY_SNAPSHOT;
+    const snapshot = state.snapshot;
+    const status: StudioStatus = this.getCompatibilitySnapshotStudioStatus();
+    if (!snapshot) {
+      return `
+        <div class="section studio-compatibility-snapshot">
+          <div class="section-heading-row">
+            <h2>Promoted Compatibility Snapshot</h2>
+            ${this.statusBadge(status)}
+          </div>
+          <div class="empty-state">${escapeHtml(state.diagnostics.join("; ") || "Tracked snapshot is unavailable.")}</div>
+        </div>
+      `;
+    }
+    const entryStatus = (entryStatus: (typeof snapshot.entries)[number]["status"]): StudioStatus =>
+      entryStatus === "passed" ? "ok" : entryStatus === "partial" ? "partial" : entryStatus === "failed" ? "fail" : "pending";
+    return `
+      <div class="section studio-compatibility-snapshot">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Promoted checkpoint</span>
+            <h2>Compatibility Corpus Snapshot</h2>
+          </div>
+          ${this.statusBadge(status)}
+        </div>
+        <dl class="kv studio-kv">
+          <dt>Schema</dt><dd class="mono">${escapeHtml(snapshot.schemaVersion)}</dd>
+          <dt>Coverage</dt><dd class="mono">${snapshot.summary.passedCount}/${snapshot.summary.entryCount} entries / ${snapshot.summary.requiredCount} required</dd>
+          <dt>Artifacts</dt><dd class="mono">${snapshot.summary.artifactCount} passed references</dd>
+          <dt>Semantic digest</dt><dd class="mono">${escapeHtml(snapshot.semanticDigest)}</dd>
+          <dt>Transport checksum</dt><dd class="mono">${escapeHtml(snapshot.checksum)}</dd>
+          <dt>Source revision</dt><dd class="mono">${escapeHtml(snapshot.source.sourceRevision)}</dd>
+          <dt>Observed</dt><dd>${escapeHtml(formatDateTime(snapshot.observedAt))}</dd>
+          <dt>Artifact</dt><dd class="mono">${escapeHtml(STUDIO_COMPATIBILITY_SNAPSHOT_ARTIFACT_PATH)}</dd>
+        </dl>
+        <div class="list compact-list">
+          ${snapshot.entries
+            .map(
+              (entry) => `
+                <div class="list-item">
+                  <span>
+                    <span class="list-title">${escapeHtml(entry.id)}</span>
+                    <span class="list-meta">${escapeHtml(entry.availability)} / ${escapeHtml(entry.journey?.schemaVersion ?? "no journey")} / ${entry.artifactRefs.length} artifacts</span>
+                  </span>
+                  ${this.statusBadge(entryStatus(entry.status))}
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+        <div class="badge-row">
+          ${snapshot.claims.allowed.slice(0, 3).map((claim) => `<span class="badge ok">allowed: ${escapeHtml(claim)}</span>`).join("")}
+          ${snapshot.claims.blocked.slice(0, 3).map((claim) => `<span class="badge warn">blocked: ${escapeHtml(claim)}</span>`).join("")}
+        </div>
+        <div class="row-actions">
+          ${studioActionButton("Compatibility evidence", 'data-evidence-filter="compatibility"')}
+        </div>
+      </div>
+    `;
+  }
+
   private renderStudioEvidenceNavigator(): string {
     const evidence = this.getStudioEvidenceSummary();
     const records = this.getFilteredEvidenceRecords(evidence);
@@ -7786,6 +7856,7 @@ export class App {
           </div>
         </div>
       </div>
+      ${this.renderStudioCompatibilitySnapshotPanel()}
       <div class="section">
         <div class="section-heading-row">
           <h2>Evidence Filters</h2>
@@ -7847,6 +7918,7 @@ export class App {
           ${[...categories.entries()].map(([category, count]) => `<span class="badge">${escapeHtml(category)} ${count}</span>`).join("")}
         </div>
       </div>
+      ${this.renderStudioCompatibilitySnapshotPanel()}
       ${this.renderTraceEvidencePanel()}
       ${this.renderTraceComparisonReviewPanel(evidence)}
       ${this.renderTraceFrameScrubberPanel()}
@@ -7981,6 +8053,9 @@ export class App {
     }
     if (row.id === "compatibility-gates") {
       return 'data-evidence-filter="gate"';
+    }
+    if (row.id === "compatibility-snapshot") {
+      return 'data-evidence-filter="compatibility"';
     }
     if (row.id === "architecture-boundaries") {
       return 'data-evidence-filter="compile"';
@@ -8528,6 +8603,7 @@ export class App {
       records.find((record) => isAttentionStatus(record.status));
     return {
       records,
+      compatibilitySnapshot: STUDIO_COMPATIBILITY_SNAPSHOT,
       stats: {
         total: records.length,
         ok: records.filter((record) => record.status === "ok" || record.status === "active").length,
@@ -9670,8 +9746,31 @@ export class App {
           ? { kind: "open-evidence", label: "Review gate evidence", targetId: "compatibility-gates" }
           : { kind: "open-build", label: "Review export readiness", targetId: "compatibility-gates" },
       },
+      this.getCompatibilitySnapshotBuildReadinessRecord(),
     ];
     return records.map((record) => this.withBuildReadinessAction(record));
+  }
+
+  private getCompatibilitySnapshotBuildReadinessRecord(): BuildReadinessRecord {
+    const evidence = this.getCompatibilitySnapshotEvidenceRecord();
+    const state: BuildReadinessStatus = evidence.status === "ok" ? "exportable" : evidence.status === "fail" ? "blocked" : "partial";
+    const snapshot = STUDIO_COMPATIBILITY_SNAPSHOT.snapshot;
+    const nextAction = evidence.nextAction ?? { kind: "open-evidence" as const, label: "Review snapshot diagnostics", targetId: "compat:snapshot" };
+    return {
+      id: "compatibility-snapshot",
+      label: "Promoted compatibility snapshot",
+      status: evidence.status,
+      state,
+      detail: evidence.detail,
+      severity: evidence.severity ?? this.severityForStatus(evidence.status),
+      affectedSystem: "build",
+      impact: evidence.impact ?? evidence.detail,
+      evidenceIds: evidence.evidenceIds ?? [],
+      blockedBy: evidence.blockedBy ?? [],
+      canExport: evidence.canExport ?? state === "exportable",
+      nextAction,
+      staleBecause: snapshot ? `checkpoint observed ${formatDateTime(snapshot.observedAt)}` : undefined,
+    };
   }
 
   private getStudioTrustContractRows(summary = this.getStudioProjectSummary()): StudioTrustContractRow[] {
@@ -9683,6 +9782,7 @@ export class App {
       { id: "asset-validation", lane: "assets" },
       { id: "source-packages", lane: "source" },
       { id: "compatibility-gates", lane: "compat" },
+      { id: "compatibility-snapshot", lane: "compat" },
       { id: "architecture-boundaries", lane: "architecture" },
     ];
     return lanes.flatMap(({ id, lane }) => {
@@ -9742,6 +9842,9 @@ export class App {
     if (record.id === "compatibility-gates") {
       const target = summary.gates.find((gate) => isAttentionStatus(gate.status)) ?? summary.gates[0];
       return { kind: "gate", id: target?.id ?? "compatibility-gates" };
+    }
+    if (record.id === "compatibility-snapshot") {
+      return { kind: "gate", id: "compat:snapshot" };
     }
     if (record.id === "architecture-boundaries") {
       return { kind: "contract", id: "test:architecture-boundaries" };
@@ -9818,6 +9921,12 @@ export class App {
       const blocked = summary.gates.filter((gate) => gate.status === "fail" || gate.status === "blocked" || gate.status === "unsupported").length;
       return { label: attention ? "review" : "current", delta: `${attention} attention / ${blocked} blocked` };
     }
+    if (record.id === "compatibility-snapshot") {
+      const snapshot = STUDIO_COMPATIBILITY_SNAPSHOT.snapshot;
+      return snapshot
+        ? { label: "promoted", delta: `semantic ${snapshot.semanticDigest} / source ${snapshot.source.sourceRevision.slice(0, 8)}` }
+        : { label: "invalid", delta: STUDIO_COMPATIBILITY_SNAPSHOT.diagnostics.join("; ") || "snapshot unavailable" };
+    }
     if (record.id === "architecture-boundaries") {
       return { label: "guarded", delta: "pnpm check:boundaries" };
     }
@@ -9859,6 +9968,12 @@ export class App {
       const blocked = summary.gates.filter((gate) => gate.status === "fail" || gate.status === "blocked" || gate.status === "unsupported").length;
       const attention = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
       return `${summary.gates.length - attention}/${summary.gates.length} clean / ${blocked} blocked`;
+    }
+    if (record.id === "compatibility-snapshot") {
+      const snapshot = STUDIO_COMPATIBILITY_SNAPSHOT.snapshot;
+      return snapshot
+        ? `${snapshot.summary.passedCount}/${snapshot.summary.entryCount} entries / ${snapshot.summary.requiredCount} required / ${snapshot.summary.artifactCount} artifacts`
+        : "tracked snapshot unavailable";
     }
     if (record.id === "architecture-boundaries") {
       const compiled = this.lastCompiledProject;
@@ -10113,6 +10228,7 @@ export class App {
     records.push(...this.getCompileEvidenceRecords());
     records.push(...this.getTraceEvidenceRecords());
     records.push(...this.getCompatibilityEvidenceRecords());
+    records.push(this.getCompatibilitySnapshotEvidenceRecord());
     records.push(...this.getDiagnosticsEvidenceRecords());
     return records;
   }
@@ -10329,6 +10445,53 @@ export class App {
       });
     }
     return records;
+  }
+
+  private getCompatibilitySnapshotStudioStatus(): StudioStatus {
+    if (STUDIO_COMPATIBILITY_SNAPSHOT.status === "passed") {
+      return "ok";
+    }
+    if (STUDIO_COMPATIBILITY_SNAPSHOT.status === "partial") {
+      return "partial";
+    }
+    if (STUDIO_COMPATIBILITY_SNAPSHOT.status === "failed") {
+      return "fail";
+    }
+    return "pending";
+  }
+
+  private getCompatibilitySnapshotEvidenceRecord(): StudioEvidenceRecord {
+    const snapshot = STUDIO_COMPATIBILITY_SNAPSHOT.snapshot;
+    const status = this.getCompatibilitySnapshotStudioStatus();
+    const diagnostics = STUDIO_COMPATIBILITY_SNAPSHOT.diagnostics;
+    const detail = snapshot
+      ? `${snapshot.summary.passedCount}/${snapshot.summary.entryCount} entries passed / ${snapshot.summary.requiredCount} required / ${snapshot.summary.artifactCount} artifacts / semantic ${snapshot.semanticDigest}`
+      : diagnostics.join("; ") || "Tracked compatibility snapshot is unavailable.";
+    return {
+      id: "compat:snapshot",
+      label: "Promoted Compatibility Snapshot",
+      category: "compatibility",
+      status,
+      detail,
+      tags: ["compatibility-corpus", "promoted", "rebuild-and-verify", ...(snapshot ? [snapshot.schemaVersion, snapshot.semanticDigest] : [])],
+      level: "Promoted Checkpoint",
+      severity: this.severityForStatus(status),
+      affectedSystem: "runtime",
+      impact:
+        status === "ok"
+          ? "The tracked corpus snapshot makes the repository-owned character and stage journey visible to Studio Evidence and Build."
+          : "The tracked corpus snapshot cannot support a clean compatibility claim until its materialization diagnostics are resolved.",
+      evidenceIds: snapshot
+        ? [`snapshot:${snapshot.semanticDigest}`, `checksum:${snapshot.checksum}`, ...snapshot.summary.artifactIds]
+        : [],
+      blockedBy: status === "ok" || status === "partial" ? [] : diagnostics.length ? diagnostics : ["compatibility-snapshot"],
+      canExport: status !== "fail" && status !== "pending",
+      nextAction: {
+        kind: status === "ok" ? "open-build" : "open-evidence",
+        label: status === "ok" ? "Review promoted snapshot" : "Review snapshot diagnostics",
+        targetId: "compat:snapshot",
+      },
+    };
   }
 
   private getDiagnosticsEvidenceRecords(): StudioEvidenceRecord[] {
@@ -11354,6 +11517,11 @@ export class App {
       studio: this.getStudioProjectSummary(),
       project: this.getGameProjectManifest(),
       compiledProject: this.lastCompiledProject,
+      compatibilitySnapshot: STUDIO_COMPATIBILITY_SNAPSHOT.snapshot ?? {
+        status: STUDIO_COMPATIBILITY_SNAPSHOT.status,
+        artifactPath: STUDIO_COMPATIBILITY_SNAPSHOT_ARTIFACT_PATH,
+        diagnostics: STUDIO_COMPATIBILITY_SNAPSHOT.diagnostics,
+      },
     };
     this.downloadJson(
       exportPayload,
@@ -11408,6 +11576,15 @@ export class App {
     this.addJsonToZip(zip, "studio/asset-source-runtime-map.json", sourceRuntimeMaps);
     this.addJsonToZip(zip, "studio/evidence.json", evidence);
     this.addJsonToZip(zip, "reports/compatibility-report.json", this.getCompatibilityExportPayload());
+    this.addJsonToZip(
+      zip,
+      "qa/compatibility-corpus-snapshot-v1.json",
+      STUDIO_COMPATIBILITY_SNAPSHOT.snapshot ?? {
+        status: STUDIO_COMPATIBILITY_SNAPSHOT.status,
+        artifactPath: STUDIO_COMPATIBILITY_SNAPSHOT_ARTIFACT_PATH,
+        diagnostics: STUDIO_COMPATIBILITY_SNAPSHOT.diagnostics,
+      },
+    );
     if (traceArtifact) {
       this.addJsonToZip(zip, "qa/latest-trace-artifact.json", traceArtifact);
     }
@@ -11429,6 +11606,7 @@ export class App {
       { path: "studio/evidence.json", kind: "qa", required: true },
       { path: "studio/build-readiness.json", kind: "qa", required: true },
       { path: "reports/compatibility-report.json", kind: "report", required: true },
+      { path: "qa/compatibility-corpus-snapshot-v1.json", kind: "qa", required: true },
       { path: "assets/package-assets.json", kind: "asset-manifest", required: true },
       { path: "README.txt", kind: "readme", required: true },
       ...bundledAssets.map((asset) => ({ path: asset.packagePath, kind: "asset" as const, required: asset.required })),

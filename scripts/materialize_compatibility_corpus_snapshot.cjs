@@ -1,3 +1,5 @@
+const { copyFileSync, mkdirSync } = require("node:fs");
+const { resolve } = require("node:path");
 const { spawnSync } = require("node:child_process");
 
 const revision = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" });
@@ -35,5 +37,12 @@ const result = spawnSync(
 if (result.error) {
   console.error(result.error);
   process.exit(1);
+}
+if ((result.status ?? 1) === 0) {
+  const docsArtifact = resolve("docs/evidence/compatibility-corpus-snapshot-v1.json");
+  const sourceArtifact = resolve("src/mugen/compatibility/compatibility-corpus-snapshot-v1.json");
+  mkdirSync(resolve("src/mugen/compatibility"), { recursive: true });
+  copyFileSync(docsArtifact, sourceArtifact);
+  console.log(`Synchronized Studio snapshot source: ${sourceArtifact}`);
 }
 process.exit(result.status ?? 1);

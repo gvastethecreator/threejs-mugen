@@ -14,6 +14,7 @@
     "qa:stage": "node scripts/qa_stage_compatibility.cjs",
     "qa:stage:repository": "node scripts/qa_repository_stage_compatibility.cjs",
     "qa:stage:repository:native": "node scripts/qa_repository_stage_native_regression.cjs",
+    "qa:studio:compatibility-snapshot": "node scripts/qa_studio_compatibility_snapshot.cjs",
     "materialize:repository-stage-journey": "node scripts/materialize_repository_stage_journey.cjs",
     "materialize:repository-stage-journey:native": "node scripts/materialize_repository_stage_journey_native.cjs",
     "qa:smoke": "node scripts/qa_smoke.cjs",

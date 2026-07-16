@@ -1882,6 +1882,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       bodyHasTrace: document.body.innerText.includes("Trace Evidence"),
       bodyHasPackage: document.body.innerText.includes("Project Package"),
       bodyHasTrustChain: document.body.innerText.includes("Build Trust Chain"),
+      bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
       trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
@@ -1927,6 +1928,9 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       architectureGateStatus: bridge?.studio?.gates?.find((gate) => gate.id === "architecture-boundaries")?.status,
       architectureGateEvidenceIds: bridge?.studio?.gates?.find((gate) => gate.id === "architecture-boundaries")?.evidenceIds ?? [],
       architectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
+      compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
+      compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
+      compatibilitySnapshotRecord: bridge?.studioEvidence?.records?.find((record) => record.id === "compat:snapshot"),
       stageReports: bridge?.stages?.length ?? 0,
       stageLayerReports: bridge?.stages?.reduce((total, stage) => total + (stage.backgrounds?.layers?.length ?? 0), 0) ?? 0,
       stageLayerStatuses: [
@@ -2459,6 +2463,7 @@ async function inspectPackageZip(packagePath) {
   const sourceRuntimeMap = JSON.parse(await zip.file("studio/asset-source-runtime-map.json").async("string"));
   const assetProvenance = JSON.parse(await zip.file("studio/asset-provenance.json").async("string"));
   const packageAssets = JSON.parse(await zip.file("assets/package-assets.json").async("string"));
+  const compatibilitySnapshot = JSON.parse(await zip.file("qa/compatibility-corpus-snapshot-v1.json").async("string"));
   const bundledAssets = packageAssets.filter((asset) => asset.status === "bundled");
   const importedAssets = bundledAssets.filter((asset) => asset.packagePath.startsWith("assets/imported/"));
   const missingBundledFiles = bundledAssets.filter((asset) => !files.includes(asset.packagePath));
@@ -2510,6 +2515,14 @@ async function inspectPackageZip(packagePath) {
     hasTrace: files.includes("qa/latest-trace-artifact.json"),
     hasAssetManifest: files.includes("assets/package-assets.json"),
     hasAssetProvenance: files.includes("studio/asset-provenance.json"),
+    hasCompatibilitySnapshot: files.includes("qa/compatibility-corpus-snapshot-v1.json"),
+    compatibilitySnapshotSchema: compatibilitySnapshot.schemaVersion,
+    compatibilitySnapshotStatus: compatibilitySnapshot.status,
+    compatibilitySnapshotSemanticDigest: compatibilitySnapshot.semanticDigest,
+    compatibilitySnapshotChecksum: compatibilitySnapshot.checksum,
+    compatibilitySnapshotRequiredEntries: compatibilitySnapshot.summary?.requiredCount ?? 0,
+    compatibilitySnapshotPassedEntries: compatibilitySnapshot.summary?.passedCount ?? 0,
+    compatibilitySnapshotArtifacts: compatibilitySnapshot.summary?.artifactCount ?? 0,
     hasRuntimeAtlas: files.some((file) => file.endsWith("sprite-sheet-alpha.png")),
     hasStageArt: files.some((file) => file.endsWith("rooftop-dojo.png")),
   };
@@ -2610,6 +2623,7 @@ async function captureStudioEvidence(page, outDir) {
       evidenceFilter: bridge?.studioEvidence?.activeFilter,
       bodyHasEvidence: document.body.innerText.includes("Evidence Browser"),
       bodyHasTrustChain: document.body.innerText.includes("Evidence Trust Chain"),
+      bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
       trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
@@ -2637,6 +2651,9 @@ async function captureStudioEvidence(page, outDir) {
       hasArchitectureGateRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "gate:architecture-boundaries")),
       hasArchitectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
       architectureEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.status,
+      compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
+      compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
+      hasCompatibilitySnapshotRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "compat:snapshot" && record.status === "ok")),
       traceArtifacts: bridge?.traceArtifacts?.length ?? 0,
       persistedTraceArtifacts: bridge?.studioEvidence?.stats?.persistedTraceArtifacts ?? 0,
       persistedTraceComparisons: bridge?.studioEvidence?.persistedTraceComparisons?.length ?? 0,
@@ -3900,6 +3917,7 @@ function assertSmoke(diagnostics) {
     "asset-validation",
     "source-packages",
     "compatibility-gates",
+    "compatibility-snapshot",
     "architecture-boundaries",
   ];
   const hasExpectedTrustChain = (check) =>
@@ -3926,6 +3944,9 @@ function assertSmoke(diagnostics) {
   }
   if (trustBindingAt(studioBuild, "compatibility-gates")?.evidenceFilter !== "gate") {
     failures.push("studio-build: compatibility Trust Chain row did not target gate evidence");
+  }
+  if (trustBindingAt(studioBuild, "compatibility-snapshot")?.evidenceFilter !== "compatibility") {
+    failures.push("studio-build: promoted compatibility snapshot Trust Chain row did not target compatibility evidence");
   }
   if (
     trustTargetAt(studioBuild, "package-bundle")?.kind !== "package-file" ||
@@ -3965,6 +3986,9 @@ function assertSmoke(diagnostics) {
   if (!studioBuild.bodyHasPackage || !studioBuild.projectBundle) {
     failures.push("studio-build: project package panel or bridge summary missing");
   }
+  if (!studioBuild.bodyHasCompatibilitySnapshot || studioBuild.compatibilitySnapshotStatus !== "passed" || studioBuild.compatibilitySnapshotRecord?.status !== "ok") {
+    failures.push("studio-build: promoted compatibility snapshot was not visible as an exportable Build record");
+  }
   if (
     !studioBuild.bodyHasArchitectureBoundaries ||
     studioBuild.architectureGateStatus !== "ok" ||
@@ -4000,6 +4024,14 @@ function assertSmoke(diagnostics) {
     (studioBuild.downloadedPackage?.provenanceLicenseUnknown ?? 0) < 1 ||
     (studioBuild.downloadedPackage?.provenanceAbsolutePathLeaks ?? 0) !== 0 ||
     !studioBuild.downloadedPackage?.hasTrace
+    || !studioBuild.downloadedPackage?.hasCompatibilitySnapshot
+    || studioBuild.downloadedPackage?.compatibilitySnapshotSchema !== "mugen-web-sandbox/compatibility-corpus-snapshot/v1.1"
+    || studioBuild.downloadedPackage?.compatibilitySnapshotStatus !== "passed"
+    || !studioBuild.downloadedPackage?.compatibilitySnapshotSemanticDigest
+    || !studioBuild.downloadedPackage?.compatibilitySnapshotChecksum
+    || (studioBuild.downloadedPackage?.compatibilitySnapshotRequiredEntries ?? 0) < 2
+    || (studioBuild.downloadedPackage?.compatibilitySnapshotPassedEntries ?? 0) < 2
+    || (studioBuild.downloadedPackage?.compatibilitySnapshotArtifacts ?? 0) < 8
   ) {
     failures.push("studio-build: downloaded project package did not include required contracts/evidence");
   }
@@ -4249,6 +4281,9 @@ function assertSmoke(diagnostics) {
   }
   if (!studioEvidence.bodyHasTrustChain || studioEvidence.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioEvidence)) {
     failures.push("studio-evidence: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions");
+  }
+  if (!studioEvidence.bodyHasCompatibilitySnapshot || studioEvidence.compatibilitySnapshotStatus !== "passed" || !studioEvidence.hasCompatibilitySnapshotRecord) {
+    failures.push("studio-evidence: promoted compatibility snapshot was not visible as validated evidence");
   }
   if ((studioBuild.trustChainIds ?? []).join("|") !== (studioEvidence.trustChainIds ?? []).join("|")) {
     failures.push("studio-evidence: Trust Chain ids drifted from Studio Build");
