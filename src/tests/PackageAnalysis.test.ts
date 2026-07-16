@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  createPackageAnalysisV1,
   createPackageAnalysis,
+  parsePackageAnalysisV1,
   parsePackageAnalysis,
+  type PackageAnalysisV1Result,
 } from "../mugen/compatibility/PackageAnalysis";
 import { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
 
@@ -123,6 +126,108 @@ describe("PackageAnalysis/v0", () => {
     expect(stage.profiles.ikemen.profile).toBe("ikemen-go-scan");
     expect(system.profiles.mugen.profile).toBe("unknown");
   });
+
+  it("materializes v1 source identity and nested targetable analysis", () => {
+    const vfs = fixtureVfs();
+    const report = createPackageAnalysisV1({
+      vfs,
+      sourceName: "fixture-package",
+      observedAt: "2026-07-16T00:00:00.000Z",
+      sourceFingerprint: fingerprintFor(vfs),
+    });
+
+    expect(report).toMatchObject({
+      schemaVersion: "mugen-web-sandbox/package-analysis/v1",
+      observedAt: "2026-07-16T00:00:00.000Z",
+      analyzer: { id: "mugen-web-sandbox/package-analysis", version: "1.0.0" },
+      ruleset: { id: "mugen-web-sandbox/package-analysis-rules", version: "1.0.0" },
+      upstream: { project: "ikemen-engine/Ikemen-GO", revision: "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703" },
+      source: {
+        name: "fixture-package",
+        package: { algorithm: "sha-256", digest: "e".repeat(64) },
+        fileCount: 12,
+      },
+      analysis: {
+        schemaVersion: "mugen-web-sandbox/package-analysis/v0",
+        sourceName: "fixture-package",
+      },
+    });
+    expect(report.source.files).toHaveLength(12);
+    expect(report.analysis.findings.find((finding) => finding.feature === "ZSS script file")).toMatchObject({
+      location: { path: "chars/kfm/kfm.zss" },
+    });
+    expect(report.semanticDigest).toMatch(/^[0-9a-f]{8}$/);
+    expect(parsePackageAnalysisV1(JSON.parse(JSON.stringify(report))).errors).toEqual([]);
+  });
+
+  it("keeps semantic identity stable when only observation time changes", () => {
+    const vfs = fixtureVfs();
+    const fingerprint = fingerprintFor(vfs);
+    const first = createPackageAnalysisV1({
+      vfs,
+      sourceName: "fixture-package",
+      observedAt: "2026-07-16T00:00:00.000Z",
+      sourceFingerprint: fingerprint,
+    });
+    const later = createPackageAnalysisV1({
+      vfs,
+      sourceName: "fixture-package",
+      observedAt: "2026-07-16T01:00:00.000Z",
+      sourceFingerprint: fingerprint,
+    });
+
+    expect(later.semanticDigest).toBe(first.semanticDigest);
+    expect(later.checksum).not.toBe(first.checksum);
+  });
+
+  it("rejects an invalid nested v0 report even when the v1 envelope is present", () => {
+    const report = createPackageAnalysisV1({
+      vfs: fixtureVfs(),
+      sourceName: "fixture-package",
+      observedAt: "2026-07-16T00:00:00.000Z",
+      sourceFingerprint: fingerprintFor(fixtureVfs()),
+    });
+    const tampered = JSON.parse(JSON.stringify(report)) as PackageAnalysisV1Result;
+    tampered.analysis = { ...tampered.analysis, checksum: "00000000" };
+
+    expect(parsePackageAnalysisV1(tampered).errors).toContain("nested package analysis: package analysis checksum mismatch");
+  });
+
+  it("rejects analyzer, ruleset, and upstream version drift", () => {
+    const report = createPackageAnalysisV1({
+      vfs: fixtureVfs(),
+      sourceName: "fixture-package",
+      observedAt: "2026-07-16T00:00:00.000Z",
+      sourceFingerprint: fingerprintFor(fixtureVfs()),
+    });
+    const tampered = JSON.parse(JSON.stringify(report)) as PackageAnalysisV1Result;
+    tampered.analyzer = { ...tampered.analyzer, version: "2.0.0" };
+    tampered.ruleset = { ...tampered.ruleset, version: "2.0.0" };
+    tampered.upstream = { ...tampered.upstream, revision: "0000000000000000000000000000000000000000" };
+
+    expect(parsePackageAnalysisV1(tampered).errors).toEqual(expect.arrayContaining([
+      "package analysis v1 analyzer identity is unsupported",
+      "package analysis v1 ruleset identity is unsupported",
+      "package analysis v1 upstream identity is unsupported",
+    ]));
+  });
+
+  it("rejects source identity drift against nested analysis locations", () => {
+    const vfs = fixtureVfs();
+    const report = createPackageAnalysisV1({
+      vfs,
+      sourceName: "fixture-package",
+      observedAt: "2026-07-16T00:00:00.000Z",
+      sourceFingerprint: fingerprintFor(vfs),
+    });
+    const tampered = JSON.parse(JSON.stringify(report)) as PackageAnalysisV1Result;
+    tampered.source.files[0] = { ...tampered.source.files[0]!, byteLength: tampered.source.files[0]!.byteLength + 1 };
+
+    expect(parsePackageAnalysisV1(tampered).errors).toEqual(expect.arrayContaining([
+      "package analysis v1 source file does not match analysis:chars/kfm/kfm.air",
+      "package analysis v1 byteLength does not match source files",
+    ]));
+  });
 });
 
 function fixtureVfs(): VirtualFileSystem {
@@ -155,4 +260,19 @@ function fixtureFiles(): Array<[string, string]> {
 
 function textBytes(value: string): Uint8Array {
   return new TextEncoder().encode(value);
+}
+
+function fingerprintFor(vfs: VirtualFileSystem) {
+  const files = vfs.listFiles().map((path, index) => ({
+    path,
+    digest: (index + 1).toString(16).padStart(64, "0"),
+    byteLength: vfs.get(path)?.bytes.byteLength ?? 0,
+  }));
+  return {
+    algorithm: "sha-256" as const,
+    digest: "e".repeat(64),
+    fileCount: files.length,
+    byteLength: files.reduce((total, file) => total + file.byteLength, 0),
+    files,
+  };
 }

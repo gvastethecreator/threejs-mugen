@@ -59,8 +59,9 @@ import { analyzeControllerTriggers, createCompatibilityProfiles, createEmptyComp
 import { createStageCompatibilityReport, summarizeStageBackgroundControllers } from "../mugen/compatibility/StageCompatibilityReport";
 import type { StageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
 import {
-  createPackageAnalysis,
-  parsePackageAnalysis,
+  createPackageAnalysisV1,
+  parsePackageAnalysisV1,
+  type PackageAnalysisV1Result,
   type PackageAnalysisResult,
 } from "../mugen/compatibility/PackageAnalysis";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
@@ -768,6 +769,7 @@ type SourceImportRollbackState = {
   pendingSourceRelinkPackageId?: string;
   sourceImportTransaction?: SourceImportTransaction;
   importedPackageAnalysis?: PackageAnalysisResult;
+  importedPackageAnalysisV1?: PackageAnalysisV1Result;
   studioSourceDocument?: StudioSourceDocumentDraft;
   studioSourceWriteReceipt?: SourceWriteReceipt;
   lastCompiledProject?: CompiledRuntimeManifest;
@@ -828,6 +830,7 @@ export class App {
   private pendingSourceRelinkPackageId?: string;
   private sourceImportTransaction?: SourceImportTransaction;
   private importedPackageAnalysis?: PackageAnalysisResult;
+  private importedPackageAnalysisV1?: PackageAnalysisV1Result;
   private studioSourceDocument?: StudioSourceDocumentDraft;
   private studioSourceWriteReceipt?: SourceWriteReceipt;
   private studioSourceSemanticPreflightTimer?: number;
@@ -2614,7 +2617,8 @@ export class App {
       (acceptedTransaction) => {
         this.studioAutosave.cancel();
         this.studioSourceDocument = undefined;
-        this.importedPackageAnalysis = this.analyzeImportedSourceBundle(sourceBundle);
+        this.importedPackageAnalysisV1 = this.analyzeImportedSourceBundle(sourceBundle);
+        this.importedPackageAnalysis = this.importedPackageAnalysisV1?.analysis;
         this.character = character;
         this.importedStages = stages;
         this.importedSourceBundle = sourceBundle;
@@ -2652,18 +2656,24 @@ export class App {
     this.updateUi();
   }
 
-  private analyzeImportedSourceBundle(sourceBundle: ImportedSourceBundle): PackageAnalysisResult | undefined {
-    const candidate = createPackageAnalysis({
-      vfs: sourceBundle.vfs,
-      sourceName: sourceBundle.sourceName,
-      generatedAt: new Date().toISOString(),
-    });
-    const parsed = parsePackageAnalysis(candidate);
-    if (!parsed.report) {
-      this.log(`Package analysis rejected: ${parsed.errors.join("; ") || "invalid analysis result"}`);
+  private analyzeImportedSourceBundle(sourceBundle: ImportedSourceBundle): PackageAnalysisV1Result | undefined {
+    try {
+      const candidate = createPackageAnalysisV1({
+        vfs: sourceBundle.vfs,
+        sourceName: sourceBundle.sourceName,
+        observedAt: new Date().toISOString(),
+        sourceFingerprint: sourceBundle.fingerprint,
+      });
+      const parsed = parsePackageAnalysisV1(candidate);
+      if (!parsed.report) {
+        this.log(`Package analysis v1 rejected: ${parsed.errors.join("; ") || "invalid analysis result"}`);
+        return undefined;
+      }
+      return parsed.report;
+    } catch (error) {
+      this.log(`Package analysis v1 rejected: ${error instanceof Error ? error.message : String(error)}`);
       return undefined;
     }
-    return parsed.report;
   }
 
   private applySourceImportTransaction(transaction: SourceImportTransaction): void {
@@ -2710,6 +2720,7 @@ export class App {
       pendingSourceRelinkPackageId: this.pendingSourceRelinkPackageId,
       sourceImportTransaction: this.sourceImportTransaction,
       importedPackageAnalysis: this.importedPackageAnalysis,
+      importedPackageAnalysisV1: this.importedPackageAnalysisV1,
       studioSourceDocument: this.studioSourceDocument,
       studioSourceWriteReceipt: this.studioSourceWriteReceipt,
       lastCompiledProject: this.lastCompiledProject,
@@ -2739,6 +2750,7 @@ export class App {
     this.pendingSourceRelinkPackageId = previousState.pendingSourceRelinkPackageId;
     this.sourceImportTransaction = previousState.sourceImportTransaction;
     this.importedPackageAnalysis = previousState.importedPackageAnalysis;
+    this.importedPackageAnalysisV1 = previousState.importedPackageAnalysisV1;
     this.studioSourceDocument = previousState.studioSourceDocument;
     this.studioSourceWriteReceipt = previousState.studioSourceWriteReceipt;
     this.lastCompiledProject = previousState.lastCompiledProject;
@@ -7996,10 +8008,11 @@ export class App {
     if (!report) {
       return "";
     }
+    const reportV1 = this.importedPackageAnalysisV1;
     const ikemen = report.profiles.ikemen;
     const status: StudioStatus = report.status === "recognized" ? "ok" : report.status === "partial" ? "warn" : "pending";
     return `
-      <div class="section studio-package-analysis" data-package-analysis="${escapeHtml(report.checksum)}">
+      <div class="section studio-package-analysis" data-package-analysis="${escapeHtml(reportV1?.checksum ?? report.checksum)}">
         <div class="section-heading-row">
           <div>
             <span class="panel-kicker">Scanner-only contract</span>
@@ -8008,11 +8021,16 @@ export class App {
           ${this.statusBadge(status)}
         </div>
         <dl class="kv studio-kv">
-          <dt>Schema</dt><dd class="mono">${escapeHtml(report.schemaVersion)}</dd>
+          <dt>Schema</dt><dd class="mono">${escapeHtml(reportV1?.schemaVersion ?? report.schemaVersion)}</dd>
           <dt>Source</dt><dd class="mono">${escapeHtml(report.sourceName)}</dd>
+          <dt>Source SHA-256</dt><dd class="mono">${escapeHtml(reportV1?.source.package.digest ?? "missing")}</dd>
           <dt>Files</dt><dd class="mono">${report.summary.recognizedFileCount}/${report.summary.fileCount} recognized</dd>
           <dt>Findings</dt><dd class="mono">${report.summary.findingCount}</dd>
-          <dt>Checksum</dt><dd class="mono">${escapeHtml(report.checksum)}</dd>
+          <dt>Semantic digest</dt><dd class="mono">${escapeHtml(reportV1?.semanticDigest ?? "missing")}</dd>
+          <dt>Envelope checksum</dt><dd class="mono">${escapeHtml(reportV1?.checksum ?? report.checksum)}</dd>
+          <dt>Analyzer</dt><dd class="mono">${escapeHtml(reportV1 ? `${reportV1.analyzer.id}@${reportV1.analyzer.version}` : "missing")}</dd>
+          <dt>Ruleset</dt><dd class="mono">${escapeHtml(reportV1 ? `${reportV1.ruleset.id}@${reportV1.ruleset.version}` : "missing")}</dd>
+          <dt>Upstream</dt><dd class="mono">${escapeHtml(reportV1 ? `${reportV1.upstream.project}@${reportV1.upstream.revision.slice(0, 12)}` : "missing")}</dd>
           <dt>IKEMEN</dt><dd>${ikemen.detected ? `${ikemen.findingCount} findings / scanner-only` : "not detected"}</dd>
         </dl>
         <div class="list compact-list">
@@ -10031,7 +10049,7 @@ export class App {
       },
       this.getCompatibilitySnapshotBuildReadinessRecord(),
     ];
-    if (this.importedPackageAnalysis) {
+    if (this.importedPackageAnalysis && this.importedPackageAnalysisV1) {
       const packageAnalysisEvidence = this.getPackageAnalysisEvidenceRecord(this.importedPackageAnalysis);
       records.push({
         id: "package-analysis",
@@ -10100,7 +10118,7 @@ export class App {
       { id: "source-packages", lane: "source" },
       { id: "compatibility-gates", lane: "compat" },
       { id: "compatibility-snapshot", lane: "compat" },
-      ...(this.importedPackageAnalysis ? [{ id: "package-analysis", lane: "compat" as const }] : []),
+      ...(this.importedPackageAnalysisV1 ? [{ id: "package-analysis", lane: "compat" as const }] : []),
       { id: "architecture-boundaries", lane: "architecture" },
       ...(this.studioSourceWriteReceipt ? [{ id: "source-write-receipt", lane: "source" as const }] : []),
     ];
@@ -10167,8 +10185,9 @@ export class App {
     }
     if (record.id === "package-analysis") {
       const report = this.importedPackageAnalysis;
+      const reportV1 = this.importedPackageAnalysisV1;
       return report
-        ? { kind: "package", id: `package-analysis:${report.checksum}` }
+        ? { kind: "package", id: `package-analysis:${reportV1?.checksum ?? report.checksum}` }
         : { kind: "package", id: "package-analysis" };
     }
     if (record.id === "architecture-boundaries") {
@@ -10260,8 +10279,9 @@ export class App {
     }
     if (record.id === "package-analysis") {
       const report = this.importedPackageAnalysis;
+      const reportV1 = this.importedPackageAnalysisV1;
       return report
-        ? { label: "current", delta: `${report.summary.findingCount} findings / ${report.checksum}` }
+        ? { label: "current", delta: `${report.summary.findingCount} findings / semantic ${reportV1?.semanticDigest ?? "missing"}` }
         : { label: "missing", delta: "package analysis not materialized" };
     }
     if (record.id === "architecture-boundaries") {
@@ -10330,9 +10350,10 @@ export class App {
     }
     if (record.id === "package-analysis") {
       const report = this.importedPackageAnalysis;
+      const reportV1 = this.importedPackageAnalysisV1;
       return report
-        ? `${report.schemaVersion} / ${report.sourceName} / ${report.checksum}`
-        : "PackageAnalysis/v0 missing";
+        ? `${reportV1?.schemaVersion ?? report.schemaVersion} / ${report.sourceName} / ${reportV1?.checksum ?? report.checksum}`
+        : "PackageAnalysis/v1 missing";
     }
     if (record.id === "architecture-boundaries") {
       const assessment = this.getStudioGateEvidenceAssessment(record.id);
@@ -10599,7 +10620,7 @@ export class App {
     records.push(...this.getTraceEvidenceRecords());
     records.push(...this.getCompatibilityEvidenceRecords());
     records.push(this.getCompatibilitySnapshotEvidenceRecord());
-    if (this.importedPackageAnalysis) {
+    if (this.importedPackageAnalysis && this.importedPackageAnalysisV1) {
       records.push(this.getPackageAnalysisEvidenceRecord(this.importedPackageAnalysis));
     }
     if (this.studioSourceWriteReceipt) {
@@ -10610,21 +10631,27 @@ export class App {
   }
 
   private getPackageAnalysisEvidenceRecord(report: PackageAnalysisResult): StudioEvidenceRecord {
+    const reportV1 = this.importedPackageAnalysisV1;
     const status: StudioStatus = report.status === "recognized" ? "ok" : report.status === "partial" ? "warn" : "pending";
     const ikemen = report.profiles.ikemen;
+    const envelopeChecksum = reportV1?.checksum ?? report.checksum;
+    const semanticDigest = reportV1?.semanticDigest ?? "missing";
+    const sourceDigest = reportV1?.source.package.digest ?? "missing";
     return {
       id: "package-analysis",
       label: "Package Analysis",
       category: "analysis",
       status,
-      detail: `${report.summary.recognizedFileCount}/${report.summary.fileCount} recognized files / ${report.summary.findingCount} findings / ${ikemen.detected ? `${ikemen.findingCount} IKEMEN scanner findings` : "no IKEMEN profile"} / ${report.checksum}`,
-      tags: ["package-analysis/v0", report.status, report.checksum, ikemen.claim, ...(ikemen.detected ? ["ikemen-go-scan"] : [])],
+      detail: `${report.summary.recognizedFileCount}/${report.summary.fileCount} recognized files / ${report.summary.findingCount} findings / ${ikemen.detected ? `${ikemen.findingCount} IKEMEN scanner findings` : "no IKEMEN profile"} / semantic ${semanticDigest} / ${envelopeChecksum}`,
+      tags: ["package-analysis/v1", report.status, envelopeChecksum, semanticDigest, sourceDigest, ikemen.claim, ...(ikemen.detected ? ["ikemen-go-scan"] : [])],
       level: "Scanner-only",
       severity: this.severityForStatus(status),
       affectedSystem: "parser",
       impact: "Package findings are source-located scanner evidence; they do not claim IKEMEN runtime execution or rendering parity.",
       evidenceIds: [
-        `package-analysis:${report.checksum}`,
+        `package-analysis:${envelopeChecksum}`,
+        `package-analysis:semantic:${semanticDigest}`,
+        `package-analysis:source:${sourceDigest}`,
         ...report.findings.slice(0, 4).map((finding) => `package-analysis:${finding.location.path}`),
       ],
       blockedBy: report.status === "unknown" ? ["package-analysis-entrypoint"] : [],
@@ -12018,8 +12045,8 @@ export class App {
     this.addJsonToZip(zip, "studio/studio-summary.json", studio);
     this.addJsonToZip(zip, "studio/asset-source-runtime-map.json", sourceRuntimeMaps);
     this.addJsonToZip(zip, "studio/gate-evidence.json", STUDIO_GATE_EVIDENCE_DOCUMENT);
-    if (this.importedPackageAnalysis) {
-      this.addJsonToZip(zip, "studio/package-analysis.json", this.importedPackageAnalysis);
+    if (this.importedPackageAnalysisV1) {
+      this.addJsonToZip(zip, "studio/package-analysis.json", this.importedPackageAnalysisV1);
     }
     if (this.studioSourceWriteReceipt) {
       this.addJsonToZip(zip, "studio/source-write-receipt.json", this.studioSourceWriteReceipt);
@@ -12053,7 +12080,7 @@ export class App {
       { path: "studio/studio-summary.json", kind: "studio", required: true },
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
       { path: "studio/gate-evidence.json", kind: "studio", required: true },
-      ...(this.importedPackageAnalysis ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
+      ...(this.importedPackageAnalysisV1 ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
       ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
       { path: "studio/evidence.json", kind: "qa", required: true },
@@ -12477,6 +12504,7 @@ export class App {
         projectImportWarnings: string[];
         sourceImportTransaction?: SourceImportTransaction;
         packageAnalysis?: PackageAnalysisResult;
+        packageAnalysisV1?: PackageAnalysisV1Result;
         sourceTransactions: SourceTransactionRecord[];
         sourceHandles: SourceHandleRecord[];
         studioSourceDocument?: StudioSourceDocumentDraft;
@@ -12537,6 +12565,7 @@ export class App {
       projectImportWarnings: [...this.projectImportWarnings],
       sourceImportTransaction: this.sourceImportTransaction,
       packageAnalysis: this.importedPackageAnalysis ? structuredClone(this.importedPackageAnalysis) : undefined,
+      packageAnalysisV1: this.importedPackageAnalysisV1 ? structuredClone(this.importedPackageAnalysisV1) : undefined,
       sourceTransactions: this.getSourceTransactionRecords(),
       sourceHandles: this.getSourceHandleRecords(),
       studioSourceDocument: this.studioSourceDocument ? structuredClone(this.studioSourceDocument) : undefined,

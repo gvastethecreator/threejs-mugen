@@ -1935,6 +1935,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       architectureEvidenceDetail: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.detail,
       architectureEvidenceCanExport: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.canExport,
       packageAnalysis: bridge?.packageAnalysis,
+      packageAnalysisV1: bridge?.packageAnalysisV1,
       packageAnalysisEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "package-analysis"),
       packageAnalysisTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "package-analysis"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
@@ -2342,10 +2343,13 @@ async function captureIkemenScan(page, baseUrl, outDir) {
       hasZssControllerFeature: Boolean(scan?.features?.["IKEMEN controller MapSet"]),
       hasLuaHookFeature: Boolean(scan?.features?.["IKEMEN Lua hook system"]),
       hasExtendedTriggerFeature: Boolean(scan?.features?.["IKEMEN extended trigger TimeElapsed"]),
-      packageAnalysisSchema: bridge?.packageAnalysis?.schemaVersion,
-      packageAnalysisStatus: bridge?.packageAnalysis?.status,
-      packageAnalysisFindings: bridge?.packageAnalysis?.summary?.findingCount ?? 0,
-      packageAnalysisIkemenDetected: bridge?.packageAnalysis?.profiles?.ikemen?.detected === true,
+      packageAnalysisSchema: bridge?.packageAnalysisV1?.schemaVersion,
+      packageAnalysisNestedSchema: bridge?.packageAnalysisV1?.analysis?.schemaVersion,
+      packageAnalysisStatus: bridge?.packageAnalysisV1?.analysis?.status,
+      packageAnalysisFindings: bridge?.packageAnalysisV1?.analysis?.summary?.findingCount ?? 0,
+      packageAnalysisIkemenDetected: bridge?.packageAnalysisV1?.analysis?.profiles?.ikemen?.detected === true,
+      packageAnalysisSemanticDigest: bridge?.packageAnalysisV1?.semanticDigest,
+      packageAnalysisSourceDigest: bridge?.packageAnalysisV1?.source?.package?.digest,
       packageAnalysisEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "package-analysis")?.status,
       packageAnalysisTrustTarget: bridge?.studioTrustChain?.find((record) => record.id === "package-analysis")?.targetKind,
       unsupportedScreenpack: unsupported.some((item) => item.format === "ikemen" && item.feature === "IKEMEN screenpack DEF"),
@@ -2574,10 +2578,13 @@ async function inspectPackageZip(packagePath) {
     hasPackageAnalysis: files.includes("studio/package-analysis.json"),
     manifestListsPackageAnalysis: manifest.files?.some((file) => file.path === "studio/package-analysis.json" && file.required === true) ?? false,
     packageAnalysisSchema: packageAnalysis?.schemaVersion,
-    packageAnalysisStatus: packageAnalysis?.status,
+    packageAnalysisNestedSchema: packageAnalysis?.analysis?.schemaVersion,
+    packageAnalysisStatus: packageAnalysis?.analysis?.status,
     packageAnalysisChecksum: packageAnalysis?.checksum,
-    packageAnalysisFindingCount: packageAnalysis?.summary?.findingCount,
-    packageAnalysisIkemenDetected: packageAnalysis?.profiles?.ikemen?.detected,
+    packageAnalysisSemanticDigest: packageAnalysis?.semanticDigest,
+    packageAnalysisSourceDigest: packageAnalysis?.source?.package?.digest,
+    packageAnalysisFindingCount: packageAnalysis?.analysis?.summary?.findingCount,
+    packageAnalysisIkemenDetected: packageAnalysis?.analysis?.profiles?.ikemen?.detected,
     hasSourceWriteReceipt: files.includes("studio/source-write-receipt.json"),
     manifestListsSourceWriteReceipt: manifest.files?.some((file) => file.path === "studio/source-write-receipt.json" && file.required === true) ?? false,
     sourceWriteReceiptSchema: sourceWriteReceipt?.schemaVersion,
@@ -4056,8 +4063,11 @@ function assertSmoke(diagnostics) {
   if (
     studioBuild.importedFixtureLoaded &&
     (!studioBuild.bodyHasPackageAnalysis ||
-      studioBuild.packageAnalysis?.schemaVersion !== "mugen-web-sandbox/package-analysis/v0" ||
-      !studioBuild.packageAnalysis?.checksum ||
+      studioBuild.packageAnalysisV1?.schemaVersion !== "mugen-web-sandbox/package-analysis/v1" ||
+      studioBuild.packageAnalysisV1?.analysis?.schemaVersion !== "mugen-web-sandbox/package-analysis/v0" ||
+      !studioBuild.packageAnalysisV1?.checksum ||
+      !studioBuild.packageAnalysisV1?.semanticDigest ||
+      !/^[0-9a-f]{64}$/i.test(String(studioBuild.packageAnalysisV1?.source?.package?.digest ?? "")) ||
       studioBuild.packageAnalysisEvidence?.category !== "analysis" ||
       studioBuild.packageAnalysisEvidence?.canExport !== true ||
       studioBuild.packageAnalysisTrustRow?.targetKind !== "package")
@@ -4122,8 +4132,11 @@ function assertSmoke(diagnostics) {
     || !studioBuild.downloadedPackage?.gateEvidenceDigest
     || studioBuild.downloadedPackage?.hasPackageAnalysis !== true
     || studioBuild.downloadedPackage?.manifestListsPackageAnalysis !== true
-    || studioBuild.downloadedPackage?.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v0"
+    || studioBuild.downloadedPackage?.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v1"
+    || studioBuild.downloadedPackage?.packageAnalysisNestedSchema !== "mugen-web-sandbox/package-analysis/v0"
     || !studioBuild.downloadedPackage?.packageAnalysisChecksum
+    || !studioBuild.downloadedPackage?.packageAnalysisSemanticDigest
+    || !/^[0-9a-f]{64}$/i.test(String(studioBuild.downloadedPackage?.packageAnalysisSourceDigest ?? ""))
     || (studioBuild.downloadedPackage?.packageAnalysisFindingCount ?? 0) < 1
   ) {
     failures.push("studio-build: downloaded project package did not include required contracts/evidence");
@@ -4301,10 +4314,13 @@ function assertSmoke(diagnostics) {
     !ikemenScan.hasExtendedTriggerFeature ||
     !ikemenScan.unsupportedScreenpack ||
     !ikemenScan.unsupportedZss ||
-    ikemenScan.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v0" ||
+    ikemenScan.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v1" ||
+    ikemenScan.packageAnalysisNestedSchema !== "mugen-web-sandbox/package-analysis/v0" ||
     ikemenScan.packageAnalysisStatus !== "partial" ||
     ikemenScan.packageAnalysisFindings < 10 ||
     !ikemenScan.packageAnalysisIkemenDetected ||
+    !ikemenScan.packageAnalysisSemanticDigest ||
+    !/^[0-9a-f]{64}$/i.test(String(ikemenScan.packageAnalysisSourceDigest ?? "")) ||
     !["warn", "ok"].includes(ikemenScan.packageAnalysisEvidenceStatus) ||
     ikemenScan.packageAnalysisTrustTarget !== "package" ||
     !ikemenScan.bodyHasPackageAnalysis ||
@@ -4848,6 +4864,7 @@ function summarizeDiagnostics(diagnostics) {
       bodyHasArchitectureBoundaries: diagnostics.checks.studioBuild.bodyHasArchitectureBoundaries,
       bodyHasPackageAnalysis: diagnostics.checks.studioBuild.bodyHasPackageAnalysis,
       packageAnalysis: diagnostics.checks.studioBuild.packageAnalysis,
+      packageAnalysisV1: diagnostics.checks.studioBuild.packageAnalysisV1,
       packageAnalysisEvidence: diagnostics.checks.studioBuild.packageAnalysisEvidence,
       packageAnalysisTrustRow: diagnostics.checks.studioBuild.packageAnalysisTrustRow,
       gateEvidencePackage: {
@@ -4862,9 +4879,12 @@ function summarizeDiagnostics(diagnostics) {
         hasFile: diagnostics.checks.studioBuild.downloadedPackage?.hasPackageAnalysis,
         manifestRequired: diagnostics.checks.studioBuild.downloadedPackage?.manifestListsPackageAnalysis,
         schema: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisSchema,
+        nestedSchema: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisNestedSchema,
         status: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisStatus,
         findings: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisFindingCount,
         ikemenDetected: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisIkemenDetected,
+        semanticDigest: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisSemanticDigest,
+        sourceDigest: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisSourceDigest,
         checksum: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisChecksum,
       },
       trustChainRows: diagnostics.checks.studioBuild.trustChainRows,
@@ -4982,9 +5002,12 @@ function summarizeDiagnostics(diagnostics) {
       luaFiles: diagnostics.checks.ikemenScan.luaFiles,
       modelFiles: diagnostics.checks.ikemenScan.modelFiles,
       packageAnalysisSchema: diagnostics.checks.ikemenScan.packageAnalysisSchema,
+      packageAnalysisNestedSchema: diagnostics.checks.ikemenScan.packageAnalysisNestedSchema,
       packageAnalysisStatus: diagnostics.checks.ikemenScan.packageAnalysisStatus,
       packageAnalysisFindings: diagnostics.checks.ikemenScan.packageAnalysisFindings,
       packageAnalysisIkemenDetected: diagnostics.checks.ikemenScan.packageAnalysisIkemenDetected,
+      packageAnalysisSemanticDigest: diagnostics.checks.ikemenScan.packageAnalysisSemanticDigest,
+      packageAnalysisSourceDigest: diagnostics.checks.ikemenScan.packageAnalysisSourceDigest,
     },
     studioStage: {
       selectedStage: diagnostics.checks.studioStage.selectedStage,

@@ -8,6 +8,19 @@ import { parseStageDef } from "../parsers/StageDefParser";
 import { parseKeyValue, parseTextLines, unquote } from "../parsers/text";
 
 export const PACKAGE_ANALYSIS_SCHEMA = "mugen-web-sandbox/package-analysis/v0" as const;
+export const PACKAGE_ANALYSIS_V1_SCHEMA = "mugen-web-sandbox/package-analysis/v1" as const;
+export const PACKAGE_ANALYSIS_V1_ANALYZER = {
+  id: "mugen-web-sandbox/package-analysis",
+  version: "1.0.0",
+} as const;
+export const PACKAGE_ANALYSIS_V1_RULESET = {
+  id: "mugen-web-sandbox/package-analysis-rules",
+  version: "1.0.0",
+} as const;
+export const PACKAGE_ANALYSIS_V1_UPSTREAM = {
+  project: "ikemen-engine/Ikemen-GO",
+  revision: "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+} as const;
 
 export type PackageAnalysisFindingStatus = "recognized" | "unsupported" | "unknown";
 export type PackageAnalysisFindingCategory = "package" | "character" | "stage" | "system" | "screenpack";
@@ -79,6 +92,57 @@ export type PackageAnalysisResult = {
 export type PackageAnalysisParseResult = {
   report?: PackageAnalysisResult;
   errors: string[];
+};
+
+export type PackageAnalysisV1SourceFile = {
+  path: string;
+  digest: string;
+  byteLength: number;
+};
+
+export type PackageAnalysisV1Source = {
+  name: string;
+  package: {
+    algorithm: "sha-256";
+    digest: string;
+  };
+  fileCount: number;
+  byteLength: number;
+  files: PackageAnalysisV1SourceFile[];
+};
+
+export type PackageAnalysisV1Result = {
+  schemaVersion: typeof PACKAGE_ANALYSIS_V1_SCHEMA;
+  observedAt: string;
+  analyzer: {
+    id: string;
+    version: string;
+  };
+  ruleset: {
+    id: string;
+    version: string;
+  };
+  upstream: {
+    project: string;
+    revision: string;
+  };
+  source: PackageAnalysisV1Source;
+  analysis: PackageAnalysisResult;
+  semanticDigest: string;
+  checksum: string;
+};
+
+export type PackageAnalysisV1ParseResult = {
+  report?: PackageAnalysisV1Result;
+  errors: string[];
+};
+
+export type PackageAnalysisV1FingerprintInput = {
+  algorithm: "sha-256";
+  digest: string;
+  fileCount: number;
+  byteLength: number;
+  files: readonly PackageAnalysisV1SourceFile[];
 };
 
 type DefinitionRecord = {
@@ -273,6 +337,234 @@ export function parsePackageAnalysis(value: unknown): PackageAnalysisParseResult
     errors.push("package analysis findings are not sorted");
   }
   return errors.length > 0 ? { errors } : { report: deepFreeze(value), errors: [] };
+}
+
+export function createPackageAnalysisV1(input: {
+  vfs: VirtualFileSystem;
+  sourceName?: string;
+  observedAt: string;
+  sourceFingerprint: PackageAnalysisV1FingerprintInput;
+}): PackageAnalysisV1Result {
+  const observedAt = input.observedAt.trim();
+  const sourceName = input.sourceName?.trim() || "virtual-package";
+  const source = normalizePackageAnalysisV1Source(sourceName, input.sourceFingerprint);
+  const analysis = createPackageAnalysis({
+    vfs: input.vfs,
+    sourceName,
+    generatedAt: observedAt,
+  });
+  const payload = {
+    schemaVersion: PACKAGE_ANALYSIS_V1_SCHEMA,
+    observedAt,
+    analyzer: PACKAGE_ANALYSIS_V1_ANALYZER,
+    ruleset: PACKAGE_ANALYSIS_V1_RULESET,
+    upstream: PACKAGE_ANALYSIS_V1_UPSTREAM,
+    source,
+    analysis,
+    semanticDigest: hashStableJson(createPackageAnalysisV1SemanticPayload({
+      schemaVersion: PACKAGE_ANALYSIS_V1_SCHEMA,
+      observedAt,
+      analyzer: PACKAGE_ANALYSIS_V1_ANALYZER,
+      ruleset: PACKAGE_ANALYSIS_V1_RULESET,
+      upstream: PACKAGE_ANALYSIS_V1_UPSTREAM,
+      source,
+      analysis,
+      semanticDigest: "",
+      checksum: "",
+    })),
+  } satisfies Omit<PackageAnalysisV1Result, "checksum">;
+  const candidate = { ...payload, checksum: hashStableJson(payload) };
+  const parsed = parsePackageAnalysisV1(candidate);
+  if (!parsed.report) {
+    throw new Error(parsed.errors.join("; ") || "package analysis v1 creation failed");
+  }
+  return parsed.report;
+}
+
+export function parsePackageAnalysisV1(value: unknown): PackageAnalysisV1ParseResult {
+  if (!isRecord(value)) {
+    return { errors: ["package analysis v1 root must be an object"] };
+  }
+  if (value.schemaVersion !== PACKAGE_ANALYSIS_V1_SCHEMA) {
+    return { errors: ["unsupported package analysis v1 schema"] };
+  }
+  if (!isPackageAnalysisV1Payload(value)) {
+    return { errors: ["package analysis v1 metadata is invalid"] };
+  }
+
+  const errors: string[] = [];
+  errors.push(...validatePackageAnalysisV1Identity(value));
+  errors.push(...validatePackageAnalysisV1Source(value.source));
+  const nested = parsePackageAnalysis(value.analysis);
+  errors.push(...nested.errors.map((error) => `nested package analysis: ${error}`));
+  if (nested.report) {
+    if (nested.report.sourceName !== value.source.name) {
+      errors.push("package analysis v1 source name does not match nested analysis");
+    }
+    if (nested.report.generatedAt !== value.observedAt) {
+      errors.push("package analysis v1 observedAt does not match nested analysis");
+    }
+    errors.push(...validatePackageAnalysisV1SourceMatchesAnalysis(value.source, nested.report));
+  }
+
+  const expectedSemanticDigest = hashStableJson(createPackageAnalysisV1SemanticPayload(value));
+  if (expectedSemanticDigest !== value.semanticDigest) {
+    errors.push("package analysis v1 semantic digest mismatch");
+  }
+  const { checksum, ...payload } = value;
+  if (hashStableJson(payload) !== checksum) {
+    errors.push("package analysis v1 checksum mismatch");
+  }
+  return errors.length > 0 ? { errors: uniqueSorted(errors) } : { report: deepFreeze(value), errors: [] };
+}
+
+function createPackageAnalysisV1SemanticPayload(value: PackageAnalysisV1Result): Record<string, unknown> {
+  const { sourceName: _sourceName, generatedAt: _generatedAt, checksum: _analysisChecksum, ...semanticAnalysis } = value.analysis;
+  return {
+    schemaVersion: value.schemaVersion,
+    analyzer: value.analyzer,
+    ruleset: value.ruleset,
+    upstream: value.upstream,
+    source: {
+      package: value.source.package,
+      fileCount: value.source.fileCount,
+      byteLength: value.source.byteLength,
+      files: value.source.files,
+    },
+    analysis: semanticAnalysis,
+  };
+}
+
+function normalizePackageAnalysisV1Source(
+  name: string,
+  fingerprint: PackageAnalysisV1FingerprintInput,
+): PackageAnalysisV1Source {
+  const files = fingerprint.files
+    .map((file) => ({
+      path: file.path.trim(),
+      digest: file.digest.toLowerCase(),
+      byteLength: file.byteLength,
+    }))
+    .sort((left, right) => left.path.localeCompare(right.path));
+  const source = {
+    name,
+    package: {
+      algorithm: fingerprint.algorithm,
+      digest: fingerprint.digest.toLowerCase(),
+    },
+    fileCount: fingerprint.fileCount,
+    byteLength: fingerprint.byteLength,
+    files,
+  } satisfies PackageAnalysisV1Source;
+  const errors = validatePackageAnalysisV1Source(source);
+  if (errors.length > 0) {
+    throw new Error(errors.join("; "));
+  }
+  return source;
+}
+
+function validatePackageAnalysisV1Identity(value: PackageAnalysisV1Result): string[] {
+  const errors: string[] = [];
+  if (!isValidTimestamp(value.observedAt)) errors.push("package analysis v1 observedAt is invalid");
+  if (value.analyzer.id !== PACKAGE_ANALYSIS_V1_ANALYZER.id || value.analyzer.version !== PACKAGE_ANALYSIS_V1_ANALYZER.version) {
+    errors.push("package analysis v1 analyzer identity is unsupported");
+  }
+  if (value.ruleset.id !== PACKAGE_ANALYSIS_V1_RULESET.id || value.ruleset.version !== PACKAGE_ANALYSIS_V1_RULESET.version) {
+    errors.push("package analysis v1 ruleset identity is unsupported");
+  }
+  if (value.upstream.project !== PACKAGE_ANALYSIS_V1_UPSTREAM.project || value.upstream.revision !== PACKAGE_ANALYSIS_V1_UPSTREAM.revision) {
+    errors.push("package analysis v1 upstream identity is unsupported");
+  }
+  return errors;
+}
+
+function validatePackageAnalysisV1Source(source: PackageAnalysisV1Source): string[] {
+  const errors: string[] = [];
+  if (!source.name.trim()) errors.push("package analysis v1 source name is empty");
+  if (source.package.algorithm !== "sha-256" || !isSha256Digest(source.package.digest)) {
+    errors.push("package analysis v1 package digest is invalid");
+  }
+  if (!Number.isSafeInteger(source.fileCount) || source.fileCount < 0) errors.push("package analysis v1 fileCount is invalid");
+  if (!Number.isSafeInteger(source.byteLength) || source.byteLength < 0) errors.push("package analysis v1 byteLength is invalid");
+  if (source.files.length !== source.fileCount) errors.push("package analysis v1 fileCount does not match source files");
+  const paths = new Set<string>();
+  let totalBytes = 0;
+  for (const file of source.files) {
+    if (!file.path || normalizeVirtualPath(file.path) !== file.path || /(?:^|\/)\.\.(?:\/|$)/.test(file.path)) {
+      errors.push(`package analysis v1 source path is invalid:${file.path}`);
+    }
+    const pathKey = file.path.toLowerCase();
+    if (paths.has(pathKey)) errors.push(`package analysis v1 duplicate source path:${file.path}`);
+    paths.add(pathKey);
+    if (!isSha256Digest(file.digest)) errors.push(`package analysis v1 file digest is invalid:${file.path}`);
+    if (!Number.isSafeInteger(file.byteLength) || file.byteLength < 0) {
+      errors.push(`package analysis v1 file byteLength is invalid:${file.path}`);
+    } else {
+      totalBytes += file.byteLength;
+    }
+  }
+  if (totalBytes !== source.byteLength) errors.push("package analysis v1 byteLength does not match source files");
+  if (!isSortedUnique(source.files.map((file) => file.path))) errors.push("package analysis v1 source files are not sorted");
+  return errors;
+}
+
+function validatePackageAnalysisV1SourceMatchesAnalysis(
+  source: PackageAnalysisV1Source,
+  analysis: PackageAnalysisResult,
+): string[] {
+  const errors: string[] = [];
+  if (source.fileCount !== analysis.files.length) errors.push("package analysis v1 source file count does not match analysis");
+  if (source.files.length !== analysis.files.length) return errors;
+  for (const [index, file] of source.files.entries()) {
+    const analyzed = analysis.files[index];
+    if (!analyzed || file.path !== analyzed.path || file.byteLength !== analyzed.bytes) {
+      errors.push(`package analysis v1 source file does not match analysis:${file.path}`);
+    }
+  }
+  return errors;
+}
+
+function isPackageAnalysisV1Payload(value: Record<string, unknown>): value is PackageAnalysisV1Result {
+  return typeof value.observedAt === "string" &&
+    isPackageAnalysisV1Identity(value.analyzer) &&
+    isPackageAnalysisV1Identity(value.ruleset) &&
+    isPackageAnalysisV1Upstream(value.upstream) &&
+    isPackageAnalysisV1Source(value.source) &&
+    isRecord(value.analysis) &&
+    typeof value.semanticDigest === "string" &&
+    typeof value.checksum === "string";
+}
+
+function isPackageAnalysisV1Identity(value: unknown): value is { id: string; version: string } {
+  return isRecord(value) && typeof value.id === "string" && typeof value.version === "string";
+}
+
+function isPackageAnalysisV1Upstream(value: unknown): value is { project: string; revision: string } {
+  return isRecord(value) && typeof value.project === "string" && typeof value.revision === "string";
+}
+
+function isPackageAnalysisV1Source(value: unknown): value is PackageAnalysisV1Source {
+  return isRecord(value) &&
+    typeof value.name === "string" &&
+    isRecord(value.package) &&
+    typeof value.package.algorithm === "string" &&
+    typeof value.package.digest === "string" &&
+    Number.isSafeInteger(value.fileCount) &&
+    Number.isSafeInteger(value.byteLength) &&
+    Array.isArray(value.files) &&
+    value.files.every((file) => isRecord(file) && typeof file.path === "string" && typeof file.digest === "string" && Number.isSafeInteger(file.byteLength));
+}
+
+function isSha256Digest(value: string): boolean {
+  return /^[0-9a-f]{64}$/i.test(value);
+}
+
+function isValidTimestamp(value: string): boolean {
+  return value.trim().length > 0 && !Number.isNaN(Date.parse(value));
+}
+
+function isSortedUnique(values: readonly string[]): boolean {
+  return values.every((value, index) => index === 0 || values[index - 1]!.localeCompare(value) < 0);
 }
 
 function analyzeCharacterDefinition(
