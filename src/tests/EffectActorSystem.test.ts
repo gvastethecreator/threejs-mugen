@@ -2450,7 +2450,7 @@ describe("EffectActorSystem", () => {
     const right = world.spawnProjectile("p2", projectileInput({ projremove: "1", projpriority: "2" }));
     left.pos = { x: 0, y: 0 };
     left.facing = 1;
-    right.pos = { x: 20, y: 0 };
+    right.pos = { x: 10, y: 0 };
     right.facing = -1;
 
     world.resolveProjectileClashes("p1", "p2", {
@@ -2474,7 +2474,7 @@ describe("EffectActorSystem", () => {
     const right = world.spawnProjectile("p2", projectileInput({ projremove: "1", projpriority: "1" }));
     left.pos = { x: 0, y: 0 };
     left.facing = 1;
-    right.pos = { x: 20, y: 0 };
+    right.pos = { x: 10, y: 0 };
     right.facing = -1;
 
     world.resolveProjectileClashes("p1", "p2", {
