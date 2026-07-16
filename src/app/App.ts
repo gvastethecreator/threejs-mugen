@@ -8010,6 +8010,10 @@ export class App {
     }
     const reportV1 = this.importedPackageAnalysisV1;
     const ikemen = report.profiles.ikemen;
+    const findingCoverage = Object.entries(report.summary.byCategory)
+      .filter(([, count]) => count > 0)
+      .map(([category, count]) => `${category}:${count}`)
+      .join(" / ");
     const status: StudioStatus = report.status === "recognized" ? "ok" : report.status === "partial" ? "warn" : "pending";
     return `
       <div class="section studio-package-analysis" data-package-analysis="${escapeHtml(reportV1?.checksum ?? report.checksum)}">
@@ -8025,6 +8029,8 @@ export class App {
           <dt>Source</dt><dd class="mono">${escapeHtml(report.sourceName)}</dd>
           <dt>Source SHA-256</dt><dd class="mono">${escapeHtml(reportV1?.source.package.digest ?? "missing")}</dd>
           <dt>Files</dt><dd class="mono">${report.summary.recognizedFileCount}/${report.summary.fileCount} recognized</dd>
+          <dt>Entrypoints</dt><dd class="mono">${report.summary.entrypointCount}</dd>
+          <dt>Finding coverage</dt><dd class="mono">${escapeHtml(findingCoverage || "none")}</dd>
           <dt>Findings</dt><dd class="mono">${report.summary.findingCount}</dd>
           <dt>Semantic digest</dt><dd class="mono">${escapeHtml(reportV1?.semanticDigest ?? "missing")}</dd>
           <dt>Envelope checksum</dt><dd class="mono">${escapeHtml(reportV1?.checksum ?? report.checksum)}</dd>

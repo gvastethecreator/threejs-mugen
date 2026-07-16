@@ -1936,6 +1936,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       architectureEvidenceCanExport: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.canExport,
       packageAnalysis: bridge?.packageAnalysis,
       packageAnalysisV1: bridge?.packageAnalysisV1,
+      packageAnalysisSummary: bridge?.packageAnalysisV1?.analysis?.summary,
       packageAnalysisEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "package-analysis"),
       packageAnalysisTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "package-analysis"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
@@ -2585,6 +2586,8 @@ async function inspectPackageZip(packagePath) {
     packageAnalysisSourceDigest: packageAnalysis?.source?.package?.digest,
     packageAnalysisFindingCount: packageAnalysis?.analysis?.summary?.findingCount,
     packageAnalysisIkemenDetected: packageAnalysis?.analysis?.profiles?.ikemen?.detected,
+    packageAnalysisEntrypoints: packageAnalysis?.analysis?.summary?.entrypointCount,
+    packageAnalysisByCategory: packageAnalysis?.analysis?.summary?.byCategory,
     hasSourceWriteReceipt: files.includes("studio/source-write-receipt.json"),
     manifestListsSourceWriteReceipt: manifest.files?.some((file) => file.path === "studio/source-write-receipt.json" && file.required === true) ?? false,
     sourceWriteReceiptSchema: sourceWriteReceipt?.schemaVersion,
@@ -4073,6 +4076,11 @@ function assertSmoke(diagnostics) {
       !studioBuild.packageAnalysisV1?.checksum ||
       !studioBuild.packageAnalysisV1?.semanticDigest ||
       !/^[0-9a-f]{64}$/i.test(String(studioBuild.packageAnalysisV1?.source?.package?.digest ?? "")) ||
+      (studioBuild.packageAnalysisSummary?.entrypointCount ?? 0) < 3 ||
+      (studioBuild.packageAnalysisSummary?.byCategory?.character ?? 0) < 1 ||
+      (studioBuild.packageAnalysisSummary?.byCategory?.stage ?? 0) < 1 ||
+      (studioBuild.packageAnalysisSummary?.byCategory?.system ?? 0) < 1 ||
+      (studioBuild.packageAnalysisSummary?.byCategory?.screenpack ?? 0) < 1 ||
       studioBuild.packageAnalysisEvidence?.category !== "analysis" ||
       studioBuild.packageAnalysisEvidence?.canExport !== true ||
       studioBuild.packageAnalysisTrustRow?.targetKind !== "package")
@@ -4143,6 +4151,11 @@ function assertSmoke(diagnostics) {
     || !studioBuild.downloadedPackage?.packageAnalysisSemanticDigest
     || !/^[0-9a-f]{64}$/i.test(String(studioBuild.downloadedPackage?.packageAnalysisSourceDigest ?? ""))
     || (studioBuild.downloadedPackage?.packageAnalysisFindingCount ?? 0) < 1
+    || (studioBuild.downloadedPackage?.packageAnalysisEntrypoints ?? 0) < 3
+    || (studioBuild.downloadedPackage?.packageAnalysisByCategory?.character ?? 0) < 1
+    || (studioBuild.downloadedPackage?.packageAnalysisByCategory?.stage ?? 0) < 1
+    || (studioBuild.downloadedPackage?.packageAnalysisByCategory?.system ?? 0) < 1
+    || (studioBuild.downloadedPackage?.packageAnalysisByCategory?.screenpack ?? 0) < 1
   ) {
     failures.push("studio-build: downloaded project package did not include required contracts/evidence");
   }
@@ -4870,6 +4883,7 @@ function summarizeDiagnostics(diagnostics) {
       bodyHasPackageAnalysis: diagnostics.checks.studioBuild.bodyHasPackageAnalysis,
       packageAnalysis: diagnostics.checks.studioBuild.packageAnalysis,
       packageAnalysisV1: diagnostics.checks.studioBuild.packageAnalysisV1,
+      packageAnalysisSummary: diagnostics.checks.studioBuild.packageAnalysisSummary,
       packageAnalysisEvidence: diagnostics.checks.studioBuild.packageAnalysisEvidence,
       packageAnalysisTrustRow: diagnostics.checks.studioBuild.packageAnalysisTrustRow,
       gateEvidencePackage: {
@@ -4887,6 +4901,8 @@ function summarizeDiagnostics(diagnostics) {
         nestedSchema: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisNestedSchema,
         status: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisStatus,
         findings: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisFindingCount,
+        entrypoints: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisEntrypoints,
+        byCategory: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisByCategory,
         ikemenDetected: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisIkemenDetected,
         semanticDigest: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisSemanticDigest,
         sourceDigest: diagnostics.checks.studioBuild.downloadedPackage?.packageAnalysisSourceDigest,
