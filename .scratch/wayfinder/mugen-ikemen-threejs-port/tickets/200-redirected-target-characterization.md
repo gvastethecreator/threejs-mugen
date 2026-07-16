@@ -1,7 +1,7 @@
 # Characterize Redirected Target Dispatch
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -31,13 +31,46 @@ operation class, and concrete mutation actor ids. Keep helper-destination
 - TypeScript 7 and later batch QA;
 - closeout report with explicit claim boundary.
 
-## Current decision
+## Resolution
 
-Open. Implement the characterization boundary before the proposed
-`RuntimeRedirectedTargetDispatch` lease. Do not widen `TargetScoreAdd` in this
-ticket.
+The characterization boundary is implemented before the proposed
+`RuntimeRedirectedTargetDispatch` lease. The dispatcher now projects the
+destination identity, operation class, requested target id, selected target
+ids, matched count, execution result, and concrete mutation actor ids from
+the pre-dispatch target memory and post-dispatch state. Compatibility
+telemetry carries the observation on the imported caller root.
+
+The four successful routes are covered:
+
+- root active CNS -> root destination;
+- root State -1 setup -> root destination;
+- helper caller -> root destination;
+- helper caller -> helper destination.
+
+Helper-destination `TargetState` remains fail-closed. `TargetScoreAdd` was not
+widened.
+
+## Evidence
+
+- `src/tests/TargetSystem.test.ts`: dispatch selection/mutation projection
+  rejects unselected candidates.
+- `src/tests/PlayableMatchRuntime.test.ts`: all four route identities and the
+  helper-to-helper mutation boundary are asserted against live runtime
+  snapshots.
+- Focused batch: `265/265` tests passed across TargetSystem,
+  RuntimeCompatibilityTelemetrySystem, and PlayableMatchRuntime.
+- TypeScript 7 check: `pnpm exec tsc -p tsconfig.json --noEmit` passed.
+- `git diff --check` passed for the feature changes.
+
+## Commits
+
+- `58ec4370 feat(runtime): characterize redirected target dispatch`
+- `d32c9720 test(runtime): prove redirected target dispatch routes`
 
 ## Next
 
-After the four-route evidence is green, review ADR 0006 and select the first
-lease migration adapter.
+Review `docs/adr/0006-runtime-redirected-target-dispatch.md` and select the
+first lease migration adapter. Keep operation-specific mutation sets,
+recursive redirects, exact multi-target ordering, projectiles/teams,
+persistence, rollback/netplay, presentation, and full parity outside this
+characterization claim until separately evidenced.
