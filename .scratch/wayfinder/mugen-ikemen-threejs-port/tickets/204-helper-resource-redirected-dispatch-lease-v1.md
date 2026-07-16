@@ -1,8 +1,8 @@
 # Implement Helper Resource Redirected Dispatch Lease/v1
 
 Type: task
-Status: open
-Blocked by: 203
+Status: resolved
+Blocked by: None
 
 ## Question
 
@@ -49,3 +49,50 @@ persistence, rollback/netplay, or full parity in this ticket.
 Helper CNS resource RedirectID resolves and executes through one synchronous
 lease for root/helper destinations, with local operation semantics,
 fail-closed invalid identity, and wrapper commits preserved.
+
+## Resolution
+
+Implemented helper CNS resource RedirectID through the existing `helper`
+lease phase. The helper resolver now reuses live root/helper identity and
+creates an empty candidate projection for resource dispatch. The helper
+dispatcher resolves dynamic resource values from the caller runtime/context,
+executes against the lease destination, and commits helper wrappers only
+inside successful lease execution.
+
+The route is propagated through the active effect, post-fighter, and pause
+helper-context plumbing. Omitted RedirectID remains local and invalid
+destinations fail closed.
+
+## Evidence
+
+- Added PlayableMatchRuntime coverage for helper LifeAdd to a root with a
+  caller-owned `Var(0)` value, helper-to-helper PowerSet, local PowerSet, and
+  invalid LifeSet RedirectID.
+- Focused batch: `23/23` selected tests passed across lease, helper,
+  PlayableMatchRuntime, and resource dispatch suites.
+- TypeScript 7 check: `pnpm exec tsc -p tsconfig.json --noEmit` passed.
+- `git diff --check` passed for the feature changes.
+- Browser/renderer smoke: N/A; no visible UI or Three.js surface changed.
+- Full repository suite and full compatibility trace remain deferred to the
+  next multi-slice checkpoint.
+
+## Claim boundary
+
+Allowed: current helper CNS resource RedirectID to live root/helper
+destinations uses the synchronous helper lease while preserving caller-owned
+dynamic values, local behavior, helper wrapper commits, and fail-closed
+identity.
+
+Still open: helper State -1/global-state, projectile/team destinations,
+recursive redirects, exact multi-target ordering, `TargetScoreAdd`,
+persistence, rollback/netplay, presentation, and full MUGEN/IKEMEN parity.
+
+## Commits
+
+- `43bb9a1f docs(wayfinder): select helper resource lease`
+- `5e0d5744 feat(runtime): lease helper resource redirects`
+
+## Next frontier
+
+Characterize projectile/team `RedirectID` ownership as the next actor-family
+boundary; keep helper scheduling and recursive redirects separate.
