@@ -278,6 +278,11 @@ describe("TargetSystem", () => {
         life: 120,
         power: 30,
         powerMax: 60,
+        redLife: 50,
+        guardPoints: 100,
+        guardPointsMax: 100,
+        dizzyPoints: 200,
+        dizzyPointsMax: 200,
         facing: -1,
         vel: { x: 1, y: 2 },
         hitVars: { isBound: false },
@@ -293,6 +298,24 @@ describe("TargetSystem", () => {
       operation: { kind: "target", controllerType: "targetlifeadd", requestedId: 77, value: -20, absolute: false, kill: true },
       onOperation: (operation) => operations.push(operation.controllerType),
       scaleIncomingDamage: (_runtime, damage) => damage + 5,
+    });
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetRedLifeAdd", { id: "77", value: "25", absolute: "1" }),
+      operation: { kind: "target", controllerType: "targetredlifeadd", requestedId: 77, value: 25, absolute: true },
+    });
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetGuardPointsAdd", { id: "77", value: "-20" }),
+      operation: { kind: "target", controllerType: "targetguardpointsadd", requestedId: 77, value: -20 },
+    });
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetDizzyPointsAdd", { id: "77", value: "-30" }),
+      operation: { kind: "target", controllerType: "targetdizzypointsadd", requestedId: 77, value: -30 },
     });
     applyRuntimeTargetController({
       actor,
@@ -328,6 +351,9 @@ describe("TargetSystem", () => {
     expect(operations).toEqual(["targetlifeadd"]);
     expect(target.runtime.life).toBe(95);
     expect(target.runtime.power).toBe(60);
+    expect(target.runtime.redLife).toBe(95);
+    expect(target.runtime.guardPoints).toBe(80);
+    expect(target.runtime.dizzyPoints).toBe(170);
     expect(target.runtime.vel).toEqual({ x: 1, y: -3 });
     expect(target.runtime.facing).toBe(1);
     expect(target.runtime.pos).toEqual({ x: 136, y: -12 });

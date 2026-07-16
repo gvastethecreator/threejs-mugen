@@ -3032,6 +3032,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperBindToTargetHelperRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-target-auxiliary-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperTargetAuxiliaryResourceHelperRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-numexplod",
       required: true,
       artifact: presets.createSyntheticImportedHelperNumExplodTraceArtifact(),

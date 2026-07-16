@@ -701,6 +701,15 @@ time = 20
 
   it("compiles Target controllers into typed target operations", () => {
     const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0", redirectid: "57" }));
+    const redirectedRedLife = compileControllerIr(
+      controller(200, "TargetRedLifeAdd", [], { id: "3", value: "25", absolute: "1", redirectid: "57" }),
+    );
+    const redirectedGuardPoints = compileControllerIr(
+      controller(200, "TargetGuardPointsAdd", [], { id: "3", value: "-20", redirectid: "56" }),
+    );
+    const redirectedDizzyPoints = compileControllerIr(
+      controller(200, "TargetDizzyPointsAdd", [], { id: "3", value: "-30", redirectid: "56" }),
+    );
     const redirectedPower = compileControllerIr(
       controller(200, "TargetPowerAdd", [], { id: "3", value: "40", redirectid: "57" }),
     );
@@ -757,6 +766,28 @@ time = 20
       absolute: true,
       kill: false,
       redirectPlayerIdExpression: "57",
+    });
+    expect(redirectedRedLife.operation).toEqual({
+      kind: "target",
+      controllerType: "targetredlifeadd",
+      requestedId: 3,
+      value: 25,
+      absolute: true,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(redirectedGuardPoints.operation).toEqual({
+      kind: "target",
+      controllerType: "targetguardpointsadd",
+      requestedId: 3,
+      value: -20,
+      redirectPlayerIdExpression: "56",
+    });
+    expect(redirectedDizzyPoints.operation).toEqual({
+      kind: "target",
+      controllerType: "targetdizzypointsadd",
+      requestedId: 3,
+      value: -30,
+      redirectPlayerIdExpression: "56",
     });
     expect(redirectedPower.operation).toEqual({
       kind: "target",

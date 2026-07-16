@@ -45148,6 +45148,145 @@ export function createSyntheticImportedHelperBindToTargetHelperRedirectTraceArti
   });
 }
 
+export function createSyntheticImportedHelperTargetAuxiliaryResourceHelperRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-target-auxiliary-redirect-activate", frames: 12, p1: ["x"], p2: ["x"] },
+    { label: "helper-target-auxiliary-redirect-settle", frames: 6, p1: [], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-target-auxiliary-redirect-caller",
+    displayName: "Synthetic Imported Helper Target Auxiliary Redirect Caller",
+    withHitDef: false,
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1244,
+      branchAnimNo: 974,
+      damage: 37,
+      targetId: 8893,
+      branchTrigger: "NumTarget(8893) > 0 && Target(8893), Life <= 963",
+      targetControllers: {
+        mode: "auxiliary",
+        redirectId: 59,
+        controllerTargetId: 77,
+        redLifeAddValue: 25,
+        redLifeAbsolute: true,
+        guardPointsAddValue: -20,
+        dizzyPointsAddValue: -30,
+      },
+    },
+  });
+  const destination = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-target-auxiliary-redirect-destination",
+    displayName: "Synthetic Imported Helper Target Auxiliary Redirect Destination",
+    withHitDef: false,
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [-40, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1245,
+      branchAnimNo: 975,
+      damage: 37,
+      targetId: 77,
+      branchTrigger: "NumTarget(77) > 0",
+    },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: caller, p2: destination, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-helper-target-auxiliary-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-target-auxiliary-redirect-golden",
+      label: "Synthetic imported helper-to-helper auxiliary Target resource RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves helper TargetRedLifeAdd, TargetGuardPointsAdd, and TargetDizzyPointsAdd can resolve another live helper PlayerID, use destination helper target memory, and commit auxiliary resource mutations to the selected target actor. TargetState and BindToTarget helper destinations remain separate ownership contracts.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-target-auxiliary-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: [
+          "ChangeState",
+          "Helper",
+          "TargetRedLifeAdd",
+          "TargetGuardPointsAdd",
+          "TargetDizzyPointsAdd",
+        ],
+        requiredExecutedOperations: [
+          "helper",
+          "target:targetredlifeadd",
+          "target:targetguardpointsadd",
+          "target:targetdizzypointsadd",
+        ],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8893, minFrames: 1 },
+          { ownerId: "p2-helper-0", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1244, animNo: 974, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p2", stateNo: 1245, animNo: 975, minFrames: 1 },
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            observedRedLifeAtLeast: 963,
+            observedGuardPointsAtMost: 980,
+            observedDizzyPointsAtMost: 970,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 963 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 963 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "helper", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "active", kind: "helper", ownerId: "p2", rootId: "p2", parentId: "p2" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 },
+          { ownerId: "p2", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1244, targetCount: 1, minAge: 2 },
+          { actorId: "p2-helper-0", kind: "helper", ownerId: "p2", effectId: 42, name: "Buddy", helperStateNo: 1245, targetCount: 1, minAge: 2 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -47040,8 +47179,12 @@ export function importedAssertSpecialShadowTelemetryScript(): RuntimeTraceInputF
 }
 
 type SyntheticHelperTargetControllerOptions = {
-  mode?: "all" | "bindtotarget";
+  mode?: "all" | "auxiliary" | "bindtotarget";
   lifeAddValue?: number;
+  redLifeAddValue?: number;
+  redLifeAbsolute?: boolean;
+  guardPointsAddValue?: number;
+  dizzyPointsAddValue?: number;
   withDrop?: boolean;
   dropTriggerTime?: number;
   redirectId?: number;
@@ -55774,6 +55917,31 @@ id = ${controllerTargetId}
 pos = 20,-8,${options.bindToTargetPostype ?? "Foot"}
 ${options.bindToTargetPosZ === undefined ? "" : `posz = ${options.bindToTargetPosZ}`}
 time = ${options.bindToTargetTime ?? 4}
+${redirectIdLine}
+`;
+  }
+  if (options.mode === "auxiliary") {
+    return `
+[State ${stateNo}, Helper Target Red Life]
+type = TargetRedLifeAdd
+trigger1 = Time = 1
+id = ${controllerTargetId}
+value = ${options.redLifeAddValue ?? 25}
+absolute = ${options.redLifeAbsolute === false ? 0 : 1}
+${redirectIdLine}
+
+[State ${stateNo}, Helper Target Guard Points]
+type = TargetGuardPointsAdd
+trigger1 = Time = 1
+id = ${controllerTargetId}
+value = ${options.guardPointsAddValue ?? -20}
+${redirectIdLine}
+
+[State ${stateNo}, Helper Target Dizzy Points]
+type = TargetDizzyPointsAdd
+trigger1 = Time = 1
+id = ${controllerTargetId}
+value = ${options.dizzyPointsAddValue ?? -30}
 ${redirectIdLine}
 `;
   }

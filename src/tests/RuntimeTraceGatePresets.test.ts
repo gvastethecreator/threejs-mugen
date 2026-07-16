@@ -354,6 +354,7 @@ import {
   createSyntheticImportedHelperTargetStateRedirectTraceArtifact,
   createSyntheticImportedHelperTargetHelperRedirectTraceArtifact,
   createSyntheticImportedHelperBindToTargetHelperRedirectTraceArtifact,
+  createSyntheticImportedHelperTargetAuxiliaryResourceHelperRedirectTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -8835,6 +8836,40 @@ describe("RuntimeTraceGatePresets", () => {
           hasBinding: true,
           bindingOffset: { x: 20, y: -8, z: 6 },
         }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported helper-to-helper auxiliary Target resource RedirectID artifact", () => {
+    const artifact = createSyntheticImportedHelperTargetAuxiliaryResourceHelperRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-auxiliary-redirect-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-auxiliary-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.TargetRedLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetGuardPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetDizzyPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations).toMatchObject({
+      "target:targetredlifeadd": 1,
+      "target:targetguardpointsadd": 1,
+      "target:targetdizzypointsadd": 1,
+    });
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8893 }),
+        expect.objectContaining({ ownerId: "p2-helper-0", actorId: "p1", targetId: 77 }),
       ]),
     );
   });
