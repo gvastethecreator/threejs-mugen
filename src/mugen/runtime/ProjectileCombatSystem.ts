@@ -15,6 +15,7 @@ import {
   getRuntimeProjectileHitboxes,
   markRuntimeProjectileForRemoval,
   recordRuntimeProjectileContact,
+  runtimeProjectileHasOppositeTeamSide,
   runtimeProjectileWorldBox,
   type RuntimeProjectile,
 } from "./ProjectileSystem";
@@ -83,6 +84,9 @@ export class RuntimeProjectileCombatWorld {
     const { attacker, defender, hurtBoxes, log } = input;
     for (const projectile of input.projectiles) {
       if (!canRuntimeProjectileContact(projectile)) {
+        continue;
+      }
+      if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
         continue;
       }
       const hitBoxes = getRuntimeProjectileHitboxes(projectile);
@@ -195,45 +199,84 @@ export class RuntimeProjectileCombatWorld {
 
   resolveClashes(input: RuntimeProjectileClashInput): void {
     const { leftLabel, rightLabel, log } = input;
+    const sameOwner = input.leftProjectiles === input.rightProjectiles;
+    if (sameOwner) {
+      const projectiles = input.leftProjectiles;
+      for (let leftIndex = 0; leftIndex < projectiles.length; leftIndex += 1) {
+        const left = projectiles[leftIndex];
+        if (!left || !canRuntimeProjectileContact(left)) {
+          continue;
+        }
+        for (let rightIndex = leftIndex + 1; rightIndex < projectiles.length; rightIndex += 1) {
+          if (!canRuntimeProjectileContact(left)) {
+            break;
+          }
+          const right = projectiles[rightIndex];
+          if (!right || !canRuntimeProjectileContact(right)) {
+            continue;
+          }
+          if (!runtimeProjectileHasOppositeTeamSide(left) && !runtimeProjectileHasOppositeTeamSide(right)) {
+            continue;
+          }
+          this.resolveClashPair(left, right, leftLabel, rightLabel, input, log);
+        }
+      }
+      input.removeProjectilesMarkedForRemoval();
+      return;
+    }
     for (const left of input.leftProjectiles) {
       if (!canRuntimeProjectileContact(left)) {
         continue;
       }
       for (const right of input.rightProjectiles) {
-        if (!canRuntimeProjectileContact(left) || !canRuntimeProjectileContact(right)) {
+        if (!canRuntimeProjectileContact(left)) {
+          break;
+        }
+        if (!canRuntimeProjectileContact(right)) {
           continue;
         }
-        if (!projectilesIntersect(left, right)) {
-          continue;
-        }
-        if (left.priority === right.priority) {
-          markRuntimeProjectileForRemoval(left, "cancel");
-          markRuntimeProjectileForRemoval(right, "cancel");
-          input.recordProjectileCancel?.(left);
-          input.recordProjectileCancel?.(right);
-          log(
-            `Projectile clash: ${leftLabel} ${left.serialId} traded with ${rightLabel} ${right.serialId} at priority ${left.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
-          );
-        } else if (left.priority > right.priority) {
-          const previousPriority = left.priority;
-          left.priority = decrementProjectilePriority(left.priority);
-          markRuntimeProjectileForRemoval(right, "cancel");
-          input.recordProjectileCancel?.(right);
-          log(
-            `Projectile clash: ${leftLabel} ${left.serialId} canceled ${rightLabel} ${right.serialId} by priority ${previousPriority} > ${right.priority}; winner priority ${previousPriority} -> ${left.priority}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
-          );
-        } else {
-          const previousPriority = right.priority;
-          right.priority = decrementProjectilePriority(right.priority);
-          markRuntimeProjectileForRemoval(left, "cancel");
-          input.recordProjectileCancel?.(left);
-          log(
-            `Projectile clash: ${rightLabel} ${right.serialId} canceled ${leftLabel} ${left.serialId} by priority ${previousPriority} > ${left.priority}; winner priority ${previousPriority} -> ${right.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}`,
-          );
-        }
+        this.resolveClashPair(left, right, leftLabel, rightLabel, input, log);
       }
     }
     input.removeProjectilesMarkedForRemoval();
+  }
+
+  private resolveClashPair(
+    left: RuntimeProjectile,
+    right: RuntimeProjectile,
+    leftLabel: string,
+    rightLabel: string,
+    input: RuntimeProjectileClashInput,
+    log: (line: string) => void,
+  ): void {
+    if (!projectilesIntersect(left, right)) {
+      return;
+    }
+    if (left.priority === right.priority) {
+      markRuntimeProjectileForRemoval(left, "cancel");
+      markRuntimeProjectileForRemoval(right, "cancel");
+      input.recordProjectileCancel?.(left);
+      input.recordProjectileCancel?.(right);
+      log(
+        `Projectile clash: ${leftLabel} ${left.serialId} traded with ${rightLabel} ${right.serialId} at priority ${left.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
+      );
+    } else if (left.priority > right.priority) {
+      const previousPriority = left.priority;
+      left.priority = decrementProjectilePriority(left.priority);
+      markRuntimeProjectileForRemoval(right, "cancel");
+      input.recordProjectileCancel?.(right);
+      log(
+        `Projectile clash: ${leftLabel} ${left.serialId} canceled ${rightLabel} ${right.serialId} by priority ${previousPriority} > ${right.priority}; winner priority ${previousPriority} -> ${left.priority}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
+      );
+    } else {
+      const previousPriority = right.priority;
+      right.priority = decrementProjectilePriority(right.priority);
+      markRuntimeProjectileForRemoval(left, "cancel");
+      input.recordProjectileCancel?.(left);
+      log(
+        `Projectile clash: ${rightLabel} ${right.serialId} canceled ${leftLabel} ${left.serialId} by priority ${previousPriority} > ${left.priority}; winner priority ${previousPriority} -> ${right.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}`,
+      );
+    }
   }
 }
 

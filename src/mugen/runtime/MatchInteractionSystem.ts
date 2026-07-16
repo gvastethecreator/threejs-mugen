@@ -42,6 +42,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   clearTargetBindingSubject?: (fighter: TFighter) => void;
   advanceActiveEffects: (fighter: TFighter) => void;
   resolveProjectileClashes: (left: TFighter, right: TFighter) => void;
+  resolveSameOwnerProjectileClashes?: (fighter: TFighter) => void;
   separateActors: (left: TFighter, right: TFighter) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
@@ -60,6 +61,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   commitHitDefTargets?: (fighter: TFighter) => void;
   recordHitDefContactCommit?: (fighter: TFighter) => void;
   resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
+  resolveSelfProjectileCombat?: (fighter: TFighter) => void;
   resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
   clampToStage: (fighter: TFighter) => void;
   advancePresentationEffects: (fighter: TFighter) => void;
@@ -133,6 +135,8 @@ export class RuntimeMatchInteractionWorld {
     input.advanceActiveEffects(p1);
     input.advanceActiveEffects(p2);
     input.resolveProjectileClashes(p1, p2);
+    input.resolveSameOwnerProjectileClashes?.(p1);
+    input.resolveSameOwnerProjectileClashes?.(p2);
     if (input.advanceBodyPush) input.advanceBodyPush();
     else input.separateActors(p1, p2);
     for (const fighter of input.targetResetActors ?? []) input.clearTargetBindingSubject?.(fighter);
@@ -173,6 +177,8 @@ export class RuntimeMatchInteractionWorld {
     }
     input.resolveProjectileCombat(p1, p2);
     input.resolveProjectileCombat(p2, p1);
+    input.resolveSelfProjectileCombat?.(p1);
+    input.resolveSelfProjectileCombat?.(p2);
     input.resolveHelperCombat?.(p1, p2);
     input.resolveHelperCombat?.(p2, p1);
     input.clampToStage(p1);
@@ -227,6 +233,15 @@ export class RuntimeMatchInteractionWorld {
             owner.contactWorld.markProjectileCancel(owner.contact, owner.runtime.stateNo, projectile.projectileId);
           },
         }),
+      resolveSameOwnerProjectileClashes: (fighter) =>
+        fighter.effectActorWorld.resolveProjectileClashes(fighter.id, fighter.id, {
+          leftLabel: fighter.label,
+          rightLabel: fighter.label,
+          log: input.log,
+          recordProjectileCancel: (projectile) => {
+            fighter.contactWorld.markProjectileCancel(fighter.contact, fighter.runtime.stateNo, projectile.projectileId);
+          },
+        }),
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
       advanceBodyPush: input.advanceBodyPush,
       inspectHitAdmission: input.inspectHitAdmission,
@@ -243,6 +258,7 @@ export class RuntimeMatchInteractionWorld {
       commitHitDefTargets: input.commitHitDefTargets,
       recordHitDefContactCommit: input.recordHitDefContactCommit,
       resolveProjectileCombat: input.resolveProjectileCombat,
+      resolveSelfProjectileCombat: (fighter) => input.resolveProjectileCombat(fighter, fighter),
       resolveHelperCombat: input.resolveHelperCombat,
       refreshGuardDistance: input.refreshGuardDistance,
       refreshRootGuardDistance: input.refreshRootGuardDistance,

@@ -94,6 +94,7 @@ describe("ProjectileSystem", () => {
         projedgebound: "48",
         projstagebound: "32",
         projheightbound: "-96,64",
+        teamside: "2",
         projremovetime: "9999",
         projpriority: "12",
         projhits: "3",
@@ -163,6 +164,7 @@ describe("ProjectileSystem", () => {
       targetId: 78,
       chainId: 43,
       hitDefHitCount: 3,
+      teamSide: 2,
       hitPause: 9,
       hitStun: 21,
       push: 7,
@@ -183,6 +185,7 @@ describe("ProjectileSystem", () => {
       removeOnHit: false,
       hasHit: false,
     });
+    expect(runtimeProjectilesToSnapshots([projectile], 1000)[0]?.effect).toMatchObject({ teamSide: 2 });
   });
 
   it("defaults missing Projectile id to target id 0", () => {
@@ -716,6 +719,7 @@ describe("ProjectileSystem", () => {
         projedgebound: "48",
         projstagebound: "32",
         projheightbound: "-96,64",
+        teamside: "2",
         projremovetime: "18",
         sprpriority: "8",
         projpriority: "3",
@@ -734,6 +738,7 @@ describe("ProjectileSystem", () => {
       edgeBound: 48,
       stageBound: 32,
       heightBound: { low: -96, high: 64 },
+      teamSide: 2,
       removeTime: 18,
       spritePriority: 8,
       priority: 3,
@@ -784,6 +789,7 @@ describe("ProjectileSystem", () => {
     const resolvedKeys: string[] = [];
     const numberValues: Partial<Record<string, number>> = {
       projid: 77,
+      teamside: 2,
       projedgebound: 52,
       projstagebound: 36,
       projremovetime: 42,
@@ -804,6 +810,7 @@ describe("ProjectileSystem", () => {
     const changed = modifyRuntimeProjectiles([matching, other], {
       controller: controller({
         projid: "var(0)",
+        teamside: "var(19)",
         velocity: "var(1),var(2)",
         accel: "var(3),var(4)",
         velmul: "var(5),var(6)",
@@ -833,6 +840,7 @@ describe("ProjectileSystem", () => {
     expect(changed).toBe(1);
     expect(resolvedKeys).toEqual([
       "projid",
+      "teamside",
       "velocity",
       "accel",
       "velmul",
@@ -858,12 +866,27 @@ describe("ProjectileSystem", () => {
       removeTime: 42,
       spritePriority: 7,
       priority: 5,
+      teamSide: 2,
       hitsRemaining: 6,
       missTime: 8,
       removeOnHit: false,
       hasHit: false,
     });
     expect(other).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
+  });
+
+  it("ignores invalid dynamic ModifyProjectile TeamSide values", () => {
+    const matching = projectile({ projectileId: 77, teamSide: 1 });
+
+    const changed = modifyRuntimeProjectiles([matching], {
+      controller: controller({ projid: "77", teamside: "var(0)" }),
+      resolveModifyProjectile: {
+        resolveNumber: (key) => (key === "teamside" ? 3 : undefined),
+      },
+    });
+
+    expect(changed).toBe(1);
+    expect(matching.teamSide).toBe(1);
   });
 
   it("plays a bounded terminal animation when hit removal metadata resolves to an AIR action", () => {

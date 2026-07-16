@@ -90,6 +90,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       advanceTargetMemory: (fighter) => tag("target-memory", fighter),
       advanceActiveEffects: (fighter) => tag("active-effects", fighter),
       resolveProjectileClashes: (left, right) => tag("projectile-clash", left, right),
+      resolveSameOwnerProjectileClashes: (fighter) => tag("same-owner-projectile-clash", fighter),
       separateActors: (left, right) => tag("separate", left, right),
       applyTargetBindings: (fighter, candidates) => tag("target-bind", fighter, candidates[0]),
       applyBindToTarget: (fighter, candidates) => tag("bind-to-target", fighter, candidates[0]),
@@ -101,6 +102,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       },
       resolveDirectCombat: (attacker, defender) => tag("direct-combat", attacker, defender),
       resolveProjectileCombat: (attacker, defender) => tag("projectile-combat", attacker, defender),
+      resolveSelfProjectileCombat: (fighter) => tag("self-projectile-combat", fighter),
       clampToStage: (fighter) => tag("clamp", fighter),
       advancePresentationEffects: (fighter) => tag("presentation", fighter),
       log: (line) => tag("log", line),
@@ -112,6 +114,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       "active-effects:p1",
       "active-effects:p2",
       "projectile-clash:p1:p2",
+      "same-owner-projectile-clash:p1",
+      "same-owner-projectile-clash:p2",
       "separate:p1:p2",
       "target-bind:p1:p2",
       "target-bind:p2:p1",
@@ -124,6 +128,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       "direct-combat:p2:p1",
       "projectile-combat:p1:p2",
       "projectile-combat:p2:p1",
+      "self-projectile-combat:p1",
+      "self-projectile-combat:p2",
       "clamp:p1",
       "clamp:p2",
       "presentation:p1",
@@ -213,6 +219,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       "active-effects:p2",
       "projectile-clash:p1/Nova:p2/Mira",
       "projectile-cancel:p1:0:77",
+      "projectile-clash:p1/Nova:p1/Nova",
+      "projectile-clash:p2/Mira:p2/Mira",
       "body-push",
       "target-bind:p1:p2",
       "target-bind:p2:p1",
@@ -231,6 +239,8 @@ describe("RuntimeMatchInteractionWorld", () => {
       "direct-combat:p1:p2",
       "projectile-combat:p1:p2",
       "projectile-combat:p2:p1",
+      "projectile-combat:p1:p1",
+      "projectile-combat:p2:p2",
       "clamp:p1",
       "clamp:p2",
       "presentation:p1",
@@ -294,7 +304,9 @@ function runtimeActor(id: string, label: string, x: number, calls: string[]): Ru
       removeExplodsOnGetHit: () => undefined,
       resolveProjectileClashes: (leftOwnerId, rightOwnerId, input) => {
         calls.push(`projectile-clash:${leftOwnerId}/${input.leftLabel}:${rightOwnerId}/${input.rightLabel}`);
-        input.recordProjectileCancel?.({ ownerId: leftOwnerId, projectileId: 77 } as never);
+        if (leftOwnerId !== rightOwnerId) {
+          input.recordProjectileCancel?.({ ownerId: leftOwnerId, projectileId: 77 } as never);
+        }
       },
     },
   } as RuntimeMatchInteractionRuntimeActor;

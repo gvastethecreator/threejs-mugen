@@ -151,6 +151,7 @@ export type ProjectileControllerOp = {
   targetId?: number;
   chainId?: number;
   hitDefHitCount?: number;
+  teamSide?: 1 | 2;
   projAnim?: number;
   offset?: [number, number];
   pos?: [number, number];
@@ -208,6 +209,7 @@ export type ProjectileControllerOp = {
 export type ModifyProjectileControllerOp = {
   kind: "modifyprojectile";
   projectileId?: number;
+  teamSide?: 1 | 2;
   velocity?: [number, number];
   acceleration?: [number, number];
   velocityMultiplier?: [number, number];
@@ -1928,6 +1930,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     targetId: firstNumber(findParam(controller, "id")),
     chainId: firstNumber(findParam(controller, "chainid")),
     hitDefHitCount: firstNumber(findParam(controller, "numhits")),
+    teamSide: parseProjectileTeamSide(findParam(controller, "teamside")),
     projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
     offset: pairWithDefaultOrUndefined(numberPair(findParam(controller, "offset"))),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
@@ -1990,6 +1993,7 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   return definedObject({
     kind: "modifyprojectile" as const,
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
+    teamSide: parseProjectileTeamSide(findParam(controller, "teamside")),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
     acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
     velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
@@ -2004,6 +2008,11 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     missTime: firstNumber(findParam(controller, "projmisstime")),
     removeOnHit: booleanNumber(findParam(controller, "projremove")),
   });
+}
+
+function parseProjectileTeamSide(raw: string | undefined): 1 | 2 | undefined {
+  const value = firstNumber(raw);
+  return value === 1 || value === 2 ? value : undefined;
 }
 
 function compileHelperControllerOp(controller: MugenStateController): HelperControllerOp | undefined {

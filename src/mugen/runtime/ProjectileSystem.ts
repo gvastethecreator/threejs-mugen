@@ -7,6 +7,7 @@ import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
+import { runtimeTeamSideFromId, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { ActorSnapshot, RuntimeResolvedSoundRef } from "./types";
 
 const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
@@ -59,6 +60,7 @@ export type RuntimeProjectile = {
   targetId?: number;
   chainId?: number;
   hitDefHitCount?: number;
+  teamSide?: RuntimeTeamSide;
   hitPause: number;
   hitStun: number;
   p2StateNo?: number;
@@ -147,6 +149,7 @@ export type RuntimeModifyProjectileNumberParam =
   | "projpriority"
   | "projhits"
   | "projmisstime"
+  | "teamside"
   | "projremove";
 export type RuntimeModifyProjectilePairParam = "velocity" | "accel" | "velmul" | "projscale" | "projheightbound";
 
@@ -169,6 +172,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const targetId = operation?.targetId ?? firstNumber(findControllerParam(input.controller, "id")) ?? projectileId;
   const chainId = operation?.chainId ?? firstNumber(findControllerParam(input.controller, "chainid"));
   const hitDefHitCount = operation?.hitDefHitCount ?? firstNumber(findControllerParam(input.controller, "numhits")) ?? 1;
+  const teamSide = operation?.teamSide ?? normalizeRuntimeProjectileTeamSide(firstNumber(findControllerParam(input.controller, "teamside")));
   const baseDamage = Math.max(0, operation?.damage ?? firstNumber(findControllerParam(input.controller, "damage")) ?? 30);
   const hitPause = Math.max(0, Math.round(operation?.hitPause ?? firstNumber(findControllerParam(input.controller, "pausetime")) ?? 6));
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
@@ -257,6 +261,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     targetId,
     chainId,
     hitDefHitCount: Math.max(0, Math.trunc(hitDefHitCount)),
+    teamSide,
     hitPause,
     hitStun,
     p2StateNo: operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno")),
@@ -296,6 +301,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
 export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input: RuntimeProjectileModifyInput): number {
   const operation = input.operation;
   const projectileId = operation?.projectileId ?? resolveModifyProjectileNumberParam(input, "projid");
+  const teamSide = operation?.teamSide ?? resolveModifyProjectileNumberParam(input, "teamside");
   const velocity = operation?.velocity ?? resolveModifyProjectilePairParam(input, "velocity", numberPair);
   const acceleration = operation?.acceleration ?? resolveModifyProjectilePairParam(input, "accel", numberPair);
   const velocityMultiplier = operation?.velocityMultiplier ?? resolveModifyProjectilePairParam(input, "velmul", scalePair);
@@ -356,6 +362,12 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     if (missTime !== undefined) {
       projectile.missTime = clampProjectileMissTime(missTime);
       projectile.missTimeRemaining = Math.min(projectile.missTimeRemaining, projectile.missTime);
+    }
+    if (teamSide !== undefined) {
+      const normalizedTeamSide = normalizeRuntimeProjectileTeamSide(teamSide);
+      if (normalizedTeamSide !== undefined) {
+        projectile.teamSide = normalizedTeamSide;
+      }
     }
     if (removeOnHit !== undefined) {
       projectile.removeOnHit = removeOnHit;
@@ -512,6 +524,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           guardStun: projectile.guardStun,
           guardDistance: projectile.guardDistance,
           guardFlag: projectile.guardFlag,
+          ...(projectile.teamSide === undefined ? {} : { teamSide: projectile.teamSide }),
           p2StateNo: projectile.p2StateNo,
           p2GetP1State: projectile.p2GetP1State,
           missOnOverride: projectile.missOnOverride,
@@ -601,6 +614,14 @@ export function getRuntimeProjectileHitboxes(projectile: RuntimeProjectile): Col
 
 export function canRuntimeProjectileContact(projectile: RuntimeProjectile): boolean {
   return !projectile.removalReason && !projectile.terminalPlayback && !projectile.hasHit && projectile.hitsRemaining > 0 && projectile.missTimeRemaining <= 0;
+}
+
+export function runtimeProjectileHasOppositeTeamSide(
+  projectile: RuntimeProjectile,
+  ownerId = projectile.ownerId,
+): boolean {
+  const ownerTeamSide = runtimeTeamSideFromId(ownerId);
+  return ownerTeamSide !== undefined && projectile.teamSide !== undefined && projectile.teamSide !== ownerTeamSide;
 }
 
 export function recordRuntimeProjectileContact(projectile: RuntimeProjectile, kind: Exclude<RuntimeProjectileContactKind, "contact"> | undefined = undefined): void {
@@ -772,6 +793,10 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function normalizeRuntimeProjectileTeamSide(value: number | undefined): RuntimeTeamSide | undefined {
+  return value === 1 || value === 2 ? value : undefined;
 }
 
 function isStaticNumericList(value: string): boolean {

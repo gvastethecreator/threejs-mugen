@@ -1643,6 +1643,7 @@ time = 20
         id: "78",
         chainID: "43",
         numhits: "3",
+        teamside: "2",
         projanim: "910",
         offset: "62,-45",
         postype: "p1",
@@ -1687,6 +1688,7 @@ time = 20
       targetId: 78,
       chainId: 43,
       hitDefHitCount: 3,
+      teamSide: 2,
       projAnim: 910,
       offset: [62, -45],
       postype: "p1",
@@ -1729,6 +1731,7 @@ time = 20
     const modifyProjectile = compileControllerIr(
       controller(1000, "ModifyProjectile", [], {
         projid: "77",
+        teamside: "1",
         velocity: "5,-1",
         accel: "0.25,0",
         velmul: "0.5,1",
@@ -1748,6 +1751,7 @@ time = 20
     expect(modifyProjectile.operation).toEqual({
       kind: "modifyprojectile",
       projectileId: 77,
+      teamSide: 1,
       velocity: [5, -1],
       acceleration: [0.25, 0],
       velocityMultiplier: [0.5, 1],
@@ -1762,6 +1766,18 @@ time = 20
       missTime: 5,
       removeOnHit: false,
     });
+  });
+
+  it("rejects invalid static Projectile TeamSide values at compile time", () => {
+    const projectile = compileControllerIr(
+      controller(1000, "Projectile", [], { teamside: "3" }),
+    );
+    const modifyProjectile = compileControllerIr(
+      controller(1000, "ModifyProjectile", [], { teamside: "0" }),
+    );
+
+    expect(projectile.operation).not.toHaveProperty("teamSide");
+    expect(modifyProjectile.operation).not.toHaveProperty("teamSide");
   });
 
   it("compiles Helper controllers into typed helper operations", () => {

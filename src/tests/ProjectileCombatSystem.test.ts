@@ -265,6 +265,75 @@ describe("ProjectileCombatSystem", () => {
     expect(rightProjectiles).toEqual([]);
   });
 
+  it("allows an explicit opposite-side Projectile to hit its owner", () => {
+    let projectiles = [projectile({ teamSide: 2, damage: 42, pos: { x: 0, y: 0 } })];
+    const fighter = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker: fighter,
+      defender: fighter,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(fighter.runtime.life).toBe(958);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("keeps ordinary same-owner Projectiles from self-contact", () => {
+    const projectiles = [projectile({ teamSide: 1, pos: { x: 0, y: 0 } })];
+    const fighter = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker: fighter,
+      defender: fighter,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => undefined,
+    });
+
+    expect(fighter.runtime.life).toBe(1000);
+    expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+  });
+
+  it("clashes overlapping same-owner Projectiles when one opts into the opposite side", () => {
+    let projectiles = [
+      projectile({ serialId: "p1-projectile-0", ownerId: "p1", teamSide: 2, priority: 5 }),
+      projectile({ serialId: "p1-projectile-1", ownerId: "p1", teamSide: 1, priority: 5 }),
+    ];
+    const logs: string[] = [];
+    const cancels: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveClashes({
+      leftLabel: "P1",
+      rightLabel: "P1",
+      leftProjectiles: projectiles,
+      rightProjectiles: projectiles,
+      log: (line) => logs.push(line),
+      recordProjectileCancel: (entry) => cancels.push(entry.serialId),
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(cancels).toEqual(["p1-projectile-0", "p1-projectile-1"]);
+    expect(logs).toEqual([
+      "Projectile clash: P1 p1-projectile-0 traded with P1 p1-projectile-1 at priority 5; p1-projectile-0 cancel removal anim none; p1-projectile-1 cancel removal anim none",
+    ]);
+    expect(projectiles).toEqual([]);
+  });
+
   it("routes projectile get-hit through an owner callback when provided", () => {
     const projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, moveType: "A" }));
