@@ -432,13 +432,17 @@ type RootControllerRedirectHandler = (
     | "screenbound"
     | "playerpush"
     | RedirectableTargetControllerType
-    | RedirectableResourceControllerType,
+    | RedirectableResourceControllerType
+    | RedirectableEffectControllerType,
 ) => FighterMatchState | undefined;
 type RootTargetDispatchLeaseHandler = (
   caller: FighterMatchState,
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
-  controllerType: RedirectableTargetControllerType | RedirectableResourceControllerType,
+  controllerType:
+    | RedirectableTargetControllerType
+    | RedirectableResourceControllerType
+    | RedirectableEffectControllerType,
   phase: Extract<RuntimeRedirectedTargetDispatchPhase, "root-active" | "root-state-minus-one">,
   candidateTargets: readonly FighterMatchState[],
 ) => RuntimeRedirectedTargetDispatchLease<FighterMatchState> | undefined;
@@ -454,6 +458,7 @@ type RedirectableResourceControllerType =
   | "redlifeset"
   | "poweradd"
   | "powerset";
+type RedirectableEffectControllerType = "modifyprojectile";
 type RedirectableTargetControllerType =
   | "targetlifeadd"
   | "targetredlifeadd"
@@ -749,7 +754,10 @@ export class PlayableMatchRuntime {
     caller: FighterMatchState,
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
-    controllerType: RedirectableTargetControllerType | RedirectableResourceControllerType,
+    controllerType:
+      | RedirectableTargetControllerType
+      | RedirectableResourceControllerType
+      | RedirectableEffectControllerType,
     phase: Extract<RuntimeRedirectedTargetDispatchPhase, "root-active" | "root-state-minus-one">,
     candidateTargets: readonly FighterMatchState[],
   ): RuntimeRedirectedTargetDispatchLease<FighterMatchState> | undefined {
@@ -2275,7 +2283,8 @@ export class PlayableMatchRuntime {
       | "screenbound"
       | "playerpush"
       | RedirectableTargetControllerType
-      | RedirectableResourceControllerType,
+      | RedirectableResourceControllerType
+      | RedirectableEffectControllerType,
   ): FighterMatchState | undefined {
     const block = (value: number | "invalid"): undefined => {
       this.logs.unshift(`Blocked ${controllerType} RedirectID ${value} for ${caller.id}`);
@@ -3396,6 +3405,10 @@ function redirectableResourceControllerType(controller: ControllerIr): Redirecta
     : undefined;
 }
 
+function redirectableEffectControllerType(controller: ControllerIr): RedirectableEffectControllerType | undefined {
+  return controller.normalizedType === "modifyprojectile" ? "modifyprojectile" : undefined;
+}
+
 function resourceControllerRedirectExpression(controller: ControllerIr): string | undefined {
   if (redirectableResourceControllerType(controller) === undefined) {
     return undefined;
@@ -3404,6 +3417,23 @@ function resourceControllerRedirectExpression(controller: ControllerIr): string 
   const compiledExpression = operation?.kind === "resource" && "redirectPlayerIdExpression" in operation
     ? operation.redirectPlayerIdExpression
     : undefined;
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller, "redirectid");
+  if (rawExpression === undefined) {
+    return undefined;
+  }
+  return rawExpression.trim() || "invalid";
+}
+
+function effectControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  if (redirectableEffectControllerType(controller) === undefined) {
+    return undefined;
+  }
+  const operation = controller.operation;
+  const compiledExpression =
+    operation?.kind === "modifyprojectile" ? operation.redirectPlayerIdExpression : undefined;
   if (compiledExpression !== undefined) {
     return compiledExpression.trim() || "invalid";
   }
@@ -3959,44 +3989,99 @@ function runActiveStateControllers(
       });
     },
     effectSpawn: ({ controller, effect, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
-      effectSpawnControllerDispatchWorld.apply({
-        actor: fighter,
-        opponent,
-        controller,
-        effect,
-        effectSpawnWorld,
-        runtimeProfile: options.runtimeProfile,
-        resolveHelperStandby:
-          effect === "helper" && options.runtimeProfile === "ikemen-go"
-            ? (operation) =>
-                resolveDispatchBoolean(
-                  operation.standby,
-                  operation.standbyExpression,
-                  actor,
-                  targetOpponent,
-                  stateOwner,
-                  stageBounds,
-                  activeTick,
-                  gameSpace,
-                  options.characters,
-                  createPlayerIdTarget(actor),
-                )
-            : undefined,
-        resolveProjectileSound:
-          effect === "projectile"
-            ? (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
-            : undefined,
-        resolveModifyProjectile:
-          effect === "modifyprojectile"
-            ? {
-                resolveNumber: (key) =>
-                  resolveModifyProjectileNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
-                resolvePair: (key) =>
-                  resolveModifyProjectilePairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
-              }
-            : undefined,
-        ...runtimeActiveControllerTelemetryHooks,
-      });
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectControllerType = redirectableEffectControllerType(controller);
+      const redirectExpression = effectControllerRedirectExpression(controller);
+      const redirectLease = redirectExpression && redirectControllerType !== undefined
+        ? options.onRootTargetDispatchLease?.(
+            fighter,
+            redirectExpression,
+            context,
+            redirectControllerType,
+            "root-active",
+            [],
+          )
+        : undefined;
+      const target = redirectExpression
+        ? options.onRootTargetDispatchLease
+          ? redirectLease?.destination
+          : redirectControllerType === undefined
+            ? undefined
+            : options.onRootRedirect?.(fighter, redirectExpression, context, redirectControllerType)
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, `${redirectControllerType ?? "effect"}-redirect`);
+        return;
+      }
+      const mirrorRedirectedEffectTelemetry =
+        redirectControllerType !== undefined &&
+        target !== fighter &&
+        !compatibilityTelemetryWorld.isImportedActor(target);
+      const applyDispatch = () => {
+        effectSpawnControllerDispatchWorld.apply({
+          actor: target,
+          opponent: target === fighter ? opponent : targetOpponent,
+          controller,
+          effect,
+          effectSpawnWorld,
+          runtimeProfile: options.runtimeProfile,
+          resolveHelperStandby:
+            effect === "helper" && options.runtimeProfile === "ikemen-go"
+              ? (operation) =>
+                  resolveDispatchBoolean(
+                    operation.standby,
+                    operation.standbyExpression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  )
+              : undefined,
+          resolveProjectileSound:
+            effect === "projectile"
+              ? (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+              : undefined,
+          resolveModifyProjectile:
+            effect === "modifyprojectile"
+              ? {
+                  resolveNumber: (key) =>
+                    resolveModifyProjectileNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolvePair: (key) =>
+                    resolveModifyProjectilePairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                }
+              : undefined,
+          ...runtimeActiveControllerTelemetryHooks,
+          recordController: (recordedTarget, recordedController) => {
+            runtimeActiveControllerTelemetryHooks.recordController(recordedTarget, recordedController);
+            if (mirrorRedirectedEffectTelemetry) {
+              runtimeActiveControllerTelemetryHooks.recordController(fighter, recordedController);
+            }
+          },
+          recordOperation: (recordedTarget, operation) => {
+            runtimeActiveControllerTelemetryHooks.recordOperation(recordedTarget, operation);
+            if (mirrorRedirectedEffectTelemetry) {
+              runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
+            }
+          },
+        });
+      };
+      if (redirectLease) {
+        redirectedTargetDispatchWorld.execute(redirectLease, applyDispatch);
+      } else {
+        applyDispatch();
+      }
     },
     target: ({ controller, effect, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(

@@ -1732,6 +1732,7 @@ time = 20
       controller(1000, "ModifyProjectile", [], {
         projid: "77",
         teamside: "1",
+        redirectid: "ID + var(0)",
         velocity: "5,-1",
         accel: "0.25,0",
         velmul: "0.5,1",
@@ -1750,6 +1751,7 @@ time = 20
 
     expect(modifyProjectile.operation).toEqual({
       kind: "modifyprojectile",
+      redirectPlayerIdExpression: "ID + var(0)",
       projectileId: 77,
       teamSide: 1,
       velocity: [5, -1],
@@ -1778,6 +1780,14 @@ time = 20
 
     expect(projectile.operation).not.toHaveProperty("teamSide");
     expect(modifyProjectile.operation).not.toHaveProperty("teamSide");
+  });
+
+  it("rejects malformed ModifyProjectile RedirectID expressions at compile time", () => {
+    const modifyProjectile = compileControllerIr(
+      controller(1000, "ModifyProjectile", [], { projid: "77", redirectid: "57, 0" }),
+    );
+
+    expect(modifyProjectile.operation).toBeUndefined();
   });
 
   it("compiles Helper controllers into typed helper operations", () => {

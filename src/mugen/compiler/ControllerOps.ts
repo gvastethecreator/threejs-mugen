@@ -208,6 +208,7 @@ export type ProjectileControllerOp = {
 
 export type ModifyProjectileControllerOp = {
   kind: "modifyprojectile";
+  redirectPlayerIdExpression?: string;
   projectileId?: number;
   teamSide?: 1 | 2;
   velocity?: [number, number];
@@ -1989,9 +1990,14 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   });
 }
 
-function compileModifyProjectileControllerOp(controller: MugenStateController): ModifyProjectileControllerOp {
+function compileModifyProjectileControllerOp(controller: MugenStateController): ModifyProjectileControllerOp | undefined {
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (redirectPlayerIdExpression === "invalid") {
+    return undefined;
+  }
   return definedObject({
     kind: "modifyprojectile" as const,
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
     teamSide: parseProjectileTeamSide(findParam(controller, "teamside")),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
