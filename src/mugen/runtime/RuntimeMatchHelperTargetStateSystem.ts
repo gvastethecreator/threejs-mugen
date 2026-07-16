@@ -2,6 +2,7 @@ import type { RuntimeHelper } from "./HelperSystem";
 import {
   RuntimeHelperTargetStateWorld,
   type RuntimeHelperTargetStateOwner,
+  type RuntimeHelperTargetStateInput,
   type RuntimeHelperTargetStateResult,
 } from "./RuntimeHelperTargetStateSystem";
 import type { RuntimeTargetWorldActor } from "./TargetSystem";
@@ -24,7 +25,19 @@ export class RuntimeMatchHelperTargetStateWorld {
   enter<TActor extends RuntimeMatchHelperTargetStateActor>(
     input: RuntimeMatchHelperTargetStateInput<TActor>,
   ): RuntimeHelperTargetStateResult<TActor> {
-    return this.targetStateWorld.enter({
+    return this.targetStateWorld.enter(this.toTargetStateInput(input));
+  }
+
+  enterRedirected<TActor extends RuntimeMatchHelperTargetStateActor>(
+    input: RuntimeMatchHelperTargetStateInput<TActor>,
+  ): RuntimeHelperTargetStateResult<TActor> {
+    return this.targetStateWorld.enterRedirected(this.toTargetStateInput(input));
+  }
+
+  private toTargetStateInput<TActor extends RuntimeMatchHelperTargetStateActor>(
+    input: RuntimeMatchHelperTargetStateInput<TActor>,
+  ): RuntimeHelperTargetStateInput<TActor, TActor> {
+    return {
       owner: input.owner,
       helper: input.helper,
       targetActor: input.targetActor,
@@ -34,6 +47,6 @@ export class RuntimeMatchHelperTargetStateWorld {
         canEnterState: input.canEnterState,
         enterState: input.enterState,
       },
-    });
+    };
   }
 }

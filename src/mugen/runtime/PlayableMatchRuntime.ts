@@ -1019,6 +1019,26 @@ export class PlayableMatchRuntime {
     });
   }
 
+  private enterHelperRedirectedTargetState(
+    helper: RuntimeHelper,
+    stateOwner: RuntimeTargetWorldActor,
+    targetActor: RuntimeTargetWorldActor,
+    stateId: number,
+  ): void {
+    const owner = this.characterRoots().find((candidate) => candidate.id === stateOwner.id);
+    if (!owner) return;
+    const actors = this.characterRoots();
+    matchHelperTargetStateWorld.enterRedirected({
+      owner,
+      helper,
+      targetActor,
+      stateId,
+      actors,
+      canEnterState: (target, targetStateId, targetOwner) => canEnterState(target, targetStateId, targetOwner),
+      enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
+    });
+  }
+
   private matchRoster(): RuntimeMatchActorRoster<FighterMatchState> {
     return matchActorRosterWorld.create({ p1: this.activeRoots[0], p2: this.activeRoots[1] });
   }
@@ -1172,6 +1192,8 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (_helper, target, operation) =>
             this.recordHelperRedirectedOperation(target, operation),
+          enterHelperRedirectedTargetState: (helper, stateOwner, target, stateId) =>
+            this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           runIgnoredControllers: (fighter, opponent) =>
             runHitPauseIgnoredControllers(
               fighter,
@@ -1358,6 +1380,8 @@ export class PlayableMatchRuntime {
                   this.recordHelperRedirectedController(target, controller),
                 onRedirectedOperation: (_helper, target, operation) =>
                   this.recordHelperRedirectedOperation(target, operation),
+                enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
+                  this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
               });
             },
             discoverHelpers: () => this.helperRunOrderCandidates(),
@@ -1438,6 +1462,8 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (_helper, target, operation) =>
             this.recordHelperRedirectedOperation(target, operation),
+          enterHelperRedirectedTargetState: (helper, stateOwner, target, stateId) =>
+            this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           actorConstraintWorld: this.actorConstraintWorld,
           effectLifecycleWorld: this.effectLifecycleWorld,
           combatResolutionWorld: this.combatResolutionWorld,
@@ -1778,6 +1804,8 @@ export class PlayableMatchRuntime {
               this.recordHelperRedirectedController(target, controller),
             onRedirectedOperation: (_helper, target, operation) =>
               this.recordHelperRedirectedOperation(target, operation),
+            enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
+              this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           });
         },
         discoverHelpers: () => this.helperRunOrderCandidates(),
@@ -1793,6 +1821,8 @@ export class PlayableMatchRuntime {
               runtimeTick: this.tick,
               opponents: [opponent],
               skipHelpers: true,
+              enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
+                this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
             });
           }
         },

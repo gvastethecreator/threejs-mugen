@@ -184,6 +184,12 @@ export type RuntimeHelperAdvanceOptions = {
     operation: TargetControllerOp | BindToTargetControllerOp,
   ) => void;
   enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
+  enterRedirectedTargetState?: (
+    helper: RuntimeHelper,
+    stateOwner: RuntimeTargetWorldActor,
+    target: RuntimeTargetWorldActor,
+    stateId: number,
+  ) => void;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -367,6 +373,7 @@ export function runRuntimeHelperStateControllers(
     | "onRedirectedController"
     | "onRedirectedOperation"
     | "enterTargetState"
+    | "enterRedirectedTargetState"
     | "onSpawnExplod"
     | "onSpawnProjectile"
     | "onRemoveExplod"
@@ -960,13 +967,11 @@ function applyRuntimeHelperTargetController(
     | "onRedirectedController"
     | "onRedirectedOperation"
     | "enterTargetState"
+    | "enterRedirectedTargetState"
     | "onOperation"
     | "scaleTargetDamage"
   >,
 ): boolean {
-  if (controller.normalizedType === "targetstate" && !options.enterTargetState) {
-    return false;
-  }
   const redirectExpression = helperTargetControllerRedirectExpression(controller);
   const redirectPlayerId = redirectExpression === undefined
     ? undefined
@@ -980,6 +985,12 @@ function applyRuntimeHelperTargetController(
       controller,
       redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
     );
+    return false;
+  }
+  if (
+    controller.normalizedType === "targetstate" &&
+    (redirect ? !options.enterRedirectedTargetState : !options.enterTargetState)
+  ) {
     return false;
   }
   const actor = redirect?.actor ?? runtimeHelperTargetActor(helper);
@@ -997,7 +1008,10 @@ function applyRuntimeHelperTargetController(
       if (redirect) options.onRedirectedOperation?.(helper, actor, operation);
     },
     scaleIncomingDamage: options.scaleTargetDamage,
-    enterTargetState: (target, stateId) => options.enterTargetState?.(helper, target, stateId),
+    enterTargetState: (target, stateId) =>
+      redirect
+        ? options.enterRedirectedTargetState?.(helper, actor, target, stateId)
+        : options.enterTargetState?.(helper, target, stateId),
   });
   if (!redirect) {
     applyRuntimeStateToHelper(helper, actor.runtime);

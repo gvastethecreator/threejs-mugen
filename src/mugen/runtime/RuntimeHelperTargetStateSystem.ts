@@ -47,6 +47,18 @@ export class RuntimeHelperTargetStateWorld {
       return { entered: false, reason: "owner-mismatch" };
     }
 
+    return this.enterResolved(input);
+  }
+
+  enterRedirected<TOwner extends RuntimeHelperTargetStateOwner, TTarget extends RuntimeTargetWorldActor>(
+    input: RuntimeHelperTargetStateInput<TOwner, TTarget>,
+  ): RuntimeHelperTargetStateResult<TTarget> {
+    return this.enterResolved(input);
+  }
+
+  private enterResolved<TOwner extends RuntimeHelperTargetStateOwner, TTarget extends RuntimeTargetWorldActor>(
+    input: RuntimeHelperTargetStateInput<TOwner, TTarget>,
+  ): RuntimeHelperTargetStateResult<TTarget> {
     const target = input.hooks.resolveTarget(input.targetActor);
     if (!target) {
       return { entered: false, reason: "missing-target" };
