@@ -18,6 +18,7 @@ import {
   resolveRuntimeTargetBindingPosition,
   RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
+  type RuntimeTargetControllerDispatchSelection,
   type RuntimeTarget,
   type RuntimeTargetBinding,
   type RuntimeTargetWorldActor,
@@ -400,6 +401,45 @@ describe("TargetSystem", () => {
       recordedController: true,
       recordedOperation: true,
     });
+  });
+
+  it("projects selected targets and operation-specific mutations without widening candidates", () => {
+    const world = new RuntimeTargetControllerDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const actor = targetActor("p1", {
+      targets: [
+        { actorId: "p2", targetId: 77, age: 0 },
+        { actorId: "p3", targetId: 88, age: 0 },
+      ],
+    });
+    const selected = targetActor("p2", { runtime: { pos: { x: 100, y: -20 }, facing: -1 } });
+    const unselected = targetActor("p3", { runtime: { pos: { x: 120, y: -20 }, facing: -1 } });
+    const ir = compileControllerIr(controller("TargetBind", { id: "77", pos: "20,-8,Mid", time: "4" }));
+    let selection: RuntimeTargetControllerDispatchSelection | undefined;
+
+    world.apply({
+      actor,
+      candidateTargets: [selected, unselected],
+      controller: ir,
+      effect: "target",
+      targetWorld,
+      recordDispatch: (value) => {
+        selection = value;
+      },
+    });
+
+    expect(selection).toMatchObject({
+      destinationId: "p1",
+      controllerType: "targetbind",
+      effect: "target",
+      requestedId: 77,
+      selectedTargetIds: ["p2"],
+      mutatedActorIds: ["p1", "p2"],
+      matchedTargets: 1,
+      operationExecuted: true,
+    });
+    expect(selection?.selectedTargetIds).not.toContain("p3");
+    expect(selection?.mutatedActorIds).not.toContain("p3");
   });
 
   it("dispatches active BindToTarget controllers with telemetry hooks", () => {

@@ -4884,6 +4884,20 @@ RedirectID = 57
     expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          route: "root-active",
+          callerId: "p1",
+          destinationId: "p2",
+          stateOwnerId: "p2",
+          controllerType: "targetpoweradd",
+          requestedId: 77,
+          selectedTargetIds: ["p1"],
+          mutatedActorIds: ["p1"],
+        }),
+      ]),
+    );
   });
 
   it("routes TargetLifeAdd RedirectID through the target owner target memory", () => {
@@ -5004,6 +5018,20 @@ value = 1
     expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.redirectedTargetDispatches).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          route: "root-state-minus-one",
+          callerId: "p2",
+          destinationId: "p1",
+          stateOwnerId: "p1",
+          controllerType: "targetpoweradd",
+          requestedId: 77,
+          selectedTargetIds: ["p2"],
+          mutatedActorIds: ["p2"],
+        }),
+      ]),
+    );
   });
 
   it("routes active TargetVelAdd and TargetVelSet RedirectID through the target owner target memory", () => {
@@ -6291,6 +6319,20 @@ RedirectID = 57
     expect(snapshot.actors[1]?.runtime.power).toBe(35);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.logs.some((line) => line.includes("Blocked TargetPowerAdd RedirectID"))).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          route: "helper-to-root",
+          callerId: "p1-helper-0",
+          destinationId: "p2",
+          stateOwnerId: "p2",
+          controllerType: "targetpoweradd",
+          requestedId: 77,
+          selectedTargetIds: ["p1"],
+          mutatedActorIds: ["p1"],
+        }),
+      ]),
+    );
   });
 
   it("routes a Helper BindToTarget RedirectID through the destination root target memory", () => {
@@ -6347,6 +6389,54 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
     expect(snapshot.logs.some((line) => line.includes("Blocked bindtotarget RedirectID"))).toBe(false);
+  });
+
+  it("characterizes a Helper TargetPowerAdd RedirectID through a destination Helper", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Helper-to-Helper Target Power]
+type = TargetPowerAdd
+trigger1 = Time = 1
+id = 77
+value = 40
+RedirectID = ID + 1
+`,
+    });
+    const destination = createImportedFixture({ withHelper: true });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["x"]) });
+    const destinationHelper = effectActorWorld.helpers("p2")[0];
+    expect(destinationHelper).toBeDefined();
+    destinationHelper!.targets = [{ actorId: "p1", targetId: 77, age: 0 }];
+
+    for (let frame = 0; frame < 4; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.power).toBe(40);
+    expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          route: "helper-to-helper",
+          callerId: "p1-helper-0",
+          destinationId: "p2-helper-0",
+          stateOwnerId: "p2-helper-0",
+          controllerType: "targetpoweradd",
+          requestedId: 77,
+          selectedTargetIds: ["p1"],
+          mutatedActorIds: ["p1"],
+        }),
+      ]),
+    );
+    expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches?.some(
+      (observation) => observation.mutatedActorIds.includes("p1-helper-0"),
+    )).toBe(false);
   });
 
   it("buffers imported CMD inputs entered during hit pause when buffer.hitpause is enabled", () => {
