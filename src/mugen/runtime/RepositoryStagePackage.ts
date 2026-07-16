@@ -50,7 +50,7 @@ export async function createRepositoryStagePackageZipBytes(
   for (const path of vfs.listFiles()) {
     const bytes = vfs.readBytes(path);
     if (!bytes) throw new Error(`repository Skyline Relay package is missing ${path}`);
-    zip.file(path, bytes, { date: fixtureDate });
+    zip.file(path, bytes, { date: fixtureDate, createFolders: false });
   }
   return zip.generateAsync({
     type: "arraybuffer",

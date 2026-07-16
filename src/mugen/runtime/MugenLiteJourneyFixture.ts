@@ -46,7 +46,7 @@ export async function createMugenLiteJourneyZipBytes(): Promise<ArrayBuffer> {
   for (const path of vfs.listFiles()) {
     const bytes = vfs.readBytes(path);
     if (!bytes) throw new Error(`MUGEN-lite journey package is missing ${path}`);
-    zip.file(path, bytes, { date: fixtureDate });
+    zip.file(path, bytes, { date: fixtureDate, createFolders: false });
   }
   return zip.generateAsync({ type: "arraybuffer", compression: "DEFLATE", compressionOptions: { level: 9 }, platform: "DOS" });
 }

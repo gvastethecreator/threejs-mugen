@@ -17,6 +17,7 @@ describe("repository Skyline Relay package", () => {
     const folderSource = new FolderCharacterSource(createBrowserFileList(canonicalVfs));
     const folderVfs = await folderSource.load();
     const zipBytes = await createRepositoryStagePackageZipBytes(canonicalVfs);
+    const repeatedZipBytes = await createRepositoryStagePackageZipBytes(canonicalVfs);
     const zipSource = new ZipCharacterSource(new File([zipBytes], "repository-skyline-relay.zip"));
     const zipVfs = await zipSource.load();
 
@@ -32,6 +33,7 @@ describe("repository Skyline Relay package", () => {
       "stages/skyline-relay/LICENSE.txt",
     ]);
     expect(new Uint8Array(zipBytes).slice(0, 4)).toEqual(new Uint8Array([0x50, 0x4b, 0x03, 0x04]));
+    expect(new Uint8Array(repeatedZipBytes)).toEqual(new Uint8Array(zipBytes));
     expect(folderSource.name).toBe("repository-skyline-relay");
     expect(zipVfs.listFiles()).toEqual(folderVfs.listFiles());
     for (const path of folderVfs.listFiles()) {
