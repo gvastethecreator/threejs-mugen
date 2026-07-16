@@ -1,7 +1,7 @@
 # Close helper-parented Projectile depth admission v1
 
 Type: task
-Status: in progress
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -44,3 +44,27 @@ complete MUGEN/IKEMEN parity.
 
 - `docs/research/2026-07-16-helper-projectile-depth-admission.md`
 
+## Implementation result
+
+- Added explicit helper-parented Projectile coverage against the existing root
+  effect store and `RuntimeProjectileCombatWorld`.
+- Separated Z ranges remain live and touching Z edges resolve the same contact
+  and removal path as root-created Projectiles.
+- No ownership, team, collision-box, or depth-oracle implementation changes
+  were required.
+
+## Evidence
+
+- Focused `ProjectileCombatSystem` tests: `31/31` passed.
+- `pnpm typecheck`: passed.
+- Full suite after the test commit: `216/216` files and `2285/2285` tests
+  passed with `--testTimeout=30000`.
+- The accumulated Wayfinder 214 runtime checkpoint remains green for build,
+  boundaries, and trace QA: build passed, `pnpm check:boundaries` passed, and
+  `pnpm qa:trace` passed `633/633` artifacts with `0` skipped.
+- Code/test commit: `f612ea4e`.
+
+Claim ceiling: helper-parented Projectiles attacking root actors now have
+explicit separated/touching Z admission evidence under the existing owner
+store. Helper actors as defenders, proxy/team breadth, depth-bound timing,
+presentation, rollback/netplay, and complete MUGEN/IKEMEN parity remain open.

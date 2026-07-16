@@ -1,7 +1,7 @@
 # Research: helper-parented Projectile depth admission
 
 Date: 2026-07-16
-Status: implementation planned (Wayfinder 215)
+Status: implementation completed (Wayfinder 215)
 
 ## Question
 
@@ -48,5 +48,12 @@ timing, rollback/netplay, or complete parity.
 
 ## Implementation evidence
 
-Pending implementation and verification.
-
+- Added helper-parented separated/touching depth cases to
+  `ProjectileCombatSystem.test.ts` without changing the existing combat
+  implementation.
+- Focused tests: `31/31` passed; full suite after the test commit:
+  `216/216` files and `2285/2285` tests passed.
+- TypeScript 7 passed. The preceding runtime checkpoint also passed build,
+  module boundaries, and trace QA at `633/633` with `0` skipped; no trace
+  preset or production runtime source changed in this test-only slice.
+- Commit: `f612ea4e`.
