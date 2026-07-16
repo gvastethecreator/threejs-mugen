@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "mugen-web-sandbox/repository-stage-native-regression/v1",
+  "generatedAt": "2026-07-16T16:47:10.101Z",
+  "sourceRevision": "62f4bb824f1a8e3d37574a13793b50fdfe733c8f",
+  "packageId": "repository-skyline-relay",
+  "packageDigest": "sha256:9c8a0b7cbd8d298eda5450518045e8d67e5d9a4a409e3186c5eef33a7183b456",
+  "status": "passed",
+  "tests": {
+    "status": "passed",
+    "files": 4,
+    "assertions": 7,
+    "command": "pnpm exec vitest run src/tests/RepositoryStageFixture.test.ts src/tests/RepositoryStagePackage.test.ts src/tests/RepositoryStageJourney.test.ts src/tests/RepositoryStageJourneyMaterializer.test.ts --testTimeout=30000"
+  },
+  "typecheck": {
+    "status": "passed",
+    "command": "pnpm typecheck"
+  },
+  "boundaries": {
+    "status": "passed",
+    "command": "pnpm run check:boundaries"
+  },
+  "build": {
+    "status": "passed",
+    "warnings": [
+      "large chunk over 500 kB"
+    ],
+    "command": "pnpm build"
+  }
+}
