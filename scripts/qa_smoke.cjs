@@ -2833,8 +2833,11 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
     ]);
     await Promise.all([waitForBridge(primary), waitForBridge(remote)]);
     for (const candidate of [primary, remote]) {
-      await candidate.locator(`[data-stored-project-id="${projectId}"]`).first().evaluate((element) => element.click());
-      await candidate.waitForFunction((id) => window.__MUGEN_WEB_SANDBOX__?.project?.id === id, projectId);
+      const storedProject = candidate.locator(`[data-stored-project-id="${projectId}"]`).first();
+      await storedProject.waitFor({ state: "attached", timeout: 15_000 });
+      await candidate.waitForTimeout(250);
+      await storedProject.evaluate((element) => element.click());
+      await candidate.waitForFunction((id) => window.__MUGEN_WEB_SANDBOX__?.project?.id === id, projectId, { timeout: 15_000 });
     }
 
     const baselineRevision = await primary.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
