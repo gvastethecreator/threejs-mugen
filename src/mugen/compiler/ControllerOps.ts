@@ -147,6 +147,7 @@ export type AssertSpecialControllerOp = {
 
 export type ProjectileControllerOp = {
   kind: "projectile";
+  redirectPlayerIdExpression?: string;
   projectileId?: number;
   targetId?: number;
   chainId?: number;
@@ -1924,9 +1925,14 @@ function compileAssertSpecialControllerOp(controller: MugenStateController): Ass
   return flags.length > 0 || globalFlags.length > 0 ? { kind: "assertspecial", flags, globalFlags } : undefined;
 }
 
-function compileProjectileControllerOp(controller: MugenStateController): ProjectileControllerOp {
+function compileProjectileControllerOp(controller: MugenStateController): ProjectileControllerOp | undefined {
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (redirectPlayerIdExpression === "invalid") {
+    return undefined;
+  }
   return definedObject({
     kind: "projectile" as const,
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
     targetId: firstNumber(findParam(controller, "id")),
     chainId: firstNumber(findParam(controller, "chainid")),

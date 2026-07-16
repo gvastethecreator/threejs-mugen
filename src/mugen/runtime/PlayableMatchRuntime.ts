@@ -458,7 +458,7 @@ type RedirectableResourceControllerType =
   | "redlifeset"
   | "poweradd"
   | "powerset";
-type RedirectableEffectControllerType = "modifyprojectile";
+type RedirectableEffectControllerType = "projectile" | "modifyprojectile";
 type RedirectableTargetControllerType =
   | "targetlifeadd"
   | "targetredlifeadd"
@@ -3406,7 +3406,9 @@ function redirectableResourceControllerType(controller: ControllerIr): Redirecta
 }
 
 function redirectableEffectControllerType(controller: ControllerIr): RedirectableEffectControllerType | undefined {
-  return controller.normalizedType === "modifyprojectile" ? "modifyprojectile" : undefined;
+  return controller.normalizedType === "projectile" || controller.normalizedType === "modifyprojectile"
+    ? controller.normalizedType
+    : undefined;
 }
 
 function resourceControllerRedirectExpression(controller: ControllerIr): string | undefined {
@@ -3433,7 +3435,9 @@ function effectControllerRedirectExpression(controller: ControllerIr): string | 
   }
   const operation = controller.operation;
   const compiledExpression =
-    operation?.kind === "modifyprojectile" ? operation.redirectPlayerIdExpression : undefined;
+    (operation?.kind === "projectile" || operation?.kind === "modifyprojectile")
+      ? operation.redirectPlayerIdExpression
+      : undefined;
   if (compiledExpression !== undefined) {
     return compiledExpression.trim() || "invalid";
   }

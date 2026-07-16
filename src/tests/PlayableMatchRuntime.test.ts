@@ -2174,6 +2174,80 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors.some((actor) => actor.executedControllers.ModifyProjectile)).toBe(false);
   });
 
+  it("routes active Projectile RedirectID into the destination-owned effect store", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const caller = createImportedFixture({
+      id: "redirected-projectile-caller",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected Projectile]
+type = Projectile
+trigger1 = 1
+projid = 81
+projanim = 910
+postype = p1
+offset = 10,0
+velocity = 0,0
+projremovetime = 20
+damage = 5
+RedirectID = 57
+`,
+    });
+    const target = createImportedFixture({
+      id: "redirected-projectile-target",
+      withStateMove: false,
+    });
+    const runtime = new PlayableMatchRuntime(caller, target, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const projectile = effectActorWorld.projectiles("p2")[0];
+
+    expect(effectActorWorld.projectiles("p1")).toEqual([]);
+    expect(projectile).toMatchObject({
+      projectileId: 81,
+      ownerId: "p2",
+      rootId: "p2",
+      parentId: "p2",
+      pos: { y: 0 },
+    });
+    expect(projectile?.pos.x).toBeCloseTo((snapshot.actors[1]?.runtime.pos.x ?? 0) - 10);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Projectile RedirectID"))).toBe(false);
+    expect(snapshot.compatibilitySession?.actors.some((actor) => actor.executedControllers.Projectile)).toBe(true);
+  });
+
+  it("fails closed for invalid active Projectile RedirectID", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const caller = createImportedFixture({
+      id: "invalid-projectile-redirect",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Invalid Projectile Redirect]
+type = Projectile
+trigger1 = 1
+projid = 81
+projanim = 910
+velocity = 0,0
+projremovetime = 20
+RedirectID = 999
+`,
+    });
+    const target = createImportedFixture({ id: "invalid-projectile-target", withStateMove: false });
+    const runtime = new PlayableMatchRuntime(caller, target, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(effectActorWorld.projectiles("p1")).toEqual([]);
+    expect(effectActorWorld.projectiles("p2")).toEqual([]);
+    expect(snapshot.logs).toContain("Blocked projectile RedirectID 999 for p1");
+    expect(snapshot.compatibilitySession?.actors.some((actor) => actor.executedControllers.Projectile)).toBe(false);
+  });
+
   it("fails closed for an invalid state-entry resource RedirectID", () => {
     const caller = createImportedFixture({
       id: "invalid-state-entry-resource-redirect",

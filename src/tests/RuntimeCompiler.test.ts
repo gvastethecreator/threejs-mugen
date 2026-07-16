@@ -1641,6 +1641,7 @@ time = 20
       controller(1000, "Projectile", [], {
         projid: "77",
         id: "78",
+        redirectid: "ID + var(0)",
         chainID: "43",
         numhits: "3",
         teamside: "2",
@@ -1684,6 +1685,7 @@ time = 20
 
     expect(projectile.operation).toMatchObject({
       kind: "projectile",
+      redirectPlayerIdExpression: "ID + var(0)",
       projectileId: 77,
       targetId: 78,
       chainId: 43,
@@ -1788,6 +1790,14 @@ time = 20
     );
 
     expect(modifyProjectile.operation).toBeUndefined();
+  });
+
+  it("rejects malformed Projectile RedirectID expressions at compile time", () => {
+    const projectile = compileControllerIr(
+      controller(1000, "Projectile", [], { projanim: "910", redirectid: "57, 0" }),
+    );
+
+    expect(projectile.operation).toBeUndefined();
   });
 
   it("compiles Helper controllers into typed helper operations", () => {
