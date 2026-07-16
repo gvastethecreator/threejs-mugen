@@ -746,7 +746,7 @@ export class PlayableMatchRuntime {
     if (!target) return undefined;
     if (
       identity?.helper &&
-      (controller.normalizedType === "targetstate" || controller.normalizedType === "bindtotarget")
+      controller.normalizedType === "targetstate"
     ) {
       return undefined;
     }
