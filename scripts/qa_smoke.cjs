@@ -2895,11 +2895,54 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
     ]);
     await Promise.all([waitForBridge(primary), waitForBridge(remote)]);
     for (const candidate of [primary, remote]) {
-      const storedProject = candidate.locator(`[data-stored-project-id="${projectId}"]`).first();
-      await storedProject.waitFor({ state: "attached", timeout: 15_000 });
+      const storedProjects = candidate.locator(`[data-stored-project-id="${projectId}"]`);
+      await storedProjects.first().waitFor({ state: "attached", timeout: 15_000 });
       await candidate.waitForTimeout(250);
-      await storedProject.evaluate((element) => element.click());
-      await candidate.waitForFunction((id) => window.__MUGEN_WEB_SANDBOX__?.project?.id === id, projectId, { timeout: 15_000 });
+      let opened = false;
+      for (let index = 0; index < await storedProjects.count() && !opened; index += 1) {
+        await storedProjects
+          .nth(index)
+          .evaluate((element) => {
+            element.dispatchEvent(
+              new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+                view: element.ownerDocument.defaultView,
+              }),
+            );
+          })
+          .catch(() => undefined);
+        opened = await candidate
+          .waitForFunction((id) => window.__MUGEN_WEB_SANDBOX__?.project?.id === id, projectId, { timeout: 15_000 })
+          .then(() => true)
+          .catch(() => false);
+      }
+      if (!opened) {
+        const openDiagnostics = await candidate.evaluate((id) => {
+          const bridge = window.__MUGEN_WEB_SANDBOX__;
+          return {
+            id,
+            url: window.location.href,
+            bridgeProjectId: bridge?.project?.id,
+            bridgeProjectName: bridge?.project?.name,
+            mode: bridge?.mode,
+            studioTab: bridge?.studioTab,
+            dirty: bridge?.projectDirty,
+            conflict: bridge?.projectStorageConflict,
+            storedProjectIds: bridge?.storedProjects?.map((entry) => entry.id) ?? [],
+            matchingButtons: [...document.querySelectorAll(`[data-stored-project-id="${id}"]`)].map((element) => ({
+              tag: element.tagName,
+              text: element.textContent?.trim().slice(0, 120),
+              disabled: element instanceof HTMLButtonElement ? element.disabled : undefined,
+              rect: (() => {
+                const box = element.getBoundingClientRect();
+                return { x: box.x, y: box.y, width: box.width, height: box.height };
+              })(),
+            })),
+          };
+        }, projectId);
+        throw new Error(`Stored project ${projectId} did not open in the browser bridge: ${JSON.stringify(openDiagnostics)}`);
+      }
     }
 
     const baselineRevision = await primary.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
