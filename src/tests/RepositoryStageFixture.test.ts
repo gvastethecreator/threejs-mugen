@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createStageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
 import { MugenStageLoader } from "../mugen/loader/MugenStageLoader";
 import {
+  createRepositoryStageFixturePackageDigest,
   createRepositoryStageFixtureVfs,
   REPOSITORY_STAGE_FIXTURE_MANIFEST,
 } from "../mugen/runtime/RepositoryStageFixture";
@@ -29,6 +30,7 @@ describe("repository-authored Skyline Relay stage fixture", () => {
     });
     expect(createPackageDigest(first)).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(createPackageDigest(first)).toBe(createPackageDigest(second));
+    expect(await createRepositoryStageFixturePackageDigest(first)).toBe(createPackageDigest(first));
   });
 
   it("loads materially different stage assumptions through the production loader", async () => {
