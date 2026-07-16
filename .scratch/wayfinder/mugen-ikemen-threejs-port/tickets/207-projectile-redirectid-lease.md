@@ -1,7 +1,7 @@
 # Implement Projectile RedirectID lease/v1
 
 Type: task
-Status: selected
+Status: completed
 Blocked by: None
 
 ## Question
@@ -54,3 +54,29 @@ full projectile parity.
 Root active CNS `Projectile RedirectID` creates destination-owned projectiles
 through the synchronous lease with focused evidence. Unsupported ordering and
 ownership surfaces remain explicit and fail closed.
+
+## Outcome
+
+- `Projectile` now lowers a validated `redirectid` expression into the typed
+  operation; malformed expressions do not produce an executable operation.
+- Root active CNS resolves the destination through the existing synchronous
+  lease before spawning.
+- The existing spawn world creates the projectile in the destination root
+  store with destination-owned `ownerId`, `rootId`, and `parentId`.
+- Destination actor position/definition resolution remains coupled to the
+  existing spawn path; omitted RedirectID remains local and invalid targets
+  fail closed.
+
+## Verification
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/EffectSpawnSystem.test.ts src/tests/PlayableMatchRuntime.test.ts --testTimeout=30000`
+  -> 3 files, `307/307` tests passed.
+- `pnpm exec tsc -p tsconfig.json --noEmit` passed.
+- `git diff --check` passed for the changed implementation and test files.
+- Browser/renderer smoke: N/A; this is compiler/runtime-only.
+
+## Closeout
+
+Report: `docs/reports/2026-07-16-projectile-redirectid-v1-closeout.md`
+
+Commit: `80237610 feat(runtime): lease Projectile redirects`
