@@ -311,6 +311,35 @@ describe("HelperSystem", () => {
     expect(blocked).toEqual([999]);
   });
 
+  it("fails closed for an invalid Helper TargetState RedirectID", () => {
+    const controller = {
+      ...controllerIr(6000, "TargetState", { id: "77", value: "888", redirectid: "999" }),
+      operation: {
+        kind: "target",
+        controllerType: "targetstate",
+        requestedId: 77,
+        stateNo: 888,
+        redirectPlayerIdExpression: "999",
+      },
+    } satisfies ControllerIr;
+    const actor = helper({
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [controller])] },
+      stateNo: 6000,
+      animNo: 6100,
+    });
+    const blocked: Array<number | "invalid"> = [];
+    const entered: number[] = [];
+
+    advanceRuntimeHelpers([actor], stage, {
+      resolveTargetRedirect: () => undefined,
+      onTargetRedirectBlocked: (_helper, _controller, playerId) => blocked.push(playerId),
+      enterRedirectedTargetState: (_helper, _stateOwner, _target, stateId) => entered.push(stateId),
+    });
+
+    expect(entered).toEqual([]);
+    expect(blocked).toEqual([999]);
+  });
+
   it("keeps standby Helper CNS and projectile dispatch active while projecting Ctrl as false", () => {
     const standby = helper({
       ctrl: true,

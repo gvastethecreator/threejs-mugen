@@ -3017,6 +3017,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperTargetStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-target-state-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperTargetStateRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-numexplod",
       required: true,
       artifact: presets.createSyntheticImportedHelperNumExplodTraceArtifact(),
@@ -4356,6 +4361,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-target-redirect",
     "synthetic-imported-helper-bind-to-target-redirect",
     "synthetic-imported-helper-targetstate",
+    "synthetic-imported-helper-target-state-redirect",
     "synthetic-imported-helper-numproj",
     "synthetic-imported-modifyexplod",
     "synthetic-imported-explod-bind",

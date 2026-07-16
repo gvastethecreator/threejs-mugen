@@ -37,6 +37,32 @@ describe("RuntimeMatchHelperTargetStateWorld", () => {
     expect(calls).toEqual(["can:p2:888:p1", "enter:p2:888:p1"]);
   });
 
+  it("routes redirected helper target-state entries through the destination owner", () => {
+    const destinationOwner = actor("p2");
+    const target = actor("p1");
+    const calls: string[] = [];
+
+    const result = new RuntimeMatchHelperTargetStateWorld().enterRedirected({
+      owner: destinationOwner,
+      helper: helper("p1"),
+      targetActor: target,
+      stateId: 888,
+      actors: [target, destinationOwner],
+      canEnterState: (candidate, stateId, stateOwner) => {
+        calls.push(`can:${candidate.id}:${stateId}:${stateOwner.id}`);
+        return true;
+      },
+      enterState: (candidate, stateId, options) => {
+        calls.push(`enter:${candidate.id}:${stateId}:${options.stateOwner.id}`);
+        candidate.runtime.stateNo = stateId;
+      },
+    });
+
+    expect(result).toMatchObject({ entered: true, target, stateId: 888 });
+    expect(target.runtime.stateNo).toBe(888);
+    expect(calls).toEqual(["can:p1:888:p2", "enter:p1:888:p2"]);
+  });
+
   it("fails closed when the target actor is not in the match roster", () => {
     const owner = actor("p1");
     const entered: string[] = [];

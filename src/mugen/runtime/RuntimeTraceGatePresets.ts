@@ -44777,6 +44777,114 @@ export function createSyntheticImportedHelperTargetStateTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedHelperTargetStateRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-target-state-redirect-seed-p2-target", frames: 8, p1: [], p2: ["x"] },
+    { label: "helper-target-state-redirect-recover", frames: 24, p1: [], p2: [] },
+    { label: "helper-target-state-redirect-attack-p1", frames: 1, p1: ["x"], p2: [] },
+    { label: "helper-target-state-redirect-settle", frames: 24, p1: [], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-target-state-redirect-caller",
+    displayName: "Synthetic Imported Helper TargetState Redirect Caller",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1236,
+      branchAnimNo: 967,
+      damage: 31,
+      targetId: 8883,
+      branchTrigger: "NumTarget(8883) > 0 && Target(8883), Life <= 969",
+      targetState: {
+        stateNo: 888,
+        triggerTime: 1,
+        redirectId: 57,
+        controllerTargetId: 77,
+      },
+    },
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-target-state-redirect-target",
+    displayName: "Synthetic Imported Helper TargetState Redirect Target",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    ownedCustomStateRoute: {
+      startStateNo: 888,
+      chainStateNo: 889,
+      changeStateAfter: 1,
+      selfStateAfter: 2,
+    },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: caller, p2: target, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-helper-target-state-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-target-state-redirect-golden",
+      label: "Synthetic imported helper TargetState RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves a helper TargetState can redirect execution to a live root PlayerID 57, use that destination root as custom-state owner, and keep helper-local target memory separate. It does not claim helper State -1, projectile/team ownership, recursive redirects, or full MUGEN/IKEMEN helper TargetState parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-target-state-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 889],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "TargetState", "SelfState"],
+        requiredExecutedOperations: ["hitdef", "helper", "target:targetstate"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8883, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920, moveType: "A", clsn1Count: 1, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1236, animNo: 967, moveType: "I", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", customOwnerId: "p2", animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", customOwnerId: "p2", animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, ctrl: true, moveType: "I" },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1236, targetCount: 1, minAge: 3 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -47374,6 +47482,8 @@ export type SyntheticImportedTraceFighterOptions = {
     targetState?: {
       stateNo: number;
       triggerTime?: number;
+      redirectId?: SyntheticNumberExpression;
+      controllerTargetId?: number;
     };
     targetControllers?: SyntheticHelperTargetControllerOptions;
   };
@@ -47484,6 +47594,8 @@ export type SyntheticImportedTraceFighterOptions = {
     targetState?: {
       stateNo: number;
       triggerTime?: number;
+      redirectId?: SyntheticNumberExpression;
+      controllerTargetId?: number;
     };
     targetControllers?: SyntheticHelperTargetControllerOptions;
   };
@@ -54703,7 +54815,14 @@ ${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${
   const targetStateLines =
     route.targetState === undefined
       ? ""
-      : helperTargetStateControllerBlock(route.branchStateNo, targetId, route.targetState.stateNo, route.targetState.triggerTime ?? 1);
+      : helperTargetStateControllerBlock(
+          route.branchStateNo,
+          targetId,
+          route.targetState.stateNo,
+          route.targetState.triggerTime ?? 1,
+          route.targetState.redirectId,
+          route.targetState.controllerTargetId,
+        );
   const secondaryProjectile = route.secondaryProjectile;
   const secondaryProjectileBlock =
     secondaryProjectile === undefined
@@ -55183,7 +55302,14 @@ function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighter
   const targetStateLines =
     route.targetState === undefined
       ? ""
-      : helperTargetStateControllerBlock(route.branchStateNo, route.targetId ?? 0, route.targetState.stateNo, route.targetState.triggerTime ?? 1);
+      : helperTargetStateControllerBlock(
+          route.branchStateNo,
+          route.targetId ?? 0,
+          route.targetState.stateNo,
+          route.targetState.triggerTime ?? 1,
+          route.targetState.redirectId,
+          route.targetState.controllerTargetId,
+        );
   const branchLines =
     route.hitDefPersistRoute !== undefined
       ? helperHitDefPersistRouteBlock(route.hitDefPersistRoute, branchTrigger)
@@ -55349,13 +55475,21 @@ ctrl = 0
 `;
 }
 
-function helperTargetStateControllerBlock(stateNo: number, targetId: number, targetStateNo: number, triggerTime: number): string {
+function helperTargetStateControllerBlock(
+  stateNo: number,
+  targetId: number,
+  targetStateNo: number,
+  triggerTime: number,
+  redirectId?: SyntheticNumberExpression,
+  controllerTargetId?: number,
+): string {
   return `
 [State ${stateNo}, Helper Target Custom State]
 type = TargetState
 trigger1 = Time = ${triggerTime}
-id = ${targetId}
+id = ${controllerTargetId ?? targetId}
 value = ${targetStateNo}
+${redirectId === undefined ? "" : `RedirectID = ${redirectId}`}
 `;
 }
 

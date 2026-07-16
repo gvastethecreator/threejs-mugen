@@ -351,6 +351,7 @@ import {
   createSyntheticImportedHelperTargetRedirectTraceArtifact,
   createSyntheticImportedHelperBindToTargetRedirectTraceArtifact,
   createSyntheticImportedHelperTargetStateTraceArtifact,
+  createSyntheticImportedHelperTargetStateRedirectTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -8725,6 +8726,47 @@ describe("RuntimeTraceGatePresets", () => {
         minAge: 3,
       },
     ]);
+  });
+
+  it("creates a synthetic imported Helper TargetState RedirectID artifact with destination-owner evidence", () => {
+    const artifact = createSyntheticImportedHelperTargetStateRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-state-redirect-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-state-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888, 889]));
+    expect(evidence?.executedControllers.TargetState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8883 }),
+        expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 77 }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", customOwnerId: "p2", animNo: 888, moveType: "H" }),
+        expect.objectContaining({ actorId: "p1", customOwnerId: "p2", animNo: 889, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", stateNo: 0, ctrl: true, moveType: "I" }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Helper NumExplod artifact with helper-local count evidence", () => {
