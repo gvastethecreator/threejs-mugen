@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 555 - bounded ProjTypeCollision collision policy/v1
+
+Closed the source-backed IKEMEN `ProjTypeCollision` boundary. `AssertSpecial`
+now exposes typed `projTypeCollision` capability; active `HitFlag = P` cancels
+overlapping projectiles through defender contact memory and existing projectile
+removal; flagged projectile contact uses strict current-frame `Clsn2`; paired
+flagged players use `Clsn2` for direct and priority admission. Missing `Clsn2`
+fails closed and flag-off behavior remains unchanged.
+
+Focused coverage passes 5 files / 110 tests. TypeScript 7, build, boundaries,
+and `git diff --check` pass. `pnpm qa:trace` passes 633/633 artifacts (599
+required, 34 optional). The full `pnpm test` batch reaches 2257/2259; the two
+failures are unrelated pre-existing post-fighter self-projectile expectations
+and a five-second round-context timeout. No score movement. Exact projectile
+trade ordering, `p2clsncheck`, `p2clsnrequire`, `affectteam`, depth/order,
+rollback/netplay, and full parity remain blocked. See
+`docs/reports/2026-07-16-projtypecollision-v1-closeout.md`,
+`docs/research/2026-07-16-projtypecollision.md`, and Wayfinder ticket 208.
+
 ## Entry 554 - bounded TargetFacing RedirectID
 
 Closed the root-only IKEMEN `RedirectID` route for `TargetFacing` across active

@@ -1,5 +1,13 @@
 ﻿# Next Build Roadmap
 
+## Current runtime queue - 2026-07-16 Entry 555
+
+Entry 555 is closed and evidence-backed at bounded `ProjTypeCollision` scope.
+Next runtime cut: Wayfinder 209, characterize exact projectile trade and
+cancellation ordering plus remaining `p2` collision parameters. Preserve the
+current claim ceiling: no score movement, rollback/netplay, or full parity.
+Product, Studio, asset, scanner, and modular lanes remain separate.
+
 ## 2026-07-14 implementation override - entry 510 and the next evidence envelope
 
 Backlog entry 510 is the active cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, Helper-local-resource, red-life, guard-point, auxiliary-projection, and explicit dizzy-point sequence is closed or bounded. Defender-owned direct HitDef suppression is now closed without score movement.

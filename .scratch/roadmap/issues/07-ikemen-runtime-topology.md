@@ -6,6 +6,15 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-16 Entry-555 lane note
+
+The bounded `ProjTypeCollision` policy is implemented in `c068de80`.
+`AssertSpecial` capability, projectile `Clsn2`, `HitFlag = P` cancel, and
+paired-player `Clsn2` admission are proven by focal tests and the 633/633
+trace corpus. Exact IKEMEN projectile trade ordering, `p2` collision options,
+team/depth/order semantics, rollback/netplay, and full parity remain blocked.
+Next: Wayfinder 209 research/implementation.
+
 ## 2026-07-14 Daily Audit Override
 
 Entries 495-510 close bounded global AssertSpecial ownership, team-round decision, explicit Turns handoff and required trace, team lifebar/HUD projection, root life/power bank ownership/mutation/routes, Helper-local life/power, explicit direct red-life/guard-points routes, auxiliary-resource projection, actor-local dizzy-point mutation, and defender-side dizzy suppression. They do not close dizzy default/break policy, red-life LifeShare mutation, automatic Turns continuation, slot/reference and resource reset, exact Simul/Tag/Turns timing, motif bars, ZSS/Lua, rollback, or netplay.

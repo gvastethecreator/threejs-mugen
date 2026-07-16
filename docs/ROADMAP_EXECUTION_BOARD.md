@@ -1,4 +1,14 @@
 ﻿# Roadmap Execution Board
+## Current runtime closeout - Entry 555 (2026-07-16)
+
+`c068de80` closes bounded `ProjTypeCollision` semantics: typed flag capability,
+strict projectile `Clsn2`, `HitFlag = P` cancellation, and paired-player
+`Clsn2` direct/priority admission. Focal 110/110, TypeScript 7, build,
+boundaries, and `qa:trace` 633/633 pass. Scores stay unchanged. The next
+runtime frontier is Wayfinder 209: exact projectile trade/cancellation order
+and remaining `p2` collision parameters. Full-suite residual failures are
+explicitly recorded in the closeout report.
+
 ## Latest score adjudication - Entry 530 (2026-07-14)
 
 Entry 530 applies the written `36-55` practical MVP criterion to the expanded

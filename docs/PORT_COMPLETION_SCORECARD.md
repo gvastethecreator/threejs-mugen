@@ -1,4 +1,16 @@
 ﻿# Port Completion Scorecard
+## 2026-07-16 Entry 555 runtime evidence
+
+Entry 555 closes a bounded `ProjTypeCollision` runtime policy: typed
+`AssertSpecial` capability, strict projectile `Clsn2` contact, `HitFlag = P`
+cancel, and paired-player `Clsn2` direct/priority admission. Focal 110/110,
+TypeScript 7, build, boundaries, and 633/633 trace artifacts pass. Scores
+remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. This is a runtime evidence slice,
+not a new written compatibility-band threshold. Exact projectile trade
+ordering, remaining `p2` collision parameters, rollback/netplay, and full
+MUGEN/IKEMEN parity remain open. Full-suite residual failures are recorded in
+`docs/reports/2026-07-16-projtypecollision-v1-closeout.md`.
+
 ## 2026-07-14 Entry 530 score-band adjudication
 
 Entry 530 applies the written `36-55` practical MVP criterion to the expanded

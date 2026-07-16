@@ -243,7 +243,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Define Studio editor authoring spine](tickets/003-studio-editor-authoring-spine.md) - active: bounded identity history, dirty-navigation protection, debounced autosave, project-index v0->v1 migration, same-origin revision conflict rejection, remote reload, and local-copy preservation have proof; deeper authoring contracts, filesystem persistence, and source writes remain open.
 - Continue evidence-led compatibility breadth without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
 
-- [Implement ProjTypeCollision runtime collision policy/v1](tickets/208-projtypecollision-runtime.md) - selected from official IKEMEN behavior: typed flag capability, strict projectile Clsn2 contact, HitFlag P cancellation, and paired player Clsn2 contact are bounded for this slice; p2 collision parameters, affectteam, proxies, depth, ordering, and full parity remain open.
+- [Implement ProjTypeCollision runtime collision policy/v1](tickets/208-projtypecollision-runtime.md) - completed in `c068de80`: typed flag capability, strict projectile Clsn2 contact, HitFlag P cancellation, and paired player Clsn2 admission; focal 110/110, TypeScript 7, build, boundaries, and 633/633 trace artifacts pass. p2 collision parameters, affectteam, proxies, depth, ordering, full parity, and score remain open.
 
 ## Not Yet Specified
 

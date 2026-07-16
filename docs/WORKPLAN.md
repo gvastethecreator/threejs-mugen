@@ -1,5 +1,16 @@
 # Workplan
 
+## Current runtime checkpoint - 2026-07-16 Entry 555
+
+Entry 555 closes bounded `ProjTypeCollision` runtime semantics: typed
+`AssertSpecial` capability, strict projectile `Clsn2`, `HitFlag = P`
+cancellation, and paired-player `Clsn2` direct/priority admission. Focal
+coverage is 110/110; TypeScript 7, build, boundaries, and 633/633 trace
+artifacts pass. Scores remain unchanged. The full suite still has two unrelated
+pre-existing failures recorded in the closeout report. Next: Wayfinder 209,
+source-backed projectile trade/cancellation ordering and remaining `p2`
+collision parameters.
+
 ## Daily architecture plan - 2026-07-15 Entry 554
 
 Entry 554 closes the bounded root-only TargetFacing RedirectID route for

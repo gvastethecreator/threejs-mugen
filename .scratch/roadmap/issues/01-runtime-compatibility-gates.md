@@ -7,6 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## 2026-07-16 Entry-555 runtime lane note
+
+Entry 555 closes bounded IKEMEN `ProjTypeCollision`: typed
+`AssertSpecial` capability, strict projectile `Clsn2`, `HitFlag = P`
+cancellation, and paired-player `Clsn2` direct/priority admission. Focal
+110/110, TypeScript 7, build, boundaries, and 633/633 trace artifacts pass;
+scores remain unchanged. Full-suite residual failures are unrelated and named
+in `docs/reports/2026-07-16-projtypecollision-v1-closeout.md`. Next: Wayfinder
+209 for exact projectile trade/cancellation ordering and remaining `p2`
+collision parameters. Full parity remains blocked.
+
 ## 2026-07-14 Daily Audit Override
 
 Entry 505 is current truth and the entry-505 report declares 587/587 traces. Entries 477-483 close the previously selected landing, journey-v1, bounded M2 decision, ACT/palette, and independent legal character package/routes. Do not rebuild those gates.

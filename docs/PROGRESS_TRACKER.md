@@ -1,5 +1,15 @@
 ﻿# Progress Tracker
 
+## Current runtime report - 2026-07-16 Entry 555
+
+- `ProjTypeCollision` v1 is implemented and committed in `c068de80`.
+- Typed `AssertSpecial`, strict projectile `Clsn2`, `HitFlag = P` cancellation, and paired-player `Clsn2` direct/priority admission are covered.
+- Focal batch: 5 files / 110 tests. TypeScript 7, build, boundaries, and `qa:trace` 633/633 (599 required / 34 optional) pass.
+- Full `pnpm test`: 2257/2259; two unrelated pre-existing failures remain and are recorded in the closeout report.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. No score movement.
+- Next runtime frontier: Wayfinder 209, exact projectile trade/cancellation ordering and remaining `p2` collision parameters.
+- See `docs/reports/2026-07-16-projtypecollision-v1-closeout.md`.
+
 ## Daily roadmap report - 2026-07-15 Entry 554
 
 - Entry 554 and 617/617 traces are the committed evidence frontier. Active CNS

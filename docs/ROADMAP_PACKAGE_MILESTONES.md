@@ -1,5 +1,15 @@
 ﻿# Roadmap Package Milestones
 
+## Current runtime package - 2026-07-16 Entry 555
+
+The runtime package now has bounded `ProjTypeCollision` evidence: typed
+`AssertSpecial` capability, strict projectile `Clsn2`, `HitFlag = P` cancel, and
+paired-player `Clsn2` direct/priority admission. Focal coverage is 110/110;
+TypeScript 7, build, boundaries, and `qa:trace` 633/633 pass. Scores do not
+move. Keep exact projectile trade ordering, `p2clsncheck`, `p2clsnrequire`,
+`affectteam`, depth/order, rollback/netplay, and full parity as separate gates.
+Next package cut: Wayfinder 209.
+
 ## 2026-07-14 daily audit override
 
 Entry 510 supersedes the entry-505 selector. M2 remains accepted only at bounded fixture scope; palette evidence, a second legal MIT character package, Studio source identity/transaction/provenance/folder editing, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, auxiliary projection, explicit dizzy-point mutation, and direct dizzy suppression are closed or bounded gates. Entry 510 closes its focal trace with 591/591 artifacts; full repository gates are batched and scores do not move.

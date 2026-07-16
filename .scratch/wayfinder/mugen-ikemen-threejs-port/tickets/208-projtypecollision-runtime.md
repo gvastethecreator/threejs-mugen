@@ -1,7 +1,7 @@
 # Implement ProjTypeCollision runtime collision policy/v1
 
 Type: task
-Status: ready
+Status: completed
 Blocked by: None
 
 ## Question
@@ -57,6 +57,34 @@ Out of scope:
 - `pnpm exec tsc -p tsconfig.json --noEmit`
 - `git diff --check`
 
-## Status note
+## Outcome
 
-Research is complete. Implementation starts only after this ticket is selected in the Wayfinder map.
+Implemented in `c068de80`. `AssertSpecial ProjTypeCollision` now exposes a typed
+actor capability; active `HitFlag = P` cancels overlapping projectiles through
+the existing terminal/removal path; flagged projectile contact uses strict
+current-frame `Clsn2`; paired flagged players use their current-frame `Clsn2`
+for direct and priority admission. Flag-off behavior keeps the existing
+HitDef/Clsn1 route.
+
+## Verification
+
+- Focal runtime/compiler batch: 5 files, 110 tests passed.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed; Vite emitted only the existing large-chunk warning.
+- `pnpm check:boundaries`: passed.
+- `pnpm qa:trace`: 633/633 artifacts passed, 599 required and 34 optional.
+- `git diff --check`: passed for the feature surface.
+
+The full `pnpm test` batch reached 2257/2259 tests. Two unrelated pre-existing
+failures remain: the post-fighter expectation omits already-scheduled self
+projectile callbacks, and one round-context test exceeds its five-second local
+timeout. They do not touch this feature's files or trace artifacts.
+
+## Closeout
+
+Allowed claim: bounded runtime `ProjTypeCollision` behavior for the four routes
+above, backed by focused tests and the existing trace corpus.
+
+Blocked claim: full MUGEN/IKEMEN projectile parity, `p2clsncheck`,
+`p2clsnrequire`, `affectteam`, exact trade arbitration, depth/order parity,
+rollback/netplay, and score movement.
