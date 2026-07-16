@@ -7,6 +7,7 @@ import { createCompatibilityJourney, type CompatibilityJourneyInput } from "../m
 import {
   parseCompatibilityCorpusSnapshot,
   materializeCompatibilityCorpusSnapshot,
+  verifyCompatibilityCorpusSnapshotArtifacts,
   type CompatibilityCorpusSnapshotMaterializerInput,
 } from "../mugen/compatibility/CompatibilityCorpusSnapshot";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
@@ -66,6 +67,59 @@ describe("CompatibilityCorpusSnapshot materializer", () => {
     ]));
   });
 
+  it("fails closed for stale, unexpected-revision, missing-file, and tampered artifacts", () => {
+    const journey = createCompatibilityJourney(journeyInput());
+    const corpus = createCompatibilityCorpus({
+      generatedAt: "2026-07-16T09:00:00.000Z",
+      entries: [{ id: "required-journey", availability: "required-legal", journey }],
+      claims: { allowed: ["bounded"], blocked: ["parity"] },
+    });
+    const base = snapshotInput(corpus, "2026-07-16T10:00:00.000Z");
+    const verified = materialize(base);
+    expect(verifyCompatibilityCorpusSnapshotArtifacts(verified, base.artifactProbe)).toEqual([]);
+    expect(verifyCompatibilityCorpusSnapshotArtifacts(verified, () => ({
+      exists: true,
+      contentDigest: `sha256:${"c".repeat(64)}`,
+    }))).toContain("snapshot artifact content digest mismatch:browser:journey-a");
+
+    const stale = materialize({
+      ...base,
+      observedAt: "2026-07-14T10:00:00.000Z",
+      referenceAt: "2026-07-16T10:00:00.000Z",
+    });
+    expect(stale.diagnostics).toContain("compatibility corpus snapshot exceeds freshness max age");
+
+    const unexpectedRevision = materialize({
+      ...base,
+      freshness: { ...base.freshness, expectedSourceRevision: "other-revision" },
+    });
+    expect(unexpectedRevision.diagnostics).toContain("snapshot source revision does not match expected revision");
+
+    const missingFile = materialize({
+      ...base,
+      artifactProbe: (path) => path === "trace.json"
+        ? { exists: false }
+        : { exists: true, contentDigest: TEST_CONTENT_DIGEST },
+    });
+    expect(missingFile.diagnostics).toContain("freshness artifact is not passed:trace-a");
+
+    const tampered = materialize({
+      ...base,
+      artifactCatalog: {
+        ...base.artifactCatalog,
+        "trace-a": {
+          ...base.artifactCatalog["trace-a"]!,
+          contentDigest: `sha256:${"b".repeat(64)}`,
+        },
+      },
+    });
+    expect(tampered.diagnostics).toContain("freshness artifact is not passed:trace-a");
+    expect(tampered.entries[0]?.artifactRefs.find((artifact) => artifact.id === "trace-a")).toMatchObject({
+      status: "failed",
+      detail: "artifact content digest mismatch",
+    });
+  });
+
   it("materializes tracked repository snapshot from the legal journey artifacts", async () => {
     const snapshot = await createRepositorySnapshot();
     const outputPath = resolve(process.cwd(), "docs/evidence/compatibility-corpus-snapshot-v1.json");
@@ -74,14 +128,14 @@ describe("CompatibilityCorpusSnapshot materializer", () => {
       mkdirSync(dirname(outputPath), { recursive: true });
       writeFileSync(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
     }
-    if (existsSync(outputPath)) {
+    if (process.env.WRITE_COMPATIBILITY_CORPUS_SNAPSHOT === "1" && existsSync(outputPath)) {
       const parsed = parseCompatibilityCorpusSnapshot(JSON.parse(readFileSync(outputPath, "utf8")));
       expect(parsed.errors).toEqual([]);
       expect(parsed.snapshot?.semanticDigest).toBe(snapshot.semanticDigest);
     }
 
     expect(snapshot).toMatchObject({
-      snapshotId: "compatibility-corpus-v1",
+      snapshotId: "compatibility-corpus-v1.1",
       status: "passed",
       summary: { entryCount: 2, requiredCount: 1, optionalCount: 1 },
     });
@@ -96,6 +150,9 @@ async function createRepositorySnapshot() {
     createMugenLiteJourneyNoKoSlowTraceArtifact({ generatedAt: "2026-07-16T00:00:00.000Z" }),
     createMugenLiteJourneyPaletteTraceArtifact({ generatedAt: "2026-07-16T00:00:00.000Z" }),
   ]);
+  const sourceRevision = process.env.COMPATIBILITY_SOURCE_REVISION ?? "repository-test-revision";
+  const referenceAt = process.env.COMPATIBILITY_REFERENCE_AT ?? "2026-07-16T00:30:00.000Z";
+  const observedAt = process.env.COMPATIBILITY_OBSERVED_AT ?? referenceAt;
   const packageDigest = createHash("sha256");
   for (const path of vfs.listFiles()) {
     packageDigest.update(path);
@@ -210,16 +267,18 @@ async function createRepositorySnapshot() {
   };
   return materializeCompatibilityCorpusSnapshot({
     corpus,
-    observedAt: "2026-07-16T00:00:00.000Z",
+    observedAt,
+    referenceAt,
     source: {
       corpusSchema: "mugen-web-sandbox/compatibility-corpus/v0",
-      sourceRevision: "post-entry-554:05d85137",
-      tool: { id: "compatibility-snapshot-materializer", version: "1.0.0" },
+      sourceRevision,
+      tool: { id: "compatibility-snapshot-materializer", version: "1.1.0" },
       ruleset: { id: "mugen-compatibility", version: "v1" },
     },
     freshness: {
       policy: "rebuild-and-verify",
       maxAgeHours: 24,
+      expectedSourceRevision: sourceRevision,
       requiredArtifactIds: [
         "mugen-lite-journey",
         "mugen-lite-journey-nokoslow",
@@ -235,6 +294,7 @@ async function createRepositorySnapshot() {
       },
     },
     artifactCatalog,
+    artifactProbe: probeRepositoryArtifact,
   });
 }
 
@@ -246,6 +306,7 @@ function snapshotInput(corpus: ReturnType<typeof createCompatibilityCorpus>, obs
   return {
     corpus,
     observedAt,
+    referenceAt: "2026-07-16T12:00:00.000Z",
     source: {
       corpusSchema: "mugen-web-sandbox/compatibility-corpus/v0",
       sourceRevision: "repo-revision",
@@ -255,6 +316,7 @@ function snapshotInput(corpus: ReturnType<typeof createCompatibilityCorpus>, obs
     freshness: {
       policy: "rebuild-and-verify",
       maxAgeHours: 24,
+      expectedSourceRevision: "repo-revision",
       requiredArtifactIds: ["trace-a", "browser:journey-a", "native:journey-a"],
     },
     packageCatalog: {
@@ -265,6 +327,18 @@ function snapshotInput(corpus: ReturnType<typeof createCompatibilityCorpus>, obs
       "browser:journey-a": { id: "browser:journey-a", status: "passed", path: "browser.json", detail: "browser" },
       "native:journey-a": { id: "native:journey-a", status: "passed", path: "build.log", detail: "native" },
     },
+    artifactProbe: () => ({ exists: true, contentDigest: TEST_CONTENT_DIGEST }),
+  };
+}
+
+const TEST_CONTENT_DIGEST = `sha256:${"a".repeat(64)}`;
+
+function probeRepositoryArtifact(path: string) {
+  const absolutePath = resolve(process.cwd(), path);
+  if (!existsSync(absolutePath)) return { exists: false };
+  return {
+    exists: true,
+    contentDigest: `sha256:${createHash("sha256").update(readFileSync(absolutePath)).digest("hex")}`,
   };
 }
 

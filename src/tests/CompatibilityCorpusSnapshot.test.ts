@@ -7,7 +7,7 @@ import {
   type CompatibilityCorpusSnapshotInput,
 } from "../mugen/compatibility/CompatibilityCorpusSnapshot";
 
-describe("CompatibilityCorpusSnapshot/v1", () => {
+describe("CompatibilityCorpusSnapshot/v1.1", () => {
   it("projects package, route, unsupported, and exact artifact identity", () => {
     const journey = createCompatibilityJourney(journeyInput());
     const snapshot = createSnapshot(journey);
@@ -49,6 +49,7 @@ describe("CompatibilityCorpusSnapshot/v1", () => {
     const journey = createCompatibilityJourney(journeyInput());
     const first = createSnapshot(journey, "2026-07-16T10:00:00.000Z");
     const second = createSnapshot(journey, "2026-07-16T11:00:00.000Z");
+    const laterReference = createSnapshot(journey, "2026-07-16T10:00:00.000Z", "2026-07-16T11:30:00.000Z");
     const reversed = createCompatibilityCorpusSnapshot({
       ...snapshotInput(journey),
       observedAt: "2026-07-16T10:00:00.000Z",
@@ -56,7 +57,9 @@ describe("CompatibilityCorpusSnapshot/v1", () => {
     });
 
     expect(second.semanticDigest).toBe(first.semanticDigest);
+    expect(laterReference.semanticDigest).toBe(first.semanticDigest);
     expect(second.checksum).not.toBe(first.checksum);
+    expect(laterReference.checksum).not.toBe(first.checksum);
     expect(reversed.semanticDigest).toBe(first.semanticDigest);
   });
 
@@ -73,7 +76,12 @@ describe("CompatibilityCorpusSnapshot/v1", () => {
 
     const missingArtifact = createCompatibilityCorpusSnapshot({
       ...snapshotInput(journey),
-      freshness: { policy: "rebuild-and-verify", requiredArtifactIds: ["missing-artifact"] },
+      freshness: {
+        policy: "rebuild-and-verify",
+        maxAgeHours: 24,
+        expectedSourceRevision: "repo-revision",
+        requiredArtifactIds: ["missing-artifact"],
+      },
     });
     expect(missingArtifact.status).toBe("failed");
     expect(missingArtifact.diagnostics).toContain("freshness artifact is not indexed:missing-artifact");
@@ -95,14 +103,19 @@ describe("CompatibilityCorpusSnapshot/v1", () => {
   });
 });
 
-function createSnapshot(journey: ReturnType<typeof createCompatibilityJourney>, observedAt = "2026-07-16T10:00:00.000Z") {
-  return createCompatibilityCorpusSnapshot({ ...snapshotInput(journey), observedAt });
+function createSnapshot(
+  journey: ReturnType<typeof createCompatibilityJourney>,
+  observedAt = "2026-07-16T10:00:00.000Z",
+  referenceAt = "2026-07-16T12:00:00.000Z",
+) {
+  return createCompatibilityCorpusSnapshot({ ...snapshotInput(journey), observedAt, referenceAt });
 }
 
 function snapshotInput(journey: ReturnType<typeof createCompatibilityJourney>): CompatibilityCorpusSnapshotInput {
   return {
     snapshotId: "compatibility-v1-baseline",
     observedAt: "2026-07-16T10:00:00.000Z",
+    referenceAt: "2026-07-16T12:00:00.000Z",
     source: {
       corpusSchema: "mugen-web-sandbox/compatibility-corpus/v0",
       sourceRevision: "repo-revision",
@@ -113,6 +126,7 @@ function snapshotInput(journey: ReturnType<typeof createCompatibilityJourney>): 
     freshness: {
       policy: "rebuild-and-verify",
       maxAgeHours: 24,
+      expectedSourceRevision: "repo-revision",
       requiredArtifactIds: ["trace-a", "journey-a:browser:diagnostics"],
     },
     entries: [

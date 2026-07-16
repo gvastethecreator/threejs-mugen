@@ -6,7 +6,7 @@ import {
 } from "./CompatibilityCorpus";
 import { STAGE_COMPATIBILITY_JOURNEY_SCHEMA } from "./StageCompatibilityJourney";
 
-export const COMPATIBILITY_CORPUS_SNAPSHOT_SCHEMA = "mugen-web-sandbox/compatibility-corpus-snapshot/v1" as const;
+export const COMPATIBILITY_CORPUS_SNAPSHOT_SCHEMA = "mugen-web-sandbox/compatibility-corpus-snapshot/v1.1" as const;
 
 export type CompatibilityCorpusSnapshotAvailability = CompatibilityCorpusAvailability;
 export type CompatibilityCorpusSnapshotEntryStatus = "passed" | "partial" | "failed" | "unavailable";
@@ -32,7 +32,8 @@ export type CompatibilityCorpusSnapshotSource = {
 
 export type CompatibilityCorpusSnapshotFreshness = {
   policy: "rebuild-and-verify";
-  maxAgeHours?: number;
+  maxAgeHours: number;
+  expectedSourceRevision: string;
   requiredArtifactIds: string[];
 };
 
@@ -42,6 +43,7 @@ export type CompatibilityCorpusSnapshotArtifact = {
   path?: string;
   checksum?: string;
   finalChecksum?: string;
+  contentDigest?: string;
   detail?: string;
 };
 
@@ -82,6 +84,7 @@ export type CompatibilityCorpusSnapshotEntryInput = {
 export type CompatibilityCorpusSnapshotInput = {
   snapshotId: string;
   observedAt: string;
+  referenceAt: string;
   source: CompatibilityCorpusSnapshotSource;
   freshness: CompatibilityCorpusSnapshotFreshness;
   entries: readonly CompatibilityCorpusSnapshotEntryInput[];
@@ -127,6 +130,7 @@ export type CompatibilityCorpusSnapshotResult = {
   schemaVersion: typeof COMPATIBILITY_CORPUS_SNAPSHOT_SCHEMA;
   snapshotId: string;
   observedAt: string;
+  referenceAt: string;
   source: CompatibilityCorpusSnapshotSource;
   freshness: CompatibilityCorpusSnapshotFreshness;
   status: CompatibilityCorpusSnapshotStatus;
@@ -149,11 +153,22 @@ export type CompatibilityCorpusSnapshotParseResult = {
 export type CompatibilityCorpusSnapshotMaterializerInput = {
   corpus: CompatibilityCorpusResult;
   observedAt: string;
+  referenceAt: string;
   source: CompatibilityCorpusSnapshotSource;
   freshness: CompatibilityCorpusSnapshotFreshness;
   packageCatalog: Readonly<Record<string, { provenance: string; entry: string }>>;
   artifactCatalog: Readonly<Record<string, CompatibilityCorpusSnapshotArtifact>>;
+  artifactProbe: CompatibilityCorpusSnapshotArtifactProbe;
 };
+
+export type CompatibilityCorpusSnapshotArtifactProbeResult = {
+  exists: boolean;
+  contentDigest?: string;
+};
+
+export type CompatibilityCorpusSnapshotArtifactProbe = (
+  path: string,
+) => CompatibilityCorpusSnapshotArtifactProbeResult;
 
 export function createCompatibilityCorpusSnapshot(input: CompatibilityCorpusSnapshotInput): CompatibilityCorpusSnapshotResult {
   const entries = input.entries.map(normalizeEntry).sort((left, right) => left.id.localeCompare(right.id));
@@ -173,11 +188,12 @@ export function createCompatibilityCorpusSnapshot(input: CompatibilityCorpusSnap
       blocked: uniqueSorted(input.claims.blocked),
     },
     diagnostics,
-  } satisfies Omit<CompatibilityCorpusSnapshotResult, "observedAt" | "semanticDigest" | "checksum">;
+  } satisfies Omit<CompatibilityCorpusSnapshotResult, "observedAt" | "referenceAt" | "semanticDigest" | "checksum">;
   const semanticDigest = hashStableJson(semanticPayload);
   const payload = {
     ...semanticPayload,
     observedAt: input.observedAt.trim(),
+    referenceAt: input.referenceAt.trim(),
     semanticDigest,
   } satisfies Omit<CompatibilityCorpusSnapshotResult, "checksum">;
   return deepFreeze({ ...payload, checksum: hashStableJson(payload) });
@@ -192,13 +208,14 @@ export function parseCompatibilityCorpusSnapshot(value: unknown): CompatibilityC
     return { errors: ["compatibility corpus snapshot metadata is invalid"] };
   }
 
-  const { checksum, semanticDigest, observedAt, ...semanticPayload } = value;
+  const { checksum, semanticDigest, observedAt, referenceAt, ...semanticPayload } = value;
   const errors: string[] = [];
   if (hashStableJson(semanticPayload) !== semanticDigest) errors.push("compatibility corpus snapshot semantic digest mismatch");
-  if (hashStableJson({ ...semanticPayload, observedAt, semanticDigest }) !== checksum) {
+  if (hashStableJson({ ...semanticPayload, observedAt, referenceAt, semanticDigest }) !== checksum) {
     errors.push("compatibility corpus snapshot checksum mismatch");
   }
   if (!isValidTimestamp(observedAt)) errors.push("compatibility corpus snapshot observedAt is invalid");
+  if (!isValidTimestamp(referenceAt)) errors.push("compatibility corpus snapshot referenceAt is invalid");
   errors.push(...validateSnapshotPayload(value));
   return errors.length > 0 ? { errors: uniqueSorted(errors) } : { snapshot: deepFreeze(value), errors: [] };
 }
@@ -207,17 +224,18 @@ export function materializeCompatibilityCorpusSnapshot(
   input: CompatibilityCorpusSnapshotMaterializerInput,
 ): CompatibilityCorpusSnapshotResult {
   return createCompatibilityCorpusSnapshot({
-    snapshotId: "compatibility-corpus-v1",
+    snapshotId: "compatibility-corpus-v1.1",
     observedAt: input.observedAt,
+    referenceAt: input.referenceAt,
     source: input.source,
     freshness: input.freshness,
     entries: input.corpus.entries.map((entry) => {
       const packageCatalog = entry.package ? input.packageCatalog[entry.package.id] : undefined;
-      const artifactRefs = entry.evidenceIds.map((artifactId) =>
-        input.artifactCatalog[artifactId]
-          ? normalizeArtifact(input.artifactCatalog[artifactId]!)
-          : { id: artifactId, status: "unavailable" as const, detail: "artifact catalog missing" },
-      );
+      const artifactRefs = entry.evidenceIds.map((artifactId) => materializeArtifact(
+        artifactId,
+        input.artifactCatalog[artifactId],
+        input.artifactProbe,
+      ));
       const projection = entry.journeyId && entry.journeySchema
         ? {
             status: entry.status,
@@ -269,9 +287,36 @@ function normalizeSource(source: CompatibilityCorpusSnapshotSource): Compatibili
 function normalizeFreshness(freshness: CompatibilityCorpusSnapshotFreshness): CompatibilityCorpusSnapshotFreshness {
   return {
     policy: freshness.policy,
-    ...(freshness.maxAgeHours === undefined ? {} : { maxAgeHours: freshness.maxAgeHours }),
+    maxAgeHours: freshness.maxAgeHours,
+    expectedSourceRevision: freshness.expectedSourceRevision.trim(),
     requiredArtifactIds: uniqueSorted(freshness.requiredArtifactIds),
   };
+}
+
+function materializeArtifact(
+  artifactId: string,
+  catalogArtifact: CompatibilityCorpusSnapshotArtifact | undefined,
+  artifactProbe: CompatibilityCorpusSnapshotArtifactProbe,
+): CompatibilityCorpusSnapshotArtifact {
+  if (!catalogArtifact) return { id: artifactId, status: "unavailable", detail: "artifact catalog missing" };
+  const artifact = normalizeArtifact(catalogArtifact);
+  if (artifact.status !== "passed") return artifact;
+  if (!artifact.path) return { ...artifact, status: "failed", detail: "artifact path missing" };
+
+  let probe: CompatibilityCorpusSnapshotArtifactProbeResult;
+  try {
+    probe = artifactProbe(artifact.path);
+  } catch {
+    return { ...artifact, status: "failed", detail: "artifact probe failed" };
+  }
+  if (!probe.exists) return { ...artifact, status: "unavailable", detail: "artifact file missing" };
+  if (!isContentDigest(probe.contentDigest)) {
+    return { ...artifact, status: "failed", detail: "artifact content digest missing" };
+  }
+  if (artifact.contentDigest && artifact.contentDigest !== probe.contentDigest) {
+    return { ...artifact, status: "failed", detail: "artifact content digest mismatch" };
+  }
+  return { ...artifact, contentDigest: probe.contentDigest };
 }
 
 function normalizeEntry(input: CompatibilityCorpusSnapshotEntryInput): CompatibilityCorpusSnapshotEntry {
@@ -377,8 +422,42 @@ function normalizeArtifact(artifact: CompatibilityCorpusSnapshotArtifact): Compa
     ...(artifact.path?.trim() ? { path: artifact.path.trim() } : {}),
     ...(artifact.checksum?.trim() ? { checksum: artifact.checksum.trim() } : {}),
     ...(artifact.finalChecksum?.trim() ? { finalChecksum: artifact.finalChecksum.trim() } : {}),
+    ...(artifact.contentDigest?.trim() ? { contentDigest: artifact.contentDigest.trim() } : {}),
     ...(artifact.detail?.trim() ? { detail: artifact.detail.trim() } : {}),
   };
+}
+
+export function verifyCompatibilityCorpusSnapshotArtifacts(
+  snapshot: CompatibilityCorpusSnapshotResult,
+  artifactProbe: CompatibilityCorpusSnapshotArtifactProbe,
+): string[] {
+  const errors: string[] = [];
+  for (const artifact of snapshot.entries.flatMap((entry) => entry.artifactRefs)) {
+    if (artifact.status !== "passed") continue;
+    if (!artifact.path) {
+      errors.push(`snapshot artifact path is missing:${artifact.id}`);
+      continue;
+    }
+    let probe: CompatibilityCorpusSnapshotArtifactProbeResult;
+    try {
+      probe = artifactProbe(artifact.path);
+    } catch {
+      errors.push(`snapshot artifact probe failed:${artifact.id}`);
+      continue;
+    }
+    if (!probe.exists) {
+      errors.push(`snapshot artifact file is missing:${artifact.id}`);
+      continue;
+    }
+    if (!isContentDigest(artifact.contentDigest) || !isContentDigest(probe.contentDigest)) {
+      errors.push(`snapshot artifact content digest is missing:${artifact.id}`);
+      continue;
+    }
+    if (artifact.contentDigest !== probe.contentDigest) {
+      errors.push(`snapshot artifact content digest mismatch:${artifact.id}`);
+    }
+  }
+  return uniqueSorted(errors);
 }
 
 function normalizeArtifactStatus(status: string): CompatibilityCorpusSnapshotArtifactStatus {
@@ -392,6 +471,7 @@ function validateSnapshotInput(
   const diagnostics = validateSnapshotPayloadFields({
     snapshotId: input.snapshotId.trim(),
     observedAt: input.observedAt.trim(),
+    referenceAt: input.referenceAt.trim(),
     source: normalizeSource(input.source),
     freshness: normalizeFreshness(input.freshness),
     entries,
@@ -441,6 +521,7 @@ function validateSnapshotInput(
 function validateSnapshotPayloadFields(value: {
   snapshotId: string;
   observedAt: string;
+  referenceAt: string;
   source: CompatibilityCorpusSnapshotSource;
   freshness: CompatibilityCorpusSnapshotFreshness;
   entries: readonly CompatibilityCorpusSnapshotEntry[];
@@ -449,15 +530,28 @@ function validateSnapshotPayloadFields(value: {
   const diagnostics: string[] = [];
   if (!value.snapshotId) diagnostics.push("snapshot id is empty");
   if (!isValidTimestamp(value.observedAt)) diagnostics.push("compatibility corpus snapshot observedAt is invalid");
+  if (!isValidTimestamp(value.referenceAt)) diagnostics.push("compatibility corpus snapshot referenceAt is invalid");
+  if (isValidTimestamp(value.observedAt) && isValidTimestamp(value.referenceAt)) {
+    const observedAt = Date.parse(value.observedAt);
+    const referenceAt = Date.parse(value.referenceAt);
+    if (observedAt > referenceAt) diagnostics.push("compatibility corpus snapshot observedAt is after referenceAt");
+    if (Number.isInteger(value.freshness.maxAgeHours) && referenceAt - observedAt > value.freshness.maxAgeHours * 60 * 60 * 1000) {
+      diagnostics.push("compatibility corpus snapshot exceeds freshness max age");
+    }
+  }
   if (value.source.corpusSchema !== COMPATIBILITY_CORPUS_SCHEMA) diagnostics.push("snapshot source corpus schema is unsupported");
   if (!value.source.sourceRevision) diagnostics.push("snapshot source revision is empty");
+  if (!value.freshness.expectedSourceRevision) diagnostics.push("snapshot expected source revision is empty");
+  if (value.source.sourceRevision !== value.freshness.expectedSourceRevision) {
+    diagnostics.push("snapshot source revision does not match expected revision");
+  }
   if (!value.source.tool.id || !value.source.tool.version) diagnostics.push("snapshot tool identity is incomplete");
   if (!value.source.ruleset.id || !value.source.ruleset.version) diagnostics.push("snapshot ruleset identity is incomplete");
   if (value.source.upstream && (!value.source.upstream.project || !value.source.upstream.revision)) {
     diagnostics.push("snapshot upstream identity is incomplete");
   }
   if (value.freshness.policy !== "rebuild-and-verify") diagnostics.push("snapshot freshness policy is unsupported");
-  if (value.freshness.maxAgeHours !== undefined && (!Number.isInteger(value.freshness.maxAgeHours) || value.freshness.maxAgeHours <= 0)) {
+  if (!Number.isInteger(value.freshness.maxAgeHours) || value.freshness.maxAgeHours <= 0) {
     diagnostics.push("snapshot freshness maxAgeHours is invalid");
   }
   if (value.freshness.requiredArtifactIds.length === 0) diagnostics.push("snapshot freshness has no required artifacts");
@@ -567,6 +661,7 @@ function isSnapshotPayload(value: Record<string, unknown>): value is Compatibili
   return (
     typeof value.snapshotId === "string" &&
     typeof value.observedAt === "string" &&
+    typeof value.referenceAt === "string" &&
     isSnapshotSource(value.source) &&
     isSnapshotFreshness(value.freshness) &&
     isSnapshotStatus(value.status) &&
@@ -597,7 +692,8 @@ function isSnapshotFreshness(value: unknown): value is CompatibilityCorpusSnapsh
   return (
     isRecord(value) &&
     value.policy === "rebuild-and-verify" &&
-    (value.maxAgeHours === undefined || typeof value.maxAgeHours === "number") &&
+    typeof value.maxAgeHours === "number" &&
+    typeof value.expectedSourceRevision === "string" &&
     Array.isArray(value.requiredArtifactIds) &&
     value.requiredArtifactIds.every((id) => typeof id === "string")
   );
@@ -628,6 +724,7 @@ function isSnapshotArtifact(value: unknown): value is CompatibilityCorpusSnapsho
     (value.path === undefined || typeof value.path === "string") &&
     (value.checksum === undefined || typeof value.checksum === "string") &&
     (value.finalChecksum === undefined || typeof value.finalChecksum === "string") &&
+    (value.contentDigest === undefined || typeof value.contentDigest === "string") &&
     (value.detail === undefined || typeof value.detail === "string");
 }
 
@@ -659,6 +756,10 @@ function isSnapshotStatus(value: unknown): value is CompatibilityCorpusSnapshotS
 
 function isValidTimestamp(value: string): boolean {
   return value.trim().length > 0 && !Number.isNaN(Date.parse(value));
+}
+
+function isContentDigest(value: string | undefined): value is string {
+  return /^sha256:[0-9a-f]{64}$/.test(value ?? "");
 }
 
 function isSortedUnique(values: readonly string[]): boolean {
