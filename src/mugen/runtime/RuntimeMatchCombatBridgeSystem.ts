@@ -75,6 +75,7 @@ export class RuntimeMatchCombatBridgeWorld {
           left,
           right,
           directCombatWorld: input.directCombatWorld,
+          getHurtBoxes: input.getHurtBoxes,
         }),
       resolveEqualPriorityOutcomes: (actors) =>
         input.combatResolutionWorld.resolveEqualPriorityOutcomes({

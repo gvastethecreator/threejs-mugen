@@ -65,6 +65,7 @@ export type RuntimeDirectPriorityHooks = {
   isMoveActive: (move: DemoMove, tick: number) => boolean;
   worldBox: (state: CharacterRuntimeState, box: CollisionBox) => CollisionBox;
   boxesIntersect: (left: CollisionBox, right: CollisionBox) => boolean;
+  collisionBoxes?: (actor: RuntimeDirectCombatActor, move: DemoMove, opponent: RuntimeDirectCombatActor) => CollisionBox[] | undefined;
 };
 
 export type RuntimeDirectPriorityOutcome = {
@@ -87,9 +88,15 @@ export class RuntimeDirectCombatWorld {
     if (!leftMove || !rightMove) {
       return undefined;
     }
-    const leftBox = hooks.worldBox(left.runtime, leftMove.hitbox);
-    const rightBox = hooks.worldBox(right.runtime, rightMove.hitbox);
-    if (!hooks.boxesIntersect(leftBox, rightBox)) {
+    const leftBoxes = hooks.collisionBoxes?.(left, leftMove, right) ?? [leftMove.hitbox];
+    const rightBoxes = hooks.collisionBoxes?.(right, rightMove, left) ?? [rightMove.hitbox];
+    const contact = leftBoxes.some((leftBox) =>
+      rightBoxes.some((rightBox) => hooks.boxesIntersect(
+        hooks.worldBox(left.runtime, leftBox),
+        hooks.worldBox(right.runtime, rightBox),
+      )),
+    );
+    if (!contact) {
       return undefined;
     }
     const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);

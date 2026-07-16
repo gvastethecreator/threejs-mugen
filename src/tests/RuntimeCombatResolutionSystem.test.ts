@@ -660,6 +660,105 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(projectile).toMatchObject({ hasHit: false, hitsRemaining: 1 });
   });
 
+  it("routes HitFlag P projectile cancellation through defender contact memory", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const projectile = projectileActor({
+      action: {
+        ...sparkAction(910),
+        frames: [{
+          ...sparkAction(910).frames[0],
+          clsn2: [{ x1: 6, y1: -18, x2: 34, y2: 6 }],
+        }],
+      },
+    });
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 300 }),
+      projectiles: [projectile],
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 12, y: 0 }, stateNo: 5000, life: 100, assertSpecial: { flags: ["projtypecollision"], globalFlags: [], projTypeCollision: true } }),
+      currentMove: move({ hitFlag: "H,L,A,F,P", hitbox: { x1: 100, y1: -30, x2: 120, y2: -2 } }),
+      moveTick: 1,
+    });
+
+    const logs: string[] = [];
+    new RuntimeCombatResolutionWorld().resolveProjectile({
+      attacker,
+      defender,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      effectLifecycleWorld: { markGetHit: () => undefined },
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 12,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(defender.runtime.life).toBe(100);
+    expect(defender.hasHit).toBe(true);
+    expect(contactWorld.projectileCancelTime(defender.contact, 5000, 88)).toBe(0);
+    expect(projectile).toMatchObject({ removalReason: "cancel", hasHit: true, lastCancelTime: 0 });
+    expect(logs.some((line) => line.includes("HitFlag P"))).toBe(true);
+  });
+
+  it("uses paired Clsn2 boxes for direct contact when both players assert ProjTypeCollision", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ assertSpecial: { flags: ["projtypecollision"], globalFlags: [], projTypeCollision: true } }),
+      currentMove: move({ hitbox: { x1: 100, y1: -30, x2: 120, y2: -2 }, damage: 19 }),
+      moveTick: 1,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, life: 100, assertSpecial: { flags: ["projtypecollision"], globalFlags: [], projTypeCollision: true } }),
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker,
+      defender,
+      ...base,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+    })).toMatchObject({ kind: "hit", damage: 19 });
+    expect(defender.runtime.life).toBe(81);
+  });
+
+  it("uses paired Clsn2 boxes for priority clash admission when both players assert ProjTypeCollision", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ assertSpecial: { flags: ["projtypecollision"], globalFlags: [], projTypeCollision: true } }),
+      currentMove: move({ priority: 4, hitbox: { x1: 100, y1: -30, x2: 120, y2: -2 }, damage: 19 }),
+      moveTick: 1,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, assertSpecial: { flags: ["projtypecollision"], globalFlags: [], projTypeCollision: true } }),
+      currentMove: move({ priority: 4, hitbox: { x1: 100, y1: -30, x2: 120, y2: -2 }, damage: 23 }),
+      moveTick: 1,
+    });
+    const world = new RuntimeCombatResolutionWorld();
+    const logs: string[] = [];
+    const base = directInputBase(contactWorld, directCombatWorld, logs);
+
+    expect(world.resolvePriorityClash({
+      left: attacker,
+      right: defender,
+      directCombatWorld,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+    })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({
+      actors: [attacker, defender],
+      ...base,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+    })).toBe(1);
+    expect(attacker.runtime.life).toBe(77);
+    expect(defender.runtime.life).toBe(81);
+  });
+
   it("routes projectile callbacks through target, contact, presentation, and damage ownership hooks", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({

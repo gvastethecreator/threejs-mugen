@@ -14,6 +14,7 @@ import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactM
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import {
   interruptRuntimeDirectMove,
+  type RuntimeDirectCombatActor,
   type RuntimeDirectCombatOutcome,
   type RuntimeDirectCombatWorld,
 } from "./DirectCombatSystem";
@@ -68,7 +69,7 @@ export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
       DemoFighterDefinition,
       "source" | "constants" | "animations" | "hitSparkLibraries" | "hitDefPriorityProfile" | "localCoord"
     >;
-    contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileContact" | "markReceivedDamage">;
+    contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileContact" | "markProjectileCancel" | "markReceivedDamage">;
     currentInput: Iterable<string>;
     targetWorld: Pick<RuntimeTargetWorld, "remember">;
     targets: RuntimeTarget[];
@@ -124,6 +125,7 @@ export type RuntimeCombatResolutionPriorityInput<TActor extends RuntimeCombatRes
   left: TActor;
   right: TActor;
   directCombatWorld: RuntimeDirectCombatWorld;
+  getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
 };
 
 export type RuntimeCombatResolutionReversalClashInput<TActor extends RuntimeCombatResolutionActor> = {
@@ -179,6 +181,10 @@ export class RuntimeCombatResolutionWorld {
       isMoveActive: runtimeMoveIsActive,
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
+      collisionBoxes: (actor, move, opponent) =>
+        usesRuntimeProjectileCollisionPair(actor, opponent)
+          ? input.getHurtBoxes?.(actor as TActor) ?? defaultHurtBoxes
+          : [move.hitbox],
     });
     const tradeKey = directTradeKey(input.left.id, input.right.id);
     if (outcome && outcome.kind !== "win" && input.left.currentMove && input.right.currentMove) {
@@ -306,7 +312,15 @@ export class RuntimeCombatResolutionWorld {
     }
 
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
-    if (!hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes)) {
+    const hasContact = usesRuntimeProjectileCollisionPair(attacker, defender)
+      ? hasRuntimeCollisionBoxPair(
+          attacker.runtime,
+          input.getHurtBoxes?.(attacker) ?? defaultHurtBoxes,
+          defender.runtime,
+          hurtBoxes,
+        )
+      : hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes);
+    if (!hasContact) {
       return { kind: "skipped", reason: "no-contact" };
     }
     if (input.canDefenderBeHit?.(defender) === false) {
@@ -461,7 +475,15 @@ export class RuntimeCombatResolutionWorld {
       attrMatches: hitAttributeMatches,
     })) return undefined;
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
-    if (!hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes)
+    const hasContact = usesRuntimeProjectileCollisionPair(attacker, defender)
+      ? hasRuntimeCollisionBoxPair(
+          attacker.runtime,
+          input.getHurtBoxes?.(attacker) ?? defaultHurtBoxes,
+          defender.runtime,
+          hurtBoxes,
+        )
+      : hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes);
+    if (!hasContact
       || input.canDefenderBeHit?.(defender) === false
       || !canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
       || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
@@ -518,10 +540,27 @@ export class RuntimeCombatResolutionWorld {
     input: RuntimeCombatResolutionProjectileInput<TActor>,
   ): void {
     const hurtBoxes = input.getHurtBoxes?.(input.defender) ?? defaultHurtBoxes;
+    const projectileCollisionMode = Boolean(input.defender.runtime.assertSpecial?.projTypeCollision);
+    const projectileDefenseMove = getActiveRuntimeProjectileDefenseMove(input.defender);
     input.attacker.effectActorWorld.resolveProjectileCombat(input.attacker.id, {
       attacker: input.attacker,
       defender: input.defender,
       hurtBoxes,
+      projectileCollisionMode,
+      projectileDefense: projectileDefenseMove
+        ? {
+            collisionBoxes: projectileCollisionMode ? hurtBoxes : [projectileDefenseMove.hitbox],
+            onCancel: (projectile) => {
+              input.defender.hasHit = true;
+              input.defender.contactWorld.markProjectileCancel(
+                input.defender.contact,
+                input.defender.runtime.stateNo,
+                projectile.projectileId,
+              );
+              input.log(`${input.defender.label} canceled ${input.attacker.label} projectile ${projectile.serialId} via HitFlag P`);
+            },
+          }
+        : undefined,
       holdingBack: isRuntimeHoldingBack(input.defender.currentInput),
       canDefenderBeHit: input.canDefenderBeHit,
       log: input.log,
@@ -698,6 +737,36 @@ export class RuntimeCombatResolutionWorld {
 
 function hasExplicitHitDefContactMemory(actor: RuntimeCombatResolutionActor): boolean {
   return actor.hitDefTargets !== undefined || actor.pendingHitDefTargets !== undefined;
+}
+
+function usesRuntimeProjectileCollisionPair(
+  left: Pick<RuntimeDirectCombatActor, "runtime">,
+  right: Pick<RuntimeDirectCombatActor, "runtime">,
+): boolean {
+  return Boolean(left.runtime.assertSpecial?.projTypeCollision && right.runtime.assertSpecial?.projTypeCollision);
+}
+
+function hasRuntimeCollisionBoxPair(
+  left: Pick<CharacterRuntimeState, "pos" | "facing">,
+  leftBoxes: CollisionBox[],
+  right: Pick<CharacterRuntimeState, "pos" | "facing">,
+  rightBoxes: CollisionBox[],
+): boolean {
+  return leftBoxes.some((leftBox) =>
+    rightBoxes.some((rightBox) => collisionBoxesIntersect(runtimeWorldBox(left, leftBox), runtimeWorldBox(right, rightBox))),
+  );
+}
+
+function hasRuntimeProjectileHitFlag(value: string | undefined): boolean {
+  return value?.toUpperCase().replace(/[\s,]/g, "").includes("P") ?? false;
+}
+
+function getActiveRuntimeProjectileDefenseMove(actor: RuntimeCombatResolutionActor): DemoMove | undefined {
+  const move = actor.currentMove;
+  if (!move || actor.hasHit || move.requiresHitDef || move.isReversal || !runtimeMoveIsActive(move, actor.moveTick)) {
+    return undefined;
+  }
+  return hasRuntimeProjectileHitFlag(move.hitFlag) ? move : undefined;
 }
 
 function shouldRuntimeHitOverrideMissDirect(move: DemoMove): boolean {

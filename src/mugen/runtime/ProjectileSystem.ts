@@ -612,6 +612,14 @@ export function getRuntimeProjectileHitboxes(projectile: RuntimeProjectile): Col
   return frame?.clsn1.length ? frame.clsn1 : [projectile.hitbox];
 }
 
+export function getRuntimeProjectileCollisionBoxes(projectile: RuntimeProjectile, boxType: 1 | 2): CollisionBox[] {
+  if (boxType === 1) {
+    return getRuntimeProjectileHitboxes(projectile);
+  }
+  const frame = projectile.action.frames[projectile.frameIndex];
+  return frame?.clsn2 ?? [];
+}
+
 export function canRuntimeProjectileContact(projectile: RuntimeProjectile): boolean {
   return !projectile.removalReason && !projectile.terminalPlayback && !projectile.hasHit && projectile.hitsRemaining > 0 && projectile.missTimeRemaining <= 0;
 }

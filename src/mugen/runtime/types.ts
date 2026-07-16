@@ -253,6 +253,7 @@ export type RuntimeAssertSpecial = {
   noJuggleCheck?: boolean;
   noGetUpFromLieDown?: boolean;
   noFastRecoverFromLieDown?: boolean;
+  projTypeCollision?: boolean;
   runFirst?: boolean;
   runLast?: boolean;
 };

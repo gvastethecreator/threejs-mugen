@@ -17,6 +17,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const ir = compileControllerIr(
       controller("HitDef", {
         attr: "S,NA",
+        hitflag: "H,L,A,F,P",
         damage: "30,5",
         guardpoints: "-12",
         dizzypoints: "18",
@@ -84,6 +85,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       activeEnd: 6,
       recovery: 18,
       damage: 30,
+      hitFlag: "H,L,A,F,P",
       priority: 5,
       priorityType: "dodge",
       guardDamage: 5,

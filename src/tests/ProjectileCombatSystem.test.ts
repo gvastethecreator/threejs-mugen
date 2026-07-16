@@ -26,7 +26,93 @@ const action: MugenAnimationAction = {
   ],
 };
 
+const projTypeCollisionAction: MugenAnimationAction = {
+  ...action,
+  frames: [{
+    ...action.frames[0],
+    clsn1: [],
+    clsn2: [{ x1: 6, y1: -18, x2: 34, y2: 6 }],
+  }],
+};
+
 describe("ProjectileCombatSystem", () => {
+  it("uses strict current-frame Clsn2 boxes when projectile collision mode is enabled", () => {
+    let projectiles = [projectile({ action: projTypeCollisionAction, hitbox: { x1: 100, y1: -18, x2: 120, y2: 6 } })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      projectileCollisionMode: true,
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(969);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("fails closed when projectile collision mode has no current-frame Clsn2", () => {
+    let projectiles = [projectile({ hitbox: { x1: 6, y1: -18, x2: 34, y2: 6 } })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      projectileCollisionMode: true,
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1000);
+    expect(projectiles).toHaveLength(1);
+  });
+
+  it("cancels overlapping projectiles through projectile defense without damage", () => {
+    let projectiles = [projectile({ action: projTypeCollisionAction })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+    const canceled: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      projectileDefense: {
+        collisionBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        onCancel: (entry) => canceled.push(entry.serialId),
+      },
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1000);
+    expect(canceled).toEqual(["projectile-0"]);
+    expect(projectiles).toEqual([]);
+  });
+
   it("owns bounded projectile hit mutation behind RuntimeProjectileCombatWorld", () => {
     let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42, targetId: 78, chainId: 43, hitDefHitCount: 3 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 10, powerMax: 40 }));

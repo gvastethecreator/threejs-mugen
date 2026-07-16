@@ -91,6 +91,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardRedLife = operation?.guardRedLife ?? secondNumber(findParam(source, "redlife")) ?? existing?.guardRedLife;
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
+    const hitFlag = operation?.hitFlag ?? stripMugenString(findParam(source, "hitflag")) ?? existing?.hitFlag;
     const hitPause = operation?.pauseTime ?? firstNumber(findParam(source, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
     const hitStun = operation?.groundHitTime ?? firstNumber(findParam(source, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
     const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")) ?? 4);
@@ -171,6 +172,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       ...(redLife === undefined ? {} : { redLife }),
       ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,
+      ...(hitFlag === undefined ? {} : { hitFlag }),
       priority,
       priorityType,
       p1SpritePriority,

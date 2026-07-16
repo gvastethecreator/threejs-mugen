@@ -22,6 +22,7 @@ type = AssertSpecial
 trigger1 = Time = 0
 flag = NoAutoTurn
 flag2 = Invisible
+flag3 = ProjTypeCollision
 `);
     const opponent = actorWithProgram("demo", "");
     const world = new RuntimeAssertSpecialWorld();
@@ -36,9 +37,10 @@ flag2 = Invisible
 
     expect(result).toEqual({ applied: 1, skipped: false });
     expect(actor.runtime.assertSpecial).toMatchObject({
-      flags: ["noautoturn", "invisible"],
+      flags: ["noautoturn", "invisible", "projtypecollision"],
       noAutoTurn: true,
       invisible: true,
+      projTypeCollision: true,
     });
     expect(actor.runtime.renderOpacity).toBe(0);
   });

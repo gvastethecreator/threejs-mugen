@@ -12,6 +12,7 @@ import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerP
 import {
   canRuntimeProjectileContact,
   describeRuntimeProjectileRemoval,
+  getRuntimeProjectileCollisionBoxes,
   getRuntimeProjectileHitboxes,
   markRuntimeProjectileForRemoval,
   recordRuntimeProjectileContact,
@@ -65,6 +66,11 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   recordReceivedDamage?: (defender: TActor, damage: number) => void;
   removeProjectilesMarkedForRemoval: () => void;
   stageBounds?: RuntimeStageBounds;
+  projectileCollisionMode?: boolean;
+  projectileDefense?: {
+    collisionBoxes: CollisionBox[];
+    onCancel?: (projectile: RuntimeProjectile) => void;
+  };
 };
 
 export type RuntimeProjectileClashInput = {
@@ -82,6 +88,24 @@ export class RuntimeProjectileCombatWorld {
     input: RuntimeProjectileCombatInput<TActor>,
   ): void {
     const { attacker, defender, hurtBoxes, log } = input;
+    if (input.projectileDefense) {
+      for (const projectile of input.projectiles) {
+        if (!canRuntimeProjectileContact(projectile)) {
+          continue;
+        }
+        if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
+          continue;
+        }
+        const collisionBoxes = getRuntimeProjectileCollisionBoxes(projectile, 2);
+        const contactAttackBox = findProjectileContactAttackBox(projectile, defender, collisionBoxes, input.projectileDefense.collisionBoxes);
+        if (!contactAttackBox) {
+          continue;
+        }
+        markRuntimeProjectileForRemoval(projectile, "cancel");
+        input.projectileDefense.onCancel?.(projectile);
+        log(`${defender.label} canceled ${attacker.label} projectile ${projectile.serialId} via HitFlag P`);
+      }
+    }
     for (const projectile of input.projectiles) {
       if (!canRuntimeProjectileContact(projectile)) {
         continue;
@@ -89,7 +113,9 @@ export class RuntimeProjectileCombatWorld {
       if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
         continue;
       }
-      const hitBoxes = getRuntimeProjectileHitboxes(projectile);
+      const hitBoxes = input.projectileCollisionMode
+        ? getRuntimeProjectileCollisionBoxes(projectile, 2)
+        : getRuntimeProjectileHitboxes(projectile);
       const contactAttackBox = findProjectileContactAttackBox(projectile, defender, hitBoxes, hurtBoxes);
       if (!contactAttackBox) {
         continue;

@@ -11,6 +11,7 @@ export type HitDefControllerOp = {
   chainId?: number;
   hitCount?: number;
   attr?: string;
+  hitFlag?: string;
   damage?: number;
   guardDamage?: number;
   guardPoints?: number;
@@ -1581,6 +1582,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     chainId: firstNumber(findParam(controller, "chainid")),
     hitCount: firstNumber(findParam(controller, "numhits")),
     attr: stripMugenString(findParam(controller, "attr")),
+    hitFlag: stripMugenString(findParam(controller, "hitflag")),
     damage: damage?.[0],
     guardDamage: damage?.[1],
     redLife: firstNumber(findParam(controller, "redlife")),

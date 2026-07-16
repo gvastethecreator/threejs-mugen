@@ -27,6 +27,7 @@ export type DemoMove = {
   guardRedLife?: number;
   kill?: boolean;
   attr?: string;
+  hitFlag?: string;
   priority?: number;
   priorityType?: RuntimeHitDefPriorityType;
   p1SpritePriority?: number;
