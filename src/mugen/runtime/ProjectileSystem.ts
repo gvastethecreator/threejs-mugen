@@ -9,7 +9,11 @@ import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
 import { runtimeAffectTeamAllows, runtimeTeamSideFromId, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
-import type { ActorSnapshot, RuntimeResolvedSoundRef } from "./types";
+import {
+  DEFAULT_RUNTIME_ATTACK_DEPTH,
+  DEFAULT_RUNTIME_SIZE_DEPTH,
+} from "./RuntimeCombatDepthSystem";
+import type { ActorSnapshot, RuntimeCombatDepth, RuntimeResolvedSoundRef } from "./types";
 
 const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
 const DEFAULT_PROJECTILE_STAGE_BOUND = 40;
@@ -28,9 +32,9 @@ export type RuntimeProjectile = {
   spriteOwnerLabel: string;
   action: MugenAnimationAction;
   animNo: number;
-  pos: { x: number; y: number };
-  vel: { x: number; y: number };
-  accel: { x: number; y: number };
+  pos: { x: number; y: number; z?: number };
+  vel: { x: number; y: number; z?: number };
+  accel: { x: number; y: number; z?: number };
   velMul: { x: number; y: number };
   scale: { x: number; y: number };
   facing: 1 | -1;
@@ -59,6 +63,8 @@ export type RuntimeProjectile = {
   guardKill: boolean;
   attr?: string;
   affectTeam?: -1 | 0 | 1;
+  attackDepth?: [number, number];
+  localCoord?: [number, number];
   targetId?: number;
   chainId?: number;
   hitDefHitCount?: number;
@@ -131,9 +137,10 @@ export type RuntimeProjectileSpawnInput = {
   action: MugenAnimationAction;
   animNo: number;
   terminalActions?: RuntimeProjectileTerminalActions;
-  pos: { x: number; y: number };
+  pos: { x: number; y: number; z?: number };
   fallbackFacing: 1 | -1;
   localCoord?: [number, number];
+  attackDepth?: [number, number];
   damageScale?: number;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
 };
@@ -159,15 +166,15 @@ export type RuntimeModifyProjectilePairParam = "velocity" | "accel" | "velmul" |
 
 export type RuntimeProjectileModifyResolver = {
   resolveNumber?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
-  resolvePair?: (key: RuntimeModifyProjectilePairParam) => [number, number] | undefined;
+  resolvePair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
 };
 
 export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): RuntimeProjectile {
   const operation = input.operation;
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const facing = forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing;
-  const rawVelocity = operation?.velocity ?? numberPair(findControllerParam(input.controller, "velocity") ?? findControllerParam(input.controller, "vel")) ?? [0, 0];
-  const rawAcceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel")) ?? [0, 0];
+  const rawVelocity = operation?.velocity ?? numberTriple(findControllerParam(input.controller, "velocity") ?? findControllerParam(input.controller, "vel")) ?? [0, 0];
+  const rawAcceleration = operation?.acceleration ?? numberTriple(findControllerParam(input.controller, "accel")) ?? [0, 0];
   const rawVelocityMultiplier = operation?.velocityMultiplier ?? scalePair(findControllerParam(input.controller, "velmul")) ?? [1, 1];
   const rawScale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale")) ?? [1, 1];
   const groundVelocity = normalizeOptionalVelocityPair(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
@@ -226,6 +233,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const sparkXy = operation?.sparkXy ?? numberPair(findControllerParam(input.controller, "sparkxy"));
   const kill = operation?.kill ?? (firstNumber(findControllerParam(input.controller, "kill")) ?? 1) !== 0;
   const guardKill = operation?.guardKill ?? (firstNumber(findControllerParam(input.controller, "guard.kill")) ?? 1) !== 0;
+  const attackDepth =
+    operation?.attackDepth ??
+    normalizedNumberPair(findControllerParam(input.controller, "attack.depth")) ??
+    input.attackDepth ??
+    [...DEFAULT_RUNTIME_ATTACK_DEPTH] as [number, number];
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -236,9 +248,17 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     spriteOwnerLabel: input.spriteOwnerLabel,
     action: input.action,
     animNo: input.animNo,
-    pos: input.pos,
-    vel: { x: rawVelocity[0] * facing, y: rawVelocity[1] },
-    accel: { x: rawAcceleration[0] * facing, y: rawAcceleration[1] },
+    pos: { ...input.pos },
+    vel: {
+      x: rawVelocity[0] * facing,
+      y: rawVelocity[1],
+      ...(rawVelocity[2] === undefined ? {} : { z: rawVelocity[2] }),
+    },
+    accel: {
+      x: rawAcceleration[0] * facing,
+      y: rawAcceleration[1],
+      ...(rawAcceleration[2] === undefined ? {} : { z: rawAcceleration[2] }),
+    },
     velMul: pairToVelocityMultiplier(rawVelocityMultiplier),
     scale: pairToScale(rawScale),
     facing,
@@ -264,6 +284,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardKill,
     attr,
     affectTeam,
+    attackDepth: [...attackDepth],
+    localCoord: input.localCoord,
     targetId,
     chainId,
     hitDefHitCount: Math.max(0, Math.trunc(hitDefHitCount)),
@@ -334,10 +356,18 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
       continue;
     }
     if (velocity) {
-      projectile.vel = { x: velocity[0] * projectile.facing, y: velocity[1] };
+      projectile.vel = {
+        x: velocity[0] * projectile.facing,
+        y: velocity[1],
+        ...(velocity[2] === undefined ? (projectile.vel.z === undefined ? {} : { z: projectile.vel.z }) : { z: velocity[2] }),
+      };
     }
     if (acceleration) {
-      projectile.accel = { x: acceleration[0] * projectile.facing, y: acceleration[1] };
+      projectile.accel = {
+        x: acceleration[0] * projectile.facing,
+        y: acceleration[1],
+        ...(acceleration[2] === undefined ? (projectile.accel.z === undefined ? {} : { z: projectile.accel.z }) : { z: acceleration[2] }),
+      };
     }
     if (velocityMultiplier) {
       projectile.velMul = pairToVelocityMultiplier(velocityMultiplier);
@@ -401,8 +431,8 @@ function resolveModifyProjectileNumberParam(
 function resolveModifyProjectilePairParam(
   input: RuntimeProjectileModifyInput,
   key: RuntimeModifyProjectilePairParam,
-  parseStatic: (raw: string | undefined) => [number, number] | undefined,
-): [number, number] | undefined {
+  parseStatic: (raw: string | undefined) => [number, number, number?] | undefined,
+): [number, number, number?] | undefined {
   const raw = findModifyProjectilePairParam(input.controller, key);
   if (raw === undefined) {
     return undefined;
@@ -411,7 +441,8 @@ function resolveModifyProjectilePairParam(
 }
 
 function resolveModifyProjectileHeightBoundParam(input: RuntimeProjectileModifyInput): { low: number; high: number } | undefined {
-  return projectileHeightBound(resolveModifyProjectilePairParam(input, "projheightbound", numberPair));
+  const value = resolveModifyProjectilePairParam(input, "projheightbound", numberPair);
+  return value ? projectileHeightBound([value[0], value[1]]) : undefined;
 }
 
 function findModifyProjectileNumberParam(
@@ -467,6 +498,10 @@ export function advanceRuntimeProjectiles(
     projectile.vel.y += projectile.accel.y;
     projectile.vel.x *= projectile.velMul.x;
     projectile.vel.y *= projectile.velMul.y;
+    if (projectile.pos.z !== undefined || projectile.vel.z !== undefined || projectile.accel.z !== undefined) {
+      projectile.pos.z = (projectile.pos.z ?? 0) + (projectile.vel.z ?? 0);
+      projectile.vel.z = (projectile.vel.z ?? 0) + (projectile.accel.z ?? 0);
+    }
     projectile.frameElapsed += 1;
     const frame = projectile.action.frames[projectile.frameIndex];
     if (frame && projectile.frameElapsed >= Math.max(1, frame.duration)) {
@@ -534,6 +569,15 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           guardFlag: projectile.guardFlag,
           ...(projectile.affectTeam === undefined ? {} : { affectTeam: projectile.affectTeam }),
           ...(projectile.teamSide === undefined ? {} : { teamSide: projectile.teamSide }),
+          ...(runtimeProjectileHasExplicitDepth(projectile)
+            ? {
+                depth: {
+                  position: projectile.pos.z ?? 0,
+                  velocity: projectile.vel.z ?? 0,
+                  attack: [...(projectile.attackDepth ?? DEFAULT_RUNTIME_ATTACK_DEPTH)] as [number, number],
+                },
+              }
+            : {}),
           p2StateNo: projectile.p2StateNo,
           p2GetP1State: projectile.p2GetP1State,
           ...(projectile.p2ClsnCheck === undefined ? {} : { p2ClsnCheck: projectile.p2ClsnCheck }),
@@ -633,6 +677,16 @@ export function getRuntimeProjectileCollisionBoxes(projectile: RuntimeProjectile
 
 export function canRuntimeProjectileContact(projectile: RuntimeProjectile): boolean {
   return !projectile.removalReason && !projectile.terminalPlayback && !projectile.hasHit && projectile.hitsRemaining > 0 && projectile.missTimeRemaining <= 0;
+}
+
+export function runtimeProjectileCombatDepth(projectile: RuntimeProjectile): RuntimeCombatDepth {
+  const attack = projectile.attackDepth ?? DEFAULT_RUNTIME_ATTACK_DEPTH;
+  return {
+    position: projectile.pos.z ?? 0,
+    velocity: projectile.vel.z ?? 0,
+    size: [...DEFAULT_RUNTIME_SIZE_DEPTH] as [number, number],
+    attack: [...attack] as [number, number],
+  };
 }
 
 export function runtimeProjectileHasOppositeTeamSide(
@@ -863,6 +917,22 @@ function numberPair(value: string | undefined): [number, number] | undefined {
   return [numbers[0], numbers[1] ?? numbers[0]];
 }
 
+function numberTriple(value: string | undefined): [number, number, number?] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(numbers[0]) || !Number.isFinite(numbers[1])) {
+    return undefined;
+  }
+  return Number.isFinite(numbers[2]) ? [numbers[0]!, numbers[1]!, numbers[2]!] : [numbers[0]!, numbers[1]!];
+}
+
+function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
+  const pair = numberPair(value);
+  return pair ? [pair[0], pair[1]] : undefined;
+}
+
 function scalePair(value: string | undefined): [number, number] | undefined {
   if (!value) {
     return undefined;
@@ -891,14 +961,14 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
   return [numbers[0], numbers[1] ?? 0];
 }
 
-function pairToScale(value: [number, number] | undefined): { x: number; y: number } {
+function pairToScale(value: [number, number, number?] | [number, number] | undefined): { x: number; y: number } {
   return {
     x: clampProjectileScale(value?.[0] ?? 1),
     y: clampProjectileScale(value?.[1] ?? value?.[0] ?? 1),
   };
 }
 
-function pairToVelocityMultiplier(value: [number, number] | undefined): { x: number; y: number } {
+function pairToVelocityMultiplier(value: [number, number, number?] | [number, number] | undefined): { x: number; y: number } {
   return {
     x: clampProjectileVelocityMultiplier(value?.[0] ?? 1),
     y: clampProjectileVelocityMultiplier(value?.[1] ?? value?.[0] ?? 1),
@@ -917,8 +987,14 @@ function isDefaultScale(value: { x: number; y: number }): boolean {
   return value.x === 1 && value.y === 1;
 }
 
-function normalizeOptionalVelocityPair(value: [number, number?] | undefined): [number, number] | undefined {
+function normalizeOptionalVelocityPair(value: [number, number, number?] | [number, number?] | undefined): [number, number] | undefined {
   return value ? [value[0], value[1] ?? 0] : undefined;
+}
+
+function runtimeProjectileHasExplicitDepth(projectile: RuntimeProjectile): boolean {
+  const attackDepth = projectile.attackDepth;
+  return projectile.pos.z !== undefined || projectile.vel.z !== undefined || projectile.accel.z !== undefined ||
+    (attackDepth !== undefined && (attackDepth[0] !== DEFAULT_RUNTIME_ATTACK_DEPTH[0] || attackDepth[1] !== DEFAULT_RUNTIME_ATTACK_DEPTH[1]));
 }
 
 function clampProjectileTime(value: number): number {

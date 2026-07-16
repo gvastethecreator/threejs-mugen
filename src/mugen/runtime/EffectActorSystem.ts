@@ -599,7 +599,12 @@ export function spawnRuntimeHelperProjectileActor(
     return undefined;
   }
   const localPos = operation?.offset ?? operation?.pos ?? numberPair(findControllerParam(controller, "offset") ?? findControllerParam(controller, "pos")) ?? [0, 0];
-  const pos = resolveHelperExplodPosition(helper, options.opponentState, operation?.postype ?? findControllerParam(controller, "postype"), localPos);
+  const pos = resolveHelperExplodPosition(
+    helper,
+    options.opponentState,
+    operation?.postype ?? findControllerParam(controller, "postype"),
+    [localPos[0], localPos[1]],
+  );
   if (!pos) {
     return undefined;
   }

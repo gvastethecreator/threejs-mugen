@@ -585,6 +585,8 @@ export class RuntimeCombatResolutionWorld {
       attacker: input.attacker,
       defender: input.defender,
       hurtBoxes,
+      attackerLocalCoord: input.attacker.definition.localCoord,
+      defenderLocalCoord: input.defender.definition.localCoord,
       getTargetCollisionBoxes: (target, boxType) =>
         input.getCollisionBoxes?.(target, boxType) ?? (boxType === "clsn2" ? hurtBoxes : undefined),
       projectileCollisionMode,
@@ -593,6 +595,8 @@ export class RuntimeCombatResolutionWorld {
             collisionBoxes: projectileCollisionMode ? hurtBoxes : [projectileDefenseMove.hitbox],
             affectTeam: projectileDefenseMove.affectTeam,
             teamSide: projectileDefenseMove.teamSide ?? runtimeTeamSideFromId(input.defender.id),
+            attackDepth: projectileDefenseMove.attackDepth,
+            localCoord: input.defender.definition.localCoord,
             onCancel: (projectile) => {
               input.defender.hasHit = true;
               input.defender.contactWorld.markProjectileCancel(

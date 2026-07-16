@@ -1788,6 +1788,27 @@ time = 20
     });
   });
 
+  it("preserves Projectile depth offset, velocity, acceleration, and attack depth", () => {
+    const projectile = compileControllerIr(
+      controller(1000, "Projectile", [], {
+        offset: "12,-24,6",
+        pos: "4,-8,2",
+        velocity: "9,-1,1.5",
+        accel: "0.25,0,-0.1",
+        "attack.depth": "7,9",
+      }),
+    );
+
+    expect(projectile.operation).toMatchObject({
+      kind: "projectile",
+      offset: [12, -24, 6],
+      pos: [4, -8, 2],
+      velocity: [9, -1, 1.5],
+      acceleration: [0.25, 0, -0.1],
+      attackDepth: [7, 9],
+    });
+  });
+
   it("rejects invalid static Projectile TeamSide values at compile time", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], { teamside: "3" }),

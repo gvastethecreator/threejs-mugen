@@ -13,6 +13,7 @@ import {
   recordRuntimeProjectileContact,
   runtimeProjectileContactTime,
   runtimeProjectileWorldBox,
+  runtimeProjectileCombatDepth,
   runtimeProjectilesToSnapshots,
   describeRuntimeProjectileRemoval,
   shouldKeepRuntimeProjectileAfterRemoval,
@@ -207,6 +208,48 @@ describe("ProjectileSystem", () => {
 
     expect(projectile.projectileId).toBe(0);
     expect(projectile.targetId).toBe(0);
+  });
+
+  it("carries projectile Z position, velocity, localcoord, and attack depth", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "depth-projectile",
+      controller: controller({
+        projanim: "1005",
+        velocity: "2,-1,0.5",
+        accel: "0,0,0.25",
+        "attack.depth": "7,9",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0, z: 10 },
+      fallbackFacing: 1,
+      localCoord: [640, 480],
+    });
+
+    expect(projectile).toMatchObject({
+      pos: { x: 0, y: 0, z: 10 },
+      vel: { x: 2, y: -1, z: 0.5 },
+      accel: { x: 0, y: 0, z: 0.25 },
+      attackDepth: [7, 9],
+      localCoord: [640, 480],
+    });
+    expect(runtimeProjectileCombatDepth(projectile)).toEqual({
+      position: 10,
+      velocity: 0.5,
+      size: [3, 3],
+      attack: [7, 9],
+    });
+
+    advanceRuntimeProjectiles([projectile], stage);
+
+    expect(projectile.pos.z).toBe(10.5);
+    expect(projectile.vel.z).toBe(0.75);
+    expect(runtimeProjectilesToSnapshots([projectile], 1000)[0]?.effect).toMatchObject({
+      depth: { position: 10.5, velocity: 0.75, attack: [7, 9] },
+    });
   });
 
   it("uses official 240p default Projectile removal bounds when params are omitted", () => {

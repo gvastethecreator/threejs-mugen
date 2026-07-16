@@ -44,6 +44,123 @@ const projectileTradeAction: MugenAnimationAction = {
 };
 
 describe("ProjectileCombatSystem", () => {
+  it("rejects separated projectile/player depth and admits touching depth edges", () => {
+    let separated = [projectile({ pos: { x: 0, y: 0, z: 20 } })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const separatedDefender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender: separatedDefender,
+      projectiles: separated,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        separated = separated.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(separatedDefender.runtime.life).toBe(1000);
+    expect(separated[0]?.hasHit).toBe(false);
+
+    let touching = [projectile({ pos: { x: 0, y: 0, z: 7 } })];
+    const touchingDefender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    }));
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender: touchingDefender,
+      projectiles: touching,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        touching = touching.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(touchingDefender.runtime.life).toBe(969);
+    expect(touching).toEqual([]);
+  });
+
+  it("applies projectile depth to HitFlag P cancellation", () => {
+    let projectiles = [projectile({ action: projectileTradeAction, pos: { x: 0, y: 0, z: 20 } })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    }));
+    let cancellations = 0;
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      projectileDefense: {
+        collisionBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        attackDepth: [4, 4],
+        onCancel: () => cancellations++,
+      },
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(cancellations).toBe(0);
+    expect(projectiles[0]?.hasHit).toBe(false);
+    expect(projectiles[0]?.removalReason).toBeUndefined();
+  });
+
+  it("requires projectile depth overlap before current-frame Clsn2 trade", () => {
+    let separatedLeft = [projectile({ action: projectileTradeAction, ownerId: "p1", pos: { x: 0, y: 0, z: 20 } })];
+    let separatedRight = [projectile({ action: projectileTradeAction, ownerId: "p2", pos: { x: 40, y: 0, z: 0 }, facing: -1 })];
+    resolveRuntimeProjectileClashes({
+      leftLabel: "P1",
+      rightLabel: "P2",
+      leftProjectiles: separatedLeft,
+      rightProjectiles: separatedRight,
+      log: () => undefined,
+      removeProjectilesMarkedForRemoval: () => undefined,
+    });
+    expect(separatedLeft[0]?.removalReason).toBeUndefined();
+    expect(separatedRight[0]?.removalReason).toBeUndefined();
+
+    let touchingLeft = [projectile({ action: projectileTradeAction, ownerId: "p1", pos: { x: 0, y: 0, z: 0 } })];
+    let touchingRight = [projectile({ action: projectileTradeAction, ownerId: "p2", pos: { x: 40, y: 0, z: 8 }, facing: -1 })];
+    resolveRuntimeProjectileClashes({
+      leftLabel: "P1",
+      rightLabel: "P2",
+      leftProjectiles: touchingLeft,
+      rightProjectiles: touchingRight,
+      log: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        touchingLeft = touchingLeft.filter((entry) => !entry.removalReason);
+        touchingRight = touchingRight.filter((entry) => !entry.removalReason);
+      },
+    });
+    expect(touchingLeft).toEqual([]);
+    expect(touchingRight).toEqual([]);
+  });
+
   it("uses strict current-frame Clsn2 boxes when projectile collision mode is enabled", () => {
     let projectiles = [projectile({ action: projTypeCollisionAction, hitbox: { x1: 100, y1: -18, x2: 120, y2: 6 } })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));

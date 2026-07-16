@@ -3,6 +3,8 @@ import { compileExpression } from "./ExpressionCompiler";
 import { normalizeMugenCollisionBoxType, type MugenCollisionBoxType } from "../model/CollisionBox";
 import { normalizeMugenAffectTeam, normalizeMugenTeamSide, type MugenAffectTeam } from "../model/MugenTeam";
 
+export type MugenProjectileVector = [number, number, number?];
+
 export type ControllerCompileContext = {
   constants?: Record<string, number>;
 };
@@ -162,11 +164,11 @@ export type ProjectileControllerOp = {
   affectTeam?: MugenAffectTeam;
   teamSide?: 1 | 2;
   projAnim?: number;
-  offset?: [number, number];
-  pos?: [number, number];
+  offset?: MugenProjectileVector;
+  pos?: MugenProjectileVector;
   postype?: string;
-  velocity: [number, number];
-  acceleration?: [number, number];
+  velocity: MugenProjectileVector;
+  acceleration?: MugenProjectileVector;
   velocityMultiplier?: [number, number];
   scale?: [number, number];
   facing?: number;
@@ -188,8 +190,9 @@ export type ProjectileControllerOp = {
   attr?: string;
   hitPause: number;
   hitStun: number;
-  groundVelocity?: [number, number?];
-  airVelocity?: [number, number?];
+  groundVelocity?: MugenProjectileVector;
+  airVelocity?: MugenProjectileVector;
+  attackDepth?: [number, number];
   p2StateNo?: number;
   p2GetP1State?: boolean;
   p2ClsnCheck?: MugenCollisionBoxType;
@@ -222,8 +225,8 @@ export type ModifyProjectileControllerOp = {
   redirectPlayerIdExpression?: string;
   projectileId?: number;
   teamSide?: 1 | 2;
-  velocity?: [number, number];
-  acceleration?: [number, number];
+  velocity?: MugenProjectileVector;
+  acceleration?: MugenProjectileVector;
   velocityMultiplier?: [number, number];
   scale?: [number, number];
   edgeBound?: number;
@@ -1955,11 +1958,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
-    offset: pairWithDefaultOrUndefined(numberPair(findParam(controller, "offset"))),
-    pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
+    offset: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "offset"))),
+    pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     postype: stripMugenString(findParam(controller, "postype")),
-    velocity: pairWithDefault(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
-    acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
+    velocity: tripleWithDefault(numberTriple(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
+    acceleration: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "accel"))),
     velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
     scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
     facing: firstNumber(findParam(controller, "facing")),
@@ -1981,8 +1984,9 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     attr: stripMugenString(findParam(controller, "attr")),
     hitPause: firstNumber(findParam(controller, "pausetime")) ?? 6,
     hitStun: firstNumber(findParam(controller, "ground.hittime")) ?? 18,
-    groundVelocity: numberPair(findParam(controller, "ground.velocity")),
-    airVelocity: numberPair(findParam(controller, "air.velocity")),
+    groundVelocity: numberTriple(findParam(controller, "ground.velocity")),
+    airVelocity: numberTriple(findParam(controller, "air.velocity")),
+    attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
     p2GetP1State:
       firstNumber(findParam(controller, "p2stateno")) !== undefined
@@ -2024,8 +2028,8 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
-    velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
-    acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
+    velocity: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
+    acceleration: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "accel"))),
     velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
     scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
     edgeBound: firstNumber(findParam(controller, "projedgebound")),
@@ -2367,6 +2371,14 @@ function pairWithDefault(value: [number, number?] | undefined): [number, number]
 
 function pairWithDefaultOrUndefined(value: [number, number?] | undefined): [number, number] | undefined {
   return value ? pairWithDefault(value) : undefined;
+}
+
+function tripleWithDefault(value: MugenProjectileVector | undefined): MugenProjectileVector {
+  return value?.[2] === undefined ? [value?.[0] ?? 0, value?.[1] ?? 0] : [value[0], value[1], value[2]];
+}
+
+function tripleWithDefaultOrUndefined(value: MugenProjectileVector | undefined): MugenProjectileVector | undefined {
+  return value ? tripleWithDefault(value) : undefined;
 }
 
 function projectileHeightBound(value: [number, number?] | undefined): { low: number; high: number } | undefined {

@@ -5,6 +5,7 @@ import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenSt
 import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import {
   resolveEffectSpawnBind,
+  resolveEffectSpawnDepth,
   resolveEffectSpawnPosition,
   RuntimeEffectSpawnControllerDispatchWorld,
   RuntimeEffectSpawnWorld,
@@ -324,7 +325,34 @@ describe("EffectSpawnSystem", () => {
       heightBound: { low: -120, high: 60 },
     });
     expect(resolveEffectSpawnPosition(fighter, opponent, "left", [12, -3])).toEqual({ x: 12, y: -3 });
+    expect(resolveEffectSpawnDepth(fighter, opponent, "p1", [12, -3, 6])).toBe(6);
     expect(resolveEffectSpawnBind("back", [12, -3])).toEqual({ localOffset: { x: -36, y: -3 } });
+  });
+
+  it("propagates root projectile Z spawn data into the effect actor", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const fighter = actor("p1", effectActorWorld, {
+      combatDepth: { position: 12, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+    const opponent = actor("p2", effectActorWorld, {
+      pos: { x: 200, y: 0 },
+      facing: -1,
+      combatDepth: { position: -4, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+
+    spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", {
+      projanim: "910",
+      offset: "8,-16,6",
+      velocity: "2,0,0.5",
+      "attack.depth": "8,10",
+    }));
+
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      pos: { x: 8, y: -16, z: 18 },
+      vel: { x: 2, y: 0, z: 0.5 },
+      attackDepth: [8, 10],
+    });
   });
 
   it("passes dynamic ModifyProjectile bound resolvers through owner-side dispatch", () => {

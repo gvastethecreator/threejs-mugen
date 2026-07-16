@@ -17,6 +17,7 @@ import {
   markRuntimeProjectileForRemoval,
   recordRuntimeProjectileContact,
   runtimeProjectileAffectTeamAllows,
+  runtimeProjectileCombatDepth,
   runtimeProjectileTeamSide,
   runtimeProjectileWorldBox,
   type RuntimeProjectile,
@@ -25,6 +26,7 @@ import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSy
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { MugenAffectTeam } from "../model/MugenTeam";
 import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
+import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 
 export type RuntimeProjectileCombatActor = {
   id: string;
@@ -39,6 +41,8 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   defender: TActor;
   projectiles: RuntimeProjectile[];
   hurtBoxes: CollisionBox[];
+  attackerLocalCoord?: readonly [number, number];
+  defenderLocalCoord?: readonly [number, number];
   getTargetCollisionBoxes?: (defender: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   holdingBack: boolean;
   canDefenderBeHit?: (defender: TActor) => boolean;
@@ -75,6 +79,8 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
     collisionBoxes: CollisionBox[];
     affectTeam?: MugenAffectTeam;
     teamSide?: RuntimeTeamSide;
+    attackDepth?: [number, number];
+    localCoord?: readonly [number, number];
     onCancel?: (projectile: RuntimeProjectile) => void;
   };
 };
@@ -109,6 +115,9 @@ export class RuntimeProjectileCombatWorld {
         )) {
           continue;
         }
+        if (!projectileDepthContactsAttackDepth(projectile, defender, input.projectileDefense.attackDepth, input.projectileDefense.localCoord ?? input.defenderLocalCoord)) {
+          continue;
+        }
         if (!projectileTargetRequirementSatisfied(input, projectile, defender, hurtBoxes)) {
           continue;
         }
@@ -127,6 +136,9 @@ export class RuntimeProjectileCombatWorld {
         continue;
       }
       if (!runtimeProjectileAffectTeamAllows(projectile, defender.id)) {
+        continue;
+      }
+      if (!projectileDepthContactsActor(projectile, defender, input.defenderLocalCoord)) {
         continue;
       }
       const targetBoxes = resolveProjectileTargetBoxes(input, projectile, defender, hurtBoxes);
@@ -295,6 +307,7 @@ export class RuntimeProjectileCombatWorld {
     log: (line: string) => void,
   ): void {
     if (!projectilesCanClash(left, right)) return;
+    if (!projectilesDepthIntersect(left, right)) return;
     if (!projectilesIntersect(left, right)) {
       return;
     }
@@ -418,6 +431,59 @@ function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile)
       collisionBoxesIntersect(runtimeProjectileWorldBox(left, leftBox), runtimeProjectileWorldBox(right, rightBox)),
     ),
   );
+}
+
+function projectileDepthContactsActor<TActor extends RuntimeProjectileCombatActor>(
+  projectile: RuntimeProjectile,
+  defender: TActor,
+  defenderLocalCoord?: readonly [number, number],
+): boolean {
+  const defenderDepth = defender.runtime.combatDepth;
+  if (!defenderDepth) {
+    return true;
+  }
+  const projectileDepth = runtimeProjectileCombatDepth(projectile);
+  return hasRuntimeCombatDepthContact({
+    attacker: projectileDepth,
+    attackDepth: projectileDepth.attack,
+    attackerLocalCoord: projectile.localCoord,
+    getter: defenderDepth,
+    getterDepth: defenderDepth.size,
+    getterLocalCoord: defenderLocalCoord,
+  });
+}
+
+function projectileDepthContactsAttackDepth<TActor extends RuntimeProjectileCombatActor>(
+  projectile: RuntimeProjectile,
+  defender: TActor,
+  attackDepth: [number, number] | undefined,
+  defenderLocalCoord?: readonly [number, number],
+): boolean {
+  if (!attackDepth || !defender.runtime.combatDepth) {
+    return true;
+  }
+  const projectileDepth = runtimeProjectileCombatDepth(projectile);
+  return hasRuntimeCombatDepthContact({
+    attacker: projectileDepth,
+    attackDepth: projectileDepth.attack,
+    attackerLocalCoord: projectile.localCoord,
+    getter: defender.runtime.combatDepth,
+    getterDepth: attackDepth,
+    getterLocalCoord: defenderLocalCoord,
+  });
+}
+
+function projectilesDepthIntersect(left: RuntimeProjectile, right: RuntimeProjectile): boolean {
+  const leftDepth = runtimeProjectileCombatDepth(left);
+  const rightDepth = runtimeProjectileCombatDepth(right);
+  return hasRuntimeCombatDepthContact({
+    attacker: leftDepth,
+    attackDepth: leftDepth.attack,
+    attackerLocalCoord: left.localCoord,
+    getter: rightDepth,
+    getterDepth: rightDepth.attack,
+    getterLocalCoord: right.localCoord,
+  });
 }
 
 function projectilesCanClash(left: RuntimeProjectile, right: RuntimeProjectile): boolean {

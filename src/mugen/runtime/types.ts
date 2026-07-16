@@ -448,6 +448,11 @@ export type ActorEffectSnapshot =
       accel?: { x: number; y: number };
       velMul?: { x: number; y: number };
       scale?: { x: number; y: number };
+      depth?: {
+        position: number;
+        velocity: number;
+        attack: [number, number];
+      };
     };
 
 export type ActorSnapshot = RuntimeActorIdentity & {

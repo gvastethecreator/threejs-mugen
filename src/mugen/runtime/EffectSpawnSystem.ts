@@ -16,13 +16,16 @@ import type { RuntimeProjectileModifyResolver, RuntimeProjectileSpawnInput } fro
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
+import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 
 export type RuntimeEffectSpawnActor = {
   id: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord">;
+  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord"> & {
+    constants?: DemoFighterDefinition["constants"];
+  };
   runtimeProgram?: Pick<RuntimeProgramIr, "states">;
-  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "stateNo" | "animNo" | "attackMultiplier">;
+  runtime: Pick<CharacterRuntimeState, "pos" | "combatDepth" | "facing" | "stateNo" | "animNo" | "attackMultiplier">;
   stateOwner?: RuntimeEffectSpawnActor;
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
@@ -194,7 +197,9 @@ export class RuntimeEffectSpawnWorld {
     if (!isPlayableAction(action)) {
       return false;
     }
-    const localPos = operation?.offset ?? operation?.pos ?? numberPair(findParam(controller, "offset") ?? findParam(controller, "pos")) ?? [0, 0];
+    const localPos = operation?.offset ?? operation?.pos ?? numberTriple(findParam(controller, "offset") ?? findParam(controller, "pos")) ?? [0, 0];
+    const spawnPos = resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos);
+    const spawnDepth = resolveEffectSpawnDepth(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos);
     fighter.effectActorWorld.spawnProjectile(fighter.id, {
       controller,
       operation,
@@ -207,9 +212,10 @@ export class RuntimeEffectSpawnWorld {
       action,
       animNo,
       terminalActions: resolveProjectileTerminalActions(owner, controller, operation),
-      pos: resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos),
+      pos: { ...spawnPos, ...(spawnDepth === 0 ? {} : { z: spawnDepth }) },
       fallbackFacing: fighter.runtime.facing,
       localCoord: owner.definition.localCoord,
+      attackDepth: operation?.attackDepth ?? runtimeCombatDepthFromConstants(fighter.definition.constants).attack,
       damageScale: fighter.runtime.attackMultiplier,
       resolveSoundValue,
     });
@@ -255,7 +261,7 @@ export function resolveEffectSpawnPosition(
   fighter: Pick<RuntimeEffectSpawnActor, "runtime">,
   opponent: Pick<RuntimeEffectSpawnActor, "runtime">,
   postype: string | undefined,
-  localPos: [number, number],
+  localPos: [number, number, number?] | [number, number],
 ): { x: number; y: number } {
   const type = postype?.trim().toLowerCase() ?? "p1";
   if (type === "p2") {
@@ -271,6 +277,23 @@ export function resolveEffectSpawnPosition(
     return { x: localPos[0], y: localPos[1] };
   }
   return { x: fighter.runtime.pos.x + localPos[0] * fighter.runtime.facing, y: fighter.runtime.pos.y + localPos[1] };
+}
+
+export function resolveEffectSpawnDepth(
+  fighter: Pick<RuntimeEffectSpawnActor, "runtime">,
+  opponent: Pick<RuntimeEffectSpawnActor, "runtime">,
+  postype: string | undefined,
+  localPos: [number, number, number?] | [number, number],
+): number {
+  const type = postype?.trim().toLowerCase() ?? "p1";
+  const offsetZ = localPos[2] ?? 0;
+  if (type === "p2") {
+    return (opponent.runtime.combatDepth?.position ?? 0) + offsetZ;
+  }
+  if (type === "left" || type === "right") {
+    return offsetZ;
+  }
+  return (fighter.runtime.combatDepth?.position ?? 0) + offsetZ;
 }
 
 export function resolveEffectSpawnBind(
@@ -346,6 +369,17 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? numbers[0]];
+}
+
+function numberTriple(value: string | undefined): [number, number, number?] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(numbers[0]) || !Number.isFinite(numbers[1])) {
+    return undefined;
+  }
+  return Number.isFinite(numbers[2]) ? [numbers[0]!, numbers[1]!, numbers[2]!] : [numbers[0]!, numbers[1]!];
 }
 
 function actionDuration(action: MugenAnimationAction): number {
