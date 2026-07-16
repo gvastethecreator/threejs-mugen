@@ -1,7 +1,7 @@
 # Implement Projectile TeamSide ownership
 
 Type: task
-Status: selected
+Status: completed
 Blocked by: None
 
 ## Question
@@ -46,3 +46,27 @@ RedirectID, `ProjTypeCollision`, score, rollback/netplay, or renderer claims.
 The projectile runtime owns explicit TeamSide state, executes the documented
 bounded self-contact/same-owner clash behavior, preserves default semantics,
 and exposes evidence without claiming broader team or projectile parity.
+
+## Outcome
+
+- `Projectile` and `ModifyProjectile` now lower static `teamside` into typed
+  operations; dynamic `ModifyProjectile teamside` uses the existing resolver.
+- Runtime projectiles and effect snapshots carry only normalized sides `1 | 2`.
+- An explicit opposite-side projectile can contact its owner; same-owner
+  clashes use deterministic pair order and require at least one opposite-side
+  opt-in.
+- Omitted, owner-equal, and invalid values remain inert.
+
+## Verification
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/ProjectileSystem.test.ts src/tests/ProjectileCombatSystem.test.ts src/tests/MatchInteractionSystem.test.ts --testTimeout=30000`
+  -> 4 files, 95/95 tests passed.
+- `pnpm exec tsc -p tsconfig.json --noEmit` passed.
+- `git diff --check` and staged diff hygiene passed.
+- Browser/renderer smoke: N/A; this slice is compiler/runtime-only.
+
+## Closeout
+
+Report: `docs/reports/2026-07-16-projectile-teamside-ownership-v1-closeout.md`
+
+Commit: `3769dd17 feat(runtime): model projectile teamside ownership`
