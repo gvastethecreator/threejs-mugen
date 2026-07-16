@@ -1,4 +1,5 @@
 import type { CollisionBox } from "../model/CollisionBox";
+import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
@@ -28,6 +29,8 @@ export type DemoMove = {
   kill?: boolean;
   attr?: string;
   hitFlag?: string;
+  p2ClsnCheck?: MugenCollisionBoxType;
+  p2ClsnRequire?: MugenCollisionBoxType;
   priority?: number;
   priorityType?: RuntimeHitDefPriorityType;
   p1SpritePriority?: number;

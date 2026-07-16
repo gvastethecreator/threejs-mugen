@@ -1,5 +1,6 @@
 import type { MugenStateController } from "../model/MugenState";
 import { compileExpression } from "./ExpressionCompiler";
+import { normalizeMugenCollisionBoxType, type MugenCollisionBoxType } from "../model/CollisionBox";
 
 export type ControllerCompileContext = {
   constants?: Record<string, number>;
@@ -12,6 +13,8 @@ export type HitDefControllerOp = {
   hitCount?: number;
   attr?: string;
   hitFlag?: string;
+  p2ClsnCheck?: MugenCollisionBoxType;
+  p2ClsnRequire?: MugenCollisionBoxType;
   damage?: number;
   guardDamage?: number;
   guardPoints?: number;
@@ -185,6 +188,8 @@ export type ProjectileControllerOp = {
   airVelocity?: [number, number?];
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  p2ClsnCheck?: MugenCollisionBoxType;
+  p2ClsnRequire?: MugenCollisionBoxType;
   missOnOverride?: boolean;
   guardDamage?: number;
   guardDistance?: number;
@@ -1583,6 +1588,8 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     hitCount: firstNumber(findParam(controller, "numhits")),
     attr: stripMugenString(findParam(controller, "attr")),
     hitFlag: stripMugenString(findParam(controller, "hitflag")),
+    p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
+    p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
     damage: damage?.[0],
     guardDamage: damage?.[1],
     redLife: firstNumber(findParam(controller, "redlife")),
@@ -1974,6 +1981,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
       firstNumber(findParam(controller, "p2stateno")) !== undefined
         ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0
         : undefined,
+    p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
+    p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
     guardDamage: secondNumber(findParam(controller, "damage")),
     guardDistance: firstNumber(findParam(controller, "guard.dist")),

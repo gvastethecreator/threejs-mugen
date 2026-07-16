@@ -1,4 +1,4 @@
-import type { CollisionBox } from "../model/CollisionBox";
+import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import {
   applyRuntimeDamage,
   canRuntimeDamageKill,
@@ -36,6 +36,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   defender: TActor;
   projectiles: RuntimeProjectile[];
   hurtBoxes: CollisionBox[];
+  getTargetCollisionBoxes?: (defender: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   holdingBack: boolean;
   canDefenderBeHit?: (defender: TActor) => boolean;
   log: (line: string) => void;
@@ -96,6 +97,9 @@ export class RuntimeProjectileCombatWorld {
         if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
           continue;
         }
+        if (!projectileTargetRequirementSatisfied(input, projectile, defender, hurtBoxes)) {
+          continue;
+        }
         const collisionBoxes = getRuntimeProjectileCollisionBoxes(projectile, 2);
         const contactAttackBox = findProjectileContactAttackBox(projectile, defender, collisionBoxes, input.projectileDefense.collisionBoxes);
         if (!contactAttackBox) {
@@ -113,10 +117,14 @@ export class RuntimeProjectileCombatWorld {
       if (attacker === defender && !runtimeProjectileHasOppositeTeamSide(projectile)) {
         continue;
       }
+      const targetBoxes = resolveProjectileTargetBoxes(input, projectile, defender, hurtBoxes);
+      if (targetBoxes === undefined) {
+        continue;
+      }
       const hitBoxes = input.projectileCollisionMode
         ? getRuntimeProjectileCollisionBoxes(projectile, 2)
         : getRuntimeProjectileHitboxes(projectile);
-      const contactAttackBox = findProjectileContactAttackBox(projectile, defender, hitBoxes, hurtBoxes);
+      const contactAttackBox = findProjectileContactAttackBox(projectile, defender, hitBoxes, targetBoxes);
       if (!contactAttackBox) {
         continue;
       }
@@ -361,9 +369,40 @@ function findProjectileContactAttackBox<TActor extends RuntimeProjectileCombatAc
   return undefined;
 }
 
+function resolveProjectileTargetBoxes<TActor extends RuntimeProjectileCombatActor>(
+  input: RuntimeProjectileCombatInput<TActor>,
+  projectile: RuntimeProjectile,
+  defender: TActor,
+  defaultHurtBoxes: CollisionBox[],
+): CollisionBox[] | undefined {
+  if (!projectileTargetRequirementSatisfied(input, projectile, defender, defaultHurtBoxes)) {
+    return undefined;
+  }
+  const boxType = input.projectileCollisionMode ? "clsn2" : projectile.p2ClsnCheck ?? "clsn2";
+  if (boxType === "none") {
+    return [];
+  }
+  return input.getTargetCollisionBoxes?.(defender, boxType) ?? (boxType === "clsn2" ? defaultHurtBoxes : undefined);
+}
+
+function projectileTargetRequirementSatisfied<TActor extends RuntimeProjectileCombatActor>(
+  input: RuntimeProjectileCombatInput<TActor>,
+  projectile: RuntimeProjectile,
+  defender: TActor,
+  defaultHurtBoxes: CollisionBox[],
+): boolean {
+  const requiredType = projectile.p2ClsnRequire;
+  if (!requiredType || requiredType === "none") {
+    return true;
+  }
+  const requiredBoxes = input.getTargetCollisionBoxes?.(defender, requiredType) ??
+    (requiredType === "clsn2" ? defaultHurtBoxes : undefined);
+  return Boolean(requiredBoxes?.length);
+}
+
 function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile): boolean {
-  return getRuntimeProjectileHitboxes(left).some((leftBox) =>
-    getRuntimeProjectileHitboxes(right).some((rightBox) =>
+  return getRuntimeProjectileCollisionBoxes(left, 2).some((leftBox) =>
+    getRuntimeProjectileCollisionBoxes(right, 2).some((rightBox) =>
       collisionBoxesIntersect(runtimeProjectileWorldBox(left, leftBox), runtimeProjectileWorldBox(right, rightBox)),
     ),
   );

@@ -7,6 +7,7 @@ import type {
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
+import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import {
@@ -1672,6 +1673,7 @@ export class PlayableMatchRuntime {
           stageBounds: this.stage.bounds,
           gameSpace,
           getHurtBoxes: getRuntimeHurtBoxes,
+          getCollisionBoxes: getRuntimeCollisionBoxes,
           combatStateHooks: runtimeCombatStateHooks,
           helperStateHooks: runtimeHelperCombatStateHooks,
           recordAudioOperation: (actor, audioOperation: AudioControllerOp) =>
@@ -1737,6 +1739,10 @@ export class PlayableMatchRuntime {
               getHurtBoxes: (candidate) => {
                 const root = roots.find(({ id }) => id === candidate.id);
                 return root ? getRuntimeHurtBoxes(root) : undefined;
+              },
+              getCollisionBoxes: (candidate, boxType) => {
+                const root = roots.find(({ id }) => id === candidate.id);
+                return root ? getRuntimeCollisionBoxes(root, boxType) : undefined;
               },
             });
             for (const id of this.lastRootHitAdmission.rootIds) recordPhase("post-fighter:hit-admission", id);
@@ -4519,6 +4525,13 @@ function advanceContactTimers(fighter: FighterMatchState): void {
 
 function getRuntimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
   return frameWorld.currentHurtBoxes(fighter);
+}
+
+function getRuntimeCollisionBoxes(fighter: FighterMatchState, boxType: MugenCollisionBoxType): MugenAnimationFrame["clsn1"] {
+  if (boxType === "clsn1") return frameWorld.currentAttackBoxes(fighter);
+  if (boxType === "clsn2") return frameWorld.currentHurtBoxes(fighter);
+  if (boxType === "size") return [runtimePushSizeBox(fighter)];
+  return [];
 }
 
 function runtimePushSizeBox(fighter: FighterMatchState) {

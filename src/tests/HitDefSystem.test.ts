@@ -18,6 +18,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       controller("HitDef", {
         attr: "S,NA",
         hitflag: "H,L,A,F,P",
+        p2clsncheck: "Size",
+        p2clsnrequire: "Clsn1",
         damage: "30,5",
         guardpoints: "-12",
         dizzypoints: "18",
@@ -86,6 +88,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       recovery: 18,
       damage: 30,
       hitFlag: "H,L,A,F,P",
+      p2ClsnCheck: "size",
+      p2ClsnRequire: "clsn1",
       priority: 5,
       priorityType: "dodge",
       guardDamage: 5,

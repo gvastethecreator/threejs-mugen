@@ -1,5 +1,5 @@
 import type { AudioControllerOp } from "../compiler/ControllerOps";
-import type { CollisionBox } from "../model/CollisionBox";
+import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import {
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
@@ -14,7 +14,6 @@ import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactM
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import {
   interruptRuntimeDirectMove,
-  type RuntimeDirectCombatActor,
   type RuntimeDirectCombatOutcome,
   type RuntimeDirectCombatWorld,
 } from "./DirectCombatSystem";
@@ -95,6 +94,7 @@ export type RuntimeCombatResolutionDirectInput<TActor extends RuntimeCombatResol
   runtimeTick: number;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
+  getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TActor) => boolean;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
@@ -114,6 +114,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   runtimeTick: number;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
+  getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TActor) => boolean;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
@@ -126,6 +127,7 @@ export type RuntimeCombatResolutionPriorityInput<TActor extends RuntimeCombatRes
   right: TActor;
   directCombatWorld: RuntimeDirectCombatWorld;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
+  getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
 };
 
 export type RuntimeCombatResolutionReversalClashInput<TActor extends RuntimeCombatResolutionActor> = {
@@ -185,6 +187,15 @@ export class RuntimeCombatResolutionWorld {
         usesRuntimeProjectileCollisionPair(actor, opponent)
           ? input.getHurtBoxes?.(actor as TActor) ?? defaultHurtBoxes
           : [move.hitbox],
+      contact: (left, leftMove, right, rightMove) =>
+        resolveRuntimePriorityContact(
+          left,
+          leftMove,
+          right,
+          rightMove,
+          (actor) => input.getHurtBoxes?.(actor as TActor),
+          (actor, boxType) => input.getCollisionBoxes?.(actor as TActor, boxType),
+        ),
     });
     const tradeKey = directTradeKey(input.left.id, input.right.id);
     if (outcome && outcome.kind !== "win" && input.left.currentMove && input.right.currentMove) {
@@ -312,14 +323,24 @@ export class RuntimeCombatResolutionWorld {
     }
 
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
+    const targetBoxes = resolveRuntimeMoveTargetBoxes(
+      defender,
+      move,
+      hurtBoxes,
+      input.getCollisionBoxes,
+      usesRuntimeProjectileCollisionPair(attacker, defender),
+    );
+    if (targetBoxes === undefined) {
+      return { kind: "skipped", reason: "no-contact" };
+    }
     const hasContact = usesRuntimeProjectileCollisionPair(attacker, defender)
       ? hasRuntimeCollisionBoxPair(
           attacker.runtime,
           input.getHurtBoxes?.(attacker) ?? defaultHurtBoxes,
           defender.runtime,
-          hurtBoxes,
+          targetBoxes,
         )
-      : hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes);
+      : hasRuntimeBoxContact(attackBox, defender.runtime, targetBoxes);
     if (!hasContact) {
       return { kind: "skipped", reason: "no-contact" };
     }
@@ -475,14 +496,24 @@ export class RuntimeCombatResolutionWorld {
       attrMatches: hitAttributeMatches,
     })) return undefined;
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
+    const targetBoxes = resolveRuntimeMoveTargetBoxes(
+      defender,
+      move,
+      hurtBoxes,
+      input.getCollisionBoxes,
+      usesRuntimeProjectileCollisionPair(attacker, defender),
+    );
+    if (targetBoxes === undefined) {
+      return undefined;
+    }
     const hasContact = usesRuntimeProjectileCollisionPair(attacker, defender)
       ? hasRuntimeCollisionBoxPair(
           attacker.runtime,
           input.getHurtBoxes?.(attacker) ?? defaultHurtBoxes,
           defender.runtime,
-          hurtBoxes,
+          targetBoxes,
         )
-      : hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes);
+      : hasRuntimeBoxContact(attackBox, defender.runtime, targetBoxes);
     if (!hasContact
       || input.canDefenderBeHit?.(defender) === false
       || !canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
@@ -546,6 +577,8 @@ export class RuntimeCombatResolutionWorld {
       attacker: input.attacker,
       defender: input.defender,
       hurtBoxes,
+      getTargetCollisionBoxes: (target, boxType) =>
+        input.getCollisionBoxes?.(target, boxType) ?? (boxType === "clsn2" ? hurtBoxes : undefined),
       projectileCollisionMode,
       projectileDefense: projectileDefenseMove
         ? {
@@ -739,9 +772,77 @@ function hasExplicitHitDefContactMemory(actor: RuntimeCombatResolutionActor): bo
   return actor.hitDefTargets !== undefined || actor.pendingHitDefTargets !== undefined;
 }
 
+type RuntimeMoveCollisionActor = {
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "assertSpecial">;
+};
+
+function resolveRuntimePriorityContact<TActor extends RuntimeMoveCollisionActor>(
+  left: TActor,
+  leftMove: DemoMove,
+  right: TActor,
+  rightMove: DemoMove,
+  getHurtBoxes: ((actor: TActor) => CollisionBox[] | undefined) | undefined,
+  getCollisionBoxes: ((actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined) | undefined,
+): boolean {
+  if (usesRuntimeProjectileCollisionPair(left, right)) {
+    const leftBoxes = getCollisionBoxes?.(left, "clsn2") ?? getHurtBoxes?.(left) ?? defaultHurtBoxes;
+    const rightBoxes = getCollisionBoxes?.(right, "clsn2") ?? getHurtBoxes?.(right) ?? defaultHurtBoxes;
+    return hasRuntimeCollisionBoxPair(left.runtime, leftBoxes, right.runtime, rightBoxes);
+  }
+  const leftTargetBoxes = resolveRuntimeMoveTargetBoxes(
+    right,
+    leftMove,
+    getHurtBoxes?.(right) ?? defaultHurtBoxes,
+    getCollisionBoxes,
+    false,
+  );
+  const rightTargetBoxes = resolveRuntimeMoveTargetBoxes(
+    left,
+    rightMove,
+    getHurtBoxes?.(left) ?? defaultHurtBoxes,
+    getCollisionBoxes,
+    false,
+  );
+  return Boolean(
+    (leftTargetBoxes && hasRuntimeBoxContact(runtimeWorldBox(left.runtime, leftMove.hitbox), right.runtime, leftTargetBoxes)) ||
+    (rightTargetBoxes && hasRuntimeBoxContact(runtimeWorldBox(right.runtime, rightMove.hitbox), left.runtime, rightTargetBoxes)),
+  );
+}
+
+function resolveRuntimeMoveTargetBoxes<TActor extends RuntimeMoveCollisionActor>(
+  defender: TActor,
+  move: DemoMove,
+  defaultHurtBoxes: CollisionBox[],
+  getCollisionBoxes: ((actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined) | undefined,
+  forceClsn2: boolean,
+): CollisionBox[] | undefined {
+  const selectedType = forceClsn2 ? "clsn2" : move.p2ClsnCheck ?? "clsn2";
+  if (!runtimeMoveRequiredBoxesExist(defender, move.p2ClsnRequire, defaultHurtBoxes, getCollisionBoxes)) {
+    return undefined;
+  }
+  if (selectedType === "none") {
+    return [];
+  }
+  return getCollisionBoxes?.(defender, selectedType) ?? (selectedType === "clsn2" ? defaultHurtBoxes : undefined);
+}
+
+function runtimeMoveRequiredBoxesExist<TActor extends RuntimeMoveCollisionActor>(
+  defender: TActor,
+  requiredType: MugenCollisionBoxType | undefined,
+  defaultHurtBoxes: CollisionBox[],
+  getCollisionBoxes: ((actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined) | undefined,
+): boolean {
+  if (!requiredType || requiredType === "none") {
+    return true;
+  }
+  const requiredBoxes = getCollisionBoxes?.(defender, requiredType) ??
+    (requiredType === "clsn2" ? defaultHurtBoxes : undefined);
+  return Boolean(requiredBoxes?.length);
+}
+
 function usesRuntimeProjectileCollisionPair(
-  left: Pick<RuntimeDirectCombatActor, "runtime">,
-  right: Pick<RuntimeDirectCombatActor, "runtime">,
+  left: RuntimeMoveCollisionActor,
+  right: RuntimeMoveCollisionActor,
 ): boolean {
   return Boolean(left.runtime.assertSpecial?.projTypeCollision && right.runtime.assertSpecial?.projTypeCollision);
 }

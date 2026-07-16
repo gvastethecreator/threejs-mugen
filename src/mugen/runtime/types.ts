@@ -432,6 +432,8 @@ export type ActorEffectSnapshot =
       guardFlag?: string;
       p2StateNo?: number;
       p2GetP1State?: boolean;
+      p2ClsnCheck?: "clsn1" | "clsn2" | "size" | "none";
+      p2ClsnRequire?: "clsn1" | "clsn2" | "size" | "none";
       missOnOverride?: boolean;
       removeOnHit: boolean;
       hasHit: boolean;

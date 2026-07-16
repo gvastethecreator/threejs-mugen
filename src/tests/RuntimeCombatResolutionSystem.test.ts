@@ -727,6 +727,31 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(81);
   });
 
+  it("selects direct target Clsn1 boxes for p2clsncheck and enforces p2clsnrequire", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ p2ClsnCheck: "clsn1", p2ClsnRequire: "clsn1", hitbox: { x1: 6, y1: -30, x2: 34, y2: -2 }, damage: 19 }),
+      moveTick: 1,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, life: 100 }),
+      currentMove: move({ hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 } }),
+      moveTick: 1,
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker,
+      defender,
+      ...base,
+      getHurtBoxes: () => [{ x1: 100, y1: -40, x2: 124, y2: 0 }],
+      getCollisionBoxes: (_target, boxType) =>
+        boxType === "clsn1" ? [{ x1: -24, y1: -40, x2: 24, y2: 0 }] : [],
+    })).toMatchObject({ kind: "hit", damage: 19 });
+    expect(defender.runtime.life).toBe(81);
+  });
+
   it("uses paired Clsn2 boxes for priority clash admission when both players assert ProjTypeCollision", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);

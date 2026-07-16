@@ -1,4 +1,5 @@
 import type { CollisionBox } from "../model/CollisionBox";
+import { normalizeMugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCharacter } from "../model/MugenCharacter";
 import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
@@ -171,6 +172,9 @@ function buildStateMoves(
       state.id,
       buildMove(animations.get(actionId), state.id, damage, fallbackHitbox, {
         attr: hitDef.params.attr,
+        hitFlag: stripMugenString(hitDef.params.hitflag),
+        p2ClsnCheck: normalizeMugenCollisionBoxType(hitDef.params.p2clsncheck),
+        p2ClsnRequire: normalizeMugenCollisionBoxType(hitDef.params.p2clsnrequire),
         guardPoints: firstNumber(hitDef.params.guardpoints) ?? undefined,
         dizzyPoints: firstNumber(hitDef.params.dizzypoints) ?? runtimeDizzyPointsFromHitDef(damage, hitDef.params.attr, constants),
         kill: boolParam(hitDef.params.kill),
@@ -280,6 +284,9 @@ function buildMove(
     Pick<
       DemoMove,
       | "attr"
+      | "hitFlag"
+      | "p2ClsnCheck"
+      | "p2ClsnRequire"
       | "kill"
       | "redLife"
       | "guardRedLife"
@@ -339,6 +346,9 @@ function buildMove(
     guardPoints: overrides.guardPoints,
     dizzyPoints: overrides.dizzyPoints,
     attr: overrides.attr,
+    hitFlag: overrides.hitFlag,
+    p2ClsnCheck: overrides.p2ClsnCheck,
+    p2ClsnRequire: overrides.p2ClsnRequire,
     redLife: overrides.redLife,
     guardRedLife: overrides.guardRedLife,
     kill: overrides.kill,

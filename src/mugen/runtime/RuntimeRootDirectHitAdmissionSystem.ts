@@ -1,4 +1,4 @@
-import type { CollisionBox } from "../model/CollisionBox";
+import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import { canRuntimeBeHitBy, hasRuntimeBoxContact, hitAttributeMatches, runtimeWorldBox } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
@@ -23,7 +23,7 @@ export type RuntimeRootDirectHitAdmissionActor = {
   side: 1 | 2 | null;
   teamState: RuntimeTeamState;
   definition?: { localCoord?: [number, number] };
-  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "hitBy" | "reversal" | "combatDepth">;
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial">;
   currentMove?: DemoMove;
   moveTick: number;
   hasHit: boolean;
@@ -59,6 +59,7 @@ export type RuntimeRootDirectHitAdmissionDiagnostic = {
 export type RuntimeRootDirectHitAdmissionInput<TActor extends RuntimeRootDirectHitAdmissionActor> = {
   roots: readonly TActor[];
   getHurtBoxes: (actor: TActor) => readonly CollisionBox[] | undefined;
+  getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => readonly CollisionBox[] | undefined;
 };
 
 export class RuntimeRootDirectHitAdmissionWorld {
@@ -77,7 +78,7 @@ export class RuntimeRootDirectHitAdmissionWorld {
     for (const getter of getters) {
       for (const attacker of roots) {
         if (attacker === getter) continue;
-        const reason = inspectPair(attacker, getter, input.getHurtBoxes);
+        const reason = inspectPair(attacker, getter, input);
         decisions.push({ attackerId: attacker.id, getterId: getter.id, reason });
         if (reason === "admitted") admittedPairIds.push(`${attacker.id}->${getter.id}`);
       }
@@ -125,7 +126,7 @@ function inspectReversalClash(
 function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   attacker: TActor,
   getter: TActor,
-  getHurtBoxes: RuntimeRootDirectHitAdmissionInput<TActor>["getHurtBoxes"],
+  input: RuntimeRootDirectHitAdmissionInput<TActor>,
 ): RuntimeRootDirectHitAdmissionReason {
   if (attacker.side === getter.side) return "same-side";
   const move = attacker.currentMove;
@@ -137,12 +138,61 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   if (move.isReversal) return "reversal-move";
   if (attacker.moveTick < move.activeStart || attacker.moveTick > move.activeEnd) return "inactive";
   if (!canRuntimeBeHitBy(getter.runtime, move.attr ?? "S,NA")) return "hitby-rejected";
-  const hurtBoxes = getHurtBoxes(getter);
-  if (!hurtBoxes?.length) return "missing-hurt-box";
+  const targetBoxes = resolveRootTargetBoxes(attacker, getter, move, input);
+  if (!targetBoxes?.length) return "missing-hurt-box";
   if (!hasRuntimeDepthContact(attacker, move, getter, getter.runtime.combatDepth?.size)) return "no-contact";
-  return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, move.hitbox), getter.runtime, [...hurtBoxes])
+  const pairedCollision = usesRootProjectileCollisionPair(attacker, getter);
+  const attackerBoxes = pairedCollision
+    ? resolveRootCollisionBoxes(attacker, "clsn2", input)
+    : [move.hitbox];
+  if (!attackerBoxes?.length) return "missing-hurt-box";
+  if (pairedCollision) {
+    return hasRootCollisionBoxPair(attacker, attackerBoxes, getter, targetBoxes) ? "admitted" : "no-contact";
+  }
+  return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, move.hitbox), getter.runtime, [...targetBoxes])
     ? "admitted"
     : "no-contact";
+}
+
+function resolveRootTargetBoxes<TActor extends RuntimeRootDirectHitAdmissionActor>(
+  attacker: TActor,
+  getter: TActor,
+  move: DemoMove,
+  input: RuntimeRootDirectHitAdmissionInput<TActor>,
+): readonly CollisionBox[] | undefined {
+  const forcedType: MugenCollisionBoxType | undefined = usesRootProjectileCollisionPair(attacker, getter) ? "clsn2" : undefined;
+  const required = move.p2ClsnRequire;
+  if (required && required !== "none" && !resolveRootCollisionBoxes(getter, required, input)?.length) return undefined;
+  const selected = forcedType ?? move.p2ClsnCheck ?? "clsn2";
+  if (selected === "none") return [];
+  return resolveRootCollisionBoxes(getter, selected, input);
+}
+
+function resolveRootCollisionBoxes<TActor extends RuntimeRootDirectHitAdmissionActor>(
+  actor: TActor,
+  boxType: MugenCollisionBoxType,
+  input: RuntimeRootDirectHitAdmissionInput<TActor>,
+): readonly CollisionBox[] | undefined {
+  if (boxType === "none") return [];
+  return input.getCollisionBoxes?.(actor, boxType) ?? (boxType === "clsn2" ? input.getHurtBoxes(actor) : undefined);
+}
+
+function usesRootProjectileCollisionPair(
+  left: RuntimeRootDirectHitAdmissionActor,
+  right: RuntimeRootDirectHitAdmissionActor,
+): boolean {
+  return Boolean(left.runtime.assertSpecial?.projTypeCollision && right.runtime.assertSpecial?.projTypeCollision);
+}
+
+function hasRootCollisionBoxPair(
+  left: RuntimeRootDirectHitAdmissionActor,
+  leftBoxes: readonly CollisionBox[],
+  right: RuntimeRootDirectHitAdmissionActor,
+  rightBoxes: readonly CollisionBox[],
+): boolean {
+  return leftBoxes.some((leftBox) => rightBoxes.some((rightBox) =>
+    hasRuntimeBoxContact(runtimeWorldBox(left.runtime, leftBox), right.runtime, [rightBox]),
+  ));
 }
 
 function hasRuntimeDepthContact(

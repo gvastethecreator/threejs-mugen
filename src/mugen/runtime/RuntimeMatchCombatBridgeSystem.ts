@@ -1,5 +1,5 @@
 import type { AudioControllerOp } from "../compiler/ControllerOps";
-import type { CollisionBox } from "../model/CollisionBox";
+import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import type { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import type { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
@@ -47,6 +47,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   runtimeTick: number;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (actor: TActor) => CollisionBox[] | undefined;
+  getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   combatStateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   helperStateHooks: RuntimeHelperCombatStateHooks<TActor>;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
@@ -76,6 +77,7 @@ export class RuntimeMatchCombatBridgeWorld {
           right,
           directCombatWorld: input.directCombatWorld,
           getHurtBoxes: input.getHurtBoxes,
+          getCollisionBoxes: input.getCollisionBoxes,
         }),
       resolveEqualPriorityOutcomes: (actors) =>
         input.combatResolutionWorld.resolveEqualPriorityOutcomes({
@@ -90,6 +92,7 @@ export class RuntimeMatchCombatBridgeWorld {
           runtimeTick: input.runtimeTick,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
+          getCollisionBoxes: input.getCollisionBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           recordAudioOperation: input.recordAudioOperation,
           stateHooks: input.combatStateHooks,
@@ -119,6 +122,7 @@ export class RuntimeMatchCombatBridgeWorld {
           runtimeTick: input.runtimeTick,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
+          getCollisionBoxes: input.getCollisionBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           recordAudioOperation: input.recordAudioOperation,
           stateHooks: input.combatStateHooks,
@@ -139,6 +143,7 @@ export class RuntimeMatchCombatBridgeWorld {
           runtimeTick: input.runtimeTick,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
+          getCollisionBoxes: input.getCollisionBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           recordAudioOperation: input.recordAudioOperation,
           stateHooks: input.combatStateHooks,

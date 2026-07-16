@@ -1,4 +1,4 @@
-import type { CollisionBox } from "../model/CollisionBox";
+import { normalizeMugenCollisionBoxType, type CollisionBox, type MugenCollisionBoxType } from "../model/CollisionBox";
 import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../compiler/ControllerOps";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
@@ -65,6 +65,8 @@ export type RuntimeProjectile = {
   hitStun: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  p2ClsnCheck?: MugenCollisionBoxType;
+  p2ClsnRequire?: MugenCollisionBoxType;
   missOnOverride?: boolean;
   push: number;
   hitVelocityY?: number;
@@ -266,6 +268,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     hitStun,
     p2StateNo: operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno")),
     p2GetP1State: resolveProjectileP2GetP1State(input.controller, operation),
+    p2ClsnCheck: operation?.p2ClsnCheck ?? normalizeMugenCollisionBoxType(findControllerParam(input.controller, "p2clsncheck")),
+    p2ClsnRequire: operation?.p2ClsnRequire ?? normalizeMugenCollisionBoxType(findControllerParam(input.controller, "p2clsnrequire")),
     missOnOverride: operation?.missOnOverride ?? booleanNumber(findControllerParam(input.controller, "missonoverride")),
     push,
     hitVelocityY: groundVelocity?.[1],
@@ -527,6 +531,8 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           ...(projectile.teamSide === undefined ? {} : { teamSide: projectile.teamSide }),
           p2StateNo: projectile.p2StateNo,
           p2GetP1State: projectile.p2GetP1State,
+          ...(projectile.p2ClsnCheck === undefined ? {} : { p2ClsnCheck: projectile.p2ClsnCheck }),
+          ...(projectile.p2ClsnRequire === undefined ? {} : { p2ClsnRequire: projectile.p2ClsnRequire }),
           missOnOverride: projectile.missOnOverride,
           removeOnHit: projectile.removeOnHit,
           hasHit: projectile.hasHit,

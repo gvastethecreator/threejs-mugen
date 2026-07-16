@@ -2,6 +2,7 @@ import type { HitDefControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { CollisionBox } from "../model/CollisionBox";
+import { normalizeMugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
 import { DEFAULT_RUNTIME_GUARD_DISTANCE } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
@@ -92,6 +93,8 @@ export class RuntimeHitDefControllerDispatchWorld {
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
     const hitFlag = operation?.hitFlag ?? stripMugenString(findParam(source, "hitflag")) ?? existing?.hitFlag;
+    const p2ClsnCheck = operation?.p2ClsnCheck ?? normalizeMugenCollisionBoxType(findParam(source, "p2clsncheck")) ?? existing?.p2ClsnCheck;
+    const p2ClsnRequire = operation?.p2ClsnRequire ?? normalizeMugenCollisionBoxType(findParam(source, "p2clsnrequire")) ?? existing?.p2ClsnRequire;
     const hitPause = operation?.pauseTime ?? firstNumber(findParam(source, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
     const hitStun = operation?.groundHitTime ?? firstNumber(findParam(source, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
     const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")) ?? 4);
@@ -173,6 +176,8 @@ export class RuntimeHitDefControllerDispatchWorld {
       ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,
       ...(hitFlag === undefined ? {} : { hitFlag }),
+      ...(p2ClsnCheck === undefined ? {} : { p2ClsnCheck }),
+      ...(p2ClsnRequire === undefined ? {} : { p2ClsnRequire }),
       priority,
       priorityType,
       p1SpritePriority,

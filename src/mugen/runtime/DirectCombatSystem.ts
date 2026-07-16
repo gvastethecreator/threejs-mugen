@@ -66,6 +66,12 @@ export type RuntimeDirectPriorityHooks = {
   worldBox: (state: CharacterRuntimeState, box: CollisionBox) => CollisionBox;
   boxesIntersect: (left: CollisionBox, right: CollisionBox) => boolean;
   collisionBoxes?: (actor: RuntimeDirectCombatActor, move: DemoMove, opponent: RuntimeDirectCombatActor) => CollisionBox[] | undefined;
+  contact?: (
+    left: RuntimeDirectCombatActor,
+    leftMove: DemoMove,
+    right: RuntimeDirectCombatActor,
+    rightMove: DemoMove,
+  ) => boolean;
 };
 
 export type RuntimeDirectPriorityOutcome = {
@@ -90,7 +96,7 @@ export class RuntimeDirectCombatWorld {
     }
     const leftBoxes = hooks.collisionBoxes?.(left, leftMove, right) ?? [leftMove.hitbox];
     const rightBoxes = hooks.collisionBoxes?.(right, rightMove, left) ?? [rightMove.hitbox];
-    const contact = leftBoxes.some((leftBox) =>
+    const contact = hooks.contact?.(left, leftMove, right, rightMove) ?? leftBoxes.some((leftBox) =>
       rightBoxes.some((rightBox) => hooks.boxesIntersect(
         hooks.worldBox(left.runtime, leftBox),
         hooks.worldBox(right.runtime, rightBox),

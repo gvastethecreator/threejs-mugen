@@ -35,6 +35,14 @@ const projTypeCollisionAction: MugenAnimationAction = {
   }],
 };
 
+const projectileTradeAction: MugenAnimationAction = {
+  ...action,
+  frames: [{
+    ...action.frames[0],
+    clsn2: [{ x1: 6, y1: -18, x2: 34, y2: 6 }],
+  }],
+};
+
 describe("ProjectileCombatSystem", () => {
   it("uses strict current-frame Clsn2 boxes when projectile collision mode is enabled", () => {
     let projectiles = [projectile({ action: projTypeCollisionAction, hitbox: { x1: 100, y1: -18, x2: 120, y2: 6 } })];
@@ -71,6 +79,55 @@ describe("ProjectileCombatSystem", () => {
       projectiles,
       hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
       projectileCollisionMode: true,
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1000);
+    expect(projectiles).toHaveLength(1);
+  });
+
+  it("selects the target Clsn1 box for an explicit projectile p2clsncheck", () => {
+    let projectiles = [projectile({ p2ClsnCheck: "clsn1" })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: 120, y1: -24, x2: 140, y2: 12 }],
+      getTargetCollisionBoxes: (_target, boxType) =>
+        boxType === "clsn1" ? [{ x1: -24, y1: -24, x2: 24, y2: 12 }] : [],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(969);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("fails closed when projectile p2clsnrequire finds no required target box", () => {
+    let projectiles = [projectile({ p2ClsnRequire: "size" })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      getTargetCollisionBoxes: (_target, boxType) => (boxType === "size" ? [] : [{ x1: -24, y1: -24, x2: 24, y2: 12 }]),
       holdingBack: false,
       log: () => undefined,
       rememberTarget: () => undefined,
@@ -321,10 +378,10 @@ describe("ProjectileCombatSystem", () => {
 
   it("owns bounded projectile clash mutation behind RuntimeProjectileCombatWorld", () => {
     let leftProjectiles = [
-      projectile({ serialId: "p1-projectile-0", ownerId: "p1", priority: 5, pos: { x: 0, y: 0 }, facing: 1 }),
+      projectile({ action: projectileTradeAction, serialId: "p1-projectile-0", ownerId: "p1", priority: 5, pos: { x: 0, y: 0 }, facing: 1 }),
     ];
     let rightProjectiles = [
-      projectile({ serialId: "p2-projectile-0", ownerId: "p2", priority: 5, pos: { x: 40, y: 0 }, facing: -1 }),
+      projectile({ action: projectileTradeAction, serialId: "p2-projectile-0", ownerId: "p2", priority: 5, pos: { x: 40, y: 0 }, facing: -1 }),
     ];
     const logs: string[] = [];
     const cancels: string[] = [];
@@ -349,6 +406,26 @@ describe("ProjectileCombatSystem", () => {
     expect(cancels).toEqual(["p1:77:0", "p2:77:0"]);
     expect(leftProjectiles).toEqual([]);
     expect(rightProjectiles).toEqual([]);
+  });
+
+  it("fails projectile trade admission without strict current-frame Clsn2 boxes", () => {
+    let leftProjectiles = [projectile({ serialId: "p1-projectile-0", ownerId: "p1", pos: { x: 0, y: 0 }, facing: 1 })];
+    let rightProjectiles = [projectile({ serialId: "p2-projectile-0", ownerId: "p2", pos: { x: 40, y: 0 }, facing: -1 })];
+
+    new RuntimeProjectileCombatWorld().resolveClashes({
+      leftLabel: "P1",
+      rightLabel: "P2",
+      leftProjectiles,
+      rightProjectiles,
+      log: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        leftProjectiles = leftProjectiles.filter((entry) => !entry.removalReason);
+        rightProjectiles = rightProjectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(leftProjectiles).toHaveLength(1);
+    expect(rightProjectiles).toHaveLength(1);
   });
 
   it("allows an explicit opposite-side Projectile to hit its owner", () => {
@@ -395,8 +472,8 @@ describe("ProjectileCombatSystem", () => {
 
   it("clashes overlapping same-owner Projectiles when one opts into the opposite side", () => {
     let projectiles = [
-      projectile({ serialId: "p1-projectile-0", ownerId: "p1", teamSide: 2, priority: 5 }),
-      projectile({ serialId: "p1-projectile-1", ownerId: "p1", teamSide: 1, priority: 5 }),
+      projectile({ action: projectileTradeAction, serialId: "p1-projectile-0", ownerId: "p1", teamSide: 2, priority: 5 }),
+      projectile({ action: projectileTradeAction, serialId: "p1-projectile-1", ownerId: "p1", teamSide: 1, priority: 5 }),
     ];
     const logs: string[] = [];
     const cancels: string[] = [];
@@ -563,10 +640,11 @@ describe("ProjectileCombatSystem", () => {
 
   it("keeps the higher-priority projectile active while removing the lower-priority clash loser", () => {
     let leftProjectiles = [
-      projectile({ serialId: "p1-projectile-0", ownerId: "p1", priority: 3, pos: { x: 0, y: 0 }, facing: 1 }),
+      projectile({ action: projectileTradeAction, serialId: "p1-projectile-0", ownerId: "p1", priority: 3, pos: { x: 0, y: 0 }, facing: 1 }),
     ];
     let rightProjectiles = [
       projectile({
+        action: projectileTradeAction,
         serialId: "p2-projectile-0",
         ownerId: "p2",
         priority: 1,
@@ -603,10 +681,10 @@ describe("ProjectileCombatSystem", () => {
   });
 
   it("degrades a winning projectile before resolving later same-tick clashes", () => {
-    let leftProjectiles = [projectile({ serialId: "p1-projectile-0", ownerId: "p1", priority: 3, pos: { x: 0, y: 0 }, facing: 1 })];
+    let leftProjectiles = [projectile({ action: projectileTradeAction, serialId: "p1-projectile-0", ownerId: "p1", priority: 3, pos: { x: 0, y: 0 }, facing: 1 })];
     let rightProjectiles = [
-      projectile({ serialId: "p2-projectile-0", ownerId: "p2", priority: 1, pos: { x: 40, y: 0 }, facing: -1 }),
-      projectile({ serialId: "p2-projectile-1", ownerId: "p2", priority: 2, pos: { x: 40, y: 0 }, facing: -1 }),
+      projectile({ action: projectileTradeAction, serialId: "p2-projectile-0", ownerId: "p2", priority: 1, pos: { x: 40, y: 0 }, facing: -1 }),
+      projectile({ action: projectileTradeAction, serialId: "p2-projectile-1", ownerId: "p2", priority: 2, pos: { x: 40, y: 0 }, facing: -1 }),
     ];
     const logs: string[] = [];
 
