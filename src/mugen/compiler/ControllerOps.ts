@@ -250,7 +250,7 @@ export type HelperControllerOp = {
   animNo?: number;
   standby?: boolean;
   standbyExpression?: string;
-  pos?: [number, number];
+  pos?: MugenProjectileVector;
   velocity?: [number, number];
   scale?: [number, number];
   postype?: string;
@@ -2073,7 +2073,7 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     animNo: firstNumber(findParam(controller, "anim")),
     standby,
     standbyExpression,
-    pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
+    pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
     scale: scalePairWithDefaultOrUndefined(helperScalePair(controller)),
     postype: stripMugenString(findParam(controller, "postype")),

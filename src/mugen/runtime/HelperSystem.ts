@@ -93,7 +93,7 @@ export type RuntimeHelper = {
   targets: RuntimeTarget[];
   targetBindings: RuntimeTargetBinding[];
   bindToTarget?: RuntimeTargetBinding;
-  pos: { x: number; y: number };
+  pos: { x: number; y: number; z?: number };
   vel: { x: number; y: number };
   bodyWidth?: { front: number; back: number };
   scale: { x: number; y: number };
@@ -264,7 +264,7 @@ export type RuntimeHelperSpawnInput = {
   animNo: number;
   initialStandby?: boolean;
   initialControl?: boolean;
-  pos: { x: number; y: number };
+  pos: { x: number; y: number; z?: number };
   bodyWidth?: { front: number; back: number };
   fallbackFacing: 1 | -1;
 };

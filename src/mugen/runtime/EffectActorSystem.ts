@@ -599,12 +599,12 @@ export function spawnRuntimeHelperProjectileActor(
   if (!isPlayableAction(action)) {
     return undefined;
   }
-  const localPos = operation?.offset ?? operation?.pos ?? numberPair(findControllerParam(controller, "offset") ?? findControllerParam(controller, "pos")) ?? [0, 0];
-  const pos = resolveHelperExplodPosition(
+  const localPos = operation?.offset ?? operation?.pos ?? numberTriple(findControllerParam(controller, "offset") ?? findControllerParam(controller, "pos")) ?? [0, 0];
+  const pos = resolveHelperProjectilePosition(
     helper,
     options.opponentState,
     operation?.postype ?? findControllerParam(controller, "postype"),
-    [localPos[0], localPos[1]],
+    localPos,
   );
   if (!pos) {
     return undefined;
@@ -900,6 +900,26 @@ function resolveHelperExplodPosition(
   return { x: helper.pos.x + localPos[0] * helper.facing, y: helper.pos.y + localPos[1] };
 }
 
+function resolveHelperProjectilePosition(
+  helper: RuntimeHelper,
+  opponentState: RuntimeHelperAdvanceOptions["opponentState"],
+  postype: string | undefined,
+  localPos: [number, number, number?],
+): { x: number; y: number; z?: number } | undefined {
+  const position = resolveHelperExplodPosition(helper, opponentState, postype, [localPos[0], localPos[1]]);
+  if (!position) {
+    return undefined;
+  }
+  const type = postype?.trim().toLowerCase() ?? "p1";
+  const offsetZ = localPos[2] ?? 0;
+  const depth = type === "p2"
+    ? (opponentState?.combatDepth?.position ?? 0) + offsetZ
+    : type === "front" || type === "back" || type === "left" || type === "right"
+      ? offsetZ
+      : (helper.pos.z ?? 0) + offsetZ;
+  return depth === 0 ? position : { ...position, z: depth };
+}
+
 function isPlayableAction(action: RuntimeHelper["action"] | undefined): action is RuntimeHelper["action"] {
   return Boolean(action && action.frames.length > 0);
 }
@@ -925,6 +945,17 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
+}
+
+function numberTriple(value: string | undefined): [number, number, number?] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(numbers[0]) || !Number.isFinite(numbers[1])) {
+    return undefined;
+  }
+  return Number.isFinite(numbers[2]) ? [numbers[0]!, numbers[1]!, numbers[2]!] : [numbers[0]!, numbers[1]!];
 }
 
 function actionDuration(action: RuntimeHelper["action"]): number {

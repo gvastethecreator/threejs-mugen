@@ -7,6 +7,7 @@ import {
   resolveEffectSpawnBind,
   resolveEffectSpawnDepth,
   resolveEffectSpawnPosition,
+  resolveHelperSpawnDepth,
   RuntimeEffectSpawnControllerDispatchWorld,
   RuntimeEffectSpawnWorld,
   type RuntimeEffectSpawnActor,
@@ -355,6 +356,46 @@ describe("EffectSpawnSystem", () => {
     });
   });
 
+  it("propagates helper-origin and helper-local Projectile Z spawn data", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const ownerState: MugenStateDef = {
+      ...state(300, 920),
+      controllers: [
+        controller("Projectile", {
+          projanim: "910",
+          offset: "6,-8,2",
+          velocity: "0,0,0",
+          projid: "88",
+        }, ["Time = 0"]),
+      ],
+    };
+    const owner = actor("owner", effectActorWorld, {}, definition("owner", [baseAction, helperAction, terminalAction], [ownerState]));
+    owner.runtimeProgram = { states: [compileStateProgram(ownerState)] };
+    const fighter = actor("p1", effectActorWorld, {
+      combatDepth: { position: 12, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+    fighter.stateOwner = owner;
+    const opponent = actor("p2", effectActorWorld);
+
+    expect(spawnWorld.spawnHelper(fighter, opponent, controller("Helper", {
+      stateno: "300",
+      pos: "4,-6,3",
+      postype: "p1",
+    }))).toBe(true);
+    expect(effectActorWorld.getStore("p1").helpers[0]).toMatchObject({ pos: { x: 4, y: -6, z: 15 } });
+    expect(resolveHelperSpawnDepth(fighter, opponent, "p1", [4, -6, 3])).toBe(15);
+
+    effectActorWorld.advanceHelpers("p1", { bounds: { left: -160, right: 160 } });
+
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      projectileId: 88,
+      parentId: "p1-helper-0",
+      pos: { x: 10, y: -14, z: 17 },
+      vel: { x: 0, y: 0, z: 0 },
+    });
+  });
+
   it("passes dynamic ModifyProjectile bound resolvers through owner-side dispatch", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();
@@ -514,11 +555,16 @@ function move(actionId: number) {
   };
 }
 
-function controller(type: string, params: Record<string, string>): MugenStateController {
+function controller(type: string, params: Record<string, string>, triggers: string[] = []): MugenStateController {
   return {
     stateId: 200,
     type,
-    triggers: [],
+    triggers: triggers.map((expression, index) => ({
+      index: index + 1,
+      expression,
+      raw: `trigger${index + 1} = ${expression}`,
+      line: index + 1,
+    })),
     params,
     line: 1,
     rawHeader: `[State 200, ${type}]`,

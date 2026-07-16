@@ -156,7 +156,8 @@ export class RuntimeEffectSpawnWorld {
     if (!isPlayableAction(action)) {
       return false;
     }
-    const localPos = operation?.pos ?? numberPair(findParam(controller, "pos")) ?? [0, 0];
+    const localPos = operation?.pos ?? numberTriple(findParam(controller, "pos")) ?? [0, 0];
+    const spawnDepth = resolveHelperSpawnDepth(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos);
     fighter.effectActorWorld.spawnHelper(fighter.id, {
       controller,
       operation,
@@ -174,7 +175,10 @@ export class RuntimeEffectSpawnWorld {
       animNo,
       initialStandby,
       initialControl: (state?.ctrl ?? 1) !== 0,
-      pos: resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos),
+      pos: {
+        ...resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos),
+        ...(spawnDepth === 0 ? {} : { z: spawnDepth }),
+      },
       fallbackFacing: fighter.runtime.facing,
     });
     return true;
@@ -291,6 +295,23 @@ export function resolveEffectSpawnDepth(
     return (opponent.runtime.combatDepth?.position ?? 0) + offsetZ;
   }
   if (type === "left" || type === "right") {
+    return offsetZ;
+  }
+  return (fighter.runtime.combatDepth?.position ?? 0) + offsetZ;
+}
+
+export function resolveHelperSpawnDepth(
+  fighter: Pick<RuntimeEffectSpawnActor, "runtime">,
+  opponent: Pick<RuntimeEffectSpawnActor, "runtime">,
+  postype: string | undefined,
+  localPos: [number, number, number?] | [number, number],
+): number {
+  const type = postype?.trim().toLowerCase() ?? "p1";
+  const offsetZ = localPos[2] ?? 0;
+  if (type === "p2") {
+    return (opponent.runtime.combatDepth?.position ?? 0) + offsetZ;
+  }
+  if (type === "front" || type === "back" || type === "left" || type === "right") {
     return offsetZ;
   }
   return (fighter.runtime.combatDepth?.position ?? 0) + offsetZ;
