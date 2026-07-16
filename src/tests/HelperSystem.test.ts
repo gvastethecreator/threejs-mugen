@@ -12,6 +12,8 @@ import {
   helperRuntimeState,
   runtimeHelperCanDirectlyInteract,
   runtimeHelpersToSnapshots,
+  runtimeHelperTargetActor,
+  syncRuntimeHelperTargetActor,
   type RuntimeHelper,
 } from "../mugen/runtime/HelperSystem";
 import {
@@ -233,6 +235,57 @@ describe("HelperSystem", () => {
     expect(rememberedTarget.runtime.power).toBe(50);
     expect(redirectedControllers).toEqual(["p2:TargetPowerAdd"]);
     expect(redirectedOperations).toEqual(["p2:targetpoweradd"]);
+  });
+
+  it("routes Helper TargetPowerAdd RedirectID through a live helper destination and commits helper state", () => {
+    const destinationHelper = helper({
+      serialId: "p2-helper-0",
+      power: 35,
+      targets: [{ actorId: "p1-helper-target", targetId: 77, age: 0 }],
+    });
+    const targetHelper = helper({ serialId: "p1-helper-target", power: 10 });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const targetActor = runtimeHelperTargetActor(targetHelper);
+    const controller = {
+      ...controllerIr(6000, "TargetPowerAdd", { id: "77", value: "40", redirectid: "57" }),
+      operation: {
+        kind: "target",
+        controllerType: "targetpoweradd",
+        requestedId: 77,
+        value: 40,
+        redirectPlayerIdExpression: "57",
+      },
+    } satisfies ControllerIr;
+    const actor = helper({
+      serialId: "p1-helper-caller",
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [controller])] },
+      stateNo: 6000,
+      animNo: 6100,
+    });
+    const helperById = new Map([
+      [destinationHelper.serialId, destinationHelper],
+      [targetHelper.serialId, targetHelper],
+    ]);
+
+    advanceRuntimeHelpers([actor], stage, {
+      resolveTargetRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [targetActor],
+              commitActor: (target) => {
+                const helper = helperById.get(target.id);
+                if (!helper) return;
+                applyRuntimeStateToHelper(helper, target.runtime);
+                syncRuntimeHelperTargetActor(helper, target);
+              },
+            }
+          : undefined,
+    });
+
+    expect(actor.targets).toEqual([]);
+    expect(destinationHelper.power).toBe(35);
+    expect(targetHelper.power).toBe(50);
   });
 
   it("routes Helper BindToTarget RedirectID through a live root target memory", () => {

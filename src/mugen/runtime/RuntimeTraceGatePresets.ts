@@ -44885,6 +44885,139 @@ export function createSyntheticImportedHelperTargetStateRedirectTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHelperTargetHelperRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-helper-target-redirect-activate", frames: 12, p1: ["x"], p2: ["x"] },
+    { label: "helper-helper-target-redirect-settle", frames: 6, p1: [], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-target-helper-redirect-caller",
+    displayName: "Synthetic Imported Helper Target Helper Redirect Caller",
+    withHitDef: false,
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1240,
+      branchAnimNo: 970,
+      damage: 37,
+      targetId: 8891,
+      branchTrigger: "NumTarget(8891) > 0 && Target(8891), Life <= 963",
+      targetControllers: {
+        lifeAddValue: -19,
+        redirectId: 59,
+        controllerTargetId: 77,
+      },
+    },
+  });
+  const destination = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-target-helper-redirect-destination",
+    displayName: "Synthetic Imported Helper Target Helper Redirect Destination",
+    withHitDef: false,
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [-40, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1241,
+      branchAnimNo: 971,
+      damage: 0,
+      targetId: 77,
+      branchTrigger: "NumTarget(77) > 0",
+    },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: caller, p2: destination, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-helper-target-helper-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-target-helper-redirect-golden",
+      label: "Synthetic imported helper-to-helper Target RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves a helper RedirectID can resolve another live helper PlayerID, execute helper-owned Target* controllers against that destination helper's target memory, and commit mutations back to the destination helper and its target actors. TargetState and BindToTarget toward helper destinations remain intentionally fail-closed until their ownership contracts are implemented.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-target-helper-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: [
+          "ChangeState",
+          "Helper",
+          "TargetLifeAdd",
+          "TargetPowerAdd",
+          "TargetVelSet",
+          "TargetVelAdd",
+          "TargetFacing",
+          "TargetBind",
+        ],
+        requiredExecutedOperations: [
+          "helper",
+          "target:targetlifeadd",
+          "target:targetpoweradd",
+          "target:targetvelset",
+          "target:targetveladd",
+          "target:targetfacing",
+          "target:targetbind",
+        ],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8891, minFrames: 1 },
+          { ownerId: "p2-helper-0", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1240, animNo: 970, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p2", stateNo: 1241, animNo: 971, minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", observedLifeAtMost: 981, observedPowerAtLeast: 40, minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 981, power: 40 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 963 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "helper", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "active", kind: "helper", ownerId: "p2", rootId: "p2", parentId: "p2" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 },
+          { ownerId: "p2", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1240, minAge: 2 },
+          { actorId: "p2-helper-0", kind: "helper", ownerId: "p2", effectId: 42, name: "Buddy", helperStateNo: 1241, minAge: 2 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();

@@ -352,6 +352,7 @@ import {
   createSyntheticImportedHelperBindToTargetRedirectTraceArtifact,
   createSyntheticImportedHelperTargetStateTraceArtifact,
   createSyntheticImportedHelperTargetStateRedirectTraceArtifact,
+  createSyntheticImportedHelperTargetHelperRedirectTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -8765,6 +8766,40 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", stateNo: 0, ctrl: true, moveType: "I" }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported helper-to-helper Target RedirectID artifact with committed destination evidence", () => {
+    const artifact = createSyntheticImportedHelperTargetHelperRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-helper-redirect-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-helper-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8891 }),
+        expect.objectContaining({ ownerId: "p2-helper-0", actorId: "p1", targetId: 77 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", life: 981, power: 40 }),
+        expect.objectContaining({ id: "p2", life: 963 }),
       ]),
     );
   });
