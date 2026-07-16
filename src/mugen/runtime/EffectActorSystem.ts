@@ -805,6 +805,9 @@ export function spawnRuntimeProjectileActor(
 ): RuntimeProjectile {
   const projectile = createRuntimeProjectile({
     ...input,
+    ownerId: input.ownerId ?? ownerId,
+    rootId: input.rootId ?? ownerId,
+    parentId: input.parentId ?? ownerId,
     serialId: `${ownerId}-projectile-${store.nextProjectileSerial++}`,
   });
   store.projectiles.unshift(projectile);
