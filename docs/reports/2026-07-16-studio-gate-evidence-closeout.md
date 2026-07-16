@@ -3,6 +3,7 @@
 Date: 2026-07-16
 Wayfinder ticket: 224
 Implementation commit: `c8145f54`
+QA follow-up commit: `ee59699f`
 
 ## Global status
 
@@ -15,7 +16,7 @@ Implementation commit: `c8145f54`
 | Required ZIP export | passed | `studio/gate-evidence.json`, manifest required |
 | Compatibility snapshot regression | passed | `pnpm run qa:studio:compatibility-snapshot` |
 | TypeScript 7 and production build | passed | `pnpm typecheck`, `pnpm run build` |
-| Broad smoke | follow-up open | timeout in Workbench storage-conflict reopen path |
+| Broad smoke | passed | `pnpm run qa:smoke`, 324 s, 0 console/page errors |
 
 ## Result
 
@@ -25,12 +26,12 @@ required export payload. The focused browser artifact proves desktop Build,
 desktop Evidence, mobile Evidence, digest equality, and zero browser console
 or page errors.
 
-The broad smoke reached the new GateEvidence assertions but timed out later
-at `scripts/qa_smoke.cjs:2837` while waiting for a stored project to reopen in
-the two-page storage-conflict journey. Because that run is not fully green,
-this report does not promote a broad smoke claim. The existing focused
-Workbench command and the new GateEvidence command remain independently
-available while that runner path is isolated.
+The first broad run exposed the same timing class as the earlier Workbench
+reopen regression: the two-page storage-conflict branch clicked a stored row
+before the attached row and bridge transition were stable. Commit `ee59699f`
+applies the bounded synchronization and the next broad run passed the full
+runtime, MUGEN Lite, Studio, package, snapshot, GateEvidence, storage-conflict,
+and debug matrix.
 
 ## Artifacts
 
@@ -43,7 +44,6 @@ available while that runner path is isolated.
 ## Audit and next
 
 The implementation is bounded and evidence-backed, but it is not a release
-readiness claim for the whole port. Next: isolate the Workbench storage
-conflict timeout, implement `SourceWriteReceipt/v0`, and add further
-independently-materialized gate records before promoting a shared evidence
-core.
+readiness claim for the whole port. Next: implement `SourceWriteReceipt/v0`
+and add further independently-materialized gate records before promoting a
+shared evidence core.

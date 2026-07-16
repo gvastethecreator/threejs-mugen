@@ -4,6 +4,7 @@ Date: 2026-07-16
 Status: resolved at bounded scope
 Depends on: Wayfinder 223
 Implementation commit: `c8145f54`
+QA follow-up commit: `ee59699f`
 
 ## Outcome
 
@@ -39,11 +40,10 @@ their architecture status from the same result. Project ZIP exports include
   console/page errors or horizontal overflow.
 - `pnpm run qa:studio:compatibility-snapshot`: passed; the package carried
   both the promoted compatibility snapshot and required GateEvidence file.
-- Broad `pnpm run qa:smoke`: the new GateEvidence checks were reached without
-  failure, but the run later timed out in
-  `captureStudioProjectStorageConflict` while reopening the stored project.
-  This is recorded as an existing Workbench QA follow-up, not as a green
-  broad-run claim for this feature.
+- Broad `pnpm run qa:smoke`: passed in 324 seconds after the QA follow-up
+  synchronized the two-page Workbench stored-project selection; runtime,
+  MUGEN Lite, Studio, package, snapshot, GateEvidence, storage-conflict, and
+  debug checks passed with 0 console issues and 0 page errors.
 
 Artifacts:
 

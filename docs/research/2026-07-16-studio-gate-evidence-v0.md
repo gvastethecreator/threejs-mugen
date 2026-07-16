@@ -44,9 +44,9 @@ silently conflating debugging usefulness with distribution readiness.
 Contract tests cover deterministic hashing, parser acceptance, tamper
 rejection, freshness, intent gating, missing observations, and duplicate
 identity. Browser QA verifies the end-to-end path from Build and Evidence to
-the exported ZIP at desktop and mobile sizes. The broad smoke remains
-separately adjudicated because its final storage-conflict timeout is outside
-this gate's ownership.
+the exported ZIP at desktop and mobile sizes. The broad smoke now passes after
+its two-page stored-project selection received the same attached-row and
+bridge-state synchronization as the focused Workbench journey.
 
 ## Boundaries
 
