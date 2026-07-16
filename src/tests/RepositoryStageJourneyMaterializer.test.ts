@@ -45,7 +45,7 @@ describe("repository Skyline Relay journey materializer", () => {
       })),
     };
     const nativeRegression = process.env.WRITE_REPOSITORY_STAGE_NATIVE === "1"
-      ? readNativeRegression(resolve(process.cwd(), process.env.REPOSITORY_STAGE_NATIVE_REGRESSION ?? DEFAULT_NATIVE_REGRESSION))
+      ? readNativeRegression(resolve(process.cwd(), process.env.REPOSITORY_STAGE_NATIVE_ARTIFACT ?? DEFAULT_NATIVE_REGRESSION))
       : undefined;
     const evidence = await createRepositoryStageJourney({
       generatedAt: browser.generatedAt,
