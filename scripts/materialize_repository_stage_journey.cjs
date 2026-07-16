@@ -22,6 +22,7 @@ const result = spawnSync(
       REPOSITORY_STAGE_BROWSER_DIAGNOSTICS: browserDiagnostics,
       REPOSITORY_STAGE_RUNTIME_ARTIFACT: runtimeArtifact,
       REPOSITORY_STAGE_JOURNEY_ARTIFACT: journeyArtifact,
+      WRITE_REPOSITORY_STAGE_NATIVE: process.env.REPOSITORY_STAGE_NATIVE_REGRESSION === "1" ? "1" : "0",
     },
     stdio: "inherit",
     shell: true,

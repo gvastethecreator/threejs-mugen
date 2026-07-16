@@ -4,7 +4,10 @@ import {
   type StageCompatibilityJourneyResult,
 } from "../compatibility/StageCompatibilityJourney";
 import { createStageCompatibilityReport } from "../compatibility/StageCompatibilityReport";
-import type { CompatibilityJourneyBrowserEvidence } from "../compatibility/CompatibilityJourney";
+import type {
+  CompatibilityJourneyBrowserEvidence,
+  CompatibilityJourneyRegressionEvidence,
+} from "../compatibility/CompatibilityJourney";
 import { MugenStageLoader } from "../loader/MugenStageLoader";
 import { demoFighters } from "./demoFighters";
 import { PlayableMatchRuntime } from "./PlayableMatchRuntime";
@@ -21,6 +24,7 @@ export type RepositoryStageJourneyOptions = {
   runtimeArtifactPath?: string;
   browserDiagnosticsPath?: string;
   browserEvidence?: CompatibilityJourneyBrowserEvidence;
+  nativeRegression?: CompatibilityJourneyRegressionEvidence;
   nativeBuildArtifact?: string;
 };
 
@@ -78,6 +82,8 @@ export async function createRepositoryStageJourney(
   const nextRound = runtime.startNextRound();
   const next = runtime.getSnapshot();
   const generatedAt = options.generatedAt ?? new Date().toISOString();
+  const browserEvidence = options.browserEvidence ?? defaultBrowserEvidence(options.browserDiagnosticsPath);
+  const nativeRegression = options.nativeRegression ?? defaultNativeRegression(options.nativeBuildArtifact);
   const initialBackgroundTick = initial.stage.backgroundTick ?? 0;
   const secondBackgroundTick = second.stage.backgroundTick ?? 0;
   const nextBackgroundTick = next.stage.backgroundTick ?? 0;
@@ -165,31 +171,18 @@ export async function createRepositoryStageJourney(
         detail: "production stage loader and bounded runtime round route",
       }],
     },
-    browser: {
-      ...(options.browserEvidence ?? {
-        status: "not-run" as const,
-        diagnosticsPath: options.browserDiagnosticsPath ?? ".scratch/qa/repository-skyline-stage/browser.json",
-        viewports: [
-          { id: "desktop" as const, status: "not-run" as const, artifacts: [], detail: "repository stage browser route pending" },
-          { id: "mobile" as const, status: "not-run" as const, artifacts: [], detail: "repository stage browser route pending" },
-        ],
-      }),
-    },
-    nativeRegression: {
-      status: "not-run",
-      tests: { status: "not-run", files: 0, assertions: 0 },
-      typecheck: "not-run",
-      boundaries: "not-run",
-      build: { status: "not-run", ...(options.nativeBuildArtifact ? { artifact: options.nativeBuildArtifact } : {}), warnings: [] },
-    },
+    browser: browserEvidence,
+    nativeRegression,
     claims: {
       allowed: [
         "repository-authored CC0 Skyline Relay stage loads through the production stage loader",
         "bounded stage depth, background, and resetBG runtime checks pass",
+        ...(browserEvidence.status === "passed" ? ["browser ZIP/folder import and Stage Studio render evidence pass"] : []),
+        ...(nativeRegression.status === "passed" ? ["repository stage native regression batch passes"] : []),
       ],
       blocked: [
-        "browser stage render proof",
-        "native regression proof",
+        ...(browserEvidence.status === "passed" ? [] : ["browser stage render proof"]),
+        ...(nativeRegression.status === "passed" ? [] : ["native regression proof"]),
         "independent arbitrary-package compatibility",
         "full MUGEN/IKEMEN stage parity",
       ],
@@ -197,6 +190,27 @@ export async function createRepositoryStageJourney(
   });
 
   return { journey, packageDigest, vfs, stagePackage, runtimeArtifact };
+}
+
+function defaultBrowserEvidence(browserDiagnosticsPath?: string): CompatibilityJourneyBrowserEvidence {
+  return {
+    status: "not-run",
+    diagnosticsPath: browserDiagnosticsPath ?? ".scratch/qa/repository-skyline-stage/browser.json",
+    viewports: [
+      { id: "desktop", status: "not-run", artifacts: [], detail: "repository stage browser route pending" },
+      { id: "mobile", status: "not-run", artifacts: [], detail: "repository stage browser route pending" },
+    ],
+  };
+}
+
+function defaultNativeRegression(nativeBuildArtifact?: string): CompatibilityJourneyRegressionEvidence {
+  return {
+    status: "not-run",
+    tests: { status: "not-run", files: 0, assertions: 0 },
+    typecheck: "not-run",
+    boundaries: "not-run",
+    build: { status: "not-run", ...(nativeBuildArtifact ? { artifact: nativeBuildArtifact } : {}), warnings: [] },
+  };
 }
 
 function runtimeSnapshotEvidence(snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>): RepositoryStageRuntimeArtifact["snapshots"]["initial"] {

@@ -11,6 +11,7 @@ import {
   type CompatibilityCorpusSnapshotMaterializerInput,
 } from "../mugen/compatibility/CompatibilityCorpusSnapshot";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
+import { parseStageCompatibilityJourney } from "../mugen/compatibility/StageCompatibilityJourney";
 import {
   createMugenLiteJourneyNoKoSlowTraceArtifact,
   createMugenLiteJourneyPaletteTraceArtifact,
@@ -137,7 +138,11 @@ describe("CompatibilityCorpusSnapshot materializer", () => {
     expect(snapshot).toMatchObject({
       snapshotId: "compatibility-corpus-v1.1",
       status: "passed",
-      summary: { entryCount: 2, requiredCount: 1, optionalCount: 1 },
+      summary: {
+        entryCount: process.env.WRITE_COMPATIBILITY_CORPUS_SNAPSHOT === "1" ? 3 : 2,
+        requiredCount: process.env.WRITE_COMPATIBILITY_CORPUS_SNAPSHOT === "1" ? 2 : 1,
+        optionalCount: 1,
+      },
     });
   }, 30_000);
 });
@@ -153,6 +158,7 @@ async function createRepositorySnapshot() {
   const sourceRevision = process.env.COMPATIBILITY_SOURCE_REVISION ?? "repository-test-revision";
   const referenceAt = process.env.COMPATIBILITY_REFERENCE_AT ?? "2026-07-16T00:30:00.000Z";
   const observedAt = process.env.COMPATIBILITY_OBSERVED_AT ?? referenceAt;
+  const stageJourney = await readMaterializedStageJourney();
   const packageDigest = createHash("sha256");
   for (const path of vfs.listFiles()) {
     packageDigest.update(path);
@@ -251,6 +257,7 @@ async function createRepositorySnapshot() {
     generatedAt: "2026-07-16T00:00:00.000Z",
     entries: [
       { id: "mugen-lite-journey", availability: "required-legal", journey },
+      ...(stageJourney ? [{ id: "repository-skyline-relay", availability: "required-legal" as const, journey: stageJourney }] : []),
       { id: "official-training-room", availability: "optional-private", unavailableReason: "stage journey machine record requires a fresh external-fixture materialization" },
     ],
     claims: {
@@ -264,6 +271,7 @@ async function createRepositorySnapshot() {
     "mugen-lite-journey-palette": { id: "mugen-lite-journey-palette", status: paletteArtifact.status, path: ".scratch/qa/trace-gates/mugen-lite-journey-palette.json", checksum: paletteArtifact.trace.checksum, finalChecksum: paletteArtifact.trace.finalChecksum, detail: "RemapPal trace" },
     "browser:mugen-lite-journey-v1": { id: "browser:mugen-lite-journey-v1", status: "passed" as const, path: ".scratch/qa/qa-smoke/diagnostics.json", detail: "desktop/mobile browser diagnostics" },
     "native:mugen-lite-journey-v1": { id: "native:mugen-lite-journey-v1", status: "passed" as const, path: "docs/reports/2026-07-13-compatibility-journey-v1.md", detail: "native regression report" },
+    ...(stageJourney ? stageArtifactCatalog(stageJourney) : {}),
   };
   return materializeCompatibilityCorpusSnapshot({
     corpus,
@@ -285,6 +293,13 @@ async function createRepositorySnapshot() {
         "mugen-lite-journey-palette",
         "browser:mugen-lite-journey-v1",
         "native:mugen-lite-journey-v1",
+        ...(stageJourney
+          ? [
+              stageJourney.runtime.artifacts[0]?.id ?? "repository-skyline-relay-runtime",
+              `browser:${stageJourney.id}`,
+              `native:${stageJourney.id}`,
+            ]
+          : []),
       ],
     },
     packageCatalog: {
@@ -292,10 +307,55 @@ async function createRepositorySnapshot() {
         provenance: MUGEN_LITE_JOURNEY_MANIFEST.provenance,
         entry: MUGEN_LITE_JOURNEY_MANIFEST.entry,
       },
+      ...(stageJourney
+        ? {
+            "repository-skyline-relay": {
+              provenance: stageJourney.package.provenance,
+              entry: stageJourney.package.entry,
+            },
+          }
+        : {}),
     },
     artifactCatalog,
     artifactProbe: probeRepositoryArtifact,
   });
+}
+
+async function readMaterializedStageJourney() {
+  if (process.env.WRITE_COMPATIBILITY_CORPUS_SNAPSHOT !== "1") return undefined;
+  const path = resolve(process.cwd(), ".scratch/qa/repository-skyline-relay-browser/journey.json");
+  if (!existsSync(path)) throw new Error(`repository stage journey is missing: ${path}`);
+  const parsed = parseStageCompatibilityJourney(JSON.parse(readFileSync(path, "utf8")));
+  if (parsed.errors.length > 0 || !parsed.journey) throw new Error(`repository stage journey is invalid: ${parsed.errors.join(", ")}`);
+  if (parsed.journey.status !== "passed") throw new Error(`repository stage journey is not promotable: ${parsed.journey.status}`);
+  return parsed.journey;
+}
+
+function stageArtifactCatalog(journey: Awaited<ReturnType<typeof readMaterializedStageJourney>>) {
+  if (!journey) return {};
+  const runtimeArtifact = journey.runtime.artifacts[0];
+  const nativeReport = journey.nativeRegression.reportPath;
+  if (!runtimeArtifact || !nativeReport) throw new Error("repository stage journey lacks runtime/native artifact identity");
+  return {
+    [runtimeArtifact.id]: {
+      id: runtimeArtifact.id,
+      status: "passed" as const,
+      path: runtimeArtifact.path,
+      detail: "repository stage runtime artifact",
+    },
+    [`browser:${journey.id}`]: {
+      id: `browser:${journey.id}`,
+      status: "passed" as const,
+      path: journey.browser.diagnosticsPath,
+      detail: "repository stage browser diagnostics",
+    },
+    [`native:${journey.id}`]: {
+      id: `native:${journey.id}`,
+      status: "passed" as const,
+      path: nativeReport,
+      detail: "repository stage native regression report",
+    },
+  };
 }
 
 function materialize(input: CompatibilityCorpusSnapshotMaterializerInput) {

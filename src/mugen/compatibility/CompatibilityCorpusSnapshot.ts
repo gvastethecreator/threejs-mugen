@@ -357,6 +357,16 @@ function normalizeEntry(input: CompatibilityCorpusSnapshotEntryInput): Compatibi
                 }),
               ]
             : []),
+          ...(journey.nativeRegression.reportPath
+            ? [
+                normalizeArtifact({
+                  id: `${journey.id}:native:report`,
+                  status: normalizeArtifactStatus(journey.nativeRegression.status),
+                  path: journey.nativeRegression.reportPath,
+                  detail: "native regression report",
+                }),
+              ]
+            : []),
         ]
       : []),
     ...(input.artifactRefs?.map(normalizeArtifact) ?? []),

@@ -129,6 +129,7 @@ function normalizeStageJourneyInput(input: StageCompatibilityJourneyInput): Stag
     },
     nativeRegression: {
       ...input.nativeRegression,
+      ...(input.nativeRegression.reportPath ? { reportPath: input.nativeRegression.reportPath.trim() } : {}),
       tests: { ...input.nativeRegression.tests },
       build: {
         ...input.nativeRegression.build,

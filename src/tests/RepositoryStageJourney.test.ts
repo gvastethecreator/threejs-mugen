@@ -33,4 +33,36 @@ describe("repository-authored Skyline Relay stage journey", () => {
     expect(parsed.errors).toEqual([]);
     expect(parsed.journey?.checksum).toBe(result.journey.checksum);
   });
+
+  it("promotes browser and native evidence only when both are explicitly supplied", async () => {
+    const result = await createRepositoryStageJourney({
+      generatedAt: "2026-07-16T16:00:00.000Z",
+      browserEvidence: {
+        status: "passed",
+        diagnosticsPath: ".scratch/qa/repository-skyline-relay-browser/browser-diagnostics.json",
+        viewports: [
+          { id: "desktop", status: "passed", artifacts: ["desktop.png"], detail: "desktop" },
+          { id: "mobile", status: "passed", artifacts: ["mobile.png"], detail: "mobile" },
+        ],
+      },
+      nativeRegression: {
+        status: "passed",
+        reportPath: "docs/evidence/repository-stage-native-regression-v1.json",
+        tests: { status: "passed", files: 4, assertions: 8 },
+        typecheck: "passed",
+        boundaries: "passed",
+        build: { status: "passed", warnings: ["large chunk over 500 kB"] },
+      },
+    });
+
+    expect(result.journey.status).toBe("passed");
+    expect(result.journey.claims.allowed).toEqual(expect.arrayContaining([
+      "browser ZIP/folder import and Stage Studio render evidence pass",
+      "repository stage native regression batch passes",
+    ]));
+    expect(result.journey.claims.blocked).not.toEqual(expect.arrayContaining([
+      "browser stage render proof",
+      "native regression proof",
+    ]));
+  });
 });

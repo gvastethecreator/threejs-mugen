@@ -68,6 +68,7 @@ export type CompatibilityJourneyBrowserEvidence = {
 
 export type CompatibilityJourneyRegressionEvidence = {
   status: CompatibilityJourneyCheckStatus;
+  reportPath?: string;
   tests: {
     status: CompatibilityJourneyCheckStatus;
     files: number;
@@ -193,6 +194,7 @@ function normalizeJourneyInput(input: CompatibilityJourneyInput): CompatibilityJ
     },
     nativeRegression: {
       ...input.nativeRegression,
+      ...(input.nativeRegression.reportPath ? { reportPath: input.nativeRegression.reportPath.trim() } : {}),
       tests: { ...input.nativeRegression.tests },
       build: {
         ...input.nativeRegression.build,
