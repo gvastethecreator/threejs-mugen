@@ -40,3 +40,16 @@ Exact IKEMEN ordering across proxies, depth, `affectteam`, same-owner projectile
 and all cancel-time triggers remains open and must not be inferred from this
 bounded slice.
 
+## Implementation evidence
+
+- Commit `3838fa5e` carries the typed compiler/runtime selectors and strict
+  current-frame `Clsn2` projectile trade admission.
+- Commit `845b8de5` aligns the two EffectActor trade fixtures with their authored
+  `Clsn2` geometry.
+- Focused runtime/compiler coverage: `168/168` tests passed.
+- TypeScript 7 typecheck, production build, boundary check, and `qa:trace`
+  (`633/633`, `599` required, `34` optional) passed.
+- Full checkpoint with `--testTimeout=15000`: `2262/2263` tests passed. The
+  remaining failure is the pre-existing `RuntimeMatchPostFighterSystem` expected
+  call list, which omits same-owner projectile callbacks already scheduled by
+  `MatchInteractionSystem`.

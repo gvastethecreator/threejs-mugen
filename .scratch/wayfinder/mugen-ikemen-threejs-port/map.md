@@ -244,7 +244,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - Continue evidence-led compatibility breadth without widening generic physics-A movement, helpers, target precedence, or presentation ownership.
 
 - [Implement ProjTypeCollision runtime collision policy/v1](tickets/208-projtypecollision-runtime.md) - completed in `c068de80`: typed flag capability, strict projectile Clsn2 contact, HitFlag P cancellation, and paired player Clsn2 admission; focal 110/110, TypeScript 7, build, boundaries, and 633/633 trace artifacts pass. p2 collision parameters, affectteam, proxies, depth, ordering, full parity, and score remain open.
-- [Implement projectile trade and p2 collision policy/v1](tickets/209-projectile-trade-p2-collision.md) - selected: source-backed `p2clsncheck`/`p2clsnrequire` selectors plus strict projectile trade admission; implementation and evidence pending. Exact proxy/depth/affectteam/order parity remains open.
+- [Implement projectile trade and p2 collision policy/v1](tickets/209-projectile-trade-p2-collision.md) - completed in `3838fa5e` with fixture follow-up `845b8de5`: typed `p2clsncheck`/`p2clsnrequire`, direct/root/projectile selector resolution, fail-closed requirements, and strict current-frame Clsn2 trades; focused `168/168`, TypeScript 7/build/boundaries/633 trace pass. Exact proxy/depth/affectteam/order parity and one unrelated self-projectile expectation remain open.
 
 ## Not Yet Specified
 

@@ -1,6 +1,6 @@
 # Implement projectile trade and p2 collision policy/v1
 
-Status: selected
+Status: completed
 
 ## Question
 
@@ -51,3 +51,16 @@ What bounded runtime contract closes the next projectile compatibility gap after
   RuntimeCombatResolutionSystem tests.
 - TypeScript 7, build, boundaries, and trace QA at the next batch checkpoint.
 
+## Result
+
+Implemented in `3838fa5e`, with the fixture alignment follow-up in `845b8de5`.
+The compiler/runtime now carries both selectors through HitDef and Projectile,
+direct/root admission resolves `Clsn1`/`Clsn2`/`Size`/`None`, required boxes fail
+closed, `ProjTypeCollision` keeps its `Clsn2` override, and projectile trades use
+strict current-frame `Clsn2` boxes. Focused coverage is `168/168`; the full
+checkpoint is `2262/2263` with one pre-existing self-projectile expectation
+failure in `RuntimeMatchPostFighterSystem.test.ts`.
+
+Allowed claim: bounded selector, requirement, and strict trade geometry contract.
+Blocked claim: exact proxy/depth/affectteam/cancel-order parity, rollback/netplay,
+score, renderer/audio parity, and complete MUGEN/IKEMEN parity.
