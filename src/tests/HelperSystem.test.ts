@@ -288,6 +288,63 @@ describe("HelperSystem", () => {
     expect(targetHelper.power).toBe(50);
   });
 
+  it("routes Helper BindToTarget RedirectID through a live helper destination and commits binding", () => {
+    const destinationHelper = helper({
+      serialId: "p2-helper-0",
+      targets: [{ actorId: "p1-helper-target", targetId: 77, age: 0 }],
+    });
+    const targetHelper = helper({ serialId: "p1-helper-target" });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const targetActor = runtimeHelperTargetActor(targetHelper);
+    const controller = {
+      ...controllerIr(6000, "BindToTarget", { id: "77", pos: "20,-8,Mid", posz: "6", time: "4", redirectid: "57" }),
+      operation: {
+        kind: "bindtotarget",
+        requestedId: 77,
+        pos: [20, -8] as [number, number],
+        posZ: 6,
+        postype: "mid",
+        time: 4,
+        redirectPlayerIdExpression: "57",
+      },
+    } satisfies ControllerIr;
+    const actor = helper({
+      serialId: "p1-helper-caller",
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [controller])] },
+      stateNo: 6000,
+      animNo: 6100,
+    });
+    const helperById = new Map([
+      [destinationHelper.serialId, destinationHelper],
+      [targetHelper.serialId, targetHelper],
+    ]);
+
+    advanceRuntimeHelpers([actor], stage, {
+      resolveTargetRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [targetActor],
+              commitActor: (target) => {
+                const helper = helperById.get(target.id);
+                if (!helper) return;
+                applyRuntimeStateToHelper(helper, target.runtime);
+                syncRuntimeHelperTargetActor(helper, target);
+              },
+            }
+          : undefined,
+    });
+
+    expect(actor.bindToTarget).toBeUndefined();
+    expect(destinationHelper.bindToTarget).toMatchObject({
+      actorId: "p1-helper-target",
+      targetId: 77,
+      remaining: 4,
+      offset: { x: 20, y: -8, z: 6 },
+    });
+    expect(targetHelper.bindToTarget).toBeUndefined();
+  });
+
   it("routes Helper BindToTarget RedirectID through a live root target memory", () => {
     const redirectedTarget = {
       id: "p2",
