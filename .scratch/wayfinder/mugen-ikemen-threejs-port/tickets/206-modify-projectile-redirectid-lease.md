@@ -1,7 +1,7 @@
 # Implement ModifyProjectile RedirectID lease/v1
 
 Type: task
-Status: selected
+Status: completed
 Blocked by: None
 
 ## Question
@@ -56,3 +56,29 @@ redirects, score, rollback/netplay, renderer behavior, or full parity.
 Root active CNS `ModifyProjectile RedirectID` has a typed, lease-backed,
 caller-evaluated destination mutation path with focused evidence. Unsupported
 projectile RedirectID surfaces remain visible and fail closed.
+
+## Outcome
+
+- `ModifyProjectile` now lowers a validated `redirectid` expression into its
+  typed operation; malformed expressions do not produce an executable
+  operation.
+- Root active CNS resolves the destination through the existing synchronous
+  lease and delegates mutation to that root's projectile store.
+- Dynamic mutation values remain caller-evaluated; the required fixture proves
+  caller `var(0)=52` changes only the destination projectile.
+- Omitted RedirectID keeps the local path; invalid or unavailable targets fail
+  closed without mutation.
+
+## Verification
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/EffectSpawnSystem.test.ts src/tests/PlayableMatchRuntime.test.ts --testTimeout=30000`
+  -> 3 files, `304/304` tests passed.
+- `pnpm exec tsc -p tsconfig.json --noEmit` passed.
+- `git diff --check` passed for the changed implementation and test files.
+- Browser/renderer smoke: N/A; this is compiler/runtime-only.
+
+## Closeout
+
+Report: `docs/reports/2026-07-16-modify-projectile-redirectid-v1-closeout.md`
+
+Commit: `e5a32bd4 feat(runtime): lease ModifyProjectile redirects`
