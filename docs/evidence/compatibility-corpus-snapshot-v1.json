@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "mugen-web-sandbox/compatibility-corpus-snapshot/v1",
-  "snapshotId": "compatibility-corpus-v1",
+  "schemaVersion": "mugen-web-sandbox/compatibility-corpus-snapshot/v1.1",
+  "snapshotId": "compatibility-corpus-v1.1",
   "source": {
     "corpusSchema": "mugen-web-sandbox/compatibility-corpus/v0",
-    "sourceRevision": "post-entry-554:05d85137",
+    "sourceRevision": "eb85b80920c6839a7d9ce997d0a632fd19116a45",
     "tool": {
       "id": "compatibility-snapshot-materializer",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     "ruleset": {
       "id": "mugen-compatibility",
@@ -16,6 +16,7 @@
   "freshness": {
     "policy": "rebuild-and-verify",
     "maxAgeHours": 24,
+    "expectedSourceRevision": "eb85b80920c6839a7d9ce997d0a632fd19116a45",
     "requiredArtifactIds": [
       "browser:mugen-lite-journey-v1",
       "mugen-lite-journey",
@@ -65,6 +66,7 @@
           "id": "browser:mugen-lite-journey-v1",
           "status": "passed",
           "path": ".scratch/qa/qa-smoke/diagnostics.json",
+          "contentDigest": "sha256:ef92df35428698d6979da09403f136896d56da8fbf9de6ccb0fba22beeec45c9",
           "detail": "desktop/mobile browser diagnostics"
         },
         {
@@ -73,6 +75,7 @@
           "path": ".scratch/qa/trace-gates/mugen-lite-journey.json",
           "checksum": "80881f71",
           "finalChecksum": "b5ae36cc",
+          "contentDigest": "sha256:35aee3fc0ed7fb9112f3a0cd2977609ea79fd59d490d1c8f97de5401c19615d1",
           "detail": "runtime trace"
         },
         {
@@ -81,6 +84,7 @@
           "path": ".scratch/qa/trace-gates/mugen-lite-journey-nokoslow.json",
           "checksum": "ceac9f37",
           "finalChecksum": "1d5b25e4",
+          "contentDigest": "sha256:678e2c583debae70f621a3ee5cff14c04a8adcce19ffeefe2d7d7e12fd21f587",
           "detail": "NoKOSlow trace"
         },
         {
@@ -89,12 +93,14 @@
           "path": ".scratch/qa/trace-gates/mugen-lite-journey-palette.json",
           "checksum": "1291909d",
           "finalChecksum": "380400cf",
+          "contentDigest": "sha256:391d0e09d8d9fd523aaeaa78426b47a153af5290f50d01c8b0e58415c4c8a151",
           "detail": "RemapPal trace"
         },
         {
           "id": "native:mugen-lite-journey-v1",
           "status": "passed",
           "path": "docs/reports/2026-07-13-compatibility-journey-v1.md",
+          "contentDigest": "sha256:96fa5c3ede6d52396e00fd0418231a4871375c5dc155b21c182f9303871fe2c4",
           "detail": "native regression report"
         }
       ],
@@ -165,7 +171,8 @@
     ]
   },
   "diagnostics": [],
-  "observedAt": "2026-07-16T00:00:00.000Z",
-  "semanticDigest": "b288c845",
-  "checksum": "63598806"
+  "observedAt": "2026-07-16T15:09:03.577Z",
+  "referenceAt": "2026-07-16T15:09:03.577Z",
+  "semanticDigest": "083429c4",
+  "checksum": "623e5bba"
 }

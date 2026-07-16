@@ -252,6 +252,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Implement helper-owned Projectile Z spawn/localcoord v1](tickets/214-helper-projectile-depth-spawn.md) - completed in `bf12d7eb` / `5297bb65`: typed Helper origin and production helper micro-VM Projectile `offset`/`pos` now preserve P1/P2 spawn-time Z under the existing root-store/parent contract. Focused `124/124`, full `2284/2284`, TypeScript 7/build/boundaries, and trace `633/633` pass. Helper Z kinematics/binding, cross-localcoord conversion, collision/presentation breadth, rollback/netplay, and full parity remain open.
 - [Close helper-parented Projectile depth admission v1](tickets/215-helper-projectile-depth-admission.md) - completed in `f612ea4e`: separated/touching Z ranges are explicitly covered for helper-parented Projectiles through the existing root-store combat world. Focused `31/31`, full `2285/2285`, TypeScript 7, and the accumulated `633/633` trace checkpoint pass. Helper defenders, proxy/team breadth, depth-bound timing, presentation, rollback/netplay, and full parity remain open.
 
+- [Harden CompatibilityCorpusSnapshot/v1.1](tickets/216-compatibility-corpus-snapshot-v1-1.md) - completed in `eb85b809`: live Git revision/reference time, required max-age, expected revision, SHA-256 artifact probes, standalone drift verification, and stale/revision/missing/tamper failure paths are covered. Focused `7/7`, TypeScript 7, materializer, syntax, and diff gates pass. Snapshot remains one required legal route; no score movement.
+
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor.
