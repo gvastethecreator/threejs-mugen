@@ -501,6 +501,8 @@ import {
   createSyntheticImportedControlStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetPowerRedirectTraceArtifact,
   createSyntheticImportedTargetLifeRedirectTraceArtifact,
+  createSyntheticImportedTargetAuxiliaryRedirectTraceArtifact,
+  createSyntheticImportedTargetAuxiliaryStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetLifeStateEntryRedirectTraceArtifact,
   createSyntheticImportedTargetVelocityRedirectTraceArtifact,
@@ -1501,6 +1503,54 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", life: 980, targetCount: 1 }),
         expect.objectContaining({ id: "p2", life: 1000, targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported Target auxiliary resource RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetAuxiliaryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-auxiliary-redirect-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-target-auxiliary-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetRedLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetGuardPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetDizzyPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "target:targetredlifeadd": 1,
+      "target:targetguardpointsadd": 1,
+      "target:targetdizzypointsadd": 1,
+    });
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", life: 963, redLife: 963, guardPoints: 980, dizzyPoints: 970, targetCount: 1 }),
+        expect.objectContaining({ id: "p2", life: 1000, targetCount: 1 }),
+      ]),
+    );
+  });
+
+  it("creates a required imported state-entry Target auxiliary resource RedirectID artifact", () => {
+    const artifact = createSyntheticImportedTargetAuxiliaryStateEntryRedirectTraceArtifact({ generatedAt: "2026-07-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-target-auxiliary-state-entry-redirect-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-target-auxiliary-state-entry-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetRedLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetGuardPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.TargetDizzyPointsAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "target:targetredlifeadd": 1,
+      "target:targetguardpointsadd": 1,
+      "target:targetdizzypointsadd": 1,
+    });
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", life: 1000, targetCount: 1 }),
+        expect.objectContaining({ id: "p2", life: 963, redLife: 963, guardPoints: 980, dizzyPoints: 970, targetCount: 1 }),
       ]),
     );
   });

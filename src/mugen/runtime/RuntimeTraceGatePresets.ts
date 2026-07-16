@@ -1024,6 +1024,191 @@ export function createSyntheticImportedControlStateEntryRedirectTraceArtifact(op
   );
 }
 
+export function createSyntheticImportedTargetAuxiliaryRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "target-auxiliary-redirect-seed-p2-target", frames: 8, p1: [], p2: ["x"] },
+    { label: "target-auxiliary-redirect-recover", frames: 24, p1: [], p2: [] },
+    { label: "target-auxiliary-redirect-attack-p1", frames: 8, p1: ["x"], p2: [] },
+    { label: "target-auxiliary-redirect-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-auxiliary-redirect-attacker",
+    displayName: "Synthetic Imported Target Auxiliary Redirect Attacker",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    withTargetAuxiliaryControllers: {
+      redirectId: 57,
+      targetId: 77,
+      redLifeAddValue: 25,
+      redLifeAbsolute: true,
+      guardPointsAddValue: -20,
+      dizzyPointsAddValue: -30,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-auxiliary-redirect-defender",
+    displayName: "Synthetic Imported Target Auxiliary Redirect Defender",
+    action200Duration: 48,
+    hitDefDamage: 37,
+    hitDefDizzyPoints: 0,
+    hitDefTargetId: 77,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-target-auxiliary-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-auxiliary-redirect-golden",
+      label: "Synthetic imported root Target auxiliary resource RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves root RedirectID routes TargetRedLifeAdd, TargetGuardPointsAdd, and TargetDizzyPointsAdd through the destination root target memory and commits all three mutations to the selected target actor. State -1, helper/projectile/team ownership, and full parity remain separate boundaries.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-auxiliary-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetRedLifeAdd", "TargetGuardPointsAdd", "TargetDizzyPointsAdd"],
+        requiredExecutedOperations: ["hitdef", "target:targetredlifeadd", "target:targetguardpointsadd", "target:targetdizzypointsadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            observedRedLifeAtLeast: 963,
+            observedGuardPointsAtMost: 980,
+            observedDizzyPointsAtMost: 970,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 963, redLife: 963, guardPoints: 980, dizzyPoints: 970 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedTargetAuxiliaryStateEntryRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? {
+    ...closeCombatStage(),
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 as const },
+      p2: { x: 35, y: 0, facing: -1 as const },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "target-auxiliary-state-entry-seed-p1-target", frames: 8, p1: ["x"], p2: [] },
+    { label: "target-auxiliary-state-entry-seed-p2-target", frames: 20, p1: [], p2: ["x"] },
+    { label: "target-auxiliary-state-entry-recover", frames: 80, p1: [], p2: [] },
+    { label: "target-auxiliary-state-entry-trigger", frames: 1, p1: [], p2: ["x"] },
+    { label: "target-auxiliary-state-entry-settle", frames: 0, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-auxiliary-state-entry-redirect-attacker",
+    displayName: "Synthetic Imported Target Auxiliary State Entry Redirect Attacker",
+    action200Duration: 48,
+    hitDefDamage: 37,
+    hitDefDizzyPoints: 0,
+    hitDefTargetId: 77,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-auxiliary-state-entry-redirect-defender",
+    displayName: "Synthetic Imported Target Auxiliary State Entry Redirect Defender",
+    action200Duration: 48,
+    hitDefDamage: 0,
+    hitDefTargetId: 77,
+    withTargetAuxiliaryStateEntry: {
+      redirectId: 56,
+      targetId: 77,
+      redLifeAddValue: 25,
+      redLifeAbsolute: true,
+      guardPointsAddValue: -20,
+      dizzyPointsAddValue: -30,
+    },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-target-auxiliary-state-entry-redirect-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-auxiliary-state-entry-redirect-golden",
+      label: "Synthetic imported root Target auxiliary resource State -1 RedirectID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported IKEMEN trace proves State -1 RedirectID routes TargetRedLifeAdd, TargetGuardPointsAdd, and TargetDizzyPointsAdd through the destination root target memory during setup and commits all three mutations to the selected target actor. Active-state, helper/projectile/team ownership, and full parity remain separate boundaries.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-auxiliary-state-entry-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetRedLifeAdd", "TargetGuardPointsAdd", "TargetDizzyPointsAdd"],
+        requiredExecutedOperations: ["hitdef", "target:targetredlifeadd", "target:targetguardpointsadd", "target:targetdizzypointsadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, minFrames: 1 },
+          { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            observedRedLifeAtLeast: 963,
+            observedGuardPointsAtMost: 980,
+            observedDizzyPointsAtMost: 970,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 963, redLife: 963, guardPoints: 980, dizzyPoints: 970 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetPowerRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -47398,6 +47583,15 @@ export type SyntheticImportedTraceFighterOptions = {
     includeGroundRecovery?: boolean;
   };
   withTargetControllers?: boolean;
+  withTargetAuxiliaryControllers?: {
+    redirectId: SyntheticNumberExpression;
+    targetId?: number;
+    triggerTime?: number;
+    redLifeAddValue?: number;
+    redLifeAbsolute?: boolean;
+    guardPointsAddValue?: number;
+    dizzyPointsAddValue?: number;
+  };
   targetFacingControllerRedirectId?: SyntheticNumberExpression;
   targetDropControllerRedirectId?: SyntheticNumberExpression;
   targetBindControllerRedirectId?: SyntheticNumberExpression;
@@ -47643,6 +47837,14 @@ export type SyntheticImportedTraceFighterOptions = {
     redirectId: SyntheticNumberExpression;
     targetId?: number;
     value?: number;
+  };
+  withTargetAuxiliaryStateEntry?: {
+    redirectId: SyntheticNumberExpression;
+    targetId?: number;
+    redLifeAddValue?: number;
+    redLifeAbsolute?: boolean;
+    guardPointsAddValue?: number;
+    dizzyPointsAddValue?: number;
   };
   withBindToTargetStateEntry?: {
     redirectId: SyntheticNumberExpression;
@@ -48419,6 +48621,7 @@ ${options.withTargetStateStateEntry === undefined ? "" : targetStateStateEntryBl
 ${options.withTargetDropStateEntry === undefined ? "" : targetDropStateEntryBlock(targetMemoryId, options.withTargetDropStateEntry)}
 ${options.withTargetBindStateEntry === undefined ? "" : targetBindStateEntryBlock(targetMemoryId, options.withTargetBindStateEntry)}
 ${options.withTargetPowerStateEntry === undefined ? "" : targetPowerStateEntryBlock(targetMemoryId, options.withTargetPowerStateEntry)}
+${options.withTargetAuxiliaryStateEntry === undefined ? "" : targetAuxiliaryStateEntryBlock(targetMemoryId, options.withTargetAuxiliaryStateEntry)}
 ${options.withBindToTargetStateEntry === undefined ? "" : bindToTargetStateEntryBlock(targetMemoryId, options.withBindToTargetStateEntry)}
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.enemyNearIndexedStateEntry === undefined ? "" : enemyNearIndexedStateEntryBlock(options.enemyNearIndexedStateEntry)}
@@ -48533,6 +48736,7 @@ ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnim
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
 ${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime, options.targetBindPosZ, options.targetControllerRedirectId, options.targetLifeControllerRedirectId) : ""}
+${options.withTargetAuxiliaryControllers === undefined ? "" : targetAuxiliaryControllerBlock(options.withTargetAuxiliaryControllers, targetMemoryId)}
 ${options.targetFacingControllerRedirectId === undefined ? "" : targetFacingRedirectControllerBlock(targetMemoryId, options.targetFacingControllerRedirectId)}
 ${options.targetDropControllerRedirectId === undefined ? "" : targetDropRedirectControllerBlock(options.targetDropControllerRedirectId)}
 ${options.targetBindControllerRedirectId === undefined ? "" : targetBindRedirectControllerBlock(options.targetBindControllerRedirectId)}
@@ -50715,6 +50919,37 @@ trigger1 = Time = ${triggerTime}
 id = ${targetId}
 pos = 36,-12${posZ === undefined ? "" : `,${posZ}`}
 time = 4
+`;
+}
+
+function targetAuxiliaryControllerBlock(
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withTargetAuxiliaryControllers"]>,
+  targetMemoryId: number,
+): string {
+  const targetId = config.targetId ?? targetMemoryId;
+  const triggerTime = config.triggerTime ?? 2;
+  return `
+[State 200, Target Red Life]
+type = TargetRedLifeAdd
+trigger1 = Time = ${triggerTime}
+id = ${targetId}
+value = ${config.redLifeAddValue ?? 25}
+absolute = ${config.redLifeAbsolute === false ? 0 : 1}
+RedirectID = ${config.redirectId}
+
+[State 200, Target Guard Points]
+type = TargetGuardPointsAdd
+trigger1 = Time = ${triggerTime}
+id = ${targetId}
+value = ${config.guardPointsAddValue ?? -20}
+RedirectID = ${config.redirectId}
+
+[State 200, Target Dizzy Points]
+type = TargetDizzyPointsAdd
+trigger1 = Time = ${triggerTime}
+id = ${targetId}
+value = ${config.dizzyPointsAddValue ?? -30}
+RedirectID = ${config.redirectId}
 `;
 }
 
@@ -53652,6 +53887,54 @@ triggerall = StageTime >= 40
 triggerall = NumTarget(${targetId}) > 0
 trigger1 = 1
 v = 30
+value = 1
+`;
+}
+
+function targetAuxiliaryStateEntryBlock(
+  targetMemoryId: number,
+  config: NonNullable<SyntheticImportedTraceFighterOptions["withTargetAuxiliaryStateEntry"]>,
+): string {
+  const targetId = config.targetId ?? targetMemoryId;
+  return `
+[State -1, Target Red Life Redirect Entry]
+type = TargetRedLifeAdd
+triggerall = var(24) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+id = ${targetId}
+value = ${config.redLifeAddValue ?? 25}
+absolute = ${config.redLifeAbsolute === false ? 0 : 1}
+RedirectID = ${config.redirectId}
+
+[State -1, Target Guard Points Redirect Entry]
+type = TargetGuardPointsAdd
+triggerall = var(24) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+id = ${targetId}
+value = ${config.guardPointsAddValue ?? -20}
+RedirectID = ${config.redirectId}
+
+[State -1, Target Dizzy Points Redirect Entry]
+type = TargetDizzyPointsAdd
+triggerall = var(24) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+id = ${targetId}
+value = ${config.dizzyPointsAddValue ?? -30}
+RedirectID = ${config.redirectId}
+
+[State -1, Target Auxiliary Redirect Entry Gate]
+type = VarSet
+triggerall = var(24) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(${targetId}) > 0
+trigger1 = 1
+v = 24
 value = 1
 `;
 }
