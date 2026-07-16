@@ -1,7 +1,7 @@
 # Research: helper-owned Projectile Z spawn
 
 Date: 2026-07-16
-Status: implementation planned (Wayfinder 214)
+Status: implementation completed (Wayfinder 214)
 
 ## Question
 
@@ -55,5 +55,14 @@ presentation remain separate claims.
 
 ## Implementation evidence
 
-Pending implementation and verification.
-
+- `HelperControllerOp.pos` and `RuntimeHelper.pos` now preserve an optional
+  third component.
+- The effect-spawn world carries the helper's initial depth from the fighter or
+  P2 combat-depth origin plus the authored helper position offset.
+- The production helper micro-VM spawn path carries Projectile `offset`/`pos`
+  depth for both helper/P1 and helper/P2 origin cases.
+- Focused tests: `124/124` passed; full suite: `216/216` files and
+  `2284/2284` tests passed.
+- TypeScript 7, production build, module boundaries, and trace QA passed;
+  trace coverage is `633/633` with `0` skipped.
+- Code commits: `bf12d7eb` and `5297bb65`.

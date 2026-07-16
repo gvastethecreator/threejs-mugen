@@ -1,7 +1,7 @@
 # Implement helper-owned Projectile Z spawn/localcoord v1
 
 Type: task
-Status: in progress
+Status: resolved
 Blocked by: None
 
 ## Question
@@ -50,3 +50,29 @@ complete MUGEN/IKEMEN parity.
 
 - `docs/research/2026-07-16-helper-projectile-depth-spawn.md`
 
+## Implementation result
+
+- Helper controller positions now preserve an optional third component through
+  the typed compiler operation and runtime helper origin.
+- Helper-created Projectiles now resolve their third `offset`/`pos` component
+  against the helper origin for `P1` and the supplied opponent runtime origin
+  for `P2`, while preserving the existing root-store/parent identity.
+- Zero and omitted depth retain the legacy object shape; local-coordinate
+  metadata remains attached to the spawned Projectile.
+
+## Evidence
+
+- Focused compiler/effect/spawn tests: `124/124` passed.
+- `pnpm typecheck`: passed.
+- Full suite: `216/216` files and `2284/2284` tests passed with
+  `--testTimeout=30000`.
+- `pnpm build`: passed; existing large-chunk warning remains.
+- `pnpm check:boundaries`: passed.
+- `pnpm qa:trace`: `633/633` artifacts passed, `0` skipped (`599` required,
+  `34` optional); artifacts in `.scratch/qa/trace-gates`.
+- Code commits: `bf12d7eb`, `5297bb65`.
+
+Claim ceiling: spawn-time helper/P1/P2 Z projection is evidenced under the
+existing owner/store contract. Helper Z kinematics, binding writeback,
+cross-localcoord conversion, collision/presentation breadth, rollback/netplay,
+and complete MUGEN/IKEMEN parity remain open.
