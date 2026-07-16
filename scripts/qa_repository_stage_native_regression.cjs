@@ -1,6 +1,6 @@
-const { execFileSync, readdirSync, mkdirSync, writeFileSync } = require("node:fs");
+const { mkdirSync, writeFileSync } = require("node:fs");
 const { resolve } = require("node:path");
-const { spawnSync } = require("node:child_process");
+const { execFileSync, spawnSync } = require("node:child_process");
 
 const packageDigest = "sha256:9c8a0b7cbd8d298eda5450518045e8d67e5d9a4a409e3186c5eef33a7183b456";
 const outputPath = ".scratch/qa/repository-skyline-relay-native/native-regression.json";
