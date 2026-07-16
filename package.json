@@ -13,6 +13,7 @@
     "fix:css": "node scripts/audit_css_duplication.cjs --fix-exact --fix-shadowed --fix-cross-file-shadowed",
     "qa:stage": "node scripts/qa_stage_compatibility.cjs",
     "qa:stage:repository": "node scripts/qa_repository_stage_compatibility.cjs",
+    "materialize:repository-stage-journey": "node scripts/materialize_repository_stage_journey.cjs",
     "qa:smoke": "node scripts/qa_smoke.cjs",
     "qa:trace": "node scripts/qa_traces.cjs",
     "materialize:compatibility-snapshot": "node scripts/materialize_compatibility_corpus_snapshot.cjs",

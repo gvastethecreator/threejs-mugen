@@ -1,8 +1,10 @@
 import {
   createStageCompatibilityJourney,
+  type StageCompatibilityJourneyCheck,
   type StageCompatibilityJourneyResult,
 } from "../compatibility/StageCompatibilityJourney";
 import { createStageCompatibilityReport } from "../compatibility/StageCompatibilityReport";
+import type { CompatibilityJourneyBrowserEvidence } from "../compatibility/CompatibilityJourney";
 import { MugenStageLoader } from "../loader/MugenStageLoader";
 import { demoFighters } from "./demoFighters";
 import { PlayableMatchRuntime } from "./PlayableMatchRuntime";
@@ -18,7 +20,38 @@ export type RepositoryStageJourneyOptions = {
   generatedAt?: string;
   runtimeArtifactPath?: string;
   browserDiagnosticsPath?: string;
+  browserEvidence?: CompatibilityJourneyBrowserEvidence;
   nativeBuildArtifact?: string;
+};
+
+export const REPOSITORY_STAGE_RUNTIME_ARTIFACT_SCHEMA = "mugen-web-sandbox/repository-stage-runtime/v1" as const;
+
+export type RepositoryStageRuntimeArtifact = {
+  schemaVersion: typeof REPOSITORY_STAGE_RUNTIME_ARTIFACT_SCHEMA;
+  generatedAt: string;
+  packageId: string;
+  packageDigest: string;
+  stage: {
+    id: string;
+    displayName: string;
+    localCoord: { width: number; height: number };
+    gameSpace?: { width: number; height: number; sourcePath?: string };
+    depthBounds?: { top: number; bottom: number };
+    resetBackgroundBetweenRounds?: boolean;
+  };
+  snapshots: Record<"initial" | "first" | "second" | "nextRound", {
+    tick: number;
+    backgroundTick: number;
+    roundState: string;
+    roundTimer: number;
+  }>;
+  nextRound: {
+    applied: boolean;
+    diagnostics: string[];
+    outcome: string;
+    matchOver: boolean;
+  };
+  checks: StageCompatibilityJourneyCheck[];
 };
 
 export type RepositoryStageJourneyEvidence = {
@@ -26,6 +59,7 @@ export type RepositoryStageJourneyEvidence = {
   packageDigest: string;
   vfs: VirtualFileSystem;
   stagePackage: MugenStagePackage;
+  runtimeArtifact: RepositoryStageRuntimeArtifact;
 };
 
 export async function createRepositoryStageJourney(
@@ -43,6 +77,7 @@ export async function createRepositoryStageJourney(
   const second = runtime.step({ p1: new Set(), p2: new Set() });
   const nextRound = runtime.startNextRound();
   const next = runtime.getSnapshot();
+  const generatedAt = options.generatedAt ?? new Date().toISOString();
   const initialBackgroundTick = initial.stage.backgroundTick ?? 0;
   const secondBackgroundTick = second.stage.backgroundTick ?? 0;
   const nextBackgroundTick = next.stage.backgroundTick ?? 0;
@@ -70,10 +105,37 @@ export async function createRepositoryStageJourney(
       detail: `resetBG=0 preserves the absolute stage background clock across the next round (initial=${initialBackgroundTick}, second=${secondBackgroundTick}, next=${nextBackgroundTick}, applied=${nextRound.applied})`,
     },
   ];
+  const runtimeArtifact: RepositoryStageRuntimeArtifact = {
+    schemaVersion: REPOSITORY_STAGE_RUNTIME_ARTIFACT_SCHEMA,
+    generatedAt,
+    packageId: REPOSITORY_STAGE_PACKAGE_MANIFEST.id,
+    packageDigest,
+    stage: {
+      id: stagePackage.stage.id,
+      displayName: stagePackage.stage.displayName,
+      localCoord: stagePackage.stage.localCoord,
+      ...(stagePackage.stage.gameSpace ? { gameSpace: stagePackage.stage.gameSpace } : {}),
+      ...(stagePackage.stage.depthBounds ? { depthBounds: stagePackage.stage.depthBounds } : {}),
+      resetBackgroundBetweenRounds: stagePackage.stage.resetBackgroundBetweenRounds,
+    },
+    snapshots: {
+      initial: runtimeSnapshotEvidence(initial),
+      first: runtimeSnapshotEvidence(first),
+      second: runtimeSnapshotEvidence(second),
+      nextRound: runtimeSnapshotEvidence(next),
+    },
+    nextRound: {
+      applied: nextRound.applied,
+      diagnostics: [...nextRound.diagnostics],
+      outcome: nextRound.matchOutcome.outcome,
+      matchOver: nextRound.matchOutcome.matchOver,
+    },
+    checks,
+  };
 
   const journey = createStageCompatibilityJourney({
     id: "repository-skyline-relay-v1",
-    generatedAt: options.generatedAt ?? new Date().toISOString(),
+    generatedAt,
     package: {
       id: REPOSITORY_STAGE_PACKAGE_MANIFEST.id,
       name: REPOSITORY_STAGE_PACKAGE_MANIFEST.displayName,
@@ -104,12 +166,14 @@ export async function createRepositoryStageJourney(
       }],
     },
     browser: {
-      status: "not-run",
-      diagnosticsPath: options.browserDiagnosticsPath ?? ".scratch/qa/repository-skyline-stage/browser.json",
-      viewports: [
-        { id: "desktop", status: "not-run", artifacts: [], detail: "repository stage browser route pending" },
-        { id: "mobile", status: "not-run", artifacts: [], detail: "repository stage browser route pending" },
-      ],
+      ...(options.browserEvidence ?? {
+        status: "not-run" as const,
+        diagnosticsPath: options.browserDiagnosticsPath ?? ".scratch/qa/repository-skyline-stage/browser.json",
+        viewports: [
+          { id: "desktop" as const, status: "not-run" as const, artifacts: [], detail: "repository stage browser route pending" },
+          { id: "mobile" as const, status: "not-run" as const, artifacts: [], detail: "repository stage browser route pending" },
+        ],
+      }),
     },
     nativeRegression: {
       status: "not-run",
@@ -132,5 +196,14 @@ export async function createRepositoryStageJourney(
     },
   });
 
-  return { journey, packageDigest, vfs, stagePackage };
+  return { journey, packageDigest, vfs, stagePackage, runtimeArtifact };
+}
+
+function runtimeSnapshotEvidence(snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>): RepositoryStageRuntimeArtifact["snapshots"]["initial"] {
+  return {
+    tick: snapshot.tick,
+    backgroundTick: snapshot.stage.backgroundTick ?? 0,
+    roundState: snapshot.round?.state ?? "unknown",
+    roundTimer: snapshot.round?.timer ?? 0,
+  };
 }
