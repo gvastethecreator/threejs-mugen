@@ -43,6 +43,9 @@ export async function createRepositoryStageJourney(
   const second = runtime.step({ p1: new Set(), p2: new Set() });
   const nextRound = runtime.startNextRound();
   const next = runtime.getSnapshot();
+  const initialBackgroundTick = initial.stage.backgroundTick ?? 0;
+  const secondBackgroundTick = second.stage.backgroundTick ?? 0;
+  const nextBackgroundTick = next.stage.backgroundTick ?? 0;
   const checks = [
     {
       id: "stage-loader",
@@ -61,10 +64,10 @@ export async function createRepositoryStageJourney(
     },
     {
       id: "stage-round-reset",
-      status: nextRound.applied && stagePackage.stage.resetBackgroundBetweenRounds === false && second.stage.backgroundTick > initial.stage.backgroundTick && next.stage.backgroundTick === second.stage.backgroundTick
+      status: nextRound.applied && stagePackage.stage.resetBackgroundBetweenRounds === false && secondBackgroundTick > initialBackgroundTick && nextBackgroundTick === secondBackgroundTick
         ? "passed" as const
         : "failed" as const,
-      detail: `resetBG=0 preserves the absolute stage background clock across the next round (initial=${initial.stage.backgroundTick}, second=${second.stage.backgroundTick}, next=${next.stage.backgroundTick}, applied=${nextRound.applied})`,
+      detail: `resetBG=0 preserves the absolute stage background clock across the next round (initial=${initialBackgroundTick}, second=${secondBackgroundTick}, next=${nextBackgroundTick}, applied=${nextRound.applied})`,
     },
   ];
 
