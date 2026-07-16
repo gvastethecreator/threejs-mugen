@@ -448,6 +448,7 @@ export type ActorEffectSnapshot =
       accel?: { x: number; y: number };
       velMul?: { x: number; y: number };
       scale?: { x: number; y: number };
+      depthBound?: number;
       depth?: {
         position: number;
         velocity: number;

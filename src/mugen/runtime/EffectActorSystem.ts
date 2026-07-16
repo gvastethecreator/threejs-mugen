@@ -47,6 +47,7 @@ import {
   type RuntimeProjectileModifyInput,
   type RuntimeProjectileModifyResolver,
   type RuntimeProjectileSpawnInput,
+  type RuntimeProjectileStage,
 } from "./ProjectileSystem";
 import {
   RuntimeProjectileCombatWorld,
@@ -202,7 +203,7 @@ export class RuntimeEffectActorWorld {
 
   advanceActiveEffects(
     ownerId: string,
-    stage: Pick<MugenStageDefinition, "bounds">,
+    stage: RuntimeProjectileStage,
     options?: RuntimeHelperAdvanceOptions & { skipHelpers?: boolean },
   ): void {
     this.advanceWorld.advanceActive({
@@ -285,8 +286,8 @@ export class RuntimeEffectActorWorld {
     ownerId: string,
     helper: RuntimeHelper,
     stage: Pick<MugenStageDefinition, "bounds">,
-    options?: RuntimeHelperAdvanceOptions,
-  ): boolean {
+  options?: RuntimeHelperAdvanceOptions,
+): boolean {
     const store = this.getStore(ownerId);
     if (!store.helpers.includes(helper)) {
       return false;
@@ -319,7 +320,7 @@ export class RuntimeEffectActorWorld {
     return modifyRuntimeProjectileActors(this.getStore(ownerId), input);
   }
 
-  advanceProjectiles(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">): void {
+  advanceProjectiles(ownerId: string, stage: RuntimeProjectileStage): void {
     advanceRuntimeProjectileActors(this.getStore(ownerId), stage);
   }
 
@@ -826,7 +827,7 @@ export function modifyRuntimeProjectileActors(store: RuntimeEffectActorStore, in
 
 export function advanceRuntimeProjectileActors(
   store: RuntimeEffectActorStore,
-  stage: Pick<MugenStageDefinition, "bounds">,
+  stage: RuntimeProjectileStage,
 ): void {
   store.projectiles = advanceRuntimeProjectiles(store.projectiles, stage);
 }

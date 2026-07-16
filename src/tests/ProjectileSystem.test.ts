@@ -94,6 +94,7 @@ describe("ProjectileSystem", () => {
         projcancelanim: "1202",
         projedgebound: "48",
         projstagebound: "32",
+        projdepthbound: "12",
         projheightbound: "-96,64",
         affectteam: "B",
         teamside: "2",
@@ -154,6 +155,7 @@ describe("ProjectileSystem", () => {
       removeTime: 1200,
       edgeBound: 48,
       stageBound: 32,
+      depthBound: 12,
       heightBound: { low: -96, high: 64 },
       priority: 10,
       hitsRemaining: 3,
@@ -712,6 +714,44 @@ describe("ProjectileSystem", () => {
         heightBound: { low: -132, high: 40 },
         removalReason: "bounds",
       },
+    });
+  });
+
+  it("uses explicit projdepthbound for stage depth removal without adding a default bound", () => {
+    const depthStage = {
+      bounds: { left: -120, right: 120 },
+      depthBounds: { top: -10, bottom: 10 },
+      localCoord: { width: 640, height: 480 },
+    };
+    const touching = projectile({
+      serialId: "depth-touching",
+      pos: { x: 0, y: 0, z: 7 },
+      vel: { x: 0, y: 0, z: 0 },
+      localCoord: [320, 240],
+      depthBound: 2,
+    });
+    const outside = projectile({
+      serialId: "depth-outside",
+      pos: { x: 0, y: 0, z: 8 },
+      vel: { x: 0, y: 0, z: 0 },
+      localCoord: [320, 240],
+      depthBound: 2,
+    });
+    const unbounded = projectile({
+      serialId: "depth-unbounded",
+      pos: { x: 0, y: 0, z: 100 },
+      vel: { x: 0, y: 0, z: 0 },
+      localCoord: [320, 240],
+    });
+
+    const remaining = advanceRuntimeProjectiles([touching, outside, unbounded], depthStage);
+
+    expect(remaining.map((entry) => entry.serialId)).toEqual(["depth-touching", "depth-unbounded"]);
+    expect(touching.removalReason).toBeUndefined();
+    expect(outside).toMatchObject({ depthBound: 2, removalReason: "bounds" });
+    expect(unbounded.removalReason).toBeUndefined();
+    expect(runtimeProjectilesToSnapshots([outside], 1000)[0]).toMatchObject({
+      effect: { depthBound: 2, removalReason: "bounds" },
     });
   });
 

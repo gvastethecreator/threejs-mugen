@@ -2,6 +2,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 
 export type RuntimeStageGameSpaceSource = Pick<MugenStageDefinition, "bounds"> & {
+  depthBounds?: MugenStageDefinition["depthBounds"];
   camera?: Partial<Pick<MugenStageDefinition["camera"], "zoom">>;
   gameSpace?: Partial<Pick<NonNullable<MugenStageDefinition["gameSpace"]>, "width" | "height">>;
   localCoord?: Partial<MugenStageDefinition["localCoord"]>;

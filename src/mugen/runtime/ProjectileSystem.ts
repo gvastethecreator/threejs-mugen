@@ -12,6 +12,7 @@ import { runtimeAffectTeamAllows, runtimeTeamSideFromId, type RuntimeTeamSide } 
 import {
   DEFAULT_RUNTIME_ATTACK_DEPTH,
   DEFAULT_RUNTIME_SIZE_DEPTH,
+  runtimeCombatLocalScale,
 } from "./RuntimeCombatDepthSystem";
 import type { ActorSnapshot, RuntimeCombatDepth, RuntimeResolvedSoundRef } from "./types";
 
@@ -19,6 +20,11 @@ const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
 const DEFAULT_PROJECTILE_STAGE_BOUND = 40;
 const DEFAULT_PROJECTILE_HEIGHT_BOUND = { low: -240, high: 1 } as const;
 const DEFAULT_PROJECTILE_LOCAL_COORD_WIDTH = 320;
+
+export type RuntimeProjectileStage = Pick<MugenStageDefinition, "bounds"> & {
+  depthBounds?: MugenStageDefinition["depthBounds"];
+  localCoord?: Partial<MugenStageDefinition["localCoord"]>;
+};
 
 export type RuntimeProjectile = {
   serialId: string;
@@ -51,6 +57,7 @@ export type RuntimeProjectile = {
   removeTime: number;
   edgeBound?: number;
   stageBound: number;
+  depthBound?: number;
   heightBound?: { low: number; high: number };
   spritePriority: number;
   priority: number;
@@ -141,6 +148,7 @@ export type RuntimeProjectileSpawnInput = {
   fallbackFacing: 1 | -1;
   localCoord?: [number, number];
   attackDepth?: [number, number];
+  depthBound?: number;
   damageScale?: number;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
 };
@@ -200,6 +208,9 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const defaultBoundScale = projectileDefaultBoundScale(input.localCoord);
   const edgeBound = operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound"));
   const stageBound = operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound"));
+  const depthBound = normalizeProjectileDepthBound(
+    operation?.depthBound ?? input.depthBound ?? firstNumber(findControllerParam(input.controller, "projdepthbound")),
+  );
   const heightBound = operation?.heightBound ?? projectileHeightBound(numberPair(findControllerParam(input.controller, "projheightbound")));
   const guardPause = Math.max(
     0,
@@ -272,6 +283,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
     edgeBound: clampProjectileStageBound(edgeBound ?? scaledDefaultProjectileBound(DEFAULT_PROJECTILE_EDGE_BOUND, defaultBoundScale)),
     stageBound: clampProjectileStageBound(stageBound ?? scaledDefaultProjectileBound(DEFAULT_PROJECTILE_STAGE_BOUND, defaultBoundScale)),
+    ...(depthBound === undefined ? {} : { depthBound }),
     heightBound: optionalProjectileHeightBound(heightBound) ?? defaultProjectileHeightBound(defaultBoundScale),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 4))),
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority")) ?? 1),
@@ -479,7 +491,7 @@ function findModifyProjectilePairParam(
 
 export function advanceRuntimeProjectiles(
   projectiles: RuntimeProjectile[],
-  stage: Pick<MugenStageDefinition, "bounds">,
+  stage: RuntimeProjectileStage,
 ): RuntimeProjectile[] {
   for (const projectile of projectiles) {
     advanceRuntimeProjectileContactTimer(projectile);
@@ -520,7 +532,8 @@ export function advanceRuntimeProjectiles(
       projectile.pos.x < stage.bounds.left - runtimeProjectileHorizontalRemovalBound(projectile) ||
       projectile.pos.x > stage.bounds.right + runtimeProjectileHorizontalRemovalBound(projectile) ||
       projectile.pos.y < runtimeProjectileVerticalRemovalBound(projectile).low ||
-      projectile.pos.y > runtimeProjectileVerticalRemovalBound(projectile).high
+      projectile.pos.y > runtimeProjectileVerticalRemovalBound(projectile).high ||
+      runtimeProjectileOutsideDepthBounds(projectile, stage)
     ) {
       markRuntimeProjectileForRemoval(projectile, "bounds");
     }
@@ -553,6 +566,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           removeTime: projectile.removeTime,
           ...(projectile.edgeBound === undefined || projectile.edgeBound === DEFAULT_PROJECTILE_EDGE_BOUND ? {} : { edgeBound: projectile.edgeBound }),
           ...(projectile.stageBound === DEFAULT_PROJECTILE_STAGE_BOUND ? {} : { stageBound: projectile.stageBound }),
+          ...(projectile.depthBound === undefined ? {} : { depthBound: projectile.depthBound }),
           ...(projectile.heightBound === undefined || isDefaultProjectileHeightBound(projectile.heightBound) ? {} : { heightBound: projectile.heightBound }),
           spritePriority: projectile.spritePriority,
           priority: projectile.priority,
@@ -1021,6 +1035,13 @@ function clampProjectileStageBound(value: number): number {
   return Math.max(0, Math.min(2000, Math.round(value)));
 }
 
+function normalizeProjectileDepthBound(value: number | undefined): number | undefined {
+  if (value === undefined || !Number.isFinite(value)) {
+    return undefined;
+  }
+  return Math.max(0, Math.round(value));
+}
+
 function clampProjectileHeightBound(value: number): number {
   return Math.max(-4000, Math.min(4000, Math.round(value)));
 }
@@ -1031,6 +1052,27 @@ function runtimeProjectileHorizontalRemovalBound(projectile: RuntimeProjectile):
 
 function runtimeProjectileVerticalRemovalBound(projectile: RuntimeProjectile): { low: number; high: number } {
   return projectile.heightBound ?? defaultProjectileHeightBound(1);
+}
+
+function runtimeProjectileOutsideDepthBounds(
+  projectile: RuntimeProjectile,
+  stage: RuntimeProjectileStage,
+): boolean {
+  if (projectile.depthBound === undefined || !stage.depthBounds) {
+    return false;
+  }
+  const stageScale = runtimeCombatLocalScale(
+    stage.localCoord?.width === undefined
+      ? undefined
+      : [stage.localCoord.width, stage.localCoord.height ?? 240],
+  );
+  const projectileScale = runtimeCombatLocalScale(projectile.localCoord);
+  const stageTop = (stage.depthBounds.top * stageScale) / projectileScale - projectile.depthBound;
+  const stageBottom = (stage.depthBounds.bottom * stageScale) / projectileScale + projectile.depthBound;
+  const top = Math.min(stageTop, stageBottom);
+  const bottom = Math.max(stageTop, stageBottom);
+  const position = projectile.pos.z ?? 0;
+  return position < top || position > bottom;
 }
 
 function defaultProjectileHeightBound(scale: number): { low: number; high: number } {

@@ -2240,6 +2240,28 @@ describe("EffectActorSystem", () => {
     expect(world.getStore("p1").explods).toEqual([]);
   });
 
+  it("applies stage depth removal to root and helper-owned projectiles in one active pass", () => {
+    const world = new RuntimeEffectActorWorld();
+    const helper = world.spawnHelper("p1", helperInput({ id: "42" }));
+    const rootProjectile = world.spawnProjectile("p1", projectileInput({ projdepthbound: "2", velocity: "0,0,0" }));
+    const helperProjectile = spawnRuntimeProjectileActor(world.getStore("p1"), "p1", {
+      ...projectileInput({ projdepthbound: "2", velocity: "0,0,0" }),
+      parentId: helper.serialId,
+    });
+    rootProjectile.pos.z = 8;
+    helperProjectile.pos.z = 8;
+
+    world.advanceActiveEffects("p1", {
+      bounds: { left: -120, right: 120 },
+      depthBounds: { top: -10, bottom: 10 },
+      localCoord: { width: 640, height: 480 },
+    });
+
+    expect(rootProjectile).toMatchObject({ removalReason: "bounds", depthBound: 2, parentId: "p1" });
+    expect(helperProjectile).toMatchObject({ removalReason: "bounds", depthBound: 2, parentId: helper.serialId });
+    expect(world.projectiles("p1")).toEqual([]);
+  });
+
   it("advances one scheduled helper while the bulk active pass skips helpers", () => {
     const world = new RuntimeEffectActorWorld();
     const scheduled = world.spawnHelper("p1", helperInput({ id: "42" }));

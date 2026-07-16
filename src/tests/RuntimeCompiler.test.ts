@@ -1795,6 +1795,7 @@ time = 20
         pos: "4,-8,2",
         velocity: "9,-1,1.5",
         accel: "0.25,0,-0.1",
+        projdepthbound: "12",
         "attack.depth": "7,9",
       }),
     );
@@ -1805,6 +1806,7 @@ time = 20
       pos: [4, -8, 2],
       velocity: [9, -1, 1.5],
       acceleration: [0.25, 0, -0.1],
+      depthBound: 12,
       attackDepth: [7, 9],
     });
   });
