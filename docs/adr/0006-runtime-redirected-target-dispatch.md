@@ -4,7 +4,7 @@ Status: Accepted (bounded RedirectID routes)
 
 Date: 2026-07-15
 
-Last reviewed: 2026-07-16 at HEAD `fd1b6133`
+Last reviewed: 2026-07-16 at HEAD `be951e9a`
 
 Decision owners: runtime compatibility and IKEMEN bounded-runtime lanes
 
@@ -233,6 +233,9 @@ alone.
   commit callback.
 - ADR 0007 accepts the helper-destination TargetState ownership boundary in
   `fd1b6133`; its focused checkpoint passes `926/926` tests, TypeScript 7,
+  production build, repository boundaries, and `check:redirect-boundary`.
+- ADR 0008 accepts the bounded helper State -1 `keyctrl` route in `be951e9a`;
+  its grouped focal checkpoint passes `404/404` tests, TypeScript 7,
   production build, repository boundaries, and `check:redirect-boundary`.
 
 ## Acceptance

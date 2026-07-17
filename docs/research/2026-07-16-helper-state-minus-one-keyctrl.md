@@ -52,3 +52,29 @@ with respect to State -1 execution.
 - the command callback reads the owner root's active command buffer;
 - pause gating remains unchanged;
 - existing helper/runtime traces remain green.
+
+## Implementation result
+
+Commit `be951e9a` accepts this slice at bounded scope. `HelperControllerOp`
+parses static `keyctrl`; `RuntimeHelperProgram` carries optional `stateEntries`;
+the helper runner executes State -1 before its current positive state only when
+`keyCtrl === true`. The helper expression context now receives the owning
+root's `CommandBuffer.isCommandActive` callback through the effect lifecycle
+bridge. The pass remains inside `canAdvanceRuntimeHelper`, so hit-pause and
+Pause/SuperPause movement-time behavior is unchanged.
+
+Focused proof:
+
+- `HelperSystem.test.ts` proves enabled, command-miss, keyctrl-off, current
+  state continuation, and pause-gated paths.
+- `RuntimeCompiler.test.ts` proves `keyctrl = 1` becomes typed operation data.
+- `PlayableMatchRuntime.test.ts` proves an imported helper reads a custom
+  owner command from the real root command buffer.
+- The grouped focal checkpoint is `404/404`; TypeScript 7/build, repository
+  boundaries, redirected-dispatch guard, and diff hygiene pass.
+
+The implementation does not claim State -2/-3/-4/+1, helper-specific input,
+Common1 merge precedence, exact global negative-state ordering, rollback,
+netplay, or full MUGEN/IKEMEN parity. Next decision: whether a separate
+source-backed State -2/-3 slice can preserve the same owner and fail-closed
+boundaries.

@@ -27,12 +27,13 @@ root state-program owner. Helper-selected targets stay fail-closed.
 ## Scope ceiling
 
 This closeout does not claim helper-owned state tables, helper target entry,
-helper State -1/global-state, recursive RedirectID, projectile/team ownership,
-exact multi-target ordering, rollback/netplay, or full MUGEN/IKEMEN parity.
+broader helper negative-state/global-state semantics, recursive RedirectID,
+projectile/team ownership, exact multi-target ordering, rollback/netplay, or
+full MUGEN/IKEMEN parity.
 
 ## Next frontier
 
 Choose the next source-backed helper/runtime boundary only after preserving this
 ownership contract and its fail-closed evidence. The current high-risk open
-areas are helper-selected TargetState, helper State -1/global-state, and
+areas are helper-selected TargetState, helper State -2/-3 semantics, and
 broader target-selection ordering.

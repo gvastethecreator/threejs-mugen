@@ -4,7 +4,7 @@ Status: Accepted (bounded root-target route)
 
 Date: 2026-07-16
 
-Last reviewed: 2026-07-16 at HEAD `fd1b6133`
+Last reviewed: 2026-07-16 at HEAD `be951e9a`
 
 Decision owners: runtime compatibility and IKEMEN bounded-runtime lanes
 
@@ -79,8 +79,9 @@ Positive:
 Negative:
 
 - helper-selected targets remain unsupported;
-- helper State -1/global-state, recursive RedirectID, projectile/team
-  ownership, and exact multi-target ordering remain outside the claim;
+- broader helper negative-state/global-state semantics, recursive RedirectID,
+  projectile/team ownership, and exact multi-target ordering remain outside the
+  claim;
 - this does not move a broad MUGEN/IKEMEN parity score.
 
 ## Evidence
@@ -110,6 +111,7 @@ Allowed:
 Blocked:
 
 - helper-owned state programs or helper-selected target entry;
-- helper State -1/global-state and Common1/helper lookup expansion;
+- broader helper negative-state/global-state and Common1/helper lookup
+  expansion;
 - recursive redirects, projectile/team ownership, exact multi-target order,
   rollback/netplay, and full MUGEN/IKEMEN parity.
