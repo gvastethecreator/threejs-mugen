@@ -113,6 +113,10 @@ import {
   type ProjectReleaseDecisionDocument,
   type ProjectReleaseEvidenceInput,
 } from "./ProjectReleaseDecision";
+import {
+  createStudioSemanticExportDocument,
+  type StudioSemanticExportDocument,
+} from "./StudioSemanticExport";
 import { STUDIO_GATE_EVIDENCE_DIAGNOSTICS, STUDIO_GATE_EVIDENCE_DOCUMENT } from "./StudioGateEvidence";
 import {
   STUDIO_COMPATIBILITY_SNAPSHOT,
@@ -474,6 +478,7 @@ type StudioEvidenceSummary = {
   envelopeDocument: StudioEvidenceEnvelopeDocument;
   envelopeAssessment: StudioEvidenceEnvelopeAssessment;
   releaseDecision: ProjectReleaseDecisionDocument;
+  semanticExport: StudioSemanticExportDocument;
   stats: {
     total: number;
     ok: number;
@@ -748,6 +753,13 @@ type ProjectExportBundleManifest = {
     blockerCount: number;
     warningCount: number;
     semanticDigest: string;
+  };
+  semanticExport: {
+    schemaVersion: "mugen-web-sandbox/studio-semantic-export/v0";
+    semanticDigest: string;
+    evidenceCount: number;
+    diagnosticExportable: boolean;
+    releaseable: boolean;
   };
   diagnostics: {
     warnings: string[];
@@ -8499,6 +8511,9 @@ export class App {
     if (row.id === "project-release-decision") {
       return row.status === "ok" ? 'data-studio-tab="build"' : 'data-evidence-filter="diagnostic"';
     }
+    if (row.id === "semantic-export") {
+      return row.status === "ok" ? 'data-studio-tab="build"' : 'data-evidence-filter="diagnostic"';
+    }
     if (row.id === "asset-validation") {
       const assetAttribute = row.targetId && row.targetId !== row.id ? ` data-studio-asset-id="${escapeHtml(row.targetId)}"` : "";
       return `data-studio-tab="assets" data-asset-filter="${row.status === "ok" ? "all" : "attention"}"${assetAttribute}`;
@@ -9064,7 +9079,8 @@ export class App {
 
   private getStudioEvidenceSummary(bundledRecords?: ProjectExportBundleAssetRecord[]): StudioEvidenceSummary {
     const releaseDecision = this.getStudioProjectReleaseDecision(bundledRecords);
-    const records = this.getStudioEvidenceRecords(releaseDecision);
+    const semanticExport = this.getStudioSemanticExportDocument(releaseDecision);
+    const records = this.getStudioEvidenceRecords(releaseDecision, semanticExport);
     const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
     const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
     const topRecord =
@@ -9076,6 +9092,7 @@ export class App {
       envelopeDocument,
       envelopeAssessment,
       releaseDecision,
+      semanticExport,
       stats: {
         total: records.length,
         ok: records.filter((record) => record.status === "ok" || record.status === "active").length,
@@ -9093,6 +9110,13 @@ export class App {
       persistedTraceEvidence: this.storedTraceEvidence.map((entry) => structuredClone(entry)),
       persistedTraceComparisons: this.getPersistedTraceComparisons(),
     };
+  }
+
+  private getStudioSemanticExportDocument(decision = this.getStudioProjectReleaseDecision()): StudioSemanticExportDocument {
+    return createStudioSemanticExportDocument({
+      generatedAt: new Date().toISOString(),
+      decision,
+    });
   }
 
   private getStudioEvidenceEnvelopeDocument(): StudioEvidenceEnvelopeDocument {
@@ -10562,6 +10586,7 @@ export class App {
     const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
     const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
     const releaseDecision = this.getStudioProjectReleaseDecision();
+    const semanticExport = this.getStudioSemanticExportDocument(releaseDecision);
     const release = releaseDecision.decisions.release;
     const releaseDecisionStatus: StudioStatus = release.canRelease
       ? "ok"
@@ -10765,6 +10790,23 @@ export class App {
           : { kind: "open-evidence", label: release.nextAction.label, targetId: "project-release-decision" },
       },
       {
+        id: "semantic-export",
+        label: "Deterministic semantic export",
+        status: semanticExport.summary.diagnosticExportable ? "ok" : "blocked",
+        state: semanticExport.summary.diagnosticExportable ? "exportable" : "blocked",
+        detail: `${semanticExport.schemaVersion} / ${semanticExport.summary.evidenceCount} evidence record(s) / ${semanticExport.semanticDigest}`,
+        affectedSystem: "build",
+        impact: semanticExport.summary.diagnosticExportable
+          ? "Semantic Studio export keeps project revision, evidence identities, blockers, and next action stable when observation time changes."
+          : "Semantic Studio export is blocked until its diagnostic decision can be serialized with complete evidence.",
+        evidenceIds: [semanticExport.id, semanticExport.semanticDigest, semanticExport.digest, semanticExport.sourceDecision.id],
+        blockedBy: semanticExport.summary.diagnosticExportable ? [] : semanticExport.decisions.diagnostic.blockerIds,
+        canExport: semanticExport.summary.diagnosticExportable,
+        nextAction: semanticExport.summary.diagnosticExportable
+          ? { kind: "open-build", label: "Review semantic export", targetId: "semantic-export" }
+          : { kind: "open-evidence", label: semanticExport.decisions.diagnostic.nextAction.label, targetId: "semantic-export" },
+      },
+      {
         id: "package-bundle",
         label: "Project package",
         status: this.lastProjectBundle ? "ok" : compiled ? "partial" : "pending",
@@ -10874,6 +10916,7 @@ export class App {
       { id: "evidence", lane: "qa" },
       { id: "evidence-envelopes", lane: "qa" },
       { id: "project-release-decision", lane: "build" },
+      { id: "semantic-export", lane: "build" },
       { id: "package-bundle", lane: "build" },
       { id: "asset-validation", lane: "assets" },
       { id: "asset-release-policy", lane: "assets" },
@@ -10927,6 +10970,9 @@ export class App {
     }
     if (record.id === "project-release-decision") {
       return { kind: "contract", id: "project-release-decision:v0" };
+    }
+    if (record.id === "semantic-export") {
+      return { kind: "contract", id: "studio-semantic-export:v0" };
     }
     if (record.id === "package-bundle") {
       const packageFile = this.getStudioTrustPackageFileTarget();
@@ -11038,6 +11084,13 @@ export class App {
         delta: `${decision.decisions.release.blockers.length} blocker(s) / ${decision.decisions.release.warnings.length} warning(s) / diagnostic ${decision.decisions.diagnostic.canExport ? "available" : "blocked"}`,
       };
     }
+    if (record.id === "semantic-export") {
+      const semanticExport = this.getStudioSemanticExportDocument();
+      return {
+        label: semanticExport.summary.diagnosticExportable ? "deterministic" : "blocked",
+        delta: `${semanticExport.summary.evidenceCount} evidence / ${semanticExport.semanticDigest}`,
+      };
+    }
     if (record.id === "package-bundle") {
       const bundle = this.lastProjectBundle;
       return bundle
@@ -11120,6 +11173,10 @@ export class App {
     if (record.id === "project-release-decision") {
       const decision = this.getStudioProjectReleaseDecision();
       return `${decision.schemaVersion} / release ${decision.decisions.release.status} / ${decision.decisions.release.blockers.length} blockers / ${decision.semanticDigest}`;
+    }
+    if (record.id === "semantic-export") {
+      const semanticExport = this.getStudioSemanticExportDocument();
+      return `${semanticExport.schemaVersion} / ${semanticExport.summary.evidenceCount} evidence / ${semanticExport.semanticDigest}`;
     }
     if (record.id === "package-bundle") {
       const bundle = this.lastProjectBundle;
@@ -11377,7 +11434,10 @@ export class App {
     return `Diff vs current: frames ${formatSignedDelta(deltas.frameDelta)}, events ${formatSignedDelta(deltas.eventDelta)}, gates ${formatSignedDelta(deltas.gateDelta)}, passed gates ${formatSignedDelta(deltas.passedGateDelta)}.`;
   }
 
-  private getStudioEvidenceRecords(releaseDecision = this.getStudioProjectReleaseDecision()): StudioEvidenceRecord[] {
+  private getStudioEvidenceRecords(
+    releaseDecision = this.getStudioProjectReleaseDecision(),
+    semanticExport = this.getStudioSemanticExportDocument(releaseDecision),
+  ): StudioEvidenceRecord[] {
     const summary = this.getStudioProjectSummary();
     const records: StudioEvidenceRecord[] = [];
     for (const gate of summary.gates) {
@@ -11434,6 +11494,7 @@ export class App {
       records.push(this.getSourceWriteReceiptEvidenceRecord(this.studioSourceWriteReceipt));
     }
     records.push(this.getProjectReleaseDecisionEvidenceRecord(releaseDecision));
+    records.push(this.getStudioSemanticExportEvidenceRecord(semanticExport));
     records.push(...this.getDiagnosticsEvidenceRecords());
     return records;
   }
@@ -11467,6 +11528,34 @@ export class App {
         kind: release.canRelease ? "open-build" : "open-evidence",
         label: release.nextAction.label,
         targetId: release.nextAction.targetId,
+      },
+    };
+  }
+
+  private getStudioSemanticExportEvidenceRecord(document: StudioSemanticExportDocument): StudioEvidenceRecord {
+    const diagnostic = document.decisions.diagnostic;
+    const release = document.decisions.release;
+    const status: StudioStatus = document.summary.diagnosticExportable ? "ok" : "blocked";
+    return {
+      id: "semantic-export",
+      label: "Deterministic Semantic Export",
+      category: "diagnostic",
+      status,
+      detail: `${document.schemaVersion} / ${document.summary.evidenceCount} evidence record(s) / diagnostic ${diagnostic.canExport ? "available" : "blocked"} / release ${release.canRelease ? "allowed" : "blocked"} / ${document.semanticDigest}`,
+      tags: ["studio-semantic-export/v0", diagnostic.intent, diagnostic.status, document.semanticDigest, ...diagnostic.blockerIds],
+      level: diagnostic.canExport ? "Diagnostic-ready" : "Blocked",
+      severity: this.severityForStatus(status),
+      affectedSystem: "build",
+      impact: diagnostic.canExport
+        ? "The export can be reopened and compared by semantic digest without treating observation time as a project change."
+        : "The semantic export remains blocked until its diagnostic decision has complete evidence.",
+      evidenceIds: [document.id, document.semanticDigest, document.digest, document.sourceDecision.id, document.sourceDecision.semanticDigest],
+      blockedBy: diagnostic.blockerIds,
+      canExport: diagnostic.canExport,
+      nextAction: {
+        kind: diagnostic.canExport ? "open-build" : "open-evidence",
+        label: diagnostic.nextAction.label,
+        targetId: diagnostic.nextAction.targetId,
       },
     };
   }
@@ -12927,6 +13016,7 @@ export class App {
     const binaryBundlingStatus = bundledAssets.length === 0 ? "metadata-only" : failedAssets.length > 0 || skippedAssets.some((record) => record.required) ? "partial" : "bundled";
     const evidence = this.getStudioEvidenceSummary(assetRecords);
     const releaseDecision = evidence.releaseDecision;
+    const semanticExport = evidence.semanticExport;
     const files: ProjectExportBundleManifest["files"] = [
       { path: "package-manifest.json", kind: "manifest", required: true },
       { path: "project/project.json", kind: "manifest", required: true },
@@ -12936,6 +13026,7 @@ export class App {
       { path: "studio/gate-evidence.json", kind: "studio", required: true },
       { path: "studio/evidence-envelopes.json", kind: "studio", required: true },
       { path: "studio/project-release-decision.json", kind: "studio", required: true },
+      { path: "studio/semantic-export.json", kind: "studio", required: true },
       ...(this.importedPackageAnalysisV1 ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
       ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
@@ -12981,6 +13072,13 @@ export class App {
         warningCount: releaseDecision.summary.warningCount,
         semanticDigest: releaseDecision.semanticDigest,
       },
+      semanticExport: {
+        schemaVersion: semanticExport.schemaVersion,
+        semanticDigest: semanticExport.semanticDigest,
+        evidenceCount: semanticExport.summary.evidenceCount,
+        diagnosticExportable: semanticExport.summary.diagnosticExportable,
+        releaseable: semanticExport.summary.releaseable,
+      },
       diagnostics: {
         warnings: [
           ...compiled.diagnostics.warnings,
@@ -13002,6 +13100,7 @@ export class App {
     this.addJsonToZip(zip, "studio/asset-release-policy.json", releasePolicies);
     this.addJsonToZip(zip, "studio/evidence.json", evidence);
     this.addJsonToZip(zip, "studio/project-release-decision.json", releaseDecision);
+    this.addJsonToZip(zip, "studio/semantic-export.json", semanticExport);
     this.addJsonToZip(zip, "assets/package-assets.json", assetRecords);
     zip.file("README.txt", this.createProjectBundleReadme(manifest));
     const blob = await zip.generateAsync({ type: "blob" });
@@ -13359,6 +13458,7 @@ export class App {
         studioDebugFilter: StudioDebugFilter;
         studioEvidence: StudioEvidenceSummary;
         projectReleaseDecision: ProjectReleaseDecisionDocument;
+        studioSemanticExport: StudioSemanticExportDocument;
         studioTrustChain: StudioTrustContractRow[];
         studioFocusedTrustRowId?: string;
         studioFocusedPackageFilePath?: string;
@@ -13402,6 +13502,7 @@ export class App {
       };
     };
     const studio = this.getStudioProjectSummary();
+    const studioEvidence = this.getStudioEvidenceSummary();
     bridge.__MUGEN_WEB_SANDBOX__ = {
       mode: this.mode,
       snapshot,
@@ -13420,8 +13521,9 @@ export class App {
       studioAssetReleasePolicies: this.getStudioAssetReleasePolicies(studio.assets),
       studioDebug: this.getStudioDebugSelection(),
       studioDebugFilter: this.studioDebugFilter,
-      studioEvidence: this.getStudioEvidenceSummary(),
-      projectReleaseDecision: this.getStudioProjectReleaseDecision(),
+      studioEvidence,
+      projectReleaseDecision: studioEvidence.releaseDecision,
+      studioSemanticExport: studioEvidence.semanticExport,
       studioTrustChain: this.getStudioTrustContractRows(studio),
       studioFocusedTrustRowId: this.studioFocusedTrustRowId,
       studioFocusedPackageFilePath: this.studioFocusedPackageFilePath,

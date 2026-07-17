@@ -1901,6 +1901,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       bodyHasPackageAnalysis: document.body.innerText.includes("Package Analysis"),
       bodyHasTrustChain: document.body.innerText.includes("Build Trust Chain"),
       bodyHasProjectReleaseDecision: document.body.innerText.includes("Project release decision") || document.body.innerText.includes("Project Release Decision"),
+      bodyHasSemanticExport: document.body.innerText.includes("Deterministic semantic export") || document.body.innerText.includes("Deterministic Semantic Export"),
       bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
@@ -1961,6 +1962,9 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       projectReleaseDecision: bridge?.projectReleaseDecision,
       projectReleaseDecisionEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "project-release-decision"),
       projectReleaseDecisionTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "project-release-decision"),
+      semanticExport: bridge?.studioSemanticExport ?? bridge?.studioEvidence?.semanticExport,
+      semanticExportEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "semantic-export"),
+      semanticExportTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "semantic-export"),
       bodyHasEvidenceEnvelopes: document.body.innerText.includes("Evidence Envelopes"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
@@ -2570,6 +2574,7 @@ async function inspectPackageZip(packagePath) {
   const gateEvidence = JSON.parse(await zip.file("studio/gate-evidence.json").async("string"));
   const evidenceEnvelopes = JSON.parse(await zip.file("studio/evidence-envelopes.json").async("string"));
   const projectReleaseDecision = JSON.parse(await zip.file("studio/project-release-decision.json").async("string"));
+  const semanticExport = JSON.parse(await zip.file("studio/semantic-export.json").async("string"));
   const packageAnalysis = files.includes("studio/package-analysis.json")
     ? JSON.parse(await zip.file("studio/package-analysis.json").async("string"))
     : undefined;
@@ -2744,6 +2749,15 @@ async function inspectPackageZip(packagePath) {
     projectReleaseDecisionBlockerCount: projectReleaseDecision.summary?.blockerCount,
     projectReleaseDecisionWarningCount: projectReleaseDecision.summary?.warningCount,
     manifestReleaseDecision: manifest.releaseDecision,
+    hasSemanticExport: files.includes("studio/semantic-export.json"),
+    manifestListsSemanticExport: manifest.files?.some((file) => file.path === "studio/semantic-export.json" && file.required === true) ?? false,
+    semanticExportSchema: semanticExport.schemaVersion,
+    semanticExportDigest: semanticExport.digest,
+    semanticExportSemanticDigest: semanticExport.semanticDigest,
+    semanticExportEvidenceCount: semanticExport.summary?.evidenceCount,
+    semanticExportDiagnosticExportable: semanticExport.summary?.diagnosticExportable,
+    semanticExportReleaseable: semanticExport.summary?.releaseable,
+    manifestSemanticExport: manifest.semanticExport,
     hasPackageAnalysis: files.includes("studio/package-analysis.json"),
     manifestListsPackageAnalysis: manifest.files?.some((file) => file.path === "studio/package-analysis.json" && file.required === true) ?? false,
     packageAnalysisSchema: packageAnalysis?.schemaVersion,
@@ -2871,6 +2885,7 @@ async function captureStudioEvidence(page, outDir) {
       bodyHasEvidence: document.body.innerText.includes("Evidence Browser"),
       bodyHasTrustChain: document.body.innerText.includes("Evidence Trust Chain"),
       bodyHasProjectReleaseDecision: document.body.innerText.includes("Project Release Decision") || document.body.innerText.includes("Project release decision"),
+      bodyHasSemanticExport: document.body.innerText.includes("Deterministic semantic export") || document.body.innerText.includes("Deterministic Semantic Export"),
       bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
@@ -2903,6 +2918,9 @@ async function captureStudioEvidence(page, outDir) {
       architectureEvidenceCanExport: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.canExport,
       projectReleaseDecision: bridge?.projectReleaseDecision,
       projectReleaseDecisionEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "project-release-decision"),
+      semanticExport: bridge?.studioSemanticExport ?? bridge?.studioEvidence?.semanticExport,
+      semanticExportEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "semantic-export"),
+      semanticExportTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "semantic-export"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
       hasCompatibilitySnapshotRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "compat:snapshot" && record.status === "ok")),
@@ -4281,6 +4299,7 @@ function assertSmoke(diagnostics) {
     "evidence",
     "evidence-envelopes",
     "project-release-decision",
+    "semantic-export",
     "package-bundle",
     "asset-validation",
     "asset-release-policy",
@@ -4376,6 +4395,18 @@ function assertSmoke(diagnostics) {
     studioBuild.projectReleaseDecisionTrustRow?.targetKind !== "contract"
   ) {
     failures.push("studio-build: diagnostic/release ProjectReleaseDecision contract was not surfaced with explicit blocker summary");
+  }
+  if (
+    !studioBuild.bodyHasSemanticExport ||
+    studioBuild.semanticExport?.schemaVersion !== "mugen-web-sandbox/studio-semantic-export/v0" ||
+    !studioBuild.semanticExport?.semanticDigest ||
+    studioBuild.semanticExport?.summary?.diagnosticExportable !== true ||
+    studioBuild.semanticExport?.summary?.releaseable !== studioBuild.projectReleaseDecision?.summary?.releaseable ||
+    studioBuild.semanticExportEvidence?.canExport !== true ||
+    studioBuild.semanticExportTrustRow?.targetKind !== "contract" ||
+    studioBuild.semanticExportTrustRow?.targetId !== "studio-semantic-export:v0"
+  ) {
+    failures.push("studio-build: deterministic semantic export was not surfaced with diagnostic/release state and contract target");
   }
   if (
     studioBuild.importedFixtureLoaded &&
@@ -4487,6 +4518,17 @@ function assertSmoke(diagnostics) {
     || studioBuild.downloadedPackage?.manifestReleaseDecision?.releaseable !== studioBuild.downloadedPackage?.projectReleaseDecisionReleaseable
     || studioBuild.downloadedPackage?.manifestReleaseDecision?.blockerCount !== studioBuild.downloadedPackage?.projectReleaseDecisionBlockerCount
     || studioBuild.downloadedPackage?.manifestReleaseDecision?.semanticDigest !== studioBuild.downloadedPackage?.projectReleaseDecisionSemanticDigest
+    || !studioBuild.downloadedPackage?.hasSemanticExport
+    || !studioBuild.downloadedPackage?.manifestListsSemanticExport
+    || studioBuild.downloadedPackage?.semanticExportSchema !== "mugen-web-sandbox/studio-semantic-export/v0"
+    || !studioBuild.downloadedPackage?.semanticExportSemanticDigest
+    || studioBuild.downloadedPackage?.semanticExportDiagnosticExportable !== true
+    || studioBuild.downloadedPackage?.semanticExportReleaseable !== studioBuild.downloadedPackage?.projectReleaseDecisionReleaseable
+    || studioBuild.downloadedPackage?.manifestSemanticExport?.schemaVersion !== studioBuild.downloadedPackage?.semanticExportSchema
+    || studioBuild.downloadedPackage?.manifestSemanticExport?.semanticDigest !== studioBuild.downloadedPackage?.semanticExportSemanticDigest
+    || studioBuild.downloadedPackage?.manifestSemanticExport?.evidenceCount !== studioBuild.downloadedPackage?.semanticExportEvidenceCount
+    || studioBuild.downloadedPackage?.manifestSemanticExport?.diagnosticExportable !== studioBuild.downloadedPackage?.semanticExportDiagnosticExportable
+    || studioBuild.downloadedPackage?.manifestSemanticExport?.releaseable !== studioBuild.downloadedPackage?.semanticExportReleaseable
     || studioBuild.downloadedPackage?.hasPackageAnalysis !== true
     || studioBuild.downloadedPackage?.manifestListsPackageAnalysis !== true
     || studioBuild.downloadedPackage?.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v1"
@@ -4825,6 +4867,17 @@ function assertSmoke(diagnostics) {
     (studioBuild.projectReleaseDecision?.semanticDigest && studioEvidence.projectReleaseDecision.semanticDigest !== studioBuild.projectReleaseDecision.semanticDigest)
   ) {
     failures.push("studio-evidence: ProjectReleaseDecision contract was not preserved across Build and Evidence surfaces");
+  }
+  if (
+    !studioEvidence.bodyHasSemanticExport ||
+    studioEvidence.semanticExport?.schemaVersion !== "mugen-web-sandbox/studio-semantic-export/v0" ||
+    studioEvidence.semanticExport?.semanticDigest !== studioBuild.semanticExport?.semanticDigest ||
+    studioEvidence.semanticExport?.summary?.diagnosticExportable !== true ||
+    studioEvidence.semanticExportEvidence?.canExport !== true ||
+    studioEvidence.semanticExportTrustRow?.targetKind !== "contract" ||
+    studioEvidence.semanticExportTrustRow?.targetId !== "studio-semantic-export:v0"
+  ) {
+    failures.push("studio-evidence: semantic export digest or Trust Chain contract drifted from Build");
   }
   if (!studioEvidence.bodyHasCompatibilitySnapshot || studioEvidence.compatibilitySnapshotStatus !== "passed" || !studioEvidence.hasCompatibilitySnapshotRecord) {
     failures.push("studio-evidence: promoted compatibility snapshot was not visible as validated evidence");
