@@ -142,6 +142,29 @@ describe("StudioSourceWrite", () => {
     expect(compensation.preimageDigest).toBe(preimage.digest);
     expect(compensation.diagnostics.join(" ")).toContain("Could not write source file");
   });
+
+  it("fails closed when the preimage cannot be read", async () => {
+    const source = mutableFileHandle("before");
+    source.failReads = true;
+
+    await expect(captureSourceWritePreimage(source.root, "kfm.cns")).rejects.toMatchObject({
+      name: "SourceHandleWriteError",
+      code: "write-failed",
+    });
+  });
+
+  it("emits restore-failed evidence when restored bytes do not verify", async () => {
+    const source = mutableFileHandle("before");
+    const preimage = await captureSourceWritePreimage(source.root, "kfm.cns");
+    await writeSourceHandleText(source.root, "kfm.cns", "edited");
+    source.corruptWrites = true;
+
+    const compensation = await restoreSourceWritePreimage(source.root, preimage);
+
+    expect(compensation.status).toBe("restore-failed");
+    expect(compensation.restoredDigest).not.toBe(preimage.digest);
+    expect(compensation.diagnostics.join(" ")).toContain("do not match");
+  });
 });
 
 function sourcePackage(overrides: Partial<GameProjectSourcePackage> = {}): GameProjectSourcePackage {
@@ -189,19 +212,29 @@ function writableFolder(): SourceHandleLike {
 function mutableFileHandle(initialText: string): {
   root: SourceHandleLike;
   failWrites: boolean;
+  failReads: boolean;
+  corruptWrites: boolean;
 } {
   let bytes = new TextEncoder().encode(initialText);
-  const state = { failWrites: false };
+  const state = { failWrites: false, failReads: false, corruptWrites: false };
   const fileHandle: SourceHandleLike = {
     kind: "file",
     name: "kfm.cns",
-    getFile: vi.fn(async () => ({ arrayBuffer: async () => bytes.slice().buffer }) as unknown as File),
+    getFile: vi.fn(async () => {
+      if (state.failReads) {
+        throw new Error("injected preimage read failure");
+      }
+      return ({ arrayBuffer: async () => bytes.slice().buffer }) as unknown as File;
+    }),
     createWritable: vi.fn(async () => ({
       write: async (data: string | Uint8Array) => {
         if (state.failWrites) {
           throw new Error("injected restore write failure");
         }
         bytes = typeof data === "string" ? new TextEncoder().encode(data) : new Uint8Array(data);
+        if (state.corruptWrites) {
+          bytes = new TextEncoder().encode("corrupted restore");
+        }
       },
       close: async () => undefined,
       abort: async () => undefined,
@@ -213,6 +246,18 @@ function mutableFileHandle(initialText: string): {
     },
     set failWrites(value: boolean) {
       state.failWrites = value;
+    },
+    get failReads() {
+      return state.failReads;
+    },
+    set failReads(value: boolean) {
+      state.failReads = value;
+    },
+    get corruptWrites() {
+      return state.corruptWrites;
+    },
+    set corruptWrites(value: boolean) {
+      state.corruptWrites = value;
     },
     root: {
       kind: "directory",
