@@ -36,6 +36,7 @@ export type RuntimeCompatibilityTelemetryActor = {
   executedOperationCounts: Record<string, number>;
   controllerEvents: RuntimeControllerTraceEvent[];
   nextControllerEventSequence: number;
+  nextRedirectedTargetDispatchSequence: number;
   compatibilityTick: number;
   redirectedTargetDispatches?: RuntimeRedirectedTargetDispatchObservation[];
 };
@@ -109,16 +110,20 @@ export class RuntimeCompatibilityTelemetryWorld {
 
   recordRedirectedTargetDispatch(
     actor: RuntimeCompatibilityTelemetryActor,
-    observation: RuntimeRedirectedTargetDispatchObservation,
+    observation: Omit<RuntimeRedirectedTargetDispatchObservation, "telemetryId">,
   ): void {
     if (!this.isImportedActor(actor)) {
       return;
     }
     const observations = actor.redirectedTargetDispatches ?? (actor.redirectedTargetDispatches = []);
+    const telemetrySequence = actor.nextRedirectedTargetDispatchSequence++;
     observations.push({
       ...observation,
+      telemetryId: `redirect:${actor.id}:${telemetrySequence}`,
+      candidateTargetIds: [...observation.candidateTargetIds],
       selectedTargetIds: [...observation.selectedTargetIds],
       mutatedActorIds: [...observation.mutatedActorIds],
+      writebackActorIds: [...observation.writebackActorIds],
     });
     while (observations.length > 160) {
       observations.shift();
@@ -145,8 +150,10 @@ export class RuntimeCompatibilityTelemetryWorld {
         if (actor.redirectedTargetDispatches && actor.redirectedTargetDispatches.length > 0) {
           session.redirectedTargetDispatches = actor.redirectedTargetDispatches.map((observation) => ({
             ...observation,
+            candidateTargetIds: [...observation.candidateTargetIds],
             selectedTargetIds: [...observation.selectedTargetIds],
             mutatedActorIds: [...observation.mutatedActorIds],
+            writebackActorIds: [...observation.writebackActorIds],
           }));
         }
         if (actor.lastRoutedState) {

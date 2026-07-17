@@ -119,6 +119,47 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
       "team-standby:tagin",
     );
   });
+
+  it("assigns unique redirect identities and preserves candidate and writeback projections", () => {
+    const world = new RuntimeCompatibilityTelemetryWorld();
+    const importedActor = actor("imported");
+    const observation = {
+      route: "root-active" as const,
+      callerId: "p1",
+      destinationId: "p2",
+      stateOwnerId: "p2",
+      destinationRevision: "57:p2",
+      controllerType: "targetpoweradd",
+      effect: "target" as const,
+      redirectExpression: "57",
+      redirectPlayerId: 57,
+      sourceStateNo: 200,
+      candidateTargetIds: ["p1", "p3"],
+      requestedId: 77,
+      selectedTargetIds: ["p1"],
+      mutatedActorIds: ["p1"],
+      writebackActorIds: ["p1"],
+      writebackMode: "direct" as const,
+      matchedTargets: 1,
+      operationExecuted: true,
+    };
+
+    world.recordRedirectedTargetDispatch(importedActor, observation);
+    world.recordRedirectedTargetDispatch(importedActor, { ...observation, selectedTargetIds: ["p3"] });
+
+    expect(importedActor.redirectedTargetDispatches).toEqual([
+      expect.objectContaining({
+        telemetryId: "redirect:p1:0",
+        candidateTargetIds: ["p1", "p3"],
+        selectedTargetIds: ["p1"],
+        writebackActorIds: ["p1"],
+      }),
+      expect.objectContaining({ telemetryId: "redirect:p1:1", selectedTargetIds: ["p3"] }),
+    ]);
+    expect(world.buildSession([importedActor])?.actors[0]?.redirectedTargetDispatches).toEqual(
+      importedActor.redirectedTargetDispatches,
+    );
+  });
 });
 
 function actor(
@@ -147,6 +188,7 @@ function actor(
     executedOperationCounts: {},
     controllerEvents: [],
     nextControllerEventSequence: 0,
+    nextRedirectedTargetDispatchSequence: 0,
     compatibilityTick: 0,
   };
 }

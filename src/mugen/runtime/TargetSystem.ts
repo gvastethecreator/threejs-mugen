@@ -102,6 +102,7 @@ export type RuntimeTargetControllerDispatchSelection = {
   destinationId: string;
   controllerType: string;
   effect: RuntimeTargetControllerDispatchEffect;
+  candidateTargetIds: string[];
   requestedId?: number;
   selectedTargetIds: string[];
   mutatedActorIds: string[];
@@ -290,6 +291,7 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
 ): RuntimeTargetControllerDispatchSelection {
   const operation = options.controller.operation;
   const controllerType = result.controllerType;
+  const candidateTargetIds = uniqueRuntimeActorIds(options.candidateTargets.map(({ id }) => id));
   const requestedId =
     (operation && "requestedId" in operation ? operation.requestedId : undefined) ??
     (controllerType === "targetdrop" ? undefined : firstNumber(findControllerParam(options.controller.source, "id")));
@@ -319,6 +321,7 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
     destinationId: options.actor.id,
     controllerType,
     effect: options.effect,
+    candidateTargetIds,
     ...(requestedId === undefined ? {} : { requestedId }),
     selectedTargetIds: uniqueRuntimeActorIds(selectedTargetIds),
     mutatedActorIds,

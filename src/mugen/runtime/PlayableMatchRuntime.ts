@@ -275,6 +275,7 @@ import type {
   CharacterRuntimeState,
   MugenSnapshot,
   RoundSnapshot,
+  RuntimeRedirectedTargetDispatchWriteback,
 } from "./types";
 import type { ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
 
@@ -908,6 +909,8 @@ export class PlayableMatchRuntime {
     selection: RuntimeTargetControllerDispatchSelection,
     redirectPlayerId: number,
     redirectExpression: string,
+    writeback: RuntimeRedirectedTargetDispatchWriteback,
+    destinationRevision?: string,
   ): void {
     const callerRoot = this.rootForHelper(helper);
     if (!callerRoot) return;
@@ -917,8 +920,11 @@ export class PlayableMatchRuntime {
       route: destinationRoot ? "helper-to-root" : "helper-to-helper",
       callerId: helper.serialId,
       stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
+      ...(destinationRevision === undefined ? {} : { destinationRevision }),
       redirectExpression,
       redirectPlayerId,
+      writebackActorIds: writeback.actorIds,
+      writebackMode: writeback.mode,
       ...(helper.stateNo === undefined ? {} : { sourceStateNo: helper.stateNo }),
     });
   }
@@ -1563,8 +1569,16 @@ export class PlayableMatchRuntime {
                   this.recordHelperRedirectedController(target, controller),
                 onRedirectedOperation: (_helper, target, operation) =>
                   this.recordHelperRedirectedOperation(target, operation),
-                onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
-                  this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
+                onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
+                  this.recordHelperRedirectedTargetDispatch(
+                    helper,
+                    target,
+                    selection,
+                    redirectPlayerId,
+                    redirectExpression,
+                    writeback,
+                    destinationRevision,
+                  ),
                 enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
                   this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
               });
@@ -2018,8 +2032,16 @@ export class PlayableMatchRuntime {
               this.recordHelperRedirectedController(target, controller),
             onRedirectedOperation: (_helper, target, operation) =>
               this.recordHelperRedirectedOperation(target, operation),
-            onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
-              this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
+            onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
+              this.recordHelperRedirectedTargetDispatch(
+                helper,
+                target,
+                selection,
+                redirectPlayerId,
+                redirectExpression,
+                writeback,
+                destinationRevision,
+              ),
             enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
               this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           });
@@ -4166,7 +4188,12 @@ function runActiveStateControllers(
             route: "root-active",
             callerId: fighter.id,
             stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
+            ...(redirectLease?.destinationRevision === undefined
+              ? {}
+              : { destinationRevision: redirectLease.destinationRevision }),
             redirectExpression,
+            writebackActorIds: selection.mutatedActorIds,
+            writebackMode: "direct",
             sourceStateNo: actor.runtime.stateNo,
           });
         },
@@ -4783,7 +4810,12 @@ function runStateEntrySetupControllers(
               route: "root-state-minus-one",
               callerId: fighter.id,
               stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
+              ...(redirectLease?.destinationRevision === undefined
+                ? {}
+                : { destinationRevision: redirectLease.destinationRevision }),
               redirectExpression,
+              writebackActorIds: selection.mutatedActorIds,
+              writebackMode: "direct",
               sourceStateNo: -1,
             });
           },

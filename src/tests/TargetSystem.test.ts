@@ -432,6 +432,7 @@ describe("TargetSystem", () => {
       destinationId: "p1",
       controllerType: "targetbind",
       effect: "target",
+      candidateTargetIds: ["p2", "p3"],
       requestedId: 77,
       selectedTargetIds: ["p2"],
       mutatedActorIds: ["p1", "p2"],

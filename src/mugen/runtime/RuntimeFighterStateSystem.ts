@@ -62,6 +62,7 @@ export type FighterMatchState = {
   executedOperationCounts: Record<string, number>;
   controllerEvents: RuntimeControllerTraceEvent[];
   nextControllerEventSequence: number;
+  nextRedirectedTargetDispatchSequence: number;
   compatibilityTick: number;
   rngSeed: number;
   firedHitDefs: Set<string>;
@@ -189,6 +190,7 @@ export class RuntimeFighterStateWorld {
       executedOperationCounts: {},
       controllerEvents: [],
       nextControllerEventSequence: 0,
+      nextRedirectedTargetDispatchSequence: 0,
       compatibilityTick: 0,
       rngSeed: createRuntimeRandomSeed(input.id, input.definition.id),
       firedHitDefs: new Set(),

@@ -502,19 +502,31 @@ export type RuntimeRedirectedTargetDispatchRoute =
   | "helper-to-root"
   | "helper-to-helper";
 
+export type RuntimeRedirectedTargetDispatchWritebackMode = "direct" | "helper-wrapper";
+
+export type RuntimeRedirectedTargetDispatchWriteback = {
+  mode: RuntimeRedirectedTargetDispatchWritebackMode;
+  actorIds: string[];
+};
+
 export type RuntimeRedirectedTargetDispatchObservation = {
   route: RuntimeRedirectedTargetDispatchRoute;
   callerId: string;
   destinationId: string;
   stateOwnerId: string;
+  destinationRevision?: string;
   controllerType: string;
   effect: "target" | "bindtotarget";
   redirectExpression?: string;
   redirectPlayerId?: number;
   sourceStateNo?: number;
+  telemetryId: string;
+  candidateTargetIds: string[];
   requestedId?: number;
   selectedTargetIds: string[];
   mutatedActorIds: string[];
+  writebackActorIds: string[];
+  writebackMode: RuntimeRedirectedTargetDispatchWritebackMode;
   matchedTargets: number;
   operationExecuted: boolean;
 };
