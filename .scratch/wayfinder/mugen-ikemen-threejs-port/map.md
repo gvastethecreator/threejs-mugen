@@ -268,6 +268,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Prove productive multi-kind PackageAnalysis/v1 export](tickets/228-package-analysis-multikind-export.md) - resolved in `9bce8fde` / `eee286a1`: Studio Build/Evidence/Trust and required ZIP export now assert entrypoint and character/stage/system/screenpack coverage from the same v1 report; KFM export records `4` entrypoints and `39/5/1/2` category findings, with 68 ZIP files and no missing/absolute-path leaks. Broad smoke passes in 280.6s with `0` console/page errors; IKEMEN remains scanner-only and asset provenance/release policy remain open.
 
 - [Prove generated asset path and permission hygiene](tickets/229-asset-path-permission-hygiene.md) - resolved at bounded scope: asset-permission/v0, Nova CC0 metadata, relative public reports, 62-file path scan, 13/13 digest checks, and browser ZIP provenance/path/digest assertions pass; next is separate AssetReleasePolicy/v0.
+- [Implement AssetReleasePolicy/v0 and one releaseable record](tickets/230-asset-release-policy-v0.md) - resolved at bounded scope: policy evidence is fail-closed for permission, license, digest, transform, QA, collision, and playtest freshness; Nova is the only ZIP-ready record, while 9 records remain diagnostic-only. Final browser smoke passes in 398.9s with 0 page/console errors; no legal approval or parity claim.
 
 ## Not Yet Specified
 
