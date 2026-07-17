@@ -481,8 +481,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
     return bridge?.mode === "match" && actor?.source === "imported" && actor.runtime?.stateNo === 0 && actor.frame?.spriteGroup === 0;
   });
-  await waitForRuntimeTicks(page, 8);
-  await page.waitForTimeout(250);
+  await resetCodeFuManRound(page);
   const initial = await captureMugenLiteVisualState(
     page,
     path.join(outDir, "codefuman-runtime-desktop.png"),
@@ -1634,6 +1633,11 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   }, { key: "mugen-web-sandbox:projects:v0", authoredName });
   await page.reload({ waitUntil: "domcontentloaded" });
   await waitForBridge(page);
+  await page.waitForFunction(
+    (expectedId) => window.__MUGEN_WEB_SANDBOX__?.storedProjects?.some((entry) => entry.id === expectedId),
+    "qa-authored-fight-project",
+    { timeout: 15_000 },
+  );
   await page.waitForSelector('[data-stored-project-id="qa-authored-fight-project"]', { state: "attached", timeout: 15_000 });
   await page.waitForTimeout(250);
   await page.locator('[data-stored-project-id="qa-authored-fight-project"]').first().evaluate((element) => element.click());
@@ -1797,8 +1801,8 @@ async function downloadFromButton(page, button, label, options = {}) {
   const timeout = options.timeout ?? 45000;
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    await button.scrollIntoViewIfNeeded();
     try {
+      await button.scrollIntoViewIfNeeded();
       const [download] = await Promise.all([
         page.waitForEvent("download", { timeout }),
         button.click(),
@@ -1827,7 +1831,11 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     importedFixtureLoaded = true;
     await page.locator('[data-mode="studio"]').first().evaluate((button) => button.click());
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
-    await selectStudioTab(page, "build");
+    await selectStudioTab(page, "workbench");
+    await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "nova-boxer");
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === "nova-boxer");
+    await page.locator('.studio-mission-node[data-studio-tab="build"]:visible').first().evaluate((button) => button.click());
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "build");
   }
   await page.locator('button[data-action="compile-project"]:visible').first().click();
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
@@ -1962,6 +1970,12 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
         ...(record.inputFiles ?? []),
         ...(record.outputFiles ?? []),
       ]).filter((file) => /^(?:[a-z]:\\|[a-z]:\/|file:|\/\/)/i.test(file.path ?? "")).length,
+      releasePolicySchema: bridge?.studioAssetReleasePolicies?.[0]?.schemaVersion,
+      releasePolicyRecords: bridge?.studioAssetReleasePolicies?.length ?? 0,
+      releasePolicyReady: bridge?.studioAssetReleasePolicies?.filter((record) => record.canRelease).length ?? 0,
+      releasePolicyReadyAssetIds: bridge?.studioAssetReleasePolicies?.filter((record) => record.canRelease).map((record) => record.assetId) ?? [],
+      releasePolicyBlocked: bridge?.studioAssetReleasePolicies?.filter((record) => !record.canRelease).length ?? 0,
+      releasePolicyWarnings: bridge?.studioAssetReleasePolicies?.flatMap((record) => record.warnings ?? []) ?? [],
       studioEvidenceStats: bridge?.studioEvidence?.stats,
       downloadedArtifact: {
         filename: downloadedArtifact.target?.id,
@@ -2546,6 +2560,9 @@ async function inspectPackageZip(packagePath) {
   const sourceWriteReceipt = files.includes("studio/source-write-receipt.json")
     ? JSON.parse(await zip.file("studio/source-write-receipt.json").async("string"))
     : undefined;
+  const assetReleasePolicies = files.includes("studio/asset-release-policy.json")
+    ? JSON.parse(await zip.file("studio/asset-release-policy.json").async("string"))
+    : [];
   const architectureGateEvidence = gateEvidence.results?.find((result) => result.gateId === "architecture-boundaries");
   const bundledAssets = packageAssets.filter((asset) => asset.status === "bundled");
   const importedAssets = bundledAssets.filter((asset) => asset.packagePath.startsWith("assets/imported/"));
@@ -2570,6 +2587,11 @@ async function inspectPackageZip(packagePath) {
     const token = unsafePackagePath(value);
     return token ? { assetId: asset.assetId, field, value, token } : undefined;
   }).filter(Boolean));
+  const assetReleasePolicyPathViolations = assetReleasePolicies.flatMap((record) => (record.evidence ?? []).map((evidence) => {
+    const token = unsafePackagePath(evidence.reference);
+    return token ? { assetId: record.assetId, evidenceId: evidence.id, reference: evidence.reference, token } : undefined;
+  }).filter(Boolean));
+  const assetReleasePolicyNova = assetReleasePolicies.find((record) => record.assetId === "nova-boxer");
   const provenanceDigestMismatches = assetProvenance.flatMap((record) => (record.outputFiles ?? []).flatMap((file) => {
     const packageAsset = packageAssetByPath.get(file.path);
     if (!file.digest?.digest || !packageAsset || packageAsset.status !== "bundled" || packageAsset.sha256?.toLowerCase() !== file.digest.digest.toLowerCase() || (file.bytes !== undefined && packageAsset.bytes !== file.bytes)) {
@@ -2616,6 +2638,21 @@ async function inspectPackageZip(packagePath) {
     provenanceReadyAssetIds,
     provenanceDeclaredLicenses,
     packageAssetPathViolations,
+    hasAssetReleasePolicy: files.includes("studio/asset-release-policy.json"),
+    manifestListsAssetReleasePolicy: manifest.files?.some((file) => file.path === "studio/asset-release-policy.json" && file.required === true) ?? false,
+    assetReleasePolicySchema: assetReleasePolicies?.[0]?.schemaVersion,
+    assetReleasePolicyRecords: assetReleasePolicies.length,
+    assetReleasePolicyReady: manifest.assets?.releasePolicyReady,
+    assetReleasePolicyBlocked: manifest.assets?.releasePolicyBlocked,
+    assetReleasePolicyReadyAssetIds: assetReleasePolicies.filter((record) => record.canRelease).map((record) => record.assetId),
+    assetReleasePolicyPathViolations,
+    assetReleasePolicyNova: assetReleasePolicyNova ? {
+      status: assetReleasePolicyNova.status,
+      canRelease: assetReleasePolicyNova.canRelease,
+      blockedBy: assetReleasePolicyNova.blockedBy,
+      warnings: assetReleasePolicyNova.warnings,
+      evidenceKinds: [...new Set((assetReleasePolicyNova.evidence ?? []).map((evidence) => evidence.kind))],
+    } : undefined,
     hasFirstPartyPermission: Boolean(firstPartyPermission),
     firstPartyPermissionSchema: firstPartyPermission?.schemaVersion,
     firstPartyPermissionAssetId: firstPartyPermission?.assetId,
@@ -2768,7 +2805,11 @@ async function captureStudioEvidence(page, outDir) {
     await traceFilter.click();
     await page.waitForTimeout(100);
   }
-  const secondFrame = page.locator('[data-trace-frame-index="1"]').first();
+  const changedFrameIndex = await page.evaluate(() => {
+    const frames = window.__MUGEN_WEB_SANDBOX__?.traceArtifact?.trace?.frames ?? [];
+    return frames.find((frame) => frame.frameIndex > 0 && (frame.delta?.actorChanges?.length ?? 0) > 0)?.frameIndex ?? 1;
+  });
+  const secondFrame = page.locator(`[data-trace-frame-index="${changedFrameIndex}"]`).first();
   if (await secondFrame.isVisible()) {
     await secondFrame.click();
     await page.waitForTimeout(100);
@@ -2851,7 +2892,7 @@ async function captureStudioAssets(page, outDir) {
   await page.waitForFunction(
     () => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.provenance?.some((record) => record.assetId === "nova-boxer" && record.license?.status === "declared"),
     undefined,
-    { timeout: 5000 },
+    { timeout: 30000 },
   );
   const generatedFilter = page.locator('[data-asset-filter="generated"]').first();
   if (await generatedFilter.isVisible()) {
@@ -2909,6 +2950,13 @@ async function captureStudioAssets(page, outDir) {
       replacementCandidates: bridge?.studioAssets?.replacementPlan?.candidates?.length ?? 0,
       sourceRuntimeRecords: bridge?.studioAssets?.sourceRuntimeMap?.records?.length ?? 0,
       sourceRuntimeLanes: bridge?.studioAssets?.sourceRuntimeMap?.lanes,
+      releasePolicySchema: bridge?.studioAssetReleasePolicies?.[0]?.schemaVersion,
+      releasePolicyRecords: bridge?.studioAssetReleasePolicies?.length ?? 0,
+      releasePolicyReady: bridge?.studioAssetReleasePolicies?.filter((record) => record.canRelease).length ?? 0,
+      releasePolicyReadyAssetIds: bridge?.studioAssetReleasePolicies?.filter((record) => record.canRelease).map((record) => record.assetId) ?? [],
+      releasePolicyBlocked: bridge?.studioAssetReleasePolicies?.filter((record) => !record.canRelease).length ?? 0,
+      selectedReleasePolicyStatus: bridge?.studioAssets?.selectedReleasePolicy?.status,
+      bodyHasReleasePolicy: document.body.innerText.includes("Release schema") || document.body.innerText.includes("release-ready"),
       provenanceSchema: bridge?.studioAssets?.provenance?.[0]?.schemaVersion,
       provenanceRecords: provenance.length,
       provenanceReady: provenance.filter((record) => record.canExport).length,
@@ -3078,6 +3126,7 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
         window.__MUGEN_WEB_SANDBOX__?.projectDirty === false &&
         window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === expectedRevision + 1,
       baselineRevision,
+      { timeout: 45_000 },
     );
     const remoteRevisionOne = await remote.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
     await primary.waitForFunction(
@@ -3122,6 +3171,7 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
         window.__MUGEN_WEB_SANDBOX__?.projectDirty === false &&
         window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === expectedRevision + 1,
       remoteRevisionOne,
+      { timeout: 45_000 },
     );
     const remoteRevisionTwo = await remote.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
     await primary.waitForFunction(
@@ -3233,6 +3283,17 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
       await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
     }
   }
+  const importedP1Id = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.runtimeRoster?.find((entry) => entry.source === "imported")?.id);
+  if (importedP1Id && importedP1Id !== await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1)) {
+    await selectStudioTab(page, "workbench");
+    await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', importedP1Id);
+    await page.waitForFunction((expectedId) => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === expectedId, importedP1Id);
+    const importedTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').first();
+    if (await importedTraceButton.count()) {
+      await downloadFromButton(page, importedTraceButton, "imported debug trace", { timeout: 90000, attempts: 2 });
+      await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
+    }
+  }
   if (!(await studioTabLocator(page, "debug").isVisible().catch(() => false))) {
     const studioMode = page.locator('[data-mode="studio"]').first();
     if (await studioMode.isVisible().catch(() => false)) {
@@ -3240,11 +3301,21 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
       await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
     }
   }
-  if (!(await studioTabLocator(page, "debug").isVisible().catch(() => false))) {
-    await page.goto(`${baseUrl}${studioDebugRoute}`, { waitUntil: "domcontentloaded" });
-    await waitForBridge(page);
+  if (!(await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "debug"))) {
+    const debugTab = studioTabLocator(page, "debug");
+    if (await debugTab.isVisible().catch(() => false)) {
+      await debugTab.evaluate((button) => button.click());
+    } else {
+      const debugRoute = page.locator('.workbench-route-button[data-studio-tab="debug"]').first();
+      if (await debugRoute.count()) {
+        await debugRoute.evaluate((button) => button.click());
+      } else {
+        await page.goto(`${baseUrl}${studioDebugRoute}`, { waitUntil: "domcontentloaded" });
+        await waitForBridge(page);
+      }
+    }
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "debug");
   }
-  await selectStudioTab(page, "debug");
   await page.locator('[data-debug-actor-id="p2"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioDebug?.selectedActorId === "p2");
   const p2Probe = await readStudioDebugBridge(page);
@@ -4157,6 +4228,7 @@ function assertSmoke(diagnostics) {
     "evidence",
     "package-bundle",
     "asset-validation",
+    "asset-release-policy",
     "source-packages",
     "compatibility-gates",
     "compatibility-snapshot",
@@ -4183,6 +4255,9 @@ function assertSmoke(diagnostics) {
   }
   if (trustBindingAt(studioBuild, "asset-validation")?.assetFilter !== "attention") {
     failures.push("studio-build: asset Trust Chain row did not target asset attention");
+  }
+  if (trustBindingAt(studioBuild, "asset-release-policy")?.assetFilter !== "attention") {
+    failures.push("studio-build: asset release policy Trust Chain row did not target asset attention");
   }
   if (trustBindingAt(studioBuild, "compatibility-gates")?.evidenceFilter !== "gate") {
     failures.push("studio-build: compatibility Trust Chain row did not target gate evidence");
@@ -4363,6 +4438,22 @@ function assertSmoke(diagnostics) {
       !studioBuild.provenanceDeclaredLicenses?.includes("nova-boxer"))
   ) {
     failures.push("studio-build: imported asset provenance did not join per-file source and bundled output hashes");
+  }
+  if (
+    studioBuild.downloadedPackage?.hasAssetReleasePolicy !== true ||
+    studioBuild.downloadedPackage?.manifestListsAssetReleasePolicy !== true ||
+    studioBuild.downloadedPackage?.assetReleasePolicySchema !== "mugen-web-sandbox/asset-release-policy/v0" ||
+    studioBuild.downloadedPackage?.assetReleasePolicyReady !== 1 ||
+    (studioBuild.downloadedPackage?.assetReleasePolicyBlocked ?? 0) < 1 ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyReadyAssetIds?.includes("nova-boxer") ||
+    (studioBuild.downloadedPackage?.assetReleasePolicyPathViolations?.length ?? 0) !== 0 ||
+    studioBuild.downloadedPackage?.assetReleasePolicyNova?.status !== "ready" ||
+    studioBuild.downloadedPackage?.assetReleasePolicyNova?.canRelease !== true ||
+    (studioBuild.downloadedPackage?.assetReleasePolicyNova?.blockedBy?.length ?? 0) !== 0 ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyNova?.evidenceKinds?.includes("permission") ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyNova?.evidenceKinds?.includes("playtest")
+  ) {
+    failures.push("studio-build: downloaded project package did not include one fresh releaseable asset policy and diagnostic-only records");
   }
   if (
     studioBuild.importedFixtureLoaded &&
@@ -4595,7 +4686,13 @@ function assertSmoke(diagnostics) {
     studioAssets.relatedEvidence < 1 ||
     studioAssets.assetTotal < 3 ||
     studioAssets.visibleAssets < 1 ||
-    studioAssets.generatedAssets < 1
+    studioAssets.generatedAssets < 1 ||
+    studioAssets.releasePolicySchema !== "mugen-web-sandbox/asset-release-policy/v0" ||
+    studioAssets.releasePolicyRecords < studioAssets.assetTotal ||
+    studioAssets.releasePolicyReady !== 0 ||
+    studioAssets.releasePolicyBlocked < 1 ||
+    studioAssets.selectedReleasePolicyStatus !== "blocked" ||
+    !studioAssets.bodyHasReleasePolicy
   ) {
     failures.push("studio-assets: Asset Library did not expose filtered project asset records");
   }
@@ -4658,7 +4755,7 @@ function assertSmoke(diagnostics) {
     !studioEvidence.bodyHasTraceFrameDelta ||
     !studioEvidence.bodyHasTraceWorldDelta ||
     (studioEvidence.traceFrameCount ?? 0) < 2 ||
-    studioEvidence.selectedTraceFrameIndex !== 1 ||
+    (studioEvidence.selectedTraceFrameIndex ?? 0) < 1 ||
     !studioEvidence.selectedTraceFrameChecksum ||
     (studioEvidence.selectedTraceFrameDeltaActorChanges ?? 0) < 1 ||
     (studioEvidence.traceFrameDeltaRows ?? 0) < 1 ||
@@ -5055,6 +5152,12 @@ function summarizeDiagnostics(diagnostics) {
       provenanceBlocked: diagnostics.checks.studioBuild.provenanceBlocked,
       provenanceLicenseUnknown: diagnostics.checks.studioBuild.provenanceLicenseUnknown,
       provenanceTransformCount: diagnostics.checks.studioBuild.provenanceTransformCount,
+      releasePolicySchema: diagnostics.checks.studioBuild.releasePolicySchema,
+      releasePolicyRecords: diagnostics.checks.studioBuild.releasePolicyRecords,
+      releasePolicyReady: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyReady,
+      releasePolicyReadyAssetIds: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyReadyAssetIds,
+      releasePolicyBlocked: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyBlocked,
+      releasePolicyNova: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyNova,
       architectureGateStatus: diagnostics.checks.studioBuild.architectureGateStatus,
       architectureEvidenceRecord: diagnostics.checks.studioBuild.architectureEvidenceRecord,
       architectureEvidenceStatus: diagnostics.checks.studioBuild.architectureEvidenceStatus,
@@ -5104,6 +5207,12 @@ function summarizeDiagnostics(diagnostics) {
       provenanceBlocked: diagnostics.checks.studioAssets.provenanceBlocked,
       provenanceLicenseUnknown: diagnostics.checks.studioAssets.provenanceLicenseUnknown,
       provenanceTransformCount: diagnostics.checks.studioAssets.provenanceTransformCount,
+      releasePolicySchema: diagnostics.checks.studioAssets.releasePolicySchema,
+      releasePolicyRecords: diagnostics.checks.studioAssets.releasePolicyRecords,
+      releasePolicyReady: diagnostics.checks.studioAssets.releasePolicyReady,
+      releasePolicyReadyAssetIds: diagnostics.checks.studioAssets.releasePolicyReadyAssetIds,
+      releasePolicyBlocked: diagnostics.checks.studioAssets.releasePolicyBlocked,
+      selectedReleasePolicyStatus: diagnostics.checks.studioAssets.selectedReleasePolicyStatus,
       selectedProvenanceStatus: diagnostics.checks.studioAssets.selectedProvenanceStatus,
       provenanceAbsolutePathLeaks: diagnostics.checks.studioAssets.provenanceAbsolutePathLeaks,
     },

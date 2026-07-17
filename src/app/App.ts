@@ -124,6 +124,12 @@ import {
   parseAssetPermissionMetadata,
   type AssetPermissionMetadata,
 } from "./StudioAssetPermission";
+import {
+  ASSET_RELEASE_POLICY_SCHEMA,
+  createAssetReleasePolicyRecord,
+  type AssetReleasePolicyEvidence,
+  type AssetReleasePolicyRecord,
+} from "./StudioAssetReleasePolicy";
 import { needsStudioProjectNavigationGuard, studioProjectDiscardMessage } from "./StudioProjectNavigationGuard";
 import { fingerprintVirtualFileSystem, type SourceFingerprint } from "./StudioSourceIdentity";
 import {
@@ -561,6 +567,8 @@ type StudioAssetLibrarySummary = {
   replacementPlan: StudioAssetReplacementPlan;
   provenance: AssetProvenanceRecord[];
   selectedProvenance?: AssetProvenanceRecord;
+  releasePolicies: AssetReleasePolicyRecord[];
+  selectedReleasePolicy?: AssetReleasePolicyRecord;
   sourceRuntimeMap: StudioAssetSourceRuntimeMap;
   missingReferences: StudioAssetDependencyRecord[];
   relatedEvidence: StudioEvidenceRecord[];
@@ -711,6 +719,8 @@ type ProjectExportBundleManifest = {
     provenanceRecords: number;
     provenanceReady: number;
     provenanceBlocked: number;
+    releasePolicyReady: number;
+    releasePolicyBlocked: number;
     records: ProjectExportBundleAssetRecord[];
   };
   diagnostics: {
@@ -5106,6 +5116,10 @@ export class App {
             <small>provenance ready</small>
           </span>
           <span>
+            <b>${library.releasePolicies.filter((record) => record.canRelease).length}/${library.releasePolicies.length}</b>
+            <small>release-ready</small>
+          </span>
+          <span>
             <b>${library.sourceRuntimeMap.records.length}</b>
             <small>mapped</small>
           </span>
@@ -5147,6 +5161,7 @@ export class App {
         </section>
       `;
     }
+    const releasePolicy = library.selectedReleasePolicy;
     const replacementFlow = this.renderStudioAssetInspectorDrawer("Replacement Flow", this.renderAssetReplacementFlow(library), {
       badge: `${library.replacementPlan.candidates.length} candidates`,
       open: true,
@@ -5219,6 +5234,10 @@ export class App {
            <dt>Export</dt><dd>${this.statusBadge(asset.canExport ? "ok" : "blocked")}</dd>
            <dt>Provenance</dt><dd>${library.selectedProvenance ? this.statusBadge(library.selectedProvenance.status === "complete" ? "ok" : library.selectedProvenance.status === "blocked" ? "blocked" : "warn") : this.statusBadge("unknown")}</dd>
            <dt>Provenance schema</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.schemaVersion ?? "missing")}</dd>
+           <dt>Release</dt><dd>${releasePolicy ? this.statusBadge(releasePolicy.canRelease ? "ok" : "blocked") : this.statusBadge("unknown")}</dd>
+           <dt>Release schema</dt><dd class="mono">${escapeHtml(releasePolicy?.schemaVersion ?? "missing")}</dd>
+           <dt>Release evidence</dt><dd>${releasePolicy ? `${releasePolicy.evidence.filter((item) => item.status === "pass").length}/${releasePolicy.evidence.length} pass / ${releasePolicy.evidence.filter((item) => item.freshness !== "fresh").length} stale or missing` : "missing"}</dd>
+           <dt>Release blockers</dt><dd>${releasePolicy?.blockedBy.length ? releasePolicy.blockedBy.slice(0, 4).map((id) => `<span class="badge warn">${escapeHtml(id)}</span>`).join(" ") : "none"}</dd>
            <dt>License</dt><dd class="mono">${escapeHtml(library.selectedProvenance?.license.expression ?? "unknown")} / ${library.selectedProvenance?.license.status ?? "unknown"}</dd>
            <dt>Transforms</dt><dd>${library.selectedProvenance ? `${library.selectedProvenance.transforms.length} ordered` : "missing"}</dd>
            <dt>QA links</dt><dd>${library.selectedProvenance?.qaLinks.length ?? 0}</dd>
@@ -5234,6 +5253,7 @@ export class App {
            <span class="badge">${escapeHtml(asset.severity)}</span>
            ${asset.blockedBy.map((id) => `<span class="badge warn">blocked by ${escapeHtml(id)}</span>`).join("")}
            ${(library.selectedProvenance?.warnings ?? []).slice(0, 4).map((warning) => `<span class="badge warn">${escapeHtml(warning)}</span>`).join("")}
+           ${(releasePolicy?.warnings ?? []).slice(0, 4).map((warning) => `<span class="badge warn">${escapeHtml(warning)}</span>`).join("")}
          </div>
       </section>
       ${replacementFlow}
@@ -8337,6 +8357,10 @@ export class App {
       const assetAttribute = row.targetId && row.targetId !== row.id ? ` data-studio-asset-id="${escapeHtml(row.targetId)}"` : "";
       return `data-studio-tab="assets" data-asset-filter="${row.status === "ok" ? "all" : "attention"}"${assetAttribute}`;
     }
+    if (row.id === "asset-release-policy") {
+      const assetAttribute = row.targetId && row.targetId !== row.id ? ` data-studio-asset-id="${escapeHtml(row.targetId)}"` : "";
+      return `data-studio-tab="assets" data-asset-filter="${row.status === "ok" ? "all" : "attention"}"${assetAttribute}`;
+    }
     if (row.id === "source-packages" && row.targetKind === "source-file" && row.targetPath) {
       const sourcePackageAttribute = row.targetPackageId ? ` data-source-package-id="${escapeHtml(row.targetPackageId)}"` : "";
       return `data-studio-tab="build"${sourcePackageAttribute} data-source-path="${escapeHtml(row.targetPath)}"`;
@@ -9159,6 +9183,7 @@ export class App {
       ? this.getAssetDependencyGraph(selectedAsset, selectedDependencies)
       : this.getEmptyAssetDependencyGraph();
     const provenance = this.getStudioAssetProvenance(assets);
+    const releasePolicies = this.getStudioAssetReleasePolicies(assets, provenance);
     const replacementPlan = selectedAsset
       ? this.getAssetReplacementPlan(selectedAsset, assets)
       : this.getEmptyAssetReplacementPlan("Select an asset to inspect replacement candidates.");
@@ -9175,6 +9200,8 @@ export class App {
       replacementPlan,
       provenance,
       selectedProvenance: selectedAsset ? provenance.find((record) => record.assetId === selectedAsset.id) : undefined,
+      releasePolicies,
+      selectedReleasePolicy: selectedAsset ? releasePolicies.find((record) => record.assetId === selectedAsset.id) : undefined,
       sourceRuntimeMap,
       missingReferences,
       relatedEvidence,
@@ -9192,6 +9219,182 @@ export class App {
         selected: assets.filter((asset) => asset.tags.includes("selected")).length,
       },
     };
+  }
+
+  private getStudioAssetReleasePolicies(
+    assets: StudioAssetRecord[],
+    provenance = this.getStudioAssetProvenance(assets),
+    bundledRecords: ProjectExportBundleAssetRecord[] = this.lastProjectBundle?.manifest.assets.records ?? [],
+  ): AssetReleasePolicyRecord[] {
+    const provenanceByAssetId = new Map(provenance.map((record) => [record.assetId, record]));
+    return assets.flatMap((asset) => {
+      const record = provenanceByAssetId.get(asset.id);
+      if (!record) {
+        return [];
+      }
+      return [createAssetReleasePolicyRecord({
+        provenance: record,
+        evidence: this.getAssetReleasePolicyEvidence(asset, record, bundledRecords),
+      })];
+    });
+  }
+
+  private getAssetReleasePolicyEvidence(
+    asset: StudioAssetRecord,
+    provenance: AssetProvenanceRecord,
+    bundledRecords: ProjectExportBundleAssetRecord[],
+  ): AssetReleasePolicyEvidence[] {
+    const metadata = this.assetPermissionMetadata.get(asset.id);
+    const permissionFile = this.getAssetBundlePathStatus(asset.id, "asset-permission.json", bundledRecords);
+    const licenseFile = metadata
+      ? this.getAssetBundlePathStatus(asset.id, metadata.license.sourceRef, bundledRecords)
+      : { status: "unknown" as const, freshness: "unknown" as const };
+    const declaredFiles = metadata
+      ? [...metadata.sourceFiles, ...metadata.outputFiles]
+      : [];
+    const declaredFileStates = declaredFiles.map((file) => ({
+      file,
+      state: this.getAssetBundlePathStatus(asset.id, file.path, bundledRecords, file.sha256, file.bytes),
+    }));
+    const digestState = !metadata
+      ? { status: "unknown" as const, freshness: "unknown" as const }
+      : declaredFileStates.some(({ state }) => state.status === "fail")
+        ? { status: "fail" as const, freshness: "stale" as const }
+        : declaredFileStates.some(({ state }) => state.status === "unknown")
+          ? { status: "unknown" as const, freshness: "unknown" as const }
+          : { status: "pass" as const, freshness: "fresh" as const };
+    const transformState = provenance.transforms.length > 0 && digestState.status === "pass"
+      ? { status: "pass" as const, freshness: "fresh" as const }
+      : digestState.status === "fail"
+        ? { status: "fail" as const, freshness: "stale" as const }
+        : { status: "unknown" as const, freshness: "unknown" as const };
+    const motionQa = this.atlasMotionQaByFighter.get(asset.id);
+    const motionFile = this.getAssetBundlePathStatus(asset.id, "qa/motion-variation-report.json", bundledRecords);
+    const motionStatus: AssetReleasePolicyEvidence["status"] = motionQa?.status === "pass"
+      ? "pass"
+      : motionQa?.status === "warn"
+        ? "warn"
+        : motionQa?.status === "fail"
+          ? "fail"
+          : "unknown";
+    const atlasManifest = this.getAssetBundlePathStatus(asset.id, "manifest.json", bundledRecords);
+    const atlasReport = this.getAssetBundlePathStatus(asset.id, "sprite-sheet-alpha.report.json", bundledRecords);
+    const atlasIntegrityState = this.atlasStatusByFighter.get(asset.id) === "loaded" && atlasManifest.status === "pass" && atlasReport.status === "pass"
+      ? { status: "pass" as const, freshness: "fresh" as const }
+      : [atlasManifest, atlasReport].some((state) => state.status === "fail")
+        ? { status: "fail" as const, freshness: "stale" as const }
+        : { status: "unknown" as const, freshness: "unknown" as const };
+    const fighter = this.findFighter(asset.id);
+    const collisionFrames = fighter
+      ? [...fighter.animations.values()].flatMap((action) => action.frames).filter((frame) => frame.clsn1.length > 0 || frame.clsn2.length > 0).length
+      : 0;
+    const airPath = `${asset.id.split("-")[0] ?? asset.id}.air`;
+    const airFile = this.getAssetBundlePathStatus(asset.id, `mugen/${airPath}`, bundledRecords);
+    const trace = this.lastTraceArtifact;
+    const traceTargetsAsset = Boolean(trace && (trace.target.id.toLowerCase().includes(asset.id.toLowerCase()) || trace.target.label.toLowerCase().includes(asset.label.toLowerCase())));
+    const traceFresh = Boolean(trace?.generatedAt && !Number.isNaN(Date.parse(trace.generatedAt)) && traceTargetsAsset);
+    const playtestStatus: AssetReleasePolicyEvidence["status"] = !trace
+      ? "unknown"
+      : trace.status === "failed"
+        ? "fail"
+        : traceTargetsAsset
+          ? "pass"
+          : "unknown";
+    return [
+      {
+        id: `${asset.id}:release:permission`,
+        kind: "permission",
+        status: metadata && permissionFile.status === "pass" ? "pass" : permissionFile.status === "fail" ? "fail" : "unknown",
+        freshness: permissionFile.freshness,
+        reference: `assets/characters/${sanitizePackageSegment(asset.id)}/asset-permission.json`,
+        ...(permissionFile.digest ? { digest: permissionFile.digest } : {}),
+        detail: metadata ? `${metadata.ownership}/${metadata.permission}` : "permission metadata is unavailable",
+      },
+      {
+        id: `${asset.id}:release:license`,
+        kind: "license",
+        status: metadata?.license.verified && licenseFile.status === "pass" ? "pass" : licenseFile.status === "fail" ? "fail" : "unknown",
+        freshness: licenseFile.freshness,
+        reference: metadata ? `assets/characters/${sanitizePackageSegment(asset.id)}/${metadata.license.sourceRef}` : "asset-permission.json",
+        ...(licenseFile.digest ? { digest: licenseFile.digest } : {}),
+        detail: metadata ? `${metadata.license.expression} / verified` : "verified license metadata is unavailable",
+      },
+      {
+        id: `${asset.id}:release:digest`,
+        kind: "digest",
+        status: digestState.status,
+        freshness: digestState.freshness,
+        reference: `assets/characters/${sanitizePackageSegment(asset.id)}/asset-permission.json`,
+        detail: metadata ? `${declaredFileStates.filter(({ state }) => state.status === "pass").length}/${declaredFileStates.length} declared files match package bytes` : "declared permission file digests are unavailable",
+      },
+      {
+        id: `${asset.id}:release:transform`,
+        kind: "transform",
+        status: transformState.status,
+        freshness: transformState.freshness,
+        reference: `asset-provenance:${asset.id}`,
+        detail: `${provenance.transforms.length} ordered transform(s) with tool/config identity`,
+      },
+      {
+        id: `${asset.id}:release:qa:atlas`,
+        kind: "qa",
+        status: atlasIntegrityState.status,
+        freshness: atlasIntegrityState.freshness,
+        reference: `assets/characters/${sanitizePackageSegment(asset.id)}/manifest.json`,
+        detail: `atlas ${this.atlasStatusByFighter.get(asset.id) ?? "missing"} / manifest and build report present`,
+      },
+      {
+        id: `${asset.id}:release:qa:motion`,
+        kind: "qa",
+        status: motionFile.freshness === "fresh" ? motionStatus : motionFile.status === "fail" ? "fail" : "unknown",
+        freshness: motionFile.freshness,
+        reference: `assets/characters/${sanitizePackageSegment(asset.id)}/qa/motion-variation-report.json`,
+        ...(motionFile.digest ? { digest: motionFile.digest } : {}),
+        detail: `${motionQa?.checkedStates.length ?? 0} checked state(s) / ${motionQa?.warnings.length ?? 0} warning(s) / ${motionQa?.errors.length ?? 0} error(s)`,
+      },
+      {
+        id: `${asset.id}:release:collision`,
+        kind: "collision",
+        status: collisionFrames > 0 && airFile.status === "pass" ? "pass" : airFile.status === "fail" ? "fail" : "unknown",
+        freshness: airFile.freshness,
+        reference: `assets/characters/${sanitizePackageSegment(asset.id)}/mugen/${airPath}`,
+        ...(airFile.digest ? { digest: airFile.digest } : {}),
+        detail: `${collisionFrames} runtime animation frame(s) carry Clsn1/Clsn2 data`,
+      },
+      {
+        id: `${asset.id}:release:playtest`,
+        kind: "playtest",
+        status: playtestStatus,
+        freshness: traceFresh ? "fresh" : "unknown",
+        reference: trace ? `trace:${trace.trace.checksum}` : "runtime-trace-artifact/v0",
+        ...(trace?.generatedAt ? { observedAt: trace.generatedAt } : {}),
+        detail: trace ? `${trace.target.label} / ${trace.status} / ${trace.trace.frameCount} frames` : "export a current trace artifact for this asset",
+      },
+    ];
+  }
+
+  private getAssetBundlePathStatus(
+    assetId: string,
+    relativePath: string,
+    bundledRecords: ProjectExportBundleAssetRecord[],
+    expectedDigest?: string,
+    expectedBytes?: number,
+  ): { status: AssetReleasePolicyEvidence["status"]; freshness: AssetReleasePolicyEvidence["freshness"]; digest?: string } {
+    const packagePath = `assets/characters/${sanitizePackageSegment(assetId)}/${relativePath.replace(/\\/g, "/")}`;
+    const record = bundledRecords.find((candidate) => candidate.packagePath === packagePath);
+    if (!record) {
+      return { status: "unknown", freshness: "unknown" };
+    }
+    if (record.status !== "bundled") {
+      return { status: "fail", freshness: "stale" };
+    }
+    if (expectedDigest && record.sha256?.toLowerCase() !== expectedDigest.toLowerCase()) {
+      return { status: "fail", freshness: "stale", ...(record.sha256 ? { digest: record.sha256 } : {}) };
+    }
+    if (expectedBytes !== undefined && record.bytes !== expectedBytes) {
+      return { status: "fail", freshness: "stale", ...(record.sha256 ? { digest: record.sha256 } : {}) };
+    }
+    return { status: "pass", freshness: "fresh", ...(record.sha256 ? { digest: record.sha256 } : {}) };
   }
 
   private getStudioAssetProvenance(
@@ -9940,6 +10143,9 @@ export class App {
     const linkedSourcePackages = sourcePackages.length - missingSourcePackages.length;
     const provenanceRecords = this.getStudioAssetProvenance(summary.assets);
     const blockedProvenance = provenanceRecords.filter((record) => !record.canExport);
+    const releasePolicies = this.getStudioAssetReleasePolicies(summary.assets, provenanceRecords);
+    const releaseReadyPolicies = releasePolicies.filter((record) => record.canRelease);
+    const releaseBlockedPolicies = releasePolicies.filter((record) => !record.canRelease);
     const tracePassed = this.lastTraceArtifact?.status === "passed";
     const compileErrors = compiled?.diagnostics.errors.length ?? 0;
     const compileWarnings = compiled?.diagnostics.warnings.length ?? 0;
@@ -10036,6 +10242,33 @@ export class App {
         nextAction: blockedProvenance.length || assetAttention.length
           ? { kind: "open-evidence", label: "Review asset provenance", targetId: "asset-validation" }
           : { kind: "open-build", label: "Review export package", targetId: "asset-validation" },
+      },
+      {
+        id: "asset-release-policy",
+        label: "Asset release policy",
+        status: releaseBlockedPolicies.length === 0 && releaseReadyPolicies.length > 0
+          ? "ok"
+          : releaseReadyPolicies.length > 0
+            ? "warn"
+            : "blocked",
+        state: releaseBlockedPolicies.length === 0 && releaseReadyPolicies.length > 0
+          ? "exportable"
+          : releaseReadyPolicies.length > 0
+            ? "partial"
+            : "blocked",
+        detail: releasePolicies.length
+          ? `${releaseReadyPolicies.length}/${releasePolicies.length} named asset release decision(s) ready; ${releaseBlockedPolicies.length} remain diagnostic-only`
+          : "No asset release policy records are available",
+        affectedSystem: "studio",
+        impact: releaseBlockedPolicies.length
+          ? "Diagnostic package export remains available, but only assets with fresh permission, license, digest, transform, QA, collision, and playtest evidence can be released."
+          : "Every current asset has a fresh, evidence-backed release decision.",
+        evidenceIds: releasePolicies.map((record) => record.id),
+        blockedBy: releaseBlockedPolicies.flatMap((record) => record.blockedBy.slice(0, 3)),
+        canExport: releaseReadyPolicies.length > 0,
+        nextAction: releaseBlockedPolicies.length
+          ? { kind: "open-evidence", label: "Review asset release blockers", targetId: "asset-release-policy" }
+          : { kind: "open-build", label: "Review release package", targetId: "asset-release-policy" },
       },
       {
         id: "source-packages",
@@ -10183,6 +10416,7 @@ export class App {
       { id: "evidence", lane: "qa" },
       { id: "package-bundle", lane: "build" },
       { id: "asset-validation", lane: "assets" },
+      { id: "asset-release-policy", lane: "assets" },
       { id: "source-packages", lane: "source" },
       { id: "compatibility-gates", lane: "compat" },
       { id: "compatibility-snapshot", lane: "compat" },
@@ -10237,6 +10471,11 @@ export class App {
     if (record.id === "asset-validation") {
       const attentionAsset = summary.assets.find((asset) => isAttentionStatus(asset.status)) ?? summary.assets[0];
       return { kind: "asset", id: attentionAsset?.id ?? "asset-validation" };
+    }
+    if (record.id === "asset-release-policy") {
+      const policies = this.getStudioAssetReleasePolicies(summary.assets);
+      const blockedAssetId = policies.find((policy) => !policy.canRelease)?.assetId ?? policies[0]?.assetId;
+      return { kind: "asset", id: blockedAssetId ?? "asset-release-policy" };
     }
     if (record.id === "source-packages") {
       const target = this.getStudioTrustSourceFileTarget();
@@ -10329,6 +10568,12 @@ export class App {
       const failed = summary.assets.filter((asset) => asset.status === "fail" || asset.status === "blocked").length;
       return { label: attention ? "review" : "current", delta: `${attention} attention / ${failed} blocked` };
     }
+    if (record.id === "asset-release-policy") {
+      const policies = this.getStudioAssetReleasePolicies(summary.assets);
+      const ready = policies.filter((policy) => policy.canRelease).length;
+      const blocked = policies.length - ready;
+      return { label: blocked ? (this.lastProjectBundle ? "review" : "missing") : "current", delta: `${ready} ready / ${blocked} diagnostic-only` };
+    }
     if (record.id === "source-packages") {
       const sourcePackages = this.getProjectSourcePackages();
       const missing = sourcePackages.filter((sourcePackage) => sourcePackage.status !== "linked").length;
@@ -10398,6 +10643,11 @@ export class App {
     if (record.id === "asset-validation") {
       const attention = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
       return `${attention}/${summary.assets.length} attention / ${summary.stats.generatedAtlases} atlases`;
+    }
+    if (record.id === "asset-release-policy") {
+      const policies = this.getStudioAssetReleasePolicies(summary.assets);
+      const ready = policies.filter((policy) => policy.canRelease).length;
+      return `${ASSET_RELEASE_POLICY_SCHEMA} / ${ready}/${policies.length} ready / ${this.lastProjectBundle ? "package hashes" : "package export required"}`;
     }
     if (record.id === "source-packages") {
       const sourcePackages = this.getProjectSourcePackages();
@@ -12136,6 +12386,9 @@ export class App {
     }
     const assetRecords = await this.addProjectBundleAssetsToZip(zip, studio.assets);
     const provenance = this.getStudioAssetProvenance(studio.assets, assetRecords);
+    const releasePolicies = this.getStudioAssetReleasePolicies(studio.assets, provenance, assetRecords);
+    const releasePolicyReady = releasePolicies.filter((record) => record.canRelease).length;
+    const releasePolicyBlocked = releasePolicies.length - releasePolicyReady;
     const provenanceReady = provenance.filter((record) => record.canExport).length;
     const provenanceBlocked = provenance.length - provenanceReady;
     const bundledAssets = assetRecords.filter((record) => record.status === "bundled");
@@ -12152,6 +12405,7 @@ export class App {
       ...(this.importedPackageAnalysisV1 ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
       ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
+      { path: "studio/asset-release-policy.json", kind: "studio", required: true },
       { path: "studio/evidence.json", kind: "qa", required: true },
       { path: "studio/build-readiness.json", kind: "qa", required: true },
       { path: "reports/compatibility-report.json", kind: "report", required: true },
@@ -12181,6 +12435,8 @@ export class App {
         provenanceRecords: provenance.length,
         provenanceReady,
         provenanceBlocked,
+        releasePolicyReady,
+        releasePolicyBlocked,
         records: assetRecords,
       },
       diagnostics: {
@@ -12189,6 +12445,7 @@ export class App {
           ...(binaryBundlingStatus === "metadata-only" ? ["No browser-fetchable binary assets were embedded in this package export."] : []),
           ...(binaryBundlingStatus === "partial" ? ["Some local/source assets could not be embedded; see assets/package-assets.json."] : []),
           ...(provenanceBlocked > 0 ? [`${provenanceBlocked} asset provenance record(s) block release readiness; this package remains diagnostic-only.`] : []),
+          ...(releasePolicyBlocked > 0 ? [`${releasePolicyBlocked} asset release policy record(s) remain diagnostic-only; only fresh named records may be released.`] : []),
           ...(traceArtifact ? [] : ["No runtime trace artifact was included because none has been exported in this session."]),
         ],
         errors: [...compiled.diagnostics.errors],
@@ -12200,6 +12457,7 @@ export class App {
     this.addJsonToZip(zip, "package-manifest.json", manifest);
     this.addJsonToZip(zip, "studio/build-readiness.json", readiness);
     this.addJsonToZip(zip, "studio/asset-provenance.json", provenance);
+    this.addJsonToZip(zip, "studio/asset-release-policy.json", releasePolicies);
     this.addJsonToZip(zip, "assets/package-assets.json", assetRecords);
     zip.file("README.txt", this.createProjectBundleReadme(manifest));
     const blob = await zip.generateAsync({ type: "blob" });
@@ -12552,6 +12810,7 @@ export class App {
         actorRegistry?: MatchWorldActorRegistrySnapshot;
         studio: StudioProjectSummary;
         studioAssets: StudioAssetLibrarySummary;
+        studioAssetReleasePolicies: AssetReleasePolicyRecord[];
         studioDebug: StudioDebugSelectionSummary;
         studioDebugFilter: StudioDebugFilter;
         studioEvidence: StudioEvidenceSummary;
@@ -12613,6 +12872,7 @@ export class App {
       actorRegistry: this.getActiveActorRegistry(),
       studio,
       studioAssets: this.getStudioAssetLibrarySummary(),
+      studioAssetReleasePolicies: this.getStudioAssetReleasePolicies(studio.assets),
       studioDebug: this.getStudioDebugSelection(),
       studioDebugFilter: this.studioDebugFilter,
       studioEvidence: this.getStudioEvidenceSummary(),
