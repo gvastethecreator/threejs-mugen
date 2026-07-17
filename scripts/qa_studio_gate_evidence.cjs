@@ -8,7 +8,9 @@ const { createServer } = require("vite");
 const OUT_DIR = path.resolve(process.cwd(), ".scratch/qa/studio-gate-evidence");
 const DIAGNOSTICS_PATH = path.join(OUT_DIR, "browser-diagnostics.json");
 const GATE_EVIDENCE_PATH = "studio/gate-evidence.json";
+const EVIDENCE_ENVELOPES_PATH = "studio/evidence-envelopes.json";
 const GATE_EVIDENCE_SCHEMA = "mugen-web-sandbox/gate-evidence/v0";
+const EVIDENCE_ENVELOPES_SCHEMA = "mugen-web-sandbox/studio-evidence-envelope-document/v0";
 const ARCHITECTURE_GATE_ID = "architecture-boundaries";
 const ARCHITECTURE_EVIDENCE_ID = "test:architecture-boundaries";
 
@@ -54,6 +56,12 @@ async function main() {
     if (!String(build.evidenceDetail ?? "").includes("check_boundaries.cjs")) diagnostics.failures.push("Build evidence did not expose the producer command");
     if (build.trustState !== "exportable" || build.trustFreshness !== "current") diagnostics.failures.push("Trust Chain did not promote current architecture evidence");
     if (!build.bodyHasGateEvidence || !build.bodyHasArchitectureReadiness) diagnostics.failures.push("Build UI did not expose GateEvidence and readiness surfaces");
+    if (
+      build.envelopeSchema !== EVIDENCE_ENVELOPES_SCHEMA ||
+      build.envelopeCount < 1 ||
+      build.envelopeCanExport !== true ||
+      !build.bodyHasEvidenceEnvelopes
+    ) diagnostics.failures.push("Build UI did not expose revision-bound EvidenceEnvelope facts");
 
     await page.screenshot({ path: path.join(OUT_DIR, "studio-build-gate-evidence.png"), fullPage: true });
     diagnostics.screenshots.desktopBuild = path.join(OUT_DIR, "studio-build-gate-evidence.png");
@@ -70,6 +78,10 @@ async function main() {
     if (
       !diagnostics.package.hasGateEvidenceFile ||
       !diagnostics.package.manifestListsGateEvidence ||
+      !diagnostics.package.hasEvidenceEnvelopesFile ||
+      !diagnostics.package.manifestListsEvidenceEnvelopes ||
+      diagnostics.package.envelopeSchema !== EVIDENCE_ENVELOPES_SCHEMA ||
+      diagnostics.package.envelopeCount < 1 ||
       diagnostics.package.schema !== GATE_EVIDENCE_SCHEMA ||
       diagnostics.package.intent !== "release" ||
       diagnostics.package.status !== "passed" ||
@@ -87,6 +99,9 @@ async function main() {
       diagnostics.failures.push("Evidence surface did not preserve the GateEvidence result");
     }
     if (evidence.trustFreshness !== "current" || evidence.trustState !== "exportable") diagnostics.failures.push("Evidence Trust Chain lost current architecture freshness");
+    if (evidence.envelopeSchema !== EVIDENCE_ENVELOPES_SCHEMA || evidence.envelopeCount < 1 || !evidence.bodyHasEvidenceEnvelopes) {
+      diagnostics.failures.push("Evidence surface did not preserve revision-bound EvidenceEnvelope facts");
+    }
     await page.screenshot({ path: path.join(OUT_DIR, "studio-evidence-gate-evidence.png"), fullPage: true });
     diagnostics.screenshots.desktopEvidence = path.join(OUT_DIR, "studio-evidence-gate-evidence.png");
 
@@ -100,10 +115,11 @@ async function main() {
       documentScrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
       bodyHasGateEvidence: document.body.innerText.includes("Architecture Boundaries"),
+      bodyHasEvidenceEnvelopes: document.body.innerText.includes("Evidence Envelopes"),
     }));
     diagnostics.checks.mobile = mobile;
     if (mobile.bodyScrollWidth > mobile.clientWidth + 1 || mobile.documentScrollWidth > mobile.clientWidth + 1) diagnostics.failures.push("mobile Evidence surface overflowed horizontally");
-    if (mobile.mode !== "studio" || mobile.studioTab !== "evidence" || !mobile.bodyHasGateEvidence) diagnostics.failures.push("mobile Evidence surface lost the architecture gate");
+    if (mobile.mode !== "studio" || mobile.studioTab !== "evidence" || !mobile.bodyHasGateEvidence || !mobile.bodyHasEvidenceEnvelopes) diagnostics.failures.push("mobile Evidence surface lost the evidence contracts");
     await page.screenshot({ path: path.join(OUT_DIR, "studio-evidence-gate-evidence-mobile.png"), fullPage: true });
     diagnostics.screenshots.mobileEvidence = path.join(OUT_DIR, "studio-evidence-gate-evidence-mobile.png");
 
@@ -144,10 +160,14 @@ async function inspectSurface(page) {
       evidenceCanExport: evidence?.canExport,
       evidenceDigest,
       evidenceIds: evidence?.evidenceIds ?? [],
+      envelopeSchema: bridge?.studioEvidence?.envelopeDocument?.schemaVersion,
+      envelopeCount: bridge?.studioEvidence?.envelopeDocument?.envelopes?.length ?? 0,
+      envelopeCanExport: bridge?.studioEvidence?.envelopeAssessment?.canExport,
       trustState: trust?.state,
       trustFreshness: trust?.freshness,
       trustTarget: trust ? `${trust.targetKind}:${trust.targetId}` : undefined,
       bodyHasGateEvidence: document.body.innerText.includes("Architecture Boundaries"),
+      bodyHasEvidenceEnvelopes: document.body.innerText.includes("Evidence Envelopes"),
       bodyHasArchitectureReadiness: Boolean(readinessRow),
     };
   }, { gateId: ARCHITECTURE_GATE_ID, evidenceId: ARCHITECTURE_EVIDENCE_ID });
@@ -158,11 +178,16 @@ async function inspectPackage(packagePath) {
   const files = Object.keys(zip.files).filter((file) => !zip.files[file].dir).sort();
   const manifest = JSON.parse(await zip.file("package-manifest.json").async("string"));
   const document = JSON.parse(await zip.file(GATE_EVIDENCE_PATH).async("string"));
+  const envelopeDocument = JSON.parse(await zip.file(EVIDENCE_ENVELOPES_PATH).async("string"));
   const result = document.results?.find((item) => item.gateId === ARCHITECTURE_GATE_ID);
   return {
     fileCount: files.length,
     hasGateEvidenceFile: files.includes(GATE_EVIDENCE_PATH),
     manifestListsGateEvidence: manifest.files?.some((file) => file.path === GATE_EVIDENCE_PATH && file.required === true) ?? false,
+    hasEvidenceEnvelopesFile: files.includes(EVIDENCE_ENVELOPES_PATH),
+    manifestListsEvidenceEnvelopes: manifest.files?.some((file) => file.path === EVIDENCE_ENVELOPES_PATH && file.required === true) ?? false,
+    envelopeSchema: envelopeDocument.schemaVersion,
+    envelopeCount: envelopeDocument.envelopes?.length ?? 0,
     schema: document.schemaVersion,
     intent: result?.intent,
     status: result?.status,

@@ -1953,6 +1953,10 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       packageAnalysisSummary: bridge?.packageAnalysisV1?.analysis?.summary,
       packageAnalysisEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "package-analysis"),
       packageAnalysisTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "package-analysis"),
+      studioEvidenceEnvelopeDocument: bridge?.studioEvidence?.envelopeDocument,
+      studioEvidenceEnvelopeAssessment: bridge?.studioEvidence?.envelopeAssessment,
+      evidenceEnvelopeTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "evidence-envelopes"),
+      bodyHasEvidenceEnvelopes: document.body.innerText.includes("Evidence Envelopes"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
       compatibilitySnapshotRecord: bridge?.studioEvidence?.records?.find((record) => record.id === "compat:snapshot"),
@@ -2559,6 +2563,7 @@ async function inspectPackageZip(packagePath) {
   const packageAssets = JSON.parse(await zip.file("assets/package-assets.json").async("string"));
   const compatibilitySnapshot = JSON.parse(await zip.file("qa/compatibility-corpus-snapshot-v1.json").async("string"));
   const gateEvidence = JSON.parse(await zip.file("studio/gate-evidence.json").async("string"));
+  const evidenceEnvelopes = JSON.parse(await zip.file("studio/evidence-envelopes.json").async("string"));
   const packageAnalysis = files.includes("studio/package-analysis.json")
     ? JSON.parse(await zip.file("studio/package-analysis.json").async("string"))
     : undefined;
@@ -2713,6 +2718,15 @@ async function inspectPackageZip(packagePath) {
     gateEvidenceSourceRevision: architectureGateEvidence?.sourceRevision,
     gateEvidenceDigest: architectureGateEvidence?.digest,
     gateEvidenceTarget: architectureGateEvidence?.target?.id,
+    hasEvidenceEnvelopes: files.includes("studio/evidence-envelopes.json"),
+    manifestListsEvidenceEnvelopes: manifest.files?.some((file) => file.path === "studio/evidence-envelopes.json" && file.required === true) ?? false,
+    evidenceEnvelopesSchema: evidenceEnvelopes.schemaVersion,
+    evidenceEnvelopesCount: evidenceEnvelopes.envelopes?.length ?? 0,
+    evidenceEnvelopesCurrent: evidenceEnvelopes.summary?.current ?? 0,
+    evidenceEnvelopesStale: evidenceEnvelopes.summary?.stale ?? 0,
+    evidenceEnvelopesProjectScope: evidenceEnvelopes.project?.scope,
+    evidenceEnvelopesHasPackage: evidenceEnvelopes.envelopes?.some((envelope) => envelope.subject?.kind === "package") ?? false,
+    evidenceEnvelopesPackageFreshness: evidenceEnvelopes.envelopes?.find((envelope) => envelope.subject?.kind === "package")?.observation?.freshness?.state,
     hasPackageAnalysis: files.includes("studio/package-analysis.json"),
     manifestListsPackageAnalysis: manifest.files?.some((file) => file.path === "studio/package-analysis.json" && file.required === true) ?? false,
     packageAnalysisSchema: packageAnalysis?.schemaVersion,
@@ -4232,6 +4246,7 @@ function assertSmoke(diagnostics) {
   const expectedTrustChainIds = [
     "runtime-manifest",
     "evidence",
+    "evidence-envelopes",
     "package-bundle",
     "asset-validation",
     "asset-release-policy",
@@ -4308,6 +4323,23 @@ function assertSmoke(diagnostics) {
   }
   if (!studioBuild.bodyHasPackage || !studioBuild.projectBundle) {
     failures.push("studio-build: project package panel or bridge summary missing");
+  }
+  if (
+    !studioBuild.bodyHasEvidenceEnvelopes ||
+    studioBuild.studioEvidenceEnvelopeDocument?.schemaVersion !== "mugen-web-sandbox/studio-evidence-envelope-document/v0" ||
+    (studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.length ?? 0) < 1 ||
+    studioBuild.studioEvidenceEnvelopeAssessment?.canExport !== true ||
+    studioBuild.evidenceEnvelopeTrustRow?.targetKind !== "contract"
+  ) {
+    failures.push("studio-build: revision-bound evidence envelopes were not surfaced through Evidence/Trust Chain");
+  }
+  if (
+    studioBuild.importedFixtureLoaded &&
+    ((studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.length ?? 0) < 2 ||
+      studioBuild.studioEvidenceEnvelopeDocument?.summary?.current < 2 ||
+      studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.some((envelope) => envelope.subject?.kind === "package" && envelope.observation?.freshness?.state !== "current"))
+  ) {
+    failures.push("studio-build: imported package EvidenceEnvelope was not current and revision-bound");
   }
   if (
     studioBuild.importedFixtureLoaded &&
@@ -4399,6 +4431,10 @@ function assertSmoke(diagnostics) {
     || studioBuild.downloadedPackage?.gateEvidenceStatus !== "passed"
     || studioBuild.downloadedPackage?.gateEvidenceTarget !== "test:architecture-boundaries"
     || !studioBuild.downloadedPackage?.gateEvidenceDigest
+    || !studioBuild.downloadedPackage?.hasEvidenceEnvelopes
+    || !studioBuild.downloadedPackage?.manifestListsEvidenceEnvelopes
+    || studioBuild.downloadedPackage?.evidenceEnvelopesSchema !== "mugen-web-sandbox/studio-evidence-envelope-document/v0"
+    || (studioBuild.downloadedPackage?.evidenceEnvelopesCount ?? 0) < 1
     || studioBuild.downloadedPackage?.hasPackageAnalysis !== true
     || studioBuild.downloadedPackage?.manifestListsPackageAnalysis !== true
     || studioBuild.downloadedPackage?.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v1"
@@ -4414,6 +4450,14 @@ function assertSmoke(diagnostics) {
     || (studioBuild.downloadedPackage?.packageAnalysisByCategory?.screenpack ?? 0) < 1
   ) {
     failures.push("studio-build: downloaded project package did not include required contracts/evidence");
+  }
+  if (
+    studioBuild.importedFixtureLoaded &&
+    (!studioBuild.downloadedPackage?.evidenceEnvelopesHasPackage ||
+      studioBuild.downloadedPackage?.evidenceEnvelopesPackageFreshness !== "current" ||
+      studioBuild.downloadedPackage?.evidenceEnvelopesCurrent < 2)
+  ) {
+    failures.push("studio-build: downloaded package did not preserve current package EvidenceEnvelope facts");
   }
   if (
     studioBuild.importedFixtureLoaded &&

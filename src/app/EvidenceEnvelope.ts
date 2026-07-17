@@ -404,6 +404,10 @@ export function sha256Hex(value: string): string {
   return [a, b, c, d, e, f, g, h].map((value) => value.toString(16).padStart(8, "0")).join("");
 }
 
+export function sha256StableJson(value: unknown): string {
+  return sha256Hex(stableStringify(value));
+}
+
 function rotateRight(value: number, amount: number): number {
   return (value >>> amount) | (value << (32 - amount));
 }

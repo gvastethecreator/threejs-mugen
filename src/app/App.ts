@@ -102,6 +102,12 @@ import {
   type GateEvidenceFreshnessAssessment,
   type GateEvidenceResult,
 } from "./GateEvidence";
+import {
+  assessStudioEvidenceEnvelopeDocument,
+  createStudioEvidenceEnvelopeDocument,
+  type StudioEvidenceEnvelopeAssessment,
+  type StudioEvidenceEnvelopeDocument,
+} from "./StudioEvidenceEnvelope";
 import { STUDIO_GATE_EVIDENCE_DIAGNOSTICS, STUDIO_GATE_EVIDENCE_DOCUMENT } from "./StudioGateEvidence";
 import {
   STUDIO_COMPATIBILITY_SNAPSHOT,
@@ -456,6 +462,8 @@ type StudioEvidenceRecord = {
 type StudioEvidenceSummary = {
   records: StudioEvidenceRecord[];
   compatibilitySnapshot: StudioCompatibilitySnapshotState;
+  envelopeDocument: StudioEvidenceEnvelopeDocument;
+  envelopeAssessment: StudioEvidenceEnvelopeAssessment;
   stats: {
     total: number;
     ok: number;
@@ -7684,6 +7692,7 @@ export class App {
       </div>
       ${this.renderStudioCompatibilitySnapshotPanel()}
       ${this.renderStudioPackageAnalysisPanel()}
+      ${this.renderStudioEvidenceEnvelopePanel()}
       <div class="section">
         <h2>Recent Projects</h2>
         ${
@@ -8120,6 +8129,42 @@ export class App {
     `;
   }
 
+  private renderStudioEvidenceEnvelopePanel(document = this.getStudioEvidenceEnvelopeDocument()): string {
+    const assessment = assessStudioEvidenceEnvelopeDocument(document);
+    const status: StudioStatus = assessment.status === "ok" ? "ok" : assessment.status === "fail" ? "fail" : "warn";
+    return `
+      <div class="section studio-evidence-envelopes" data-evidence-envelope-document="${escapeHtml(document.schemaVersion)}">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Revision-bound facts</span>
+            <h2>Evidence Envelopes</h2>
+          </div>
+          ${this.statusBadge(status)}
+        </div>
+        <dl class="kv studio-kv">
+          <dt>Schema</dt><dd class="mono">${escapeHtml(document.schemaVersion)}</dd>
+          <dt>Producer</dt><dd class="mono">${escapeHtml(`${document.producer.id}@${document.producer.version}`)}</dd>
+          <dt>Producer revision</dt><dd class="mono">${escapeHtml(document.producer.revision)}</dd>
+          <dt>Project</dt><dd class="mono">${escapeHtml(`${document.project.id} / ${document.project.scope}${document.project.revision ? ` / revision ${document.project.revision}` : ""}`)}</dd>
+          <dt>Freshness</dt><dd class="mono">${document.summary.current} current / ${document.summary.stale} stale / ${document.summary.missing} missing / ${document.summary.unknown} unknown</dd>
+          <dt>Export</dt><dd>${escapeHtml(assessment.detail)}</dd>
+        </dl>
+        <div class="list compact-list">
+          ${document.envelopes.map((envelope) => `
+            <div class="list-item">
+              <span>
+                <span class="list-title">${escapeHtml(envelope.subject.kind)} / ${escapeHtml(envelope.subject.id)}</span>
+                <span class="list-meta">${escapeHtml(envelope.observation.status)} / ${escapeHtml(envelope.observation.freshness.state)} / ${escapeHtml(envelope.digest.value.slice(0, 16))}...</span>
+              </span>
+              ${this.statusBadge(envelope.observation.freshness.state === "current" ? "ok" : "warn")}
+            </div>
+          `).join("") || `<div class="empty-state">No evidence envelopes are available.</div>`}
+        </div>
+        ${document.diagnostics.length ? `<div class="badge-row">${document.diagnostics.map((diagnostic) => `<span class="badge warn">${escapeHtml(diagnostic)}</span>`).join("")}</div>` : ""}
+      </div>
+    `;
+  }
+
   private renderStudioEvidenceNavigator(): string {
     const evidence = this.getStudioEvidenceSummary();
     const records = this.getFilteredEvidenceRecords(evidence);
@@ -8172,6 +8217,7 @@ export class App {
       </div>
       ${this.renderStudioCompatibilitySnapshotPanel()}
       ${this.renderStudioPackageAnalysisPanel()}
+      ${this.renderStudioEvidenceEnvelopePanel(evidence.envelopeDocument)}
       <div class="section">
         <div class="section-heading-row">
           <h2>Evidence Filters</h2>
@@ -8918,12 +8964,16 @@ export class App {
 
   private getStudioEvidenceSummary(): StudioEvidenceSummary {
     const records = this.getStudioEvidenceRecords();
+    const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
+    const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
     const topRecord =
       records.find((record) => record.status === "fail" || record.status === "blocked" || record.status === "unsupported") ??
       records.find((record) => isAttentionStatus(record.status));
     return {
       records,
       compatibilitySnapshot: STUDIO_COMPATIBILITY_SNAPSHOT,
+      envelopeDocument,
+      envelopeAssessment,
       stats: {
         total: records.length,
         ok: records.filter((record) => record.status === "ok" || record.status === "active").length,
@@ -8941,6 +8991,20 @@ export class App {
       persistedTraceEvidence: this.storedTraceEvidence.map((entry) => structuredClone(entry)),
       persistedTraceComparisons: this.getPersistedTraceComparisons(),
     };
+  }
+
+  private getStudioEvidenceEnvelopeDocument(): StudioEvidenceEnvelopeDocument {
+    const manifest = this.getGameProjectManifest();
+    return createStudioEvidenceEnvelopeDocument({
+      generatedAt: new Date().toISOString(),
+      projectId: manifest.id,
+      projectRevision: this.projectStorageRevision,
+      gates: STUDIO_GATE_EVIDENCE_DOCUMENT.results,
+      packageAnalysis: this.importedPackageAnalysisV1,
+      currentPackageRevision: this.importedSourceBundle?.fingerprint.digest,
+      currentPackageAvailable: Boolean(this.importedSourceBundle),
+      now: Date.now(),
+    });
   }
 
   private getStudioDebugSelection(
@@ -10147,6 +10211,8 @@ export class App {
     const releaseReadyPolicies = releasePolicies.filter((record) => record.canRelease);
     const releaseBlockedPolicies = releasePolicies.filter((record) => !record.canRelease);
     const tracePassed = this.lastTraceArtifact?.status === "passed";
+    const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
+    const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
     const compileErrors = compiled?.diagnostics.errors.length ?? 0;
     const compileWarnings = compiled?.diagnostics.warnings.length ?? 0;
     const missingModules = compiled?.modules.missing.length ?? 0;
@@ -10307,6 +10373,26 @@ export class App {
           : { kind: "run-trace", label: "Export trace artifact", targetId: "trace-artifact" },
       },
       {
+        id: "evidence-envelopes",
+        label: "Revision-bound evidence",
+        status: envelopeAssessment.status,
+        state: envelopeAssessment.state,
+        detail: envelopeAssessment.detail,
+        affectedSystem: "build",
+        impact: "Studio exports shared evidence facts with explicit provenance, source/producer revisions, freshness, and cryptographic integrity; release decisions remain separate.",
+        evidenceIds: [
+          envelopeDocument.schemaVersion,
+          ...envelopeDocument.envelopes.map((envelope) => envelope.id),
+        ],
+        blockedBy: envelopeAssessment.blockedBy,
+        canExport: envelopeAssessment.canExport,
+        nextAction: {
+          kind: envelopeAssessment.status === "ok" ? "open-build" : "open-evidence",
+          label: envelopeAssessment.status === "ok" ? "Review evidence envelope export" : "Review evidence freshness",
+          targetId: "evidence-envelopes",
+        },
+      },
+      {
         id: "package-bundle",
         label: "Project package",
         status: this.lastProjectBundle ? "ok" : compiled ? "partial" : "pending",
@@ -10414,6 +10500,7 @@ export class App {
     const lanes: Array<{ id: string; lane: StudioTrustLane }> = [
       { id: "runtime-manifest", lane: "runtime" },
       { id: "evidence", lane: "qa" },
+      { id: "evidence-envelopes", lane: "qa" },
       { id: "package-bundle", lane: "build" },
       { id: "asset-validation", lane: "assets" },
       { id: "asset-release-policy", lane: "assets" },
@@ -10461,6 +10548,9 @@ export class App {
     }
     if (record.id === "evidence") {
       return { kind: "trace", id: this.lastTraceArtifact?.trace.checksum ?? this.storedTraceEvidence[0]?.artifact.trace.checksum ?? "trace:smoke" };
+    }
+    if (record.id === "evidence-envelopes") {
+      return { kind: "contract", id: "evidence-envelope:v0" };
     }
     if (record.id === "package-bundle") {
       const packageFile = this.getStudioTrustPackageFileTarget();
@@ -10557,6 +10647,14 @@ export class App {
         ? { label: "session", delta: "current trace not persisted" }
         : { label: this.storedTraceEvidence.length ? "stale" : "missing", delta: this.storedTraceEvidence.length ? "stored trace lacks current run" : "export trace required" };
     }
+    if (record.id === "evidence-envelopes") {
+      const document = this.getStudioEvidenceEnvelopeDocument();
+      const assessment = assessStudioEvidenceEnvelopeDocument(document);
+      return {
+        label: document.project.scope === "saved" && assessment.status === "ok" ? "current" : assessment.state,
+        delta: `${document.summary.current}/${document.summary.total} current / ${document.project.scope} project scope`,
+      };
+    }
     if (record.id === "package-bundle") {
       const bundle = this.lastProjectBundle;
       return bundle
@@ -10631,6 +10729,10 @@ export class App {
         return `${this.lastTraceArtifact.trace.frameCount}f / ${this.lastTraceArtifact.trace.eventCount} events / ${this.lastTraceArtifact.trace.checksum}`;
       }
       return this.storedTraceEvidence.length ? `${this.storedTraceEvidence.length} stored trace(s), no current run` : "no current trace artifact";
+    }
+    if (record.id === "evidence-envelopes") {
+      const document = this.getStudioEvidenceEnvelopeDocument();
+      return `${document.schemaVersion} / ${document.summary.current}/${document.summary.total} current / ${document.project.scope}`;
     }
     if (record.id === "package-bundle") {
       const bundle = this.lastProjectBundle;
@@ -12357,6 +12459,7 @@ export class App {
     const studio = this.getStudioProjectSummary();
     const sourceRuntimeMaps = this.getAssetSourceRuntimeMaps(studio.assets);
     const evidence = this.getStudioEvidenceSummary();
+    const evidenceEnvelopes = evidence.envelopeDocument;
     const traceArtifact = this.lastTraceArtifact;
     const zip = new JSZip();
     this.addJsonToZip(zip, "project/project.json", project);
@@ -12371,6 +12474,7 @@ export class App {
       this.addJsonToZip(zip, "studio/source-write-receipt.json", this.studioSourceWriteReceipt);
     }
     this.addJsonToZip(zip, "studio/evidence.json", evidence);
+    this.addJsonToZip(zip, "studio/evidence-envelopes.json", evidenceEnvelopes);
     this.addJsonToZip(zip, "reports/compatibility-report.json", this.getCompatibilityExportPayload());
     this.addJsonToZip(
       zip,
@@ -12402,6 +12506,7 @@ export class App {
       { path: "studio/studio-summary.json", kind: "studio", required: true },
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
       { path: "studio/gate-evidence.json", kind: "studio", required: true },
+      { path: "studio/evidence-envelopes.json", kind: "studio", required: true },
       ...(this.importedPackageAnalysisV1 ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
       ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
