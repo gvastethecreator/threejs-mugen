@@ -150,7 +150,7 @@ export type SourceHandleLike = {
 };
 
 export type SourceWritableLike = {
-  write: (data: string) => Promise<void> | void;
+  write: (data: string | Uint8Array) => Promise<void> | void;
   close: () => Promise<void> | void;
   abort?: () => Promise<void> | void;
 };

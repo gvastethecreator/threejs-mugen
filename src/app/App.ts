@@ -180,9 +180,13 @@ import {
   type SourceImportTransaction,
 } from "./StudioSourceTransaction";
 import {
+  captureSourceWritePreimage,
   createSourceWritePlan,
+  restoreSourceWritePreimage,
   writeSourceHandleText,
   type SourceWritePlan,
+  type SourceWriteCompensation,
+  type SourceWritePreimage,
 } from "./StudioSourceWrite";
 import {
   createSourceWriteReceipt,
@@ -2058,6 +2062,7 @@ export class App {
       observedProjectRevision?: number;
       committedDigest?: string;
       byteLength?: number;
+      compensation?: SourceWriteCompensation;
     },
   ): SourceWriteReceipt {
     const sourcePackage = this.getProjectSourcePackages().find((item) => item.id === draft.sourcePackageId);
@@ -2079,11 +2084,45 @@ export class App {
       ...(draft.semanticPreflight?.draftDigest ? { draftDigest: draft.semanticPreflight.draftDigest } : {}),
       ...(input.committedDigest ? { committedDigest: input.committedDigest } : {}),
       ...(input.byteLength !== undefined ? { byteLength: input.byteLength } : {}),
+      ...(input.compensation ? { compensation: input.compensation } : {}),
       invalidatedOutputs: [...SOURCE_TRANSACTION_INVALIDATED_OUTPUTS],
       diagnostics: [...new Set(input.diagnostics ?? [])],
     });
     this.studioSourceWriteReceipt = receipt;
     return receipt;
+  }
+
+  private async compensateStudioSourceWrite(
+    sourcePackageId: string,
+    handle: SourceHandleLike,
+    preimage: SourceWritePreimage,
+    runtimeWasReimported: boolean,
+  ): Promise<SourceWriteCompensation> {
+    const compensation = await restoreSourceWritePreimage(handle, preimage);
+    if (compensation.status !== "restored" || !runtimeWasReimported) {
+      return compensation;
+    }
+    try {
+      this.pendingSourceRelinkPackageId = sourcePackageId;
+      const accepted = await this.loadFolder(await readSourceHandleFolder(handle), {
+        allowChangedSource: true,
+        skipNavigationGuard: true,
+      });
+      if (accepted) {
+        return compensation;
+      }
+      return {
+        ...compensation,
+        status: "restore-failed",
+        diagnostics: [...compensation.diagnostics, "The source bytes were restored, but the active runtime could not be reimported from the restored folder."],
+      };
+    } catch (error) {
+      return {
+        ...compensation,
+        status: "restore-failed",
+        diagnostics: [...compensation.diagnostics, error instanceof Error ? error.message : String(error)],
+      };
+    }
   }
 
   private async saveStudioSourceDocument(): Promise<void> {
@@ -2093,6 +2132,17 @@ export class App {
     if (!draft?.dirty) {
       return;
     }
+    let preimage: SourceWritePreimage | undefined;
+    let writeClosed = false;
+    let runtimeWasReimported = false;
+    let compensationHandle: SourceHandleLike | undefined;
+    let compensationPackageId: string | undefined;
+    const compensateAfterClose = async (): Promise<SourceWriteCompensation | undefined> => {
+      if (!writeClosed || !preimage || !compensationHandle || !compensationPackageId) {
+        return undefined;
+      }
+      return this.compensateStudioSourceWrite(compensationPackageId, compensationHandle, preimage, runtimeWasReimported);
+    };
     const semanticPreflight = draft.semanticPreflight;
     if (!semanticPreflight || !canWriteStudioSemanticDraft(semanticPreflight)) {
       this.recordStudioSourceWriteReceipt(draft, {
@@ -2186,7 +2236,11 @@ export class App {
         this.updateUi();
         return;
       }
+      preimage = await captureSourceWritePreimage(latestContext.handle, draft.path);
+      compensationHandle = latestContext.handle;
+      compensationPackageId = latestContext.sourcePackage.id;
       const result = await writeSourceHandleText(latestContext.handle, draft.path, draft.text);
+      writeClosed = true;
       this.studioSourceDocument = commitStudioSourceDocumentDraft(draft);
       this.invalidateBuildOutputs();
       this.pendingSourceRelinkPackageId = latestContext.sourcePackage.id;
@@ -2194,6 +2248,7 @@ export class App {
         allowChangedSource: true,
         skipNavigationGuard: true,
       });
+      runtimeWasReimported = accepted;
       if (accepted) {
         const activePackage = this.getProjectSourcePackages().find((item) => item.id === latestContext.sourcePackage.id) ?? latestContext.sourcePackage;
         const fingerprint = this.importedSourceBundle?.fingerprint;
@@ -2207,12 +2262,17 @@ export class App {
         const refreshedText = this.importedSourceBundle?.vfs.readText(draft.path);
         if (refreshedText === undefined) {
           this.studioSourceDocument = undefined;
+          const compensation = await compensateAfterClose();
           this.recordStudioSourceWriteReceipt(draft, {
-            status: "rejected",
+            status: compensation?.status === "restore-failed" ? "failed" : "rejected",
             reason: "reimport-rejected",
             observedSourceFingerprint: fingerprint?.digest,
             byteLength: result.byteLength,
-            diagnostics: [`Saved ${draft.path}, but the reimported source no longer exposes the edited path.`],
+            compensation,
+            diagnostics: [
+              `Saved ${draft.path}, but the reimported source no longer exposes the edited path.`,
+              ...(compensation?.diagnostics ?? []),
+            ],
             observedProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.log(`Saved ${draft.path}, but the reimported source no longer exposes the edited path.`);
@@ -2225,21 +2285,25 @@ export class App {
             baseProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.refreshStudioSourceSemanticDraft();
+          const compensation = await compensateAfterClose();
           this.recordStudioSourceWriteReceipt(draft, {
-            status: "rejected",
+            status: compensation?.status === "restore-failed" ? "failed" : "rejected",
             reason: "reimport-rejected",
             observedSourceFingerprint: fingerprint?.digest,
             byteLength: result.byteLength,
-            diagnostics: ["The reimported text digest differs from the semantic draft."],
+            compensation,
+            diagnostics: ["The reimported text digest differs from the semantic draft.", ...(compensation?.diagnostics ?? [])],
             observedProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.log(`Saved ${draft.path}, but the reimported text digest differs from the semantic draft; inspect before continuing.`);
         } else if (!fingerprint?.digest) {
+          const compensation = await compensateAfterClose();
           this.recordStudioSourceWriteReceipt(draft, {
-            status: "rejected",
+            status: compensation?.status === "restore-failed" ? "failed" : "rejected",
             reason: "reimport-rejected",
             byteLength: result.byteLength,
-            diagnostics: ["The reimported source did not expose a source fingerprint."],
+            compensation,
+            diagnostics: ["The reimported source did not expose a source fingerprint.", ...(compensation?.diagnostics ?? [])],
             observedProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.log(`Saved ${draft.path}, but the reimported source fingerprint is unavailable.`);
@@ -2260,25 +2324,35 @@ export class App {
             committedSourceFingerprint: fingerprint.digest,
             committedDigest: semanticPreflight.draftDigest,
             byteLength: result.byteLength,
+            compensation: preimage ? {
+              status: "not-needed",
+              preimageDigest: preimage.digest,
+              preimageByteLength: preimage.byteLength,
+              diagnostics: [],
+            } : undefined,
             observedProjectRevision: this.getActiveStudioProjectRevision(),
           });
           this.log(`Saved ${draft.path} (${result.byteLength} bytes) and explicitly reimported ${activePackage.name}.`);
         }
       } else {
+        const compensation = await compensateAfterClose();
         this.recordStudioSourceWriteReceipt(draft, {
-          status: "rejected",
+          status: compensation?.status === "restore-failed" ? "failed" : "rejected",
           reason: "reimport-rejected",
           byteLength: result.byteLength,
-          diagnostics: ["Explicit source reimport was rejected; the current runtime session was retained."],
+          compensation,
+          diagnostics: ["Explicit source reimport was rejected; the current runtime session was retained.", ...(compensation?.diagnostics ?? [])],
           observedProjectRevision: this.getActiveStudioProjectRevision(),
         });
         this.log(`Saved ${draft.path}, but explicit source reimport was rejected; the current runtime session was retained.`);
       }
     } catch (error) {
+      const compensation = await compensateAfterClose();
       this.recordStudioSourceWriteReceipt(draft, {
         status: "failed",
         reason: "write-failed",
-        diagnostics: [error instanceof Error ? error.message : String(error)],
+        compensation,
+        diagnostics: [error instanceof Error ? error.message : String(error), ...(compensation?.diagnostics ?? [])],
         observedProjectRevision: this.getActiveStudioProjectRevision(),
       });
       this.log(`Source document save failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -7879,7 +7953,7 @@ export class App {
         <textarea data-source-editor="true" aria-label="Source document text" spellcheck="false"${editable ? "" : " readonly"}>${escapeHtml(draft.text)}</textarea>
         <div class="studio-source-editor-status" data-source-editor-status>${escapeHtml(editorStatus)}</div>
         <small class="list-meta">Semantic ${escapeHtml(preflight.status)} / digest ${escapeHtml(preflight.draftDigest)} / diagnostics ${preflight.diagnostics.length}</small>
-        ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / ${escapeHtml(receipt.digest)}</small>` : ""}
+        ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / compensation ${escapeHtml(receipt.compensation.status)} / ${escapeHtml(receipt.digest)}</small>` : ""}
         <div class="row-actions studio-source-editor-actions">
           <button type="button" data-action="save-source-document"${!draft.dirty || !editable || !canWriteStudioSemanticDraft(preflight) ? " disabled" : ""}>Save &amp; Reimport</button>
           <button type="button" data-action="discard-source-document"${!draft.dirty ? " disabled" : ""}>Discard</button>
@@ -10785,7 +10859,7 @@ export class App {
       const receipt = this.studioSourceWriteReceipt;
       return receipt
         ? `${receipt.status} / ${receipt.reason} / ${receipt.digest}`
-        : "SourceWriteReceipt/v0 missing";
+        : "SourceWriteReceipt/v1 missing";
     }
     return record.evidenceIds.slice(0, 2).join(" / ") || record.id;
   }
@@ -11086,28 +11160,35 @@ export class App {
 
   private getSourceWriteReceiptEvidenceRecord(receipt: SourceWriteReceipt): StudioEvidenceRecord {
     const committed = isSourceWriteReceiptCommitted(receipt);
+    const compensationFailed = receipt.compensation.status === "restore-failed";
     const status: StudioStatus = committed
       ? "ok"
-      : receipt.status === "failed"
+      : compensationFailed || receipt.status === "failed"
         ? "fail"
         : receipt.status === "blocked"
           ? "blocked"
           : "warn";
+    const compensationDetail = `compensation ${receipt.compensation.status}${receipt.compensation.preimageDigest ? ` / preimage ${receipt.compensation.preimageDigest}` : ""}`;
     return {
       id: receipt.id,
       label: "Source Write Receipt",
       category: "source",
       status,
-      detail: `${receipt.sourceName} / ${receipt.path} / ${receipt.status} / ${receipt.reason} / ${receipt.digest}`,
-      tags: ["source-write-receipt/v0", receipt.status, receipt.reason, receipt.sourcePackageId, receipt.digest],
+      detail: `${receipt.sourceName} / ${receipt.path} / ${receipt.status} / ${receipt.reason} / ${compensationDetail} / ${receipt.digest}`,
+      tags: ["source-write-receipt/v1", receipt.status, receipt.reason, receipt.compensation.status, receipt.sourcePackageId, receipt.digest],
       level: committed ? "Committed" : "Guarded",
       severity: this.severityForStatus(status),
       affectedSystem: "studio",
       impact: committed
         ? "The edited source bytes were written through the directory handle and explicitly reimported into the active project."
-        : "The source write did not reach a committed write-and-reimport state; the receipt keeps the blocking reason exportable as diagnostic evidence.",
+        : compensationFailed
+          ? "The post-close source verification failed and the retained preimage could not be proven restored; do not export this source as current."
+          : "The source write did not reach a committed write-and-reimport state; the receipt keeps the blocking reason and compensation evidence exportable as diagnostic evidence.",
       evidenceIds: [receipt.id, `source-write-digest:${receipt.digest}`, `source-package:${receipt.sourcePackageId}`],
-      blockedBy: committed ? [] : [`source-write:${receipt.reason}`],
+      blockedBy: committed ? [] : [
+        `source-write:${receipt.reason}`,
+        ...(compensationFailed ? ["source-write:restore-failed"] : []),
+      ],
       canExport: committed,
       nextAction: {
         kind: committed ? "open-build" : "open-evidence",

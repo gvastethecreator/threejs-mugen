@@ -60,6 +60,7 @@ async function main() {
     deviceScaleFactor: 1,
   });
   const page = await context.newPage();
+  page.setDefaultNavigationTimeout(120000);
   const logs = [];
   const pageErrors = [];
   page.on("console", (msg) => logs.push({ type: msg.type(), text: msg.text() }));
@@ -2193,7 +2194,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
           let staged = fileEntry.bytes.slice();
           return {
             write: async (value) => {
-              staged = new TextEncoder().encode(String(value));
+              staged = typeof value === "string" ? new TextEncoder().encode(value) : Uint8Array.from(value);
             },
             close: async () => {
               fileEntry.bytes = staged;
@@ -2744,6 +2745,9 @@ async function inspectPackageZip(packagePath) {
     sourceWriteReceiptSchema: sourceWriteReceipt?.schemaVersion,
     sourceWriteReceiptStatus: sourceWriteReceipt?.status,
     sourceWriteReceiptReason: sourceWriteReceipt?.reason,
+    sourceWriteReceiptCompensation: sourceWriteReceipt?.compensation?.status,
+    sourceWriteReceiptPreimageDigest: sourceWriteReceipt?.compensation?.preimageDigest,
+    sourceWriteReceiptPreimageByteLength: sourceWriteReceipt?.compensation?.preimageByteLength,
     sourceWriteReceiptDigest: sourceWriteReceipt?.digest,
     sourceWriteReceiptCommittedDigest: sourceWriteReceipt?.committedDigest,
     hasRuntimeAtlas: files.some((file) => file.endsWith("sprite-sheet-alpha.png")),
@@ -2916,8 +2920,18 @@ async function captureStudioAssets(page, outDir) {
   );
   const generatedFilter = page.locator('[data-asset-filter="generated"]').first();
   if (await generatedFilter.isVisible()) {
-    await generatedFilter.evaluate((button) => button.click());
-    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.activeFilter === "generated", undefined, { timeout: 5000 });
+    await page.evaluate(() => {
+      const button = [...document.querySelectorAll('[data-asset-filter="generated"]')]
+        .find((candidate) => {
+          const rect = candidate.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        });
+      if (!button) {
+        throw new Error("Generated asset filter is not present in the visible Studio surface.");
+      }
+      button.click();
+    });
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.activeFilter === "generated", undefined, { timeout: 30000 });
   }
   const firstAsset = page.locator("[data-studio-asset-id]").first();
   if (await firstAsset.isVisible()) {
@@ -4613,9 +4627,12 @@ function assertSmoke(diagnostics) {
       !studioFolderHandleRecovery.after?.bodyHasSourceWriteReceipt ||
       !studioFolderHandleRecovery.after?.sourceEditorVisible ||
       studioFolderHandleRecovery.after?.explicitReimport !== true ||
-      studioFolderHandleRecovery.after?.sourceWriteReceipt?.schemaVersion !== "mugen-web-sandbox/source-write-receipt/v0" ||
+      studioFolderHandleRecovery.after?.sourceWriteReceipt?.schemaVersion !== "mugen-web-sandbox/source-write-receipt/v1" ||
       studioFolderHandleRecovery.after?.sourceWriteReceipt?.status !== "committed" ||
       studioFolderHandleRecovery.after?.sourceWriteReceipt?.reason !== "write-and-reimport" ||
+      studioFolderHandleRecovery.after?.sourceWriteReceipt?.compensation?.status !== "not-needed" ||
+      !/^[0-9a-f]{64}$/i.test(String(studioFolderHandleRecovery.after?.sourceWriteReceipt?.compensation?.preimageDigest ?? "")) ||
+      !Number.isSafeInteger(studioFolderHandleRecovery.after?.sourceWriteReceipt?.compensation?.preimageByteLength) ||
       !String(studioFolderHandleRecovery.after?.sourceWriteReceipt?.path ?? "").toLowerCase().endsWith("chars/kfm/kfm.cns") ||
       !/^[0-9a-f]{64}$/i.test(String(studioFolderHandleRecovery.after?.sourceWriteReceipt?.committedSourceFingerprint ?? "")) ||
       !/^fnv1a32:[0-9a-f]{8}$/i.test(String(studioFolderHandleRecovery.after?.sourceWriteReceipt?.draftDigest ?? "")) ||
@@ -4626,13 +4643,13 @@ function assertSmoke(diagnostics) {
       studioFolderHandleRecovery.after?.sourceWriteTrustRow?.targetKind !== "source-file" ||
       studioFolderHandleRecovery.sourceWritePackage?.hasSourceWriteReceipt !== true ||
       studioFolderHandleRecovery.sourceWritePackage?.manifestListsSourceWriteReceipt !== true ||
-      studioFolderHandleRecovery.sourceWritePackage?.sourceWriteReceiptSchema !== "mugen-web-sandbox/source-write-receipt/v0" ||
+      studioFolderHandleRecovery.sourceWritePackage?.sourceWriteReceiptSchema !== "mugen-web-sandbox/source-write-receipt/v1" ||
       studioFolderHandleRecovery.sourceWritePackage?.sourceWriteReceiptStatus !== "committed" ||
       studioFolderHandleRecovery.sourceWritePackage?.sourceWriteReceiptReason !== "write-and-reimport" ||
       !studioFolderHandleRecovery.sourceWritePackage?.sourceWriteReceiptDigest ||
       studioFolderHandleRecovery.sourceWritePackage?.sourceWriteReceiptCommittedDigest !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.committedDigest)
   ) {
-    failures.push("studio-folder-handle: directory enumeration did not recover, write, reimport, and materialize SourceWriteReceipt/v0 for the real fixture");
+    failures.push("studio-folder-handle: directory enumeration did not recover, write, reimport, and materialize SourceWriteReceipt/v1 compensation evidence for the real fixture");
   }
   if (
     ikemenScan.mode !== "studio" ||
@@ -5338,6 +5355,7 @@ function summarizeDiagnostics(diagnostics) {
             sourceHandle: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceHandle,
             sourceTransaction: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceTransaction,
             sourceWriteReceipt: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteReceipt,
+            sourceWriteReceiptCompensation: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteReceipt?.compensation,
             sourceWriteEvidenceRecord: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteEvidenceRecord,
             sourceWriteTrustRow: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteTrustRow,
             bodyHasSourcePackages: diagnostics.checks.studioFolderHandleRecovery?.after?.bodyHasSourcePackages,

@@ -22,6 +22,7 @@ describe("StudioSourceWriteReceipt", () => {
     expect(parsed.receipt).toMatchObject({
       status: "committed",
       reason: "write-and-reimport",
+      compensation: { status: "not-needed" },
       committedDigest: "sha256:edited-cns",
     });
     expect(isSourceWriteReceiptCommitted(parsed.receipt)).toBe(true);
@@ -54,6 +55,32 @@ describe("StudioSourceWriteReceipt", () => {
 
     expect(parseSourceWriteReceipt(blocked).diagnostics).toEqual([]);
     expect(isSourceWriteReceiptCommitted(blocked)).toBe(false);
+  });
+
+  it("preserves restored preimage evidence and rejects incomplete compensation", () => {
+    const restored = receipt({
+      status: "rejected",
+      reason: "reimport-rejected",
+      compensation: {
+        status: "restored",
+        preimageDigest: "a".repeat(64),
+        preimageByteLength: 12,
+        restoredDigest: "a".repeat(64),
+        restoredByteLength: 12,
+        diagnostics: [],
+      },
+    });
+    expect(parseSourceWriteReceipt(restored).diagnostics).toEqual([]);
+
+    const incomplete = { ...restored, compensation: { ...restored.compensation, restoredDigest: undefined } };
+    expect(parseSourceWriteReceipt(incomplete).diagnostics).toContain("Source write receipt restored compensation is missing byte evidence");
+  });
+
+  it("requires compensation evidence in v1 receipts", () => {
+    const withoutCompensation = { ...receipt() } as Record<string, unknown>;
+    delete withoutCompensation.compensation;
+
+    expect(parseSourceWriteReceipt(withoutCompensation).diagnostics).toContain("Source write receipt compensation is missing");
   });
 
   it("requires the receipt digest field", () => {

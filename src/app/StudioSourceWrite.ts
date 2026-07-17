@@ -22,6 +22,22 @@ export type SourceWritePlan = {
   reason?: SourceWriteBlockReason;
 };
 
+export type SourceWritePreimage = {
+  path: string;
+  bytes: Uint8Array;
+  digest: string;
+  byteLength: number;
+};
+
+export type SourceWriteCompensation = {
+  status: "not-needed" | "restored" | "restore-failed";
+  preimageDigest?: string;
+  preimageByteLength?: number;
+  restoredDigest?: string;
+  restoredByteLength?: number;
+  diagnostics: string[];
+};
+
 export type SourceWritePlanInput = {
   sourcePackage: GameProjectSourcePackage;
   sourceTransaction: SourceTransactionRecord | undefined;
@@ -32,7 +48,7 @@ export type SourceWritePlanInput = {
 
 export class SourceHandleWriteError extends Error {
   constructor(
-    readonly code: "unsupported" | "permission-denied" | "missing" | "conflict" | "write-failed",
+    readonly code: "unsupported" | "permission-denied" | "missing" | "read-failed" | "conflict" | "write-failed",
     message: string,
     options?: ErrorOptions,
   ) {
@@ -81,8 +97,143 @@ export async function writeSourceHandleText(
   sourcePath: string,
   text: string,
 ): Promise<{ path: string; byteLength: number }> {
+  return writeSourceHandleData(handle, sourcePath, text);
+}
+
+export async function captureSourceWritePreimage(
+  handle: SourceHandleLike,
+  sourcePath: string,
+): Promise<SourceWritePreimage> {
+  const observed = await readSourceHandleBytes(handle, sourcePath);
+  return {
+    path: sourcePath,
+    bytes: observed.bytes,
+    digest: observed.digest,
+    byteLength: observed.byteLength,
+  };
+}
+
+export async function readSourceHandleBytes(
+  handle: SourceHandleLike,
+  sourcePath: string,
+): Promise<{ path: string; bytes: Uint8Array; digest: string; byteLength: number }> {
+  const fileHandle = await resolveSourceFileHandle(handle, sourcePath);
+  if (typeof fileHandle.getFile !== "function") {
+    throw new SourceHandleWriteError("unsupported", "The source file handle cannot read file bytes.");
+  }
+  let file: File;
+  try {
+    file = await fileHandle.getFile();
+  } catch (error) {
+    throw new SourceHandleWriteError(classifyWriteError(error), `Could not read source file '${sourcePath}'.`, { cause: error });
+  }
+  let bytes: Uint8Array;
+  try {
+    bytes = new Uint8Array(await file.arrayBuffer());
+  } catch (error) {
+    throw new SourceHandleWriteError("read-failed", `Could not read bytes from source file '${sourcePath}'.`, { cause: error });
+  }
+  return {
+    path: sourcePath,
+    bytes,
+    digest: await sha256SourceBytes(bytes),
+    byteLength: bytes.byteLength,
+  };
+}
+
+export async function restoreSourceWritePreimage(
+  handle: SourceHandleLike,
+  preimage: SourceWritePreimage,
+): Promise<SourceWriteCompensation> {
+  const base = {
+    preimageDigest: preimage.digest,
+    preimageByteLength: preimage.byteLength,
+  };
+  try {
+    await writeSourceHandleBytes(handle, preimage.path, preimage.bytes);
+    const restored = await readSourceHandleBytes(handle, preimage.path);
+    const byteEquivalent = bytesEqual(preimage.bytes, restored.bytes);
+    if (!byteEquivalent || restored.digest.toLowerCase() !== preimage.digest.toLowerCase() || restored.byteLength !== preimage.byteLength) {
+      return {
+        ...base,
+        status: "restore-failed",
+        restoredDigest: restored.digest,
+        restoredByteLength: restored.byteLength,
+        diagnostics: ["Restored source bytes do not match the retained preimage."],
+      };
+    }
+    return {
+      ...base,
+      status: "restored",
+      restoredDigest: restored.digest,
+      restoredByteLength: restored.byteLength,
+      diagnostics: [],
+    };
+  } catch (error) {
+    return {
+      ...base,
+      status: "restore-failed",
+      diagnostics: [error instanceof Error ? error.message : String(error)],
+    };
+  }
+}
+
+export async function sha256SourceBytes(
+  bytes: Uint8Array,
+  digestApi: Pick<SubtleCrypto, "digest"> | undefined = globalThis.crypto?.subtle,
+): Promise<string> {
+  if (!digestApi) {
+    throw new SourceHandleWriteError("unsupported", "Web Crypto SHA-256 is unavailable for source compensation.");
+  }
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  const digest = await digestApi.digest("SHA-256", copy);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function writeSourceHandleBytes(
+  handle: SourceHandleLike,
+  sourcePath: string,
+  bytes: Uint8Array,
+): Promise<{ path: string; byteLength: number }> {
+  return writeSourceHandleData(handle, sourcePath, bytes);
+}
+
+async function writeSourceHandleData(
+  handle: SourceHandleLike,
+  sourcePath: string,
+  data: string | Uint8Array,
+): Promise<{ path: string; byteLength: number }> {
   if (handle.kind !== "directory") {
     throw new SourceHandleWriteError("unsupported", "Only directory source handles can write source files.");
+  }
+  const fileHandle = await resolveSourceFileHandle(handle, sourcePath);
+  if (typeof fileHandle.createWritable !== "function") {
+    throw new SourceHandleWriteError("unsupported", "The source file handle cannot create a writable stream.");
+  }
+  let writable: Awaited<ReturnType<NonNullable<SourceHandleLike["createWritable"]>>> | undefined;
+  let closed = false;
+  try {
+    writable = await fileHandle.createWritable({ keepExistingData: false, mode: "exclusive" });
+    await writable.write(data);
+    await writable.close();
+    closed = true;
+  } catch (error) {
+    if (writable && !closed && typeof writable.abort === "function") {
+      try {
+        await writable.abort();
+      } catch {
+        // Preserve the original write failure; the browser owns rollback of the staged stream.
+      }
+    }
+    throw new SourceHandleWriteError(classifyWriteError(error), `Could not write source file '${sourcePath}'.`, { cause: error });
+  }
+  return { path: sourcePath, byteLength: typeof data === "string" ? new TextEncoder().encode(data).byteLength : data.byteLength };
+}
+
+async function resolveSourceFileHandle(handle: SourceHandleLike, sourcePath: string): Promise<SourceHandleLike> {
+  if (handle.kind !== "directory") {
+    throw new SourceHandleWriteError("unsupported", "Only directory source handles can resolve source files.");
   }
   const segments = sourceWritePathSegments(handle.name, sourcePath);
   let directory = handle;
@@ -100,33 +251,11 @@ export async function writeSourceHandleText(
   if (!fileName || typeof directory.getFileHandle !== "function") {
     throw new SourceHandleWriteError("unsupported", "The source folder cannot resolve the target file.");
   }
-  let fileHandle: SourceHandleLike;
   try {
-    fileHandle = await directory.getFileHandle(fileName, { create: false });
+    return await directory.getFileHandle(fileName, { create: false });
   } catch (error) {
     throw new SourceHandleWriteError(classifyWriteError(error), `Could not open source file '${sourcePath}'.`, { cause: error });
   }
-  if (typeof fileHandle.createWritable !== "function") {
-    throw new SourceHandleWriteError("unsupported", "The source file handle cannot create a writable stream.");
-  }
-  let writable: Awaited<ReturnType<NonNullable<SourceHandleLike["createWritable"]>>> | undefined;
-  let closed = false;
-  try {
-    writable = await fileHandle.createWritable({ keepExistingData: false, mode: "exclusive" });
-    await writable.write(text);
-    await writable.close();
-    closed = true;
-  } catch (error) {
-    if (writable && !closed && typeof writable.abort === "function") {
-      try {
-        await writable.abort();
-      } catch {
-        // Preserve the original write failure; the browser owns rollback of the staged stream.
-      }
-    }
-    throw new SourceHandleWriteError(classifyWriteError(error), `Could not write source file '${sourcePath}'.`, { cause: error });
-  }
-  return { path: sourcePath, byteLength: new TextEncoder().encode(text).byteLength };
 }
 
 export function sourceWritePathSegments(rootName: string | undefined, sourcePath: string): string[] {
@@ -165,4 +294,12 @@ function errorName(error: unknown): string | undefined {
   return typeof error === "object" && error !== null && "name" in error && typeof error.name === "string"
     ? error.name
     : undefined;
+}
+
+function bytesEqual(left: Uint8Array, right: Uint8Array): boolean {
+  if (left.byteLength !== right.byteLength) return false;
+  for (let index = 0; index < left.byteLength; index += 1) {
+    if (left[index] !== right[index]) return false;
+  }
+  return true;
 }

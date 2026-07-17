@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  captureSourceWritePreimage,
   createSourceWritePlan,
+  readSourceHandleBytes,
+  restoreSourceWritePreimage,
   SourceHandleWriteError,
   sourceWritePathSegments,
   writeSourceHandleText,
@@ -106,6 +109,39 @@ describe("StudioSourceWrite", () => {
     });
     expect(writable.abort).toHaveBeenCalledTimes(1);
   });
+
+  it("retains a byte preimage and proves exact restore after a post-close failure", async () => {
+    const source = mutableFileHandle("before\u0000bytes");
+    const preimage = await captureSourceWritePreimage(source.root, "kfm.cns");
+
+    await writeSourceHandleText(source.root, "kfm.cns", "edited");
+    expect(new TextDecoder().decode((await readSourceHandleBytes(source.root, "kfm.cns")).bytes)).toBe("edited");
+
+    const compensation = await restoreSourceWritePreimage(source.root, preimage);
+
+    expect(compensation).toMatchObject({
+      status: "restored",
+      preimageDigest: preimage.digest,
+      preimageByteLength: preimage.byteLength,
+      restoredDigest: preimage.digest,
+      restoredByteLength: preimage.byteLength,
+      diagnostics: [],
+    });
+    expect((await readSourceHandleBytes(source.root, "kfm.cns")).bytes).toEqual(preimage.bytes);
+  });
+
+  it("emits restore-failed evidence when the compensating writer is rejected", async () => {
+    const source = mutableFileHandle("before");
+    const preimage = await captureSourceWritePreimage(source.root, "kfm.cns");
+    await writeSourceHandleText(source.root, "kfm.cns", "edited");
+    source.failWrites = true;
+
+    const compensation = await restoreSourceWritePreimage(source.root, preimage);
+
+    expect(compensation.status).toBe("restore-failed");
+    expect(compensation.preimageDigest).toBe(preimage.digest);
+    expect(compensation.diagnostics.join(" ")).toContain("Could not write source file");
+  });
 });
 
 function sourcePackage(overrides: Partial<GameProjectSourcePackage> = {}): GameProjectSourcePackage {
@@ -148,4 +184,40 @@ function transaction(source: GameProjectSourcePackage) {
 
 function writableFolder(): SourceHandleLike {
   return { kind: "directory", name: "kfm", getDirectoryHandle: vi.fn(), getFileHandle: vi.fn() };
+}
+
+function mutableFileHandle(initialText: string): {
+  root: SourceHandleLike;
+  failWrites: boolean;
+} {
+  let bytes = new TextEncoder().encode(initialText);
+  const state = { failWrites: false };
+  const fileHandle: SourceHandleLike = {
+    kind: "file",
+    name: "kfm.cns",
+    getFile: vi.fn(async () => ({ arrayBuffer: async () => bytes.slice().buffer }) as unknown as File),
+    createWritable: vi.fn(async () => ({
+      write: async (data: string | Uint8Array) => {
+        if (state.failWrites) {
+          throw new Error("injected restore write failure");
+        }
+        bytes = typeof data === "string" ? new TextEncoder().encode(data) : new Uint8Array(data);
+      },
+      close: async () => undefined,
+      abort: async () => undefined,
+    })),
+  };
+  return {
+    get failWrites() {
+      return state.failWrites;
+    },
+    set failWrites(value: boolean) {
+      state.failWrites = value;
+    },
+    root: {
+      kind: "directory",
+      name: "kfm",
+      getFileHandle: vi.fn(async () => fileHandle),
+    },
+  };
 }

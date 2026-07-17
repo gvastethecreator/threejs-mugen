@@ -1,6 +1,7 @@
 import type { SourceTransactionPermission } from "./StudioSourceTransaction";
+import type { SourceWriteCompensation } from "./StudioSourceWrite";
 
-export const SOURCE_WRITE_RECEIPT_SCHEMA = "mugen-web-sandbox/source-write-receipt/v0" as const;
+export const SOURCE_WRITE_RECEIPT_SCHEMA = "mugen-web-sandbox/source-write-receipt/v1" as const;
 
 export type SourceWriteReceiptStatus = "committed" | "blocked" | "rejected" | "failed";
 export type SourceWriteReceiptReason =
@@ -32,6 +33,7 @@ export type SourceWriteReceipt = {
   draftDigest?: string;
   committedDigest?: string;
   byteLength?: number;
+  compensation: SourceWriteCompensation;
   invalidatedOutputs: string[];
   diagnostics: string[];
   digest: string;
@@ -43,8 +45,9 @@ export type SourceWriteReceiptParseResult = {
 };
 
 export function createSourceWriteReceipt(
-  input: Omit<SourceWriteReceipt, "schemaVersion" | "digest">,
+  input: Omit<SourceWriteReceipt, "schemaVersion" | "digest" | "compensation"> & { compensation?: SourceWriteCompensation },
 ): SourceWriteReceipt {
+  const compensation = input.compensation ?? { status: "not-needed" as const, diagnostics: [] };
   const payload: Omit<SourceWriteReceipt, "digest"> = {
     schemaVersion: SOURCE_WRITE_RECEIPT_SCHEMA,
     id: input.id,
@@ -64,6 +67,7 @@ export function createSourceWriteReceipt(
     ...(input.draftDigest ? { draftDigest: input.draftDigest } : {}),
     ...(input.committedDigest ? { committedDigest: input.committedDigest } : {}),
     ...(input.byteLength !== undefined ? { byteLength: input.byteLength } : {}),
+    compensation: cloneCompensation(compensation),
     invalidatedOutputs: [...input.invalidatedOutputs],
     diagnostics: [...input.diagnostics],
   };
@@ -92,6 +96,7 @@ export function parseSourceWriteReceipt(value: unknown): SourceWriteReceiptParse
       diagnostics.push(`Source write receipt ${key} is invalid`);
     }
   }
+  const compensation = parseCompensation(value.compensation, diagnostics);
   if (!Array.isArray(value.invalidatedOutputs) || !value.invalidatedOutputs.every((item) => typeof item === "string")) {
     diagnostics.push("Source write receipt invalidatedOutputs must be string[]");
   }
@@ -99,7 +104,7 @@ export function parseSourceWriteReceipt(value: unknown): SourceWriteReceiptParse
     diagnostics.push("Source write receipt diagnostics must be string[]");
   }
   if (!nonEmptyString(value.digest)) diagnostics.push("Source write receipt digest is missing");
-  if (diagnostics.length) return { diagnostics };
+  if (diagnostics.length || !compensation) return { diagnostics };
   const candidate = {
     schemaVersion: SOURCE_WRITE_RECEIPT_SCHEMA,
     id: String(value.id),
@@ -119,6 +124,7 @@ export function parseSourceWriteReceipt(value: unknown): SourceWriteReceiptParse
     ...optionalString(value, "draftDigest"),
     ...optionalString(value, "committedDigest"),
     ...optionalNumber(value, "byteLength"),
+    compensation,
     invalidatedOutputs: [...(value.invalidatedOutputs as string[])],
     diagnostics: [...(value.diagnostics as string[])],
   } satisfies Omit<SourceWriteReceipt, "digest">;
@@ -128,7 +134,47 @@ export function parseSourceWriteReceipt(value: unknown): SourceWriteReceiptParse
 }
 
 export function isSourceWriteReceiptCommitted(receipt: SourceWriteReceipt | undefined): boolean {
-  return receipt?.status === "committed" && Boolean(receipt.committedSourceFingerprint) && Boolean(receipt.committedDigest);
+  return receipt?.status === "committed" && receipt.compensation.status === "not-needed" && Boolean(receipt.committedSourceFingerprint) && Boolean(receipt.committedDigest);
+}
+
+function parseCompensation(value: unknown, diagnostics: string[]): SourceWriteCompensation | undefined {
+  if (!isRecord(value)) {
+    diagnostics.push("Source write receipt compensation is missing");
+    return undefined;
+  }
+  if (!isCompensationStatus(value.status)) diagnostics.push("Source write receipt compensation status is invalid");
+  if (!Array.isArray(value.diagnostics) || !value.diagnostics.every((item) => typeof item === "string")) {
+    diagnostics.push("Source write receipt compensation diagnostics must be string[]");
+  }
+  for (const key of ["preimageDigest", "restoredDigest"] as const) {
+    if (value[key] !== undefined && !nonEmptyString(value[key])) {
+      diagnostics.push(`Source write receipt compensation ${key} is invalid`);
+    }
+  }
+  for (const key of ["preimageByteLength", "restoredByteLength"] as const) {
+    if (value[key] !== undefined && !isNonNegativeSafeInteger(value[key])) {
+      diagnostics.push(`Source write receipt compensation ${key} is invalid`);
+    }
+  }
+  if (value.status === "restored" && (!nonEmptyString(value.preimageDigest) || !isNonNegativeSafeInteger(value.preimageByteLength) || !nonEmptyString(value.restoredDigest) || !isNonNegativeSafeInteger(value.restoredByteLength))) {
+    diagnostics.push("Source write receipt restored compensation is missing byte evidence");
+  }
+  if (value.status === "restore-failed" && (!nonEmptyString(value.preimageDigest) || !isNonNegativeSafeInteger(value.preimageByteLength))) {
+    diagnostics.push("Source write receipt failed compensation is missing preimage evidence");
+  }
+  if (diagnostics.length) return undefined;
+  return {
+    status: value.status as SourceWriteCompensation["status"],
+    ...(value.preimageDigest !== undefined ? { preimageDigest: String(value.preimageDigest) } : {}),
+    ...(value.preimageByteLength !== undefined ? { preimageByteLength: Number(value.preimageByteLength) } : {}),
+    ...(value.restoredDigest !== undefined ? { restoredDigest: String(value.restoredDigest) } : {}),
+    ...(value.restoredByteLength !== undefined ? { restoredByteLength: Number(value.restoredByteLength) } : {}),
+    diagnostics: [...(value.diagnostics as string[])],
+  };
+}
+
+function cloneCompensation(value: SourceWriteCompensation): SourceWriteCompensation {
+  return { ...value, diagnostics: [...value.diagnostics] };
 }
 
 function optionalString(value: Record<string, unknown>, key: string): Record<string, string> {
@@ -154,6 +200,10 @@ function isReceiptReason(value: unknown): value is SourceWriteReceiptReason {
 
 function isPermission(value: unknown): value is SourceTransactionPermission {
   return value === "not-requested" || value === "prompt" || value === "granted" || value === "denied" || value === "revoked" || value === "unsupported";
+}
+
+function isCompensationStatus(value: unknown): value is SourceWriteCompensation["status"] {
+  return value === "not-needed" || value === "restored" || value === "restore-failed";
 }
 
 function isIsoDate(value: unknown): value is string {
