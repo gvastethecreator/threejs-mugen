@@ -808,6 +808,61 @@ damage = 5
     });
   });
 
+  it("routes imported helper State -1 through the owner command buffer when keyctrl is enabled", () => {
+    const fighter = createImportedFixture({
+      id: "ikemen-helper-keyctrl-state-entry",
+      withStateMove: false,
+      withHelper: true,
+      helperKeyCtrl: true,
+      helperStateControllers: `
+[State 1200, Current helper state]
+type = VarAdd
+trigger1 = 1
+v = 1
+value = 1
+`,
+      helperStateEntryControllers: `
+[State -1, Helper command gate]
+type = VarAdd
+trigger1 = command = "helper_tick"
+v = 0
+value = 10
+`,
+    });
+    const immediateHelper = parseCns(`
+[State 0, Immediate keyctrl helper]
+type = Helper
+trigger1 = command = "helper_tick"
+id = 43
+stateno = 1200
+anim = 910
+keyctrl = 1
+pos = -44,-28
+postype = p1
+`).controllers[0];
+    const stateZero = fighter.states?.find((state) => state.id === 0);
+    if (!immediateHelper || !stateZero) {
+      throw new Error("Expected helper fixture State 0");
+    }
+    fighter.states = fighter.states?.map((state) =>
+      state === stateZero ? { ...state, controllers: [...state.controllers, immediateHelper] } : state,
+    );
+    fighter.commands = [
+      ...(fighter.commands ?? []),
+      ...parseCmd(`
+[Command]
+name = "helper_tick"
+command = m
+`).commands,
+    ];
+
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    const snapshot = runtime.step({ p1: new Set(["m"]), p2: new Set() });
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([10, 1]);
+  });
+
   it("executes Helper-owned default TagOut and later TagIn without stopping Helper CNS", () => {
     const fighter = createImportedFixture({
       id: "ikemen-helper-owned-self-tag-cycle",
@@ -7616,6 +7671,7 @@ function createImportedFixture(
     withProjectile?: boolean;
     withHelper?: boolean;
     helperStandby?: number | string;
+    helperKeyCtrl?: boolean;
     helperPreSpawnVarSet?: { index: number; value: number | string };
     helperStateCtrl?: number | null;
     helperRedirectTag?: boolean;
@@ -7624,6 +7680,7 @@ function createImportedFixture(
     helperRedirectTagParams?: string;
     helperRemoveTime?: number;
     helperStateControllers?: string;
+    helperStateEntryControllers?: string;
     helperExtraStates?: string;
     withTargetControllers?: boolean;
     withBindToTarget?: boolean;
@@ -8079,6 +8136,7 @@ id = 42
 name = "Buddy"
 stateno = 1200
 ${options.helperStandby === undefined ? "" : `standby = ${options.helperStandby}`}
+${options.helperKeyCtrl ? "keyctrl = 1" : ""}
 pos = -44,-28
 postype = p1
 facing = 1
@@ -8589,6 +8647,7 @@ triggerall = command = "x"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
+${options.helperStateEntryControllers ?? ""}
 ${options.stateEntryResourceController ?? ""}
 `).controllers;
   const stateFile = parseCns(`

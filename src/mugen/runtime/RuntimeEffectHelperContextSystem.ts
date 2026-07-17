@@ -25,6 +25,7 @@ export type RuntimeEffectHelperContextOpponent = {
 export type RuntimeEffectHelperContextOptions = Pick<
   RuntimeHelperAdvanceOptions,
   | "constants"
+  | "commandActive"
   | "gameSpace"
   | "stageTime"
   | "runtimeTick"
@@ -44,6 +45,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
 
 export type RuntimeEffectHelperContext = {
   constants?: RuntimeHelperAdvanceOptions["constants"];
+  commandActive?: RuntimeHelperAdvanceOptions["commandActive"];
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentId?: string;

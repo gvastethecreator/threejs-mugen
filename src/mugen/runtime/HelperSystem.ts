@@ -64,6 +64,8 @@ import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
+export type RuntimeHelperProgram = Pick<RuntimeProgramIr, "states"> & Partial<Pick<RuntimeProgramIr, "stateEntries">>;
+
 export type RuntimeHelper = {
   serialId: string;
   playerId?: number;
@@ -86,7 +88,7 @@ export type RuntimeHelper = {
   spriteOwnerDefinitionId: string;
   spriteOwnerLabel: string;
   localCoord?: [number, number];
-  runtimeProgram?: Pick<RuntimeProgramIr, "states">;
+  runtimeProgram?: RuntimeHelperProgram;
   animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
   stateNo?: number;
@@ -109,6 +111,7 @@ export type RuntimeHelper = {
   stateType: CharacterRuntimeState["stateType"];
   moveType: CharacterRuntimeState["moveType"];
   physics: CharacterRuntimeState["physics"];
+  keyCtrl?: boolean;
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -163,6 +166,7 @@ export type RuntimeHelperResourceRedirect = RuntimeHelperTargetRedirect;
 export type RuntimeHelperAdvanceOptions = {
   constants?: RuntimeResourceConstants;
   pauseKind?: RuntimeHelperPauseKind;
+  commandActive?: (name: string) => boolean;
   stageBounds?: MugenStageDefinition["bounds"];
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
@@ -268,7 +272,7 @@ export type RuntimeHelperSpawnInput = {
   spriteOwnerDefinitionId: string;
   spriteOwnerLabel: string;
   localCoord?: [number, number];
-  runtimeProgram?: Pick<RuntimeProgramIr, "states">;
+  runtimeProgram?: RuntimeHelperProgram;
   animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
   stateNo?: number;
@@ -321,6 +325,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     ctrl: input.initialControl ?? (initialState?.ctrl ?? 1) !== 0,
+    keyCtrl: operation?.keyCtrl ?? booleanNumber(findControllerParam(input.controller, "keyctrl")) ?? false,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -365,6 +370,9 @@ export function advanceRuntimeHelperActor(
 ): boolean {
   if (canAdvanceRuntimeHelper(helper, options.pauseKind)) {
     helper.assertSpecial = undefined;
+    if (helper.keyCtrl === true && runRuntimeHelperStateControllers(helper, options, -1) === "destroyed") {
+      return false;
+    }
     if (runRuntimeHelperStateControllers(helper, options) === "destroyed") {
       return false;
     }
@@ -392,6 +400,7 @@ export function runRuntimeHelperStateControllers(
     | "stageBounds"
     | "gameSpace"
     | "stageTime"
+    | "commandActive"
     | "runtimeTick"
     | "parentState"
     | "rootState"
@@ -425,12 +434,15 @@ export function runRuntimeHelperStateControllers(
     | "onOperation"
     | "onUnsupportedController"
   > = {},
+  stateNo: number | undefined = helper.stateNo,
 ): RuntimeHelperControllerResult {
-  const stateProgram = helper.runtimeProgram?.states.find((candidate) => candidate.id === helper.stateNo);
-  if (!stateProgram) {
+  const controllers = stateNo === -1
+    ? helper.runtimeProgram?.stateEntries
+    : helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.controllers;
+  if (!controllers) {
     return "active";
   }
-  for (const controller of stateProgram.controllers) {
+  for (const controller of controllers) {
     if (!helperTriggersPass(helper, controller, options)) {
       continue;
     }
@@ -511,6 +523,7 @@ export function runRuntimeHelperStateControllers(
         playerNo: expressionContext.playerNo,
         stageBounds: options.stageBounds,
         stageTime: options.stageTime,
+        commandActive: expressionContext.commandActive,
         opponent: expressionContext.opponent,
         parent: expressionContext.parent,
         parentPlayerId: expressionContext.parentPlayerId,
@@ -1037,6 +1050,7 @@ function applyRuntimeHelperTargetController(
     | "stageBounds"
     | "gameSpace"
     | "stageTime"
+    | "commandActive"
     | "opponentId"
     | "parentState"
     | "rootState"
@@ -1226,6 +1240,7 @@ function helperTriggersPass(
     | "stageBounds"
     | "gameSpace"
     | "stageTime"
+    | "commandActive"
     | "opponentId"
     | "parentState"
     | "rootState"
@@ -1269,6 +1284,7 @@ function resolveHelperNumber(
     | "stageBounds"
     | "gameSpace"
     | "stageTime"
+    | "commandActive"
     | "opponentId"
     | "parentState"
     | "rootState"
@@ -1446,6 +1462,7 @@ function helperExpressionContext(
     | "stageBounds"
     | "gameSpace"
     | "stageTime"
+    | "commandActive"
     | "opponentId"
     | "parentState"
     | "rootState"
@@ -1482,6 +1499,7 @@ function helperExpressionContext(
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
     stageTime: options.stageTime,
+    commandActive: options.commandActive,
     stateTime: helper.stateTime,
     target: (targetId?: number) => helperTargetRedirect(helper, options, targetId),
     numTarget: (targetId?: number) => helperTargetWorld.count(runtimeHelperTargetActor(helper), targetId),

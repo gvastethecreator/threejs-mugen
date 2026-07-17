@@ -248,6 +248,7 @@ export type HelperControllerOp = {
   name?: string;
   stateNo?: number;
   animNo?: number;
+  keyCtrl?: boolean;
   standby?: boolean;
   standbyExpression?: string;
   pos?: MugenProjectileVector;
@@ -2071,6 +2072,7 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     name: stripMugenString(findParam(controller, "name")),
     stateNo: firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value")),
     animNo: firstNumber(findParam(controller, "anim")),
+    keyCtrl: booleanNumber(findParam(controller, "keyctrl")) ?? false,
     standby,
     standbyExpression,
     pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ControllerIr, StateProgramIr } from "../mugen/compiler/RuntimeIr";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
 import type { HelperControllerOp, PauseControllerOp, TeamStandbyControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
@@ -109,6 +110,27 @@ function controllerIr(stateId: number, type: string, params: Record<string, stri
   };
 }
 
+function compiledControllerIr(
+  stateId: number,
+  type: string,
+  triggers: string[],
+  params: Record<string, string> = {},
+): ControllerIr {
+  return compileControllerIr({
+    stateId,
+    type,
+    params,
+    triggers: triggers.map((expression, index) => ({
+      index: index + 1,
+      expression,
+      raw: `trigger${index + 1} = ${expression}`,
+      line: index + 1,
+    })),
+    line: 1,
+    rawHeader: `[State ${stateId}, ${type}]`,
+  });
+}
+
 function stateProgram(source: MugenStateDef, controllers: ControllerIr[] = []): StateProgramIr {
   return {
     source,
@@ -190,6 +212,33 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("runs helper State -1 only with keyctrl, owner command input, and outside pause", () => {
+    const stateEntry = compiledControllerIr(-1, "VarAdd", ['command = "helper_tick"'], { v: "0", value: "10" });
+    const currentState = controllerIr(6000, "VarAdd", { v: "1", value: "1" });
+    const runtimeProgram = {
+      states: [stateProgram(stateDef(6000), [currentState])],
+      stateEntries: [stateEntry],
+    };
+
+    const enabled = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([enabled], stage, { commandActive: (name) => name === "helper_tick" });
+    expect(enabled.vars.slice(0, 2)).toEqual([10, 1]);
+    expect(enabled.age).toBe(1);
+
+    const commandMiss = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([commandMiss], stage, { commandActive: () => false });
+    expect(commandMiss.vars.slice(0, 2)).toEqual([0, 1]);
+
+    const keyCtrlOff = helper({ keyCtrl: false, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([keyCtrlOff], stage, { commandActive: () => true });
+    expect(keyCtrlOff.vars.slice(0, 2)).toEqual([0, 1]);
+
+    const paused = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram, pauseMoveTime: 0 });
+    advanceRuntimeHelpers([paused], stage, { pauseKind: "Pause", commandActive: () => true });
+    expect(paused.vars.slice(0, 2)).toEqual([0, 0]);
+    expect(paused.age).toBe(0);
+  });
+
   it("routes Helper TargetPowerAdd RedirectID through a live root target memory", () => {
     const redirectedTarget = {
       id: "p2",

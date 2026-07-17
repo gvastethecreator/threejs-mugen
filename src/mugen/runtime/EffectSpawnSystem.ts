@@ -6,7 +6,7 @@ import type {
   ProjectileControllerOp,
   RemoveExplodControllerOp,
 } from "../compiler/ControllerOps";
-import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { DemoFighterDefinition } from "./demoFighters";
@@ -14,6 +14,7 @@ import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodSpawnInput } from "./ExplodSystem";
 import type { RuntimeProjectileModifyResolver, RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import type { RuntimeHelperProgram } from "./HelperSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
@@ -24,7 +25,7 @@ export type RuntimeEffectSpawnActor = {
   definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord"> & {
     constants?: DemoFighterDefinition["constants"];
   };
-  runtimeProgram?: Pick<RuntimeProgramIr, "states">;
+  runtimeProgram?: RuntimeHelperProgram;
   runtime: Pick<CharacterRuntimeState, "pos" | "combatDepth" | "facing" | "stateNo" | "animNo" | "attackMultiplier">;
   stateOwner?: RuntimeEffectSpawnActor;
   effectActorWorld: Pick<

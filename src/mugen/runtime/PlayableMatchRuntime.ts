@@ -1594,6 +1594,7 @@ export class PlayableMatchRuntime {
                 runtimeTick: this.tick,
                 opponents: [opponent],
                 constants: owner.definition.constants,
+                commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
                 resolveTargetRedirect: (helper, playerId, controller) =>
                   this.resolveHelperTargetRedirect(helper, playerId, controller),
                 resolveResourceRedirect: (helper, playerId, controller) =>
@@ -2065,6 +2066,7 @@ export class PlayableMatchRuntime {
             runtimeTick: this.tick,
             opponents: [opponent],
             constants: owner.definition.constants,
+            commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
             resolveTargetRedirect: (helper, playerId, controller) =>
               this.resolveHelperTargetRedirect(helper, playerId, controller),
             resolveResourceRedirect: (helper, playerId, controller) =>
