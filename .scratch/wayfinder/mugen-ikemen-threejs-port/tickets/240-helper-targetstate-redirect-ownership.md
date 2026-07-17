@@ -1,8 +1,14 @@
 # Decide helper-destination TargetState ownership
 
 Type: task
-Status: claimed
+Status: resolved
 Blocked by: 239-redirect-lease-migration
+
+Implementation commit: `fd1b6133`
+
+Decision: `docs/adr/0007-helper-targetstate-redirect-ownership.md`
+
+Closeout: `docs/reports/2026-07-16-helper-targetstate-redirect-closeout.md`
 
 ## Question
 
@@ -33,7 +39,8 @@ Research: `docs/research/2026-07-16-helper-targetstate-redirect-ownership.md`.
   closed;
 - telemetry retains helper destination and root state-owner identity;
 - focused helper/playable/target tests, TypeScript 7, build, boundaries, and
-  diff hygiene pass.
+  diff hygiene pass: `926/926` focal tests, `pnpm build`,
+  `pnpm check:boundaries`, and `pnpm check:redirect-boundary`.
 
 ## Boundaries
 

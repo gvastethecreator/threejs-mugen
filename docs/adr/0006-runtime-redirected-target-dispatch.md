@@ -4,7 +4,7 @@ Status: Accepted (bounded RedirectID routes)
 
 Date: 2026-07-15
 
-Last reviewed: 2026-07-16 at HEAD `5750eb0a`
+Last reviewed: 2026-07-16 at HEAD `fd1b6133`
 
 Decision owners: runtime compatibility and IKEMEN bounded-runtime lanes
 
@@ -31,8 +31,10 @@ State -1 paths. Helper routing has a separate resolver and commits the
 destination plus every candidate wrapper after execution. Telemetry converts a
 helper destination to its root, losing exact destination identity.
 
-Helper-destination TargetState is deliberately blocked because the runtime
-cannot yet represent the redirected helper's state-program ownership safely.
+Helper-destination TargetState was deliberately blocked during the lease
+migration because the runtime had not yet represented the redirected helper's
+state-program ownership safely. ADR 0007 now defines and gates that bounded
+ownership slice without widening this ADR's generic lease contract.
 
 The latest bounded report frontier is 633/633 traces. This proves the named
 routes, not that the current architecture is safe to extend mechanically.
@@ -191,19 +193,12 @@ assumption.
 
 ## Helper-destination TargetState
 
-This ADR does not authorize helper-destination TargetState. A separate decision
-must define:
-
-- which state table and current state-program owner the destination helper
-  contributes;
-- which owner is written to selected targets;
-- SelfState return;
-- Common1 and character/helper lookup precedence;
-- helper destruction and stale PlayerID handling;
-- mutation and telemetry identity.
-
-Until that decision and a bounded trace exist, the current fail-closed behavior
-remains correct.
+The specific ownership decision is recorded in
+[`docs/adr/0007-helper-targetstate-redirect-ownership.md`](0007-helper-targetstate-redirect-ownership.md).
+It is a bounded extension of this lease, not a generic authorization for
+helper-owned state programs. The accepted route uses the destination helper's
+target memory, the destination helper's root fighter as state-program owner,
+and selected root fighters only. Helper-selected targets remain fail-closed.
 
 ## Migration order
 
@@ -215,7 +210,8 @@ remains correct.
 5. Migrate root State -1.
 6. Migrate helper-to-root.
 7. Migrate helper-to-helper.
-8. Review helper TargetState separately.
+8. Resolve helper-destination TargetState ownership through ADR 0007 and its
+   bounded trace gate.
 
 Each step must preserve existing required trace semantics or document an
 intentional, source-backed checksum change. No step moves a score by refactor
@@ -235,6 +231,9 @@ alone.
   `check:redirect-boundary` pass.
 - The unselected helper candidate remains byte-identical and is absent from the
   commit callback.
+- ADR 0007 accepts the helper-destination TargetState ownership boundary in
+  `fd1b6133`; its focused checkpoint passes `926/926` tests, TypeScript 7,
+  production build, repository boundaries, and `check:redirect-boundary`.
 
 ## Acceptance
 
@@ -246,7 +245,8 @@ alone.
 - Trace evidence retains original caller and exact destination identities.
 - Existing root active, root State -1, helper-to-root, and helper-to-helper
   route gates remain green.
-- Helper-destination TargetState remains blocked until its separate ADR/gate.
+- Helper-destination TargetState is accepted only within ADR 0007's bounded
+  root-target route; helper-target entry and broader parity remain blocked.
 - Boundary and deletion tests explain why this Module must remain.
 
 ## Consequences
@@ -264,7 +264,8 @@ Negative:
   compatibility credit.
 - A stale lease can reject work that previously executed; this needs explicit
   diagnostics.
-- TargetState remains a separate high-risk path.
+- TargetState remains a separately audited high-risk path with a narrow
+  helper-destination ownership contract.
 
 ## Claim boundary
 
@@ -277,7 +278,7 @@ Blocked:
 
 - broader controller support;
 - root-to-helper support unless separately gated;
-- helper-destination TargetState;
+- helper-target TargetState entry and broader helper custom-state semantics;
 - recursive RedirectID;
 - exact multi-target ordering beyond explicit evidence;
 - rollback/netplay;

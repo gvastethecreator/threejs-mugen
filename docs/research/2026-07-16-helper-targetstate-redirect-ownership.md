@@ -72,3 +72,16 @@ selection evidence, rollback/netplay, or full MUGEN/IKEMEN parity.
 - an unselected root target remains byte-identical;
 - a selected helper target remains fail-closed;
 - existing root/helper redirect tests stay green.
+
+## Implementation result
+
+Resolved in `fd1b6133` under ADR 0007. The runtime now admits the bounded
+helper-to-helper route: the destination helper's target memory selects a root
+fighter, and that fighter enters through the destination helper's root as the
+state-program owner. The new synthetic gate
+`synthetic-imported-helper-target-state-helper-redirect-golden` passes, the
+selected-helper fail-closed TargetSystem case passes, and the existing
+helper-to-root/helper-to-helper redirect tests remain green.
+
+The claim remains bounded exactly as specified above; no broad compatibility
+score or parity claim changes.
