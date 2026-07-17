@@ -152,6 +152,8 @@ export type RuntimeHelperOpponentEntry = RuntimeOpponentRosterEntry<CharacterRun
 export type RuntimeHelperTargetRedirect = {
   actor: RuntimeTargetWorldActor;
   candidateTargets: RuntimeTargetWorldActor[];
+  stateOwner?: RuntimeTargetWorldActor;
+  canEnterTargetState?: (target: RuntimeTargetWorldActor, stateId: number) => boolean;
   commitActor?: (actor: RuntimeTargetWorldActor) => void;
   lease?: RuntimeRedirectedTargetDispatchLease<RuntimeTargetWorldActor>;
 };
@@ -217,13 +219,13 @@ export type RuntimeHelperAdvanceOptions = {
     writeback: RuntimeRedirectedTargetDispatchWriteback,
     destinationRevision?: string,
   ) => void;
-  enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
+  enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => unknown;
   enterRedirectedTargetState?: (
     helper: RuntimeHelper,
     stateOwner: RuntimeTargetWorldActor,
     target: RuntimeTargetWorldActor,
     stateId: number,
-  ) => void;
+  ) => unknown;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -1103,9 +1105,10 @@ function applyRuntimeHelperTargetController(
         if (redirect) redirectedSelection = selection;
       },
       scaleIncomingDamage: options.scaleTargetDamage,
+      canEnterTargetState: redirect?.canEnterTargetState,
       enterTargetState: (target, stateId) =>
         redirect
-          ? options.enterRedirectedTargetState?.(helper, actor, target, stateId)
+          ? options.enterRedirectedTargetState?.(helper, redirect.stateOwner ?? actor, target, stateId)
           : options.enterTargetState?.(helper, target, stateId),
     });
     return result;

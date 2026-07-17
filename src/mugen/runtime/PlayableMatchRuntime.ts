@@ -827,6 +827,9 @@ export class PlayableMatchRuntime {
       ? helperById.get(identity.helper.serialId)?.helper
       : undefined;
     const target = destinationRoot ?? (destinationHelper ? runtimeHelperTargetActor(destinationHelper) : undefined);
+    const destinationStateOwner = destinationRoot?.stateOwner
+      ?? (destinationHelper ? roots.find((root) => root.id === destinationHelper.rootId) : undefined)
+      ?? destinationRoot;
     const findCurrentHelper = (serialId: string): RuntimeHelper | undefined => this.characterRoots()
       .flatMap((root) => this.effectActorWorld.helpers(root.id))
       .filter((candidate) => candidate.destroyed !== true && candidate.teamState?.disabled !== true)
@@ -843,10 +846,18 @@ export class PlayableMatchRuntime {
       return undefined;
     };
     if (!target) return undefined;
-    const destinationSupported = !(identity?.helper && controller.normalizedType === "targetstate");
+    if (identity?.helper && !destinationStateOwner) return undefined;
     const candidateTargets = candidateProjection
       ? [...candidateProjection]
       : [...roots, ...helperEntries.map((entry) => entry.actor)];
+    const canEnterTargetState = controller.normalizedType === "targetstate"
+      ? (selectedTarget: RuntimeTargetWorldActor, stateId: number): boolean => {
+          const selectedRoot = roots.find((root) => root.id === selectedTarget.id);
+          return selectedRoot !== undefined && destinationStateOwner !== undefined
+            ? canEnterState(selectedRoot, stateId, destinationStateOwner)
+            : false;
+        }
+      : undefined;
     const destinationRevision = `${playerId}:${target.id}`;
     const resolution = redirectedTargetDispatchWorld.resolveResult<RuntimeTargetWorldActor>({
       phase: "helper",
@@ -856,7 +867,7 @@ export class PlayableMatchRuntime {
       destination: target,
       candidateTargets,
       targetWorld: destinationRoot?.targetWorld ?? helperTargetWorld,
-      stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
+      stateOwnerId: destinationStateOwner?.id ?? target.id,
       destinationRevision,
       destinationGeneration: destinationRevision,
       resolveCurrentDestination,
@@ -864,13 +875,14 @@ export class PlayableMatchRuntime {
         const currentDestination = resolveCurrentDestination();
         return currentDestination ? `${playerId}:${currentDestination.id}` : undefined;
       },
-      isDestinationSupported: () => destinationSupported,
     });
     if (resolution.kind === "rejected") return undefined;
     const lease = resolution.lease;
     return {
       actor: target,
       candidateTargets,
+      ...(destinationStateOwner === undefined ? {} : { stateOwner: destinationStateOwner }),
+      ...(canEnterTargetState === undefined ? {} : { canEnterTargetState }),
       lease,
       commitActor: (actor) => {
         const targetHelper = helperById.get(actor.id)?.helper;
@@ -926,13 +938,14 @@ export class PlayableMatchRuntime {
     const callerRoot = this.rootForHelper(helper);
     if (!callerRoot) return;
     const destinationRoot = this.characterRoots().find((candidate) => candidate.id === target.id);
+    const stateOwner = selection.controllerType === "targetstate" ? this.rootForRedirectedTarget(target) : destinationRoot;
     compatibilityTelemetryWorld.recordRedirectedTargetDispatch(
       callerRoot,
       createRuntimeRedirectedTargetDispatchObservation(selection, {
         route: destinationRoot ? "helper-to-root" : "helper-to-helper",
         callerId: helper.serialId,
         destinationId: target.id,
-        stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
+        stateOwnerId: stateOwner?.stateOwner?.id ?? stateOwner?.id ?? target.id,
         ...(destinationRevision === undefined ? {} : { destinationRevision }),
         redirectExpression,
         redirectPlayerId,
@@ -1193,9 +1206,9 @@ export class PlayableMatchRuntime {
     helper: RuntimeHelper,
     targetActor: RuntimeTargetWorldActor,
     stateId: number,
-  ): void {
+  ): boolean {
     const roster = this.matchRoster();
-    matchHelperTargetStateWorld.enter({
+    const result = matchHelperTargetStateWorld.enter({
       owner,
       helper,
       targetActor,
@@ -1204,6 +1217,7 @@ export class PlayableMatchRuntime {
       canEnterState: (target, targetStateId, stateOwner) => canEnterState(target, targetStateId, stateOwner),
       enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
     });
+    return result.entered;
   }
 
   private enterHelperRedirectedTargetState(
@@ -1211,11 +1225,11 @@ export class PlayableMatchRuntime {
     stateOwner: RuntimeTargetWorldActor,
     targetActor: RuntimeTargetWorldActor,
     stateId: number,
-  ): void {
+  ): boolean {
     const owner = this.characterRoots().find((candidate) => candidate.id === stateOwner.id);
-    if (!owner) return;
+    if (!owner) return false;
     const actors = this.characterRoots();
-    matchHelperTargetStateWorld.enterRedirected({
+    const result = matchHelperTargetStateWorld.enterRedirected({
       owner,
       helper,
       targetActor,
@@ -1224,6 +1238,7 @@ export class PlayableMatchRuntime {
       canEnterState: (target, targetStateId, targetOwner) => canEnterState(target, targetStateId, targetOwner),
       enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
     });
+    return result.entered;
   }
 
   private matchRoster(): RuntimeMatchActorRoster<FighterMatchState> {
@@ -4231,8 +4246,10 @@ function runActiveStateControllers(
           );
         },
         scaleIncomingDamage: scaleRuntimeIncomingDamage,
+        canEnterTargetState: (selectedTarget, stateId) =>
+          canEnterState(selectedTarget, stateId, target.stateOwner ?? target),
         enterTargetState: (selectedTarget, stateId) => {
-          targetStateEntryWorld.enter({
+          const result = targetStateEntryWorld.enter({
             actor: target,
             target: selectedTarget,
             stateId,
@@ -4243,6 +4260,7 @@ function runActiveStateControllers(
                 enterState(targetActor, targetStateId, undefined, targetOptions),
             },
           });
+          return result.entered;
         },
         getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
       });
@@ -4855,8 +4873,10 @@ function runStateEntrySetupControllers(
               }),
             );
           },
+          canEnterTargetState: (selectedTarget, stateId) =>
+            canEnterState(selectedTarget, stateId, target.stateOwner ?? target),
           enterTargetState: (selectedTarget, stateId) => {
-            targetStateEntryWorld.enter({
+            const result = targetStateEntryWorld.enter({
               actor: target,
               target: selectedTarget,
               stateId,
@@ -4867,6 +4887,7 @@ function runStateEntrySetupControllers(
                   enterState(targetActor, targetStateId, undefined, targetOptions),
               },
             });
+            return result.entered;
           },
         });
         if (redirectLease) {

@@ -534,6 +534,47 @@ describe("TargetSystem", () => {
     expect(actor.runtime.targetCount).toBe(1);
   });
 
+  it("fails closed before TargetState entry when a selected actor has no bounded state owner", () => {
+    const world = new RuntimeTargetControllerDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const actor = targetActor("destination-helper", {
+      targets: [{ actorId: "selected-helper", targetId: 77, age: 0 }],
+    });
+    const selectedHelper = targetActor("selected-helper");
+    const ir = compileControllerIr(controller("TargetState", { id: "77", value: "888" }));
+    let selection: RuntimeTargetControllerDispatchSelection | undefined;
+    let entered = false;
+
+    const result = world.apply({
+      actor,
+      candidateTargets: [selectedHelper],
+      controller: ir,
+      effect: "target",
+      targetWorld,
+      canEnterTargetState: () => false,
+      enterTargetState: () => {
+        entered = true;
+      },
+      recordDispatch: (value) => {
+        selection = value;
+      },
+    });
+
+    expect(result).toMatchObject({
+      controllerType: "targetstate",
+      matchedTargets: 0,
+      operationExecuted: false,
+      recordedOperation: false,
+    });
+    expect(entered).toBe(false);
+    expect(selection).toMatchObject({
+      selectedTargetIds: ["selected-helper"],
+      mutatedActorIds: [],
+      matchedTargets: 0,
+      operationExecuted: false,
+    });
+  });
+
   it("applies raw BindToTarget through target memory, postype anchors, and facing-aware binding position", () => {
     const actor = targetActor("p1", {
       targets: [{ actorId: "p2", targetId: 77, age: 0 }],

@@ -352,6 +352,7 @@ import {
   createSyntheticImportedHelperBindToTargetRedirectTraceArtifact,
   createSyntheticImportedHelperTargetStateTraceArtifact,
   createSyntheticImportedHelperTargetStateRedirectTraceArtifact,
+  createSyntheticImportedHelperTargetStateHelperRedirectTraceArtifact,
   createSyntheticImportedHelperTargetHelperRedirectTraceArtifact,
   createSyntheticImportedHelperBindToTargetHelperRedirectTraceArtifact,
   createSyntheticImportedHelperTargetAuxiliaryResourceHelperRedirectTraceArtifact,
@@ -8853,6 +8854,44 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ id: "p1", life: 981, power: 40 }),
         expect.objectContaining({ id: "p2", life: 963 }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported helper-to-helper TargetState RedirectID artifact with root-owner evidence", () => {
+    const artifact = createSyntheticImportedHelperTargetStateHelperRedirectTraceArtifact({ generatedAt: "2026-07-16T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-state-helper-redirect-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-state-helper-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888, 889]));
+    expect(evidence?.executedControllers.TargetState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8893 }),
+        expect.objectContaining({ ownerId: "p2-helper-0", actorId: "p1", targetId: 77 }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", customOwnerId: "p2", animNo: 888, moveType: "H" }),
+        expect.objectContaining({ actorId: "p1", customOwnerId: "p2", animNo: 889, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p1", stateNo: 0, ctrl: true, moveType: "I" })]),
     );
   });
 

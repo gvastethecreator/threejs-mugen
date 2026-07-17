@@ -77,7 +77,8 @@ export type RuntimeTargetControllerOptions<TActor extends RuntimeTargetControlle
   operation?: TargetControllerOp;
   onOperation?: (operation: TargetControllerOp) => void;
   scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
-  enterTargetState?: (target: TActor, stateId: number) => void;
+  canEnterTargetState?: (target: TActor, stateId: number) => boolean;
+  enterTargetState?: (target: TActor, stateId: number) => unknown;
 };
 
 export type RuntimeBindToTargetControllerOptions<TActor extends RuntimeTargetWorldActor> = {
@@ -126,7 +127,8 @@ export type RuntimeTargetControllerDispatchOptions<TActor extends RuntimeTargetW
   recordOperation?: (actor: TActor, operation: RuntimeTargetControllerDispatchOperation) => void;
   recordDispatch?: (selection: RuntimeTargetControllerDispatchSelection) => void;
   scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
-  enterTargetState?: (target: TActor, stateId: number) => void;
+  canEnterTargetState?: (target: TActor, stateId: number) => boolean;
+  enterTargetState?: (target: TActor, stateId: number) => unknown;
   getTargetConst?: (target: TActor, name: string) => number | undefined;
 };
 
@@ -242,6 +244,7 @@ export class RuntimeTargetControllerDispatchWorld {
           options.recordOperation?.(options.actor, operation);
         },
         scaleIncomingDamage: options.scaleIncomingDamage,
+        canEnterTargetState: options.canEnterTargetState,
         enterTargetState: options.enterTargetState,
       });
       options.recordDispatch?.(
@@ -307,6 +310,9 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
     : options.effect === "bindtotarget"
       ? selectedBindToTargetActorIds(beforeTargets, options.candidateTargets, requestedId)
       : matchingRuntimeTargetActors(beforeTargets, options.candidateTargets, requestedId).map(({ id }) => id);
+  const targetStateMutationIds = controllerType === "targetstate" && !result.operationExecuted
+    ? []
+    : selectedTargetIds;
   const changedBindingSubjects = options.candidateTargets
     .filter((candidate) => beforeBindingSubjects.get(candidate.id) !== candidate.runtime.hitVars?.isBound)
     .map(({ id }) => id);
@@ -314,7 +320,7 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
     ...(options.effect === "bindtotarget" || controllerType === "targetbind" || controllerType === "targetdrop"
       ? [options.actor.id]
       : []),
-    ...selectedTargetIds,
+    ...targetStateMutationIds,
     ...changedBindingSubjects,
     ...(
       controllerType === "targetdrop"
@@ -417,6 +423,18 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
   if (targets.length === 0) {
     return { controllerType: type, matchedTargets: 0, operationExecuted: false };
   }
+  const targetStateId =
+    options.operation?.controllerType === "targetstate"
+      ? options.operation.stateNo
+      : firstNumber(findControllerParam(options.controller, "value"));
+  if (
+    type === "targetstate" &&
+    (targetStateId === undefined ||
+      (options.canEnterTargetState !== undefined &&
+        targets.some((target) => !options.canEnterTargetState!(target, targetStateId))))
+  ) {
+    return { controllerType: type, matchedTargets: 0, operationExecuted: false };
+  }
   if (options.operation) {
     options.onOperation?.(options.operation);
   }
@@ -493,12 +511,8 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
         }),
       );
     } else if (type === "targetstate") {
-      const stateId =
-        options.operation?.controllerType === "targetstate"
-          ? options.operation.stateNo
-          : firstNumber(findControllerParam(options.controller, "value"));
-      if (stateId !== undefined) {
-        options.enterTargetState?.(target, stateId);
+      if (targetStateId !== undefined) {
+        options.enterTargetState?.(target, targetStateId);
       }
     }
   }
