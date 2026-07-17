@@ -39,11 +39,12 @@ lease v1.1 without claiming an immutable transaction or full engine parity?
 The bounded migration is implemented in `RuntimeRedirectedTargetDispatchSystem`,
 `HelperSystem`, `PlayableMatchRuntime`, and the redirect boundary script. It
 preserves the four route traces and adds a focused unselected-byte identity
-assertion. ADR 0006 remains proposed pending the formal state-owner decision.
+assertion. ADR 0006 is accepted for this bounded ownership contract; helper
+TargetState and registry-owned state-program lookup remain outside that claim.
 
 ## Remaining uncertainty
 
 The lease still receives state ownership from runtime adapters and does not own
-the complete state-program lookup policy. A future acceptance decision must
-either justify that boundary or add the registry-owned contract, with separate
-evidence for helper TargetState remaining blocked.
+the complete state-program lookup policy. Future controller families must keep
+that adapter-supplied contract explicit and provide separate evidence for
+helper TargetState before widening support.

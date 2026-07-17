@@ -19,7 +19,7 @@ Implementation commits: `61987675`, `5750eb0a`
 | Focused runtime tests | passed | 4 files, `287/287` tests |
 | TypeScript 7 | passed | `pnpm run typecheck` |
 | Production build | passed | `pnpm run build`; existing large-chunk advisory remains |
-| ADR 0006 status | pending | Formal state-owner decision is intentionally not changed here |
+| ADR 0006 status | accepted (bounded) | `docs/adr/0006-runtime-redirected-target-dispatch.md` records the evidence-backed bounded decision |
 
 ## Implementation
 
@@ -40,13 +40,13 @@ that all runtime state is immutable or transactional.
 
 ## Claim ceiling
 
-This closes the bounded T12 implementation slice. It does not accept ADR 0006,
-prove registry-owned state-program lookup, typed execute-time mutation patches,
-rollback/netplay, recursive redirects, external engine parity, or full
-MUGEN/IKEMEN parity. Helper-destination TargetState remains fail-closed.
+This closes the bounded T12 implementation slice and accepts ADR 0006 only for
+the named RedirectID routes. It does not prove registry-owned state-program
+lookup beyond the explicit state-owner contract, typed execute-time mutation
+patches, rollback/netplay, recursive redirects, external engine parity, or
+full MUGEN/IKEMEN parity. Helper-destination TargetState remains fail-closed.
 
 ## Next
 
-Resolve the ADR 0006 state-owner decision gate. If accepted, keep the deletion
-guard as a regression gate; if amended, record the narrower ownership contract
-before extending RedirectID to new controller families.
+Keep the deletion guard as a regression gate. The next extension must record a
+narrower ownership contract before adding new RedirectID controller families.

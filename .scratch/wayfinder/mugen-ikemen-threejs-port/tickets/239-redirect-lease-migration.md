@@ -2,7 +2,7 @@
 
 Date: 2026-07-16
 Type: task
-Status: implementation-complete / ADR decision pending
+Status: resolved (bounded ADR acceptance)
 Blocked by: T11
 
 Implementation commits: `61987675`, `5750eb0a`
@@ -35,13 +35,12 @@ remain owned by the telemetry world.
 - An unselected helper candidate is asserted byte-identical and absent from
   the commit callback.
 
-## Decision gate
+## Decision
 
-ADR 0006 remains `Proposed` in the existing ADR file. This report proves the
-bounded migration and all route evidence, but does not silently change the
-formal architecture status owned by that document. The remaining decision is
-whether the adapter-supplied state-owner token is sufficient for acceptance or
-requires a registry-owned state-program ownership contract.
+ADR 0006 is accepted for the bounded RedirectID routes. The lease owns the
+explicit state-owner identity contract while adapters continue to supply the
+profile-specific owner id. Helper-destination TargetState remains separately
+blocked; this acceptance does not claim a registry-owned state-program lookup.
 
 ## Evidence target
 
