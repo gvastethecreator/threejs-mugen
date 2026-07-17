@@ -1122,9 +1122,12 @@ function applyRuntimeHelperTargetController(
   if (!dispatch.executed || !dispatch.value) return false;
   const result = dispatch.value;
   if (redirect && redirectedSelection && redirectPlayerId !== undefined) {
-    const writebackActorIds = redirect.commitActor
-      ? redirectedTargetWritebackActorIds(actor, candidateTargets, redirectedSelection.mutatedActorIds)
-      : [];
+    const writebackActorIds = redirectedTargetWritebackActorIds(
+      redirect,
+      actor,
+      candidateTargets,
+      redirectedSelection.mutatedActorIds,
+    );
     options.onRedirectedTargetDispatch?.(
       helper,
       actor,
@@ -1143,10 +1146,12 @@ function applyRuntimeHelperTargetController(
 }
 
 function redirectedTargetWritebackActorIds(
+  redirect: RuntimeHelperTargetRedirect | undefined,
   actor: RuntimeTargetWorldActor,
   candidateTargets: RuntimeTargetWorldActor[],
   mutationActorIds: readonly string[] = [actor.id, ...candidateTargets.map(({ id }) => id)],
 ): string[] {
+  if (!redirect?.commitActor) return [];
   const availableActors = new Set([actor.id, ...candidateTargets.map(({ id }) => id)]);
   return [...new Set(mutationActorIds)].filter((id) => availableActors.has(id));
 }
@@ -1159,7 +1164,7 @@ function commitRuntimeHelperRedirect(
 ): void {
   if (!redirect.commitActor) return;
   const actorsById = new Map([actor, ...candidateTargets].map((candidate) => [candidate.id, candidate] as const));
-  const writebackActorIds = redirectedTargetWritebackActorIds(actor, candidateTargets, mutationActorIds);
+  const writebackActorIds = redirectedTargetWritebackActorIds(redirect, actor, candidateTargets, mutationActorIds);
   for (const actorId of writebackActorIds) {
     const committedActor = actorsById.get(actorId);
     if (committedActor) redirect.commitActor(committedActor);

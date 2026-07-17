@@ -25,6 +25,7 @@
     "qa:trace": "node scripts/qa_traces.cjs",
     "materialize:compatibility-snapshot": "node scripts/materialize_compatibility_corpus_snapshot.cjs",
     "check:boundaries": "node scripts/check_boundaries.cjs",
+    "check:redirect-boundary": "node scripts/check_redirected_target_dispatch_boundary.cjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

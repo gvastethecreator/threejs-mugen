@@ -263,6 +263,7 @@ import {
 } from "./TargetSystem";
 import {
   RuntimeRedirectedTargetDispatchWorld,
+  createRuntimeRedirectedTargetDispatchObservation,
   type RuntimeRedirectedTargetDispatchLease,
   type RuntimeRedirectedTargetDispatchPhase,
 } from "./RuntimeRedirectedTargetDispatchSystem";
@@ -925,18 +926,21 @@ export class PlayableMatchRuntime {
     const callerRoot = this.rootForHelper(helper);
     if (!callerRoot) return;
     const destinationRoot = this.characterRoots().find((candidate) => candidate.id === target.id);
-    compatibilityTelemetryWorld.recordRedirectedTargetDispatch(callerRoot, {
-      ...selection,
-      route: destinationRoot ? "helper-to-root" : "helper-to-helper",
-      callerId: helper.serialId,
-      stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
-      ...(destinationRevision === undefined ? {} : { destinationRevision }),
-      redirectExpression,
-      redirectPlayerId,
-      writebackActorIds: writeback.actorIds,
-      writebackMode: writeback.mode,
-      ...(helper.stateNo === undefined ? {} : { sourceStateNo: helper.stateNo }),
-    });
+    compatibilityTelemetryWorld.recordRedirectedTargetDispatch(
+      callerRoot,
+      createRuntimeRedirectedTargetDispatchObservation(selection, {
+        route: destinationRoot ? "helper-to-root" : "helper-to-helper",
+        callerId: helper.serialId,
+        destinationId: target.id,
+        stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
+        ...(destinationRevision === undefined ? {} : { destinationRevision }),
+        redirectExpression,
+        redirectPlayerId,
+        writebackActorIds: writeback.actorIds,
+        writebackMode: writeback.mode,
+        ...(helper.stateNo === undefined ? {} : { sourceStateNo: helper.stateNo }),
+      }),
+    );
   }
 
   private characterRoots(): FighterMatchState[] {
@@ -4209,19 +4213,22 @@ function runActiveStateControllers(
         },
         recordDispatch: (selection) => {
           if (redirectExpression === undefined) return;
-          compatibilityTelemetryWorld.recordRedirectedTargetDispatch(fighter, {
-            ...selection,
-            route: "root-active",
-            callerId: fighter.id,
-            stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
-            ...(redirectLease?.destinationRevision === undefined
-              ? {}
-              : { destinationRevision: redirectLease.destinationRevision }),
-            redirectExpression,
-            writebackActorIds: selection.mutatedActorIds,
-            writebackMode: "direct",
-            sourceStateNo: actor.runtime.stateNo,
-          });
+          compatibilityTelemetryWorld.recordRedirectedTargetDispatch(
+            fighter,
+            createRuntimeRedirectedTargetDispatchObservation(selection, {
+              route: "root-active",
+              callerId: fighter.id,
+              destinationId: target.id,
+              stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
+              ...(redirectLease?.destinationRevision === undefined
+                ? {}
+                : { destinationRevision: redirectLease.destinationRevision }),
+              redirectExpression,
+              writebackActorIds: selection.mutatedActorIds,
+              writebackMode: "direct",
+              sourceStateNo: actor.runtime.stateNo,
+            }),
+          );
         },
         scaleIncomingDamage: scaleRuntimeIncomingDamage,
         enterTargetState: (selectedTarget, stateId) => {
@@ -4831,19 +4838,22 @@ function runStateEntrySetupControllers(
           },
           recordDispatch: (selection) => {
             if (redirectExpression === undefined) return;
-            compatibilityTelemetryWorld.recordRedirectedTargetDispatch(fighter, {
-              ...selection,
-              route: "root-state-minus-one",
-              callerId: fighter.id,
-              stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
-              ...(redirectLease?.destinationRevision === undefined
-                ? {}
-                : { destinationRevision: redirectLease.destinationRevision }),
-              redirectExpression,
-              writebackActorIds: selection.mutatedActorIds,
-              writebackMode: "direct",
-              sourceStateNo: -1,
-            });
+            compatibilityTelemetryWorld.recordRedirectedTargetDispatch(
+              fighter,
+              createRuntimeRedirectedTargetDispatchObservation(selection, {
+                route: "root-state-minus-one",
+                callerId: fighter.id,
+                destinationId: target.id,
+                stateOwnerId: redirectLease?.stateOwnerId ?? target.stateOwner?.id ?? target.id,
+                ...(redirectLease?.destinationRevision === undefined
+                  ? {}
+                  : { destinationRevision: redirectLease.destinationRevision }),
+                redirectExpression,
+                writebackActorIds: selection.mutatedActorIds,
+                writebackMode: "direct",
+                sourceStateNo: -1,
+              }),
+            );
           },
           enterTargetState: (selectedTarget, stateId) => {
             targetStateEntryWorld.enter({

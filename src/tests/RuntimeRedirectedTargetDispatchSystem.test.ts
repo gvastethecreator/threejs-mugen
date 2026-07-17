@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { RuntimeRedirectedTargetDispatchWorld } from "../mugen/runtime/RuntimeRedirectedTargetDispatchSystem";
+import {
+  createRuntimeRedirectedTargetDispatchObservation,
+  RuntimeRedirectedTargetDispatchWorld,
+} from "../mugen/runtime/RuntimeRedirectedTargetDispatchSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 
 describe("RuntimeRedirectedTargetDispatchWorld", () => {
@@ -172,6 +175,47 @@ describe("RuntimeRedirectedTargetDispatchWorld", () => {
       }, () => liveEvents.push("commit"))).toEqual({ executed: true, value: "prepared" });
       expect(liveEvents).toEqual(["operation", "commit"]);
     }
+  });
+
+  it("builds one route observation shape for adapter telemetry", () => {
+    const observation = createRuntimeRedirectedTargetDispatchObservation(
+      {
+        destinationId: "p2",
+        controllerType: "targetpoweradd",
+        operationClass: "target-resource",
+        effect: "target",
+        candidateTargetIds: ["p1", "p3"],
+        requestedId: 77,
+        selectedTargetIds: ["p1"],
+        mutatedActorIds: ["p1"],
+        matchedTargets: 1,
+        operationExecuted: true,
+      },
+      {
+        route: "helper-to-root",
+        callerId: "p1-helper-0",
+        destinationId: "p2",
+        stateOwnerId: "p2",
+        redirectExpression: "57",
+        redirectPlayerId: 57,
+        destinationRevision: "57:p2",
+        sourceStateNo: 1200,
+        writebackActorIds: ["p1"],
+        writebackMode: "helper-wrapper",
+      },
+    );
+
+    expect(observation).toMatchObject({
+      route: "helper-to-root",
+      callerId: "p1-helper-0",
+      destinationId: "p2",
+      stateOwnerId: "p2",
+      operationClass: "target-resource",
+      candidateTargetIds: ["p1", "p3"],
+      mutatedActorIds: ["p1"],
+      writebackActorIds: ["p1"],
+      writebackMode: "helper-wrapper",
+    });
   });
 
   it("carries helper caller, destination store, and state-owner metadata", () => {

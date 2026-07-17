@@ -1,4 +1,9 @@
-import type { RuntimeTargetWorld } from "./TargetSystem";
+import type { RuntimeTargetControllerDispatchSelection, RuntimeTargetWorld } from "./TargetSystem";
+import type {
+  RuntimeRedirectedTargetDispatchObservation,
+  RuntimeRedirectedTargetDispatchRoute,
+  RuntimeRedirectedTargetDispatchWritebackMode,
+} from "./types";
 
 export type RuntimeRedirectedTargetDispatchPhase = "root-active" | "root-state-minus-one" | "helper";
 
@@ -70,6 +75,41 @@ export type RuntimeRedirectedTargetDispatchCommit<TActor extends { id: string },
   lease: RuntimeRedirectedTargetDispatchLease<TActor>,
   value: TResult,
 ) => void;
+
+export type RuntimeRedirectedTargetDispatchObservationContext = {
+  route: RuntimeRedirectedTargetDispatchRoute;
+  callerId: string;
+  destinationId: string;
+  stateOwnerId: string;
+  redirectExpression: string;
+  redirectPlayerId?: number;
+  destinationRevision?: string;
+  sourceStateNo?: number;
+  writebackActorIds: readonly string[];
+  writebackMode: RuntimeRedirectedTargetDispatchWritebackMode;
+};
+
+export function createRuntimeRedirectedTargetDispatchObservation(
+  selection: RuntimeTargetControllerDispatchSelection,
+  context: RuntimeRedirectedTargetDispatchObservationContext,
+): Omit<RuntimeRedirectedTargetDispatchObservation, "telemetryId"> {
+  return {
+    ...selection,
+    candidateTargetIds: [...selection.candidateTargetIds],
+    selectedTargetIds: [...selection.selectedTargetIds],
+    mutatedActorIds: [...selection.mutatedActorIds],
+    route: context.route,
+    callerId: context.callerId,
+    destinationId: context.destinationId,
+    stateOwnerId: context.stateOwnerId,
+    ...(context.destinationRevision === undefined ? {} : { destinationRevision: context.destinationRevision }),
+    redirectExpression: context.redirectExpression,
+    ...(context.redirectPlayerId === undefined ? {} : { redirectPlayerId: context.redirectPlayerId }),
+    ...(context.sourceStateNo === undefined ? {} : { sourceStateNo: context.sourceStateNo }),
+    writebackActorIds: [...context.writebackActorIds],
+    writebackMode: context.writebackMode,
+  };
+}
 
 const leaseStatus = new WeakMap<object, RuntimeRedirectedTargetDispatchLeaseStatus>();
 
