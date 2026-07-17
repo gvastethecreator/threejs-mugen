@@ -1,6 +1,7 @@
 import type { StudioAssetRecord } from "./StudioModel";
 import type { SourceFingerprintAlgorithm } from "./StudioSourceIdentity";
 import type { SourceTransactionPermission } from "./StudioSourceTransaction";
+import { STUDIO_LICENSE_EXPRESSION_PROFILE, isSupportedStudioLicenseExpression } from "./StudioLicenseExpression";
 
 export const ASSET_PROVENANCE_SCHEMA_V1 = "mugen-web-sandbox/asset-provenance/v1" as const;
 export const ASSET_PROVENANCE_SCHEMA = "mugen-web-sandbox/asset-provenance/v2" as const;
@@ -24,6 +25,7 @@ export type AssetProvenanceLicenseInput = {
 export type AssetProvenanceLicense = {
   status: "declared" | "unknown";
   expression?: string;
+  profile?: typeof STUDIO_LICENSE_EXPRESSION_PROFILE;
   sourceRef?: string;
   verified: boolean;
 };
@@ -255,11 +257,12 @@ export function canonicalizeAssetProvenanceRecord(record: AssetProvenanceRecord)
 function normalizeLicense(input: AssetProvenanceLicenseInput | undefined): AssetProvenanceLicense {
   const expression = input?.expression?.trim();
   const sourceRef = redactAssetSourcePath(input?.sourceRef);
-  const validExpression = Boolean(expression && isSpdxExpression(expression));
+  const validExpression = Boolean(expression && isSupportedStudioLicenseExpression(expression));
   const verified = input?.verified === true && validExpression;
   return {
     status: verified ? "declared" : "unknown",
     ...(validExpression && expression ? { expression } : {}),
+    ...(verified ? { profile: STUDIO_LICENSE_EXPRESSION_PROFILE } : {}),
     ...(sourceRef ? { sourceRef } : {}),
     verified,
   };
@@ -351,9 +354,6 @@ function digestRecord(value: string | undefined): AssetProvenanceDigest | undefi
   return { algorithm: "sha-256", digest: value.toLowerCase() };
 }
 
-function isSpdxExpression(value: string): boolean {
-  return /^(?:[A-Za-z0-9][A-Za-z0-9.+:-]*)(?:\s+(?:AND|OR|WITH)\s+[A-Za-z0-9][A-Za-z0-9.+:-]*)*$/i.test(value);
-}
 
 function normalizeId(value: string | undefined, fallback: string): string {
   return value?.trim() || fallback;

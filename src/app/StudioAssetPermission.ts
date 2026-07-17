@@ -1,3 +1,8 @@
+import {
+  STUDIO_LICENSE_EXPRESSION_PROFILE,
+  isSupportedStudioLicenseExpression,
+} from "./StudioLicenseExpression";
+
 export const ASSET_PERMISSION_SCHEMA = "mugen-web-sandbox/asset-permission/v0" as const;
 
 export const FIRST_PARTY_ASSET_PERMISSION_PATHS: Readonly<Record<string, string>> = {
@@ -17,6 +22,7 @@ export type AssetPermissionMetadata = {
   permission: "repository-owned";
   license: {
     expression: string;
+    profile: typeof STUDIO_LICENSE_EXPRESSION_PROFILE;
     sourceRef: string;
     verified: true;
   };
@@ -64,15 +70,21 @@ export function isSafeAssetMetadataPath(value: string): boolean {
 }
 
 function parseLicense(value: unknown): AssetPermissionMetadata["license"] | undefined {
-  if (!isRecord(value) || typeof value.expression !== "string" || typeof value.sourceRef !== "string" || value.verified !== true) {
+  if (
+    !isRecord(value) ||
+    typeof value.expression !== "string" ||
+    value.profile !== STUDIO_LICENSE_EXPRESSION_PROFILE ||
+    typeof value.sourceRef !== "string" ||
+    value.verified !== true
+  ) {
     return undefined;
   }
   const expression = value.expression.trim();
   const sourceRef = value.sourceRef.trim().replace(/\\/g, "/");
-  if (!isSpdxExpression(expression) || !isSafeAssetMetadataPath(sourceRef)) {
+  if (!isSupportedStudioLicenseExpression(expression) || !isSafeAssetMetadataPath(sourceRef)) {
     return undefined;
   }
-  return { expression, sourceRef, verified: true };
+  return { expression, profile: STUDIO_LICENSE_EXPRESSION_PROFILE, sourceRef, verified: true };
 }
 
 function parseFiles(value: unknown): AssetPermissionFile[] | undefined {
@@ -105,8 +117,4 @@ function parseFiles(value: unknown): AssetPermissionFile[] | undefined {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isSpdxExpression(value: string): boolean {
-  return /^(?:[A-Za-z0-9][A-Za-z0-9.+:-]*)(?:\s+(?:AND|OR|WITH)\s+[A-Za-z0-9][A-Za-z0-9.+:-]*)*$/i.test(value);
 }

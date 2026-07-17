@@ -481,7 +481,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
     return bridge?.mode === "match" && actor?.source === "imported" && actor.runtime?.stateNo === 0 && actor.frame?.spriteGroup === 0;
   });
-  await resetCodeFuManRound(page);
+  await resetCodeFuManRound(page, { pauseAfter: true });
   const initial = await captureMugenLiteVisualState(
     page,
     path.join(outDir, "codefuman-runtime-desktop.png"),
@@ -489,6 +489,8 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     "p1",
     [],
   );
+  await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === true);
 
   const pauseOnAttack = page.evaluate(() => new Promise((resolve, reject) => {
     let lastSnapshot = {};
@@ -602,7 +604,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
   return { skipped: false, fixturePath, initial, attack, special, upper, returnedToIdle: true, specialReturnedToIdle: true, upperReturnedToIdle: true };
 }
 
-async function resetCodeFuManRound(page) {
+async function resetCodeFuManRound(page, options = {}) {
   await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
   await page.waitForFunction(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -612,7 +614,10 @@ async function resetCodeFuManRound(page) {
       p1?.runtime?.stateNo === 0 && p1.runtime.ctrl === true && p1.frame?.spriteGroup === 0 &&
       p2?.runtime?.stateNo === 0;
   });
-  await page.waitForTimeout(120);
+  if (options.pauseAfter) {
+    await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
+  }
 }
 
 async function pressCodeFuManQcfX(page) {
@@ -2657,6 +2662,7 @@ async function inspectPackageZip(packagePath) {
     firstPartyPermissionSchema: firstPartyPermission?.schemaVersion,
     firstPartyPermissionAssetId: firstPartyPermission?.assetId,
     firstPartyPermissionOwnership: firstPartyPermission?.ownership,
+    firstPartyPermissionLicenseProfile: firstPartyPermission?.license?.profile,
     firstPartyPermissionLicense: firstPartyPermission?.license,
     firstPartyPermissionDigestMismatches,
     hasFirstPartyLicense: files.includes("assets/characters/nova-boxer/LICENSE.txt"),
@@ -4372,6 +4378,7 @@ function assertSmoke(diagnostics) {
     studioBuild.downloadedPackage?.firstPartyPermissionSchema !== "mugen-web-sandbox/asset-permission/v0" ||
     studioBuild.downloadedPackage?.firstPartyPermissionAssetId !== "nova-boxer" ||
     studioBuild.downloadedPackage?.firstPartyPermissionOwnership !== "repository-owned" ||
+    studioBuild.downloadedPackage?.firstPartyPermissionLicenseProfile !== "mugen-web-sandbox/spdx-expression-subset/v0" ||
     studioBuild.downloadedPackage?.firstPartyPermissionLicense?.expression !== "CC0-1.0" ||
     studioBuild.downloadedPackage?.firstPartyPermissionLicense?.verified !== true ||
     !studioBuild.downloadedPackage?.hasFirstPartyLicense ||

@@ -5,6 +5,7 @@
   "permission": "repository-owned",
   "license": {
     "expression": "CC0-1.0",
+    "profile": "mugen-web-sandbox/spdx-expression-subset/v0",
     "sourceRef": "LICENSE.txt",
     "verified": true
   },

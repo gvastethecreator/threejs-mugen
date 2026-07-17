@@ -9317,7 +9317,7 @@ export class App {
         freshness: licenseFile.freshness,
         reference: metadata ? `assets/characters/${sanitizePackageSegment(asset.id)}/${metadata.license.sourceRef}` : "asset-permission.json",
         ...(licenseFile.digest ? { digest: licenseFile.digest } : {}),
-        detail: metadata ? `${metadata.license.expression} / verified` : "verified license metadata is unavailable",
+        detail: metadata ? `${metadata.license.expression} / ${metadata.license.profile} / verified` : "verified license metadata is unavailable",
       },
       {
         id: `${asset.id}:release:digest`,
