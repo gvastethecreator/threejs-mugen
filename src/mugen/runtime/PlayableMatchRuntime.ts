@@ -1369,8 +1369,16 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (_helper, target, operation) =>
             this.recordHelperRedirectedOperation(target, operation),
-          onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
-            this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
+          onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
+            this.recordHelperRedirectedTargetDispatch(
+              helper,
+              target,
+              selection,
+              redirectPlayerId,
+              redirectExpression,
+              writeback,
+              destinationRevision,
+            ),
           enterHelperRedirectedTargetState: (helper, stateOwner, target, stateId) =>
             this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           runIgnoredControllers: (fighter, opponent) =>
@@ -1667,8 +1675,16 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (_helper, target, operation) =>
             this.recordHelperRedirectedOperation(target, operation),
-          onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression) =>
-            this.recordHelperRedirectedTargetDispatch(helper, target, selection, redirectPlayerId, redirectExpression),
+          onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
+            this.recordHelperRedirectedTargetDispatch(
+              helper,
+              target,
+              selection,
+              redirectPlayerId,
+              redirectExpression,
+              writeback,
+              destinationRevision,
+            ),
           enterHelperRedirectedTargetState: (helper, stateOwner, target, stateId) =>
             this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
           actorConstraintWorld: this.actorConstraintWorld,
