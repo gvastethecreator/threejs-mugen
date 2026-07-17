@@ -8,7 +8,12 @@ import {
   applyRuntimePowerDelta,
   applyRuntimeRedLifeAdd,
 } from "./RuntimeResourceSystem";
-import type { CharacterRuntimeState, RuntimeTargetBindingSnapshot, RuntimeTargetSnapshot } from "./types";
+import type {
+  CharacterRuntimeState,
+  RuntimeRedirectedTargetDispatchOperationClass,
+  RuntimeTargetBindingSnapshot,
+  RuntimeTargetSnapshot,
+} from "./types";
 
 export type RuntimeTarget = {
   actorId: string;
@@ -101,6 +106,7 @@ export type RuntimeTargetControllerDispatchOperation = TargetControllerOp | Bind
 export type RuntimeTargetControllerDispatchSelection = {
   destinationId: string;
   controllerType: string;
+  operationClass: RuntimeRedirectedTargetDispatchOperationClass;
   effect: RuntimeTargetControllerDispatchEffect;
   candidateTargetIds: string[];
   requestedId?: number;
@@ -292,6 +298,7 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
   const operation = options.controller.operation;
   const controllerType = result.controllerType;
   const candidateTargetIds = uniqueRuntimeActorIds(options.candidateTargets.map(({ id }) => id));
+  const operationClass = runtimeTargetControllerDispatchOperationClass(controllerType, options.effect);
   const requestedId =
     (operation && "requestedId" in operation ? operation.requestedId : undefined) ??
     (controllerType === "targetdrop" ? undefined : firstNumber(findControllerParam(options.controller.source, "id")));
@@ -320,6 +327,7 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
   return {
     destinationId: options.actor.id,
     controllerType,
+    operationClass,
     effect: options.effect,
     candidateTargetIds,
     ...(requestedId === undefined ? {} : { requestedId }),
@@ -328,6 +336,28 @@ function createRuntimeTargetControllerDispatchSelection<TActor extends RuntimeTa
     matchedTargets: result.matchedTargets,
     operationExecuted: result.operationExecuted,
   };
+}
+
+function runtimeTargetControllerDispatchOperationClass(
+  controllerType: string,
+  effect: RuntimeTargetControllerDispatchEffect,
+): RuntimeRedirectedTargetDispatchOperationClass {
+  if (effect === "bindtotarget") return "bind-to-target";
+  if (controllerType === "targetstate") return "target-state";
+  if (controllerType === "targetbind" || controllerType === "targetdrop") return "target-binding";
+  if (controllerType === "targetfacing" || controllerType === "targetveladd" || controllerType === "targetvelset") {
+    return "target-motion";
+  }
+  if (
+    controllerType === "targetlifeadd" ||
+    controllerType === "targetpoweradd" ||
+    controllerType === "targetredlifeadd" ||
+    controllerType === "targetguardpointsadd" ||
+    controllerType === "targetdizzypointsadd"
+  ) {
+    return "target-resource";
+  }
+  return "target-controller";
 }
 
 function droppedRuntimeTargetActorIds(beforeTargets: RuntimeTarget[], afterTargets: RuntimeTarget[]): string[] {

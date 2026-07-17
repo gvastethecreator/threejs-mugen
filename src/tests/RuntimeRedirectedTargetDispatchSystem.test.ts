@@ -28,6 +28,7 @@ describe("RuntimeRedirectedTargetDispatchWorld", () => {
       destinationId: "p2",
       stateOwnerId: "p2",
       destinationRevision: "57:p2",
+      destinationGeneration: "57:p2",
       status: "open",
     });
     expect(lease?.candidateTargets).toEqual([selected]);
@@ -88,6 +89,43 @@ describe("RuntimeRedirectedTargetDispatchWorld", () => {
     expect(aborted?.status).toBe("aborted");
   });
 
+  it("returns typed resolution failures and rejects stale generations or unsupported destinations", () => {
+    const world = new RuntimeRedirectedTargetDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const destination = { id: "p2" };
+    let generation = "p2:g1";
+    const base = {
+      phase: "root-active" as const,
+      callerId: "p1",
+      redirectExpression: "57",
+      redirectPlayerId: 57,
+      destination,
+      candidateTargets: [{ id: "p1" }],
+      targetWorld,
+      destinationRevision: "57:p2",
+      destinationGeneration: "p2:g1",
+      resolveCurrentDestination: () => destination,
+      resolveCurrentDestinationGeneration: () => generation,
+    };
+
+    const resolved = world.resolveResult(base);
+    expect(resolved).toMatchObject({ kind: "resolved", lease: { destinationGeneration: "p2:g1" } });
+    if (resolved.kind === "resolved") {
+      generation = "p2:g2";
+      expect(resolved.lease.isFresh()).toBe(false);
+    }
+
+    const stale = world.resolveResult(base);
+    expect(stale).toMatchObject({ kind: "rejected", failure: { code: "stale-destination", destinationId: "p2" } });
+
+    generation = "p2:g1";
+    const unsupported = world.resolveResult({ ...base, isDestinationSupported: () => false });
+    expect(unsupported).toMatchObject({
+      kind: "rejected",
+      failure: { code: "unsupported-destination", destinationId: "p2", destinationRevision: "57:p2" },
+    });
+  });
+
   it("carries helper caller, destination store, and state-owner metadata", () => {
     const world = new RuntimeRedirectedTargetDispatchWorld();
     const targetWorld = new RuntimeTargetWorld();
@@ -112,6 +150,7 @@ describe("RuntimeRedirectedTargetDispatchWorld", () => {
       destinationId: "p2-helper-0",
       stateOwnerId: "p2-helper-0",
       destinationRevision: "57:p2-helper-0",
+      destinationGeneration: "57:p2-helper-0",
       targetWorld,
       status: "open",
     });

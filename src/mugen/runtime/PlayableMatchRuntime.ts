@@ -776,7 +776,14 @@ export class PlayableMatchRuntime {
       ? this.characterRoots().find((root) => root.id === identity.fighter!.id)
       : undefined;
     if (!destination) return block(playerId);
-    const lease = redirectedTargetDispatchWorld.resolve({
+    const destinationRevision = `${playerId}:${destination.id}`;
+    const resolveCurrentDestination = (): FighterMatchState | undefined => {
+      const currentIdentity = this.characterIdentity?.findByPlayerId(playerId);
+      return currentIdentity?.fighter
+        ? this.characterRoots().find((root) => root.id === currentIdentity.fighter!.id)
+        : undefined;
+    };
+    const resolution = redirectedTargetDispatchWorld.resolveResult({
       phase,
       callerId: caller.id,
       redirectExpression: expression,
@@ -785,15 +792,15 @@ export class PlayableMatchRuntime {
       candidateTargets,
       targetWorld: destination.targetWorld,
       stateOwnerId: destination.stateOwner?.id ?? destination.id,
-      destinationRevision: `${playerId}:${destination.id}`,
-      resolveCurrentDestination: () => {
-        const currentIdentity = this.characterIdentity?.findByPlayerId(playerId);
-        return currentIdentity?.fighter
-          ? this.characterRoots().find((root) => root.id === currentIdentity.fighter!.id)
-          : undefined;
+      destinationRevision,
+      destinationGeneration: destinationRevision,
+      resolveCurrentDestination,
+      resolveCurrentDestinationGeneration: () => {
+        const currentDestination = resolveCurrentDestination();
+        return currentDestination ? `${playerId}:${currentDestination.id}` : undefined;
       },
     });
-    return lease ?? block(playerId);
+    return resolution.kind === "resolved" ? resolution.lease : block(resolution.failure.redirectPlayerId);
   }
 
   private resolveHelperTargetRedirect(
@@ -835,16 +842,12 @@ export class PlayableMatchRuntime {
       return undefined;
     };
     if (!target) return undefined;
-    if (
-      identity?.helper &&
-      controller.normalizedType === "targetstate"
-    ) {
-      return undefined;
-    }
+    const destinationSupported = !(identity?.helper && controller.normalizedType === "targetstate");
     const candidateTargets = candidateProjection
       ? [...candidateProjection]
       : [...roots, ...helperEntries.map((entry) => entry.actor)];
-    const lease = redirectedTargetDispatchWorld.resolve<RuntimeTargetWorldActor>({
+    const destinationRevision = `${playerId}:${target.id}`;
+    const resolution = redirectedTargetDispatchWorld.resolveResult<RuntimeTargetWorldActor>({
       phase: "helper",
       callerId: helper.serialId,
       redirectExpression,
@@ -853,10 +856,17 @@ export class PlayableMatchRuntime {
       candidateTargets,
       targetWorld: destinationRoot?.targetWorld ?? helperTargetWorld,
       stateOwnerId: destinationRoot?.stateOwner?.id ?? target.id,
-      destinationRevision: `${playerId}:${target.id}`,
+      destinationRevision,
+      destinationGeneration: destinationRevision,
       resolveCurrentDestination,
+      resolveCurrentDestinationGeneration: () => {
+        const currentDestination = resolveCurrentDestination();
+        return currentDestination ? `${playerId}:${currentDestination.id}` : undefined;
+      },
+      isDestinationSupported: () => destinationSupported,
     });
-    if (!lease) return undefined;
+    if (resolution.kind === "rejected") return undefined;
+    const lease = resolution.lease;
     return {
       actor: target,
       candidateTargets,

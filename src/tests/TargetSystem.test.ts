@@ -431,6 +431,7 @@ describe("TargetSystem", () => {
     expect(selection).toMatchObject({
       destinationId: "p1",
       controllerType: "targetbind",
+      operationClass: "target-binding",
       effect: "target",
       candidateTargetIds: ["p2", "p3"],
       requestedId: 77,

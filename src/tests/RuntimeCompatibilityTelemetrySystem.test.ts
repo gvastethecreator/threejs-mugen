@@ -130,6 +130,7 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
       stateOwnerId: "p2",
       destinationRevision: "57:p2",
       controllerType: "targetpoweradd",
+      operationClass: "target-resource" as const,
       effect: "target" as const,
       redirectExpression: "57",
       redirectPlayerId: 57,

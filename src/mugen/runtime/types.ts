@@ -504,6 +504,14 @@ export type RuntimeRedirectedTargetDispatchRoute =
 
 export type RuntimeRedirectedTargetDispatchWritebackMode = "direct" | "helper-wrapper";
 
+export type RuntimeRedirectedTargetDispatchOperationClass =
+  | "target-resource"
+  | "target-motion"
+  | "target-binding"
+  | "target-state"
+  | "bind-to-target"
+  | "target-controller";
+
 export type RuntimeRedirectedTargetDispatchWriteback = {
   mode: RuntimeRedirectedTargetDispatchWritebackMode;
   actorIds: string[];
@@ -516,6 +524,7 @@ export type RuntimeRedirectedTargetDispatchObservation = {
   stateOwnerId: string;
   destinationRevision?: string;
   controllerType: string;
+  operationClass: RuntimeRedirectedTargetDispatchOperationClass;
   effect: "target" | "bindtotarget";
   redirectExpression?: string;
   redirectPlayerId?: number;
