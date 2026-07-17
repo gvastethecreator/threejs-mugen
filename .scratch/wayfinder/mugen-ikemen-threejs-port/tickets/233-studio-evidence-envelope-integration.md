@@ -31,8 +31,9 @@ Chain contract row, expose it through the diagnostics bridge, and require
 - `pnpm run qa:studio:gate-evidence` passes with desktop/mobile UI checks,
   zero browser console/page errors, and ZIP assertions for schema, manifest,
   and envelope count.
-- Full `qa:smoke` regression remains the next broad gate for the imported
-  PackageAnalysis path.
+- Full `pnpm run qa:smoke` passes in 459.5s; the imported package path exposes
+  two current envelopes, including a current PackageAnalysis source match, and
+  the required ZIP document is present.
 
 ## Claim ceiling
 
@@ -42,6 +43,6 @@ MUGEN/IKEMEN runtime/rendering parity.
 
 ## Next
 
-Run the broad imported-package smoke and preserve a negative source-revision
-case before promoting this integration beyond the current bounded Studio
-scope.
+Keep the changed-source negative case as the next hardening slice; this
+integration is promoted for the current Studio scope with the claim ceiling
+above.

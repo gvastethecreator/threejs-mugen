@@ -33,16 +33,19 @@ and exports them as a required ZIP document.
 - Browser evidence: Build and Evidence surfaces expose the document on
   desktop; Evidence remains within 390px mobile width; zero console issues and
   zero page errors.
-- ZIP evidence: 63 files; `studio/evidence-envelopes.json` exists, is listed as
-  required, has the expected schema, and contains one current gate envelope.
+- ZIP evidence: the focused package has 63 files; `studio/evidence-envelopes.json`
+  exists, is listed as required, has the expected schema, and contains one
+  current gate envelope.
+- Full `pnpm run qa:smoke`: passed in 459.5s. The imported project exposed two
+  current envelopes, including a current PackageAnalysis source match; the ZIP
+  carried two envelopes with the expected schema and required manifest entry.
 
 ## Claim ceiling
 
-The focused route does not prove imported PackageAnalysis freshness under a
-full smoke. No release approval, JCS conformance, legal approval, or
-MUGEN/IKEMEN parity claim is made.
+No release approval, JCS conformance, legal approval, or MUGEN/IKEMEN parity
+claim is made.
 
-## Next gate
+## Next hardening
 
-Run the full imported ZIP smoke with the new envelope assertions, then add a
-negative changed-source browser case if the broad route exposes a gap.
+Add a browser-level changed-source case that proves a stale PackageAnalysis
+envelope remains visible and diagnostic-only after source mutation.
