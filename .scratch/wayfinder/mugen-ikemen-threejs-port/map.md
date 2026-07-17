@@ -269,6 +269,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Prove generated asset path and permission hygiene](tickets/229-asset-path-permission-hygiene.md) - resolved at bounded scope: asset-permission/v0, Nova CC0 metadata, relative public reports, 62-file path scan, 13/13 digest checks, and browser ZIP provenance/path/digest assertions pass; next is separate AssetReleasePolicy/v0.
 - [Implement AssetReleasePolicy/v0 and one releaseable record](tickets/230-asset-release-policy-v0.md) - resolved at bounded scope: policy evidence is fail-closed for permission, license, digest, transform, QA, collision, and playtest freshness; Nova is the only ZIP-ready record, while 9 records remain diagnostic-only. Final browser smoke passes in 398.9s with 0 page/console errors; no legal approval or parity claim.
+- [Define the SPDX expression support boundary](tickets/231-spdx-expression-boundary.md) - resolved at explicit subset scope: shared `spdx-expression-subset/v0` accepts identifier/AND/OR syntax only; metadata, provenance, policy evidence, and ZIP assertions expose the profile; unsupported normative forms block release. Focused 16/16, typecheck, and asset hygiene pass; full smoke pending this profile change.
 
 ## Not Yet Specified
 
