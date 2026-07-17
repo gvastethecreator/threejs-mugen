@@ -1900,6 +1900,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       bodyHasPackage: document.body.innerText.includes("Project Package"),
       bodyHasPackageAnalysis: document.body.innerText.includes("Package Analysis"),
       bodyHasTrustChain: document.body.innerText.includes("Build Trust Chain"),
+      bodyHasProjectReleaseDecision: document.body.innerText.includes("Project release decision") || document.body.innerText.includes("Project Release Decision"),
       bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
@@ -1957,6 +1958,9 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       studioEvidenceEnvelopeDocument: bridge?.studioEvidence?.envelopeDocument,
       studioEvidenceEnvelopeAssessment: bridge?.studioEvidence?.envelopeAssessment,
       evidenceEnvelopeTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "evidence-envelopes"),
+      projectReleaseDecision: bridge?.projectReleaseDecision,
+      projectReleaseDecisionEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "project-release-decision"),
+      projectReleaseDecisionTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "project-release-decision"),
       bodyHasEvidenceEnvelopes: document.body.innerText.includes("Evidence Envelopes"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
@@ -2565,6 +2569,7 @@ async function inspectPackageZip(packagePath) {
   const compatibilitySnapshot = JSON.parse(await zip.file("qa/compatibility-corpus-snapshot-v1.json").async("string"));
   const gateEvidence = JSON.parse(await zip.file("studio/gate-evidence.json").async("string"));
   const evidenceEnvelopes = JSON.parse(await zip.file("studio/evidence-envelopes.json").async("string"));
+  const projectReleaseDecision = JSON.parse(await zip.file("studio/project-release-decision.json").async("string"));
   const packageAnalysis = files.includes("studio/package-analysis.json")
     ? JSON.parse(await zip.file("studio/package-analysis.json").async("string"))
     : undefined;
@@ -2728,6 +2733,17 @@ async function inspectPackageZip(packagePath) {
     evidenceEnvelopesProjectScope: evidenceEnvelopes.project?.scope,
     evidenceEnvelopesHasPackage: evidenceEnvelopes.envelopes?.some((envelope) => envelope.subject?.kind === "package") ?? false,
     evidenceEnvelopesPackageFreshness: evidenceEnvelopes.envelopes?.find((envelope) => envelope.subject?.kind === "package")?.observation?.freshness?.state,
+    hasProjectReleaseDecision: files.includes("studio/project-release-decision.json"),
+    manifestListsProjectReleaseDecision: manifest.files?.some((file) => file.path === "studio/project-release-decision.json" && file.required === true) ?? false,
+    projectReleaseDecisionSchema: projectReleaseDecision.schemaVersion,
+    projectReleaseDecisionDigest: projectReleaseDecision.digest,
+    projectReleaseDecisionSemanticDigest: projectReleaseDecision.semanticDigest,
+    projectReleaseDecisionStatus: projectReleaseDecision.decisions?.release?.status,
+    projectReleaseDecisionDiagnosticExportable: projectReleaseDecision.decisions?.diagnostic?.canExport,
+    projectReleaseDecisionReleaseable: projectReleaseDecision.decisions?.release?.canRelease,
+    projectReleaseDecisionBlockerCount: projectReleaseDecision.summary?.blockerCount,
+    projectReleaseDecisionWarningCount: projectReleaseDecision.summary?.warningCount,
+    manifestReleaseDecision: manifest.releaseDecision,
     hasPackageAnalysis: files.includes("studio/package-analysis.json"),
     manifestListsPackageAnalysis: manifest.files?.some((file) => file.path === "studio/package-analysis.json" && file.required === true) ?? false,
     packageAnalysisSchema: packageAnalysis?.schemaVersion,
@@ -2854,6 +2870,7 @@ async function captureStudioEvidence(page, outDir) {
       evidenceFilter: bridge?.studioEvidence?.activeFilter,
       bodyHasEvidence: document.body.innerText.includes("Evidence Browser"),
       bodyHasTrustChain: document.body.innerText.includes("Evidence Trust Chain"),
+      bodyHasProjectReleaseDecision: document.body.innerText.includes("Project Release Decision") || document.body.innerText.includes("Project release decision"),
       bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
@@ -2884,6 +2901,8 @@ async function captureStudioEvidence(page, outDir) {
       architectureEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.status,
       architectureEvidenceDetail: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.detail,
       architectureEvidenceCanExport: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.canExport,
+      projectReleaseDecision: bridge?.projectReleaseDecision,
+      projectReleaseDecisionEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "project-release-decision"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
       hasCompatibilitySnapshotRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "compat:snapshot" && record.status === "ok")),
@@ -4261,6 +4280,7 @@ function assertSmoke(diagnostics) {
     "runtime-manifest",
     "evidence",
     "evidence-envelopes",
+    "project-release-decision",
     "package-bundle",
     "asset-validation",
     "asset-release-policy",
@@ -4274,7 +4294,7 @@ function assertSmoke(diagnostics) {
     expectedTrustChainIds.every((id) => check.trustChainTargets?.some((target) => target.startsWith(`${id}:`))) &&
     expectedTrustChainIds.every((id) => check.trustChainDeltas?.some((delta) => delta.startsWith(`${id}:`) && !delta.endsWith(":"))) &&
     (check.trustChainNextActions?.length ?? 0) >= expectedTrustChainIds.length;
-  if (!studioBuild.bodyHasTrustChain || studioBuild.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioBuild)) {
+  if (!studioBuild.bodyHasTrustChain || !studioBuild.bodyHasProjectReleaseDecision || studioBuild.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioBuild)) {
     failures.push("studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions");
   }
   const trustBindingAt = (check, id) => {
@@ -4346,6 +4366,16 @@ function assertSmoke(diagnostics) {
     studioBuild.evidenceEnvelopeTrustRow?.targetKind !== "contract"
   ) {
     failures.push("studio-build: revision-bound evidence envelopes were not surfaced through Evidence/Trust Chain");
+  }
+  if (
+    studioBuild.projectReleaseDecision?.schemaVersion !== "mugen-web-sandbox/project-release-decision/v0" ||
+    studioBuild.projectReleaseDecision?.decisions?.diagnostic?.canExport !== true ||
+    studioBuild.projectReleaseDecision?.summary?.blockerCount !== studioBuild.projectReleaseDecision?.decisions?.release?.blockers?.length ||
+    studioBuild.projectReleaseDecision?.summary?.releaseable !== studioBuild.projectReleaseDecision?.decisions?.release?.canRelease ||
+    studioBuild.projectReleaseDecisionEvidence?.canExport !== true ||
+    studioBuild.projectReleaseDecisionTrustRow?.targetKind !== "contract"
+  ) {
+    failures.push("studio-build: diagnostic/release ProjectReleaseDecision contract was not surfaced with explicit blocker summary");
   }
   if (
     studioBuild.importedFixtureLoaded &&
@@ -4449,6 +4479,14 @@ function assertSmoke(diagnostics) {
     || !studioBuild.downloadedPackage?.manifestListsEvidenceEnvelopes
     || studioBuild.downloadedPackage?.evidenceEnvelopesSchema !== "mugen-web-sandbox/studio-evidence-envelope-document/v0"
     || (studioBuild.downloadedPackage?.evidenceEnvelopesCount ?? 0) < 1
+    || !studioBuild.downloadedPackage?.hasProjectReleaseDecision
+    || !studioBuild.downloadedPackage?.manifestListsProjectReleaseDecision
+    || studioBuild.downloadedPackage?.projectReleaseDecisionSchema !== "mugen-web-sandbox/project-release-decision/v0"
+    || studioBuild.downloadedPackage?.projectReleaseDecisionDiagnosticExportable !== true
+    || studioBuild.downloadedPackage?.manifestReleaseDecision?.diagnosticExportable !== studioBuild.downloadedPackage?.projectReleaseDecisionDiagnosticExportable
+    || studioBuild.downloadedPackage?.manifestReleaseDecision?.releaseable !== studioBuild.downloadedPackage?.projectReleaseDecisionReleaseable
+    || studioBuild.downloadedPackage?.manifestReleaseDecision?.blockerCount !== studioBuild.downloadedPackage?.projectReleaseDecisionBlockerCount
+    || studioBuild.downloadedPackage?.manifestReleaseDecision?.semanticDigest !== studioBuild.downloadedPackage?.projectReleaseDecisionSemanticDigest
     || studioBuild.downloadedPackage?.hasPackageAnalysis !== true
     || studioBuild.downloadedPackage?.manifestListsPackageAnalysis !== true
     || studioBuild.downloadedPackage?.packageAnalysisSchema !== "mugen-web-sandbox/package-analysis/v1"
@@ -4777,8 +4815,16 @@ function assertSmoke(diagnostics) {
   if (studioEvidence.mode !== "studio" || studioEvidence.studioTab !== "evidence" || !studioEvidence.bodyHasEvidence) {
     failures.push("studio-evidence: Evidence surface did not render");
   }
-  if (!studioEvidence.bodyHasTrustChain || studioEvidence.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioEvidence)) {
+  if (!studioEvidence.bodyHasTrustChain || !studioEvidence.bodyHasProjectReleaseDecision || studioEvidence.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioEvidence)) {
     failures.push("studio-evidence: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions");
+  }
+  if (
+    studioEvidence.projectReleaseDecision?.schemaVersion !== "mugen-web-sandbox/project-release-decision/v0" ||
+    studioEvidence.projectReleaseDecision?.decisions?.diagnostic?.canExport !== true ||
+    studioEvidence.projectReleaseDecisionEvidence?.canExport !== true ||
+    (studioBuild.projectReleaseDecision?.semanticDigest && studioEvidence.projectReleaseDecision.semanticDigest !== studioBuild.projectReleaseDecision.semanticDigest)
+  ) {
+    failures.push("studio-evidence: ProjectReleaseDecision contract was not preserved across Build and Evidence surfaces");
   }
   if (!studioEvidence.bodyHasCompatibilitySnapshot || studioEvidence.compatibilitySnapshotStatus !== "passed" || !studioEvidence.hasCompatibilitySnapshotRecord) {
     failures.push("studio-evidence: promoted compatibility snapshot was not visible as validated evidence");

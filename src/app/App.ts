@@ -108,6 +108,11 @@ import {
   type StudioEvidenceEnvelopeAssessment,
   type StudioEvidenceEnvelopeDocument,
 } from "./StudioEvidenceEnvelope";
+import {
+  createProjectReleaseDecisionDocument,
+  type ProjectReleaseDecisionDocument,
+  type ProjectReleaseEvidenceInput,
+} from "./ProjectReleaseDecision";
 import { STUDIO_GATE_EVIDENCE_DIAGNOSTICS, STUDIO_GATE_EVIDENCE_DOCUMENT } from "./StudioGateEvidence";
 import {
   STUDIO_COMPATIBILITY_SNAPSHOT,
@@ -468,6 +473,7 @@ type StudioEvidenceSummary = {
   compatibilitySnapshot: StudioCompatibilitySnapshotState;
   envelopeDocument: StudioEvidenceEnvelopeDocument;
   envelopeAssessment: StudioEvidenceEnvelopeAssessment;
+  releaseDecision: ProjectReleaseDecisionDocument;
   stats: {
     total: number;
     ok: number;
@@ -735,6 +741,14 @@ type ProjectExportBundleManifest = {
     releasePolicyBlocked: number;
     records: ProjectExportBundleAssetRecord[];
   };
+  releaseDecision: {
+    status: "ready" | "blocked";
+    diagnosticExportable: boolean;
+    releaseable: boolean;
+    blockerCount: number;
+    warningCount: number;
+    semanticDigest: string;
+  };
   diagnostics: {
     warnings: string[];
     errors: string[];
@@ -894,6 +908,15 @@ export class App {
   private lastCompiledProject?: CompiledRuntimeManifest;
   private lastProjectBundle?: ProjectExportBundleSummary;
   private lastTraceArtifact?: RuntimeTraceArtifact;
+  private studioProjectReleaseDecisionCache?: {
+    projectKey: string;
+    compiled?: CompiledRuntimeManifest;
+    trace?: RuntimeTraceArtifact;
+    packageAnalysis?: PackageAnalysisV1Result;
+    sourceWriteReceipt?: SourceWriteReceipt;
+    bundledRecords?: ProjectExportBundleAssetRecord[];
+    document: ProjectReleaseDecisionDocument;
+  };
   private traceArtifacts: RuntimeTraceArtifact[] = [];
   private storedTraceEvidence: StoredTraceEvidenceEntry[] = [];
   private selectedTraceFrameIndex = 0;
@@ -8473,6 +8496,9 @@ export class App {
     if (row.id === "evidence") {
       return 'data-evidence-filter="trace" data-trace-frame-index="0"';
     }
+    if (row.id === "project-release-decision") {
+      return row.status === "ok" ? 'data-studio-tab="build"' : 'data-evidence-filter="diagnostic"';
+    }
     if (row.id === "asset-validation") {
       const assetAttribute = row.targetId && row.targetId !== row.id ? ` data-studio-asset-id="${escapeHtml(row.targetId)}"` : "";
       return `data-studio-tab="assets" data-asset-filter="${row.status === "ok" ? "all" : "attention"}"${assetAttribute}`;
@@ -9036,8 +9062,9 @@ export class App {
     `;
   }
 
-  private getStudioEvidenceSummary(): StudioEvidenceSummary {
-    const records = this.getStudioEvidenceRecords();
+  private getStudioEvidenceSummary(bundledRecords?: ProjectExportBundleAssetRecord[]): StudioEvidenceSummary {
+    const releaseDecision = this.getStudioProjectReleaseDecision(bundledRecords);
+    const records = this.getStudioEvidenceRecords(releaseDecision);
     const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
     const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
     const topRecord =
@@ -9048,6 +9075,7 @@ export class App {
       compatibilitySnapshot: STUDIO_COMPATIBILITY_SNAPSHOT,
       envelopeDocument,
       envelopeAssessment,
+      releaseDecision,
       stats: {
         total: records.length,
         ok: records.filter((record) => record.status === "ok" || record.status === "active").length,
@@ -9079,6 +9107,252 @@ export class App {
       currentPackageAvailable: Boolean(this.importedSourceBundle),
       now: Date.now(),
     });
+  }
+
+  private getStudioProjectReleaseDecision(bundledRecords?: ProjectExportBundleAssetRecord[]): ProjectReleaseDecisionDocument {
+    const manifest = this.getGameProjectManifest();
+    const projectRevision = this.projectStorageRevision;
+    const project = {
+      id: manifest.id,
+      ...(projectRevision !== undefined ? { revision: projectRevision } : {}),
+      scope: projectRevision !== undefined ? ("saved" as const) : ("session" as const),
+      dirty: this.projectDirty,
+      conflict: Boolean(this.projectStorageConflict),
+    };
+    if (this.mode !== "studio") {
+      return createProjectReleaseDecisionDocument({
+        generatedAt: new Date().toISOString(),
+        project,
+        evidence: [],
+      });
+    }
+    const activeBundledRecords = bundledRecords ?? this.lastProjectBundle?.manifest.assets.records;
+    const projectKey = [
+      manifest.id,
+      manifest.name,
+      manifest.entry.p1,
+      manifest.entry.p2,
+      manifest.entry.stage,
+      manifest.sourcePackages.map((sourcePackage) => `${sourcePackage.id}:${sourcePackage.status}:${sourcePackage.observedFingerprint ?? sourcePackage.fingerprint ?? ""}`).join(","),
+      projectRevision ?? "",
+      this.projectDirty,
+      this.projectStorageConflict?.actualRevision ?? "",
+      this.importedSourceBundle?.fingerprint.digest ?? "",
+      this.assetPermissionMetadata.size,
+      [...this.atlasStatusByFighter.entries()].map(([id, status]) => `${id}:${status}`).join(","),
+      [...this.atlasMotionQaByFighter.entries()].map(([id, qa]) => `${id}:${qa.status}:${qa.checkedStates.length}:${qa.warnings.length}:${qa.errors.length}`).join(","),
+      STUDIO_COMPATIBILITY_SNAPSHOT.snapshot?.semanticDigest ?? STUDIO_COMPATIBILITY_SNAPSHOT.status,
+    ].join("|");
+    const cache = this.studioProjectReleaseDecisionCache;
+    if (
+      cache &&
+      cache.projectKey === projectKey &&
+      cache.compiled === this.lastCompiledProject &&
+      cache.trace === this.lastTraceArtifact &&
+      cache.packageAnalysis === this.importedPackageAnalysisV1 &&
+      cache.sourceWriteReceipt === this.studioSourceWriteReceipt &&
+      cache.bundledRecords === activeBundledRecords
+    ) {
+      return cache.document;
+    }
+    const summary = this.getStudioProjectSummary();
+    const compiled = this.lastCompiledProject;
+    const sourcePackages = this.getProjectSourcePackages();
+    const architectureEvidence = this.getStudioGateEvidenceAssessment("architecture-boundaries");
+    const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
+    const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
+    const provenance = this.getStudioAssetProvenance(summary.assets, activeBundledRecords ?? []);
+    const releasePolicies = this.getStudioAssetReleasePolicies(summary.assets, provenance, activeBundledRecords ?? []);
+    const snapshotEvidence = this.getCompatibilitySnapshotEvidenceRecord();
+    const evidence: ProjectReleaseEvidenceInput[] = [];
+    const releaseStatus = (status: StudioStatus, missing = false): ProjectReleaseEvidenceInput["status"] => {
+      if (missing || status === "pending") return "missing";
+      if (status === "fail") return "failed";
+      if (status === "blocked" || status === "unsupported") return "blocked";
+      if (status === "warn" || status === "partial" || status === "planned" || status === "unknown") return "warn";
+      return "passed";
+    };
+    const envelopeFreshness: ProjectReleaseEvidenceInput["freshness"] = envelopeDocument.summary.total === 0
+      ? "missing"
+      : envelopeDocument.summary.stale > 0
+        ? "stale"
+        : envelopeDocument.summary.missing > 0
+          ? "missing"
+          : envelopeDocument.summary.unknown > 0
+            ? "unknown"
+            : "current";
+    const envelopeRevisionState: ProjectReleaseEvidenceInput["revisionState"] = envelopeDocument.envelopes.length === 0
+      ? "not-applicable"
+      : envelopeDocument.project.scope !== "saved" || projectRevision === undefined || !envelopeDocument.project.revision
+        ? "unknown"
+        : envelopeDocument.project.revision === String(projectRevision)
+          ? "matched"
+          : "mismatched";
+    const add = (value: ProjectReleaseEvidenceInput): void => {
+      evidence.push(value);
+    };
+
+    add({
+      id: "runtime-manifest",
+      label: "Runtime manifest",
+      kind: "runtime",
+      status: !compiled
+        ? "missing"
+        : compiled.diagnostics.errors.length || compiled.modules.missing.length
+          ? "failed"
+          : compiled.diagnostics.warnings.length || compiled.modules.planned.length
+            ? "warn"
+            : "passed",
+      freshness: compiled ? "current" : "missing",
+      revisionState: "not-applicable",
+      requiredForRelease: true,
+      detail: !compiled
+        ? "Runtime manifest has not been compiled for the current project."
+        : `${compiled.modules.active.length} active / ${compiled.modules.planned.length} planned / ${compiled.modules.missing.length} missing modules / ${compiled.diagnostics.errors.length} errors`,
+      evidenceIds: compiled ? [compiled.schemaVersion, `compile:${compiled.projectId}`] : ["compile:runtime-manifest"],
+    });
+
+    add({
+      id: "runtime-trace",
+      label: "Runtime trace",
+      kind: "runtime",
+      status: !this.lastTraceArtifact ? "missing" : this.lastTraceArtifact.status === "passed" ? "passed" : "failed",
+      freshness: this.lastTraceArtifact ? "current" : "missing",
+      revisionState: "not-applicable",
+      requiredForRelease: true,
+      detail: this.lastTraceArtifact
+        ? `${this.lastTraceArtifact.status} / ${this.lastTraceArtifact.trace.frameCount} frames / ${this.lastTraceArtifact.trace.checksum}`
+        : "No runtime trace artifact has been exported in the current session.",
+      evidenceIds: this.lastTraceArtifact ? [`trace:${this.lastTraceArtifact.trace.checksum}`] : ["trace-artifact"],
+    });
+
+    add({
+      id: "evidence-envelopes",
+      label: "Revision-bound evidence envelopes",
+      kind: "envelope",
+      status: envelopeAssessment.status === "ok" ? "passed" : envelopeAssessment.status === "fail" ? "failed" : "warn",
+      freshness: envelopeFreshness,
+      revisionState: envelopeRevisionState,
+      requiredForRelease: true,
+      detail: envelopeAssessment.detail,
+      evidenceIds: [envelopeDocument.schemaVersion, ...envelopeDocument.envelopes.map((item) => item.id)],
+    });
+
+    const gateEvidenceStatus: ProjectReleaseEvidenceInput["status"] = architectureEvidence.evidence?.status === "passed" && architectureEvidence.canExport
+      ? architectureEvidence.freshness.state === "current" ? "passed" : "stale"
+      : architectureEvidence.evidence?.status === "failed"
+        ? "failed"
+        : architectureEvidence.evidence?.status === "unsupported"
+          ? "blocked"
+          : "missing";
+    add({
+      id: "architecture-boundaries",
+      label: "Architecture boundary gate",
+      kind: "gate",
+      status: gateEvidenceStatus,
+      freshness: architectureEvidence.freshness.state === "current" ? "current" : architectureEvidence.freshness.state,
+      revisionState: "not-applicable",
+      requiredForRelease: true,
+      detail: architectureEvidence.detail,
+      evidenceIds: architectureEvidence.evidenceIds,
+    });
+
+    const policyFreshness: ProjectReleaseEvidenceInput["freshness"] = releasePolicies.length === 0
+      ? "missing"
+      : releasePolicies.flatMap((policy) => policy.evidence).some((item) => item.freshness === "stale")
+        ? "stale"
+        : releasePolicies.flatMap((policy) => policy.evidence).some((item) => item.freshness === "unknown")
+          ? "unknown"
+          : "current";
+    add({
+      id: "asset-release-policy",
+      label: "Asset release policy",
+      kind: "asset-policy",
+      status: releasePolicies.length === 0 ? "missing" : releasePolicies.every((policy) => policy.canRelease) ? "passed" : "blocked",
+      freshness: policyFreshness,
+      revisionState: "not-applicable",
+      requiredForRelease: true,
+      detail: releasePolicies.length
+        ? `${releasePolicies.filter((policy) => policy.canRelease).length}/${releasePolicies.length} asset release policies ready`
+        : "No asset release policy records are available.",
+      evidenceIds: releasePolicies.flatMap((policy) => [policy.id, ...policy.blockedBy.slice(0, 4)]),
+    });
+
+    const missingSourcePackages = sourcePackages.filter((sourcePackage) => sourcePackage.status !== "linked");
+    add({
+      id: "source-packages",
+      label: "Source packages",
+      kind: "project",
+      status: missingSourcePackages.length ? "missing" : "passed",
+      freshness: missingSourcePackages.length ? "missing" : "current",
+      revisionState: "not-applicable",
+      requiredForRelease: true,
+      detail: sourcePackages.length
+        ? `${sourcePackages.length - missingSourcePackages.length}/${sourcePackages.length} linked source package(s)`
+        : "No imported source package is required by the current generated/local project.",
+      evidenceIds: sourcePackages.map((sourcePackage) => `source-package:${sourcePackage.id}`),
+    });
+
+    add({
+      id: "compatibility-snapshot",
+      label: "Promoted compatibility snapshot",
+      kind: "analysis",
+      status: releaseStatus(snapshotEvidence.status, !STUDIO_COMPATIBILITY_SNAPSHOT.snapshot),
+      freshness: STUDIO_COMPATIBILITY_SNAPSHOT.snapshot ? "current" : "missing",
+      revisionState: "not-applicable",
+      requiredForRelease: true,
+      detail: snapshotEvidence.detail,
+      evidenceIds: snapshotEvidence.evidenceIds ?? [],
+    });
+
+    if (this.importedPackageAnalysis && this.importedPackageAnalysisV1) {
+      const packageEnvelope = envelopeDocument.envelopes.find((item) => item.subject.kind === "package");
+      add({
+        id: "package-analysis",
+        label: "Package analysis",
+        kind: "analysis",
+        status: this.importedPackageAnalysis.status === "recognized" ? "passed" : this.importedPackageAnalysis.status === "partial" ? "warn" : "unknown",
+        freshness: packageEnvelope?.observation.freshness.state ?? "unknown",
+        revisionState: packageEnvelope?.revisions.project
+          ? packageEnvelope.revisions.project.revision === String(projectRevision) ? "matched" : "mismatched"
+          : "unknown",
+        requiredForRelease: false,
+        detail: `${this.importedPackageAnalysis.status} / ${this.importedPackageAnalysisV1.semanticDigest}`,
+        evidenceIds: [`package-analysis:${this.importedPackageAnalysisV1.checksum}`, `package-analysis:semantic:${this.importedPackageAnalysisV1.semanticDigest}`],
+      });
+    }
+
+    if (this.studioSourceWriteReceipt) {
+      const receipt = this.studioSourceWriteReceipt;
+      const committed = isSourceWriteReceiptCommitted(receipt);
+      add({
+        id: "source-write-receipt",
+        label: "Source write receipt",
+        kind: "source-write",
+        status: committed ? "passed" : receipt.status === "blocked" ? "blocked" : "failed",
+        freshness: committed ? "current" : "unknown",
+        revisionState: "not-applicable",
+        requiredForRelease: true,
+        detail: `${receipt.status} / ${receipt.reason} / ${receipt.digest}`,
+        evidenceIds: [receipt.id, `source-write-digest:${receipt.digest}`],
+      });
+    }
+
+    const document = createProjectReleaseDecisionDocument({
+      generatedAt: new Date().toISOString(),
+      project,
+      evidence,
+    });
+    this.studioProjectReleaseDecisionCache = {
+      projectKey,
+      compiled: this.lastCompiledProject,
+      trace: this.lastTraceArtifact,
+      packageAnalysis: this.importedPackageAnalysisV1,
+      sourceWriteReceipt: this.studioSourceWriteReceipt,
+      bundledRecords: activeBundledRecords,
+      document,
+    };
+    return document;
   }
 
   private getStudioDebugSelection(
@@ -10287,6 +10561,13 @@ export class App {
     const tracePassed = this.lastTraceArtifact?.status === "passed";
     const envelopeDocument = this.getStudioEvidenceEnvelopeDocument();
     const envelopeAssessment = assessStudioEvidenceEnvelopeDocument(envelopeDocument);
+    const releaseDecision = this.getStudioProjectReleaseDecision();
+    const release = releaseDecision.decisions.release;
+    const releaseDecisionStatus: StudioStatus = release.canRelease
+      ? "ok"
+      : release.blockers.some((blocker) => blocker.reason === "evidence-failed" || blocker.reason === "policy-blocked" || blocker.reason === "wrong-revision")
+        ? "fail"
+        : "blocked";
     const compileErrors = compiled?.diagnostics.errors.length ?? 0;
     const compileWarnings = compiled?.diagnostics.warnings.length ?? 0;
     const missingModules = compiled?.modules.missing.length ?? 0;
@@ -10467,6 +10748,23 @@ export class App {
         },
       },
       {
+        id: "project-release-decision",
+        label: "Project release decision",
+        status: releaseDecisionStatus,
+        state: release.canRelease ? "exportable" : "blocked",
+        detail: `${release.canRelease ? "release allowed" : "release blocked"}; diagnostic export ${release.canExport ? "available" : "blocked"}; ${release.blockers.length} blocker(s), ${release.warnings.length} warning(s)`,
+        affectedSystem: "build",
+        impact: release.canRelease
+          ? "Diagnostic and release intents agree that the current revision-bound project evidence is ready for packaging."
+          : "The project can still export a diagnostic package, but release remains blocked until its explicit blockers are resolved.",
+        evidenceIds: [releaseDecision.id, releaseDecision.semanticDigest, releaseDecision.digest, ...release.evidence.flatMap((item) => item.evidenceIds).slice(0, 24)],
+        blockedBy: release.blockers.map((blocker) => blocker.id),
+        canExport: releaseDecision.decisions.diagnostic.canExport,
+        nextAction: release.canRelease
+          ? { kind: "open-build", label: "Review release package", targetId: "project-release-decision" }
+          : { kind: "open-evidence", label: release.nextAction.label, targetId: "project-release-decision" },
+      },
+      {
         id: "package-bundle",
         label: "Project package",
         status: this.lastProjectBundle ? "ok" : compiled ? "partial" : "pending",
@@ -10575,6 +10873,7 @@ export class App {
       { id: "runtime-manifest", lane: "runtime" },
       { id: "evidence", lane: "qa" },
       { id: "evidence-envelopes", lane: "qa" },
+      { id: "project-release-decision", lane: "build" },
       { id: "package-bundle", lane: "build" },
       { id: "asset-validation", lane: "assets" },
       { id: "asset-release-policy", lane: "assets" },
@@ -10625,6 +10924,9 @@ export class App {
     }
     if (record.id === "evidence-envelopes") {
       return { kind: "contract", id: "evidence-envelope:v0" };
+    }
+    if (record.id === "project-release-decision") {
+      return { kind: "contract", id: "project-release-decision:v0" };
     }
     if (record.id === "package-bundle") {
       const packageFile = this.getStudioTrustPackageFileTarget();
@@ -10729,6 +11031,13 @@ export class App {
         delta: `${document.summary.current}/${document.summary.total} current / ${document.project.scope} project scope`,
       };
     }
+    if (record.id === "project-release-decision") {
+      const decision = this.getStudioProjectReleaseDecision();
+      return {
+        label: decision.decisions.release.canRelease ? "current" : "blocked",
+        delta: `${decision.decisions.release.blockers.length} blocker(s) / ${decision.decisions.release.warnings.length} warning(s) / diagnostic ${decision.decisions.diagnostic.canExport ? "available" : "blocked"}`,
+      };
+    }
     if (record.id === "package-bundle") {
       const bundle = this.lastProjectBundle;
       return bundle
@@ -10807,6 +11116,10 @@ export class App {
     if (record.id === "evidence-envelopes") {
       const document = this.getStudioEvidenceEnvelopeDocument();
       return `${document.schemaVersion} / ${document.summary.current}/${document.summary.total} current / ${document.project.scope}`;
+    }
+    if (record.id === "project-release-decision") {
+      const decision = this.getStudioProjectReleaseDecision();
+      return `${decision.schemaVersion} / release ${decision.decisions.release.status} / ${decision.decisions.release.blockers.length} blockers / ${decision.semanticDigest}`;
     }
     if (record.id === "package-bundle") {
       const bundle = this.lastProjectBundle;
@@ -11064,7 +11377,7 @@ export class App {
     return `Diff vs current: frames ${formatSignedDelta(deltas.frameDelta)}, events ${formatSignedDelta(deltas.eventDelta)}, gates ${formatSignedDelta(deltas.gateDelta)}, passed gates ${formatSignedDelta(deltas.passedGateDelta)}.`;
   }
 
-  private getStudioEvidenceRecords(): StudioEvidenceRecord[] {
+  private getStudioEvidenceRecords(releaseDecision = this.getStudioProjectReleaseDecision()): StudioEvidenceRecord[] {
     const summary = this.getStudioProjectSummary();
     const records: StudioEvidenceRecord[] = [];
     for (const gate of summary.gates) {
@@ -11120,8 +11433,42 @@ export class App {
     if (this.studioSourceWriteReceipt) {
       records.push(this.getSourceWriteReceiptEvidenceRecord(this.studioSourceWriteReceipt));
     }
+    records.push(this.getProjectReleaseDecisionEvidenceRecord(releaseDecision));
     records.push(...this.getDiagnosticsEvidenceRecords());
     return records;
+  }
+
+  private getProjectReleaseDecisionEvidenceRecord(document: ProjectReleaseDecisionDocument): StudioEvidenceRecord {
+    const diagnostic = document.decisions.diagnostic;
+    const release = document.decisions.release;
+    const status: StudioStatus = release.canRelease
+      ? "ok"
+      : release.blockers.some((blocker) => blocker.reason === "evidence-failed" || blocker.reason === "policy-blocked" || blocker.reason === "wrong-revision")
+        ? "fail"
+        : "blocked";
+    const blockerEvidenceIds = release.blockers.flatMap((blocker) => blocker.evidenceId ? [blocker.evidenceId] : []);
+    return {
+      id: "project-release-decision",
+      label: "Project Release Decision",
+      category: "diagnostic",
+      status,
+      detail: `${release.status} / diagnostic export ${diagnostic.canExport ? "available" : "blocked"} / release ${release.canRelease ? "allowed" : "blocked"} / ${release.blockers.length} blocker(s) / ${release.warnings.length} warning(s) / ${document.semanticDigest}`,
+      tags: ["project-release-decision/v0", release.intent, release.status, document.semanticDigest, ...release.blockers.map((blocker) => blocker.reason)],
+      level: release.canRelease ? "Release-ready" : "Diagnostic-only",
+      severity: this.severityForStatus(status),
+      affectedSystem: "build",
+      impact: release.canRelease
+        ? "The current saved project has revision-bound evidence sufficient for a release decision."
+        : "Diagnostic export remains available; release is blocked until the decision blockers and next action are resolved.",
+      evidenceIds: [document.id, document.semanticDigest, document.digest, ...blockerEvidenceIds],
+      blockedBy: release.blockers.map((blocker) => blocker.id),
+      canExport: diagnostic.canExport,
+      nextAction: {
+        kind: release.canRelease ? "open-build" : "open-evidence",
+        label: release.nextAction.label,
+        targetId: release.nextAction.targetId,
+      },
+    };
   }
 
   private getPackageAnalysisEvidenceRecord(report: PackageAnalysisResult): StudioEvidenceRecord {
@@ -12539,8 +12886,7 @@ export class App {
     await this.loadAssetPermissionMetadata();
     const studio = this.getStudioProjectSummary();
     const sourceRuntimeMaps = this.getAssetSourceRuntimeMaps(studio.assets);
-    const evidence = this.getStudioEvidenceSummary();
-    const evidenceEnvelopes = evidence.envelopeDocument;
+    const evidenceEnvelopes = this.getStudioEvidenceEnvelopeDocument();
     const traceArtifact = this.lastTraceArtifact;
     const zip = new JSZip();
     this.addJsonToZip(zip, "project/project.json", project);
@@ -12554,7 +12900,6 @@ export class App {
     if (this.studioSourceWriteReceipt) {
       this.addJsonToZip(zip, "studio/source-write-receipt.json", this.studioSourceWriteReceipt);
     }
-    this.addJsonToZip(zip, "studio/evidence.json", evidence);
     this.addJsonToZip(zip, "studio/evidence-envelopes.json", evidenceEnvelopes);
     this.addJsonToZip(zip, "reports/compatibility-report.json", this.getCompatibilityExportPayload());
     this.addJsonToZip(
@@ -12580,6 +12925,8 @@ export class App {
     const failedAssets = assetRecords.filter((record) => record.status === "failed");
     const skippedAssets = assetRecords.filter((record) => record.status === "skipped");
     const binaryBundlingStatus = bundledAssets.length === 0 ? "metadata-only" : failedAssets.length > 0 || skippedAssets.some((record) => record.required) ? "partial" : "bundled";
+    const evidence = this.getStudioEvidenceSummary(assetRecords);
+    const releaseDecision = evidence.releaseDecision;
     const files: ProjectExportBundleManifest["files"] = [
       { path: "package-manifest.json", kind: "manifest", required: true },
       { path: "project/project.json", kind: "manifest", required: true },
@@ -12588,6 +12935,7 @@ export class App {
       { path: "studio/asset-source-runtime-map.json", kind: "studio", required: true },
       { path: "studio/gate-evidence.json", kind: "studio", required: true },
       { path: "studio/evidence-envelopes.json", kind: "studio", required: true },
+      { path: "studio/project-release-decision.json", kind: "studio", required: true },
       ...(this.importedPackageAnalysisV1 ? [{ path: "studio/package-analysis.json", kind: "studio" as const, required: true }] : []),
       ...(this.studioSourceWriteReceipt ? [{ path: "studio/source-write-receipt.json", kind: "studio" as const, required: true }] : []),
       { path: "studio/asset-provenance.json", kind: "studio", required: true },
@@ -12625,6 +12973,14 @@ export class App {
         releasePolicyBlocked,
         records: assetRecords,
       },
+      releaseDecision: {
+        status: releaseDecision.decisions.release.status,
+        diagnosticExportable: releaseDecision.decisions.diagnostic.canExport,
+        releaseable: releaseDecision.decisions.release.canRelease,
+        blockerCount: releaseDecision.summary.blockerCount,
+        warningCount: releaseDecision.summary.warningCount,
+        semanticDigest: releaseDecision.semanticDigest,
+      },
       diagnostics: {
         warnings: [
           ...compiled.diagnostics.warnings,
@@ -12644,6 +13000,8 @@ export class App {
     this.addJsonToZip(zip, "studio/build-readiness.json", readiness);
     this.addJsonToZip(zip, "studio/asset-provenance.json", provenance);
     this.addJsonToZip(zip, "studio/asset-release-policy.json", releasePolicies);
+    this.addJsonToZip(zip, "studio/evidence.json", evidence);
+    this.addJsonToZip(zip, "studio/project-release-decision.json", releaseDecision);
     this.addJsonToZip(zip, "assets/package-assets.json", assetRecords);
     zip.file("README.txt", this.createProjectBundleReadme(manifest));
     const blob = await zip.generateAsync({ type: "blob" });
@@ -13000,6 +13358,7 @@ export class App {
         studioDebug: StudioDebugSelectionSummary;
         studioDebugFilter: StudioDebugFilter;
         studioEvidence: StudioEvidenceSummary;
+        projectReleaseDecision: ProjectReleaseDecisionDocument;
         studioTrustChain: StudioTrustContractRow[];
         studioFocusedTrustRowId?: string;
         studioFocusedPackageFilePath?: string;
@@ -13062,6 +13421,7 @@ export class App {
       studioDebug: this.getStudioDebugSelection(),
       studioDebugFilter: this.studioDebugFilter,
       studioEvidence: this.getStudioEvidenceSummary(),
+      projectReleaseDecision: this.getStudioProjectReleaseDecision(),
       studioTrustChain: this.getStudioTrustContractRows(studio),
       studioFocusedTrustRowId: this.studioFocusedTrustRowId,
       studioFocusedPackageFilePath: this.studioFocusedPackageFilePath,
