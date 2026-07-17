@@ -126,6 +126,54 @@ describe("RuntimeRedirectedTargetDispatchWorld", () => {
     });
   });
 
+  it("revalidates freshness before the commit callback and owns commit ordering", () => {
+    const world = new RuntimeRedirectedTargetDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const destination = { id: "p2" };
+    let generation = "p2:g1";
+    const options = {
+      phase: "helper" as const,
+      callerId: "p1-helper-0",
+      redirectExpression: "57",
+      redirectPlayerId: 57,
+      destination,
+      candidateTargets: [{ id: "p1" }],
+      targetWorld,
+      destinationGeneration: "p2:g1",
+      resolveCurrentDestination: () => destination,
+      resolveCurrentDestinationGeneration: () => generation,
+    };
+    const stale = world.resolveResult(options);
+    expect(stale.kind).toBe("resolved");
+    if (stale.kind !== "resolved") return;
+
+    const committed: string[] = [];
+    const staleResult = world.execute(
+      stale.lease,
+      () => {
+        committed.push("operation");
+        generation = "p2:g2";
+        return "prepared";
+      },
+      () => committed.push("commit"),
+    );
+    expect(staleResult).toEqual({ executed: false });
+    expect(committed).toEqual(["operation"]);
+    expect(stale.lease.status).toBe("aborted");
+
+    generation = "p2:g1";
+    const live = world.resolveResult(options);
+    expect(live.kind).toBe("resolved");
+    if (live.kind === "resolved") {
+      const liveEvents: string[] = [];
+      expect(world.execute(live.lease, () => {
+        liveEvents.push("operation");
+        return "prepared";
+      }, () => liveEvents.push("commit"))).toEqual({ executed: true, value: "prepared" });
+      expect(liveEvents).toEqual(["operation", "commit"]);
+    }
+  });
+
   it("carries helper caller, destination store, and state-owner metadata", () => {
     const world = new RuntimeRedirectedTargetDispatchWorld();
     const targetWorld = new RuntimeTargetWorld();

@@ -244,8 +244,19 @@ describe("HelperSystem", () => {
       targets: [{ actorId: "p1-helper-target", targetId: 77, age: 0 }],
     });
     const targetHelper = helper({ serialId: "p1-helper-target", power: 10 });
+    const unselectedHelper = helper({ serialId: "p3-helper-unselected", power: 17 });
     const destinationActor = runtimeHelperTargetActor(destinationHelper);
     const targetActor = runtimeHelperTargetActor(targetHelper);
+    const unselectedActor = runtimeHelperTargetActor(unselectedHelper);
+    const unselectedBefore = JSON.stringify({
+      life: unselectedHelper.life,
+      power: unselectedHelper.power,
+      pos: unselectedHelper.pos,
+      targets: unselectedHelper.targets,
+      targetBindings: unselectedHelper.targetBindings,
+      bindToTarget: unselectedHelper.bindToTarget,
+    });
+    const committedIds: string[] = [];
     const controller = {
       ...controllerIr(6000, "TargetPowerAdd", { id: "77", value: "40", redirectid: "57" }),
       operation: {
@@ -265,6 +276,7 @@ describe("HelperSystem", () => {
     const helperById = new Map([
       [destinationHelper.serialId, destinationHelper],
       [targetHelper.serialId, targetHelper],
+      [unselectedHelper.serialId, unselectedHelper],
     ]);
 
     advanceRuntimeHelpers([actor], stage, {
@@ -272,8 +284,9 @@ describe("HelperSystem", () => {
         playerId === 57
           ? {
               actor: destinationActor,
-              candidateTargets: [targetActor],
+              candidateTargets: [targetActor, unselectedActor],
               commitActor: (target) => {
+                committedIds.push(target.id);
                 const helper = helperById.get(target.id);
                 if (!helper) return;
                 applyRuntimeStateToHelper(helper, target.runtime);
@@ -286,6 +299,15 @@ describe("HelperSystem", () => {
     expect(actor.targets).toEqual([]);
     expect(destinationHelper.power).toBe(35);
     expect(targetHelper.power).toBe(50);
+    expect(committedIds).toEqual(["p1-helper-target"]);
+    expect(JSON.stringify({
+      life: unselectedHelper.life,
+      power: unselectedHelper.power,
+      pos: unselectedHelper.pos,
+      targets: unselectedHelper.targets,
+      targetBindings: unselectedHelper.targetBindings,
+      bindToTarget: unselectedHelper.bindToTarget,
+    })).toBe(unselectedBefore);
   });
 
   it("routes Helper BindToTarget RedirectID through a live helper destination and commits binding", () => {

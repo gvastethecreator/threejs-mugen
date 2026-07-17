@@ -66,6 +66,11 @@ export type RuntimeRedirectedTargetDispatchExecuteResult<TResult> = {
   value?: TResult;
 };
 
+export type RuntimeRedirectedTargetDispatchCommit<TActor extends { id: string }, TResult> = (
+  lease: RuntimeRedirectedTargetDispatchLease<TActor>,
+  value: TResult,
+) => void;
+
 const leaseStatus = new WeakMap<object, RuntimeRedirectedTargetDispatchLeaseStatus>();
 
 export class RuntimeRedirectedTargetDispatchWorld {
@@ -133,7 +138,7 @@ export class RuntimeRedirectedTargetDispatchWorld {
       isFresh: () => {
         const currentGeneration = options.resolveCurrentDestinationGeneration?.();
         return (
-          lease.status === "open" &&
+          (lease.status === "open" || lease.status === "executing") &&
           options.resolveCurrentDestination() === destination &&
           options.isDestinationLive?.(destination) !== false &&
           (currentGeneration === undefined || currentGeneration === destinationGeneration)
@@ -157,6 +162,7 @@ export class RuntimeRedirectedTargetDispatchWorld {
   execute<TActor extends { id: string }, TResult>(
     lease: RuntimeRedirectedTargetDispatchLease<TActor>,
     operation: (lease: RuntimeRedirectedTargetDispatchLease<TActor>) => TResult,
+    commit?: RuntimeRedirectedTargetDispatchCommit<TActor, TResult>,
   ): RuntimeRedirectedTargetDispatchExecuteResult<TResult> {
     if (!lease.isFresh()) {
       lease.abort();
@@ -165,6 +171,15 @@ export class RuntimeRedirectedTargetDispatchWorld {
     setLeaseStatus(lease, "executing");
     try {
       const value = operation(lease);
+      if (!lease.isFresh()) {
+        lease.abort();
+        return { executed: false };
+      }
+      commit?.(lease, value);
+      if (!lease.isFresh()) {
+        lease.abort();
+        return { executed: false };
+      }
       setLeaseStatus(lease, "committed");
       return { executed: true, value };
     } catch (error) {

@@ -542,20 +542,19 @@ export function runRuntimeHelperStateControllers(
             ? options.onRedirectedOperation?.(helper, actor, operation)
             : options.onOperation?.(helper, operation),
         });
-        if (redirect?.commitActor) {
-          const committedActors = new Set<RuntimeTargetWorldActor>([actor, ...candidateTargets]);
-          for (const committedActor of committedActors) {
-            redirect.commitActor(committedActor);
-          }
-        } else if (!redirect) {
+        if (!redirect) {
           applyRuntimeStateToHelper(helper, actor.runtime);
           syncRuntimeHelperTargetActor(helper, actor);
         }
         return result;
       };
+      const commitRedirect = () => {
+        if (redirect) commitRuntimeHelperRedirect(redirect, actor, candidateTargets);
+      };
       const dispatch = redirect?.lease
-        ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch)
+        ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, commitRedirect)
         : { executed: true, value: applyDispatch() };
+      if (redirect && !redirect.lease && dispatch.executed) commitRedirect();
       if (!dispatch.executed || !dispatch.value) {
         options.onUnsupportedController?.(helper, controller);
       }
@@ -1109,38 +1108,62 @@ function applyRuntimeHelperTargetController(
           ? options.enterRedirectedTargetState?.(helper, actor, target, stateId)
           : options.enterTargetState?.(helper, target, stateId),
     });
-    const writebackActorIds = redirect?.commitActor
-      ? [...new Set([actor, ...candidateTargets].map(({ id }) => id))]
-      : [];
-    if (redirect?.commitActor) {
-      const committedActors = new Set<RuntimeTargetWorldActor>([actor, ...candidateTargets]);
-      for (const committedActor of committedActors) {
-        redirect.commitActor(committedActor);
-      }
-    }
-    if (redirect && redirectedSelection && redirectPlayerId !== undefined) {
-      options.onRedirectedTargetDispatch?.(
-        helper,
-        actor,
-        redirectedSelection,
-        Math.trunc(redirectPlayerId),
-        redirectExpression!,
-        { mode: "helper-wrapper", actorIds: writebackActorIds },
-        redirect.lease?.destinationRevision,
-      );
-    }
     return result;
   };
+  const commitRedirect = () => {
+    if (redirect) {
+      commitRuntimeHelperRedirect(redirect, actor, candidateTargets, redirectedSelection?.mutatedActorIds);
+    }
+  };
   const dispatch = redirect?.lease
-    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch)
+    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, commitRedirect)
     : { executed: true, value: applyDispatch() };
+  if (redirect && !redirect.lease && dispatch.executed) commitRedirect();
   if (!dispatch.executed || !dispatch.value) return false;
   const result = dispatch.value;
+  if (redirect && redirectedSelection && redirectPlayerId !== undefined) {
+    const writebackActorIds = redirect.commitActor
+      ? redirectedTargetWritebackActorIds(actor, candidateTargets, redirectedSelection.mutatedActorIds)
+      : [];
+    options.onRedirectedTargetDispatch?.(
+      helper,
+      actor,
+      redirectedSelection,
+      Math.trunc(redirectPlayerId),
+      redirectExpression!,
+      { mode: "helper-wrapper", actorIds: writebackActorIds },
+      redirect.lease?.destinationRevision,
+    );
+  }
   if (!redirect) {
     applyRuntimeStateToHelper(helper, actor.runtime);
     syncRuntimeHelperTargetActor(helper, actor);
   }
   return result.matchedTargets > 0 || result.operationExecuted;
+}
+
+function redirectedTargetWritebackActorIds(
+  actor: RuntimeTargetWorldActor,
+  candidateTargets: RuntimeTargetWorldActor[],
+  mutationActorIds: readonly string[] = [actor.id, ...candidateTargets.map(({ id }) => id)],
+): string[] {
+  const availableActors = new Set([actor.id, ...candidateTargets.map(({ id }) => id)]);
+  return [...new Set(mutationActorIds)].filter((id) => availableActors.has(id));
+}
+
+function commitRuntimeHelperRedirect(
+  redirect: RuntimeHelperTargetRedirect,
+  actor: RuntimeTargetWorldActor,
+  candidateTargets: RuntimeTargetWorldActor[],
+  mutationActorIds?: readonly string[],
+): void {
+  if (!redirect.commitActor) return;
+  const actorsById = new Map([actor, ...candidateTargets].map((candidate) => [candidate.id, candidate] as const));
+  const writebackActorIds = redirectedTargetWritebackActorIds(actor, candidateTargets, mutationActorIds);
+  for (const actorId of writebackActorIds) {
+    const committedActor = actorsById.get(actorId);
+    if (committedActor) redirect.commitActor(committedActor);
+  }
 }
 
 export function helperControllerRedirectExpression(controller: ControllerIr): string | undefined {
