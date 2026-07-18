@@ -177,6 +177,31 @@ describe("RuntimeHitFallControllerWorld", () => {
       fallCountedGroundImpact: true,
     });
   });
+
+  it("honors NoFallCount at the Common1 ground-impact counter boundary", () => {
+    const world = new RuntimeHitFallControllerWorld();
+    const state = runtime({
+      stateNo: 5100,
+      moveType: "H",
+      assertSpecial: {
+        flags: ["nofallcount"],
+        globalFlags: [],
+        noFallCount: true,
+      },
+      hitFall: {
+        falling: true,
+        damage: 0,
+        velocity: { y: -4 },
+      },
+    });
+
+    expect(world.applyController(state, controller("HitFallDamage"))).toEqual({
+      applied: false,
+      controllerType: "hitfalldamage",
+    });
+    expect(state.hitFall).not.toHaveProperty("fallCount");
+    expect(state.hitFall).not.toHaveProperty("fallCountedGroundImpact");
+  });
 });
 
 function controller(type: string, params: Record<string, string> = {}): RuntimeHitFallControllerSource {

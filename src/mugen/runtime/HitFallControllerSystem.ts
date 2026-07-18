@@ -52,7 +52,11 @@ function applyHitFallDamage(state: CharacterRuntimeState): RuntimeHitFallControl
   if (state.moveType !== "H" || !state.hitFall) {
     return { applied: false, controllerType: "hitfalldamage" };
   }
-  const { hitFall, countedGroundImpact } = countCommon1GroundImpact(state.stateNo, state.hitFall);
+  const { hitFall, countedGroundImpact } = countCommon1GroundImpact(
+    state.stateNo,
+    state.hitFall,
+    state.assertSpecial?.noFallCount === true,
+  );
   if (hitFall.damage <= 0) {
     state.hitFall = hitFall;
     return { applied: countedGroundImpact, controllerType: "hitfalldamage" };
@@ -73,11 +77,12 @@ function legacyHitFallDefenceScale(defenceUp: number | undefined): number {
 function countCommon1GroundImpact(
   stateNo: number,
   hitFall: NonNullable<CharacterRuntimeState["hitFall"]>,
+  noFallCount: boolean,
 ): {
   hitFall: NonNullable<CharacterRuntimeState["hitFall"]>;
   countedGroundImpact: boolean;
 } {
-  if (stateNo !== COMMON1_GROUND_IMPACT_STATE_NO || hitFall.fallCountedGroundImpact) {
+  if (stateNo !== COMMON1_GROUND_IMPACT_STATE_NO || noFallCount || hitFall.fallCountedGroundImpact) {
     return { hitFall, countedGroundImpact: false };
   }
   return {

@@ -257,6 +257,7 @@ export type RuntimeAssertSpecial = {
   noGetUpFromLieDown?: boolean;
   noFastRecoverFromLieDown?: boolean;
   noFallDefenceUp?: boolean;
+  noFallCount?: boolean;
   projTypeCollision?: boolean;
   runFirst?: boolean;
   runLast?: boolean;

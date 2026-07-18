@@ -74,6 +74,35 @@ flag = NoFallDefenceUp
     });
   });
 
+  it("normalizes NoFallCount for Common1 fall accounting", () => {
+    const actor = actorWithProgram("imported", `
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+
+[State 0, Fall Count Opt Out]
+type = AssertSpecial
+trigger1 = 1
+flag = NoFallCount
+`);
+
+    const result = new RuntimeAssertSpecialWorld().applyPreFacing({
+      actor,
+      opponent: actorWithProgram("demo", ""),
+      tick: 1,
+      triggersPass: () => true,
+      executeController: (controller, target) => executeControllerIr(controller, target.runtime, () => undefined),
+    });
+
+    expect(result).toEqual({ applied: 1, skipped: false });
+    expect(actor.runtime.assertSpecial).toMatchObject({
+      flags: ["nofallcount"],
+      noFallCount: true,
+    });
+  });
+
   it("skips non-imported actors without an imported state owner", () => {
     const actor = actorWithProgram("demo", `
 [Statedef 0]
