@@ -66,7 +66,9 @@ phase/ownership decision.
 - Helpers, projectiles, custom states, ZSS/Lua execution, rollback/netplay,
   browser presentation, and full MUGEN/IKEMEN parity remain outside scope.
 
-## Next action
+## Implementation outcome
 
-Implement the state-entry mechanics with focused tests, then run the grouped
-runtime gates and close only if the existing trace corpus remains green.
+The bounded state-entry mechanics were implemented in `33ead1f9`. A follow-up
+fix in `9a47e635` preserves an earlier legacy `HitFallDamage` count so the same
+Common1 entry is not replayed as a second fall. Focused and full runtime gates
+remain green, and the claim ceiling above is unchanged.

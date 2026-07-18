@@ -3,17 +3,26 @@
   `AssertSpecial NoFallCount` suppresses the existing state-`5100`
   `HitFallDamage` ground-impact counter while preserving fall damage, other
   hit-fall metadata, default `fallCount`, and `GetHitVar(fallcount)`. Exact
-  state-loop timing, repeated-fall invulnerability, recovery shortening, other
-  fall flags, and full MUGEN/IKEMEN parity remain unsupported.
+  state-loop timing, fall-count lifetime/reset parity, other fall flags, and
+  full MUGEN/IKEMEN parity remain unsupported.
+- Imported root runtime now has bounded IKEMEN-style Common1 repeated-fall
+  recovery: first-tick `5070`/`5100` entry counting is idempotent and honors
+  `NoFallCount`; a second counted `5100` entry halves positive
+  `down.recovertime` using `data.liedown.time` as fallback, and installs typed
+  `deny SCA / 180` protection when the shortened window is `<= 10` while
+  preserving the secondary `HitBy` slot. Exact `acttmp`, `NoFallHitFlag`,
+  generic hitflag `F`, MUGEN's infinite duration, fall lifetime/reset,
+  helper/custom-state ownership, ZSS/Lua, rollback, and full parity remain
+  unsupported.
 - Imported root runtime now has a bounded Common1 fall-defense lifecycle:
   character `[Data] fall.defence_up` derives the source-facing
   `data.fall.defence_mul`, states `5070`/`5100` apply the incoming-damage factor
   once while in `Hit`, and `AssertSpecial NoFallDefenceUp` opts out. The factor
   is cleared on leaving `Hit`; existing synthetic `HitDef`-level
   `hitFall.defenceUp` metadata remains a separate compatibility path. Full
-  Common1 source merge, fall-count/invulnerability parity, later restoration
-  choreography, helper/custom-state ownership, and full MUGEN/IKEMEN parity
-  remain unsupported.
+  Common1 source merge, broader fall-count lifetime/reset parity, later
+  restoration choreography, helper/custom-state ownership, and full
+  MUGEN/IKEMEN parity remain unsupported.
 - Runtime input now supports bounded IKEMEN `SOCDResolution` modes `0`-`4`
   through one copied per-tick policy shared by routing, control, command
   buffers, pause, and hitpause. `ikemen-go` defaults to `4`; `mugen-1.1` and

@@ -24,6 +24,21 @@ timing, repeated-fall invulnerability, recovery shortening, other fall flags,
 helper/custom-state ownership, ZSS/Lua, rollback, and full parity are outside
 this gate.
 
+## Common1 repeated-fall recovery gate
+
+Acceptance requires imported-root Common1 state-entry counting at `5070` and
+`5100`, idempotence against the legacy `HitFallDamage` counter, `NoFallCount`
+preservation, second-counted-`5100` `down.recovertime` halving, and typed
+`deny SCA / 180` protection at the short-window boundary without losing
+secondary `HitBy` state. T259 passes focused `7` files / `60` tests and the
+full suite passes `230/230` files / `2401/2401` tests. TypeScript 7, production
+build, repository boundaries, redirect boundary, and `633/633` trace artifacts
+are part of the grouped closeout evidence. Browser smoke is N/A because no
+renderer, Studio, or visible surface changed. Exact `acttmp`, generic hitflag
+`F`, `NoFallHitFlag`, MUGEN infinite-duration behavior, fall lifetime/reset,
+helper/custom-state ownership, ZSS/Lua, rollback, and full parity remain
+outside this gate.
+
 ## SOCD resolution gate
 
 Acceptance requires one resolved per-tick input copy for documented modes
