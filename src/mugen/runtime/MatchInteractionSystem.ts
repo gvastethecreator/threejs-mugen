@@ -92,6 +92,8 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     targetResetActors?: readonly TFighter[];
     hitDefContactActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
+    runtimeProfile?: RuntimeEffectLifecycleAdvanceOptions["runtimeProfile"];
+    resolveHelperCommandActive?: (fighter: TFighter, name: string) => boolean;
     resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
     resolveHelperResourceRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveResourceRedirect"];
     onHelperTargetRedirectBlocked?: RuntimeEffectLifecycleAdvanceOptions["onTargetRedirectBlocked"];
@@ -213,6 +215,10 @@ export class RuntimeMatchInteractionWorld {
           runtimeTick: input.runtimeTick,
           opponents: context.opponents,
           skipHelpers: input.helpersAdvancedInActorOrder,
+          runtimeProfile: input.runtimeProfile,
+          commandActive: input.resolveHelperCommandActive
+            ? (name) => input.resolveHelperCommandActive!(fighter, name)
+            : undefined,
           resolveTargetRedirect: input.resolveHelperTargetRedirect,
           resolveResourceRedirect: input.resolveHelperResourceRedirect,
           onTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,

@@ -19,6 +19,7 @@ describe("RuntimeEffectHelperContextWorld", () => {
       opponent: far,
       options: {
         opponents: [far, near, tied],
+        runtimeProfile: "ikemen-go",
         stageTime: 12,
         runtimeTick: 120,
       },
@@ -30,6 +31,7 @@ describe("RuntimeEffectHelperContextWorld", () => {
     expect(context.opponentRoster?.map((entry) => entry.state)).toEqual([near.runtime, tied.runtime, far.runtime]);
     expect(context.stageTime).toBe(12);
     expect(context.runtimeTick).toBe(120);
+    expect(context.runtimeProfile).toBe("ikemen-go");
     expect("opponents" in context).toBe(false);
   });
 

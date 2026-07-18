@@ -22,6 +22,7 @@ import {
 } from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
 import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
 import type {
@@ -166,6 +167,7 @@ export type RuntimeHelperResourceRedirect = RuntimeHelperTargetRedirect;
 export type RuntimeHelperAdvanceOptions = {
   constants?: RuntimeResourceConstants;
   pauseKind?: RuntimeHelperPauseKind;
+  runtimeProfile?: RuntimeCompatibilityProfile;
   commandActive?: (name: string) => boolean;
   stageBounds?: MugenStageDefinition["bounds"];
   gameSpace?: ExpressionGameSpace;
@@ -370,6 +372,14 @@ export function advanceRuntimeHelperActor(
 ): boolean {
   if (canAdvanceRuntimeHelper(helper, options.pauseKind)) {
     helper.assertSpecial = undefined;
+    if (helper.keyCtrl === true && options.runtimeProfile === "ikemen-go") {
+      if (runRuntimeHelperStateControllers(helper, options, -3) === "destroyed") {
+        return false;
+      }
+      if (runRuntimeHelperStateControllers(helper, options, -2) === "destroyed") {
+        return false;
+      }
+    }
     if (helper.keyCtrl === true && runRuntimeHelperStateControllers(helper, options, -1) === "destroyed") {
       return false;
     }
@@ -397,6 +407,7 @@ export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "runtimeProfile"
     | "stageBounds"
     | "gameSpace"
     | "stageTime"

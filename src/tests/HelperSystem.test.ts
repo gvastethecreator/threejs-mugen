@@ -212,6 +212,29 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("runs IKEMEN helper States -3 and -2 before State -1, only with keyctrl", () => {
+    const runtimeProgram = {
+      states: [
+        stateProgram(stateDef(-3), [compiledControllerIr(-3, "VarAdd", [], { v: "0", value: "3" })]),
+        stateProgram(stateDef(-2), [compiledControllerIr(-2, "VarAdd", [], { v: "0", value: "20" })]),
+        stateProgram(stateDef(6000), [controllerIr(6000, "VarAdd", { v: "1", value: "1" })]),
+      ],
+      stateEntries: [compiledControllerIr(-1, "VarAdd", [], { v: "0", value: "100" })],
+    };
+
+    const ikemen = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([ikemen], stage, { runtimeProfile: "ikemen-go" });
+    expect(ikemen.vars.slice(0, 2)).toEqual([123, 1]);
+
+    const mugen = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([mugen], stage, { runtimeProfile: "mugen-1.1" });
+    expect(mugen.vars.slice(0, 2)).toEqual([100, 1]);
+
+    const keyCtrlOff = helper({ keyCtrl: false, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([keyCtrlOff], stage, { runtimeProfile: "ikemen-go" });
+    expect(keyCtrlOff.vars.slice(0, 2)).toEqual([0, 1]);
+  });
+
   it("runs helper State -1 only with keyctrl, owner command input, and outside pause", () => {
     const stateEntry = compiledControllerIr(-1, "VarAdd", ['command = "helper_tick"'], { v: "0", value: "10" });
     const currentState = controllerIr(6000, "VarAdd", { v: "1", value: "1" });

@@ -21,6 +21,8 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
   helpersAdvancedInActorOrder?: boolean;
+  runtimeProfile?: RuntimeEffectLifecycleAdvanceOptions["runtimeProfile"];
+  resolveHelperCommandActive?: (fighter: TActor, name: string) => boolean;
   targetActors?: readonly TActor[];
   targetResetActors?: readonly TActor[];
   hitDefContactActors?: readonly TActor[];
@@ -71,6 +73,8 @@ export class RuntimeMatchPostFighterWorld {
       targetResetActors: input.targetResetActors,
       hitDefContactActors: input.hitDefContactActors,
       helpersAdvancedInActorOrder: input.helpersAdvancedInActorOrder,
+      runtimeProfile: input.runtimeProfile,
+      resolveHelperCommandActive: input.resolveHelperCommandActive,
       resolveHelperTargetRedirect: input.resolveHelperTargetRedirect,
       resolveHelperResourceRedirect: input.resolveHelperResourceRedirect,
       onHelperTargetRedirectBlocked: input.onHelperTargetRedirectBlocked,

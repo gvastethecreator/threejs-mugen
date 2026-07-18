@@ -808,7 +808,7 @@ damage = 5
     });
   });
 
-  it("routes imported helper State -1 through the owner command buffer when keyctrl is enabled", () => {
+  it("routes imported helper negative states through the owner profile when keyctrl is enabled", () => {
     const fighter = createImportedFixture({
       id: "ikemen-helper-keyctrl-state-entry",
       withStateMove: false,
@@ -820,6 +820,29 @@ type = VarAdd
 trigger1 = 1
 v = 1
 value = 1
+`,
+      helperExtraStates: `
+[Statedef -3]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -3, IKEMEN helper global state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 3
+
+[Statedef -2]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -2, IKEMEN helper global state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 20
 `,
       helperStateEntryControllers: `
 [State -1, Helper command gate]
@@ -860,7 +883,13 @@ command = m
       runtimeProfile: "ikemen-go",
     });
     const snapshot = runtime.step({ p1: new Set(["m"]), p2: new Set() });
-    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([10, 1]);
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([33, 1]);
+
+    const legacy = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+    const legacySnapshot = legacy.step({ p1: new Set(["m"]), p2: new Set() });
+    expect(legacySnapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([10, 1]);
   });
 
   it("executes Helper-owned default TagOut and later TagIn without stopping Helper CNS", () => {

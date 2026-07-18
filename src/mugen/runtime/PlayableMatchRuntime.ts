@@ -1594,6 +1594,7 @@ export class PlayableMatchRuntime {
                 runtimeTick: this.tick,
                 opponents: [opponent],
                 constants: owner.definition.constants,
+                runtimeProfile: this.runtimeProfile,
                 commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
                 resolveTargetRedirect: (helper, playerId, controller) =>
                   this.resolveHelperTargetRedirect(helper, playerId, controller),
@@ -1693,6 +1694,9 @@ export class PlayableMatchRuntime {
           stage: this.stage,
           stageTime: this.tick,
           helpersAdvancedInActorOrder: this.runtimeProfile === "ikemen-go",
+          runtimeProfile: this.runtimeProfile,
+          resolveHelperCommandActive: (fighter, name) =>
+            fighter.commandBuffer.isCommandActive(name, fighter.definition.commands ?? []),
           resolveHelperTargetRedirect: (helper, playerId, controller) =>
             this.resolveHelperTargetRedirect(helper, playerId, controller),
           resolveHelperResourceRedirect: (helper, playerId, controller) =>
@@ -2066,6 +2070,7 @@ export class PlayableMatchRuntime {
             runtimeTick: this.tick,
             opponents: [opponent],
             constants: owner.definition.constants,
+            runtimeProfile: this.runtimeProfile,
             commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
             resolveTargetRedirect: (helper, playerId, controller) =>
               this.resolveHelperTargetRedirect(helper, playerId, controller),
