@@ -223,6 +223,7 @@ mugenversion = 1.1
 
 [Files]
 cns = neo.cns
+st = neo.cns
 `),
     );
     vfs.addFile(
