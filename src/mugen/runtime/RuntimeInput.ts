@@ -3,6 +3,18 @@ import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile"
 export type RuntimeDirection = "B" | "DB" | "D" | "DF" | "F" | "UF" | "U" | "UB";
 export type RuntimeSocdResolution = 0 | 1 | 2 | 3 | 4;
 
+export type RuntimeSocdInputState = {
+  first: [boolean, boolean, boolean, boolean];
+};
+
+export function createRuntimeSocdInputState(): RuntimeSocdInputState {
+  return { first: [false, false, false, false] };
+}
+
+export function resetRuntimeSocdInputState(state: RuntimeSocdInputState): void {
+  state.first = [false, false, false, false];
+}
+
 export function parseRuntimeSocdResolution(value: string | number | undefined): RuntimeSocdResolution | undefined {
   if (typeof value === "number") {
     return Number.isInteger(value) && value >= 0 && value <= 4 ? value as RuntimeSocdResolution : undefined;
@@ -20,10 +32,18 @@ export function defaultRuntimeSocdResolution(profile: RuntimeCompatibilityProfil
 export function resolveRuntimeSocdInput(
   values: Iterable<string>,
   resolution: RuntimeSocdResolution = 0,
+  state?: RuntimeSocdInputState,
 ): Set<string> {
   const entries = [...values];
   const resolved = new Set(entries);
   if (resolution === 0) {
+    return resolved;
+  }
+
+  if (state && (resolution === 1 || resolution === 3)) {
+    updateRuntimeSocdFirstState(state, entries);
+    resolveStatefulOpposingDirections(resolved, entries, "B", "F", resolution, state.first[2]);
+    resolveStatefulOpposingDirections(resolved, entries, "D", "U", resolution, state.first[1]);
     return resolved;
   }
 
@@ -116,6 +136,54 @@ function resolveOpposingDirections(
   }
   if (resolution === 3) {
     deleteDirection(resolved, negativeIndex < positiveIndex ? positive : negative);
+  }
+}
+
+function updateRuntimeSocdFirstState(state: RuntimeSocdInputState, entries: readonly string[]): void {
+  updateRuntimeSocdAxisFirstState(state.first, entries, "D", "U", 1, 0);
+  updateRuntimeSocdAxisFirstState(state.first, entries, "B", "F", 2, 3);
+}
+
+function updateRuntimeSocdAxisFirstState(
+  first: [boolean, boolean, boolean, boolean],
+  entries: readonly string[],
+  negative: RuntimeDirection,
+  positive: RuntimeDirection,
+  negativeSlot: 1 | 2,
+  positiveSlot: 0 | 3,
+): void {
+  const negativeHeld = directionIndex(entries, negative) !== undefined;
+  const positiveHeld = directionIndex(entries, positive) !== undefined;
+  if (!negativeHeld && !positiveHeld) {
+    first[negativeSlot] = false;
+    first[positiveSlot] = false;
+    return;
+  }
+  if (!negativeHeld) first[negativeSlot] = false;
+  if (!positiveHeld) first[positiveSlot] = false;
+  if (!first[negativeSlot] && !first[positiveSlot]) {
+    first[negativeSlot] = negativeHeld;
+    first[positiveSlot] = !negativeHeld && positiveHeld;
+  }
+}
+
+function resolveStatefulOpposingDirections(
+  resolved: Set<string>,
+  entries: readonly string[],
+  negative: RuntimeDirection,
+  positive: RuntimeDirection,
+  resolution: RuntimeSocdResolution,
+  negativeFirst: boolean,
+): void {
+  if (directionIndex(entries, negative) === undefined || directionIndex(entries, positive) === undefined) {
+    return;
+  }
+  if (resolution === 1) {
+    deleteDirection(resolved, negativeFirst ? negative : positive);
+    return;
+  }
+  if (resolution === 3) {
+    deleteDirection(resolved, negativeFirst ? positive : negative);
   }
 }
 

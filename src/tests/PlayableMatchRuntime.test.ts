@@ -56,6 +56,20 @@ describe("PlayableMatchRuntime", () => {
     });
   });
 
+  it("keeps stateful first/last SOCD priority across input-set reconstruction and reset", () => {
+    const runtime = new PlayableMatchRuntime({ ...demoFighters[0]!, source: "imported" }, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+      socdResolution: 1,
+    });
+    runtime.step({ p1: new Set(["F"]), p2: new Set() }, { force: true });
+    const held = runtime.step({ p1: new Set(["F", "B"]), p2: new Set() }, { force: true });
+    expect(held.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1")?.commandHistory.at(-1)?.values).toEqual(["B"]);
+
+    runtime.reset();
+    const reset = runtime.step({ p1: new Set(["F", "B"]), p2: new Set() }, { force: true });
+    expect(reset.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1")?.commandHistory.at(-1)?.values).toEqual(["F"]);
+  });
+
   it("schedules capped IKEMEN P3-P8 reserve roots for controller-only CNS without presenting them", () => {
     const reserveFighters = Array.from({ length: 7 }, (_, index) => demoFighters[index % 2]!);
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {

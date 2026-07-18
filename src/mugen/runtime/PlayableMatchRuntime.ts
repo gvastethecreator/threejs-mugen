@@ -74,9 +74,12 @@ import {
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld, type RuntimeInputControlResult } from "./RuntimeInputControlSystem";
 import {
+  createRuntimeSocdInputState,
   defaultRuntimeSocdResolution,
   parseRuntimeSocdResolution,
+  resetRuntimeSocdInputState,
   resolveRuntimeSocdInput,
+  type RuntimeSocdInputState,
   type RuntimeSocdResolution,
 } from "./RuntimeInput";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
@@ -575,6 +578,10 @@ export class PlayableMatchRuntime {
   private lastTurnsContinuation?: RuntimeTurnsContinuationResult;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly socdResolution: RuntimeSocdResolution;
+  private readonly socdInputState: { p1: RuntimeSocdInputState; p2: RuntimeSocdInputState } = {
+    p1: createRuntimeSocdInputState(),
+    p2: createRuntimeSocdInputState(),
+  };
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
   private readonly teamPowerShare: boolean;
@@ -1401,8 +1408,8 @@ export class PlayableMatchRuntime {
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
-    const p1Input = resolveRuntimeSocdInput(input.p1, this.socdResolution);
-    const p2Input = resolveRuntimeSocdInput(input.p2 ?? new Set<string>(), this.socdResolution);
+    const p1Input = resolveRuntimeSocdInput(input.p1, this.socdResolution, this.socdInputState.p1);
+    const p2Input = resolveRuntimeSocdInput(input.p2 ?? new Set<string>(), this.socdResolution, this.socdInputState.p2);
     const rootInputRoutes = rootInputRoutingWorld.routes({
       runtimeProfile: this.runtimeProfile,
       teamMode: this.teamPresentationMode(),
@@ -3105,6 +3112,8 @@ export class PlayableMatchRuntime {
   }
 
   private resetRuntimeState(options: { preserveRound?: boolean } = {}): void {
+    resetRuntimeSocdInputState(this.socdInputState.p1);
+    resetRuntimeSocdInputState(this.socdInputState.p2);
     this.restoreExpiredSuperPauseTargetDefense(true);
     this.tagTeamOrder?.reset();
     const resetState = this.matchResetWorld.reset({

@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  createRuntimeSocdInputState,
   defaultRuntimeSocdResolution,
   hasRuntimeDirection,
   isRuntimeHoldingBack,
   parseRuntimeSocdResolution,
+  resetRuntimeSocdInputState,
   resolveRuntimeSocdInput,
   runtimeCurrentDirection,
 } from "../mugen/runtime/RuntimeInput";
@@ -37,6 +39,28 @@ describe("RuntimeInput", () => {
     expect([...resolveRuntimeSocdInput(["B", "F"], 3)]).toEqual(["B"]);
     expect([...resolveRuntimeSocdInput(["F", "B"], 1)]).toEqual(["B"]);
     expect([...resolveRuntimeSocdInput(["F", "B"], 3)]).toEqual(["F"]);
+  });
+
+  it("keeps first-direction history across reconstructed input sets for modes 1 and 3", () => {
+    const lastDirection = createRuntimeSocdInputState();
+    resolveRuntimeSocdInput(["B"], 1, lastDirection);
+    expect([...resolveRuntimeSocdInput(["F", "B"], 1, lastDirection)]).toEqual(["F"]);
+
+    const firstDirection = createRuntimeSocdInputState();
+    resolveRuntimeSocdInput(["F"], 3, firstDirection);
+    expect([...resolveRuntimeSocdInput(["B", "F"], 3, firstDirection)]).toEqual(["F"]);
+  });
+
+  it("clears first-direction history after both directions release and reset", () => {
+    const state = createRuntimeSocdInputState();
+    resolveRuntimeSocdInput(["F"], 1, state);
+    expect([...resolveRuntimeSocdInput(["B", "F"], 1, state)]).toEqual(["B"]);
+    expect([...resolveRuntimeSocdInput([], 1, state)]).toEqual([]);
+    expect([...resolveRuntimeSocdInput(["B", "F"], 1, state)]).toEqual(["F"]);
+
+    resolveRuntimeSocdInput(["F"], 1, state);
+    resetRuntimeSocdInputState(state);
+    expect([...resolveRuntimeSocdInput(["F", "B"], 1, state)]).toEqual(["F"]);
   });
 
   it.each([
