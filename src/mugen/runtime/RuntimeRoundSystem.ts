@@ -1,4 +1,6 @@
 import type { RoundSnapshot } from "./types";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 
 export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
 export const DEFAULT_RUNTIME_KO_SLOW_FRAMES = 60;
@@ -31,9 +33,11 @@ export class RuntimeRoundSystem {
   private koSlowRemaining = 0;
   private noKoSlow = false;
   private roundNo = 1;
+  private readonly phaseWorld: RuntimeRoundPhaseWorld;
 
-  constructor(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES) {
+  constructor(timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES, profile: RuntimeCompatibilityProfile = "unknown") {
     this.timerFrames = boundedRoundFrames(timerFrames);
+    this.phaseWorld = new RuntimeRoundPhaseWorld(profile);
   }
 
   get isOver(): boolean {
@@ -46,6 +50,10 @@ export class RuntimeRoundSystem {
 
   get roundsExisted(): number {
     return Math.max(0, this.roundNo - 1);
+  }
+
+  get currentPhase(): RuntimeRoundPhase {
+    return this.phaseWorld.currentPhase;
   }
 
   get remainingTimerFrames(): number {
@@ -68,6 +76,7 @@ export class RuntimeRoundSystem {
       this.postRoundRemaining = Math.max(0, this.postRoundRemaining - 1);
       this.koSlowRemaining = Math.max(0, this.koSlowRemaining - 1);
       this.over = this.postRoundRemaining === 0;
+      if (this.over) this.phaseWorld.transition("round-over");
       return { finishedNow: this.over };
     }
     this.timerFrames = Math.max(0, this.timerFrames - 1);
@@ -90,6 +99,7 @@ export class RuntimeRoundSystem {
     this.postRoundRemaining = this.state === "ko" ? DEFAULT_RUNTIME_POST_KO_FRAMES : 1;
     this.koSlowRemaining = this.state === "ko" ? DEFAULT_RUNTIME_KO_SLOW_FRAMES : 0;
     this.over = this.state === "timeover";
+    this.phaseWorld.transition("round-finished");
     return {
       state: this.state,
       winner: this.winner,
@@ -120,6 +130,7 @@ export class RuntimeRoundSystem {
     this.postRoundRemaining = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
+    this.phaseWorld.transition("reset");
   }
 
   snapshot(): RoundSnapshot {
@@ -132,6 +143,9 @@ export class RuntimeRoundSystem {
     if (this.roundNo > 1) {
       snapshot.roundNo = this.roundNo;
       snapshot.roundsExisted = this.roundsExisted;
+    }
+    if (this.currentPhase !== 2) {
+      snapshot.roundPhase = this.currentPhase;
     }
     if (this.state === "ko") {
       snapshot.postRound = {

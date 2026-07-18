@@ -71,6 +71,15 @@ describe("RuntimeExpressionContextWorld", () => {
     });
   });
 
+  it("reads the runtime round phase and preserves fight as the legacy fallback", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const closingActor = runtimeActor("p1", "Author", { roundPhase: 3 });
+    const opponent = runtimeActor("p2", "Rival");
+
+    expect(world.evaluateNumber("RoundState", { actor: closingActor, opponent })).toBe(3);
+    expect(world.evaluateNumber("RoundState", { actor: runtimeActor("p1", "Author"), opponent })).toBe(2);
+  });
+
   it("forwards explicit numeric identity through caller, EnemyNear, and Target reads", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

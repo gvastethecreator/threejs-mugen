@@ -31,6 +31,7 @@ describe("RuntimeRoundSystem", () => {
     expect(round.snapshot()).toEqual({
       state: "ko",
       timer: 99,
+      roundPhase: 3,
       winner: "P1",
       message: "P1 wins",
       postRound: {
@@ -62,6 +63,8 @@ describe("RuntimeRoundSystem", () => {
     expect(round.snapshot().postRound).toMatchObject({ remaining: 195, slowRemaining: 0 });
     for (let frame = 60; frame < 255; frame += 1) round.tickTimer();
     expect(round.isOver).toBe(true);
+    expect(round.currentPhase).toBe(4);
+    expect(round.snapshot()).toMatchObject({ roundPhase: 4 });
   });
 
   it("captures NoKOSlow on the KO frame without shortening the post-round window", () => {
@@ -88,6 +91,7 @@ describe("RuntimeRoundSystem", () => {
       winner: "Draw",
       message: "Time over - draw - press Reset to fight again",
     });
+    expect(time.snapshot()).toMatchObject({ roundPhase: 3 });
   });
 
   it("resets mutable round state for MatchWorld reset", () => {

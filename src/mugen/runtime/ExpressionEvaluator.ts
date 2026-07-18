@@ -730,7 +730,7 @@ class ExpressionParser {
       return this.context.self.roundNo ?? 1;
     }
     if (lower === "roundstate") {
-      return 2;
+      return this.context.self.roundPhase ?? 2;
     }
     if (lower === "roundsexisted" || lower === "matchover") {
       return lower === "roundsexisted" ? (this.context.self.roundsExisted ?? 0) : (this.context.self.matchOver ? 1 : 0);

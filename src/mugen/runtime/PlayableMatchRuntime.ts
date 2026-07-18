@@ -620,7 +620,7 @@ export class PlayableMatchRuntime {
     );
     this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
-    this.round = new RuntimeRoundSystem(options.roundTimerFrames);
+    this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
     this.effectLifecycleWorld = options.effectLifecycleWorld ?? new RuntimeEffectLifecycleWorld();
     this.effectSpawnWorld = options.effectSpawnWorld ?? new RuntimeEffectSpawnWorld();
@@ -696,6 +696,7 @@ export class PlayableMatchRuntime {
     );
     this.lastRoundContext = this.roundContextWorld.reset(this.characterRoots().map(({ id }) => ({ id })));
     this.applyRoundContext(this.lastRoundContext);
+    this.applyRuntimeRoundPhase();
     this.resetTeamResourceBanks();
     this.attachHelperHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
@@ -1541,6 +1542,7 @@ export class PlayableMatchRuntime {
     schedule.record("tick:restore-superpause-defense");
     this.restoreExpiredSuperPauseTargetDefense();
     this.reconcileTeamResourceBanks();
+    this.applyRuntimeRoundPhase();
     this.lastTickSchedule = schedule.complete(branchResult.branch);
   }
 
@@ -3120,6 +3122,7 @@ export class PlayableMatchRuntime {
     this.matchOutcome.reset();
     this.lastRoundContext = this.roundContextWorld.reset(this.characterRoots().map(({ id }) => ({ id })));
     this.applyRoundContext(this.lastRoundContext);
+    this.applyRuntimeRoundPhase();
   }
 
   private resetRuntimeState(options: { preserveRound?: boolean } = {}): void {
@@ -3328,6 +3331,7 @@ export class PlayableMatchRuntime {
     this.activeRoots = [nextActiveRoots[0], nextActiveRoots[1]];
     this.turnsContinuationActive = true;
     this.applyRoundContext(this.lastRoundContext);
+    this.applyRuntimeRoundPhase();
 
     for (const root of roots) {
       const desired = desiredTeamStates.get(root.id);
@@ -3468,6 +3472,7 @@ export class PlayableMatchRuntime {
     this.round.startNextRound(this.roundTimerFrames);
     this.lastRoundContext = this.roundContextWorld.commit(roundContextPlan);
     this.applyRoundContext(this.lastRoundContext);
+    this.applyRuntimeRoundPhase();
 
     const stateByActorId = new Map(plan.states.map((state) => [state.actorId, state]));
     for (const root of this.characterRoots()) {
@@ -3543,6 +3548,17 @@ export class PlayableMatchRuntime {
       root.runtime.roundNo = actor.roundNo;
       root.runtime.roundsExisted = actor.roundsExisted;
       root.runtime.matchOver = context.matchOver;
+    }
+  }
+
+  private applyRuntimeRoundPhase(): void {
+    const phase = this.round.currentPhase;
+    for (const root of this.characterRoots()) {
+      if (phase === 2) {
+        delete root.runtime.roundPhase;
+      } else {
+        root.runtime.roundPhase = phase;
+      }
     }
   }
 

@@ -9,6 +9,7 @@ import type { RuntimeMatchOutcomeSnapshot } from "./RuntimeMatchOutcomeSystem";
 import type { RuntimeRoundContextSnapshot } from "./RuntimeRoundContextSystem";
 import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900System";
 import type { RuntimeTurnsContinuationResult } from "./RuntimeTurnsContinuationSystem";
+import type { RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import type {
   RuntimeHitDefPriorityProfile,
   RuntimeHitDefSpritePrioritySource,
@@ -96,6 +97,7 @@ export type CharacterRuntimeState = {
   stateNo: number;
   roundNo?: number;
   roundsExisted?: number;
+  roundPhase?: RuntimeRoundPhase;
   matchOver?: boolean;
   animNo: number;
   animTime: number;
@@ -592,6 +594,7 @@ export type RoundSnapshot = {
   timer: number;
   roundNo?: number;
   roundsExisted?: number;
+  roundPhase?: RuntimeRoundPhase;
   winner?: string;
   message: string;
   match?: RuntimeMatchOutcomeSnapshot;

@@ -3958,8 +3958,9 @@ RedirectID = 999
     expect(runtime.getSnapshot().round).not.toHaveProperty("roundNo");
 
     const over = runtime.step({ p1: new Set(), p2: new Set() });
-    expect(over.round).toMatchObject({ state: "timeover", winner: "Draw" });
+    expect(over.round).toMatchObject({ state: "timeover", roundPhase: 3, winner: "Draw" });
     expect(over.playing).toBe(false);
+    expect(over.actors.every((actor) => actor.runtime.roundPhase === 3)).toBe(true);
 
     const next = runtime.startNextRound();
     expect(next).toMatchObject({ applied: true, nextRoundNo: 2, roundsExisted: 1, states: expect.any(Array) });
@@ -3968,6 +3969,40 @@ RedirectID = 999
     expect(restarted.round).toMatchObject({ state: "fight", roundNo: 2, roundsExisted: 1 });
     expect(restarted.actors.every((actor) => actor.runtime.life === actor.runtime.lifeMax)).toBe(true);
     expect(restarted.actors.every((actor) => (actor.runtime.redLife ?? 0) === 0)).toBe(true);
+  });
+
+  it("keeps actor and round phase synchronized through the KO close window", () => {
+    const attacker = createImportedFixture({
+      id: "phase-attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    });
+    const defender = createImportedFixture({
+      id: "phase-defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const ko = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(ko.round).toMatchObject({ state: "ko", roundPhase: 3 });
+    expect(ko.actors.every((actor) => actor.runtime.roundPhase === 3)).toBe(true);
+
+    let closed = ko;
+    for (let frame = 0; frame < 255; frame += 1) {
+      closed = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    expect(closed.round).toMatchObject({ state: "ko", roundPhase: 4 });
+    expect(closed.actors.every((actor) => actor.runtime.roundPhase === 4)).toBe(true);
   });
 
   it("resets stage background time between rounds only when resetBG is enabled", () => {
