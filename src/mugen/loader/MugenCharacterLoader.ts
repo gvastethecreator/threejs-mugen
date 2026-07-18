@@ -5,6 +5,7 @@ import { compileRuntimeProgram, isRuntimeExecutableController } from "../compile
 import { resolveMugenStateSources, type MugenStateSourceInput } from "../compiler/StateSourceResolver";
 import type { MugenCharacter, ResolvedCharacterFiles } from "../model/MugenCharacter";
 import type { MugenDiagnostic } from "../model/MugenAnimation";
+import type { MugenGameConfig } from "../model/MugenConfig";
 import type { MugenPalette } from "../model/MugenPalette";
 import { parseAir } from "../parsers/AirParser";
 import { parseAct } from "../parsers/ActParser";
@@ -132,9 +133,21 @@ export class MugenCharacterLoader {
       Object.assign(constants, parseCnsFile(files.cns).parsed.constants);
     }
 
+    const globalCommonStatePaths = resolveGlobalCommonStatePaths(systemAssets?.gameConfig, resolver, diagnostics);
+    const globalCnsStatePaths = globalCommonStatePaths.filter((path) => {
+      if (!/\.zss$/i.test(path)) {
+        return true;
+      }
+      unsupported.report("ikemen", "Common.States ZSS", {
+        location: path,
+        fallback: "Only CNS Common.States sources are compiled by the bounded loader",
+      });
+      return false;
+    });
     const stateFiles = [
       ...files.states.map((path) => ({ kind: "character" as const, path })),
       ...files.commonStates.map((path) => ({ kind: "common" as const, path })),
+      ...globalCnsStatePaths.map((path) => ({ kind: "common" as const, path })),
     ];
     for (const stateFile of stateFiles) {
       const { text, parsed } = parseCnsFile(stateFile.path);
@@ -350,6 +363,54 @@ function findGlobalCommon(path: string, resolver: PathResolver): string | undefi
     candidates.find((candidate) => candidate.split("/").length <= 2) ??
     candidates[0]
   );
+}
+
+function resolveGlobalCommonStatePaths(
+  config: MugenGameConfig | undefined,
+  resolver: PathResolver,
+  diagnostics: MugenDiagnostic[],
+): string[] {
+  if (!config) {
+    return [];
+  }
+  const common = getConfigSection(config.rawSections, "Common");
+  const configPath = config.gameSpace?.sourcePath ?? "data/mugen.cfg";
+  const entries = Object.entries(common)
+    .filter(([key]) => /^states\d*$/i.test(key))
+    .sort(([left], [right]) => commonStateConfigRank(left) - commonStateConfigRank(right));
+  const paths: string[] = [];
+
+  for (const [, value] of entries) {
+    for (const reference of value.split(",").map((item) => item.trim()).filter(Boolean)) {
+      const normalizedReference = reference.replace(/^['"]|['"]$/g, "");
+      const rootPath = resolver.resolve("", normalizedReference);
+      const configRelativePath = resolver.resolve(configPath, normalizedReference);
+      const candidates = normalizedReference.includes("/") || normalizedReference.includes("\\")
+        ? [rootPath, configRelativePath]
+        : [configRelativePath, rootPath];
+      const resolved = candidates.find((candidate) => resolver.exists(candidate)) ?? candidates.find(Boolean);
+      if (!resolved || !resolver.exists(resolved)) {
+        diagnostics.push({
+          severity: "warning",
+          format: "loader",
+          file: configPath,
+          message: `Referenced global common state file was not found: ${reference}`,
+        });
+        continue;
+      }
+      paths.push(resolved);
+    }
+  }
+  return paths;
+}
+
+function getConfigSection(rawSections: Record<string, Record<string, string>>, expected: string): Record<string, string> {
+  return Object.entries(rawSections).find(([section]) => section.toLowerCase() === expected.toLowerCase())?.[1] ?? {};
+}
+
+function commonStateConfigRank(key: string): number {
+  const normalized = key.toLowerCase();
+  return normalized === "states" ? 0 : Number(normalized.slice("states".length)) + 1;
 }
 
 function createEmptyFiles(): ResolvedCharacterFiles {

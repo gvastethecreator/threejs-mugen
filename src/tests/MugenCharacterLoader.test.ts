@@ -163,6 +163,60 @@ stcommon = common.cns
       reason: "ikemen-negative-merge",
     });
   });
+
+  it("loads configured CNS Common.States after stcommon with explicit fallback evidence", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common/common.def",
+      textBytes(`[Info]
+name = "Global Common"
+
+[Files]
+cns = common.cns
+stcommon = common1.cns
+`),
+    );
+    vfs.addFile("chars/common/common.cns", textBytes("[Data]\nlife = 1000\n"));
+    vfs.addFile("data/common1.cns", textBytes(namedState(120, "DEF Common Guard")));
+    vfs.addFile("data/global-first.cns", textBytes(`${namedState(120, "Global Shadowed Guard")}\n${namedState(900, "Global Fallback")}`));
+    vfs.addFile("data/global-second.cns", textBytes(namedState(900, "Global Duplicate")));
+    vfs.addFile("data/global-relative.cns", textBytes(namedState(901, "Config Relative Fallback")));
+    vfs.addFile("data/global.zss", textBytes("StateDef 900"));
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+States1 = data/global-second.cns
+States = data/global-first.cns, data/global.zss, data/missing.cns
+States2 = global-relative.cns
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common.zip", vfs);
+
+    expect(character.states.find((state) => state.id === 120)?.controllers[0]?.name).toBe("DEF Common Guard");
+    expect(character.states.find((state) => state.id === 900)?.controllers[0]?.name).toBe("Global Fallback");
+    expect(character.states.find((state) => state.id === 901)?.controllers[0]?.name).toBe("Config Relative Fallback");
+    expect(character.stateSources.find((selection) => selection.stateId === 120)).toMatchObject({
+      selected: { kind: "common", path: "data/common1.cns" },
+      shadowed: [{ kind: "common", path: "data/global-first.cns" }],
+      reason: "common-fallback",
+    });
+    expect(character.stateSources.find((selection) => selection.stateId === 900)).toMatchObject({
+      selected: { kind: "common", path: "data/global-first.cns" },
+      shadowed: [{ kind: "common", path: "data/global-second.cns" }],
+      reason: "common-fallback",
+    });
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Referenced global common state file was not found: data/missing.cns" }),
+    );
+    expect(character.compatibility.unsupported).toEqual(
+      expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.States ZSS" })]),
+    );
+  });
 });
 
 function stateSourceFixture(options: { withCharacterState120: boolean }) {
@@ -215,6 +269,18 @@ ${options.ctrl ? `ctrl = ${options.ctrl}\n` : ""}${options.anim ? `anim = ${opti
 type = VarAdd
 v = 0
 value = ${options.value ?? "1"}
+`;
+}
+
+function namedState(id: number, name: string): string {
+  return `[Statedef ${id}]
+type = S
+physics = S
+anim = ${id}
+
+[State ${id}, ${name}]
+type = Null
+trigger1 = 1
 `;
 }
 
