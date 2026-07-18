@@ -118,6 +118,51 @@ trigger1 = 1
     expect(character.states).toEqual([]);
     expect(character.stateSources).toEqual([]);
   });
+
+  it("appends IKEMEN negative states across ordered st files and stcommon", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/negative/negative.def",
+      textBytes(`[Info]
+name = "Negative Merge"
+ikemenversion = 0.99
+
+[Files]
+cns = negative.cns
+st1 = second.st
+st = first.st
+stcommon = common.cns
+`),
+    );
+    vfs.addFile("chars/negative/negative.cns", textBytes("[Data]\nlife = 900\n"));
+    vfs.addFile("chars/negative/first.st", textBytes(negativeState(-2, "First Negative", { physics: "S", value: "1" })));
+    vfs.addFile("chars/negative/second.st", textBytes(negativeState(-2, "Second Negative", { ctrl: "0", value: "2" })));
+    vfs.addFile("data/common.cns", textBytes(negativeState(-2, "Common Negative", { anim: "7", value: "3" })));
+
+    const character = await new MugenCharacterLoader().load("negative.zip", vfs);
+    const state = character.states.find((candidate) => candidate.id === -2);
+
+    expect(state).toMatchObject({ physics: "S", ctrl: 0, anim: 7 });
+    expect(state?.controllers.map((controller) => controller.name)).toEqual([
+      "First Negative",
+      "Second Negative",
+      "Common Negative",
+    ]);
+    expect(state?.controllers.map((controller) => controller.source?.path)).toEqual([
+      "chars/negative/first.st",
+      "chars/negative/second.st",
+      "data/common.cns",
+    ]);
+    expect(character.stateSources.find((selection) => selection.stateId === -2)).toMatchObject({
+      selected: { kind: "character", path: "chars/negative/first.st" },
+      shadowed: [],
+      appended: [
+        { kind: "character", path: "chars/negative/second.st" },
+        { kind: "common", path: "data/common.cns" },
+      ],
+      reason: "ikemen-negative-merge",
+    });
+  });
 });
 
 function stateSourceFixture(options: { withCharacterState120: boolean }) {
@@ -158,6 +203,18 @@ function stateZero(): string {
 type = S
 physics = S
 anim = 0
+`;
+}
+
+function negativeState(id: number, name: string, options: { physics?: string; ctrl?: string; anim?: string; value?: string } = {}): string {
+  const physics = options.physics ? `physics = ${options.physics}\n` : "";
+  return `[Statedef ${id}]
+${physics}
+${options.ctrl ? `ctrl = ${options.ctrl}\n` : ""}${options.anim ? `anim = ${options.anim}\n` : ""}
+[State ${id}, ${name}]
+type = VarAdd
+v = 0
+value = ${options.value ?? "1"}
 `;
 }
 

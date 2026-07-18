@@ -141,7 +141,9 @@ export class MugenCharacterLoader {
       stateSources.push({ ...stateFile, text, states: parsed.states });
       Object.assign(constants, parsed.constants);
     }
-    const stateResolution = resolveMugenStateSources(stateSources);
+    const stateResolution = resolveMugenStateSources(stateSources, {
+      negativeStatePolicy: definition.info.ikemenVersion?.trim() ? "ikemen-append" : "first-wins",
+    });
     const states = stateResolution.states;
 
     let spriteArchive: MugenCharacter["spriteArchive"];

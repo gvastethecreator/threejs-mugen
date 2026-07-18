@@ -32,7 +32,8 @@ export type MugenStateSourceSelection = {
   special?: MugenStateSpecial;
   selected: MugenStateSourceRef;
   shadowed: MugenStateSourceRef[];
-  reason: "character-override" | "character-only" | "common-fallback";
+  appended?: MugenStateSourceRef[];
+  reason: "character-override" | "character-only" | "common-fallback" | "ikemen-negative-merge";
 };
 
 export type MugenStateController = {

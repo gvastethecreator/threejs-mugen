@@ -83,6 +83,86 @@ value = 7
       kind: "character",
     });
   });
+
+  it("keeps MUGEN negative duplicates first-listed", () => {
+    const firstText = negativeState(-2, "First Negative");
+    const secondText = negativeState(-2, "Second Negative");
+    const resolution = resolveMugenStateSources([
+      source("character", "chars/probe/first.st", firstText),
+      source("character", "chars/probe/second.st", secondText),
+    ]);
+
+    expect(resolution.states[0]?.controllers.map((controller) => controller.name)).toEqual(["First Negative"]);
+    expect(resolution.selections[0]).toMatchObject({
+      stateId: -2,
+      shadowed: [{ kind: "character", path: "chars/probe/second.st" }],
+      reason: "character-only",
+    });
+  });
+
+  it("appends IKEMEN negative states and preserves source order", () => {
+    const firstText = negativeState(-2, "First Negative", { physics: "S", value: "1" });
+    const secondText = negativeState(-2, "Second Negative", { ctrl: "0", value: "2" });
+    const commonText = negativeState(-2, "Common Negative", { anim: "7", value: "3" });
+    const resolution = resolveMugenStateSources(
+      [
+        source("common", "data/common1.cns", commonText),
+        source("character", "chars/probe/first.st", firstText),
+        source("character", "chars/probe/second.st", secondText),
+      ],
+      { negativeStatePolicy: "ikemen-append" },
+    );
+
+    expect(resolution.states[0]).toMatchObject({ id: -2, physics: "S", ctrl: 0, anim: 7 });
+    expect(resolution.states[0]?.controllers.map((controller) => controller.name)).toEqual([
+      "First Negative",
+      "Second Negative",
+      "Common Negative",
+    ]);
+    expect(resolution.states[0]?.controllers.map((controller) => controller.source?.path)).toEqual([
+      "chars/probe/first.st",
+      "chars/probe/second.st",
+      "data/common1.cns",
+    ]);
+    expect(resolution.selections[0]).toMatchObject({
+      stateId: -2,
+      shadowed: [],
+      appended: [
+        { kind: "character", path: "chars/probe/second.st" },
+        { kind: "common", path: "data/common1.cns" },
+      ],
+      reason: "ikemen-negative-merge",
+    });
+  });
+
+  it("appends literal IKEMEN +1 states under the same policy", () => {
+    const firstText = plusOneState("First Plus One", "1");
+    const secondText = plusOneState("Second Plus One", "2");
+    const resolution = resolveMugenStateSources(
+      [
+        source("character", "chars/probe/first.st", firstText),
+        source("character", "chars/probe/second.st", secondText),
+      ],
+      { negativeStatePolicy: "ikemen-append" },
+    );
+
+    expect(resolution.states).toHaveLength(1);
+    expect(resolution.states[0]?.special).toBe("plus-one");
+    expect(resolution.states[0]?.controllers.map((controller) => controller.name)).toEqual([
+      "First Plus One",
+      "Second Plus One",
+    ]);
+  });
+
+  it("does not append a duplicate negative StateDef from the same source file", () => {
+    const resolution = resolveMugenStateSources(
+      [source("character", "chars/probe/duplicate.st", `${negativeState(-2, "First")}\n${negativeState(-2, "Duplicate")}`)],
+      { negativeStatePolicy: "ikemen-append" },
+    );
+
+    expect(resolution.states[0]?.controllers.map((controller) => controller.name)).toEqual(["First"]);
+    expect(resolution.selections[0]?.appended).toBeUndefined();
+  });
 });
 
 function source(kind: "character" | "common", path: string, text: string) {
@@ -99,5 +179,26 @@ anim = 120
 type = ChangeState
 trigger1 = Time >= 1
 value = 130
+`;
+}
+
+function negativeState(id: number, name: string, options: { physics?: string; ctrl?: string; anim?: string; value?: string } = {}): string {
+  const physics = options.physics ? `physics = ${options.physics}\n` : "";
+  return `[Statedef ${id}]
+${physics}
+${options.ctrl ? `ctrl = ${options.ctrl}\n` : ""}${options.anim ? `anim = ${options.anim}\n` : ""}
+[State ${id}, ${name}]
+type = VarAdd
+v = 0
+value = ${options.value ?? "1"}
+`;
+}
+
+function plusOneState(name: string, value: string): string {
+  return `[Statedef +1]
+[State +1, ${name}]
+type = VarAdd
+v = 0
+value = ${value}
 `;
 }
