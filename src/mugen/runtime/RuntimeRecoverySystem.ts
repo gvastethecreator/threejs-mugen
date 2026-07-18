@@ -5,7 +5,16 @@ export type RuntimeRecoveryActor = {
   definition: Pick<DemoFighterDefinition, "source" | "constants">;
   runtime: Pick<
     CharacterRuntimeState,
-    "assertSpecial" | "hitFall" | "life" | "physics" | "pos" | "stateNo" | "stateType" | "vel"
+    | "assertSpecial"
+    | "fallDefenseMultiplier"
+    | "hitFall"
+    | "life"
+    | "moveType"
+    | "physics"
+    | "pos"
+    | "stateNo"
+    | "stateType"
+    | "vel"
   >;
   stateElapsed: number;
   stateOwner?: {
@@ -21,6 +30,15 @@ export type RuntimeRecoveryTransitionApi = {
 
 export class RuntimeRecoverySystem {
   tickHitFallRecoveryWindow(actor: RuntimeRecoveryActor): void {
+    if (actor.runtime.moveType !== "H") {
+      actor.runtime.fallDefenseMultiplier = undefined;
+      if (actor.runtime.hitFall?.fallDefenseApplied) {
+        actor.runtime.hitFall = {
+          ...actor.runtime.hitFall,
+          fallDefenseApplied: false,
+        };
+      }
+    }
     const hitFall = actor.runtime.hitFall;
     if (!hitFall?.recover || hitFall.recoverTime === undefined || hitFall.recoverTime <= 0) {
       return;
@@ -29,6 +47,29 @@ export class RuntimeRecoverySystem {
       ...hitFall,
       recoverTime: Math.max(0, hitFall.recoverTime - 1),
     };
+  }
+
+  applyCommon1FallDefenseUp(actor: RuntimeRecoveryActor): void {
+    const hitFall = actor.runtime.hitFall;
+    if (
+      actor.definition.source !== "imported" ||
+      actor.runtime.moveType !== "H" ||
+      (actor.runtime.stateNo !== 5070 && actor.runtime.stateNo !== 5100) ||
+      actor.stateElapsed !== 1 ||
+      !hitFall ||
+      hitFall.fallDefenseApplied
+    ) {
+      return;
+    }
+    actor.runtime.hitFall = { ...hitFall, fallDefenseApplied: true };
+    if (actor.runtime.assertSpecial?.noFallDefenceUp) {
+      return;
+    }
+    const multiplier = defaultFallDefenseMultiplier(actor.definition);
+    if (multiplier === undefined) {
+      return;
+    }
+    actor.runtime.fallDefenseMultiplier = (actor.runtime.fallDefenseMultiplier ?? 1) * multiplier;
   }
 
   advanceCommon1LieDownRecovery(actor: RuntimeRecoveryActor, transitions: RuntimeRecoveryTransitionApi): void {
@@ -103,6 +144,21 @@ export function ensureDownRecoveryTime(actor: RuntimeRecoveryActor): CharacterRu
 
 export function defaultDownRecoverTime(definition: Pick<DemoFighterDefinition, "constants">): number {
   return Math.max(0, Math.round(definition.constants?.["data.liedown.time"] ?? 60));
+}
+
+export function defaultFallDefenseMultiplier(
+  definition: Pick<DemoFighterDefinition, "constants">,
+): number | undefined {
+  const constants = definition.constants;
+  const defenseFactor = constants?.["data.fall.defence_mul"];
+  if (defenseFactor !== undefined && Number.isFinite(defenseFactor) && defenseFactor > 0) {
+    return 1 / defenseFactor;
+  }
+  const defenseUp = constants?.["data.fall.defence_up"];
+  if (defenseUp !== undefined && Number.isFinite(defenseUp) && defenseUp > -100) {
+    return 100 / (100 + defenseUp);
+  }
+  return undefined;
 }
 
 function shouldFastRecoverFromLieDown(

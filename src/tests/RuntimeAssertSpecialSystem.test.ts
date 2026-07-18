@@ -45,6 +45,35 @@ flag3 = ProjTypeCollision
     expect(actor.runtime.renderOpacity).toBe(0);
   });
 
+  it("normalizes NoFallDefenceUp for Common1 recovery", () => {
+    const actor = actorWithProgram("imported", `
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+
+[State 0, Fall Defense Opt Out]
+type = AssertSpecial
+trigger1 = 1
+flag = NoFallDefenceUp
+`);
+
+    const result = new RuntimeAssertSpecialWorld().applyPreFacing({
+      actor,
+      opponent: actorWithProgram("demo", ""),
+      tick: 1,
+      triggersPass: () => true,
+      executeController: (controller, target) => executeControllerIr(controller, target.runtime, () => undefined),
+    });
+
+    expect(result).toEqual({ applied: 1, skipped: false });
+    expect(actor.runtime.assertSpecial).toMatchObject({
+      flags: ["nofalldefenceup"],
+      noFallDefenceUp: true,
+    });
+  });
+
   it("skips non-imported actors without an imported state owner", () => {
     const actor = actorWithProgram("demo", `
 [Statedef 0]

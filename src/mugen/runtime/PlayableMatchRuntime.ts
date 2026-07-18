@@ -3919,6 +3919,9 @@ function advanceFighter(
         },
       );
     },
+    applyCommon1FallDefenseUp: (actor) => {
+      recoveryWorld.applyCommon1FallDefenseUp(actor);
+    },
     advanceImportedGroundRecoveryLanding: (actor) => {
       recoveryWorld.advanceImportedGroundRecoveryLanding(actor, {
         canEnterState: (stateId) => canEnterState(actor, stateId),

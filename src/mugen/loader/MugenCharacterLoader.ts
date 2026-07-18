@@ -226,6 +226,12 @@ export class MugenCharacterLoader {
       stateSources.push({ ...stateFile, text, states: parsed.states });
       Object.assign(constants, parsed.constants);
     }
+    if (constants["data.fall.defence_mul"] === undefined) {
+      const fallDefenceUp = constants["data.fall.defence_up"];
+      if (fallDefenceUp !== undefined && Number.isFinite(fallDefenceUp) && fallDefenceUp > -100) {
+        constants["data.fall.defence_mul"] = (fallDefenceUp + 100) / 100;
+      }
+    }
     const stateResolution = resolveMugenStateSources(stateSources, {
       negativeStatePolicy: definition.info.ikemenVersion?.trim() ? "ikemen-append" : "first-wins",
     });

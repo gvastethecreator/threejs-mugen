@@ -24,6 +24,7 @@ export class RuntimeFighterAdvanceHookSetWorld {
       advanceKinematics: input.advanceKinematics,
       advanceAnimation: input.advanceAnimation,
       runActiveStateControllers: input.runActiveStateControllers,
+      applyCommon1FallDefenseUp: input.applyCommon1FallDefenseUp,
       advanceImportedGroundRecoveryLanding: input.advanceImportedGroundRecoveryLanding,
       advanceCommon1LieDownRecovery: input.advanceCommon1LieDownRecovery,
       preserveFrozenPosition: input.preserveFrozenPosition,

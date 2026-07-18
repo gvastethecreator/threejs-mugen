@@ -130,6 +130,27 @@ describe("RuntimeHitFallControllerWorld", () => {
     expect(state.hitFall?.damage).toBe(0);
   });
 
+  it("composes canonical Common1 fall defense with runtime incoming damage", () => {
+    const world = new RuntimeHitFallControllerWorld();
+    const state = runtime({
+      life: 100,
+      moveType: "H",
+      fallDefenseMultiplier: 2 / 3,
+      hitFall: {
+        falling: true,
+        damage: 30,
+        velocity: { y: -4 },
+      },
+    });
+
+    expect(world.applyController(state, controller("HitFallDamage"))).toEqual({
+      applied: true,
+      controllerType: "hitfalldamage",
+      damageApplied: 20,
+    });
+    expect(state.life).toBe(80);
+  });
+
   it("counts Common1 ground impact once even when fall damage is already spent", () => {
     const world = new RuntimeHitFallControllerWorld();
     const state = runtime({

@@ -18,6 +18,7 @@ export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor
   advanceKinematics: (actor: TActor, preserveImportedStateMoveType: boolean) => void;
   advanceAnimation: (actor: TActor) => void;
   runActiveStateControllers: (actor: TActor) => void;
+  applyCommon1FallDefenseUp: (actor: TActor) => void;
   advanceImportedGroundRecoveryLanding: (actor: TActor) => void;
   advanceCommon1LieDownRecovery: (actor: TActor) => void;
   preserveFrozenPosition: (actor: TActor, tickStartPos: { x: number; y: number; z: number }) => void;
@@ -57,6 +58,7 @@ export class RuntimeFighterAdvanceWorld {
     hooks.advanceKinematics(actor, preserveImportedStateMoveType);
     hooks.advanceAnimation(actor);
     hooks.runActiveStateControllers(actor);
+    hooks.applyCommon1FallDefenseUp(actor);
     hooks.advanceImportedGroundRecoveryLanding(actor);
     hooks.advanceCommon1LieDownRecovery(actor);
     hooks.preserveFrozenPosition(actor, tickStartPos);

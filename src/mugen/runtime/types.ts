@@ -46,6 +46,8 @@ export type CharacterRuntimeState = {
   reversal?: RuntimeReversalDef;
   defenseMultiplier?: number;
   superPauseDefenseMultiplier?: number;
+  /** Incoming-damage factor from Common1 fall.defence_up; upstream stores its inverse. */
+  fallDefenseMultiplier?: number;
   attackMultiplier?: number;
   dizzyPointsAttackMultiplier?: number;
   paletteRemap?: RuntimePaletteRemap;
@@ -215,6 +217,7 @@ export type RuntimeHitFall = {
   damage: number;
   fallCount?: number;
   fallCountedGroundImpact?: boolean;
+  fallDefenseApplied?: boolean;
   defenceUp?: number;
   kill?: boolean;
   velocity: {
@@ -253,6 +256,7 @@ export type RuntimeAssertSpecial = {
   noJuggleCheck?: boolean;
   noGetUpFromLieDown?: boolean;
   noFastRecoverFromLieDown?: boolean;
+  noFallDefenceUp?: boolean;
   projTypeCollision?: boolean;
   runFirst?: boolean;
   runLast?: boolean;

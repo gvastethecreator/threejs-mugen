@@ -119,6 +119,30 @@ trigger1 = 1
     expect(character.stateSources).toEqual([]);
   });
 
+  it("derives the Common1 fall defense factor from character Data", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/fall/fall.def",
+      textBytes(`[Info]
+name = "Fall Defense"
+
+[Files]
+cns = fall.cns
+`),
+    );
+    vfs.addFile(
+      "chars/fall/fall.cns",
+      textBytes(`[Data]
+fall.defence_up = 50
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("fall.zip", vfs);
+
+    expect(character.constants["data.fall.defence_up"]).toBe(50);
+    expect(character.constants["data.fall.defence_mul"]).toBe(1.5);
+  });
+
   it("appends IKEMEN negative states across ordered st files and stcommon", async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile(

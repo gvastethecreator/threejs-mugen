@@ -1,6 +1,6 @@
 import type { HitFallControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
-import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
+import { applyRuntimeDamage, canRuntimeDamageKill, scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
@@ -57,11 +57,17 @@ function applyHitFallDamage(state: CharacterRuntimeState): RuntimeHitFallControl
     state.hitFall = hitFall;
     return { applied: countedGroundImpact, controllerType: "hitfalldamage" };
   }
-  const defenceScale = hitFall.defenceUp === undefined ? 1 : Math.max(0, Math.min(10, hitFall.defenceUp / 100));
-  const scaledDamage = Math.max(0, Math.round(hitFall.damage * defenceScale));
+  const scaledDamage =
+    state.fallDefenseMultiplier === undefined
+      ? Math.max(0, Math.round(hitFall.damage * legacyHitFallDefenceScale(hitFall.defenceUp)))
+      : scaleRuntimeIncomingDamage(state, hitFall.damage);
   state.life = applyRuntimeDamage(state.life, scaledDamage, canRuntimeDamageKill(state, hitFall.kill ?? true));
   state.hitFall = { ...hitFall, damage: 0 };
   return { applied: true, controllerType: "hitfalldamage", damageApplied: scaledDamage };
+}
+
+function legacyHitFallDefenceScale(defenceUp: number | undefined): number {
+  return defenceUp === undefined ? 1 : Math.max(0, Math.min(10, defenceUp / 100));
 }
 
 function countCommon1GroundImpact(

@@ -22,6 +22,7 @@ describe("RuntimeFighterAdvanceHookSetWorld", () => {
       advanceKinematics: (_actor: AdvanceHookActor, preserve: boolean) => calls.push(`kinematics:${preserve}`),
       advanceAnimation: () => calls.push("animation"),
       runActiveStateControllers: () => calls.push("active-controllers"),
+      applyCommon1FallDefenseUp: () => calls.push("fall-defense-up"),
       advanceImportedGroundRecoveryLanding: () => calls.push("ground-recovery"),
       advanceCommon1LieDownRecovery: () => calls.push("liedown-recovery"),
       preserveFrozenPosition: (_actor: AdvanceHookActor, pos: { x: number; y: number }) =>
@@ -44,6 +45,7 @@ describe("RuntimeFighterAdvanceHookSetWorld", () => {
     expect(hooks.advanceKinematics).toBe(input.advanceKinematics);
     expect(hooks.advanceAnimation).toBe(input.advanceAnimation);
     expect(hooks.runActiveStateControllers).toBe(input.runActiveStateControllers);
+    expect(hooks.applyCommon1FallDefenseUp).toBe(input.applyCommon1FallDefenseUp);
     expect(hooks.advanceImportedGroundRecoveryLanding).toBe(input.advanceImportedGroundRecoveryLanding);
     expect(hooks.advanceCommon1LieDownRecovery).toBe(input.advanceCommon1LieDownRecovery);
     expect(hooks.preserveFrozenPosition).toBe(input.preserveFrozenPosition);
@@ -61,6 +63,7 @@ describe("RuntimeFighterAdvanceHookSetWorld", () => {
     hooks.advanceKinematics(actor, preserve);
     hooks.advanceAnimation(actor);
     hooks.runActiveStateControllers(actor);
+    hooks.applyCommon1FallDefenseUp(actor);
     hooks.advanceImportedGroundRecoveryLanding(actor);
     hooks.advanceCommon1LieDownRecovery(actor);
     hooks.preserveFrozenPosition(actor, { x: 4, y: -2, z: 0 });
@@ -79,6 +82,7 @@ describe("RuntimeFighterAdvanceHookSetWorld", () => {
       "kinematics:true",
       "animation",
       "active-controllers",
+      "fall-defense-up",
       "ground-recovery",
       "liedown-recovery",
       "preserve-frozen:4,-2",

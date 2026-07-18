@@ -338,6 +338,7 @@ describe("CombatResolver", () => {
     expect(isRuntimeGuarding(true, "I", "S", "MA", { attackUnguardable: true })).toBe(false);
     expect(scaleRuntimeOutgoingDamage(actor({ attackMultiplier: 1.25 }), 20)).toBe(25);
     expect(scaleRuntimeIncomingDamage(actor({ defenseMultiplier: 0.75 }), 20)).toBe(15);
+    expect(scaleRuntimeIncomingDamage(actor({ fallDefenseMultiplier: 2 / 3 }), 30)).toBe(20);
     expect(
       scaleRuntimeIncomingDamage(
         actor({ defenseMultiplier: 0.5, superPauseDefenseMultiplier: 2 / 3 }),

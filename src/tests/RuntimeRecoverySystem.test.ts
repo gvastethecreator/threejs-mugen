@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultDownRecoverTime,
+  defaultFallDefenseMultiplier,
   ensureDownRecoveryTime,
   isImportedGroundRecoveryLandingState,
   RuntimeRecoverySystem,
@@ -21,10 +22,60 @@ describe("RuntimeRecoverySystem", () => {
     expect(fighter.runtime.hitFall?.recoverTime).toBe(0);
   });
 
+  it("applies Common1 fall defense once and restores it after leaving Hit", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5100,
+      stateElapsed: 1,
+      moveType: "H",
+      constants: { "data.fall.defence_up": 50 },
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.fallDefenseMultiplier).toBeCloseTo(2 / 3);
+    expect(fighter.runtime.hitFall?.fallDefenseApplied).toBe(true);
+
+    fighter.runtime.moveType = "I";
+    system.tickHitFallRecoveryWindow(fighter);
+
+    expect(fighter.runtime.fallDefenseMultiplier).toBeUndefined();
+    expect(fighter.runtime.hitFall?.fallDefenseApplied).toBe(false);
+  });
+
+  it("honors Common1 NoFallDefenceUp without applying the transient factor", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5070,
+      stateElapsed: 1,
+      moveType: "H",
+      constants: { "data.fall.defence_up": 50 },
+      assertSpecial: {
+        flags: ["nofalldefenceup"],
+        globalFlags: [],
+        noFallDefenceUp: true,
+      },
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.fallDefenseMultiplier).toBeUndefined();
+    expect(fighter.runtime.hitFall?.fallDefenseApplied).toBe(true);
+  });
+
   it("uses data.liedown.time as the default down recovery window", () => {
     expect(defaultDownRecoverTime({ constants: { "data.liedown.time": 14.6 } })).toBe(15);
     expect(defaultDownRecoverTime({ constants: { "data.liedown.time": -5 } })).toBe(0);
     expect(defaultDownRecoverTime({})).toBe(60);
+  });
+
+  it("derives the incoming fall-damage factor from canonical Data values", () => {
+    expect(defaultFallDefenseMultiplier({ constants: { "data.fall.defence_up": 50 } })).toBeCloseTo(2 / 3);
+    expect(defaultFallDefenseMultiplier({ constants: { "data.fall.defence_mul": 1.5 } })).toBeCloseTo(2 / 3);
+    expect(defaultFallDefenseMultiplier({ constants: {} })).toBeUndefined();
   });
 
   it("ensures and decrements Common1 liedown recovery time", () => {
@@ -130,6 +181,7 @@ function actor(options: {
   stateElapsed?: number;
   recoverTime?: number;
   downRecoverTime?: number;
+  moveType?: "I" | "A" | "H";
   physics?: "S" | "C" | "A" | "N";
   posY?: number;
   velY?: number;
@@ -142,6 +194,7 @@ function actor(options: {
     },
     runtime: {
       stateNo: options.stateNo ?? 5000,
+      moveType: options.moveType ?? "I",
       stateType: options.stateType ?? "S",
       life: 1000,
       physics: options.physics ?? "S",
