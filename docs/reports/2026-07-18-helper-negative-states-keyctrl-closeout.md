@@ -34,9 +34,9 @@ preserved outside IKEMEN actor-order advancement.
 
 This closeout does not claim root State -2/-3 scheduling, Common1 or
 multi-file merge precedence, helper-specific input buffers, exact complete
-global ordering, State -4/+1, rollback/netplay, or full MUGEN/IKEMEN parity.
+global ordering, State +1, rollback/netplay, or full MUGEN/IKEMEN parity.
 
 ## Next frontier
 
-Ticket 243 maps the separate IKEMEN State -4/+1 pause, ownership, and
-post-current ordering contract.
+Ticket 243 records the State -4 closeout; the next frontier is State +1
+identity and post-current ordering.

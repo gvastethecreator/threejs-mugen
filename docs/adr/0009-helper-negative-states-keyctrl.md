@@ -65,7 +65,7 @@ Positive:
 
 Negative:
 
-- State -4/+1 remains separate;
+- State +1 remains separate; State -4 is closed by ADR 0010;
 - root negative-state scheduling, Common1/multi-file merge precedence, helper
   input buffers, exact complete global ordering, rollback/netplay, and full
   parity remain open;
@@ -95,4 +95,4 @@ Blocked:
 - MUGEN helper -2/-3 execution;
 - root -2/-3 scheduling;
 - Common1/multi-file merge precedence and helper input buffers;
-- State -4/+1, rollback/netplay, and complete MUGEN/IKEMEN parity.
+- State +1, rollback/netplay, and complete MUGEN/IKEMEN parity.

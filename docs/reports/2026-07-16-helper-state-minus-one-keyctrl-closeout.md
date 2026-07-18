@@ -32,12 +32,12 @@ active.
 
 ## Scope ceiling
 
-This closeout does not claim helper States -4/+1, helper-specific input
+This closeout does not claim helper State +1, helper-specific input
 buffers, Common1/global negative-state merge or exact ordering, recursive
 RedirectID, rollback/netplay, or full MUGEN/IKEMEN parity.
 
 ## Next frontier
 
 ADR 0009 closes Ticket 242 with a bounded IKEMEN-only helper State -2/-3
-route. The next frontier is the separate State -4/+1 pause and ordering
-contract.
+route. State -4 is now closed by ADR 0010; the next frontier is the separate
+State +1 identity and ordering contract.

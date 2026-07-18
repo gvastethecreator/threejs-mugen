@@ -76,7 +76,7 @@ Positive:
 
 Negative:
 
-- States -4/+1 remain separate decisions; State -2/-3 is extended by
+- State +1 remains a separate decision; States -2/-3/-4 are extended by
   ADR 0009 at bounded IKEMEN profile scope;
 - helper input buffers, Common1 lookup/merge, exact negative-state order,
   recursive redirects, rollback/netplay, and full parity remain open;
@@ -102,7 +102,7 @@ Allowed:
 
 Blocked:
 
-- helper States -4/+1;
+- helper State +1;
 - exact Common1/global merge and root negative-state scheduling;
 - helper-specific input buffers and Common1/global merge semantics;
 - exact negative-state tick ordering beyond this bounded prepass;

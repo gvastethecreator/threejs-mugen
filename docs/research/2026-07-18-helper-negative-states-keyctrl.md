@@ -47,7 +47,7 @@ Implement `HelperNegativeStates/v0` with these limits:
    keep all passes inside the existing pause/advance gate.
 4. Keep MUGEN and `unknown` profiles unchanged for -2/-3.
 5. Do not synthesize helper input, Common1 files, multi-file negative-state
-   merge precedence, root negative-state execution, or State -4/+1.
+   merge precedence, root negative-state execution, or State +1.
 
 ## Proof target
 
@@ -69,4 +69,4 @@ dispatch guard, and diff hygiene pass.
 
 This result does not claim root State -2/-3 scheduling, Common1 or multi-file
 merge precedence, helper-specific input buffers, exact complete global tick
-ordering, State -4/+1, rollback/netplay, or full MUGEN/IKEMEN parity.
+ordering, State +1, rollback/netplay, or full MUGEN/IKEMEN parity.

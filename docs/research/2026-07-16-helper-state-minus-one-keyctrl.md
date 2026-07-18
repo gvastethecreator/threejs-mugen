@@ -73,7 +73,7 @@ Focused proof:
 - The grouped focal checkpoint is `404/404`; TypeScript 7/build, repository
   boundaries, redirected-dispatch guard, and diff hygiene pass.
 
-The implementation does not claim State -4/+1, helper-specific input,
+The implementation does not claim State +1, helper-specific input,
 Common1 merge precedence, exact global negative-state ordering, rollback,
 netplay, or full MUGEN/IKEMEN parity. ADR 0009 subsequently accepts the
 bounded IKEMEN State -2/-3 extension using the same owner and fail-closed

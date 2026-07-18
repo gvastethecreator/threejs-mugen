@@ -46,4 +46,4 @@ owner command callback, preserving the prior State -1 contract there.
 
 This ticket does not claim root State -2/-3 scheduling, Common1 or multi-file
 merge precedence, helper-specific input buffers, exact full-engine tick order,
-IKEMEN State -4/+1, rollback/netplay, or full MUGEN/IKEMEN parity.
+IKEMEN State +1, rollback/netplay, or full MUGEN/IKEMEN parity.
