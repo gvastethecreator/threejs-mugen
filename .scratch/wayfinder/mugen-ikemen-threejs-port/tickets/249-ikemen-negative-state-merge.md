@@ -1,9 +1,11 @@
 # Ticket 249: IKEMEN negative-state merge
 
-- Status: selected, implementation pending
+- Status: resolved bounded implementation
 - Date: 2026-07-18
 - Scope: imported character `st*` and `stcommon` CNS source resolution
 - Depends on: Ticket 248 / ADR 0015
+- Implementation: `0c42c770`
+- Closeout: [`docs/reports/2026-07-18-ikemen-negative-state-merge-closeout.md`](../../../docs/reports/2026-07-18-ikemen-negative-state-merge-closeout.md)
 
 ## Question
 
@@ -37,9 +39,17 @@ controller blocks from each source?
 - a closeout report with the pinned source revision and explicit remaining
   boundaries.
 
-## Decision gate
+## Outcome
 
-Implement only if the source order and negative-state distinction remain
-visible in the model. If a later source cannot be attributed without making
-the existing selection contract ambiguous, stop at characterization and keep
-the behavior fail-closed.
+The resolver now exposes `first-wins` and `ikemen-append` policies. The loader
+selects the latter only for an explicit `ikemenversion`; negative states and
+literal `+1` preserve the first state identity, merge later authored fields,
+append later controllers, and retain source provenance. Duplicate identities
+inside one source file remain non-appending.
+
+## Evidence
+
+- Resolver/loader/compiler compatibility focus: `91/91`.
+- Full suite after implementation: `230/230` files, `2371/2371` tests.
+- `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`,
+  `pnpm check:redirect-boundary`, and `git diff --check` passed.
