@@ -25716,6 +25716,7 @@ export function createSyntheticImportedDownHitCornerPushTraceArtifact(
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-down-hit-cornerpush-attacker",
     displayName: "Synthetic Imported Down Hit Cornerpush Attacker",
+    hitDefHitFlag: "D",
     groundVelocity: [-3],
     groundCornerPush: 1,
     airCornerPush: 2,
@@ -25768,6 +25769,7 @@ export function createSyntheticImportedProjectileDownHitCornerPushTraceArtifact(
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-projectile-down-hit-cornerpush-attacker",
     displayName: "Synthetic Imported Projectile Down Hit Cornerpush Attacker",
+    hitDefHitFlag: "D",
     withHitDef: false,
     withProjectile: true,
     projectileOffset: [62, -45],
@@ -25917,6 +25919,7 @@ export function createSyntheticImportedDownHitCornerPushDefaultTraceArtifact(
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-down-hit-cornerpush-default-attacker",
     displayName: "Synthetic Imported Down Hit Cornerpush Default Attacker",
+    hitDefHitFlag: "D",
     groundVelocity: [-3],
     groundCornerPush: 6,
     airCornerPush: 1,
@@ -25968,6 +25971,7 @@ export function createSyntheticImportedProjectileDownHitCornerPushDefaultTraceAr
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-projectile-down-hit-cornerpush-default-attacker",
     displayName: "Synthetic Imported Projectile Down Hit Cornerpush Default Attacker",
+    hitDefHitFlag: "D",
     withHitDef: false,
     withProjectile: true,
     projectileOffset: [62, -45],
@@ -47540,6 +47544,7 @@ export type SyntheticImportedTraceFighterOptions = {
   localCoord?: [number, number];
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   hitDefAttr?: string;
+  hitDefHitFlag?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
   hitDefGuardPoints?: number;
@@ -48590,6 +48595,7 @@ export type SyntheticImportedTraceFighterOptions = {
 
 export function createSyntheticImportedTraceFighter(options: SyntheticImportedTraceFighterOptions = {}): DemoFighterDefinition {
   const hitDefAttr = options.hitDefAttr ?? "S,NA";
+  const hitDefHitFlagLine = options.hitDefHitFlag === undefined ? "" : `hitflag = ${options.hitDefHitFlag}`;
   const hitDefDamage = options.hitDefDamage ?? 37;
   const withHitDef = options.withHitDef ?? true;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
@@ -48677,6 +48683,7 @@ p2getp1state = 1
 type = HitDef
 trigger1 = Time = 1
 attr = ${hitDefAttr}
+${hitDefHitFlagLine}
 damage = ${damageLine}
 ${redLifeLine}
 ${guardPointsLine}
@@ -48875,7 +48882,7 @@ ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, op
 ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBlock(options.extraSuperPauseP2DefMul)}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -52441,6 +52448,7 @@ function projectileControllerBlock(
   guardControlTime?: number,
   guardHitTime?: number,
   guardFlag = "MA",
+  hitFlag?: string,
   kill?: boolean,
   guardKill?: boolean,
   projectileId = 77,
@@ -52487,6 +52495,7 @@ function projectileControllerBlock(
   const guardVelocityLine = omitGuardVelocity ? "" : `guard.velocity = ${(guardVelocity ?? [-2]).join(",")}`;
   const killLine = kill === undefined ? "" : `kill = ${kill ? 1 : 0}`;
   const guardKillLine = guardKill === undefined ? "" : `guard.kill = ${guardKill ? 1 : 0}`;
+  const hitFlagLine = hitFlag === undefined ? "" : `hitflag = ${hitFlag}`;
   const targetIdLine = targetId === undefined ? "" : `id = ${targetId}`;
   const chainIdLine = chainId === undefined ? "" : `chainID = ${chainId}`;
   const hitDefHitCountLine = hitDefHitCount === undefined ? "" : `numhits = ${hitDefHitCount}`;
@@ -52531,6 +52540,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 damage = ${damage.join(",")}
+${hitFlagLine}
 ${killLine}
 ${guardKillLine}
 pausetime = 4,4
