@@ -4001,6 +4001,12 @@ ctrl = 0
     const imported = {
       ...base,
       states: [...(base.states ?? []), state5900],
+      stateSources: [{
+        stateId: 5900,
+        selected: { kind: "common" as const, path: "data/common1.cns", fingerprint: "fnv1a32:abcdef01" },
+        shadowed: [],
+        reason: "common-fallback" as const,
+      }],
       animations: new Map([...base.animations, [5900, action(5900)] as const]),
     };
     const runtime = new PlayableMatchRuntime(imported, imported, trainingStage, {
@@ -4020,6 +4026,23 @@ ctrl = 0
       matchOver: false,
     });
     expect(next.state5900).toMatchObject({ availableActorIds: ["p1", "p2"], unavailableActorIds: [] });
+    expect(next.state5900.actors).toEqual([
+      expect.objectContaining({
+        actorId: "p1",
+        provenance: expect.objectContaining({
+          status: "resolved",
+          selected: { layer: "common", path: "data/common1.cns", fingerprint: "fnv1a32:abcdef01" },
+          precedence: "common-fallback",
+        }),
+      }),
+      expect.objectContaining({
+        actorId: "p2",
+        provenance: expect.objectContaining({
+          status: "resolved",
+          selected: { layer: "common", path: "data/common1.cns", fingerprint: "fnv1a32:abcdef01" },
+        }),
+      }),
+    ]);
     expect(runtime.getSnapshot().round).toMatchObject({
       state: "fight",
       roundNo: 2,

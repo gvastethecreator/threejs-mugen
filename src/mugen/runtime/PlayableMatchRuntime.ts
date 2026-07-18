@@ -3612,6 +3612,7 @@ function roundState5900Actor(root: FighterMatchState) {
       ...(root.definition.states?.map(({ id }) => id) ?? []),
       ...(root.definition.animations.has(RUNTIME_ROUND_STATE_5900) ? [RUNTIME_ROUND_STATE_5900] : []),
     ],
+    ...(root.definition.stateSources === undefined ? {} : { stateSources: root.definition.stateSources }),
   };
 }
 

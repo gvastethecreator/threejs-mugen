@@ -74,6 +74,7 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     },
     stateMoves,
     states: character.states,
+    stateSources: character.stateSources,
     stateEntryControllers: character.stateEntryControllers,
     constants: character.constants,
     commands: character.commands,

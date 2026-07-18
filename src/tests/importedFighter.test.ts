@@ -29,6 +29,18 @@ describe("createImportedFighterDefinition", () => {
     expect(fighter?.moves.kick.actionId).toBe(230);
   });
 
+  it("carries state source selections into imported fighters", () => {
+    const character = fakeCharacter(new Map([[0, action(0, [[0, 0, 0]])]]));
+    character.stateSources = [{
+      stateId: 5900,
+      selected: { kind: "common", path: "data/common1.cns", fingerprint: "fnv1a32:abcdef01" },
+      shadowed: [],
+      reason: "common-fallback",
+    }];
+
+    expect(createImportedFighterDefinition(character)?.stateSources).toEqual(character.stateSources);
+  });
+
   it("carries parsed character localcoord into imported fighters", () => {
     const character = fakeCharacter(
       new Map<number, MugenAnimationAction>([

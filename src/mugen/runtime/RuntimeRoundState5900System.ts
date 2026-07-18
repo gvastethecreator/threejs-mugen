@@ -1,15 +1,41 @@
+import type {
+  MugenStateSourceKind,
+  MugenStateSourceRef,
+  MugenStateSourceSelection,
+} from "../model/MugenState";
+
 export const RUNTIME_ROUND_STATE_5900_SCHEMA = "mugen-web-sandbox/runtime-round-state-5900/v0";
+export const RUNTIME_ROUND_STATE_5900_PROVENANCE_SCHEMA = "mugen-web-sandbox/runtime-round-state-5900-provenance/v1";
 export const RUNTIME_ROUND_STATE_5900 = 5900;
+
+export type RuntimeRoundState5900SourceSnapshot = {
+  layer: MugenStateSourceKind;
+  path: string;
+  fingerprint: string;
+};
+
+export type RuntimeRoundState5900Provenance = {
+  schema: typeof RUNTIME_ROUND_STATE_5900_PROVENANCE_SCHEMA;
+  stateNo: typeof RUNTIME_ROUND_STATE_5900;
+  status: "resolved" | "unknown" | "unavailable";
+  selected?: RuntimeRoundState5900SourceSnapshot;
+  precedence?: MugenStateSourceSelection["reason"];
+  shadowed: RuntimeRoundState5900SourceSnapshot[];
+  appended: RuntimeRoundState5900SourceSnapshot[];
+  reason?: "state-not-available" | "state-source-selection-missing";
+};
 
 export type RuntimeRoundState5900Actor = {
   id: string;
   stateIds: readonly number[];
+  stateSources?: readonly MugenStateSourceSelection[];
 };
 
 export type RuntimeRoundState5900ActorSnapshot = {
   actorId: string;
   stateNo: typeof RUNTIME_ROUND_STATE_5900;
   status: "available" | "unavailable";
+  provenance?: RuntimeRoundState5900Provenance;
 };
 
 export type RuntimeRoundState5900Snapshot = {
@@ -39,10 +65,14 @@ export class RuntimeRoundState5900World {
       }
       seenIds.add(actorId);
       const stateAvailable = actor.stateIds.some((stateId) => stateId === RUNTIME_ROUND_STATE_5900);
+      const provenance = actor.stateSources === undefined
+        ? undefined
+        : createState5900Provenance(actor.stateSources, stateAvailable);
       snapshots.push({
         actorId,
         stateNo: RUNTIME_ROUND_STATE_5900,
         status: stateAvailable ? "available" : "unavailable",
+        ...(provenance === undefined ? {} : { provenance }),
       });
     }
 
@@ -58,6 +88,40 @@ export class RuntimeRoundState5900World {
       diagnostics: [...new Set(diagnostics)].sort(compareStableStrings),
     };
   }
+}
+
+function createState5900Provenance(
+  selections: readonly MugenStateSourceSelection[],
+  stateAvailable: boolean,
+): RuntimeRoundState5900Provenance {
+  const selection = selections.find(({ stateId, special }) => stateId === RUNTIME_ROUND_STATE_5900 && special === undefined);
+  if (!selection) {
+    return {
+      schema: RUNTIME_ROUND_STATE_5900_PROVENANCE_SCHEMA,
+      stateNo: RUNTIME_ROUND_STATE_5900,
+      status: stateAvailable ? "unknown" : "unavailable",
+      shadowed: [],
+      appended: [],
+      reason: stateAvailable ? "state-source-selection-missing" : "state-not-available",
+    };
+  }
+  return {
+    schema: RUNTIME_ROUND_STATE_5900_PROVENANCE_SCHEMA,
+    stateNo: RUNTIME_ROUND_STATE_5900,
+    status: "resolved",
+    selected: sourceSnapshot(selection.selected),
+    precedence: selection.reason,
+    shadowed: selection.shadowed.map(sourceSnapshot),
+    appended: (selection.appended ?? []).map(sourceSnapshot),
+  };
+}
+
+function sourceSnapshot(source: MugenStateSourceRef): RuntimeRoundState5900SourceSnapshot {
+  return {
+    layer: source.kind,
+    path: source.path,
+    fingerprint: source.fingerprint,
+  };
 }
 
 function compareStableStrings(left: string, right: string): number {

@@ -3,7 +3,7 @@ import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
-import type { MugenStateController, MugenStateDef } from "../model/MugenState";
+import type { MugenStateController, MugenStateDef, MugenStateSourceSelection } from "../model/MugenState";
 import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import type { MugenAffectTeam, MugenTeamSide } from "../model/MugenTeam";
@@ -125,6 +125,7 @@ export type DemoFighterDefinition = {
   };
   stateMoves?: Map<number, DemoMove>;
   states?: MugenStateDef[];
+  stateSources?: MugenStateSourceSelection[];
   stateEntryControllers?: MugenStateController[];
   constants?: Record<string, number>;
   commands?: MugenCommand[];

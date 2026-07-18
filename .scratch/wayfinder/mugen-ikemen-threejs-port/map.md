@@ -321,6 +321,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Stateful SOCD temporal state](tickets/267-stateful-socd-temporal-state.md) - resolved bounded in `69aacf86` / ADR 0033: per-seat `SocdFirst` state now persists across reconstructed sets for modes `1` and `3` and resets at match/round boundaries; raw event/InputBuffer parity remains open.
 - [SOCD resolution authority](tickets/268-socd-resolution-authority.md) - resolved bounded in `b241cc65` / ADR 0034: runtime/package/profile precedence and package conflicts are observable through `RuntimeSocdResolutionAuthority/v0`; final match-level ownership remains open.
 - [Source authority reconciliation](tickets/269-source-authority-reconciliation.md) - resolved bounded in `0d4a0274` / ADR 0035: the real normative/local nine-file delta is materialized as a tracked artifact with dirty-cache and fail-closed guards; semantic review remains `unclassified` and no parity score moves.
+- [State 5900 provenance](tickets/270-state-5900-provenance.md) - resolved bounded in `f2c4b2a0` / nested `RuntimeRoundState5900Provenance/v1`: imported round and Turns snapshots carry selected character/Common1 path, layer, precedence, FNV fingerprint, shadowed/appended refs, and explicit missing-source status; exact state-5900 execution remains open.
 
 ## Not Yet Specified
 
