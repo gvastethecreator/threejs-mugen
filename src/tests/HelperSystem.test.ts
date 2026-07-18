@@ -212,9 +212,10 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
-  it("runs IKEMEN helper States -3 and -2 before State -1, only with keyctrl", () => {
+  it("runs IKEMEN helper States -4, -3, and -2 before State -1, only with keyctrl for -3/-2", () => {
     const runtimeProgram = {
       states: [
+        stateProgram(stateDef(-4), [compiledControllerIr(-4, "VarAdd", [], { v: "0", value: "4" })]),
         stateProgram(stateDef(-3), [compiledControllerIr(-3, "VarAdd", [], { v: "0", value: "3" })]),
         stateProgram(stateDef(-2), [compiledControllerIr(-2, "VarAdd", [], { v: "0", value: "20" })]),
         stateProgram(stateDef(6000), [controllerIr(6000, "VarAdd", { v: "1", value: "1" })]),
@@ -224,7 +225,7 @@ describe("HelperSystem", () => {
 
     const ikemen = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram });
     advanceRuntimeHelpers([ikemen], stage, { runtimeProfile: "ikemen-go" });
-    expect(ikemen.vars.slice(0, 2)).toEqual([123, 1]);
+    expect(ikemen.vars.slice(0, 2)).toEqual([127, 1]);
 
     const mugen = helper({ keyCtrl: true, vars: [0, 0], runtimeProgram });
     advanceRuntimeHelpers([mugen], stage, { runtimeProfile: "mugen-1.1" });
@@ -232,7 +233,12 @@ describe("HelperSystem", () => {
 
     const keyCtrlOff = helper({ keyCtrl: false, vars: [0, 0], runtimeProgram });
     advanceRuntimeHelpers([keyCtrlOff], stage, { runtimeProfile: "ikemen-go" });
-    expect(keyCtrlOff.vars.slice(0, 2)).toEqual([0, 1]);
+    expect(keyCtrlOff.vars.slice(0, 2)).toEqual([4, 1]);
+
+    const paused = helper({ keyCtrl: false, vars: [0, 0], runtimeProgram });
+    advanceRuntimeHelpers([paused], stage, { runtimeProfile: "ikemen-go", pauseKind: "Pause" });
+    expect(paused.vars.slice(0, 2)).toEqual([4, 0]);
+    expect(paused.age).toBe(0);
   });
 
   it("runs helper State -1 only with keyctrl, owner command input, and outside pause", () => {

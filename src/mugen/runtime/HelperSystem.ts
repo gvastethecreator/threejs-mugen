@@ -370,6 +370,9 @@ export function advanceRuntimeHelperActor(
   stage: Pick<MugenStageDefinition, "bounds">,
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
+  if (options.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, options, -4) === "destroyed") {
+    return false;
+  }
   if (canAdvanceRuntimeHelper(helper, options.pauseKind)) {
     helper.assertSpecial = undefined;
     if (helper.keyCtrl === true && options.runtimeProfile === "ikemen-go") {

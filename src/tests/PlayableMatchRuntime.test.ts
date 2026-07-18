@@ -822,6 +822,17 @@ v = 1
 value = 1
 `,
       helperExtraStates: `
+[Statedef -4]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -4, IKEMEN helper pause-safe global state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 4
+
 [Statedef -3]
 type = S
 movetype = I
@@ -883,7 +894,7 @@ command = m
       runtimeProfile: "ikemen-go",
     });
     const snapshot = runtime.step({ p1: new Set(["m"]), p2: new Set() });
-    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([33, 1]);
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([37, 1]);
 
     const legacy = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
       runtimeProfile: "mugen-1.1",
