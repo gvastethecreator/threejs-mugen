@@ -294,6 +294,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Implement root State -1 ordering](tickets/247-root-state-minus-one-ordering.md) - resolved in `730f1a14`: imported roots with numeric `-3/-2` now observe `-3 -> -2 -> -1 -> current`, with sampled player/AI fallback deferred to the same boundary for MUGEN 1.1 and IKEMEN. Common1/multi-file merge, helper input buffers, exact controller interleaving, rollback/netplay, and full parity remain separate.
 - [Character State source precedence](tickets/248-character-state-source-precedence.md) - resolved in `e47d4f76` / ADR 0015: separate constants-only `cns` from explicit `st*` state sources, normalize `st`/`st0`-`st9` order, and preserve character-before-`stcommon` fallback ownership without appending duplicate controllers.
 - [IKEMEN negative-state merge](tickets/249-ikemen-negative-state-merge.md) - resolved in `0c42c770` / ADR 0016: explicit `ikemenversion` now appends ordered `-4/-3/-2/-1/+1` state contributions across distinct `st*`/`stcommon` files, preserves first-wins normal states, and keeps intra-file duplicates shadowed. CMD, global `Common.States`, ZSS/Lua, helper buffers, and full parity remain separate.
+- [Global Common.States CNS](tickets/250-global-common-states-cns.md) - selected: load configured CNS common states after DEF `stcommon`, preserve normal/negative precedence, and report missing/ZSS entries explicitly. Common commands/constants/AIR/FX, JSON mutation, Lua, helper buffers, and full parity remain separate.
 
 ## Not Yet Specified
 
