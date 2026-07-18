@@ -1197,6 +1197,26 @@ This gate proves:
 
 Required trace checksum is `fe532005`; initial checksum is `912a2131`; final checksum is `8434e7f8`; frame count is `44`. This proves one fixture-owned authored air-guard exit and landing route under the active-motion scheduler. It does not establish generic `physics = A` landing, jumping or air movement, exact Common1/IKEMEN timing, complete high/low/air policy, projectiles/helpers, custom state, forceguard, target ranking, Pause/hitpause, guard sound/spark/renderer effects, team replacement/KO, HUD/resources, rollback, or full MUGEN/IKEMEN parity.
 
+## Explicit Projectile HitFlag Admission Gate
+
+The grouped runtime gate for T263 requires:
+
+- `RuntimeCompiler.test.ts` coverage for static Projectile and
+  ModifyProjectile HitFlags plus a fail-closed dynamic string boundary;
+- `ProjectileSystem.test.ts` coverage for live storage, effect snapshot
+  visibility, and active-projectile mutation;
+- `ProjectileCombatSystem.test.ts` coverage for state-type, fall,
+  NoFallHitFlag, minus, plus, omitted compatibility, and admitted contact;
+- full `pnpm test` at `230` files / `2418` tests, `pnpm typecheck`, production
+  build, repository boundaries, redirect boundary, diff hygiene, and
+  `pnpm qa:trace` at `633/633` artifacts (`599` required, `34` optional);
+- browser smoke is N/A because no visible UI or renderer surface changed.
+
+This gate proves only explicit static projectile HitFlag transport and bounded
+player-contact admission. It does not prove default `MAF` inference, dynamic
+string expressions, reversal/clash parity, exact projectile timing,
+`acttmp`/`hittmp`, or full MUGEN/IKEMEN compatibility.
+
 ## Playable MVP Acceptance
 
 The Playable MVP requires:

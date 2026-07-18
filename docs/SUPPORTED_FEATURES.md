@@ -1,4 +1,10 @@
 ﻿# Supported Features
+- Imported projectile/player contact now carries explicit static Projectile
+  and ModifyProjectile HitFlags through typed IR, live runtime state, effect
+  snapshots, and the shared state/fall/NoFallHitFlag/minus/plus admission
+  predicate. Omitted/default `MAF` inference, dynamic string expressions,
+  reversals, exact projectile pause/contact timing, and full MUGEN/IKEMEN
+  parity remain unsupported.
 - Imported direct HitDef admission now supports bounded explicit HitFlag
   `-`/`+` semantics across root admission, regular direct combat,
   equal-priority preparation, and helpers. The runtime projects `hittmp` as

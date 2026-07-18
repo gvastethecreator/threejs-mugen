@@ -1183,14 +1183,15 @@ ownership, exact `hittmp`/`acttmp`, and full parity remain blocked.
 
 ## Entry 488 - Explicit projectile HitFlag admission
 
-Planned from the pinned IKEMEN projectile contact path: Projectile inherits
-HitDef parameters, including `hitflag`, and ModifyProjectile can mutate the
-live projectile HitDef. The next bounded implementation will carry explicit
-projectile HitFlags through compiler IR, runtime state, mutation, and effect
-snapshots, then reuse the shared player-contact admission predicate. Omitted
-projectile hitflags/default `MAF`, dynamic string expressions, reversals,
-exact projectile pause/contact timing, `acttmp`/`hittmp`, and full parity stay
-blocked.
+Done in `f6990dff` / ADR 0030: static Projectile and ModifyProjectile HitFlags
+now flow through compiler IR, runtime state, live mutation, and effect
+snapshots, then reuse the shared player-contact admission predicate. Focused
+coverage passes `3` files / `115/115`; the grouped suite passes `230/230`
+files / `2418/2418` tests. TypeScript 7, production build, repository
+boundaries, redirect boundary, diff hygiene, and `qa:trace` `633/633`
+artifacts (`599` required, `34` optional) pass. Browser smoke is N/A.
+Omitted/default `MAF`, dynamic string expressions, reversals, exact projectile
+pause/contact timing, `acttmp`/`hittmp`, and full parity remain blocked.
 
 ## Entry 479 - MUGEN-lite milestone adjudication
 

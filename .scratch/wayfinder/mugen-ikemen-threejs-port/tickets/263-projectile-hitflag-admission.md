@@ -1,6 +1,6 @@
 # Ticket 263: explicit projectile HitFlag admission
 
-- Status: planned
+- Status: resolved bounded
 - Date: 2026-07-18
 - Scope: explicit projectile HitDef `hitflag` transport, mutation, and bounded
   target admission
@@ -8,6 +8,10 @@
   compiler/runtime ownership, projectile combat, and effect snapshots
 - Research: [`docs/research/2026-07-18-projectile-hitflag-admission.md`](../../../../docs/research/2026-07-18-projectile-hitflag-admission.md)
 - Source contract: pinned IKEMEN GO commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Planning commit: `597b03bf`
+- Implementation: `f6990dff`
+- ADR: [`0030-projectile-hitflag-admission`](../../../../docs/adr/0030-projectile-hitflag-admission.md)
+- Closeout: [`2026-07-18-projectile-hitflag-closeout`](../../../../docs/reports/2026-07-18-projectile-hitflag-closeout.md)
 
 ## Question
 
@@ -52,3 +56,15 @@ ownership breadth, ZSS/Lua, rollback/netplay, and full MUGEN/IKEMEN parity.
 This ticket closes only explicit projectile HitFlag transport and bounded
 player-contact admission. It does not close defaults, reversals, exact
 projectile timing, dynamic string expressions, or full compatibility.
+
+## Implementation outcome
+
+`Projectile` and static `ModifyProjectile` now carry authored explicit
+`hitflag` values through typed compiler operations, live projectile state, and
+effect snapshots. Active projectile/player contact reuses the shared state,
+fall/NoFallHitFlag, minus, and plus admission predicate before HitBy/NotHitBy
+and override handling. Omitted values remain undefined, and dynamic string
+expressions remain outside the typed path. Focused coverage passed `3` files /
+`115` tests; the grouped closeout passes `230` files / `2418` tests,
+TypeScript 7, build, boundaries, redirect boundary, diff hygiene, and trace
+QA `633/633`. Browser smoke is N/A.

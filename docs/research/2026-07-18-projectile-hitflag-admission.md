@@ -57,3 +57,15 @@ Implement one explicit projectile field path:
 - This does not establish exact projectile pause, one-frame invulnerability,
   `acttmp`, `hittmp`, clash, reversal, target order, or custom-state parity.
 - Snapshot visibility is diagnostic state, not proof of renderer parity.
+
+## Implementation outcome
+
+Implemented in `f6990dff` after planning commit `597b03bf`. Static Projectile
+and ModifyProjectile HitFlags now reach typed runtime state, mutation, and
+effect snapshots; projectile/player contact applies the shared explicit
+HitFlag predicate before HitBy/NotHitBy and override handling. Focused coverage
+passed `3` files / `115` tests; grouped evidence passes `230` files / `2418`
+tests, TypeScript 7, build, repository boundaries, redirect boundary, diff
+hygiene, and `qa:trace` `633/633` (`599` required, `34` optional). Browser
+smoke is N/A. Omitted/default inference, dynamic string expressions, reversal
+admission, exact projectile pause/contact timing, and full parity remain open.

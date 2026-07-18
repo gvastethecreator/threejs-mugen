@@ -549,3 +549,15 @@ full suite passes `230/230` files / `2416/2416` tests and trace QA passes
 `633/633` artifacts. This is `executed-partial` for explicit direct HitDef
 routes; default inference, projectiles, reversals, exact `hittmp`/`acttmp`,
 custom-state breadth, ZSS/Lua, rollback, and full parity remain unsupported.
+
+Explicit projectile HitFlag addendum: `Projectile` and static
+`ModifyProjectile` now carry authored HitFlags through typed compiler
+operations, live projectile state, active mutation, and effect snapshots.
+`ProjectileCombatWorld` reuses the shared explicit state-type, fall,
+`NoFallHitFlag`, minus, and plus predicate before HitBy/NotHitBy and override
+handling. Focused coverage passes `3` files / `115/115`; full suite passes
+`230/230` files / `2418/2418` tests and trace QA passes `633/633` artifacts.
+This is `executed-partial` for static explicit projectile/player admission;
+omitted/default `MAF`, dynamic string expressions, reversals, clash ordering,
+exact projectile pause/contact timing, `acttmp`/`hittmp`, and full parity remain
+unsupported.
