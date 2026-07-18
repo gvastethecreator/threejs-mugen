@@ -1,9 +1,11 @@
 # Ticket 250: global Common.States CNS
 
-- Status: selected, implementation pending
+- Status: resolved bounded implementation
 - Date: 2026-07-18
 - Scope: imported character loading from `[Common] States` config entries
 - Depends on: Ticket 249 / ADR 0016
+- Implementation: `0878f15e`
+- Closeout: [`docs/reports/2026-07-18-global-common-states-cns-closeout.md`](../../../docs/reports/2026-07-18-global-common-states-cns-closeout.md)
 
 ## Question
 
@@ -30,10 +32,17 @@ JSON `CommonStates` save/config mutation, ZSS compilation, Lua insertion and
 deletion, common commands/constants/air/fx, helper input buffers, and complete
 IKEMEN parity.
 
-## Evidence required
+## Outcome
 
-- loader fixture for natural config order, normal precedence, fallback state,
-  missing path, and blocked ZSS;
-- focused loader/config/compiler tests;
-- TypeScript 7/build, global suite at checkpoint, and repository guards;
-- ADR and closeout report with official IKEMEN source links.
+The loader now reads natural `[Common] States*` config entries, resolves
+root-style and config-relative CNS paths, appends them after DEF `stcommon`,
+and reuses the existing source precedence/negative merge model. Missing files
+become loader warnings; ZSS entries become explicit unsupported findings and
+are not parsed as CNS.
+
+## Evidence
+
+- Loader/config/compiler focus: `17/17` tests.
+- Full suite after implementation: `230/230` files, `2372/2372` tests.
+- `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`,
+  `pnpm check:redirect-boundary`, and `git diff --check` passed.
