@@ -182,6 +182,32 @@ damage = 30
     expect(parsed.controllers[0]?.triggers[0]?.expression).toBe("AnimElem = 3");
   });
 
+  it("keeps IKEMEN State +1 distinct from numeric State 1", () => {
+    const parsed = parseCns(`
+[Statedef 1]
+anim = 1
+[State 1, Normal]
+type = VarAdd
+v = 0
+value = 1
+
+[Statedef +1]
+anim = 2
+[State +1, Post current]
+type = VarAdd
+v = 0
+value = 7
+`);
+
+    expect(parsed.states.map(({ id, special }) => ({ id, special }))).toEqual([
+      { id: 1, special: undefined },
+      { id: 1, special: "plus-one" },
+    ]);
+    expect(parsed.states[0]?.controllers[0]?.special).toBeUndefined();
+    expect(parsed.states[1]?.controllers[0]).toMatchObject({ stateId: 1, special: "plus-one" });
+    expect(parsed.controllers[1]).toMatchObject({ stateId: 1, special: "plus-one" });
+  });
+
   it("indexes Data, Movement, Velocity, and Size constants for runtime Const lookups", () => {
     const parsed = parseCns(`
 [Data]

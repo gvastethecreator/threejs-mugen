@@ -8,7 +8,7 @@ import type {
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
-import type { MugenStateController, MugenStateDef } from "../model/MugenState";
+import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef } from "../model/MugenState";
 import type { DemoFighterDefinition } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodSpawnInput } from "./ExplodSystem";
@@ -343,8 +343,8 @@ function findActorState(actor: RuntimeEffectSpawnActor, stateNo: number | undefi
   if (stateNo === undefined) {
     return undefined;
   }
-  return actor.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source ??
-    actor.definition.states?.find((candidate) => candidate.id === stateNo);
+  return actor.runtimeProgram?.states.find((candidate) => matchesMugenStateIdentity(candidate, stateNo))?.source ??
+    actor.definition.states?.find((candidate) => matchesMugenStateIdentity(candidate, stateNo));
 }
 
 function resolveProjectileTerminalActions(

@@ -51,6 +51,38 @@ describe("resolveMugenStateSources", () => {
     });
     expect(resolution.selections[0]).toMatchObject({ stateId: 120, reason: "common-fallback", shadowed: [] });
   });
+
+  it("resolves numeric State 1 and IKEMEN +1 as separate source identities", () => {
+    const characterText = `
+[Statedef 1]
+anim = 1
+[State 1, Numeric]
+type = VarAdd
+v = 0
+value = 1
+
+[Statedef +1]
+anim = 2
+[State +1, Special]
+type = VarAdd
+v = 0
+value = 7
+`;
+    const resolution = resolveMugenStateSources([source("character", "chars/probe/probe.cns", characterText)]);
+
+    expect(resolution.states.map(({ id, special }) => ({ id, special }))).toEqual([
+      { id: 1, special: undefined },
+      { id: 1, special: "plus-one" },
+    ]);
+    expect(resolution.selections.map(({ stateId, special }) => ({ stateId, special }))).toEqual([
+      { stateId: 1, special: undefined },
+      { stateId: 1, special: "plus-one" },
+    ]);
+    expect(resolution.states[1]?.controllers[0]?.source).toMatchObject({
+      path: "chars/probe/probe.cns",
+      kind: "character",
+    });
+  });
 });
 
 function source(kind: "character" | "common", path: string, text: string) {

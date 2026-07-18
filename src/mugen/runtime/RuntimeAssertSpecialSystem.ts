@@ -27,7 +27,7 @@ export class RuntimeAssertSpecialWorld {
     input: RuntimeAssertSpecialApplyInput<TActor>,
   ): RuntimeAssertSpecialApplyResult {
     const owner = (input.actor.stateOwner ?? input.actor) as TActor;
-    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === input.actor.runtime.stateNo);
+    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === input.actor.runtime.stateNo && candidate.special === undefined);
     if (!stateProgram?.source || !isImportedAssertSpecialRoute(input.actor, owner)) {
       return { applied: 0, skipped: true };
     }

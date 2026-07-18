@@ -1,5 +1,5 @@
 import type { MugenCommand } from "../model/MugenCommand";
-import type { MugenStateController, MugenStateDef, MugenTrigger } from "../model/MugenState";
+import type { MugenStateController, MugenStateDef, MugenStateSpecial, MugenTrigger } from "../model/MugenState";
 import type { ControllerOp } from "./ControllerOps";
 
 export type CompileSupportLevel = "executable" | "partial" | "noop" | "recognized" | "unsupported" | "invalid";
@@ -49,6 +49,7 @@ export type TriggerIr = {
 export type ControllerIr = {
   source: MugenStateController;
   stateId: number;
+  special?: MugenStateSpecial;
   name?: string;
   type: string;
   normalizedType: string;
@@ -63,6 +64,7 @@ export type ControllerIr = {
 export type StateProgramIr = {
   source: MugenStateDef;
   id: number;
+  special?: MugenStateSpecial;
   supportLevel: CompileSupportLevel;
   controllers: ControllerIr[];
   compiledControllers: number;

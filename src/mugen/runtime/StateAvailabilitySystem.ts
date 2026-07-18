@@ -21,6 +21,7 @@ export class RuntimeStateAvailabilityWorld {
   }
 
   findState<TActor extends RuntimeStateAvailabilityActor>(owner: TActor, stateId: number): MugenStateDef | undefined {
-    return owner.runtimeProgram?.states.find((state) => state.id === stateId)?.source ?? owner.definition.states?.find((state) => state.id === stateId);
+    return owner.runtimeProgram?.states.find((state) => state.id === stateId && state.special === undefined)?.source ??
+      owner.definition.states?.find((state) => state.id === stateId && state.special === undefined);
   }
 }

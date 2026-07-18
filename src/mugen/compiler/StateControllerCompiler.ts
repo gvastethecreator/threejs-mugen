@@ -142,6 +142,7 @@ export function compileControllerIr(controller: MugenStateController, context: C
   return {
     source: controller,
     stateId: controller.stateId,
+    ...(controller.special ? { special: controller.special } : {}),
     name: controller.name,
     type: controller.type,
     normalizedType,
@@ -160,6 +161,7 @@ export function compileStateProgram(state: MugenStateDef, context: ControllerCom
   return {
     source: state,
     id: state.id,
+    ...(state.special ? { special: state.special } : {}),
     supportLevel: compiledControllers > 0 ? "partial" : "unsupported",
     controllers,
     compiledControllers,
@@ -186,7 +188,7 @@ export function compileRuntimeProgram(input: {
     }
     triggerSupportedStateEntries += 1;
     const target = firstNumber(entry.params.value);
-    const state = input.states.find((candidate) => candidate.id === target);
+    const state = input.states.find((candidate) => candidate.id === target && candidate.special === undefined);
     if (target !== undefined && state && input.animations.has(state.anim ?? state.id)) {
       runtimeRoutableStateTargets.add(target);
     }

@@ -57,7 +57,7 @@ export class RuntimeActiveControllerScanWorld {
     options: RuntimeActiveControllerScanOptions<TActor, TOpponent>,
   ): RuntimeActiveControllerScanResult<TActor> {
     const owner = options.actor.stateOwner ?? options.actor;
-    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === options.actor.runtime.stateNo);
+    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === options.actor.runtime.stateNo && candidate.special === undefined);
     if (!stateProgram) {
       return {
         scanned: false,

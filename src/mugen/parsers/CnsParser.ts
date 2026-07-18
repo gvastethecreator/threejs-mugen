@@ -1,4 +1,4 @@
-import type { MugenStateController, MugenStateDef, MugenStateFile } from "../model/MugenState";
+import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef, type MugenStateFile, type MugenStateSpecial } from "../model/MugenState";
 import { createDiagnostic, parseKeyValue, parseNumber, parseTextLines } from "./text";
 
 export function parseCns(text: string, file?: string): MugenStateFile {
@@ -16,11 +16,15 @@ export function parseCns(text: string, file?: string): MugenStateFile {
       continue;
     }
 
-    const stateDefMatch = /^\[Statedef\s+(-?\d+)\]$/i.exec(line.content);
+    const stateDefMatch = /^\[Statedef\s+(-?\d+|\+1)\]$/i.exec(line.content);
     if (stateDefMatch) {
+      const identity = parseStateIdentity(stateDefMatch[1]);
+      if (!identity) {
+        continue;
+      }
       currentSection = undefined;
       currentState = {
-        id: Number(stateDefMatch[1]),
+        ...identity,
         rawParams: {},
         controllers: [],
         line: line.number,
@@ -30,15 +34,19 @@ export function parseCns(text: string, file?: string): MugenStateFile {
       continue;
     }
 
-    const stateControllerMatch = /^\[State\s+(-?\d+)\s*,?\s*([^\]]*)\]$/i.exec(line.content);
+    const stateControllerMatch = /^\[State\s+(-?\d+|\+1)\s*,?\s*([^\]]*)\]$/i.exec(line.content);
     if (stateControllerMatch) {
-      currentSection = undefined;
-      if (!currentState || currentState.id !== Number(stateControllerMatch[1])) {
-        currentState = states.find((state) => state.id === Number(stateControllerMatch[1]));
+      const identity = parseStateIdentity(stateControllerMatch[1]);
+      if (!identity) {
+        continue;
       }
-      const stateId = Number(stateControllerMatch[1]);
+      currentSection = undefined;
+      if (!currentState || !matchesMugenStateIdentity(currentState, identity.id, identity.special)) {
+        currentState = states.find((state) => matchesMugenStateIdentity(state, identity.id, identity.special));
+      }
       currentController = {
-        stateId,
+        stateId: identity.id,
+        ...(identity.special ? { special: identity.special } : {}),
         name: stateControllerMatch[2]?.trim() || undefined,
         type: "",
         triggers: [],
@@ -119,6 +127,17 @@ export function parseCns(text: string, file?: string): MugenStateFile {
   }
 
   return { states, controllers, constants, diagnostics };
+}
+
+function parseStateIdentity(token: string | undefined): { id: number; special?: MugenStateSpecial } | undefined {
+  const normalized = token?.trim();
+  if (normalized === "+1") {
+    return { id: 1, special: "plus-one" };
+  }
+  if (!normalized || !/^-?\d+$/.test(normalized)) {
+    return undefined;
+  }
+  return { id: Number(normalized) };
 }
 
 function applyStateParam(state: MugenStateDef, key: string, value: string): void {

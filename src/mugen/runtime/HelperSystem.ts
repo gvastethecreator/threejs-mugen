@@ -8,7 +8,7 @@ import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
-import type { MugenStateController, MugenStateDef } from "../model/MugenState";
+import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef, type MugenStateSpecial } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent, type RuntimeResolvedSoundValue } from "./AudioEventSystem";
 import {
@@ -290,7 +290,10 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
   const operation = input.operation;
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const identity = resolveActorIdentity(input);
-  const initialState = input.runtimeProgram?.states.find((candidate) => candidate.id === input.stateNo)?.source;
+  const initialStateNo = input.stateNo;
+  const initialState = initialStateNo === undefined
+    ? undefined
+    : input.runtimeProgram?.states.find((candidate) => matchesMugenStateIdentity(candidate, initialStateNo))?.source;
   return {
     serialId: input.serialId,
     destroyed: false,
@@ -392,6 +395,9 @@ export function advanceRuntimeHelperActor(
     advanceRuntimeHelper(helper, options);
     consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
   }
+  if (options.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, options, 1, "plus-one") === "destroyed") {
+    return false;
+  }
   const margin = 240;
   if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
     return false;
@@ -449,10 +455,11 @@ export function runRuntimeHelperStateControllers(
     | "onUnsupportedController"
   > = {},
   stateNo: number | undefined = helper.stateNo,
+  stateSpecial?: MugenStateSpecial,
 ): RuntimeHelperControllerResult {
-  const controllers = stateNo === -1
+  const controllers = stateNo === -1 && stateSpecial === undefined
     ? helper.runtimeProgram?.stateEntries
-    : helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.controllers;
+    : helper.runtimeProgram?.states.find((candidate) => matchesMugenStateIdentity(candidate, stateNo ?? helper.stateNo ?? 0, stateSpecial))?.controllers;
   if (!controllers) {
     return "active";
   }
@@ -1383,7 +1390,7 @@ export function applyRuntimeHelperTagStateControl(
 }
 
 function findHelperState(helper: RuntimeHelper, stateNo: number): MugenStateDef | undefined {
-  return helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source;
+  return helper.runtimeProgram?.states.find((candidate) => matchesMugenStateIdentity(candidate, stateNo))?.source;
 }
 
 function cancelHelperStaleMove(helper: RuntimeHelper, stateNo: number, state?: MugenStateDef): void {
@@ -1535,7 +1542,7 @@ function helperExpressionContext(
     hitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, false),
     uniqueHitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, true),
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
-    stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
+    stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => matchesMugenStateIdentity(candidate, stateNo)) ?? false,
   };
 }
 

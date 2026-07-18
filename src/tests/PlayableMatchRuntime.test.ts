@@ -854,6 +854,17 @@ type = VarAdd
 trigger1 = 1
 v = 0
 value = 20
+
+[Statedef +1]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State +1, IKEMEN helper post-current state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 7
 `,
       helperStateEntryControllers: `
 [State -1, Helper command gate]
@@ -894,7 +905,7 @@ command = m
       runtimeProfile: "ikemen-go",
     });
     const snapshot = runtime.step({ p1: new Set(["m"]), p2: new Set() });
-    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([37, 1]);
+    expect(snapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([44, 1]);
 
     const legacy = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
       runtimeProfile: "mugen-1.1",

@@ -1,3 +1,4 @@
+import { mugenStateIdentityKey } from "../model/MugenState";
 import type {
   MugenStateDef,
   MugenStateSourceKind,
@@ -22,12 +23,12 @@ export function resolveMugenStateSources(sources: readonly MugenStateSourceInput
     .map((source, index) => ({ source, index }))
     .sort((left, right) => sourceRank(left.source.kind) - sourceRank(right.source.kind) || left.index - right.index);
   const states: MugenStateDef[] = [];
-  const selections = new Map<number, MugenStateSourceSelection>();
+  const selections = new Map<string, MugenStateSourceSelection>();
 
   for (const { source } of ordered) {
     const ref = createMugenStateSourceRef(source);
     for (const state of source.states) {
-      const existing = selections.get(state.id);
+      const existing = selections.get(mugenStateIdentityKey(state.id, state.special));
       if (existing) {
         existing.shadowed.push(ref);
         if (existing.selected.kind === "character" && ref.kind === "common") {
@@ -38,8 +39,9 @@ export function resolveMugenStateSources(sources: readonly MugenStateSourceInput
 
       const selected = cloneStateWithSource(state, ref);
       states.push(selected);
-      selections.set(state.id, {
+      selections.set(mugenStateIdentityKey(state.id, state.special), {
         stateId: state.id,
+        ...(state.special ? { special: state.special } : {}),
         selected: ref,
         shadowed: [],
         reason: ref.kind === "character" ? "character-only" : "common-fallback",

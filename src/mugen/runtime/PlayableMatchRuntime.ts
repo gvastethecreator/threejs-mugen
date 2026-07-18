@@ -9,7 +9,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import type { MugenStateController, MugenStateDef } from "../model/MugenState";
+import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef } from "../model/MugenState";
 import {
   RuntimeActorConstraintControllerDispatchWorld,
   RuntimeActorConstraintWorld,
@@ -4652,8 +4652,8 @@ function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolea
   }
   const owner = fighter.stateOwner ?? fighter;
   const state =
-    owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
-    owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
+    owner.runtimeProgram?.states.find((candidate) => matchesMugenStateIdentity(candidate, fighter.runtime.stateNo))?.source ??
+    owner.definition.states?.find((candidate) => matchesMugenStateIdentity(candidate, fighter.runtime.stateNo));
   return state?.moveType?.toUpperCase() === "H";
 }
 

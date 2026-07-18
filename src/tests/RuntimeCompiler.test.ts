@@ -205,6 +205,33 @@ time = 20
     expect(program.report.triggers.unsupportedFeatures).toEqual({ "enemynear(negative)": 1 });
   });
 
+  it("preserves IKEMEN +1 identity in IR without routing it as normal State 1", () => {
+    const parsed = parseCns(`
+[Statedef +1]
+anim = 1
+[State +1, Post current]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 7
+
+[State -1, Numeric route]
+type = ChangeState
+trigger1 = 1
+value = 1
+`);
+    const program = compileRuntimeProgram({
+      commands: [],
+      animations: new Map<number, MugenAnimationAction>([[1, action(1)]]),
+      states: parsed.states,
+      stateEntryControllers: parsed.controllers.filter((controller) => controller.stateId === -1),
+    });
+
+    expect(program.states[0]).toMatchObject({ id: 1, special: "plus-one" });
+    expect(program.states[0]?.controllers[0]).toMatchObject({ stateId: 1, special: "plus-one" });
+    expect(program.report.states.runtimeRoutableStateTargets).toEqual([]);
+  });
+
   it("keeps controller support metadata in one registry", () => {
     expect(isRuntimeExecutableController("HitDef")).toBe(true);
     expect(isRuntimeExecutableController("MoveHitReset")).toBe(true);

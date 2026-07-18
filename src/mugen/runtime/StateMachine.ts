@@ -1,10 +1,10 @@
-import type { MugenStateDef } from "../model/MugenState";
+import { matchesMugenStateIdentity, type MugenStateDef, type MugenStateSpecial } from "../model/MugenState";
 
 export class StateMachine {
   constructor(private readonly states: MugenStateDef[]) {}
 
-  getState(id: number): MugenStateDef | undefined {
-    return this.states.find((state) => state.id === id);
+  getState(id: number, special?: MugenStateSpecial): MugenStateDef | undefined {
+    return this.states.find((state) => matchesMugenStateIdentity(state, id, special));
   }
 
   listStateIds(): number[] {

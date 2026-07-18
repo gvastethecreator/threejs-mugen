@@ -386,8 +386,8 @@ function runtimeExpressionSizeBoxY(
 export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, "runtimeProgram" | "definition">, stateNo: number): boolean {
   const id = Math.trunc(stateNo);
   return (
-    actor.runtimeProgram?.states.some((state) => state.id === id) ??
-    actor.definition.states?.some((state) => state.id === id) ??
+    actor.runtimeProgram?.states.some((state) => state.id === id && state.special === undefined) ??
+    actor.definition.states?.some((state) => state.id === id && state.special === undefined) ??
     false
   );
 }
