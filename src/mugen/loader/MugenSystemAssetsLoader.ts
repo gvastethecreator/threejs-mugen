@@ -1,5 +1,6 @@
 import type { MugenDiagnostic } from "../model/MugenAnimation";
 import type { MugenCharacterDef } from "../model/MugenCharacter";
+import type { MugenGameConfig } from "../model/MugenConfig";
 import type { MugenSystemAssets, MugenSystemHitSparkLibrary, MugenSystemHitSparkLibrarySource } from "../model/MugenSystemAssets";
 import { parseAir } from "../parsers/AirParser";
 import { parseDef } from "../parsers/DefParser";
@@ -25,6 +26,28 @@ export async function loadMugenSystemAssets(
   if (gameConfig) {
     diagnostics.push(...gameConfig.diagnostics);
   }
+  const commonFightFxPaths = resolveGlobalCommonFightFxPaths(gameConfig, resolver, diagnostics);
+  const supportedCommonFightFxPaths = commonFightFxPaths.filter((path) => {
+    if (/\.zss$/i.test(path)) {
+      diagnostics.push({
+        severity: "warning",
+        format: "loader",
+        file: path,
+        message: "Common.Fx ZSS source is unsupported; only FightFX DEF packages are loaded",
+      });
+      return false;
+    }
+    if (!/\.def$/i.test(path)) {
+      diagnostics.push({
+        severity: "warning",
+        format: "loader",
+        file: path,
+        message: "Common.Fx source has an unsupported format; expected a FightFX .def package",
+      });
+      return false;
+    }
+    return true;
+  });
   const explicit = fightDefPath ? readFightDefRefs(vfs, fightDefPath, resolver) : {};
   const airPath = explicit.airPath ?? findBestBasename(resolver, "fightfx.air");
   const sffPath = explicit.sffPath ?? findBestBasename(resolver, "fightfx.sff");
@@ -79,10 +102,10 @@ export async function loadMugenSystemAssets(
   }
 
   const fightFxLibraries: Record<string, MugenSystemHitSparkLibrary> = {};
-  for (const fxDefPath of characterFxPaths) {
-    const library = await loadCharacterFightFxLibrary(vfs, resolver, fxDefPath, diagnostics);
+  const registerFightFxLibrary = async (fxDefPath: string, label: "Common" | "Character"): Promise<void> => {
+    const library = await loadFightFxLibrary(vfs, resolver, fxDefPath, diagnostics, label);
     if (!library?.prefix) {
-      continue;
+      return;
     }
     if (fightFxLibraries[library.prefix]) {
       diagnostics.push({
@@ -91,14 +114,21 @@ export async function loadMugenSystemAssets(
         file: fxDefPath,
         message: `Duplicate FightFX prefix '${library.prefix}' ignored`,
       });
-      continue;
+      return;
     }
     fightFxLibraries[library.prefix] = library;
+  };
+  for (const fxDefPath of supportedCommonFightFxPaths) {
+    await registerFightFxLibrary(fxDefPath, "Common");
+  }
+  for (const fxDefPath of characterFxPaths) {
+    await registerFightFxLibrary(fxDefPath, "Character");
   }
 
   return {
     fightDefPath,
     ...(gameConfig ? { gameConfig } : {}),
+    ...(supportedCommonFightFxPaths.length > 0 ? { commonFightFxPaths: supportedCommonFightFxPaths } : {}),
     hitSparkLibraries,
     ...(Object.keys(fightFxLibraries).length > 0 ? { fightFxLibraries } : {}),
     diagnostics,
@@ -162,11 +192,12 @@ async function loadAirSffSndPackage(
   return { animations, spriteArchive, soundArchive };
 }
 
-async function loadCharacterFightFxLibrary(
+async function loadFightFxLibrary(
   vfs: VirtualFileSystem,
   resolver: PathResolver,
   fxDefPath: string,
   diagnostics: MugenDiagnostic[],
+  label: "Common" | "Character",
 ): Promise<MugenSystemHitSparkLibrary | undefined> {
   const definition = parseDef(vfs.readText(fxDefPath) ?? "", fxDefPath);
   diagnostics.push(...definition.diagnostics);
@@ -177,7 +208,7 @@ async function loadCharacterFightFxLibrary(
       severity: "warning",
       format: "loader",
       file: fxDefPath,
-      message: "Character FightFX DEF was found, but no [Info] prefix was declared",
+      message: `${label} FightFX DEF was found, but no [Info] prefix was declared`,
     });
     return undefined;
   }
@@ -191,7 +222,7 @@ async function loadCharacterFightFxLibrary(
       severity: "warning",
       format: "loader",
       file: fxDefPath,
-      message: `Character FightFX '${prefix}' has no resolvable AIR file`,
+      message: `${label} FightFX '${prefix}' has no resolvable AIR file`,
     });
   }
   if (!sffPath) {
@@ -199,7 +230,7 @@ async function loadCharacterFightFxLibrary(
       severity: "warning",
       format: "loader",
       file: fxDefPath,
-      message: `Character FightFX '${prefix}' has no resolvable SFF file`,
+      message: `${label} FightFX '${prefix}' has no resolvable SFF file`,
     });
   }
 
@@ -285,6 +316,45 @@ function findBestBasename(resolver: PathResolver, basename: string): string | un
   return candidates.find((path) => path.toLowerCase().includes("/data/")) ?? candidates[0];
 }
 
+function resolveGlobalCommonFightFxPaths(
+  config: MugenGameConfig | undefined,
+  resolver: PathResolver,
+  diagnostics: MugenDiagnostic[],
+): string[] {
+  if (!config) {
+    return [];
+  }
+  const common = getSection(config.rawSections, "Common");
+  const configPath = config.gameSpace?.sourcePath ?? "data/mugen.cfg";
+  const entries = Object.entries(common)
+    .filter(([key]) => /^fx\d*$/i.test(key))
+    .sort(([left], [right]) => commonFightFxConfigRank(left) - commonFightFxConfigRank(right));
+  const paths: string[] = [];
+
+  for (const [, value] of entries) {
+    for (const reference of value.split(",").map((item) => item.trim()).filter(Boolean)) {
+      const normalizedReference = reference.replace(/^['"]|['"]$/g, "");
+      const rootPath = resolver.resolve("", normalizedReference);
+      const configRelativePath = resolver.resolve(configPath, normalizedReference);
+      const candidates = normalizedReference.includes("/") || normalizedReference.includes("\\")
+        ? [rootPath, configRelativePath]
+        : [configRelativePath, rootPath];
+      const resolved = candidates.find((candidate) => resolver.exists(candidate)) ?? candidates.find(Boolean);
+      if (!resolved || !resolver.exists(resolved)) {
+        diagnostics.push({
+          severity: "warning",
+          format: "loader",
+          file: configPath,
+          message: `Referenced global common FightFX file was not found: ${reference}`,
+        });
+        continue;
+      }
+      paths.push(resolved);
+    }
+  }
+  return paths;
+}
+
 function resolveExisting(resolver: PathResolver, basePath: string, ref: string | undefined): string | undefined {
   const resolved = resolver.resolve(basePath, ref);
   return resolver.exists(resolved) ? resolved : undefined;
@@ -307,4 +377,9 @@ function getValue(section: Record<string, string>, keys: string[]): string | und
 function normalizePrefix(value: string | undefined): string | undefined {
   const prefix = value?.trim().replace(/^"|"$/g, "").toLowerCase();
   return prefix || undefined;
+}
+
+function commonFightFxConfigRank(key: string): number {
+  const normalized = key.toLowerCase();
+  return normalized === "fx" ? 0 : Number(normalized.slice("fx".length)) + 1;
 }

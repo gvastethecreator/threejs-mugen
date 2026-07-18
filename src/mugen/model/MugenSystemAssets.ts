@@ -21,6 +21,7 @@ export type MugenSystemHitSparkLibrary = {
 export type MugenSystemAssets = {
   fightDefPath?: string;
   gameConfig?: MugenGameConfig;
+  commonFightFxPaths?: string[];
   hitSparkLibraries: Partial<Record<MugenSystemHitSparkLibrarySource, MugenSystemHitSparkLibrary>>;
   fightFxLibraries?: Record<string, MugenSystemHitSparkLibrary>;
   diagnostics: MugenDiagnostic[];

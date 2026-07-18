@@ -152,6 +152,101 @@ snd = kfmfx.snd
       axisY: 7,
     });
   });
+
+  it("loads ordered Common.Fx packages before character FX prefixes", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/fx/fx.def",
+      text(`[Info]
+name = "Common FX Character"
+
+[Files]
+fx = character-fx.def
+`),
+    );
+    vfs.addFile(
+      "chars/fx/character-fx.def",
+      text(`[Info]
+prefix = shared_fx
+
+[Files]
+air = character-fx.air
+sff = character-fx.sff
+`),
+    );
+    vfs.addFile("chars/fx/character-fx.air", text("[Begin Action 7001]\n9800,0,0,0,5\n"));
+    vfs.addFile(
+      "chars/fx/character-fx.sff",
+      createSffV1([{ group: 9800, index: 0, axisX: 1, axisY: 2 }]),
+    );
+    vfs.addFile(
+      "data/common-first.def",
+      text(`[Info]
+prefix = shared_fx
+
+[Files]
+air = common-first.air
+sff = common-first.sff
+`),
+    );
+    vfs.addFile("data/common-first.air", text("[Begin Action 7001]\n9100,0,0,0,3\n"));
+    vfs.addFile(
+      "data/common-first.sff",
+      createSffV1([{ group: 9100, index: 0, axisX: 3, axisY: 4 }]),
+    );
+    vfs.addFile(
+      "data/common-second.def",
+      text(`[Info]
+prefix = common_fx
+
+[Files]
+air = common-second.air
+sff = common-second.sff
+`),
+    );
+    vfs.addFile("data/common-second.air", text("[Begin Action 7002]\n9200,0,0,0,4\n"));
+    vfs.addFile(
+      "data/common-second.sff",
+      createSffV1([{ group: 9200, index: 0, axisX: 5, axisY: 6 }]),
+    );
+    vfs.addFile("data/common.zss", text("StateDef 900"));
+    vfs.addFile(
+      "data/mugen.cfg",
+      text(`[Common]
+Fx1 = common-second.def
+Fx = data/common-first.def
+Fx2 = data/missing.def
+Fx3 = data/common.zss
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("fx.zip", vfs);
+    const libraries = character.systemAssets?.fightFxLibraries;
+
+    expect(character.systemAssets?.commonFightFxPaths).toEqual(["data/common-first.def", "data/common-second.def"]);
+    expect(libraries?.shared_fx?.defPath).toBe("data/common-first.def");
+    expect(libraries?.shared_fx?.animations.get(7001)?.frames[0]).toMatchObject({
+      spriteGroup: 9100,
+      spriteIndex: 0,
+    });
+    expect(libraries?.common_fx?.animations.get(7002)?.frames[0]).toMatchObject({
+      spriteGroup: 9200,
+      spriteIndex: 0,
+    });
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Referenced global common FightFX file was not found: data/missing.def" }),
+    );
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Common.Fx ZSS source is unsupported; only FightFX DEF packages are loaded" }),
+    );
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Duplicate FightFX prefix 'shared_fx' ignored" }),
+    );
+  });
 });
 
 type SffSpriteSpec = {
