@@ -59,4 +59,12 @@ sandbox owns the engine's full per-tick `hittmp` lifecycle or reversal value
 
 ## Implementation outcome
 
-Pending T261 implementation and grouped verification.
+Implemented in `c88fd483` after planning commit `bf5f296c`. The shared direct
+predicate now parses compact and separated explicit hitflags, projects the
+bounded runtime `hittmp` values `0/1/2`, and applies source-ordered `F`, `-`,
+and `+` admission across root, regular direct, equal-priority preparation, and
+helper routes. Focused coverage passed `4` files / `79` tests before T262;
+grouped closeout evidence passes `230` files / `2416` tests, TypeScript 7,
+build, boundaries, redirect boundary, trace QA, and diff hygiene. The claim
+ceiling remains bounded and omitted/default flags, projectiles, reversals, and
+exact `hittmp`/`acttmp` remain open.

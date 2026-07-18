@@ -1,6 +1,6 @@
 # Ticket 262: explicit HitFlag state-type admission
 
-- Status: planned
+- Status: resolved bounded
 - Date: 2026-07-18
 - Scope: bounded direct HitDef admission for explicit `HitFlag H/L/A/D/M`
 - Depends on: T261 shared hitflag admission, `CharacterRuntimeState.stateType`,
@@ -9,6 +9,10 @@
 - Research: [`docs/research/2026-07-18-hitflag-state-type-admission.md`](../../../../docs/research/2026-07-18-hitflag-state-type-admission.md)
 - Previous implementation: T261 `c88fd483`
 - Source contract: pinned IKEMEN GO commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Planning commit: `09ecb1dd`
+- Implementation: `6c10303f`
+- ADR: [`0029-hitflag-state-type-admission`](../../../../docs/adr/0029-hitflag-state-type-admission.md)
+- Closeout: [`2026-07-18-hitflag-state-type-closeout`](../../../../docs/reports/2026-07-18-hitflag-state-type-closeout.md)
 
 ## Question
 
@@ -49,3 +53,13 @@ custom-state breadth, ZSS/Lua, rollback/netplay, and full MUGEN/IKEMEN parity.
 This ticket closes only explicit direct HitDef state-type admission. It does
 not close defaults, projectiles, reversals, complete `hittmp`/`acttmp`, or full
 MUGEN/IKEMEN compatibility.
+
+## Implementation outcome
+
+The shared predicate now enforces explicit `H/L/A/D` target state admission,
+with `M` covering standing and crouching targets, before the existing `F`, `-`,
+and `+` checks. Root admission, regular direct combat, equal-priority
+preparation, and helper direct combat share the same result. Focused coverage
+passed `4` files / `80` tests; the grouped closeout passes `230` files /
+`2416` tests, TypeScript 7, build, boundaries, redirect boundary, trace QA,
+and diff hygiene. Browser smoke is N/A.

@@ -527,3 +527,25 @@ QA passes `633/633` artifacts. This is `executed-partial` for the current direct
 HitDef routes only; default hitflag inference, projectiles, reversals, exact
 `hittmp`/`acttmp`, custom-state ownership breadth, ZSS/Lua, rollback, and full
 parity remain unsupported.
+
+Explicit HitFlag minus/plus addendum: direct HitDef admission now parses
+compact, comma-delimited, and whitespace-delimited explicit flags and projects
+the bounded runtime `hittmp` values `0/1/2`. `-` rejects get-hit/falling
+targets; `+` requires get-hit/falling targets and excludes the source Common1
+guard-state range and the runtime guard latch. Root, regular direct,
+equal-priority, and helper paths share the pure predicate. Focused coverage
+passes `4` files / `79/79`; the grouped full suite passes `230/230` files /
+`2416/2416` tests and trace QA passes `633/633` artifacts. This is
+`executed-partial` for explicit direct HitDef routes; omitted/default flags,
+state-type completeness, projectiles, reversals, exact `hittmp`/`acttmp`,
+ZSS/Lua, rollback, and full parity remain unsupported.
+
+Explicit HitFlag state-type addendum: direct HitDef admission now enforces
+`H`/`M` for standing, `L`/`M` for crouching, `A` for air, and `D` for
+lie-down targets before the existing fall and chain filters. Root, regular
+direct, equal-priority, and helper paths share the result; omitted hitflags
+remain unchanged. Focused coverage passes `4` files / `80/80`; the grouped
+full suite passes `230/230` files / `2416/2416` tests and trace QA passes
+`633/633` artifacts. This is `executed-partial` for explicit direct HitDef
+routes; default inference, projectiles, reversals, exact `hittmp`/`acttmp`,
+custom-state breadth, ZSS/Lua, rollback, and full parity remain unsupported.

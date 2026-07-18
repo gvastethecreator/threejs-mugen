@@ -53,6 +53,33 @@ renderer, Studio, or visible surface changed. Default hitflag inference,
 projectiles, reversals, exact `hittmp`/`acttmp`, custom-state ownership breadth,
 ZSS/Lua, rollback, and full parity remain outside this gate.
 
+## Explicit HitFlag minus/plus admission gate
+
+Acceptance requires compact explicit HitFlag parsing, one shared direct
+predicate over the bounded `hittmp` projection, `-` rejection for get-hit or
+falling targets, `+` admission only for get-hit or falling targets, Common1
+guard-state exclusion, preserved omitted-hitflag behavior, and consistent root,
+regular, equal-priority, and helper decisions. T261 passes focused `4` files /
+`79` tests; the grouped full suite passes `230/230` files / `2416/2416` tests.
+TypeScript 7, production build, repository boundaries, redirect boundary,
+`git diff --check`, and `qa:trace` `633/633` artifacts (`599` required,
+`34` optional) pass. Browser smoke is N/A because no visible surface changed.
+Default inference, state-type completeness, projectiles, reversals, exact
+`hittmp`/`acttmp`, and full parity remain outside this gate.
+
+## Explicit HitFlag state-type admission gate
+
+Acceptance requires explicit `H`/`M` for standing, `L`/`M` for crouching, `A`
+for air, and `D` for lie-down targets, source-order precedence before `F`,
+`-`, and `+`, unchanged omitted-hitflag behavior, and the same pure result at
+root, regular direct, equal-priority, and helper paths. T262 passes focused `4`
+files / `80` tests; the grouped full suite passes `230/230` files /
+`2416/2416` tests. TypeScript 7, production build, repository boundaries,
+redirect boundary, `git diff --check`, and `qa:trace` `633/633` artifacts
+(`599` required, `34` optional) pass. Browser smoke is N/A because no visible
+surface changed. Default `MAF` inference, projectile/reversal ownership,
+exact `hittmp`/`acttmp`, and full parity remain outside this gate.
+
 ## SOCD resolution gate
 
 Acceptance requires one resolved per-tick input copy for documented modes

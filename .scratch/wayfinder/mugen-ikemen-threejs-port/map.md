@@ -311,9 +311,9 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Common1 NoFallHitFlag admission](tickets/260-common1-no-fall-hit-flag.md) - resolved bounded in `71f0d265` / ADR 0027: source-pinned IKEMEN `NoFallHitFlag` is typed and one shared direct HitDef fall-admission predicate now covers root admission, regular direct combat, equal-priority preparation, and helpers. Explicit `F` is required for a falling target unless the attacker asserts `NoFallHitFlag`; omitted hitflags remain unchanged. Focused `5` files / `83/83`, full `230/230` files / `2411/2411`, TypeScript 7, build, boundaries, redirect boundary, `633/633` traces, and diff hygiene pass; browser smoke is N/A. Default hitflag inference, projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
 
-- [Explicit HitFlag minus/plus admission](tickets/261-hitflag-minus-plus-admission.md) - planned: source-pinned IKEMEN `hittmp` admission will add compact explicit `-`/`+` handling over the current direct root, regular, equal-priority, and helper paths. Omitted/default hitflags, state-type `H/L/A/D` filtering, projectiles, reversals, exact `hittmp`/`acttmp` timing, and full parity remain open.
+- [Explicit HitFlag minus/plus admission](tickets/261-hitflag-minus-plus-admission.md) - resolved bounded in `c88fd483` / ADR 0028: compact explicit `-`/`+` admission now uses the shared `hittmp` projection across direct root, regular, equal-priority, and helper paths; omitted/default flags, projectiles, reversals, and exact `hittmp`/`acttmp` remain open.
 
-- [Explicit HitFlag state-type admission](tickets/262-hitflag-state-type-admission.md) - planned: source-pinned IKEMEN/MUGEN `H/L/A/D/M` target-state admission will extend the shared direct predicate while preserving omitted/default hitflags. Projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
+- [Explicit HitFlag state-type admission](tickets/262-hitflag-state-type-admission.md) - resolved bounded in `6c10303f` / ADR 0029: explicit `H/L/A/D/M` target-state admission now extends the shared direct predicate while preserving omitted/default hitflags. Projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
 
 ## Not Yet Specified
 

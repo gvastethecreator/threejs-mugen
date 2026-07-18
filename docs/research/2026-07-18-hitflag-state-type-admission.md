@@ -50,4 +50,10 @@ does not establish projectile or reversal parity.
 
 ## Implementation outcome
 
-Pending T262 implementation and grouped verification.
+Implemented in `6c10303f` after planning commit `09ecb1dd`. Explicit direct
+hitflags now require `H`/`M` for standing, `L`/`M` for crouching, `A` for air,
+and `D` for lie-down targets before the existing T261 checks. Focused coverage
+passed `4` files / `80` tests; grouped closeout evidence passes `230` files /
+`2416` tests, TypeScript 7, build, boundaries, redirect boundary, trace QA,
+and diff hygiene. Omitted/default flags, projectiles, reversals, and exact
+runtime engine timing remain outside the claim.

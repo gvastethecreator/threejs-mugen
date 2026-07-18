@@ -1,4 +1,13 @@
 ﻿# Supported Features
+- Imported direct HitDef admission now supports bounded explicit HitFlag
+  `-`/`+` semantics across root admission, regular direct combat,
+  equal-priority preparation, and helpers. The runtime projects `hittmp` as
+  idle/get-hit/falling from current state metadata, rejects `-` against
+  get-hit/falling targets, and requires `+` for get-hit/falling targets while
+  excluding Common1 guard states. Explicit state-type matching is also
+  enforced: `H`/`M` for standing, `L`/`M` for crouching, `A` for air, and `D`
+  for lie-down. Omitted/default hitflags, projectiles, reversals, exact
+  `hittmp`/`acttmp`, and full MUGEN/IKEMEN parity remain unsupported.
 - Imported root runtime now has a bounded IKEMEN Common1 `NoFallCount` opt-out:
   `AssertSpecial NoFallCount` suppresses the existing state-`5100`
   `HitFallDamage` ground-impact counter while preserving fall damage, other

@@ -1,6 +1,6 @@
 # Ticket 261: explicit HitFlag minus/plus admission
 
-- Status: planned
+- Status: resolved bounded
 - Date: 2026-07-18
 - Scope: bounded direct HitDef admission for explicit `HitFlag -` and `HitFlag +`
 - Depends on: `DemoMove.hitFlag`, `CharacterRuntimeState` move/state metadata,
@@ -8,6 +8,10 @@
   helper direct combat
 - Research: [`docs/research/2026-07-18-hitflag-minus-plus-admission.md`](../../../../docs/research/2026-07-18-hitflag-minus-plus-admission.md)
 - Source contract: pinned IKEMEN GO commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Planning commit: `bf5f296c`
+- Implementation: `c88fd483`
+- ADR: [`0028-hitflag-minus-plus-admission`](../../../../docs/adr/0028-hitflag-minus-plus-admission.md)
+- Closeout: [`2026-07-18-hitflag-minus-plus-closeout`](../../../../docs/reports/2026-07-18-hitflag-minus-plus-closeout.md)
 
 ## Question
 
@@ -54,3 +58,13 @@ This ticket closes only explicit direct `HitFlag -/+` admission over the
 runtime's bounded `hittmp` projection. It does not close generic hitflag
 defaults, projectile/reversal parity, exact pause scheduling, or full
 MUGEN/IKEMEN compatibility.
+
+## Implementation outcome
+
+The shared direct predicate now normalizes compact, comma-delimited, and
+whitespace-delimited explicit hitflags, projects `hittmp` as `0/1/2` from the
+current runtime metadata, and enforces `-`/`+` across root admission, regular
+direct combat, equal-priority preparation, and helpers. Focused coverage passed
+`4` files / `79` tests before T262; the grouped closeout passes `230` files /
+`2416` tests, TypeScript 7, build, boundaries, redirect boundary, trace QA,
+and diff hygiene. Browser smoke is N/A.
