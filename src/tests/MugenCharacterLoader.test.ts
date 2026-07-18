@@ -217,6 +217,107 @@ GameHeight = 720
       expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.States ZSS" })]),
     );
   });
+
+  it("appends ordered Common.Cmd sources through one command parser boundary", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common-cmd/common-cmd.def",
+      textBytes(`[Info]
+name = "Common CMD"
+
+[Files]
+cmd = common-cmd.cmd
+`),
+    );
+    vfs.addFile(
+      "chars/common-cmd/common-cmd.cmd",
+      textBytes(`[Command]
+name = "character_command"
+command = x
+`),
+    );
+    vfs.addFile(
+      "data/common-first.cmd",
+      textBytes(`[Command]
+name = "common_first"
+command = a
+`),
+    );
+    vfs.addFile(
+      "data/common-second.cmd",
+      textBytes(`[Defaults]
+command.time = 27
+
+[Command]
+name = "common_second"
+command = b
+`),
+    );
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+Cmd1 = common-second.cmd
+Cmd = data/common-first.cmd
+Cmd2 = data/missing.cmd
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common-cmd.zip", vfs);
+
+    expect(character.files.commonCommands).toEqual(["data/common-first.cmd", "data/common-second.cmd"]);
+    expect(character.commands.map((command) => command.name)).toEqual([
+      "character_command",
+      "common_first",
+      "common_second",
+    ]);
+    expect(character.commands[2]?.time).toBe(27);
+    expect(character.compatibility.files.cmd).toBe(true);
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Referenced global common command file was not found: data/missing.cmd" }),
+    );
+  });
+
+  it("loads Common.Cmd when the DEF has no character CMD and blocks ZSS sources", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common-only/common-only.def",
+      textBytes(`[Info]
+name = "Common Only"
+`),
+    );
+    vfs.addFile(
+      "data/common.cmd",
+      textBytes(`[Command]
+name = "common_only"
+command = y
+`),
+    );
+    vfs.addFile("data/common.zss", textBytes("StateDef 900"));
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+Cmd = data/common.cmd, data/common.zss
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common-only.zip", vfs);
+
+    expect(character.files.cmd).toBeUndefined();
+    expect(character.files.commonCommands).toEqual(["data/common.cmd"]);
+    expect(character.commands.map((command) => command.name)).toEqual(["common_only"]);
+    expect(character.compatibility.files.cmd).toBe(true);
+    expect(character.compatibility.unsupported).toEqual(
+      expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.Cmd ZSS" })]),
+    );
+  });
 });
 
 function stateSourceFixture(options: { withCharacterState120: boolean }) {

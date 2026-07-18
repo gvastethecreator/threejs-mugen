@@ -88,6 +88,26 @@ export class MugenCharacterLoader {
       diagnostics.push(...systemAssets.diagnostics);
     }
 
+    const commonCommandPaths = resolveGlobalCommonCommandPaths(systemAssets?.gameConfig, resolver, diagnostics);
+    const supportedCommonCommandPaths = commonCommandPaths.filter((path) => {
+      if (/\.zss$/i.test(path)) {
+        unsupported.report("ikemen", "Common.Cmd ZSS", {
+          location: path,
+          fallback: "Only CNS-compatible Common.Cmd sources are parsed by the bounded loader",
+        });
+        return false;
+      }
+      if (!/\.cmd$/i.test(path)) {
+        unsupported.report("ikemen", "Common.Cmd format", {
+          location: path,
+          fallback: "Only .cmd Common.Cmd sources are parsed by the bounded loader",
+        });
+        return false;
+      }
+      return true;
+    });
+    files.commonCommands = supportedCommonCommandPaths;
+
     const animations = new Map();
     if (files.anim) {
       const parsedAir = parseAir(vfs.readText(files.anim) ?? "", files.anim);
@@ -101,13 +121,20 @@ export class MugenCharacterLoader {
     let commandDefaults: MugenCharacter["commandDefaults"];
     let commandRemap: MugenCharacter["commandRemap"];
     let stateEntryControllers: MugenCharacter["stateEntryControllers"] = [];
-    if (files.cmd) {
-      const cmdText = vfs.readText(files.cmd) ?? "";
-      const parsedCmd = parseCmd(cmdText, files.cmd);
+    const commandSources = [files.cmd, ...supportedCommonCommandPaths].filter(
+      (path): path is string => Boolean(path),
+    );
+    if (commandSources.length > 0) {
+      const commandText = commandSources.map((path) => vfs.readText(path) ?? "").join("\n");
+      const commandFileLabel = commandSources.length === 1 ? commandSources[0] : commandSources.join(", ");
+      const parsedCmd = parseCmd(commandText, commandFileLabel);
       commands = parsedCmd.commands;
       commandDefaults = parsedCmd.defaults;
       commandRemap = parsedCmd.remap;
       diagnostics.push(...parsedCmd.diagnostics);
+    }
+    if (files.cmd) {
+      const cmdText = vfs.readText(files.cmd) ?? "";
       const parsedCmdStateEntries = parseCns(cmdText, files.cmd);
       stateEntryControllers = parsedCmdStateEntries.controllers.filter((controller) => controller.stateId === -1);
       diagnostics.push(...parsedCmdStateEntries.diagnostics);
@@ -404,6 +431,45 @@ function resolveGlobalCommonStatePaths(
   return paths;
 }
 
+function resolveGlobalCommonCommandPaths(
+  config: MugenGameConfig | undefined,
+  resolver: PathResolver,
+  diagnostics: MugenDiagnostic[],
+): string[] {
+  if (!config) {
+    return [];
+  }
+  const common = getConfigSection(config.rawSections, "Common");
+  const configPath = config.gameSpace?.sourcePath ?? "data/mugen.cfg";
+  const entries = Object.entries(common)
+    .filter(([key]) => /^cmd\d*$/i.test(key))
+    .sort(([left], [right]) => commonCommandConfigRank(left) - commonCommandConfigRank(right));
+  const paths: string[] = [];
+
+  for (const [, value] of entries) {
+    for (const reference of value.split(",").map((item) => item.trim()).filter(Boolean)) {
+      const normalizedReference = reference.replace(/^['"]|['"]$/g, "");
+      const rootPath = resolver.resolve("", normalizedReference);
+      const configRelativePath = resolver.resolve(configPath, normalizedReference);
+      const candidates = normalizedReference.includes("/") || normalizedReference.includes("\\")
+        ? [rootPath, configRelativePath]
+        : [configRelativePath, rootPath];
+      const resolved = candidates.find((candidate) => resolver.exists(candidate)) ?? candidates.find(Boolean);
+      if (!resolved || !resolver.exists(resolved)) {
+        diagnostics.push({
+          severity: "warning",
+          format: "loader",
+          file: configPath,
+          message: `Referenced global common command file was not found: ${reference}`,
+        });
+        continue;
+      }
+      paths.push(resolved);
+    }
+  }
+  return paths;
+}
+
 function getConfigSection(rawSections: Record<string, Record<string, string>>, expected: string): Record<string, string> {
   return Object.entries(rawSections).find(([section]) => section.toLowerCase() === expected.toLowerCase())?.[1] ?? {};
 }
@@ -411,6 +477,11 @@ function getConfigSection(rawSections: Record<string, Record<string, string>>, e
 function commonStateConfigRank(key: string): number {
   const normalized = key.toLowerCase();
   return normalized === "states" ? 0 : Number(normalized.slice("states".length)) + 1;
+}
+
+function commonCommandConfigRank(key: string): number {
+  const normalized = key.toLowerCase();
+  return normalized === "cmd" ? 0 : Number(normalized.slice("cmd".length)) + 1;
 }
 
 function createEmptyFiles(): ResolvedCharacterFiles {

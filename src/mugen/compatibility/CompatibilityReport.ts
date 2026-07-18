@@ -128,7 +128,7 @@ export function createCompatibilityReport(input: {
       def: Boolean(input.files.def),
       sff: Boolean(input.files.sprite),
       air: Boolean(input.files.anim),
-      cmd: Boolean(input.files.cmd),
+      cmd: Boolean(input.files.cmd || input.files.commonCommands?.length),
       cns: Boolean(input.files.cns || input.files.states.length > 0),
       snd: Boolean(input.files.sound),
     },

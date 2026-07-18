@@ -36,6 +36,7 @@ export type MugenCharacterDef = {
 export type ResolvedCharacterFiles = {
   def?: string;
   cmd?: string;
+  commonCommands?: string[];
   cns?: string;
   states: string[];
   commonStates: string[];
