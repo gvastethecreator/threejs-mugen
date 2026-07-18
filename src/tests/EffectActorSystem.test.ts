@@ -297,6 +297,26 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("forwards an imported HitFlag default into Helper Projectile spawn", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [controller("Projectile", { projanim: "900" }, ["Time = 0"])])),
+        ],
+      },
+      animations: new Map([[900, action(900, 4)]]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, { defaultHitFlag: "MAF" });
+
+    expect(store.projectiles.find((projectile) => projectile.parentId === helper.serialId)).toMatchObject({
+      hitFlag: "MAF",
+      parentId: helper.serialId,
+    });
+  });
+
   it("passes stage bounds into helper-local triggers and controller expressions", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

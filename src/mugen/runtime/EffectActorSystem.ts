@@ -624,6 +624,7 @@ export function spawnRuntimeHelperProjectileActor(
     terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),
     pos,
     fallbackFacing: helper.facing,
+    defaultHitFlag: options.defaultHitFlag,
     resolveSoundValue: (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options),
   });
 }

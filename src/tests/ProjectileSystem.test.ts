@@ -218,6 +218,26 @@ describe("ProjectileSystem", () => {
     expect(projectile.targetId).toBe(0);
   });
 
+  it("applies an imported default only when Projectile HitFlag is omitted", () => {
+    const create = (params: Record<string, string>) =>
+      createRuntimeProjectile({
+        serialId: "hitflag-projectile",
+        controller: controller(params),
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+        defaultHitFlag: "MAF",
+      });
+
+    expect(create({ projanim: "1005" }).hitFlag).toBe("MAF");
+    expect(create({ projanim: "1005", hitflag: "H" }).hitFlag).toBe("H");
+    expect(create({ projanim: "1005", hitflag: "var(0)" }).hitFlag).toBeUndefined();
+  });
+
   it("carries projectile Z position, velocity, localcoord, and attack depth", () => {
     const projectile = createRuntimeProjectile({
       serialId: "depth-projectile",

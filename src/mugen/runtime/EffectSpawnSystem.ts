@@ -18,11 +18,12 @@ import type { RuntimeHelperProgram } from "./HelperSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
+import { runtimeDefaultHitFlagForSource } from "./RuntimeHitFlagDefaults";
 
 export type RuntimeEffectSpawnActor = {
   id: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord" | "commands"> & {
+  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord" | "commands" | "source"> & {
     constants?: DemoFighterDefinition["constants"];
   };
   runtimeProgram?: RuntimeHelperProgram;
@@ -223,6 +224,7 @@ export class RuntimeEffectSpawnWorld {
       localCoord: owner.definition.localCoord,
       attackDepth: operation?.attackDepth ?? runtimeCombatDepthFromConstants(fighter.definition.constants).attack,
       damageScale: fighter.runtime.attackMultiplier,
+      defaultHitFlag: runtimeDefaultHitFlagForSource(owner.definition.source),
       resolveSoundValue,
     });
     return true;

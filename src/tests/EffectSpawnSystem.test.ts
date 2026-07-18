@@ -223,6 +223,20 @@ describe("EffectSpawnSystem", () => {
     });
   });
 
+  it("carries imported Projectile HitFlag defaults through the root spawn boundary", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const importedDefinition = { ...definition("imported", [baseAction]), source: "imported" as const };
+    const fighter = actor("p1", effectActorWorld, {}, importedDefinition);
+    const opponent = actor("p2", effectActorWorld);
+
+    expect(spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", { projanim: "910" }))).toBe(true);
+    expect(spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", { projanim: "910", hitflag: "H" }))).toBe(true);
+    expect(spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", { projanim: "910", hitflag: "var(0)" }))).toBe(true);
+
+    expect(effectActorWorld.getStore("p1").projectiles.map((projectile) => projectile.hitFlag)).toEqual([undefined, "H", "MAF"]);
+  });
+
   it("resolves initial Helper standby only for IKEMEN and preserves StateDef ctrl precedence", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

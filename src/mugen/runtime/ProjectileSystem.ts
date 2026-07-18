@@ -151,6 +151,7 @@ export type RuntimeProjectileSpawnInput = {
   attackDepth?: [number, number];
   depthBound?: number;
   damageScale?: number;
+  defaultHitFlag?: string;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
 };
 
@@ -228,7 +229,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const guardSlideTime = guardTiming.guardSlideTime;
   const guardControlTime = guardTiming.guardControlTime;
   const attr = operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP";
-  const hitFlag = operation?.hitFlag ?? staticHitFlag(findControllerParam(input.controller, "hitflag"));
+  const rawHitFlag = stripMugenString(findControllerParam(input.controller, "hitflag"));
+  const hitFlag = operation?.hitFlag ?? (rawHitFlag === undefined ? input.defaultHitFlag : staticHitFlag(rawHitFlag));
   const cornerPush = resolveHitDefCornerPush({
     attr,
     guardVelocityX,
