@@ -1181,6 +1181,17 @@ hygiene, and `qa:trace` `633/633` artifacts (`599` required, `34` optional)
 pass. Browser smoke is N/A. Default `MAF` inference, projectile/reversal
 ownership, exact `hittmp`/`acttmp`, and full parity remain blocked.
 
+## Entry 488 - Explicit projectile HitFlag admission
+
+Planned from the pinned IKEMEN projectile contact path: Projectile inherits
+HitDef parameters, including `hitflag`, and ModifyProjectile can mutate the
+live projectile HitDef. The next bounded implementation will carry explicit
+projectile HitFlags through compiler IR, runtime state, mutation, and effect
+snapshots, then reuse the shared player-contact admission predicate. Omitted
+projectile hitflags/default `MAF`, dynamic string expressions, reversals,
+exact projectile pause/contact timing, `acttmp`/`hittmp`, and full parity stay
+blocked.
+
 ## Entry 479 - MUGEN-lite milestone adjudication
 
 Done: the written M2 Imported MUGEN-lite MVP exit is accepted at bounded fixture scope. Current optional local KFM artifacts prove imported idle/walk/crouch/jump (`02b6bfc0` / `81e3500f`), normal and QCF special input (`89bc15e0` / `330f329a`, `5242ac11` / `9e559255`), guard (`07870510` / `b4c3f3b9`), get-hit (`dc476568` / `bc7d27b6`), fall, and recovery (`88a7c7aa` / `86e41e54`, `ecce3c63` / `60591b38`). The repository-owned CC0 package remains separately evidenced by `CompatibilityJourney/v1` checksum `cabcd573`, digest `sha256:f0389c3f95003bb16e26d6ae2020acdb57c12fa0f088d63ba25ca3466ed71eb0`, and runtime refs `a372a02c` / `ceac9f37`. Unsupported findings and blocked claims remain visible. Scores are unchanged; broad corpus, exact Common1 timing, and full MUGEN/IKEMEN parity remain blocked. Verification passes 184/1958 tests, typecheck, boundaries, build, 577/577 traces (546 required), and smoke. Next: Wayfinder 130 selects one independent legal package or ACT/palette route.
