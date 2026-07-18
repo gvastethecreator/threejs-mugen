@@ -21,9 +21,8 @@ ADR: [0031](../adr/0031-imported-hitflag-defaults.md)
 - `pnpm check:redirect-boundary`: passed.
 - `git diff --check`: passed, with only the repository's existing CRLF
   normalization warnings on unrelated dirty roadmap files.
-- Full `pnpm test`, production build, and `pnpm qa:trace` are grouped with the
-  next runtime tranche to avoid repeating the same expensive gates between
-  adjacent compatibility slices.
+- The grouped T265 checkpoint passes `230/230` files / `2424/2424` tests,
+  production build, and `pnpm qa:trace` `633/633` artifacts.
 - Browser smoke: N/A; no renderer, Studio, or visible surface changed.
 
 ## Claim ceiling

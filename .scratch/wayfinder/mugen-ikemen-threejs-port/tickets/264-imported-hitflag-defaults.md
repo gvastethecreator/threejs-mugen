@@ -68,9 +68,10 @@ synthetic runtime unit actors?
 - Demo and synthetic callers keep their previous omitted-field behavior.
 - Focused verification passes `3` files / `60` tests, TypeScript 7,
   repository boundaries, redirect boundary, and diff hygiene.
-- Full suite and trace QA are intentionally grouped with the next runtime
-  tranche; browser smoke is N/A because no visible renderer or Studio surface
-  changed.
+- The grouped T265 checkpoint passes `230/230` files / `2424/2424` tests,
+  production build, trace QA `633/633`, TypeScript 7, repository boundaries,
+  redirect boundary, and diff hygiene; browser smoke is N/A because no visible
+  renderer or Studio surface changed.
 
 ## Claim ceiling
 

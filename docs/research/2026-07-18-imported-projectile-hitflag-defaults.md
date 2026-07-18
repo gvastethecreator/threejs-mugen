@@ -52,3 +52,14 @@ introduced without widening synthetic runtime behavior?
 - It does not change `ModifyProjectile` omission behavior.
 - It does not prove exact projectile pause/contact timing, reversals, clashes,
   `acttmp`/`hittmp`, or full MUGEN/IKEMEN parity.
+
+## Implementation outcome
+
+The bounded decision shipped in `9b0122fa` after planning in `0fabf9cc`; the
+synthetic down-hit fixture correction is recorded in `2f65c1c6`. Projectile
+spawn input now distinguishes an absent raw field from a dynamic raw string,
+passes the imported source default through root/state-owner and Helper spawn,
+and leaves live `ModifyProjectile` omission unchanged. Focused coverage passes
+`3` files / `104` tests. The grouped suite passes `230/230` files / `2424/2424`
+tests, build, TypeScript 7, repository boundaries, redirect boundary, diff
+hygiene, and trace QA `633/633` artifacts (`599` required, `34` optional).

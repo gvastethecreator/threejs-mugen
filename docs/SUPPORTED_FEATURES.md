@@ -1,4 +1,10 @@
 ﻿# Supported Features
+- Imported root/state-owner and Helper Projectile spawns now restore the
+  source-backed omitted `MAF` HitFlag default. Typed/static values retain
+  precedence, dynamic raw strings remain unresolved, and live ModifyProjectile
+  omission preserves the existing projectile flag. Projectile timing,
+  reversals, clashes, exact timing, and full MUGEN/IKEMEN parity remain
+  unsupported.
 - Imported direct and Helper HitDef dispatch now restores the source-backed
   omitted `MAF` default, and imported state moves expose the same materialized
   value. Authored/static/raw HitFlags retain precedence and demo/synthetic

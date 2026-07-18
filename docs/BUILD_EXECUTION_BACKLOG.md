@@ -1206,13 +1206,15 @@ tranche; projectile defaults, dynamic string expressions, reversals, exact
 
 ## Entry 492 - Imported Projectile HitFlag defaults
 
-Planned from the official Projectile/HitDef inheritance contract and the
-runtime spawn ownership audit: carry T264's source-scoped omitted `MAF` default
-into imported root/state-owner and Helper Projectile creation. Explicit static
-values must win, dynamic raw strings must remain unresolved, and demo/synthetic
-omissions must remain unchanged. ModifyProjectile omission, projectile timing,
-reversals, clashes, exact `acttmp`/`hittmp`, and full MUGEN/IKEMEN parity stay
-blocked until separately audited.
+Done in `9b0122fa` after planning in `0fabf9cc`, with synthetic fixture
+correction `2f65c1c6`: carried T264's source-scoped omitted `MAF` default into
+imported root/state-owner and Helper Projectile creation. Explicit static
+values win, dynamic raw strings remain unresolved, and live ModifyProjectile
+omission remains unchanged. Focused coverage passes `3` files / `104` tests;
+the grouped suite passes `230/230` files / `2424/2424` tests, TypeScript 7,
+build, boundaries, redirect boundary, diff hygiene, and `633/633` traces
+(`599` required, `34` optional). Projectile timing, reversals, clashes, exact
+`acttmp`/`hittmp`, and full MUGEN/IKEMEN parity stay blocked.
 
 ## Entry 479 - MUGEN-lite milestone adjudication
 

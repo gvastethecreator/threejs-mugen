@@ -559,6 +559,16 @@ This is `executed-partial` for imported direct and Helper routes only;
 projectile defaults, dynamic strings, reversals, exact timing, and full parity
 remain unsupported.
 
+Imported Projectile HitFlag default addendum: root/state-owner and Helper
+Projectile spawns now materialize omitted `hitflag` as the source-backed `MAF`
+default. Explicit typed/static values retain precedence, dynamic raw strings
+remain unresolved, and omitted `ModifyProjectile` mutations preserve the live
+projectile flag. Focused coverage passes `3` files / `104` tests; the grouped
+suite passes `230/230` files / `2424/2424` tests and trace QA passes `633/633`
+artifacts. This is `executed-partial` for imported Projectile spawn only;
+timing, reversals, clashes, exact `acttmp`/`hittmp`, and full parity remain
+unsupported.
+
 Explicit projectile HitFlag addendum: `Projectile` and static
 `ModifyProjectile` now carry authored HitFlags through typed compiler
 operations, live projectile state, active mutation, and effect snapshots.

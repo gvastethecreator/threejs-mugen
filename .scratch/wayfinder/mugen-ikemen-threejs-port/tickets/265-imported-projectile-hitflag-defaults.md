@@ -1,6 +1,6 @@
 # Ticket 265: imported Projectile HitFlag default provenance
 
-- Status: planned
+- Status: resolved bounded
 - Date: 2026-07-18
 - Scope: omitted `Projectile.hitflag` default `MAF` at imported root and Helper
   projectile spawn boundaries
@@ -8,6 +8,11 @@
   HitFlag default provenance
 - Research: [`docs/research/2026-07-18-imported-projectile-hitflag-defaults.md`](../../../../docs/research/2026-07-18-imported-projectile-hitflag-defaults.md)
 - Source contract: pinned IKEMEN GO commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Planning commit: `0fabf9cc`
+- Implementation commit: `9b0122fa`
+- Regression fixture commit: `2f65c1c6`
+- ADR: [`docs/adr/0032-imported-projectile-hitflag-defaults.md`](../../../../docs/adr/0032-imported-projectile-hitflag-defaults.md)
+- Closeout report: [`docs/reports/2026-07-18-imported-projectile-hitflag-defaults-closeout.md`](../../../../docs/reports/2026-07-18-imported-projectile-hitflag-defaults-closeout.md)
 
 ## Question
 
@@ -54,6 +59,21 @@ expressions or synthetic fixtures into authored values?
   hygiene pass. Full suite, build, and trace QA run at the grouped checkpoint.
 - Browser smoke is expected to be N/A because no visible renderer or Studio
   surface changes.
+
+## Implementation outcome
+
+- Imported root/state-owner and Helper Projectile spawns now materialize
+  omitted `hitflag` as `MAF`.
+- Typed/static HitFlags retain precedence, while dynamic raw strings remain
+  unresolved and `ModifyProjectile` omission preserves live state.
+- Synthetic down-hit traces now author `hitflag = D` explicitly because their
+  target is `StateType L`; this preserves fixture intent under the real `MAF`
+  admission rule.
+- Focused coverage passes `3` files / `104` tests, and the grouped suite passes
+  `230/230` files / `2424/2424` tests.
+- TypeScript 7, production build, repository boundaries, redirect boundary,
+  diff hygiene, and trace QA `633/633` pass; browser smoke is N/A because no
+  visible renderer or Studio surface changed.
 
 ## Claim ceiling
 

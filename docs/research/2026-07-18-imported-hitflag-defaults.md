@@ -64,5 +64,6 @@ moves materialize the same value, while direct and Helper dispatch pass it
 through their existing runtime ownership boundaries. Authored/static/raw values
 win over the provenance default, and demo/synthetic omissions remain
 unchanged. Focused verification passes `3` files / `60` tests, TypeScript 7,
-repository boundaries, redirect boundary, and diff hygiene. Full suite and
-trace evidence are grouped with the next runtime tranche.
+repository boundaries, redirect boundary, and diff hygiene. The grouped T265
+checkpoint passes `230/230` files / `2424/2424` tests, production build, and
+trace QA `633/633` artifacts.
