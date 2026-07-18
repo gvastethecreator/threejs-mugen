@@ -2,13 +2,14 @@ import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import {
   canRuntimeBeHitBy,
-  canRuntimeHitFallenTarget,
   collisionBoxesIntersect,
   findRuntimeHitOverride,
   hasRuntimeBoxContact,
   hitAttributeMatches,
+  runtimeHitFlagRejectionReason,
   resolveRuntimeCombatHit,
   runtimeWorldBox,
+  type RuntimeHitFlagRejectionReason,
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
@@ -160,7 +161,7 @@ export type RuntimeDirectCombatSkipReason =
   | "no-contact"
   | "superpause-unhittable"
   | "hitby-rejected"
-  | "fall-hitflag-rejected"
+  | RuntimeHitFlagRejectionReason
   | "affectteam-rejected"
   | "priority-no-hit"
   | "hitoverride-custom-state-miss";
@@ -356,10 +357,11 @@ export class RuntimeCombatResolutionWorld {
       input.log(message);
       return { kind: "skipped", reason: "superpause-unhittable" };
     }
-    if (!canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: defender.runtime, hitFlag: move.hitFlag })) {
-      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via fall HitFlag/NoFallHitFlag`;
+    const hitFlagReason = runtimeHitFlagRejectionReason({ attacker: attacker.runtime, defender: defender.runtime, hitFlag: move.hitFlag });
+    if (hitFlagReason) {
+      const message = runtimeHitFlagRejectionMessage(defender.label, attacker.label, move.attr ?? "S,NA", hitFlagReason);
       input.log(message);
-      return { kind: "skipped", reason: "fall-hitflag-rejected" };
+      return { kind: "skipped", reason: hitFlagReason };
     }
     if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")) {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`;
@@ -529,10 +531,13 @@ export class RuntimeCombatResolutionWorld {
           targetBoxes,
         )
       : hasRuntimeBoxContact(attackBox, defender.runtime, targetBoxes);
-    if (!hasContact
-      || input.canDefenderBeHit?.(defender) === false
-      || !canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: defender.runtime, hitFlag: move.hitFlag })
-      || !canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
+    if (!hasContact || input.canDefenderBeHit?.(defender) === false) {
+      return undefined;
+    }
+    if (runtimeHitFlagRejectionReason({ attacker: attacker.runtime, defender: defender.runtime, hitFlag: move.hitFlag })) {
+      return undefined;
+    }
+    if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
       || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
       return undefined;
     }
@@ -898,6 +903,20 @@ function hasRuntimeCollisionBoxPair(
 
 function hasRuntimeProjectileHitFlag(value: string | undefined): boolean {
   return value?.toUpperCase().replace(/[\s,]/g, "").includes("P") ?? false;
+}
+
+function runtimeHitFlagRejectionMessage(
+  defenderLabel: string,
+  attackerLabel: string,
+  attr: string,
+  reason: RuntimeHitFlagRejectionReason,
+): string {
+  const suffix = reason === "fall-hitflag-rejected"
+    ? "fall HitFlag/NoFallHitFlag"
+    : reason === "minus-hitflag-rejected"
+      ? "HitFlag -"
+      : "HitFlag +";
+  return `${defenderLabel} rejected ${attackerLabel} ${attr} via ${suffix}`;
 }
 
 function getActiveRuntimeProjectileDefenseMove(actor: RuntimeCombatResolutionActor): DemoMove | undefined {

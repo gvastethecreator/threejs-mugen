@@ -128,7 +128,49 @@ export function canRuntimeBeHitBy(defender: Pick<CharacterRuntimeState, "hitBy">
 export function hasRuntimeHitFlag(hitFlag: string | undefined, expectedFlag: string): boolean {
   const normalizedExpected = expectedFlag.trim().toUpperCase();
   if (!hitFlag || !normalizedExpected) return false;
-  return hitFlag.split(",").some((token) => token.trim().toUpperCase() === normalizedExpected);
+  return hitFlag
+    .toUpperCase()
+    .split(/[\s,]+/)
+    .some((token) => token.includes(normalizedExpected));
+}
+
+export type RuntimeHitFlagRejectionReason =
+  | "fall-hitflag-rejected"
+  | "minus-hitflag-rejected"
+  | "plus-hitflag-rejected";
+
+type RuntimeHitFlagDefender = Pick<CharacterRuntimeState, "moveType" | "hitFall">
+  & Partial<Pick<CharacterRuntimeState, "stateNo" | "guarding">>;
+
+export function runtimeHitFlagRejectionReason(input: {
+  attacker: Pick<CharacterRuntimeState, "assertSpecial">;
+  defender: RuntimeHitFlagDefender;
+  hitFlag?: string;
+}): RuntimeHitFlagRejectionReason | undefined {
+  if (input.hitFlag === undefined) return undefined;
+
+  const hitTmp = runtimeHitTmp(input.defender);
+  if (hitTmp >= 2 && (!hasRuntimeHitFlag(input.hitFlag, "F") || input.attacker.assertSpecial?.noFallHitFlag === true)) {
+    return "fall-hitflag-rejected";
+  }
+  if (hasRuntimeHitFlag(input.hitFlag, "-") && hitTmp > 0) {
+    return "minus-hitflag-rejected";
+  }
+  if (
+    hasRuntimeHitFlag(input.hitFlag, "+")
+    && (hitTmp <= 0 || isRuntimeHitFlagGuardState(input.defender))
+  ) {
+    return "plus-hitflag-rejected";
+  }
+  return undefined;
+}
+
+export function canRuntimeHitByHitFlag(input: {
+  attacker: Pick<CharacterRuntimeState, "assertSpecial">;
+  defender: RuntimeHitFlagDefender;
+  hitFlag?: string;
+}): boolean {
+  return runtimeHitFlagRejectionReason(input) === undefined;
 }
 
 export function canRuntimeHitFallenTarget(input: {
@@ -136,14 +178,24 @@ export function canRuntimeHitFallenTarget(input: {
   defender: Pick<CharacterRuntimeState, "moveType" | "hitFall">;
   hitFlag?: string;
 }): boolean {
-  if (
-    input.hitFlag === undefined
-    || input.defender.moveType !== "H"
-    || input.defender.hitFall?.falling !== true
-  ) {
-    return true;
-  }
-  return hasRuntimeHitFlag(input.hitFlag, "F") && input.attacker.assertSpecial?.noFallHitFlag !== true;
+  return canRuntimeHitByHitFlag({
+    ...input,
+    defender: input.defender,
+  });
+}
+
+function runtimeHitTmp(defender: RuntimeHitFlagDefender): 0 | 1 | 2 {
+  if (defender.moveType !== "H") return 0;
+  return defender.hitFall?.falling === true ? 2 : 1;
+}
+
+function isRuntimeHitFlagGuardState(defender: RuntimeHitFlagDefender): boolean {
+  if (defender.guarding === true) return true;
+  const stateNo = defender.stateNo ?? 0;
+  return stateNo === 120
+    || (stateNo >= 130 && stateNo <= 132)
+    || stateNo === 140
+    || (stateNo >= 150 && stateNo <= 155);
 }
 
 export function findRuntimeHitOverride(

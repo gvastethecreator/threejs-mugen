@@ -21,10 +21,10 @@ import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type { RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
   canRuntimeBeHitBy,
-  canRuntimeHitFallenTarget,
   collisionBoxesIntersect,
   hasRuntimeBoxContact,
   hitAttributeMatches,
+  runtimeHitFlagRejectionReason,
   resolveRuntimeCombatHit,
   runtimeWorldBox,
 } from "./CombatResolver";
@@ -129,8 +129,14 @@ export class RuntimeHelperCombatWorld {
         input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via SuperPause unhittable`);
         continue;
       }
-      if (!canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: input.defender.runtime, hitFlag: move.hitFlag })) {
-        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via fall HitFlag/NoFallHitFlag`);
+      const hitFlagReason = runtimeHitFlagRejectionReason({ attacker: attacker.runtime, defender: input.defender.runtime, hitFlag: move.hitFlag });
+      if (hitFlagReason) {
+        const suffix = hitFlagReason === "fall-hitflag-rejected"
+          ? "fall HitFlag/NoFallHitFlag"
+          : hitFlagReason === "minus-hitflag-rejected"
+            ? "HitFlag -"
+            : "HitFlag +";
+        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via ${suffix}`);
         continue;
       }
       if (!canRuntimeBeHitBy(input.defender.runtime, move.attr ?? "S,NA")) {

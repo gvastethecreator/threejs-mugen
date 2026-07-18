@@ -110,6 +110,35 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.admittedPairIds).toEqual(["p1->p2"]);
   });
 
+  it("applies explicit minus and plus HitFlags to root admission", () => {
+    const minus = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, hitFlag: "H-" }),
+        actor("p2", 2, 2, 0, { moveType: "H", stateNo: 5000 }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(minus.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "minus-hitflag-rejected" });
+
+    const plus = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, hitFlag: "H+" }),
+        actor("p2", 2, 2, 0, { moveType: "H", stateNo: 5000 }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(plus.admittedPairIds).toEqual(["p1->p2"]);
+
+    const guard = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, hitFlag: "H+" }),
+        actor("p2", 2, 2, 0, { stateNo: 150, guarding: true }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(guard.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "plus-hitflag-rejected" });
+  });
+
   it("applies HitDef AffectTeam before root collision admission", () => {
     const sameSideDefault = actor("p1", 1, 1, 0, { move: true });
     const sameSideFriendly = actor("p3", 3, 1, 0, { move: true, affectTeam: -1 });
@@ -235,6 +264,9 @@ function actor(
     noHurt?: boolean;
     hitFlag?: string;
     falling?: boolean;
+    moveType?: "I" | "A" | "H";
+    stateNo?: number;
+    guarding?: boolean;
     noFallHitFlag?: boolean;
     x?: number;
   } = {},
@@ -252,7 +284,9 @@ function actor(
     runtime: {
       pos: { x, y: 0 },
       facing: 1,
-      moveType: options.falling ? "H" : "I",
+      stateNo: options.stateNo ?? 0,
+      moveType: options.falling ? "H" : options.moveType ?? "I",
+      ...(options.guarding === undefined ? {} : { guarding: options.guarding }),
       ...(options.falling ? { hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } } : {}),
       ...(options.reversal ? { reversal: { attr: "S,NA", hitPause: 0 } } : {}),
       ...(options.denyHit ? { hitBy: { slot1: { mode: "deny" as const, attr: "S,NA", remaining: 1 } } } : {}),

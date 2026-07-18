@@ -1,10 +1,11 @@
 import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import {
   canRuntimeBeHitBy,
-  canRuntimeHitFallenTarget,
   hasRuntimeBoxContact,
   hitAttributeMatches,
+  runtimeHitFlagRejectionReason,
   runtimeWorldBox,
+  type RuntimeHitFlagRejectionReason,
 } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
@@ -21,7 +22,7 @@ export type RuntimeRootDirectHitAdmissionReason =
   | "reversal-move"
   | "inactive"
   | "hitby-rejected"
-  | "fall-hitflag-rejected"
+  | RuntimeHitFlagRejectionReason
   | "affectteam-rejected"
   | "missing-hurt-box"
   | "no-contact";
@@ -34,7 +35,7 @@ export type RuntimeRootDirectHitAdmissionActor = {
   definition?: { localCoord?: [number, number] };
   runtime: Pick<
     CharacterRuntimeState,
-    "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial" | "moveType" | "hitFall"
+    | "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial" | "moveType" | "hitFall" | "stateNo" | "guarding"
   >;
   currentMove?: DemoMove;
   moveTick: number;
@@ -150,9 +151,8 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   if (move.requiresHitDef) return "compiled-hitdef";
   if (move.isReversal) return "reversal-move";
   if (attacker.moveTick < move.activeStart || attacker.moveTick > move.activeEnd) return "inactive";
-  if (!canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: getter.runtime, hitFlag: move.hitFlag })) {
-    return "fall-hitflag-rejected";
-  }
+  const hitFlagReason = runtimeHitFlagRejectionReason({ attacker: attacker.runtime, defender: getter.runtime, hitFlag: move.hitFlag });
+  if (hitFlagReason) return hitFlagReason;
   if (!canRuntimeBeHitBy(getter.runtime, move.attr ?? "S,NA")) return "hitby-rejected";
   const targetBoxes = resolveRootTargetBoxes(attacker, getter, move, input);
   if (!targetBoxes?.length) return "missing-hurt-box";

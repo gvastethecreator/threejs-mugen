@@ -129,6 +129,54 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(helper.hasHit).toBe(false);
   });
 
+  it("enforces helper minus and plus HitFlags without mutating rejected targets", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const combatWorld = new RuntimeHelperCombatWorld();
+    const inputBase = {
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld,
+      runtimeTick: 33,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: stateHooks([], [5000]),
+    };
+    const minusHelper = effectActorWorld.spawnHelper("p1", helperInput({ id: "44", name: '"Minus Assist"' }));
+    minusHelper.currentMove = move({ hitFlag: "H-" });
+    minusHelper.moveTick = 1;
+    const minusTarget = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, stateNo: 5000, moveType: "H", life: 100 }),
+    });
+    const minusLogs: string[] = [];
+    combatWorld.resolveDirect({ ...inputBase, defender: minusTarget, log: (line) => minusLogs.push(line) });
+    expect(minusTarget.runtime.life).toBe(100);
+    expect(minusLogs).toEqual(["P2 rejected Helper Minus Assist S,NA via HitFlag -"]);
+
+    const plusEffectActorWorld = new RuntimeEffectActorWorld();
+    const plusHelper = plusEffectActorWorld.spawnHelper("p1", helperInput({ id: "45", name: '"Plus Assist"' }));
+    plusHelper.currentMove = move({ hitFlag: "H+", damage: 11 });
+    plusHelper.moveTick = 1;
+    const idleTarget = defenderActor("p3", "P3", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    const plusLogs: string[] = [];
+    combatWorld.resolveDirect({
+      ...inputBase,
+      owner: owner("p1", plusEffectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      defender: idleTarget,
+      log: (line) => plusLogs.push(line),
+    });
+    expect(idleTarget.runtime.life).toBe(100);
+    expect(plusLogs).toEqual(["P3 rejected Helper Plus Assist S,NA via HitFlag +"]);
+  });
+
   it("suppresses standby Helper direct HitDef and resumes it after TagIn", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();

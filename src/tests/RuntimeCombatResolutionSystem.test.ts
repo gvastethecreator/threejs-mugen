@@ -137,6 +137,60 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(attacker.runtime.life).toBe(100);
   });
 
+  it("enforces explicit minus and plus HitFlags at direct admission", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const logs: string[] = [];
+
+    const minusAttacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ hitFlag: "H-" }),
+      moveTick: 1,
+    });
+    const gettingHit = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, life: 100, stateNo: 5000, moveType: "H" }),
+    });
+    expect(world.resolveDirect({
+      attacker: minusAttacker,
+      defender: gettingHit,
+      ...directInputBase(contactWorld, directCombatWorld, logs),
+    })).toEqual({ kind: "skipped", reason: "minus-hitflag-rejected" });
+    expect(gettingHit.runtime.life).toBe(100);
+
+    const plusAttacker = actor("p3", "P3", contactWorld, {
+      currentMove: move({ hitFlag: "H+" }),
+      moveTick: 1,
+    });
+    const idle = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, life: 100 }),
+    });
+    expect(world.resolveDirect({
+      attacker: plusAttacker,
+      defender: idle,
+      ...directInputBase(contactWorld, directCombatWorld, logs),
+    })).toEqual({ kind: "skipped", reason: "plus-hitflag-rejected" });
+    expect(idle.runtime.life).toBe(100);
+
+    const chainAttacker = actor("p5", "P5", contactWorld, {
+      currentMove: move({ hitFlag: "H+", damage: 13 }),
+      moveTick: 1,
+    });
+    const chainTarget = actor("p6", "P6", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, life: 100, stateNo: 5000, moveType: "H" }),
+    });
+    expect(world.resolveDirect({
+      attacker: chainAttacker,
+      defender: chainTarget,
+      ...directInputBase(contactWorld, directCombatWorld, logs),
+    })).toMatchObject({ kind: "hit", damage: 13 });
+    expect(chainTarget.runtime.life).toBe(87);
+    expect(logs).toEqual([
+      "P2 rejected P1 S,NA via HitFlag -",
+      "P4 rejected P3 S,NA via HitFlag +",
+      "P5 hit P6 for 13",
+    ]);
+  });
+
   it("applies equal-priority Hit versus Hit as one bilateral transaction", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();

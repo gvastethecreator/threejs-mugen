@@ -10,6 +10,7 @@ import {
   isRuntimeGuarding,
   parseHitAttribute,
   resolveRuntimeCombatHit,
+  runtimeHitFlagRejectionReason,
   runtimeWorldBox,
   scaleRuntimeIncomingDamage,
   scaleRuntimeOutgoingDamage,
@@ -85,6 +86,22 @@ describe("CombatResolver", () => {
     })).toBe(false);
     expect(canRuntimeHitFallenTarget({ attacker, defender: falling })).toBe(true);
     expect(canRuntimeHitFallenTarget({ attacker, defender: actor(), hitFlag: "H,L,A" })).toBe(true);
+  });
+
+  it("projects explicit compact plus and minus hitflags over the bounded hittmp model", () => {
+    const attacker = actor();
+    const idle = actor({ stateNo: 0, moveType: "I" });
+    const gettingHit = actor({ stateNo: 5000, moveType: "H" });
+    const guarded = actor({ stateNo: 150, moveType: "H", guarding: true });
+
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: idle, hitFlag: "H+" })).toBe("plus-hitflag-rejected");
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: gettingHit, hitFlag: "H+" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: guarded, hitFlag: "H+" })).toBe("plus-hitflag-rejected");
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: gettingHit, hitFlag: "H-" })).toBe("minus-hitflag-rejected");
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: idle, hitFlag: "H-" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: gettingHit, hitFlag: "HLAF" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: gettingHit, hitFlag: "H, L, A" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: idle })).toBeUndefined();
   });
 
   it("finds active hit overrides by attribute", () => {
