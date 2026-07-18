@@ -1195,12 +1195,14 @@ pause/contact timing, `acttmp`/`hittmp`, and full parity remain blocked.
 
 ## Entry 490 - Imported HitFlag default provenance
 
-Planned from the official HitDef default contract and the imported runtime
-ownership audit: materialize omitted `MAF` on imported state moves and carry a
-source-scoped default through direct and Helper HitDef dispatch. Demo and
-synthetic omitted fields must remain unchanged. Projectile defaults, dynamic
-string expressions, reversals, exact `acttmp`/`hittmp`, temporal parity, and
-full MUGEN/IKEMEN parity stay blocked until separately audited.
+Done in `66c21cac` after planning in `08c157d2`: materialized omitted `MAF` on
+imported state moves and carried a source-scoped default through direct and
+Helper HitDef dispatch. Authored/static/raw values keep precedence, while demo
+and synthetic omitted fields remain unchanged. Focused coverage passes `3`
+files / `60` tests, TypeScript 7, repository boundaries, redirect boundary,
+and diff hygiene. Full suite and trace QA are grouped with the next runtime
+tranche; projectile defaults, dynamic string expressions, reversals, exact
+`acttmp`/`hittmp`, temporal parity, and full MUGEN/IKEMEN parity stay blocked.
 
 ## Entry 479 - MUGEN-lite milestone adjudication
 

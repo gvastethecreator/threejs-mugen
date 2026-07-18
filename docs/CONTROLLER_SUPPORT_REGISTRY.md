@@ -550,6 +550,15 @@ full suite passes `230/230` files / `2416/2416` tests and trace QA passes
 routes; default inference, projectiles, reversals, exact `hittmp`/`acttmp`,
 custom-state breadth, ZSS/Lua, rollback, and full parity remain unsupported.
 
+Imported HitFlag default addendum: imported state moves and direct/Helper
+HitDef dispatch now materialize omitted `hitflag` as the source-backed `MAF`
+default. Authored/static/raw values retain precedence, while demo and synthetic
+omissions remain unchanged. Focused coverage passes `3` files / `60` tests;
+TypeScript 7, repository boundaries, redirect boundary, and diff hygiene pass.
+This is `executed-partial` for imported direct and Helper routes only;
+projectile defaults, dynamic strings, reversals, exact timing, and full parity
+remain unsupported.
+
 Explicit projectile HitFlag addendum: `Projectile` and static
 `ModifyProjectile` now carry authored HitFlags through typed compiler
 operations, live projectile state, active mutation, and effect snapshots.

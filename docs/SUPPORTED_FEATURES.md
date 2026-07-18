@@ -1,4 +1,9 @@
 ﻿# Supported Features
+- Imported direct and Helper HitDef dispatch now restores the source-backed
+  omitted `MAF` default, and imported state moves expose the same materialized
+  value. Authored/static/raw HitFlags retain precedence and demo/synthetic
+  omissions remain unchanged. Projectile defaults, dynamic string expressions,
+  reversals, exact timing, and full MUGEN/IKEMEN parity remain unsupported.
 - Imported projectile/player contact now carries explicit static Projectile
   and ModifyProjectile HitFlags through typed IR, live runtime state, effect
   snapshots, and the shared state/fall/NoFallHitFlag/minus/plus admission

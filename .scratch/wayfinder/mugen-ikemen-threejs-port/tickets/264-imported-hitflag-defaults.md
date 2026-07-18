@@ -1,6 +1,6 @@
 # Ticket 264: imported HitFlag default provenance
 
-- Status: planned
+- Status: resolved bounded
 - Date: 2026-07-18
 - Scope: omitted `HitDef.hitflag` default `MAF` for imported direct and Helper
   controller dispatch
@@ -8,6 +8,10 @@
   transport, and existing imported source identity
 - Research: [`docs/research/2026-07-18-imported-hitflag-defaults.md`](../../../../docs/research/2026-07-18-imported-hitflag-defaults.md)
 - Source contract: pinned IKEMEN GO commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Planning commit: `08c157d2`
+- Implementation commit: `66c21cac`
+- ADR: [`docs/adr/0031-imported-hitflag-defaults.md`](../../../../docs/adr/0031-imported-hitflag-defaults.md)
+- Closeout report: [`docs/reports/2026-07-18-imported-hitflag-defaults-closeout.md`](../../../../docs/reports/2026-07-18-imported-hitflag-defaults-closeout.md)
 
 ## Question
 
@@ -55,6 +59,18 @@ synthetic runtime unit actors?
   will run at the next grouped checkpoint.
 - Browser smoke is expected to be N/A because no visible renderer or Studio
   surface changes.
+
+## Implementation outcome
+
+- Imported state moves now materialize `MAF` for omitted `HitDef.hitflag`.
+- Direct and Helper dispatch receive the default only from an imported fighter
+  source; authored/static/raw values retain precedence.
+- Demo and synthetic callers keep their previous omitted-field behavior.
+- Focused verification passes `3` files / `60` tests, TypeScript 7,
+  repository boundaries, redirect boundary, and diff hygiene.
+- Full suite and trace QA are intentionally grouped with the next runtime
+  tranche; browser smoke is N/A because no visible renderer or Studio surface
+  changed.
 
 ## Claim ceiling
 

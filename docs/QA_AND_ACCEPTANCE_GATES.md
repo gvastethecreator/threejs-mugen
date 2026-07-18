@@ -80,6 +80,18 @@ redirect boundary, `git diff --check`, and `qa:trace` `633/633` artifacts
 surface changed. Default `MAF` inference, projectile/reversal ownership,
 exact `hittmp`/`acttmp`, and full parity remain outside this gate.
 
+## Imported HitFlag default provenance gate
+
+Acceptance requires omitted imported `HitDef.hitflag` to resolve to `MAF` for
+state moves, direct dispatch, and Helper dispatch; authored/static/raw values
+must retain precedence; and demo/synthetic omitted fields must remain
+unchanged. T264 passes focused `3` files / `60` tests, TypeScript 7,
+repository boundaries, redirect boundary, and `git diff --check`. Full suite
+and `qa:trace` are grouped with the next runtime tranche. Browser smoke is N/A
+because no renderer, Studio, or visible surface changed. Projectile defaults,
+dynamic string expressions, reversals, exact timing, and full parity remain
+outside this gate.
+
 ## SOCD resolution gate
 
 Acceptance requires one resolved per-tick input copy for documented modes
