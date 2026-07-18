@@ -313,6 +313,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Explicit HitFlag minus/plus admission](tickets/261-hitflag-minus-plus-admission.md) - planned: source-pinned IKEMEN `hittmp` admission will add compact explicit `-`/`+` handling over the current direct root, regular, equal-priority, and helper paths. Omitted/default hitflags, state-type `H/L/A/D` filtering, projectiles, reversals, exact `hittmp`/`acttmp` timing, and full parity remain open.
 
+- [Explicit HitFlag state-type admission](tickets/262-hitflag-state-type-admission.md) - planned: source-pinned IKEMEN/MUGEN `H/L/A/D/M` target-state admission will extend the shared direct predicate while preserving omitted/default hitflags. Projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
+
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor; the promoted snapshot is visible and local-project reopen now has a green browser gate.
