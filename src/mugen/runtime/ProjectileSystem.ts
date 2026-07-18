@@ -69,6 +69,7 @@ export type RuntimeProjectile = {
   kill: boolean;
   guardKill: boolean;
   attr?: string;
+  hitFlag?: string;
   affectTeam?: -1 | 0 | 1;
   attackDepth?: [number, number];
   localCoord?: [number, number];
@@ -227,6 +228,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const guardSlideTime = guardTiming.guardSlideTime;
   const guardControlTime = guardTiming.guardControlTime;
   const attr = operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP";
+  const hitFlag = operation?.hitFlag ?? staticHitFlag(findControllerParam(input.controller, "hitflag"));
   const cornerPush = resolveHitDefCornerPush({
     attr,
     guardVelocityX,
@@ -296,6 +298,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     kill,
     guardKill,
     attr,
+    ...(hitFlag === undefined ? {} : { hitFlag }),
     affectTeam,
     attackDepth: [...attackDepth],
     localCoord: input.localCoord,
@@ -358,6 +361,7 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const priority = operation?.priority ?? resolveModifyProjectileNumberParam(input, "projpriority");
   const hitCount = operation?.hitCount ?? resolveModifyProjectileNumberParam(input, "projhits");
   const missTime = operation?.missTime ?? resolveModifyProjectileNumberParam(input, "projmisstime");
+  const hitFlag = operation?.hitFlag ?? staticHitFlag(findControllerParam(input.controller, "hitflag"));
   const removeOnHitParam = operation?.removeOnHit === undefined ? resolveModifyProjectileNumberParam(input, "projremove") : undefined;
   const removeOnHit = operation?.removeOnHit ?? (removeOnHitParam === undefined ? undefined : removeOnHitParam !== 0);
   let changed = 0;
@@ -417,6 +421,9 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     if (missTime !== undefined) {
       projectile.missTime = clampProjectileMissTime(missTime);
       projectile.missTimeRemaining = Math.min(projectile.missTimeRemaining, projectile.missTime);
+    }
+    if (hitFlag !== undefined) {
+      projectile.hitFlag = hitFlag;
     }
     if (teamSide !== undefined) {
       const normalizedTeamSide = normalizeRuntimeProjectileTeamSide(teamSide);
@@ -586,6 +593,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           guardStun: projectile.guardStun,
           guardDistance: projectile.guardDistance,
           guardFlag: projectile.guardFlag,
+          ...(projectile.hitFlag === undefined ? {} : { hitFlag: projectile.hitFlag }),
           ...(projectile.affectTeam === undefined ? {} : { affectTeam: projectile.affectTeam }),
           ...(projectile.teamSide === undefined ? {} : { teamSide: projectile.teamSide }),
           ...(runtimeProjectileHasExplicitDepth(projectile)
@@ -1156,4 +1164,9 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function staticHitFlag(value: string | undefined): string | undefined {
+  const stripped = stripMugenString(value);
+  return stripped && !/[()]/.test(stripped) ? stripped : undefined;
 }

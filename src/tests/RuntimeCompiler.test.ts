@@ -1701,6 +1701,7 @@ value = 1
         kill: "0",
         "guard.kill": "0",
         attr: "S, SP",
+        hitflag: "H,L,A,F,+",
         pausetime: "4,4",
         "ground.hittime": "13",
         "ground.velocity": "-5,-2",
@@ -1732,6 +1733,7 @@ value = 1
       hitDefHitCount: 3,
       affectTeam: 0,
       teamSide: 2,
+      hitFlag: "H,L,A,F,+",
       projAnim: 910,
       offset: [62, -45],
       postype: "p1",
@@ -1786,6 +1788,7 @@ value = 1
         projstagebound: "32",
         projdepthbound: "12",
         projheightbound: "-96,64",
+        hitflag: "H-",
         projremovetime: "18",
         sprpriority: "8",
         projpriority: "3",
@@ -1800,6 +1803,7 @@ value = 1
       redirectPlayerIdExpression: "ID + var(0)",
       projectileId: 77,
       teamSide: 1,
+      hitFlag: "H-",
       velocity: [5, -1],
       acceleration: [0.25, 0],
       velocityMultiplier: [0.5, 1],
@@ -1858,6 +1862,18 @@ value = 1
     );
 
     expect(modifyProjectile.operation).toBeUndefined();
+  });
+
+  it("keeps dynamic projectile HitFlag expressions outside the static typed path", () => {
+    const projectile = compileControllerIr(
+      controller(1000, "Projectile", [], { hitflag: "var(0)" }),
+    );
+    const modifyProjectile = compileControllerIr(
+      controller(1000, "ModifyProjectile", [], { hitflag: "var(0)" }),
+    );
+
+    expect(projectile.operation).not.toHaveProperty("hitFlag");
+    expect(modifyProjectile.operation).not.toHaveProperty("hitFlag");
   });
 
   it("rejects malformed Projectile RedirectID expressions at compile time", () => {

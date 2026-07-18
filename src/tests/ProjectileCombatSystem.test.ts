@@ -265,6 +265,67 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles).toHaveLength(1);
   });
 
+  it("enforces explicit projectile HitFlags through shared player admission", () => {
+    const resolve = (
+      hitFlag: string,
+      defenderOverrides: Partial<CharacterRuntimeState> = {},
+      attackerOverrides: Partial<CharacterRuntimeState> = {},
+    ) => {
+      let projectiles = [projectile({ hitFlag, removeOnHit: true })];
+      const attacker = actor("p1", "P1", runtimeState(attackerOverrides));
+      const defender = actor("p2", "P2", runtimeState({ life: 1000, ...defenderOverrides }));
+      const logs: string[] = [];
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles,
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        holdingBack: false,
+        log: (line) => logs.push(line),
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        removeProjectilesMarkedForRemoval: () => {
+          projectiles = projectiles.filter((entry) => !entry.removalReason);
+        },
+      });
+      return { defender, logs, projectiles };
+    };
+
+    const stateMismatch = resolve("L");
+    expect(stateMismatch.defender.runtime.life).toBe(1000);
+    expect(stateMismatch.logs).toEqual(["P2 rejected P1 projectile S,SP via HitFlag state type"]);
+    expect(stateMismatch.projectiles).toHaveLength(1);
+
+    const minusGetHit = resolve("H-", { moveType: "H", stateNo: 5000 });
+    expect(minusGetHit.defender.runtime.life).toBe(1000);
+    expect(minusGetHit.logs).toEqual(["P2 rejected P1 projectile S,SP via HitFlag -"]);
+
+    const plusIdle = resolve("H+");
+    expect(plusIdle.defender.runtime.life).toBe(1000);
+    expect(plusIdle.logs).toEqual(["P2 rejected P1 projectile S,SP via HitFlag +"]);
+
+    const allowedStanding = resolve("H");
+    expect(allowedStanding.defender.runtime.life).toBe(969);
+    expect(allowedStanding.logs).toHaveLength(1);
+    expect(allowedStanding.projectiles).toEqual([]);
+
+    const falling = resolve("H", {
+      moveType: "H",
+      hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } },
+    });
+    expect(falling.defender.runtime.life).toBe(1000);
+    expect(falling.logs).toEqual(["P2 rejected P1 projectile S,SP via fall HitFlag/NoFallHitFlag"]);
+
+    const noFallHitFlag = resolve(
+      "H",
+      { moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } },
+      { assertSpecial: { flags: [], globalFlags: [], noFallHitFlag: true } },
+    );
+    expect(noFallHitFlag.defender.runtime.life).toBe(1000);
+    expect(noFallHitFlag.logs).toEqual(["P2 rejected P1 projectile S,SP via fall HitFlag/NoFallHitFlag"]);
+    expect(noFallHitFlag.projectiles).toHaveLength(1);
+  });
+
   it("selects the target Clsn1 box for an explicit projectile p2clsncheck", () => {
     let projectiles = [projectile({ p2ClsnCheck: "clsn1" })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));

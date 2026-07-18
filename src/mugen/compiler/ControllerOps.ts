@@ -189,6 +189,7 @@ export type ProjectileControllerOp = {
   kill?: boolean;
   guardKill?: boolean;
   attr?: string;
+  hitFlag?: string;
   hitPause: number;
   hitStun: number;
   groundVelocity?: MugenProjectileVector;
@@ -226,6 +227,7 @@ export type ModifyProjectileControllerOp = {
   redirectPlayerIdExpression?: string;
   projectileId?: number;
   teamSide?: 1 | 2;
+  hitFlag?: string;
   velocity?: MugenProjectileVector;
   acceleration?: MugenProjectileVector;
   velocityMultiplier?: [number, number];
@@ -1986,6 +1988,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     attr: stripMugenString(findParam(controller, "attr")),
+    hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
     hitPause: firstNumber(findParam(controller, "pausetime")) ?? 6,
     hitStun: firstNumber(findParam(controller, "ground.hittime")) ?? 18,
     groundVelocity: numberTriple(findParam(controller, "ground.velocity")),
@@ -2032,6 +2035,7 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
+    hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
     velocity: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
     acceleration: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "accel"))),
     velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
@@ -2406,6 +2410,11 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function staticHitFlagParam(value: string | undefined): string | undefined {
+  const stripped = stripMugenString(value);
+  return stripped && !/[()]/.test(stripped) ? stripped : undefined;
 }
 
 function hitAnimType(value: string | undefined): number | undefined {

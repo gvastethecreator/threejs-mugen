@@ -6,7 +6,9 @@ import {
   collisionBoxesIntersect,
   findRuntimeHitOverride,
   resolveRuntimeCombatHit,
+  runtimeHitFlagRejectionReason,
   runtimeWorldBox,
+  type RuntimeHitFlagRejectionReason,
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
 import {
@@ -157,6 +159,15 @@ export class RuntimeProjectileCombatWorld {
       }
       if (input.canDefenderBeHit?.(defender) === false) {
         log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via SuperPause unhittable`);
+        continue;
+      }
+      const hitFlagReason = runtimeHitFlagRejectionReason({
+        attacker: attacker.runtime,
+        defender: defender.runtime,
+        hitFlag: projectile.hitFlag,
+      });
+      if (hitFlagReason) {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via ${runtimeHitFlagRejectionLabel(hitFlagReason)}`);
         continue;
       }
       if (!canRuntimeBeHitBy(defender.runtime, projectile.attr ?? "S,SP")) {
@@ -353,6 +364,15 @@ export function resolveRuntimeProjectileClashes(input: RuntimeProjectileClashInp
 
 function decrementProjectilePriority(priority: number): number {
   return Math.max(0, priority - 1);
+}
+
+function runtimeHitFlagRejectionLabel(
+  reason: RuntimeHitFlagRejectionReason,
+): string {
+  if (reason === "state-type-hitflag-rejected") return "HitFlag state type";
+  if (reason === "fall-hitflag-rejected") return "fall HitFlag/NoFallHitFlag";
+  if (reason === "minus-hitflag-rejected") return "HitFlag -";
+  return "HitFlag +";
 }
 
 function runtimeGetHitVarsFromProjectileResult(

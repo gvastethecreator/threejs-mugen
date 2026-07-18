@@ -116,6 +116,7 @@ describe("ProjectileSystem", () => {
         "guard.cornerpush.veloff": "6",
         "airguard.cornerpush.veloff": "7",
         attr: '"S,SP"',
+        hitflag: "H,L,A,F,+",
         pausetime: "9",
         "ground.hittime": "21",
         "ground.velocity": "-7,-3",
@@ -165,6 +166,7 @@ describe("ProjectileSystem", () => {
       opacity: 0.78,
       damage: 60,
       attr: "S,SP",
+      hitFlag: "H,L,A,F,+",
       targetId: 78,
       chainId: 43,
       hitDefHitCount: 3,
@@ -190,7 +192,11 @@ describe("ProjectileSystem", () => {
       removeOnHit: false,
       hasHit: false,
     });
-    expect(runtimeProjectilesToSnapshots([projectile], 1000)[0]?.effect).toMatchObject({ affectTeam: 0, teamSide: 2 });
+    expect(runtimeProjectilesToSnapshots([projectile], 1000)[0]?.effect).toMatchObject({
+      affectTeam: 0,
+      teamSide: 2,
+      hitFlag: "H,L,A,F,+",
+    });
   });
 
   it("defaults missing Projectile id to target id 0", () => {
@@ -810,6 +816,7 @@ describe("ProjectileSystem", () => {
         projstagebound: "32",
         projdepthbound: "12",
         projheightbound: "-96,64",
+        hitflag: "H+",
         teamside: "2",
         projremovetime: "18",
         sprpriority: "8",
@@ -839,6 +846,7 @@ describe("ProjectileSystem", () => {
       removeOnHit: false,
       hasHit: false,
     });
+    expect(matching.hitFlag).toBe("H+");
     expect(other).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
     expect(terminal).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
     expect(terminal.depthBound).toBeUndefined();

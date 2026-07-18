@@ -438,6 +438,7 @@ export type ActorEffectSnapshot =
       guardStun: number;
       guardDistance: number;
       guardFlag?: string;
+      hitFlag?: string;
       p2StateNo?: number;
       p2GetP1State?: boolean;
       p2ClsnCheck?: "clsn1" | "clsn2" | "size" | "none";
