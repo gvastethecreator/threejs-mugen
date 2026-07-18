@@ -23,6 +23,8 @@ export type RuntimeActiveControllerRunInput<TActor extends RuntimeActiveControll
   actor: TActor;
   opponent: TActor;
   tick: number;
+  stateNo?: number;
+  stateOwner?: TActor;
   onlyIgnoreHitPause?: boolean;
   controllerIgnoresHitPause: (controller: ControllerIr) => boolean;
   triggersPass: (controller: ControllerIr, actor: TActor, opponent: TActor, owner: TActor, tick: number) => boolean;
@@ -47,6 +49,8 @@ export class RuntimeActiveControllerRunWorld {
       actor: input.actor,
       opponent: input.opponent,
       tick: input.tick,
+      stateNo: input.stateNo,
+      stateOwner: input.stateOwner,
       onlyIgnoreHitPause: input.onlyIgnoreHitPause,
       controllerIgnoresHitPause: input.controllerIgnoresHitPause,
       triggersPass: input.triggersPass,

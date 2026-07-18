@@ -4457,30 +4457,44 @@ function runActiveStateControllers(
     },
   });
 
-  rootCnsExecutionWorld.execute({
-    actor: fighter,
-    opponent,
-    tick,
-    onlyIgnoreHitPause: options.onlyIgnoreHitPause,
-    controllerIgnoresHitPause,
-    triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
-      triggersPass(
-        controller,
-        actor,
-        targetOpponent,
-        owner,
-        activeTick,
-        stageBounds,
-        gameSpace,
-        options.characters,
-        options.playerIdTarget,
-      ),
-    dispatchController: dispatchStateProgramController,
-    stateHooks: hookSet.stateHooks,
-    sideEffectHooks: hookSet.sideEffectHooks,
-    hooks: hookSet.hooks,
-    onBlocked: options.onBlocked,
-  }, options.participation ?? "playable");
+  const participation = options.participation ?? "playable";
+  const executeRootState = (stateNo?: number, stateOwner?: FighterMatchState): void => {
+    rootCnsExecutionWorld.execute({
+      actor: fighter,
+      opponent,
+      tick,
+      ...(stateNo === undefined ? {} : { stateNo }),
+      ...(stateOwner === undefined ? {} : { stateOwner }),
+      onlyIgnoreHitPause: options.onlyIgnoreHitPause,
+      controllerIgnoresHitPause,
+      triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
+        triggersPass(
+          controller,
+          actor,
+          targetOpponent,
+          owner,
+          activeTick,
+          stageBounds,
+          gameSpace,
+          options.characters,
+          options.playerIdTarget,
+        ),
+      dispatchController: dispatchStateProgramController,
+      stateHooks: hookSet.stateHooks,
+      sideEffectHooks: hookSet.sideEffectHooks,
+      hooks: hookSet.hooks,
+      onBlocked: options.onBlocked,
+    }, participation);
+  };
+
+  const supportsRootGlobalStates = options.runtimeProfile === "mugen-1.1" || options.runtimeProfile === "ikemen-go";
+  if (supportsRootGlobalStates) {
+    if (fighter.stateOwner === undefined) {
+      executeRootState(-3, fighter);
+    }
+    executeRootState(-2, fighter);
+  }
+  executeRootState();
 }
 
 function resolveDynamicTeamStandbyOperation(

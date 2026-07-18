@@ -914,6 +914,68 @@ command = m
     expect(legacySnapshot.effects?.find(({ id }) => id === "p1-helper-0")?.runtime.vars.slice(0, 2)).toEqual([10, 1]);
   });
 
+  it("runs imported root States -3 and -2 before the current state for explicit profiles", () => {
+    const createFixtureWithRootGlobals = (): DemoFighterDefinition => {
+      const fighter = createImportedFixture({ id: "root-global-states", withStateMove: false });
+      const parsed = parseCns(`
+[Statedef -3]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -3, Root global pre-state]
+type = VarSet
+trigger1 = 1
+v = 0
+value = 3
+
+[Statedef -2]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -2, Root global tick]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 20
+
+[Statedef 0]
+[State 0, Current state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 100
+`).states;
+      const normalState = parsed.find((state) => state.id === 0);
+      if (!normalState) {
+        throw new Error("Expected root global fixture State 0");
+      }
+      fighter.states = [
+        ...(fighter.states ?? []).map((state) =>
+          state.id === 0 ? { ...state, controllers: [...state.controllers, ...normalState.controllers] } : state,
+        ),
+        ...parsed.filter((state) => state.id !== 0),
+      ];
+      return fighter;
+    };
+
+    const ikemen = new PlayableMatchRuntime(createFixtureWithRootGlobals(), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    expect(ikemen.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(123);
+
+    const mugen = new PlayableMatchRuntime(createFixtureWithRootGlobals(), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+    expect(mugen.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(123);
+
+    const unknown = new PlayableMatchRuntime(createFixtureWithRootGlobals(), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "unknown",
+    });
+    expect(unknown.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(100);
+  });
+
   it("executes Helper-owned default TagOut and later TagIn without stopping Helper CNS", () => {
     const fighter = createImportedFixture({
       id: "ikemen-helper-owned-self-tag-cycle",

@@ -14,6 +14,8 @@ export type RuntimeActiveControllerScanOptions<
   actor: TActor;
   opponent: TOpponent;
   tick: number;
+  stateNo?: number;
+  stateOwner?: TActor;
   onlyIgnoreHitPause?: boolean;
   controllerIgnoresHitPause: (controller: ControllerIr) => boolean;
   triggersPass: (controller: ControllerIr, actor: TActor, opponent: TOpponent, owner: TActor, tick: number) => boolean;
@@ -56,8 +58,9 @@ export class RuntimeActiveControllerScanWorld {
   run<TActor extends RuntimeActiveControllerScanActor<TActor>, TOpponent>(
     options: RuntimeActiveControllerScanOptions<TActor, TOpponent>,
   ): RuntimeActiveControllerScanResult<TActor> {
-    const owner = options.actor.stateOwner ?? options.actor;
-    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === options.actor.runtime.stateNo && candidate.special === undefined);
+    const owner = options.stateOwner ?? options.actor.stateOwner ?? options.actor;
+    const stateNo = options.stateNo ?? options.actor.runtime.stateNo;
+    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === stateNo && candidate.special === undefined);
     if (!stateProgram) {
       return {
         scanned: false,

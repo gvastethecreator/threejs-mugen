@@ -73,6 +73,34 @@ describe("RuntimeActiveControllerScanWorld", () => {
     expect(calls).toEqual(["trigger:PlaySnd", "execute:PlaySnd", "trigger:ChangeState", "execute:ChangeState"]);
   });
 
+  it("can scan an explicit root-owned global state while the actor borrows another state owner", () => {
+    const world = new RuntimeActiveControllerScanWorld();
+    const borrowedOwner = actor("borrowed", "imported", 200, [stateProgram(-2, [controller("Borrowed")])]);
+    const rootOwner = actor("root", "imported", 200, [stateProgram(-2, [controller("RootGlobal")])]);
+    const fighter = actor("p2", "demo", 200, []);
+    fighter.stateOwner = borrowedOwner;
+    const calls: string[] = [];
+
+    const result = world.run({
+      actor: fighter,
+      opponent: actor("p1", "demo", 0, []),
+      tick: 3,
+      stateNo: -2,
+      stateOwner: rootOwner,
+      controllerIgnoresHitPause: () => true,
+      triggersPass: (controllerInput, actorInput, _opponent, owner, tick) => {
+        calls.push(`trigger:${controllerInput.type}:${actorInput.id}:${owner.id}:${tick}`);
+        return true;
+      },
+      executeController: ({ controller: controllerInput, owner }) => {
+        calls.push(`execute:${controllerInput.type}:${owner.id}`);
+      },
+    });
+
+    expect(result).toMatchObject({ scanned: true, owner: rootOwner, visitedControllers: 1, executedControllers: 1 });
+    expect(calls).toEqual(["trigger:RootGlobal:p2:root:3", "execute:RootGlobal:root"]);
+  });
+
   it("fails closed for missing states, non-imported actors, and failing triggers", () => {
     const world = new RuntimeActiveControllerScanWorld();
     const opponent = actor("p2", "demo", 0, []);
