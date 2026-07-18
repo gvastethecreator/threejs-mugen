@@ -322,6 +322,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [SOCD resolution authority](tickets/268-socd-resolution-authority.md) - resolved bounded in `b241cc65` / ADR 0034: runtime/package/profile precedence and package conflicts are observable through `RuntimeSocdResolutionAuthority/v0`; final match-level ownership remains open.
 - [Source authority reconciliation](tickets/269-source-authority-reconciliation.md) - resolved bounded in `0d4a0274` / ADR 0035: the real normative/local nine-file delta is materialized as a tracked artifact with dirty-cache and fail-closed guards; semantic review remains `unclassified` and no parity score moves.
 - [State 5900 provenance](tickets/270-state-5900-provenance.md) - resolved bounded in `f2c4b2a0` / nested `RuntimeRoundState5900Provenance/v1`: imported round and Turns snapshots carry selected character/Common1 path, layer, precedence, FNV fingerprint, shadowed/appended refs, and explicit missing-source status; exact state-5900 execution remains open.
+- [RuntimeRoundPhase/v0](tickets/271-runtime-round-phase.md) - resolved bounded in `89403690`: typed legal phase events, fight -> pre-over -> over integration, actor/round synchronization, and dynamic `RoundState`; exact intro/motif/winpose timing remains open.
 
 ## Not Yet Specified
 
