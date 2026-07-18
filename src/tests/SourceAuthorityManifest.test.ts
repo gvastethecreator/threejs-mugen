@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   canonicalizeSourceAuthorityManifest,
@@ -46,6 +48,20 @@ function input(overrides: Partial<SourceAuthorityManifestInput> = {}): SourceAut
 }
 
 describe("SourceAuthorityManifest", () => {
+  it("parses the committed selected-file authority audit", () => {
+    const artifactPath = resolve(process.cwd(), "docs/evidence/source-authority-manifest-v0.json");
+    expect(existsSync(artifactPath)).toBe(true);
+    const parsed = parseSourceAuthorityManifest(JSON.parse(readFileSync(artifactPath, "utf8")));
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.manifest?.source.normative.revision).toBe("05b7d98af690c73c7bffe5cb4f4eeb6933fa2703");
+    expect(parsed.manifest?.source.localCache.revision).toBe("044da72008b8ba13caf7b0f820526ce16e955fb3");
+    expect(parsed.manifest?.source.localCache.state).toBe("dirty");
+    expect(parsed.manifest?.comparison.status).toBe("changed");
+    expect(parsed.manifest?.comparison.files.filter((file) => file.status === "same")).toHaveLength(3);
+    expect(parsed.manifest?.comparison.files.filter((file) => file.status === "changed")).toHaveLength(6);
+    expect(parsed.manifest?.comparison.semanticReview.status).toBe("unclassified");
+  });
+
   it("creates a deterministic manifest and keeps semantic review unclassified", () => {
     const first = createSourceAuthorityManifest(input());
     const second = createSourceAuthorityManifest({

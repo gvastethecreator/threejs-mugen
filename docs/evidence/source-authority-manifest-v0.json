@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "mugen-web-sandbox/source-authority-manifest/v0",
+  "generatedAt": "2026-07-18T13:00:00.000Z",
+  "source": {
+    "project": "ikemen-engine/Ikemen-GO",
+    "repository": "https://github.com/ikemen-engine/Ikemen-GO",
+    "normative": {
+      "revision": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+      "files": [
+        {
+          "path": "src/bytecode.go",
+          "digest": "b2988454a8d1256797f28b6e8b8fc0a63aa55718d073ca6ef75df0719879f29e"
+        },
+        {
+          "path": "src/char.go",
+          "digest": "6b4939e6a728ac202e225c31f0eb56ea7ee4ff3777e42bb3bf0e5a53780fc7b5"
+        },
+        {
+          "path": "src/compiler.go",
+          "digest": "2da550de7606217cb00d78c1d3795f9b25b30d2a577852cc83e773b9b1faa55b"
+        },
+        {
+          "path": "src/config.go",
+          "digest": "f53e1fac54af81c8e9abc81472bd740012c35186d16b8ae5d162baa50d3d922c"
+        },
+        {
+          "path": "src/input.go",
+          "digest": "b5364afc200959b73d9f30d20b75f76e3c571e216c13659e22c59e3b8f1036e0"
+        },
+        {
+          "path": "src/main.go",
+          "digest": "f556946a6423cf9f286e593b91ce0aa02b9695d260fbe8262f138f95a85300cf"
+        },
+        {
+          "path": "src/script.go",
+          "digest": "6e32d414b5cefc7b064b02031d0487c7835b3533c6a0ac25ee7ef01b4d7e8b2d"
+        },
+        {
+          "path": "src/state.go",
+          "digest": "9cfea0a5d8d50fa20dbc31db328c8f10509c64f71b31297f869fc10130e203f2"
+        },
+        {
+          "path": "src/system.go",
+          "digest": "34f35d442b1d550032fe42cea883faf43a57aefdedf434ea24c34d3ef0cd3fa0"
+        }
+      ]
+    },
+    "localCache": {
+      "revision": "044da72008b8ba13caf7b0f820526ce16e955fb3",
+      "state": "dirty",
+      "files": [
+        {
+          "path": "src/bytecode.go",
+          "digest": "fa2eb8c180fd277fbc1b61d5a143e5f4feea1c3567ea189a9340dbfb4db0f644"
+        },
+        {
+          "path": "src/char.go",
+          "digest": "80c90e01e22d31de6e3dfde51a8883528038f733c68014d7bf52b929394e2b35"
+        },
+        {
+          "path": "src/compiler.go",
+          "digest": "2da550de7606217cb00d78c1d3795f9b25b30d2a577852cc83e773b9b1faa55b"
+        },
+        {
+          "path": "src/config.go",
+          "digest": "9a0b0da84571da236177d46e6874060fa8a9e18cadb07b5dcf70c5d8b74ba16d"
+        },
+        {
+          "path": "src/input.go",
+          "digest": "b5364afc200959b73d9f30d20b75f76e3c571e216c13659e22c59e3b8f1036e0"
+        },
+        {
+          "path": "src/main.go",
+          "digest": "9e949aa283dfcedebac2c516b8a0432727315eb368abf3a0ddb6030b2115d613"
+        },
+        {
+          "path": "src/script.go",
+          "digest": "68dc3c21ea1ac11adb70a323910f48c8b037a3da16c9aba88d76249d2bb4720d"
+        },
+        {
+          "path": "src/state.go",
+          "digest": "9cfea0a5d8d50fa20dbc31db328c8f10509c64f71b31297f869fc10130e203f2"
+        },
+        {
+          "path": "src/system.go",
+          "digest": "0b6006e4169df89c29d1c60eced7d94d654078265f66f8ace3fa4652c3a161fc"
+        }
+      ],
+      "dirtyPaths": [
+        "compiler_functions.go",
+        "compiler.go",
+        "script.go",
+        "stage.go"
+      ]
+    }
+  },
+  "comparison": {
+    "status": "changed",
+    "files": [
+      {
+        "path": "src/bytecode.go",
+        "status": "changed"
+      },
+      {
+        "path": "src/char.go",
+        "status": "changed"
+      },
+      {
+        "path": "src/compiler.go",
+        "status": "same"
+      },
+      {
+        "path": "src/config.go",
+        "status": "changed"
+      },
+      {
+        "path": "src/input.go",
+        "status": "same"
+      },
+      {
+        "path": "src/main.go",
+        "status": "changed"
+      },
+      {
+        "path": "src/script.go",
+        "status": "changed"
+      },
+      {
+        "path": "src/state.go",
+        "status": "same"
+      },
+      {
+        "path": "src/system.go",
+        "status": "changed"
+      }
+    ],
+    "semanticReview": {
+      "status": "unclassified",
+      "reviewedPaths": [],
+      "notes": []
+    }
+  },
+  "claims": {
+    "allowed": [
+      "local cache dirtiness is recorded",
+      "normative and local source revisions are recorded",
+      "selected source file byte delta is recorded"
+    ],
+    "blocked": [
+      "full MUGEN/IKEMEN parity",
+      "semantic parity",
+      "ZSS/Lua/Modules execution"
+    ]
+  },
+  "canonicalization": "stable-json/v0",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "20216fe3f7031af71fd43af8ca1e918037cea9a23eb8a642cb8c2085442ff79b"
+  }
+}
