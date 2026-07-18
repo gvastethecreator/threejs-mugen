@@ -1,7 +1,8 @@
-import type { MugenStateDef } from "../model/MugenState";
+import type { MugenStateDef, MugenStateSpecial } from "../model/MugenState";
 
 export type RuntimeStateAvailabilityProgramState = {
   id: number;
+  special?: MugenStateSpecial;
   source?: MugenStateDef;
 };
 

@@ -1,5 +1,6 @@
 import type { TriggerIr } from "../compiler/RuntimeIr";
 import type { MugenCommand } from "../model/MugenCommand";
+import type { MugenStateSpecial } from "../model/MugenState";
 import { hitAttributeMatches } from "./CombatResolver";
 import type { CommandBuffer } from "./CommandBuffer";
 import type { RuntimeContactKind, RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
@@ -25,14 +26,14 @@ export type RuntimeExpressionContextDefinition = {
   constants?: Record<string, number>;
   commands?: MugenCommand[];
   animations: Pick<Map<number, unknown>, "has">;
-  states?: readonly { id: number }[];
+  states?: readonly { id: number; special?: MugenStateSpecial }[];
 };
 
 export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
   playerId?: number;
   playerNo?: number;
   definition: RuntimeExpressionContextDefinition;
-  runtimeProgram?: { states: readonly { id: number }[] };
+  runtimeProgram?: { states: readonly { id: number; special?: MugenStateSpecial }[] };
   commandBuffer: Pick<CommandBuffer, "isCommandActive">;
   currentMove?: { attr?: string };
   stateElapsed: number;
