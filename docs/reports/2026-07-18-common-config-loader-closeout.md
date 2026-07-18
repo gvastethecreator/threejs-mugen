@@ -43,13 +43,13 @@ path fallback, and explicit unsupported/missing evidence.
 
 ## Claim blocked
 
-CommonFx, complete Common1/default-table behavior, ZSS/Lua, raw IKEMEN
-InputBuffer internals, AI command generation, SOCD, rollback/netplay, broader
-runtime ownership, visual/audio parity, and full MUGEN/IKEMEN parity remain
-open. No compatibility score increase is inferred from this loader-only cut.
+Complete Common1/default-table behavior, ZSS/Lua, raw IKEMEN InputBuffer
+internals, AI command generation, SOCD, rollback/netplay, broader runtime
+ownership, visual/audio parity, and full MUGEN/IKEMEN parity remain open. No
+compatibility score increase is inferred from this loader-only cut.
 
 ## Next source-backed frontier
 
-CommonFx is the next bounded system-assets lane: resolve ordered `[Common]
-Fx*` DEF packages, preserve prefix ownership, and feed them through the
-existing FightFX library contract before considering ZSS/Lua.
+CommonFx is now closed by T255 at a bounded system-assets scope. The next
+frontier is an evidence-backed audit of remaining Common1/default-table
+behavior before considering ZSS/Lua admission.
