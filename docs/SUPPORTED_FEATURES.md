@@ -1,4 +1,10 @@
 ﻿# Supported Features
+- Imported root runtime now has a bounded IKEMEN Common1 `NoFallCount` opt-out:
+  `AssertSpecial NoFallCount` suppresses the existing state-`5100`
+  `HitFallDamage` ground-impact counter while preserving fall damage, other
+  hit-fall metadata, default `fallCount`, and `GetHitVar(fallcount)`. Exact
+  state-loop timing, repeated-fall invulnerability, recovery shortening, other
+  fall flags, and full MUGEN/IKEMEN parity remain unsupported.
 - Imported root runtime now has a bounded Common1 fall-defense lifecycle:
   character `[Data] fall.defence_up` derives the source-facing
   `data.fall.defence_mul`, states `5070`/`5100` apply the incoming-damage factor

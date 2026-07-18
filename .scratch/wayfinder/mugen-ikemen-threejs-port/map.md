@@ -305,6 +305,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Common1 NoFallCount](tickets/258-common1-no-fall-count.md) - implementation in progress: source-pinned IKEMEN `AssertSpecial, NoFallCount` will guard the existing Common1 `5100` ground-impact counter while preserving `GetHitVar(fallcount)` and the default path. Repeated-fall invulnerability, exact state-loop timing, other fall flags, and full parity remain open.
 
+- [Common1 NoFallCount](tickets/258-common1-no-fall-count.md) - resolved bounded in `a637b124` / ADR 0025: typed IKEMEN `NoFallCount` now suppresses the existing state-`5100` ground-impact counter while preserving default `fallCount`, `GetHitVar(fallcount)`, and all other hit-fall metadata. Focused `61/61`, full `230/230` files / `2396/2396` tests, TypeScript 7, build, boundaries, redirect boundary, and `633/633` traces pass; browser smoke is N/A. Exact state-loop timing, repeated-fall invulnerability, recovery shortening, other fall flags, helper ownership, rollback, and parity remain open.
+
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor; the promoted snapshot is visible and local-project reopen now has a green browser gate.

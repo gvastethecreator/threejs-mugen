@@ -12,6 +12,18 @@ Browser smoke is N/A because no visible surface changed. Full Common1 merge,
 fall-count/invulnerability behavior, later restoration states, helper/custom
 state ownership, ZSS/Lua, rollback, and full parity are outside this gate.
 
+## Common1 NoFallCount gate
+
+Acceptance requires typed IKEMEN `AssertSpecial NoFallCount`, suppression of the
+existing state-`5100` `HitFallDamage` counter, unchanged default counting, and
+continued `GetHitVar(fallcount)` compatibility. T258 passes focused `4` files
+and `61/61` tests, full `230/230` files and `2396/2396` tests, TypeScript 7,
+build, repository boundaries, redirect boundary, and `633/633` trace artifacts.
+Browser smoke is N/A because no visible surface changed. Exact state-loop
+timing, repeated-fall invulnerability, recovery shortening, other fall flags,
+helper/custom-state ownership, ZSS/Lua, rollback, and full parity are outside
+this gate.
+
 ## SOCD resolution gate
 
 Acceptance requires one resolved per-tick input copy for documented modes
