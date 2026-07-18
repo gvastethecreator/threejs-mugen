@@ -31,6 +31,16 @@ Entry 458 extends that same gate through deterministic ZIP generation and produc
 | `unsupported` | The controller is known but not executed. |
 | `unknown` | The controller or param was encountered but not classified. |
 
+## Input Policy Notes
+
+- `SOCDResolution` is an input-policy contract rather than a CNS controller.
+  The runtime executes modes `0`-`4` at the shared tick boundary and preserves
+  the result across routing, direct control, command history, pause, and
+  hitpause. Profile defaults are `ikemen-go = 4` and legacy/unknown `= 0`;
+  imported `[Input] SOCDResolution` and explicit runtime options are covered
+  by T256 / ADR 0023. Set insertion order is a bounded stand-in for first/last
+  device timing, not raw IKEMEN InputBuffer parity.
+
 ## Current Trigger Notes
 
 - `AssertSpecial NoKOSnd` is `executed-partial`: a tick-active global flag suppresses automatic common `f:11,0` emission when the round first enters KO; normal and double KO emit per defeated player, while time-over emits none. `NoKOSlow` is now `executed-partial`: KO-frame capture suppresses the bounded default 60-tick slowdown while retaining timeline length. Required legal-fixture trace `mugen-lite-journey-nokoslow` checksum `ceac9f37` and desktop/mobile browser smoke now prove a repository-owned ZIP command/state `210` can assert `nokoslow` on a lethal KO and retain playback `1`; this does not broaden the existing round-flow claim. Post-KO echo suppression, teams, motif ownership, configurable round timing, and full round/audio parity remain blocked.

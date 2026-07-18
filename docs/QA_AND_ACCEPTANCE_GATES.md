@@ -1,5 +1,17 @@
 ﻿# QA And Acceptance Gates
 
+## SOCD resolution gate
+
+Acceptance requires one resolved per-tick input copy for documented modes
+`0`-`4`, profile defaults (`ikemen-go = 4`, legacy/unknown `= 0`), explicit
+option precedence, imported `[Input] SOCDResolution` parsing, and identical
+command-history/direct-control behavior. T256 passes focused `278/278`, full
+`230/230` files / `2388/2388` tests, TypeScript 7, build, repository boundary
+checks, redirect boundary, and `633/633` trace artifacts. Browser smoke is
+N/A because no visible surface changed. Hardware timestamp ordering, raw
+IKEMEN InputBuffer, AI/remapping, netplay, rollback, and full parity are not
+part of this gate.
+
 ## Sequential round context gate
 
 Acceptance requires the imported artifact

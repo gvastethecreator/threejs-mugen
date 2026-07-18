@@ -1,4 +1,11 @@
 ﻿# Supported Features
+- Runtime input now supports bounded IKEMEN `SOCDResolution` modes `0`-`4`
+  through one copied per-tick policy shared by routing, control, command
+  buffers, pause, and hitpause. `ikemen-go` defaults to `4`; `mugen-1.1` and
+  `unknown` default to `0`; explicit runtime options override valid imported
+  `[Input] SOCDResolution` values. Modes `1`/`3` use Set insertion order, so
+  raw hardware timestamp/InputBuffer parity, AI/remapping, netplay, rollback,
+  and full MUGEN/IKEMEN parity remain unsupported.
 - Imported stage layers expose bounded `scalestart`, `scaledelta`, and
   scalar-or-pair `zoomdelta` projection for normal, animated, asset, and
   placeholder backgrounds. Deprecated `yscalestart`/`yscaledelta` use the
