@@ -976,6 +976,110 @@ value = 100
     expect(unknown.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(100);
   });
 
+  it.each(["mugen-1.1", "ikemen-go"] as const)(
+    "runs root State -1 after -3/-2 and before the current state under %s",
+    (runtimeProfile) => {
+      const fighter = createImportedFixture({ id: `root-state-minus-one-order-${runtimeProfile}`, withStateMove: false });
+      fighter.stateEntryControllers = [
+        ...(fighter.stateEntryControllers ?? []),
+        ...parseCns(`
+[State -1, Ordered command phase]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 10
+`).controllers,
+      ];
+      const parsed = parseCns(`
+[Statedef -3]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -3, Ordered pre-command]
+type = VarSet
+trigger1 = 1
+v = 0
+value = 3
+
+[Statedef -2]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -2, Ordered command boundary]
+type = VarSet
+trigger1 = 1
+v = 0
+value = 20
+
+[Statedef 0]
+[State 0, Ordered current state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 100
+`).states;
+      const normalState = parsed.find((state) => state.id === 0 && state.special === undefined);
+      if (!normalState) {
+        throw new Error("Expected ordered root State 0");
+      }
+      fighter.states = [
+        ...(fighter.states ?? []).map((state) =>
+          state.id === 0 && state.special === undefined
+            ? { ...state, controllers: [...state.controllers, ...normalState.controllers] }
+            : state,
+        ),
+        ...parsed.filter((state) => !(state.id === 0 && state.special === undefined)),
+      ];
+
+      const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, { runtimeProfile });
+      expect(runtime.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(130);
+    },
+  );
+
+  it("runs root State -1 for an AI-controlled imported fighter before its heuristic", () => {
+    const fighter = createImportedFixture({ id: "root-state-minus-one-ai", withStateMove: false });
+    fighter.states = [
+      ...(fighter.states ?? []),
+      ...parseCns(`
+[Statedef -3]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -3, AI pre-command boundary]
+type = Null
+trigger1 = 1
+
+[Statedef -2]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -2, AI command boundary]
+type = Null
+trigger1 = 1
+`).states,
+    ];
+    fighter.stateEntryControllers = [
+      ...(fighter.stateEntryControllers ?? []),
+      ...parseCns(`
+[State -1, AI command route]
+type = ChangeState
+trigger1 = 1
+value = 1000
+`).controllers,
+    ];
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, fighter, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+
+    const snapshot = runtime.step({ p1: new Set() });
+    expect(snapshot.actors[1]?.runtime.stateNo).toBe(1000);
+    expect(snapshot.compatibilitySession?.actors[0]?.routedStateEntries).toBeGreaterThan(0);
+  });
+
   it("runs IKEMEN root State -4 and +1 around the existing global passes", () => {
     const createFixtureWithIkemenGlobals = (): DemoFighterDefinition => {
       const fighter = createImportedFixture({ id: "root-ikemen-global-order", withStateMove: false });
@@ -1103,6 +1207,53 @@ value = 1
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.matchPause).toMatchObject({ type: "Pause" });
     expect(snapshot.actors[0]?.runtime.vars[0]).toBe(20);
+  });
+
+  it("keeps root State -1 after global passes during a movable IKEMEN Pause tick", () => {
+    const fighter = createImportedFixture({ id: "root-state-minus-one-pause", withStateMove: false, withPause: true });
+    fighter.states = [
+      ...(fighter.states ?? []),
+      ...parseCns(`
+[Statedef -3]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -3, Pause pre-command boundary]
+type = Null
+trigger1 = 1
+
+[Statedef -2]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -2, Pause command boundary]
+type = Null
+trigger1 = 1
+`).states,
+    ];
+    fighter.stateEntryControllers = [
+      ...(fighter.stateEntryControllers ?? []),
+      ...parseCns(`
+[State -1, Pause command phase]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 10
+`).controllers,
+    ];
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const firstValue = snapshot.actors[0]?.runtime.vars[0] ?? 0;
+    expect(snapshot.matchPause).toMatchObject({ type: "Pause" });
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.tickSchedule?.branch).toBe("pause");
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBeGreaterThan(firstValue);
   });
 
   it("executes Helper-owned default TagOut and later TagIn without stopping Helper CNS", () => {

@@ -27,6 +27,7 @@ export type RuntimeInputControlOpponent = {
 export type RuntimeInputControlHooks = {
   hasStun?: boolean;
   preserveImportedStateMoveType?: boolean;
+  deferControl?: (apply: () => RuntimeInputControlResult) => RuntimeInputControlResult;
   runStateEntrySetup?: () => void;
   tryApplyStateEntry?: () => boolean;
   startMove?: (move: RuntimeInputControlMove) => void;
@@ -37,6 +38,7 @@ export type RuntimeInputControlHooks = {
 
 export type RuntimeInputControlResult =
   | "blocked"
+  | "deferred"
   | "state-entry"
   | "move"
   | "crouch"
@@ -55,6 +57,11 @@ export class RuntimeInputControlWorld {
   ): RuntimeInputControlResult {
     if (isInputBlocked(actor, hooks)) {
       return "blocked";
+    }
+
+    if (hooks.deferControl) {
+      const { deferControl: _deferControl, ...immediateHooks } = hooks;
+      return hooks.deferControl(() => this.handlePlayerInput(actor, input, immediateHooks));
     }
 
     hooks.runStateEntrySetup?.();
@@ -124,6 +131,16 @@ export class RuntimeInputControlWorld {
   ): RuntimeInputControlResult {
     if (isInputBlocked(actor, hooks)) {
       return "blocked";
+    }
+
+    if (hooks.deferControl) {
+      const { deferControl: _deferControl, ...immediateHooks } = hooks;
+      return hooks.deferControl(() => this.handleSimpleAi(actor, opponent, tick, immediateHooks));
+    }
+
+    hooks.runStateEntrySetup?.();
+    if (hooks.tryApplyStateEntry?.()) {
+      return "state-entry";
     }
 
     actor.aiCooldown = Math.max(0, actor.aiCooldown - 1);

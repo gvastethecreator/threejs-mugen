@@ -36,6 +36,31 @@ describe("RuntimeInputControlWorld", () => {
     expect(calls).toEqual(["setup", "entry"]);
   });
 
+  it("can defer State -1 and local control as one sampled intent", () => {
+    const world = new RuntimeInputControlWorld();
+    const fighter = actor();
+    const calls: string[] = [];
+    const deferred: Array<() => unknown> = [];
+
+    const result = world.handlePlayerInput(fighter, new Set(["x"]), {
+      runStateEntrySetup: () => calls.push("setup"),
+      tryApplyStateEntry: () => {
+        calls.push("entry");
+        return false;
+      },
+      startMove: (move) => calls.push(`move:${move}`),
+      deferControl: (apply) => {
+        deferred.push(apply);
+        return "deferred";
+      },
+    });
+
+    expect(result).toBe("deferred");
+    expect(calls).toEqual([]);
+    expect(deferred[0]?.()).toBe("move");
+    expect(calls).toEqual(["setup", "entry", "move:punch"]);
+  });
+
   it("owns player crouch, jump, walk, and idle control mutations", () => {
     const world = new RuntimeInputControlWorld();
     const calls: string[] = [];
