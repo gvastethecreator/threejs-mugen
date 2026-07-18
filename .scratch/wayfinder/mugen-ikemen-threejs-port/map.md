@@ -311,6 +311,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Common1 NoFallHitFlag admission](tickets/260-common1-no-fall-hit-flag.md) - resolved bounded in `71f0d265` / ADR 0027: source-pinned IKEMEN `NoFallHitFlag` is typed and one shared direct HitDef fall-admission predicate now covers root admission, regular direct combat, equal-priority preparation, and helpers. Explicit `F` is required for a falling target unless the attacker asserts `NoFallHitFlag`; omitted hitflags remain unchanged. Focused `5` files / `83/83`, full `230/230` files / `2411/2411`, TypeScript 7, build, boundaries, redirect boundary, `633/633` traces, and diff hygiene pass; browser smoke is N/A. Default hitflag inference, projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
 
+- [Explicit HitFlag minus/plus admission](tickets/261-hitflag-minus-plus-admission.md) - planned: source-pinned IKEMEN `hittmp` admission will add compact explicit `-`/`+` handling over the current direct root, regular, equal-priority, and helper paths. Omitted/default hitflags, state-type `H/L/A/D` filtering, projectiles, reversals, exact `hittmp`/`acttmp` timing, and full parity remain open.
+
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor; the promoted snapshot is visible and local-project reopen now has a green browser gate.
