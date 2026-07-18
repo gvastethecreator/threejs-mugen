@@ -64,6 +64,28 @@ describe("RuntimeRecoverySystem", () => {
     });
   });
 
+  it("does not replay a legacy ground-impact count as a second fall on the same entry", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5100,
+      stateElapsed: 1,
+      moveType: "H",
+      fallCount: 1,
+      fallCountedGroundImpact: true,
+      downRecoverTime: 60,
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.hitFall).toMatchObject({
+      fallCount: 1,
+      fallCountedGroundImpact: true,
+      downRecoverTime: 60,
+      common1FallMechanicsStateNo: 5100,
+    });
+  });
+
   it("honors NoFallCount at the Common1 state-entry boundary", () => {
     const system = new RuntimeRecoverySystem();
     const fighter = actor({
@@ -264,6 +286,7 @@ function actor(options: {
   recoverTime?: number;
   downRecoverTime?: number;
   fallCount?: number;
+  fallCountedGroundImpact?: boolean;
   hitBy?: RuntimeRecoveryActor["runtime"]["hitBy"];
   moveType?: "I" | "A" | "H";
   physics?: "S" | "C" | "A" | "N";
@@ -292,6 +315,9 @@ function actor(options: {
         recover: true,
         recoverTime: options.recoverTime,
         ...(options.fallCount === undefined ? {} : { fallCount: options.fallCount }),
+        ...(options.fallCountedGroundImpact === undefined
+          ? {}
+          : { fallCountedGroundImpact: options.fallCountedGroundImpact }),
         downRecoverTime: options.downRecoverTime,
       },
       hitBy: options.hitBy,

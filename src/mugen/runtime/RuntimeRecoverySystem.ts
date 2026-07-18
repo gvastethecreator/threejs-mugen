@@ -69,12 +69,13 @@ export class RuntimeRecoverySystem {
     ) {
       return;
     }
-    const previousEntry = clearCommon1FallEntryMarkers(hitFall);
+    const countedByEarlierGroundImpact = hitFall.fallCountedGroundImpact === true;
+    const previousEntry = countedByEarlierGroundImpact ? hitFall : clearCommon1FallEntryMarkers(hitFall);
     let nextHitFall: NonNullable<CharacterRuntimeState["hitFall"]> = {
       ...previousEntry,
       common1FallMechanicsStateNo: actor.runtime.stateNo,
     };
-    if (!actor.runtime.assertSpecial?.noFallCount) {
+    if (!actor.runtime.assertSpecial?.noFallCount && !countedByEarlierGroundImpact) {
       nextHitFall = {
         ...nextHitFall,
         fallCount: (previousEntry.fallCount ?? 0) + 1,
