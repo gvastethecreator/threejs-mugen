@@ -315,6 +315,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Explicit HitFlag state-type admission](tickets/262-hitflag-state-type-admission.md) - resolved bounded in `6c10303f` / ADR 0029: explicit `H/L/A/D/M` target-state admission now extends the shared direct predicate while preserving omitted/default hitflags. Projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
 - [Explicit projectile HitFlag admission](tickets/263-projectile-hitflag-admission.md) - resolved bounded in `f6990dff` / ADR 0030: static Projectile and ModifyProjectile HitFlags now reach typed runtime state, mutation, snapshots, and shared player-contact admission. Omitted/default inference, dynamic string expressions, reversals, exact projectile timing, and full parity remain open.
+- [Imported HitFlag default provenance](tickets/264-imported-hitflag-defaults.md) - planned: source-scoped omitted `HitDef.hitflag` `MAF` inference will cover imported direct and Helper dispatch while preserving demo/synthetic omission behavior. Projectile defaults, reversals, exact `acttmp`/`hittmp`, temporal parity, and full parity remain open.
 
 ## Not Yet Specified
 
