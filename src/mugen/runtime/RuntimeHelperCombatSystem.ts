@@ -21,6 +21,7 @@ import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type { RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
   canRuntimeBeHitBy,
+  canRuntimeHitFallenTarget,
   collisionBoxesIntersect,
   hasRuntimeBoxContact,
   hitAttributeMatches,
@@ -126,6 +127,10 @@ export class RuntimeHelperCombatWorld {
       }
       if (input.canDefenderBeHit?.(input.defender) === false) {
         input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via SuperPause unhittable`);
+        continue;
+      }
+      if (!canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: input.defender.runtime, hitFlag: move.hitFlag })) {
+        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via fall HitFlag/NoFallHitFlag`);
         continue;
       }
       if (!canRuntimeBeHitBy(input.defender.runtime, move.attr ?? "S,NA")) {

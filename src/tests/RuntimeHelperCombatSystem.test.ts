@@ -96,6 +96,39 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(audioOperations).toEqual(["p1:S5,1"]);
   });
 
+  it("rejects helper direct HitDef admission against a falling target without F", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "43", name: '"Fall Filter Assist"' }));
+    helper.currentMove = move({ hitFlag: "H,L,A" });
+    helper.moveTick = 1;
+    const defender = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } }, life: 100 }),
+    });
+    const logs: string[] = [];
+
+    new RuntimeHelperCombatWorld().resolveDirect({
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld,
+      runtimeTick: 33,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: stateHooks([], [5000]),
+      log: (line) => logs.push(line),
+    });
+
+    expect(logs).toEqual(["P2 rejected Helper Fall Filter Assist S,NA via fall HitFlag/NoFallHitFlag"]);
+    expect(defender.runtime.life).toBe(100);
+    expect(helper.hasHit).toBe(false);
+  });
+
   it("suppresses standby Helper direct HitDef and resumes it after TagIn", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();

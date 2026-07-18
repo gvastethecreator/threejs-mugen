@@ -539,6 +539,7 @@ function applyAssertSpecialController(
     if (flag.name === "nofastrecoverfromliedown") current.noFastRecoverFromLieDown = true;
     if (flag.name === "nofalldefenceup") current.noFallDefenceUp = true;
     if (flag.name === "nofallcount") current.noFallCount = true;
+    if (flag.name === "nofallhitflag") current.noFallHitFlag = true;
     if (flag.name === "projtypecollision") current.projTypeCollision = true;
     if (flag.name === "runfirst") current.runFirst = true;
     if (flag.name === "runlast") current.runLast = true;

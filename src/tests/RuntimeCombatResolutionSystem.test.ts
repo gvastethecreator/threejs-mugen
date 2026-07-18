@@ -56,6 +56,87 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(shouldHit ? 75 : 100);
   });
 
+  it.each([
+    ["without F", "H,L,A", undefined, 100],
+    ["with NoFallHitFlag", "H,L,A,F", true, 100],
+  ] as const)("rejects a falling target %s", (_label, hitFlag, noFallHitFlag, expectedLife) => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const logs: string[] = [];
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ hitFlag, damage: 25 }),
+      runtime: runtimeState(noFallHitFlag ? {
+        assertSpecial: { flags: ["nofallhitflag"], globalFlags: [], noFallHitFlag: true },
+      } : {}),
+      moveTick: 1,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ life: 100, moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } }),
+    });
+
+    const result = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker,
+      defender,
+      ...directInputBase(contactWorld, directCombatWorld, logs),
+    });
+
+    expect(result).toEqual({ kind: "skipped", reason: "fall-hitflag-rejected" });
+    expect(defender.runtime.life).toBe(expectedLife);
+    expect(logs).toEqual(["P2 rejected P1 S,NA via fall HitFlag/NoFallHitFlag"]);
+  });
+
+  it("allows explicit F and preserves omitted hitflag behavior for a falling target", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const allowed = actor("p1", "P1", contactWorld, {
+      currentMove: move({ hitFlag: "H,L,A,F", damage: 25 }),
+      moveTick: 1,
+    });
+    const omitted = actor("p3", "P3", contactWorld, {
+      currentMove: move({ damage: 15 }),
+      moveTick: 1,
+    });
+    const fallingAllowed = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ life: 100, moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } }),
+    });
+    const fallingOmitted = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ life: 100, moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } }),
+    });
+
+    expect(world.resolveDirect({
+      attacker: allowed,
+      defender: fallingAllowed,
+      ...directInputBase(contactWorld, directCombatWorld, []),
+    })).toMatchObject({ kind: "hit", damage: 25 });
+    expect(world.resolveDirect({
+      attacker: omitted,
+      defender: fallingOmitted,
+      ...directInputBase(contactWorld, directCombatWorld, []),
+    })).toMatchObject({ kind: "hit", damage: 15 });
+  });
+
+  it("filters a falling target before equal-priority prepared hits mutate it", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ priority: 4, hitFlag: "H,L,A", damage: 17 }),
+      moveTick: 1,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, life: 100, moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } }),
+      currentMove: move({ priority: 4, damage: 23 }),
+      moveTick: 1,
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(world.resolvePriorityClash({ left: attacker, right: defender, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [attacker, defender], ...base })).toBe(0);
+    expect(defender.runtime.life).toBe(100);
+    expect(attacker.runtime.life).toBe(100);
+  });
+
   it("applies equal-priority Hit versus Hit as one bilateral transaction", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canRuntimeBeHitBy,
+  canRuntimeHitFallenTarget,
   collisionBoxesIntersect,
   findRuntimeHitOverride,
   hasRuntimeGuardDistance,
@@ -69,6 +70,21 @@ describe("CombatResolver", () => {
     expect(canRuntimeBeHitBy(actor({ hitBy: { slot1: { mode: "deny", attr: "S,NA", remaining: 8 } } }), "S,NA")).toBe(false);
     expect(canRuntimeBeHitBy(actor({ hitBy: { slot1: { mode: "allow", attr: "S,NA", remaining: 8 } } }), "A,NA")).toBe(false);
     expect(canRuntimeBeHitBy(actor({ hitBy: { slot1: { mode: "allow", attr: "S,NA", remaining: 0 } } }), "A,NA")).toBe(true);
+  });
+
+  it("applies the bounded F and NoFallHitFlag predicate only to falling targets", () => {
+    const falling = actor({ moveType: "H", hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } });
+    const attacker = actor();
+
+    expect(canRuntimeHitFallenTarget({ attacker, defender: falling, hitFlag: "H, L, A" })).toBe(false);
+    expect(canRuntimeHitFallenTarget({ attacker, defender: falling, hitFlag: "H, L, A, F" })).toBe(true);
+    expect(canRuntimeHitFallenTarget({
+      attacker: { ...attacker, assertSpecial: { flags: ["nofallhitflag"], globalFlags: [], noFallHitFlag: true } },
+      defender: falling,
+      hitFlag: "H,L,A,F",
+    })).toBe(false);
+    expect(canRuntimeHitFallenTarget({ attacker, defender: falling })).toBe(true);
+    expect(canRuntimeHitFallenTarget({ attacker, defender: actor(), hitFlag: "H,L,A" })).toBe(true);
   });
 
   it("finds active hit overrides by attribute", () => {

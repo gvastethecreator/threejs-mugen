@@ -125,6 +125,27 @@ export function canRuntimeBeHitBy(defender: Pick<CharacterRuntimeState, "hitBy">
   return true;
 }
 
+export function hasRuntimeHitFlag(hitFlag: string | undefined, expectedFlag: string): boolean {
+  const normalizedExpected = expectedFlag.trim().toUpperCase();
+  if (!hitFlag || !normalizedExpected) return false;
+  return hitFlag.split(",").some((token) => token.trim().toUpperCase() === normalizedExpected);
+}
+
+export function canRuntimeHitFallenTarget(input: {
+  attacker: Pick<CharacterRuntimeState, "assertSpecial">;
+  defender: Pick<CharacterRuntimeState, "moveType" | "hitFall">;
+  hitFlag?: string;
+}): boolean {
+  if (
+    input.hitFlag === undefined
+    || input.defender.moveType !== "H"
+    || input.defender.hitFall?.falling !== true
+  ) {
+    return true;
+  }
+  return hasRuntimeHitFlag(input.hitFlag, "F") && input.attacker.assertSpecial?.noFallHitFlag !== true;
+}
+
 export function findRuntimeHitOverride(
   defender: Pick<CharacterRuntimeState, "hitOverrides">,
   attackAttr: string,

@@ -71,6 +71,45 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "no-contact" });
   });
 
+  it("rejects an explicit direct HitDef without F against a falling getter", () => {
+    const attacker = actor("p1", 1, 1, 0, { move: true, hitFlag: "H,L,A" });
+    const getter = actor("p2", 2, 2, 0, { falling: true });
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({ roots: [attacker, getter], getHurtBoxes: () => hurt });
+
+    expect(result.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "fall-hitflag-rejected" });
+    expect(result.admittedPairIds).toEqual([]);
+  });
+
+  it("allows explicit F against a falling getter unless the attacker opts out", () => {
+    const allowed = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, hitFlag: "H,L,A,F" }),
+        actor("p2", 2, 2, 0, { falling: true }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    const rejected = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, hitFlag: "H,L,A,F", noFallHitFlag: true }),
+        actor("p2", 2, 2, 0, { falling: true }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+
+    expect(allowed.admittedPairIds).toEqual(["p1->p2"]);
+    expect(rejected.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "fall-hitflag-rejected" });
+  });
+
+  it("preserves omitted hitflag behavior against a falling getter", () => {
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [actor("p1", 1, 1, 0, { move: true }), actor("p2", 2, 2, 0, { falling: true })],
+      getHurtBoxes: () => hurt,
+    });
+
+    expect(result.admittedPairIds).toEqual(["p1->p2"]);
+  });
+
   it("applies HitDef AffectTeam before root collision admission", () => {
     const sameSideDefault = actor("p1", 1, 1, 0, { move: true });
     const sameSideFriendly = actor("p3", 3, 1, 0, { move: true, affectTeam: -1 });
@@ -194,6 +233,9 @@ function actor(
     moveTick?: number;
     denyHit?: boolean;
     noHurt?: boolean;
+    hitFlag?: string;
+    falling?: boolean;
+    noFallHitFlag?: boolean;
     x?: number;
   } = {},
 ): RuntimeRootDirectHitAdmissionActor {
@@ -210,8 +252,13 @@ function actor(
     runtime: {
       pos: { x, y: 0 },
       facing: 1,
+      moveType: options.falling ? "H" : "I",
+      ...(options.falling ? { hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } } : {}),
       ...(options.reversal ? { reversal: { attr: "S,NA", hitPause: 0 } } : {}),
       ...(options.denyHit ? { hitBy: { slot1: { mode: "deny" as const, attr: "S,NA", remaining: 1 } } } : {}),
+      ...(options.noFallHitFlag ? {
+        assertSpecial: { flags: ["nofallhitflag"], globalFlags: [], noFallHitFlag: true },
+      } : {}),
     },
     currentMove: options.move ? {
       actionId: 200,
@@ -224,6 +271,7 @@ function actor(
       hitStun: 0,
       push: 0,
       hitbox: { x1: 0, y1: -20, x2: 20, y2: 0 },
+      hitFlag: options.hitFlag,
       requiresHitDef: options.requiresHitDef,
       isReversal: options.isReversal,
       affectTeam: options.affectTeam,

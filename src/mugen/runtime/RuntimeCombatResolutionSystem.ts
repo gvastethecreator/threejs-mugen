@@ -2,6 +2,7 @@ import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { CollisionBox, MugenCollisionBoxType } from "../model/CollisionBox";
 import {
   canRuntimeBeHitBy,
+  canRuntimeHitFallenTarget,
   collisionBoxesIntersect,
   findRuntimeHitOverride,
   hasRuntimeBoxContact,
@@ -159,6 +160,7 @@ export type RuntimeDirectCombatSkipReason =
   | "no-contact"
   | "superpause-unhittable"
   | "hitby-rejected"
+  | "fall-hitflag-rejected"
   | "affectteam-rejected"
   | "priority-no-hit"
   | "hitoverride-custom-state-miss";
@@ -354,6 +356,11 @@ export class RuntimeCombatResolutionWorld {
       input.log(message);
       return { kind: "skipped", reason: "superpause-unhittable" };
     }
+    if (!canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: defender.runtime, hitFlag: move.hitFlag })) {
+      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via fall HitFlag/NoFallHitFlag`;
+      input.log(message);
+      return { kind: "skipped", reason: "fall-hitflag-rejected" };
+    }
     if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")) {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`;
       input.log(message);
@@ -524,6 +531,7 @@ export class RuntimeCombatResolutionWorld {
       : hasRuntimeBoxContact(attackBox, defender.runtime, targetBoxes);
     if (!hasContact
       || input.canDefenderBeHit?.(defender) === false
+      || !canRuntimeHitFallenTarget({ attacker: attacker.runtime, defender: defender.runtime, hitFlag: move.hitFlag })
       || !canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
       || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
       return undefined;
