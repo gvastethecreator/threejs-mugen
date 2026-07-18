@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-18 - T266-T268 source authority and SOCD closeout
+
+Closed three bounded runtime/control slices after the grouped checkpoint.
+
+- T266 `SourceAuthorityManifest/v0` is implemented in `20b50cac`: canonical
+  normative/local source identity, relative file SHA-256 delta, dirty-cache
+  guard, and separate `unclassified` semantic review.
+- T267 stateful SOCD is implemented in `69aacf86`: one four-slot state per
+  input seat preserves modes `1`/`3` across reconstructed sets and resets with
+  match/round runtime reset.
+- T268 SOCD authority is implemented in `b241cc65`:
+  `RuntimeSocdResolutionAuthority/v0` exposes runtime/package/profile source,
+  explicit-option precedence, package conflicts, and invalid-option diagnostics.
+
+Evidence: T266 focused `1` file / `6` tests; T267 focused `2` files / `268`
+tests; T268 focused `2` files / `270` tests. Grouped verification passes
+`231/231` test files / `2435/2435` tests, `pnpm typecheck`, `pnpm build`,
+repository boundaries, redirect boundary, and `pnpm qa:trace` `633/633`
+artifacts (`599` required, `34` optional). Browser smoke is N/A because all
+three slices are compatibility/input runtime changes. Vite retains the known
+large JavaScript chunk warning; the trace command still reports unrelated
+WebSocket port `24678` occupancy while ending passed.
+
+Allowed claims: reproducible source metadata, bounded temporal SOCD state, and
+observable current SOCD precedence. Blocked claims: normative checkout
+reconciliation/semantic classification, raw device/InputBuffer parity,
+match-level configuration ownership, replay/netplay serialization, and full
+MUGEN/IKEMEN parity. Scores do not move. See ADRs 0033-0034 and reports
+`2026-07-18-stateful-socd-temporal-closeout.md` and
+`2026-07-18-socd-resolution-authority-closeout.md`.
+
 ## Entry 555 - bounded ProjTypeCollision collision policy/v1
 
 Closed the source-backed IKEMEN `ProjTypeCollision` boundary. `AssertSpecial`
@@ -1216,14 +1247,18 @@ build, boundaries, redirect boundary, diff hygiene, and `633/633` traces
 (`599` required, `34` optional). Projectile timing, reversals, clashes, exact
 `acttmp`/`hittmp`, and full MUGEN/IKEMEN parity stay blocked.
 
-## Runtime lane T266 - SourceAuthorityManifest/v0 planned
+## Runtime lane T266-T268 - source authority and SOCD bounded closeout
 
-Planned in ticket 266 and research dated 2026-07-18: add a canonical
-compatibility-boundary manifest for the normative IKEMEN revision, local-cache
-revision/state, relative source-file SHA-256 records, and a derived file delta.
-Semantic review remains explicitly unclassified until a later pin-delta audit;
-matching bytes must not become a parity claim. No runtime behavior, score, or
-full MUGEN/IKEMEN claim changes in the planned slice.
+Implemented in `20b50cac`, `69aacf86`, and `b241cc65`: the compatibility
+boundary now has `SourceAuthorityManifest/v0`; per-seat SOCD first-direction
+state persists for modes `1`/`3`; and
+`RuntimeSocdResolutionAuthority/v0` exposes runtime/package/profile precedence
+and package conflicts. Focused coverage is T266 `1` file / `6` tests, T267 `2`
+files / `268` tests, and T268 `2` files / `270` tests. Grouped verification
+passes `231/231` files / `2435/2435` tests, TypeScript 7, build, boundaries,
+redirect boundary, diff hygiene, and `633/633` traces. Semantic source review,
+raw input-buffer parity, match-level config ownership, and full parity remain
+open; no score movement.
 
 ## Entry 479 - MUGEN-lite milestone adjudication
 

@@ -118,6 +118,28 @@ N/A because no visible surface changed. Hardware timestamp ordering, raw
 IKEMEN InputBuffer, AI/remapping, netplay, rollback, and full parity are not
 part of this gate.
 
+## Stateful SOCD temporal gate
+
+Acceptance requires persistent per-seat first-direction state for modes `1`
+and `3`, clearing when an opposing pair is released, and reset at match/round
+runtime reset. T267 passes focused `2` files / `268` tests. The grouped
+checkpoint passes `231/231` files / `2435/2435` tests, TypeScript 7, production
+build, repository boundaries, redirect boundary, and `633/633` trace artifacts.
+Browser smoke is N/A because no visible surface changed. Raw device timestamp
+ordering, complete IKEMEN `InputBuffer`, AI/remapping, rollback/netplay, and
+full input parity remain outside this gate.
+
+## SOCD resolution authority gate
+
+Acceptance requires valid runtime-option precedence, P1/P2/profile fallback,
+visible package-conflict diagnostics, invalid-option diagnostics, and a
+defensive authority projection from the match runtime. T268 passes focused `2`
+files / `270` tests. The same grouped checkpoint passes `231/231` files /
+`2435/2435` tests, TypeScript 7, production build, repository boundaries,
+redirect boundary, and `633/633` trace artifacts. Browser smoke is N/A because
+no visible surface changed. Final match-level config ownership, replay/netplay
+serialization, and full package/input parity remain outside this gate.
+
 ## Sequential round context gate
 
 Acceptance requires the imported artifact

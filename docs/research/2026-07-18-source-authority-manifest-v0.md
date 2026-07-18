@@ -47,10 +47,20 @@ unique file records, digest format, derived delta, and checksum. It does not
 infer semantic equivalence from matching bytes and does not allow a dirty cache
 to be represented as clean.
 
+## Implementation outcome
+
+Implemented in `20b50cac` as `SourceAuthorityManifest/v0`. Focused coverage is
+`1` file / `6` tests. The grouped checkpoint passes `231/231` files /
+`2435/2435` tests, TypeScript 7, build, repository boundaries, redirect
+boundary, and `633/633` trace artifacts. No runtime behavior or compatibility
+score changed.
+
 ## Deferred work
 
-- T267 may use this manifest to attach file-level semantic-delta findings to
-  `input.go`, compiler, default-config, round, projectile, and redirect source.
+- The next source-authority slice must materialize a real current-cache delta
+  against the normative revision and classify semantic findings for selected
+  files such as `input.go`, compiler, default-config, round, projectile, and
+  redirect source.
 - Fetching or pinning the normative checkout is not part of this model pass.
 - Runtime behavior, scanner breadth, scores, and full MUGEN/IKEMEN parity remain
   outside the claim.

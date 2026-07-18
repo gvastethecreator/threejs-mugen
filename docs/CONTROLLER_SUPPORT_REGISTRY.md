@@ -38,8 +38,10 @@ Entry 458 extends that same gate through deterministic ZIP generation and produc
   the result across routing, direct control, command history, pause, and
   hitpause. Profile defaults are `ikemen-go = 4` and legacy/unknown `= 0`;
   imported `[Input] SOCDResolution` and explicit runtime options are covered
-  by T256 / ADR 0023. Set insertion order is a bounded stand-in for first/last
-  device timing, not raw IKEMEN InputBuffer parity.
+  by T256 / ADR 0023. T267 / ADR 0033 preserves bounded per-seat first
+  direction for modes `1`/`3`; T268 / ADR 0034 exposes source precedence and
+  package conflicts. Set input still cannot provide raw device timestamps or
+  complete IKEMEN InputBuffer parity.
 
 ## Current Trigger Notes
 
