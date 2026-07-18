@@ -309,6 +309,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Common1 repeated-fall recovery](tickets/259-common1-repeated-fall-recovery.md) - resolved bounded in `33ead1f9` / regression fix `9a47e635` / ADR 0026: imported-root Common1 `5070`/`5100` entry mechanics now count idempotently unless `NoFallCount`, shorten a second counted `5100` `down.recovertime`, and install typed `deny SCA / 180` recovery protection at the `<= 10` boundary while preserving the secondary `HitBy` slot and legacy controller count. Focused `7` files / `60/60`, full `230/230` files / `2401/2401` tests; grouped TypeScript 7, build, boundaries, redirect boundary, `633/633` traces, and diff hygiene are recorded in the closeout report; browser smoke is N/A. `acttmp`, `NoFallHitFlag`, generic hitflag `F`, exact MUGEN infinite duration, fall lifetime/reset parity, helper/custom-state ownership, ZSS/Lua, rollback, and full parity remain open.
 
+- [Common1 NoFallHitFlag admission](tickets/260-common1-no-fall-hit-flag.md) - implementation in progress: source-pinned IKEMEN `NoFallHitFlag` is being mapped into the typed AssertSpecial state and one shared direct HitDef fall-admission predicate across roots, regular direct combat, and helpers. Omitted hitflags, projectiles, reversals, exact `hittmp`/`acttmp`, and full parity remain open.
+
 ## Not Yet Specified
 
 - Minimum Studio editing surface that graduates the current workbench from evidence shell to practical editor; the promoted snapshot is visible and local-project reopen now has a green browser gate.
