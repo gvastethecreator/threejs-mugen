@@ -30,6 +30,10 @@ evidence for ZSS or wrong-format sources where applicable.
 - `pnpm check:boundaries`: passed.
 - `pnpm check:redirect-boundary`: passed.
 - `git diff --check`: passed for the implementation and closeout patch.
+- The trace runner logged that WebSocket port `24678` was already in use by an
+  existing Node process, but its final JSON status was `passed` and all
+  `633/633` artifacts completed successfully; no trace assertion failure was
+  observed.
 
 ## Claim allowed
 
