@@ -1,9 +1,12 @@
 # Ticket 251: helper command-buffer ownership
 
-- Status: mapped, implementation pending
+- Status: resolved bounded implementation
 - Date: 2026-07-18
 - Scope: runtime input history used by IKEMEN helpers with `keyctrl = 1`
 - Depends on: Ticket 241 / ADR 0008, Ticket 250 / ADR 0017
+- Implementation: `ba6a7e0b`
+- Pause follow-up: `7968bc65`
+- Closeout: [`docs/reports/2026-07-18-helper-command-buffer-ownership-closeout.md`](../../../docs/reports/2026-07-18-helper-command-buffer-ownership-closeout.md)
 
 ## Question
 
@@ -36,6 +39,16 @@ ZSS/Lua command compilation, CommonCmd loading, command remapping and SOCD
 policy, helper-specific controller identities beyond command history, exact
 upstream `InputBuffer` internals, rollback/netplay, and complete parity.
 
+## Outcome
+
+`keyctrl = 1` helpers in the `ikemen-go` profile now receive a local
+`CommandBuffer` backed by the owning character's parsed commands. The owning
+root's normalized current input is sampled once before helper controller
+execution, including active, regular-pause, and hitpause helper advances.
+Command predicates for `keyctrl = 0` remain closed. MUGEN 1.1 keeps the prior
+owner-buffer compatibility route instead of silently switching to IKEMEN local
+history.
+
 ## Acceptance evidence
 
 - A focused helper test proves a `keyctrl = 1` helper can activate a command
@@ -44,8 +57,17 @@ upstream `InputBuffer` internals, rollback/netplay, and complete parity.
   access from the same sampled input.
 - Production spawn wiring passes the owner's parsed command definitions and
   current input into helper advancement.
+- Pause and hitpause bridges forward the actor input to helper effect advances.
 - Batched runtime tests, TypeScript 7 typecheck, build, repository boundary
   guards, and `git diff --check` pass before closeout.
+
+## Verification
+
+- Helper/effect/match focus after implementation: `297/297` tests.
+- Pause/helper/match focus after pause forwarding: `323/323` tests.
+- Final full suite: `230/230` files, `2373/2373` tests.
+- `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`,
+  `pnpm check:redirect-boundary`, and `git diff --check` passed.
 
 ## Source basis
 
