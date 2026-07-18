@@ -37,6 +37,7 @@ export type ResolvedCharacterFiles = {
   def?: string;
   cmd?: string;
   commonCommands?: string[];
+  commonConstants?: string[];
   cns?: string;
   states: string[];
   commonStates: string[];

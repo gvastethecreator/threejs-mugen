@@ -156,6 +156,22 @@ export class MugenCharacterLoader {
       return result;
     };
 
+    const commonConstantPaths = resolveGlobalCommonConstantPaths(systemAssets?.gameConfig, resolver, diagnostics);
+    const supportedCommonConstantPaths = commonConstantPaths.filter((path) => {
+      if (!/\.zss$/i.test(path)) {
+        return true;
+      }
+      unsupported.report("ikemen", "Common.Const ZSS", {
+        location: path,
+        fallback: "Only INI-compatible Common.Const sources are parsed by the bounded loader",
+      });
+      return false;
+    });
+    files.commonConstants = supportedCommonConstantPaths;
+    for (const commonConstantPath of supportedCommonConstantPaths) {
+      Object.assign(constants, parseCnsFile(commonConstantPath).parsed.constants);
+    }
+
     if (files.cns) {
       Object.assign(constants, parseCnsFile(files.cns).parsed.constants);
     }
@@ -470,6 +486,45 @@ function resolveGlobalCommonCommandPaths(
   return paths;
 }
 
+function resolveGlobalCommonConstantPaths(
+  config: MugenGameConfig | undefined,
+  resolver: PathResolver,
+  diagnostics: MugenDiagnostic[],
+): string[] {
+  if (!config) {
+    return [];
+  }
+  const common = getConfigSection(config.rawSections, "Common");
+  const configPath = config.gameSpace?.sourcePath ?? "data/mugen.cfg";
+  const entries = Object.entries(common)
+    .filter(([key]) => /^const\d*$/i.test(key))
+    .sort(([left], [right]) => commonConstantConfigRank(left) - commonConstantConfigRank(right));
+  const paths: string[] = [];
+
+  for (const [, value] of entries) {
+    for (const reference of value.split(",").map((item) => item.trim()).filter(Boolean)) {
+      const normalizedReference = reference.replace(/^['"]|['"]$/g, "");
+      const rootPath = resolver.resolve("", normalizedReference);
+      const configRelativePath = resolver.resolve(configPath, normalizedReference);
+      const candidates = normalizedReference.includes("/") || normalizedReference.includes("\\")
+        ? [rootPath, configRelativePath]
+        : [configRelativePath, rootPath];
+      const resolved = candidates.find((candidate) => resolver.exists(candidate)) ?? candidates.find(Boolean);
+      if (!resolved || !resolver.exists(resolved)) {
+        diagnostics.push({
+          severity: "warning",
+          format: "loader",
+          file: configPath,
+          message: `Referenced global common constant file was not found: ${reference}`,
+        });
+        continue;
+      }
+      paths.push(resolved);
+    }
+  }
+  return paths;
+}
+
 function getConfigSection(rawSections: Record<string, Record<string, string>>, expected: string): Record<string, string> {
   return Object.entries(rawSections).find(([section]) => section.toLowerCase() === expected.toLowerCase())?.[1] ?? {};
 }
@@ -482,6 +537,11 @@ function commonStateConfigRank(key: string): number {
 function commonCommandConfigRank(key: string): number {
   const normalized = key.toLowerCase();
   return normalized === "cmd" ? 0 : Number(normalized.slice("cmd".length)) + 1;
+}
+
+function commonConstantConfigRank(key: string): number {
+  const normalized = key.toLowerCase();
+  return normalized === "const" ? 0 : Number(normalized.slice("const".length)) + 1;
 }
 
 function createEmptyFiles(): ResolvedCharacterFiles {

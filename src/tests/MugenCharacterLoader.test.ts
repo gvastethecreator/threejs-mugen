@@ -318,6 +318,102 @@ GameHeight = 720
       expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.Cmd ZSS" })]),
     );
   });
+
+  it("seeds constants from ordered Common.Const sources before character CNS overrides", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common-const/common-const.def",
+      textBytes(`[Info]
+name = "Common Const"
+
+[Files]
+cns = common-const.cns
+`),
+    );
+    vfs.addFile(
+      "chars/common-const/common-const.cns",
+      textBytes(`[Constants]
+shared.value = 99
+character.only = 7
+`),
+    );
+    vfs.addFile(
+      "data/common-first.const",
+      textBytes(`[Constants]
+shared.value = 1
+common.only = 10
+`),
+    );
+    vfs.addFile(
+      "data/common-second.const",
+      textBytes(`[Constants]
+shared.value = 2
+second.only = 20
+`),
+    );
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+Const1 = common-second.const
+Const = data/common-first.const
+Const2 = data/missing.const
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common-const.zip", vfs);
+
+    expect(character.files.commonConstants).toEqual(["data/common-first.const", "data/common-second.const"]);
+    expect(character.constants).toMatchObject({
+      "shared.value": 99,
+      "common.only": 10,
+      "second.only": 20,
+      "character.only": 7,
+    });
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Referenced global common constant file was not found: data/missing.const" }),
+    );
+  });
+
+  it("loads Common.Const without character CNS and blocks ZSS sources", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common-const-only/common-const-only.def",
+      textBytes(`[Info]
+name = "Common Const Only"
+`),
+    );
+    vfs.addFile(
+      "data/common.const",
+      textBytes(`[Constants]
+common.only = 42
+`),
+    );
+    vfs.addFile("data/common.zss", textBytes("[Constants]\nblocked = 1"));
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+Const = data/common.const, data/common.zss
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common-const-only.zip", vfs);
+
+    expect(character.files.cns).toBeUndefined();
+    expect(character.files.commonConstants).toEqual(["data/common.const"]);
+    expect(character.constants["common.only"]).toBe(42);
+    expect(character.constants["blocked"]).toBeUndefined();
+    expect(character.compatibility.unsupported).toEqual(
+      expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.Const ZSS" })]),
+    );
+  });
 });
 
 function stateSourceFixture(options: { withCharacterState120: boolean }) {
