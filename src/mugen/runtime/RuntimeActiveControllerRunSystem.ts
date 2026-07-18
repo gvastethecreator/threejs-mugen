@@ -1,4 +1,5 @@
 import type { ControllerIr } from "../compiler/RuntimeIr";
+import type { MugenStateSpecial } from "../model/MugenState";
 import {
   RuntimeActiveControllerDispatchWorld,
   type RuntimeActiveControllerDispatchHooks,
@@ -24,6 +25,7 @@ export type RuntimeActiveControllerRunInput<TActor extends RuntimeActiveControll
   opponent: TActor;
   tick: number;
   stateNo?: number;
+  stateSpecial?: MugenStateSpecial;
   stateOwner?: TActor;
   onlyIgnoreHitPause?: boolean;
   controllerIgnoresHitPause: (controller: ControllerIr) => boolean;
@@ -50,6 +52,7 @@ export class RuntimeActiveControllerRunWorld {
       opponent: input.opponent,
       tick: input.tick,
       stateNo: input.stateNo,
+      stateSpecial: input.stateSpecial,
       stateOwner: input.stateOwner,
       onlyIgnoreHitPause: input.onlyIgnoreHitPause,
       controllerIgnoresHitPause: input.controllerIgnoresHitPause,

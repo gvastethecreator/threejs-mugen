@@ -9,6 +9,7 @@ export type RuntimePausedActorAdvanceInput<TRoot, THelper> = {
   pause: RuntimeMatchPause;
   runOrder: RuntimeActorRunOrderResult<TRoot, THelper>;
   canAdvanceRoot: (root: TRoot) => boolean;
+  advancePauseImmuneRoot?: (root: TRoot) => void;
   advanceRoot: (root: TRoot) => void;
   consumeRootMoveTime: (root: TRoot) => void;
   canAdvanceHelper: (helper: THelper, pauseType: RuntimeMatchPause["type"]) => boolean;
@@ -41,6 +42,8 @@ export class RuntimePausedActorAdvanceWorld {
           input.advanceRoot(entry.value);
           input.consumeRootMoveTime(entry.value);
           movedRoots.push(entry.value);
+        } else {
+          input.advancePauseImmuneRoot?.(entry.value);
         }
       } else if (input.canAdvanceHelper(entry.value, input.pause.type)) {
         input.advanceHelper(entry.value, input.pause.type);

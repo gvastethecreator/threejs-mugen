@@ -1,4 +1,5 @@
 import type { ControllerIr, StateProgramIr } from "../compiler/RuntimeIr";
+import type { MugenStateSpecial } from "../model/MugenState";
 
 export type RuntimeActiveControllerScanActor<TSelf> = {
   definition: { source?: string };
@@ -15,6 +16,7 @@ export type RuntimeActiveControllerScanOptions<
   opponent: TOpponent;
   tick: number;
   stateNo?: number;
+  stateSpecial?: MugenStateSpecial;
   stateOwner?: TActor;
   onlyIgnoreHitPause?: boolean;
   controllerIgnoresHitPause: (controller: ControllerIr) => boolean;
@@ -60,7 +62,9 @@ export class RuntimeActiveControllerScanWorld {
   ): RuntimeActiveControllerScanResult<TActor> {
     const owner = options.stateOwner ?? options.actor.stateOwner ?? options.actor;
     const stateNo = options.stateNo ?? options.actor.runtime.stateNo;
-    const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === stateNo && candidate.special === undefined);
+    const stateProgram = owner.runtimeProgram?.states.find(
+      (candidate) => candidate.id === stateNo && candidate.special === options.stateSpecial,
+    );
     if (!stateProgram) {
       return {
         scanned: false,

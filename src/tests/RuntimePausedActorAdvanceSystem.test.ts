@@ -108,6 +108,31 @@ describe("RuntimePausedActorAdvanceWorld", () => {
     expect(calls).toEqual(["root", "consume"]);
     expect(result).toEqual({ movedRoots: [p1], movedHelpers: 0, interrupted: true, ticked: false });
   });
+
+  it("runs the pause-immune root hook for frozen roots without advancing normal state", () => {
+    const calls: string[] = [];
+    const frozen = root("frozen", false);
+    const pause = runtimePause();
+    const orderWorld = new RuntimeActorRunOrderWorld();
+
+    const result = new RuntimePausedActorAdvanceWorld(orderWorld).advance({
+      pause,
+      runOrder: orderWorld.order("ikemen-go", [rootCandidate(frozen, 1, "A")]),
+      canAdvanceRoot: (actor) => actor.movable,
+      advancePauseImmuneRoot: (actor) => calls.push(`immune:${actor.id}`),
+      advanceRoot: (actor) => calls.push(`root:${actor.id}`),
+      consumeRootMoveTime: (actor) => calls.push(`consume:${actor.id}`),
+      canAdvanceHelper: () => false,
+      advanceHelper: () => undefined,
+      discoverHelpers: () => [],
+      currentPause: () => pause,
+      finalizePresentation: (roots) => calls.push(`presentation:${roots.length}`),
+      tickPause: () => pause,
+    });
+
+    expect(calls).toEqual(["immune:frozen", "presentation:0"]);
+    expect(result).toEqual({ movedRoots: [], movedHelpers: 0, interrupted: false, ticked: true });
+  });
 });
 
 function root(id: string, movable: boolean): Root {

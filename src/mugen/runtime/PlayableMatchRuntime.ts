@@ -9,7 +9,12 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef } from "../model/MugenState";
+import {
+  matchesMugenStateIdentity,
+  type MugenStateController,
+  type MugenStateDef,
+  type MugenStateSpecial,
+} from "../model/MugenState";
 import {
   RuntimeActorConstraintControllerDispatchWorld,
   RuntimeActorConstraintWorld,
@@ -1986,6 +1991,10 @@ export class PlayableMatchRuntime {
         pause,
         runOrder: preparedActorRunOrder,
         canAdvanceRoot: (fighter) => this.inactiveRoots().includes(fighter) || this.pauseWorld.canActorMove(fighter.id),
+        advancePauseImmuneRoot: (fighter) => {
+          const opponent = this.opponentForRoot(fighter);
+          this.advancePauseImmuneRootCns(fighter, opponent, gameSpace, recordPhase);
+        },
         advanceRoot: (fighter) => {
           const opponent = this.opponentForRoot(fighter);
           if (this.inactiveRoots().includes(fighter)) {
@@ -2164,6 +2173,51 @@ export class PlayableMatchRuntime {
         characters: this.characterRoots(),
       },
     );
+  }
+
+  private advancePauseImmuneRootCns(
+    fighter: FighterMatchState,
+    opponent: FighterMatchState,
+    gameSpace: ExpressionGameSpace,
+    recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
+  ): void {
+    if (this.runtimeProfile !== "ikemen-go") return;
+    if (fighter.runtime.teamState?.disabled || fighter.runtime.teamState?.playerType === false) return;
+    recordPhase("fighter:controllers", fighter.id);
+    const runSpecialState = (stateNo: number, stateSpecial?: MugenStateSpecial): void => {
+      runActiveStateControllers(
+        fighter,
+        opponent,
+        this.actorConstraintWorld,
+        this.spriteEffectWorld,
+        this.reversalWorld,
+        this.effectSpawnWorld,
+        this.stage.bounds,
+        gameSpace,
+        this.tick,
+        undefined,
+        undefined,
+        {
+          participation: "active-motion",
+          runtimeProfile: this.runtimeProfile,
+          stateNo,
+          stateSpecial,
+          stateOwner: fighter,
+          includeRootGlobalStates: false,
+          onlyIgnoreHitPause: false,
+          onBlocked: (controller, route) =>
+            this.logs.unshift(`Blocked pause-immune CNS controller ${controller.type} for ${fighter.id} (${route})`),
+          onRootRedirect: (caller, expression, context, controllerType) =>
+            this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+          onRootTargetDispatchLease: (caller, expression, context, controllerType, phase, candidates) =>
+            this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
+          playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
+          characters: this.characterRoots(),
+        },
+      );
+    };
+    runSpecialState(-4);
+    runSpecialState(1, "plus-one");
   }
 
   private advanceActiveRootMotion(
@@ -3827,6 +3881,11 @@ function runHitPauseIgnoredControllers(
 
 type ActiveControllerRunOptions = {
   onlyIgnoreHitPause?: boolean;
+  stateNo?: number;
+  stateSpecial?: MugenStateSpecial;
+  stateOwner?: FighterMatchState;
+  includeRootGlobalStates?: boolean;
+  includeCurrentState?: boolean;
   participation?: RuntimeRootCnsParticipation;
   onBlocked?: (controller: ControllerIr, route: string) => void;
   onTeamStandby?: TeamStandbyControllerHandler;
@@ -4458,14 +4517,20 @@ function runActiveStateControllers(
   });
 
   const participation = options.participation ?? "playable";
-  const executeRootState = (stateNo?: number, stateOwner?: FighterMatchState): void => {
+  const executeRootState = (
+    stateNo?: number,
+    stateSpecial?: MugenStateSpecial,
+    stateOwner?: FighterMatchState,
+    onlyIgnoreHitPause = options.onlyIgnoreHitPause,
+  ): void => {
     rootCnsExecutionWorld.execute({
       actor: fighter,
       opponent,
       tick,
       ...(stateNo === undefined ? {} : { stateNo }),
+      ...(stateSpecial === undefined ? {} : { stateSpecial }),
       ...(stateOwner === undefined ? {} : { stateOwner }),
-      onlyIgnoreHitPause: options.onlyIgnoreHitPause,
+      onlyIgnoreHitPause,
       controllerIgnoresHitPause,
       triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
         triggersPass(
@@ -4487,14 +4552,24 @@ function runActiveStateControllers(
     }, participation);
   };
 
-  const supportsRootGlobalStates = options.runtimeProfile === "mugen-1.1" || options.runtimeProfile === "ikemen-go";
-  if (supportsRootGlobalStates) {
-    if (fighter.stateOwner === undefined) {
-      executeRootState(-3, fighter);
-    }
-    executeRootState(-2, fighter);
+  const includeRootGlobalStates = options.includeRootGlobalStates !== false;
+  const includeCurrentState = options.includeCurrentState !== false;
+  if (includeRootGlobalStates && options.runtimeProfile === "ikemen-go") {
+    executeRootState(-4, undefined, fighter, false);
   }
-  executeRootState();
+  const supportsRootGlobalStates = options.runtimeProfile === "mugen-1.1" || options.runtimeProfile === "ikemen-go";
+  if (includeRootGlobalStates && supportsRootGlobalStates) {
+    if (fighter.stateOwner === undefined) {
+      executeRootState(-3, undefined, fighter);
+    }
+    executeRootState(-2, undefined, fighter);
+  }
+  if (includeCurrentState) {
+    executeRootState(options.stateNo, options.stateSpecial, options.stateOwner);
+  }
+  if (includeRootGlobalStates && options.runtimeProfile === "ikemen-go") {
+    executeRootState(1, "plus-one", fighter, false);
+  }
 }
 
 function resolveDynamicTeamStandbyOperation(

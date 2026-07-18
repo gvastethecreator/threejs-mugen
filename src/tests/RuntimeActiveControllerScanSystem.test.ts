@@ -101,6 +101,32 @@ describe("RuntimeActiveControllerScanWorld", () => {
     expect(calls).toEqual(["trigger:RootGlobal:p2:root:3", "execute:RootGlobal:root"]);
   });
 
+  it("selects literal plus-one separately from numeric State 1", () => {
+    const world = new RuntimeActiveControllerScanWorld();
+    const owner = actor("owner", "imported", 0, [
+      stateProgram(1, [controller("NormalOne")]),
+      stateProgram(1, [controller("PlusOne")], "plus-one"),
+    ]);
+    const calls: string[] = [];
+
+    const result = world.run({
+      actor: actor("p1", "imported", 0, []),
+      opponent: actor("p2", "demo", 0, []),
+      tick: 4,
+      stateNo: 1,
+      stateSpecial: "plus-one",
+      stateOwner: owner,
+      controllerIgnoresHitPause: () => true,
+      triggersPass: () => true,
+      executeController: ({ controller }) => {
+        calls.push(controller.type);
+      },
+    });
+
+    expect(result).toMatchObject({ scanned: true, stateProgram: { id: 1, special: "plus-one" } });
+    expect(calls).toEqual(["PlusOne"]);
+  });
+
   it("fails closed for missing states, non-imported actors, and failing triggers", () => {
     const world = new RuntimeActiveControllerScanWorld();
     const opponent = actor("p2", "demo", 0, []);
@@ -158,9 +184,10 @@ function actor(id: string, source: string, stateNo: number, states: StateProgram
   };
 }
 
-function stateProgram(id: number, controllers: ControllerIr[]): StateProgramIr {
+function stateProgram(id: number, controllers: ControllerIr[], special?: "plus-one"): StateProgramIr {
   return {
     id,
+    ...(special === undefined ? {} : { special }),
     source: {
       id,
       rawParams: {},

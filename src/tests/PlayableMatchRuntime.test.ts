@@ -976,6 +976,135 @@ value = 100
     expect(unknown.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(100);
   });
 
+  it("runs IKEMEN root State -4 and +1 around the existing global passes", () => {
+    const createFixtureWithIkemenGlobals = (): DemoFighterDefinition => {
+      const fighter = createImportedFixture({ id: "root-ikemen-global-order", withStateMove: false });
+      const parsed = parseCns(`
+[Statedef -4]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -4, Root pause-immune pre-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 4
+
+[Statedef -3]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -3, Root global pre-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 3
+
+[Statedef -2]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -2, Root global tick]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 20
+
+[Statedef 0]
+[State 0, Current state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 100
+
+[Statedef +1]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State +1, Root pause-immune post-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 1
+`).states;
+      const normalState = parsed.find((state) => state.id === 0 && state.special === undefined);
+      if (!normalState) {
+        throw new Error("Expected root global fixture State 0");
+      }
+      fighter.states = [
+        ...(fighter.states ?? []).map((state) =>
+          state.id === 0 && state.special === undefined
+            ? { ...state, controllers: [...state.controllers, ...normalState.controllers] }
+            : state,
+        ),
+        ...parsed.filter((state) => !(state.id === 0 && state.special === undefined)),
+      ];
+      return fighter;
+    };
+
+    const ikemen = new PlayableMatchRuntime(createFixtureWithIkemenGlobals(), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    expect(ikemen.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(128);
+
+    const mugen = new PlayableMatchRuntime(createFixtureWithIkemenGlobals(), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    });
+    expect(mugen.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(123);
+
+    const unknown = new PlayableMatchRuntime(createFixtureWithIkemenGlobals(), demoFighters[1]!, trainingStage, {
+      runtimeProfile: "unknown",
+    });
+    expect(unknown.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(100);
+  });
+
+  it("runs root State -4 and +1 while IKEMEN Pause freezes the normal root", () => {
+    const fighter = createImportedFixture({ id: "root-ikemen-pause-immune", withStateMove: false, withPause: true });
+    fighter.states = [
+      ...(fighter.states ?? []),
+      ...parseCns(`
+[Statedef -4]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -4, Pause-immune pre-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 4
+
+[Statedef +1]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State +1, Pause-immune post-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 1
+`).states,
+    ];
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.matchPause).toMatchObject({ type: "Pause" });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(5);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.matchPause).toMatchObject({ type: "Pause" });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(20);
+  });
+
   it("executes Helper-owned default TagOut and later TagIn without stopping Helper CNS", () => {
     const fighter = createImportedFixture({
       id: "ikemen-helper-owned-self-tag-cycle",
@@ -6986,6 +7115,55 @@ RedirectID = ID + 1
         { id: "tick:restore-superpause-defense" },
       ],
     });
+  });
+
+  it("runs IKEMEN root State -4 and +1 during global hit pause", () => {
+    const imported = createHitPauseIgnoreControllerFixture(true);
+    imported.states = [
+      ...(imported.states ?? []),
+      ...parseCns(`
+[Statedef -4]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State -4, Hitpause immune pre-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 4
+
+[Statedef +1]
+type = S
+movetype = I
+physics = N
+anim = 0
+[State +1, Hitpause immune post-state]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 1
+`).states,
+    ];
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, closeStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]) });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(5);
+    expect(snapshot.actors[0]?.hitPause).toBeGreaterThan(0);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(10);
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(220);
   });
 
   it("keeps non-ignorehitpause imported controllers frozen during global hit pause", () => {
