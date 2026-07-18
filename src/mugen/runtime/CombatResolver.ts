@@ -135,12 +135,13 @@ export function hasRuntimeHitFlag(hitFlag: string | undefined, expectedFlag: str
 }
 
 export type RuntimeHitFlagRejectionReason =
+  | "state-type-hitflag-rejected"
   | "fall-hitflag-rejected"
   | "minus-hitflag-rejected"
   | "plus-hitflag-rejected";
 
 type RuntimeHitFlagDefender = Pick<CharacterRuntimeState, "moveType" | "hitFall">
-  & Partial<Pick<CharacterRuntimeState, "stateNo" | "guarding">>;
+  & Partial<Pick<CharacterRuntimeState, "stateNo" | "guarding" | "stateType">>;
 
 export function runtimeHitFlagRejectionReason(input: {
   attacker: Pick<CharacterRuntimeState, "assertSpecial">;
@@ -149,6 +150,9 @@ export function runtimeHitFlagRejectionReason(input: {
 }): RuntimeHitFlagRejectionReason | undefined {
   if (input.hitFlag === undefined) return undefined;
 
+  if (input.defender.stateType !== undefined && !runtimeHitFlagAllowsStateType(input.hitFlag, input.defender.stateType)) {
+    return "state-type-hitflag-rejected";
+  }
   const hitTmp = runtimeHitTmp(input.defender);
   if (hitTmp >= 2 && (!hasRuntimeHitFlag(input.hitFlag, "F") || input.attacker.assertSpecial?.noFallHitFlag === true)) {
     return "fall-hitflag-rejected";
@@ -196,6 +200,16 @@ function isRuntimeHitFlagGuardState(defender: RuntimeHitFlagDefender): boolean {
     || (stateNo >= 130 && stateNo <= 132)
     || stateNo === 140
     || (stateNo >= 150 && stateNo <= 155);
+}
+
+function runtimeHitFlagAllowsStateType(
+  hitFlag: string,
+  stateType: CharacterRuntimeState["stateType"],
+): boolean {
+  if (stateType === "S") return hasRuntimeHitFlag(hitFlag, "H") || hasRuntimeHitFlag(hitFlag, "M");
+  if (stateType === "C") return hasRuntimeHitFlag(hitFlag, "L") || hasRuntimeHitFlag(hitFlag, "M");
+  if (stateType === "A") return hasRuntimeHitFlag(hitFlag, "A");
+  return hasRuntimeHitFlag(hitFlag, "D");
 }
 
 export function findRuntimeHitOverride(

@@ -35,7 +35,7 @@ export type RuntimeRootDirectHitAdmissionActor = {
   definition?: { localCoord?: [number, number] };
   runtime: Pick<
     CharacterRuntimeState,
-    | "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial" | "moveType" | "hitFall" | "stateNo" | "guarding"
+    | "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial" | "stateType" | "moveType" | "hitFall" | "stateNo" | "guarding"
   >;
   currentMove?: DemoMove;
   moveTick: number;

@@ -131,7 +131,9 @@ export class RuntimeHelperCombatWorld {
       }
       const hitFlagReason = runtimeHitFlagRejectionReason({ attacker: attacker.runtime, defender: input.defender.runtime, hitFlag: move.hitFlag });
       if (hitFlagReason) {
-        const suffix = hitFlagReason === "fall-hitflag-rejected"
+        const suffix = hitFlagReason === "state-type-hitflag-rejected"
+          ? "HitFlag state type"
+          : hitFlagReason === "fall-hitflag-rejected"
           ? "fall HitFlag/NoFallHitFlag"
           : hitFlagReason === "minus-hitflag-rejected"
             ? "HitFlag -"

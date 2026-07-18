@@ -171,6 +171,20 @@ describe("RuntimeCombatResolutionSystem", () => {
     })).toEqual({ kind: "skipped", reason: "plus-hitflag-rejected" });
     expect(idle.runtime.life).toBe(100);
 
+    const wrongStateAttacker = actor("p7", "P7", contactWorld, {
+      currentMove: move({ hitFlag: "H" }),
+      moveTick: 1,
+    });
+    const crouching = actor("p8", "P8", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, life: 100, stateType: "C" }),
+    });
+    expect(world.resolveDirect({
+      attacker: wrongStateAttacker,
+      defender: crouching,
+      ...directInputBase(contactWorld, directCombatWorld, logs),
+    })).toEqual({ kind: "skipped", reason: "state-type-hitflag-rejected" });
+    expect(crouching.runtime.life).toBe(100);
+
     const chainAttacker = actor("p5", "P5", contactWorld, {
       currentMove: move({ hitFlag: "H+", damage: 13 }),
       moveTick: 1,
@@ -187,6 +201,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(logs).toEqual([
       "P2 rejected P1 S,NA via HitFlag -",
       "P4 rejected P3 S,NA via HitFlag +",
+      "P8 rejected P7 S,NA via HitFlag state type",
       "P5 hit P6 for 13",
     ]);
   });

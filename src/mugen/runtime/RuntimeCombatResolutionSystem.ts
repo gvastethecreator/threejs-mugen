@@ -911,7 +911,9 @@ function runtimeHitFlagRejectionMessage(
   attr: string,
   reason: RuntimeHitFlagRejectionReason,
 ): string {
-  const suffix = reason === "fall-hitflag-rejected"
+  const suffix = reason === "state-type-hitflag-rejected"
+    ? "HitFlag state type"
+    : reason === "fall-hitflag-rejected"
     ? "fall HitFlag/NoFallHitFlag"
     : reason === "minus-hitflag-rejected"
       ? "HitFlag -"

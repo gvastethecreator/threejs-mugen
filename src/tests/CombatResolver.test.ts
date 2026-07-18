@@ -104,6 +104,20 @@ describe("CombatResolver", () => {
     expect(runtimeHitFlagRejectionReason({ attacker, defender: idle })).toBeUndefined();
   });
 
+  it("matches explicit HitFlag state types before the fall and chain filters", () => {
+    const attacker = actor();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "S" }), hitFlag: "L" }))
+      .toBe("state-type-hitflag-rejected");
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "C" }), hitFlag: "M" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "A" }), hitFlag: "H" }))
+      .toBe("state-type-hitflag-rejected");
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "A" }), hitFlag: "A" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "L" }), hitFlag: "A" }))
+      .toBe("state-type-hitflag-rejected");
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "L" }), hitFlag: "D" })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "C" }), hitFlag: "H,L,A,F" })).toBeUndefined();
+  });
+
   it("finds active hit overrides by attribute", () => {
     const defender = actor({
       hitOverrides: [

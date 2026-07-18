@@ -137,6 +137,15 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
       getHurtBoxes: () => hurt,
     });
     expect(guard.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "plus-hitflag-rejected" });
+
+    const stateType = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, hitFlag: "H" }),
+        actor("p2", 2, 2, 0, { stateType: "C" }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(stateType.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "state-type-hitflag-rejected" });
   });
 
   it("applies HitDef AffectTeam before root collision admission", () => {
@@ -265,6 +274,7 @@ function actor(
     hitFlag?: string;
     falling?: boolean;
     moveType?: "I" | "A" | "H";
+    stateType?: "S" | "C" | "A" | "L";
     stateNo?: number;
     guarding?: boolean;
     noFallHitFlag?: boolean;
@@ -285,6 +295,7 @@ function actor(
       pos: { x, y: 0 },
       facing: 1,
       stateNo: options.stateNo ?? 0,
+      stateType: options.stateType ?? "S",
       moveType: options.falling ? "H" : options.moveType ?? "I",
       ...(options.guarding === undefined ? {} : { guarding: options.guarding }),
       ...(options.falling ? { hitFall: { falling: true, damage: 0, velocity: { x: undefined, y: 0 } } } : {}),

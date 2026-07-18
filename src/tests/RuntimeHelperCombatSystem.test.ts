@@ -175,6 +175,24 @@ describe("RuntimeHelperCombatSystem", () => {
     });
     expect(idleTarget.runtime.life).toBe(100);
     expect(plusLogs).toEqual(["P3 rejected Helper Plus Assist S,NA via HitFlag +"]);
+
+    const mismatchEffectActorWorld = new RuntimeEffectActorWorld();
+    const mismatchHelper = mismatchEffectActorWorld.spawnHelper("p1", helperInput({ id: "46", name: '"State Assist"' }));
+    mismatchHelper.currentMove = move({ hitFlag: "H" });
+    mismatchHelper.moveTick = 1;
+    const mismatchTarget = defenderActor("p4", "P4", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, stateType: "C", life: 100 }),
+    });
+    const mismatchLogs: string[] = [];
+    combatWorld.resolveDirect({
+      ...inputBase,
+      owner: owner("p1", mismatchEffectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      defender: mismatchTarget,
+      log: (line) => mismatchLogs.push(line),
+    });
+    expect(mismatchTarget.runtime.life).toBe(100);
+    expect(mismatchLogs).toEqual(["P4 rejected Helper State Assist S,NA via HitFlag state type"]);
   });
 
   it("suppresses standby Helper direct HitDef and resumes it after TagIn", () => {
