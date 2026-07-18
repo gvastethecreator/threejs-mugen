@@ -72,6 +72,12 @@ import {
 } from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld, type RuntimeInputControlResult } from "./RuntimeInputControlSystem";
+import {
+  defaultRuntimeSocdResolution,
+  parseRuntimeSocdResolution,
+  resolveRuntimeSocdInput,
+  type RuntimeSocdResolution,
+} from "./RuntimeInput";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
@@ -405,6 +411,7 @@ export type PlayableMatchRuntimeOptions = {
   maxDraws?: number;
   maxDrawsBySide?: Partial<Record<RuntimeTeamSide, number>>;
   runtimeProfile?: RuntimeCompatibilityProfile;
+  socdResolution?: RuntimeSocdResolution;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
   teamMode?: RuntimeTeamRoundMode;
@@ -566,6 +573,7 @@ export class PlayableMatchRuntime {
   private lastRoundState5900?: RuntimeRoundState5900Snapshot;
   private lastTurnsContinuation?: RuntimeTurnsContinuationResult;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
+  private readonly socdResolution: RuntimeSocdResolution;
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
   private readonly teamPowerShare: boolean;
@@ -587,6 +595,11 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
+    this.socdResolution =
+      parseRuntimeSocdResolution(options.socdResolution) ??
+      p1Definition.socdResolution ??
+      p2Definition.socdResolution ??
+      defaultRuntimeSocdResolution(this.runtimeProfile);
     this.teamRoundMode = options.teamMode ?? "single";
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
@@ -1387,8 +1400,8 @@ export class PlayableMatchRuntime {
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
     const schedule = new RuntimeMatchTickScheduleRecorder(this.tick);
-    const p1Input = input.p1;
-    const p2Input = input.p2 ?? new Set<string>();
+    const p1Input = resolveRuntimeSocdInput(input.p1, this.socdResolution);
+    const p2Input = resolveRuntimeSocdInput(input.p2 ?? new Set<string>(), this.socdResolution);
     const rootInputRoutes = rootInputRoutingWorld.routes({
       runtimeProfile: this.runtimeProfile,
       teamMode: this.teamPresentationMode(),
@@ -1518,6 +1531,10 @@ export class PlayableMatchRuntime {
     this.restoreExpiredSuperPauseTargetDefense();
     this.reconcileTeamResourceBanks();
     this.lastTickSchedule = schedule.complete(branchResult.branch);
+  }
+
+  getSocdResolution(): RuntimeSocdResolution {
+    return this.socdResolution;
   }
 
   private advanceActiveMatch(

@@ -57,6 +57,7 @@ export type MatchWorldOptions = {
   maxDraws?: number;
   maxDrawsBySide?: Partial<Record<RuntimeTeamSide, number>>;
   runtimeProfile?: RuntimeCompatibilityProfile;
+  socdResolution?: import("./RuntimeInput").RuntimeSocdResolution;
   superPauseTargetDefenseValue?: number;
   reserveFighters?: readonly DemoFighterDefinition[];
   teamMode?: RuntimeTeamRoundMode;
@@ -134,6 +135,7 @@ export class MatchWorld {
         maxDraws: options.maxDraws,
         maxDrawsBySide: options.maxDrawsBySide,
         runtimeProfile: options.runtimeProfile,
+        socdResolution: options.socdResolution,
         superPauseTargetDefenseValue: options.superPauseTargetDefenseValue,
         reserveFighters: options.reserveFighters,
         teamMode: options.teamMode,

@@ -50,6 +50,24 @@ describe("createImportedFighterDefinition", () => {
     expect(createImportedFighterDefinition(character)?.ikemenVersion).toBe("0.99");
   });
 
+  it("carries imported [Input] SOCDResolution and ignores invalid values", () => {
+    const character = fakeCharacter(new Map([[0, action(0, [[0, 0, 0]])]]));
+    character.systemAssets = {
+      gameConfig: {
+        rawSections: { Input: { SOCDResolution: "2" } },
+        rawLines: [],
+        diagnostics: [],
+      },
+      diagnostics: [],
+      hitSparkLibraries: {},
+    };
+
+    expect(createImportedFighterDefinition(character)?.socdResolution).toBe(2);
+
+    character.systemAssets.gameConfig!.rawSections.Input!.SOCDResolution = "9";
+    expect(createImportedFighterDefinition(character)?.socdResolution).toBeUndefined();
+  });
+
   it("maps assessed package profiles into the HitDef priority policy seam", () => {
     const animations = new Map<number, MugenAnimationAction>([[0, action(0, [[0, 0, 0]])]]);
     const mugen11 = fakeCharacter(animations);

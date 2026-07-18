@@ -7,6 +7,7 @@ import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import type { MugenAffectTeam, MugenTeamSide } from "../model/MugenTeam";
+import type { RuntimeSocdResolution } from "./RuntimeInput";
 
 export type HitSparkLibrarySource = "common" | "fightfx";
 export type RuntimeHitDefPriorityType = "hit" | "miss" | "dodge";
@@ -104,6 +105,7 @@ export type DemoFighterDefinition = {
   id: string;
   source?: "demo" | "imported";
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
+  socdResolution?: RuntimeSocdResolution;
   displayName: string;
   authorName?: string;
   ikemenVersion?: string;

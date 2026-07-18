@@ -10,6 +10,7 @@ import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
+import { parseRuntimeSocdResolution, type RuntimeSocdResolution } from "./RuntimeInput";
 
 type FrameWindow = {
   index: number;
@@ -42,11 +43,13 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
   const displayName =
     character.definition.info.displayName ?? character.definition.info.name ?? character.compatibility.character ?? "Imported Fighter";
   const stateMoves = buildStateMoves(character.states, animations, character.constants);
+  const socdResolution = runtimeSocdResolution(character);
 
   return {
     id: `imported-${slugify(displayName)}`,
     source: "imported",
     hitDefPriorityProfile: runtimeHitDefPriorityProfile(character),
+    ...(socdResolution === undefined ? {} : { socdResolution }),
     displayName,
     authorName: character.definition.info.author,
     ikemenVersion: character.definition.info.ikemenVersion,
@@ -78,6 +81,16 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     fightFxPrefix: fightFxPrefix(character),
     hitSparkLibraries: normalizeHitSparkLibraries(character),
   };
+}
+
+function runtimeSocdResolution(character: MugenCharacter): RuntimeSocdResolution | undefined {
+  const inputSection = Object.entries(character.systemAssets?.gameConfig?.rawSections ?? {}).find(
+    ([section]) => section.toLowerCase() === "input",
+  )?.[1];
+  const rawValue = Object.entries(inputSection ?? {}).find(
+    ([key]) => key.toLowerCase() === "socdresolution",
+  )?.[1];
+  return parseRuntimeSocdResolution(rawValue);
 }
 
 function runtimeHitDefPriorityProfile(character: MugenCharacter): DemoFighterDefinition["hitDefPriorityProfile"] {

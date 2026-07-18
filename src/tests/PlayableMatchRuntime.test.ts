@@ -27,6 +27,35 @@ describe("PlayableMatchRuntime", () => {
     });
   });
 
+  it("applies profile SOCD defaults before control and command-buffer consumers", () => {
+    const importedP1 = { ...demoFighters[0]!, source: "imported" as const };
+    const ikemen = new PlayableMatchRuntime(importedP1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+    expect(ikemen.getSocdResolution()).toBe(4);
+
+    const denied = ikemen.step({ p1: new Set(["F", "B"]), p2: new Set() });
+    expect(denied.actors[0]?.runtime.pos.x).toBe(trainingStage.playerStart.p1.x);
+    expect(denied.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1")?.commandHistory.at(-1)).toEqual({
+      frame: 1,
+      values: [],
+      hitPause: false,
+    });
+
+    const mugenMode = new PlayableMatchRuntime(importedP1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      socdResolution: 0,
+    });
+    expect(mugenMode.getSocdResolution()).toBe(0);
+    const preserved = mugenMode.step({ p1: new Set(["F", "B"]), p2: new Set() });
+    expect(preserved.actors[0]?.runtime.pos.x).toBeGreaterThan(trainingStage.playerStart.p1.x);
+    expect(preserved.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1")?.commandHistory.at(-1)).toEqual({
+      frame: 1,
+      values: ["B", "F"],
+      hitPause: false,
+    });
+  });
+
   it("schedules capped IKEMEN P3-P8 reserve roots for controller-only CNS without presenting them", () => {
     const reserveFighters = Array.from({ length: 7 }, (_, index) => demoFighters[index % 2]!);
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
