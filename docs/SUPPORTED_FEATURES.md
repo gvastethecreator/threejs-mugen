@@ -8,14 +8,15 @@
 - Imported direct and Helper HitDef dispatch now restores the source-backed
   omitted `MAF` default, and imported state moves expose the same materialized
   value. Authored/static/raw HitFlags retain precedence and demo/synthetic
-  omissions remain unchanged. Projectile defaults, dynamic string expressions,
+  omissions remain unchanged. Projectile timing, dynamic string expressions,
   reversals, exact timing, and full MUGEN/IKEMEN parity remain unsupported.
 - Imported projectile/player contact now carries explicit static Projectile
   and ModifyProjectile HitFlags through typed IR, live runtime state, effect
   snapshots, and the shared state/fall/NoFallHitFlag/minus/plus admission
-  predicate. Omitted/default `MAF` inference, dynamic string expressions,
-  reversals, exact projectile pause/contact timing, and full MUGEN/IKEMEN
-  parity remain unsupported.
+  predicate. Imported root/state-owner and Helper Projectile spawn now also
+  materialize the omitted `MAF` default; dynamic string expressions, live
+  mutation defaults, reversals, exact projectile pause/contact timing, and full
+  MUGEN/IKEMEN parity remain unsupported.
 - Imported direct HitDef admission now supports bounded explicit HitFlag
   `-`/`+` semantics across root admission, regular direct combat,
   equal-priority preparation, and helpers. The runtime projects `hittmp` as

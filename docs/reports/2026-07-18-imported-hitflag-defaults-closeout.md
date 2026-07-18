@@ -27,7 +27,8 @@ ADR: [0031](../adr/0031-imported-hitflag-defaults.md)
 
 ## Claim ceiling
 
-The project now has bounded imported direct/Helper HitDef default provenance,
-not complete MUGEN/IKEMEN HitFlag parity. Projectile defaults, dynamic strings,
-reversals, exact timing, custom-state breadth, rollback, and full parity remain
-open.
+This report closes only the bounded direct/Helper HitDef provenance slice. The
+following T265 closeout separately covers imported root/state-owner and Helper
+Projectile spawn defaults. Complete MUGEN/IKEMEN HitFlag parity remains open:
+dynamic strings, live mutation defaults, reversals, exact timing, custom-state
+breadth, rollback, and full parity are not claimed.
