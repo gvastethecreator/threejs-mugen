@@ -43,6 +43,7 @@ import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
+import { runtimeDefaultHitFlagForSource } from "./RuntimeHitFlagDefaults";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalControllerDispatchWorld, RuntimeReversalWorld } from "./ReversalSystem";
 import {
@@ -1673,6 +1674,7 @@ export class PlayableMatchRuntime {
                 runtimeTick: this.tick,
                 opponents: [opponent],
                 constants: owner.definition.constants,
+                defaultHitFlag: runtimeDefaultHitFlagForSource(owner.definition.source),
                 runtimeProfile: this.runtimeProfile,
                 commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
                 commandInput: owner.currentInput,
@@ -2188,6 +2190,7 @@ export class PlayableMatchRuntime {
             runtimeTick: this.tick,
             opponents: [opponent],
             constants: owner.definition.constants,
+            defaultHitFlag: runtimeDefaultHitFlagForSource(owner.definition.source),
             runtimeProfile: this.runtimeProfile,
             commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
             commandInput: owner.currentInput,
@@ -4096,6 +4099,7 @@ function runActiveStateControllers(
     hitDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       hitDefControllerDispatchWorld.apply({
         actor,
+        defaultHitFlag: runtimeDefaultHitFlagForSource(actor.definition.source),
         controller,
         frame: getCurrentCollisionFrame(actor),
         constants: actor.definition.constants,

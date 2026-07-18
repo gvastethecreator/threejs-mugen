@@ -11,6 +11,7 @@ import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import { parseRuntimeSocdResolution, type RuntimeSocdResolution } from "./RuntimeInput";
+import { RUNTIME_DEFAULT_HIT_FLAG } from "./RuntimeHitFlagDefaults";
 
 type FrameWindow = {
   index: number;
@@ -186,7 +187,7 @@ function buildStateMoves(
       state.id,
       buildMove(animations.get(actionId), state.id, damage, fallbackHitbox, {
         attr: hitDef.params.attr,
-        hitFlag: stripMugenString(hitDef.params.hitflag),
+        hitFlag: stripMugenString(hitDef.params.hitflag) ?? RUNTIME_DEFAULT_HIT_FLAG,
         affectTeam: normalizeMugenAffectTeam(hitDef.params.affectteam),
         teamSide: normalizeMugenTeamSide(firstNumber(hitDef.params.teamside)),
         p2ClsnCheck: normalizeMugenCollisionBoxType(hitDef.params.p2clsncheck),

@@ -151,6 +151,30 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.targetId).toBe(0);
   });
 
+  it("uses an imported source default only when HitDef omits hitflag", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const imported = hitDefActor();
+
+    world.apply({
+      actor: imported,
+      controller: compileControllerIr(controller("HitDef", { damage: "30" })),
+      defaultHitFlag: "MAF",
+      frame: activeFrame(),
+    });
+
+    expect(imported.currentMove?.hitFlag).toBe("MAF");
+
+    const explicit = hitDefActor();
+    world.apply({
+      actor: explicit,
+      controller: compileControllerIr(controller("HitDef", { damage: "30", hitflag: "H,L,A,F" })),
+      defaultHitFlag: "MAF",
+      frame: activeFrame(),
+    });
+
+    expect(explicit.currentMove?.hitFlag).toBe("H,L,A,F");
+  });
+
   it("derives omitted dizzy points from damage and the authored normal multiplier", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

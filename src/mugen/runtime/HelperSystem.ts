@@ -170,6 +170,7 @@ export type RuntimeHelperResourceRedirect = RuntimeHelperTargetRedirect;
 
 export type RuntimeHelperAdvanceOptions = {
   constants?: RuntimeResourceConstants;
+  defaultHitFlag?: string;
   pauseKind?: RuntimeHelperPauseKind;
   runtimeProfile?: RuntimeCompatibilityProfile;
   commandActive?: (name: string) => boolean;
@@ -985,7 +986,7 @@ export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
   controller: ControllerIr,
   hitDefWorld: RuntimeHitDefControllerDispatchWorld = helperHitDefWorld,
-  options?: Parameters<typeof resolveHelperNumber>[3] & Pick<RuntimeHelperAdvanceOptions, "constants">,
+  options?: Parameters<typeof resolveHelperNumber>[3] & Pick<RuntimeHelperAdvanceOptions, "constants" | "defaultHitFlag">,
 ): boolean {
   const runtime = helperRuntimeState(helper);
   const actor = {
@@ -1001,6 +1002,7 @@ export function activateRuntimeHelperHitDef(
   const result = hitDefWorld.apply({
     actor,
     controller,
+    defaultHitFlag: options?.defaultHitFlag,
     frame: helper.action.frames[helper.frameIndex],
     resolveSoundValue: options
       ? (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options)

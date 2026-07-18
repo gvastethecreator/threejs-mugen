@@ -24,6 +24,7 @@ export type RuntimeEffectHelperContextOpponent = {
 
 export type RuntimeEffectHelperContextOptions = Pick<
   RuntimeHelperAdvanceOptions,
+  | "defaultHitFlag"
   | "constants"
   | "runtimeProfile"
   | "commandActive"
@@ -46,6 +47,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
 };
 
 export type RuntimeEffectHelperContext = {
+  defaultHitFlag?: RuntimeHelperAdvanceOptions["defaultHitFlag"];
   constants?: RuntimeHelperAdvanceOptions["constants"];
   runtimeProfile?: RuntimeHelperAdvanceOptions["runtimeProfile"];
   commandActive?: RuntimeHelperAdvanceOptions["commandActive"];

@@ -256,6 +256,23 @@ describe("createImportedFighterDefinition", () => {
     });
   });
 
+  it("materializes the imported HitDef MAF default when hitflag is omitted", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+      [210, action(210, [[210, 0, 0], [210, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", { damage: "30" })]),
+      state(210, 210, [controller(210, "HitDef", { damage: "30", hitflag: "H,L,A,F" })]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)?.hitFlag).toBe("MAF");
+    expect(fighter?.stateMoves?.get(210)?.hitFlag).toBe("H,L,A,F");
+  });
+
   it("preserves explicit and default attack depth on imported state moves", () => {
     const animations = new Map<number, MugenAnimationAction>([
       [0, action(0, [[0, 0, 0]])],

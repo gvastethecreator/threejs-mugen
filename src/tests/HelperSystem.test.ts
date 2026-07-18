@@ -285,6 +285,22 @@ describe("HelperSystem", () => {
     expect(paused.age).toBe(0);
   });
 
+  it("carries a source-scoped default HitFlag into Helper HitDef execution", () => {
+    const hitDef = compiledControllerIr(6000, "HitDef", [], { damage: "20" });
+    const imported = helper({
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [hitDef])] },
+    });
+    const legacy = helper({
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [hitDef])] },
+    });
+
+    advanceRuntimeHelpers([imported], stage, { defaultHitFlag: "MAF" });
+    advanceRuntimeHelpers([legacy], stage);
+
+    expect(imported.currentMove?.hitFlag).toBe("MAF");
+    expect(legacy.currentMove?.hitFlag).toBeUndefined();
+  });
+
   it("isolates keyctrl command history while keeping keyctrl-off commands closed", () => {
     const stateEntry = compiledControllerIr(-1, "VarAdd", ['command = "helper_tick"'], { v: "0", value: "10" });
     const runtimeProgram = {

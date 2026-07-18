@@ -34,6 +34,7 @@ export type RuntimeHitDefControllerDispatchActor = {
 export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefControllerDispatchActor> = {
   actor: TActor;
   controller: ControllerIr;
+  defaultHitFlag?: string;
   frame?: MugenAnimationFrame;
   constants?: RuntimeResourceConstants;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
@@ -54,6 +55,7 @@ export class RuntimeHitDefControllerDispatchWorld {
   apply<TActor extends RuntimeHitDefControllerDispatchActor>({
     actor,
     controller,
+    defaultHitFlag,
     frame,
     constants,
     resolveSoundValue,
@@ -93,7 +95,11 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardRedLife = operation?.guardRedLife ?? secondNumber(findParam(source, "redlife")) ?? existing?.guardRedLife;
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
-    const hitFlag = operation?.hitFlag ?? stripMugenString(findParam(source, "hitflag")) ?? existing?.hitFlag;
+    const hitFlag =
+      operation?.hitFlag ??
+      stripMugenString(findParam(source, "hitflag")) ??
+      defaultHitFlag ??
+      existing?.hitFlag;
     const affectTeam = operation?.affectTeam ?? normalizeMugenAffectTeam(findParam(source, "affectteam")) ?? existing?.affectTeam;
     const teamSide = operation?.teamSide ?? normalizeMugenTeamSide(firstNumber(findParam(source, "teamside"))) ?? existing?.teamSide;
     const p2ClsnCheck = operation?.p2ClsnCheck ?? normalizeMugenCollisionBoxType(findParam(source, "p2clsncheck")) ?? existing?.p2ClsnCheck;
