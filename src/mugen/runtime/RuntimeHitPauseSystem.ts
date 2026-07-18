@@ -108,6 +108,7 @@ export class RuntimeHitPauseWorld {
           gameSpace: input.gameSpace,
           stageTime: input.stageTime ?? input.tick,
           runtimeTick: input.runtimeTick ?? input.tick,
+          commandInput: actor === input.p1 ? input.p1Input : input.p2Input,
           opponents: context.opponents,
           resolveTargetRedirect: input.resolveHelperTargetRedirect,
           resolveResourceRedirect: input.resolveHelperResourceRedirect,

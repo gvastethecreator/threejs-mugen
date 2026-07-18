@@ -460,6 +460,7 @@ export class RuntimePausedMatchWorld {
           gameSpace: input.gameSpace,
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
+          commandInput: actor === input.p1 ? input.p1Input : input.p2Input,
           opponents: context.opponents,
         });
       },
@@ -476,6 +477,7 @@ export class RuntimePausedMatchWorld {
           gameSpace: input.gameSpace,
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
+          commandInput: actor === input.p1 ? input.p1Input : input.p2Input,
           opponents: context.opponents,
         });
       },
