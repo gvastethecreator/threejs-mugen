@@ -6,8 +6,10 @@ import type {
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
+import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
+import { CommandBuffer } from "./CommandBuffer";
 import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef, type MugenStateSpecial } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent, type RuntimeResolvedSoundValue } from "./AudioEventSystem";
@@ -90,6 +92,8 @@ export type RuntimeHelper = {
   spriteOwnerLabel: string;
   localCoord?: [number, number];
   runtimeProgram?: RuntimeHelperProgram;
+  commandBuffer?: CommandBuffer;
+  commandDefinitions?: MugenCommand[];
   animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
   stateNo?: number;
@@ -169,6 +173,7 @@ export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
   runtimeProfile?: RuntimeCompatibilityProfile;
   commandActive?: (name: string) => boolean;
+  commandInput?: Iterable<string>;
   stageBounds?: MugenStageDefinition["bounds"];
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
@@ -275,6 +280,7 @@ export type RuntimeHelperSpawnInput = {
   spriteOwnerLabel: string;
   localCoord?: [number, number];
   runtimeProgram?: RuntimeHelperProgram;
+  commandDefinitions?: MugenCommand[];
   animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
   stateNo?: number;
@@ -289,6 +295,7 @@ export type RuntimeHelperSpawnInput = {
 export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelper {
   const operation = input.operation;
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
+  const keyCtrl = operation?.keyCtrl ?? booleanNumber(findControllerParam(input.controller, "keyctrl")) ?? false;
   const identity = resolveActorIdentity(input);
   const initialStateNo = input.stateNo;
   const initialState = initialStateNo === undefined
@@ -312,6 +319,8 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     spriteOwnerLabel: input.spriteOwnerLabel,
     localCoord: input.localCoord,
     runtimeProgram: input.runtimeProgram,
+    commandBuffer: keyCtrl && input.commandDefinitions !== undefined ? new CommandBuffer() : undefined,
+    commandDefinitions: input.commandDefinitions,
     animations: input.animations,
     action: input.action,
     stateNo: input.stateNo,
@@ -330,7 +339,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     ctrl: input.initialControl ?? (initialState?.ctrl ?? 1) !== 0,
-    keyCtrl: operation?.keyCtrl ?? booleanNumber(findControllerParam(input.controller, "keyctrl")) ?? false,
+    keyCtrl,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -373,29 +382,30 @@ export function advanceRuntimeHelperActor(
   stage: Pick<MugenStageDefinition, "bounds">,
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
-  if (options.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, options, -4) === "destroyed") {
+  const controllerOptions = runtimeHelperControllerOptions(helper, options);
+  if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4) === "destroyed") {
     return false;
   }
-  if (canAdvanceRuntimeHelper(helper, options.pauseKind)) {
+  if (canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind)) {
     helper.assertSpecial = undefined;
-    if (helper.keyCtrl === true && options.runtimeProfile === "ikemen-go") {
-      if (runRuntimeHelperStateControllers(helper, options, -3) === "destroyed") {
+    if (helper.keyCtrl === true && controllerOptions.runtimeProfile === "ikemen-go") {
+      if (runRuntimeHelperStateControllers(helper, controllerOptions, -3) === "destroyed") {
         return false;
       }
-      if (runRuntimeHelperStateControllers(helper, options, -2) === "destroyed") {
+      if (runRuntimeHelperStateControllers(helper, controllerOptions, -2) === "destroyed") {
         return false;
       }
     }
-    if (helper.keyCtrl === true && runRuntimeHelperStateControllers(helper, options, -1) === "destroyed") {
+    if (helper.keyCtrl === true && runRuntimeHelperStateControllers(helper, controllerOptions, -1) === "destroyed") {
       return false;
     }
-    if (runRuntimeHelperStateControllers(helper, options) === "destroyed") {
+    if (runRuntimeHelperStateControllers(helper, controllerOptions) === "destroyed") {
       return false;
     }
-    advanceRuntimeHelper(helper, options);
-    consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
+    advanceRuntimeHelper(helper, controllerOptions);
+    consumeRuntimeHelperPauseMoveTime(helper, controllerOptions.pauseKind);
   }
-  if (options.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, options, 1, "plus-one") === "destroyed") {
+  if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, 1, "plus-one") === "destroyed") {
     return false;
   }
   const margin = 240;
@@ -408,6 +418,29 @@ export function advanceRuntimeHelperActor(
     helper.pos.y >= -360 &&
     helper.pos.y <= 180
   );
+}
+
+function runtimeHelperControllerOptions(
+  helper: RuntimeHelper,
+  options: RuntimeHelperAdvanceOptions,
+): RuntimeHelperAdvanceOptions {
+  if (helper.keyCtrl !== true) {
+    return { ...options, commandActive: () => false };
+  }
+  if (options.runtimeProfile === "ikemen-go" && helper.commandBuffer && helper.commandDefinitions !== undefined) {
+    if (options.commandInput !== undefined) {
+      helper.commandBuffer.push(
+        options.runtimeTick ?? options.stageTime ?? helper.age,
+        options.commandInput,
+        { hitPause: options.pauseKind === "hitpause" },
+      );
+    }
+    return {
+      ...options,
+      commandActive: (name) => helper.commandBuffer!.isCommandActive(name, helper.commandDefinitions!),
+    };
+  }
+  return options;
 }
 
 export type RuntimeHelperControllerResult = "active" | "destroyed";

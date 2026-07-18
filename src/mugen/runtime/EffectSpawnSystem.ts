@@ -22,7 +22,7 @@ import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 export type RuntimeEffectSpawnActor = {
   id: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord"> & {
+  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord" | "commands"> & {
     constants?: DemoFighterDefinition["constants"];
   };
   runtimeProgram?: RuntimeHelperProgram;
@@ -170,6 +170,7 @@ export class RuntimeEffectSpawnWorld {
       spriteOwnerLabel: owner.label,
       localCoord: owner.definition.localCoord,
       runtimeProgram: owner.runtimeProgram,
+      commandDefinitions: owner.definition.commands,
       animations: owner.definition.animations,
       action,
       stateNo,

@@ -1658,6 +1658,7 @@ export class PlayableMatchRuntime {
                 constants: owner.definition.constants,
                 runtimeProfile: this.runtimeProfile,
                 commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
+                commandInput: owner.currentInput,
                 resolveTargetRedirect: (helper, playerId, controller) =>
                   this.resolveHelperTargetRedirect(helper, playerId, controller),
                 resolveResourceRedirect: (helper, playerId, controller) =>
@@ -2172,6 +2173,7 @@ export class PlayableMatchRuntime {
             constants: owner.definition.constants,
             runtimeProfile: this.runtimeProfile,
             commandActive: (name) => owner.commandBuffer.isCommandActive(name, owner.definition.commands ?? []),
+            commandInput: owner.currentInput,
             resolveTargetRedirect: (helper, playerId, controller) =>
               this.resolveHelperTargetRedirect(helper, playerId, controller),
             resolveResourceRedirect: (helper, playerId, controller) =>

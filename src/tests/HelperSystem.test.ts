@@ -4,6 +4,7 @@ import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
 import type { HelperControllerOp, PauseControllerOp, TeamStandbyControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
+import type { MugenCommand } from "../mugen/model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
 import {
@@ -61,6 +62,20 @@ const action: MugenAnimationAction = {
       line: 2,
     },
   ],
+};
+
+const helperCommand: MugenCommand = {
+  name: "helper_tick",
+  sequence: [{ raw: "x", type: "button" }],
+  rawCommand: "x",
+  resolvedCommand: "x",
+  time: 15,
+  stepTime: 1,
+  bufferTime: 1,
+  bufferHitPause: false,
+  remapped: false,
+  rawParams: {},
+  line: 1,
 };
 
 function controller(params: Record<string, string>): MugenStateController {
@@ -268,6 +283,59 @@ describe("HelperSystem", () => {
     advanceRuntimeHelpers([paused], stage, { pauseKind: "Pause", commandActive: () => true });
     expect(paused.vars.slice(0, 2)).toEqual([0, 0]);
     expect(paused.age).toBe(0);
+  });
+
+  it("isolates keyctrl command history while keeping keyctrl-off commands closed", () => {
+    const stateEntry = compiledControllerIr(-1, "VarAdd", ['command = "helper_tick"'], { v: "0", value: "10" });
+    const runtimeProgram = {
+      states: [stateProgram(stateDef(6000), [])],
+      stateEntries: [stateEntry],
+    };
+
+    const local = createRuntimeHelper({
+      serialId: "p1-helper-local-command",
+      controller: controller({ id: "440", keyctrl: "1" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      runtimeProgram,
+      commandDefinitions: [helperCommand],
+      action,
+      stateNo: 6000,
+      animNo: 6100,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+    const closed = createRuntimeHelper({
+      serialId: "p1-helper-closed-command",
+      controller: controller({ id: "441" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      runtimeProgram,
+      commandDefinitions: [helperCommand],
+      action,
+      stateNo: 6000,
+      animNo: 6100,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(local.commandBuffer).toBeDefined();
+    advanceRuntimeHelpers([local], stage, {
+      runtimeProfile: "ikemen-go",
+      commandInput: new Set(["x"]),
+      runtimeTick: 1,
+      commandActive: () => false,
+    });
+    advanceRuntimeHelpers([closed], stage, {
+      commandInput: new Set(["x"]),
+      runtimeTick: 1,
+      commandActive: () => true,
+    });
+
+    expect(local.vars[0]).toBe(10);
+    expect(closed.vars[0]).toBe(0);
   });
 
   it("routes Helper TargetPowerAdd RedirectID through a live root target memory", () => {
