@@ -39,6 +39,7 @@ export type ResolvedCharacterFiles = {
   commonCommands?: string[];
   commonConstants?: string[];
   cns?: string;
+  commonAnimations?: string[];
   states: string[];
   commonStates: string[];
   sprite?: string;

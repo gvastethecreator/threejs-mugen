@@ -108,6 +108,26 @@ export class MugenCharacterLoader {
     });
     files.commonCommands = supportedCommonCommandPaths;
 
+    const commonAnimationPaths = resolveGlobalCommonAnimationPaths(systemAssets?.gameConfig, resolver, diagnostics);
+    const supportedCommonAnimationPaths = commonAnimationPaths.filter((path) => {
+      if (/\.zss$/i.test(path)) {
+        unsupported.report("ikemen", "Common.Air ZSS", {
+          location: path,
+          fallback: "Only AIR Common.Air sources are parsed by the bounded loader",
+        });
+        return false;
+      }
+      if (!/\.air$/i.test(path)) {
+        unsupported.report("ikemen", "Common.Air format", {
+          location: path,
+          fallback: "Only .air Common.Air sources are parsed by the bounded loader",
+        });
+        return false;
+      }
+      return true;
+    });
+    files.commonAnimations = supportedCommonAnimationPaths;
+
     const animations = new Map();
     if (files.anim) {
       const parsedAir = parseAir(vfs.readText(files.anim) ?? "", files.anim);
@@ -115,6 +135,15 @@ export class MugenCharacterLoader {
         animations.set(id, action);
       }
       diagnostics.push(...parsedAir.diagnostics);
+    }
+    for (const commonAnimationPath of supportedCommonAnimationPaths) {
+      const parsedCommonAir = parseAir(vfs.readText(commonAnimationPath) ?? "", commonAnimationPath);
+      for (const [id, action] of parsedCommonAir.actions) {
+        if (!animations.has(id)) {
+          animations.set(id, action);
+        }
+      }
+      diagnostics.push(...parsedCommonAir.diagnostics);
     }
 
     let commands: MugenCharacter["commands"] = [];
@@ -525,6 +554,45 @@ function resolveGlobalCommonConstantPaths(
   return paths;
 }
 
+function resolveGlobalCommonAnimationPaths(
+  config: MugenGameConfig | undefined,
+  resolver: PathResolver,
+  diagnostics: MugenDiagnostic[],
+): string[] {
+  if (!config) {
+    return [];
+  }
+  const common = getConfigSection(config.rawSections, "Common");
+  const configPath = config.gameSpace?.sourcePath ?? "data/mugen.cfg";
+  const entries = Object.entries(common)
+    .filter(([key]) => /^air\d*$/i.test(key))
+    .sort(([left], [right]) => commonAnimationConfigRank(left) - commonAnimationConfigRank(right));
+  const paths: string[] = [];
+
+  for (const [, value] of entries) {
+    for (const reference of value.split(",").map((item) => item.trim()).filter(Boolean)) {
+      const normalizedReference = reference.replace(/^['"]|['"]$/g, "");
+      const rootPath = resolver.resolve("", normalizedReference);
+      const configRelativePath = resolver.resolve(configPath, normalizedReference);
+      const candidates = normalizedReference.includes("/") || normalizedReference.includes("\\")
+        ? [rootPath, configRelativePath]
+        : [configRelativePath, rootPath];
+      const resolved = candidates.find((candidate) => resolver.exists(candidate)) ?? candidates.find(Boolean);
+      if (!resolved || !resolver.exists(resolved)) {
+        diagnostics.push({
+          severity: "warning",
+          format: "loader",
+          file: configPath,
+          message: `Referenced global common animation file was not found: ${reference}`,
+        });
+        continue;
+      }
+      paths.push(resolved);
+    }
+  }
+  return paths;
+}
+
 function getConfigSection(rawSections: Record<string, Record<string, string>>, expected: string): Record<string, string> {
   return Object.entries(rawSections).find(([section]) => section.toLowerCase() === expected.toLowerCase())?.[1] ?? {};
 }
@@ -542,6 +610,11 @@ function commonCommandConfigRank(key: string): number {
 function commonConstantConfigRank(key: string): number {
   const normalized = key.toLowerCase();
   return normalized === "const" ? 0 : Number(normalized.slice("const".length)) + 1;
+}
+
+function commonAnimationConfigRank(key: string): number {
+  const normalized = key.toLowerCase();
+  return normalized === "air" ? 0 : Number(normalized.slice("air".length)) + 1;
 }
 
 function createEmptyFiles(): ResolvedCharacterFiles {

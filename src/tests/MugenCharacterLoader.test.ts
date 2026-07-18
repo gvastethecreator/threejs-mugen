@@ -414,6 +414,80 @@ GameHeight = 720
       expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.Const ZSS" })]),
     );
   });
+
+  it("merges ordered Common.Air actions without replacing character AIR IDs", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common-air/common-air.def",
+      textBytes(`[Info]
+name = "Common Air"
+
+[Files]
+anim = common-air.air
+`),
+    );
+    vfs.addFile(
+      "chars/common-air/common-air.air",
+      textBytes(`${namedAction(0, 10)}\n${namedAction(900, 11)}`),
+    );
+    vfs.addFile("data/common-first.air", textBytes(`${namedAction(900, 20)}\n${namedAction(901, 21)}`));
+    vfs.addFile("data/common-second.air", textBytes(`${namedAction(901, 22)}\n${namedAction(902, 23)}`));
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+Air1 = common-second.air
+Air = data/common-first.air
+Air2 = data/missing.air
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common-air.zip", vfs);
+
+    expect(character.files.commonAnimations).toEqual(["data/common-first.air", "data/common-second.air"]);
+    expect([...character.animations.keys()].sort((a, b) => a - b)).toEqual([0, 900, 901, 902]);
+    expect(character.animations.get(900)?.frames[0]?.spriteIndex).toBe(11);
+    expect(character.animations.get(901)?.frames[0]?.spriteIndex).toBe(21);
+    expect(character.animations.get(902)?.frames[0]?.spriteIndex).toBe(23);
+    expect(character.diagnostics).toContainEqual(
+      expect.objectContaining({ message: "Referenced global common animation file was not found: data/missing.air" }),
+    );
+  });
+
+  it("loads Common.Air without character AIR and blocks non-AIR sources", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/common-air-only/common-air-only.def",
+      textBytes(`[Info]
+name = "Common Air Only"
+`),
+    );
+    vfs.addFile("data/common.air", textBytes(namedAction(910, 30)));
+    vfs.addFile("data/common.zss", textBytes("[Begin Action 911]"));
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Common]
+Air = data/common.air, data/common.zss
+
+[Config]
+GameWidth = 1280
+GameHeight = 720
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("common-air-only.zip", vfs);
+
+    expect(character.files.anim).toBeUndefined();
+    expect(character.files.commonAnimations).toEqual(["data/common.air"]);
+    expect(character.animations.get(910)?.frames[0]?.spriteIndex).toBe(30);
+    expect(character.animations.has(911)).toBe(false);
+    expect(character.compatibility.unsupported).toEqual(
+      expect.arrayContaining([expect.objectContaining({ format: "ikemen", feature: "Common.Air ZSS" })]),
+    );
+  });
 });
 
 function stateSourceFixture(options: { withCharacterState120: boolean }) {
@@ -478,6 +552,12 @@ anim = ${id}
 [State ${id}, ${name}]
 type = Null
 trigger1 = 1
+`;
+}
+
+function namedAction(id: number, spriteIndex: number): string {
+  return `[Begin Action ${id}]
+0,${spriteIndex},0,0,1
 `;
 }
 
