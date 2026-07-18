@@ -1,5 +1,17 @@
 ﻿# QA And Acceptance Gates
 
+## Common1 fall defense-up gate
+
+Acceptance requires canonical imported `[Data] fall.defence_up` derivation,
+one transient incoming-damage factor at Common1 states `5070`/`5100`, explicit
+`NoFallDefenceUp` suppression, restoration after leaving `Hit`, and no change to
+the legacy synthetic `HitDef` fall metadata path. T257 passes focused `7` files
+and `56/56` tests, full `230/230` files and `2394/2394` tests, TypeScript 7,
+build, repository boundaries, redirect boundary, and `633/633` trace artifacts.
+Browser smoke is N/A because no visible surface changed. Full Common1 merge,
+fall-count/invulnerability behavior, later restoration states, helper/custom
+state ownership, ZSS/Lua, rollback, and full parity are outside this gate.
+
 ## SOCD resolution gate
 
 Acceptance requires one resolved per-tick input copy for documented modes

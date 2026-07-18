@@ -1,4 +1,13 @@
 ﻿# Supported Features
+- Imported root runtime now has a bounded Common1 fall-defense lifecycle:
+  character `[Data] fall.defence_up` derives the source-facing
+  `data.fall.defence_mul`, states `5070`/`5100` apply the incoming-damage factor
+  once while in `Hit`, and `AssertSpecial NoFallDefenceUp` opts out. The factor
+  is cleared on leaving `Hit`; existing synthetic `HitDef`-level
+  `hitFall.defenceUp` metadata remains a separate compatibility path. Full
+  Common1 source merge, fall-count/invulnerability parity, later restoration
+  choreography, helper/custom-state ownership, and full MUGEN/IKEMEN parity
+  remain unsupported.
 - Runtime input now supports bounded IKEMEN `SOCDResolution` modes `0`-`4`
   through one copied per-tick policy shared by routing, control, command
   buffers, pause, and hitpause. `ikemen-go` defaults to `4`; `mugen-1.1` and

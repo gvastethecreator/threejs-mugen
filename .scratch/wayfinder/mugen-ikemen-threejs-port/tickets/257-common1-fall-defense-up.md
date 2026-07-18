@@ -1,6 +1,6 @@
 # Ticket 257: Common1 fall defense-up
 
-- Status: implementation in progress
+- Status: resolved bounded implementation
 - Date: 2026-07-18
 - Scope: bounded Common1 fall-defense lifecycle for imported root fighters
 - Depends on: imported `[Data]` constants, `RuntimeRecoverySystem`, and the
@@ -8,6 +8,8 @@
 - Research: [`docs/research/2026-07-18-common1-fall-defense-up.md`](../../../docs/research/2026-07-18-common1-fall-defense-up.md)
 - Source contract: official MUGEN Common1 behavior and pinned IKEMEN GO source
   at commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Implementation: `064e2db0`
+- Closeout: [`docs/adr/0024-common1-fall-defense-up.md`](../../../docs/adr/0024-common1-fall-defense-up.md), [`docs/reports/2026-07-18-common1-fall-defense-up-closeout.md`](../../../docs/reports/2026-07-18-common1-fall-defense-up-closeout.md)
 
 ## Question
 
@@ -37,11 +39,20 @@ parity.
   application, one-shot behavior, restoration, and the opt-out flag.
 - Imported `[Data]` derivation is covered without changing character-over-common
   precedence.
-- Batched TypeScript 7, relevant tests, build, boundaries, trace, and diff
-  hygiene are run before closeout.
+- Focused coverage passes `7` files / `56/56` tests; the full suite passes
+  `230/230` files / `2394/2394` tests.
+- TypeScript 7, build, boundaries, redirect boundary, `633/633` traces, and
+  diff hygiene pass before closeout.
 - Browser smoke is N/A because this slice changes runtime semantics only.
 
 ## Claim ceiling
 
 This ticket closes one Common1/default-table rule for the root runtime. It does
 not establish complete Common1 coverage or MUGEN/IKEMEN parity.
+
+## Answer
+
+The runtime now keeps canonical `[Data]` fall defense separate from the legacy
+synthetic `HitDef` extension. Imported root actors receive the bounded
+`5070`/`5100` transient factor, `NoFallDefenceUp` is honored, and leaving
+`Hit` clears the factor. No compatibility score moved.
