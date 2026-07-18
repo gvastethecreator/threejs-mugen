@@ -50,8 +50,35 @@ The six changed files are byte-level findings only. They do not identify which
 changes are behaviorally relevant. Full repository-wide semantic review,
 generated code/config parity, and ZSS/Lua/Modules remain open.
 
+## Implementation outcome
+
+`scripts/materialize_source_authority_manifest.cjs` now reads the normative
+Git blobs and local working-tree bytes for the nine selected `src/*.go` files,
+records local Git dirtiness, and writes the tracked artifact
+`docs/evidence/source-authority-manifest-v0.json`. The real comparison is
+normative `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703` versus local
+`044da72008b8ba13caf7b0f820526ce16e955fb3`: three files are byte-identical,
+six differ, and four pre-existing untracked local files keep the cache dirty.
+The artifact digest is
+`20216fe3f7031af71fd43af8ca1e918037cea9a23eb8a642cb8c2085442ff79b`.
+
+The materializer fails closed when either Git root, revision, or required
+normative blob is unavailable. It does not mutate either checkout. Semantic
+review remains `unclassified`; this cut proves transport-level identity and
+delta only. Implementation commit: `0d4a0274`.
+
+## Verification
+
+- `pnpm materialize:source-authority` passed against the real normative audit
+  clone and local cache.
+- `pnpm exec vitest run src/tests/SourceAuthorityManifest.test.ts --reporter=dot`
+  passed: `1` file / `7` tests.
+- `node --check scripts/materialize_source_authority_manifest.cjs`,
+  `pnpm typecheck`, `pnpm check:boundaries`, and
+  `pnpm check:redirect-boundary` passed.
+- Browser smoke is N/A: no visible runtime or Studio surface changed.
+
 ## Next action
 
-Add the materializer, run it against the real two-checkout audit inputs, parse
-the output through the TypeScript contract, and record the resulting artifact
-and claim ceiling in T269's closeout.
+Materializer and artifact are complete in `0d4a0274`; close T269 while keeping
+semantic review and compatibility-score movement open.

@@ -320,6 +320,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [SourceAuthorityManifest/v0](tickets/266-source-authority-manifest-v0.md) - resolved bounded in `20b50cac`: canonical normative/local identity, file-level SHA-256 delta, dirty-cache guard, and explicit `unclassified` semantic review are available; actual normative checkout reconciliation remains open.
 - [Stateful SOCD temporal state](tickets/267-stateful-socd-temporal-state.md) - resolved bounded in `69aacf86` / ADR 0033: per-seat `SocdFirst` state now persists across reconstructed sets for modes `1` and `3` and resets at match/round boundaries; raw event/InputBuffer parity remains open.
 - [SOCD resolution authority](tickets/268-socd-resolution-authority.md) - resolved bounded in `b241cc65` / ADR 0034: runtime/package/profile precedence and package conflicts are observable through `RuntimeSocdResolutionAuthority/v0`; final match-level ownership remains open.
+- [Source authority reconciliation](tickets/269-source-authority-reconciliation.md) - resolved bounded in `0d4a0274` / ADR 0035: the real normative/local nine-file delta is materialized as a tracked artifact with dirty-cache and fail-closed guards; semantic review remains `unclassified` and no parity score moves.
 
 ## Not Yet Specified
 

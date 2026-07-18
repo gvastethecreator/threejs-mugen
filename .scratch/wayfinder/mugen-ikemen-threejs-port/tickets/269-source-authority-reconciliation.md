@@ -1,6 +1,6 @@
 # Ticket 269: source authority reconciliation
 
-- Status: claimed
+- Status: resolved
 - Date: 2026-07-18
 - Scope: materialize selected normative/local IKEMEN source file digests without
   mutating either checkout
@@ -32,6 +32,15 @@ semantic parity claims?
   separate normative clone.
 - Output parses through `parseSourceAuthorityManifest`, reports the selected
   same/changed file delta, and preserves dirty-cache incompleteness.
+- The committed artifact is `docs/evidence/source-authority-manifest-v0.json`:
+  normative `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`, local
+  `044da72008b8ba13caf7b0f820526ce16e955fb3`, cache `dirty`, comparison
+  `changed`, three same files, six changed files, and semantic review
+  `unclassified`.
+- Implementation commit: `0d4a0274`.
+- Focused parser/artifact coverage: `1` file / `7` tests passed. Materializer
+  syntax, real materialization, missing-normative-root failure, TypeScript 7,
+  module boundaries, and redirect-boundary checks passed.
 - Browser smoke is N/A because this is a tooling/compatibility evidence slice.
 
 ## Claim ceiling
