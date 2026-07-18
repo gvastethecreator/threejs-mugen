@@ -114,18 +114,32 @@ export class MugenCharacterLoader {
 
     const stateSources: MugenStateSourceInput[] = [];
     const constants: MugenCharacter["constants"] = {};
+    const parsedCnsByPath = new Map<string, { text: string; parsed: ReturnType<typeof parseCns> }>();
+    const parseCnsFile = (path: string): { text: string; parsed: ReturnType<typeof parseCns> } => {
+      const cached = parsedCnsByPath.get(path);
+      if (cached) {
+        return cached;
+      }
+      const text = vfs.readText(path) ?? "";
+      const parsed = parseCns(text, path);
+      const result = { text, parsed };
+      parsedCnsByPath.set(path, result);
+      diagnostics.push(...parsed.diagnostics);
+      return result;
+    };
+
+    if (files.cns) {
+      Object.assign(constants, parseCnsFile(files.cns).parsed.constants);
+    }
+
     const stateFiles = [
-      ...[files.cns, ...files.states]
-        .filter((path): path is string => Boolean(path))
-        .map((path) => ({ kind: "character" as const, path })),
+      ...files.states.map((path) => ({ kind: "character" as const, path })),
       ...files.commonStates.map((path) => ({ kind: "common" as const, path })),
     ];
     for (const stateFile of stateFiles) {
-      const text = vfs.readText(stateFile.path) ?? "";
-      const parsedCns = parseCns(text, stateFile.path);
-      stateSources.push({ ...stateFile, text, states: parsedCns.states });
-      Object.assign(constants, parsedCns.constants);
-      diagnostics.push(...parsedCns.diagnostics);
+      const { text, parsed } = parseCnsFile(stateFile.path);
+      stateSources.push({ ...stateFile, text, states: parsed.states });
+      Object.assign(constants, parsed.constants);
     }
     const stateResolution = resolveMugenStateSources(stateSources);
     const states = stateResolution.states;

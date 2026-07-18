@@ -39,6 +39,9 @@ export function parseDef(text: string, file?: string): MugenCharacterDef {
   const infoRaw = getSection(rawSections, "Info");
   const filesRaw = getSection(rawSections, "Files");
   const files = Object.entries(filesRaw);
+  const stateFiles = files
+    .filter(([key]) => /^st\d*$/i.test(key))
+    .sort(([left], [right]) => stateFileRank(left) - stateFileRank(right));
 
   return {
     info: {
@@ -53,10 +56,7 @@ export function parseDef(text: string, file?: string): MugenCharacterDef {
     files: {
       cmd: getValue(filesRaw, "cmd"),
       cns: getValue(filesRaw, "cns"),
-      states: files
-        .filter(([key]) => /^st\d*$/i.test(key))
-        .map(([, value]) => value)
-        .filter(Boolean),
+      states: stateFiles.map(([, value]) => value).filter(Boolean),
       commonStates: files
         .filter(([key]) => /^stcommon\d*$/i.test(key) || /^common\d*$/i.test(key))
         .map(([, value]) => value)
@@ -74,6 +74,11 @@ export function parseDef(text: string, file?: string): MugenCharacterDef {
     rawLines: lines.map((line) => line.raw),
     diagnostics,
   };
+}
+
+function stateFileRank(key: string): number {
+  const normalized = key.toLowerCase();
+  return normalized === "st" ? 0 : Number(normalized.slice(2)) + 1;
 }
 
 function getSection(

@@ -87,6 +87,37 @@ pal2 = pal2.act
       shadowed: [],
     });
   });
+
+  it("keeps constants from a CNS-only file without importing its state sections", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/constants-only/constants-only.def",
+      textBytes(`[Info]
+name = "Constants Only"
+
+[Files]
+cns = constants-only.cns
+`),
+    );
+    vfs.addFile(
+      "chars/constants-only/constants-only.cns",
+      textBytes(`[Data]
+life = 777
+
+[Statedef 120]
+anim = 120
+[State 120, Must not load]
+type = Null
+trigger1 = 1
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("constants-only.zip", vfs);
+
+    expect(character.constants["data.life"]).toBe(777);
+    expect(character.states).toEqual([]);
+    expect(character.stateSources).toEqual([]);
+  });
 });
 
 function stateSourceFixture(options: { withCharacterState120: boolean }) {
@@ -100,6 +131,7 @@ name = "Source Probe"
 
 [Files]
 cns = source-probe.cns
+${options.withCharacterState120 ? "st = source-probe.cns" : ""}
 stcommon = common1.cns
 `),
   );

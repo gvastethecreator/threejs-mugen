@@ -34,4 +34,16 @@ pal1 = kfm.act
     expect(parsed.files.palettes).toEqual(["kfm.act"]);
     expect(parsed.rawSections.Files?.sprite).toBe("kfm.sff");
   });
+
+  it("normalizes numbered character state files after the unnumbered st file", () => {
+    const parsed = parseDef(`[Files]
+st2 = second.st
+st9 = ninth.st
+st = base.st
+st0 = zero.st
+st1 = first.st
+`);
+
+    expect(parsed.files.states).toEqual(["base.st", "zero.st", "first.st", "second.st", "ninth.st"]);
+  });
 });
