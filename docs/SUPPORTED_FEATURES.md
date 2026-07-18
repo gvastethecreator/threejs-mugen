@@ -14,6 +14,12 @@
   generic hitflag `F`, MUGEN's infinite duration, fall lifetime/reset,
   helper/custom-state ownership, ZSS/Lua, rollback, and full parity remain
   unsupported.
+- Imported direct HitDef admission now has a bounded IKEMEN `NoFallHitFlag`
+  contract across root admission, regular direct combat, equal-priority
+  preparation, and helpers: an already falling target requires an explicit
+  `F` token unless the attacker asserts `NoFallHitFlag`; omitted hitflags retain
+  the current behavior. Default hitflag inference, projectiles, reversals,
+  exact `hittmp`/`acttmp`, and full MUGEN/IKEMEN parity remain unsupported.
 - Imported root runtime now has a bounded Common1 fall-defense lifecycle:
   character `[Data] fall.defence_up` derives the source-facing
   `data.fall.defence_mul`, states `5070`/`5100` apply the incoming-damage factor

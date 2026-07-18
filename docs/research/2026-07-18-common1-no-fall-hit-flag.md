@@ -52,3 +52,12 @@ not a claim that the sandbox has complete `hittmp` or `acttmp` parity.
   and browser presentation are outside this change.
 - The direct predicate does not establish complete MUGEN/IKEMEN parity or
   exact Common1 state-loop ordering.
+
+## Implementation outcome
+
+The bounded predicate was implemented in `71f0d265` after the planning and
+source audit commit `4637d4e9`. `NoFallHitFlag` is now typed, explicit direct
+HitDef `F` admission is enforced for falling targets across root, regular, and
+helper direct paths, and omitted hitflags remain unchanged. Focused, full-suite,
+TypeScript 7, build, boundary, and trace gates remain green. The claim ceiling
+above is unchanged.

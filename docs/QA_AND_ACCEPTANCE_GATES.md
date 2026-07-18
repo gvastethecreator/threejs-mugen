@@ -39,6 +39,20 @@ renderer, Studio, or visible surface changed. Exact `acttmp`, generic hitflag
 helper/custom-state ownership, ZSS/Lua, rollback, and full parity remain
 outside this gate.
 
+## Common1 NoFallHitFlag admission gate
+
+Acceptance requires typed IKEMEN `AssertSpecial NoFallHitFlag`, one shared
+explicit direct-HitDef predicate across root admission, regular direct combat,
+equal-priority preparation, and helper direct combat, rejection of a falling
+target without hitflag `F` or with attacker-side `NoFallHitFlag`, and unchanged
+omitted-hitflag behavior. T260 passes focused `5` files / `83` tests and the
+full suite passes `230/230` files / `2411/2411` tests. TypeScript 7, production
+build, repository boundaries, redirect boundary, and `633/633` trace artifacts
+are part of the grouped closeout evidence. Browser smoke is N/A because no
+renderer, Studio, or visible surface changed. Default hitflag inference,
+projectiles, reversals, exact `hittmp`/`acttmp`, custom-state ownership breadth,
+ZSS/Lua, rollback, and full parity remain outside this gate.
+
 ## SOCD resolution gate
 
 Acceptance requires one resolved per-tick input copy for documented modes

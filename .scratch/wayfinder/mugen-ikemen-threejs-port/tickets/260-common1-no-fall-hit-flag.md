@@ -1,12 +1,16 @@
 # Ticket 260: Common1 NoFallHitFlag admission
 
-- Status: implementation in progress
+- Status: resolved bounded
 - Date: 2026-07-18
 - Scope: bounded direct HitDef admission against an already falling target
 - Depends on: typed `AssertSpecial`, `DemoMove.hitFlag`, root hit admission,
   direct combat resolution, and helper direct combat
 - Research: [`docs/research/2026-07-18-common1-no-fall-hit-flag.md`](../../../../docs/research/2026-07-18-common1-no-fall-hit-flag.md)
 - Source contract: pinned IKEMEN GO commit `044da72008b8ba13caf7b0f820526ce16e955fb3`
+- Planning commit: `4637d4e9`
+- Implementation: `71f0d265`
+- ADR: [`0027-common1-no-fall-hit-flag`](../../../../docs/adr/0027-common1-no-fall-hit-flag.md)
+- Closeout: [`2026-07-18-common1-no-fall-hit-flag-closeout`](../../../../docs/reports/2026-07-18-common1-no-fall-hit-flag-closeout.md)
 
 ## Question
 
@@ -41,9 +45,10 @@ and full MUGEN/IKEMEN parity remain open.
 - Focused AssertSpecial, root-admission, direct-combat, and helper-combat tests
   cover opt-out, explicit `F`, non-falling targets, omitted hitflags, and
   rejection reasons without mutation.
-- The accumulated TypeScript 7, build, boundary, trace, and full-suite gates
-  are run after the implementation rounds, with unrelated baseline findings
-  reported separately.
+- Focused coverage passes `5` files / `83` tests; the full suite passes `230`
+  files / `2411` tests.
+- The accumulated TypeScript 7, build, boundary, trace, and diff-hygiene gates
+  pass, with unrelated baseline findings reported separately.
 - Browser smoke is N/A unless the implementation changes renderer, Studio, or
   other visible behavior.
 

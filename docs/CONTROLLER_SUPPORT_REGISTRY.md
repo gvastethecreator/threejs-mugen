@@ -516,3 +516,14 @@ Common1 fall-defense addendum: imported root `HitFallDamage` now consumes canoni
 Common1 NoFallCount addendum: IKEMEN `AssertSpecial NoFallCount` is now typed and suppresses the existing state-`5100` `HitFallDamage` ground-impact increment while preserving fall damage, other hit-fall metadata, default counting, and `GetHitVar(fallcount)`. Focused coverage passes `61/61`; full suite passes `230/230` files / `2396/2396` tests and trace QA passes `633/633` artifacts. This is `executed-partial` at the current controller boundary only; exact state-loop timing, repeated-fall invulnerability, recovery shortening, `NoFallHitFlag`, helper/custom-state ownership, ZSS/Lua, and full parity remain unsupported.
 
 Common1 repeated-fall recovery addendum: imported-root Common1 entry mechanics now count `5070`/`5100` on the bounded first tick unless `NoFallCount`, remain idempotent when legacy `HitFallDamage` already counted the same entry, halve the second counted `5100` positive `down.recovertime`, and install typed `deny SCA / 180` protection at `<= 10` while preserving the secondary `HitBy` slot. Focused coverage passes `7` files / `60/60`; full suite passes `230/230` files / `2401/2401` tests and trace QA passes `633/633` artifacts. This is `executed-partial` for imported roots and current typed eligibility ownership only; exact `acttmp`, generic hitflag `F`, `NoFallHitFlag`, MUGEN infinite duration, fall lifetime/reset, helper/custom-state ownership, ZSS/Lua, rollback, and full parity remain unsupported.
+
+Common1 NoFallHitFlag addendum: `AssertSpecial NoFallHitFlag` is now typed and
+the explicit direct HitDef `F` admission rule is shared by root admission,
+regular direct combat, equal-priority preparation, and helper direct combat.
+An already falling target is rejected without `F`, or when the attacker asserts
+`NoFallHitFlag`; omitted hitflags remain unchanged. Focused coverage passes `5`
+files / `83/83`; full suite passes `230/230` files / `2411/2411` tests and trace
+QA passes `633/633` artifacts. This is `executed-partial` for the current direct
+HitDef routes only; default hitflag inference, projectiles, reversals, exact
+`hittmp`/`acttmp`, custom-state ownership breadth, ZSS/Lua, rollback, and full
+parity remain unsupported.

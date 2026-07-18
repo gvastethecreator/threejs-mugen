@@ -1142,6 +1142,22 @@ hitflag `F`, `NoFallHitFlag`, exact MUGEN infinite duration, fall lifetime/reset
 helpers/custom states, ZSS/Lua, rollback/netplay, visual/audio parity, and full
 MUGEN/IKEMEN parity.
 
+## Entry 485 - Common1 NoFallHitFlag direct admission
+
+Done: typed IKEMEN `AssertSpecial NoFallHitFlag` now shares one explicit direct
+HitDef predicate across root admission, regular direct combat, equal-priority
+preparation, and helper direct combat. An already falling target requires an
+explicit `F` token unless the attacker asserts `NoFallHitFlag`; omitted hitflags
+retain the existing behavior. Focused coverage passes `5` files / `83/83`; the
+full suite passes `230/230` files / `2411/2411` tests. TypeScript 7, production
+build, repository boundaries, redirect boundary, and `qa:trace` `633/633`
+artifacts (`599` required, `34` optional) pass. Browser smoke is N/A because no
+visible surface changed. No compatibility score moved. Claim allowed: one
+source-backed direct HitDef falling-target admission boundary. Claim blocked:
+default hitflag inference, projectiles, reversals, exact `hittmp`/`acttmp`,
+custom-state ownership breadth, ZSS/Lua, rollback/netplay, visual/audio parity,
+and full MUGEN/IKEMEN parity.
+
 ## Entry 479 - MUGEN-lite milestone adjudication
 
 Done: the written M2 Imported MUGEN-lite MVP exit is accepted at bounded fixture scope. Current optional local KFM artifacts prove imported idle/walk/crouch/jump (`02b6bfc0` / `81e3500f`), normal and QCF special input (`89bc15e0` / `330f329a`, `5242ac11` / `9e559255`), guard (`07870510` / `b4c3f3b9`), get-hit (`dc476568` / `bc7d27b6`), fall, and recovery (`88a7c7aa` / `86e41e54`, `ecce3c63` / `60591b38`). The repository-owned CC0 package remains separately evidenced by `CompatibilityJourney/v1` checksum `cabcd573`, digest `sha256:f0389c3f95003bb16e26d6ae2020acdb57c12fa0f088d63ba25ca3466ed71eb0`, and runtime refs `a372a02c` / `ceac9f37`. Unsupported findings and blocked claims remain visible. Scores are unchanged; broad corpus, exact Common1 timing, and full MUGEN/IKEMEN parity remain blocked. Verification passes 184/1958 tests, typecheck, boundaries, build, 577/577 traces (546 required), and smoke. Next: Wayfinder 130 selects one independent legal package or ACT/palette route.
