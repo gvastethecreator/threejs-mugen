@@ -35,5 +35,5 @@ full MUGEN/IKEMEN parity.
 
 Choose the next source-backed helper/runtime boundary only after preserving this
 ownership contract and its fail-closed evidence. The current high-risk open
-areas are helper-selected TargetState, helper State -2/-3 semantics, and
-broader target-selection ordering.
+areas are IKEMEN helper State -4/+1 semantics, broader root negative-state
+scheduling, and target-selection ordering.

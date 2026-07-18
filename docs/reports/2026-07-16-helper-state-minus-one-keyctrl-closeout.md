@@ -32,12 +32,12 @@ active.
 
 ## Scope ceiling
 
-This closeout does not claim helper States -2/-3/-4/+1, helper-specific input
+This closeout does not claim helper States -4/+1, helper-specific input
 buffers, Common1/global negative-state merge or exact ordering, recursive
 RedirectID, rollback/netplay, or full MUGEN/IKEMEN parity.
 
 ## Next frontier
 
-Ticket 242 maps whether official helper State -2/-3 behavior can reuse the
-owner-root program and command boundary without expanding into an unbounded
-global-state VM.
+ADR 0009 closes Ticket 242 with a bounded IKEMEN-only helper State -2/-3
+route. The next frontier is the separate State -4/+1 pause and ordering
+contract.
