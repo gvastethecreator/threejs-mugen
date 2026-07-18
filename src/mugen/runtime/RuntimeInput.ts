@@ -2,6 +2,21 @@ import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile"
 
 export type RuntimeDirection = "B" | "DB" | "D" | "DF" | "F" | "UF" | "U" | "UB";
 export type RuntimeSocdResolution = 0 | 1 | 2 | 3 | 4;
+export type RuntimeSocdResolutionInput = RuntimeSocdResolution | string | number | undefined;
+export type RuntimeSocdResolutionSource =
+  | "runtime-option"
+  | "p1-package"
+  | "p2-package"
+  | "package-conflict-p1-fallback"
+  | "profile-default";
+
+export type RuntimeSocdResolutionAuthority = {
+  schema: "RuntimeSocdResolutionAuthority/v0";
+  resolution: RuntimeSocdResolution;
+  source: RuntimeSocdResolutionSource;
+  packageValues: { p1?: RuntimeSocdResolution; p2?: RuntimeSocdResolution };
+  diagnostics: string[];
+};
 
 export type RuntimeSocdInputState = {
   first: [boolean, boolean, boolean, boolean];
@@ -15,7 +30,7 @@ export function resetRuntimeSocdInputState(state: RuntimeSocdInputState): void {
   state.first = [false, false, false, false];
 }
 
-export function parseRuntimeSocdResolution(value: string | number | undefined): RuntimeSocdResolution | undefined {
+export function parseRuntimeSocdResolution(value: RuntimeSocdResolutionInput): RuntimeSocdResolution | undefined {
   if (typeof value === "number") {
     return Number.isInteger(value) && value >= 0 && value <= 4 ? value as RuntimeSocdResolution : undefined;
   }
@@ -27,6 +42,70 @@ export function parseRuntimeSocdResolution(value: string | number | undefined): 
 
 export function defaultRuntimeSocdResolution(profile: RuntimeCompatibilityProfile): RuntimeSocdResolution {
   return profile === "ikemen-go" ? 4 : 0;
+}
+
+export function resolveRuntimeSocdResolution(input: {
+  profile: RuntimeCompatibilityProfile;
+  runtimeOption?: RuntimeSocdResolutionInput;
+  p1Package?: RuntimeSocdResolution;
+  p2Package?: RuntimeSocdResolution;
+}): RuntimeSocdResolutionAuthority {
+  const runtimeOption = parseRuntimeSocdResolution(input.runtimeOption);
+  const packageConflict = input.p1Package !== undefined && input.p2Package !== undefined && input.p1Package !== input.p2Package;
+  const diagnostics = [
+    ...(input.runtimeOption !== undefined && runtimeOption === undefined ? ["invalid-runtime-option"] : []),
+    ...(packageConflict ? ["package-socd-resolution-conflict"] : []),
+  ];
+  if (runtimeOption !== undefined) {
+    return {
+      schema: "RuntimeSocdResolutionAuthority/v0",
+      resolution: runtimeOption,
+      source: "runtime-option",
+      packageValues: packageValues(input.p1Package, input.p2Package),
+      diagnostics,
+    };
+  }
+  if (packageConflict) {
+    return {
+      schema: "RuntimeSocdResolutionAuthority/v0",
+      resolution: input.p1Package!,
+      source: "package-conflict-p1-fallback",
+      packageValues: packageValues(input.p1Package, input.p2Package),
+      diagnostics,
+    };
+  }
+  if (input.p1Package !== undefined) {
+    return {
+      schema: "RuntimeSocdResolutionAuthority/v0",
+      resolution: input.p1Package,
+      source: "p1-package",
+      packageValues: packageValues(input.p1Package, input.p2Package),
+      diagnostics,
+    };
+  }
+  if (input.p2Package !== undefined) {
+    return {
+      schema: "RuntimeSocdResolutionAuthority/v0",
+      resolution: input.p2Package,
+      source: "p2-package",
+      packageValues: packageValues(input.p1Package, input.p2Package),
+      diagnostics,
+    };
+  }
+  return {
+    schema: "RuntimeSocdResolutionAuthority/v0",
+    resolution: defaultRuntimeSocdResolution(input.profile),
+    source: "profile-default",
+    packageValues: packageValues(input.p1Package, input.p2Package),
+    diagnostics,
+  };
+}
+
+function packageValues(p1: RuntimeSocdResolution | undefined, p2: RuntimeSocdResolution | undefined): RuntimeSocdResolutionAuthority["packageValues"] {
+  return {
+    ...(p1 === undefined ? {} : { p1 }),
+    ...(p2 === undefined ? {} : { p2 }),
+  };
 }
 
 export function resolveRuntimeSocdInput(

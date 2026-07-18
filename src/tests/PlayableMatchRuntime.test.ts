@@ -70,6 +70,20 @@ describe("PlayableMatchRuntime", () => {
     expect(reset.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1")?.commandHistory.at(-1)?.values).toEqual(["F"]);
   });
 
+  it("exposes package SOCD conflicts instead of hiding P1-first fallback", () => {
+    const p1 = { ...demoFighters[0]!, source: "imported" as const, socdResolution: 1 as const };
+    const p2 = { ...demoFighters[1]!, source: "imported" as const, socdResolution: 3 as const };
+    const runtime = new PlayableMatchRuntime(p1, p2, trainingStage, { runtimeProfile: "ikemen-go" });
+
+    expect(runtime.getSocdResolutionAuthority()).toEqual({
+      schema: "RuntimeSocdResolutionAuthority/v0",
+      resolution: 1,
+      source: "package-conflict-p1-fallback",
+      packageValues: { p1: 1, p2: 3 },
+      diagnostics: ["package-socd-resolution-conflict"],
+    });
+  });
+
   it("schedules capped IKEMEN P3-P8 reserve roots for controller-only CNS without presenting them", () => {
     const reserveFighters = Array.from({ length: 7 }, (_, index) => demoFighters[index % 2]!);
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {

@@ -6,6 +6,7 @@ import {
   isRuntimeHoldingBack,
   parseRuntimeSocdResolution,
   resetRuntimeSocdInputState,
+  resolveRuntimeSocdResolution,
   resolveRuntimeSocdInput,
   runtimeCurrentDirection,
 } from "../mugen/runtime/RuntimeInput";
@@ -76,5 +77,17 @@ describe("RuntimeInput", () => {
     expect(parseRuntimeSocdResolution("5")).toBeUndefined();
     expect(parseRuntimeSocdResolution("4x")).toBeUndefined();
     expect(parseRuntimeSocdResolution(2.5)).toBeUndefined();
+  });
+
+  it("publishes explicit SOCD authority and conflicts without hiding package provenance", () => {
+    expect(resolveRuntimeSocdResolution({ profile: "ikemen-go", runtimeOption: 2, p1Package: 1, p2Package: 3 })).toEqual({
+      schema: "RuntimeSocdResolutionAuthority/v0",
+      resolution: 2,
+      source: "runtime-option",
+      packageValues: { p1: 1, p2: 3 },
+      diagnostics: ["package-socd-resolution-conflict"],
+    });
+    expect(resolveRuntimeSocdResolution({ profile: "ikemen-go", p1Package: 1, p2Package: 3 }).source).toBe("package-conflict-p1-fallback");
+    expect(resolveRuntimeSocdResolution({ profile: "ikemen-go", runtimeOption: "invalid" }).diagnostics).toEqual(["invalid-runtime-option"]);
   });
 });

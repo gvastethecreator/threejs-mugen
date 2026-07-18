@@ -75,11 +75,11 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld, type RuntimeInputControlResult } from "./RuntimeInputControlSystem";
 import {
   createRuntimeSocdInputState,
-  defaultRuntimeSocdResolution,
-  parseRuntimeSocdResolution,
   resetRuntimeSocdInputState,
+  resolveRuntimeSocdResolution,
   resolveRuntimeSocdInput,
   type RuntimeSocdInputState,
+  type RuntimeSocdResolutionAuthority,
   type RuntimeSocdResolution,
 } from "./RuntimeInput";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
@@ -578,6 +578,7 @@ export class PlayableMatchRuntime {
   private lastTurnsContinuation?: RuntimeTurnsContinuationResult;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly socdResolution: RuntimeSocdResolution;
+  private readonly socdResolutionAuthority: RuntimeSocdResolutionAuthority;
   private readonly socdInputState: { p1: RuntimeSocdInputState; p2: RuntimeSocdInputState } = {
     p1: createRuntimeSocdInputState(),
     p2: createRuntimeSocdInputState(),
@@ -603,11 +604,13 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
-    this.socdResolution =
-      parseRuntimeSocdResolution(options.socdResolution) ??
-      p1Definition.socdResolution ??
-      p2Definition.socdResolution ??
-      defaultRuntimeSocdResolution(this.runtimeProfile);
+    this.socdResolutionAuthority = resolveRuntimeSocdResolution({
+      profile: this.runtimeProfile,
+      runtimeOption: options.socdResolution,
+      p1Package: p1Definition.socdResolution,
+      p2Package: p2Definition.socdResolution,
+    });
+    this.socdResolution = this.socdResolutionAuthority.resolution;
     this.teamRoundMode = options.teamMode ?? "single";
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
@@ -1543,6 +1546,14 @@ export class PlayableMatchRuntime {
 
   getSocdResolution(): RuntimeSocdResolution {
     return this.socdResolution;
+  }
+
+  getSocdResolutionAuthority(): RuntimeSocdResolutionAuthority {
+    return {
+      ...this.socdResolutionAuthority,
+      packageValues: { ...this.socdResolutionAuthority.packageValues },
+      diagnostics: [...this.socdResolutionAuthority.diagnostics],
+    };
   }
 
   private advanceActiveMatch(
