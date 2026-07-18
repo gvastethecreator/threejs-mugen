@@ -1,9 +1,11 @@
 # Ticket 252: Common.Cmd command-source loading
 
-- Status: in progress
+- Status: resolved bounded implementation
 - Date: 2026-07-18
 - Scope: merge configured IKEMEN `Common.Cmd` sources into character command parsing
 - Depends on: Ticket 250 / ADR 0017, Ticket 251 / ADR 0018
+- Implementation: `991613f7`
+- Closeout: [`docs/reports/2026-07-18-common-config-loader-closeout.md`](../../../docs/reports/2026-07-18-common-config-loader-closeout.md)
 - Research: [`docs/research/2026-07-18-common-cmd-loading.md`](../../../docs/research/2026-07-18-common-cmd-loading.md)
 
 ## Question
@@ -28,6 +30,14 @@ command predicates.
 - Keep character CMD `[State -1]` extraction scoped to the character CMD text;
   CommonCmd contributes commands only in this bounded slice.
 
+## Outcome
+
+The loader now resolves ordered `[Common] Cmd*` entries, appends supported
+`.cmd` text after the character command source, and parses the merged text once.
+Resolved CommonCmd paths are retained in `MugenCharacter.files`, and the
+compatibility report marks CMD as present when only a common source supplies
+the command list. Common ZSS and missing paths remain explicit evidence.
+
 ## Out of scope
 
 CommonConst, CommonAir, CommonFx, ZSS/Lua command compilation, raw IKEMEN
@@ -44,3 +54,15 @@ and complete MUGEN/IKEMEN parity.
   evidence without crashing or contaminating the command list.
 - Batched runtime tests, TypeScript 7 typecheck, build, repository boundary
   guards, and diff hygiene pass before closeout.
+
+## Verification
+
+- Loader/config focus: `31/31` tests across four files.
+- `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`,
+  `pnpm check:redirect-boundary`, and `git diff --check` passed.
+
+## Scope ceiling
+
+This does not claim CommonConst/AIR/FX parity, ZSS/Lua command compilation,
+raw IKEMEN input internals, AI command generation, SOCD, rollback/netplay, or
+complete MUGEN/IKEMEN parity.
