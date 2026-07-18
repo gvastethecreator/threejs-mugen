@@ -8,6 +8,7 @@ export type RuntimeRecoveryActor = {
     | "assertSpecial"
     | "fallDefenseMultiplier"
     | "hitFall"
+    | "hitBy"
     | "life"
     | "moveType"
     | "physics"
@@ -39,7 +40,14 @@ export class RuntimeRecoverySystem {
         };
       }
     }
-    const hitFall = actor.runtime.hitFall;
+    let hitFall = actor.runtime.hitFall;
+    if (hitFall && !isCommon1FallMechanicsState(actor.runtime.stateNo)) {
+      const cleared = clearCommon1FallEntryMarkers(hitFall);
+      if (cleared !== hitFall) {
+        actor.runtime.hitFall = cleared;
+        hitFall = cleared;
+      }
+    }
     if (!hitFall?.recover || hitFall.recoverTime === undefined || hitFall.recoverTime <= 0) {
       return;
     }
@@ -57,11 +65,28 @@ export class RuntimeRecoverySystem {
       (actor.runtime.stateNo !== 5070 && actor.runtime.stateNo !== 5100) ||
       actor.stateElapsed !== 1 ||
       !hitFall ||
-      hitFall.fallDefenseApplied
+      hitFall.common1FallMechanicsStateNo === actor.runtime.stateNo
     ) {
       return;
     }
-    actor.runtime.hitFall = { ...hitFall, fallDefenseApplied: true };
+    const previousEntry = clearCommon1FallEntryMarkers(hitFall);
+    let nextHitFall: NonNullable<CharacterRuntimeState["hitFall"]> = {
+      ...previousEntry,
+      common1FallMechanicsStateNo: actor.runtime.stateNo,
+    };
+    if (!actor.runtime.assertSpecial?.noFallCount) {
+      nextHitFall = {
+        ...nextHitFall,
+        fallCount: (previousEntry.fallCount ?? 0) + 1,
+        fallCountedGroundImpact: true,
+      };
+    }
+    actor.runtime.hitFall = nextHitFall;
+    if (actor.runtime.stateNo === 5100 && (nextHitFall.fallCount ?? 0) > 1) {
+      this.applyCommon1RepeatedFallRecovery(actor);
+      nextHitFall = actor.runtime.hitFall ?? nextHitFall;
+    }
+    actor.runtime.hitFall = { ...nextHitFall, fallDefenseApplied: true };
     if (actor.runtime.assertSpecial?.noFallDefenceUp) {
       return;
     }
@@ -70,6 +95,21 @@ export class RuntimeRecoverySystem {
       return;
     }
     actor.runtime.fallDefenseMultiplier = (actor.runtime.fallDefenseMultiplier ?? 1) * multiplier;
+  }
+
+  private applyCommon1RepeatedFallRecovery(actor: RuntimeRecoveryActor): void {
+    const hitFall = ensureDownRecoveryTime(actor);
+    if (!hitFall || (hitFall.downRecoverTime ?? 0) <= 0) {
+      return;
+    }
+    const downRecoverTime = Math.floor((hitFall.downRecoverTime ?? 0) / 2);
+    actor.runtime.hitFall = { ...hitFall, downRecoverTime };
+    if (downRecoverTime <= 10) {
+      actor.runtime.hitBy = {
+        ...(actor.runtime.hitBy ?? {}),
+        slot1: { mode: "deny", attr: "SCA", remaining: 180 },
+      };
+    }
   }
 
   advanceCommon1LieDownRecovery(actor: RuntimeRecoveryActor, transitions: RuntimeRecoveryTransitionApi): void {
@@ -159,6 +199,22 @@ export function defaultFallDefenseMultiplier(
     return 100 / (100 + defenseUp);
   }
   return undefined;
+}
+
+function isCommon1FallMechanicsState(stateNo: number): boolean {
+  return stateNo === 5070 || stateNo === 5100;
+}
+
+function clearCommon1FallEntryMarkers(
+  hitFall: NonNullable<CharacterRuntimeState["hitFall"]>,
+): NonNullable<CharacterRuntimeState["hitFall"]> {
+  if (hitFall.fallCountedGroundImpact === undefined && hitFall.common1FallMechanicsStateNo === undefined) {
+    return hitFall;
+  }
+  const rest = { ...hitFall };
+  delete rest.fallCountedGroundImpact;
+  delete rest.common1FallMechanicsStateNo;
+  return rest;
 }
 
 function shouldFastRecoverFromLieDown(

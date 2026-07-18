@@ -217,6 +217,7 @@ export type RuntimeHitFall = {
   damage: number;
   fallCount?: number;
   fallCountedGroundImpact?: boolean;
+  common1FallMechanicsStateNo?: number;
   fallDefenseApplied?: boolean;
   defenceUp?: number;
   kill?: boolean;

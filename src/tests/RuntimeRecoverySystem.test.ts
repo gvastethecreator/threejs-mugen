@@ -45,6 +45,88 @@ describe("RuntimeRecoverySystem", () => {
     expect(fighter.runtime.hitFall?.fallDefenseApplied).toBe(false);
   });
 
+  it("counts Common1 fall entry before HitFallDamage and remains idempotent", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5100,
+      stateElapsed: 1,
+      moveType: "H",
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.hitFall).toMatchObject({
+      fallCount: 1,
+      fallCountedGroundImpact: true,
+      common1FallMechanicsStateNo: 5100,
+    });
+  });
+
+  it("honors NoFallCount at the Common1 state-entry boundary", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5100,
+      stateElapsed: 1,
+      moveType: "H",
+      assertSpecial: {
+        flags: ["nofallcount"],
+        globalFlags: [],
+        noFallCount: true,
+      },
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.hitFall).not.toHaveProperty("fallCount");
+    expect(fighter.runtime.hitFall).not.toHaveProperty("fallCountedGroundImpact");
+    expect(fighter.runtime.hitFall?.common1FallMechanicsStateNo).toBe(5100);
+  });
+
+  it("shortens repeated Common1 ground recovery and preserves the secondary HitBy slot", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5100,
+      stateElapsed: 1,
+      moveType: "H",
+      fallCount: 1,
+      downRecoverTime: 18,
+      hitBy: { slot2: { mode: "allow", attr: "S,NT", remaining: 4 } },
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.hitFall).toMatchObject({ fallCount: 2, downRecoverTime: 9 });
+    expect(fighter.runtime.hitBy).toEqual({
+      slot1: { mode: "deny", attr: "SCA", remaining: 180 },
+      slot2: { mode: "allow", attr: "S,NT", remaining: 4 },
+    });
+  });
+
+  it("clears per-entry fall markers before a later Common1 fall entry", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      source: "imported",
+      stateNo: 5100,
+      stateElapsed: 1,
+      moveType: "H",
+    });
+
+    system.applyCommon1FallDefenseUp(fighter);
+    fighter.runtime.stateNo = 5101;
+    system.tickHitFallRecoveryWindow(fighter);
+    fighter.runtime.stateNo = 5100;
+    system.applyCommon1FallDefenseUp(fighter);
+
+    expect(fighter.runtime.hitFall).toMatchObject({
+      fallCount: 2,
+      common1FallMechanicsStateNo: 5100,
+    });
+  });
+
   it("honors Common1 NoFallDefenceUp without applying the transient factor", () => {
     const system = new RuntimeRecoverySystem();
     const fighter = actor({
@@ -181,6 +263,8 @@ function actor(options: {
   stateElapsed?: number;
   recoverTime?: number;
   downRecoverTime?: number;
+  fallCount?: number;
+  hitBy?: RuntimeRecoveryActor["runtime"]["hitBy"];
   moveType?: "I" | "A" | "H";
   physics?: "S" | "C" | "A" | "N";
   posY?: number;
@@ -207,8 +291,10 @@ function actor(options: {
         velocity: { y: 0 },
         recover: true,
         recoverTime: options.recoverTime,
+        ...(options.fallCount === undefined ? {} : { fallCount: options.fallCount }),
         downRecoverTime: options.downRecoverTime,
       },
+      hitBy: options.hitBy,
     },
     stateElapsed: options.stateElapsed ?? 0,
   };
