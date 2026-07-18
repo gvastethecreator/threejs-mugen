@@ -1,14 +1,16 @@
 # ADR 0010: Bounded helper State -4
 
-Status: Accepted (bounded IKEMEN helper State -4 route; State +1 deferred)
+Status: Accepted (bounded IKEMEN helper State -4 route; +1 deferral superseded by ADR 0011)
 
 Date: 2026-07-18
 
-Last reviewed: 2026-07-18 at HEAD `a8777cce`
+Last reviewed: 2026-07-18 at HEAD `0caa2a34`
 
 Decision owners: runtime compatibility and IKEMEN bounded-runtime lanes
 
 Related decision: [`docs/adr/0009-helper-negative-states-keyctrl.md`](0009-helper-negative-states-keyctrl.md)
+
+Superseding follow-up: [`docs/adr/0011-helper-state-plus-one.md`](0011-helper-state-plus-one.md)
 
 Research: [`docs/research/2026-07-18-helper-state-minus-four-plus-one.md`](../research/2026-07-18-helper-state-minus-four-plus-one.md)
 
@@ -28,8 +30,8 @@ state is not representable without colliding with normal State 1.
 2. Do not require `keyctrl` for this pass.
 3. Keep MUGEN and `unknown` profiles closed for State -4.
 4. Reuse helper-local controller context and existing fail-closed dispatch.
-5. Defer State +1 until parser, source resolver, compiler, availability, and
-   runtime lookup carry a distinct special-state identity.
+5. The State +1 deferral in this ADR is superseded by ADR 0011; the State -4
+   decision remains bounded to the route described above.
 
 ## Alternatives rejected
 
@@ -58,7 +60,7 @@ Positive:
 
 Negative:
 
-- State +1 remains open behind Ticket 244;
+- State +1 was subsequently resolved by Ticket 244 / ADR 0011;
 - root global-state scheduling, Common1/multi-file merge precedence, helper
   input buffers, exact complete order, rollback/netplay, and full parity remain
   outside the claim.
@@ -81,9 +83,12 @@ Allowed:
 - State -4 before the normal helper pause gate;
 - helper-local mutation and existing dispatch/failure behavior.
 
-Blocked:
+Historical deferral superseded by ADR 0011:
+
+- State +1 identity and post-current execution.
+
+Still blocked:
 
 - MUGEN/unknown State -4 execution;
-- State +1 identity and post-current execution;
 - root global-state scheduling, Common1 merge, helper input buffers,
   rollback/netplay, and complete MUGEN/IKEMEN parity.
