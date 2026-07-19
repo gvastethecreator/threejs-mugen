@@ -167,7 +167,10 @@ import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveController
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
-import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
+import {
+  DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
+  RuntimeRoundSystem,
+} from "./RuntimeRoundSystem";
 import {
   RuntimeRoundResourceResetWorld,
   type RuntimeRoundResourceActor,
@@ -188,6 +191,7 @@ import {
   type RuntimeRoundContextSnapshot,
 } from "./RuntimeRoundContextSystem";
 import {
+  DEFAULT_RUNTIME_WIN_POSE_FRAMES,
   RuntimeRoundWinPoseWorld,
   type RuntimeRoundWinPoseSnapshot,
 } from "./RuntimeRoundWinPoseSystem";
@@ -3592,6 +3596,9 @@ export class PlayableMatchRuntime {
   private applyRoundWinPose(): RuntimeRoundWinPoseSnapshot | undefined {
     if (this.teamRoundMode === "turns") return undefined;
     const round = this.round.snapshot();
+    const postRoundFrame = round.postRound?.frame ?? 0;
+    const winPoseReadyFrame = DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES + DEFAULT_RUNTIME_WIN_POSE_FRAMES;
+    if (postRoundFrame < winPoseReadyFrame) return undefined;
     return this.roundWinPoseWorld.apply({
       phase: this.round.currentPhase,
       winner: round.winner,

@@ -2,6 +2,7 @@ import type { RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 
 export const RUNTIME_ROUND_WIN_POSE_SCHEMA = "mugen-web-sandbox/runtime-round-win-pose/v0";
 
+export const DEFAULT_RUNTIME_WIN_POSE_FRAMES = 45;
 export const RUNTIME_WIN_POSE_STATE = 180;
 export const RUNTIME_LOSE_POSE_STATE = 170;
 export const RUNTIME_DRAW_POSE_STATE = 175;

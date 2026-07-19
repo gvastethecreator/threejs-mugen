@@ -4097,6 +4097,16 @@ RedirectID = 999
     expect(phaseFour.round).toMatchObject({
       state: "ko",
       roundPhase: 4,
+    });
+    expect(phaseFour.round).not.toHaveProperty("winPose");
+    expect(phaseFour.actors.find((actor) => actor.id === "p1")?.runtime.stateNo).not.toBe(180);
+
+    for (let frame = 0; frame < 100 && phaseFour.round?.winPose?.status !== "started"; frame += 1) {
+      phaseFour = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    expect(phaseFour.round).toMatchObject({
+      roundPhase: 4,
       winPose: { status: "started", winner: attacker.displayName },
     });
     expect(phaseFour.actors.find((actor) => actor.id === "p1")?.runtime).toMatchObject({ stateNo: 180 });
