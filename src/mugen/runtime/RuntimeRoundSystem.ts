@@ -7,7 +7,10 @@ import type {
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
-import type { RuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
+import {
+  RuntimeRoundAnnouncementWorld,
+  type RuntimeRoundAnnouncementTiming,
+} from "./RuntimeRoundAnnouncementSystem";
 
 export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
 
@@ -110,6 +113,7 @@ export class RuntimeRoundSystem {
   private roundNo = 1;
   private readonly phaseWorld: RuntimeRoundPhaseWorld;
   private readonly timing: RuntimeRoundTiming;
+  private readonly announcementWorld?: RuntimeRoundAnnouncementWorld;
 
   constructor(
     timerFrames = DEFAULT_RUNTIME_ROUND_FRAMES,
@@ -118,6 +122,9 @@ export class RuntimeRoundSystem {
   ) {
     this.timerFrames = boundedRoundFrames(timerFrames);
     this.timing = resolveRuntimeRoundTiming(timing);
+    this.announcementWorld = this.timing.announcement === undefined
+      ? undefined
+      : new RuntimeRoundAnnouncementWorld(this.timing.announcement);
     this.phaseWorld = new RuntimeRoundPhaseWorld(profile);
     this.introRemaining = this.roundIntroDuration();
     this.resetRoundPhase();
@@ -246,7 +253,12 @@ export class RuntimeRoundSystem {
     }
     this.advanceShutter();
     this.preRoundFrame = Math.min(this.roundFadeInDuration(), this.preRoundFrame + 1);
-    if (this.advanceRoundIntro()) {
+    const introActive = this.advanceRoundIntro();
+    this.announcementWorld?.advance({
+      introActive,
+      shutterActive: this.shutterRemaining > 0,
+    });
+    if (introActive) {
       return { finishedNow: false };
     }
     this.timerFrames = Math.max(0, this.timerFrames - 1);
@@ -305,6 +317,7 @@ export class RuntimeRoundSystem {
     this.shutterRemaining = 0;
     this.shutterJustStarted = false;
     this.introSkipResetSignal = false;
+    this.announcementWorld?.reset();
     this.phase4HoldFrames = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
@@ -318,6 +331,7 @@ export class RuntimeRoundSystem {
       winner: this.winner,
       message: this.message(),
       ...(this.timing.announcement === undefined ? {} : { announcementTiming: this.timing.announcement }),
+      ...(this.announcementWorld === undefined ? {} : { announcement: this.announcementWorld.snapshot() }),
     };
     if (this.roundNo > 1) {
       snapshot.roundNo = this.roundNo;
