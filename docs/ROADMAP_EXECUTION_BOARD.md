@@ -1,6 +1,17 @@
 ﻿# Roadmap Execution Board
 ## Current runtime closeout - Entry 555 (2026-07-16)
 
+## Current implementation board - T286 / Entry 560 (2026-07-18)
+
+T286 closes the bounded imported FightScreen round-intro timing path in
+`e978fa3c`: `start.waittime` and `ctrl.time` parse, publish
+`RuntimeRoundIntro/v0`, drive `pre-intro` -> `intro` -> `fight`, and hold the
+live timer and finish decision until `fight`. Missing fields preserve the
+legacy immediate route. Evidence is focused 3 files / 289 tests plus TypeScript
+7.0.2, full 233 / 2480 tests, Vite 316 modules, 633/633 traces, boundaries,
+CSS budget, and 64 browser capture paths with no console/page errors. The
+existing build warning is non-blocking; scores do not move. Next board item is
+announcement/shutter/skip ownership or independent character breadth.
 ## Current implementation board - T285 / Entry 559 (2026-07-18)
 
 T285 closes the bounded imported FightScreen round-start path in `c688f04d`:

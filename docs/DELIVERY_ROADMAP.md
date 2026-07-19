@@ -1,5 +1,18 @@
 # Delivery Roadmap
 
+## Latest bounded runtime checkpoint - T286 / Entry 560
+
+T286 is implemented in `e978fa3c`. Imported `start.waittime` and `ctrl.time`
+now feed a reset-owned `RuntimeRoundIntro/v0` countdown and expose the
+`pre-intro` -> `intro` -> `fight` phase boundary. The live timer and finish
+decision wait for `fight`, while the no-source route remains immediate.
+Verification is focused 3 files / 289 tests plus TypeScript 7.0.2, full 233 /
+2480 tests, Vite 316 modules, 633/633 traces, boundaries, CSS budget, and
+64 browser capture paths with 0 console/page errors. The existing build chunk
+warning is non-blocking; scores remain unchanged. Announcement, shutter/skip, character
+control/reset, motif, Common1/ZSS, teams/Turns, rollback/netplay, and full
+parity remain separate delivery gates.
+
 ## Latest bounded runtime checkpoint - T285 / Entry 559
 
 The FightScreen round-start continuation is closed in `c688f04d`. Imported

@@ -1,5 +1,15 @@
 # Architecture
 
+## 2026-07-18 T286 checkpoint
+
+The imported FightScreen round-start boundary now carries explicit
+`start.waittime` and `ctrl.time` through the system-asset loader into a
+reset-owned `RuntimeRoundIntro/v0` countdown. The existing phase world exposes
+`pre-intro`, `intro`, and `fight`, while the round timer and finish decision
+remain held until `fight`. The no-source route keeps the prior immediate phase
+2 behavior. This is a timing/phase adapter only; announcement, shutter, skip,
+character control/reset, motif, Common1/ZSS, and full parity remain separate.
+
 ## 2026-07-18 T285 checkpoint
 
 The imported FightScreen boundary now carries `fadein.time`, `fadein.col`,

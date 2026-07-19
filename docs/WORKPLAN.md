@@ -2,6 +2,19 @@
 
 ## Current runtime checkpoint - 2026-07-16 Entry 555
 
+## Active implementation frontier - T286 / Entry 560 (2026-07-18)
+
+T286 is implemented in `e978fa3c`. Imported FightScreen `start.waittime` and
+`ctrl.time` now flow through loader, reset-owned `RuntimeRoundIntro/v0`, the
+existing phase world, and live timer/finish gating. Verification passes
+focused 3 files / 289 tests, TypeScript 7.0.2, full 233 / 2480 tests, Vite 316
+modules, 633/633 traces, boundaries, CSS budget, and 64 browser capture paths
+with 0 console/page errors.
+
+The next implementation may start only after selecting announcement/shutter/
+skip ownership or independent character breadth. Keep exact character intro
+control/reset, dialogue, Common1/ZSS, screenpack transforms, teams/Turns,
+rollback/netplay, and full parity outside this bounded timing slice.
 ## Active implementation frontier - T285 / Entry 559 (2026-07-18)
 
 T285 is implemented and verified in `c688f04d`. The imported FightScreen

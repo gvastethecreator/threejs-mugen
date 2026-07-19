@@ -1,6 +1,24 @@
 ﻿# Port Completion Scorecard
 ## 2026-07-16 Entry 555 runtime evidence
 
+## 2026-07-18 T286 bounded FightScreen round-intro checkpoint
+
+The current implementation frontier is HEAD `e978fa3c`, Entry 560, and
+Wayfinder T286. Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. Imported
+`start.waittime` and `ctrl.time` now flow through loader, runtime timing,
+`RuntimeRoundIntro/v0`, and the existing round phase world; the live timer and
+finish decision wait until `fight`. Focused loader/runtime/round evidence is
+3 files / 289 tests. The full checkpoint also passes TypeScript 7.0.2,
+233 files / 2480 tests, Vite 316 modules, 633/633 traces,
+repository/redirect boundaries, CSS budget, and 64 browser capture paths with
+0 console issues and 0 page errors.
+
+This does not move a score. Announcement/shutter/skip, character intro
+control/reset, exact Fight tick order, motif/dialogue, Common1/ZSS,
+screenpack transforms, teams/Turns, rollback/netplay, and full parity remain
+blocked. The existing Vite chunk-size warning remains non-blocking; no score
+movement follows from this bounded phase/timer evidence.
+
 ## 2026-07-18 T285 bounded FightScreen round-start checkpoint
 
 The current implementation frontier is HEAD `c688f04d`, Entry 559, and

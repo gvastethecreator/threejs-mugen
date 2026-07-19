@@ -6,6 +6,21 @@ This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO 
 
 Current control override: numbered backlog maximum 510 is the active implementation cursor. Entries 477-509 closed or bounded the compatibility journey, milestone/package, global-AssertSpecial, team-round, lifebar, resource-bank, Helper-resource, red-life, guard-point, auxiliary-projection, and explicit dizzy-point sequence. Entry 510 closes defender-owned direct HitDef dizzy suppression with 591/591 trace artifacts; full repository gates are batched for the next round. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-dizzy-points-suppression.md`.
 
+## Current control override: T286 / Entry 560 frontier
+
+Implementation HEAD is `e978fa3c`; T286 closes the bounded FightScreen
+`start.waittime`/`ctrl.time` loader, reset-owned `RuntimeRoundIntro/v0`,
+pre-intro/intro/fight phase boundary, and live timer/finish hold. The focused
+gate is 3 files / 289 tests; the full gate also passes TypeScript 7.0.2,
+233 / 2480 tests, Vite 316 modules, 633/633 traces, boundaries, CSS budget,
+and 64 browser capture paths with no console/page errors. Scores remain 65 /
+36 / 20 / 10-12 / 6-8 / 25.
+
+The next executable gate is announcement/shutter/skip ownership or an
+independent character-breadth slice. Exact character intro control/reset,
+screenpack transforms, motif/dialogue, Common1/ZSS, teams/Turns, rollback/
+netplay, and full parity are not implied by T286.
+
 ## Current control override: T285 / Entry 559 frontier
 
 Implementation HEAD is `c688f04d`; T285 closes the bounded FightScreen

@@ -1,4 +1,11 @@
 ﻿# Supported Features
+## T286 bounded round-intro timing
+
+Imported `fight.def` `[Round] start.waittime` and `ctrl.time` are parsed and
+mapped to a reset-owned `RuntimeRoundIntro/v0` countdown. The runtime exposes
+`pre-intro`, `intro`, and `fight`, holds the round timer until `fight`, and
+preserves the legacy immediate-fight route when both fields are absent.
+
 - Imported root/state-owner and Helper Projectile spawns now restore the
   source-backed omitted `MAF` HitFlag default. Typed/static values retain
   precedence, dynamic raw strings remain unresolved, and live ModifyProjectile

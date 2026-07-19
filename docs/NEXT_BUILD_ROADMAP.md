@@ -2,6 +2,22 @@
 
 ## Current runtime queue - 2026-07-16 Entry 555
 
+## Current implementation frontier - T286 / Entry 560 (2026-07-18)
+
+T286 closes a bounded imported FightScreen round-intro timing boundary in
+`e978fa3c`. `start.waittime` and `ctrl.time` now populate
+`RuntimeRoundIntro/v0`, drive `pre-intro` -> `intro` -> `fight`, and hold the
+live timer and finish decision until `fight`. The legacy immediate route is
+unchanged when both fields are absent. Evidence is focused 3 files / 289
+tests plus TypeScript 7.0.2, full 233 / 2480 tests, Vite 316 modules, 633/633
+traces, boundaries, CSS budget, and 64 browser paths with 0 console/page
+errors. Scores remain unchanged.
+
+The next research-first gate is announcement/shutter/skip ownership or an
+independent character-breadth route. Do not claim exact character intro
+control/reset, `RoundNoSkip`, dialogue, Common1/ZSS, screenpack transforms,
+teams/Turns, rollback/netplay, or full parity from T286.
+
 ## Current implementation frontier - T285 / Entry 559 (2026-07-18)
 
 T285 is closed at a bounded FightScreen round-start boundary. Imported

@@ -2,6 +2,27 @@
 
 ## Current runtime report - 2026-07-16 Entry 555
 
+## Current implementation report - T286 / Entry 560 (2026-07-18)
+
+- Implementation HEAD: `e978fa3c`; documentation closeout follows in a
+  separate commit. Maximum current ledger entry: 560; latest closed lane:
+  Wayfinder T286.
+- Imported `[Round]` `start.waittime` and `ctrl.time` now flow through the
+  loader, reset-owned `RuntimeRoundIntro/v0` snapshot, existing phase world,
+  and live timer/finish boundary. Missing fields preserve immediate phase 2.
+- Current gates: focused 3 files / 289 tests; TypeScript 7.0.2; full 233 files
+  / 2480 tests; Vite build with 316 modules; 633/633 traces; repository,
+  redirect, and CSS budget checks; browser smoke 64 capture paths with 0
+  console issues and 0 page errors.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded timing slice
+  does not move compatibility scores.
+- Claim ceiling: explicit intro timing parsing, source-shaped countdown,
+  pre-intro/intro/fight phase signal, timer hold, finish hold, reset/next-round
+  reset, and `RuntimeRoundIntro/v0`. Announcement/shutter/skip, character
+  control/reset, motif/dialogue, Common1/ZSS, teams/Turns, rollback/netplay,
+  and full parity remain open.
+- Next research gate: select announcement/shutter/skip ownership or an
+  independent character-breadth boundary.
 ## Current implementation report - T285 / Entry 559 (2026-07-18)
 
 - Implementation HEAD: `c688f04d`; documentation closeout follows in a

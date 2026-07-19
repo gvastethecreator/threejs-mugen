@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 560 - bounded FightScreen round intro timing
+
+Closed the source-backed continuation after T285 in `e978fa3c`. Imported
+`fight.def` `[Round] start.waittime` and `ctrl.time` now parse through the
+system-assets loader, map into `RuntimeRoundTiming`, publish a reset/next-round
+`RuntimeRoundIntro/v0` snapshot inside `RuntimePreRound/v0`, and drive the
+existing `pre-intro` -> `intro` -> `fight` phase boundary. The live round timer
+and finish decision remain held until `fight`; missing fields preserve the
+legacy immediate phase-2 route.
+
+Verification: focused 3 files / 289 tests; TypeScript 7.0.2; full 233 files /
+2480 tests; Vite build with 316 modules; 633/633 trace artifacts;
+repository/redirect boundaries; CSS budget; and 64 browser capture paths with
+0 console issues and 0 page errors in `.scratch/qa/qa-smoke-t286-full/diagnostics.json`.
+The existing build chunk warning is non-blocking. No score movement. Announcement rendering,
+`shutter.time`/`shutter.col`, skip, character intro control/reset, dialogue,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain open. See
+Wayfinder 286, ADR 0051, research note `2026-07-18-round-intro-timing.md`, and
+closeout report `2026-07-18-round-intro-timing-closeout.md`.
+
 ## Entry 559 - bounded FightScreen round-start fade-in
 
 Closed the research-selected continuation of T284 in `c688f04d`. Imported

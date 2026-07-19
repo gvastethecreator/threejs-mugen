@@ -4,6 +4,11 @@ This document is the working truth for the private sandbox milestone. It separat
 
 ## Closed In The Current Playable Prototype
 
+- T286 adds a bounded imported FightScreen round-intro countdown: explicit
+  `start.waittime` and `ctrl.time` drive `RuntimeRoundIntro/v0`, the existing
+  `pre-intro`/`intro`/`fight` phase signal, and timer/finish gating until
+  `fight`. This does not claim announcement, shutter, skip, character intro
+  control/reset, or full FightScreen parity.
 - Vite, TypeScript, Three.js local app.
 - First screen opens in Runtime Mode.
 - Three active local original fighters are selectable: Nova Boxer, Mira Volt, Rook Apprentice.

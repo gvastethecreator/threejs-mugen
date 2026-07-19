@@ -2,6 +2,12 @@
 
 This document describes the intended architecture for growing the current sandbox into a progressive MUGEN/IKEMEN-GO browser port. The broader studio and modular-engine direction is documented in `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`.
 
+Current runtime decision checkpoint (2026-07-18 T286): imported
+`start.waittime`/`ctrl.time` now have a dedicated reset-owned intro countdown
+and phase transition boundary. Keep it separate from FightScreen announcement,
+shutter/skip, character control/reset, and renderer ownership until those
+contracts have independent source and browser evidence.
+
 Current decision checkpoint (2026-07-18): preserve renderer independence;
 introduce immutable upstream/source authority; make input conflict resolution
 stateful per seat and configuration match-owned; publish Common source
