@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
   DEFAULT_RUNTIME_POST_KO_FRAMES,
+  resolveRuntimeRoundTiming,
   RuntimeRoundSystem,
 } from "../mugen/runtime/RuntimeRoundSystem";
 
@@ -90,6 +91,35 @@ describe("RuntimeRoundSystem", () => {
       frame: DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
       remaining: DEFAULT_RUNTIME_POST_KO_FRAMES - DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
     });
+  });
+
+  it("derives phase-4 timing from normalized source-backed overrides", () => {
+    const timing = resolveRuntimeRoundTiming({
+      postKoPhase4StartFrames: 2,
+      winPoseFrames: 3,
+      postKoFrames: 7,
+      koSlowFrames: 4,
+      koSlowFadeFrames: 99,
+      koSlowRate: 2,
+    });
+    expect(timing).toEqual({
+      postKoPhase4StartFrames: 2,
+      winPoseFrames: 3,
+      postKoFrames: 7,
+      koSlowFrames: 4,
+      koSlowFadeFrames: 4,
+      koSlowRate: 1,
+    });
+
+    const round = new RuntimeRoundSystem(undefined, "ikemen-go", timing);
+    round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
+    round.tickTimer();
+    expect(round.currentPhase).toBe(3);
+    round.tickTimer();
+
+    expect(round.currentPhase).toBe(4);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 5, duration: 7, slowDuration: 4 });
+    expect(round.winPoseFrames).toBe(3);
   });
 
   it("captures NoKOSlow on the KO frame without shortening the post-round window", () => {

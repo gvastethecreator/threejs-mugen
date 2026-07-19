@@ -167,10 +167,7 @@ import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveController
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
-import {
-  DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
-  RuntimeRoundSystem,
-} from "./RuntimeRoundSystem";
+import { RuntimeRoundSystem, type RuntimeRoundTiming } from "./RuntimeRoundSystem";
 import {
   RuntimeRoundResourceResetWorld,
   type RuntimeRoundResourceActor,
@@ -191,7 +188,6 @@ import {
   type RuntimeRoundContextSnapshot,
 } from "./RuntimeRoundContextSystem";
 import {
-  DEFAULT_RUNTIME_WIN_POSE_FRAMES,
   RuntimeRoundWinPoseWorld,
   type RuntimeRoundWinPoseSnapshot,
 } from "./RuntimeRoundWinPoseSystem";
@@ -420,6 +416,7 @@ export type PlayableMatchRuntimeOptions = {
   effectSpawnWorld?: RuntimeEffectSpawnWorld;
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
+  roundTiming?: Partial<RuntimeRoundTiming>;
   matchWins?: number;
   maxDraws?: number;
   maxDrawsBySide?: Partial<Record<RuntimeTeamSide, number>>;
@@ -630,7 +627,7 @@ export class PlayableMatchRuntime {
     );
     this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
-    this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile);
+    this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile, options.roundTiming);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
     this.effectLifecycleWorld = options.effectLifecycleWorld ?? new RuntimeEffectLifecycleWorld();
     this.effectSpawnWorld = options.effectSpawnWorld ?? new RuntimeEffectSpawnWorld();
@@ -3597,7 +3594,7 @@ export class PlayableMatchRuntime {
     if (this.teamRoundMode === "turns") return undefined;
     const round = this.round.snapshot();
     const postRoundFrame = round.postRound?.frame ?? 0;
-    const winPoseReadyFrame = DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES + DEFAULT_RUNTIME_WIN_POSE_FRAMES;
+    const winPoseReadyFrame = this.round.postKoPhase4StartFrames + this.round.winPoseFrames;
     if (postRoundFrame < winPoseReadyFrame) return undefined;
     return this.roundWinPoseWorld.apply({
       phase: this.round.currentPhase,
