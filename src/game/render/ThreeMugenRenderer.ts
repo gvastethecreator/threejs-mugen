@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import type { MugenAnimationAction } from "../../mugen/model/MugenAnimation";
+import type { MugenFightScreenAssets } from "../../mugen/model/MugenSystemAssets";
 import type { SffArchive } from "../../mugen/model/MugenSprite";
 import type { SpriteProvider } from "../../mugen/model/MugenSprite";
 import type { ActorSnapshot, MugenSnapshot } from "../../mugen/runtime/types";
 import { AxisRenderer } from "./AxisRenderer";
 import { CharacterRenderer } from "./CharacterRenderer";
+import { FightScreenAnnouncementRenderer } from "./FightScreenAnnouncementRenderer";
 import { CollisionBoxRenderer } from "./CollisionBoxRenderer";
 import { HitSparkRenderer } from "./HitSparkRenderer";
 import { RoundFadeRenderer } from "./RoundFadeRenderer";
@@ -27,6 +29,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   private readonly boxes = new CollisionBoxRenderer();
   private readonly hitSparks: HitSparkRenderer;
   private readonly roundFade: RoundFadeRenderer;
+  private readonly fightScreenAnnouncement: FightScreenAnnouncementRenderer;
   private readonly roundShutter: RoundShutterRenderer;
   private readonly characters: CharacterRenderer;
   private readonly pauseOverlayMaterial = new THREE.MeshBasicMaterial({
@@ -61,6 +64,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.characters = new CharacterRenderer(spriteProvider, this.textures);
     this.hitSparks = new HitSparkRenderer(spriteProvider, this.textures);
     this.roundFade = new RoundFadeRenderer(spriteProvider, this.textures);
+    this.fightScreenAnnouncement = new FightScreenAnnouncementRenderer(this.textures);
     this.roundShutter = new RoundShutterRenderer();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.setClearColor(0x000000, 0);
@@ -69,6 +73,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.scene.add(this.hitSparks.group);
     this.scene.add(this.boxes.group);
     this.scene.add(this.roundFade.group);
+    this.scene.add(this.fightScreenAnnouncement.group);
     this.scene.add(this.roundShutter.group);
     this.pauseOverlay.visible = false;
     applyThreePresentationOrder(this.pauseOverlay, this.pauseOverlayMaterial, resolveOverlayPresentationOrder(0));
@@ -87,6 +92,10 @@ export class ThreeMugenRenderer implements MugenRenderer {
 
   setRoundFadeAnimations(animations: Map<number, MugenAnimationAction> | undefined): void {
     this.roundFade.setAnimations(animations);
+  }
+
+  setFightScreenAssets(assets: MugenFightScreenAssets | undefined): void {
+    this.fightScreenAnnouncement.setAssets(assets);
   }
 
   mount(target: HTMLElement): void {
@@ -128,6 +137,13 @@ export class ThreeMugenRenderer implements MugenRenderer {
       10,
     );
     this.camera.zoom = snapshot.stage.camera.zoom;
+    await this.fightScreenAnnouncement.update(snapshot, {
+      x: this.camera.position.x,
+      y: this.camera.position.y,
+      width: this.size.width,
+      height: this.size.height,
+      zoom: this.camera.zoom,
+    });
     const roundFade = resolveRoundFadePresentation(snapshot);
     await this.roundFade.update(roundFade, {
       x: this.camera.position.x,
@@ -225,6 +241,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     presentationGroups: { stage: number; characters: number; hitSparks: number; collision: number };
     collision: ReturnType<CollisionBoxRenderer["getDiagnostics"]>;
     roundFade: { visible: boolean; opacity: number; color: number; asset: ReturnType<RoundFadeRenderer["getDiagnostics"]> };
+    fightScreenAnnouncement: ReturnType<FightScreenAnnouncementRenderer["getDiagnostics"]>;
     roundShutter: ReturnType<RoundShutterRenderer["getDiagnostics"]>;
   } {
     return {
@@ -257,6 +274,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
         color: this.roundFadeOverlayMaterial.color.getHex(),
         asset: this.roundFade.getDiagnostics(),
       },
+      fightScreenAnnouncement: this.fightScreenAnnouncement.getDiagnostics(),
       roundShutter: this.roundShutter.getDiagnostics(),
     };
   }
@@ -267,6 +285,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.boxes.dispose();
     this.hitSparks.dispose();
     this.roundFade.dispose();
+    this.fightScreenAnnouncement.dispose();
     this.roundShutter.dispose();
     this.characters.dispose();
     this.pauseOverlay.geometry.dispose();

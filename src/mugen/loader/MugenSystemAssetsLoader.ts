@@ -178,6 +178,7 @@ async function loadFightScreenAssets(
   for (const diagnostic of inlineActions.diagnostics) {
     record(diagnostic);
   }
+  const localCoord = pairValue(getSection(definition.rawSections, "Info"), "localcoord");
 
   let spriteArchive: MugenFightScreenAssets["spriteArchive"];
   if (sffPath) {
@@ -203,12 +204,13 @@ async function loadFightScreenAssets(
 
   const display = parseFightScreenDisplayDefinitions(getSection(definition.rawSections, "Round"));
 
-  if (!sffPath && !sndPath && inlineActions.actions.size === 0 && !display) {
+  if (!localCoord && !sffPath && !sndPath && inlineActions.actions.size === 0 && !display) {
     return undefined;
   }
 
   return {
     sourcePath: fightDefPath,
+    ...(localCoord ? { localCoord } : {}),
     ...(sffPath ? { sffPath } : {}),
     ...(sndPath ? { sndPath } : {}),
     animations: inlineActions.actions,

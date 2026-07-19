@@ -45,6 +45,8 @@ export type RuntimeRoundAnnouncementSnapshot = {
   schema: "RuntimeRoundAnnouncement/v0";
   visibility: "hidden" | "visible";
   phase: "hidden" | "round" | "fight";
+  roundNo: number;
+  mode: RuntimeRoundAnnouncementMode;
   roundDisplaySkipped: boolean;
   fightDisplaySkipped: boolean;
   round: RuntimeRoundAnnouncementTrackSnapshot;
@@ -194,6 +196,8 @@ export class RuntimeRoundAnnouncementWorld {
       schema: "RuntimeRoundAnnouncement/v0",
       visibility,
       phase,
+      roundNo: this.roundNo,
+      mode: this.mode,
       roundDisplaySkipped: this.roundSkipped,
       fightDisplaySkipped: this.fightSkipped,
       round: {

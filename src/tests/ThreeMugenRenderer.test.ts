@@ -5,9 +5,15 @@ import {
   resolveRoundFadePresentation,
   resolveRoundShutterPresentation,
 } from "../game/render/ThreeMugenRenderer";
+import {
+  projectFightScreenSprite,
+  resolveFightScreenAnnouncementSelection,
+  resolveRoundDisplayAsset,
+} from "../game/render/FightScreenAnnouncementRenderer";
 import { projectRoundFadeSprite, resolveRoundFadeAnimationFrame } from "../game/render/RoundFadeRenderer";
 import { projectRoundShutterBars } from "../game/render/RoundShutterRenderer";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
+import type { MugenFightScreenDisplayDefinitions } from "../mugen/model/MugenSystemAssets";
 import type { ActorSnapshot, MugenSnapshot } from "../mugen/runtime/types";
 
 describe("resolveRootPresentationActors", () => {
@@ -137,6 +143,59 @@ describe("RoundShutterRenderer", () => {
     };
     expect(resolveRoundShutterPresentation({ round: { preRound: { shutter } } as MugenSnapshot["round"] })).toEqual(shutter);
     expect(resolveRoundShutterPresentation({ round: { preRound: { shutter: { ...shutter, active: false } } } as MugenSnapshot["round"] })).toBeUndefined();
+  });
+});
+
+describe("FightScreenAnnouncementRenderer asset selection", () => {
+  const display: MugenFightScreenDisplayDefinitions = {
+    round: new Map([[2, { animationNo: 7002 }]]),
+    roundDefault: { animationNo: 7000 },
+    roundSingle: { animationNo: 7001 },
+    roundFinal: { animationNo: 7003 },
+    fight: { animationNo: 7004 },
+  };
+
+  it("selects numbered, single, final, and fight assets from the runtime announcement", () => {
+    expect(resolveRoundDisplayAsset(display, "normal", 2)).toEqual({ animationNo: 7002 });
+    expect(resolveRoundDisplayAsset(display, "normal", 3)).toEqual({ animationNo: 7000 });
+    expect(resolveRoundDisplayAsset(display, "single", 1)).toEqual({ animationNo: 7001 });
+    expect(resolveRoundDisplayAsset(display, "final", 2)).toEqual({ animationNo: 7003 });
+    expect(resolveFightScreenAnnouncementSelection({
+      state: "fight",
+      timer: 99,
+      message: "Fight",
+      announcement: {
+        schema: "RuntimeRoundAnnouncement/v0",
+        visibility: "visible",
+        phase: "fight",
+        roundNo: 2,
+        mode: "normal",
+        round: { phase: "active", skipped: false, elapsed: 4, animationStart: 0, soundTime: 0, soundDue: false },
+        fight: { phase: "active", skipped: false, elapsed: 0, animationStart: 0, soundTime: 0, soundDue: false },
+        roundDisplaySkipped: false,
+        fightDisplaySkipped: false,
+        callFightElapsed: 0,
+        completion: "asset-owned",
+        timing: {} as never,
+      },
+    }, display)?.asset).toEqual({ animationNo: 7004 });
+  });
+
+  it("projects FightScreen layout coordinates with AIR offsets and authored flips", () => {
+    expect(projectFightScreenSprite(
+      { x: 0, y: 0, width: 640, height: 360, zoom: 1 },
+      [320, 240],
+      { width: 32, height: 16, axisX: 8, axisY: 4 },
+      { offsetX: 2, offsetY: -3, flip: "" },
+      { offset: [160, 100], scale: [1, 1], facing: 1, vfacing: 1 },
+    )).toEqual({
+      x: 20,
+      y: 28.5,
+      width: 64,
+      height: 24,
+      scaleX: 64,
+      scaleY: 24,
+    });
   });
 });
 

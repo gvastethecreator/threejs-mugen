@@ -28,7 +28,10 @@ cns = kfm.cns
     vfs.addFile("chars/kfm/kfm.sff", createSffV1([{ group: 0, index: 0, axisX: 0, axisY: 0 }]));
     vfs.addFile(
       "data/fight.def",
-      text(`[Files]
+      text(`[Info]
+localcoord = 640, 360
+
+[Files]
 fightfx.air = fightfx.air
 fightfx.sff = fightfx.sff
 sff = fightfx.sff
@@ -135,6 +138,7 @@ slow.speed = 0.5
     });
     expect(character.systemAssets?.fightScreenAssets).toMatchObject({
       sourcePath: "data/fight.def",
+      localCoord: [640, 360],
       sffPath: "data/fightfx.sff",
       sndPath: "data/fightfx.snd",
       display: {

@@ -3006,10 +3006,12 @@ export class App {
 
   private installSystemHitSparkProviders(character: MugenCharacter): void {
     this.renderer.setRoundFadeAnimations(undefined);
+    this.renderer.setFightScreenAssets(undefined);
     const assets = character.systemAssets;
     if (!assets) {
       return;
     }
+    this.renderer.setFightScreenAssets(assets.fightScreenAssets);
     const seenArchives = new Set<unknown>();
     const libraries = [
       assets.hitSparkLibraries.common,

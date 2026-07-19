@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Render FightScreen AIR announcements](tickets/295-fightscreen-announcement-renderer.md) - resolved at bounded AIR/SFF presentation scope: a dedicated screen SFF provider renders selected inline AIR frames with localcoord/layout projection and diagnostics; FNT, exact AnimTextSnd completion, top/background layers, and full visual parity remain open.
+
 - [Index FightScreen display variants](tickets/294-fightscreen-display-variants.md) - resolved at definition and sound-selection scope: numbered/default/single/final/fight `AnimTextSnd` references, layout metadata, and bounded runtime sound precedence are imported; AIR/FNT/SFF rendering and exact `AnimTextSnd` completion remain the next renderer boundary.
 
 - [Route FightScreen announcement sounds](tickets/293-fightscreen-announcement-sound.md) - resolved at source-sound routing scope: `fight.def` screen SND loads under `fs`, Round/Fight sound edges reach Web Audio once, and inline screen actions are indexed without claiming rendering parity.

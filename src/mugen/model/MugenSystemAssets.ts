@@ -20,6 +20,7 @@ export type MugenSystemHitSparkLibrary = {
 
 export type MugenFightScreenAssets = {
   sourcePath: string;
+  localCoord?: [number, number];
   sffPath?: string;
   sndPath?: string;
   animations: Map<number, MugenAnimationAction>;
