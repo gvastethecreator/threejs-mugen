@@ -114,6 +114,25 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.snapshot().postRound?.frame).toBe((beforeHold?.frame ?? 0) + 1);
   });
 
+  it("passes imported phase-4 readiness through the timer boundary", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      postKoPhase4StartFrames: 2,
+      forceWinTimeFrames: 6,
+      postKoFrames: 8,
+    });
+    const world = new RuntimeMatchRoundWorld();
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 700 }, { label: "P2", life: 0 });
+
+    world.advanceTimer(round, [], undefined, 0, { phase4Ready: false });
+    world.advanceTimer(round, [], undefined, 0, { phase4Ready: false });
+    expect(round.currentPhase).toBe(3);
+
+    world.advanceTimer(round, [], undefined, 0, { phase4Ready: true });
+    expect(round.currentPhase).toBe(4);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 6 });
+  });
+
   it("holds the phase-4 time-over clock while RoundNotOver stays asserted", () => {
     const round = new RuntimeRoundSystem(1, "ikemen-go", { postKoPhase4StartFrames: 1, postKoFrames: 3 });
     const world = new RuntimeMatchRoundWorld();

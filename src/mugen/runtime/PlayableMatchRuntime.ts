@@ -1418,7 +1418,7 @@ export class PlayableMatchRuntime {
     if (this.round.snapshot().state === "ko") {
       matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
         this.playing = false;
-      }, this.tick);
+      }, this.tick, { phase4Ready: this.isRoundPhase4Ready() });
     }
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
@@ -1596,7 +1596,7 @@ export class PlayableMatchRuntime {
         if (this.round.snapshot().state === "ko") return { frozen: false };
         return matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
           this.playing = false;
-        }, this.tick);
+        }, this.tick, { phase4Ready: this.isRoundPhase4Ready() });
       },
       pushNormalCommandBuffers: () => {
         recordPhase("active:command-buffer");
@@ -3584,6 +3584,31 @@ export class PlayableMatchRuntime {
       root.runtime.roundsExisted = actor.roundsExisted;
       root.runtime.matchOver = context.matchOver;
     }
+  }
+
+  private isRoundPhase4Ready(): boolean {
+    if (this.round.forceWinTimeFrames <= 0) return true;
+    const roundState = this.round.snapshot().state;
+    return this.activeRoots.every((root) => {
+      const teamState = root.runtime.teamState;
+      if (
+        root.runtime.life <= 0
+        || teamState?.disabled
+        || teamState?.standby
+        || teamState?.overKo
+      ) {
+        return true;
+      }
+      // IKEMEN waits for a controllable standing idle actor before phase 4,
+      // then forces the handoff when over.forcewintime expires.
+      return !(
+        root.runtime.ctrl
+        && root.runtime.stateType === "S"
+        && root.runtime.moveType === "I"
+        && roundState !== "timeover"
+        && root.runtime.animNo !== 5
+      );
+    });
   }
 
   private applyRuntimeRoundPhase(): void {
@@ -6155,6 +6180,7 @@ function runtimeRoundTimingFromFightScreen(
   const timing: Partial<RuntimeRoundTiming> = {
     overHitTimeFrames: source.overHitTime,
     postKoPhase4StartFrames: source.overWaitTime,
+    forceWinTimeFrames: source.overForceWinTime,
     winPoseFrames: source.overWinTime,
     postKoFrames,
     koSlowFrames: source.slowTime,

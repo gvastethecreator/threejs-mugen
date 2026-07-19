@@ -106,6 +106,7 @@ describe("RuntimeRoundSystem", () => {
     expect(timing).toEqual({
       overHitTimeFrames: 1,
       postKoPhase4StartFrames: 2,
+      forceWinTimeFrames: 0,
       winPoseFrames: 3,
       postKoFrames: 7,
       koSlowFrames: 4,
@@ -123,6 +124,49 @@ describe("RuntimeRoundSystem", () => {
     expect(round.currentPhase).toBe(4);
     expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 5, duration: 7, slowDuration: 4 });
     expect(round.winPoseFrames).toBe(3);
+  });
+
+  it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      overHitTimeFrames: 1,
+      postKoPhase4StartFrames: 2,
+      forceWinTimeFrames: 3,
+      postKoFrames: 8,
+    });
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 500 }, { label: "P2", life: 0 });
+
+    round.tickTimer({ phase4Ready: false });
+    round.tickTimer({ phase4Ready: false });
+    expect(round.currentPhase).toBe(3);
+    expect(round.roundNoDamage).toBe(true);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 6 });
+
+    round.tickTimer({ phase4Ready: false });
+    expect(round.currentPhase).toBe(3);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 6 });
+
+    round.tickTimer({ phase4Ready: false });
+    expect(round.currentPhase).toBe(4);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 6 });
+  });
+
+  it("releases a held phase-4 boundary as soon as actors become ready", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      postKoPhase4StartFrames: 2,
+      forceWinTimeFrames: 10,
+      postKoFrames: 8,
+    });
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 500 }, { label: "P2", life: 0 });
+
+    round.tickTimer({ phase4Ready: false });
+    round.tickTimer({ phase4Ready: false });
+    expect(round.currentPhase).toBe(3);
+
+    round.tickTimer({ phase4Ready: true });
+    expect(round.currentPhase).toBe(4);
+    expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 6 });
   });
 
   it("opens the official no-damage interval through the wait boundary", () => {

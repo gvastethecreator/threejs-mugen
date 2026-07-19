@@ -4237,6 +4237,57 @@ RedirectID = 999
     });
   });
 
+  it("holds imported phase 4 at the wait boundary until over.forcewintime releases it", () => {
+    const attacker = createImportedFixture({
+      id: "imported-force-win-attacker",
+      displayName: "Imported Force Win Attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+      extraStateNos: [170, 180],
+    });
+    const defender = createImportedFixture({
+      id: "imported-force-win-defender",
+      displayName: "Imported Force Win Defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+      extraStateNos: [170, 180],
+    });
+    attacker.fightScreenTiming = {
+      sourcePath: "data/fight.def",
+      overHitTime: 1,
+      overWaitTime: 2,
+      overWinTime: 1,
+      overForceWinTime: 3,
+      overTime: 8,
+    };
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, { runtimeProfile: "ikemen-go" });
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    const internals = runtime as unknown as {
+      p1: { runtime: { ctrl: boolean; moveType: "I"; stateType: "S"; animNo: number } };
+    };
+    internals.p1.runtime.ctrl = true;
+    internals.p1.runtime.moveType = "I";
+    internals.p1.runtime.stateType = "S";
+    internals.p1.runtime.animNo = 0;
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    expect(snapshot.round).toMatchObject({ roundPhase: 3, postRound: { frame: 1 } });
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    expect(snapshot.round).toMatchObject({ roundPhase: 3, postRound: { frame: 2, remaining: 8 } });
+
+    internals.p1.runtime.ctrl = false;
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    expect(snapshot.round).toMatchObject({ roundPhase: 4, postRound: { frame: 2, remaining: 8 } });
+  });
+
   it("routes a time-over draw through reserved state 175 before terminal close", () => {
     const p1 = createImportedFixture({
       id: "draw-pose-p1",

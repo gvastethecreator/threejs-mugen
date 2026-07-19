@@ -1,4 +1,8 @@
-import type { RuntimeRoundFinishResult, RuntimeRoundSystem } from "./RuntimeRoundSystem";
+import type {
+  RuntimeRoundFinishResult,
+  RuntimeRoundSystem,
+  RuntimeRoundTickOptions,
+} from "./RuntimeRoundSystem";
 import {
   RuntimeGlobalAssertSpecialWorld,
   type RuntimeGlobalAssertSpecialActor,
@@ -26,6 +30,8 @@ export type RuntimeMatchRoundTimerResult = {
   frozen: boolean;
   held?: boolean;
 };
+
+export type RuntimeMatchRoundTimerOptions = RuntimeRoundTickOptions;
 
 export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor> = {
   round: RuntimeRoundSystem;
@@ -63,8 +69,9 @@ export class RuntimeMatchRoundWorld {
     round: RuntimeRoundSystem,
     actors: readonly RuntimeMatchRoundActor[] = [],
     tick = 0,
+    options: RuntimeMatchRoundTimerOptions = {},
   ): RuntimeMatchRoundTimerResult {
-    return this.advanceTimer(round, actors, undefined, tick);
+    return this.advanceTimer(round, actors, undefined, tick, options);
   }
 
   advanceTimer(
@@ -72,6 +79,7 @@ export class RuntimeMatchRoundWorld {
     actors: readonly RuntimeMatchRoundActor[] = [],
     stopPlaying?: () => void,
     runtimeTick = 0,
+    options: RuntimeMatchRoundTimerOptions = {},
   ): RuntimeMatchRoundTimerResult {
     const globalAssertSpecial = this.snapshotGlobalAssertSpecial(actors, runtimeTick);
     const roundSnapshot = round.snapshot();
@@ -85,7 +93,7 @@ export class RuntimeMatchRoundWorld {
     ) {
       return { frozen: false, held: true };
     }
-    const timerTick = round.tickTimer();
+    const timerTick = round.tickTimer(options);
     if (timerTick.finishedNow) stopPlaying?.();
     return { frozen: false };
   }

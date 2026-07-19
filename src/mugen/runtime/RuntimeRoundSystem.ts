@@ -8,6 +8,7 @@ export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
 export type RuntimeRoundTiming = {
   overHitTimeFrames: number;
   postKoPhase4StartFrames: number;
+  forceWinTimeFrames: number;
   winPoseFrames: number;
   postKoFrames: number;
   koSlowFrames: number;
@@ -15,9 +16,15 @@ export type RuntimeRoundTiming = {
   koSlowRate: number;
 };
 
+export type RuntimeRoundTickOptions = {
+  /** Allows imported actors to hold the phase-4 boundary until the force window expires. */
+  phase4Ready?: boolean;
+};
+
 export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object.freeze({
   overHitTimeFrames: 10,
   postKoPhase4StartFrames: 45,
+  forceWinTimeFrames: 0,
   winPoseFrames: DEFAULT_RUNTIME_WIN_POSE_FRAMES,
   postKoFrames: 45 + 210,
   koSlowFrames: 60,
@@ -54,6 +61,7 @@ export class RuntimeRoundSystem {
   private over = false;
   private postRoundFrame = 0;
   private postRoundRemaining = 0;
+  private phase4HoldFrames = 0;
   private koSlowRemaining = 0;
   private noKoSlow = false;
   private roundNo = 1;
@@ -101,6 +109,10 @@ export class RuntimeRoundSystem {
     return this.timing.postKoPhase4StartFrames;
   }
 
+  get forceWinTimeFrames(): number {
+    return this.timing.forceWinTimeFrames;
+  }
+
   /** Ikemen's roundNoDamage interval: post-hit wait before round state 4. */
   get roundNoDamage(): boolean {
     if (this.state !== "ko" && this.state !== "timeover") return false;
@@ -114,11 +126,25 @@ export class RuntimeRoundSystem {
     return this.timing.winPoseFrames;
   }
 
-  tickTimer(): RuntimeRoundTickResult {
+  tickTimer(options: RuntimeRoundTickOptions = {}): RuntimeRoundTickResult {
     if (this.over) {
       return { finishedNow: false };
     }
     if (this.state === "ko" || this.state === "timeover") {
+      if (this.currentPhase === 3 && this.postRoundFrame >= this.timing.postKoPhase4StartFrames && this.phase4HoldFrames > 0) {
+        this.koSlowRemaining = Math.max(0, this.koSlowRemaining - 1);
+        const nextHoldFrames = this.phase4HoldFrames + 1;
+        if (
+          options.phase4Ready !== false
+          || nextHoldFrames >= this.timing.forceWinTimeFrames
+        ) {
+          this.phase4HoldFrames = 0;
+          this.phaseWorld.transition("round-over");
+        } else {
+          this.phase4HoldFrames = nextHoldFrames;
+        }
+        return { finishedNow: false };
+      }
       this.postRoundFrame += 1;
       this.postRoundRemaining = Math.max(0, this.postRoundRemaining - 1);
       this.koSlowRemaining = Math.max(0, this.koSlowRemaining - 1);
@@ -126,7 +152,11 @@ export class RuntimeRoundSystem {
         this.currentPhase === 3 &&
         this.postRoundFrame >= this.timing.postKoPhase4StartFrames
       ) {
-        this.phaseWorld.transition("round-over");
+        if (options.phase4Ready === false && this.timing.forceWinTimeFrames > 0) {
+          this.phase4HoldFrames = 1;
+        } else {
+          this.phaseWorld.transition("round-over");
+        }
       }
       this.over = this.postRoundRemaining === 0;
       return { finishedNow: this.over };
@@ -149,6 +179,7 @@ export class RuntimeRoundSystem {
     this.noKoSlow = this.state === "ko" && options.noKoSlow === true;
     this.postRoundFrame = 0;
     this.postRoundRemaining = this.state === "ko" || this.state === "timeover" ? this.timing.postKoFrames : 1;
+    this.phase4HoldFrames = 0;
     this.koSlowRemaining = this.state === "ko" ? this.timing.koSlowFrames : 0;
     this.over = false;
     this.phaseWorld.transition("round-finished");
@@ -180,6 +211,7 @@ export class RuntimeRoundSystem {
     this.over = false;
     this.postRoundFrame = 0;
     this.postRoundRemaining = 0;
+    this.phase4HoldFrames = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
     this.phaseWorld.transition("reset");
@@ -252,6 +284,10 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.overHitTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.overHitTimeFrames,
   );
+  const forceWinTimeFrames = boundedTimingFrames(
+    overrides.forceWinTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.forceWinTimeFrames,
+  );
   const postKoFrames = Math.max(
     postKoPhase4StartFrames,
     boundedTimingFrames(overrides.postKoFrames, DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames),
@@ -272,6 +308,7 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
   return {
     overHitTimeFrames,
     postKoPhase4StartFrames,
+    forceWinTimeFrames,
     winPoseFrames,
     postKoFrames,
     koSlowFrames,
