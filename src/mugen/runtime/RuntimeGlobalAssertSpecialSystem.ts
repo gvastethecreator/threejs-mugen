@@ -13,6 +13,8 @@ export const RUNTIME_GLOBAL_ASSERT_SPECIAL_FLAGS = [
   "nokosnd",
   "nomusic",
   "roundnotover",
+  "skipfightdisplay",
+  "skiprounddisplay",
   "timerfreeze",
 ] as const;
 
@@ -36,6 +38,8 @@ export type RuntimeGlobalAssertSpecialSnapshot = {
   noKoSound: boolean;
   timerFreeze: boolean;
   roundNotOver: boolean;
+  skipRoundDisplay: boolean;
+  skipFightDisplay: boolean;
 };
 
 export type RuntimeGlobalAssertSpecialSnapshotInput<TActor extends RuntimeGlobalAssertSpecialActor> = {
@@ -90,6 +94,8 @@ export class RuntimeGlobalAssertSpecialWorld {
       noKoSound: knownSources.has("nokosnd"),
       timerFreeze: knownSources.has("timerfreeze"),
       roundNotOver: knownSources.has("roundnotover"),
+      skipRoundDisplay: knownSources.has("skiprounddisplay"),
+      skipFightDisplay: knownSources.has("skipfightdisplay"),
     };
   }
 }
@@ -110,6 +116,10 @@ function isGlobalFlagActive(
       return assertSpecial.roundNotOver === true || hasFlag(assertSpecial.flags, flag);
     case "timerfreeze":
       return assertSpecial.timerFreeze === true || hasFlag(assertSpecial.flags, flag);
+    case "skiprounddisplay":
+      return assertSpecial.skipRoundDisplay === true || hasFlag(assertSpecial.flags, flag);
+    case "skipfightdisplay":
+      return assertSpecial.skipFightDisplay === true || hasFlag(assertSpecial.flags, flag);
     default:
       return false;
   }

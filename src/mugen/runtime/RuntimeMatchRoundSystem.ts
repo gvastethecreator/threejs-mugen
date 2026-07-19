@@ -94,7 +94,11 @@ export class RuntimeMatchRoundWorld {
     ) {
       return { frozen: false, held: true };
     }
-    const timerTick = round.tickTimer(options);
+    const timerTick = round.tickTimer({
+      ...options,
+      skipRoundDisplay: globalAssertSpecial.skipRoundDisplay,
+      skipFightDisplay: globalAssertSpecial.skipFightDisplay,
+    });
     if (timerTick.finishedNow) stopPlaying?.();
     return {
       frozen: false,

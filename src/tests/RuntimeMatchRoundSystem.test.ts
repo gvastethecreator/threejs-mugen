@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { RuntimeMatchRoundWorld } from "../mugen/runtime/RuntimeMatchRoundSystem";
+import { resolveRuntimeRoundAnnouncementTiming } from "../mugen/runtime/RuntimeRoundAnnouncementSystem";
 import { RuntimeRoundSystem } from "../mugen/runtime/RuntimeRoundSystem";
 
 describe("RuntimeMatchRoundWorld", () => {
@@ -43,6 +44,27 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(result).toEqual({ frozen: true });
     expect(round.snapshot()).toMatchObject({ state: "fight", timer: 2, message: "Fight" });
     expect(round.isOver).toBe(false);
+  });
+
+  it("forwards global FightScreen display-skip flags to the announcement clock", () => {
+    const round = new RuntimeRoundSystem(61, "ikemen-go", {
+      announcement: resolveRuntimeRoundAnnouncementTiming({ roundTimeFrames: 4 }),
+    });
+    const world = new RuntimeMatchRoundWorld();
+
+    world.tickTimer(round, [
+      actor("P1", 700, { globalFlags: ["skiprounddisplay", "skipfightdisplay"] }),
+      actor("P2", 700),
+    ]);
+
+    expect(round.snapshot().announcement).toMatchObject({
+      visibility: "visible",
+      phase: "hidden",
+      roundDisplaySkipped: true,
+      fightDisplaySkipped: true,
+      round: { skipped: true },
+      fight: { skipped: true },
+    });
   });
 
   it("owns round-finish side effects for match playing state and logs", () => {

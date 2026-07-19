@@ -28,6 +28,8 @@ describe("RuntimeGlobalAssertSpecialWorld", () => {
       noKoSound: true,
       timerFreeze: true,
       roundNotOver: true,
+      skipRoundDisplay: false,
+      skipFightDisplay: false,
     });
   });
 
@@ -52,6 +54,23 @@ describe("RuntimeGlobalAssertSpecialWorld", () => {
     expect(snapshot.unknownFlags).toEqual(["futureflag"]);
   });
 
+  it("publishes the FightScreen display-skip flags with typed aliases", () => {
+    const snapshot = new RuntimeGlobalAssertSpecialWorld().snapshot({
+      actors: [
+        actor("p1", { globalFlags: ["skiprounddisplay"] }),
+        actor("p2", { skipFightDisplay: true }),
+      ],
+    });
+
+    expect(snapshot.activeFlags).toEqual(["skipfightdisplay", "skiprounddisplay"]);
+    expect(snapshot.skipRoundDisplay).toBe(true);
+    expect(snapshot.skipFightDisplay).toBe(true);
+    expect(snapshot.actorsByFlag).toEqual({
+      skipfightdisplay: ["p2"],
+      skiprounddisplay: ["p1"],
+    });
+  });
+
   it("recomputes per snapshot instead of carrying flags across ticks", () => {
     const world = new RuntimeGlobalAssertSpecialWorld();
 
@@ -72,6 +91,7 @@ function actor(
     globalFlags?: string[];
     noKoSlow?: boolean;
     timerFreeze?: boolean;
+    skipFightDisplay?: boolean;
   } = {},
 ) {
   return {
@@ -83,6 +103,7 @@ function actor(
         globalFlags: assertSpecial.globalFlags ?? [],
         noKoSlow: assertSpecial.noKoSlow,
         timerFreeze: assertSpecial.timerFreeze,
+        skipFightDisplay: assertSpecial.skipFightDisplay,
       },
     },
   };

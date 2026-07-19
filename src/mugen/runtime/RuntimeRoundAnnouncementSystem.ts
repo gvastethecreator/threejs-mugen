@@ -17,6 +17,7 @@ export type RuntimeRoundAnnouncementTiming = {
 
 export type RuntimeRoundAnnouncementTrackSnapshot = {
   phase: "pending" | "active";
+  skipped: boolean;
   elapsed: number;
   animationStart: number;
   soundTime: number;
@@ -27,6 +28,8 @@ export type RuntimeRoundAnnouncementSnapshot = {
   schema: "RuntimeRoundAnnouncement/v0";
   visibility: "hidden" | "visible";
   phase: "hidden" | "round" | "fight";
+  roundDisplaySkipped: boolean;
+  fightDisplaySkipped: boolean;
   round: RuntimeRoundAnnouncementTrackSnapshot;
   fight: RuntimeRoundAnnouncementTrackSnapshot;
   callFightElapsed: number;
@@ -37,6 +40,8 @@ export type RuntimeRoundAnnouncementSnapshot = {
 export type RuntimeRoundAnnouncementAdvanceOptions = {
   introActive: boolean;
   shutterActive: boolean;
+  skipRoundDisplay?: boolean;
+  skipFightDisplay?: boolean;
 };
 
 const DEFAULT_CALL_FIGHT_TIME_FRAMES = 60;
@@ -68,6 +73,8 @@ export class RuntimeRoundAnnouncementWorld {
   private roundStarted = false;
   private roundActive = false;
   private fightActive = false;
+  private roundSkipped = false;
+  private fightSkipped = false;
   private hidden = true;
 
   constructor(private readonly timing: RuntimeRoundAnnouncementTiming) {}
@@ -79,6 +86,8 @@ export class RuntimeRoundAnnouncementWorld {
     this.roundStarted = false;
     this.roundActive = false;
     this.fightActive = false;
+    this.roundSkipped = false;
+    this.fightSkipped = false;
     this.hidden = true;
   }
 
@@ -90,8 +99,14 @@ export class RuntimeRoundAnnouncementWorld {
 
     if (!this.roundStarted) {
       this.roundStarted = true;
-    } else if (!this.fightActive) {
+    } else if (!this.fightActive && !this.roundSkipped) {
       this.roundElapsed += 1;
+    }
+
+    if (options.skipRoundDisplay) {
+      this.roundSkipped = true;
+      this.roundActive = true;
+      this.roundElapsed = Math.max(this.roundElapsed, this.timing.roundTimeFrames);
     }
 
     if (!this.roundActive && this.roundElapsed >= this.timing.roundTimeFrames) {
@@ -101,6 +116,13 @@ export class RuntimeRoundAnnouncementWorld {
       if (this.fightActive) {
         this.fightElapsed += 1;
       }
+      return;
+    }
+
+    if (options.skipFightDisplay) {
+      this.fightSkipped = true;
+      this.fightActive = true;
+      this.fightElapsed = this.timing.fightTimeFrames;
       return;
     }
 
@@ -114,23 +136,36 @@ export class RuntimeRoundAnnouncementWorld {
 
   snapshot(): RuntimeRoundAnnouncementSnapshot {
     const visibility = this.hidden ? "hidden" : "visible";
+    const phase = visibility === "hidden"
+      ? "hidden"
+      : this.fightSkipped
+        ? "hidden"
+        : this.fightActive
+          ? "fight"
+          : this.roundActive && !this.roundSkipped
+            ? "round"
+            : "hidden";
     return {
       schema: "RuntimeRoundAnnouncement/v0",
       visibility,
-      phase: visibility === "hidden" ? "hidden" : this.fightActive ? "fight" : this.roundActive ? "round" : "hidden",
+      phase,
+      roundDisplaySkipped: this.roundSkipped,
+      fightDisplaySkipped: this.fightSkipped,
       round: {
         phase: this.roundActive ? "active" : "pending",
+        skipped: this.roundSkipped,
         elapsed: this.roundElapsed,
         animationStart: this.timing.roundTimeFrames,
         soundTime: this.timing.roundSoundTimeFrames,
-        soundDue: visibility === "visible" && this.roundElapsed === this.timing.roundSoundTimeFrames,
+        soundDue: visibility === "visible" && !this.roundSkipped && this.roundElapsed === this.timing.roundSoundTimeFrames,
       },
       fight: {
         phase: this.fightActive ? "active" : "pending",
+        skipped: this.fightSkipped,
         elapsed: this.fightElapsed,
         animationStart: this.timing.fightTimeFrames,
         soundTime: this.timing.fightSoundTimeFrames,
-        soundDue: visibility === "visible" && this.fightActive && this.fightElapsed === this.timing.fightSoundTimeFrames,
+        soundDue: visibility === "visible" && !this.fightSkipped && this.fightActive && this.fightElapsed === this.timing.fightSoundTimeFrames,
       },
       callFightElapsed: this.callFightElapsed,
       completion: "asset-owned",

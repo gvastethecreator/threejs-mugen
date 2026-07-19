@@ -44,6 +44,10 @@ export type RuntimeRoundTiming = {
 export type RuntimeRoundTickOptions = {
   /** Allows imported actors to hold the phase-4 boundary until the force window expires. */
   phase4Ready?: boolean;
+  /** Skips the source FightScreen Round display while retaining round timing ownership. */
+  skipRoundDisplay?: boolean;
+  /** Skips the source FightScreen Fight display while retaining round timing ownership. */
+  skipFightDisplay?: boolean;
 };
 
 export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object.freeze({
@@ -257,6 +261,8 @@ export class RuntimeRoundSystem {
     this.announcementWorld?.advance({
       introActive,
       shutterActive: this.shutterRemaining > 0,
+      skipRoundDisplay: options.skipRoundDisplay,
+      skipFightDisplay: options.skipFightDisplay,
     });
     if (introActive) {
       return { finishedNow: false };

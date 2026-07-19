@@ -14133,6 +14133,9 @@ function formatHudRoundMessage(round: MugenSnapshot["round"]): string {
     if (round.announcement.phase === "fight") {
       return "Fight!";
     }
+    if (round.announcement.roundDisplaySkipped || round.announcement.fightDisplaySkipped) {
+      return "";
+    }
   }
   return round?.message ?? "Fight";
 }

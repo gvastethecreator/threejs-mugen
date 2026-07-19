@@ -559,6 +559,8 @@ function applyAssertSpecialController(
     if (flag.name === "nokoslow") current.noKoSlow = true;
     if (flag.name === "timerfreeze") current.timerFreeze = true;
     if (flag.name === "roundnotover") current.roundNotOver = true;
+    if (flag.name === "skiprounddisplay") current.skipRoundDisplay = true;
+    if (flag.name === "skipfightdisplay") current.skipFightDisplay = true;
     if (flag.name === "intro") current.intro = true;
     if (flag.name === "nojugglecheck") current.noJuggleCheck = true;
     if (flag.name === "nogetupfromliedown") current.noGetUpFromLieDown = true;
@@ -592,6 +594,8 @@ function normalizeAssertSpecialFlag(rawFlag: string): { name: string; global: bo
     "nokosnd",
     "nomusic",
     "roundnotover",
+    "skipfightdisplay",
+    "skiprounddisplay",
     "timerfreeze",
   ]);
   return { name, global: globalFlags.has(name) };

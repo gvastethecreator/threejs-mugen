@@ -2495,6 +2495,8 @@ function normalizeAssertSpecialFlag(rawFlag: string): { name: string; global: bo
     "nokosnd",
     "nomusic",
     "roundnotover",
+    "skipfightdisplay",
+    "skiprounddisplay",
     "timerfreeze",
   ]);
   return { name, global: globalFlags.has(name) };

@@ -267,6 +267,8 @@ export type RuntimeAssertSpecial = {
   noKoSlow?: boolean;
   timerFreeze?: boolean;
   roundNotOver?: boolean;
+  skipRoundDisplay?: boolean;
+  skipFightDisplay?: boolean;
   intro?: boolean;
   noJuggleCheck?: boolean;
   noGetUpFromLieDown?: boolean;

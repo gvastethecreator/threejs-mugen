@@ -1,4 +1,5 @@
 import type { FighterMatchState } from "./RuntimeFighterStateSystem";
+import type { RuntimeAssertSpecial } from "./types";
 
 export type RuntimeIntroSkipActorStart = {
   x: number;
@@ -56,7 +57,7 @@ export function resetRuntimeIntroSkipActor(
   runtime.renderAngle = undefined;
   runtime.animationSource = "self";
   runtime.customState = undefined;
-  runtime.assertSpecial = undefined;
+  runtime.assertSpecial = preserveRuntimeIntroSkipAssertSpecial(runtime.assertSpecial);
   runtime.inGuardDist = undefined;
   runtime.stateNo = 0;
   runtime.animNo = actor.definition.idleAction;
@@ -95,4 +96,32 @@ export function resetRuntimeIntroSkipActor(
   actor.hitEffectEvents = [];
   actor.contact = actor.contactWorld.create();
   actor.commandBuffer.clear();
+}
+
+export function preserveRuntimeIntroSkipAssertSpecial(
+  assertSpecial: RuntimeAssertSpecial | undefined,
+): RuntimeAssertSpecial | undefined {
+  if (!assertSpecial) {
+    return undefined;
+  }
+
+  const flags = assertSpecial.flags.filter((flag) => isIntroSkipDisplayFlag(flag));
+  const globalFlags = assertSpecial.globalFlags.filter((flag) => isIntroSkipDisplayFlag(flag));
+  const skipRoundDisplay = assertSpecial.skipRoundDisplay === true || globalFlags.includes("skiprounddisplay");
+  const skipFightDisplay = assertSpecial.skipFightDisplay === true || globalFlags.includes("skipfightdisplay");
+  if (!skipRoundDisplay && !skipFightDisplay && flags.length === 0 && globalFlags.length === 0) {
+    return undefined;
+  }
+
+  return {
+    flags,
+    globalFlags,
+    ...(skipRoundDisplay ? { skipRoundDisplay: true } : {}),
+    ...(skipFightDisplay ? { skipFightDisplay: true } : {}),
+  };
+}
+
+function isIntroSkipDisplayFlag(flag: string): boolean {
+  const normalized = flag.trim().replace(/^"|"$/g, "").replace(/[^A-Za-z0-9_]/g, "").toLowerCase();
+  return normalized === "skiprounddisplay" || normalized === "skipfightdisplay";
 }

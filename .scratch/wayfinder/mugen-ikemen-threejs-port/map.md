@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Carry FightScreen display-skip flags](tickets/292-fightscreen-display-skip-flags.md) - resolved at presentation-clock scope: typed global `SkipRoundDisplay`/`SkipFightDisplay` flags reach the announcement clock and suppress fallback text while timer/actor ownership remains separate.
+
 - [Consume FightScreen announcement phases in HUD](tickets/291-fightscreen-announcement-hud.md) - resolved at fallback presentation scope: existing runtime HUD reads visible Round/Fight phase snapshots, while AIR/FNT assets, source audio, exact display skip, and motif transforms remain open.
 
 - [Model FightScreen announcement phases](tickets/290-fightscreen-announcement-phases.md) - resolved at bounded phase-clock scope: pause round/fight announcement clocks during intro/shutter, expose source timing and sound edges, and leave animation completion/assets/audio/skip flags as explicit downstream ownership.

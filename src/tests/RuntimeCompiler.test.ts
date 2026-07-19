@@ -572,7 +572,7 @@ value = 1
     const compiled = compileControllerIr(
       controller(200, "AssertSpecial", [], {
         flag: "NoAutoTurn, NoWalk",
-        flag2: '"Invisible", GlobalNoKO, TimerFreeze, RoundNotOver, NoKOSlow, Intro, NoWalk',
+        flag2: '"Invisible", GlobalNoKO, TimerFreeze, RoundNotOver, NoKOSlow, Intro, NoWalk, SkipRoundDisplay, SkipFightDisplay',
         flag3: "NoGetUpFromLieDown, NoFastRecoverFromLieDown, RunFirst, RunLast, SizePushOnly",
       }),
     );
@@ -582,7 +582,7 @@ value = 1
     expect(compiled.operation).toEqual({
       kind: "assertspecial",
       flags: ["noautoturn", "nowalk", "invisible", "nogetupfromliedown", "nofastrecoverfromliedown", "runfirst", "runlast", "sizepushonly"],
-      globalFlags: ["globalnoko", "timerfreeze", "roundnotover", "nokoslow", "intro"],
+      globalFlags: ["globalnoko", "timerfreeze", "roundnotover", "nokoslow", "intro", "skiprounddisplay", "skipfightdisplay"],
     });
     expect(disabled.operation).toBeUndefined();
     expect(dynamic.operation).toBeUndefined();

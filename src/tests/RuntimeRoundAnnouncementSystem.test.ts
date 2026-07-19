@@ -109,4 +109,29 @@ describe("RuntimeRoundAnnouncementSystem", () => {
       round: { phase: "pending", elapsed: 0 },
     });
   });
+
+  it("keeps skipped Round/Fight displays hidden while preserving the phase clock contract", () => {
+    const timing = resolveRuntimeRoundAnnouncementTiming({
+      roundTimeFrames: 4,
+      callFightTimeFrames: 60,
+      fightTimeFrames: 5,
+    })!;
+    const world = new RuntimeRoundAnnouncementWorld(timing);
+
+    world.advance({
+      introActive: false,
+      shutterActive: false,
+      skipRoundDisplay: true,
+      skipFightDisplay: true,
+    });
+
+    expect(world.snapshot()).toMatchObject({
+      visibility: "visible",
+      phase: "hidden",
+      roundDisplaySkipped: true,
+      fightDisplaySkipped: true,
+      round: { phase: "active", skipped: true, soundDue: false },
+      fight: { phase: "active", skipped: true, elapsed: 5, soundDue: false },
+    });
+  });
 });
