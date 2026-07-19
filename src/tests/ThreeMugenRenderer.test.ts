@@ -4,6 +4,8 @@ import {
   resolveRootPresentationActors,
   resolveRoundFadePresentation,
 } from "../game/render/ThreeMugenRenderer";
+import { projectRoundFadeSprite, resolveRoundFadeAnimationFrame } from "../game/render/RoundFadeRenderer";
+import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { ActorSnapshot, MugenSnapshot } from "../mugen/runtime/types";
 
 describe("resolveRootPresentationActors", () => {
@@ -81,8 +83,44 @@ describe("resolveRoundFadePresentation", () => {
   });
 });
 
+describe("RoundFadeRenderer asset projection", () => {
+  it("advances FightScreen AIR frames using imported durations", () => {
+    const action: MugenAnimationAction = {
+      id: 7001,
+      frames: [fadeFrame(1, 3), fadeFrame(2, 2)],
+      rawLines: [],
+    };
+
+    expect(resolveRoundFadeAnimationFrame(action, 0)).toMatchObject({ frameIndex: 0, frame: { spriteIndex: 1 } });
+    expect(resolveRoundFadeAnimationFrame(action, 3)).toMatchObject({ frameIndex: 1, frame: { spriteIndex: 2 } });
+    expect(resolveRoundFadeAnimationFrame(action, 4)).toMatchObject({ frameIndex: 1, frame: { spriteIndex: 2 } });
+  });
+
+  it("anchors a full-screen SFF sprite to the active viewport", () => {
+    expect(projectRoundFadeSprite(
+      { x: 12, y: 30, width: 640, height: 360, zoom: 1 },
+      { width: 640, height: 360, axisX: 0, axisY: 0 },
+      { offsetX: 0, offsetY: 0 },
+    )).toEqual({ x: 12, y: 30, width: 640, height: 360, flipX: 1, flipY: 1 });
+  });
+});
+
 function actor(id: string): ActorSnapshot {
   return { id } as ActorSnapshot;
+}
+
+function fadeFrame(spriteIndex: number, duration: number): MugenAnimationAction["frames"][number] {
+  return {
+    spriteGroup: 9000,
+    spriteIndex,
+    offsetX: 0,
+    offsetY: 0,
+    duration,
+    clsn1: [],
+    clsn2: [],
+    raw: `${spriteIndex},0,0,0,${duration}`,
+    line: spriteIndex,
+  };
 }
 
 function diagnostic(drawRootIds: string[], collisionRootIds = drawRootIds): NonNullable<MugenSnapshot["rootPresentation"]> {

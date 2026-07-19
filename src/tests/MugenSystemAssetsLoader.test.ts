@@ -40,6 +40,8 @@ over.forcewintime = 900
 over.time = 240
 fadeout.time = 16
 fadeout.col = 12, 34, 56
+fadeout.anim = 7001
+fadeout.snd = 7, 1
 slow.time = 70
 slow.fadetime = 50
 slow.speed = 0.5
@@ -74,6 +76,9 @@ slow.speed = 0.5
       overTime: 240,
       fadeOutTime: 16,
       fadeOutColor: [12, 34, 56],
+      fadeOutAnimationNo: 7001,
+      fadeOutAnimationDuration: 6,
+      fadeOutSound: [7, 1],
       slowTime: 70,
       slowFadeTime: 50,
       slowSpeed: 0.5,

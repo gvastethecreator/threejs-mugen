@@ -1,4 +1,4 @@
-import type { MugenDiagnostic } from "../model/MugenAnimation";
+import type { MugenAnimationAction, MugenDiagnostic } from "../model/MugenAnimation";
 import type { MugenCharacterDef } from "../model/MugenCharacter";
 import type { MugenGameConfig } from "../model/MugenConfig";
 import type {
@@ -130,9 +130,10 @@ export async function loadMugenSystemAssets(
     await registerFightFxLibrary(fxDefPath, "Character");
   }
 
+  const fightScreenTiming = enrichFightScreenTiming(explicit.fightScreenTiming, systemPackage.animations);
   return {
     fightDefPath,
-    ...(explicit.fightScreenTiming ? { fightScreenTiming: explicit.fightScreenTiming } : {}),
+    ...(fightScreenTiming ? { fightScreenTiming } : {}),
     ...(gameConfig ? { gameConfig } : {}),
     ...(supportedCommonFightFxPaths.length > 0 ? { commonFightFxPaths: supportedCommonFightFxPaths } : {}),
     hitSparkLibraries,
@@ -303,11 +304,29 @@ function parseFightScreenTiming(
     overTime: numberValue(section, "over.time"),
     fadeOutTime: numberValue(section, "fadeout.time"),
     fadeOutColor: colorValue(section, "fadeout.col"),
+    fadeOutAnimationNo: nonNegativeIntegerValue(section, "fadeout.anim"),
+    fadeOutSound: soundValue(section, "fadeout.snd"),
     slowTime: numberValue(section, "slow.time"),
     slowFadeTime: numberValue(section, "slow.fadetime"),
     slowSpeed: numberValue(section, "slow.speed"),
   };
   return Object.values(timing).some((value) => typeof value === "number") ? timing : undefined;
+}
+
+function enrichFightScreenTiming(
+  timing: MugenFightScreenTiming | undefined,
+  animations: Map<number, MugenAnimationAction>,
+): MugenFightScreenTiming | undefined {
+  if (!timing || timing.fadeOutAnimationNo === undefined) {
+    return timing;
+  }
+  const action = animations.get(timing.fadeOutAnimationNo);
+  const duration = action ? animationDuration(action.frames.map((frame) => frame.duration)) : undefined;
+  return duration === undefined ? timing : { ...timing, fadeOutAnimationDuration: duration };
+}
+
+function animationDuration(durations: number[]): number {
+  return durations.reduce((total, duration) => total + (duration === -1 ? 1 : Math.max(0, Math.round(duration))), 0);
 }
 
 function findCharacterFightFxPaths(
@@ -407,6 +426,20 @@ function numberValue(section: Record<string, string>, key: string): number | und
   if (raw === undefined) return undefined;
   const value = Number(raw.trim());
   return Number.isFinite(value) ? value : undefined;
+}
+
+function nonNegativeIntegerValue(section: Record<string, string>, key: string): number | undefined {
+  const value = numberValue(section, key);
+  if (value === undefined || value < 0) return undefined;
+  return Math.round(value);
+}
+
+function soundValue(section: Record<string, string>, key: string): [number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 2 || values.some((value) => !Number.isFinite(value) || value < 0)) return undefined;
+  return values.map((value) => Math.round(value)) as [number, number];
 }
 
 function colorValue(section: Record<string, string>, key: string): [number, number, number] | undefined {

@@ -632,6 +632,8 @@ export type RuntimeRoundFadeSnapshot = {
   duration: number;
   opacity: number;
   color: [number, number, number];
+  animationNo?: number;
+  sound?: { group: number; index: number };
 };
 
 export type RuntimeSuperPauseAnimSnapshot = {

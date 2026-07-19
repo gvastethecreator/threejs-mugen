@@ -177,6 +177,26 @@ describe("MugenAudioSystem", () => {
     expect(missing.getDiagnostics().played).toBe(0);
   });
 
+  it("plays a FightScreen fade sound once without an actor-scoped event", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(undefined, { f: archive(1) });
+    await system.unlock();
+
+    const first = audioSnapshot([], roundFadeSnapshot(1));
+    system.processSnapshot(first);
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(1));
+
+    system.processSnapshot(audioSnapshot([], roundFadeSnapshot(2)));
+    expect(system.getDiagnostics().played).toBe(1);
+    expect(audioContext.sources).toHaveLength(1);
+  });
+
   it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });
@@ -283,12 +303,41 @@ function stopSoundActor(id: string, runtimeTick: number): MugenSnapshot["actors"
   return actor;
 }
 
-function audioSnapshot(actors: MugenSnapshot["actors"]): MugenSnapshot {
+function audioSnapshot(actors: MugenSnapshot["actors"], round?: MugenSnapshot["round"]): MugenSnapshot {
   return {
     actors,
     effects: [],
+    ...(round ? { round } : {}),
     stage: { camera: { x: 0 } },
   } as unknown as MugenSnapshot;
+}
+
+function roundFadeSnapshot(frame: number): NonNullable<MugenSnapshot["round"]> {
+  return {
+    state: "ko",
+    timer: 0,
+    message: "P1 wins",
+    postRound: {
+      schema: "RuntimePostRound/v0",
+      frame,
+      remaining: 2,
+      duration: 4,
+      slowRemaining: 0,
+      slowDuration: 0,
+      playbackRate: 1,
+      noKoSlow: true,
+      fadeOut: {
+        schema: "RuntimeRoundFade/v0",
+        active: true,
+        frame,
+        remaining: Math.max(0, 4 - frame),
+        duration: 4,
+        opacity: 0,
+        color: [0, 0, 0],
+        sound: { group: 5, index: 0 },
+      },
+    },
+  };
 }
 
 function fakeAudioContext(): {

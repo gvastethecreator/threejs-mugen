@@ -1,5 +1,5 @@
 import { findSound, type MugenSound, type SndArchive } from "../../mugen/model/MugenSound";
-import type { ActorSnapshot, MugenSnapshot, RuntimeSoundEvent } from "../../mugen/runtime/types";
+import type { ActorSnapshot, MugenSnapshot, RuntimeRoundFadeSnapshot, RuntimeSoundEvent } from "../../mugen/runtime/types";
 
 export type MugenAudioDiagnostics = {
   available: boolean;
@@ -22,6 +22,10 @@ export type RuntimeAudioEventAction =
 type RuntimeAudioSourceHandle = {
   source: AudioBufferSourceNode;
   panner?: StereoPannerNode;
+};
+
+type RuntimeAudioActorContext = Pick<ActorSnapshot, "id"> & {
+  runtime: Pick<ActorSnapshot["runtime"], "pos" | "facing">;
 };
 
 const DEFAULT_SOUND_GAIN = 0.55;
@@ -88,6 +92,7 @@ export class MugenAudioSystem {
   private skipped = 0;
   private missing = 0;
   private channelRequestSequence = 0;
+  private lastRoundFadeSoundKey?: string;
 
   setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
     this.stopAll();
@@ -118,7 +123,12 @@ export class MugenAudioSystem {
 
   processSnapshot(snapshot: MugenSnapshot): void {
     const soundActors = [...snapshot.actors, ...(snapshot.effects ?? [])];
-    if (!this.hasAnyArchive() || soundActors.length === 0) {
+    const roundFade = snapshot.round?.postRound?.fadeOut;
+    if (!roundFade?.active) {
+      this.lastRoundFadeSoundKey = undefined;
+    }
+    const hasRoundFadeSound = Boolean(roundFade?.active && roundFade.sound);
+    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound)) {
       return;
     }
     for (const actor of soundActors) {
@@ -150,6 +160,9 @@ export class MugenAudioSystem {
       }
       this.stopVoiceChannelOnNewHit(actor);
     }
+    if (roundFade?.active && roundFade.sound) {
+      this.processRoundFadeSound(roundFade, snapshot);
+    }
   }
 
   getDiagnostics(): MugenAudioDiagnostics {
@@ -167,6 +180,7 @@ export class MugenAudioSystem {
   }
 
   stopAll(): void {
+    this.lastRoundFadeSoundKey = undefined;
     this.pendingChannels.clear();
     for (const handle of this.activeChannels.clear()) {
       handle.source.stop();
@@ -180,7 +194,7 @@ export class MugenAudioSystem {
   private async play(
     event: RuntimeSoundEvent,
     action: Extract<RuntimeAudioEventAction, { type: "play" }>,
-    actor: ActorSnapshot,
+    actor: RuntimeAudioActorContext,
     snapshot: MugenSnapshot,
   ): Promise<void> {
     const archive = this.resolveArchive(event);
@@ -252,6 +266,28 @@ export class MugenAudioSystem {
     }
     source.start();
     this.played += 1;
+  }
+
+  private processRoundFadeSound(fade: RuntimeRoundFadeSnapshot, snapshot: MugenSnapshot): void {
+    if (!fade.sound) return;
+    const key = `${snapshot.round?.roundNo ?? 1}:${snapshot.round?.state ?? "ko"}:${fade.sound.group},${fade.sound.index}`;
+    if (this.lastRoundFadeSoundKey === key) return;
+    this.lastRoundFadeSoundKey = key;
+    const event: RuntimeSoundEvent = {
+      type: "PlaySnd",
+      group: fade.sound.group,
+      index: fade.sound.index,
+      soundPrefix: "f",
+      stateNo: -3,
+      tick: snapshot.tick,
+      runtimeTick: snapshot.tick,
+    };
+    void this.play(
+      event,
+      { type: "play" },
+      { id: "__round-fade__", runtime: { pos: { x: 0, y: 0 }, facing: 1 } },
+      snapshot,
+    );
   }
 
   private stop(actorId: string, channel: number | undefined): void {

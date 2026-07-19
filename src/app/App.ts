@@ -3000,6 +3000,7 @@ export class App {
   }
 
   private installSystemHitSparkProviders(character: MugenCharacter): void {
+    this.renderer.setRoundFadeAnimations(undefined);
     const assets = character.systemAssets;
     if (!assets) {
       return;
@@ -3010,6 +3011,8 @@ export class App {
       assets.hitSparkLibraries.fightfx,
       ...Object.values(assets.fightFxLibraries ?? {}),
     ];
+    const roundFadeLibrary = assets.hitSparkLibraries.fightfx ?? assets.hitSparkLibraries.common;
+    this.renderer.setRoundFadeAnimations(roundFadeLibrary?.animations);
     for (const library of libraries) {
       const archive = library?.spriteArchive;
       if (!archive || archive.sprites.length === 0 || seenArchives.has(archive)) {

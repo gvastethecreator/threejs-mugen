@@ -13,6 +13,9 @@ export type RuntimeRoundTiming = {
   overTimeFrames: number;
   fadeOutTimeFrames: number;
   fadeOutColor: [number, number, number];
+  fadeOutAnimationNo?: number;
+  fadeOutAnimationDurationFrames?: number;
+  fadeOutSound?: [number, number];
   postKoFrames: number;
   koSlowFrames: number;
   koSlowFadeFrames: number;
@@ -259,18 +262,26 @@ export class RuntimeRoundSystem {
   }
 
   private roundFadeSnapshot(): RuntimeRoundFadeSnapshot | undefined {
-    const duration = this.timing.fadeOutTimeFrames;
+    const animationDuration = this.timing.fadeOutAnimationNo === undefined
+      ? 0
+      : this.timing.fadeOutAnimationDurationFrames ?? 0;
+    const duration = Math.max(animationDuration, animationDuration > 0 ? 0 : this.timing.fadeOutTimeFrames);
     if (duration <= 0) return undefined;
     const startFrame = this.timing.postKoFrames - duration + 1;
     const frame = Math.max(0, Math.min(duration, this.postRoundFrame - startFrame + 1));
+    const colorDuration = animationDuration > 0 ? 0 : this.timing.fadeOutTimeFrames;
     return {
       schema: "RuntimeRoundFade/v0",
       active: frame > 0,
       frame,
       remaining: Math.max(0, duration - frame),
       duration,
-      opacity: frame / duration,
+      opacity: colorDuration > 0 ? Math.min(1, frame / colorDuration) : 0,
       color: [...this.timing.fadeOutColor] as [number, number, number],
+      ...(animationDuration > 0 && this.timing.fadeOutAnimationNo !== undefined
+        ? { animationNo: this.timing.fadeOutAnimationNo }
+        : {}),
+      ...(frame > 0 && this.timing.fadeOutSound ? { sound: { group: this.timing.fadeOutSound[0], index: this.timing.fadeOutSound[1] } } : {}),
     };
   }
 
@@ -321,11 +332,18 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.fadeOutTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.fadeOutTimeFrames,
   );
+  const rawFadeOutAnimationDurationFrames = boundedTimingFrames(
+    overrides.fadeOutAnimationDurationFrames,
+    0,
+  );
+  const fadeOutAnimationNo = boundedOptionalInteger(overrides.fadeOutAnimationNo);
+  const fadeOutAnimationDurationFrames = fadeOutAnimationNo === undefined ? 0 : rawFadeOutAnimationDurationFrames;
+  const fadeOutSound = normalizeFadeOutSound(overrides.fadeOutSound);
   const fadeOutColor = normalizeFadeOutColor(overrides.fadeOutColor ?? DEFAULT_RUNTIME_ROUND_TIMING.fadeOutColor);
   const requestedPostKoFrames = boundedTimingFrames(overrides.postKoFrames, DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames);
   const hasTerminalSourceTiming = overrides.postKoFrames === undefined &&
-    (overrides.overTimeFrames !== undefined || overrides.fadeOutTimeFrames !== undefined);
-  const sourceTerminalFrames = postKoPhase4StartFrames + Math.max(overTimeFrames, fadeOutTimeFrames);
+    (overrides.overTimeFrames !== undefined || overrides.fadeOutTimeFrames !== undefined || overrides.fadeOutAnimationDurationFrames !== undefined);
+  const sourceTerminalFrames = postKoPhase4StartFrames + Math.max(overTimeFrames, fadeOutTimeFrames, fadeOutAnimationDurationFrames);
   const postKoFrames = Math.max(
     postKoPhase4StartFrames,
     hasTerminalSourceTiming ? sourceTerminalFrames : requestedPostKoFrames,
@@ -351,6 +369,9 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overTimeFrames,
     fadeOutTimeFrames,
     fadeOutColor,
+    ...(fadeOutAnimationNo !== undefined ? { fadeOutAnimationNo } : {}),
+    ...(fadeOutAnimationDurationFrames > 0 ? { fadeOutAnimationDurationFrames } : {}),
+    ...(fadeOutSound ? { fadeOutSound } : {}),
     postKoFrames,
     koSlowFrames,
     koSlowFadeFrames,
@@ -360,6 +381,16 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
 
 function normalizeFadeOutColor(value: [number, number, number]): [number, number, number] {
   return value.map((channel) => Math.max(0, Math.min(255, Math.round(channel)))) as [number, number, number];
+}
+
+function normalizeFadeOutSound(value: [number, number] | undefined): [number, number] | undefined {
+  if (!value || value.length !== 2 || value.some((part) => !Number.isFinite(part) || part < 0)) return undefined;
+  return value.map((part) => Math.round(part)) as [number, number];
+}
+
+function boundedOptionalInteger(value: number | undefined): number | undefined {
+  if (value === undefined || !Number.isFinite(value) || value < 0) return undefined;
+  return Math.round(value);
 }
 
 function boundedTimingFrames(value: number | undefined, fallback: number): number {

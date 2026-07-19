@@ -157,6 +157,38 @@ describe("RuntimeRoundSystem", () => {
     expect(round.snapshot().postRound?.fadeOut).toMatchObject({ active: true, frame: 6, remaining: 0, opacity: 1 });
   });
 
+  it("uses the imported FightScreen animation duration and emits its global sound reference", () => {
+    const timing = resolveRuntimeRoundTiming({
+      postKoPhase4StartFrames: 2,
+      overTimeFrames: 4,
+      fadeOutTimeFrames: 6,
+      fadeOutAnimationNo: 7001,
+      fadeOutAnimationDurationFrames: 8,
+      fadeOutSound: [7, 1],
+    });
+
+    expect(timing).toMatchObject({
+      fadeOutAnimationNo: 7001,
+      fadeOutAnimationDurationFrames: 8,
+      fadeOutSound: [7, 1],
+      postKoFrames: 10,
+    });
+
+    const round = new RuntimeRoundSystem(1, "ikemen-go", timing);
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
+    expect(round.snapshot().postRound?.fadeOut).toMatchObject({ active: false, frame: 0, duration: 8 });
+
+    for (let frame = 0; frame < 3; frame += 1) round.tickTimer();
+    expect(round.snapshot().postRound?.fadeOut).toMatchObject({
+      active: true,
+      frame: 1,
+      animationNo: 7001,
+      opacity: 0,
+      sound: { group: 7, index: 1 },
+    });
+  });
+
   it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {
     const round = new RuntimeRoundSystem(1, "ikemen-go", {
       overHitTimeFrames: 1,
