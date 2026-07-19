@@ -396,6 +396,7 @@ export type MatchRuntimeCommand =
   | { type: "set-root-standby"; changes: readonly RuntimeRootStandbyChange[] }
   | { type: "set-match-max-draws"; side: RuntimeTeamSide; count: number }
   | { type: "set-match-wins"; side: RuntimeTeamSide; count: number }
+  | { type: "skip-intro" }
   | { type: "next-round" }
   | { type: "reset" };
 
@@ -590,6 +591,10 @@ export class PlayableMatchRuntime {
   private readonly socdInputState: { p1: RuntimeSocdInputState; p2: RuntimeSocdInputState } = {
     p1: createRuntimeSocdInputState(),
     p2: createRuntimeSocdInputState(),
+  };
+  private readonly previousIntroSkipInputs: { p1: Set<string>; p2: Set<string> } = {
+    p1: new Set(),
+    p2: new Set(),
   };
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
@@ -1309,6 +1314,8 @@ export class PlayableMatchRuntime {
         throw new Error("Match win targets require the ikemen-go runtime profile");
       }
       this.matchOutcome.setMatchWins(command.side, command.count);
+    } else if (command.type === "skip-intro") {
+      this.round.requestIntroSkip({ roundNoSkip: hasRuntimeRoundNoSkip(this.characterRoots()) });
     } else if (command.type === "next-round") {
       this.startNextRound();
     } else if (command.type === "reset") {
@@ -1415,6 +1422,18 @@ export class PlayableMatchRuntime {
     this.tick += 1;
     this.deferredInputControls.clear();
     const [activeP1, activeP2] = this.activePair();
+    const introSkipButtonPressed = hasNewRuntimeIntroSkipButtonPress(
+      input.p1,
+      this.previousIntroSkipInputs.p1,
+    ) || hasNewRuntimeIntroSkipButtonPress(
+      input.p2 ?? new Set<string>(),
+      this.previousIntroSkipInputs.p2,
+    );
+    rememberRuntimeInput(this.previousIntroSkipInputs.p1, input.p1);
+    rememberRuntimeInput(this.previousIntroSkipInputs.p2, input.p2 ?? new Set<string>());
+    if (introSkipButtonPressed) {
+      this.round.requestIntroSkip({ roundNoSkip: hasRuntimeRoundNoSkip(this.characterRoots()) });
+    }
     if (this.round.snapshot().state === "ko") {
       matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
         this.playing = false;
@@ -3155,6 +3174,8 @@ export class PlayableMatchRuntime {
     this.roundWinPoseWorld.reset();
     resetRuntimeSocdInputState(this.socdInputState.p1);
     resetRuntimeSocdInputState(this.socdInputState.p2);
+    this.previousIntroSkipInputs.p1.clear();
+    this.previousIntroSkipInputs.p2.clear();
     this.restoreExpiredSuperPauseTargetDefense(true);
     this.tagTeamOrder?.reset();
     const resetState = this.matchResetWorld.reset({
@@ -6170,6 +6191,30 @@ function fallbackGameSpaceFromBounds(stageBounds?: MugenStageDefinition["bounds"
   return { width: Math.max(0, stageBounds.right - stageBounds.left), height: 480, zoom: 1 };
 }
 
+const RUNTIME_INTRO_SKIP_BUTTONS = new Set(["a", "b", "c", "x", "y", "z"]);
+
+function hasNewRuntimeIntroSkipButtonPress(current: Iterable<string>, previous: ReadonlySet<string>): boolean {
+  for (const value of current) {
+    const normalized = value.trim().toLowerCase();
+    if (RUNTIME_INTRO_SKIP_BUTTONS.has(normalized) && !previous.has(normalized)) return true;
+  }
+  return false;
+}
+
+function rememberRuntimeInput(previous: Set<string>, current: Iterable<string>): void {
+  previous.clear();
+  for (const value of current) previous.add(value.trim().toLowerCase());
+}
+
+function hasRuntimeRoundNoSkip(
+  actors: ReadonlyArray<{ runtime: { assertSpecial?: { flags: readonly string[]; globalFlags: readonly string[] } } }>,
+): boolean {
+  return actors.some(({ runtime }) => {
+    const flags = [...(runtime.assertSpecial?.flags ?? []), ...(runtime.assertSpecial?.globalFlags ?? [])];
+    return flags.some((flag) => flag.trim().replace(/^"|"$/g, "").replace(/[^A-Za-z0-9_]/g, "").toLowerCase() === "roundnotskip");
+  });
+}
+
 function runtimeRoundTimingFromFightScreen(
   source?: MugenFightScreenTiming,
 ): Partial<RuntimeRoundTiming> | undefined {
@@ -6182,6 +6227,8 @@ function runtimeRoundTimingFromFightScreen(
     overTimeFrames: source.overTime,
     startWaitTimeFrames: source.startWaitTime,
     controlTimeFrames: source.controlTime,
+    shutterTimeFrames: source.shutterTime,
+    shutterColor: source.shutterColor,
     fadeInTimeFrames: source.fadeInTime,
     fadeInColor: source.fadeInColor,
     fadeInAnimationNo: source.fadeInAnimationNo,

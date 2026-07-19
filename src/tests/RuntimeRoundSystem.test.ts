@@ -111,6 +111,8 @@ describe("RuntimeRoundSystem", () => {
       overTimeFrames: 210,
       startWaitTimeFrames: 0,
       controlTimeFrames: 0,
+      shutterTimeFrames: 0,
+      shutterColor: [0, 0, 0],
       fadeInTimeFrames: 0,
       fadeInColor: [0, 0, 0],
       fadeOutTimeFrames: 0,
@@ -294,6 +296,54 @@ describe("RuntimeRoundSystem", () => {
 
     round.startNextRound(121);
     expect(round.snapshot()).toMatchObject({ roundNo: 2, roundPhase: 0, preRound: { intro: { frame: 0, remaining: 6, phase: 0 } } });
+  });
+
+  it("skips the imported character-intro wait through a source-shaped shutter", () => {
+    const round = new RuntimeRoundSystem(121, "ikemen-go", {
+      startWaitTimeFrames: 4,
+      controlTimeFrames: 2,
+      shutterTimeFrames: 3,
+      shutterColor: [17, 18, 19],
+    });
+
+    expect(round.requestIntroSkip({ roundNoSkip: true })).toEqual({
+      applied: false,
+      reason: "round-no-skip",
+      shutterStarted: false,
+    });
+    expect(round.snapshot().preRound?.shutter).toBeUndefined();
+
+    expect(round.requestIntroSkip()).toEqual({ applied: true, reason: "applied", shutterStarted: true });
+    expect(round.snapshot()).toMatchObject({
+      roundPhase: 1,
+      preRound: {
+        intro: { remaining: 3, phase: 1 },
+        shutter: {
+          schema: "RuntimeRoundShutter/v0",
+          active: true,
+          frame: 0,
+          remaining: 6,
+          duration: 6,
+          shutterTime: 3,
+          color: [17, 18, 19],
+          phase: "closing",
+        },
+      },
+    });
+
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ timer: 3, preRound: { shutter: { frame: 0, remaining: 6 } } });
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ timer: 3, preRound: { shutter: { frame: 1, remaining: 5 } } });
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({
+      timer: 2,
+      preRound: { intro: { active: false, remaining: 0 }, shutter: { frame: 2, remaining: 4 } },
+    });
+
+    expect(round.requestIntroSkip()).toEqual({ applied: false, reason: "inactive", shutterStarted: false });
+    for (let frame = 0; frame < 4; frame += 1) round.tickTimer();
+    expect(round.snapshot().preRound?.shutter).toBeUndefined();
   });
 
   it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {

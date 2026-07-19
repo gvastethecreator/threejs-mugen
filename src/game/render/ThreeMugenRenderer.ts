@@ -8,6 +8,7 @@ import { CharacterRenderer } from "./CharacterRenderer";
 import { CollisionBoxRenderer } from "./CollisionBoxRenderer";
 import { HitSparkRenderer } from "./HitSparkRenderer";
 import { RoundFadeRenderer } from "./RoundFadeRenderer";
+import { RoundShutterRenderer } from "./RoundShutterRenderer";
 import {
   applyThreePresentationOrder,
   resolveOverlayPresentationOrder,
@@ -26,6 +27,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   private readonly boxes = new CollisionBoxRenderer();
   private readonly hitSparks: HitSparkRenderer;
   private readonly roundFade: RoundFadeRenderer;
+  private readonly roundShutter: RoundShutterRenderer;
   private readonly characters: CharacterRenderer;
   private readonly pauseOverlayMaterial = new THREE.MeshBasicMaterial({
     color: 0x05070c,
@@ -59,6 +61,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.characters = new CharacterRenderer(spriteProvider, this.textures);
     this.hitSparks = new HitSparkRenderer(spriteProvider, this.textures);
     this.roundFade = new RoundFadeRenderer(spriteProvider, this.textures);
+    this.roundShutter = new RoundShutterRenderer();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.setClearColor(0x000000, 0);
     this.scene.add(this.axis.group);
@@ -66,6 +69,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.scene.add(this.hitSparks.group);
     this.scene.add(this.boxes.group);
     this.scene.add(this.roundFade.group);
+    this.scene.add(this.roundShutter.group);
     this.pauseOverlay.visible = false;
     applyThreePresentationOrder(this.pauseOverlay, this.pauseOverlayMaterial, resolveOverlayPresentationOrder(0));
     this.scene.add(this.pauseOverlay);
@@ -126,6 +130,14 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.camera.zoom = snapshot.stage.camera.zoom;
     const roundFade = resolveRoundFadePresentation(snapshot);
     await this.roundFade.update(roundFade, {
+      x: this.camera.position.x,
+      y: this.camera.position.y,
+      width: this.size.width,
+      height: this.size.height,
+      zoom: this.camera.zoom,
+    });
+    const roundShutter = resolveRoundShutterPresentation(snapshot);
+    this.roundShutter.update(roundShutter, {
       x: this.camera.position.x,
       y: this.camera.position.y,
       width: this.size.width,
@@ -213,6 +225,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     presentationGroups: { stage: number; characters: number; hitSparks: number; collision: number };
     collision: ReturnType<CollisionBoxRenderer["getDiagnostics"]>;
     roundFade: { visible: boolean; opacity: number; color: number; asset: ReturnType<RoundFadeRenderer["getDiagnostics"]> };
+    roundShutter: ReturnType<RoundShutterRenderer["getDiagnostics"]>;
   } {
     return {
       size: this.size,
@@ -244,6 +257,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
         color: this.roundFadeOverlayMaterial.color.getHex(),
         asset: this.roundFade.getDiagnostics(),
       },
+      roundShutter: this.roundShutter.getDiagnostics(),
     };
   }
 
@@ -253,6 +267,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.boxes.dispose();
     this.hitSparks.dispose();
     this.roundFade.dispose();
+    this.roundShutter.dispose();
     this.characters.dispose();
     this.pauseOverlay.geometry.dispose();
     this.pauseOverlayMaterial.dispose();
@@ -273,6 +288,13 @@ export function resolveRoundFadePresentation(
   if (fadeOut?.active) return fadeOut;
   const fadeIn = snapshot.round?.preRound?.fadeIn;
   return fadeIn?.active ? fadeIn : undefined;
+}
+
+export function resolveRoundShutterPresentation(
+  snapshot: Pick<MugenSnapshot, "round">,
+): NonNullable<NonNullable<MugenSnapshot["round"]>["preRound"]>["shutter"] | undefined {
+  const shutter = snapshot.round?.preRound?.shutter;
+  return shutter?.active ? shutter : undefined;
 }
 
 export function resolveRootPresentationActors(

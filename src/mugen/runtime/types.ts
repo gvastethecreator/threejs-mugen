@@ -611,6 +611,7 @@ export type RoundSnapshot = {
     remaining: number;
     duration: number;
     intro?: RuntimeRoundIntroSnapshot;
+    shutter?: RuntimeRoundShutterSnapshot;
     fadeIn?: RuntimeRoundFadeSnapshot;
   };
   winPose?: RuntimeRoundWinPoseSnapshot;
@@ -641,6 +642,17 @@ export type RuntimeRoundIntroSnapshot = {
   startWaitTime: number;
   controlTime: number;
   phase: RuntimeRoundPhase;
+};
+
+export type RuntimeRoundShutterSnapshot = {
+  schema: "RuntimeRoundShutter/v0";
+  active: boolean;
+  frame: number;
+  remaining: number;
+  duration: number;
+  shutterTime: number;
+  color: [number, number, number];
+  phase: "closing" | "opening";
 };
 
 export type RuntimeRoundFadeSnapshot = {

@@ -1,4 +1,9 @@
-import type { RoundSnapshot, RuntimeRoundFadeSnapshot, RuntimeRoundIntroSnapshot } from "./types";
+import type {
+  RoundSnapshot,
+  RuntimeRoundFadeSnapshot,
+  RuntimeRoundIntroSnapshot,
+  RuntimeRoundShutterSnapshot,
+} from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
@@ -13,6 +18,8 @@ export type RuntimeRoundTiming = {
   overTimeFrames: number;
   startWaitTimeFrames: number;
   controlTimeFrames: number;
+  shutterTimeFrames: number;
+  shutterColor: [number, number, number];
   fadeInTimeFrames: number;
   fadeInColor: [number, number, number];
   fadeInAnimationNo?: number;
@@ -42,6 +49,8 @@ export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object
   overTimeFrames: 210,
   startWaitTimeFrames: 0,
   controlTimeFrames: 0,
+  shutterTimeFrames: 0,
+  shutterColor: [0, 0, 0] as [number, number, number],
   fadeInTimeFrames: 0,
   fadeInColor: [0, 0, 0] as [number, number, number],
   fadeOutTimeFrames: 0,
@@ -74,6 +83,12 @@ export type RuntimeRoundTickResult = {
   finishedNow: boolean;
 };
 
+export type RuntimeRoundIntroSkipResult = {
+  applied: boolean;
+  reason: "applied" | "inactive" | "round-no-skip" | "too-late" | "already-skipped";
+  shutterStarted: boolean;
+};
+
 export class RuntimeRoundSystem {
   private timerFrames: number;
   private state: RoundSnapshot["state"] = "fight";
@@ -83,6 +98,9 @@ export class RuntimeRoundSystem {
   private postRoundRemaining = 0;
   private preRoundFrame = 0;
   private introRemaining = 0;
+  private introSkipApplied = false;
+  private shutterRemaining = 0;
+  private shutterJustStarted = false;
   private phase4HoldFrames = 0;
   private koSlowRemaining = 0;
   private noKoSlow = false;
@@ -150,6 +168,34 @@ export class RuntimeRoundSystem {
       && this.postRoundFrame <= this.timing.postKoPhase4StartFrames;
   }
 
+  requestIntroSkip(options: { roundNoSkip?: boolean } = {}): RuntimeRoundIntroSkipResult {
+    if (this.state !== "fight" || this.currentPhase === 2 || this.introRemaining <= 0) {
+      return { applied: false, reason: "inactive", shutterStarted: false };
+    }
+    if (this.introSkipApplied) {
+      return { applied: false, reason: "already-skipped", shutterStarted: false };
+    }
+    if (options.roundNoSkip === true) {
+      return { applied: false, reason: "round-no-skip", shutterStarted: false };
+    }
+    if (this.introRemaining <= this.timing.controlTimeFrames) {
+      return { applied: false, reason: "too-late", shutterStarted: false };
+    }
+
+    this.introRemaining = this.timing.controlTimeFrames + 1;
+    this.introSkipApplied = true;
+    if (this.currentPhase === 0) {
+      this.phaseWorld.transition("intro");
+    }
+    const shutterDuration = this.roundShutterDuration();
+    if (shutterDuration <= 0) {
+      return { applied: true, reason: "applied", shutterStarted: false };
+    }
+    this.shutterRemaining = shutterDuration;
+    this.shutterJustStarted = true;
+    return { applied: true, reason: "applied", shutterStarted: true };
+  }
+
   get winPoseFrames(): number {
     return this.timing.winPoseFrames;
   }
@@ -189,6 +235,7 @@ export class RuntimeRoundSystem {
       this.over = this.postRoundRemaining === 0;
       return { finishedNow: this.over };
     }
+    this.advanceShutter();
     this.preRoundFrame = Math.min(this.roundFadeInDuration(), this.preRoundFrame + 1);
     if (this.advanceRoundIntro()) {
       return { finishedNow: false };
@@ -245,6 +292,9 @@ export class RuntimeRoundSystem {
     this.postRoundRemaining = 0;
     this.preRoundFrame = 0;
     this.introRemaining = this.roundIntroDuration();
+    this.introSkipApplied = false;
+    this.shutterRemaining = 0;
+    this.shutterJustStarted = false;
     this.phase4HoldFrames = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
@@ -281,13 +331,15 @@ export class RuntimeRoundSystem {
     } else {
       const fadeIn = this.roundFadeInSnapshot();
       const intro = this.roundIntroSnapshot();
-      if (fadeIn || intro) {
+      const shutter = this.roundShutterSnapshot();
+      if (fadeIn || intro || shutter) {
         snapshot.preRound = {
           schema: "RuntimePreRound/v0",
           frame: fadeIn?.frame ?? intro?.frame ?? 0,
           remaining: fadeIn?.remaining ?? intro?.remaining ?? 0,
           duration: fadeIn?.duration ?? intro?.duration ?? 0,
           ...(intro ? { intro } : {}),
+          ...(shutter ? { shutter } : {}),
           ...(fadeIn ? { fadeIn } : {}),
         };
       }
@@ -345,6 +397,35 @@ export class RuntimeRoundSystem {
       controlTime: this.timing.controlTimeFrames,
       phase: this.currentPhase,
     };
+  }
+
+  private roundShutterDuration(): number {
+    return this.timing.shutterTimeFrames * 2;
+  }
+
+  private roundShutterSnapshot(): RuntimeRoundShutterSnapshot | undefined {
+    const duration = this.roundShutterDuration();
+    if (duration <= 0 || this.shutterRemaining <= 0) return undefined;
+    const frame = Math.max(0, Math.min(duration, duration - this.shutterRemaining));
+    return {
+      schema: "RuntimeRoundShutter/v0",
+      active: true,
+      frame,
+      remaining: this.shutterRemaining,
+      duration,
+      shutterTime: this.timing.shutterTimeFrames,
+      color: [...this.timing.shutterColor] as [number, number, number],
+      phase: frame <= this.timing.shutterTimeFrames ? "closing" : "opening",
+    };
+  }
+
+  private advanceShutter(): void {
+    if (this.shutterRemaining <= 0) return;
+    if (this.shutterJustStarted) {
+      this.shutterJustStarted = false;
+      return;
+    }
+    this.shutterRemaining = Math.max(0, this.shutterRemaining - 1);
   }
 
   private advanceRoundIntro(): boolean {
@@ -443,6 +524,11 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.controlTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.controlTimeFrames,
   );
+  const shutterTimeFrames = boundedTimingFrames(
+    overrides.shutterTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.shutterTimeFrames,
+  );
+  const shutterColor = normalizeFadeColor(overrides.shutterColor ?? DEFAULT_RUNTIME_ROUND_TIMING.shutterColor);
   const fadeInTimeFrames = boundedTimingFrames(
     overrides.fadeInTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.fadeInTimeFrames,
@@ -496,6 +582,8 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overTimeFrames,
     startWaitTimeFrames,
     controlTimeFrames,
+    shutterTimeFrames,
+    shutterColor,
     fadeInTimeFrames,
     fadeInColor,
     ...(fadeInAnimationNo !== undefined ? { fadeInAnimationNo } : {}),

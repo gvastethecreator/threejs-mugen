@@ -27,6 +27,42 @@ describe("PlayableMatchRuntime", () => {
     });
   });
 
+  it("starts the imported shutter on a new hard-button press and ignores the held edge", () => {
+    const importedP1 = {
+      ...demoFighters[0]!,
+      source: "imported" as const,
+      fightScreenTiming: {
+        sourcePath: "data/fight.def",
+        startWaitTime: 4,
+        controlTime: 2,
+        shutterTime: 3,
+        shutterColor: [17, 18, 19] as [number, number, number],
+      },
+    };
+    const runtime = new PlayableMatchRuntime(importedP1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 121,
+    });
+
+    const first = runtime.step({ p1: new Set(["a"]), p2: new Set() }, { force: true });
+    expect(first.round).toMatchObject({
+      roundPhase: 1,
+      preRound: {
+        intro: { remaining: 2, phase: 1 },
+        shutter: { active: true, frame: 0, remaining: 6, color: [17, 18, 19] },
+      },
+    });
+
+    const held = runtime.step({ p1: new Set(["a"]), p2: new Set() }, { force: true });
+    expect(held.round).toMatchObject({ preRound: { intro: { remaining: 1 }, shutter: { frame: 1, remaining: 5 } } });
+
+    const released = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    expect(released.round).toMatchObject({
+      timer: 2,
+      preRound: { intro: { active: false, remaining: 0, phase: 2 }, shutter: { frame: 2, remaining: 4 } },
+    });
+  });
+
   it("applies profile SOCD defaults before control and command-buffer consumers", () => {
     const importedP1 = { ...demoFighters[0]!, source: "imported" as const };
     const ikemen = new PlayableMatchRuntime(importedP1, demoFighters[1]!, trainingStage, {

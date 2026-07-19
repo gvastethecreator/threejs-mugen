@@ -40,6 +40,8 @@ over.forcewintime = 900
 over.time = 240
 start.waittime = 12
 ctrl.time = 30
+shutter.time = 15
+shutter.col = 17, 18, 19
 fadein.time = 10
 fadein.col = 1, 2, 3
 fadein.anim = 7001
@@ -82,6 +84,8 @@ slow.speed = 0.5
       overTime: 240,
       startWaitTime: 12,
       controlTime: 30,
+      shutterTime: 15,
+      shutterColor: [17, 18, 19],
       fadeInTime: 10,
       fadeInColor: [1, 2, 3],
       fadeInAnimationNo: 7001,

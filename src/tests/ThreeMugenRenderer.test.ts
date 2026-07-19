@@ -3,8 +3,10 @@ import {
   resolveRootCollisionActors,
   resolveRootPresentationActors,
   resolveRoundFadePresentation,
+  resolveRoundShutterPresentation,
 } from "../game/render/ThreeMugenRenderer";
 import { projectRoundFadeSprite, resolveRoundFadeAnimationFrame } from "../game/render/RoundFadeRenderer";
+import { projectRoundShutterBars } from "../game/render/RoundShutterRenderer";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { ActorSnapshot, MugenSnapshot } from "../mugen/runtime/types";
 
@@ -107,6 +109,34 @@ describe("RoundFadeRenderer asset projection", () => {
       { width: 640, height: 360, axisX: 0, axisY: 0 },
       { offsetX: 0, offsetY: 0 },
     )).toEqual({ x: 12, y: 30, width: 640, height: 360, flipX: 1, flipY: 1 });
+  });
+});
+
+describe("RoundShutterRenderer", () => {
+  it("projects the imported shutter into symmetric closing bars", () => {
+    expect(projectRoundShutterBars(
+      { frame: 3, duration: 6, shutterTime: 3 },
+      { x: 12, y: 30, width: 640, height: 360, zoom: 1 },
+    )).toEqual({
+      coverHeight: 180,
+      top: { x: 12, y: 120, width: 640, height: 180 },
+      bottom: { x: 12, y: -60, width: 640, height: 180 },
+    });
+  });
+
+  it("selects only an active pre-round shutter", () => {
+    const shutter = {
+      schema: "RuntimeRoundShutter/v0" as const,
+      active: true,
+      frame: 1,
+      remaining: 5,
+      duration: 6,
+      shutterTime: 3,
+      color: [17, 18, 19] as [number, number, number],
+      phase: "closing" as const,
+    };
+    expect(resolveRoundShutterPresentation({ round: { preRound: { shutter } } as MugenSnapshot["round"] })).toEqual(shutter);
+    expect(resolveRoundShutterPresentation({ round: { preRound: { shutter: { ...shutter, active: false } } } as MugenSnapshot["round"] })).toBeUndefined();
   });
 });
 

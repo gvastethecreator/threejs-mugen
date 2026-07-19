@@ -304,6 +304,8 @@ function parseFightScreenTiming(
     overTime: numberValue(section, "over.time"),
     startWaitTime: numberValue(section, "start.waittime"),
     controlTime: numberValue(section, "ctrl.time"),
+    shutterTime: numberValue(section, "shutter.time"),
+    shutterColor: colorValue(section, "shutter.col"),
     fadeInTime: numberValue(section, "fadein.time"),
     fadeInColor: colorValue(section, "fadein.col"),
     fadeInAnimationNo: nonNegativeIntegerValue(section, "fadein.anim"),
