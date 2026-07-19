@@ -3590,6 +3590,7 @@ export class PlayableMatchRuntime {
   }
 
   private applyRoundWinPose(): RuntimeRoundWinPoseSnapshot | undefined {
+    if (this.teamRoundMode === "turns") return undefined;
     const round = this.round.snapshot();
     return this.roundWinPoseWorld.apply({
       phase: this.round.currentPhase,
