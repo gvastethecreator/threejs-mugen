@@ -325,6 +325,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [RuntimeRoundPhase/v0](tickets/271-runtime-round-phase.md) - resolved bounded in `89403690`: typed legal phase events, fight -> pre-over -> over integration, actor/round synchronization, and dynamic `RoundState`; exact intro/motif/winpose timing remains open.
 - [MatchOver phase-4 projection](tickets/272-matchover-phase4-projection.md) - resolved bounded in `5f4e7ccb`: pure `RuntimeMatchOutcomeProjection/v0` for terminal normal/tag phase-4 reads, actor/context `MatchOver` projection, and next-round-only score commit; exact state-180/win-pose timing, Turns, time-over, and full match-end parity remain open.
 - [RuntimeRoundWinPose/v0](tickets/273-runtime-win-pose-handoff.md) - resolved bounded in `4d9d6f76` / `2bb4a476`: active normal/tag phase-4 handoff to available `180/170/175` states with actor/round evidence and fail-closed ambiguity/asset diagnostics; exact timing, Common1/ZSS execution, RoundNotOver, Turns, and motif ownership remain open.
+- [Runtime phase-4 RoundNotOver hold](tickets/274-runtime-roundnotover-phase4.md) - resolved bounded in `db36894c`: phase `4` opens at post-KO frame `45` while terminal `isOver` remains false, and `RuntimeMatchRoundWorld` holds the KO clock while imported win-pose `AssertSpecial RoundNotOver` is active; exact IKEMEN timing, Common1/ZSS readiness, release choreography, time-over, Turns, and full parity remain open.
 
 ## Not Yet Specified
 
