@@ -1,4 +1,14 @@
 ﻿# Roadmap Package Milestones
+## Current bounded runtime package - T288 / Entry 562
+
+HEAD `a12a2672` closes the T288 FightScreen actor-reset boundary after the
+T287 shutter/skip path. The signal is timer-owned and consumed before the
+fighter pass; roots restore stage position/state `0`/idle/control, transient
+memory, command history, and owner-scoped effects while persistent resources,
+variables, team state, and compatibility history remain. Focused 5-file / 392
+tests and TypeScript 7 pass; broad evidence is pending. Scores stay unchanged.
+The next package discriminator is announcement/display ownership, not a claim
+of full FightScreen parity.
 
 ## Current runtime package - 2026-07-16 Entry 555
 

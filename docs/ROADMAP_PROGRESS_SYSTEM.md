@@ -1,4 +1,17 @@
 # Roadmap Progress System
+## Current control override: T288 / Entry 562 frontier
+
+Implementation HEAD is `a12a2672`; T288 closes the bounded FightScreen
+character-reset event after the T287 shutter edge. The timer-owned signal is
+consumed before the active fighter pass; roots restore stage position/state
+`0`/idle/control, transient memory, command history, and owner-scoped effects,
+while resources, variables, team state, and compatibility history persist. The
+focused gate is 5 files / 392 tests plus TypeScript 7; the grouped full
+checkpoint is pending. Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+
+The next executable gate is FightScreen announcement/display ownership. Exact
+global asset clearing, display suppression, motif/dialogue, Common1/ZSS,
+teams/Turns, rollback/netplay, and full parity are not implied by T288.
 
 Last updated: 2026-07-14
 
@@ -6,7 +19,7 @@ This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO 
 
 Current control override: numbered backlog maximum 510 is the active implementation cursor. Entries 477-509 closed or bounded the compatibility journey, milestone/package, global-AssertSpecial, team-round, lifebar, resource-bank, Helper-resource, red-life, guard-point, auxiliary-projection, and explicit dizzy-point sequence. Entry 510 closes defender-owned direct HitDef dizzy suppression with 591/591 trace artifacts; full repository gates are batched for the next round. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-dizzy-points-suppression.md`.
 
-## Current control override: T287 / Entry 561 frontier
+## Historical control override: T287 / Entry 561 frontier
 
 Implementation HEAD is `4d615c8f`; T287 closes the bounded FightScreen
 `shutter.time`/`shutter.col` loader, edge-triggered intro skip, raw

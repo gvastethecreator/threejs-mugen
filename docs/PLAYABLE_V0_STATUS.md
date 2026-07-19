@@ -4,6 +4,13 @@ This document is the working truth for the private sandbox milestone. It separat
 
 ## Closed In The Current Playable Prototype
 
+- T288 adds the bounded imported FightScreen character reset at the T287
+  shutter signal: roots return to stage starts/state `0`, restore idle/control
+  state, clear transient state, command history, and owner-scoped effects, and
+  preserve round resources, variables, team state, and compatibility history.
+  This does not claim exact `clearPlayerAssets`, announcements/display
+  suppression, dialogue, Common1/ZSS, or full FightScreen parity.
+
 - T287 adds a bounded imported FightScreen intro skip: `shutter.time` and
   `shutter.col` drive a new hard-button edge, the raw `roundnotskip` guard,
   `RuntimeRoundShutter/v0`, and symmetric Three.js top/bottom bars. This does

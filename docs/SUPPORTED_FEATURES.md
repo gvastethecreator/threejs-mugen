@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## T288 bounded FightScreen intro-skip character reset
+
+At the source-shaped shutter signal, imported runtime roots reset to their
+stage starts and state `0`, restore idle/control state, clear transient
+target/hit/guard/command memory, and remove owner-scoped helpers, projectiles,
+and explods. Round resources, variables, team state, and compatibility history
+are preserved.
+
+Exact global asset clearing, announcement and round/fight display suppression,
+dialogue, Common1/ZSS, motif/localcoord transforms, teams/Turns,
+rollback/netplay, and full MUGEN/IKEMEN parity remain unsupported.
+
 ## T287 bounded FightScreen intro shutter skip
 
 Imported `fight.def` `[Round] shutter.time` and `shutter.col` are parsed into

@@ -1,8 +1,21 @@
 # Workplan
+## Active implementation frontier - T288 / Entry 562 (2026-07-18)
+
+T288 is implemented in `a12a2672`. The imported FightScreen shutter signal now
+reaches the match boundary before the fighter pass and resets root position,
+state `0`, idle/control state, transient memory, command history, and
+owner-scoped effects while preserving round resources, variables, team state,
+and compatibility history. Focused 5-file / 392-test evidence and TypeScript 7
+pass; the grouped broad checkpoint remains pending.
+
+Keep exact `clearPlayerAssets`, global effects, announcements, display
+suppression, dialogue, Common1/ZSS, screenpack transforms, teams/Turns,
+rollback/netplay, and full parity outside this bounded slice. The next
+implementation is the source-backed announcement/display ownership boundary.
 
 ## Current runtime checkpoint - 2026-07-16 Entry 555
 
-## Active implementation frontier - T287 / Entry 561 (2026-07-18)
+## Previous implementation frontier - T287 / Entry 561 (2026-07-18)
 
 T287 is implemented in `4d615c8f`. Imported FightScreen shutter timing/color
 now feed an edge-triggered, bounded intro skip, raw `roundnotskip` guard,

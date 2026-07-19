@@ -1,8 +1,28 @@
 ﻿# Progress Tracker
+## Current implementation report - T288 / Entry 562 (2026-07-18)
+
+- Implementation HEAD: `a12a2672`; documentation closeout follows in a
+  separate commit. Maximum current ledger entry: 562; latest closed lane:
+  Wayfinder T288.
+- The source-shaped shutter edge now resets all registered roots before the
+  active fighter pass: stage start, state `0`, idle/control state, transient
+  target/hit/guard state, command history, and owner-scoped effects are clear.
+  Round resources, variables, team state, and compatibility history persist.
+- Current focused gates: 5 files / 392 tests; TypeScript 7 typecheck; diff
+  hygiene. Broad suite/build/trace/browser evidence is pending the grouped
+  checkpoint.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded actor-reset
+  slice does not move compatibility scores.
+- Claim ceiling: timer-owned reset signal, root reset ordering, state `0`
+  handoff, transient cleanup, command/effect owner isolation, and persistent
+  resource preservation. Exact global asset clearing, announcements/display
+  skipping, dialogue, Common1/ZSS, teams/Turns, rollback/netplay, and full
+  parity remain open.
+- Next research gate: select FightScreen announcement/display ownership.
 
 ## Current runtime report - 2026-07-16 Entry 555
 
-## Current implementation report - T287 / Entry 561 (2026-07-18)
+## Previous implementation report - T287 / Entry 561 (2026-07-18)
 
 - Implementation HEAD: `4d615c8f`; documentation closeout is recorded in the
   T287 report and ADR. Maximum current ledger entry: 561; latest closed lane:

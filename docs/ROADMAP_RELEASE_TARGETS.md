@@ -1,4 +1,12 @@
 # Roadmap Release Targets
+## 2026-07-18 T288 bounded release checkpoint
+
+HEAD `a12a2672` and Entry 562 close only the timer-owned FightScreen
+intro-skip character-reset boundary. Focused 5-file / 392-test and TypeScript
+7 evidence pass; broad release evidence is pending. This does not unlock a
+release or score movement. Exact global asset clearing, announcements/display
+suppression, dialogue, Common1/ZSS, teams/Turns, rollback/netplay, and full
+parity remain release blockers.
 
 Last updated: 2026-06-28
 

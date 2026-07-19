@@ -1,7 +1,17 @@
 ﻿# Roadmap Execution Board
+## Current implementation board - T288 / Entry 562 (2026-07-18)
+
+T288 closes the bounded imported FightScreen character-reset path in
+`a12a2672`: the source-shaped shutter edge is consumed before the active
+fighter pass, roots return to stage starts and state `0`, transient state and
+command history clear, and owner-scoped effects are removed. Persistent round
+resources, variables, team state, and compatibility history remain. Focused
+evidence is 5 files / 392 tests plus TypeScript 7 and diff hygiene; the broad
+checkpoint is pending. Scores do not move. Next board item is
+announcement/display ownership.
 ## Current runtime closeout - Entry 555 (2026-07-16)
 
-## Current implementation board - T287 / Entry 561 (2026-07-18)
+## Previous implementation board - T287 / Entry 561 (2026-07-18)
 
 T287 closes the bounded imported FightScreen shutter/skip path in
 `4d615c8f`: `shutter.time`/`shutter.col` parse, new hard-button edges request

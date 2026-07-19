@@ -1,4 +1,12 @@
 # Roadmap Continuity Guide
+## 2026-07-18 T288 continuation checkpoint
+
+Resume from implementation HEAD `a12a2672`, Entry 562, and Wayfinder T288.
+The focused actor-reset slice is green at 5 files / 392 tests plus TypeScript
+7; broad suite/build/trace/browser evidence is deliberately pending. Continue
+with source-backed FightScreen announcement/display ownership, preserve the
+T288 claim ceiling, and keep the pre-existing dirty roadmap/research files
+untouched unless they are explicitly part of the next closeout.
 
 Last updated: 2026-07-14
 

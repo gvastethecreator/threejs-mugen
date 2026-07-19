@@ -1,4 +1,17 @@
 ﻿# Port Completion Scorecard
+## 2026-07-18 T288 bounded FightScreen intro-skip character-reset checkpoint
+
+The current implementation frontier is HEAD `a12a2672`, Entry 562, and
+Wayfinder T288. The source-shaped shutter edge now resets roots before the
+fighter pass, enters state `0`, restores stage position/idle/control state,
+clears transient target/hit/guard/command memory, and removes owner-scoped
+effects while preserving round resources, variables, team state, and
+compatibility history. The focused gate is 5 files / 392 tests plus TypeScript
+7 typecheck and diff hygiene. The broad checkpoint is pending.
+
+This does not move a score. Exact global asset clearing, announcement or
+round/fight display suppression, dialogue, Common1/ZSS, motif/localcoord,
+teams/Turns, rollback/netplay, and full parity remain blocked.
 ## 2026-07-16 Entry 555 runtime evidence
 
 ## 2026-07-18 T287 bounded FightScreen intro shutter/skip checkpoint

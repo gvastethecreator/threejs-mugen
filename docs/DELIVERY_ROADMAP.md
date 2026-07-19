@@ -1,6 +1,17 @@
 # Delivery Roadmap
+## Latest bounded runtime checkpoint - T288 / Entry 562
 
-## Latest bounded runtime checkpoint - T287 / Entry 561
+T288 is implemented in `a12a2672`. The imported FightScreen shutter signal
+now resets roots before the active fighter pass: stage position/state `0`,
+idle/control state, transient target/hit/guard/command memory, and
+owner-scoped effects clear while resources, variables, team state, and
+compatibility history persist. Focused evidence is 5 files / 392 tests plus
+TypeScript 7; the broad checkpoint is pending. Scores remain unchanged.
+Exact global asset clearing, announcements/display suppression, dialogue,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain separate
+delivery gates.
+
+## Previous bounded runtime checkpoint - T287 / Entry 561
 
 T287 is implemented in `4d615c8f`. Imported `[Round] shutter.time` and
 `shutter.col` now feed edge-triggered intro skip, the bounded raw

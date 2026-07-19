@@ -1,5 +1,15 @@
 # Architecture
 
+## 2026-07-18 T288 checkpoint
+
+The T287 shutter edge now crosses a timer-owned reset boundary before the
+active fighter pass. `PlayableMatchRuntime` resets roots in place to stage
+starts/state `0` with idle/control state, clears transient state, command
+history, and owner-scoped effects, then reuses the existing state-entry path.
+Persistent round resources, variables, team state, and compatibility history
+remain separate. Exact global asset clearing and FightScreen display ownership
+remain outside this contract.
+
 ## 2026-07-18 T287 checkpoint
 
 The bounded imported FightScreen intro-skip bridge now parses `shutter.time`

@@ -1,5 +1,22 @@
 # Build Execution Backlog
 
+## Entry 562 - bounded FightScreen intro-skip character reset
+
+Closed the source-backed actor-reset continuation after T287 in `a12a2672`.
+The shutter edge now reaches the match round boundary before the fighter pass;
+all roots return to their stage starts, enter state `0`, restore idle/control
+state, clear transient target/hit/guard/command memory, and remove only their
+own helpers, projectiles, and explods. Life, power, guard/dizzy/red-life,
+variables, team state, and compatibility history remain intact.
+
+Verification: focused 5 files / 392 tests and TypeScript 7 typecheck pass.
+The broad suite/build/trace/browser checkpoint is intentionally pending. No
+score movement. Exact `clearPlayerAssets`, global effects, announcements,
+round/fight display suppression, dialogue, Common1/ZSS, teams/Turns,
+rollback/netplay, and full parity remain open. See Wayfinder 288, ADR 0053,
+research note `2026-07-18-round-intro-skip-character-reset.md`, and closeout
+report `2026-07-18-round-intro-skip-character-reset-closeout.md`.
+
 ## Entry 561 - bounded FightScreen intro shutter skip
 
 Closed the source-backed continuation after T286 in `4d615c8f`. Imported
