@@ -11,6 +11,11 @@ export type RuntimeRoundTiming = {
   forceWinTimeFrames: number;
   winPoseFrames: number;
   overTimeFrames: number;
+  fadeInTimeFrames: number;
+  fadeInColor: [number, number, number];
+  fadeInAnimationNo?: number;
+  fadeInAnimationDurationFrames?: number;
+  fadeInSound?: [number, number];
   fadeOutTimeFrames: number;
   fadeOutColor: [number, number, number];
   fadeOutAnimationNo?: number;
@@ -33,6 +38,8 @@ export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object
   forceWinTimeFrames: 0,
   winPoseFrames: DEFAULT_RUNTIME_WIN_POSE_FRAMES,
   overTimeFrames: 210,
+  fadeInTimeFrames: 0,
+  fadeInColor: [0, 0, 0] as [number, number, number],
   fadeOutTimeFrames: 0,
   fadeOutColor: [0, 0, 0] as [number, number, number],
   postKoFrames: 45 + 210,
@@ -70,6 +77,7 @@ export class RuntimeRoundSystem {
   private over = false;
   private postRoundFrame = 0;
   private postRoundRemaining = 0;
+  private preRoundFrame = 0;
   private phase4HoldFrames = 0;
   private koSlowRemaining = 0;
   private noKoSlow = false;
@@ -174,6 +182,7 @@ export class RuntimeRoundSystem {
       this.over = this.postRoundRemaining === 0;
       return { finishedNow: this.over };
     }
+    this.preRoundFrame = Math.min(this.roundFadeInDuration(), this.preRoundFrame + 1);
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     return { finishedNow: false };
   }
@@ -224,6 +233,7 @@ export class RuntimeRoundSystem {
     this.over = false;
     this.postRoundFrame = 0;
     this.postRoundRemaining = 0;
+    this.preRoundFrame = 0;
     this.phase4HoldFrames = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
@@ -257,6 +267,17 @@ export class RuntimeRoundSystem {
       };
       const fadeOut = this.roundFadeSnapshot();
       if (fadeOut) snapshot.postRound.fadeOut = fadeOut;
+    } else {
+      const fadeIn = this.roundFadeInSnapshot();
+      if (fadeIn) {
+        snapshot.preRound = {
+          schema: "RuntimePreRound/v0",
+          frame: this.preRoundFrame,
+          remaining: fadeIn.remaining,
+          duration: fadeIn.duration,
+          fadeIn,
+        };
+      }
     }
     return snapshot;
   }
@@ -278,10 +299,41 @@ export class RuntimeRoundSystem {
       duration,
       opacity: colorDuration > 0 ? Math.min(1, frame / colorDuration) : 0,
       color: [...this.timing.fadeOutColor] as [number, number, number],
-      ...(animationDuration > 0 && this.timing.fadeOutAnimationNo !== undefined
+      ...(this.timing.fadeOutAnimationNo !== undefined
         ? { animationNo: this.timing.fadeOutAnimationNo }
         : {}),
       ...(frame > 0 && this.timing.fadeOutSound ? { sound: { group: this.timing.fadeOutSound[0], index: this.timing.fadeOutSound[1] } } : {}),
+    };
+  }
+
+  private roundFadeInDuration(): number {
+    const animationDuration = this.timing.fadeInAnimationNo === undefined
+      ? 0
+      : this.timing.fadeInAnimationDurationFrames ?? 0;
+    return Math.max(animationDuration, animationDuration > 0 ? 0 : this.timing.fadeInTimeFrames);
+  }
+
+  private roundFadeInSnapshot(): RuntimeRoundFadeSnapshot | undefined {
+    const animationDuration = this.timing.fadeInAnimationNo === undefined
+      ? 0
+      : this.timing.fadeInAnimationDurationFrames ?? 0;
+    const duration = this.roundFadeInDuration();
+    if (duration <= 0) return undefined;
+    const frame = Math.min(duration, this.preRoundFrame);
+    const colorDuration = animationDuration > 0 ? 0 : this.timing.fadeInTimeFrames;
+    return {
+      schema: "RuntimeRoundFade/v0",
+      active: frame < duration,
+      frame,
+      remaining: Math.max(0, duration - frame),
+      duration,
+      opacity: colorDuration > 0 ? Math.max(0, 1 - frame / colorDuration) : 0,
+      color: [...this.timing.fadeInColor] as [number, number, number],
+      direction: "in",
+      ...(this.timing.fadeInAnimationNo !== undefined ? { animationNo: this.timing.fadeInAnimationNo } : {}),
+      ...(frame > 0 && this.timing.fadeInSound
+        ? { sound: { group: this.timing.fadeInSound[0], index: this.timing.fadeInSound[1] } }
+        : {}),
     };
   }
 
@@ -328,6 +380,18 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     DEFAULT_RUNTIME_ROUND_TIMING.forceWinTimeFrames,
   );
   const overTimeFrames = boundedTimingFrames(overrides.overTimeFrames, DEFAULT_RUNTIME_ROUND_TIMING.overTimeFrames);
+  const fadeInTimeFrames = boundedTimingFrames(
+    overrides.fadeInTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.fadeInTimeFrames,
+  );
+  const rawFadeInAnimationDurationFrames = boundedTimingFrames(
+    overrides.fadeInAnimationDurationFrames,
+    0,
+  );
+  const fadeInAnimationNo = boundedOptionalInteger(overrides.fadeInAnimationNo);
+  const fadeInAnimationDurationFrames = fadeInAnimationNo === undefined ? 0 : rawFadeInAnimationDurationFrames;
+  const fadeInSound = normalizeFadeSound(overrides.fadeInSound);
+  const fadeInColor = normalizeFadeColor(overrides.fadeInColor ?? DEFAULT_RUNTIME_ROUND_TIMING.fadeInColor);
   const fadeOutTimeFrames = boundedTimingFrames(
     overrides.fadeOutTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.fadeOutTimeFrames,
@@ -338,8 +402,8 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
   );
   const fadeOutAnimationNo = boundedOptionalInteger(overrides.fadeOutAnimationNo);
   const fadeOutAnimationDurationFrames = fadeOutAnimationNo === undefined ? 0 : rawFadeOutAnimationDurationFrames;
-  const fadeOutSound = normalizeFadeOutSound(overrides.fadeOutSound);
-  const fadeOutColor = normalizeFadeOutColor(overrides.fadeOutColor ?? DEFAULT_RUNTIME_ROUND_TIMING.fadeOutColor);
+  const fadeOutSound = normalizeFadeSound(overrides.fadeOutSound);
+  const fadeOutColor = normalizeFadeColor(overrides.fadeOutColor ?? DEFAULT_RUNTIME_ROUND_TIMING.fadeOutColor);
   const requestedPostKoFrames = boundedTimingFrames(overrides.postKoFrames, DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames);
   const hasTerminalSourceTiming = overrides.postKoFrames === undefined &&
     (overrides.overTimeFrames !== undefined || overrides.fadeOutTimeFrames !== undefined || overrides.fadeOutAnimationDurationFrames !== undefined);
@@ -367,6 +431,11 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     forceWinTimeFrames,
     winPoseFrames,
     overTimeFrames,
+    fadeInTimeFrames,
+    fadeInColor,
+    ...(fadeInAnimationNo !== undefined ? { fadeInAnimationNo } : {}),
+    ...(fadeInAnimationDurationFrames > 0 ? { fadeInAnimationDurationFrames } : {}),
+    ...(fadeInSound ? { fadeInSound } : {}),
     fadeOutTimeFrames,
     fadeOutColor,
     ...(fadeOutAnimationNo !== undefined ? { fadeOutAnimationNo } : {}),
@@ -379,11 +448,11 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
   };
 }
 
-function normalizeFadeOutColor(value: [number, number, number]): [number, number, number] {
+function normalizeFadeColor(value: [number, number, number]): [number, number, number] {
   return value.map((channel) => Math.max(0, Math.min(255, Math.round(channel)))) as [number, number, number];
 }
 
-function normalizeFadeOutSound(value: [number, number] | undefined): [number, number] | undefined {
+function normalizeFadeSound(value: [number, number] | undefined): [number, number] | undefined {
   if (!value || value.length !== 2 || value.some((part) => !Number.isFinite(part) || part < 0)) return undefined;
   return value.map((part) => Math.round(part)) as [number, number];
 }

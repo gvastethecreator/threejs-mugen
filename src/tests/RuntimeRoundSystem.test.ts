@@ -109,6 +109,8 @@ describe("RuntimeRoundSystem", () => {
       forceWinTimeFrames: 0,
       winPoseFrames: 3,
       overTimeFrames: 210,
+      fadeInTimeFrames: 0,
+      fadeInColor: [0, 0, 0],
       fadeOutTimeFrames: 0,
       fadeOutColor: [0, 0, 0],
       postKoFrames: 7,
@@ -187,6 +189,64 @@ describe("RuntimeRoundSystem", () => {
       opacity: 0,
       sound: { group: 7, index: 1 },
     });
+  });
+
+  it("opens the imported FightScreen fade-in on reset and clears it on the next round", () => {
+    const timing = resolveRuntimeRoundTiming({
+      fadeInTimeFrames: 4,
+      fadeInColor: [12.4, 34.5, 300],
+      fadeInSound: [8, 2],
+    });
+    expect(timing).toMatchObject({
+      fadeInTimeFrames: 4,
+      fadeInColor: [12, 35, 255],
+      fadeInSound: [8, 2],
+    });
+
+    const round = new RuntimeRoundSystem(120, "ikemen-go", timing);
+    expect(round.snapshot().preRound?.fadeIn).toMatchObject({
+      active: true,
+      frame: 0,
+      remaining: 4,
+      duration: 4,
+      opacity: 1,
+      direction: "in",
+    });
+    expect(round.snapshot().preRound?.fadeIn?.sound).toBeUndefined();
+
+    round.tickTimer();
+    expect(round.snapshot().preRound?.fadeIn).toMatchObject({
+      active: true,
+      frame: 1,
+      remaining: 3,
+      opacity: 0.75,
+      sound: { group: 8, index: 2 },
+    });
+    for (let frame = 1; frame < 4; frame += 1) round.tickTimer();
+    expect(round.snapshot().preRound?.fadeIn).toMatchObject({ active: false, frame: 4, remaining: 0, opacity: 0 });
+
+    round.startNextRound(120);
+    expect(round.snapshot().preRound).toMatchObject({ frame: 0, remaining: 4, duration: 4 });
+    expect(round.snapshot().preRound?.fadeIn).toMatchObject({ active: true, frame: 0, opacity: 1 });
+  });
+
+  it("lets an imported FightScreen fade-in animation own the pre-round duration", () => {
+    const round = new RuntimeRoundSystem(120, "ikemen-go", {
+      fadeInTimeFrames: 4,
+      fadeInAnimationNo: 7001,
+      fadeInAnimationDurationFrames: 6,
+    });
+
+    expect(round.snapshot().preRound?.fadeIn).toMatchObject({
+      active: true,
+      frame: 0,
+      remaining: 6,
+      duration: 6,
+      animationNo: 7001,
+      opacity: 0,
+    });
+    for (let frame = 0; frame < 6; frame += 1) round.tickTimer();
+    expect(round.snapshot().preRound?.fadeIn).toMatchObject({ active: false, frame: 6, remaining: 0 });
   });
 
   it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {

@@ -302,6 +302,10 @@ function parseFightScreenTiming(
     overWinTime: numberValue(section, "over.wintime"),
     overForceWinTime: numberValue(section, "over.forcewintime"),
     overTime: numberValue(section, "over.time"),
+    fadeInTime: numberValue(section, "fadein.time"),
+    fadeInColor: colorValue(section, "fadein.col"),
+    fadeInAnimationNo: nonNegativeIntegerValue(section, "fadein.anim"),
+    fadeInSound: soundValue(section, "fadein.snd"),
     fadeOutTime: numberValue(section, "fadeout.time"),
     fadeOutColor: colorValue(section, "fadeout.col"),
     fadeOutAnimationNo: nonNegativeIntegerValue(section, "fadeout.anim"),
@@ -310,19 +314,34 @@ function parseFightScreenTiming(
     slowFadeTime: numberValue(section, "slow.fadetime"),
     slowSpeed: numberValue(section, "slow.speed"),
   };
-  return Object.values(timing).some((value) => typeof value === "number") ? timing : undefined;
+  return Object.entries(timing).some(([key, value]) => key !== "sourcePath" && value !== undefined)
+    ? timing
+    : undefined;
 }
 
 function enrichFightScreenTiming(
   timing: MugenFightScreenTiming | undefined,
   animations: Map<number, MugenAnimationAction>,
 ): MugenFightScreenTiming | undefined {
-  if (!timing || timing.fadeOutAnimationNo === undefined) {
+  if (!timing) {
     return timing;
   }
-  const action = animations.get(timing.fadeOutAnimationNo);
-  const duration = action ? animationDuration(action.frames.map((frame) => frame.duration)) : undefined;
-  return duration === undefined ? timing : { ...timing, fadeOutAnimationDuration: duration };
+  const fadeInDuration = resolveAnimationDuration(animations, timing.fadeInAnimationNo);
+  const fadeOutDuration = resolveAnimationDuration(animations, timing.fadeOutAnimationNo);
+  return {
+    ...timing,
+    ...(fadeInDuration === undefined ? {} : { fadeInAnimationDuration: fadeInDuration }),
+    ...(fadeOutDuration === undefined ? {} : { fadeOutAnimationDuration: fadeOutDuration }),
+  };
+}
+
+function resolveAnimationDuration(
+  animations: Map<number, MugenAnimationAction>,
+  actionNo: number | undefined,
+): number | undefined {
+  if (actionNo === undefined) return undefined;
+  const action = animations.get(actionNo);
+  return action ? animationDuration(action.frames.map((frame) => frame.duration)) : undefined;
 }
 
 function animationDuration(durations: number[]): number {

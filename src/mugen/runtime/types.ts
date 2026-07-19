@@ -605,6 +605,13 @@ export type RoundSnapshot = {
   roundPhase?: RuntimeRoundPhase;
   winner?: string;
   message: string;
+  preRound?: {
+    schema: "RuntimePreRound/v0";
+    frame: number;
+    remaining: number;
+    duration: number;
+    fadeIn?: RuntimeRoundFadeSnapshot;
+  };
   winPose?: RuntimeRoundWinPoseSnapshot;
   match?: RuntimeMatchOutcomeSnapshot;
   matchProjection?: RuntimeMatchOutcomeProjection;
@@ -632,6 +639,7 @@ export type RuntimeRoundFadeSnapshot = {
   duration: number;
   opacity: number;
   color: [number, number, number];
+  direction?: "in" | "out";
   animationNo?: number;
   sound?: { group: number; index: number };
 };

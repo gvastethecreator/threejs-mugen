@@ -76,9 +76,14 @@ describe("resolveRoundFadePresentation", () => {
       opacity: 0.5,
       color: [12, 34, 56] as [number, number, number],
     };
+    const fadeIn = { ...fade, direction: "in" as const };
 
     expect(resolveRoundFadePresentation({ round: { postRound: { fadeOut: fade } } as MugenSnapshot["round"] })).toEqual(fade);
     expect(resolveRoundFadePresentation({ round: { postRound: { fadeOut: { ...fade, active: false } } } as MugenSnapshot["round"] })).toBeUndefined();
+    expect(resolveRoundFadePresentation({ round: { preRound: { fadeIn } } as MugenSnapshot["round"] })).toEqual(fadeIn);
+    expect(resolveRoundFadePresentation({
+      round: { postRound: { fadeOut: { ...fade, active: false } }, preRound: { fadeIn } } as MugenSnapshot["round"],
+    })).toEqual(fadeIn);
     expect(resolveRoundFadePresentation({ round: undefined })).toBeUndefined();
   });
 });

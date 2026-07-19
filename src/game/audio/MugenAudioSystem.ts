@@ -123,7 +123,11 @@ export class MugenAudioSystem {
 
   processSnapshot(snapshot: MugenSnapshot): void {
     const soundActors = [...snapshot.actors, ...(snapshot.effects ?? [])];
-    const roundFade = snapshot.round?.postRound?.fadeOut;
+    const roundFade = snapshot.round?.postRound?.fadeOut?.active
+      ? snapshot.round.postRound.fadeOut
+      : snapshot.round?.preRound?.fadeIn?.active
+        ? snapshot.round.preRound.fadeIn
+        : undefined;
     if (!roundFade?.active) {
       this.lastRoundFadeSoundKey = undefined;
     }
@@ -270,7 +274,7 @@ export class MugenAudioSystem {
 
   private processRoundFadeSound(fade: RuntimeRoundFadeSnapshot, snapshot: MugenSnapshot): void {
     if (!fade.sound) return;
-    const key = `${snapshot.round?.roundNo ?? 1}:${snapshot.round?.state ?? "ko"}:${fade.sound.group},${fade.sound.index}`;
+    const key = `${snapshot.round?.roundNo ?? 1}:${fade.direction ?? "out"}:${snapshot.round?.state ?? "ko"}:${fade.sound.group},${fade.sound.index}`;
     if (this.lastRoundFadeSoundKey === key) return;
     this.lastRoundFadeSoundKey = key;
     const event: RuntimeSoundEvent = {

@@ -162,7 +162,9 @@ export class ThreeMugenRenderer implements MugenRenderer {
       const color = roundFade.color;
       const fadeDiagnostics = this.roundFade.getDiagnostics();
       const fallbackOpacity = roundFade.animationNo !== undefined && !fadeDiagnostics.resolved
-        ? Math.min(1, roundFade.frame / Math.max(1, roundFade.duration))
+        ? roundFade.direction === "in"
+          ? Math.max(0, 1 - roundFade.frame / Math.max(1, roundFade.duration))
+          : Math.min(1, roundFade.frame / Math.max(1, roundFade.duration))
         : roundFade.opacity;
       this.roundFadeOverlayMaterial.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
       this.roundFadeOverlayMaterial.opacity = Math.max(0, Math.min(1, fallbackOpacity));
@@ -268,7 +270,9 @@ export function resolveRoundFadePresentation(
   snapshot: Pick<MugenSnapshot, "round">,
 ): NonNullable<NonNullable<MugenSnapshot["round"]>["postRound"]>["fadeOut"] | undefined {
   const fadeOut = snapshot.round?.postRound?.fadeOut;
-  return fadeOut?.active ? fadeOut : undefined;
+  if (fadeOut?.active) return fadeOut;
+  const fadeIn = snapshot.round?.preRound?.fadeIn;
+  return fadeIn?.active ? fadeIn : undefined;
 }
 
 export function resolveRootPresentationActors(

@@ -38,6 +38,10 @@ over.hittime = 10
 over.wintime = 18
 over.forcewintime = 900
 over.time = 240
+fadein.time = 10
+fadein.col = 1, 2, 3
+fadein.anim = 7001
+fadein.snd = 8, 2
 fadeout.time = 16
 fadeout.col = 12, 34, 56
 fadeout.anim = 7001
@@ -62,7 +66,7 @@ slow.speed = 0.5
         { group: 9100, index: 1, axisX: 4, axisY: 5 },
       ]),
     );
-    vfs.addFile("data/fightfx.snd", createSndV1([{ group: 7, index: 1 }]));
+    vfs.addFile("data/fightfx.snd", createSndV1([{ group: 7, index: 1 }, { group: 8, index: 2 }]));
 
     const character = await new MugenCharacterLoader().load("kfm.zip", vfs);
 
@@ -74,6 +78,11 @@ slow.speed = 0.5
       overWinTime: 18,
       overForceWinTime: 900,
       overTime: 240,
+      fadeInTime: 10,
+      fadeInColor: [1, 2, 3],
+      fadeInAnimationNo: 7001,
+      fadeInAnimationDuration: 6,
+      fadeInSound: [8, 2],
       fadeOutTime: 16,
       fadeOutColor: [12, 34, 56],
       fadeOutAnimationNo: 7001,

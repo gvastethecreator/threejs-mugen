@@ -197,6 +197,25 @@ describe("MugenAudioSystem", () => {
     expect(audioContext.sources).toHaveLength(1);
   });
 
+  it("plays a FightScreen fade-in sound once without an actor-scoped event", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(undefined, { f: archive(1) });
+    await system.unlock();
+
+    system.processSnapshot(audioSnapshot([], roundFadeInSnapshot(1)));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(1));
+
+    system.processSnapshot(audioSnapshot([], roundFadeInSnapshot(2)));
+    expect(system.getDiagnostics().played).toBe(1);
+    expect(audioContext.sources).toHaveLength(1);
+  });
+
   it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });
@@ -334,6 +353,31 @@ function roundFadeSnapshot(frame: number): NonNullable<MugenSnapshot["round"]> {
         duration: 4,
         opacity: 0,
         color: [0, 0, 0],
+        sound: { group: 5, index: 0 },
+      },
+    },
+  };
+}
+
+function roundFadeInSnapshot(frame: number): NonNullable<MugenSnapshot["round"]> {
+  return {
+    state: "fight",
+    timer: 99,
+    message: "Fight",
+    preRound: {
+      schema: "RuntimePreRound/v0",
+      frame,
+      remaining: Math.max(0, 4 - frame),
+      duration: 4,
+      fadeIn: {
+        schema: "RuntimeRoundFade/v0",
+        active: true,
+        frame,
+        remaining: Math.max(0, 4 - frame),
+        duration: 4,
+        opacity: Math.max(0, 1 - frame / 4),
+        color: [0, 0, 0],
+        direction: "in",
         sound: { group: 5, index: 0 },
       },
     },
