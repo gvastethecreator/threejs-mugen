@@ -14,6 +14,23 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.isOver).toBe(false);
   });
 
+  it("publishes the intro actor-reset edge after the round timer advances", () => {
+    const round = new RuntimeRoundSystem(121, "ikemen-go", {
+      startWaitTimeFrames: 4,
+      controlTimeFrames: 2,
+      shutterTimeFrames: 3,
+    });
+    const world = new RuntimeMatchRoundWorld();
+    round.requestIntroSkip();
+
+    for (let frame = 0; frame < 3; frame += 1) {
+      expect(world.tickTimer(round)).toEqual({ frozen: false });
+    }
+
+    expect(world.tickTimer(round)).toEqual({ frozen: false, introSkipResetReady: true });
+    expect(world.tickTimer(round)).toEqual({ frozen: false });
+  });
+
   it("freezes the round timer while an actor asserts TimerFreeze", () => {
     const round = new RuntimeRoundSystem(61);
     const world = new RuntimeMatchRoundWorld();

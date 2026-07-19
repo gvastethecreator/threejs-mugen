@@ -346,6 +346,26 @@ describe("RuntimeRoundSystem", () => {
     expect(round.snapshot().preRound?.shutter).toBeUndefined();
   });
 
+  it("signals the bounded actor reset at the source shutter edge exactly once", () => {
+    const round = new RuntimeRoundSystem(121, "ikemen-go", {
+      startWaitTimeFrames: 4,
+      controlTimeFrames: 2,
+      shutterTimeFrames: 3,
+    });
+
+    round.requestIntroSkip();
+    expect(round.consumeIntroSkipResetSignal()).toBe(false);
+    for (let frame = 0; frame < 3; frame += 1) {
+      round.tickTimer();
+      expect(round.consumeIntroSkipResetSignal()).toBe(false);
+    }
+
+    round.tickTimer();
+    expect(round.snapshot().preRound?.shutter).toMatchObject({ remaining: 3, frame: 3 });
+    expect(round.consumeIntroSkipResetSignal()).toBe(true);
+    expect(round.consumeIntroSkipResetSignal()).toBe(false);
+  });
+
   it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {
     const round = new RuntimeRoundSystem(1, "ikemen-go", {
       overHitTimeFrames: 1,

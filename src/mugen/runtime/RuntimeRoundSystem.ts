@@ -101,6 +101,7 @@ export class RuntimeRoundSystem {
   private introSkipApplied = false;
   private shutterRemaining = 0;
   private shutterJustStarted = false;
+  private introSkipResetSignal = false;
   private phase4HoldFrames = 0;
   private koSlowRemaining = 0;
   private noKoSlow = false;
@@ -194,6 +195,12 @@ export class RuntimeRoundSystem {
     this.shutterRemaining = shutterDuration;
     this.shutterJustStarted = true;
     return { applied: true, reason: "applied", shutterStarted: true };
+  }
+
+  consumeIntroSkipResetSignal(): boolean {
+    const signal = this.introSkipResetSignal;
+    this.introSkipResetSignal = false;
+    return signal;
   }
 
   get winPoseFrames(): number {
@@ -295,6 +302,7 @@ export class RuntimeRoundSystem {
     this.introSkipApplied = false;
     this.shutterRemaining = 0;
     this.shutterJustStarted = false;
+    this.introSkipResetSignal = false;
     this.phase4HoldFrames = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
@@ -421,6 +429,12 @@ export class RuntimeRoundSystem {
 
   private advanceShutter(): void {
     if (this.shutterRemaining <= 0) return;
+    if (
+      this.timing.shutterTimeFrames > 0
+      && this.shutterRemaining === this.timing.shutterTimeFrames + 1
+    ) {
+      this.introSkipResetSignal = true;
+    }
     if (this.shutterJustStarted) {
       this.shutterJustStarted = false;
       return;

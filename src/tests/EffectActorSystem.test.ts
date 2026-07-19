@@ -168,6 +168,23 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resets one owner store without crossing into another actor", () => {
+    const world = new RuntimeEffectActorWorld();
+    const removed: string[] = [];
+    world.observeHelperLifecycle({ onRemove: (helper) => removed.push(helper.serialId) });
+
+    world.spawnHelper("p1", helperInput({ id: "20" }));
+    world.spawnExplod("p1", explodInput({ id: "10" }));
+    world.spawnExplod("p2", explodInput({ id: "11" }));
+
+    world.resetOwner("p1");
+
+    expect(world.summarize(["p1", "p2"]).map(({ total }) => total)).toEqual([0, 1]);
+    expect(removed).toEqual(["p1-helper-0"]);
+    expect(world.getStore("p1").nextExplodSerial).toBe(0);
+    expect(world.getStore("p2").nextExplodSerial).toBe(1);
+  });
+
   it("registers exact root stores and fails closed for unknown owners", () => {
     const world = new RuntimeEffectActorWorld();
     const p3Store = world.registerOwner("p3");

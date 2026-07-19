@@ -172,6 +172,13 @@ export class RuntimeEffectActorWorld {
     this.nextHelperRunOrderId = 3;
   }
 
+  resetOwner(ownerId: string): void {
+    const store = this.getStore(ownerId);
+    this.notifyHelpersRemoved(store.helpers);
+    resetRuntimeEffectActorStore(store);
+    this.nextHelperRunOrderId = normalizeRuntimeHelperRunOrderIds(this.stores);
+  }
+
   summarize(ownerIds: Record<string, string> | readonly string[] = { p1: "p1", p2: "p2" }): RuntimeEffectActorStoreSummary[] {
     if (Array.isArray(ownerIds)) {
       return ownerIds.map((ownerId) => summarizeRuntimeEffectActorStore(this.getStore(ownerId), ownerId));

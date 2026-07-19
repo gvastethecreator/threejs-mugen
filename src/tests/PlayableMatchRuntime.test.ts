@@ -63,6 +63,52 @@ describe("PlayableMatchRuntime", () => {
     });
   });
 
+  it("resets imported actors on the shutter signal while preserving round resources and variables", () => {
+    const importedP1 = {
+      ...demoFighters[0]!,
+      source: "imported" as const,
+      fightScreenTiming: {
+        sourcePath: "data/fight.def",
+        startWaitTime: 4,
+        controlTime: 2,
+        shutterTime: 3,
+        shutterColor: [17, 18, 19] as [number, number, number],
+      },
+    };
+    const runtime = new PlayableMatchRuntime(importedP1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 121,
+    });
+    const internals = runtime as unknown as {
+      p1: { runtime: { life: number; power: number; vars: number[]; fvars: number[] } };
+    };
+    internals.p1.runtime.life = 777;
+    internals.p1.runtime.power = 321;
+    internals.p1.runtime.vars[2] = 44;
+    internals.p1.runtime.fvars[1] = 1.25;
+
+    const moved = runtime.step({ p1: new Set(["F"]), p2: new Set() }, { force: true });
+    expect(moved.actors[0]?.runtime.pos.x).toBeGreaterThan(trainingStage.playerStart.p1.x);
+
+    runtime.step({ p1: new Set(["a"]), p2: new Set() }, { force: true });
+    runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    const reset = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+
+    expect(reset.actors[0]?.runtime).toMatchObject({
+      pos: { x: trainingStage.playerStart.p1.x, y: trainingStage.playerStart.p1.y },
+      vel: { x: 0, y: 0 },
+      stateNo: 0,
+      animNo: importedP1.idleAction,
+      ctrl: true,
+      life: 777,
+      power: 321,
+    });
+    expect(reset.actors[0]?.runtime.vars[2]).toBe(44);
+    expect(reset.actors[0]?.runtime.fvars[1]).toBe(1.25);
+    expect(reset.logs).toContain("Intro skip reset 2 actors");
+  });
+
   it("applies profile SOCD defaults before control and command-buffer consumers", () => {
     const importedP1 = { ...demoFighters[0]!, source: "imported" as const };
     const ikemen = new PlayableMatchRuntime(importedP1, demoFighters[1]!, trainingStage, {

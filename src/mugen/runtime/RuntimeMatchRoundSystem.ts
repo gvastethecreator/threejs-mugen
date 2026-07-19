@@ -29,6 +29,7 @@ export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
 export type RuntimeMatchRoundTimerResult = {
   frozen: boolean;
   held?: boolean;
+  introSkipResetReady?: boolean;
 };
 
 export type RuntimeMatchRoundTimerOptions = RuntimeRoundTickOptions;
@@ -95,7 +96,10 @@ export class RuntimeMatchRoundWorld {
     }
     const timerTick = round.tickTimer(options);
     if (timerTick.finishedNow) stopPlaying?.();
-    return { frozen: false };
+    return {
+      frozen: false,
+      ...(round.consumeIntroSkipResetSignal() ? { introSkipResetReady: true } : {}),
+    };
   }
 
   finishIfNeeded<TActor extends RuntimeMatchRoundActor>(

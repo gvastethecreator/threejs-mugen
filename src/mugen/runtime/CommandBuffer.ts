@@ -19,6 +19,10 @@ export class CommandBuffer {
 
   constructor(private readonly maxFrames = 60) {}
 
+  clear(): void {
+    this.samples.length = 0;
+  }
+
   push(frame: number, values: Iterable<string>, options: { hitPause?: boolean } = {}): void {
     this.samples.push({ frame, values: new Set(values), hitPause: Boolean(options.hitPause) });
     while (this.samples.length > this.maxFrames) {

@@ -23,6 +23,15 @@ describe("CommandBuffer", () => {
     ]);
   });
 
+  it("clears pending input history when an intro skip resets an actor", () => {
+    const buffer = new CommandBuffer();
+    buffer.push(10, ["x"]);
+
+    buffer.clear();
+
+    expect(buffer.getHistory()).toEqual([]);
+  });
+
   it("detects quarter-circle commands using derived diagonal samples", () => {
     const commands = commandsFrom(`
 [Command]

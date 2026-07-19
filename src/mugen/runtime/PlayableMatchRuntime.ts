@@ -143,6 +143,7 @@ import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetSt
 import { RuntimeMatchEnvColorBridgeWorld } from "./RuntimeMatchEnvColorBridgeSystem";
 import { RuntimeMatchEnvShakeBridgeWorld } from "./RuntimeMatchEnvShakeBridgeSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
+import { resetRuntimeIntroSkipActor } from "./RuntimeIntroSkipSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import {
   RuntimeRootCnsExecutionWorld,
@@ -1007,6 +1008,26 @@ export class PlayableMatchRuntime {
     return [this.p1, this.p2, ...this.reserveRoots];
   }
 
+  private applyIntroSkipReset(): void {
+    const roots = this.characterRoots();
+    for (const root of roots) this.effectActorWorld.resetOwner(root.id);
+    for (const root of roots) {
+      const start = root.id === "p1" || /p[357]$/.test(root.id)
+        ? this.stage.playerStart.p1
+        : this.stage.playerStart.p2;
+      resetRuntimeIntroSkipActor(root, start);
+      enterState(root, 0, undefined, {
+        clearStateOwner: true,
+        animOverride: root.definition.idleAction,
+      });
+    }
+    if (this.runtimeProfile === "ikemen-go") {
+      this.initializeCharacterIdentity();
+    }
+    this.attachHelperHandlers();
+    this.logs.unshift(`Intro skip reset ${roots.length} actors`);
+  }
+
   private activePair(): [FighterMatchState, FighterMatchState] {
     return this.activeRoots;
   }
@@ -1613,9 +1634,11 @@ export class PlayableMatchRuntime {
       tickRoundTimer: () => {
         recordPhase("active:round-timer");
         if (this.round.snapshot().state === "ko") return { frozen: false };
-        return matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
+        const result = matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
           this.playing = false;
         }, this.tick, { phase4Ready: this.isRoundPhase4Ready() });
+        if (result.introSkipResetReady) this.applyIntroSkipReset();
+        return result;
       },
       pushNormalCommandBuffers: () => {
         recordPhase("active:command-buffer");
