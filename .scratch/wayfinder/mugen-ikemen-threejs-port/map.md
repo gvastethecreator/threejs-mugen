@@ -324,6 +324,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [State 5900 provenance](tickets/270-state-5900-provenance.md) - resolved bounded in `f2c4b2a0` / nested `RuntimeRoundState5900Provenance/v1`: imported round and Turns snapshots carry selected character/Common1 path, layer, precedence, FNV fingerprint, shadowed/appended refs, and explicit missing-source status; exact state-5900 execution remains open.
 - [RuntimeRoundPhase/v0](tickets/271-runtime-round-phase.md) - resolved bounded in `89403690`: typed legal phase events, fight -> pre-over -> over integration, actor/round synchronization, and dynamic `RoundState`; exact intro/motif/winpose timing remains open.
 - [MatchOver phase-4 projection](tickets/272-matchover-phase4-projection.md) - resolved bounded in `5f4e7ccb`: pure `RuntimeMatchOutcomeProjection/v0` for terminal normal/tag phase-4 reads, actor/context `MatchOver` projection, and next-round-only score commit; exact state-180/win-pose timing, Turns, time-over, and full match-end parity remain open.
+- [RuntimeRoundWinPose/v0](tickets/273-runtime-win-pose-handoff.md) - resolved bounded in `4d9d6f76` / `2bb4a476`: active normal/tag phase-4 handoff to available `180/170/175` states with actor/round evidence and fail-closed ambiguity/asset diagnostics; exact timing, Common1/ZSS execution, RoundNotOver, Turns, and motif ownership remain open.
 
 ## Not Yet Specified
 

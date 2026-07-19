@@ -2,6 +2,22 @@
 
 This document describes the intended architecture for growing the current sandbox into a progressive MUGEN/IKEMEN-GO browser port. The broader studio and modular-engine direction is documented in `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`.
 
+Current decision checkpoint (2026-07-18): preserve renderer independence;
+introduce immutable upstream/source authority; make input conflict resolution
+stateful per seat and configuration match-owned; publish Common source
+provenance; compose state-5900 provenance, round phase and an atomic Turns
+transaction as separate owners; centralize global projectile scheduling; and
+extract evidence facts only after real non-vacuous boundary roots exist. See
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+Historical decision checkpoint (2026-07-16): preserve renderer independence;
+complete the redirected-target lease before accepting ADR 0006; make Turns a
+revisioned plan/commit transaction; derive `RoundState` from a profile-owned
+phase model; carry state-5900 provenance; and treat corpus, Studio, scanner,
+asset, and modular evidence as separate consumers with separate claim
+ceilings. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
 ## Architectural Shape
 
 ```txt
@@ -285,7 +301,7 @@ not an exact upstream mutation-order claim.
 
 `RuntimeControllerDispatchWorld` owns the bounded runtime-controller execution bridge that active imported states, State -1 setup controllers, and pre-facing `AssertSpecial` now share before falling through to `StateControllerExecutor`. It centralizes runtime-state replacement, evaluation context handoff (`Const`, `HitPauseTime`, random, stage time), optional controller/operation telemetry hooks, and unsupported-controller reporting. `PlayableMatchRuntime` still owns trigger filtering, `ChangeState` / `ChangeAnim`, side-effect controller dispatch, and exact ordering, so this is a dispatch ownership seam rather than new CNS VM parity.
 
-`RuntimeRoundSystem` owns the current bounded round timer, KO/time-over finish decision, winner selection, reset, and `RoundSnapshot` message/timer projection used by `PlayableMatchRuntime`. `RuntimeTraceGate.requiredRoundFrames` now lets required artifacts gate that snapshot evidence by round state, winner, message, frame count, and observed timer range; `synthetic-imported-round-ko.json` proves the bounded KO snapshot route after a lethal imported `HitDef`, and `synthetic-imported-round-timeover.json` proves a bounded time-over/draw route through a short `roundTimerFrames` fixture. The match loop still decides when combat/resources change life and when playback stops, so this is ownership cleanup plus evidence coverage for current sandbox round state, not MUGEN/IKEMEN round, lifebar, team, simul/tag, intro, winpose, or screenpack parity.
+`RuntimeRoundSystem` owns the current bounded round timer, KO/time-over finish decision, winner selection, reset, and `RoundSnapshot` message/timer projection used by `PlayableMatchRuntime`. `RuntimeRoundWinPose/v0` adds a bounded phase-4 reserved-state handoff for the active normal/tag pair when `180/170/175` is available, and publishes explicit unavailable/ambiguous diagnostics. `RuntimeTraceGate.requiredRoundFrames` now lets required artifacts gate that snapshot evidence by round state, winner, message, frame count, and observed timer range; `synthetic-imported-round-ko.json` proves the bounded KO snapshot route after a lethal imported `HitDef`, and `synthetic-imported-round-timeover.json` proves a bounded time-over/draw route through a short `roundTimerFrames` fixture. The match loop still decides when combat/resources change life and when playback stops, so this is bounded runtime ownership plus evidence coverage, not exact MUGEN/IKEMEN round, lifebar, team, simul/tag, intro, Common1 winpose, or screenpack parity.
 
 `MatchWorldLifecycleSystem` owns the actor/effect lifecycle tracker used by `MatchWorld`: spawn/active/remove classification, first/last seen ticks, actor age, live/removed lists, and bounded recent-event history. `MatchWorld` still builds the registry from snapshots and stores, so this is lifecycle evidence ownership, not full actor simulation ownership.
 
