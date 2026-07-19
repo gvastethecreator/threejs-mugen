@@ -1,6 +1,6 @@
 # Research: Bounded time-over draw window
 
-Date: 2026-07-18  
+Date: 2026-07-18
 Ticket: [T278](../../.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/278-timeover-draw-window.md)
 
 ## Question

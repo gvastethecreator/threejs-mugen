@@ -1,7 +1,7 @@
 # Time-over Draw Window Closeout
 
-Date: 2026-07-18  
-Ticket: Wayfinder 278  
+Date: 2026-07-18
+Ticket: Wayfinder 278
 Implementation commit: `a2ce3298`
 
 ## Result
