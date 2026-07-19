@@ -54,6 +54,11 @@ round.default.font = 1, 0, 0, 256, 128, 64
 round.default.displaytime = 60
 round.default.offset = 160, 100
 round.default.scale = 1.2, 0.8
+round.default.top.spr = 9100, 1
+round.default.top.offset = 160, 120
+round.default.top.scale = 1, 1
+round.default.bg0.anim = 7002
+round.default.bg0.offset = 160, 100
 round1.snd = 8, 1
 round1.anim = 7002
 round1.offset = 161, 101
@@ -175,6 +180,14 @@ File = standard.sff
           displayTime: 60,
           offset: [160, 100],
           scale: [1.2, 0.8],
+          top: {
+            sprite: [9100, 1],
+            offset: [160, 120],
+            scale: [1, 1],
+          },
+          background: [
+            { animationNo: 7002, offset: [160, 100] },
+          ],
         },
         roundSingle: { animationNo: 7002, sound: [8, 3] },
         roundFinal: { animationNo: 7002, sound: [8, 4] },

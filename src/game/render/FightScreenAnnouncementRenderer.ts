@@ -4,6 +4,7 @@ import type {
   MugenFightScreenDisplayAsset,
   MugenFightScreenDisplayDefinitions,
   MugenFightScreenFont,
+  MugenFightScreenLayoutAsset,
 } from "../../mugen/model/MugenSystemAssets";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/model/MugenAnimation";
 import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
@@ -58,6 +59,10 @@ export type FightScreenAnnouncementDiagnostics = {
   sprite?: { group: number; index: number; width: number; height: number; axisX: number; axisY: number };
   placement?: FightScreenAnnouncementPlacement;
   meshRenderOrder?: number;
+  backgroundLayerCount?: number;
+  backgroundResolved?: number;
+  topLayerCount?: number;
+  topResolved?: number;
   fallbackReason?: string;
 };
 
@@ -80,6 +85,18 @@ type FightScreenAnnouncementSelection = {
 
 type FightScreenMesh = THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 
+type FightScreenDisplayLayers = {
+  background: MugenFightScreenLayoutAsset[];
+  top?: MugenFightScreenLayoutAsset;
+};
+
+type FightScreenLayoutRenderResult = {
+  backgroundLayerCount: number;
+  backgroundResolved: number;
+  topLayerCount: number;
+  topResolved: number;
+};
+
 type FightScreenTextRenderResult = {
   rendered: boolean;
   text?: string;
@@ -101,6 +118,10 @@ export class FightScreenAnnouncementRenderer {
   private readonly mesh: FightScreenMesh;
   private readonly textGroup = new THREE.Group();
   private readonly textMeshes: Array<FightScreenMesh | undefined> = [];
+  private readonly backgroundGroup = new THREE.Group();
+  private readonly topGroup = new THREE.Group();
+  private readonly backgroundMeshes: Array<FightScreenMesh | undefined> = [];
+  private readonly topMeshes: Array<FightScreenMesh | undefined> = [];
   private animations = new Map<number, MugenAnimationAction>();
   private display?: MugenFightScreenDisplayDefinitions;
   private fonts = new Map<number, MugenFightScreenFont>();
@@ -110,6 +131,12 @@ export class FightScreenAnnouncementRenderer {
     active: false,
     configured: false,
     resolved: false,
+  };
+  private layerDiagnostics: FightScreenLayoutRenderResult = {
+    backgroundLayerCount: 0,
+    backgroundResolved: 0,
+    topLayerCount: 0,
+    topResolved: 0,
   };
 
   constructor(private readonly textures: TextureStore) {
@@ -124,9 +151,13 @@ export class FightScreenAnnouncementRenderer {
       }),
     );
     this.mesh.visible = false;
+    this.backgroundGroup.visible = false;
+    this.topGroup.visible = false;
+    this.group.add(this.backgroundGroup);
     this.group.add(this.mesh);
     this.textGroup.visible = false;
     this.group.add(this.textGroup);
+    this.group.add(this.topGroup);
   }
 
   setAssets(assets: MugenFightScreenAssets | undefined): void {
@@ -137,6 +168,7 @@ export class FightScreenAnnouncementRenderer {
     this.coordinate = assets?.localCoord ?? [320, 240];
     this.mesh.visible = false;
     this.hideTextMeshes();
+    this.hideLayoutMeshes();
     this.diagnostics = {
       active: false,
       configured: Boolean(this.display) || this.animations.size > 0 || this.fonts.size > 0,
@@ -178,11 +210,19 @@ export class FightScreenAnnouncementRenderer {
       selection.roundNo,
     );
     const displayTime = selection.asset.displayTime;
+    const displayLayers = resolveFightScreenDisplayLayers(this.display, selection.kind, selection.mode, selection.roundNo);
+    const hasDisplayLayers = hasRenderableFightScreenLayers(displayLayers);
     const textCanUseImmediateCompletion = (!action || actionNo === undefined)
       && Boolean(selection.asset.text && selection.asset.font)
       && completion?.frame === 0
       && frameTick === 0;
-    if (completion && frameTick >= completion.frame && !textCanUseImmediateCompletion) {
+    const layersCanUseEmptyCompletion = !action
+      && actionNo === undefined
+      && hasDisplayLayers
+      && completion !== undefined
+      && completion.actionNos.length === 0
+      && completion.reason !== "displaytime";
+    if (completion && frameTick >= completion.frame && !textCanUseImmediateCompletion && !layersCanUseEmptyCompletion) {
       this.hide({
         ...baseDiagnostics,
         ...(actionNo === undefined ? {} : { actionNo }),
@@ -195,9 +235,13 @@ export class FightScreenAnnouncementRenderer {
       });
       return;
     }
+    this.mesh.visible = false;
+    this.hideTextMeshes();
+    const layoutResult = await this.renderDisplayLayers(displayLayers, frameTick, viewport);
+    const hasResolvedLayers = layoutResult.backgroundResolved > 0 || layoutResult.topResolved > 0;
     if (actionNo === undefined) {
       const textResult = this.renderText(selection.asset, selection.roundNo, viewport);
-      if (textResult.rendered) {
+      if (textResult.rendered || hasResolvedLayers) {
         const { rendered: _rendered, ...textDiagnostics } = textResult;
         this.diagnostics = {
           ...baseDiagnostics,
@@ -210,7 +254,7 @@ export class FightScreenAnnouncementRenderer {
             completionReason: completion.reason,
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
-          ...textDiagnostics,
+          ...(textResult.rendered ? textDiagnostics : {}),
         };
         return;
       }
@@ -229,7 +273,7 @@ export class FightScreenAnnouncementRenderer {
     }
     if (!action) {
       const textResult = this.renderText(selection.asset, selection.roundNo, viewport);
-      if (textResult.rendered) {
+      if (textResult.rendered || hasResolvedLayers) {
         const { rendered: _rendered, ...textDiagnostics } = textResult;
         this.diagnostics = {
           ...baseDiagnostics,
@@ -243,7 +287,7 @@ export class FightScreenAnnouncementRenderer {
             completionReason: completion.reason,
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
-          ...textDiagnostics,
+          ...(textResult.rendered ? textDiagnostics : {}),
         };
         return;
       }
@@ -263,6 +307,22 @@ export class FightScreenAnnouncementRenderer {
     }
     const animationFrame = resolveRoundFadeAnimationFrame(action, frameTick);
     if (!animationFrame) {
+      if (hasResolvedLayers) {
+        this.diagnostics = {
+          ...baseDiagnostics,
+          configured: true,
+          resolved: true,
+          actionNo,
+          frameTick,
+          ...(completion ? {
+            animationEndFrame: completion.frame,
+            animationComplete: false,
+            completionReason: completion.reason,
+          } : {}),
+          ...(displayTime === undefined ? {} : { displayTime }),
+        };
+        return;
+      }
       this.hide({
         ...baseDiagnostics,
         actionNo,
@@ -282,6 +342,23 @@ export class FightScreenAnnouncementRenderer {
       animationFrame.frame.spriteIndex,
     );
     if (!sprite) {
+      if (hasResolvedLayers) {
+        this.diagnostics = {
+          ...baseDiagnostics,
+          configured: true,
+          resolved: true,
+          actionNo,
+          frameIndex: animationFrame.frameIndex,
+          frameTick,
+          ...(completion ? {
+            animationEndFrame: completion.frame,
+            animationComplete: false,
+            completionReason: completion.reason,
+          } : {}),
+          ...(displayTime === undefined ? {} : { displayTime }),
+        };
+        return;
+      }
       this.hide({
         ...baseDiagnostics,
         actionNo,
@@ -349,7 +426,7 @@ export class FightScreenAnnouncementRenderer {
   }
 
   getDiagnostics(): FightScreenAnnouncementDiagnostics {
-    return structuredClone(this.diagnostics);
+    return structuredClone({ ...this.diagnostics, ...this.layerDiagnostics });
   }
 
   getCoordinate(): [number, number] {
@@ -357,6 +434,9 @@ export class FightScreenAnnouncementRenderer {
   }
 
   dispose(): void {
+    this.disposeLayoutMeshes(this.backgroundMeshes, this.backgroundGroup);
+    this.disposeLayoutMeshes(this.topMeshes, this.topGroup);
+    this.group.remove(this.backgroundGroup, this.topGroup);
     this.group.remove(this.mesh);
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
@@ -372,7 +452,143 @@ export class FightScreenAnnouncementRenderer {
   private hide(diagnostics: FightScreenAnnouncementDiagnostics): void {
     this.mesh.visible = false;
     this.hideTextMeshes();
+    this.hideLayoutMeshes();
     this.diagnostics = diagnostics;
+  }
+
+  private async renderDisplayLayers(
+    layers: FightScreenDisplayLayers,
+    frameTick: number,
+    viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+  ): Promise<FightScreenLayoutRenderResult> {
+    this.hideLayoutMeshes();
+    const backgroundResolved = await this.renderLayoutCollection(
+      layers.background,
+      this.backgroundMeshes,
+      this.backgroundGroup,
+      frameTick,
+      viewport,
+      "background",
+    );
+    const topResolved = await this.renderLayoutCollection(
+      layers.top ? [layers.top] : [],
+      this.topMeshes,
+      this.topGroup,
+      frameTick,
+      viewport,
+      "top",
+    );
+    this.layerDiagnostics = {
+      backgroundLayerCount: layers.background.length,
+      backgroundResolved,
+      topLayerCount: layers.top ? 1 : 0,
+      topResolved,
+    };
+    this.backgroundGroup.visible = backgroundResolved > 0;
+    this.topGroup.visible = topResolved > 0;
+    return this.layerDiagnostics;
+  }
+
+  private async renderLayoutCollection(
+    layouts: MugenFightScreenLayoutAsset[],
+    meshPool: Array<FightScreenMesh | undefined>,
+    group: THREE.Group,
+    frameTick: number,
+    viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+    kind: "background" | "top",
+  ): Promise<number> {
+    let resolved = 0;
+    for (const [index, layout] of layouts.entries()) {
+      const resolvedFrame = resolveFightScreenLayoutFrame(layout, frameTick, this.animations);
+      if (!resolvedFrame) continue;
+      const sprite = await this.spriteProvider?.getSprite(
+        resolvedFrame.frame.spriteGroup,
+        resolvedFrame.frame.spriteIndex,
+      );
+      if (!sprite) continue;
+      const placement = projectFightScreenSprite(
+        viewport,
+        this.coordinate,
+        sprite,
+        resolvedFrame.frame,
+        layout,
+      );
+      const mesh = this.ensureLayoutMesh(index, meshPool, group);
+      const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
+      mesh.visible = true;
+      mesh.position.set(placement.x, placement.y, 0);
+      mesh.scale.set(placement.scaleX, placement.scaleY, 1);
+      mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
+      mesh.material.color.setHex(0xffffff);
+      mesh.material.opacity = 1;
+      mesh.material.blending = blend === "additive" ? THREE.AdditiveBlending : THREE.NormalBlending;
+      applyThreePresentationOrder(
+        mesh,
+        mesh.material,
+        resolvePresentationOrder({
+          profile: "unknown",
+          phase: "overlay",
+          sourceKind: "overlay",
+          blendPolicy: blend,
+          priority: kind === "background" ? 2 : 6,
+          tieBreaker: (kind === "background" ? 30 : 40) + index,
+          tiePolicy: "authored-order",
+        }),
+      );
+      mesh.material.needsUpdate = true;
+      resolved += 1;
+    }
+    for (let index = layouts.length; index < meshPool.length; index += 1) {
+      const mesh = meshPool[index];
+      if (mesh) mesh.visible = false;
+    }
+    return resolved;
+  }
+
+  private ensureLayoutMesh(
+    index: number,
+    meshPool: Array<FightScreenMesh | undefined>,
+    group: THREE.Group,
+  ): FightScreenMesh {
+    const existing = meshPool[index];
+    if (existing) return existing;
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 1,
+        depthWrite: false,
+        depthTest: false,
+      }),
+    );
+    meshPool[index] = mesh;
+    group.add(mesh);
+    return mesh;
+  }
+
+  private hideLayoutMeshes(): void {
+    this.backgroundGroup.visible = false;
+    this.topGroup.visible = false;
+    for (const mesh of [...this.backgroundMeshes, ...this.topMeshes]) {
+      if (mesh) mesh.visible = false;
+    }
+    this.layerDiagnostics = {
+      backgroundLayerCount: 0,
+      backgroundResolved: 0,
+      topLayerCount: 0,
+      topResolved: 0,
+    };
+  }
+
+  private disposeLayoutMeshes(meshPool: Array<FightScreenMesh | undefined>, group: THREE.Group): void {
+    for (const mesh of meshPool) {
+      if (!mesh) continue;
+      group.remove(mesh);
+      mesh.geometry.dispose();
+      mesh.material.dispose();
+    }
+    meshPool.length = 0;
   }
 
   private renderText(
@@ -534,7 +750,34 @@ export function resolveRoundDisplayAsset(
     : mode === "final"
       ? [display.roundFinal, display.roundDefault]
       : [display.round.get(roundNo), display.roundDefault];
-  return candidates.find((asset) => asset !== undefined && (asset.animationNo !== undefined || asset.text !== undefined));
+  return candidates.find((asset) => hasFightScreenPrimaryContent(asset))
+    ?? candidates.find((asset) => hasFightScreenDisplayContent(asset));
+}
+
+export function resolveFightScreenDisplayLayers(
+  display: MugenFightScreenDisplayDefinitions | undefined,
+  kind: "round" | "fight",
+  mode: RuntimeRoundAnnouncementSnapshot["mode"],
+  roundNo: number,
+): FightScreenDisplayLayers {
+  if (!display) return { background: [] };
+  if (kind === "fight") {
+    return {
+      background: display.fight?.background ?? [],
+      ...(display.fight?.top ? { top: display.fight.top } : {}),
+    };
+  }
+  const variant = resolveRoundVariantDisplayAsset(display, mode, roundNo);
+  const defaultAsset = display.roundDefault;
+  const background = [
+    ...(defaultAsset?.background ?? []),
+    ...(variant && variant !== defaultAsset ? variant.background ?? [] : []),
+  ];
+  const top = variant?.top ?? defaultAsset?.top;
+  return {
+    background,
+    ...(top ? { top } : {}),
+  };
 }
 
 export function projectFightScreenSprite(
@@ -588,4 +831,65 @@ function finiteScale(value: number | undefined): number {
 
 function isAdditiveBlend(value: string | undefined): boolean {
   return value?.toLowerCase().includes("add") ?? false;
+}
+
+function hasFightScreenDisplayContent(asset: MugenFightScreenDisplayAsset | undefined): boolean {
+  return Boolean(asset && (
+    hasFightScreenPrimaryContent(asset)
+    || asset.background?.some((layout) => hasRenderableFightScreenLayout(layout))
+    || hasRenderableFightScreenLayout(asset.top)
+  ));
+}
+
+function hasFightScreenPrimaryContent(asset: MugenFightScreenDisplayAsset | undefined): boolean {
+  return Boolean(asset && (asset.animationNo !== undefined || asset.text !== undefined));
+}
+
+function hasRenderableFightScreenLayers(layers: FightScreenDisplayLayers): boolean {
+  return layers.background.some((layout) => hasRenderableFightScreenLayout(layout))
+    || hasRenderableFightScreenLayout(layers.top);
+}
+
+function hasRenderableFightScreenLayout(layout: MugenFightScreenLayoutAsset | undefined): boolean {
+  return Boolean(layout && (layout.animationNo !== undefined || layout.sprite !== undefined));
+}
+
+function resolveRoundVariantDisplayAsset(
+  display: MugenFightScreenDisplayDefinitions,
+  mode: RuntimeRoundAnnouncementSnapshot["mode"],
+  roundNo: number,
+): MugenFightScreenDisplayAsset | undefined {
+  if (mode === "single") return display.roundSingle;
+  if (mode === "final") return display.roundFinal;
+  return display.round.get(roundNo);
+}
+
+function resolveFightScreenLayoutFrame(
+  layout: MugenFightScreenLayoutAsset,
+  frameTick: number,
+  animations: ReadonlyMap<number, MugenAnimationAction>,
+): { frame: MugenAnimationFrame; frameIndex: number } | undefined {
+  if (layout.animationNo !== undefined) {
+    const action = animations.get(layout.animationNo);
+    if (action) {
+      const animationFrame = resolveRoundFadeAnimationFrame(action, frameTick);
+      if (animationFrame) return animationFrame;
+    }
+  }
+  if (!layout.sprite) return undefined;
+  return {
+    frame: {
+      spriteGroup: layout.sprite[0],
+      spriteIndex: layout.sprite[1],
+      offsetX: 0,
+      offsetY: 0,
+      duration: -1,
+      flip: "",
+      clsn1: [],
+      clsn2: [],
+      raw: `${layout.sprite[0]},${layout.sprite[1]}`,
+      line: 0,
+    },
+    frameIndex: 0,
+  };
 }

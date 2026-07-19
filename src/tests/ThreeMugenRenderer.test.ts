@@ -185,6 +185,15 @@ describe("FightScreenAnnouncementRenderer asset selection", () => {
     }, display)?.asset).toEqual({ animationNo: 7004 });
   });
 
+  it("keeps the default primary announcement when a numbered variant only adds layouts", () => {
+    const display: MugenFightScreenDisplayDefinitions = {
+      round: new Map([[2, { top: { sprite: [9100, 1] } }]]),
+      roundDefault: { animationNo: 7000 },
+    };
+
+    expect(resolveRoundDisplayAsset(display, "normal", 2)).toEqual({ animationNo: 7000 });
+  });
+
   it("mirrors AnimTextSnd End for displaytime, finite AIR, and terminal AIR frames", () => {
     const finite = actionWithDurations(7100, [3, 4]);
     const terminal = actionWithDurations(7101, [3, -1]);

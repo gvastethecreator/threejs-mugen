@@ -3,6 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { FightScreenAnnouncementRenderer } from "../game/render/FightScreenAnnouncementRenderer";
 import { TextureStore } from "../game/render/TextureStore";
+import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenFightScreenAssets, MugenFightScreenFont } from "../mugen/model/MugenSystemAssets";
 import type { MugenSnapshot } from "../mugen/runtime/types";
 
@@ -81,7 +82,76 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     renderer.dispose();
     textures.dispose();
   });
+
+  it("renders bounded top/background layouts with static sprites and AIR frames", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const action: MugenAnimationAction = {
+      id: 7002,
+      frames: [{
+        spriteGroup: 9100,
+        spriteIndex: 0,
+        offsetX: 2,
+        offsetY: -1,
+        duration: 3,
+        flip: "",
+        clsn1: [],
+        clsn2: [],
+        raw: "9100,0,2,-1,3",
+        line: 1,
+      }],
+      rawLines: [],
+    };
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map([[7002, action]]),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          background: [{ animationNo: 7002, offset: [160, 100] }],
+          top: { sprite: [9100, 1], offset: [160, 120], facing: -1 },
+        },
+      },
+      spriteArchive: {
+        version: "v1",
+        sprites: [
+          createSprite(9100, 0, 24, 12),
+          createSprite(9100, 1, 16, 8),
+        ],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      active: true,
+      resolved: true,
+      backgroundLayerCount: 1,
+      backgroundResolved: 1,
+      topLayerCount: 1,
+      topResolved: 1,
+    });
+    const backgroundGroup = renderer.group.children[0]!;
+    const topGroup = renderer.group.children[3]!;
+    expect(backgroundGroup.children[0]?.renderOrder).toBeLessThan(topGroup.children[0]?.renderOrder ?? Number.POSITIVE_INFINITY);
+    renderer.dispose();
+    textures.dispose();
+  });
 });
+
+function createSprite(group: number, index: number, width: number, height: number) {
+  return {
+    group,
+    index,
+    width,
+    height,
+    axisX: 0,
+    axisY: 0,
+    canvas: document.createElement("canvas"),
+  };
+}
 
 function createFont(text: string): MugenFightScreenFont {
   const characters = [...new Set([...text].filter((character) => character !== " "))];

@@ -46,12 +46,24 @@ export type MugenFightScreenFont = {
   diagnostics: MugenDiagnostic[];
 };
 
+export type MugenFightScreenLayoutAsset = {
+  animationNo?: number;
+  sprite?: [number, number];
+  offset?: [number, number];
+  scale?: [number, number];
+  facing?: 1 | -1;
+  vfacing?: 1 | -1;
+  blend?: string;
+};
+
 export type MugenFightScreenDisplayAsset = {
   animationNo?: number;
   sound?: [number, number];
   text?: string;
   font?: [number, number, number];
   fontColor?: [number, number, number, number];
+  background?: MugenFightScreenLayoutAsset[];
+  top?: MugenFightScreenLayoutAsset;
   displayTime?: number;
   offset?: [number, number];
   scale?: [number, number];

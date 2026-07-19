@@ -6,6 +6,7 @@ import type {
   MugenFightScreenDisplayAsset,
   MugenFightScreenDisplayDefinitions,
   MugenFightScreenFont,
+  MugenFightScreenLayoutAsset,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -644,12 +645,16 @@ function displayAsset(
   section: Record<string, string>,
   prefix: string,
 ): MugenFightScreenDisplayAsset | undefined {
+  const background = layoutAssets(section, prefix, "bg", 32);
+  const top = layoutAsset(section, `${prefix}.top`);
   const asset: MugenFightScreenDisplayAsset = {
     animationNo: nonNegativeIntegerValue(section, `${prefix}.anim`),
     sound: soundValue(section, `${prefix}.snd`),
     text: getValue(section, [`${prefix}.text`]),
     font: fontValue(section, `${prefix}.font`),
     fontColor: fontColorValue(section, `${prefix}.font`),
+    ...(background.length > 0 ? { background } : {}),
+    ...(top ? { top } : {}),
     displayTime: numberValue(section, `${prefix}.displaytime`),
     offset: pairValue(section, `${prefix}.offset`),
     scale: pairValue(section, `${prefix}.scale`),
@@ -662,6 +667,40 @@ function displayAsset(
   return Object.fromEntries(
     Object.entries(asset).filter(([, value]) => value !== undefined),
   ) as MugenFightScreenDisplayAsset;
+}
+
+function layoutAssets(
+  section: Record<string, string>,
+  prefix: string,
+  name: string,
+  count: number,
+): MugenFightScreenLayoutAsset[] {
+  const layouts: MugenFightScreenLayoutAsset[] = [];
+  for (let index = 0; index < count; index += 1) {
+    const layout = layoutAsset(section, `${prefix}.${name}${index}`);
+    if (layout) {
+      layouts.push(layout);
+    }
+  }
+  return layouts;
+}
+
+function layoutAsset(section: Record<string, string>, prefix: string): MugenFightScreenLayoutAsset | undefined {
+  const asset: MugenFightScreenLayoutAsset = {
+    animationNo: nonNegativeIntegerValue(section, `${prefix}.anim`),
+    sprite: integerPairValue(section, `${prefix}.spr`),
+    offset: pairValue(section, `${prefix}.offset`),
+    scale: pairValue(section, `${prefix}.scale`),
+    facing: facingValue(section, `${prefix}.facing`),
+    vfacing: facingValue(section, `${prefix}.vfacing`),
+    blend: getValue(section, [`${prefix}.trans`]),
+  };
+  if (!Object.values(asset).some((value) => value !== undefined)) {
+    return undefined;
+  }
+  return Object.fromEntries(
+    Object.entries(asset).filter(([, value]) => value !== undefined),
+  ) as MugenFightScreenLayoutAsset;
 }
 
 function pairValue(section: Record<string, string>, key: string): [number, number] | undefined {
