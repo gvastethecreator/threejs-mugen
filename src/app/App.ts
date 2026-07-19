@@ -12828,7 +12828,7 @@ export class App {
           ? this.renderHudTeamSide(teamRoundLifebar.sides[0], "left", teamRoundLifebar.visible)
           : this.renderHudFighter(p1, "left")}
         <div class="round-center">
-          <span class="round-state ${round?.state ?? "fight"}">${escapeHtml(round?.message ?? "Fight")}</span>
+          <span class="round-state ${round?.state ?? "fight"}" data-round-announcement-phase="${round?.announcement?.phase ?? "none"}">${escapeHtml(formatHudRoundMessage(round))}</span>
           <strong>${round?.timer ?? 99}</strong>
           ${round?.roundNo ? `<span class="round-number">Round ${round.roundNo}</span>` : ""}
           ${round?.match ? `<span class="round-score" aria-label="Match score">${round.match.wins[1]}-${round.match.wins[2]} / ${round.match.matchWins}</span>` : ""}
@@ -14123,6 +14123,18 @@ export class App {
     }
     return names;
   }
+}
+
+function formatHudRoundMessage(round: MugenSnapshot["round"]): string {
+  if (round?.state === "fight" && round.announcement?.visibility === "visible") {
+    if (round.announcement.phase === "round") {
+      return `Round ${round.roundNo ?? 1}`;
+    }
+    if (round.announcement.phase === "fight") {
+      return "Fight!";
+    }
+  }
+  return round?.message ?? "Fight";
 }
 
 function formatHudMatchPause(pause: MugenSnapshot["matchPause"]): string {

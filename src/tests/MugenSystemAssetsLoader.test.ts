@@ -38,6 +38,11 @@ over.hittime = 10
 over.wintime = 18
 over.forcewintime = 900
 over.time = 240
+round.time = 4
+round.sndtime = 2
+callfight.time = 3
+fight.time = 5
+fight.sndtime = 1
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -82,6 +87,11 @@ slow.speed = 0.5
       overWinTime: 18,
       overForceWinTime: 900,
       overTime: 240,
+      roundTime: 4,
+      roundSoundTime: 2,
+      callFightTime: 3,
+      fightTime: 5,
+      fightSoundTime: 1,
       startWaitTime: 12,
       controlTime: 30,
       shutterTime: 15,

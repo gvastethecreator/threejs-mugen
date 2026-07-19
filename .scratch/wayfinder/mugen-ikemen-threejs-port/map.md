@@ -14,6 +14,10 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Consume FightScreen announcement phases in HUD](tickets/291-fightscreen-announcement-hud.md) - resolved at fallback presentation scope: existing runtime HUD reads visible Round/Fight phase snapshots, while AIR/FNT assets, source audio, exact display skip, and motif transforms remain open.
+
+- [Model FightScreen announcement phases](tickets/290-fightscreen-announcement-phases.md) - resolved at bounded phase-clock scope: pause round/fight announcement clocks during intro/shutter, expose source timing and sound edges, and leave animation completion/assets/audio/skip flags as explicit downstream ownership.
+
 - [Import FightScreen announcement timing](tickets/289-fightscreen-announcement-timing.md) - resolved at bounded source-transport scope: import `round.time`, `round.sndtime`, `callfight.time`, `fight.time`, and `fight.sndtime` into a typed `RuntimeRoundAnnouncementTiming/v0`; phase execution, display skip, audio, assets, motif/localcoord, and full parity remain separate.
 
 - [Implement FightScreen intro-skip character reset](tickets/288-round-intro-skip-character-reset.md) - resolved at bounded scope in `a12a2672`: consume the source-shaped shutter edge before the fighter pass, reset root position/state/animation/transient memory, clear command history and owner-scoped effects, and preserve round resources, variables, team state, and compatibility history. Announcements, exact display suppression, dialogue, Common1/ZSS, motif/localcoord, teams/Turns, rollback/netplay, and full parity remain open.
