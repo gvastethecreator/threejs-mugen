@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Import FightScreen announcement timing](tickets/289-fightscreen-announcement-timing.md) - resolved at bounded source-transport scope: import `round.time`, `round.sndtime`, `callfight.time`, `fight.time`, and `fight.sndtime` into a typed `RuntimeRoundAnnouncementTiming/v0`; phase execution, display skip, audio, assets, motif/localcoord, and full parity remain separate.
+
 - [Implement FightScreen intro-skip character reset](tickets/288-round-intro-skip-character-reset.md) - resolved at bounded scope in `a12a2672`: consume the source-shaped shutter edge before the fighter pass, reset root position/state/animation/transient memory, clear command history and owner-scoped effects, and preserve round resources, variables, team state, and compatibility history. Announcements, exact display suppression, dialogue, Common1/ZSS, motif/localcoord, teams/Turns, rollback/netplay, and full parity remain open.
 
 - [Implement FightScreen intro shutter skip](tickets/287-round-intro-shutter-skip.md) - resolved at bounded scope in `4d615c8f`: parse `shutter.time`/`shutter.col`, detect new hard-button edges, honor the raw `roundnotskip` guard, reduce intro to `ctrl.time + 1`, publish `RuntimeRoundShutter/v0`, and render two bars. Upstream character asset/position/state reset, announcements, exact round/fight display skipping, dialogue, Common1/ZSS, motif/localcoord, teams/Turns, rollback/netplay, and full parity remain open.

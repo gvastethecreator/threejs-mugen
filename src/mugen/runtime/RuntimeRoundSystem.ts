@@ -7,6 +7,7 @@ import type {
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
+import type { RuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
 
 export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
 
@@ -18,6 +19,7 @@ export type RuntimeRoundTiming = {
   overTimeFrames: number;
   startWaitTimeFrames: number;
   controlTimeFrames: number;
+  announcement?: RuntimeRoundAnnouncementTiming;
   shutterTimeFrames: number;
   shutterColor: [number, number, number];
   fadeInTimeFrames: number;
@@ -315,6 +317,7 @@ export class RuntimeRoundSystem {
       timer: Math.ceil(this.timerFrames / 60),
       winner: this.winner,
       message: this.message(),
+      ...(this.timing.announcement === undefined ? {} : { announcementTiming: this.timing.announcement }),
     };
     if (this.roundNo > 1) {
       snapshot.roundNo = this.roundNo;
@@ -538,6 +541,7 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.controlTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.controlTimeFrames,
   );
+  const announcement = overrides.announcement;
   const shutterTimeFrames = boundedTimingFrames(
     overrides.shutterTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.shutterTimeFrames,
@@ -596,6 +600,7 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overTimeFrames,
     startWaitTimeFrames,
     controlTimeFrames,
+    ...(announcement === undefined ? {} : { announcement }),
     shutterTimeFrames,
     shutterColor,
     fadeInTimeFrames,

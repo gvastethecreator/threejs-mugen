@@ -170,6 +170,7 @@ import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionCo
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem, type RuntimeRoundTiming } from "./RuntimeRoundSystem";
+import { resolveRuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
 import {
   RuntimeRoundResourceResetWorld,
   type RuntimeRoundResourceActor,
@@ -6250,6 +6251,13 @@ function runtimeRoundTimingFromFightScreen(
     overTimeFrames: source.overTime,
     startWaitTimeFrames: source.startWaitTime,
     controlTimeFrames: source.controlTime,
+    announcement: resolveRuntimeRoundAnnouncementTiming({
+      roundTimeFrames: source.roundTime,
+      roundSoundTimeFrames: source.roundSoundTime,
+      callFightTimeFrames: source.callFightTime,
+      fightTimeFrames: source.fightTime,
+      fightSoundTimeFrames: source.fightSoundTime,
+    }),
     shutterTimeFrames: source.shutterTime,
     shutterColor: source.shutterColor,
     fadeInTimeFrames: source.fadeInTime,

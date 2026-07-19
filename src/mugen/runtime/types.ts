@@ -13,6 +13,7 @@ import type { RuntimeRoundContextSnapshot } from "./RuntimeRoundContextSystem";
 import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900System";
 import type { RuntimeTurnsContinuationResult } from "./RuntimeTurnsContinuationSystem";
 import type { RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
+import type { RuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
 import type {
   RuntimeRoundWinPoseActorSnapshot,
   RuntimeRoundWinPoseSnapshot,
@@ -605,6 +606,7 @@ export type RoundSnapshot = {
   roundPhase?: RuntimeRoundPhase;
   winner?: string;
   message: string;
+  announcementTiming?: RuntimeRoundAnnouncementTiming;
   preRound?: {
     schema: "RuntimePreRound/v0";
     frame: number;

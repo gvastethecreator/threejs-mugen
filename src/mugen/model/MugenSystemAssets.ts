@@ -27,6 +27,11 @@ export type MugenFightScreenTiming = {
   overTime?: number;
   startWaitTime?: number;
   controlTime?: number;
+  roundTime?: number;
+  roundSoundTime?: number;
+  callFightTime?: number;
+  fightTime?: number;
+  fightSoundTime?: number;
   shutterTime?: number;
   shutterColor?: [number, number, number];
   fadeInTime?: number;
