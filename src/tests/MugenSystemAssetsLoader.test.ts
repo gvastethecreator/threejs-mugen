@@ -38,6 +38,8 @@ over.hittime = 10
 over.wintime = 18
 over.forcewintime = 900
 over.time = 240
+fadeout.time = 16
+fadeout.col = 12, 34, 56
 slow.time = 70
 slow.fadetime = 50
 slow.speed = 0.5
@@ -70,6 +72,8 @@ slow.speed = 0.5
       overWinTime: 18,
       overForceWinTime: 900,
       overTime: 240,
+      fadeOutTime: 16,
+      fadeOutColor: [12, 34, 56],
       slowTime: 70,
       slowFadeTime: 50,
       slowSpeed: 0.5,

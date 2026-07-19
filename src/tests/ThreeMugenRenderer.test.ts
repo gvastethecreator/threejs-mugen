@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { resolveRootCollisionActors, resolveRootPresentationActors } from "../game/render/ThreeMugenRenderer";
+import {
+  resolveRootCollisionActors,
+  resolveRootPresentationActors,
+  resolveRoundFadePresentation,
+} from "../game/render/ThreeMugenRenderer";
 import type { ActorSnapshot, MugenSnapshot } from "../mugen/runtime/types";
 
 describe("resolveRootPresentationActors", () => {
@@ -56,6 +60,24 @@ describe("resolveRootPresentationActors", () => {
       actors,
       rootPresentation: diagnostic(["p1"], ["p3"]),
     })).toThrow("Unknown root presentation collision actor p3");
+  });
+});
+
+describe("resolveRoundFadePresentation", () => {
+  it("returns only an active imported round fade for the renderer overlay", () => {
+    const fade = {
+      schema: "RuntimeRoundFade/v0" as const,
+      active: true,
+      frame: 2,
+      remaining: 2,
+      duration: 4,
+      opacity: 0.5,
+      color: [12, 34, 56] as [number, number, number],
+    };
+
+    expect(resolveRoundFadePresentation({ round: { postRound: { fadeOut: fade } } as MugenSnapshot["round"] })).toEqual(fade);
+    expect(resolveRoundFadePresentation({ round: { postRound: { fadeOut: { ...fade, active: false } } } as MugenSnapshot["round"] })).toBeUndefined();
+    expect(resolveRoundFadePresentation({ round: undefined })).toBeUndefined();
   });
 });
 

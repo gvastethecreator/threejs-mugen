@@ -4207,6 +4207,8 @@ RedirectID = 999
       overWaitTime: 2,
       overWinTime: 3,
       overTime: 8,
+      fadeOutTime: 4,
+      fadeOutColor: [12, 34, 56],
     };
     const closeStage = {
       ...trainingStage,
@@ -4234,6 +4236,19 @@ RedirectID = 999
       roundPhase: 4,
       postRound: { frame: 5 },
       winPose: { status: "started", winner: attacker.displayName },
+    });
+
+    while (snapshot.round?.postRound?.remaining !== 0) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    expect(snapshot.round?.postRound?.fadeOut).toMatchObject({
+      schema: "RuntimeRoundFade/v0",
+      active: true,
+      frame: 4,
+      remaining: 0,
+      duration: 4,
+      opacity: 1,
+      color: [12, 34, 56],
     });
   });
 

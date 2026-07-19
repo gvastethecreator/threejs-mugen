@@ -108,6 +108,9 @@ describe("RuntimeRoundSystem", () => {
       postKoPhase4StartFrames: 2,
       forceWinTimeFrames: 0,
       winPoseFrames: 3,
+      overTimeFrames: 210,
+      fadeOutTimeFrames: 0,
+      fadeOutColor: [0, 0, 0],
       postKoFrames: 7,
       koSlowFrames: 4,
       koSlowFadeFrames: 4,
@@ -124,6 +127,34 @@ describe("RuntimeRoundSystem", () => {
     expect(round.currentPhase).toBe(4);
     expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 5, duration: 7, slowDuration: 4 });
     expect(round.winPoseFrames).toBe(3);
+  });
+
+  it("extends the imported terminal window when fadeout lasts longer than over.time", () => {
+    const timing = resolveRuntimeRoundTiming({
+      postKoPhase4StartFrames: 2,
+      overTimeFrames: 4,
+      fadeOutTimeFrames: 6,
+      fadeOutColor: [12.4, 34.5, 300],
+    });
+
+    expect(timing).toMatchObject({
+      overTimeFrames: 4,
+      fadeOutTimeFrames: 6,
+      fadeOutColor: [12, 35, 255],
+      postKoFrames: 8,
+    });
+
+    const round = new RuntimeRoundSystem(1, "ikemen-go", timing);
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
+    expect(round.snapshot().postRound?.fadeOut).toMatchObject({ active: false, frame: 0, remaining: 6 });
+
+    for (let frame = 0; frame < 3; frame += 1) round.tickTimer();
+    expect(round.snapshot().postRound?.fadeOut).toMatchObject({ active: true, frame: 1, remaining: 5, opacity: 1 / 6 });
+
+    for (let frame = 3; frame < 8; frame += 1) round.tickTimer();
+    expect(round.isOver).toBe(true);
+    expect(round.snapshot().postRound?.fadeOut).toMatchObject({ active: true, frame: 6, remaining: 0, opacity: 1 });
   });
 
   it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {

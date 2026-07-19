@@ -6174,15 +6174,14 @@ function runtimeRoundTimingFromFightScreen(
   source?: MugenFightScreenTiming,
 ): Partial<RuntimeRoundTiming> | undefined {
   if (!source) return undefined;
-  const postKoFrames = source.overWaitTime === undefined || source.overTime === undefined
-    ? undefined
-    : source.overWaitTime + source.overTime;
   const timing: Partial<RuntimeRoundTiming> = {
     overHitTimeFrames: source.overHitTime,
     postKoPhase4StartFrames: source.overWaitTime,
     forceWinTimeFrames: source.overForceWinTime,
     winPoseFrames: source.overWinTime,
-    postKoFrames,
+    overTimeFrames: source.overTime,
+    fadeOutTimeFrames: source.fadeOutTime,
+    fadeOutColor: source.fadeOutColor,
     koSlowFrames: source.slowTime,
     koSlowFadeFrames: source.slowFadeTime,
     koSlowRate: source.slowSpeed,

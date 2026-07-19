@@ -40,6 +40,14 @@ export class ThreeMugenRenderer implements MugenRenderer {
     depthTest: false,
   });
   private readonly envColorOverlay = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.envColorOverlayMaterial);
+  private readonly roundFadeOverlayMaterial = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    depthTest: false,
+  });
+  private readonly roundFadeOverlay = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.roundFadeOverlayMaterial);
   private target?: HTMLElement;
   private resizeObserver?: ResizeObserver;
   private size = { width: 640, height: 360 };
@@ -59,6 +67,9 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.envColorOverlay.visible = false;
     applyThreePresentationOrder(this.envColorOverlay, this.envColorOverlayMaterial, resolveOverlayPresentationOrder(1));
     this.scene.add(this.envColorOverlay);
+    this.roundFadeOverlay.visible = false;
+    applyThreePresentationOrder(this.roundFadeOverlay, this.roundFadeOverlayMaterial, resolveOverlayPresentationOrder(3));
+    this.scene.add(this.roundFadeOverlay);
   }
 
   setStageSpriteArchives(archives: Array<{ stageId: string; archive?: SffArchive }>): void {
@@ -129,6 +140,17 @@ export class ThreeMugenRenderer implements MugenRenderer {
       this.envColorOverlay.position.set(this.camera.position.x, this.camera.position.y, snapshot.stage.envColor.under ? -1 : 9.5);
       this.envColorOverlay.scale.set(this.size.width / this.camera.zoom, this.size.height / this.camera.zoom, 1);
     }
+    const roundFade = resolveRoundFadePresentation(snapshot);
+    this.roundFadeOverlay.visible = Boolean(roundFade);
+    if (roundFade) {
+      const color = roundFade.color;
+      this.roundFadeOverlayMaterial.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
+      this.roundFadeOverlayMaterial.opacity = Math.max(0, Math.min(1, roundFade.opacity));
+      this.roundFadeOverlay.position.set(this.camera.position.x, this.camera.position.y, 10);
+      this.roundFadeOverlay.scale.set(this.size.width / this.camera.zoom, this.size.height / this.camera.zoom, 1);
+    } else {
+      this.roundFadeOverlayMaterial.opacity = 0;
+    }
     this.camera.updateProjectionMatrix();
     this.renderer.render(this.scene, this.camera);
   }
@@ -168,6 +190,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     stage: ReturnType<AxisRenderer["getDiagnostics"]>;
     presentationGroups: { stage: number; characters: number; hitSparks: number; collision: number };
     collision: ReturnType<CollisionBoxRenderer["getDiagnostics"]>;
+    roundFade: { visible: boolean; opacity: number; color: number };
   } {
     return {
       size: this.size,
@@ -193,6 +216,11 @@ export class ThreeMugenRenderer implements MugenRenderer {
         hitSparks: this.hitSparks.group.renderOrder,
         collision: this.boxes.group.renderOrder,
       },
+      roundFade: {
+        visible: this.roundFadeOverlay.visible,
+        opacity: this.roundFadeOverlayMaterial.opacity,
+        color: this.roundFadeOverlayMaterial.color.getHex(),
+      },
     };
   }
 
@@ -206,10 +234,19 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.pauseOverlayMaterial.dispose();
     this.envColorOverlay.geometry.dispose();
     this.envColorOverlayMaterial.dispose();
+    this.roundFadeOverlay.geometry.dispose();
+    this.roundFadeOverlayMaterial.dispose();
     this.textures.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
+}
+
+export function resolveRoundFadePresentation(
+  snapshot: Pick<MugenSnapshot, "round">,
+): NonNullable<NonNullable<MugenSnapshot["round"]>["postRound"]>["fadeOut"] | undefined {
+  const fadeOut = snapshot.round?.postRound?.fadeOut;
+  return fadeOut?.active ? fadeOut : undefined;
 }
 
 export function resolveRootPresentationActors(

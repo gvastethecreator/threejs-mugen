@@ -620,7 +620,18 @@ export type RoundSnapshot = {
     slowDuration: number;
     playbackRate: number;
     noKoSlow: boolean;
+    fadeOut?: RuntimeRoundFadeSnapshot;
   };
+};
+
+export type RuntimeRoundFadeSnapshot = {
+  schema: "RuntimeRoundFade/v0";
+  active: boolean;
+  frame: number;
+  remaining: number;
+  duration: number;
+  opacity: number;
+  color: [number, number, number];
 };
 
 export type RuntimeSuperPauseAnimSnapshot = {

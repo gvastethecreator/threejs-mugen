@@ -1,4 +1,4 @@
-import type { RoundSnapshot } from "./types";
+import type { RoundSnapshot, RuntimeRoundFadeSnapshot } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
@@ -10,6 +10,9 @@ export type RuntimeRoundTiming = {
   postKoPhase4StartFrames: number;
   forceWinTimeFrames: number;
   winPoseFrames: number;
+  overTimeFrames: number;
+  fadeOutTimeFrames: number;
+  fadeOutColor: [number, number, number];
   postKoFrames: number;
   koSlowFrames: number;
   koSlowFadeFrames: number;
@@ -26,6 +29,9 @@ export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object
   postKoPhase4StartFrames: 45,
   forceWinTimeFrames: 0,
   winPoseFrames: DEFAULT_RUNTIME_WIN_POSE_FRAMES,
+  overTimeFrames: 210,
+  fadeOutTimeFrames: 0,
+  fadeOutColor: [0, 0, 0] as [number, number, number],
   postKoFrames: 45 + 210,
   koSlowFrames: 60,
   koSlowFadeFrames: 45,
@@ -111,6 +117,10 @@ export class RuntimeRoundSystem {
 
   get forceWinTimeFrames(): number {
     return this.timing.forceWinTimeFrames;
+  }
+
+  get fadeOutTimeFrames(): number {
+    return this.timing.fadeOutTimeFrames;
   }
 
   /** Ikemen's roundNoDamage interval: post-hit wait before round state 4. */
@@ -242,8 +252,26 @@ export class RuntimeRoundSystem {
         playbackRate: this.playbackRate,
         noKoSlow: this.noKoSlow,
       };
+      const fadeOut = this.roundFadeSnapshot();
+      if (fadeOut) snapshot.postRound.fadeOut = fadeOut;
     }
     return snapshot;
+  }
+
+  private roundFadeSnapshot(): RuntimeRoundFadeSnapshot | undefined {
+    const duration = this.timing.fadeOutTimeFrames;
+    if (duration <= 0) return undefined;
+    const startFrame = this.timing.postKoFrames - duration + 1;
+    const frame = Math.max(0, Math.min(duration, this.postRoundFrame - startFrame + 1));
+    return {
+      schema: "RuntimeRoundFade/v0",
+      active: frame > 0,
+      frame,
+      remaining: Math.max(0, duration - frame),
+      duration,
+      opacity: frame / duration,
+      color: [...this.timing.fadeOutColor] as [number, number, number],
+    };
   }
 
   private shouldFinish(left: RuntimeRoundParticipant, right: RuntimeRoundParticipant): boolean {
@@ -288,9 +316,19 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.forceWinTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.forceWinTimeFrames,
   );
+  const overTimeFrames = boundedTimingFrames(overrides.overTimeFrames, DEFAULT_RUNTIME_ROUND_TIMING.overTimeFrames);
+  const fadeOutTimeFrames = boundedTimingFrames(
+    overrides.fadeOutTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.fadeOutTimeFrames,
+  );
+  const fadeOutColor = normalizeFadeOutColor(overrides.fadeOutColor ?? DEFAULT_RUNTIME_ROUND_TIMING.fadeOutColor);
+  const requestedPostKoFrames = boundedTimingFrames(overrides.postKoFrames, DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames);
+  const hasTerminalSourceTiming = overrides.postKoFrames === undefined &&
+    (overrides.overTimeFrames !== undefined || overrides.fadeOutTimeFrames !== undefined);
+  const sourceTerminalFrames = postKoPhase4StartFrames + Math.max(overTimeFrames, fadeOutTimeFrames);
   const postKoFrames = Math.max(
     postKoPhase4StartFrames,
-    boundedTimingFrames(overrides.postKoFrames, DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames),
+    hasTerminalSourceTiming ? sourceTerminalFrames : requestedPostKoFrames,
   );
   const koSlowFrames = boundedTimingFrames(overrides.koSlowFrames, DEFAULT_RUNTIME_ROUND_TIMING.koSlowFrames);
   const koSlowFadeFrames = Math.min(
@@ -310,11 +348,18 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     postKoPhase4StartFrames,
     forceWinTimeFrames,
     winPoseFrames,
+    overTimeFrames,
+    fadeOutTimeFrames,
+    fadeOutColor,
     postKoFrames,
     koSlowFrames,
     koSlowFadeFrames,
     koSlowRate,
   };
+}
+
+function normalizeFadeOutColor(value: [number, number, number]): [number, number, number] {
+  return value.map((channel) => Math.max(0, Math.min(255, Math.round(channel)))) as [number, number, number];
 }
 
 function boundedTimingFrames(value: number | undefined, fallback: number): number {

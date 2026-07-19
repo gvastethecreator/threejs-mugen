@@ -301,6 +301,8 @@ function parseFightScreenTiming(
     overWinTime: numberValue(section, "over.wintime"),
     overForceWinTime: numberValue(section, "over.forcewintime"),
     overTime: numberValue(section, "over.time"),
+    fadeOutTime: numberValue(section, "fadeout.time"),
+    fadeOutColor: colorValue(section, "fadeout.col"),
     slowTime: numberValue(section, "slow.time"),
     slowFadeTime: numberValue(section, "slow.fadetime"),
     slowSpeed: numberValue(section, "slow.speed"),
@@ -405,6 +407,14 @@ function numberValue(section: Record<string, string>, key: string): number | und
   if (raw === undefined) return undefined;
   const value = Number(raw.trim());
   return Number.isFinite(value) ? value : undefined;
+}
+
+function colorValue(section: Record<string, string>, key: string): [number, number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 3 || values.some((value) => !Number.isFinite(value))) return undefined;
+  return values.map((value) => Math.max(0, Math.min(255, Math.round(value)))) as [number, number, number];
 }
 
 function normalizePrefix(value: string | undefined): string | undefined {
