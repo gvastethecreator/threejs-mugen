@@ -7,10 +7,10 @@ describe("RuntimeIntroSkipSystem", () => {
       flags: ["runfirst"],
       globalFlags: ["skiprounddisplay", "nokosnd"],
       skipFightDisplay: true,
-      noKoSound: true,
     })).toEqual({
       flags: [],
       globalFlags: ["skiprounddisplay"],
+      skipRoundDisplay: true,
       skipFightDisplay: true,
     });
   });
@@ -19,7 +19,6 @@ describe("RuntimeIntroSkipSystem", () => {
     expect(preserveRuntimeIntroSkipAssertSpecial({
       flags: ["runfirst"],
       globalFlags: ["nokosnd"],
-      noKoSound: true,
     })).toBeUndefined();
     expect(preserveRuntimeIntroSkipAssertSpecial(undefined)).toBeUndefined();
   });

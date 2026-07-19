@@ -18,6 +18,16 @@ export type MugenSystemHitSparkLibrary = {
   diagnostics: MugenDiagnostic[];
 };
 
+export type MugenFightScreenAssets = {
+  sourcePath: string;
+  sffPath?: string;
+  sndPath?: string;
+  animations: Map<number, MugenAnimationAction>;
+  spriteArchive?: SffArchive;
+  soundArchive?: SndArchive;
+  diagnostics: MugenDiagnostic[];
+};
+
 export type MugenFightScreenTiming = {
   sourcePath: string;
   overWaitTime?: number;
@@ -29,9 +39,11 @@ export type MugenFightScreenTiming = {
   controlTime?: number;
   roundTime?: number;
   roundSoundTime?: number;
+  roundSound?: [number, number];
   callFightTime?: number;
   fightTime?: number;
   fightSoundTime?: number;
+  fightSound?: [number, number];
   shutterTime?: number;
   shutterColor?: [number, number, number];
   fadeInTime?: number;
@@ -52,6 +64,7 @@ export type MugenFightScreenTiming = {
 export type MugenSystemAssets = {
   fightDefPath?: string;
   fightScreenTiming?: MugenFightScreenTiming;
+  fightScreenAssets?: MugenFightScreenAssets;
   gameConfig?: MugenGameConfig;
   commonFightFxPaths?: string[];
   hitSparkLibraries: Partial<Record<MugenSystemHitSparkLibrarySource, MugenSystemHitSparkLibrary>>;

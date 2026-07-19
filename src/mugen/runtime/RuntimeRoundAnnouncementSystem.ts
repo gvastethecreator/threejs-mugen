@@ -1,18 +1,28 @@
 export type RuntimeRoundAnnouncementTimingInput = {
   roundTimeFrames?: number;
   roundSoundTimeFrames?: number;
+  roundSound?: RuntimeRoundAnnouncementSound;
   callFightTimeFrames?: number;
   fightTimeFrames?: number;
   fightSoundTimeFrames?: number;
+  fightSound?: RuntimeRoundAnnouncementSound;
+};
+
+export type RuntimeRoundAnnouncementSound = {
+  group: number;
+  index: number;
+  soundPrefix: string;
 };
 
 export type RuntimeRoundAnnouncementTiming = {
   schema: "RuntimeRoundAnnouncementTiming/v0";
   roundTimeFrames: number;
   roundSoundTimeFrames: number;
+  roundSound?: RuntimeRoundAnnouncementSound;
   callFightTimeFrames: number;
   fightTimeFrames: number;
   fightSoundTimeFrames: number;
+  fightSound?: RuntimeRoundAnnouncementSound;
 };
 
 export type RuntimeRoundAnnouncementTrackSnapshot = {
@@ -22,6 +32,7 @@ export type RuntimeRoundAnnouncementTrackSnapshot = {
   animationStart: number;
   soundTime: number;
   soundDue: boolean;
+  sound?: RuntimeRoundAnnouncementSound;
 };
 
 export type RuntimeRoundAnnouncementSnapshot = {
@@ -56,13 +67,17 @@ export function resolveRuntimeRoundAnnouncementTiming(
 
   const roundTimeFrames = boundedFrames(input.roundTimeFrames, 0);
   const fightTimeFrames = boundedFrames(input.fightTimeFrames, 0);
+  const roundSound = normalizeSound(input.roundSound);
+  const fightSound = normalizeSound(input.fightSound);
   return {
     schema: "RuntimeRoundAnnouncementTiming/v0",
     roundTimeFrames,
     roundSoundTimeFrames: boundedFrames(input.roundSoundTimeFrames, roundTimeFrames),
+    ...(roundSound ? { roundSound } : {}),
     callFightTimeFrames: boundedFrames(input.callFightTimeFrames, DEFAULT_CALL_FIGHT_TIME_FRAMES),
     fightTimeFrames,
     fightSoundTimeFrames: boundedFrames(input.fightSoundTimeFrames, fightTimeFrames),
+    ...(fightSound ? { fightSound } : {}),
   };
 }
 
@@ -145,6 +160,13 @@ export class RuntimeRoundAnnouncementWorld {
           : this.roundActive && !this.roundSkipped
             ? "round"
             : "hidden";
+    const roundSoundDue = visibility === "visible"
+      && !this.roundSkipped
+      && this.roundElapsed === this.timing.roundSoundTimeFrames;
+    const fightSoundDue = visibility === "visible"
+      && !this.fightSkipped
+      && this.fightActive
+      && this.fightElapsed === this.timing.fightSoundTimeFrames;
     return {
       schema: "RuntimeRoundAnnouncement/v0",
       visibility,
@@ -157,7 +179,8 @@ export class RuntimeRoundAnnouncementWorld {
         elapsed: this.roundElapsed,
         animationStart: this.timing.roundTimeFrames,
         soundTime: this.timing.roundSoundTimeFrames,
-        soundDue: visibility === "visible" && !this.roundSkipped && this.roundElapsed === this.timing.roundSoundTimeFrames,
+        soundDue: roundSoundDue,
+        ...(roundSoundDue && this.timing.roundSound ? { sound: { ...this.timing.roundSound } } : {}),
       },
       fight: {
         phase: this.fightActive ? "active" : "pending",
@@ -165,7 +188,8 @@ export class RuntimeRoundAnnouncementWorld {
         elapsed: this.fightElapsed,
         animationStart: this.timing.fightTimeFrames,
         soundTime: this.timing.fightSoundTimeFrames,
-        soundDue: visibility === "visible" && !this.fightSkipped && this.fightActive && this.fightElapsed === this.timing.fightSoundTimeFrames,
+        soundDue: fightSoundDue,
+        ...(fightSoundDue && this.timing.fightSound ? { sound: { ...this.timing.fightSound } } : {}),
       },
       callFightElapsed: this.callFightElapsed,
       completion: "asset-owned",
@@ -179,4 +203,15 @@ function boundedFrames(value: number | undefined, fallback: number): number {
     return fallback;
   }
   return Math.max(0, Math.round(value));
+}
+
+function normalizeSound(value: RuntimeRoundAnnouncementSound | undefined): RuntimeRoundAnnouncementSound | undefined {
+  if (!value || !Number.isFinite(value.group) || !Number.isFinite(value.index)) {
+    return undefined;
+  }
+  return {
+    group: Math.max(0, Math.round(value.group)),
+    index: Math.max(0, Math.round(value.index)),
+    soundPrefix: value.soundPrefix?.trim().toLowerCase() || "fs",
+  };
 }

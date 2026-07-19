@@ -6254,9 +6254,15 @@ function runtimeRoundTimingFromFightScreen(
     announcement: resolveRuntimeRoundAnnouncementTiming({
       roundTimeFrames: source.roundTime,
       roundSoundTimeFrames: source.roundSoundTime,
+      roundSound: source.roundSound
+        ? { group: source.roundSound[0], index: source.roundSound[1], soundPrefix: "fs" }
+        : undefined,
       callFightTimeFrames: source.callFightTime,
       fightTimeFrames: source.fightTime,
       fightSoundTimeFrames: source.fightSoundTime,
+      fightSound: source.fightSound
+        ? { group: source.fightSound[0], index: source.fightSound[1], soundPrefix: "fs" }
+        : undefined,
     }),
     shutterTimeFrames: source.shutterTime,
     shutterColor: source.shutterColor,

@@ -1,5 +1,6 @@
 import { findSound, type MugenSound, type SndArchive } from "../../mugen/model/MugenSound";
 import type { ActorSnapshot, MugenSnapshot, RuntimeRoundFadeSnapshot, RuntimeSoundEvent } from "../../mugen/runtime/types";
+import type { RuntimeRoundAnnouncementSound } from "../../mugen/runtime/RuntimeRoundAnnouncementSystem";
 
 export type MugenAudioDiagnostics = {
   available: boolean;
@@ -93,6 +94,7 @@ export class MugenAudioSystem {
   private missing = 0;
   private channelRequestSequence = 0;
   private lastRoundFadeSoundKey?: string;
+  private lastRoundAnnouncementSoundKey?: string;
 
   setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
     this.stopAll();
@@ -111,6 +113,7 @@ export class MugenAudioSystem {
     this.played = 0;
     this.skipped = 0;
     this.missing = 0;
+    this.lastRoundAnnouncementSoundKey = undefined;
   }
 
   async unlock(): Promise<void> {
@@ -132,7 +135,11 @@ export class MugenAudioSystem {
       this.lastRoundFadeSoundKey = undefined;
     }
     const hasRoundFadeSound = Boolean(roundFade?.active && roundFade.sound);
-    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound)) {
+    const roundAnnouncementSound = resolveRoundAnnouncementSound(snapshot);
+    if (!roundAnnouncementSound) {
+      this.lastRoundAnnouncementSoundKey = undefined;
+    }
+    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound && !roundAnnouncementSound)) {
       return;
     }
     for (const actor of soundActors) {
@@ -167,6 +174,9 @@ export class MugenAudioSystem {
     if (roundFade?.active && roundFade.sound) {
       this.processRoundFadeSound(roundFade, snapshot);
     }
+    if (roundAnnouncementSound) {
+      this.processRoundAnnouncementSound(roundAnnouncementSound, snapshot);
+    }
   }
 
   getDiagnostics(): MugenAudioDiagnostics {
@@ -185,6 +195,7 @@ export class MugenAudioSystem {
 
   stopAll(): void {
     this.lastRoundFadeSoundKey = undefined;
+    this.lastRoundAnnouncementSoundKey = undefined;
     this.pendingChannels.clear();
     for (const handle of this.activeChannels.clear()) {
       handle.source.stop();
@@ -294,6 +305,34 @@ export class MugenAudioSystem {
     );
   }
 
+  private processRoundAnnouncementSound(
+    input: { kind: "round" | "fight"; sound: RuntimeRoundAnnouncementSound; elapsed: number },
+    snapshot: MugenSnapshot,
+  ): void {
+    const key = `${snapshot.round?.roundNo ?? 1}:${input.kind}:${input.elapsed}:${input.sound.soundPrefix}:${input.sound.group},${input.sound.index}`;
+    if (this.lastRoundAnnouncementSoundKey === key) {
+      return;
+    }
+    this.lastRoundAnnouncementSoundKey = key;
+    const actor = snapshot.actors[0] ?? {
+      id: "__round-announcement__",
+      runtime: {
+        pos: { x: snapshot.stage.camera.x, y: 0 },
+        facing: 1 as const,
+      },
+    };
+    const event: RuntimeSoundEvent = {
+      type: "PlaySnd",
+      group: input.sound.group,
+      index: input.sound.index,
+      soundPrefix: input.sound.soundPrefix,
+      stateNo: 0,
+      tick: input.elapsed,
+      runtimeTick: snapshot.tick,
+    };
+    void this.play(event, { type: "play" }, actor, snapshot);
+  }
+
   private stop(actorId: string, channel: number | undefined): void {
     if (channel === undefined || channel < 0) {
       this.stopAll();
@@ -381,6 +420,22 @@ export class MugenAudioSystem {
     archives.push(...this.prefixedArchives.values());
     return archives;
   }
+}
+
+function resolveRoundAnnouncementSound(
+  snapshot: MugenSnapshot,
+): { kind: "round" | "fight"; sound: RuntimeRoundAnnouncementSound; elapsed: number } | undefined {
+  const announcement = snapshot.round?.announcement;
+  if (!announcement || announcement.visibility !== "visible") {
+    return undefined;
+  }
+  if (announcement.round.sound) {
+    return { kind: "round", sound: announcement.round.sound, elapsed: announcement.round.elapsed };
+  }
+  if (announcement.fight.sound) {
+    return { kind: "fight", sound: announcement.fight.sound, elapsed: announcement.fight.elapsed };
+  }
+  return undefined;
 }
 
 function runtimeAudioChannelKey(actorId: string, channel: number): string {

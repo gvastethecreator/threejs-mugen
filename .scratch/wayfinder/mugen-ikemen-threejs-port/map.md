@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Route FightScreen announcement sounds](tickets/293-fightscreen-announcement-sound.md) - resolved at source-sound routing scope: `fight.def` screen SND loads under `fs`, Round/Fight sound edges reach Web Audio once, and inline screen actions are indexed without claiming rendering parity.
+
 - [Carry FightScreen display-skip flags](tickets/292-fightscreen-display-skip-flags.md) - resolved at presentation-clock scope: typed global `SkipRoundDisplay`/`SkipFightDisplay` flags reach the announcement clock and suppress fallback text while timer/actor ownership remains separate.
 
 - [Consume FightScreen announcement phases in HUD](tickets/291-fightscreen-announcement-hud.md) - resolved at fallback presentation scope: existing runtime HUD reads visible Round/Fight phase snapshots, while AIR/FNT assets, source audio, exact display skip, and motif transforms remain open.

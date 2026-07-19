@@ -26,9 +26,11 @@ describe("RuntimeRoundAnnouncementSystem", () => {
     const timing = resolveRuntimeRoundAnnouncementTiming({
       roundTimeFrames: 2,
       roundSoundTimeFrames: 2,
+      roundSound: { group: 8, index: 2, soundPrefix: "FS" },
       callFightTimeFrames: 1,
       fightTimeFrames: 3,
       fightSoundTimeFrames: 1,
+      fightSound: { group: 7, index: 1, soundPrefix: "fs" },
     })!;
     const world = new RuntimeRoundAnnouncementWorld(timing);
 
@@ -59,7 +61,7 @@ describe("RuntimeRoundAnnouncementSystem", () => {
     expect(world.snapshot()).toMatchObject({
       visibility: "visible",
       phase: "round",
-      round: { phase: "active", elapsed: 2, soundDue: true },
+      round: { phase: "active", elapsed: 2, soundDue: true, sound: { group: 8, index: 2, soundPrefix: "fs" } },
       fight: { phase: "pending" },
     });
 
@@ -72,7 +74,7 @@ describe("RuntimeRoundAnnouncementSystem", () => {
     world.advance({ introActive: false, shutterActive: false });
     expect(world.snapshot()).toMatchObject({
       phase: "fight",
-      fight: { phase: "active", elapsed: 1, soundDue: true },
+      fight: { phase: "active", elapsed: 1, soundDue: true, sound: { group: 7, index: 1, soundPrefix: "fs" } },
       completion: "asset-owned",
     });
 

@@ -2,6 +2,7 @@ import type { MugenAnimationAction, MugenDiagnostic } from "../model/MugenAnimat
 import type { MugenCharacterDef } from "../model/MugenCharacter";
 import type { MugenGameConfig } from "../model/MugenConfig";
 import type {
+  MugenFightScreenAssets,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -81,6 +82,15 @@ export async function loadMugenSystemAssets(
   }
 
   const systemPackage = await loadAirSffSndPackage(vfs, airPath, sffPath, sndPath, diagnostics);
+  const fightScreenAssets = fightDefPath
+    ? await loadFightScreenAssets(
+        vfs,
+        fightDefPath,
+        explicit.screenSffPath,
+        explicit.screenSndPath,
+        diagnostics,
+      )
+    : undefined;
 
   const hitSparkLibraries: MugenSystemAssets["hitSparkLibraries"] = {};
   if (systemPackage.animations.size > 0 || systemPackage.spriteArchive) {
@@ -134,11 +144,69 @@ export async function loadMugenSystemAssets(
   return {
     fightDefPath,
     ...(fightScreenTiming ? { fightScreenTiming } : {}),
+    ...(fightScreenAssets ? { fightScreenAssets } : {}),
     ...(gameConfig ? { gameConfig } : {}),
     ...(supportedCommonFightFxPaths.length > 0 ? { commonFightFxPaths: supportedCommonFightFxPaths } : {}),
     hitSparkLibraries,
     ...(Object.keys(fightFxLibraries).length > 0 ? { fightFxLibraries } : {}),
     diagnostics,
+  };
+}
+
+async function loadFightScreenAssets(
+  vfs: VirtualFileSystem,
+  fightDefPath: string,
+  sffPath: string | undefined,
+  sndPath: string | undefined,
+  diagnostics: MugenDiagnostic[],
+): Promise<MugenFightScreenAssets | undefined> {
+  const bundleDiagnostics: MugenDiagnostic[] = [];
+  const record = (diagnostic: MugenDiagnostic): void => {
+    bundleDiagnostics.push(diagnostic);
+    diagnostics.push(diagnostic);
+  };
+  const inlineActions = parseAir(
+    extractEmbeddedActionText(vfs.readText(fightDefPath) ?? ""),
+    fightDefPath,
+  );
+  for (const diagnostic of inlineActions.diagnostics) {
+    record(diagnostic);
+  }
+
+  let spriteArchive: MugenFightScreenAssets["spriteArchive"];
+  if (sffPath) {
+    const buffer = vfs.readArrayBuffer(sffPath);
+    if (buffer) {
+      spriteArchive = await new SffParser().load(buffer);
+      for (const warning of spriteArchive.warnings) {
+        record({ severity: "warning", format: "sff", file: sffPath, message: warning });
+      }
+    }
+  }
+
+  let soundArchive: MugenFightScreenAssets["soundArchive"];
+  if (sndPath) {
+    const buffer = vfs.readArrayBuffer(sndPath);
+    if (buffer) {
+      soundArchive = parseSnd(buffer);
+      for (const warning of soundArchive.warnings) {
+        record({ severity: "warning", format: "snd", file: sndPath, message: warning });
+      }
+    }
+  }
+
+  if (!sffPath && !sndPath && inlineActions.actions.size === 0) {
+    return undefined;
+  }
+
+  return {
+    sourcePath: fightDefPath,
+    ...(sffPath ? { sffPath } : {}),
+    ...(sndPath ? { sndPath } : {}),
+    animations: inlineActions.actions,
+    ...(spriteArchive ? { spriteArchive } : {}),
+    ...(soundArchive ? { soundArchive } : {}),
+    diagnostics: bundleDiagnostics,
   };
 }
 
@@ -197,6 +265,22 @@ async function loadAirSffSndPackage(
   }
 
   return { animations, spriteArchive, soundArchive };
+}
+
+function extractEmbeddedActionText(text: string): string {
+  const lines = text.split(/\r?\n/);
+  const output: string[] = [];
+  let inAction = false;
+  for (const line of lines) {
+    const sectionMatch = /^\[([^\]]+)\]$/.exec(line.trim());
+    if (sectionMatch) {
+      inAction = /^Begin\s+Action\s+-?\d+$/i.test(sectionMatch[1]?.trim() ?? "");
+    }
+    if (inAction) {
+      output.push(line);
+    }
+  }
+  return output.join("\n");
 }
 
 async function loadFightFxLibrary(
@@ -276,17 +360,26 @@ function readFightDefRefs(
   vfs: VirtualFileSystem,
   fightDefPath: string,
   resolver: PathResolver,
-): { airPath?: string; sffPath?: string; sndPath?: string; fightScreenTiming?: MugenFightScreenTiming } {
+): {
+  airPath?: string;
+  sffPath?: string;
+  sndPath?: string;
+  screenSffPath?: string;
+  screenSndPath?: string;
+  fightScreenTiming?: MugenFightScreenTiming;
+} {
   const definition = parseDef(vfs.readText(fightDefPath) ?? "", fightDefPath);
   const files = getSection(definition.rawSections, "Files");
   const round = getSection(definition.rawSections, "Round");
   const airRef = getValue(files, ["fightfx.air", "fightfx.anim", "fx.air"]);
   const sffRef = getValue(files, ["fightfx.sff", "fx.sff"]);
-  const sndRef = getValue(files, ["snd", "fightfx.snd", "fx.snd"]);
+  const sndRef = getValue(files, ["fightfx.snd", "fx.snd"]);
   return {
     airPath: resolveExisting(resolver, fightDefPath, airRef),
     sffPath: resolveExisting(resolver, fightDefPath, sffRef),
     sndPath: resolveExisting(resolver, fightDefPath, sndRef),
+    screenSffPath: resolveExisting(resolver, fightDefPath, getValue(files, ["sff", "sprite"])),
+    screenSndPath: resolveExisting(resolver, fightDefPath, getValue(files, ["snd", "sound"])),
     fightScreenTiming: parseFightScreenTiming(round, fightDefPath),
   };
 }
@@ -306,9 +399,11 @@ function parseFightScreenTiming(
     controlTime: numberValue(section, "ctrl.time"),
     roundTime: numberValue(section, "round.time"),
     roundSoundTime: numberValue(section, "round.sndtime"),
+    roundSound: soundValue(section, "round.default.snd"),
     callFightTime: numberValue(section, "callfight.time"),
     fightTime: numberValue(section, "fight.time"),
     fightSoundTime: numberValue(section, "fight.sndtime"),
+    fightSound: soundValue(section, "fight.snd"),
     shutterTime: numberValue(section, "shutter.time"),
     shutterColor: colorValue(section, "shutter.col"),
     fadeInTime: numberValue(section, "fadein.time"),

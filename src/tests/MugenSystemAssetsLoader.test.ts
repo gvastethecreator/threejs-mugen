@@ -31,6 +31,8 @@ cns = kfm.cns
       text(`[Files]
 fightfx.air = fightfx.air
 fightfx.sff = fightfx.sff
+sff = fightfx.sff
+snd = fightfx.snd
 
 [Round]
 over.waittime = 12
@@ -40,9 +42,11 @@ over.forcewintime = 900
 over.time = 240
 round.time = 4
 round.sndtime = 2
+round.default.snd = 8, 2
 callfight.time = 3
 fight.time = 5
 fight.sndtime = 1
+fight.snd = 7, 1
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -58,6 +62,9 @@ fadeout.snd = 7, 1
 slow.time = 70
 slow.fadetime = 50
 slow.speed = 0.5
+
+[Begin Action 7002]
+9100,0,0,0,3
 `),
     );
     vfs.addFile("data/mugen.cfg", text("[Config]\nGameWidth = 1280\nGameHeight = 720\n"));
@@ -89,9 +96,11 @@ slow.speed = 0.5
       overTime: 240,
       roundTime: 4,
       roundSoundTime: 2,
+      roundSound: [8, 2],
       callFightTime: 3,
       fightTime: 5,
       fightSoundTime: 1,
+      fightSound: [7, 1],
       startWaitTime: 12,
       controlTime: 30,
       shutterTime: 15,
@@ -109,6 +118,21 @@ slow.speed = 0.5
       slowTime: 70,
       slowFadeTime: 50,
       slowSpeed: 0.5,
+    });
+    expect(character.systemAssets?.fightScreenAssets).toMatchObject({
+      sourcePath: "data/fight.def",
+      sffPath: "data/fightfx.sff",
+      sndPath: "data/fightfx.snd",
+    });
+    expect(character.systemAssets?.fightScreenAssets?.animations.get(7002)?.frames[0]).toMatchObject({
+      spriteGroup: 9100,
+      spriteIndex: 0,
+      duration: 3,
+    });
+    expect(character.systemAssets?.fightScreenAssets?.soundArchive?.sounds[0]).toMatchObject({
+      group: 7,
+      index: 1,
+      format: "wav",
     });
     expect(character.systemAssets?.gameConfig?.gameSpace).toEqual({ width: 1280, height: 720, sourcePath: "data/mugen.cfg" });
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.airPath).toBe("data/fightfx.air");

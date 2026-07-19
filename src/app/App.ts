@@ -2960,7 +2960,8 @@ export class App {
       this.log(`Character SND decoded ${archive.metadata.decodedTotal}/${archive.metadata.soundTotal} WAV sounds`);
     }
     for (const [prefix, soundArchive] of Object.entries(prefixedArchives)) {
-      this.log(`FightFX ${prefix} SND decoded ${soundArchive.metadata.decodedTotal}/${soundArchive.metadata.soundTotal} WAV sounds`);
+      const label = prefix === "fs" ? "FightScreen" : `FightFX ${prefix}`;
+      this.log(`${label} SND decoded ${soundArchive.metadata.decodedTotal}/${soundArchive.metadata.soundTotal} WAV sounds`);
     }
   }
 
@@ -2970,8 +2971,12 @@ export class App {
     if (fightfx?.soundArchive) {
       result.f = fightfx.soundArchive;
     }
+    const fightScreen = character.systemAssets?.fightScreenAssets;
+    if (fightScreen?.soundArchive) {
+      result.fs = fightScreen.soundArchive;
+    }
     for (const library of Object.values(character.systemAssets?.fightFxLibraries ?? {})) {
-      if (library.prefix && library.soundArchive) {
+      if (library.prefix && library.soundArchive && !result[library.prefix]) {
         result[library.prefix] = library.soundArchive;
       }
     }
