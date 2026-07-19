@@ -137,6 +137,48 @@ describe("RuntimeMatchInteractionWorld", () => {
     ]);
   });
 
+  it("keeps presentation alive while the round no-damage window rejects combat admission", () => {
+    const calls: string[] = [];
+    const combat = (name: string) => () => calls.push(`combat:${name}`);
+
+    new RuntimeMatchInteractionWorld().advance({
+      p1: "p1",
+      p2: "p2",
+      roundNoDamage: true,
+      advanceTargetMemory: () => calls.push("target"),
+      advanceActiveEffects: (fighter) => calls.push(`effects:${fighter}`),
+      resolveProjectileClashes: () => calls.push("maintenance:projectile-clash"),
+      separateActors: () => calls.push("separate"),
+      applyTargetBindings: () => calls.push("target-bind"),
+      applyBindToTarget: () => calls.push("bind-to-target"),
+      inspectHitAdmission: combat("hit-admission"),
+      resolveReversalClash: combat("reversal"),
+      resolveRootReversalClashes: () => calls.push("combat:root-reversal"),
+      resolvePriorityClash: () => {
+        calls.push("combat:priority");
+        return undefined;
+      },
+      resolveRootPriorityClashes: () => calls.push("combat:root-priority"),
+      resolveEqualPriorityOutcomes: () => 0,
+      resolveRootPriorityOutcomes: () => calls.push("combat:priority-outcomes"),
+      resolveDirectCombat: combat("direct"),
+      resolveRootDirectCombat: () => calls.push("combat:root-direct"),
+      commitHitDefTargets: combat("hitdef-commit"),
+      resolveProjectileCombat: combat("projectile"),
+      resolveSelfProjectileCombat: combat("self-projectile"),
+      resolveHelperCombat: combat("helper"),
+      clampToStage: (fighter) => calls.push(`clamp:${fighter}`),
+      advancePresentationEffects: (fighter) => calls.push(`presentation:${fighter}`),
+      log: () => calls.push("combat:log"),
+    });
+
+    expect(calls.filter((call) => call.startsWith("combat:"))).toEqual([]);
+    expect(calls).toContain("clamp:p1");
+    expect(calls).toContain("clamp:p2");
+    expect(calls).toContain("presentation:p1");
+    expect(calls).toContain("presentation:p2");
+  });
+
   it("wires runtime target, effect lifecycle, projectile clash, and constraint systems", () => {
     const world = new RuntimeMatchInteractionWorld();
     const calls: string[] = [];

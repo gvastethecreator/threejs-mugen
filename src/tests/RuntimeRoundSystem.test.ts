@@ -95,6 +95,7 @@ describe("RuntimeRoundSystem", () => {
 
   it("derives phase-4 timing from normalized source-backed overrides", () => {
     const timing = resolveRuntimeRoundTiming({
+      overHitTimeFrames: 1,
       postKoPhase4StartFrames: 2,
       winPoseFrames: 3,
       postKoFrames: 7,
@@ -103,6 +104,7 @@ describe("RuntimeRoundSystem", () => {
       koSlowRate: 2,
     });
     expect(timing).toEqual({
+      overHitTimeFrames: 1,
       postKoPhase4StartFrames: 2,
       winPoseFrames: 3,
       postKoFrames: 7,
@@ -120,6 +122,27 @@ describe("RuntimeRoundSystem", () => {
     expect(round.currentPhase).toBe(4);
     expect(round.snapshot().postRound).toMatchObject({ frame: 2, remaining: 5, duration: 7, slowDuration: 4 });
     expect(round.winPoseFrames).toBe(3);
+  });
+
+  it("opens the official no-damage interval before phase 4", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      overHitTimeFrames: 2,
+      postKoPhase4StartFrames: 4,
+      postKoFrames: 6,
+    });
+    round.tickTimer();
+    round.finishIfNeeded({ label: "P1", life: 500 }, { label: "P2", life: 500 });
+
+    expect(round.roundNoDamage).toBe(false);
+    round.tickTimer();
+    expect(round.roundNoDamage).toBe(false);
+    round.tickTimer();
+    expect(round.roundNoDamage).toBe(true);
+    round.tickTimer();
+    expect(round.roundNoDamage).toBe(true);
+    round.tickTimer();
+    expect(round.currentPhase).toBe(4);
+    expect(round.roundNoDamage).toBe(false);
   });
 
   it("captures NoKOSlow on the KO frame without shortening the post-round window", () => {

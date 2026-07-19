@@ -20,6 +20,7 @@ export type RuntimeMatchPostFighterInput<TActor extends RuntimeMatchPostFighterA
   stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
   gameSpace?: ExpressionGameSpace;
   stageTime?: number;
+  roundNoDamage?: boolean;
   helpersAdvancedInActorOrder?: boolean;
   runtimeProfile?: RuntimeEffectLifecycleAdvanceOptions["runtimeProfile"];
   resolveHelperCommandActive?: (fighter: TActor, name: string) => boolean;
@@ -69,6 +70,7 @@ export class RuntimeMatchPostFighterWorld {
       gameSpace: input.gameSpace,
       stageTime: input.stageTime,
       runtimeTick: input.runtimeTick,
+      roundNoDamage: input.roundNoDamage,
       targetActors: input.targetActors,
       targetResetActors: input.targetResetActors,
       hitDefContactActors: input.hitDefContactActors,

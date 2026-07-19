@@ -1800,6 +1800,7 @@ export class PlayableMatchRuntime {
         return matchPostFighterWorld.advanceRuntime({
           p1: activeP1,
           p2: activeP2,
+          roundNoDamage: this.round.roundNoDamage,
           targetActors: this.teamGameplayActive()
             ? selectRuntimeRootTargetMaintenanceActors(this.characterRoots())
             : undefined,
@@ -6125,6 +6126,7 @@ function runtimeRoundTimingFromFightScreen(
     ? undefined
     : source.overWaitTime + source.overTime;
   const timing: Partial<RuntimeRoundTiming> = {
+    overHitTimeFrames: source.overHitTime,
     postKoPhase4StartFrames: source.overWaitTime,
     winPoseFrames: source.overWinTime,
     postKoFrames,

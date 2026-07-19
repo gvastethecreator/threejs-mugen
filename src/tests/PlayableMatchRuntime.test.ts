@@ -4203,6 +4203,7 @@ RedirectID = 999
     });
     attacker.fightScreenTiming = {
       sourcePath: "data/fight.def",
+      overHitTime: 1,
       overWaitTime: 2,
       overWinTime: 3,
       overTime: 8,
@@ -4288,6 +4289,35 @@ RedirectID = 999
     }
     expect(snapshot.playing).toBe(false);
     expect(snapshot.round).toMatchObject({ state: "timeover", roundPhase: 4, postRound: { frame: 5, remaining: 0 } });
+  });
+
+  it("blocks a newly admitted HitDef during the imported time-over no-damage interval", () => {
+    const attacker = createImportedFixture({
+      id: "timeover-no-damage-attacker",
+      hitDefDamage: 200,
+    });
+    const defender = createImportedFixture({
+      id: "timeover-no-damage-defender",
+      hitDefDamage: 0,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 1,
+      roundTiming: {
+        overHitTimeFrames: 1,
+        postKoPhase4StartFrames: 4,
+        winPoseFrames: 2,
+        postKoFrames: 6,
+      },
+    });
+
+    const timeOver = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(timeOver.round).toMatchObject({ state: "timeover", roundPhase: 3, postRound: { frame: 0 } });
+
+    const duringNoDamage = runtime.step({ p1: new Set(["x"]), p2: new Set() }, { force: true });
+    expect(duringNoDamage.round).toMatchObject({ state: "timeover", roundPhase: 3, postRound: { frame: 1 } });
+    expect(duringNoDamage.actors.find(({ id }) => id === "p1")?.runtime.stateNo).toBe(200);
+    expect(duringNoDamage.actors.find(({ id }) => id === "p2")?.runtime.life).toBe(1000);
   });
 
   it("projects MatchOver at phase 4 and commits it only through next-round ownership", () => {

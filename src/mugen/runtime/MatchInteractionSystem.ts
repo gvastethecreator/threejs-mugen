@@ -46,6 +46,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   separateActors: (left: TFighter, right: TFighter) => void;
   advanceBodyPush?: () => void;
   inspectHitAdmission?: () => void;
+  roundNoDamage?: boolean;
   resolveRootReversalClashes?: (resolveReversalClash: (reverser: TFighter, getter: TFighter) => void) => void;
   resolveRootDirectCombat?: (resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void) => void;
   applyTargetBindings: (fighter: TFighter, candidates: TFighter[]) => void;
@@ -92,6 +93,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     targetResetActors?: readonly TFighter[];
     hitDefContactActors?: readonly TFighter[];
     helpersAdvancedInActorOrder?: boolean;
+    roundNoDamage?: boolean;
     runtimeProfile?: RuntimeEffectLifecycleAdvanceOptions["runtimeProfile"];
     resolveHelperCommandActive?: (fighter: TFighter, name: string) => boolean;
     resolveHelperTargetRedirect?: RuntimeEffectLifecycleAdvanceOptions["resolveTargetRedirect"];
@@ -153,36 +155,39 @@ export class RuntimeMatchInteractionWorld {
     input.refreshGuardDistance?.(p1, p2);
     input.refreshGuardDistance?.(p2, p1);
     input.refreshRootGuardDistance?.();
-    input.inspectHitAdmission?.();
+    const combatEnabled = input.roundNoDamage !== true;
+    if (combatEnabled) input.inspectHitAdmission?.();
 
     input.recordSchedulePhase?.("post-fighter:combat");
-    if (input.resolveRootReversalClashes && input.resolveReversalClash) {
-      input.resolveRootReversalClashes(input.resolveReversalClash);
-    }
-    if (input.resolveRootPriorityClashes) input.resolveRootPriorityClashes(input.resolvePriorityClash);
-    else {
-      const priorityMessage = input.resolvePriorityClash(p1, p2);
-      if (priorityMessage) input.log(priorityMessage);
-    }
-    if (input.resolveRootPriorityOutcomes && input.resolveEqualPriorityOutcomes) {
-      input.resolveRootPriorityOutcomes(input.resolveEqualPriorityOutcomes);
-    }
+    if (combatEnabled) {
+      if (input.resolveRootReversalClashes && input.resolveReversalClash) {
+        input.resolveRootReversalClashes(input.resolveReversalClash);
+      }
+      if (input.resolveRootPriorityClashes) input.resolveRootPriorityClashes(input.resolvePriorityClash);
+      else {
+        const priorityMessage = input.resolvePriorityClash(p1, p2);
+        if (priorityMessage) input.log(priorityMessage);
+      }
+      if (input.resolveRootPriorityOutcomes && input.resolveEqualPriorityOutcomes) {
+        input.resolveRootPriorityOutcomes(input.resolveEqualPriorityOutcomes);
+      }
 
-    if (input.resolveRootDirectCombat) input.resolveRootDirectCombat(input.resolveDirectCombat);
-    else {
-      input.resolveDirectCombat(p1, p2);
-      input.resolveDirectCombat(p2, p1);
+      if (input.resolveRootDirectCombat) input.resolveRootDirectCombat(input.resolveDirectCombat);
+      else {
+        input.resolveDirectCombat(p1, p2);
+        input.resolveDirectCombat(p2, p1);
+      }
+      for (const fighter of input.hitDefContactActors ?? [p1, p2]) {
+        input.commitHitDefTargets?.(fighter);
+        input.recordHitDefContactCommit?.(fighter);
+      }
+      input.resolveProjectileCombat(p1, p2);
+      input.resolveProjectileCombat(p2, p1);
+      input.resolveSelfProjectileCombat?.(p1);
+      input.resolveSelfProjectileCombat?.(p2);
+      input.resolveHelperCombat?.(p1, p2);
+      input.resolveHelperCombat?.(p2, p1);
     }
-    for (const fighter of input.hitDefContactActors ?? [p1, p2]) {
-      input.commitHitDefTargets?.(fighter);
-      input.recordHitDefContactCommit?.(fighter);
-    }
-    input.resolveProjectileCombat(p1, p2);
-    input.resolveProjectileCombat(p2, p1);
-    input.resolveSelfProjectileCombat?.(p1);
-    input.resolveSelfProjectileCombat?.(p2);
-    input.resolveHelperCombat?.(p1, p2);
-    input.resolveHelperCombat?.(p2, p1);
     input.clampToStage(p1);
     input.clampToStage(p2);
     input.recordSchedulePhase?.("post-fighter:presentation-effects");
@@ -199,6 +204,7 @@ export class RuntimeMatchInteractionWorld {
     this.advance({
       p1,
       p2,
+      roundNoDamage: input.roundNoDamage,
       targetActors: input.targetActors,
       targetResetActors: input.targetResetActors,
       hitDefContactActors: input.hitDefContactActors,

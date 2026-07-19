@@ -6,6 +6,7 @@ import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
 export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
 
 export type RuntimeRoundTiming = {
+  overHitTimeFrames: number;
   postKoPhase4StartFrames: number;
   winPoseFrames: number;
   postKoFrames: number;
@@ -15,6 +16,7 @@ export type RuntimeRoundTiming = {
 };
 
 export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object.freeze({
+  overHitTimeFrames: 10,
   postKoPhase4StartFrames: 45,
   winPoseFrames: DEFAULT_RUNTIME_WIN_POSE_FRAMES,
   postKoFrames: 45 + 210,
@@ -23,6 +25,7 @@ export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object
   koSlowRate: 0.25,
 });
 
+export const DEFAULT_RUNTIME_OVER_HIT_TIME_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.overHitTimeFrames;
 export const DEFAULT_RUNTIME_KO_SLOW_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.koSlowFrames;
 export const DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.koSlowFadeFrames;
 export const DEFAULT_RUNTIME_KO_SLOW_RATE = DEFAULT_RUNTIME_ROUND_TIMING.koSlowRate;
@@ -96,6 +99,15 @@ export class RuntimeRoundSystem {
 
   get postKoPhase4StartFrames(): number {
     return this.timing.postKoPhase4StartFrames;
+  }
+
+  /** Ikemen's roundNoDamage interval: post-hit wait before round state 4. */
+  get roundNoDamage(): boolean {
+    if (this.state !== "ko" && this.state !== "timeover") return false;
+    return this.postRoundRemaining > 0
+      && this.postRoundFrame > 0
+      && this.postRoundFrame >= this.timing.overHitTimeFrames
+      && this.postRoundFrame < this.timing.postKoPhase4StartFrames;
   }
 
   get winPoseFrames(): number {
@@ -236,6 +248,10 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.postKoPhase4StartFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.postKoPhase4StartFrames,
   );
+  const overHitTimeFrames = Math.min(
+    postKoPhase4StartFrames,
+    boundedTimingFrames(overrides.overHitTimeFrames, DEFAULT_RUNTIME_ROUND_TIMING.overHitTimeFrames),
+  );
   const postKoFrames = Math.max(
     postKoPhase4StartFrames,
     boundedTimingFrames(overrides.postKoFrames, DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames),
@@ -254,6 +270,7 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     : DEFAULT_RUNTIME_ROUND_TIMING.koSlowRate;
 
   return {
+    overHitTimeFrames,
     postKoPhase4StartFrames,
     winPoseFrames,
     postKoFrames,
