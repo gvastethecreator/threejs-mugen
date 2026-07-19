@@ -5,10 +5,15 @@ export type RuntimeRoundAnnouncementTimingInput = {
   roundSoundsByNumber?: Record<number, RuntimeRoundAnnouncementSound | undefined>;
   roundSingleSound?: RuntimeRoundAnnouncementSound;
   roundFinalSound?: RuntimeRoundAnnouncementSound;
+  roundAnimationEndFrames?: number;
+  roundAnimationEndFramesByNumber?: Record<number, number | undefined>;
+  roundSingleAnimationEndFrames?: number;
+  roundFinalAnimationEndFrames?: number;
   callFightTimeFrames?: number;
   fightTimeFrames?: number;
   fightSoundTimeFrames?: number;
   fightSound?: RuntimeRoundAnnouncementSound;
+  fightAnimationEndFrames?: number;
 };
 
 export type RuntimeRoundAnnouncementSound = {
@@ -25,10 +30,15 @@ export type RuntimeRoundAnnouncementTiming = {
   roundSoundsByNumber?: Record<number, RuntimeRoundAnnouncementSound>;
   roundSingleSound?: RuntimeRoundAnnouncementSound;
   roundFinalSound?: RuntimeRoundAnnouncementSound;
+  roundAnimationEndFrames?: number;
+  roundAnimationEndFramesByNumber?: Record<number, number>;
+  roundSingleAnimationEndFrames?: number;
+  roundFinalAnimationEndFrames?: number;
   callFightTimeFrames: number;
   fightTimeFrames: number;
   fightSoundTimeFrames: number;
   fightSound?: RuntimeRoundAnnouncementSound;
+  fightAnimationEndFrames?: number;
 };
 
 export type RuntimeRoundAnnouncementTrackSnapshot = {
@@ -38,6 +48,8 @@ export type RuntimeRoundAnnouncementTrackSnapshot = {
   animationStart: number;
   soundTime: number;
   soundDue: boolean;
+  animationEnd?: number;
+  animationComplete?: boolean;
   sound?: RuntimeRoundAnnouncementSound;
 };
 
@@ -83,7 +95,12 @@ export function resolveRuntimeRoundAnnouncementTiming(
   const roundSoundsByNumber = normalizeSoundMap(input.roundSoundsByNumber);
   const roundSingleSound = normalizeSound(input.roundSingleSound);
   const roundFinalSound = normalizeSound(input.roundFinalSound);
+  const roundAnimationEndFrames = normalizeOptionalFrames(input.roundAnimationEndFrames);
+  const roundAnimationEndFramesByNumber = normalizeFramesMap(input.roundAnimationEndFramesByNumber);
+  const roundSingleAnimationEndFrames = normalizeOptionalFrames(input.roundSingleAnimationEndFrames);
+  const roundFinalAnimationEndFrames = normalizeOptionalFrames(input.roundFinalAnimationEndFrames);
   const fightSound = normalizeSound(input.fightSound);
+  const fightAnimationEndFrames = normalizeOptionalFrames(input.fightAnimationEndFrames);
   return {
     schema: "RuntimeRoundAnnouncementTiming/v0",
     roundTimeFrames,
@@ -92,10 +109,15 @@ export function resolveRuntimeRoundAnnouncementTiming(
     ...(roundSoundsByNumber ? { roundSoundsByNumber } : {}),
     ...(roundSingleSound ? { roundSingleSound } : {}),
     ...(roundFinalSound ? { roundFinalSound } : {}),
+    ...(roundAnimationEndFrames === undefined ? {} : { roundAnimationEndFrames }),
+    ...(roundAnimationEndFramesByNumber ? { roundAnimationEndFramesByNumber } : {}),
+    ...(roundSingleAnimationEndFrames === undefined ? {} : { roundSingleAnimationEndFrames }),
+    ...(roundFinalAnimationEndFrames === undefined ? {} : { roundFinalAnimationEndFrames }),
     callFightTimeFrames: boundedFrames(input.callFightTimeFrames, DEFAULT_CALL_FIGHT_TIME_FRAMES),
     fightTimeFrames,
     fightSoundTimeFrames: boundedFrames(input.fightSoundTimeFrames, fightTimeFrames),
     ...(fightSound ? { fightSound } : {}),
+    ...(fightAnimationEndFrames === undefined ? {} : { fightAnimationEndFrames }),
   };
 }
 
@@ -111,6 +133,8 @@ export class RuntimeRoundAnnouncementWorld {
   private hidden = true;
   private roundNo = 1;
   private mode: RuntimeRoundAnnouncementMode = "normal";
+  private roundAnimationComplete = false;
+  private fightAnimationComplete = false;
 
   constructor(private readonly timing: RuntimeRoundAnnouncementTiming) {}
 
@@ -126,6 +150,8 @@ export class RuntimeRoundAnnouncementWorld {
     this.hidden = true;
     this.roundNo = 1;
     this.mode = "normal";
+    this.roundAnimationComplete = false;
+    this.fightAnimationComplete = false;
   }
 
   advance(options: RuntimeRoundAnnouncementAdvanceOptions): void {
@@ -146,14 +172,21 @@ export class RuntimeRoundAnnouncementWorld {
       this.roundSkipped = true;
       this.roundActive = true;
       this.roundElapsed = Math.max(this.roundElapsed, this.timing.roundTimeFrames);
+      this.roundAnimationComplete = true;
     }
 
     if (!this.roundActive && this.roundElapsed >= this.timing.roundTimeFrames) {
       this.roundActive = true;
     }
+    if (this.roundActive && !this.roundSkipped) {
+      this.roundAnimationComplete = this.roundAnimationCompleteAtCurrentFrame();
+    }
     if (!this.roundActive || this.fightActive) {
       if (this.fightActive) {
         this.fightElapsed += 1;
+        if (!this.fightSkipped) {
+          this.fightAnimationComplete = this.fightAnimationCompleteAtCurrentFrame();
+        }
       }
       return;
     }
@@ -162,6 +195,7 @@ export class RuntimeRoundAnnouncementWorld {
       this.fightSkipped = true;
       this.fightActive = true;
       this.fightElapsed = this.timing.fightTimeFrames;
+      this.fightAnimationComplete = true;
       return;
     }
 
@@ -180,8 +214,8 @@ export class RuntimeRoundAnnouncementWorld {
       : this.fightSkipped
         ? "hidden"
         : this.fightActive
-          ? "fight"
-          : this.roundActive && !this.roundSkipped
+          ? (this.fightAnimationComplete ? "hidden" : "fight")
+          : this.roundActive && !this.roundSkipped && !this.roundAnimationComplete
             ? "round"
             : "hidden";
     const roundSoundDue = visibility === "visible"
@@ -207,6 +241,10 @@ export class RuntimeRoundAnnouncementWorld {
         animationStart: this.timing.roundTimeFrames,
         soundTime: this.timing.roundSoundTimeFrames,
         soundDue: roundSoundDue,
+        ...(this.roundAnimationEndFrames() === undefined ? {} : {
+          animationEnd: this.roundAnimationEndFrames(),
+          animationComplete: this.roundAnimationComplete,
+        }),
         ...(roundSoundDue && roundSound ? { sound: { ...roundSound } } : {}),
       },
       fight: {
@@ -216,12 +254,38 @@ export class RuntimeRoundAnnouncementWorld {
         animationStart: this.timing.fightTimeFrames,
         soundTime: this.timing.fightSoundTimeFrames,
         soundDue: fightSoundDue,
+        ...(this.timing.fightAnimationEndFrames === undefined ? {} : {
+          animationEnd: this.timing.fightAnimationEndFrames,
+          animationComplete: this.fightAnimationComplete,
+        }),
         ...(fightSoundDue && this.timing.fightSound ? { sound: { ...this.timing.fightSound } } : {}),
       },
       callFightElapsed: this.callFightElapsed,
       completion: "asset-owned",
       timing: { ...this.timing },
     };
+  }
+
+  private roundAnimationEndFrames(): number | undefined {
+    if (this.mode === "single" && this.timing.roundSingleAnimationEndFrames !== undefined) {
+      return this.timing.roundSingleAnimationEndFrames;
+    }
+    if (this.mode === "final" && this.timing.roundFinalAnimationEndFrames !== undefined) {
+      return this.timing.roundFinalAnimationEndFrames;
+    }
+    return this.timing.roundAnimationEndFramesByNumber?.[this.roundNo] ?? this.timing.roundAnimationEndFrames;
+  }
+
+  private roundAnimationCompleteAtCurrentFrame(): boolean {
+    const endFrame = this.roundAnimationEndFrames();
+    if (endFrame === undefined) return false;
+    return Math.max(0, this.roundElapsed - this.timing.roundTimeFrames) >= endFrame;
+  }
+
+  private fightAnimationCompleteAtCurrentFrame(): boolean {
+    const endFrame = this.timing.fightAnimationEndFrames;
+    if (endFrame === undefined) return false;
+    return Math.max(0, this.fightElapsed - this.timing.fightTimeFrames) >= endFrame;
   }
 }
 
@@ -260,6 +324,26 @@ function normalizeSoundMap(
     }
   }
   return Object.keys(normalized).length > 0 ? normalized : undefined;
+}
+
+function normalizeFramesMap(
+  values: Record<number, number | undefined> | undefined,
+): Record<number, number> | undefined {
+  if (!values) return undefined;
+  const normalized: Record<number, number> = {};
+  for (const [key, value] of Object.entries(values)) {
+    const roundNo = Number(key);
+    const frames = normalizeOptionalFrames(value);
+    if (Number.isFinite(roundNo) && roundNo >= 1 && frames !== undefined) {
+      normalized[Math.round(roundNo)] = frames;
+    }
+  }
+  return Object.keys(normalized).length > 0 ? normalized : undefined;
+}
+
+function normalizeOptionalFrames(value: number | undefined): number | undefined {
+  if (value === undefined || !Number.isFinite(value)) return undefined;
+  return Math.max(0, Math.round(value));
 }
 
 function normalizeSound(value: RuntimeRoundAnnouncementSound | undefined): RuntimeRoundAnnouncementSound | undefined {

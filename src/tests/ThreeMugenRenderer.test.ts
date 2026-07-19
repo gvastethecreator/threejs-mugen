@@ -10,6 +10,10 @@ import {
   resolveFightScreenAnnouncementSelection,
   resolveRoundDisplayAsset,
 } from "../game/render/FightScreenAnnouncementRenderer";
+import {
+  resolveFightScreenAnimationCompletion,
+  resolveFightScreenAnnouncementCompletion,
+} from "../mugen/runtime/FightScreenAnimationSemantics";
 import { projectRoundFadeSprite, resolveRoundFadeAnimationFrame } from "../game/render/RoundFadeRenderer";
 import { projectRoundShutterBars } from "../game/render/RoundShutterRenderer";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
@@ -181,6 +185,51 @@ describe("FightScreenAnnouncementRenderer asset selection", () => {
     }, display)?.asset).toEqual({ animationNo: 7004 });
   });
 
+  it("mirrors AnimTextSnd End for displaytime, finite AIR, and terminal AIR frames", () => {
+    const finite = actionWithDurations(7100, [3, 4]);
+    const terminal = actionWithDurations(7101, [3, -1]);
+    const animations = new Map([[7100, finite], [7101, terminal]]);
+
+    expect(resolveFightScreenAnimationCompletion({ animationNo: 7100 }, animations)).toEqual({
+      frame: 7,
+      reason: "finite-animation",
+      actionNos: [7100],
+    });
+    expect(resolveFightScreenAnimationCompletion({ animationNo: 7101 }, animations)).toEqual({
+      frame: 3,
+      reason: "terminal-frame",
+      actionNos: [7101],
+    });
+    expect(resolveFightScreenAnimationCompletion({ animationNo: 7100, displayTime: 4 }, animations)).toEqual({
+      frame: 3,
+      reason: "displaytime",
+      actionNos: [7100],
+    });
+  });
+
+  it("waits for both the selected round variant and round.default", () => {
+    const display: MugenFightScreenDisplayDefinitions = {
+      round: new Map([[2, { animationNo: 7100 }]]),
+      roundDefault: { animationNo: 7101 },
+      fight: { animationNo: 7100 },
+    };
+    const animations = new Map([
+      [7100, actionWithDurations(7100, [3, 4])],
+      [7101, actionWithDurations(7101, [9])],
+    ]);
+
+    expect(resolveFightScreenAnnouncementCompletion(display, animations, "round", "normal", 2)).toEqual({
+      frame: 9,
+      reason: "parallel",
+      actionNos: [7100, 7101],
+    });
+    expect(resolveFightScreenAnnouncementCompletion(display, animations, "fight", "normal", 1)).toEqual({
+      frame: 7,
+      reason: "finite-animation",
+      actionNos: [7100],
+    });
+  });
+
   it("projects FightScreen layout coordinates with AIR offsets and authored flips", () => {
     expect(projectFightScreenSprite(
       { x: 0, y: 0, width: 640, height: 360, zoom: 1 },
@@ -214,6 +263,14 @@ function fadeFrame(spriteIndex: number, duration: number): MugenAnimationAction[
     clsn2: [],
     raw: `${spriteIndex},0,0,0,${duration}`,
     line: spriteIndex,
+  };
+}
+
+function actionWithDurations(id: number, durations: number[]): MugenAnimationAction {
+  return {
+    id,
+    frames: durations.map((duration, index) => fadeFrame(index, duration)),
+    rawLines: [`[Begin Action ${id}]`],
   };
 }
 

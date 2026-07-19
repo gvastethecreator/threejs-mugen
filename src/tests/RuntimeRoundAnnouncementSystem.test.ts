@@ -174,4 +174,56 @@ describe("RuntimeRoundAnnouncementSystem", () => {
 
     expect(round.snapshot().announcement?.round.sound).toEqual({ group: 10, index: 0, soundPrefix: "fs" });
   });
+
+  it("uses source-derived AnimTextSnd completion to hide finished announcement phases", () => {
+    const timing = resolveRuntimeRoundAnnouncementTiming({
+      roundTimeFrames: 1,
+      roundAnimationEndFrames: 1,
+      callFightTimeFrames: 99,
+      fightAnimationEndFrames: 1,
+    })!;
+    const world = new RuntimeRoundAnnouncementWorld(timing);
+
+    world.advance({ introActive: false, shutterActive: false });
+    expect(world.snapshot()).toMatchObject({ phase: "hidden", round: { phase: "pending" } });
+
+    world.advance({ introActive: false, shutterActive: false });
+    expect(world.snapshot()).toMatchObject({
+      phase: "round",
+      round: { phase: "active", animationEnd: 1, animationComplete: false },
+    });
+
+    world.advance({ introActive: false, shutterActive: false });
+    expect(world.snapshot()).toMatchObject({
+      phase: "hidden",
+      round: { animationEnd: 1, animationComplete: true },
+    });
+
+    const fightTiming = resolveRuntimeRoundAnnouncementTiming({
+      roundTimeFrames: 0,
+      callFightTimeFrames: 0,
+      fightTimeFrames: 0,
+      fightAnimationEndFrames: 1,
+    })!;
+    const fightWorld = new RuntimeRoundAnnouncementWorld(fightTiming);
+    fightWorld.advance({ introActive: false, shutterActive: false });
+    expect(fightWorld.snapshot()).toMatchObject({ phase: "fight", fight: { animationComplete: false } });
+    fightWorld.advance({ introActive: false, shutterActive: false });
+    expect(fightWorld.snapshot()).toMatchObject({ phase: "hidden", fight: { animationComplete: true } });
+  });
+
+  it("normalizes per-round completion metadata without inventing absent source timing", () => {
+    expect(resolveRuntimeRoundAnnouncementTiming({
+      roundAnimationEndFrames: 4.6,
+      roundAnimationEndFramesByNumber: { 2: 3.4, 0: 8, 3: Number.NaN },
+      roundSingleAnimationEndFrames: -2,
+      fightAnimationEndFrames: 1.2,
+    })).toMatchObject({
+      roundAnimationEndFrames: 5,
+      roundAnimationEndFramesByNumber: { 2: 3 },
+      roundSingleAnimationEndFrames: 0,
+      fightAnimationEndFrames: 1,
+    });
+    expect(resolveRuntimeRoundAnnouncementTiming({})).toBeUndefined();
+  });
 });

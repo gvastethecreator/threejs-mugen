@@ -10,7 +10,7 @@ import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type {
-  MugenFightScreenDisplayDefinitions,
+  MugenFightScreenAssets,
   MugenFightScreenTiming,
 } from "../model/MugenSystemAssets";
 import {
@@ -174,6 +174,10 @@ import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem, type RuntimeRoundTiming } from "./RuntimeRoundSystem";
 import { resolveRuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
+import {
+  resolveFightScreenAnimationCompletion,
+  resolveFightScreenAnnouncementCompletion,
+} from "./FightScreenAnimationSemantics";
 import {
   RuntimeRoundResourceResetWorld,
   type RuntimeRoundResourceActor,
@@ -641,7 +645,7 @@ export class PlayableMatchRuntime {
     const fightScreenDefinition = p1Definition.fightScreenTiming ? p1Definition : p2Definition;
     const roundTiming = options.roundTiming ?? runtimeRoundTimingFromFightScreen(
       fightScreenDefinition.fightScreenTiming,
-      fightScreenDefinition.fightScreenAssets?.display,
+      fightScreenDefinition.fightScreenAssets,
     );
     this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile, roundTiming);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
@@ -6267,9 +6271,11 @@ function hasRuntimeRoundNoSkip(
 
 function runtimeRoundTimingFromFightScreen(
   source?: MugenFightScreenTiming,
-  display?: MugenFightScreenDisplayDefinitions,
+  assets?: MugenFightScreenAssets,
 ): Partial<RuntimeRoundTiming> | undefined {
+  const display = assets?.display;
   if (!source && !display) return undefined;
+  const animations = assets?.animations ?? new Map();
   const roundSoundsByNumber = display
     ? Object.fromEntries(
         [...display.round.entries()]
@@ -6280,6 +6286,26 @@ function runtimeRoundTimingFromFightScreen(
   const roundSingleSound = runtimeAnnouncementSound(display?.roundSingle?.sound);
   const roundFinalSound = runtimeAnnouncementSound(display?.roundFinal?.sound);
   const defaultRoundSound = runtimeAnnouncementSound(source?.roundSound ?? display?.roundDefault?.sound);
+  const defaultRoundAnimationEndFrames = display === undefined
+    ? undefined
+    : resolveFightScreenAnimationCompletion(display.roundDefault, animations).frame;
+  const roundAnimationEndFramesByNumber = display === undefined
+    ? undefined
+    : Object.fromEntries(
+        [...display.round.keys()].map((roundNo) => [
+          roundNo,
+          resolveFightScreenAnnouncementCompletion(display, animations, "round", "normal", roundNo)?.frame ?? 0,
+        ]),
+      );
+  const roundSingleAnimationEndFrames = display === undefined
+    ? undefined
+    : resolveFightScreenAnnouncementCompletion(display, animations, "round", "single", 1)?.frame ?? 0;
+  const roundFinalAnimationEndFrames = display === undefined
+    ? undefined
+    : resolveFightScreenAnnouncementCompletion(display, animations, "round", "final", 1)?.frame ?? 0;
+  const fightAnimationEndFrames = display === undefined
+    ? undefined
+    : resolveFightScreenAnnouncementCompletion(display, animations, "fight", "normal", 1)?.frame ?? 0;
   const timing: Partial<RuntimeRoundTiming> = {
     overHitTimeFrames: source?.overHitTime,
     postKoPhase4StartFrames: source?.overWaitTime,
@@ -6295,10 +6321,15 @@ function runtimeRoundTimingFromFightScreen(
       roundSoundsByNumber: roundSoundsByNumber as Record<number, ReturnType<typeof runtimeAnnouncementSound>>,
       roundSingleSound,
       roundFinalSound,
+      roundAnimationEndFrames: defaultRoundAnimationEndFrames,
+      roundAnimationEndFramesByNumber,
+      roundSingleAnimationEndFrames,
+      roundFinalAnimationEndFrames,
       callFightTimeFrames: source?.callFightTime,
       fightTimeFrames: source?.fightTime,
       fightSoundTimeFrames: source?.fightSoundTime,
       fightSound: runtimeAnnouncementSound(source?.fightSound),
+      fightAnimationEndFrames,
     }),
     shutterTimeFrames: source?.shutterTime,
     shutterColor: source?.shutterColor,

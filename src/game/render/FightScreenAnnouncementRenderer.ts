@@ -12,6 +12,7 @@ import { SffSpriteProvider } from "../textures/SffSpriteProvider";
 import { applyThreePresentationOrder, resolvePresentationOrder } from "./PresentationOrder";
 import { resolveRoundFadeAnimationFrame } from "./RoundFadeRenderer";
 import { TextureStore } from "./TextureStore";
+import { resolveFightScreenAnnouncementCompletion } from "../../mugen/runtime/FightScreenAnimationSemantics";
 
 export type FightScreenAnnouncementViewport = {
   x: number;
@@ -34,6 +35,9 @@ export type FightScreenAnnouncementDiagnostics = {
   frameIndex?: number;
   frameTick?: number;
   displayTime?: number;
+  animationEndFrame?: number;
+  animationComplete?: boolean;
+  completionReason?: string;
   sprite?: { group: number; index: number; width: number; height: number; axisX: number; axisY: number };
   placement?: FightScreenAnnouncementPlacement;
   meshRenderOrder?: number;
@@ -126,14 +130,24 @@ export class FightScreenAnnouncementRenderer {
     const actionNo = selection.asset.animationNo;
     const action = actionNo === undefined ? undefined : this.animations.get(actionNo);
     const frameTick = announcementFrameTick(selection.track);
+    const completion = resolveFightScreenAnnouncementCompletion(
+      this.display,
+      this.animations,
+      selection.kind,
+      selection.mode,
+      selection.roundNo,
+    );
     const displayTime = selection.asset.displayTime;
-    if (displayTime !== undefined && displayTime >= 0 && frameTick + 1 > displayTime) {
+    if (completion && frameTick >= completion.frame) {
       this.hide({
         ...baseDiagnostics,
         ...(actionNo === undefined ? {} : { actionNo }),
         frameTick,
+        animationEndFrame: completion.frame,
+        animationComplete: true,
+        completionReason: completion.reason,
         displayTime,
-        fallbackReason: "FightScreen AnimTextSnd displaytime expired.",
+        fallbackReason: "FightScreen AnimTextSnd completion reached.",
       });
       return;
     }
@@ -141,6 +155,11 @@ export class FightScreenAnnouncementRenderer {
       this.hide({
         ...baseDiagnostics,
         frameTick,
+        ...(completion ? {
+          animationEndFrame: completion.frame,
+          animationComplete: false,
+          completionReason: completion.reason,
+        } : {}),
         ...(displayTime === undefined ? {} : { displayTime }),
         fallbackReason: "FightScreen display has no AIR animation; FNT text fallback remains outside the renderer.",
       });
@@ -151,6 +170,11 @@ export class FightScreenAnnouncementRenderer {
         ...baseDiagnostics,
         actionNo,
         frameTick,
+        ...(completion ? {
+          animationEndFrame: completion.frame,
+          animationComplete: false,
+          completionReason: completion.reason,
+        } : {}),
         ...(displayTime === undefined ? {} : { displayTime }),
         fallbackReason: `FightScreen AIR action ${actionNo} is unavailable.`,
       });
@@ -162,6 +186,11 @@ export class FightScreenAnnouncementRenderer {
         ...baseDiagnostics,
         actionNo,
         frameTick,
+        ...(completion ? {
+          animationEndFrame: completion.frame,
+          animationComplete: false,
+          completionReason: completion.reason,
+        } : {}),
         ...(displayTime === undefined ? {} : { displayTime }),
         fallbackReason: `FightScreen AIR action ${actionNo} has no drawable frames.`,
       });
@@ -177,6 +206,11 @@ export class FightScreenAnnouncementRenderer {
         actionNo,
         frameIndex: animationFrame.frameIndex,
         frameTick,
+        ...(completion ? {
+          animationEndFrame: completion.frame,
+          animationComplete: false,
+          completionReason: completion.reason,
+        } : {}),
         ...(displayTime === undefined ? {} : { displayTime }),
         fallbackReason: `FightScreen AIR action ${actionNo} frame ${animationFrame.frameIndex} references missing sprite ${animationFrame.frame.spriteGroup},${animationFrame.frame.spriteIndex}.`,
       });
@@ -213,6 +247,11 @@ export class FightScreenAnnouncementRenderer {
       actionNo,
       frameIndex: animationFrame.frameIndex,
       frameTick,
+      ...(completion ? {
+        animationEndFrame: completion.frame,
+        animationComplete: false,
+        completionReason: completion.reason,
+      } : {}),
       ...(displayTime === undefined ? {} : { displayTime }),
       sprite: {
         group: sprite.group,
