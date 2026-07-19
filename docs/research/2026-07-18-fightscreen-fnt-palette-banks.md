@@ -41,7 +41,16 @@ The browser port still lacks palette-effect composition, truecolor/TrueType
 and binary FNT support, text windows, and top/background `AnimLayout` layers.
 The full source palette remap lifecycle is not claimed. The next high-value
 FightScreen boundary is top/background layout only after the MUGEN-lite browser
-smoke assertion is repaired or explicitly re-baselined.
+fixture grows a direct FNT palette-bank route. Current `pnpm qa:smoke` passes
+the supported runtime and Studio journeys, but does not prove that specific
+FightScreen FNT asset path.
+
+## Browser evidence
+
+- `pnpm qa:smoke`: `status=passed`, Vite server started, Playwright runtime
+  desktop/mobile and Studio screenshots written under `.scratch/qa/qa-smoke/`.
+- Visual inspection covered `runtime-desktop.png`, `runtime-mobile.png`, and
+  `studio-workbench.png`; captures were nonblank and structurally coherent.
 
 ## Primary sources
 

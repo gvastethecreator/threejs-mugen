@@ -34,6 +34,9 @@ effects, and binary FNT remain outside this slice.
   `1` independently and keeps a deterministic fallback for slot `2`.
 - Pure renderer fixture proves bank `1` changes the indexed palette key while
   bank `9` falls back to bank `0`.
+- `pnpm qa:smoke`: passed with `status=passed`, started Vite, Playwright
+  captures for runtime desktop/mobile and Studio journeys. The smoke fixture
+  does not exercise a FightScreen FNT palette-bank asset directly.
 
 ## Claim ceiling
 
@@ -41,9 +44,9 @@ Allowed: bounded indexed SFF palette-bank transport and FightScreen glyph
 presentation for the current bitmap-font path.
 
 Blocked: palette FX/remap composition, truecolor/TrueType/binary FNT, text
-windows and advanced transforms, top/background `AnimLayout`, exact browser
-visual parity, and full MUGEN/IKEMEN parity. Browser smoke remains blocked by
-the existing MUGEN-lite get-hit assertion and is not claimed green here.
+windows and advanced transforms, top/background `AnimLayout`, FNT-specific
+browser asset coverage, exact browser visual parity, and full MUGEN/IKEMEN
+parity.
 
 ## Primary sources
 
