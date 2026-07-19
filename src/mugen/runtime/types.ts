@@ -5,7 +5,10 @@ import type { MugenPresentationOrder } from "./PresentationOrder";
 import type { RuntimeMatchTickSchedule } from "./RuntimeMatchTickScheduleSystem";
 import type { RuntimeCollisionOverride } from "./RuntimeCollisionOverrideSystem";
 import type { CommandInputHistorySample } from "./CommandBuffer";
-import type { RuntimeMatchOutcomeSnapshot } from "./RuntimeMatchOutcomeSystem";
+import type {
+  RuntimeMatchOutcomeProjection,
+  RuntimeMatchOutcomeSnapshot,
+} from "./RuntimeMatchOutcomeSystem";
 import type { RuntimeRoundContextSnapshot } from "./RuntimeRoundContextSystem";
 import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900System";
 import type { RuntimeTurnsContinuationResult } from "./RuntimeTurnsContinuationSystem";
@@ -598,6 +601,7 @@ export type RoundSnapshot = {
   winner?: string;
   message: string;
   match?: RuntimeMatchOutcomeSnapshot;
+  matchProjection?: RuntimeMatchOutcomeProjection;
   roundContext?: RuntimeRoundContextSnapshot;
   state5900?: RuntimeRoundState5900Snapshot;
   turnsContinuation?: RuntimeTurnsContinuationResult;

@@ -21,6 +21,26 @@ describe("RuntimeMatchOutcomeSystem", () => {
     });
   });
 
+  it("projects a pending match win without mutating committed outcome state", () => {
+    const outcome = new RuntimeMatchOutcomeSystem("single", 1);
+    const before = outcome.snapshot();
+
+    expect(outcome.projectRound(1)).toMatchObject({
+      schema: "mugen-web-sandbox/runtime-match-outcome-projection/v0",
+      status: "projected",
+      outcome: "match-win",
+      roundWinnerSide: 1,
+      winsBefore: { 1: 0, 2: 0 },
+      winsAfter: { 1: 1, 2: 0 },
+      roundsExistedBefore: 0,
+      roundsExistedAfter: 1,
+      matchOver: true,
+      winnerSide: 1,
+    });
+    expect(outcome.snapshot()).toEqual(before);
+    expect(outcome.isOver).toBe(false);
+  });
+
   it("closes the match at the configured score and rejects later scoring", () => {
     const outcome = new RuntimeMatchOutcomeSystem("tag", 2);
 

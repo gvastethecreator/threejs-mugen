@@ -78,6 +78,10 @@ describe("RuntimeExpressionContextWorld", () => {
 
     expect(world.evaluateNumber("RoundState", { actor: closingActor, opponent })).toBe(3);
     expect(world.evaluateNumber("RoundState", { actor: runtimeActor("p1", "Author"), opponent })).toBe(2);
+    expect(world.evaluateNumber("MatchOver", {
+      actor: runtimeActor("p1", "Author", { matchOver: true }),
+      opponent,
+    })).toBe(1);
   });
 
   it("forwards explicit numeric identity through caller, EnemyNear, and Target reads", () => {

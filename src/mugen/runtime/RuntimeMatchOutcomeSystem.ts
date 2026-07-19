@@ -2,6 +2,7 @@ import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
 import type { RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 
 export const RUNTIME_MATCH_OUTCOME_SCHEMA = "mugen-web-sandbox/runtime-match-outcome/v0";
+export const RUNTIME_MATCH_OUTCOME_PROJECTION_SCHEMA = "mugen-web-sandbox/runtime-match-outcome-projection/v0";
 
 export type RuntimeMatchOutcomeKind = "ongoing" | "draw" | "round-win" | "match-win" | "match-over";
 
@@ -23,6 +24,27 @@ export type RuntimeMatchOutcomeResult = RuntimeMatchOutcomeSnapshot & {
   roundWinnerSide?: RuntimeTeamSide;
   winsBefore: { 1: number; 2: number };
   winsAfter: { 1: number; 2: number };
+  effectiveLossBySide?: { 1: boolean; 2: boolean };
+  diagnostics: string[];
+};
+
+export type RuntimeMatchOutcomeProjection = {
+  schema: typeof RUNTIME_MATCH_OUTCOME_PROJECTION_SCHEMA;
+  status: "projected";
+  mode: RuntimeTeamRoundMode;
+  matchWins: number;
+  matchWinsBySide?: { 1: number; 2: number };
+  maxDrawsBySide?: { 1: number; 2: number };
+  roundWinnerSide?: RuntimeTeamSide;
+  winsBefore: { 1: number; 2: number };
+  winsAfter: { 1: number; 2: number };
+  roundsExistedBefore: number;
+  roundsExistedAfter: number;
+  drawsBefore: number;
+  drawsAfter: number;
+  matchOver: boolean;
+  winnerSide?: RuntimeTeamSide;
+  outcome: Exclude<RuntimeMatchOutcomeKind, "ongoing" | "match-over">;
   effectiveLossBySide?: { 1: boolean; 2: boolean };
   diagnostics: string[];
 };
@@ -108,6 +130,69 @@ export class RuntimeMatchOutcomeSystem {
       draws: this.draws,
       matchOver: this.isOver,
       ...(this.winnerSide === undefined ? {} : { winnerSide: this.winnerSide }),
+    };
+  }
+
+  projectRound(roundWinnerSide?: RuntimeTeamSide): RuntimeMatchOutcomeProjection {
+    const winsBefore = this.scoreObject();
+    const winsAfter = { ...winsBefore };
+    const drawsBefore = this.draws;
+    let drawsAfter = drawsBefore;
+    let projectedWinnerSide: RuntimeTeamSide | undefined;
+    let effectiveLossBySide: { 1: boolean; 2: boolean } | undefined;
+    const diagnostics: string[] = [];
+
+    if (roundWinnerSide === undefined) {
+      effectiveLossBySide = this.effectiveLossBySideForNextDraw();
+      drawsAfter += 1;
+      const effectiveLossSides = ([1, 2] as const).filter((side) => effectiveLossBySide![side]);
+      if (effectiveLossSides.length === 1) {
+        projectedWinnerSide = effectiveLossSides[0] === 1 ? 2 : 1;
+        winsAfter[projectedWinnerSide] += 1;
+        diagnostics.push(`draw-effective-loss:side-${effectiveLossSides[0]}`);
+      } else if (effectiveLossSides.length === 2) {
+        winsAfter[1] += 1;
+        winsAfter[2] += 1;
+        diagnostics.push("draw-effective-loss:both");
+      }
+    } else {
+      projectedWinnerSide = roundWinnerSide;
+      winsAfter[roundWinnerSide] += 1;
+    }
+
+    const reachedSides = ([1, 2] as const).filter((side) =>
+      winsAfter[side] >= this.matchWinsBySide[side],
+    );
+    const matchOver = reachedSides.length > 0;
+    const winnerSide = reachedSides.length === 1 ? reachedSides[0] : undefined;
+    if (matchOver && winnerSide === undefined) diagnostics.push("projected-draw-match-over");
+    const outcome = matchOver
+      ? winnerSide === undefined ? "draw" : "match-win"
+      : projectedWinnerSide === undefined ? "draw" : "round-win";
+
+    return {
+      schema: RUNTIME_MATCH_OUTCOME_PROJECTION_SCHEMA,
+      status: "projected",
+      mode: this.mode,
+      matchWins: this.matchWins,
+      ...(this.matchWinsBySide[1] === this.matchWinsBySide[2]
+        ? {}
+        : { matchWinsBySide: { ...this.matchWinsBySide } }),
+      ...(this.maxDrawsBySide[1] < 0 && this.maxDrawsBySide[2] < 0
+        ? {}
+        : { maxDrawsBySide: { ...this.maxDrawsBySide } }),
+      ...(projectedWinnerSide === undefined ? {} : { roundWinnerSide: projectedWinnerSide }),
+      winsBefore,
+      winsAfter,
+      roundsExistedBefore: this.completedRounds,
+      roundsExistedAfter: this.completedRounds + 1,
+      drawsBefore,
+      drawsAfter,
+      matchOver,
+      ...(winnerSide === undefined ? {} : { winnerSide }),
+      outcome,
+      ...(effectiveLossBySide === undefined ? {} : { effectiveLossBySide }),
+      diagnostics,
     };
   }
 

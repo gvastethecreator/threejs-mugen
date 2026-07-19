@@ -175,6 +175,7 @@ import {
 } from "./RuntimeRoundResourceResetSystem";
 import {
   RuntimeMatchOutcomeSystem,
+  type RuntimeMatchOutcomeProjection,
   type RuntimeMatchOutcomeResult,
 } from "./RuntimeMatchOutcomeSystem";
 import {
@@ -3511,6 +3512,10 @@ export class PlayableMatchRuntime {
 
   private snapshotRound(): RoundSnapshot {
     const round = this.round.snapshot();
+    const matchProjection = this.currentMatchOutcomeProjection();
+    if (matchProjection) {
+      round.matchProjection = matchProjection;
+    }
     if (this.matchOutcome.roundsExisted > 0 || this.matchOutcome.isOver) {
       round.match = this.matchOutcome.snapshot();
     }
@@ -3553,13 +3558,31 @@ export class PlayableMatchRuntime {
 
   private applyRuntimeRoundPhase(): void {
     const phase = this.round.currentPhase;
+    const matchProjection = this.currentMatchOutcomeProjection();
     for (const root of this.characterRoots()) {
       if (phase === 2) {
         delete root.runtime.roundPhase;
       } else {
         root.runtime.roundPhase = phase;
       }
+      root.runtime.matchOver = root.runtime.matchOver === true || matchProjection?.matchOver === true;
     }
+  }
+
+  private currentMatchOutcomeProjection(): RuntimeMatchOutcomeProjection | undefined {
+    if (this.round.currentPhase !== 4 || this.teamRoundMode === "turns" || this.matchOutcome.isOver) {
+      return undefined;
+    }
+    const round = this.round.snapshot();
+    if (round.winner === undefined) return undefined;
+    if (round.winner === "Draw") {
+      const projection = this.matchOutcome.projectRound();
+      return projection.matchOver ? projection : undefined;
+    }
+    const winnerRoot = this.characterRoots().find((root) => root.label === round.winner);
+    if (!winnerRoot) return undefined;
+    const projection = this.matchOutcome.projectRound(runtimeTeamSide(winnerRoot));
+    return projection.matchOver ? projection : undefined;
   }
 
   private createFighterState(

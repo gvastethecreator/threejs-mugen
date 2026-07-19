@@ -4002,7 +4002,60 @@ RedirectID = 999
       closed = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
     }
     expect(closed.round).toMatchObject({ state: "ko", roundPhase: 4 });
+    expect(closed.round).not.toHaveProperty("matchProjection");
     expect(closed.actors.every((actor) => actor.runtime.roundPhase === 4)).toBe(true);
+  });
+
+  it("projects MatchOver at phase 4 and commits it only through next-round ownership", () => {
+    const attacker = createImportedFixture({
+      id: "matchover-phase-attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    });
+    const defender = createImportedFixture({
+      id: "matchover-phase-defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+      matchWins: 1,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 255; frame += 1) {
+      runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    const projected = runtime.getSnapshot();
+    expect(projected.round).toMatchObject({
+      state: "ko",
+      roundPhase: 4,
+      matchProjection: {
+        status: "projected",
+        outcome: "match-win",
+        matchOver: true,
+        winnerSide: 1,
+        winsAfter: { 1: 1, 2: 0 },
+      },
+    });
+    expect(projected.round).not.toHaveProperty("match");
+    expect(projected.actors.every((actor) => actor.runtime.matchOver === true)).toBe(true);
+
+    const committed = runtime.startNextRound();
+    expect(committed).toMatchObject({ applied: false, diagnostics: expect.arrayContaining(["match-over"]) });
+    expect(runtime.getSnapshot().round).toMatchObject({
+      match: { matchOver: true, winnerSide: 1, wins: { 1: 1, 2: 0 } },
+      roundContext: { matchOver: true },
+    });
+    expect(runtime.getSnapshot().round).not.toHaveProperty("matchProjection");
   });
 
   it("resets stage background time between rounds only when resetBG is enabled", () => {
