@@ -190,9 +190,17 @@
   continue. T280 adds bounded suppression of imported player/root active and
   State -1 life, red-life, guard, dizzy, and power writes while preserving
   controller telemetry and `CtrlSet`; helper/effect-owner resources,
-  `Target*` resource controllers, `over.forcewintime`, skip input,
+  `Target*` resource controllers, skip input,
   fade/motif/dialogue release, Common1/ZSS choreography, Turns/team parity,
   and full round parity remain unsupported.
+
+- Imported round force-win readiness is `executed-partial`: `over.forcewintime`
+  now feeds the normalized timing contract, holds the phase-4 boundary for a
+  bounded active-root readiness proxy, and releases early when roots are ready
+  or forcibly at the configured budget. The held post-round frame remains
+  observable through the existing snapshot; no public schema changed. Exact
+  `intro`/`winwaittime` accounting, Common1/ZSS state ownership, skip input,
+  fade/motif/dialogue, Teams/Turns, and full parity remain unsupported.
 
 - Contextual SND selection is `executed-partial`: unprefixed `PlaySnd` uses player SND; unprefixed `HitDef`/`SuperPause` use common prefix `f`; explicit `S`/`F` remain stable; absent common archives fail closed. Full audio ownership/parity remains unsupported.
 
