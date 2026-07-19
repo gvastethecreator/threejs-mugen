@@ -6,16 +6,19 @@ This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO 
 
 Current control override: numbered backlog maximum 510 is the active implementation cursor. Entries 477-509 closed or bounded the compatibility journey, milestone/package, global-AssertSpecial, team-round, lifebar, resource-bank, Helper-resource, red-life, guard-point, auxiliary-projection, and explicit dizzy-point sequence. Entry 510 closes defender-owned direct HitDef dizzy suppression with 591/591 trace artifacts; full repository gates are batched for the next round. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-dizzy-points-suppression.md`.
 
-## Current control override: T284 / Entry 558 frontier
+## Current control override: T285 / Entry 559 frontier
 
-Implementation HEAD is `84fc1510`; T284 closes the bounded FightScreen
-`fadeout.anim`/`fadeout.snd` loader, runtime, AIR/SFF renderer, and global
-audio path. The grouped gate is 233/233 files, 2476/2476 tests, TypeScript 7,
-build, 633/633 traces, boundaries, CSS budget, and 64 browser capture paths
-with zero console/page errors. Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+Implementation HEAD is `c688f04d`; T285 closes the bounded FightScreen
+`fadein.time`/`fadein.col`/`fadein.anim`/`fadein.snd` loader, reset-owned
+pre-round runtime, AIR/SFF renderer, reverse fallback, and global audio path.
+The grouped gate is 233/233 files, 2479/2479 tests, TypeScript 7, build,
+633/633 traces, boundaries, CSS budget, and 64 browser capture paths with
+zero console/page errors. Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
 
-The next executable gate is research-first round-start/fade-in ownership.
-Exact screenpack transforms, release ordering, motif/dialogue/skip, Common1/
+The next executable gate is an independent source-backed round/intro or
+character-breadth slice. Exact intro/shutter/frame-start order, timer/input
+gating, screenpack transforms, motif/dialogue/skip, Common1/ZSS, teams/Turns,
+rollback/netplay, and full parity are not implied by T285.
 
 ## Source Of Truth Stack
 

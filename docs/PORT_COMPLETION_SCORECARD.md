@@ -1,21 +1,22 @@
 ﻿# Port Completion Scorecard
 ## 2026-07-16 Entry 555 runtime evidence
 
-## 2026-07-18 T284 bounded FightScreen asset checkpoint
+## 2026-07-18 T285 bounded FightScreen round-start checkpoint
 
-The current implementation frontier is HEAD `84fc1510`, Entry 558, and
-Wayfinder T284. Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. Imported
-`fadeout.anim`/`fadeout.snd` now have source-backed loader, runtime snapshot,
-FightFX AIR/SFF renderer, and global audio evidence. The grouped checkpoint
-passes 233/233 test files, 2476/2476 tests, TypeScript 7, Vite build, 633/633
-traces, repository/redirect/CSS gates, and 64 browser capture paths with zero
+The current implementation frontier is HEAD `c688f04d`, Entry 559, and
+Wayfinder T285. Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. Imported
+`fadein.time`/`fadein.col`/`fadein.anim`/`fadein.snd` now have source-backed
+loader, reset-owned pre-round snapshot, FightFX AIR/SFF renderer, reverse
+fallback, and global audio evidence. The grouped checkpoint passes 233/233
+test files, 2479/2479 tests, TypeScript 7, Vite build, 633/633 traces,
+repository/redirect/CSS gates, and 64 browser capture paths with zero
 console/page errors.
 
-This does not move a score. Exact screenpack localcoord transforms, fade-in and
-release choreography, motif/dialogue/skip, Common1/ZSS, teams/Turns,
-rollback/netplay, and full MUGEN/IKEMEN parity remain blocked. The next score
-relevant work still requires current corpus/independent-breadth adjudication;
-the next runtime gate is research-first round-start/fade-in ownership.
+This does not move a score. Exact intro/shutter/frame-start ordering, timer or
+input gating, screenpack localcoord transforms, motif/dialogue/skip,
+Common1/ZSS, teams/Turns, rollback/netplay, and full MUGEN/IKEMEN parity remain
+blocked. The next score-relevant work still requires current
+corpus/independent-breadth adjudication and a separate source-backed gate.
 
 Entry 555 closes a bounded `ProjTypeCollision` runtime policy: typed
 `AssertSpecial` capability, strict projectile `Clsn2` contact, `HitFlag = P`

@@ -2,27 +2,29 @@
 
 ## Current runtime report - 2026-07-16 Entry 555
 
-## Current implementation report - T284 / Entry 558 (2026-07-18)
+## Current implementation report - T285 / Entry 559 (2026-07-18)
 
-- Implementation HEAD: `84fc1510`; documentation closeout follows in a
-  separate commit. Maximum current ledger entry: 558; latest closed lane:
-  Wayfinder T284.
-- Imported `[Round] fadeout.anim` and `fadeout.snd` now flow through loader,
-  runtime snapshot, Three.js FightFX AIR/SFF presentation, and global audio.
-  Missing assets fail closed to color fallback with diagnostics.
-- Current gates: focused 4 files / 38 tests; full 233 files / 2476 tests;
+- Implementation HEAD: `c688f04d`; documentation closeout follows in a
+  separate commit. Maximum current ledger entry: 559; latest closed lane:
+  Wayfinder T285.
+- Imported `[Round]` fade-in time/color/animation/sound now flow through
+  loader, reset-owned pre-round snapshot, Three.js FightFX AIR/SFF
+  presentation, reverse color fallback, and global audio. Missing assets fail
+  closed to fallback with diagnostics.
+- Current gates: focused 4 files / 41 tests; full 233 files / 2479 tests;
   TypeScript 7.0.2; Vite build with 316 modules; 633/633 traces; repository,
   redirect, and CSS budget checks; browser smoke 64 capture paths with 0
   console issues and 0 page errors.
 - Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime and
   presentation slice does not move compatibility scores.
-- Claim ceiling: animation/sound parsing, AIR duration extension, snapshot
-  metadata, bounded FightFX presentation, one-shot global audio, and explicit
-  fallback diagnostics. Exact screenpack transform, fade-in/release order,
-  motif/dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay, and full
-  parity remain open.
-- Next research gate: compare imported round-start/fade-in ownership against
-  the pinned FightScreen source before widening release choreography.
+- Claim ceiling: fade-in time/color/animation/sound parsing, AIR duration
+  resolution, reset/next-round snapshot state, bounded FightFX presentation,
+  reverse color fallback, one-shot global audio, and explicit diagnostics.
+  Exact intro/shutter/frame-start order, timer/input gating, motif/dialogue/
+  skip, Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain
+  open.
+- Next research gate: select an independent source-backed round/intro or
+  character-breadth boundary.
 
 - `ProjTypeCollision` v1 is implemented and committed in `c068de80`.
 - Typed `AssertSpecial`, strict projectile `Clsn2`, `HitFlag = P` cancellation, and paired-player `Clsn2` direct/priority admission are covered.

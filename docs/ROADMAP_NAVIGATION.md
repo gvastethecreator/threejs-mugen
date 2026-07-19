@@ -4,9 +4,9 @@ Last updated: 2026-07-11
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
-Current cursors: implementation HEAD `84fc1510`; maximum current ledger Entry
-558; latest closed lane T284. The latest bounded checkpoint is 233/233 files,
-2476/2476 tests, TypeScript 7, 633/633 traces, and a 64-path browser smoke
+Current cursors: implementation HEAD `c688f04d`; maximum current ledger Entry
+559; latest closed lane T285. The latest bounded checkpoint is 233/233 files,
+2479/2479 tests, TypeScript 7, 633/633 traces, and a 64-path browser smoke
 with zero console/page errors. T266-T268 and Wayfinder 256 remain historical
 control references. The current cross-lane task contract is
 `docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.

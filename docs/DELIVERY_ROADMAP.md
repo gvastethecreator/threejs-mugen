@@ -1,16 +1,17 @@
 # Delivery Roadmap
 
-## Latest bounded runtime checkpoint - T284 / Entry 558
+## Latest bounded runtime checkpoint - T285 / Entry 559
 
-The FightScreen fade asset continuation is closed in `84fc1510`. Imported
-`fadeout.anim` and `fadeout.snd` now have a typed loader-to-runtime path,
-resolved FightFX AIR/SFF presentation, and one-shot global audio. Missing
-assets keep the color fallback and diagnostic state visible. The checkpoint
-passes 233 test files / 2476 tests, TypeScript 7, build, 633/633 traces,
-boundary checks, CSS budget, and a 64-path browser smoke with zero console or
-page errors. Scores remain unchanged. Exact fade-in/release choreography,
-motif/localcoord ownership, dialogue/skip, Common1/ZSS, teams/Turns,
-rollback/netplay, and full parity remain separate delivery gates.
+The FightScreen round-start continuation is closed in `c688f04d`. Imported
+`fadein.time`, `fadein.col`, `fadein.anim`, and `fadein.snd` now have a typed
+loader-to-runtime path, reset-owned `RuntimePreRound/v0` state, bounded
+FightFX AIR/SFF presentation, reverse color fallback, and one-shot global
+audio. The checkpoint passes 233 test files / 2479 tests, TypeScript 7, build,
+633/633 traces, boundary checks, CSS budget, and a 64-path browser smoke with
+zero console or page errors. Scores remain unchanged. Exact intro/shutter
+ordering, timer/input gating, motif/localcoord ownership, dialogue/skip,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain separate
+delivery gates.
 
 Last updated: 2026-07-14
 

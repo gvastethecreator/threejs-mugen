@@ -1,15 +1,16 @@
 # Architecture
 
-## 2026-07-18 T284 checkpoint
+## 2026-07-18 T285 checkpoint
 
-The imported FightScreen boundary now carries `fadeout.anim` and `fadeout.snd`
-through system-asset loading, `RuntimeRoundFade/v0`, the FightFX AIR/SFF
-renderer, and global audio. AIR duration participates in the source-derived
-terminal window; unresolved actions or sprites keep the color fallback and
-report a diagnostic. The 84fc1510 checkpoint passes the full suite, TypeScript
-7, build, 633/633 traces, repository boundaries, CSS budget, and 64-path
-browser smoke with zero console/page errors. This remains a bounded adapter:
-exact localcoord/motif transforms, fade-in/release order, dialogue/skip,
+The imported FightScreen boundary now carries `fadein.time`, `fadein.col`,
+`fadein.anim`, and `fadein.snd` through system-asset loading,
+`RuntimePreRound/v0`, the FightFX AIR/SFF renderer, and global audio. The
+pre-round frame resets on reset and next-round handoff; unresolved actions or
+sprites keep the reverse-opacity color fallback and report a diagnostic. The
+`c688f04d` checkpoint passes the full suite, TypeScript 7, build, 633/633
+traces, repository boundaries, CSS budget, and 64-path browser smoke with zero
+console/page errors. This remains a bounded adapter: exact intro/shutter
+ordering, timer/input gating, localcoord/motif transforms, dialogue/skip,
 Common1/ZSS, teams/Turns, rollback/netplay, and full parity are separate.
 
 ## 2026-07-18 architecture checkpoint

@@ -2,20 +2,20 @@
 
 ## Current runtime queue - 2026-07-16 Entry 555
 
-## Current implementation frontier - T284 / Entry 558 (2026-07-18)
+## Current implementation frontier - T285 / Entry 559 (2026-07-18)
 
-T284 is closed at a bounded FightScreen asset boundary. Imported
-`fadeout.anim`/`fadeout.snd` now resolve through FightFX AIR/SFF assets,
-extend the source-derived terminal window by action duration, publish additive
-round-fade metadata, render with an explicit fallback, and play global fade
-audio once per fade. The grouped suite, TypeScript 7, build, traces, boundary
-checks, CSS budget, and 64-path browser smoke are green. Scores remain
-unchanged.
+T285 is closed at a bounded FightScreen round-start boundary. Imported
+`fadein.time`/`fadein.col`/`fadein.anim`/`fadein.snd` now resolve through
+FightFX AIR/SFF assets, publish reset-owned `RuntimePreRound/v0` metadata,
+render with reverse color fallback, and play global fade-in audio once per
+round. The grouped suite, TypeScript 7, build, traces, boundary checks, CSS
+budget, and 64-path browser smoke are green. Scores remain unchanged.
 
 Do not widen this into a full release claim. The next research-first gate is
-round-start/fade-in ownership from the pinned FightScreen source. Exact
-screenpack localcoord transforms, motif/dialogue/skip, release ordering,
-Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain blocked.
+an independent source-backed round/intro or character-compatibility boundary.
+Exact intro/shutter ordering, timer/input gating, screenpack localcoord
+transforms, motif/dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay,
+and full parity remain blocked.
 
 Entry 555 is closed and evidence-backed at bounded `ProjTypeCollision` scope.
 Next runtime cut: Wayfinder 209, characterize exact projectile trade and

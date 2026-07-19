@@ -1,16 +1,17 @@
 ﻿# Roadmap Execution Board
 ## Current runtime closeout - Entry 555 (2026-07-16)
 
-## Current implementation board - T284 / Entry 558 (2026-07-18)
+## Current implementation board - T285 / Entry 559 (2026-07-18)
 
-T284 closes the bounded imported FightScreen fade asset path in `84fc1510`:
-`fadeout.anim`/`fadeout.snd` parse, resolve through FightFX, extend the
-source-derived terminal window, publish `RuntimeRoundFade/v0` metadata, render
-through Three.js with fallback diagnostics, and play global audio once. The
-current evidence gate is 233/233 files, 2476/2476 tests, TypeScript 7, build,
-633/633 traces, boundaries, CSS budget, and 64 browser capture paths with no
-console/page errors. No score movement. Next board item is a research gate for
-round-start/fade-in ownership; exact release choreography remains blocked.
+T285 closes the bounded imported FightScreen round-start path in `c688f04d`:
+`fadein.time`/`fadein.col`/`fadein.anim`/`fadein.snd` parse, resolve through
+FightFX, publish reset-owned `RuntimePreRound/v0` data, render through Three.js
+with reverse color fallback, and play global audio once. The current evidence
+gate is 233/233 files, 2479/2479 tests, TypeScript 7, build, 633/633 traces,
+boundaries, CSS budget, and 64 browser capture paths with no console/page
+errors. No score movement. Next board item is an independent source-backed
+round/intro or character-breadth research gate; exact release choreography
+remains blocked.
 
 `c068de80` closes bounded `ProjTypeCollision` semantics: typed flag capability,
 strict projectile `Clsn2`, `HitFlag = P` cancellation, and paired-player

@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 559 - bounded FightScreen round-start fade-in
+
+Closed the research-selected continuation of T284 in `c688f04d`. Imported
+`fight.def` `[Round]` fade-in time/color/animation/sound now parse through the
+system-asset loader, resolve against FightFX AIR/SFF, reset into additive
+`RuntimePreRound/v0` metadata, render with reverse color fallback, and route a
+one-shot global sound through FightFX. Reset and next-round handoff clear the
+pre-round frame.
+
+Verification: focused 4 files / 41 tests, TypeScript 7 typecheck, 233 test
+files / 2479 tests, Vite build (316 modules), 633/633 traces, repository and
+redirect boundaries, CSS budget, and real Vite browser smoke all pass. Smoke
+produced 64 capture paths with 0 console issues and 0 page errors in
+`.scratch/qa/qa-smoke-t285-full/diagnostics.json`. No score movement. Exact
+intro/shutter/frame-start order, timer/input gating, motif/localcoord,
+dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay, and full parity
+remain blocked. See ADR 0050, research note
+`2026-07-18-round-fadein-boundary.md`, and closeout report
+`2026-07-18-round-fadein-boundary-closeout.md`.
+
 ## Entry 558 - bounded FightScreen fade animation and sound assets
 
 Closed the asset-backed continuation of T282 in `84fc1510`. Imported
