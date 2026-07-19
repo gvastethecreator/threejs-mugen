@@ -4174,6 +4174,56 @@ RedirectID = 999
     });
   });
 
+  it("uses imported fight-screen timing when no runtime override is supplied", () => {
+    const attacker = createImportedFixture({
+      id: "imported-timing-attacker",
+      displayName: "Imported Timing Attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+      extraStateNos: [170, 180],
+    });
+    const defender = createImportedFixture({
+      id: "imported-timing-defender",
+      displayName: "Imported Timing Defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+      extraStateNos: [170, 180],
+    });
+    attacker.fightScreenTiming = {
+      sourcePath: "data/fight.def",
+      overWaitTime: 2,
+      overWinTime: 3,
+      overTime: 8,
+    };
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, { runtimeProfile: "ikemen-go" });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let snapshot = runtime.getSnapshot();
+    for (let frame = 0; frame < 10 && snapshot.round?.roundPhase !== 4; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    expect(snapshot.round).toMatchObject({ roundPhase: 4, postRound: { frame: 2 } });
+    expect(snapshot.round).not.toHaveProperty("winPose");
+
+    for (let frame = 0; frame < 10 && snapshot.round?.winPose?.status !== "started"; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    expect(snapshot.round).toMatchObject({
+      roundPhase: 4,
+      postRound: { frame: 5 },
+      winPose: { status: "started", winner: attacker.displayName },
+    });
+  });
+
   it("projects MatchOver at phase 4 and commits it only through next-round ownership", () => {
     const attacker = createImportedFixture({
       id: "matchover-phase-attacker",

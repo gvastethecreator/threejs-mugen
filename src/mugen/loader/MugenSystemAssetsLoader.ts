@@ -1,7 +1,12 @@
 import type { MugenDiagnostic } from "../model/MugenAnimation";
 import type { MugenCharacterDef } from "../model/MugenCharacter";
 import type { MugenGameConfig } from "../model/MugenConfig";
-import type { MugenSystemAssets, MugenSystemHitSparkLibrary, MugenSystemHitSparkLibrarySource } from "../model/MugenSystemAssets";
+import type {
+  MugenFightScreenTiming,
+  MugenSystemAssets,
+  MugenSystemHitSparkLibrary,
+  MugenSystemHitSparkLibrarySource,
+} from "../model/MugenSystemAssets";
 import { parseAir } from "../parsers/AirParser";
 import { parseDef } from "../parsers/DefParser";
 import { parseSnd } from "../parsers/SndParser";
@@ -127,6 +132,7 @@ export async function loadMugenSystemAssets(
 
   return {
     fightDefPath,
+    ...(explicit.fightScreenTiming ? { fightScreenTiming: explicit.fightScreenTiming } : {}),
     ...(gameConfig ? { gameConfig } : {}),
     ...(supportedCommonFightFxPaths.length > 0 ? { commonFightFxPaths: supportedCommonFightFxPaths } : {}),
     hitSparkLibraries,
@@ -269,9 +275,10 @@ function readFightDefRefs(
   vfs: VirtualFileSystem,
   fightDefPath: string,
   resolver: PathResolver,
-): { airPath?: string; sffPath?: string; sndPath?: string } {
+): { airPath?: string; sffPath?: string; sndPath?: string; fightScreenTiming?: MugenFightScreenTiming } {
   const definition = parseDef(vfs.readText(fightDefPath) ?? "", fightDefPath);
   const files = getSection(definition.rawSections, "Files");
+  const round = getSection(definition.rawSections, "Round");
   const airRef = getValue(files, ["fightfx.air", "fightfx.anim", "fx.air"]);
   const sffRef = getValue(files, ["fightfx.sff", "fx.sff"]);
   const sndRef = getValue(files, ["snd", "fightfx.snd", "fx.snd"]);
@@ -279,7 +286,26 @@ function readFightDefRefs(
     airPath: resolveExisting(resolver, fightDefPath, airRef),
     sffPath: resolveExisting(resolver, fightDefPath, sffRef),
     sndPath: resolveExisting(resolver, fightDefPath, sndRef),
+    fightScreenTiming: parseFightScreenTiming(round, fightDefPath),
   };
+}
+
+function parseFightScreenTiming(
+  section: Record<string, string>,
+  sourcePath: string,
+): MugenFightScreenTiming | undefined {
+  const timing: MugenFightScreenTiming = {
+    sourcePath,
+    overWaitTime: numberValue(section, "over.waittime"),
+    overHitTime: numberValue(section, "over.hittime"),
+    overWinTime: numberValue(section, "over.wintime"),
+    overForceWinTime: numberValue(section, "over.forcewintime"),
+    overTime: numberValue(section, "over.time"),
+    slowTime: numberValue(section, "slow.time"),
+    slowFadeTime: numberValue(section, "slow.fadetime"),
+    slowSpeed: numberValue(section, "slow.speed"),
+  };
+  return Object.values(timing).some((value) => typeof value === "number") ? timing : undefined;
 }
 
 function findCharacterFightFxPaths(
@@ -372,6 +398,13 @@ function getValue(section: Record<string, string>, keys: string[]): string | und
     }
   }
   return undefined;
+}
+
+function numberValue(section: Record<string, string>, key: string): number | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const value = Number(raw.trim());
+  return Number.isFinite(value) ? value : undefined;
 }
 
 function normalizePrefix(value: string | undefined): string | undefined {

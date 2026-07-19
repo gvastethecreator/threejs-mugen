@@ -18,8 +18,21 @@ export type MugenSystemHitSparkLibrary = {
   diagnostics: MugenDiagnostic[];
 };
 
+export type MugenFightScreenTiming = {
+  sourcePath: string;
+  overWaitTime?: number;
+  overHitTime?: number;
+  overWinTime?: number;
+  overForceWinTime?: number;
+  overTime?: number;
+  slowTime?: number;
+  slowFadeTime?: number;
+  slowSpeed?: number;
+};
+
 export type MugenSystemAssets = {
   fightDefPath?: string;
+  fightScreenTiming?: MugenFightScreenTiming;
   gameConfig?: MugenGameConfig;
   commonFightFxPaths?: string[];
   hitSparkLibraries: Partial<Record<MugenSystemHitSparkLibrarySource, MugenSystemHitSparkLibrary>>;

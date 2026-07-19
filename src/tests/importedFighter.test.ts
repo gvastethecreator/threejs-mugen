@@ -125,6 +125,12 @@ describe("createImportedFighterDefinition", () => {
     const character = fakeCharacter(animations);
     character.systemAssets = {
       fightDefPath: "data/fight.def",
+      fightScreenTiming: {
+        sourcePath: "data/fight.def",
+        overWaitTime: 12,
+        overWinTime: 18,
+        overTime: 240,
+      },
       diagnostics: [],
       hitSparkLibraries: {
         common: {
@@ -146,6 +152,7 @@ describe("createImportedFighterDefinition", () => {
 
     const fighter = createImportedFighterDefinition(character);
 
+    expect(fighter?.fightScreenTiming).toEqual(character.systemAssets.fightScreenTiming);
     expect(fighter?.hitSparkLibraries?.common?.animations.get(7001)?.frames[0]).toMatchObject({
       spriteGroup: 9100,
       spriteIndex: 0,

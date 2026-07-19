@@ -51,6 +51,9 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     source: "imported",
     hitDefPriorityProfile: runtimeHitDefPriorityProfile(character),
     ...(socdResolution === undefined ? {} : { socdResolution }),
+    ...(character.systemAssets?.fightScreenTiming
+      ? { fightScreenTiming: character.systemAssets.fightScreenTiming }
+      : {}),
     displayName,
     authorName: character.definition.info.author,
     ikemenVersion: character.definition.info.ikemenVersion,

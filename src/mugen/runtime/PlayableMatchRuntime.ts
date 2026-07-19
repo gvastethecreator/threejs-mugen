@@ -9,6 +9,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import type { MugenFightScreenTiming } from "../model/MugenSystemAssets";
 import {
   matchesMugenStateIdentity,
   type MugenStateController,
@@ -627,7 +628,10 @@ export class PlayableMatchRuntime {
     );
     this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
-    this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile, options.roundTiming);
+    const roundTiming = options.roundTiming ?? runtimeRoundTimingFromFightScreen(
+      p1Definition.fightScreenTiming ?? p2Definition.fightScreenTiming,
+    );
+    this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile, roundTiming);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
     this.effectLifecycleWorld = options.effectLifecycleWorld ?? new RuntimeEffectLifecycleWorld();
     this.effectSpawnWorld = options.effectSpawnWorld ?? new RuntimeEffectSpawnWorld();
@@ -6111,6 +6115,24 @@ function fallbackGameSpaceFromBounds(stageBounds?: MugenStageDefinition["bounds"
     return undefined;
   }
   return { width: Math.max(0, stageBounds.right - stageBounds.left), height: 480, zoom: 1 };
+}
+
+function runtimeRoundTimingFromFightScreen(
+  source?: MugenFightScreenTiming,
+): Partial<RuntimeRoundTiming> | undefined {
+  if (!source) return undefined;
+  const postKoFrames = source.overWaitTime === undefined || source.overTime === undefined
+    ? undefined
+    : source.overWaitTime + source.overTime;
+  const timing: Partial<RuntimeRoundTiming> = {
+    postKoPhase4StartFrames: source.overWaitTime,
+    winPoseFrames: source.overWinTime,
+    postKoFrames,
+    koSlowFrames: source.slowTime,
+    koSlowFadeFrames: source.slowFadeTime,
+    koSlowRate: source.slowSpeed,
+  };
+  return Object.values(timing).some((value) => value !== undefined) ? timing : undefined;
 }
 
 

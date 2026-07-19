@@ -27,6 +27,7 @@ import type {
   RuntimeTargetSnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import type { RuntimeRoundTiming } from "./RuntimeRoundSystem";
 import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
 import type { RuntimeTeamRoundDecision } from "./RuntimeTeamRoundDecisionSystem";
 import type { RuntimeTeamRoundHandoffResult } from "./RuntimeTeamRoundHandoffSystem";
@@ -53,6 +54,7 @@ export type MatchWorldOptions = {
   p2?: DemoFighterDefinition;
   stage?: MugenStageDefinition;
   roundTimerFrames?: number;
+  roundTiming?: Partial<RuntimeRoundTiming>;
   matchWins?: number;
   maxDraws?: number;
   maxDrawsBySide?: Partial<Record<RuntimeTeamSide, number>>;
@@ -131,6 +133,7 @@ export class MatchWorld {
         effectActorWorld: this.effectActorWorld,
         targetWorld: this.targetWorld,
         roundTimerFrames: options.roundTimerFrames,
+        roundTiming: options.roundTiming,
         matchWins: options.matchWins,
         maxDraws: options.maxDraws,
         maxDrawsBySide: options.maxDrawsBySide,

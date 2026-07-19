@@ -31,6 +31,16 @@ cns = kfm.cns
       text(`[Files]
 fightfx.air = fightfx.air
 fightfx.sff = fightfx.sff
+
+[Round]
+over.waittime = 12
+over.hittime = 10
+over.wintime = 18
+over.forcewintime = 900
+over.time = 240
+slow.time = 70
+slow.fadetime = 50
+slow.speed = 0.5
 `),
     );
     vfs.addFile("data/mugen.cfg", text("[Config]\nGameWidth = 1280\nGameHeight = 720\n"));
@@ -53,6 +63,17 @@ fightfx.sff = fightfx.sff
     const character = await new MugenCharacterLoader().load("kfm.zip", vfs);
 
     expect(character.systemAssets?.fightDefPath).toBe("data/fight.def");
+    expect(character.systemAssets?.fightScreenTiming).toEqual({
+      sourcePath: "data/fight.def",
+      overWaitTime: 12,
+      overHitTime: 10,
+      overWinTime: 18,
+      overForceWinTime: 900,
+      overTime: 240,
+      slowTime: 70,
+      slowFadeTime: 50,
+      slowSpeed: 0.5,
+    });
     expect(character.systemAssets?.gameConfig?.gameSpace).toEqual({ width: 1280, height: 720, sourcePath: "data/mugen.cfg" });
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.airPath).toBe("data/fightfx.air");
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.sffPath).toBe("data/fightfx.sff");
