@@ -20,6 +20,16 @@ export type SffPaletteSummary = {
   linkedIndex?: number;
 };
 
+export type SffPaletteBank = {
+  slot: number;
+  group: number;
+  index: number;
+  colors: number;
+  bytes: Uint8Array;
+  stride: 3 | 4;
+  linkedIndex?: number;
+};
+
 export type SffArchiveMetadata = {
   versionLabel?: string;
   spriteTotal: number;
@@ -34,6 +44,7 @@ export type SffArchive = {
   version: "v1" | "v2" | "unknown";
   sprites: MugenSprite[];
   warnings: string[];
+  paletteBanks?: SffPaletteBank[];
   metadata?: SffArchiveMetadata;
 };
 

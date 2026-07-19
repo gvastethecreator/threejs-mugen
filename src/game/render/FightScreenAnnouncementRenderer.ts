@@ -17,6 +17,7 @@ import { resolveFightScreenAnnouncementCompletion } from "../../mugen/runtime/Fi
 import {
   formatFightScreenText,
   layoutFightScreenFontText,
+  resolveFightScreenFontPalette,
 } from "./FightScreenFontRenderer";
 
 export type FightScreenAnnouncementViewport = {
@@ -46,6 +47,11 @@ export type FightScreenAnnouncementDiagnostics = {
   missingCharacters?: string[];
   textWidth?: number;
   textLineCount?: number;
+  paletteBank?: {
+    requested: number;
+    resolved: number;
+    source: "sff" | "sprite" | "missing";
+  };
   animationEndFrame?: number;
   animationComplete?: boolean;
   completionReason?: string;
@@ -82,6 +88,11 @@ type FightScreenTextRenderResult = {
   missingCharacters?: string[];
   textWidth?: number;
   textLineCount?: number;
+  paletteBank?: {
+    requested: number;
+    resolved: number;
+    source: "sff" | "sprite" | "missing";
+  };
   fallbackReason?: string;
 };
 
@@ -389,13 +400,6 @@ export class FightScreenAnnouncementRenderer {
         fallbackReason: `FightScreen font ${fontIndex} uses unsupported ${font.format} rendering.`,
       };
     }
-    if (font.bankType !== "sprite" && bank !== 0) {
-      return {
-        rendered: false,
-        font: { index: fontIndex, bank, alignment, format: font.format },
-        fallbackReason: `FightScreen palette bank ${bank} for font ${fontIndex} requires palette remapping.`,
-      };
-    }
     if (!font.spriteArchive) {
       return {
         rendered: false,
@@ -404,6 +408,7 @@ export class FightScreenAnnouncementRenderer {
       };
     }
 
+    const paletteResolution = resolveFightScreenFontPalette(font, bank);
     const text = formatFightScreenText(textTemplate, roundNo);
     const layout = layoutFightScreenFontText(font, text, bank, alignment);
     const origin = asset.offset ?? [0, 0];
@@ -453,6 +458,11 @@ export class FightScreenAnnouncementRenderer {
       text,
       font: { index: fontIndex, bank, alignment, format: font.format },
       glyphCount: layout.glyphs.filter((glyph) => glyph.sprite).length,
+      paletteBank: {
+        requested: paletteResolution.requestedBank,
+        resolved: paletteResolution.resolvedBank,
+        source: paletteResolution.source,
+      },
       ...(layout.missingCharacters.length > 0 ? { missingCharacters: layout.missingCharacters } : {}),
       textWidth: layout.width,
       textLineCount: layout.lines.length,

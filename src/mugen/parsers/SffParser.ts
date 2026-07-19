@@ -1,5 +1,5 @@
 import { createIndexedCanvas } from "../model/IndexedImage";
-import type { ISffReader, MugenSprite, SffArchive } from "../model/MugenSprite";
+import type { ISffReader, MugenSprite, SffArchive, SffPaletteBank } from "../model/MugenSprite";
 
 type DecodedPcx = {
   width: number;
@@ -204,6 +204,20 @@ function parseSffV1(bytes: Uint8Array): SffArchive {
     version: "v1",
     sprites,
     warnings,
+    ...(palettes[0]
+      ? {
+          paletteBanks: [
+            {
+              slot: 0,
+              group: 0,
+              index: 0,
+              colors: Math.floor(palettes[0].length / 3),
+              bytes: palettes[0],
+              stride: 3 as const,
+            },
+          ],
+        }
+      : {}),
     metadata: {
       versionLabel: "1",
       spriteTotal: imageCount,
@@ -351,6 +365,7 @@ function createSffV2Archive(
     version: "v2",
     sprites,
     warnings,
+    ...(palettes.length > 0 ? { paletteBanks: buildSffV2PaletteBanks(palettes, warnings) } : {}),
     metadata: {
       versionLabel: header.versionLabel,
       spriteTotal: header.spriteTotal,
@@ -366,6 +381,40 @@ function createSffV2Archive(
       })),
     },
   };
+}
+
+function buildSffV2PaletteBanks(records: SffV2PaletteRecord[], warnings: string[]): SffPaletteBank[] {
+  const resolved = records.map((_, index) => resolveSffV2Palette(index, records, warnings));
+  const firstResolvedIndex = resolved.findIndex((palette) => Boolean(palette));
+  const groupZeroByBank = new Map<number, number>();
+  records.forEach((record, recordIndex) => {
+    if (record.group === 0 && !groupZeroByBank.has(record.index)) {
+      groupZeroByBank.set(record.index, recordIndex);
+    }
+  });
+
+  const banks: SffPaletteBank[] = [];
+  for (let slot = 0; slot < records.length; slot += 1) {
+    const sourceIndex = groupZeroByBank.get(slot) ?? firstResolvedIndex;
+    if (sourceIndex === undefined) {
+      continue;
+    }
+    const source = records[sourceIndex];
+    const bytes = resolved[sourceIndex];
+    if (!source || !bytes) {
+      continue;
+    }
+    banks.push({
+      slot,
+      group: source.group,
+      index: source.index,
+      colors: source.colors || Math.floor(bytes.length / 4),
+      bytes,
+      stride: 4,
+      ...(source.dataLength === 0 ? { linkedIndex: source.linkedIndex } : {}),
+    });
+  }
+  return banks;
 }
 
 function readSffV2Header(view: DataView, bytes: Uint8Array): SffV2Header {

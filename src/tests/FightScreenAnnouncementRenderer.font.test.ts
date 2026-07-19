@@ -36,6 +36,47 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       font: { index: 1, bank: 0, alignment: 0, format: "bitmap" },
       glyphCount: 6,
       textLineCount: 1,
+      paletteBank: { requested: 0, resolved: 0, source: "missing" },
+    });
+    renderer.dispose();
+    textures.dispose();
+  });
+
+  it("presents a non-zero indexed font bank through the FightScreen path", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const font = createFont("A");
+    const glyph = font.spriteArchive!.sprites[0]!;
+    glyph.indexed = {
+      pixels: new Uint8Array([1]),
+      palette: {
+        bytes: new Uint8Array([0, 0, 0, 0, 1, 2, 3, 255]),
+        stride: 4,
+        transparentIndex: 0,
+        key: "glyph-default",
+      },
+    };
+    font.spriteArchive!.paletteBanks = [
+      { slot: 0, group: 0, index: 0, colors: 256, bytes: new Uint8Array([0, 0, 0, 0, 10, 20, 30, 255]), stride: 4 },
+      { slot: 1, group: 0, index: 1, colors: 256, bytes: new Uint8Array([0, 0, 0, 0, 40, 50, 60, 255]), stride: 4 },
+    ];
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display: {
+        round: new Map(),
+        roundDefault: { text: "A", font: [1, 1, 0], offset: [160, 100] },
+      },
+      fonts: new Map([[1, font]]),
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      resolved: true,
+      paletteBank: { requested: 1, resolved: 1, source: "sff" },
+      glyphCount: 1,
     });
     renderer.dispose();
     textures.dispose();

@@ -1,5 +1,13 @@
+import { createIndexedCanvas, type IndexedPaletteData } from "../../mugen/model/IndexedImage";
 import type { MugenFightScreenFont } from "../../mugen/model/MugenSystemAssets";
 import type { MugenSprite } from "../../mugen/model/MugenSprite";
+
+export type FightScreenFontPaletteResolution = {
+  requestedBank: number;
+  resolvedBank: number;
+  source: "sff" | "sprite" | "missing";
+  palette?: IndexedPaletteData;
+};
 
 export type FightScreenFontGlyph = {
   character: string;
@@ -31,8 +39,64 @@ export function resolveFightScreenFontGlyph(
   if (font.format !== "bitmap" || !font.spriteArchive) {
     return undefined;
   }
-  const group = font.bankType === "sprite" ? Math.max(0, Math.round(bank)) : 0;
-  return font.spriteArchive.sprites.find((sprite) => sprite.group === group && sprite.index === codePoint);
+  const group = font.bankType.toLowerCase() === "sprite" ? normalizeBank(bank) : 0;
+  const glyph = font.spriteArchive.sprites.find((sprite) => sprite.group === group && sprite.index === codePoint);
+  return glyph ? applyFightScreenFontPalette(glyph, font, bank) : undefined;
+}
+
+export function resolveFightScreenFontPalette(font: MugenFightScreenFont, bank: number): FightScreenFontPaletteResolution {
+  const requestedBank = normalizeBank(bank);
+  if (font.bankType.toLowerCase() === "sprite") {
+    return { requestedBank, resolvedBank: 0, source: "sprite" };
+  }
+
+  const paletteBanks = font.spriteArchive?.paletteBanks ?? [];
+  const selected = paletteBanks.find((palette) => palette.slot === requestedBank)
+    ?? paletteBanks.find((palette) => palette.slot === 0)
+    ?? paletteBanks[0];
+  if (!selected) {
+    return { requestedBank, resolvedBank: 0, source: "missing" };
+  }
+  return {
+    requestedBank,
+    resolvedBank: selected.slot,
+    source: "sff",
+    palette: {
+      bytes: selected.bytes,
+      stride: selected.stride,
+      colorCount: selected.colors,
+      transparentIndex: 0,
+      key: `fnt:${font.index}:${selected.slot}:${selected.group}:${selected.index}`,
+    },
+  };
+}
+
+function applyFightScreenFontPalette(sprite: MugenSprite, font: MugenFightScreenFont, bank: number): MugenSprite {
+  if (!sprite.indexed) {
+    return sprite;
+  }
+  const resolution = resolveFightScreenFontPalette(font, bank);
+  if (!resolution.palette) {
+    return sprite;
+  }
+  const indexed = {
+    pixels: sprite.indexed.pixels,
+    palette: resolution.palette,
+  };
+  const canvas = createIndexedCanvas(sprite.width, sprite.height, indexed.pixels, indexed.palette);
+  return {
+    ...sprite,
+    ...(canvas ? { canvas } : { canvas: undefined }),
+    indexed,
+    raw: {
+      ...(sprite.raw && typeof sprite.raw === "object" ? sprite.raw : {}),
+      fightScreenFontPalette: {
+        requestedBank: resolution.requestedBank,
+        resolvedBank: resolution.resolvedBank,
+        key: resolution.palette.key,
+      },
+    },
+  };
 }
 
 export function layoutFightScreenFontText(
@@ -103,5 +167,9 @@ function glyphTextWidth(width: number, spacing: number): number {
 }
 
 function positiveOrZero(value: number): number {
+  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+}
+
+function normalizeBank(value: number): number {
   return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }

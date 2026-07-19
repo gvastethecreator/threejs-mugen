@@ -109,6 +109,26 @@ describe("SffParser", () => {
     expect(archive.sprites[0]?.indexed?.palette).toMatchObject({ stride: 4, transparentIndex: 0, key: "sff-v2:0" });
   });
 
+  it("exposes FNT palette banks by group-zero slot with a deterministic fallback", async () => {
+    const archive = await new SffParser().load(
+      createSffV2(
+        [{ group: 0, index: 65, format: 2, colorDepth: 8 }],
+        [
+          { group: 1, index: 1, data: createSffV2PaletteVariant(30, 40, 50) },
+          { group: 0, index: 0, data: createSffV2PaletteVariant(60, 70, 80) },
+          { group: 0, index: 1, data: createSffV2PaletteVariant(90, 100, 110) },
+        ],
+      ),
+    );
+
+    expect(archive.paletteBanks?.map((bank) => ({ slot: bank.slot, group: bank.group, index: bank.index }))).toEqual([
+      { slot: 0, group: 0, index: 0 },
+      { slot: 1, group: 0, index: 1 },
+      { slot: 2, group: 1, index: 1 },
+    ]);
+    expect(archive.paletteBanks?.[1]?.bytes.slice(4, 8)).toEqual(new Uint8Array([90, 100, 110, 255]));
+  });
+
   it("decodes SFF v2 RLE5 sprites with reduced palettes", async () => {
     const archive = await new SffParser().load(createSffV2([{ group: 0, index: 0, format: 3, colorDepth: 5 }]));
 
@@ -223,16 +243,27 @@ type SffV2SpriteSpec = {
   index: number;
   format: number;
   colorDepth: number;
+  paletteIndex?: number;
 };
 
-function createSffV2(specs: SffV2SpriteSpec[]): ArrayBuffer {
-  const palette = createSffV2Palette();
+type SffV2PaletteSpec = {
+  group: number;
+  index: number;
+  data?: Uint8Array;
+};
+
+function createSffV2(
+  specs: SffV2SpriteSpec[],
+  paletteSpecs: SffV2PaletteSpec[] = [{ group: 1, index: 1 }],
+): ArrayBuffer {
+  const palettes = paletteSpecs.map((spec) => spec.data ?? createSffV2Palette());
   const spritePayloads = specs.map(createSffV2Payload2x2);
   const headerSize = 512;
   const paletteOffset = headerSize;
-  const spriteOffset = paletteOffset + 16;
+  const spriteOffset = paletteOffset + paletteSpecs.length * 16;
   const ldataOffset = spriteOffset + specs.length * 28;
-  const totalLength = ldataOffset + palette.length + spritePayloads.reduce((total, payload) => total + payload.length, 0);
+  const paletteDataLength = palettes.reduce((total, palette) => total + palette.length, 0);
+  const totalLength = ldataOffset + paletteDataLength + spritePayloads.reduce((total, payload) => total + payload.length, 0);
   const bytes = new Uint8Array(totalLength);
   const view = new DataView(bytes.buffer);
 
@@ -244,21 +275,28 @@ function createSffV2(specs: SffV2SpriteSpec[]): ArrayBuffer {
   view.setUint32(36, spriteOffset, true);
   view.setUint32(40, specs.length, true);
   view.setUint32(44, paletteOffset, true);
-  view.setUint32(48, 1, true);
+  view.setUint32(48, paletteSpecs.length, true);
   view.setUint32(52, ldataOffset, true);
   view.setUint32(56, totalLength - ldataOffset, true);
   view.setUint32(60, totalLength, true);
   view.setUint32(64, 0, true);
 
-  view.setUint16(paletteOffset, 1, true);
-  view.setUint16(paletteOffset + 2, 1, true);
-  view.setUint16(paletteOffset + 4, 256, true);
-  view.setUint16(paletteOffset + 6, 0, true);
-  view.setUint32(paletteOffset + 8, 0, true);
-  view.setUint32(paletteOffset + 12, palette.length, true);
-  bytes.set(palette, ldataOffset);
+  let paletteDataOffset = 0;
+  for (let paletteIndex = 0; paletteIndex < paletteSpecs.length; paletteIndex += 1) {
+    const spec = paletteSpecs[paletteIndex]!;
+    const palette = palettes[paletteIndex]!;
+    const offset = paletteOffset + paletteIndex * 16;
+    view.setUint16(offset, spec.group, true);
+    view.setUint16(offset + 2, spec.index, true);
+    view.setUint16(offset + 4, 256, true);
+    view.setUint16(offset + 6, 0, true);
+    view.setUint32(offset + 8, paletteDataOffset, true);
+    view.setUint32(offset + 12, palette.length, true);
+    bytes.set(palette, ldataOffset + paletteDataOffset);
+    paletteDataOffset += palette.length;
+  }
 
-  let dataOffset = palette.length;
+  let dataOffset = paletteDataLength;
   for (let spriteNumber = 0; spriteNumber < specs.length; spriteNumber += 1) {
     const spec = specs[spriteNumber]!;
     const payload = spritePayloads[spriteNumber]!;
@@ -274,7 +312,7 @@ function createSffV2(specs: SffV2SpriteSpec[]): ArrayBuffer {
     view.setUint8(offset + 15, spec.colorDepth);
     view.setUint32(offset + 16, dataOffset, true);
     view.setUint32(offset + 20, payload.length, true);
-    view.setUint16(offset + 24, 0, true);
+    view.setUint16(offset + 24, spec.paletteIndex ?? 0, true);
     view.setUint16(offset + 26, 0, true);
     bytes.set(payload, ldataOffset + dataOffset);
     dataOffset += payload.length;
@@ -288,6 +326,12 @@ function createSffV2Palette(): Uint8Array {
   palette.set([0, 0, 0, 0], 0);
   palette.set([255, 0, 0, 255], 4);
   palette.set([0, 255, 0, 255], 8);
+  return palette;
+}
+
+function createSffV2PaletteVariant(red: number, green: number, blue: number): Uint8Array {
+  const palette = createSffV2Palette();
+  palette.set([red, green, blue, 255], 4);
   return palette;
 }
 
