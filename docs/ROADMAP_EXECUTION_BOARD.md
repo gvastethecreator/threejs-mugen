@@ -1,7 +1,18 @@
 ﻿# Roadmap Execution Board
 ## Current runtime closeout - Entry 555 (2026-07-16)
 
-## Current implementation board - T286 / Entry 560 (2026-07-18)
+## Current implementation board - T287 / Entry 561 (2026-07-18)
+
+T287 closes the bounded imported FightScreen shutter/skip path in
+`4d615c8f`: `shutter.time`/`shutter.col` parse, new hard-button edges request
+skip, raw `roundnotskip` rejects it, `RuntimeRoundShutter/v0` exposes the
+countdown, and Three.js renders symmetric bars. Evidence is focused 4 files /
+300 tests plus TypeScript 7.0.2, full 233 / 2484 tests, Vite 317 modules,
+633/633 traces, boundaries, CSS budget, and 64 browser paths with no
+console/page errors. Scores do not move. Next board item is announcement/
+display ownership or independent character control/reset.
+
+## Previous implementation board - T286 / Entry 560 (2026-07-18)
 
 T286 closes the bounded imported FightScreen round-intro timing path in
 `e978fa3c`: `start.waittime` and `ctrl.time` parse, publish

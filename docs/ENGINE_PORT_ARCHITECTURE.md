@@ -2,6 +2,13 @@
 
 This document describes the intended architecture for growing the current sandbox into a progressive MUGEN/IKEMEN-GO browser port. The broader studio and modular-engine direction is documented in `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`.
 
+Current runtime decision checkpoint (2026-07-18 T287): imported
+`shutter.time`/`shutter.col` now have a bounded edge-triggered intro skip,
+raw `roundnotskip` guard, reset-owned `RuntimeRoundShutter/v0`, and an
+independent symmetric Three.js shutter renderer. Keep character reset,
+announcement/display choreography, and global input snapshot expansion
+separate until they have independent source and browser evidence.
+
 Current runtime decision checkpoint (2026-07-18 T286): imported
 `start.waittime`/`ctrl.time` now have a dedicated reset-owned intro countdown
 and phase transition boundary. Keep it separate from FightScreen announcement,

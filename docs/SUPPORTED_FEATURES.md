@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## T287 bounded FightScreen intro shutter skip
+
+Imported `fight.def` `[Round] shutter.time` and `shutter.col` are parsed into
+runtime timing. A new hard-button edge from either seat can request a bounded
+intro skip, raw `roundnotskip` rejects the request, held input does not restart
+the shutter, and active `RuntimeRoundShutter/v0` metadata renders as symmetric
+top/bottom Three.js bars over a source-shaped `2T` close/open cycle.
+
+Character asset/position/state reset, announcement and exact round/fight
+display suppression, dialogue, Common1/ZSS, motif/localcoord transforms,
+teams/Turns, rollback/netplay, and full MUGEN/IKEMEN parity remain unsupported.
+
 ## T286 bounded round-intro timing
 
 Imported `fight.def` `[Round] start.waittime` and `ctrl.time` are parsed and

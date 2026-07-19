@@ -1,5 +1,14 @@
 # Architecture
 
+## 2026-07-18 T287 checkpoint
+
+The bounded imported FightScreen intro-skip bridge now parses `shutter.time`
+and `shutter.col`, observes a new hard-button edge from either seat, rejects
+the raw `roundnotskip` guard, reduces the remaining intro to `ctrl.time + 1`,
+publishes `RuntimeRoundShutter/v0`, and renders symmetric top/bottom bars. The
+source-owned character reset and announcement/fight-display choreography stay
+outside this contract.
+
 ## 2026-07-18 T286 checkpoint
 
 The imported FightScreen round-start boundary now carries explicit

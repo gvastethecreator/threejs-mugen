@@ -1,5 +1,19 @@
 # Delivery Roadmap
 
+## Latest bounded runtime checkpoint - T287 / Entry 561
+
+T287 is implemented in `4d615c8f`. Imported `[Round] shutter.time` and
+`shutter.col` now feed edge-triggered intro skip, the bounded raw
+`roundnotskip` guard, reset-owned `RuntimeRoundShutter/v0`, and a symmetric
+Three.js top/bottom shutter. The source-shaped duration is `2T`; held input
+does not restart the shutter. Verification passes focused 4 files / 300
+tests, TypeScript 7.0.2, full 233 / 2484 tests, Vite 317 modules, 633/633
+traces, boundaries, CSS budget, and 64 browser capture paths with 0
+console/page errors. The build chunk warning is non-blocking; scores remain
+unchanged. Character reset, announcements, exact display skipping,
+dialogue, Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain
+separate delivery gates.
+
 ## Latest bounded runtime checkpoint - T286 / Entry 560
 
 T286 is implemented in `e978fa3c`. Imported `start.waittime` and `ctrl.time`

@@ -2,7 +2,24 @@
 
 ## Current runtime queue - 2026-07-16 Entry 555
 
-## Current implementation frontier - T286 / Entry 560 (2026-07-18)
+## Current implementation frontier - T287 / Entry 561 (2026-07-18)
+
+T287 closes a bounded imported FightScreen intro shutter/skip path in
+`4d615c8f`. `shutter.time` and `shutter.col` now populate runtime timing; a
+new hard-button edge from either seat starts a source-shaped `2T` shutter,
+held input is ignored, raw `roundnotskip` rejects the request, and
+`RuntimeRoundShutter/v0` feeds the symmetric Three.js bars. Evidence is
+focused 4 files / 300 tests plus TypeScript 7.0.2, full 233 / 2484 tests,
+Vite 317 modules, 633/633 traces, boundaries, CSS budget, and 64 browser
+paths with 0 console/page errors. Scores remain unchanged.
+
+Do not claim character asset/position/state reset, announcement or exact
+round/fight display skipping, dialogue, Common1/ZSS, screenpack transforms,
+teams/Turns, rollback/netplay, or full parity from T287. The next
+research-first gate is announcement/display ownership or an independent
+character control/reset boundary.
+
+## Previous implementation frontier - T286 / Entry 560 (2026-07-18)
 
 T286 closes a bounded imported FightScreen round-intro timing boundary in
 `e978fa3c`. `start.waittime` and `ctrl.time` now populate

@@ -4,6 +4,12 @@ This document is the working truth for the private sandbox milestone. It separat
 
 ## Closed In The Current Playable Prototype
 
+- T287 adds a bounded imported FightScreen intro skip: `shutter.time` and
+  `shutter.col` drive a new hard-button edge, the raw `roundnotskip` guard,
+  `RuntimeRoundShutter/v0`, and symmetric Three.js top/bottom bars. This does
+  not claim upstream character reset, announcement/display suppression,
+  dialogue, Common1/ZSS, or full FightScreen parity.
+
 - T286 adds a bounded imported FightScreen round-intro countdown: explicit
   `start.waittime` and `ctrl.time` drive `RuntimeRoundIntro/v0`, the existing
   `pre-intro`/`intro`/`fight` phase signal, and timer/finish gating until

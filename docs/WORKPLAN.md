@@ -2,7 +2,22 @@
 
 ## Current runtime checkpoint - 2026-07-16 Entry 555
 
-## Active implementation frontier - T286 / Entry 560 (2026-07-18)
+## Active implementation frontier - T287 / Entry 561 (2026-07-18)
+
+T287 is implemented in `4d615c8f`. Imported FightScreen shutter timing/color
+now feed an edge-triggered, bounded intro skip, raw `roundnotskip` guard,
+`RuntimeRoundShutter/v0`, and symmetric Three.js bars. Verification passes
+focused 4 files / 300 tests, TypeScript 7.0.2, full 233 / 2484 tests, Vite
+317 modules, 633/633 traces, boundaries, CSS budget, and 64 browser paths
+with 0 console/page errors.
+
+Keep character reset, announcements, exact round/fight display skipping,
+dialogue, Common1/ZSS, screenpack transforms, teams/Turns, rollback/netplay,
+and full parity outside this bounded slice. The next implementation should
+start with announcement/display ownership or an independent character
+control/reset boundary.
+
+## Previous implementation frontier - T286 / Entry 560 (2026-07-18)
 
 T286 is implemented in `e978fa3c`. Imported FightScreen `start.waittime` and
 `ctrl.time` now flow through loader, reset-owned `RuntimeRoundIntro/v0`, the

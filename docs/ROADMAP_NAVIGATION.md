@@ -4,9 +4,9 @@ Last updated: 2026-07-11
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
-Current cursors: implementation HEAD `e978fa3c`; maximum current ledger Entry
-560; latest closed lane T286. The latest bounded checkpoint is 233/233 files,
-2480/2480 tests, TypeScript 7.0.2, 633/633 traces, and 64 browser paths with
+Current cursors: implementation HEAD `4d615c8f`; maximum current ledger Entry
+561; latest closed lane T287. The latest bounded checkpoint is 233/233 files,
+2484/2484 tests, TypeScript 7.0.2, 633/633 traces, and 64 browser paths with
 zero console/page errors. T266-T268 and Wayfinder 256 remain historical
 control references. The current cross-lane task contract is
 `docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
@@ -15,6 +15,11 @@ Use lane-specific reports for evidence; do not project Wayfinder 256's
 checkpoint for current runtime evidence. Keep the
 HEAD, numbered backlog, and Wayfinder cursors separate.
 
+T287 current claim: imported shutter timing/color, edge-triggered intro skip,
+bounded raw `roundnotskip` guard, `RuntimeRoundShutter/v0`, and symmetric
+renderer bars. Character reset, announcements/display suppression, dialogue,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain open. See
+`docs/reports/2026-07-18-round-intro-shutter-skip-closeout.md`.
 ## Start Here
 
 For any non-trivial pass, read in this order:

@@ -1,6 +1,22 @@
 ﻿# Port Completion Scorecard
 ## 2026-07-16 Entry 555 runtime evidence
 
+## 2026-07-18 T287 bounded FightScreen intro shutter/skip checkpoint
+
+The current implementation frontier is HEAD `4d615c8f`, Entry 561, and
+Wayfinder T287. Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. Imported
+`shutter.time` and `shutter.col` now flow through loader/runtime timing,
+edge-triggered skip, the raw `roundnotskip` guard, `RuntimeRoundShutter/v0`,
+and symmetric Three.js bars. The focused gate is 4 files / 300 tests. The
+full checkpoint also passes TypeScript 7.0.2, 233 files / 2484 tests, Vite
+317 modules, 633/633 traces, repository/redirect boundaries, CSS budget, and
+64 browser capture paths with 0 console issues and 0 page errors.
+
+This does not move a score. Character asset/position/state reset, exact
+announcement or round/fight display skipping, motif/dialogue, Common1/ZSS,
+screenpack transforms, teams/Turns, rollback/netplay, and full parity remain
+blocked. The existing Vite chunk-size warning remains non-blocking.
+
 ## 2026-07-18 T286 bounded FightScreen round-intro checkpoint
 
 The current implementation frontier is HEAD `e978fa3c`, Entry 560, and

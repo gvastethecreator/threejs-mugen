@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 561 - bounded FightScreen intro shutter skip
+
+Closed the source-backed continuation after T286 in `4d615c8f`. Imported
+`fight.def` `[Round] shutter.time` and `shutter.col` now parse through the
+system-assets loader, map into runtime timing, and expose an active
+`RuntimeRoundShutter/v0` snapshot. A new hard-button edge from either seat
+requests a bounded skip, held input does not restart it, and the raw
+`roundnotskip` guard rejects it. Three.js renders symmetric top/bottom bars
+with the source-shaped `2T` close/open cycle.
+
+Verification: focused 4 files / 300 tests; TypeScript 7.0.2; full 233 files /
+2484 tests; Vite build with 317 modules; 633/633 trace artifacts;
+repository/redirect boundaries; CSS budget; and 64 browser capture paths with
+0 console issues and 0 page errors in
+`.scratch/qa/qa-smoke-t287-full/diagnostics.json`. The existing build chunk
+warning is non-blocking. No score movement. Character asset/position/state
+reset, announcements, exact round/fight display skipping, dialogue,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain open. See
+Wayfinder 287, ADR 0052, research note
+`2026-07-18-round-intro-shutter-skip.md`, and closeout report
+`2026-07-18-round-intro-shutter-skip-closeout.md`.
+
 ## Entry 560 - bounded FightScreen round intro timing
 
 Closed the source-backed continuation after T285 in `e978fa3c`. Imported

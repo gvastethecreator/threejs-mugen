@@ -2,7 +2,30 @@
 
 ## Current runtime report - 2026-07-16 Entry 555
 
-## Current implementation report - T286 / Entry 560 (2026-07-18)
+## Current implementation report - T287 / Entry 561 (2026-07-18)
+
+- Implementation HEAD: `4d615c8f`; documentation closeout is recorded in the
+  T287 report and ADR. Maximum current ledger entry: 561; latest closed lane:
+  Wayfinder T287.
+- Imported `shutter.time`/`shutter.col` now flow through the loader and runtime
+  timing; new hard-button edges request a bounded skip, raw `roundnotskip`
+  rejects it, `RuntimeRoundShutter/v0` publishes the countdown, and Three.js
+  renders symmetric top/bottom bars.
+- Current gates: focused 4 files / 300 tests; TypeScript 7.0.2; full 233 files
+  / 2484 tests; Vite build with 317 modules; 633/633 traces; repository,
+  redirect, and CSS budget checks; browser smoke 64 capture paths with 0
+  console issues and 0 page errors.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded shutter/skip
+  slice does not move compatibility scores.
+- Claim ceiling: source-shaped shutter timing/color, edge-triggered skip,
+  bounded `roundnotskip` guard, intro boundary reduction, reset/next-round
+  clearing, `RuntimeRoundShutter/v0`, and symmetric renderer bars. Character
+  reset, announcements/display skipping, motif/dialogue, Common1/ZSS,
+  teams/Turns, rollback/netplay, and full parity remain open.
+- Next research gate: select announcement/display ownership or an independent
+  character control/reset boundary.
+
+## Previous implementation report - T286 / Entry 560 (2026-07-18)
 
 - Implementation HEAD: `e978fa3c`; documentation closeout follows in a
   separate commit. Maximum current ledger entry: 560; latest closed lane:

@@ -14,6 +14,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Decisions So Far
 
+- [Implement FightScreen intro shutter skip](tickets/287-round-intro-shutter-skip.md) - resolved at bounded scope in `4d615c8f`: parse `shutter.time`/`shutter.col`, detect new hard-button edges, honor the raw `roundnotskip` guard, reduce intro to `ctrl.time + 1`, publish `RuntimeRoundShutter/v0`, and render two bars. Upstream character asset/position/state reset, announcements, exact round/fight display skipping, dialogue, Common1/ZSS, motif/localcoord, teams/Turns, rollback/netplay, and full parity remain open.
+
 - [Implement FightScreen round intro timing](tickets/286-round-intro-timing.md) - resolved: imported `start.waittime` and `ctrl.time` now populate a bounded `RuntimeRoundIntro/v0` countdown, hold the live round timer until `fight`, and preserve the immediate legacy path when both fields are absent. Focused loader/runtime/round evidence passes 289 tests; announcement, shutter, skip, character control, and full parity remain open.
 
 - [Implement helper TargetState RedirectID](tickets/194-helper-targetstate-redirectid.md) - resolved: bounded `ikemen-go` helper TargetState now selects from the redirected root's target memory and enters the selected actor under the destination custom-state owner; required checksum `d995fa81`, full trace `628/628`, affected suite `882/882`. Helper State -1/global-state, helper/projectile/team ownership, recursive redirects, and full parity remain open.
