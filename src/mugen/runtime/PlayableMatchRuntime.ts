@@ -188,6 +188,10 @@ import {
   type RuntimeRoundContextSnapshot,
 } from "./RuntimeRoundContextSystem";
 import {
+  RuntimeRoundWinPoseWorld,
+  type RuntimeRoundWinPoseSnapshot,
+} from "./RuntimeRoundWinPoseSystem";
+import {
   RuntimeTurnsContinuationWorld,
   type RuntimeTurnsContinuationResult,
 } from "./RuntimeTurnsContinuationSystem";
@@ -573,6 +577,7 @@ export class PlayableMatchRuntime {
   private readonly matchOutcome: RuntimeMatchOutcomeSystem;
   private readonly roundState5900World = new RuntimeRoundState5900World();
   private readonly roundContextWorld = new RuntimeRoundContextWorld();
+  private readonly roundWinPoseWorld = new RuntimeRoundWinPoseWorld();
   private readonly turnsContinuationWorld = new RuntimeTurnsContinuationWorld();
   private lastRoundContext: RuntimeRoundContextSnapshot;
   private lastRoundState5900?: RuntimeRoundState5900Snapshot;
@@ -3127,6 +3132,7 @@ export class PlayableMatchRuntime {
   }
 
   private resetRuntimeState(options: { preserveRound?: boolean } = {}): void {
+    this.roundWinPoseWorld.reset();
     resetRuntimeSocdInputState(this.socdInputState.p1);
     resetRuntimeSocdInputState(this.socdInputState.p2);
     this.restoreExpiredSuperPauseTargetDefense(true);
@@ -3528,6 +3534,10 @@ export class PlayableMatchRuntime {
     if (this.lastTurnsContinuation) {
       round.turnsContinuation = this.lastTurnsContinuation;
     }
+    const winPose = this.roundWinPoseWorld.snapshot();
+    if (winPose) {
+      round.winPose = winPose;
+    }
     if (round.match?.matchOver && round.match.winnerSide === undefined) {
       round.message = "Match over - Draw";
     } else if (round.match?.matchOver) {
@@ -3559,6 +3569,8 @@ export class PlayableMatchRuntime {
   private applyRuntimeRoundPhase(): void {
     const phase = this.round.currentPhase;
     const matchProjection = this.currentMatchOutcomeProjection();
+    const winPose = phase === 4 ? this.applyRoundWinPose() : undefined;
+    const activeIds = new Set(this.activeRoots.map(({ id }) => id));
     for (const root of this.characterRoots()) {
       if (phase === 2) {
         delete root.runtime.roundPhase;
@@ -3566,7 +3578,26 @@ export class PlayableMatchRuntime {
         root.runtime.roundPhase = phase;
       }
       root.runtime.matchOver = root.runtime.matchOver === true || matchProjection?.matchOver === true;
+      const actorWinPose = activeIds.has(root.id)
+        ? winPose?.actors.find(({ actorId }) => actorId === root.id)
+        : undefined;
+      if (actorWinPose) {
+        root.runtime.winPose = actorWinPose;
+      } else {
+        delete root.runtime.winPose;
+      }
     }
+  }
+
+  private applyRoundWinPose(): RuntimeRoundWinPoseSnapshot | undefined {
+    const round = this.round.snapshot();
+    return this.roundWinPoseWorld.apply({
+      phase: this.round.currentPhase,
+      winner: round.winner,
+      actors: this.activeRoots,
+      canEnterState: (actor, stateNo) => canEnterState(actor, stateNo),
+      enterState: (actor, stateNo) => enterState(actor, stateNo, undefined, { clearStateOwner: true }),
+    });
   }
 
   private currentMatchOutcomeProjection(): RuntimeMatchOutcomeProjection | undefined {

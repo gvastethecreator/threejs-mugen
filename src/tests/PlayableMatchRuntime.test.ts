@@ -4006,6 +4006,61 @@ RedirectID = 999
     expect(closed.actors.every((actor) => actor.runtime.roundPhase === 4)).toBe(true);
   });
 
+  it("starts reserved win and lose states at the bounded phase-4 handoff", () => {
+    const attacker = createImportedFixture({
+      id: "win-pose-attacker",
+      displayName: "Win Pose Attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+      extraStateNos: [170, 180],
+    });
+    const defender = createImportedFixture({
+      id: "win-pose-defender",
+      displayName: "Win Pose Defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+      extraStateNos: [170, 180],
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let closed = runtime.getSnapshot();
+    for (let frame = 0; frame < 255; frame += 1) {
+      closed = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    expect(closed.round).toMatchObject({
+      roundPhase: 4,
+      winPose: {
+        schema: "mugen-web-sandbox/runtime-round-win-pose/v0",
+        phase: 4,
+        status: "started",
+        winner: attacker.displayName,
+        actors: [
+          { actorId: "p1", role: "winner", requestedStateNo: 180, status: "started", appliedStateNo: 180 },
+          { actorId: "p2", role: "loser", requestedStateNo: 170, status: "started", appliedStateNo: 170 },
+        ],
+      },
+    });
+    expect(closed.actors.find((actor) => actor.id === "p1")?.runtime).toMatchObject({
+      stateNo: 180,
+      winPose: { role: "winner", requestedStateNo: 180, status: "started" },
+    });
+    expect(closed.actors.find((actor) => actor.id === "p2")?.runtime).toMatchObject({
+      stateNo: 170,
+      winPose: { role: "loser", requestedStateNo: 170, status: "started" },
+    });
+  });
+
   it("projects MatchOver at phase 4 and commits it only through next-round ownership", () => {
     const attacker = createImportedFixture({
       id: "matchover-phase-attacker",

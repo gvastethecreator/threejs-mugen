@@ -14,6 +14,10 @@ import type { RuntimeRoundState5900Snapshot } from "./RuntimeRoundState5900Syste
 import type { RuntimeTurnsContinuationResult } from "./RuntimeTurnsContinuationSystem";
 import type { RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import type {
+  RuntimeRoundWinPoseActorSnapshot,
+  RuntimeRoundWinPoseSnapshot,
+} from "./RuntimeRoundWinPoseSystem";
+import type {
   RuntimeHitDefPriorityProfile,
   RuntimeHitDefSpritePrioritySource,
 } from "./HitDefPriorityPolicy";
@@ -102,6 +106,7 @@ export type CharacterRuntimeState = {
   roundsExisted?: number;
   roundPhase?: RuntimeRoundPhase;
   matchOver?: boolean;
+  winPose?: RuntimeRoundWinPoseActorSnapshot;
   animNo: number;
   animTime: number;
   frameIndex: number;
@@ -600,6 +605,7 @@ export type RoundSnapshot = {
   roundPhase?: RuntimeRoundPhase;
   winner?: string;
   message: string;
+  winPose?: RuntimeRoundWinPoseSnapshot;
   match?: RuntimeMatchOutcomeSnapshot;
   matchProjection?: RuntimeMatchOutcomeProjection;
   roundContext?: RuntimeRoundContextSnapshot;
