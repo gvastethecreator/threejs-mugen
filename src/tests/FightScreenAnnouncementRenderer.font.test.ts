@@ -1,0 +1,105 @@
+/** @vitest-environment jsdom */
+
+import { describe, expect, it } from "vitest";
+import { FightScreenAnnouncementRenderer } from "../game/render/FightScreenAnnouncementRenderer";
+import { TextureStore } from "../game/render/TextureStore";
+import type { MugenFightScreenAssets, MugenFightScreenFont } from "../mugen/model/MugenSystemAssets";
+import type { MugenSnapshot } from "../mugen/runtime/types";
+
+describe("FightScreenAnnouncementRenderer bitmap text", () => {
+  it("renders a loaded FNT bitmap string through reusable glyph meshes", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const font = createFont("Round 2");
+    const assets: MugenFightScreenAssets = {
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          text: "Round %i",
+          font: [1, 0, 0],
+          offset: [160, 100],
+        },
+      },
+      fonts: new Map([[1, font]]),
+      diagnostics: [],
+    };
+    renderer.setAssets(assets);
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      active: true,
+      resolved: true,
+      text: "Round 2",
+      font: { index: 1, bank: 0, alignment: 0, format: "bitmap" },
+      glyphCount: 6,
+      textLineCount: 1,
+    });
+    renderer.dispose();
+    textures.dispose();
+  });
+});
+
+function createFont(text: string): MugenFightScreenFont {
+  const characters = [...new Set([...text].filter((character) => character !== " "))];
+  return {
+    index: 1,
+    sourcePath: "font/standard.def",
+    format: "bitmap",
+    bankType: "palette",
+    size: [8, 12],
+    spacing: [1, 0],
+    offset: [0, 0],
+    spriteArchive: {
+      version: "v1",
+      sprites: characters.map((character) => ({
+        group: 0,
+        index: character.codePointAt(0)!,
+        width: 6,
+        height: 8,
+        axisX: 0,
+        axisY: 8,
+        canvas: document.createElement("canvas"),
+      })),
+      warnings: [],
+    },
+    diagnostics: [],
+  };
+}
+
+function snapshot(): MugenSnapshot {
+  return {
+    round: {
+      announcement: {
+        schema: "RuntimeRoundAnnouncement/v0",
+        visibility: "visible",
+        phase: "round",
+        roundNo: 2,
+        mode: "normal",
+        round: {
+          phase: "active",
+          skipped: false,
+          elapsed: 0,
+          animationStart: 0,
+          soundTime: 0,
+          soundDue: false,
+        },
+        fight: {
+          phase: "pending",
+          skipped: false,
+          elapsed: 0,
+          animationStart: 0,
+          soundTime: 0,
+          soundDue: false,
+        },
+        roundDisplaySkipped: false,
+        fightDisplaySkipped: false,
+        callFightElapsed: 0,
+        completion: "asset-owned",
+        timing: {} as never,
+      },
+    },
+  } as unknown as MugenSnapshot;
+}
