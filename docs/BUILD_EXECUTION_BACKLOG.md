@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 558 - bounded FightScreen fade animation and sound assets
+
+Closed the asset-backed continuation of T282 in `84fc1510`. Imported
+`fight.def` `[Round] fadeout.anim` and `fadeout.snd` now parse through the
+system-asset loader, resolve against the loaded FightFX AIR/SFF package, extend
+the source-derived terminal window by the resolved AIR duration, and publish
+optional animation/sound metadata through `RuntimeRoundFade/v0`. Three.js
+renders the bounded AIR action with frame timing, loop, offsets, flips, and
+blend policy; missing actions/sprites retain the color fallback and a visible
+diagnostic. The global fade sound is routed through FightFX and deduplicated
+per round fade.
+
+Verification: focused 4 files / 38 tests, TypeScript 7 typecheck, 233 test
+files / 2476 tests, Vite build (316 modules), 633/633 traces, repository and
+redirect boundaries, CSS budget, and real Vite browser smoke all pass. Smoke
+produced 64 capture paths with 0 console issues and 0 page errors in
+`.scratch/qa/qa-smoke-t284-full/diagnostics.json`. No score movement. Exact
+localcoord/motif transforms, fade-in and release choreography, dialogue/skip,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain blocked.
+See ADR 0049, research note `2026-07-18-round-fade-assets-sound.md`, and
+closeout report `2026-07-18-round-fade-assets-sound-closeout.md`.
+
 ## Entry 557 - desktop Studio route visibility and smoke resilience
 
 Closed the desktop navigation gap found during the T282 visual checkpoint in

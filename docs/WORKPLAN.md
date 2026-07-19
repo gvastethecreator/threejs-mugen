@@ -2,6 +2,19 @@
 
 ## Current runtime checkpoint - 2026-07-16 Entry 555
 
+## Active implementation frontier - T284 / Entry 558 (2026-07-18)
+
+T284 is implemented and verified in `84fc1510`. The imported FightScreen
+`fadeout.anim`/`fadeout.snd` bridge is now source-backed through loader,
+runtime, renderer, and global audio, with fail-closed fallback diagnostics.
+The checkpoint passes 233/233 test files, 2476/2476 tests, TypeScript 7,
+build, 633/633 traces, boundaries, CSS budget, and 64-path browser smoke.
+
+The next implementation may start only after a focused research note on
+round-start/fade-in ownership. Keep exact screenpack transforms, release
+ordering, motif/dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay, and
+full parity outside the bounded asset bridge.
+
 Entry 555 closes bounded `ProjTypeCollision` runtime semantics: typed
 `AssertSpecial` capability, strict projectile `Clsn2`, `HitFlag = P`
 cancellation, and paired-player `Clsn2` direct/priority admission. Focal

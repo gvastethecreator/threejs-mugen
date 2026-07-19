@@ -1,5 +1,17 @@
 # Delivery Roadmap
 
+## Latest bounded runtime checkpoint - T284 / Entry 558
+
+The FightScreen fade asset continuation is closed in `84fc1510`. Imported
+`fadeout.anim` and `fadeout.snd` now have a typed loader-to-runtime path,
+resolved FightFX AIR/SFF presentation, and one-shot global audio. Missing
+assets keep the color fallback and diagnostic state visible. The checkpoint
+passes 233 test files / 2476 tests, TypeScript 7, build, 633/633 traces,
+boundary checks, CSS budget, and a 64-path browser smoke with zero console or
+page errors. Scores remain unchanged. Exact fade-in/release choreography,
+motif/localcoord ownership, dialogue/skip, Common1/ZSS, teams/Turns,
+rollback/netplay, and full parity remain separate delivery gates.
+
 Last updated: 2026-07-14
 
 This document turns the broad MUGEN / IKEMEN-GO / Studio / modular-engine horizon into delivery checkpoints. It is an execution companion to `docs/PORT_COMPLETION_SCORECARD.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and `.scratch/roadmap/issues/`.

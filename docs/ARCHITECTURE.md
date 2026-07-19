@@ -1,5 +1,17 @@
 # Architecture
 
+## 2026-07-18 T284 checkpoint
+
+The imported FightScreen boundary now carries `fadeout.anim` and `fadeout.snd`
+through system-asset loading, `RuntimeRoundFade/v0`, the FightFX AIR/SFF
+renderer, and global audio. AIR duration participates in the source-derived
+terminal window; unresolved actions or sprites keep the color fallback and
+report a diagnostic. The 84fc1510 checkpoint passes the full suite, TypeScript
+7, build, 633/633 traces, repository boundaries, CSS budget, and 64-path
+browser smoke with zero console/page errors. This remains a bounded adapter:
+exact localcoord/motif transforms, fade-in/release order, dialogue/skip,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity are separate.
+
 ## 2026-07-18 architecture checkpoint
 
 Current frontier: HEAD `50801d84`, Entry 555, Wayfinder 256. Redirected

@@ -2,6 +2,21 @@
 
 ## Current runtime queue - 2026-07-16 Entry 555
 
+## Current implementation frontier - T284 / Entry 558 (2026-07-18)
+
+T284 is closed at a bounded FightScreen asset boundary. Imported
+`fadeout.anim`/`fadeout.snd` now resolve through FightFX AIR/SFF assets,
+extend the source-derived terminal window by action duration, publish additive
+round-fade metadata, render with an explicit fallback, and play global fade
+audio once per fade. The grouped suite, TypeScript 7, build, traces, boundary
+checks, CSS budget, and 64-path browser smoke are green. Scores remain
+unchanged.
+
+Do not widen this into a full release claim. The next research-first gate is
+round-start/fade-in ownership from the pinned FightScreen source. Exact
+screenpack localcoord transforms, motif/dialogue/skip, release ordering,
+Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain blocked.
+
 Entry 555 is closed and evidence-backed at bounded `ProjTypeCollision` scope.
 Next runtime cut: Wayfinder 209, characterize exact projectile trade and
 cancellation ordering plus remaining `p2` collision parameters. Preserve the
