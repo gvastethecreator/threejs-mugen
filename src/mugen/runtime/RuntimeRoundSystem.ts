@@ -107,7 +107,7 @@ export class RuntimeRoundSystem {
     return this.postRoundRemaining > 0
       && this.postRoundFrame > 0
       && this.postRoundFrame >= this.timing.overHitTimeFrames
-      && this.postRoundFrame < this.timing.postKoPhase4StartFrames;
+      && this.postRoundFrame <= this.timing.postKoPhase4StartFrames;
   }
 
   get winPoseFrames(): number {
@@ -248,9 +248,9 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     overrides.postKoPhase4StartFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.postKoPhase4StartFrames,
   );
-  const overHitTimeFrames = Math.min(
-    postKoPhase4StartFrames,
-    boundedTimingFrames(overrides.overHitTimeFrames, DEFAULT_RUNTIME_ROUND_TIMING.overHitTimeFrames),
+  const overHitTimeFrames = boundedTimingFrames(
+    overrides.overHitTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.overHitTimeFrames,
   );
   const postKoFrames = Math.max(
     postKoPhase4StartFrames,

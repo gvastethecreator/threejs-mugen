@@ -112,6 +112,7 @@ describe("RuntimeRoundSystem", () => {
       koSlowFadeFrames: 4,
       koSlowRate: 1,
     });
+    expect(resolveRuntimeRoundTiming({ overHitTimeFrames: 12, postKoPhase4StartFrames: 2 }).overHitTimeFrames).toBe(12);
 
     const round = new RuntimeRoundSystem(undefined, "ikemen-go", timing);
     round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
@@ -124,7 +125,7 @@ describe("RuntimeRoundSystem", () => {
     expect(round.winPoseFrames).toBe(3);
   });
 
-  it("opens the official no-damage interval before phase 4", () => {
+  it("opens the official no-damage interval through the wait boundary", () => {
     const round = new RuntimeRoundSystem(1, "ikemen-go", {
       overHitTimeFrames: 2,
       postKoPhase4StartFrames: 4,
@@ -142,6 +143,8 @@ describe("RuntimeRoundSystem", () => {
     expect(round.roundNoDamage).toBe(true);
     round.tickTimer();
     expect(round.currentPhase).toBe(4);
+    expect(round.roundNoDamage).toBe(true);
+    round.tickTimer();
     expect(round.roundNoDamage).toBe(false);
   });
 
