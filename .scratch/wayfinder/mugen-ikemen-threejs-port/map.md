@@ -327,6 +327,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [RuntimeRoundWinPose/v0](tickets/273-runtime-win-pose-handoff.md) - resolved bounded in `4d9d6f76` / `2bb4a476`: active normal/tag phase-4 handoff to available `180/170/175` states with actor/round evidence and fail-closed ambiguity/asset diagnostics; exact timing, Common1/ZSS execution, RoundNotOver, Turns, and motif ownership remain open.
 - [Runtime phase-4 RoundNotOver hold](tickets/274-runtime-roundnotover-phase4.md) - resolved bounded in `db36894c`: phase `4` opens at post-KO frame `45` while terminal `isOver` remains false, and `RuntimeMatchRoundWorld` holds the KO clock while imported win-pose `AssertSpecial RoundNotOver` is active; exact IKEMEN timing, Common1/ZSS readiness, release choreography, time-over, Turns, and full parity remain open.
 - [Runtime win-pose readiness delay](tickets/275-runtime-win-pose-readiness.md) - resolved bounded in `dbb13813`: use pinned default `over.wintime = 45` to defer reserved `180/170/175` entry until bounded post-KO frame `90`; score projection, RoundNotOver hold, Turns, exact frame order, Common1/ZSS, and full parity stay separate.
+- [Runtime round timing configuration](tickets/276-runtime-round-timing-configuration.md) - resolved bounded in `14460d38`: expose bounded `over.waittime` / `over.wintime` / post-KO timing overrides with source-backed defaults while preserving the default snapshot and ownership boundaries.
 
 ## Not Yet Specified
 
