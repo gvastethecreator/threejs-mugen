@@ -29,6 +29,7 @@ import {
   applyRuntimeResourceController,
   applyRuntimeVariableAssignment,
   applyRuntimeVariableRangeAssignment,
+  shouldBlockRuntimeResourceControllerForRoundNoDamage,
   type RuntimeVariableAssignment,
 } from "./RuntimeResourceSystem";
 import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRandomSystem";
@@ -115,53 +116,78 @@ export function executeControllerIr(
     const operation = resourceOperation(controller, "lifeadd");
     const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
     const kill = operation?.kill ?? ((numberParam(controller, next, context, "kill") ?? 1) !== 0);
-    applyRuntimeLifeAdd(next, value, kill);
+    if (!shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "lifeadd", context.roundNoDamage)) {
+      applyRuntimeLifeAdd(next, value, kill);
+    }
   } else if (type === "lifeset") {
     const operation = resourceOperation(controller, "lifeset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
+    if (
+      value !== undefined &&
+      !shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "lifeset", context.roundNoDamage)
+    ) {
       applyRuntimeResourceController(next, { kind: "resource", controllerType: "lifeset", value });
     }
   } else if (type === "guardpointsadd") {
     const operation = resourceOperation(controller, "guardpointsadd");
-    applyRuntimeGuardPointsAdd(next, operation?.value ?? numberParam(controller, next, context, "value") ?? 0);
+    if (!shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "guardpointsadd", context.roundNoDamage)) {
+      applyRuntimeGuardPointsAdd(next, operation?.value ?? numberParam(controller, next, context, "value") ?? 0);
+    }
   } else if (type === "guardpointsset") {
     const operation = resourceOperation(controller, "guardpointsset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
+    if (
+      value !== undefined &&
+      !shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "guardpointsset", context.roundNoDamage)
+    ) {
       applyRuntimeGuardPointsSet(next, value);
     }
   } else if (type === "dizzypointsadd") {
     const operation = resourceOperation(controller, "dizzypointsadd");
-    applyRuntimeDizzyPointsAdd(next, operation?.value ?? numberParam(controller, next, context, "value") ?? 0);
+    if (!shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "dizzypointsadd", context.roundNoDamage)) {
+      applyRuntimeDizzyPointsAdd(next, operation?.value ?? numberParam(controller, next, context, "value") ?? 0);
+    }
   } else if (type === "dizzypointsset") {
     const operation = resourceOperation(controller, "dizzypointsset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
+    if (
+      value !== undefined &&
+      !shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "dizzypointsset", context.roundNoDamage)
+    ) {
       applyRuntimeDizzyPointsSet(next, value);
     }
   } else if (type === "redlifeadd") {
     const operation = resourceOperation(controller, "redlifeadd");
     const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
     const absolute = operation?.absolute ?? ((numberParam(controller, next, context, "absolute") ?? 0) !== 0);
-    applyRuntimeRedLifeAdd(next, value, absolute);
+    if (!shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "redlifeadd", context.roundNoDamage)) {
+      applyRuntimeRedLifeAdd(next, value, absolute);
+    }
   } else if (type === "redlifeset") {
     const operation = resourceOperation(controller, "redlifeset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
+    if (
+      value !== undefined &&
+      !shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "redlifeset", context.roundNoDamage)
+    ) {
       applyRuntimeRedLifeSet(next, value);
     }
   } else if (type === "poweradd") {
     const operation = resourceOperation(controller, "poweradd");
-    applyRuntimeResourceController(next, {
-      kind: "resource",
-      controllerType: "poweradd",
-      value: operation?.value ?? numberParam(controller, next, context, "value") ?? 0,
-    });
+    if (!shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "poweradd", context.roundNoDamage)) {
+      applyRuntimeResourceController(next, {
+        kind: "resource",
+        controllerType: "poweradd",
+        value: operation?.value ?? numberParam(controller, next, context, "value") ?? 0,
+      });
+    }
   } else if (type === "powerset") {
     const operation = resourceOperation(controller, "powerset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
+    if (
+      value !== undefined &&
+      !shouldBlockRuntimeResourceControllerForRoundNoDamage(next, "powerset", context.roundNoDamage)
+    ) {
       applyRuntimeResourceController(next, { kind: "resource", controllerType: "powerset", value });
     }
   } else if (type === "varset" || type === "varadd") {

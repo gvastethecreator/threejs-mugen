@@ -192,6 +192,63 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(results.every((result) => result.recordedOperation)).toBe(true);
   });
 
+  it("blocks post-round resource writes while preserving control writes and telemetry", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({
+      life: 100,
+      guardPoints: 100,
+      dizzyPoints: 100,
+      redLife: 25,
+      power: 50,
+      vars: [1],
+    });
+    const controllers = [
+      controllerSource("CtrlSet", { value: "0" }),
+      controllerSource("LifeAdd", { value: "-40" }),
+      controllerSource("LifeSet", { value: "800" }),
+      controllerSource("GuardPointsAdd", { value: "-20" }),
+      controllerSource("GuardPointsSet", { value: "800" }),
+      controllerSource("DizzyPointsAdd", { value: "-20" }),
+      controllerSource("DizzyPointsSet", { value: "800" }),
+      controllerSource("RedLifeAdd", { value: "20" }),
+      controllerSource("RedLifeSet", { value: "200" }),
+      controllerSource("PowerAdd", { value: "100" }),
+      controllerSource("PowerSet", { value: "900" }),
+    ].map((controller) => compileControllerIr(controller));
+    const recordedTypes: string[] = [];
+
+    for (const controller of controllers) {
+      world.apply(actor, controller, {
+        roundNoDamage: true,
+        recordOperation: (_actor, operation) => {
+          if (operation.kind === "resource") recordedTypes.push(operation.controllerType);
+        },
+      });
+    }
+
+    expect(actor.runtime).toMatchObject({
+      ctrl: false,
+      life: 100,
+      guardPoints: 100,
+      dizzyPoints: 100,
+      redLife: 25,
+      power: 50,
+    });
+    expect(recordedTypes).toEqual([
+      "ctrlset",
+      "lifeadd",
+      "lifeset",
+      "guardpointsadd",
+      "guardpointsset",
+      "dizzypointsadd",
+      "dizzypointsset",
+      "redlifeadd",
+      "redlifeset",
+      "poweradd",
+      "powerset",
+    ]);
+  });
+
   it("records bounded dynamic DizzyPointsAdd and DizzyPointsSet as typed resource telemetry", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ dizzyPoints: 500, dizzyPointsMax: 1000, vars: [1, 1] });

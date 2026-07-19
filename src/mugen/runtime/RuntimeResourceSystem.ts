@@ -232,6 +232,30 @@ export function applyRuntimeResourceController(
   defaultRuntimeResourceWorld.applyResourceController(state, operation);
 }
 
+/**
+ * Mirrors Ikemen's roundNoDamage guards for state-controller resource writes.
+ * Life and red-life still follow the upstream dead-actor cleanup exception;
+ * control writes are intentionally outside this resource lock.
+ */
+export function shouldBlockRuntimeResourceControllerForRoundNoDamage(
+  state: CharacterRuntimeState,
+  controllerType: ResourceControllerOp["controllerType"],
+  roundNoDamage = false,
+): boolean {
+  if (!roundNoDamage || controllerType === "ctrlset") {
+    return false;
+  }
+  if (
+    controllerType === "lifeadd" ||
+    controllerType === "lifeset" ||
+    controllerType === "redlifeadd" ||
+    controllerType === "redlifeset"
+  ) {
+    return state.life > 0;
+  }
+  return true;
+}
+
 export function applyRuntimeLifeAdd(state: CharacterRuntimeState, value: number, kill: boolean): void {
   defaultRuntimeResourceWorld.applyLifeAdd(state, value, kill);
 }

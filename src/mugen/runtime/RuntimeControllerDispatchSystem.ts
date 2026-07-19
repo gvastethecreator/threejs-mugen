@@ -19,6 +19,7 @@ export type RuntimeControllerDispatchActor = {
 
 export type RuntimeControllerDispatchHooks<TActor extends RuntimeControllerDispatchActor> = {
   context?: RuntimeControllerEvaluationContext;
+  roundNoDamage?: boolean;
   executeController?: (
     controller: ControllerIr,
     runtime: CharacterRuntimeState,
@@ -43,7 +44,10 @@ export class RuntimeControllerDispatchWorld {
     hooks: RuntimeControllerDispatchHooks<TActor> = {},
   ): RuntimeControllerDispatchResult {
     const unsupported: string[] = [];
-    const context = hooks.context ?? {};
+    const context =
+      hooks.roundNoDamage === undefined
+        ? hooks.context ?? {}
+        : { ...(hooks.context ?? {}), roundNoDamage: hooks.roundNoDamage };
     const reportUnsupported = (name: string): void => {
       unsupported.push(name);
       hooks.reportUnsupported?.(name);

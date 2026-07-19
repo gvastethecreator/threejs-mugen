@@ -4295,6 +4295,18 @@ RedirectID = 999
     const attacker = createImportedFixture({
       id: "timeover-no-damage-attacker",
       hitDefDamage: 200,
+      withRuntimeFlags: true,
+      stateEntryResourceController: `
+[State -1, No Damage Entry Life]
+type = LifeSet
+trigger1 = StageTime > 1
+value = 123
+
+[State -1, No Damage Entry Power]
+type = PowerSet
+trigger1 = StageTime > 1
+value = 321
+`,
     });
     const defender = createImportedFixture({
       id: "timeover-no-damage-defender",
@@ -4317,6 +4329,8 @@ RedirectID = 999
     const duringNoDamage = runtime.step({ p1: new Set(["x"]), p2: new Set() }, { force: true });
     expect(duringNoDamage.round).toMatchObject({ state: "timeover", roundPhase: 3, postRound: { frame: 1 } });
     expect(duringNoDamage.actors.find(({ id }) => id === "p1")?.runtime.stateNo).toBe(200);
+    expect(duringNoDamage.actors.find(({ id }) => id === "p1")?.runtime.life).toBe(1000);
+    expect(duringNoDamage.actors.find(({ id }) => id === "p1")?.runtime.power).toBe(0);
     expect(duringNoDamage.actors.find(({ id }) => id === "p2")?.runtime.life).toBe(1000);
   });
 

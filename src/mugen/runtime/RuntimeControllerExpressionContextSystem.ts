@@ -4,6 +4,8 @@ import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerEvaluationContext = {
+  /** The bounded post-round window where resource writes must not alter combat state. */
+  roundNoDamage?: boolean;
   self?: CharacterRuntimeState;
   playerId?: number;
   playerNo?: number;

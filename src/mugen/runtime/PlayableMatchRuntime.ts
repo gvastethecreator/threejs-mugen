@@ -1513,6 +1513,7 @@ export class PlayableMatchRuntime {
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               this.characterRoots(),
+              this.round.roundNoDamage,
             ),
         });
         return { paused: result.paused, result };
@@ -1627,6 +1628,7 @@ export class PlayableMatchRuntime {
               (caller, expression, context, controllerType, phase, candidates) =>
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               this.rootInputControlDeferral(fighter),
+              this.round.roundNoDamage,
             ),
           handleAi: (fighter, opponent) =>
             handleSimpleAi(
@@ -1643,6 +1645,7 @@ export class PlayableMatchRuntime {
               (caller, expression, context, controllerType, phase, candidates) =>
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               this.rootInputControlDeferral(fighter),
+              this.round.roundNoDamage,
             ),
         });
       },
@@ -1693,6 +1696,7 @@ export class PlayableMatchRuntime {
                 (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
                 this.characterRoots(),
                 this.rootInputControlRunner(fighter),
+                this.round.roundNoDamage,
               );
             },
             advanceHelper: (helper) => {
@@ -1788,6 +1792,7 @@ export class PlayableMatchRuntime {
               (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
               this.characterRoots(),
               this.rootInputControlRunner(fighter),
+              this.round.roundNoDamage,
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -2045,6 +2050,7 @@ export class PlayableMatchRuntime {
           (caller, expression, context, controllerType, phase, candidates) =>
             this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
           this.rootInputControlDeferral(actor),
+          this.round.roundNoDamage,
         ),
       handleAi: (actor, opponent) =>
         handleSimpleAi(
@@ -2061,6 +2067,7 @@ export class PlayableMatchRuntime {
           (caller, expression, context, controllerType, phase, candidates) =>
             this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
           this.rootInputControlDeferral(actor),
+          this.round.roundNoDamage,
         ),
       advanceFighter: (actor, opponent) =>
         advanceFighter(
@@ -2093,6 +2100,7 @@ export class PlayableMatchRuntime {
           (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
           this.characterRoots(),
           this.rootInputControlRunner(actor),
+          this.round.roundNoDamage,
         ),
     });
   }
@@ -2147,6 +2155,7 @@ export class PlayableMatchRuntime {
               (caller, expression, context, controllerType, phase, candidates) =>
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               this.rootInputControlDeferral(fighter),
+              this.round.roundNoDamage,
             );
           } else {
             handleSimpleAi(
@@ -2163,6 +2172,7 @@ export class PlayableMatchRuntime {
               (caller, expression, context, controllerType, phase, candidates) =>
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               this.rootInputControlDeferral(fighter),
+              this.round.roundNoDamage,
             );
           }
           advanceFighter(
@@ -2196,6 +2206,7 @@ export class PlayableMatchRuntime {
             (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
             this.characterRoots(),
             this.rootInputControlRunner(fighter),
+            this.round.roundNoDamage,
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -2306,6 +2317,7 @@ export class PlayableMatchRuntime {
       {
         participation: "standby",
         runtimeProfile: this.runtimeProfile,
+        roundNoDamage: this.round.roundNoDamage,
         onlyIgnoreHitPause: options.onlyIgnoreHitPause,
         onBlocked: (controller, route) =>
           this.logs.unshift(`Blocked standby CNS controller ${controller.type} for ${fighter.id} (${route})`),
@@ -2345,6 +2357,7 @@ export class PlayableMatchRuntime {
         {
           participation: "active-motion",
           runtimeProfile: this.runtimeProfile,
+          roundNoDamage: this.round.roundNoDamage,
           stateNo,
           stateSpecial,
           stateOwner: fighter,
@@ -2399,6 +2412,7 @@ export class PlayableMatchRuntime {
             {
               participation: "active-motion",
               runtimeProfile: this.runtimeProfile,
+              roundNoDamage: this.round.roundNoDamage,
               onBlocked: (controller, route) =>
                 this.logs.unshift(`Blocked active-motion CNS controller ${controller.type} for ${actor.id} (${route})`),
               onTeamStandby: (caller, operation, context) => this.applyTeamStandbyController(caller, operation, context),
@@ -3868,6 +3882,7 @@ function handlePlayerInput(
   onRootRedirect?: RootControllerRedirectHandler,
   onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
   deferControl?: (apply: () => RuntimeInputControlResult) => RuntimeInputControlResult,
+  roundNoDamage = false,
 ): void {
   inputControlWorld.handlePlayerInput(fighter, input, {
     hasStun: hasRuntimeStun(fighter),
@@ -3884,6 +3899,7 @@ function handlePlayerInput(
         characters,
         onRootRedirect,
         onRootTargetDispatchLease,
+        roundNoDamage,
       ),
     tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, gameSpace, tick, characters, playerIdTarget),
     startMove: (move) => startMove(fighter, move),
@@ -3905,6 +3921,7 @@ function handleSimpleAi(
   onRootRedirect?: RootControllerRedirectHandler,
   onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
   deferControl?: (apply: () => RuntimeInputControlResult) => RuntimeInputControlResult,
+  roundNoDamage = false,
 ): void {
   inputControlWorld.handleSimpleAi(fighter, opponent, tick, {
     hasStun: hasRuntimeStun(fighter),
@@ -3921,6 +3938,7 @@ function handleSimpleAi(
         characters,
         onRootRedirect,
         onRootTargetDispatchLease,
+        roundNoDamage,
       ),
     tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, gameSpace, tick, characters, playerIdTarget),
     startMove: (move) => startMove(fighter, move),
@@ -3956,6 +3974,7 @@ function advanceFighter(
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
   runDeferredInputControl?: () => boolean,
+  roundNoDamage = false,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -4017,6 +4036,7 @@ function advanceFighter(
           playerIdTarget,
           characters,
           runtimeProfile,
+          roundNoDamage,
           includeStateEntries:
             fighter.definition.source === "imported" && runDeferredInputControl !== undefined,
           runDeferredInputControl,
@@ -4105,6 +4125,7 @@ function runHitPauseIgnoredControllers(
   onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
   playerIdTarget?: PlayerIdTargetResolver,
   characters?: readonly FighterMatchState[],
+  roundNoDamage = false,
 ): void {
   runActiveStateControllers(
     fighter,
@@ -4126,6 +4147,7 @@ function runHitPauseIgnoredControllers(
       playerIdTarget,
       characters,
       runtimeProfile,
+      roundNoDamage,
     },
   );
 }
@@ -4147,6 +4169,7 @@ type ActiveControllerRunOptions = {
   playerIdTarget?: PlayerIdTargetResolver;
   characters?: readonly FighterMatchState[];
   runtimeProfile?: RuntimeCompatibilityProfile;
+  roundNoDamage?: boolean;
 };
 
 function runActiveStateControllers(
@@ -4756,6 +4779,7 @@ function runActiveStateControllers(
         }
         controllerDispatchWorld.apply(target, redirectedController, {
           context,
+          roundNoDamage: options.roundNoDamage,
           ...runtimeActiveControllerTelemetryHooks,
         });
         if (mirrorRedirectedResourceTelemetry && redirectedController.operation) {
@@ -4832,6 +4856,7 @@ function runActiveStateControllers(
       options.characters,
       options.onRootRedirect,
       options.onRootTargetDispatchLease,
+      options.roundNoDamage,
     );
     tryApplyStateEntry(
       fighter,
@@ -5153,6 +5178,7 @@ function runStateEntrySetupControllers(
   characters?: readonly FighterMatchState[],
   onRootRedirect?: RootControllerRedirectHandler,
   onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler,
+  roundNoDamage = false,
 ): void {
   stateEntrySetupWorld.apply({
     actor: fighter,
@@ -5305,6 +5331,7 @@ function runStateEntrySetupControllers(
           !compatibilityTelemetryWorld.isImportedActor(target);
         controllerDispatchWorld.apply(target, redirectedController, {
           context,
+          roundNoDamage,
           recordController: (recordedTarget, recordedController) => {
             compatibilityTelemetryWorld.recordController(recordedTarget, recordedController);
             if (mirrorRedirectedResourceTelemetry) {
