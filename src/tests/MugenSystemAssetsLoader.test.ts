@@ -36,6 +36,8 @@ fightfx.air = fightfx.air
 fightfx.sff = fightfx.sff
 sff = fightfx.sff
 snd = fightfx.snd
+font1 = ../font/standard.def
+font1.height = 14
 
 [Round]
 over.waittime = 12
@@ -48,6 +50,7 @@ round.sndtime = 2
 round.default.snd = 8, 2
 round.default.anim = 7002
 round.default.text = Round %i
+round.default.font = 1, 0, 0, 256, 128, 64
 round.default.displaytime = 60
 round.default.offset = 160, 100
 round.default.scale = 1.2, 0.8
@@ -85,6 +88,27 @@ slow.speed = 0.5
 `),
     );
     vfs.addFile("data/mugen.cfg", text("[Config]\nGameWidth = 1280\nGameHeight = 720\n"));
+    vfs.addFile(
+      "font/standard.def",
+      text(`[FNT v2]
+fntversion = 2,00
+
+[Def]
+Type = bitmap
+BankType = palette
+Size = 8, 12
+Spacing = 1, 2
+Offset = 0, -1
+File = standard.sff
+`),
+    );
+    vfs.addFile(
+      "font/standard.sff",
+      createSffV1([
+        { group: 0, index: 82, axisX: 0, axisY: 9 },
+        { group: 0, index: 111, axisX: 0, axisY: 9 },
+      ]),
+    );
     vfs.addFile(
       "data/fightfx.air",
       text(`[Begin Action 7001]
@@ -146,6 +170,8 @@ slow.speed = 0.5
           animationNo: 7002,
           sound: [8, 2],
           text: "Round %i",
+          font: [1, 0, 0],
+          fontColor: [255, 128, 64, 255],
           displayTime: 60,
           offset: [160, 100],
           scale: [1.2, 0.8],
@@ -159,6 +185,22 @@ slow.speed = 0.5
       animationNo: 7002,
       sound: [8, 1],
       offset: [161, 101],
+    });
+    expect(character.systemAssets?.fightScreenAssets?.fonts?.get(1)).toMatchObject({
+      index: 1,
+      sourcePath: "font/standard.def",
+      reference: "../font/standard.def",
+      height: 14,
+      format: "bitmap",
+      bankType: "palette",
+      size: [8, 12],
+      spacing: [1, 2],
+      offset: [0, -1],
+      filePath: "font/standard.sff",
+      spriteArchive: { version: "v1", sprites: expect.arrayContaining([
+        expect.objectContaining({ group: 0, index: 82 }),
+        expect.objectContaining({ group: 0, index: 111 }),
+      ]) },
     });
     expect(character.systemAssets?.fightScreenAssets?.animations.get(7002)?.frames[0]).toMatchObject({
       spriteGroup: 9100,

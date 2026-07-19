@@ -5,6 +5,7 @@ import type {
   MugenFightScreenAssets,
   MugenFightScreenDisplayAsset,
   MugenFightScreenDisplayDefinitions,
+  MugenFightScreenFont,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -87,9 +88,11 @@ export async function loadMugenSystemAssets(
   const fightScreenAssets = fightDefPath
     ? await loadFightScreenAssets(
         vfs,
+        resolver,
         fightDefPath,
         explicit.screenSffPath,
         explicit.screenSndPath,
+        explicit.fontRefs,
         diagnostics,
       )
     : undefined;
@@ -157,9 +160,11 @@ export async function loadMugenSystemAssets(
 
 async function loadFightScreenAssets(
   vfs: VirtualFileSystem,
+  resolver: PathResolver,
   fightDefPath: string,
   sffPath: string | undefined,
   sndPath: string | undefined,
+  fontRefs: Map<number, FightScreenFontRef> | undefined,
   diagnostics: MugenDiagnostic[],
 ): Promise<MugenFightScreenAssets | undefined> {
   const bundleDiagnostics: MugenDiagnostic[] = [];
@@ -203,8 +208,9 @@ async function loadFightScreenAssets(
   }
 
   const display = parseFightScreenDisplayDefinitions(getSection(definition.rawSections, "Round"));
+  const fonts = await loadFightScreenFonts(vfs, resolver, fontRefs, record, fightDefPath);
 
-  if (!localCoord && !sffPath && !sndPath && inlineActions.actions.size === 0 && !display) {
+  if (!localCoord && !sffPath && !sndPath && inlineActions.actions.size === 0 && !display && fonts.size === 0) {
     return undefined;
   }
 
@@ -215,6 +221,7 @@ async function loadFightScreenAssets(
     ...(sndPath ? { sndPath } : {}),
     animations: inlineActions.actions,
     ...(display ? { display } : {}),
+    ...(fonts.size > 0 ? { fonts } : {}),
     ...(spriteArchive ? { spriteArchive } : {}),
     ...(soundArchive ? { soundArchive } : {}),
     diagnostics: bundleDiagnostics,
@@ -377,6 +384,7 @@ function readFightDefRefs(
   sndPath?: string;
   screenSffPath?: string;
   screenSndPath?: string;
+  fontRefs?: Map<number, FightScreenFontRef>;
   fightScreenTiming?: MugenFightScreenTiming;
 } {
   const definition = parseDef(vfs.readText(fightDefPath) ?? "", fightDefPath);
@@ -385,14 +393,186 @@ function readFightDefRefs(
   const airRef = getValue(files, ["fightfx.air", "fightfx.anim", "fx.air"]);
   const sffRef = getValue(files, ["fightfx.sff", "fx.sff"]);
   const sndRef = getValue(files, ["fightfx.snd", "fx.snd"]);
+  const fontRefs = readFightScreenFontRefs(files, fightDefPath, resolver);
   return {
     airPath: resolveExisting(resolver, fightDefPath, airRef),
     sffPath: resolveExisting(resolver, fightDefPath, sffRef),
     sndPath: resolveExisting(resolver, fightDefPath, sndRef),
     screenSffPath: resolveExisting(resolver, fightDefPath, getValue(files, ["sff", "sprite"])),
     screenSndPath: resolveExisting(resolver, fightDefPath, getValue(files, ["snd", "sound"])),
+    ...(fontRefs.size > 0 ? { fontRefs } : {}),
     fightScreenTiming: parseFightScreenTiming(round, fightDefPath),
   };
+}
+
+type FightScreenFontRef = {
+  index: number;
+  reference: string;
+  path?: string;
+  height?: number;
+};
+
+function readFightScreenFontRefs(
+  section: Record<string, string>,
+  sourcePath: string,
+  resolver: PathResolver,
+): Map<number, FightScreenFontRef> {
+  const refs = new Map<number, FightScreenFontRef>();
+  for (const [key, value] of Object.entries(section)) {
+    const match = /^font(\d+)(?:\.height)?$/i.exec(key.trim());
+    if (!match) continue;
+    const index = Number(match[1]);
+    if (!Number.isInteger(index) || index < 0) continue;
+    const existing = refs.get(index) ?? { index, reference: "" };
+    if (key.toLowerCase().endsWith(".height")) {
+      const height = Number(value.trim());
+      refs.set(index, {
+        ...existing,
+        ...(Number.isFinite(height) ? { height: Math.round(height) } : {}),
+      });
+      continue;
+    }
+    refs.set(index, {
+      ...existing,
+      reference: value,
+      path: resolveExisting(resolver, sourcePath, value),
+    });
+  }
+  return refs;
+}
+
+async function loadFightScreenFonts(
+  vfs: VirtualFileSystem,
+  resolver: PathResolver,
+  refs: Map<number, FightScreenFontRef> | undefined,
+  record: (diagnostic: MugenDiagnostic) => void,
+  sourcePath: string,
+): Promise<Map<number, MugenFightScreenFont>> {
+  const fonts = new Map<number, MugenFightScreenFont>();
+  for (const [index, ref] of refs ?? []) {
+    const fontDiagnostics: MugenDiagnostic[] = [];
+    const addDiagnostic = (diagnostic: MugenDiagnostic): void => {
+      fontDiagnostics.push(diagnostic);
+      record(diagnostic);
+    };
+    const fontPath = ref.path;
+    if (!fontPath) {
+      addDiagnostic({
+        severity: "warning",
+        format: "loader",
+        file: sourcePath,
+        message: `FightScreen font ${index} was declared but could not be resolved: ${ref.reference}`,
+      });
+      fonts.set(index, createEmptyFightScreenFont(index, sourcePath, ref, fontDiagnostics));
+      continue;
+    }
+
+    const definition = parseDef(vfs.readText(fontPath) ?? "", fontPath);
+    for (const diagnostic of definition.diagnostics) {
+      addDiagnostic(diagnostic);
+    }
+    const fontSection = getSection(definition.rawSections, "Def");
+    const format = normalizeFightScreenFontFormat(getValue(fontSection, ["type"]));
+    const bankType = (getValue(fontSection, ["banktype"]) ?? "palette").trim().toLowerCase() || "palette";
+    const fileReference = getValue(fontSection, ["file"]);
+    const filePath = resolveFightScreenFontFile(resolver, fontPath, fileReference);
+    const font: MugenFightScreenFont = {
+      index,
+      sourcePath: fontPath,
+      reference: ref.reference,
+      ...(ref.height === undefined ? {} : { height: ref.height }),
+      format,
+      bankType,
+      size: integerPairValue(fontSection, "size") ?? [0, 0],
+      spacing: integerPairValue(fontSection, "spacing") ?? [0, 0],
+      offset: integerPairValue(fontSection, "offset") ?? [0, 0],
+      ...(filePath ? { filePath } : {}),
+      diagnostics: fontDiagnostics,
+    };
+
+    if (!fileReference) {
+      addDiagnostic({
+        severity: "warning",
+        format: "loader",
+        file: fontPath,
+        message: `FightScreen font ${index} has no [Def] File entry`,
+      });
+    } else if (!filePath) {
+      addDiagnostic({
+        severity: "warning",
+        format: "loader",
+        file: fontPath,
+        message: `FightScreen font ${index} file was not found: ${fileReference}`,
+      });
+    } else if (format === "truetype") {
+      addDiagnostic({
+        severity: "warning",
+        format: "loader",
+        file: fontPath,
+        message: `FightScreen TrueType font ${index} is indexed as metadata only; browser font rendering remains unsupported`,
+      });
+    } else if (/\.sff$/i.test(filePath)) {
+      const buffer = vfs.readArrayBuffer(filePath);
+      if (buffer) {
+        const spriteArchive = await new SffParser().load(buffer);
+        font.spriteArchive = spriteArchive;
+        for (const warning of spriteArchive.warnings) {
+          addDiagnostic({ severity: "warning", format: "sff", file: filePath, message: warning });
+        }
+      }
+    } else {
+      addDiagnostic({
+        severity: "warning",
+        format: "loader",
+        file: fontPath,
+        message: `FightScreen bitmap font ${index} references unsupported glyph source: ${filePath}`,
+      });
+    }
+    fonts.set(index, font);
+  }
+  return fonts;
+}
+
+function createEmptyFightScreenFont(
+  index: number,
+  sourcePath: string,
+  ref: FightScreenFontRef,
+  diagnostics: MugenDiagnostic[],
+): MugenFightScreenFont {
+  return {
+    index,
+    sourcePath,
+    reference: ref.reference,
+    ...(ref.height === undefined ? {} : { height: ref.height }),
+    format: "unknown",
+    bankType: "palette",
+    size: [0, 0],
+    spacing: [0, 0],
+    offset: [0, 0],
+    diagnostics,
+  };
+}
+
+function normalizeFightScreenFontFormat(value: string | undefined): MugenFightScreenFont["format"] {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === "bitmap") return "bitmap";
+  if (normalized === "truetype") return "truetype";
+  return "unknown";
+}
+
+function resolveFightScreenFontFile(
+  resolver: PathResolver,
+  fontPath: string,
+  reference: string | undefined,
+): string | undefined {
+  if (!reference) return undefined;
+  const candidates = [
+    resolver.resolve(fontPath, reference),
+    resolver.resolve("font/fight.def", reference),
+    resolver.resolve("data/fight.def", reference),
+    resolver.resolve("", reference),
+  ].filter((candidate): candidate is string => Boolean(candidate));
+  return candidates.find((candidate) => resolver.exists(candidate));
 }
 
 function parseFightScreenTiming(
@@ -469,6 +649,7 @@ function displayAsset(
     sound: soundValue(section, `${prefix}.snd`),
     text: getValue(section, [`${prefix}.text`]),
     font: fontValue(section, `${prefix}.font`),
+    fontColor: fontColorValue(section, `${prefix}.font`),
     displayTime: numberValue(section, `${prefix}.displaytime`),
     offset: pairValue(section, `${prefix}.offset`),
     scale: pairValue(section, `${prefix}.scale`),
@@ -491,12 +672,34 @@ function pairValue(section: Record<string, string>, key: string): [number, numbe
   return [values[0]!, values[1]!];
 }
 
+function integerPairValue(section: Record<string, string>, key: string): [number, number] | undefined {
+  const value = pairValue(section, key);
+  return value ? [Math.round(value[0]), Math.round(value[1])] : undefined;
+}
+
 function fontValue(section: Record<string, string>, key: string): [number, number, number] | undefined {
   const raw = getValue(section, [key]);
   if (raw === undefined) return undefined;
   const values = raw.split(",").map((part) => Number(part.trim()));
-  if (values.length !== 3 || values.some((value) => !Number.isFinite(value))) return undefined;
+  if (values.length < 3 || values.some((value) => !Number.isFinite(value))) return undefined;
   return [Math.round(values[0]!), Math.round(values[1]!), Math.round(values[2]!)];
+}
+
+function fontColorValue(section: Record<string, string>, key: string): [number, number, number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length < 6 || values.slice(3).some((value) => !Number.isFinite(value))) return undefined;
+  return [
+    clampFontColor(values[3]!),
+    clampFontColor(values[4]!),
+    clampFontColor(values[5]!),
+    clampFontColor(values[6] ?? 255),
+  ];
+}
+
+function clampFontColor(value: number): number {
+  return Math.max(0, Math.min(255, Math.round(value)));
 }
 
 function facingValue(section: Record<string, string>, key: string): 1 | -1 | undefined {

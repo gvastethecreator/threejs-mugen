@@ -25,8 +25,24 @@ export type MugenFightScreenAssets = {
   sndPath?: string;
   animations: Map<number, MugenAnimationAction>;
   display?: MugenFightScreenDisplayDefinitions;
+  fonts?: Map<number, MugenFightScreenFont>;
   spriteArchive?: SffArchive;
   soundArchive?: SndArchive;
+  diagnostics: MugenDiagnostic[];
+};
+
+export type MugenFightScreenFont = {
+  index: number;
+  sourcePath: string;
+  reference?: string;
+  height?: number;
+  format: "bitmap" | "truetype" | "unknown";
+  bankType: string;
+  size: [number, number];
+  spacing: [number, number];
+  offset: [number, number];
+  filePath?: string;
+  spriteArchive?: SffArchive;
   diagnostics: MugenDiagnostic[];
 };
 
@@ -35,6 +51,7 @@ export type MugenFightScreenDisplayAsset = {
   sound?: [number, number];
   text?: string;
   font?: [number, number, number];
+  fontColor?: [number, number, number, number];
   displayTime?: number;
   offset?: [number, number];
   scale?: [number, number];

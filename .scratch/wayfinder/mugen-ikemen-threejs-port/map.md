@@ -18,6 +18,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Carry FightScreen AnimTextSnd completion](tickets/296-fightscreen-animtextsnd-completion.md) - resolved at source-derived completion scope: finite AIR, terminal `-1` AIR, `displaytime`, and the parallel selected/default End boundary now reach renderer diagnostics and runtime phase visibility; FNT, top/background layers, and full visual parity remain open.
 
+- [Load FightScreen FNT v2 bitmap fonts](tickets/297-fightscreen-fnt-v2-loader.md) - resolved at asset-contract scope: `[Files] fontN`/`fontN.height`, FNT v2 `[Def]` metadata, relative glyph SFF resolution, decoded glyph archives, and explicit TrueType/unsupported-source diagnostics are now carried through `MugenFightScreenAssets`; glyph rasterization, palette-bank remaps, and top/background layers remain open.
+
 - [Index FightScreen display variants](tickets/294-fightscreen-display-variants.md) - resolved at definition and sound-selection scope: numbered/default/single/final/fight `AnimTextSnd` references, layout metadata, and bounded runtime sound precedence are imported; AIR/FNT/SFF rendering and exact `AnimTextSnd` completion remain the next renderer boundary.
 
 - [Route FightScreen announcement sounds](tickets/293-fightscreen-announcement-sound.md) - resolved at source-sound routing scope: `fight.def` screen SND loads under `fs`, Round/Fight sound edges reach Web Audio once, and inline screen actions are indexed without claiming rendering parity.
