@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 556 - bounded imported round fade-out boundary
+
+Closed the visible round-release gap after T281. Imported `fight.def` timing
+now preserves `fadeout.time` and clamped `fadeout.col`; source-derived runtime
+timing uses `max(over.time, fadeout.time)` for the effective terminal window.
+`RuntimeRoundSystem` publishes additive `RuntimeRoundFade/v0` state, and the
+Three.js renderer draws the active color/opacity overlay above pause and
+environment overlays. Explicit normalized `postKoFrames` and source-less demo
+timing remain stable.
+
+The focused loader/runtime/renderer batch passes 4 files / 290 tests and
+TypeScript 7 typecheck. The full suite, production build, full trace,
+boundaries, and browser smoke are reserved for the next grouped checkpoint
+because this slice changes a visible renderer path. No score movement. Exact
+fight-screen fade animation/sound assets, motif/dialogue/skip ownership,
+frame-start ordering, Common1/ZSS release, teams/Turns, rollback/netplay, and
+full MUGEN/IKEMEN parity remain blocked. See ADR 0048, research note
+`2026-07-18-round-fadeout-boundary.md`, and closeout report
+`2026-07-18-round-fadeout-boundary-closeout.md`.
+
 ## 2026-07-18 - T266-T268 source authority and SOCD closeout
 
 Closed three bounded runtime/control slices after the grouped checkpoint.
