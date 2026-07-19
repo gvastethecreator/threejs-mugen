@@ -48,4 +48,7 @@ Turns, Simul, rollback, and full parity remain open.
   `src/tests/PlayableMatchRuntime.test.ts`.
 - Commit: `db36894c`.
 - Focused verification: `4` files / `287` tests and `pnpm typecheck` passed.
+- Wide checkpoint: `233` test files / `2456` tests, build, boundaries, redirect
+  boundary, and `633/633` runtime traces passed; the production build retains
+  the existing large-chunk warning.
 - Sources: [Elecbyte AssertSpecial](https://www.elecbyte.com/mugendocs-11b1/sctrls.html), [pinned IKEMEN-GO roundState](https://github.com/ikemen-engine/Ikemen-GO/blob/05b7d98af690c73c7bffe5cb4f4eeb6933fa2703/src/system.go#L1666-L1683).

@@ -39,6 +39,10 @@ ownership?
 - Implementation commit: `db36894c`.
 - Focused verification: `4` files / `287` tests, `pnpm typecheck`, and
   `git diff --check` passed.
+- Wide checkpoint: `pnpm test` passed `233` files / `2456` tests; build,
+  TypeScript 7, boundaries, redirect boundary, and `633/633` traces passed
+  (`599` required, `34` optional). Build retains the existing large-chunk
+  warning.
 
 ## Claim ceiling
 

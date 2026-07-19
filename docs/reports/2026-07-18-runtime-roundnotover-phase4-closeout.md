@@ -20,6 +20,20 @@ the flag clears, the same clock resumes.
 - Browser smoke: N/A; this slice changes renderer-independent round timing and
   snapshot state only.
 
+## Wide checkpoint
+
+- `pnpm test`: `233` files / `2456` tests passed when run alone after the
+  implementation batch. An earlier parallel checkpoint produced two
+  five-second timeout failures under CPU contention; both cases passed in
+  isolation and the final suite completed without failures.
+- `pnpm build`: passed. TypeScript 7 emits the production bundle; Vite keeps
+  the existing large-chunk warning (`index-CFYCqZet.js`, about `1.98 MB`).
+- `pnpm typecheck`: passed.
+- `pnpm check:boundaries`: passed.
+- `pnpm check:redirect-boundary`: passed.
+- `pnpm qa:trace`: `633/633` artifacts passed (`599` required, `34` optional),
+  with no failed artifacts.
+
 ## Global status
 
 Bounded local match-end coverage now includes phase progression, reserved
