@@ -5662,6 +5662,47 @@ export class App {
             </span>
           </button>
         </div>
+
+        <div class="pro-inspector-section" aria-label="Recent local projects">
+          <div class="pro-section-head">
+            <span>Recent Projects</span>
+            <b>${this.storedProjects.length}</b>
+          </div>
+          ${
+            this.storedProjects.length
+              ? `<div class="pro-warning-list">${this.storedProjects
+                  .slice(0, 4)
+                  .map(
+                    (project) => `
+                      <button type="button" class="pro-warning-row is-ok" data-stored-project-id="${escapeHtml(project.id)}">
+                        ${tablerIcon("folder", "ui-icon")}
+                        <span>
+                          <strong>${escapeHtml(project.name)}</strong>
+                          <small>${escapeHtml(project.id)} / ${escapeHtml(formatDateTime(project.savedAt))}</small>
+                        </span>
+                        <em>${escapeHtml(`${project.manifest.entry.p1} vs ${project.manifest.entry.p2}`)}</em>
+                      </button>
+                    `,
+                  )
+                  .join("")}</div>`
+              : `<div class="pro-empty-note">No local projects saved yet.</div>`
+          }
+        </div>
+
+        <div class="pro-inspector-section" aria-label="Runtime debug">
+          <div class="pro-section-head">
+            <span>Runtime Debug</span>
+            <b>${this.matchRuntime.getActorRegistry().actors.length} actors</b>
+          </div>
+          <button type="button" class="pro-selected-asset is-ok" data-studio-tab="debug">
+            <span class="pro-asset-thumb">${tablerIcon("tools", "ui-icon")}</span>
+            <span>
+              <strong>Open Debug</strong>
+              <small>Actor registry and execution lenses</small>
+              <em>Inspect current runtime ownership, targets, effects, pause, and audio.</em>
+            </span>
+          </button>
+        </div>
       </section>
     `;
   }
