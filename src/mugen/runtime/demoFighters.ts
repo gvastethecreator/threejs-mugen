@@ -4,7 +4,7 @@ import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef, MugenStateSourceSelection } from "../model/MugenState";
-import type { MugenFightScreenTiming } from "../model/MugenSystemAssets";
+import type { MugenFightScreenAssets, MugenFightScreenTiming } from "../model/MugenSystemAssets";
 import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import type { MugenAffectTeam, MugenTeamSide } from "../model/MugenTeam";
@@ -108,6 +108,7 @@ export type DemoFighterDefinition = {
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   socdResolution?: RuntimeSocdResolution;
   fightScreenTiming?: MugenFightScreenTiming;
+  fightScreenAssets?: MugenFightScreenAssets;
   displayName: string;
   authorName?: string;
   ikemenVersion?: string;

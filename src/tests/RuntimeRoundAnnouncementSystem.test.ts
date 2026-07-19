@@ -136,4 +136,42 @@ describe("RuntimeRoundAnnouncementSystem", () => {
       fight: { phase: "active", skipped: true, elapsed: 5, soundDue: false },
     });
   });
+
+  it("selects round-number, single-round, and final-round sounds before the default fallback", () => {
+    const timing = resolveRuntimeRoundAnnouncementTiming({
+      roundTimeFrames: 1,
+      roundSoundTimeFrames: 1,
+      roundSound: { group: 8, index: 2, soundPrefix: "fs" },
+      roundSoundsByNumber: { 2: { group: 9, index: 4, soundPrefix: "FS" } },
+      roundSingleSound: { group: 10, index: 0, soundPrefix: "fs" },
+      roundFinalSound: { group: 11, index: 1, soundPrefix: "fs" },
+    })!;
+
+    const roundTwo = new RuntimeRoundAnnouncementWorld(timing);
+    roundTwo.advance({ introActive: false, shutterActive: false, roundNo: 2 });
+    roundTwo.advance({ introActive: false, shutterActive: false, roundNo: 2 });
+    expect(roundTwo.snapshot().round.sound).toEqual({ group: 9, index: 4, soundPrefix: "fs" });
+
+    const single = new RuntimeRoundAnnouncementWorld(timing);
+    single.advance({ introActive: false, shutterActive: false, mode: "single" });
+    single.advance({ introActive: false, shutterActive: false, mode: "single" });
+    expect(single.snapshot().round.sound).toEqual({ group: 10, index: 0, soundPrefix: "fs" });
+
+    const final = new RuntimeRoundAnnouncementWorld(timing);
+    final.advance({ introActive: false, shutterActive: false, mode: "final" });
+    final.advance({ introActive: false, shutterActive: false, mode: "final" });
+    expect(final.snapshot().round.sound).toEqual({ group: 11, index: 1, soundPrefix: "fs" });
+  });
+
+  it("forwards the selected FightScreen round mode through RuntimeRoundSystem", () => {
+    const timing = resolveRuntimeRoundAnnouncementTiming({
+      roundTimeFrames: 0,
+      roundSingleSound: { group: 10, index: 0, soundPrefix: "fs" },
+    })!;
+    const round = new RuntimeRoundSystem(10, "unknown", { announcement: timing });
+
+    round.tickTimer({ announcementMode: "single" });
+
+    expect(round.snapshot().announcement?.round.sound).toEqual({ group: 10, index: 0, soundPrefix: "fs" });
+  });
 });

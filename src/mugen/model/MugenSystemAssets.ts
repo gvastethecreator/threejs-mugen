@@ -23,9 +23,30 @@ export type MugenFightScreenAssets = {
   sffPath?: string;
   sndPath?: string;
   animations: Map<number, MugenAnimationAction>;
+  display?: MugenFightScreenDisplayDefinitions;
   spriteArchive?: SffArchive;
   soundArchive?: SndArchive;
   diagnostics: MugenDiagnostic[];
+};
+
+export type MugenFightScreenDisplayAsset = {
+  animationNo?: number;
+  sound?: [number, number];
+  text?: string;
+  font?: [number, number, number];
+  displayTime?: number;
+  offset?: [number, number];
+  scale?: [number, number];
+  facing?: 1 | -1;
+  vfacing?: 1 | -1;
+};
+
+export type MugenFightScreenDisplayDefinitions = {
+  round: Map<number, MugenFightScreenDisplayAsset>;
+  roundDefault?: MugenFightScreenDisplayAsset;
+  roundSingle?: MugenFightScreenDisplayAsset;
+  roundFinal?: MugenFightScreenDisplayAsset;
+  fight?: MugenFightScreenDisplayAsset;
 };
 
 export type MugenFightScreenTiming = {

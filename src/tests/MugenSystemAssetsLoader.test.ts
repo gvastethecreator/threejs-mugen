@@ -43,10 +43,24 @@ over.time = 240
 round.time = 4
 round.sndtime = 2
 round.default.snd = 8, 2
+round.default.anim = 7002
+round.default.text = Round %i
+round.default.displaytime = 60
+round.default.offset = 160, 100
+round.default.scale = 1.2, 0.8
+round1.snd = 8, 1
+round1.anim = 7002
+round1.offset = 161, 101
+round.single.snd = 8, 3
+round.single.anim = 7002
+round.final.snd = 8, 4
+round.final.anim = 7002
 callfight.time = 3
 fight.time = 5
 fight.sndtime = 1
 fight.snd = 7, 1
+fight.anim = 7002
+fight.offset = 160, 110
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -123,6 +137,24 @@ slow.speed = 0.5
       sourcePath: "data/fight.def",
       sffPath: "data/fightfx.sff",
       sndPath: "data/fightfx.snd",
+      display: {
+        roundDefault: {
+          animationNo: 7002,
+          sound: [8, 2],
+          text: "Round %i",
+          displayTime: 60,
+          offset: [160, 100],
+          scale: [1.2, 0.8],
+        },
+        roundSingle: { animationNo: 7002, sound: [8, 3] },
+        roundFinal: { animationNo: 7002, sound: [8, 4] },
+        fight: { animationNo: 7002, sound: [7, 1], offset: [160, 110] },
+      },
+    });
+    expect(character.systemAssets?.fightScreenAssets?.display?.round.get(1)).toEqual({
+      animationNo: 7002,
+      sound: [8, 1],
+      offset: [161, 101],
     });
     expect(character.systemAssets?.fightScreenAssets?.animations.get(7002)?.frames[0]).toMatchObject({
       spriteGroup: 9100,

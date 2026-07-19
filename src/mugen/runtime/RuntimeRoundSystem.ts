@@ -10,6 +10,7 @@ import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
 import {
   RuntimeRoundAnnouncementWorld,
   type RuntimeRoundAnnouncementTiming,
+  type RuntimeRoundAnnouncementMode,
 } from "./RuntimeRoundAnnouncementSystem";
 
 export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
@@ -48,6 +49,8 @@ export type RuntimeRoundTickOptions = {
   skipRoundDisplay?: boolean;
   /** Skips the source FightScreen Fight display while retaining round timing ownership. */
   skipFightDisplay?: boolean;
+  /** Selects the source FightScreen round asset variant when one is available. */
+  announcementMode?: RuntimeRoundAnnouncementMode;
 };
 
 export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object.freeze({
@@ -261,6 +264,8 @@ export class RuntimeRoundSystem {
     this.announcementWorld?.advance({
       introActive,
       shutterActive: this.shutterRemaining > 0,
+      roundNo: this.roundNo,
+      mode: options.announcementMode,
       skipRoundDisplay: options.skipRoundDisplay,
       skipFightDisplay: options.skipFightDisplay,
     });

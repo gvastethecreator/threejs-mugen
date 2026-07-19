@@ -3,6 +3,8 @@ import type { MugenCharacterDef } from "../model/MugenCharacter";
 import type { MugenGameConfig } from "../model/MugenConfig";
 import type {
   MugenFightScreenAssets,
+  MugenFightScreenDisplayAsset,
+  MugenFightScreenDisplayDefinitions,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -165,6 +167,10 @@ async function loadFightScreenAssets(
     bundleDiagnostics.push(diagnostic);
     diagnostics.push(diagnostic);
   };
+  const definition = parseDef(vfs.readText(fightDefPath) ?? "", fightDefPath);
+  for (const diagnostic of definition.diagnostics) {
+    record(diagnostic);
+  }
   const inlineActions = parseAir(
     extractEmbeddedActionText(vfs.readText(fightDefPath) ?? ""),
     fightDefPath,
@@ -189,13 +195,15 @@ async function loadFightScreenAssets(
     const buffer = vfs.readArrayBuffer(sndPath);
     if (buffer) {
       soundArchive = parseSnd(buffer);
-      for (const warning of soundArchive.warnings) {
+  for (const warning of soundArchive.warnings) {
         record({ severity: "warning", format: "snd", file: sndPath, message: warning });
       }
     }
   }
 
-  if (!sffPath && !sndPath && inlineActions.actions.size === 0) {
+  const display = parseFightScreenDisplayDefinitions(getSection(definition.rawSections, "Round"));
+
+  if (!sffPath && !sndPath && inlineActions.actions.size === 0 && !display) {
     return undefined;
   }
 
@@ -204,6 +212,7 @@ async function loadFightScreenAssets(
     ...(sffPath ? { sffPath } : {}),
     ...(sndPath ? { sndPath } : {}),
     animations: inlineActions.actions,
+    ...(display ? { display } : {}),
     ...(spriteArchive ? { spriteArchive } : {}),
     ...(soundArchive ? { soundArchive } : {}),
     diagnostics: bundleDiagnostics,
@@ -421,6 +430,77 @@ function parseFightScreenTiming(
   return Object.entries(timing).some(([key, value]) => key !== "sourcePath" && value !== undefined)
     ? timing
     : undefined;
+}
+
+function parseFightScreenDisplayDefinitions(
+  section: Record<string, string>,
+): MugenFightScreenDisplayDefinitions | undefined {
+  const round = new Map<number, MugenFightScreenDisplayAsset>();
+  for (let roundNo = 1; roundNo <= 9; roundNo += 1) {
+    const asset = displayAsset(section, `round${roundNo}`);
+    if (asset) {
+      round.set(roundNo, asset);
+    }
+  }
+  const definitions: MugenFightScreenDisplayDefinitions = {
+    round,
+    roundDefault: displayAsset(section, "round.default"),
+    roundSingle: displayAsset(section, "round.single"),
+    roundFinal: displayAsset(section, "round.final"),
+    fight: displayAsset(section, "fight"),
+  };
+  return definitions.round.size > 0
+    || definitions.roundDefault !== undefined
+    || definitions.roundSingle !== undefined
+    || definitions.roundFinal !== undefined
+    || definitions.fight !== undefined
+    ? definitions
+    : undefined;
+}
+
+function displayAsset(
+  section: Record<string, string>,
+  prefix: string,
+): MugenFightScreenDisplayAsset | undefined {
+  const asset: MugenFightScreenDisplayAsset = {
+    animationNo: nonNegativeIntegerValue(section, `${prefix}.anim`),
+    sound: soundValue(section, `${prefix}.snd`),
+    text: getValue(section, [`${prefix}.text`]),
+    font: fontValue(section, `${prefix}.font`),
+    displayTime: numberValue(section, `${prefix}.displaytime`),
+    offset: pairValue(section, `${prefix}.offset`),
+    scale: pairValue(section, `${prefix}.scale`),
+    facing: facingValue(section, `${prefix}.facing`),
+    vfacing: facingValue(section, `${prefix}.vfacing`),
+  };
+  if (!Object.values(asset).some((value) => value !== undefined)) {
+    return undefined;
+  }
+  return Object.fromEntries(
+    Object.entries(asset).filter(([, value]) => value !== undefined),
+  ) as MugenFightScreenDisplayAsset;
+}
+
+function pairValue(section: Record<string, string>, key: string): [number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 2 || values.some((value) => !Number.isFinite(value))) return undefined;
+  return [values[0]!, values[1]!];
+}
+
+function fontValue(section: Record<string, string>, key: string): [number, number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 3 || values.some((value) => !Number.isFinite(value))) return undefined;
+  return [Math.round(values[0]!), Math.round(values[1]!), Math.round(values[2]!)];
+}
+
+function facingValue(section: Record<string, string>, key: string): 1 | -1 | undefined {
+  const value = numberValue(section, key);
+  if (value === undefined) return undefined;
+  return value < 0 ? -1 : 1;
 }
 
 function enrichFightScreenTiming(

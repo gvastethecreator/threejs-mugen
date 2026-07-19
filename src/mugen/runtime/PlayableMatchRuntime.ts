@@ -9,7 +9,10 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import type { MugenFightScreenTiming } from "../model/MugenSystemAssets";
+import type {
+  MugenFightScreenDisplayDefinitions,
+  MugenFightScreenTiming,
+} from "../model/MugenSystemAssets";
 import {
   matchesMugenStateIdentity,
   type MugenStateController,
@@ -635,8 +638,10 @@ export class PlayableMatchRuntime {
     );
     this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
+    const fightScreenDefinition = p1Definition.fightScreenTiming ? p1Definition : p2Definition;
     const roundTiming = options.roundTiming ?? runtimeRoundTimingFromFightScreen(
-      p1Definition.fightScreenTiming ?? p2Definition.fightScreenTiming,
+      fightScreenDefinition.fightScreenTiming,
+      fightScreenDefinition.fightScreenAssets?.display,
     );
     this.round = new RuntimeRoundSystem(options.roundTimerFrames, this.runtimeProfile, roundTiming);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
@@ -1398,6 +1403,21 @@ export class PlayableMatchRuntime {
       : undefined;
   }
 
+  private roundAnnouncementMode(): "normal" | "single" | "final" {
+    const outcome = this.matchOutcome.snapshot();
+    const roundNo = this.round.currentRoundNo;
+    const side1Target = outcome.matchWinsBySide?.[1] ?? outcome.matchWins;
+    const side2Target = outcome.matchWinsBySide?.[2] ?? outcome.matchWins;
+    if (roundNo === 1 && side1Target === 1 && side2Target === 1) {
+      return "single";
+    }
+    if (roundNo <= 1 || outcome.matchOver) {
+      return "normal";
+    }
+    const bothSidesDecisive = outcome.wins[1] >= side1Target - 1 && outcome.wins[2] >= side2Target - 1;
+    return bothSidesDecisive ? "final" : "normal";
+  }
+
   private actorRunOrderCandidates(): RuntimeActorRunOrderCandidate<FighterMatchState, RuntimeHelper>[] {
     return [
       this.rootRunOrderCandidate(this.p1, 1),
@@ -1459,7 +1479,10 @@ export class PlayableMatchRuntime {
     if (this.round.snapshot().state === "ko") {
       matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
         this.playing = false;
-      }, this.tick, { phase4Ready: this.isRoundPhase4Ready() });
+      }, this.tick, {
+        phase4Ready: this.isRoundPhase4Ready(),
+        announcementMode: this.roundAnnouncementMode(),
+      });
     }
     this.lastRootBodyPush = undefined;
     this.lastRootHitAdmission = undefined;
@@ -1637,7 +1660,10 @@ export class PlayableMatchRuntime {
         if (this.round.snapshot().state === "ko") return { frozen: false };
         const result = matchRoundWorld.advanceTimer(this.round, this.matchRoster().actors, () => {
           this.playing = false;
-        }, this.tick, { phase4Ready: this.isRoundPhase4Ready() });
+        }, this.tick, {
+          phase4Ready: this.isRoundPhase4Ready(),
+          announcementMode: this.roundAnnouncementMode(),
+        });
         if (result.introSkipResetReady) this.applyIntroSkipReset();
         return result;
       },
@@ -6241,46 +6267,62 @@ function hasRuntimeRoundNoSkip(
 
 function runtimeRoundTimingFromFightScreen(
   source?: MugenFightScreenTiming,
+  display?: MugenFightScreenDisplayDefinitions,
 ): Partial<RuntimeRoundTiming> | undefined {
-  if (!source) return undefined;
+  if (!source && !display) return undefined;
+  const roundSoundsByNumber = display
+    ? Object.fromEntries(
+        [...display.round.entries()]
+          .filter(([, asset]) => asset.sound !== undefined)
+          .map(([roundNo, asset]) => [roundNo, runtimeAnnouncementSound(asset.sound)]),
+      )
+    : undefined;
+  const roundSingleSound = runtimeAnnouncementSound(display?.roundSingle?.sound);
+  const roundFinalSound = runtimeAnnouncementSound(display?.roundFinal?.sound);
+  const defaultRoundSound = runtimeAnnouncementSound(source?.roundSound ?? display?.roundDefault?.sound);
   const timing: Partial<RuntimeRoundTiming> = {
-    overHitTimeFrames: source.overHitTime,
-    postKoPhase4StartFrames: source.overWaitTime,
-    forceWinTimeFrames: source.overForceWinTime,
-    winPoseFrames: source.overWinTime,
-    overTimeFrames: source.overTime,
-    startWaitTimeFrames: source.startWaitTime,
-    controlTimeFrames: source.controlTime,
+    overHitTimeFrames: source?.overHitTime,
+    postKoPhase4StartFrames: source?.overWaitTime,
+    forceWinTimeFrames: source?.overForceWinTime,
+    winPoseFrames: source?.overWinTime,
+    overTimeFrames: source?.overTime,
+    startWaitTimeFrames: source?.startWaitTime,
+    controlTimeFrames: source?.controlTime,
     announcement: resolveRuntimeRoundAnnouncementTiming({
-      roundTimeFrames: source.roundTime,
-      roundSoundTimeFrames: source.roundSoundTime,
-      roundSound: source.roundSound
-        ? { group: source.roundSound[0], index: source.roundSound[1], soundPrefix: "fs" }
-        : undefined,
-      callFightTimeFrames: source.callFightTime,
-      fightTimeFrames: source.fightTime,
-      fightSoundTimeFrames: source.fightSoundTime,
-      fightSound: source.fightSound
-        ? { group: source.fightSound[0], index: source.fightSound[1], soundPrefix: "fs" }
-        : undefined,
+      roundTimeFrames: source?.roundTime,
+      roundSoundTimeFrames: source?.roundSoundTime,
+      roundSound: defaultRoundSound,
+      roundSoundsByNumber: roundSoundsByNumber as Record<number, ReturnType<typeof runtimeAnnouncementSound>>,
+      roundSingleSound,
+      roundFinalSound,
+      callFightTimeFrames: source?.callFightTime,
+      fightTimeFrames: source?.fightTime,
+      fightSoundTimeFrames: source?.fightSoundTime,
+      fightSound: runtimeAnnouncementSound(source?.fightSound),
     }),
-    shutterTimeFrames: source.shutterTime,
-    shutterColor: source.shutterColor,
-    fadeInTimeFrames: source.fadeInTime,
-    fadeInColor: source.fadeInColor,
-    fadeInAnimationNo: source.fadeInAnimationNo,
-    fadeInAnimationDurationFrames: source.fadeInAnimationDuration,
-    fadeInSound: source.fadeInSound,
-    fadeOutTimeFrames: source.fadeOutTime,
-    fadeOutColor: source.fadeOutColor,
-    fadeOutAnimationNo: source.fadeOutAnimationNo,
-    fadeOutAnimationDurationFrames: source.fadeOutAnimationDuration,
-    fadeOutSound: source.fadeOutSound,
-    koSlowFrames: source.slowTime,
-    koSlowFadeFrames: source.slowFadeTime,
-    koSlowRate: source.slowSpeed,
+    shutterTimeFrames: source?.shutterTime,
+    shutterColor: source?.shutterColor,
+    fadeInTimeFrames: source?.fadeInTime,
+    fadeInColor: source?.fadeInColor,
+    fadeInAnimationNo: source?.fadeInAnimationNo,
+    fadeInAnimationDurationFrames: source?.fadeInAnimationDuration,
+    fadeInSound: source?.fadeInSound,
+    fadeOutTimeFrames: source?.fadeOutTime,
+    fadeOutColor: source?.fadeOutColor,
+    fadeOutAnimationNo: source?.fadeOutAnimationNo,
+    fadeOutAnimationDurationFrames: source?.fadeOutAnimationDuration,
+    fadeOutSound: source?.fadeOutSound,
+    koSlowFrames: source?.slowTime,
+    koSlowFadeFrames: source?.slowFadeTime,
+    koSlowRate: source?.slowSpeed,
   };
   return Object.values(timing).some((value) => value !== undefined) ? timing : undefined;
+}
+
+function runtimeAnnouncementSound(
+  value: [number, number] | undefined,
+): { group: number; index: number; soundPrefix: string } | undefined {
+  return value ? { group: value[0], index: value[1], soundPrefix: "fs" } : undefined;
 }
 
 

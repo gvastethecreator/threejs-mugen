@@ -54,6 +54,9 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     ...(character.systemAssets?.fightScreenTiming
       ? { fightScreenTiming: character.systemAssets.fightScreenTiming }
       : {}),
+    ...(character.systemAssets?.fightScreenAssets
+      ? { fightScreenAssets: character.systemAssets.fightScreenAssets }
+      : {}),
     displayName,
     authorName: character.definition.info.author,
     ikemenVersion: character.definition.info.ikemenVersion,
