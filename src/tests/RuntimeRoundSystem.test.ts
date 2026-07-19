@@ -109,6 +109,8 @@ describe("RuntimeRoundSystem", () => {
       forceWinTimeFrames: 0,
       winPoseFrames: 3,
       overTimeFrames: 210,
+      startWaitTimeFrames: 0,
+      controlTimeFrames: 0,
       fadeInTimeFrames: 0,
       fadeInColor: [0, 0, 0],
       fadeOutTimeFrames: 0,
@@ -247,6 +249,51 @@ describe("RuntimeRoundSystem", () => {
     });
     for (let frame = 0; frame < 6; frame += 1) round.tickTimer();
     expect(round.snapshot().preRound?.fadeIn).toMatchObject({ active: false, frame: 6, remaining: 0 });
+  });
+
+  it("holds the imported round timer until the source intro reaches fight", () => {
+    const round = new RuntimeRoundSystem(121, "ikemen-go", {
+      startWaitTimeFrames: 2,
+      controlTimeFrames: 3,
+    });
+
+    expect(round.snapshot()).toMatchObject({
+      state: "fight",
+      timer: 3,
+      roundPhase: 0,
+      preRound: {
+        intro: {
+          schema: "RuntimeRoundIntro/v0",
+          active: true,
+          frame: 0,
+          remaining: 6,
+          duration: 6,
+          startWaitTime: 2,
+          controlTime: 3,
+          phase: 0,
+        },
+      },
+    });
+
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ timer: 3, roundPhase: 0, preRound: { intro: { frame: 1, remaining: 5, phase: 0 } } });
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ timer: 3, roundPhase: 1, preRound: { intro: { frame: 2, remaining: 4, phase: 1 } } });
+
+    round.tickTimer();
+    round.tickTimer();
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ timer: 3, roundPhase: 1, preRound: { intro: { frame: 5, remaining: 1, phase: 1 } } });
+
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({
+      timer: 2,
+      preRound: { intro: { active: false, frame: 6, remaining: 0, phase: 2 } },
+    });
+    expect(round.currentPhase).toBe(2);
+
+    round.startNextRound(121);
+    expect(round.snapshot()).toMatchObject({ roundNo: 2, roundPhase: 0, preRound: { intro: { frame: 0, remaining: 6, phase: 0 } } });
   });
 
   it("holds phase 4 at the wait boundary until imported actors are ready or force time expires", () => {

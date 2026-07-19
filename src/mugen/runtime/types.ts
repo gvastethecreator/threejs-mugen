@@ -610,6 +610,7 @@ export type RoundSnapshot = {
     frame: number;
     remaining: number;
     duration: number;
+    intro?: RuntimeRoundIntroSnapshot;
     fadeIn?: RuntimeRoundFadeSnapshot;
   };
   winPose?: RuntimeRoundWinPoseSnapshot;
@@ -629,6 +630,17 @@ export type RoundSnapshot = {
     noKoSlow: boolean;
     fadeOut?: RuntimeRoundFadeSnapshot;
   };
+};
+
+export type RuntimeRoundIntroSnapshot = {
+  schema: "RuntimeRoundIntro/v0";
+  active: boolean;
+  frame: number;
+  remaining: number;
+  duration: number;
+  startWaitTime: number;
+  controlTime: number;
+  phase: RuntimeRoundPhase;
 };
 
 export type RuntimeRoundFadeSnapshot = {

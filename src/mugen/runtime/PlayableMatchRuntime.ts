@@ -6180,6 +6180,8 @@ function runtimeRoundTimingFromFightScreen(
     forceWinTimeFrames: source.overForceWinTime,
     winPoseFrames: source.overWinTime,
     overTimeFrames: source.overTime,
+    startWaitTimeFrames: source.startWaitTime,
+    controlTimeFrames: source.controlTime,
     fadeInTimeFrames: source.fadeInTime,
     fadeInColor: source.fadeInColor,
     fadeInAnimationNo: source.fadeInAnimationNo,

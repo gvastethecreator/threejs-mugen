@@ -38,6 +38,8 @@ over.hittime = 10
 over.wintime = 18
 over.forcewintime = 900
 over.time = 240
+start.waittime = 12
+ctrl.time = 30
 fadein.time = 10
 fadein.col = 1, 2, 3
 fadein.anim = 7001
@@ -78,6 +80,8 @@ slow.speed = 0.5
       overWinTime: 18,
       overForceWinTime: 900,
       overTime: 240,
+      startWaitTime: 12,
+      controlTime: 30,
       fadeInTime: 10,
       fadeInColor: [1, 2, 3],
       fadeInAnimationNo: 7001,

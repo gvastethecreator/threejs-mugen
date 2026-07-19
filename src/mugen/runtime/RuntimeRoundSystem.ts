@@ -1,4 +1,4 @@
-import type { RoundSnapshot, RuntimeRoundFadeSnapshot } from "./types";
+import type { RoundSnapshot, RuntimeRoundFadeSnapshot, RuntimeRoundIntroSnapshot } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import { DEFAULT_RUNTIME_WIN_POSE_FRAMES } from "./RuntimeRoundWinPoseSystem";
@@ -11,6 +11,8 @@ export type RuntimeRoundTiming = {
   forceWinTimeFrames: number;
   winPoseFrames: number;
   overTimeFrames: number;
+  startWaitTimeFrames: number;
+  controlTimeFrames: number;
   fadeInTimeFrames: number;
   fadeInColor: [number, number, number];
   fadeInAnimationNo?: number;
@@ -38,6 +40,8 @@ export const DEFAULT_RUNTIME_ROUND_TIMING: Readonly<RuntimeRoundTiming> = Object
   forceWinTimeFrames: 0,
   winPoseFrames: DEFAULT_RUNTIME_WIN_POSE_FRAMES,
   overTimeFrames: 210,
+  startWaitTimeFrames: 0,
+  controlTimeFrames: 0,
   fadeInTimeFrames: 0,
   fadeInColor: [0, 0, 0] as [number, number, number],
   fadeOutTimeFrames: 0,
@@ -78,6 +82,7 @@ export class RuntimeRoundSystem {
   private postRoundFrame = 0;
   private postRoundRemaining = 0;
   private preRoundFrame = 0;
+  private introRemaining = 0;
   private phase4HoldFrames = 0;
   private koSlowRemaining = 0;
   private noKoSlow = false;
@@ -91,8 +96,10 @@ export class RuntimeRoundSystem {
     timing: Partial<RuntimeRoundTiming> = {},
   ) {
     this.timerFrames = boundedRoundFrames(timerFrames);
-    this.phaseWorld = new RuntimeRoundPhaseWorld(profile);
     this.timing = resolveRuntimeRoundTiming(timing);
+    this.phaseWorld = new RuntimeRoundPhaseWorld(profile);
+    this.introRemaining = this.roundIntroDuration();
+    this.resetRoundPhase();
   }
 
   get isOver(): boolean {
@@ -183,6 +190,9 @@ export class RuntimeRoundSystem {
       return { finishedNow: this.over };
     }
     this.preRoundFrame = Math.min(this.roundFadeInDuration(), this.preRoundFrame + 1);
+    if (this.advanceRoundIntro()) {
+      return { finishedNow: false };
+    }
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     return { finishedNow: false };
   }
@@ -192,7 +202,7 @@ export class RuntimeRoundSystem {
     right: RuntimeRoundParticipant,
     options: { noKoSlow?: boolean } = {},
   ): RuntimeRoundFinishResult | undefined {
-    if (this.state !== "fight" || !this.shouldFinish(left, right)) {
+    if (this.state !== "fight" || this.currentPhase !== 2 || !this.shouldFinish(left, right)) {
       return undefined;
     }
 
@@ -234,10 +244,11 @@ export class RuntimeRoundSystem {
     this.postRoundFrame = 0;
     this.postRoundRemaining = 0;
     this.preRoundFrame = 0;
+    this.introRemaining = this.roundIntroDuration();
     this.phase4HoldFrames = 0;
     this.koSlowRemaining = 0;
     this.noKoSlow = false;
-    this.phaseWorld.transition("reset");
+    this.resetRoundPhase();
   }
 
   snapshot(): RoundSnapshot {
@@ -269,13 +280,15 @@ export class RuntimeRoundSystem {
       if (fadeOut) snapshot.postRound.fadeOut = fadeOut;
     } else {
       const fadeIn = this.roundFadeInSnapshot();
-      if (fadeIn) {
+      const intro = this.roundIntroSnapshot();
+      if (fadeIn || intro) {
         snapshot.preRound = {
           schema: "RuntimePreRound/v0",
-          frame: this.preRoundFrame,
-          remaining: fadeIn.remaining,
-          duration: fadeIn.duration,
-          fadeIn,
+          frame: fadeIn?.frame ?? intro?.frame ?? 0,
+          remaining: fadeIn?.remaining ?? intro?.remaining ?? 0,
+          duration: fadeIn?.duration ?? intro?.duration ?? 0,
+          ...(intro ? { intro } : {}),
+          ...(fadeIn ? { fadeIn } : {}),
         };
       }
     }
@@ -311,6 +324,48 @@ export class RuntimeRoundSystem {
       ? 0
       : this.timing.fadeInAnimationDurationFrames ?? 0;
     return Math.max(animationDuration, animationDuration > 0 ? 0 : this.timing.fadeInTimeFrames);
+  }
+
+  private roundIntroDuration(): number {
+    if (this.timing.startWaitTimeFrames <= 0 && this.timing.controlTimeFrames <= 0) return 0;
+    return this.timing.startWaitTimeFrames + this.timing.controlTimeFrames + 1;
+  }
+
+  private roundIntroSnapshot(): RuntimeRoundIntroSnapshot | undefined {
+    const duration = this.roundIntroDuration();
+    if (duration <= 0) return undefined;
+    const remaining = Math.max(0, this.introRemaining);
+    return {
+      schema: "RuntimeRoundIntro/v0",
+      active: remaining > 0,
+      frame: duration - remaining,
+      remaining,
+      duration,
+      startWaitTime: this.timing.startWaitTimeFrames,
+      controlTime: this.timing.controlTimeFrames,
+      phase: this.currentPhase,
+    };
+  }
+
+  private advanceRoundIntro(): boolean {
+    if (this.introRemaining <= 0) return false;
+    this.introRemaining = Math.max(0, this.introRemaining - 1);
+    if (this.currentPhase === 0 && this.introRemaining <= this.timing.controlTimeFrames + 1) {
+      this.phaseWorld.transition("intro");
+    }
+    if (this.currentPhase === 1 && this.introRemaining <= 0) {
+      this.phaseWorld.transition("fight");
+    }
+    return this.introRemaining > 0;
+  }
+
+  private resetRoundPhase(): void {
+    this.phaseWorld.transition("reset");
+    if (this.roundIntroDuration() <= 0) return;
+    this.phaseWorld.transition("pre-intro");
+    if (this.introRemaining <= this.timing.controlTimeFrames + 1) {
+      this.phaseWorld.transition("intro");
+    }
   }
 
   private roundFadeInSnapshot(): RuntimeRoundFadeSnapshot | undefined {
@@ -380,6 +435,14 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     DEFAULT_RUNTIME_ROUND_TIMING.forceWinTimeFrames,
   );
   const overTimeFrames = boundedTimingFrames(overrides.overTimeFrames, DEFAULT_RUNTIME_ROUND_TIMING.overTimeFrames);
+  const startWaitTimeFrames = boundedTimingFrames(
+    overrides.startWaitTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.startWaitTimeFrames,
+  );
+  const controlTimeFrames = boundedTimingFrames(
+    overrides.controlTimeFrames,
+    DEFAULT_RUNTIME_ROUND_TIMING.controlTimeFrames,
+  );
   const fadeInTimeFrames = boundedTimingFrames(
     overrides.fadeInTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.fadeInTimeFrames,
@@ -431,6 +494,8 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     forceWinTimeFrames,
     winPoseFrames,
     overTimeFrames,
+    startWaitTimeFrames,
+    controlTimeFrames,
     fadeInTimeFrames,
     fadeInColor,
     ...(fadeInAnimationNo !== undefined ? { fadeInAnimationNo } : {}),
