@@ -36,6 +36,12 @@ events without conflating round outcome, state 5900, win poses, or MatchOver?
 - Implementation commit: `89403690`.
 - Focused verification passes `5` files / `295` tests and `pnpm typecheck`.
 - `git diff --check` passes for the implementation surface.
+- Checkpoint passes `232` files / `2446` tests, build, TypeScript 7,
+  boundaries, redirect boundary, and `633/633` runtime traces (`599` required,
+  `34` optional).
+- The intentional `mugen-lite-journey-nokoslow` trace golden moved from
+  `ceac9f37` to `a1ce409c` because the phase metadata is now part of the
+  post-KO evidence; all other journey goldens remain unchanged.
 
 ## Claim ceiling
 

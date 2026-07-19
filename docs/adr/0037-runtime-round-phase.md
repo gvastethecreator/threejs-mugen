@@ -34,7 +34,9 @@ Round and actor evidence can now distinguish active fight from the bounded
 close window without conflating score, state 5900, win poses, or MatchOver.
 Time-over remains terminal at phase `3` in this slice because the existing
 runtime has no time-over post-round animation window. No compatibility score
-moves.
+moves. The post-KO `mugen-lite-journey-nokoslow` trace golden intentionally
+changes from `ceac9f37` to `a1ce409c`; unaffected journey routes retain their
+goldens.
 
 ## Evidence
 
@@ -47,6 +49,8 @@ moves.
   `src/tests/PlayableMatchRuntime.test.ts`.
 - Commit: `89403690`.
 - Focused verification: `5` files / `295` tests; `pnpm typecheck` passed.
+- Full checkpoint: `232` files / `2446` tests; build, TypeScript 7,
+  boundaries, redirect boundary, and `633/633` traces passed.
 
 ## Claim Ceiling
 
