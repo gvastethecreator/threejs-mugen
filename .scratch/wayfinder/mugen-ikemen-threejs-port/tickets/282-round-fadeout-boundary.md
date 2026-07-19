@@ -40,12 +40,16 @@ release, team/Turns choreography, rollback/netplay, and full parity.
 ## Outcome
 
 - Implementation commit: `55e4eeca`.
+- Grouped checkpoint and visible QA follow-up: `bf49f178`.
 - `MugenFightScreenTiming` preserves `fadeout.time` and clamped RGB color.
 - `RuntimeRoundSystem` extends source-derived terminal timing when fade lasts
   longer than `over.time` and publishes `RuntimeRoundFade/v0`.
 - `ThreeMugenRenderer` presents the active fade above other overlays and exposes
   bounded diagnostics.
 - Focused verification: 4 files / 290 tests; TypeScript 7 typecheck passes.
+- Grouped verification: 233 test files / 2472 tests, Vite build, 633/633
+  trace artifacts, boundaries, redirect boundary, CSS budget, and browser
+  smoke pass with 64 capture paths, 0 console issues, and 0 page errors.
 
 ## Closure Audit
 
@@ -54,5 +58,5 @@ release, team/Turns choreography, rollback/netplay, and full parity.
 - The local fade starts over the final configured fade frames of the bounded
   terminal window; this is an adapter, not a claim of exact `intro` ordering.
 - No trace checksum or compatibility score moves in this slice.
-- Full suite, build, trace, boundaries, and browser smoke belong to the next
-  grouped checkpoint because this feature changes a visible renderer path.
+- The renderer path has a green grouped checkpoint. Exact fight-screen asset
+  ownership and frame ordering remain intentionally outside this slice.

@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 557 - desktop Studio route visibility and smoke resilience
+
+Closed the desktop navigation gap found during the T282 visual checkpoint in
+`bf49f178`. Workbench now exposes Recent Projects and Runtime Debug in the
+visible right inspector while preserving the existing local-storage conflict
+flow. The Playwright smoke harness selects visible tab routes, expands the
+Workbench disclosure before opening stored projects, and normalizes through
+Workbench before entering Debug; hidden legacy navigator nodes are no longer
+used as click targets.
+
+Verification: TypeScript 7 typecheck, runner syntax/diff hygiene, and the real
+Vite browser smoke pass with `status=passed`, 64 capture paths, 0 console
+issues, and 0 page errors. This is a Studio/QA surface correction, not a
+compatibility-score movement. Persistent filesystem ownership, source editing,
+and full MUGEN/IKEMEN parity remain blocked.
+
 ## Entry 556 - bounded imported round fade-out boundary
 
 Closed the visible round-release gap after T281. Imported `fight.def` timing
@@ -11,12 +27,13 @@ environment overlays. Explicit normalized `postKoFrames` and source-less demo
 timing remain stable.
 
 The focused loader/runtime/renderer batch passes 4 files / 290 tests and
-TypeScript 7 typecheck. The full suite, production build, full trace,
-boundaries, and browser smoke are reserved for the next grouped checkpoint
-because this slice changes a visible renderer path. No score movement. Exact
-fight-screen fade animation/sound assets, motif/dialogue/skip ownership,
-frame-start ordering, Common1/ZSS release, teams/Turns, rollback/netplay, and
-full MUGEN/IKEMEN parity remain blocked. See ADR 0048, research note
+TypeScript 7 typecheck. The grouped checkpoint passes 233 test files / 2472
+tests, production build, `633/633` trace artifacts, repository and redirect
+boundaries, CSS budget, and browser smoke (`64` capture paths, `0` console
+issues, `0` page errors). No score movement. Exact fight-screen fade
+animation/sound assets, motif/dialogue/skip ownership, frame-start ordering,
+Common1/ZSS release, teams/Turns, rollback/netplay, and full MUGEN/IKEMEN
+parity remain blocked. See ADR 0048, research note
 `2026-07-18-round-fadeout-boundary.md`, and closeout report
 `2026-07-18-round-fadeout-boundary-closeout.md`.
 

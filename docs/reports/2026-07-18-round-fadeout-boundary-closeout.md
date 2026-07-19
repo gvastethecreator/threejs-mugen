@@ -3,6 +3,7 @@
 Date: 2026-07-18
 Ticket: Wayfinder 282
 Implementation commit: `55e4eeca`
+QA/Workbench follow-up: `bf49f178`
 
 ## Result
 
@@ -17,11 +18,20 @@ demo timing remain stable.
 
 - Focused runtime/loader/renderer tests: 4 files, 290 passed.
 - `pnpm typecheck`: passed with TypeScript 7.0.2.
-- `git diff --check`: passed before the implementation commit.
+- Grouped regression: `pnpm test` passed 233 files / 2472 tests.
+- `pnpm build`: passed with Vite 8.0.16 / 315 modules; existing large-chunk advisory remains.
+- `pnpm qa:trace`: passed 633/633 artifacts (599 required / 34 optional / 0 failed).
+- Repository boundaries, redirect boundary, and CSS budget passed
+  (`324085/536051` bytes, `1519/2364` rules, `80/119` repeated groups).
+- Browser smoke passed from the real Vite server: 64 capture paths, 0 console
+  issues, 0 page errors. Diagnostics: `.scratch/qa/qa-smoke-t282g/diagnostics.json`.
+- Visual audit passed for Workbench, local-project conflict, and Debug
+  surfaces at desktop/mobile capture points.
+- `git diff --check` passed for implementation, docs, and the follow-up.
 
-Full suite, production build, full trace, boundary checks, and browser smoke
-are intentionally the next grouped checkpoint because this slice changes a
-visible renderer path.
+The follow-up exposed `Recent Projects` and `Runtime Debug` in the desktop
+Workbench and made smoke navigation select visible routes only. It does not
+change runtime compatibility claims or move the score.
 
 ## Claim ceiling
 
