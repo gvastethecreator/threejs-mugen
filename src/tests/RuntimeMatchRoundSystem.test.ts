@@ -86,6 +86,34 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.snapshot().postRound).toMatchObject({ frame: 255, remaining: 0 });
   });
 
+  it("holds the phase-4 post-KO clock while RoundNotOver stays asserted", () => {
+    const round = new RuntimeRoundSystem();
+    const world = new RuntimeMatchRoundWorld();
+    let playing = true;
+    round.finishIfNeeded({ label: "P1", life: 700 }, { label: "P2", life: 0 });
+
+    for (let frame = 0; frame < 45; frame += 1) world.advanceTimer(round);
+
+    expect(round.currentPhase).toBe(4);
+    const beforeHold = round.snapshot().postRound;
+    const result = world.advanceTimer(
+      round,
+      [actor("P1", 700, { globalFlags: ["roundnotover"] })],
+      () => { playing = false; },
+    );
+
+    expect(result).toEqual({ frozen: false, held: true });
+    expect(round.snapshot().postRound).toMatchObject({
+      frame: beforeHold?.frame,
+      remaining: beforeHold?.remaining,
+    });
+    expect(round.isOver).toBe(false);
+    expect(playing).toBe(true);
+
+    expect(world.advanceTimer(round)).toEqual({ frozen: false });
+    expect(round.snapshot().postRound?.frame).toBe((beforeHold?.frame ?? 0) + 1);
+  });
+
   it("captures actor NoKOSlow policy on the first KO frame", () => {
     const round = new RuntimeRoundSystem();
     new RuntimeMatchRoundWorld().finishIfNeeded({

@@ -6,6 +6,7 @@ export const DEFAULT_RUNTIME_ROUND_FRAMES = 99 * 60;
 export const DEFAULT_RUNTIME_KO_SLOW_FRAMES = 60;
 export const DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES = 45;
 export const DEFAULT_RUNTIME_KO_SLOW_RATE = 0.25;
+export const DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES = 45;
 export const DEFAULT_RUNTIME_POST_KO_FRAMES = 45 + 210;
 
 export type RuntimeRoundParticipant = {
@@ -75,8 +76,13 @@ export class RuntimeRoundSystem {
       this.postRoundFrame += 1;
       this.postRoundRemaining = Math.max(0, this.postRoundRemaining - 1);
       this.koSlowRemaining = Math.max(0, this.koSlowRemaining - 1);
+      if (
+        this.currentPhase === 3 &&
+        this.postRoundFrame >= DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES
+      ) {
+        this.phaseWorld.transition("round-over");
+      }
       this.over = this.postRoundRemaining === 0;
-      if (this.over) this.phaseWorld.transition("round-over");
       return { finishedNow: this.over };
     }
     this.timerFrames = Math.max(0, this.timerFrames - 1);

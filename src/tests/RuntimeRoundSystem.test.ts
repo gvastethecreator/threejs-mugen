@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { RuntimeRoundSystem } from "../mugen/runtime/RuntimeRoundSystem";
+import {
+  DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
+  DEFAULT_RUNTIME_POST_KO_FRAMES,
+  RuntimeRoundSystem,
+} from "../mugen/runtime/RuntimeRoundSystem";
 
 describe("RuntimeRoundSystem", () => {
   it("owns the fight timer snapshot without ending a live round", () => {
@@ -65,6 +69,27 @@ describe("RuntimeRoundSystem", () => {
     expect(round.isOver).toBe(true);
     expect(round.currentPhase).toBe(4);
     expect(round.snapshot()).toMatchObject({ roundPhase: 4 });
+  });
+
+  it("opens phase 4 before the post-KO terminal window completes", () => {
+    const round = new RuntimeRoundSystem();
+    round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
+
+    for (let frame = 0; frame < DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES - 1; frame += 1) {
+      round.tickTimer();
+    }
+
+    expect(round.currentPhase).toBe(3);
+    expect(round.isOver).toBe(false);
+
+    round.tickTimer();
+
+    expect(round.currentPhase).toBe(4);
+    expect(round.isOver).toBe(false);
+    expect(round.snapshot().postRound).toMatchObject({
+      frame: DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
+      remaining: DEFAULT_RUNTIME_POST_KO_FRAMES - DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES,
+    });
   });
 
   it("captures NoKOSlow on the KO frame without shortening the post-round window", () => {

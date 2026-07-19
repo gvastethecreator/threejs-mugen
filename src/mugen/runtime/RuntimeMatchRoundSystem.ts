@@ -24,6 +24,7 @@ export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
 
 export type RuntimeMatchRoundTimerResult = {
   frozen: boolean;
+  held?: boolean;
 };
 
 export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor> = {
@@ -73,8 +74,12 @@ export class RuntimeMatchRoundWorld {
     runtimeTick = 0,
   ): RuntimeMatchRoundTimerResult {
     const globalAssertSpecial = this.snapshotGlobalAssertSpecial(actors, runtimeTick);
-    if (round.snapshot().state === "fight" && globalAssertSpecial.timerFreeze) {
+    const roundSnapshot = round.snapshot();
+    if (roundSnapshot.state === "fight" && globalAssertSpecial.timerFreeze) {
       return { frozen: true };
+    }
+    if (roundSnapshot.state === "ko" && round.currentPhase === 4 && globalAssertSpecial.roundNotOver) {
+      return { frozen: false, held: true };
     }
     const timerTick = round.tickTimer();
     if (timerTick.finishedNow) stopPlaying?.();

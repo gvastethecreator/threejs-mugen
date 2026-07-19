@@ -4061,6 +4061,62 @@ RedirectID = 999
     });
   });
 
+  it("holds the phase-4 post-KO clock while an imported win pose asserts RoundNotOver", () => {
+    const attacker = createImportedFixture({
+      id: "win-pose-roundnotover-attacker",
+      displayName: "RoundNotOver Winner",
+      withStateMove: false,
+      hitDefDamage: 2000,
+      extraStateNos: [170, 180],
+      winPoseRoundNotOver: true,
+    });
+    const defender = createImportedFixture({
+      id: "win-pose-roundnotover-defender",
+      displayName: "RoundNotOver Loser",
+      withStateMove: false,
+      hitDefDamage: 0,
+      extraStateNos: [170, 180],
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    let phaseFour = runtime.getSnapshot();
+    for (let frame = 0; frame < 100 && phaseFour.round?.roundPhase !== 4; frame += 1) {
+      phaseFour = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    expect(phaseFour.round).toMatchObject({
+      state: "ko",
+      roundPhase: 4,
+      winPose: { status: "started", winner: attacker.displayName },
+    });
+    expect(phaseFour.actors.find((actor) => actor.id === "p1")?.runtime).toMatchObject({ stateNo: 180 });
+
+    const asserted = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    expect(asserted.actors.find((actor) => actor.id === "p1")?.runtime).toMatchObject({
+      stateNo: 180,
+      assertSpecial: { roundNotOver: true },
+    });
+    const heldFrame = asserted.round?.postRound?.frame;
+    const held = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+
+    expect(held.playing).toBe(true);
+    expect(held.round).toMatchObject({
+      state: "ko",
+      roundPhase: 4,
+      postRound: { frame: heldFrame, remaining: asserted.round?.postRound?.remaining },
+    });
+  });
+
   it("projects MatchOver at phase 4 and commits it only through next-round ownership", () => {
     const attacker = createImportedFixture({
       id: "matchover-phase-attacker",
@@ -8294,6 +8350,7 @@ function createImportedFixture(
     hitDefP2ChangeAnim2To?: number;
     hitDefP2ChangeAnim2After?: number;
     extraStateNos?: number[];
+    winPoseRoundNotOver?: boolean;
     hitSpark?: string;
     guardSpark?: string;
     hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
@@ -8492,6 +8549,12 @@ movetype = H
 physics = N
 anim = ${stateNo}
 ctrl = 0
+${stateNo === 180 && options.winPoseRoundNotOver ? `
+[State 180, Hold Round During Win Pose]
+type = AssertSpecial
+trigger1 = 1
+flag = RoundNotOver
+` : ""}
 `,
     )
     .join("");
