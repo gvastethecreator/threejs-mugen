@@ -67,8 +67,14 @@ describe("StageCompatibilityJourney/v1", () => {
     if (!stagePackage) throw new Error("official stage fixture did not produce a stage package");
 
     const report = createStageCompatibilityReport(stagePackage);
-    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, stagePackage.stage, { roundTimerFrames: 1 });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, stagePackage.stage, {
+      roundTimerFrames: 1,
+      roundTiming: { postKoPhase4StartFrames: 1, postKoFrames: 1 },
+    });
     const firstRound = runtime.step({ p1: new Set(), p2: new Set() });
+    while (runtime.getSnapshot().round?.postRound?.remaining !== 0) {
+      runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
     expect(runtime.startNextRound().applied).toBe(true);
     const nextRound = runtime.getSnapshot();
 

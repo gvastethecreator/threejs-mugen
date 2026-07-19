@@ -78,7 +78,12 @@ export async function createRepositoryStageJourney(
   const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, stagePackage.stage, { roundTimerFrames: 1 });
   const initial = runtime.getSnapshot();
   const first = runtime.step({ p1: new Set(), p2: new Set() });
-  const second = runtime.step({ p1: new Set(), p2: new Set() });
+  let second = runtime.step({ p1: new Set(), p2: new Set() });
+  let closed = second;
+  while (closed.round?.postRound?.remaining !== 0) {
+    closed = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+  }
+  second = closed;
   const nextRound = runtime.startNextRound();
   const next = runtime.getSnapshot();
   const generatedAt = options.generatedAt ?? new Date().toISOString();

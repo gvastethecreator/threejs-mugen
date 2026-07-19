@@ -78,7 +78,11 @@ export class RuntimeMatchRoundWorld {
     if (roundSnapshot.state === "fight" && globalAssertSpecial.timerFreeze) {
       return { frozen: true };
     }
-    if (roundSnapshot.state === "ko" && round.currentPhase === 4 && globalAssertSpecial.roundNotOver) {
+    if (
+      (roundSnapshot.state === "ko" || roundSnapshot.state === "timeover") &&
+      round.currentPhase === 4 &&
+      globalAssertSpecial.roundNotOver
+    ) {
       return { frozen: false, held: true };
     }
     const timerTick = round.tickTimer();

@@ -114,6 +114,37 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.snapshot().postRound?.frame).toBe((beforeHold?.frame ?? 0) + 1);
   });
 
+  it("holds the phase-4 time-over clock while RoundNotOver stays asserted", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", { postKoPhase4StartFrames: 1, postKoFrames: 3 });
+    const world = new RuntimeMatchRoundWorld();
+    let playing = true;
+    round.tickTimer();
+
+    expect(world.finishIfNeeded({
+      round,
+      p1: actor("P1", 700),
+      p2: actor("P2", 700),
+      stopPlaying: () => { playing = false; },
+      log: () => undefined,
+    })).toMatchObject({ state: "timeover", winner: "Draw" });
+
+    expect(world.advanceTimer(round)).toEqual({ frozen: false });
+    expect(round.currentPhase).toBe(4);
+    const beforeHold = round.snapshot().postRound;
+    expect(world.advanceTimer(
+      round,
+      [actor("P1", 700, { globalFlags: ["roundnotover"], roundNotOver: true })],
+      () => { playing = false; },
+    )).toEqual({ frozen: false, held: true });
+
+    expect(round.snapshot().postRound).toMatchObject({
+      frame: beforeHold?.frame,
+      remaining: beforeHold?.remaining,
+    });
+    expect(round.isOver).toBe(false);
+    expect(playing).toBe(true);
+  });
+
   it("captures actor NoKOSlow policy on the first KO frame", () => {
     const round = new RuntimeRoundSystem();
     new RuntimeMatchRoundWorld().finishIfNeeded({

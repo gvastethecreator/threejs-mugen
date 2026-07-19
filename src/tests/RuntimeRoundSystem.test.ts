@@ -149,6 +149,36 @@ describe("RuntimeRoundSystem", () => {
     expect(time.snapshot()).toMatchObject({ roundPhase: 3 });
   });
 
+  it("keeps time-over in the post-round window until the terminal draw frame", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      postKoPhase4StartFrames: 2,
+      postKoFrames: 4,
+    });
+    round.tickTimer();
+
+    expect(round.finishIfNeeded({ label: "P1", life: 500 }, { label: "P2", life: 500 })).toMatchObject({
+      state: "timeover",
+      winner: "Draw",
+    });
+    expect(round.isOver).toBe(false);
+    expect(round.snapshot()).toMatchObject({
+      state: "timeover",
+      roundPhase: 3,
+      postRound: { frame: 0, remaining: 4, duration: 4, playbackRate: 1 },
+    });
+
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ roundPhase: 3, postRound: { frame: 1, remaining: 3 } });
+    round.tickTimer();
+    expect(round.snapshot()).toMatchObject({ roundPhase: 4, postRound: { frame: 2, remaining: 2 } });
+    round.tickTimer();
+    expect(round.isOver).toBe(false);
+    expect(round.snapshot()).toMatchObject({ postRound: { frame: 3, remaining: 1 } });
+    expect(round.tickTimer()).toEqual({ finishedNow: true });
+    expect(round.isOver).toBe(true);
+    expect(round.snapshot()).toMatchObject({ roundPhase: 4, postRound: { frame: 4, remaining: 0 } });
+  });
+
   it("resets mutable round state for MatchWorld reset", () => {
     const round = new RuntimeRoundSystem(1);
     round.tickTimer();
@@ -166,10 +196,11 @@ describe("RuntimeRoundSystem", () => {
   });
 
   it("tracks the next round without changing the initial-round snapshot contract", () => {
-    const round = new RuntimeRoundSystem(1);
+    const round = new RuntimeRoundSystem(1, "unknown", { postKoPhase4StartFrames: 1, postKoFrames: 1 });
     round.tickTimer();
     round.finishIfNeeded({ label: "P1", life: 100 }, { label: "P2", life: 100 });
-    expect(round.isOver).toBe(true);
+    expect(round.isOver).toBe(false);
+    expect(round.tickTimer()).toEqual({ finishedNow: true });
 
     round.startNextRound(120);
 

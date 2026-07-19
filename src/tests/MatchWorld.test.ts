@@ -136,7 +136,10 @@ describe("MatchWorld", () => {
       maxDrawsBySide: { 1: 2 },
     });
 
-    world.step({ p1: new Set(), p2: new Set() });
+    let closed = world.step({ p1: new Set(), p2: new Set() });
+    while (closed.round?.postRound?.remaining !== 0) {
+      closed = world.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
     const initialRound = world.dispatch({ type: "next-round" });
     expect(initialRound.round?.match).toMatchObject({
       maxDrawsBySide: { 1: 2, 2: -1 },

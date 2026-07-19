@@ -3931,8 +3931,10 @@ RedirectID = 999
       timer: 0,
       winner: "Draw",
       message: "Time over - draw",
+      roundPhase: 3,
+      postRound: { frame: 0, remaining: 255, duration: 255 },
     });
-    expect(snapshot.playing).toBe(false);
+    expect(snapshot.playing).toBe(true);
 
     runtime.dispatch({ type: "reset" });
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -3941,13 +3943,17 @@ RedirectID = 999
       timer: 0,
       winner: "Draw",
       message: "Time over - draw",
+      roundPhase: 3,
+      postRound: { frame: 0, remaining: 255, duration: 255 },
     });
+    expect(snapshot.playing).toBe(true);
   });
 
   it("blocks next-round until the round is over and then starts a numbered round", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
       runtimeProfile: "ikemen-go",
       roundTimerFrames: 1,
+      roundTiming: { postKoPhase4StartFrames: 1, postKoFrames: 2 },
       teamMode: "tag",
       reserveFighters: [demoFighters[0]!, demoFighters[1]!],
     });
@@ -3957,10 +3963,16 @@ RedirectID = 999
     expect(blocked.diagnostics).toContain("round-not-over");
     expect(runtime.getSnapshot().round).not.toHaveProperty("roundNo");
 
-    const over = runtime.step({ p1: new Set(), p2: new Set() });
+    let over = runtime.step({ p1: new Set(), p2: new Set() });
     expect(over.round).toMatchObject({ state: "timeover", roundPhase: 3, winner: "Draw" });
-    expect(over.playing).toBe(false);
+    expect(over.playing).toBe(true);
     expect(over.actors.every((actor) => actor.runtime.roundPhase === 3)).toBe(true);
+    while (over.round?.postRound?.remaining !== 0) {
+      over = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    expect(over.playing).toBe(false);
+    expect(over.round).toMatchObject({ state: "timeover", roundPhase: 4 });
+    expect(over.actors.every((actor) => actor.runtime.roundPhase === 4)).toBe(true);
 
     const next = runtime.startNextRound();
     expect(next).toMatchObject({ applied: true, nextRoundNo: 2, roundsExisted: 1, states: expect.any(Array) });
@@ -4224,6 +4236,60 @@ RedirectID = 999
     });
   });
 
+  it("routes a time-over draw through reserved state 175 before terminal close", () => {
+    const p1 = createImportedFixture({
+      id: "draw-pose-p1",
+      displayName: "Draw Pose P1",
+      withStateMove: false,
+      extraStateNos: [175],
+    });
+    const p2 = createImportedFixture({
+      id: "draw-pose-p2",
+      displayName: "Draw Pose P2",
+      withStateMove: false,
+      extraStateNos: [175],
+    });
+    const runtime = new PlayableMatchRuntime(p1, p2, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 1,
+      roundTiming: { postKoPhase4StartFrames: 2, winPoseFrames: 1, postKoFrames: 5 },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot).toMatchObject({
+      playing: true,
+      round: { state: "timeover", roundPhase: 3, postRound: { frame: 0, remaining: 5 } },
+    });
+
+    while (snapshot.round?.winPose?.status !== "started") {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+
+    expect(snapshot).toMatchObject({
+      playing: true,
+      round: {
+        state: "timeover",
+        roundPhase: 4,
+        postRound: { frame: 3, remaining: 2 },
+        winPose: {
+          status: "started",
+          winner: "Draw",
+          actors: [
+            { actorId: "p1", role: "draw", requestedStateNo: 175, appliedStateNo: 175 },
+            { actorId: "p2", role: "draw", requestedStateNo: 175, appliedStateNo: 175 },
+          ],
+        },
+      },
+    });
+    expect(snapshot.actors.map((actor) => actor.runtime.stateNo)).toEqual([175, 175]);
+
+    while (snapshot.round?.postRound?.remaining !== 0) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    expect(snapshot.playing).toBe(false);
+    expect(snapshot.round).toMatchObject({ state: "timeover", roundPhase: 4, postRound: { frame: 5, remaining: 0 } });
+  });
+
   it("projects MatchOver at phase 4 and commits it only through next-round ownership", () => {
     const attacker = createImportedFixture({
       id: "matchover-phase-attacker",
@@ -4279,19 +4345,28 @@ RedirectID = 999
   it("resets stage background time between rounds only when resetBG is enabled", () => {
     const resetStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: true };
     const continuingStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: false };
-    const resetRuntime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, resetStage, { roundTimerFrames: 1 });
-    const continuingRuntime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, continuingStage, { roundTimerFrames: 1 });
+    const roundTiming = { postKoPhase4StartFrames: 1, postKoFrames: 1 };
+    const resetRuntime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, resetStage, { roundTimerFrames: 1, roundTiming });
+    const continuingRuntime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, continuingStage, { roundTimerFrames: 1, roundTiming });
 
-    const resetOver = resetRuntime.step({ p1: new Set(), p2: new Set() });
-    const continuingOver = continuingRuntime.step({ p1: new Set(), p2: new Set() });
+    let resetOver = resetRuntime.step({ p1: new Set(), p2: new Set() });
+    let continuingOver = continuingRuntime.step({ p1: new Set(), p2: new Set() });
     expect(resetOver.stage.backgroundTick).toBe(1);
     expect(continuingOver.stage.backgroundTick).toBe(1);
+
+    while (resetOver.round?.postRound?.remaining !== 0) {
+      resetOver = resetRuntime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    while (continuingOver.round?.postRound?.remaining !== 0) {
+      continuingOver = continuingRuntime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
 
     resetRuntime.startNextRound();
     continuingRuntime.startNextRound();
 
     expect(resetRuntime.getSnapshot().stage.backgroundTick).toBe(0);
-    expect(continuingRuntime.getSnapshot().stage.backgroundTick).toBe(1);
+    expect(continuingRuntime.getSnapshot().stage.backgroundTick).toBe(continuingOver.stage.backgroundTick);
+    expect(continuingRuntime.getSnapshot().stage.backgroundTick).toBeGreaterThan(0);
   });
 
   it("records the round outcome and routes imported roots through state 5900", () => {
@@ -4318,11 +4393,15 @@ ctrl = 0
     const runtime = new PlayableMatchRuntime(imported, imported, trainingStage, {
       runtimeProfile: "ikemen-go",
       roundTimerFrames: 1,
+      roundTiming: { postKoPhase4StartFrames: 1, postKoFrames: 1 },
       matchWins: 2,
     });
 
-    const over = runtime.step({ p1: new Set(), p2: new Set() });
+    let over = runtime.step({ p1: new Set(), p2: new Set() });
     expect(over.round).toMatchObject({ state: "timeover", winner: "Draw" });
+    while (over.round?.postRound?.remaining !== 0) {
+      over = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
 
     const next = runtime.startNextRound();
     expect(next.matchOutcome).toMatchObject({
@@ -4371,12 +4450,16 @@ ctrl = 0
     const runtime = new PlayableMatchRuntime(imported, imported, trainingStage, {
       runtimeProfile: "ikemen-go",
       roundTimerFrames: 1,
+      roundTiming: { postKoPhase4StartFrames: 1, postKoFrames: 1 },
       matchWins: 3,
     });
 
-    const firstOver = runtime.step({ p1: new Set(), p2: new Set() });
+    let firstOver = runtime.step({ p1: new Set(), p2: new Set() });
     expect(firstOver.round?.state).toBe("timeover");
     expect(firstOver.round?.roundNo).toBeUndefined();
+    while (firstOver.round?.postRound?.remaining !== 0) {
+      firstOver = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
     const secondRound = runtime.startNextRound();
     expect(secondRound.roundContext).toMatchObject({ roundNo: 2, roundsExisted: 1, matchOver: false });
     expect(secondRound.roundContext.actors).toEqual([
@@ -4384,11 +4467,14 @@ ctrl = 0
       { actorId: "p2", roundNo: 2, roundsExisted: 1, joinedRoundNo: 1 },
     ]);
 
-    const secondOver = runtime.step({ p1: new Set(), p2: new Set() });
+    let secondOver = runtime.step({ p1: new Set(), p2: new Set() });
     expect(secondOver.round).toMatchObject({ roundNo: 2, roundsExisted: 1 });
     expect(secondOver.actors.every((actor) => actor.runtime.roundNo === 2)).toBe(true);
     expect(secondOver.actors.every((actor) => actor.runtime.roundsExisted === 1)).toBe(true);
     expect(secondOver.actors.every((actor) => actor.runtime.vars[7] === 1)).toBe(true);
+    while (secondOver.round?.postRound?.remaining !== 0) {
+      secondOver = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
 
     const thirdRound = runtime.startNextRound();
     expect(thirdRound.roundContext).toMatchObject({ roundNo: 3, roundsExisted: 2, matchOver: false });

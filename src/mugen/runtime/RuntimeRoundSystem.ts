@@ -106,7 +106,7 @@ export class RuntimeRoundSystem {
     if (this.over) {
       return { finishedNow: false };
     }
-    if (this.state === "ko") {
+    if (this.state === "ko" || this.state === "timeover") {
       this.postRoundFrame += 1;
       this.postRoundRemaining = Math.max(0, this.postRoundRemaining - 1);
       this.koSlowRemaining = Math.max(0, this.koSlowRemaining - 1);
@@ -136,9 +136,9 @@ export class RuntimeRoundSystem {
     this.winner = resolveRoundWinner(left, right);
     this.noKoSlow = this.state === "ko" && options.noKoSlow === true;
     this.postRoundFrame = 0;
-    this.postRoundRemaining = this.state === "ko" ? this.timing.postKoFrames : 1;
+    this.postRoundRemaining = this.state === "ko" || this.state === "timeover" ? this.timing.postKoFrames : 1;
     this.koSlowRemaining = this.state === "ko" ? this.timing.koSlowFrames : 0;
-    this.over = this.state === "timeover";
+    this.over = false;
     this.phaseWorld.transition("round-finished");
     return {
       state: this.state,
@@ -187,7 +187,7 @@ export class RuntimeRoundSystem {
     if (this.currentPhase !== 2) {
       snapshot.roundPhase = this.currentPhase;
     }
-    if (this.state === "ko") {
+    if (this.state === "ko" || this.state === "timeover") {
       snapshot.postRound = {
         schema: "RuntimePostRound/v0",
         frame: this.postRoundFrame,
