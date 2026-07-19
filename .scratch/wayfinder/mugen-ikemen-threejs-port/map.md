@@ -329,6 +329,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - [Runtime win-pose readiness delay](tickets/275-runtime-win-pose-readiness.md) - resolved bounded in `dbb13813`: use pinned default `over.wintime = 45` to defer reserved `180/170/175` entry until bounded post-KO frame `90`; score projection, RoundNotOver hold, Turns, exact frame order, Common1/ZSS, and full parity stay separate.
 - [Runtime round timing configuration](tickets/276-runtime-round-timing-configuration.md) - resolved bounded in `14460d38`: expose bounded `over.waittime` / `over.wintime` / post-KO timing overrides with source-backed defaults while preserving the default snapshot and ownership boundaries.
 - [Imported fight-screen timing source](tickets/277-imported-fight-screen-timing.md) - resolved bounded in `93e1429a`: parse `[Round]` values from resolved `fight.def`, carry source provenance through imported fighters, and feed runtime timing when no explicit override exists; `over.forcewintime` remains metadata-only.
+- [Time-over draw window](tickets/278-timeover-draw-window.md) - resolved bounded in `a2ce3298`: time-over now shares the post-round phase clock, can reach phase `4` and reserved draw state `175`, honors the phase-4 `RoundNotOver` hold, and stops/opens the next round only at the terminal boundary; exact release choreography, score movement, and full parity remain blocked.
 
 ## Not Yet Specified
 

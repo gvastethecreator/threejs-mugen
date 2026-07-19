@@ -179,6 +179,15 @@
 
 - Automatic KO sound is `executed-partial`: first KO transition emits common `f:11,0` per defeated player; time-over emits none; tick-active global `NoKOSnd` suppresses all KO emission. Post-KO echo timing, slowdown, teams, and full round/audio parity remain unsupported.
 
+- Round close is `executed-partial`: KO and time-over now share a bounded
+  `RuntimePostRound/v0` window, phase `4` opens at the resolved wait boundary,
+  phase-4 `RoundNotOver` can hold either route, and imported roots that expose
+  reserved state `175` can enter the draw pose before terminal stop. Public
+  next-round consumers wait for `postRound.remaining = 0`. Exact
+  `over.hittime`/`over.forcewintime`, skip input, fade/motif/dialogue release,
+  Common1/ZSS choreography, Turns/team parity, and full round parity remain
+  unsupported.
+
 - Contextual SND selection is `executed-partial`: unprefixed `PlaySnd` uses player SND; unprefixed `HitDef`/`SuperPause` use common prefix `f`; explicit `S`/`F` remain stable; absent common archives fail closed. Full audio ownership/parity remains unsupported.
 
 ## Loader
