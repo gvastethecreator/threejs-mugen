@@ -1,6 +1,6 @@
 # Research: Runtime phase-4 RoundNotOver hold
 
-Date: 2026-07-18  
+Date: 2026-07-18
 Ticket: [T274](../../.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/274-runtime-roundnotover-phase4.md)
 
 ## Question

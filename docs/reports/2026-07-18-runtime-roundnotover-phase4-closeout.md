@@ -1,7 +1,7 @@
 # Runtime Phase-4 RoundNotOver Closeout
 
-Date: 2026-07-18  
-Ticket: Wayfinder 274  
+Date: 2026-07-18
+Ticket: Wayfinder 274
 Implementation commit: `db36894c`
 
 ## Result
