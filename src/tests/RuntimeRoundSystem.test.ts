@@ -121,6 +121,7 @@ describe("RuntimeRoundSystem", () => {
           schema: "RuntimeRoundWinnerDisplaySelection/v0",
           family: "win",
           side: 0,
+          winnerSide: 0,
           variant: 0,
         },
       },

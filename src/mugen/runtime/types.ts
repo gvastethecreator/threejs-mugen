@@ -691,6 +691,7 @@ export type RuntimeRoundWinnerDisplaySelection = {
   schema: "RuntimeRoundWinnerDisplaySelection/v0";
   family: RuntimeRoundResultDisplayFamily;
   side: 0 | 1;
+  winnerSide?: 0 | 1;
   variant: number;
   winType?: RuntimeRoundWinTypeName;
 };

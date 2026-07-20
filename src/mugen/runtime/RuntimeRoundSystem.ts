@@ -801,6 +801,7 @@ function resolveWinnerDisplaySelection(
     schema: "RuntimeRoundWinnerDisplaySelection/v0",
     family,
     side: family === "aiWin" ? loserSide : winnerSide,
+    winnerSide,
     variant: boundedResultVariant(winner.variantIndex),
     ...(winner.winType ? { winType: winner.winType } : {}),
   };

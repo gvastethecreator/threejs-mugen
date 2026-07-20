@@ -8,6 +8,7 @@ import {
   resolveFightScreenOutcomeKind,
   resolveFightScreenResultDisplayAsset,
   resolveFightScreenWinTypeAsset,
+  resolveFightScreenWinTypeTiming,
 } from "../game/render/FightScreenAnnouncementRenderer";
 import { TextureStore } from "../game/render/TextureStore";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
@@ -318,6 +319,121 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       text: "P2 clutch",
       sound: [7, 2],
     });
+    expect(resolveFightScreenWinTypeTiming({ time: 3, displayTime: 4 }, 3)).toMatchObject({
+      time: 3,
+      displayTime: 4,
+      end: 7,
+      active: false,
+      windowOpen: true,
+    });
+    expect(resolveFightScreenWinTypeTiming({ time: 3, displayTime: 4 }, 4)).toMatchObject({ active: true });
+    expect(resolveFightScreenWinTypeTiming({ time: 3, displayTime: 4 }, 8)).toMatchObject({
+      active: false,
+      windowOpen: false,
+    });
+  });
+
+  it("renders the selected p2 win type after its Ikemen-GO display delay", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const font = createFont("AI resultPERFECT");
+    const display: MugenFightScreenDisplayDefinitions = {
+      round: new Map(),
+      result: {
+        win: {
+          variants: [{
+            sides: [
+              { text: "P1 result", font: [1, 0, 0], offset: [160, 80] },
+              { text: "P2 result", font: [1, 0, 0], offset: [160, 80] },
+            ],
+          }],
+        },
+        aiWin: {
+          variants: [{
+            sides: [{ text: "AI result", font: [1, 0, 0], offset: [160, 80] }, undefined],
+          }],
+        },
+        aiLose: { variants: [] },
+      },
+      winType: {
+        p1: {},
+        p2: {
+          perfect: {
+            text: "PERFECT",
+            font: [1, 0, 0],
+            offset: [160, 140],
+            time: 1,
+            displayTime: 3,
+            background: { sprite: [9100, 0], offset: [4, 5], layerNo: 0 },
+          },
+        },
+      },
+    };
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display,
+      fonts: new Map([[1, font]]),
+      spriteArchive: {
+        version: "v1",
+        sprites: [createSprite(9100, 0, 24, 12)],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+
+    const winnerDisplay = {
+      schema: "RuntimeRoundWinnerDisplay/v0",
+      kind: "win",
+      phase: "active",
+      displayStartFrame: 0,
+      soundTime: 0,
+      soundDue: false,
+      selection: {
+        schema: "RuntimeRoundWinnerDisplaySelection/v0",
+        family: "aiWin",
+        side: 0,
+        winnerSide: 1,
+        variant: 0,
+        winType: "perfect",
+      },
+    } as const;
+    const winner = outcomeSnapshot("ko", "P2", 0);
+    winner.round!.postRound!.outcome = {
+      schema: "RuntimeRoundOutcome/v0",
+      kind: "ko",
+      displayStartFrame: 0,
+      soundTime: 0,
+      soundDue: false,
+      showDraw: false,
+      winnerDisplay,
+    };
+
+    await renderer.update(winner, { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+    expect(renderer.getDiagnostics()).toMatchObject({
+      kind: "win",
+      text: "AI result",
+      winType: { name: "perfect", side: 1, active: false, resolved: false },
+    });
+
+    const activeWinner = outcomeSnapshot("ko", "P2", 2);
+    activeWinner.round!.postRound!.outcome = { ...winner.round!.postRound!.outcome!, winnerDisplay };
+    await renderer.update(activeWinner, { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+    expect(renderer.getDiagnostics()).toMatchObject({
+      resolved: true,
+      winType: { name: "perfect", side: 1, active: true, resolved: true, text: "PERFECT", backgroundResolved: 1 },
+    });
+    expect(renderer.group.children[4]?.visible).toBe(true);
+    expect(renderer.group.children[5]?.visible).toBe(true);
+
+    const expiredWinner = outcomeSnapshot("ko", "P2", 5);
+    expiredWinner.round!.postRound!.outcome = { ...winner.round!.postRound!.outcome!, winnerDisplay };
+    await renderer.update(expiredWinner, { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+    expect(renderer.getDiagnostics().winType).toBeUndefined();
+    expect(renderer.group.children[4]?.visible).toBe(false);
+    expect(renderer.group.children[5]?.visible).toBe(false);
+    renderer.dispose();
+    textures.dispose();
   });
 
   it("applies the FSText palette effect while preserving authored font color", async () => {

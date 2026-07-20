@@ -95,6 +95,14 @@ export type FightScreenAnnouncementDiagnostics = {
   backgroundResolved?: number;
   topLayerCount?: number;
   topResolved?: number;
+  winType?: {
+    name: MugenFightScreenWinTypeName;
+    side: 0 | 1;
+    active: boolean;
+    resolved: boolean;
+    text?: string;
+    backgroundResolved?: number;
+  };
   windowApplied?: number;
   windowCulled?: number;
   layerNoApplied?: number;
@@ -151,6 +159,11 @@ type FightScreenAnnouncementSelection = {
   kind: FightScreenAnnouncementKind;
   track: RuntimeRoundAnnouncementSnapshot["round"];
   asset?: MugenFightScreenDisplayAsset;
+  winType?: {
+    name: MugenFightScreenWinTypeName;
+    side: 0 | 1;
+    asset: MugenFightScreenWinTypeAsset;
+  };
   mode: RuntimeRoundAnnouncementSnapshot["mode"];
   roundNo: number;
 };
@@ -245,6 +258,8 @@ type FightScreenTextRenderResult = {
   fallbackReason?: string;
 };
 
+type FightScreenWinTypeRenderResult = NonNullable<FightScreenAnnouncementDiagnostics["winType"]>;
+
 type FightScreenTransformApplicationResult = FightScreenTransformDiagnostics & {
   placement?: FightScreenClippedPlacement;
   transformedWindow: boolean;
@@ -259,6 +274,10 @@ export class FightScreenAnnouncementRenderer {
   private readonly topGroup = new THREE.Group();
   private readonly backgroundMeshes: Array<FightScreenLayoutMesh | undefined> = [];
   private readonly topMeshes: Array<FightScreenLayoutMesh | undefined> = [];
+  private readonly winTypeBackgroundGroup = new THREE.Group();
+  private readonly winTypeTextGroup = new THREE.Group();
+  private readonly winTypeBackgroundMeshes: Array<FightScreenLayoutMesh | undefined> = [];
+  private readonly winTypeTextMeshes: Array<FightScreenMesh | undefined> = [];
   private animations = new Map<number, MugenAnimationAction>();
   private display?: MugenFightScreenDisplayDefinitions;
   private fonts = new Map<number, MugenFightScreenFont>();
@@ -313,6 +332,10 @@ export class FightScreenAnnouncementRenderer {
     this.textGroup.visible = false;
     this.group.add(this.textGroup);
     this.group.add(this.topGroup);
+    this.winTypeBackgroundGroup.visible = false;
+    this.winTypeTextGroup.visible = false;
+    this.group.add(this.winTypeBackgroundGroup);
+    this.group.add(this.winTypeTextGroup);
   }
 
   setAssets(assets: MugenFightScreenAssets | undefined): void {
@@ -324,6 +347,7 @@ export class FightScreenAnnouncementRenderer {
     this.mesh.visible = false;
     this.hideTextMeshes();
     this.hideLayoutMeshes();
+    this.hideWinTypeOverlay();
     this.diagnostics = {
       active: false,
       configured: Boolean(this.display) || this.animations.size > 0 || this.fonts.size > 0,
@@ -357,6 +381,7 @@ export class FightScreenAnnouncementRenderer {
     const actionNo = selection.asset.animationNo;
     const action = actionNo === undefined ? undefined : this.animations.get(actionNo);
     const frameTick = announcementFrameTick(selection.track);
+    const winTypeWindowOpen = isFightScreenWinTypeWindowOpen(selection.winType?.asset, frameTick);
     const completion = selection.kind === "round" || selection.kind === "fight"
       ? resolveFightScreenAnnouncementCompletion(
         this.display,
@@ -385,7 +410,7 @@ export class FightScreenAnnouncementRenderer {
       && completion !== undefined
       && completion.actionNos.length === 0
       && completion.reason !== "displaytime";
-    if (completion && frameTick >= completion.frame && !textCanUseImmediateCompletion && !layersCanUseEmptyCompletion) {
+    if (completion && frameTick >= completion.frame && !winTypeWindowOpen && !textCanUseImmediateCompletion && !layersCanUseEmptyCompletion) {
       this.hide({
         ...baseDiagnostics,
         ...(actionNo === undefined ? {} : { actionNo }),
@@ -402,14 +427,17 @@ export class FightScreenAnnouncementRenderer {
     this.hideTextMeshes();
     const layoutResult = await this.renderDisplayLayers(displayLayers, frameTick, viewport);
     const hasResolvedLayers = layoutResult.backgroundResolved > 0 || layoutResult.topResolved > 0;
+    const winTypeRender = await this.renderWinTypeOverlay(selection.winType, selection.roundNo, frameTick, viewport);
+    const hasResolvedWinType = winTypeRender?.resolved ?? false;
+    const hasResolvedContent = hasResolvedLayers || hasResolvedWinType;
     if (actionNo === undefined) {
       const textResult = this.renderText(selection.asset, selection.roundNo, frameTick, viewport);
-      if (textResult.rendered || hasResolvedLayers) {
+      if (textResult.rendered || hasResolvedContent || winTypeWindowOpen) {
         const { rendered: _rendered, ...textDiagnostics } = textResult;
         this.diagnostics = {
           ...baseDiagnostics,
           configured: true,
-          resolved: true,
+          resolved: textResult.rendered || hasResolvedContent,
           frameTick,
           ...(completion ? {
             animationEndFrame: completion.frame,
@@ -418,6 +446,7 @@ export class FightScreenAnnouncementRenderer {
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
           ...(textResult.rendered ? textDiagnostics : {}),
+          ...(winTypeRender ? { winType: winTypeRender } : {}),
         };
         return;
       }
@@ -436,12 +465,12 @@ export class FightScreenAnnouncementRenderer {
     }
     if (!action) {
       const textResult = this.renderText(selection.asset, selection.roundNo, frameTick, viewport);
-      if (textResult.rendered || hasResolvedLayers) {
+      if (textResult.rendered || hasResolvedContent || winTypeWindowOpen) {
         const { rendered: _rendered, ...textDiagnostics } = textResult;
         this.diagnostics = {
           ...baseDiagnostics,
           configured: true,
-          resolved: true,
+          resolved: textResult.rendered || hasResolvedContent,
           actionNo,
           frameTick,
           ...(completion ? {
@@ -451,6 +480,7 @@ export class FightScreenAnnouncementRenderer {
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
           ...(textResult.rendered ? textDiagnostics : {}),
+          ...(winTypeRender ? { winType: winTypeRender } : {}),
         };
         return;
       }
@@ -470,11 +500,11 @@ export class FightScreenAnnouncementRenderer {
     }
     const animationFrame = resolveRoundFadeAnimationFrame(action, frameTick);
     if (!animationFrame) {
-      if (hasResolvedLayers) {
+      if (hasResolvedContent || winTypeWindowOpen) {
         this.diagnostics = {
           ...baseDiagnostics,
           configured: true,
-          resolved: true,
+          resolved: hasResolvedContent,
           actionNo,
           frameTick,
           ...(completion ? {
@@ -483,6 +513,7 @@ export class FightScreenAnnouncementRenderer {
             completionReason: completion.reason,
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
+          ...(winTypeRender ? { winType: winTypeRender } : {}),
         };
         return;
       }
@@ -505,11 +536,11 @@ export class FightScreenAnnouncementRenderer {
       animationFrame.frame.spriteIndex,
     );
     if (!sprite) {
-      if (hasResolvedLayers) {
+      if (hasResolvedContent || winTypeWindowOpen) {
         this.diagnostics = {
           ...baseDiagnostics,
           configured: true,
-          resolved: true,
+          resolved: hasResolvedContent,
           actionNo,
           frameIndex: animationFrame.frameIndex,
           frameTick,
@@ -519,6 +550,7 @@ export class FightScreenAnnouncementRenderer {
             completionReason: completion.reason,
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
+          ...(winTypeRender ? { winType: winTypeRender } : {}),
         };
         return;
       }
@@ -565,7 +597,7 @@ export class FightScreenAnnouncementRenderer {
         ...baseDiagnostics,
         active: true,
         configured: true,
-        resolved: hasResolvedLayers,
+        resolved: hasResolvedContent,
         actionNo,
         frameIndex: animationFrame.frameIndex,
         frameTick,
@@ -576,8 +608,9 @@ export class FightScreenAnnouncementRenderer {
         } : {}),
         ...(displayTime === undefined ? {} : { displayTime }),
         primaryTransform,
+        ...(winTypeRender ? { winType: winTypeRender } : {}),
       } satisfies FightScreenAnnouncementDiagnostics;
-      if (hasResolvedLayers) {
+      if (hasResolvedContent || winTypeWindowOpen) {
         this.diagnostics = commonDiagnostics;
       } else {
         this.hide({ ...commonDiagnostics, resolved: false, fallbackReason });
@@ -606,6 +639,7 @@ export class FightScreenAnnouncementRenderer {
         completionReason: completion.reason,
       } : {}),
       ...(displayTime === undefined ? {} : { displayTime }),
+      ...(winTypeRender ? { winType: winTypeRender } : {}),
       ...(selection.asset.paletteFx ? {
         primaryPaletteFxApplied: primaryPaletteFx ? 1 : 0,
         primaryPaletteFxExpired: primaryPaletteFx ? 0 : 1,
@@ -635,7 +669,8 @@ export class FightScreenAnnouncementRenderer {
   dispose(): void {
     this.disposeLayoutMeshes(this.backgroundMeshes, this.backgroundGroup);
     this.disposeLayoutMeshes(this.topMeshes, this.topGroup);
-    this.group.remove(this.backgroundGroup, this.topGroup);
+    this.disposeLayoutMeshes(this.winTypeBackgroundMeshes, this.winTypeBackgroundGroup);
+    this.group.remove(this.backgroundGroup, this.topGroup, this.winTypeBackgroundGroup, this.winTypeTextGroup);
     this.group.remove(this.mesh);
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
@@ -646,12 +681,20 @@ export class FightScreenAnnouncementRenderer {
       textMesh.material.dispose();
     }
     this.textMeshes.length = 0;
+    for (const textMesh of this.winTypeTextMeshes) {
+      if (!textMesh) continue;
+      this.winTypeTextGroup.remove(textMesh);
+      textMesh.geometry.dispose();
+      textMesh.material.dispose();
+    }
+    this.winTypeTextMeshes.length = 0;
   }
 
   private hide(diagnostics: FightScreenAnnouncementDiagnostics): void {
     this.mesh.visible = false;
     this.hideTextMeshes();
     this.hideLayoutMeshes();
+    this.hideWinTypeOverlay();
     this.diagnostics = diagnostics;
   }
 
@@ -704,6 +747,69 @@ export class FightScreenAnnouncementRenderer {
     this.backgroundGroup.visible = backgroundResult.resolved > 0;
     this.topGroup.visible = topResult.resolved > 0;
     return this.layerDiagnostics;
+  }
+
+  private async renderWinTypeOverlay(
+    winType: FightScreenAnnouncementSelection["winType"],
+    roundNo: number,
+    frameTick: number,
+    viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+  ): Promise<FightScreenWinTypeRenderResult | undefined> {
+    if (!winType) return undefined;
+    this.hideWinTypeOverlay();
+    const timing = resolveFightScreenWinTypeTiming(winType.asset, frameTick);
+    const baseResult: FightScreenWinTypeRenderResult = {
+      name: winType.name,
+      side: winType.side,
+      active: timing.active,
+      resolved: false,
+      ...(winType.asset.text ? { text: formatFightScreenText(winType.asset.text, roundNo) } : {}),
+    };
+    if (!timing.active) return baseResult;
+
+    const outerOffset = winType.asset.offset ?? [0, 0];
+    const background = winType.asset.background
+      ? {
+        ...winType.asset.background,
+        offset: [
+          (winType.asset.background.offset?.[0] ?? 0) + outerOffset[0],
+          (winType.asset.background.offset?.[1] ?? 0) + outerOffset[1],
+        ] as [number, number],
+      }
+      : undefined;
+    const backgroundResult = await this.renderLayoutCollection(
+      background ? [background] : [],
+      this.winTypeBackgroundMeshes,
+      this.winTypeBackgroundGroup,
+      frameTick,
+      viewport,
+      "background",
+    );
+    this.winTypeBackgroundGroup.visible = backgroundResult.resolved > 0;
+
+    const textResult = this.renderText(
+      {
+        ...(winType.asset.text === undefined ? {} : { text: winType.asset.text }),
+        ...(winType.asset.font === undefined ? {} : { font: winType.asset.font }),
+        ...(winType.asset.fontColor === undefined ? {} : { fontColor: winType.asset.fontColor }),
+        ...(winType.asset.textPaletteFx === undefined ? {} : { textPaletteFx: winType.asset.textPaletteFx }),
+        ...(winType.asset.textLayout === undefined ? {} : { textLayout: winType.asset.textLayout }),
+        ...(winType.asset.offset === undefined ? {} : { offset: winType.asset.offset }),
+        ...(winType.asset.displayTime === undefined ? {} : { displayTime: winType.asset.displayTime }),
+      },
+      roundNo,
+      frameTick,
+      viewport,
+      this.winTypeTextGroup,
+      this.winTypeTextMeshes,
+    );
+    const result: FightScreenWinTypeRenderResult = {
+      ...baseResult,
+      resolved: backgroundResult.resolved > 0 || textResult.rendered,
+      ...(textResult.text ? { text: textResult.text } : {}),
+      ...(backgroundResult.resolved > 0 ? { backgroundResolved: backgroundResult.resolved } : {}),
+    };
+    return result;
   }
 
   private async renderLayoutCollection(
@@ -871,6 +977,15 @@ export class FightScreenAnnouncementRenderer {
     };
   }
 
+  private hideWinTypeOverlay(): void {
+    this.winTypeBackgroundGroup.visible = false;
+    this.winTypeTextGroup.visible = false;
+    for (const mesh of this.winTypeBackgroundMeshes) {
+      if (mesh) mesh.visible = false;
+    }
+    this.hideTextMeshes(this.winTypeTextGroup, this.winTypeTextMeshes);
+  }
+
   private disposeLayoutMeshes(meshPool: Array<FightScreenLayoutMesh | undefined>, group: THREE.Group): void {
     for (const mesh of meshPool) {
       if (!mesh) continue;
@@ -886,6 +1001,8 @@ export class FightScreenAnnouncementRenderer {
     roundNo: number,
     frameTick: number,
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+    targetGroup: THREE.Group = this.textGroup,
+    targetMeshes: Array<FightScreenMesh | undefined> = this.textMeshes,
   ): FightScreenTextRenderResult {
     const textTemplate = asset.text;
     const fontTuple = asset.font;
@@ -927,11 +1044,10 @@ export class FightScreenAnnouncementRenderer {
     const textTransform = asset.textLayout ?? asset.layout;
     const textTransformDiagnostics = createFightScreenTransformDiagnostics();
     const textPaletteFx = resolveFightScreenPaletteFx(asset.textPaletteFx, frameTick);
-    this.mesh.visible = false;
-    this.hideTextMeshes();
+    this.hideTextMeshes(targetGroup, targetMeshes);
     for (const [glyphIndex, glyph] of layout.glyphs.entries()) {
       if (!glyph.sprite) continue;
-      const textMesh = this.ensureTextMesh(glyphIndex);
+      const textMesh = this.ensureTextMesh(glyphIndex, targetGroup, targetMeshes);
       const placement = projectFightScreenSprite(
         viewport,
         this.coordinate,
@@ -972,7 +1088,7 @@ export class FightScreenAnnouncementRenderer {
       applyThreePresentationOrder(textMesh, textMesh.material, textPresentationOrder);
       textMesh.material.needsUpdate = true;
     }
-    this.textGroup.visible = true;
+    targetGroup.visible = true;
     return {
       rendered: true,
       text,
@@ -994,8 +1110,12 @@ export class FightScreenAnnouncementRenderer {
     };
   }
 
-  private ensureTextMesh(index: number): FightScreenMesh {
-    const existing = this.textMeshes[index];
+  private ensureTextMesh(
+    index: number,
+    targetGroup: THREE.Group = this.textGroup,
+    targetMeshes: Array<FightScreenMesh | undefined> = this.textMeshes,
+  ): FightScreenMesh {
+    const existing = targetMeshes[index];
     if (existing) return existing;
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1),
@@ -1005,14 +1125,17 @@ export class FightScreenAnnouncementRenderer {
         depthTest: false,
       }),
     );
-    this.textMeshes[index] = mesh;
-    this.textGroup.add(mesh);
+    targetMeshes[index] = mesh;
+    targetGroup.add(mesh);
     return mesh;
   }
 
-  private hideTextMeshes(): void {
-    this.textGroup.visible = false;
-    for (const mesh of this.textMeshes) {
+  private hideTextMeshes(
+    targetGroup: THREE.Group = this.textGroup,
+    targetMeshes: Array<FightScreenMesh | undefined> = this.textMeshes,
+  ): void {
+    targetGroup.visible = false;
+    for (const mesh of targetMeshes) {
       if (!mesh) continue;
       mesh.visible = false;
     }
@@ -1051,6 +1174,11 @@ export function resolveFightScreenAnnouncementSelection(
   if (winnerDisplay?.phase === "active") {
     const winnerAsset = resolveFightScreenWinnerDisplayAsset(display, winnerDisplay.kind, winnerDisplay.selection);
     if (winnerAsset) {
+      const winTypeName = winnerDisplay.selection?.winType;
+      const winTypeSide = winnerDisplay.selection?.winnerSide ?? winnerDisplay.selection?.side ?? 0;
+      const winTypeAsset = winTypeName === undefined
+        ? undefined
+        : resolveFightScreenWinTypeAsset(display, winTypeSide, winTypeName);
       return {
         kind: winnerDisplay.kind,
         track: {
@@ -1063,6 +1191,9 @@ export function resolveFightScreenAnnouncementSelection(
           ...(winnerDisplay.sound ? { sound: { ...winnerDisplay.sound } } : {}),
         },
         asset: winnerAsset,
+        ...(winTypeName !== undefined && winTypeAsset ? {
+          winType: { name: winTypeName, side: winTypeSide, asset: winTypeAsset },
+        } : {}),
         mode: round.announcement?.mode ?? "normal",
         roundNo: round.announcement?.roundNo ?? round.roundNo ?? 1,
       };
@@ -1141,6 +1272,35 @@ export function resolveFightScreenWinTypeAsset(
 ): MugenFightScreenWinTypeAsset | undefined {
   if (!display?.winType) return undefined;
   return display.winType[side === 0 ? "p1" : "p2"][type];
+}
+
+export type FightScreenWinTypeTiming = {
+  time: number;
+  displayTime: number;
+  end: number;
+  active: boolean;
+  windowOpen: boolean;
+};
+
+export function resolveFightScreenWinTypeTiming(
+  asset: MugenFightScreenWinTypeAsset | undefined,
+  frameTick: number,
+): FightScreenWinTypeTiming {
+  const time = normalizedFightScreenTimer(asset?.time);
+  const displayTime = normalizedFightScreenTimer(asset?.displayTime);
+  const end = time + displayTime;
+  const normalizedFrameTick = Number.isFinite(frameTick) ? Math.max(0, Math.round(frameTick)) : 0;
+  return {
+    time,
+    displayTime,
+    end,
+    active: normalizedFrameTick > time && normalizedFrameTick <= end,
+    windowOpen: displayTime > 0 && normalizedFrameTick <= end,
+  };
+}
+
+function isFightScreenWinTypeWindowOpen(asset: MugenFightScreenWinTypeAsset | undefined, frameTick: number): boolean {
+  return asset !== undefined && resolveFightScreenWinTypeTiming(asset, frameTick).windowOpen;
 }
 
 export function resolveRoundDisplayAsset(
@@ -1290,6 +1450,10 @@ function resolveFightScreenWindowRect(
 
 function announcementFrameTick(track: RuntimeRoundAnnouncementSnapshot["round"]): number {
   return Math.max(0, track.elapsed - track.animationStart);
+}
+
+function normalizedFightScreenTimer(value: number | undefined): number {
+  return value !== undefined && Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function positiveCoordinate(value: number | undefined, fallback: number): number {
