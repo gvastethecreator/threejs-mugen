@@ -1,7 +1,7 @@
 # Global checkpoint after T354
 
 Date: 2026-07-20
-Head: `3aec5e30`
+Head: `46e82fa8`
 Feature commit: `891d55f5`
 Documentation commit: `3aec5e30`
 Status: green for the bounded Ikemen `ownclsnscale` proxy-geometry block
