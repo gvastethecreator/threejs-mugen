@@ -1,7 +1,7 @@
 # Global checkpoint after T351
 
 Date: 2026-07-20
-Head: `71967da6`
+Head: `701792d8`
 Feature commit: `813bf6d6`
 Documentation commit: `71967da6`
 Status: green for the bounded Ikemen HelperVar and direct-admission block
