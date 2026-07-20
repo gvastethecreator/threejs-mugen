@@ -40,6 +40,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Global checkpoint after T302](../../../docs/research/2026-07-20-global-checkpoint-after-t302.md) - green at `7c6da75e`: 237 files / 2516 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.
 
+- [Global checkpoint after T306](../../../docs/research/2026-07-20-global-checkpoint-after-t306.md) - green at `dc15736b`: 237 files / 2518 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.
+
 - [Index FightScreen display variants](tickets/294-fightscreen-display-variants.md) - resolved at definition and sound-selection scope: numbered/default/single/final/fight `AnimTextSnd` references, layout metadata, and bounded runtime sound precedence are imported; AIR/FNT/SFF rendering and exact `AnimTextSnd` completion remain the next renderer boundary.
 
 - [Route FightScreen announcement sounds](tickets/293-fightscreen-announcement-sound.md) - resolved at source-sound routing scope: `fight.def` screen SND loads under `fs`, Round/Fight sound edges reach Web Audio once, and inline screen actions are indexed without claiming rendering parity.
