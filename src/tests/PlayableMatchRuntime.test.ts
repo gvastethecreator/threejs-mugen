@@ -8355,6 +8355,28 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PowerSet).toBe(1);
   });
 
+  it("records suicide when a root-owned LifeSet reaches zero outside hit state", () => {
+    const selfKo = createImportedFixture({
+      id: "root-self-ko",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Root self KO]
+type = LifeSet
+trigger1 = 1
+value = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(selfKo, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("suicide");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.LifeSet).toBe(1);
+  });
+
   it("executes imported AssertSpecial flags for noautoturn, nowalk, and invisible telemetry", () => {
     const imported = createImportedFixture({ withStateMove: false, withAssertSpecial: true });
     const closeStage = {

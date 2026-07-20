@@ -218,6 +218,7 @@ import {
   applyRuntimePowerDelta,
   resolveRuntimeResourceControllerOperation,
 } from "./RuntimeResourceSystem";
+import { recordRuntimeRootSelfKoCause } from "./RuntimeRoundWinTypeSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
@@ -4899,11 +4900,15 @@ function runActiveStateControllers(
         if (mirrorRedirectedResourceTelemetry) {
           runtimeActiveControllerTelemetryHooks.recordController(fighter, dispatch.controller.source);
         }
+        const lifeBefore = target.runtime.life;
         controllerDispatchWorld.apply(target, redirectedController, {
           context,
           roundNoDamage: options.roundNoDamage,
           ...runtimeActiveControllerTelemetryHooks,
         });
+        if (target === fighter && redirectExpression === undefined) {
+          recordRuntimeRootSelfKoCause(fighter, opponent, lifeBefore, owner.id);
+        }
         if (mirrorRedirectedResourceTelemetry && redirectedController.operation) {
           runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
         }
@@ -5451,6 +5456,7 @@ function runStateEntrySetupControllers(
           redirectControllerType !== undefined &&
           target !== actor &&
           !compatibilityTelemetryWorld.isImportedActor(target);
+        const lifeBefore = target.runtime.life;
         controllerDispatchWorld.apply(target, redirectedController, {
           context,
           roundNoDamage,
@@ -5467,6 +5473,9 @@ function runStateEntrySetupControllers(
             }
           },
         });
+        if (target === fighter && target === actor && redirectExpression === undefined) {
+          recordRuntimeRootSelfKoCause(fighter, opponent, lifeBefore, actor.id);
+        }
       };
       if (resourceRedirectLease) {
         redirectedTargetDispatchWorld.execute(resourceRedirectLease, applyDispatch);
