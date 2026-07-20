@@ -123,6 +123,21 @@ type FightScreenAnnouncementSelection = {
 };
 
 type FightScreenMesh = THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+type FightScreenLayoutMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
+
+type FightScreenTransformVertex = {
+  x: number;
+  y: number;
+  u: number;
+  v: number;
+};
+
+type FightScreenWindowRect = {
+  left: number;
+  right: number;
+  bottom: number;
+  top: number;
+};
 
 type FightScreenDisplayLayers = {
   background: MugenFightScreenLayoutAsset[];
@@ -201,8 +216,8 @@ export class FightScreenAnnouncementRenderer {
   private readonly textMeshes: Array<FightScreenMesh | undefined> = [];
   private readonly backgroundGroup = new THREE.Group();
   private readonly topGroup = new THREE.Group();
-  private readonly backgroundMeshes: Array<FightScreenMesh | undefined> = [];
-  private readonly topMeshes: Array<FightScreenMesh | undefined> = [];
+  private readonly backgroundMeshes: Array<FightScreenLayoutMesh | undefined> = [];
+  private readonly topMeshes: Array<FightScreenLayoutMesh | undefined> = [];
   private animations = new Map<number, MugenAnimationAction>();
   private display?: MugenFightScreenDisplayDefinitions;
   private fonts = new Map<number, MugenFightScreenFont>();
@@ -612,7 +627,7 @@ export class FightScreenAnnouncementRenderer {
 
   private async renderLayoutCollection(
     layouts: MugenFightScreenLayoutAsset[],
-    meshPool: Array<FightScreenMesh | undefined>,
+    meshPool: Array<FightScreenLayoutMesh | undefined>,
     group: THREE.Group,
     frameTick: number,
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
@@ -650,19 +665,6 @@ export class FightScreenAnnouncementRenderer {
         if (layout.focalLength !== undefined) focalLengthCulled += 1;
         continue;
       }
-      if (layout.window && (
-        layout.angle !== undefined
-        || layout.xAngle !== undefined
-        || layout.yAngle !== undefined
-        || layout.xShear !== undefined
-        || layout.projection === "perspective"
-      )) {
-        if (layout.angle !== undefined) angleCulled += 1;
-        if (layout.xAngle !== undefined) xAngleCulled += 1;
-        if (layout.yAngle !== undefined) yAngleCulled += 1;
-        if (layout.xShear !== undefined) xShearCulled += 1;
-        continue;
-      }
       const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
       const presentationOrder = resolveFightScreenLayoutPresentationOrder(layout.layerNo, kind, index, blend);
       if (!presentationOrder) {
@@ -676,7 +678,17 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame,
         layout,
       );
-      const clippedPlacement = clipFightScreenPlacement(placement, viewport, this.coordinate, layout.window);
+      const hasTransform = hasFightScreenLayoutTransform(layout);
+      const transformedWindow = Boolean(layout.window && hasTransform);
+      const transformVertices = hasTransform
+        ? projectFightScreenLayoutVertices(placement, layout)
+        : undefined;
+      const clippedPolygon = transformedWindow && transformVertices && layout.window
+        ? clipFightScreenPolygon(transformVertices, resolveFightScreenWindowRect(viewport, this.coordinate, layout.window))
+        : undefined;
+      const clippedPlacement = transformedWindow
+        ? clippedPolygon && clippedPolygon.length >= 3 ? placement : undefined
+        : clipFightScreenPlacement(placement, viewport, this.coordinate, layout.window);
       if (!clippedPlacement) {
         if (layout.window) windowCulled += 1;
         continue;
@@ -696,8 +708,23 @@ export class FightScreenAnnouncementRenderer {
       if (layout.paletteFx && !paletteFx) paletteFxExpired += 1;
       const mesh = this.ensureLayoutMesh(index, meshPool, group);
       mesh.visible = true;
-      mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
-      if (layout.projection === "perspective") {
+      if (transformedWindow && clippedPolygon) {
+        mesh.position.set(placement.x, placement.y, 0);
+        mesh.scale.set(1, 1, 1);
+        mesh.rotation.set(0, 0, 0);
+        applyFightScreenPolygonGeometry(
+          mesh,
+          clippedPolygon.map((vertex) => ({
+            ...vertex,
+            x: vertex.x - placement.x,
+            y: vertex.y - placement.y,
+          })),
+        );
+      } else {
+        mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
+        ensureFightScreenPlaneGeometry(mesh);
+      }
+      if (layout.projection === "perspective" && !transformedWindow) {
         mesh.scale.set(1, 1, 1);
         mesh.rotation.set(0, 0, 0);
         applyFightScreenPerspective(
@@ -708,7 +735,7 @@ export class FightScreenAnnouncementRenderer {
           clippedPlacement.scaleY,
           layout,
         );
-      } else {
+      } else if (!transformedWindow) {
         mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
         mesh.rotation.set(
           -degreesToRadians(layout.xAngle ?? 0),
@@ -717,7 +744,12 @@ export class FightScreenAnnouncementRenderer {
         );
         applyFightScreenMeshShear(mesh.geometry, layout.xShear);
       }
-      applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
+      if (!transformedWindow) {
+        const clippedUv = "uv" in clippedPlacement
+          ? (clippedPlacement as FightScreenClippedPlacement).uv
+          : undefined;
+        applyFightScreenMeshUv(mesh.geometry, clippedUv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
+      }
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
       applyPaletteFxMaterial(mesh.material, paletteFx);
       mesh.material.blending = blend === "additive" ? THREE.AdditiveBlending : THREE.NormalBlending;
@@ -754,9 +786,9 @@ export class FightScreenAnnouncementRenderer {
 
   private ensureLayoutMesh(
     index: number,
-    meshPool: Array<FightScreenMesh | undefined>,
+    meshPool: Array<FightScreenLayoutMesh | undefined>,
     group: THREE.Group,
-  ): FightScreenMesh {
+  ): FightScreenLayoutMesh {
     const existing = meshPool[index];
     if (existing) return existing;
     const mesh = new THREE.Mesh(
@@ -769,7 +801,7 @@ export class FightScreenAnnouncementRenderer {
         depthTest: false,
       }),
     );
-    meshPool[index] = mesh;
+    meshPool[index] = mesh as FightScreenLayoutMesh;
     group.add(mesh);
     return mesh;
   }
@@ -806,7 +838,7 @@ export class FightScreenAnnouncementRenderer {
     };
   }
 
-  private disposeLayoutMeshes(meshPool: Array<FightScreenMesh | undefined>, group: THREE.Group): void {
+  private disposeLayoutMeshes(meshPool: Array<FightScreenLayoutMesh | undefined>, group: THREE.Group): void {
     for (const mesh of meshPool) {
       if (!mesh) continue;
       group.remove(mesh);
@@ -1060,19 +1092,11 @@ export function clipFightScreenPlacement(
   window: [number, number, number, number] | undefined,
 ): FightScreenClippedPlacement | undefined {
   if (!window) return placement;
-  const zoom = Math.max(0.01, viewport.zoom);
-  const worldWidth = viewport.width / zoom;
-  const worldHeight = viewport.height / zoom;
-  const coordinateWidth = positiveCoordinate(coordinate[0], 320);
-  const coordinateHeight = positiveCoordinate(coordinate[1], 240);
-  const coordinateScaleX = worldWidth / coordinateWidth;
-  const coordinateScaleY = worldHeight / coordinateHeight;
-  const viewportLeft = viewport.x - worldWidth / 2;
-  const viewportTop = viewport.y + worldHeight / 2;
-  const windowLeft = viewportLeft + window[0] * coordinateScaleX;
-  const windowRight = windowLeft + window[2] * coordinateScaleX;
-  const windowTop = viewportTop - window[1] * coordinateScaleY;
-  const windowBottom = windowTop - window[3] * coordinateScaleY;
+  const windowRect = resolveFightScreenWindowRect(viewport, coordinate, window);
+  const windowLeft = windowRect.left;
+  const windowRight = windowRect.right;
+  const windowTop = windowRect.top;
+  const windowBottom = windowRect.bottom;
   const spriteLeft = placement.x - placement.width / 2;
   const spriteRight = placement.x + placement.width / 2;
   const spriteBottom = placement.y - placement.height / 2;
@@ -1098,6 +1122,27 @@ export function clipFightScreenPlacement(
     scaleY: signedMagnitude(placement.scaleY, clippedTop - clippedBottom),
     uv: { u1, v1, u2, v2 },
   };
+}
+
+function resolveFightScreenWindowRect(
+  viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+  coordinate: [number, number],
+  window: [number, number, number, number],
+): FightScreenWindowRect {
+  const zoom = Math.max(0.01, viewport.zoom);
+  const worldWidth = viewport.width / zoom;
+  const worldHeight = viewport.height / zoom;
+  const coordinateWidth = positiveCoordinate(coordinate[0], 320);
+  const coordinateHeight = positiveCoordinate(coordinate[1], 240);
+  const coordinateScaleX = worldWidth / coordinateWidth;
+  const coordinateScaleY = worldHeight / coordinateHeight;
+  const viewportLeft = viewport.x - worldWidth / 2;
+  const viewportTop = viewport.y + worldHeight / 2;
+  const left = viewportLeft + window[0] * coordinateScaleX;
+  const right = left + window[2] * coordinateScaleX;
+  const top = viewportTop - window[1] * coordinateScaleY;
+  const bottom = top - window[3] * coordinateScaleY;
+  return { left, right, bottom, top };
 }
 
 function announcementFrameTick(track: RuntimeRoundAnnouncementSnapshot["round"]): number {
@@ -1153,7 +1198,164 @@ function degreesToRadians(value: number): number {
   return (Number.isFinite(value) ? value : 0) * Math.PI / 180;
 }
 
-function applyFightScreenMeshShear(geometry: THREE.PlaneGeometry, value: number | undefined): void {
+function hasFightScreenLayoutTransform(layout: MugenFightScreenLayoutAsset): boolean {
+  return layout.angle !== undefined
+    || layout.xAngle !== undefined
+    || layout.yAngle !== undefined
+    || layout.xShear !== undefined
+    || layout.projection === "perspective";
+}
+
+function ensureFightScreenPlaneGeometry(mesh: FightScreenLayoutMesh): void {
+  if (!mesh.userData.fightScreenPolygonGeometry) return;
+  mesh.geometry.dispose();
+  mesh.geometry = new THREE.PlaneGeometry(1, 1);
+  delete mesh.userData.fightScreenPolygonGeometry;
+}
+
+function applyFightScreenPolygonGeometry(mesh: FightScreenLayoutMesh, vertices: FightScreenTransformVertex[]): void {
+  if (!mesh.userData.fightScreenPolygonGeometry) {
+    mesh.geometry.dispose();
+    mesh.geometry = new THREE.BufferGeometry();
+    mesh.userData.fightScreenPolygonGeometry = true;
+  }
+  const positions = new Float32Array(vertices.length * 3);
+  const uvs = new Float32Array(vertices.length * 2);
+  for (const [index, vertex] of vertices.entries()) {
+    positions[index * 3] = vertex.x;
+    positions[index * 3 + 1] = vertex.y;
+    positions[index * 3 + 2] = 0;
+    uvs[index * 2] = vertex.u;
+    uvs[index * 2 + 1] = vertex.v;
+  }
+  const indices: number[] = [];
+  for (let index = 1; index < vertices.length - 1; index += 1) {
+    indices.push(0, index, index + 1);
+  }
+  mesh.geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  mesh.geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  mesh.geometry.setIndex(indices);
+  mesh.geometry.computeBoundingSphere();
+}
+
+function projectFightScreenLayoutVertices(
+  placement: FightScreenAnnouncementPlacement,
+  layout: MugenFightScreenLayoutAsset,
+): FightScreenTransformVertex[] {
+  if (layout.projection === "perspective") {
+    return projectFightScreenPerspectiveVertices(placement, layout);
+  }
+  const rotation = new THREE.Euler(
+    -degreesToRadians(layout.xAngle ?? 0),
+    degreesToRadians(layout.yAngle ?? 0),
+    degreesToRadians(layout.angle ?? 0),
+    "XYZ",
+  );
+  const shear = Number.isFinite(layout.xShear) ? -(layout.xShear as number) : 0;
+  const vertices: Array<[number, number, number, number]> = [
+    [-0.5, 0.5, 0, 1],
+    [0.5, 0.5, 1, 1],
+    [-0.5, -0.5, 0, 0],
+    [0.5, -0.5, 1, 0],
+  ];
+  return vertices.map(([x, y, u, v]) => {
+    const point = new THREE.Vector3(
+      (x + shear * y) * placement.scaleX,
+      y * placement.scaleY,
+      0,
+    ).applyEuler(rotation);
+    return { x: placement.x + point.x, y: placement.y + point.y, u, v };
+  });
+}
+
+function projectFightScreenPerspectiveVertices(
+  placement: FightScreenAnnouncementPlacement,
+  layout: MugenFightScreenLayoutAsset,
+): FightScreenTransformVertex[] {
+  const focalLength = finiteFocalLength(layout.focalLength);
+  const rotation = new THREE.Euler(
+    -degreesToRadians(layout.xAngle ?? 0),
+    degreesToRadians(layout.yAngle ?? 0),
+    degreesToRadians(layout.angle ?? 0),
+    "XYZ",
+  );
+  const shear = Number.isFinite(layout.xShear) ? -(layout.xShear as number) : 0;
+  const flipX = placement.scaleX < 0 ? -1 : 1;
+  const flipY = placement.scaleY < 0 ? -1 : 1;
+  const vertices: Array<[number, number, number, number]> = [
+    [-placement.width / 2, placement.height / 2, 0, 1],
+    [placement.width / 2, placement.height / 2, 1, 1],
+    [-placement.width / 2, -placement.height / 2, 0, 0],
+    [placement.width / 2, -placement.height / 2, 1, 0],
+  ];
+  return vertices.map(([x, y, u, v]) => {
+    const point = new THREE.Vector3(x * flipX, y * flipY, 0);
+    point.x += shear * point.y;
+    point.applyEuler(rotation);
+    const perspectiveScale = focalLength / Math.max(1, focalLength - point.z);
+    return {
+      x: placement.x + point.x * perspectiveScale,
+      y: placement.y + point.y * perspectiveScale,
+      u,
+      v,
+    };
+  });
+}
+
+function clipFightScreenPolygon(vertices: FightScreenTransformVertex[], bounds: FightScreenWindowRect): FightScreenTransformVertex[] {
+  let clipped = vertices;
+  const boundaries: Array<{
+    coordinate: "x" | "y";
+    value: number;
+    keepGreater: boolean;
+  }> = [
+    { coordinate: "x", value: bounds.left, keepGreater: true },
+    { coordinate: "x", value: bounds.right, keepGreater: false },
+    { coordinate: "y", value: bounds.bottom, keepGreater: true },
+    { coordinate: "y", value: bounds.top, keepGreater: false },
+  ];
+  for (const boundary of boundaries) {
+    if (clipped.length === 0) return [];
+    const next: FightScreenTransformVertex[] = [];
+    for (const [index, current] of clipped.entries()) {
+      const previous = clipped[(index + clipped.length - 1) % clipped.length]!;
+      const currentInside = isFightScreenClipPointInside(current, boundary);
+      const previousInside = isFightScreenClipPointInside(previous, boundary);
+      if (currentInside !== previousInside) {
+        next.push(intersectFightScreenClipEdge(previous, current, boundary));
+      }
+      if (currentInside) next.push(current);
+    }
+    clipped = next;
+  }
+  return clipped;
+}
+
+function isFightScreenClipPointInside(
+  point: FightScreenTransformVertex,
+  boundary: { coordinate: "x" | "y"; value: number; keepGreater: boolean },
+): boolean {
+  const value = point[boundary.coordinate];
+  return boundary.keepGreater ? value >= boundary.value : value <= boundary.value;
+}
+
+function intersectFightScreenClipEdge(
+  start: FightScreenTransformVertex,
+  end: FightScreenTransformVertex,
+  boundary: { coordinate: "x" | "y"; value: number },
+): FightScreenTransformVertex {
+  const startValue = start[boundary.coordinate];
+  const delta = end[boundary.coordinate] - startValue;
+  const amount = Math.abs(delta) < 0.000001 ? 0 : (boundary.value - startValue) / delta;
+  return {
+    x: start.x + (end.x - start.x) * amount,
+    y: start.y + (end.y - start.y) * amount,
+    u: start.u + (end.u - start.u) * amount,
+    v: start.v + (end.v - start.v) * amount,
+  };
+}
+
+function applyFightScreenMeshShear(geometry: THREE.BufferGeometry, value: number | undefined): void {
   const shear = Number.isFinite(value) ? -(value as number) : 0;
   const attribute = geometry.getAttribute("position") as THREE.BufferAttribute;
   const vertices: Array<[number, number]> = [
@@ -1172,36 +1374,24 @@ function applyFightScreenMeshShear(geometry: THREE.PlaneGeometry, value: number 
 }
 
 function applyFightScreenPerspective(
-  geometry: THREE.PlaneGeometry,
+  geometry: THREE.BufferGeometry,
   width: number,
   height: number,
   scaleX: number,
   scaleY: number,
   layout: MugenFightScreenLayoutAsset,
 ): void {
-  const focalLength = finiteFocalLength(layout.focalLength);
-  const rotation = new THREE.Euler(
-    -degreesToRadians(layout.xAngle ?? 0),
-    degreesToRadians(layout.yAngle ?? 0),
-    degreesToRadians(layout.angle ?? 0),
-    "XYZ",
-  );
-  const shear = Number.isFinite(layout.xShear) ? -(layout.xShear as number) : 0;
-  const flipX = scaleX < 0 ? -1 : 1;
-  const flipY = scaleY < 0 ? -1 : 1;
+  const vertices = projectFightScreenPerspectiveVertices({
+    x: 0,
+    y: 0,
+    width,
+    height,
+    scaleX,
+    scaleY,
+  }, layout);
   const attribute = geometry.getAttribute("position") as THREE.BufferAttribute;
-  const vertices: Array<[number, number]> = [
-    [-width / 2, height / 2],
-    [width / 2, height / 2],
-    [-width / 2, -height / 2],
-    [width / 2, -height / 2],
-  ];
-  for (const [index, [x, y]] of vertices.entries()) {
-    const point = new THREE.Vector3(x * flipX, y * flipY, 0);
-    point.x += shear * point.y;
-    point.applyEuler(rotation);
-    const perspectiveScale = focalLength / Math.max(1, focalLength - point.z);
-    attribute.setXYZ(index, point.x * perspectiveScale, point.y * perspectiveScale, 0);
+  for (const [index, vertex] of vertices.entries()) {
+    attribute.setXYZ(index, vertex.x, vertex.y, 0);
   }
   attribute.needsUpdate = true;
   geometry.computeBoundingSphere();
@@ -1240,7 +1430,7 @@ function finitePaletteTriplet(
   return value.map((component) => Math.round(component)) as [number, number, number];
 }
 
-function applyFightScreenMeshUv(geometry: THREE.PlaneGeometry, uv: FightScreenPlacementUv): void {
+function applyFightScreenMeshUv(geometry: THREE.BufferGeometry, uv: FightScreenPlacementUv): void {
   const attribute = geometry.getAttribute("uv") as THREE.BufferAttribute;
   attribute.setXY(0, uv.u1, uv.v2);
   attribute.setXY(1, uv.u2, uv.v2);

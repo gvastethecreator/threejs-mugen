@@ -259,27 +259,30 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       active: true,
       resolved: true,
       backgroundLayerCount: 2,
-      backgroundResolved: 1,
+      backgroundResolved: 2,
       topLayerCount: 1,
       topResolved: 1,
-      windowApplied: 1,
+      windowApplied: 2,
       windowCulled: 0,
       layerNoApplied: 2,
       layerNoCulled: 0,
-      angleApplied: 1,
-      angleCulled: 1,
-      xAngleApplied: 1,
-      xAngleCulled: 1,
-      yAngleApplied: 1,
-      yAngleCulled: 1,
-      xShearApplied: 1,
-      xShearCulled: 1,
+      angleApplied: 2,
+      angleCulled: 0,
+      xAngleApplied: 2,
+      xAngleCulled: 0,
+      yAngleApplied: 2,
+      yAngleCulled: 0,
+      xShearApplied: 2,
+      xShearCulled: 0,
       paletteFxApplied: 1,
       paletteFxExpired: 0,
     });
     const backgroundGroup = renderer.group.children[0]!;
     const topGroup = renderer.group.children[3]!;
     expect(backgroundGroup.children[0]?.renderOrder).toBeLessThan(topGroup.children[0]?.renderOrder ?? Number.POSITIVE_INFINITY);
+    expect(backgroundGroup.children[1]?.userData.fightScreenPolygonGeometry).toBe(true);
+    const clippedBackground = backgroundGroup.children[1] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
+    expect((clippedBackground.geometry.getAttribute("position") as THREE.BufferAttribute).count).toBeGreaterThanOrEqual(3);
     expect(topGroup.children[0]?.rotation.z).toBeCloseTo(15 * Math.PI / 180);
     expect(topGroup.children[0]?.rotation.x).toBeCloseTo(-10 * Math.PI / 180);
     expect(topGroup.children[0]?.rotation.y).toBeCloseTo(-20 * Math.PI / 180);
