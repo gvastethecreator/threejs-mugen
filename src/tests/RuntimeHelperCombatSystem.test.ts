@@ -31,6 +31,8 @@ describe("RuntimeHelperCombatSystem", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const targetWorld = new RuntimeTargetWorld();
     const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "42", name: '"Assist"' }));
+    helper.playerNo = 1;
+    helper.rootPlayerNo = 1;
     helper.stateNo = 6000;
     helper.currentMove = move({
       targetId: 7,
@@ -88,6 +90,14 @@ describe("RuntimeHelperCombatSystem", () => {
     });
     expect(defender.runtime.life).toBe(75);
     expect(defender.runtime.receivedHitSequence).toBe(1);
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerNo: 1,
+      sourceActorId: helper.serialId,
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+      sourceAttr: "S,NA",
+      sourceGuardKo: false,
+    });
     expect(defender.runtime.spritePriority).toBe(-3);
     expect(defender.runtime.hitDefSpritePriority).toMatchObject({ role: "p2", contactKind: "hit", source: "authored" });
     expect(defender.runtime.stateNo).toBe(5000);

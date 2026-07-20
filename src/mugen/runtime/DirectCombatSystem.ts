@@ -32,6 +32,7 @@ export type RuntimeDirectCombatActor = {
   id: string;
   playerNo?: number;
   rootId?: string;
+  rootOwned?: boolean;
   effectOwnerId?: string;
   label: string;
   definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile">;
@@ -352,7 +353,7 @@ function runtimeGetHitVarsFromMove(
     id: source.id,
     playerNo: source.playerNo,
     rootId: source.rootId,
-    rootOwned: source.rootId === undefined || source.rootId === source.id,
+    rootOwned: source.rootOwned ?? (source.rootId === undefined || source.rootId === source.id),
     attr: move.attr ?? "S,NA",
     guardKo: timing.sourceGuardKo,
   });

@@ -188,6 +188,10 @@ function helperDirectCombatActor(helper: RuntimeHelper, owner: RuntimeHelperComb
     id: helper.serialId,
     playerNo: helper.playerNo,
     rootId: helper.rootId,
+    rootOwned: helper.rootId === owner.id &&
+      helper.parentId === helper.rootId &&
+      helper.playerNo !== undefined &&
+      helper.rootPlayerNo === helper.playerNo,
     effectOwnerId: owner.id,
     label: `Helper ${helper.name ?? helper.helperId ?? helper.stateNo ?? helper.animNo}`,
     definition: owner.definition,
