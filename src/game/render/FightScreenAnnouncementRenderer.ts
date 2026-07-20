@@ -5,6 +5,7 @@ import type {
   MugenFightScreenDisplayDefinitions,
   MugenFightScreenFont,
   MugenFightScreenLayoutAsset,
+  MugenFightScreenLayoutTransform,
 } from "../../mugen/model/MugenSystemAssets";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/model/MugenAnimation";
 import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
@@ -30,6 +31,25 @@ export type FightScreenAnnouncementViewport = {
   zoom: number;
   coordinateWidth: number;
   coordinateHeight: number;
+};
+
+export type FightScreenTransformDiagnostics = {
+  windowApplied: number;
+  windowCulled: number;
+  layerNoApplied: number;
+  layerNoCulled: number;
+  angleApplied: number;
+  angleCulled: number;
+  xAngleApplied: number;
+  xAngleCulled: number;
+  yAngleApplied: number;
+  yAngleCulled: number;
+  xShearApplied: number;
+  xShearCulled: number;
+  projectionApplied: number;
+  projectionCulled: number;
+  focalLengthApplied: number;
+  focalLengthCulled: number;
 };
 
 export type FightScreenAnnouncementDiagnostics = {
@@ -86,6 +106,8 @@ export type FightScreenAnnouncementDiagnostics = {
   primaryPaletteFxExpired?: number;
   textPaletteFxApplied?: number;
   textPaletteFxExpired?: number;
+  primaryTransform?: FightScreenTransformDiagnostics;
+  textTransform?: FightScreenTransformDiagnostics;
   fallbackReason?: string;
 };
 
@@ -122,8 +144,8 @@ type FightScreenAnnouncementSelection = {
   roundNo: number;
 };
 
-type FightScreenMesh = THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-type FightScreenLayoutMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
+type FightScreenMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
+type FightScreenLayoutMesh = FightScreenMesh;
 
 type FightScreenTransformVertex = {
   x: number;
@@ -206,7 +228,13 @@ type FightScreenTextRenderResult = {
   };
   textPaletteFxApplied?: number;
   textPaletteFxExpired?: number;
+  textTransform?: FightScreenTransformDiagnostics;
   fallbackReason?: string;
+};
+
+type FightScreenTransformApplicationResult = FightScreenTransformDiagnostics & {
+  placement?: FightScreenClippedPlacement;
+  transformedWindow: boolean;
 };
 
 export class FightScreenAnnouncementRenderer {
@@ -490,27 +518,58 @@ export class FightScreenAnnouncementRenderer {
     }
 
     const placement = projectFightScreenSprite(viewport, this.coordinate, sprite, animationFrame.frame, selection.asset);
+    this.mesh.position.z = 10.4;
+    const primaryTransformResult = applyFightScreenLayoutTransform(
+      this.mesh,
+      placement,
+      selection.asset.layout,
+      viewport,
+      this.coordinate,
+    );
+    const primaryTransform = toFightScreenTransformDiagnostics(primaryTransformResult);
+    const primaryPresentationOrder = primaryTransformResult.placement
+      ? resolveFightScreenLayoutPresentationOrder(
+        selection.asset.layout?.layerNo,
+        "primary",
+        0,
+        isAdditiveBlend(animationFrame.frame.blend) ? "additive" : "alpha",
+      )
+      : undefined;
+    if (!primaryTransformResult.placement || !primaryPresentationOrder) {
+      this.mesh.visible = false;
+      const fallbackReason = primaryTransformResult.projectionCulled > 0
+        ? "FightScreen primary AnimTextSnd perspective2 projection is not supported."
+        : "FightScreen primary AnimTextSnd is outside its layout window.";
+      const commonDiagnostics = {
+        ...baseDiagnostics,
+        active: true,
+        configured: true,
+        resolved: hasResolvedLayers,
+        actionNo,
+        frameIndex: animationFrame.frameIndex,
+        frameTick,
+        ...(completion ? {
+          animationEndFrame: completion.frame,
+          animationComplete: false,
+          completionReason: completion.reason,
+        } : {}),
+        ...(displayTime === undefined ? {} : { displayTime }),
+        primaryTransform,
+      } satisfies FightScreenAnnouncementDiagnostics;
+      if (hasResolvedLayers) {
+        this.diagnostics = commonDiagnostics;
+      } else {
+        this.hide({ ...commonDiagnostics, resolved: false, fallbackReason });
+      }
+      return;
+    }
     this.hideTextMeshes();
     this.mesh.visible = true;
-    this.mesh.position.set(placement.x, placement.y, 10.4);
-    this.mesh.scale.set(placement.scaleX, placement.scaleY, 1);
     this.mesh.material.map = this.textures.getTexture(sprite, "fight-screen");
     const primaryPaletteFx = resolveFightScreenPaletteFx(selection.asset.paletteFx, frameTick);
     applyPaletteFxMaterial(this.mesh.material, primaryPaletteFx);
     this.mesh.material.blending = isAdditiveBlend(animationFrame.frame.blend) ? THREE.AdditiveBlending : THREE.NormalBlending;
-    applyThreePresentationOrder(
-      this.mesh,
-      this.mesh.material,
-      resolvePresentationOrder({
-        profile: "unknown",
-        phase: "overlay",
-        sourceKind: "overlay",
-        blendPolicy: isAdditiveBlend(animationFrame.frame.blend) ? "additive" : "alpha",
-        priority: 4,
-        tieBreaker: 20,
-        tiePolicy: "explicit",
-      }),
-    );
+    applyThreePresentationOrder(this.mesh, this.mesh.material, primaryPresentationOrder);
     this.mesh.material.needsUpdate = true;
     this.diagnostics = {
       ...baseDiagnostics,
@@ -530,6 +589,7 @@ export class FightScreenAnnouncementRenderer {
         primaryPaletteFxApplied: primaryPaletteFx ? 1 : 0,
         primaryPaletteFxExpired: primaryPaletteFx ? 0 : 1,
       } : {}),
+      primaryTransform,
       sprite: {
         group: sprite.group,
         index: sprite.index,
@@ -538,7 +598,7 @@ export class FightScreenAnnouncementRenderer {
         axisX: sprite.axisX,
         axisY: sprite.axisY,
       },
-      placement,
+      placement: primaryTransformResult.placement,
       meshRenderOrder: this.mesh.renderOrder,
     };
   }
@@ -678,78 +738,30 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame,
         layout,
       );
-      const hasTransform = hasFightScreenLayoutTransform(layout);
-      const transformedWindow = Boolean(layout.window && hasTransform);
-      const transformVertices = hasTransform
-        ? projectFightScreenLayoutVertices(placement, layout)
-        : undefined;
-      const clippedPolygon = transformedWindow && transformVertices && layout.window
-        ? clipFightScreenPolygon(transformVertices, resolveFightScreenWindowRect(viewport, this.coordinate, layout.window))
-        : undefined;
-      const clippedPlacement = transformedWindow
-        ? clippedPolygon && clippedPolygon.length >= 3 ? placement : undefined
-        : clipFightScreenPlacement(placement, viewport, this.coordinate, layout.window);
-      if (!clippedPlacement) {
+      const mesh = this.ensureLayoutMesh(index, meshPool, group);
+      const transformResult = applyFightScreenLayoutTransform(
+        mesh,
+        placement,
+        layout,
+        viewport,
+        this.coordinate,
+      );
+      if (!transformResult.placement) {
         if (layout.window) windowCulled += 1;
         continue;
       }
-      if (layout.window) windowApplied += 1;
-      if (layout.layerNo !== undefined) layerNoApplied += 1;
-      if (layout.angle !== undefined) angleApplied += 1;
-      if (layout.xAngle !== undefined) xAngleApplied += 1;
-      if (layout.yAngle !== undefined) yAngleApplied += 1;
-      if (layout.xShear !== undefined) xShearApplied += 1;
-      if (layout.projection === "perspective") {
-        projectionApplied += 1;
-        if (layout.focalLength !== undefined) focalLengthApplied += 1;
-      }
+      windowApplied += transformResult.windowApplied;
+      layerNoApplied += transformResult.layerNoApplied;
+      angleApplied += transformResult.angleApplied;
+      xAngleApplied += transformResult.xAngleApplied;
+      yAngleApplied += transformResult.yAngleApplied;
+      xShearApplied += transformResult.xShearApplied;
+      projectionApplied += transformResult.projectionApplied;
+      focalLengthApplied += transformResult.focalLengthApplied;
       const paletteFx = resolveFightScreenPaletteFx(layout.paletteFx, frameTick);
       if (layout.paletteFx && paletteFx) paletteFxApplied += 1;
       if (layout.paletteFx && !paletteFx) paletteFxExpired += 1;
-      const mesh = this.ensureLayoutMesh(index, meshPool, group);
       mesh.visible = true;
-      if (transformedWindow && clippedPolygon) {
-        mesh.position.set(placement.x, placement.y, 0);
-        mesh.scale.set(1, 1, 1);
-        mesh.rotation.set(0, 0, 0);
-        applyFightScreenPolygonGeometry(
-          mesh,
-          clippedPolygon.map((vertex) => ({
-            ...vertex,
-            x: vertex.x - placement.x,
-            y: vertex.y - placement.y,
-          })),
-        );
-      } else {
-        mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
-        ensureFightScreenPlaneGeometry(mesh);
-      }
-      if (layout.projection === "perspective" && !transformedWindow) {
-        mesh.scale.set(1, 1, 1);
-        mesh.rotation.set(0, 0, 0);
-        applyFightScreenPerspective(
-          mesh.geometry,
-          clippedPlacement.width,
-          clippedPlacement.height,
-          clippedPlacement.scaleX,
-          clippedPlacement.scaleY,
-          layout,
-        );
-      } else if (!transformedWindow) {
-        mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
-        mesh.rotation.set(
-          -degreesToRadians(layout.xAngle ?? 0),
-          degreesToRadians(layout.yAngle ?? 0),
-          degreesToRadians(layout.angle ?? 0),
-        );
-        applyFightScreenMeshShear(mesh.geometry, layout.xShear);
-      }
-      if (!transformedWindow) {
-        const clippedUv = "uv" in clippedPlacement
-          ? (clippedPlacement as FightScreenClippedPlacement).uv
-          : undefined;
-        applyFightScreenMeshUv(mesh.geometry, clippedUv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
-      }
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
       applyPaletteFxMaterial(mesh.material, paletteFx);
       mesh.material.blending = blend === "additive" ? THREE.AdditiveBlending : THREE.NormalBlending;
@@ -891,6 +903,8 @@ export class FightScreenAnnouncementRenderer {
       origin[0] + font.offset[0],
       origin[1] + font.offset[1] - fontHeight + 1,
     ];
+    const textTransform = asset.textLayout ?? asset.layout;
+    const textTransformDiagnostics = createFightScreenTransformDiagnostics();
     const textPaletteFx = resolveFightScreenPaletteFx(asset.textPaletteFx, frameTick);
     this.mesh.visible = false;
     this.hideTextMeshes();
@@ -904,9 +918,26 @@ export class FightScreenAnnouncementRenderer {
         { offsetX: glyph.x, offsetY: -glyph.line * layout.lineHeight, flip: "" },
         { ...asset, offset: baseOffset },
       );
+      textMesh.position.z = 10.45;
+      const transformResult = applyFightScreenLayoutTransform(
+        textMesh,
+        placement,
+        textTransform,
+        viewport,
+        this.coordinate,
+      );
+      addFightScreenTransformDiagnostics(textTransformDiagnostics, transformResult);
+      const textPresentationOrder = transformResult.placement
+        ? resolveFightScreenLayoutPresentationOrder(textTransform?.layerNo, "text", glyphIndex, "alpha")
+        : undefined;
+      if (!transformResult.placement || !textPresentationOrder) {
+        if (transformResult.placement && !textPresentationOrder) {
+          textTransformDiagnostics.layerNoCulled += 1;
+        }
+        textMesh.visible = false;
+        continue;
+      }
       textMesh.visible = true;
-      textMesh.position.set(placement.x, placement.y, 10.45);
-      textMesh.scale.set(placement.scaleX, placement.scaleY, 1);
       textMesh.material.map = this.textures.getTexture(glyph.sprite, `fight-screen-font-${fontIndex}-${font.sourcePath}`);
       const color = asset.fontColor ?? [255, 255, 255, 255];
       const fontOpacity = Math.max(0, Math.min(1, color[3] / 255));
@@ -917,19 +948,7 @@ export class FightScreenAnnouncementRenderer {
         textMesh.material.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
       }
       textMesh.material.blending = THREE.NormalBlending;
-      applyThreePresentationOrder(
-        textMesh,
-        textMesh.material,
-        resolvePresentationOrder({
-          profile: "unknown",
-          phase: "overlay",
-          sourceKind: "overlay",
-          blendPolicy: "alpha",
-          priority: 4,
-          tieBreaker: 21 + glyphIndex,
-          tiePolicy: "explicit",
-        }),
-      );
+      applyThreePresentationOrder(textMesh, textMesh.material, textPresentationOrder);
       textMesh.material.needsUpdate = true;
     }
     this.textGroup.visible = true;
@@ -950,6 +969,7 @@ export class FightScreenAnnouncementRenderer {
         textPaletteFxApplied: textPaletteFx ? 1 : 0,
         textPaletteFxExpired: textPaletteFx ? 0 : 1,
       } : {}),
+      ...(textTransform ? { textTransform: textTransformDiagnostics } : {}),
     };
   }
 
@@ -1163,7 +1183,7 @@ function isAdditiveBlend(value: string | undefined): boolean {
 
 function resolveFightScreenLayoutPresentationOrder(
   layerNo: number | undefined,
-  kind: "background" | "top",
+  kind: "background" | "top" | "primary" | "text",
   index: number,
   blend: "alpha" | "additive",
 ): ReturnType<typeof resolvePresentationOrder> | undefined {
@@ -1184,8 +1204,20 @@ function resolveFightScreenLayoutPresentationOrder(
     phase,
     sourceKind: "overlay",
     blendPolicy: blend,
-    priority: kind === "background" ? 2 : 6,
-    tieBreaker: (kind === "background" ? 30 : 40) + index,
+    priority: kind === "background"
+      ? 2
+      : kind === "primary"
+        ? 4
+        : kind === "text"
+          ? 5
+          : 6,
+    tieBreaker: (kind === "background"
+      ? 30
+      : kind === "primary"
+        ? 20
+        : kind === "text"
+          ? 21
+          : 40) + index,
     tiePolicy: "authored-order",
   });
 }
@@ -1198,22 +1230,158 @@ function degreesToRadians(value: number): number {
   return (Number.isFinite(value) ? value : 0) * Math.PI / 180;
 }
 
-function hasFightScreenLayoutTransform(layout: MugenFightScreenLayoutAsset): boolean {
-  return layout.angle !== undefined
-    || layout.xAngle !== undefined
-    || layout.yAngle !== undefined
-    || layout.xShear !== undefined
-    || layout.projection === "perspective";
+function createFightScreenTransformDiagnostics(): FightScreenTransformDiagnostics {
+  return {
+    windowApplied: 0,
+    windowCulled: 0,
+    layerNoApplied: 0,
+    layerNoCulled: 0,
+    angleApplied: 0,
+    angleCulled: 0,
+    xAngleApplied: 0,
+    xAngleCulled: 0,
+    yAngleApplied: 0,
+    yAngleCulled: 0,
+    xShearApplied: 0,
+    xShearCulled: 0,
+    projectionApplied: 0,
+    projectionCulled: 0,
+    focalLengthApplied: 0,
+    focalLengthCulled: 0,
+  };
 }
 
-function ensureFightScreenPlaneGeometry(mesh: FightScreenLayoutMesh): void {
+function addFightScreenTransformDiagnostics(
+  target: FightScreenTransformDiagnostics,
+  source: FightScreenTransformDiagnostics,
+): void {
+  target.windowApplied += source.windowApplied;
+  target.windowCulled += source.windowCulled;
+  target.layerNoApplied += source.layerNoApplied;
+  target.layerNoCulled += source.layerNoCulled;
+  target.angleApplied += source.angleApplied;
+  target.angleCulled += source.angleCulled;
+  target.xAngleApplied += source.xAngleApplied;
+  target.xAngleCulled += source.xAngleCulled;
+  target.yAngleApplied += source.yAngleApplied;
+  target.yAngleCulled += source.yAngleCulled;
+  target.xShearApplied += source.xShearApplied;
+  target.xShearCulled += source.xShearCulled;
+  target.projectionApplied += source.projectionApplied;
+  target.projectionCulled += source.projectionCulled;
+  target.focalLengthApplied += source.focalLengthApplied;
+  target.focalLengthCulled += source.focalLengthCulled;
+}
+
+function toFightScreenTransformDiagnostics(
+  result: FightScreenTransformApplicationResult,
+): FightScreenTransformDiagnostics {
+  const {
+    placement: _placement,
+    transformedWindow: _transformedWindow,
+    ...diagnostics
+  } = result;
+  return diagnostics;
+}
+
+function applyFightScreenLayoutTransform(
+  mesh: FightScreenMesh,
+  placement: FightScreenAnnouncementPlacement,
+  transform: MugenFightScreenLayoutTransform | undefined,
+  viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+  coordinate: [number, number],
+): FightScreenTransformApplicationResult {
+  const diagnostics = createFightScreenTransformDiagnostics();
+  const transformedWindow = Boolean(transform?.window && hasFightScreenLayoutTransform(transform));
+  if (transform?.projection === "perspective2") {
+    diagnostics.projectionCulled = 1;
+    if (transform.focalLength !== undefined) diagnostics.focalLengthCulled = 1;
+    return { ...diagnostics, transformedWindow };
+  }
+  const transformVertices = transform && hasFightScreenLayoutTransform(transform)
+    ? projectFightScreenLayoutVertices(placement, transform)
+    : undefined;
+  const clippedPolygon = transformedWindow && transformVertices && transform?.window
+    ? clipFightScreenPolygon(transformVertices, resolveFightScreenWindowRect(viewport, coordinate, transform.window))
+    : undefined;
+  const clippedPlacement = transformedWindow
+    ? clippedPolygon && clippedPolygon.length >= 3 ? placement : undefined
+    : clipFightScreenPlacement(placement, viewport, coordinate, transform?.window);
+  if (!clippedPlacement) {
+    if (transform?.window) diagnostics.windowCulled = 1;
+    return { ...diagnostics, transformedWindow };
+  }
+  if (transform?.window) diagnostics.windowApplied = 1;
+  if (transform?.layerNo !== undefined) diagnostics.layerNoApplied = 1;
+  if (transform?.angle !== undefined) diagnostics.angleApplied = 1;
+  if (transform?.xAngle !== undefined) diagnostics.xAngleApplied = 1;
+  if (transform?.yAngle !== undefined) diagnostics.yAngleApplied = 1;
+  if (transform?.xShear !== undefined) diagnostics.xShearApplied = 1;
+  if (transform?.projection === "perspective") {
+    diagnostics.projectionApplied = 1;
+    if (transform.focalLength !== undefined) diagnostics.focalLengthApplied = 1;
+  }
+  if (transformedWindow && clippedPolygon) {
+    mesh.position.set(placement.x, placement.y, mesh.position.z);
+    mesh.scale.set(1, 1, 1);
+    mesh.rotation.set(0, 0, 0);
+    applyFightScreenPolygonGeometry(
+      mesh,
+      clippedPolygon.map((vertex) => ({
+        ...vertex,
+        x: vertex.x - placement.x,
+        y: vertex.y - placement.y,
+      })),
+    );
+  } else {
+    mesh.position.set(clippedPlacement.x, clippedPlacement.y, mesh.position.z);
+    ensureFightScreenPlaneGeometry(mesh);
+    if (transform?.projection === "perspective") {
+      mesh.scale.set(1, 1, 1);
+      mesh.rotation.set(0, 0, 0);
+      applyFightScreenPerspective(
+        mesh.geometry,
+        clippedPlacement.width,
+        clippedPlacement.height,
+        clippedPlacement.scaleX,
+        clippedPlacement.scaleY,
+        transform,
+      );
+    } else {
+      mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
+      mesh.rotation.set(
+        -degreesToRadians(transform?.xAngle ?? 0),
+        degreesToRadians(transform?.yAngle ?? 0),
+        degreesToRadians(transform?.angle ?? 0),
+      );
+      applyFightScreenMeshShear(mesh.geometry, transform?.xShear);
+    }
+  }
+  if (!transformedWindow) {
+    const clippedUv = "uv" in clippedPlacement
+      ? (clippedPlacement as FightScreenClippedPlacement).uv
+      : undefined;
+    applyFightScreenMeshUv(mesh.geometry, clippedUv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
+  }
+  return { ...diagnostics, placement: clippedPlacement, transformedWindow };
+}
+
+function hasFightScreenLayoutTransform(layout: MugenFightScreenLayoutTransform | undefined): boolean {
+  return layout?.angle !== undefined
+    || layout?.xAngle !== undefined
+    || layout?.yAngle !== undefined
+    || layout?.xShear !== undefined
+    || layout?.projection === "perspective";
+}
+
+function ensureFightScreenPlaneGeometry(mesh: FightScreenMesh): void {
   if (!mesh.userData.fightScreenPolygonGeometry) return;
   mesh.geometry.dispose();
   mesh.geometry = new THREE.PlaneGeometry(1, 1);
   delete mesh.userData.fightScreenPolygonGeometry;
 }
 
-function applyFightScreenPolygonGeometry(mesh: FightScreenLayoutMesh, vertices: FightScreenTransformVertex[]): void {
+function applyFightScreenPolygonGeometry(mesh: FightScreenMesh, vertices: FightScreenTransformVertex[]): void {
   if (!mesh.userData.fightScreenPolygonGeometry) {
     mesh.geometry.dispose();
     mesh.geometry = new THREE.BufferGeometry();
@@ -1240,7 +1408,7 @@ function applyFightScreenPolygonGeometry(mesh: FightScreenLayoutMesh, vertices: 
 
 function projectFightScreenLayoutVertices(
   placement: FightScreenAnnouncementPlacement,
-  layout: MugenFightScreenLayoutAsset,
+  layout: MugenFightScreenLayoutTransform,
 ): FightScreenTransformVertex[] {
   if (layout.projection === "perspective") {
     return projectFightScreenPerspectiveVertices(placement, layout);
@@ -1270,7 +1438,7 @@ function projectFightScreenLayoutVertices(
 
 function projectFightScreenPerspectiveVertices(
   placement: FightScreenAnnouncementPlacement,
-  layout: MugenFightScreenLayoutAsset,
+  layout: MugenFightScreenLayoutTransform,
 ): FightScreenTransformVertex[] {
   const focalLength = finiteFocalLength(layout.focalLength);
   const rotation = new THREE.Euler(
@@ -1379,7 +1547,7 @@ function applyFightScreenPerspective(
   height: number,
   scaleX: number,
   scaleY: number,
-  layout: MugenFightScreenLayoutAsset,
+  layout: MugenFightScreenLayoutTransform,
 ): void {
   const vertices = projectFightScreenPerspectiveVertices({
     x: 0,

@@ -8,6 +8,7 @@ import type {
   MugenFightScreenFont,
   MugenFightScreenLayerNo,
   MugenFightScreenLayoutAsset,
+  MugenFightScreenLayoutTransform,
   MugenFightScreenPaletteFx,
   MugenFightScreenProjection,
   MugenFightScreenTiming,
@@ -650,6 +651,8 @@ function displayAsset(
 ): MugenFightScreenDisplayAsset | undefined {
   const background = layoutAssets(section, prefix, "bg", 32);
   const top = layoutAsset(section, `${prefix}.top`);
+  const layout = layoutTransform(section, prefix);
+  const textLayout = layoutTransform(section, `${prefix}.text`);
   const asset: MugenFightScreenDisplayAsset = {
     animationNo: nonNegativeIntegerValue(section, `${prefix}.anim`),
     sound: soundValue(section, `${prefix}.snd`),
@@ -658,6 +661,8 @@ function displayAsset(
     fontColor: fontColorValue(section, `${prefix}.font`),
     paletteFx: paletteFxValue(section, `${prefix}.palfx`),
     textPaletteFx: paletteFxValue(section, `${prefix}.text.palfx`),
+    ...(layout ? { layout } : {}),
+    ...(textLayout ? { textLayout } : {}),
     ...(background.length > 0 ? { background } : {}),
     ...(top ? { top } : {}),
     displayTime: numberValue(section, `${prefix}.displaytime`),
@@ -691,22 +696,16 @@ function layoutAssets(
 }
 
 function layoutAsset(section: Record<string, string>, prefix: string): MugenFightScreenLayoutAsset | undefined {
+  const transform = layoutTransform(section, prefix);
   const asset: MugenFightScreenLayoutAsset = {
+    ...(transform ?? {}),
     animationNo: nonNegativeIntegerValue(section, `${prefix}.anim`),
     sprite: integerPairValue(section, `${prefix}.spr`),
     offset: pairValue(section, `${prefix}.offset`),
     scale: pairValue(section, `${prefix}.scale`),
     facing: facingValue(section, `${prefix}.facing`),
     vfacing: facingValue(section, `${prefix}.vfacing`),
-    layerNo: layerNoValue(section, `${prefix}.layerno`),
-    angle: numberValue(section, `${prefix}.angle`),
-    xAngle: numberValue(section, `${prefix}.xangle`),
-    yAngle: numberValue(section, `${prefix}.yangle`),
-    xShear: numberValue(section, `${prefix}.xshear`),
-    projection: projectionValue(section, `${prefix}.projection`),
-    focalLength: numberValue(section, `${prefix}.focallength`),
     paletteFx: paletteFxValue(section, `${prefix}.palfx`),
-    window: integerQuadValue(section, `${prefix}.window`),
     blend: getValue(section, [`${prefix}.trans`]),
   };
   if (!Object.values(asset).some((value) => value !== undefined)) {
@@ -715,6 +714,28 @@ function layoutAsset(section: Record<string, string>, prefix: string): MugenFigh
   return Object.fromEntries(
     Object.entries(asset).filter(([, value]) => value !== undefined),
   ) as MugenFightScreenLayoutAsset;
+}
+
+function layoutTransform(
+  section: Record<string, string>,
+  prefix: string,
+): MugenFightScreenLayoutTransform | undefined {
+  const transform: MugenFightScreenLayoutTransform = {
+    layerNo: layerNoValue(section, `${prefix}.layerno`),
+    angle: numberValue(section, `${prefix}.angle`),
+    xAngle: numberValue(section, `${prefix}.xangle`),
+    yAngle: numberValue(section, `${prefix}.yangle`),
+    xShear: numberValue(section, `${prefix}.xshear`),
+    projection: projectionValue(section, `${prefix}.projection`),
+    focalLength: numberValue(section, `${prefix}.focallength`),
+    window: integerQuadValue(section, `${prefix}.window`),
+  };
+  if (!Object.values(transform).some((value) => value !== undefined)) {
+    return undefined;
+  }
+  return Object.fromEntries(
+    Object.entries(transform).filter(([, value]) => value !== undefined),
+  ) as MugenFightScreenLayoutTransform;
 }
 
 function pairValue(section: Record<string, string>, key: string): [number, number] | undefined {

@@ -59,10 +59,19 @@ round.default.palfx.add = 32, 0, 0
 round.default.palfx.mul = 64, 32, 32
 round.default.palfx.color = 128
 round.default.palfx.invertall = true
+round.default.angle = 11
+round.default.xangle = 2
+round.default.yangle = -3
+round.default.xshear = 0.125
+round.default.projection = perspective
+round.default.focallength = 512
+round.default.window = 100, 60, 220, 200
 round.default.text.palfx.time = 3
 round.default.text.palfx.add = 16, 0, 0
 round.default.text.palfx.mul = 128, 64, 64
 round.default.text.palfx.color = 192
+round.default.text.angle = 7
+round.default.text.window = 110, 70, 230, 210
 round.default.top.spr = 9100, 1
 round.default.top.offset = 160, 120
 round.default.top.scale = 1, 1
@@ -217,6 +226,19 @@ File = standard.sff
             add: [16, 0, 0],
             mul: [128, 64, 64],
             color: 192,
+          },
+          layout: {
+            angle: 11,
+            xAngle: 2,
+            yAngle: -3,
+            xShear: 0.125,
+            projection: "perspective",
+            focalLength: 512,
+            window: [100, 60, 120, 140],
+          },
+          textLayout: {
+            angle: 7,
+            window: [110, 70, 120, 140],
           },
           top: {
             sprite: [9100, 1],

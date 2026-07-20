@@ -44,6 +44,50 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     textures.dispose();
   });
 
+  it("shares the AnimTextSnd layout with FSText and clips transformed glyphs", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          text: "A",
+          font: [1, 0, 0],
+          offset: [160, 100],
+          layout: {
+            angle: 12,
+            xShear: 0.15,
+            window: [140, 80, 40, 40],
+          },
+        },
+      },
+      fonts: new Map([[1, createFont("A")]]),
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      resolved: true,
+      text: "A",
+      textTransform: {
+        windowApplied: 1,
+        windowCulled: 0,
+        angleApplied: 1,
+        xShearApplied: 1,
+      },
+    });
+    const textGroup = renderer.group.children[2]!;
+    const textMesh = textGroup.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
+    expect(textMesh.userData.fightScreenPolygonGeometry).toBe(true);
+    expect((textMesh.geometry.getAttribute("position") as THREE.BufferAttribute).count).toBeGreaterThanOrEqual(3);
+    expect(textMesh.rotation.z).toBe(0);
+    renderer.dispose();
+    textures.dispose();
+  });
+
   it("applies the FSText palette effect while preserving authored font color", async () => {
     const textures = new TextureStore();
     const renderer = new FightScreenAnnouncementRenderer(textures);
@@ -158,6 +202,12 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
             color: 128,
             invertAll: true,
           },
+          layout: {
+            angle: 12,
+            xAngle: 4,
+            yAngle: -6,
+            xShear: 0.15,
+          },
         },
       },
       spriteArchive: {
@@ -174,9 +224,18 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       actionNo: 7002,
       primaryPaletteFxApplied: 1,
       primaryPaletteFxExpired: 0,
+      primaryTransform: {
+        angleApplied: 1,
+        xAngleApplied: 1,
+        yAngleApplied: 1,
+        xShearApplied: 1,
+      },
     });
     const primaryMesh = renderer.group.children[1] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
     expect(primaryMesh.material.color.getHex()).not.toBe(0xffffff);
+    expect(primaryMesh.rotation.z).toBeCloseTo(12 * Math.PI / 180);
+    expect(primaryMesh.rotation.x).toBeCloseTo(-4 * Math.PI / 180);
+    expect(primaryMesh.rotation.y).toBeCloseTo(-6 * Math.PI / 180);
 
     await renderer.update(snapshot(3), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
 

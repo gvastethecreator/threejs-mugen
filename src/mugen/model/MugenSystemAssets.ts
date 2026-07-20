@@ -57,13 +57,7 @@ export type MugenFightScreenPaletteFx = {
   invertAll?: boolean;
 };
 
-export type MugenFightScreenLayoutAsset = {
-  animationNo?: number;
-  sprite?: [number, number];
-  offset?: [number, number];
-  scale?: [number, number];
-  facing?: 1 | -1;
-  vfacing?: 1 | -1;
+export type MugenFightScreenLayoutTransform = {
   layerNo?: MugenFightScreenLayerNo;
   angle?: number;
   xAngle?: number;
@@ -71,8 +65,17 @@ export type MugenFightScreenLayoutAsset = {
   xShear?: number;
   projection?: MugenFightScreenProjection;
   focalLength?: number;
-  paletteFx?: MugenFightScreenPaletteFx;
   window?: [number, number, number, number];
+};
+
+export type MugenFightScreenLayoutAsset = MugenFightScreenLayoutTransform & {
+  animationNo?: number;
+  sprite?: [number, number];
+  offset?: [number, number];
+  scale?: [number, number];
+  facing?: 1 | -1;
+  vfacing?: 1 | -1;
+  paletteFx?: MugenFightScreenPaletteFx;
   blend?: string;
 };
 
@@ -84,6 +87,8 @@ export type MugenFightScreenDisplayAsset = {
   fontColor?: [number, number, number, number];
   paletteFx?: MugenFightScreenPaletteFx;
   textPaletteFx?: MugenFightScreenPaletteFx;
+  layout?: MugenFightScreenLayoutTransform;
+  textLayout?: MugenFightScreenLayoutTransform;
   background?: MugenFightScreenLayoutAsset[];
   top?: MugenFightScreenLayoutAsset;
   displayTime?: number;
