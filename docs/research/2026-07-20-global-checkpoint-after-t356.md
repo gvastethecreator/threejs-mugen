@@ -1,7 +1,7 @@
 # Global checkpoint after T356
 
 Date: 2026-07-20
-Head: `7e47aaa7`
+Head: `d21ff047`
 Feature commit: `eff5cdb4`
 Documentation commit: `7e47aaa7`
 Status: green for the bounded Ikemen root ReversalDef collision block
