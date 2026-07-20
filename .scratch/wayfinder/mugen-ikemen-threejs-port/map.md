@@ -28,6 +28,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Apply FightScreen layout window](tickets/301-fightscreen-layout-window.md) - resolved at bounded rectangular clip scope: top/background `AnimLayout` windows now normalize source endpoints, clip projected meshes, remap UVs, and report applied or culled entries; primary announcement windows, tile, advanced transforms, PalFX, KO/winner families, browser asset parity, and full parity remain open.
 
+- [Carry FightScreen layout layerno](tickets/302-fightscreen-layout-layerno.md) - resolved at bounded presentation-order scope: valid `-1|0|1|2` layout values map to the existing stage-background, actor-underlay, stage-foreground, and overlay phases; exact cross-subsystem draw interleaving, primary composition, transforms, PalFX, KO/winner families, browser asset parity, and full parity remain open.
+
 - [Index FightScreen display variants](tickets/294-fightscreen-display-variants.md) - resolved at definition and sound-selection scope: numbered/default/single/final/fight `AnimTextSnd` references, layout metadata, and bounded runtime sound precedence are imported; AIR/FNT/SFF rendering and exact `AnimTextSnd` completion remain the next renderer boundary.
 
 - [Route FightScreen announcement sounds](tickets/293-fightscreen-announcement-sound.md) - resolved at source-sound routing scope: `fight.def` screen SND loads under `fs`, Round/Fight sound edges reach Web Audio once, and inline screen actions are indexed without claiming rendering parity.

@@ -65,6 +65,8 @@ export type FightScreenAnnouncementDiagnostics = {
   topResolved?: number;
   windowApplied?: number;
   windowCulled?: number;
+  layerNoApplied?: number;
+  layerNoCulled?: number;
   fallbackReason?: string;
 };
 
@@ -115,12 +117,16 @@ type FightScreenLayoutRenderResult = {
   topResolved: number;
   windowApplied: number;
   windowCulled: number;
+  layerNoApplied: number;
+  layerNoCulled: number;
 };
 
 type FightScreenLayoutCollectionResult = {
   resolved: number;
   windowApplied: number;
   windowCulled: number;
+  layerNoApplied: number;
+  layerNoCulled: number;
 };
 
 type FightScreenTextRenderResult = {
@@ -165,6 +171,8 @@ export class FightScreenAnnouncementRenderer {
     topResolved: 0,
     windowApplied: 0,
     windowCulled: 0,
+    layerNoApplied: 0,
+    layerNoCulled: 0,
   };
 
   constructor(private readonly textures: TextureStore) {
@@ -513,6 +521,8 @@ export class FightScreenAnnouncementRenderer {
       topResolved: topResult.resolved,
       windowApplied: backgroundResult.windowApplied + topResult.windowApplied,
       windowCulled: backgroundResult.windowCulled + topResult.windowCulled,
+      layerNoApplied: backgroundResult.layerNoApplied + topResult.layerNoApplied,
+      layerNoCulled: backgroundResult.layerNoCulled + topResult.layerNoCulled,
     };
     this.backgroundGroup.visible = backgroundResult.resolved > 0;
     this.topGroup.visible = topResult.resolved > 0;
@@ -530,6 +540,8 @@ export class FightScreenAnnouncementRenderer {
     let resolved = 0;
     let windowApplied = 0;
     let windowCulled = 0;
+    let layerNoApplied = 0;
+    let layerNoCulled = 0;
     for (const [index, layout] of layouts.entries()) {
       const resolvedFrame = resolveFightScreenLayoutFrame(layout, frameTick, this.animations);
       if (!resolvedFrame) continue;
@@ -538,6 +550,12 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame.spriteIndex,
       );
       if (!sprite) continue;
+      const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
+      const presentationOrder = resolveFightScreenLayoutPresentationOrder(layout.layerNo, kind, index, blend);
+      if (!presentationOrder) {
+        layerNoCulled += 1;
+        continue;
+      }
       const placement = projectFightScreenSprite(
         viewport,
         this.coordinate,
@@ -551,8 +569,8 @@ export class FightScreenAnnouncementRenderer {
         continue;
       }
       if (layout.window) windowApplied += 1;
+      if (layout.layerNo !== undefined) layerNoApplied += 1;
       const mesh = this.ensureLayoutMesh(index, meshPool, group);
-      const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
       mesh.visible = true;
       mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
       mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
@@ -561,19 +579,7 @@ export class FightScreenAnnouncementRenderer {
       mesh.material.color.setHex(0xffffff);
       mesh.material.opacity = 1;
       mesh.material.blending = blend === "additive" ? THREE.AdditiveBlending : THREE.NormalBlending;
-      applyThreePresentationOrder(
-        mesh,
-        mesh.material,
-        resolvePresentationOrder({
-          profile: "unknown",
-          phase: "overlay",
-          sourceKind: "overlay",
-          blendPolicy: blend,
-          priority: kind === "background" ? 2 : 6,
-          tieBreaker: (kind === "background" ? 30 : 40) + index,
-          tiePolicy: "authored-order",
-        }),
-      );
+      applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
       mesh.material.needsUpdate = true;
       resolved += 1;
     }
@@ -581,7 +587,7 @@ export class FightScreenAnnouncementRenderer {
       const mesh = meshPool[index];
       if (mesh) mesh.visible = false;
     }
-    return { resolved, windowApplied, windowCulled };
+    return { resolved, windowApplied, windowCulled, layerNoApplied, layerNoCulled };
   }
 
   private ensureLayoutMesh(
@@ -619,6 +625,8 @@ export class FightScreenAnnouncementRenderer {
       topResolved: 0,
       windowApplied: 0,
       windowCulled: 0,
+      layerNoApplied: 0,
+      layerNoCulled: 0,
     };
   }
 
@@ -919,6 +927,35 @@ function finiteScale(value: number | undefined): number {
 
 function isAdditiveBlend(value: string | undefined): boolean {
   return value?.toLowerCase().includes("add") ?? false;
+}
+
+function resolveFightScreenLayoutPresentationOrder(
+  layerNo: number | undefined,
+  kind: "background" | "top",
+  index: number,
+  blend: "alpha" | "additive",
+): ReturnType<typeof resolvePresentationOrder> | undefined {
+  const phase = layerNo === undefined
+    ? "overlay"
+    : layerNo === -1
+      ? "stage-background"
+      : layerNo === 0
+        ? "actor-underlay"
+        : layerNo === 1
+          ? "stage-foreground"
+          : layerNo === 2
+            ? "overlay"
+            : undefined;
+  if (!phase) return undefined;
+  return resolvePresentationOrder({
+    profile: "unknown",
+    phase,
+    sourceKind: "overlay",
+    blendPolicy: blend,
+    priority: kind === "background" ? 2 : 6,
+    tieBreaker: (kind === "background" ? 30 : 40) + index,
+    tiePolicy: "authored-order",
+  });
 }
 
 function signedMagnitude(value: number, magnitude: number): number {

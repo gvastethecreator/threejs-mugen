@@ -108,8 +108,8 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       display: {
         round: new Map(),
         roundDefault: {
-          background: [{ animationNo: 7002, offset: [160, 100], window: [140, 80, 40, 40] }],
-          top: { sprite: [9100, 1], offset: [160, 120], facing: -1 },
+          background: [{ animationNo: 7002, offset: [160, 100], layerNo: 0, window: [140, 80, 40, 40] }],
+          top: { sprite: [9100, 1], offset: [160, 120], facing: -1, layerNo: 1 },
         },
       },
       spriteArchive: {
@@ -134,6 +134,8 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       topResolved: 1,
       windowApplied: 1,
       windowCulled: 0,
+      layerNoApplied: 2,
+      layerNoCulled: 0,
     });
     const backgroundGroup = renderer.group.children[0]!;
     const topGroup = renderer.group.children[3]!;

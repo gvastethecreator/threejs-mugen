@@ -6,6 +6,7 @@ import type {
   MugenFightScreenDisplayAsset,
   MugenFightScreenDisplayDefinitions,
   MugenFightScreenFont,
+  MugenFightScreenLayerNo,
   MugenFightScreenLayoutAsset,
   MugenFightScreenTiming,
   MugenSystemAssets,
@@ -693,6 +694,7 @@ function layoutAsset(section: Record<string, string>, prefix: string): MugenFigh
     scale: pairValue(section, `${prefix}.scale`),
     facing: facingValue(section, `${prefix}.facing`),
     vfacing: facingValue(section, `${prefix}.vfacing`),
+    layerNo: layerNoValue(section, `${prefix}.layerno`),
     window: integerQuadValue(section, `${prefix}.window`),
     blend: getValue(section, [`${prefix}.trans`]),
   };
@@ -727,6 +729,13 @@ function integerQuadValue(section: Record<string, string>, key: string): [number
   const x2 = Math.round(values[2]!);
   const y2 = Math.round(values[3]!);
   return [Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1)];
+}
+
+function layerNoValue(section: Record<string, string>, key: string): MugenFightScreenLayerNo | undefined {
+  const value = numberValue(section, key);
+  if (value === undefined) return undefined;
+  const rounded = Math.round(value);
+  return rounded >= -1 && rounded <= 2 ? rounded as MugenFightScreenLayerNo : undefined;
 }
 
 function fontValue(section: Record<string, string>, key: string): [number, number, number] | undefined {

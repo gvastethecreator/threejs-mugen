@@ -46,6 +46,8 @@ export type MugenFightScreenFont = {
   diagnostics: MugenDiagnostic[];
 };
 
+export type MugenFightScreenLayerNo = -1 | 0 | 1 | 2;
+
 export type MugenFightScreenLayoutAsset = {
   animationNo?: number;
   sprite?: [number, number];
@@ -53,6 +55,7 @@ export type MugenFightScreenLayoutAsset = {
   scale?: [number, number];
   facing?: 1 | -1;
   vfacing?: 1 | -1;
+  layerNo?: MugenFightScreenLayerNo;
   window?: [number, number, number, number];
   blend?: string;
 };

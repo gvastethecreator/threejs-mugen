@@ -57,8 +57,10 @@ round.default.scale = 1.2, 0.8
 round.default.top.spr = 9100, 1
 round.default.top.offset = 160, 120
 round.default.top.scale = 1, 1
+round.default.top.layerno = 1
 round.default.bg0.anim = 7002
 round.default.bg0.offset = 160, 100
+round.default.bg0.layerno = 0
 round.default.bg0.window = 80, 40, 240, 160
 round1.snd = 8, 1
 round1.anim = 7002
@@ -185,9 +187,10 @@ File = standard.sff
             sprite: [9100, 1],
             offset: [160, 120],
             scale: [1, 1],
+            layerNo: 1,
           },
           background: [
-            { animationNo: 7002, offset: [160, 100], window: [80, 40, 160, 120] },
+            { animationNo: 7002, offset: [160, 100], layerNo: 0, window: [80, 40, 160, 120] },
           ],
         },
         roundSingle: { animationNo: 7002, sound: [8, 3] },
