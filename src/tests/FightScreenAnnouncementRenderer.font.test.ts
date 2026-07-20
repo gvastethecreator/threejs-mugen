@@ -7,6 +7,7 @@ import {
   resolveFightScreenAnnouncementSelection,
   resolveFightScreenOutcomeKind,
   resolveFightScreenResultDisplayAsset,
+  resolveFightScreenWinTypeAsset,
 } from "../game/render/FightScreenAnnouncementRenderer";
 import { TextureStore } from "../game/render/TextureStore";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
@@ -300,6 +301,22 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     });
     expect(resolveFightScreenResultDisplayAsset(display, { family: "aiLose", side: 1, variant: 0 })).toMatchObject({
       text: "P2 wins",
+    });
+
+    const winTypeDisplay: MugenFightScreenDisplayDefinitions = {
+      round: new Map(),
+      winType: {
+        p1: { perfect: { text: "P1 perfect", time: 8 } },
+        p2: { clutch: { text: "P2 clutch", sound: [7, 2] } },
+      },
+    };
+    expect(resolveFightScreenWinTypeAsset(winTypeDisplay, 0, "perfect")).toMatchObject({
+      text: "P1 perfect",
+      time: 8,
+    });
+    expect(resolveFightScreenWinTypeAsset(winTypeDisplay, 1, "clutch")).toMatchObject({
+      text: "P2 clutch",
+      sound: [7, 2],
     });
   });
 

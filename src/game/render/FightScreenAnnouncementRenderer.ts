@@ -7,6 +7,8 @@ import type {
   MugenFightScreenLayoutAsset,
   MugenFightScreenLayoutTransform,
   MugenFightScreenResultDisplaySelection,
+  MugenFightScreenWinTypeAsset,
+  MugenFightScreenWinTypeName,
 } from "../../mugen/model/MugenSystemAssets";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/model/MugenAnimation";
 import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
@@ -1130,6 +1132,15 @@ export function resolveFightScreenResultDisplayAsset(
   if (requested) return requested;
   if (variant >= 2) return family.variants[1]?.sides[selection.side];
   return undefined;
+}
+
+export function resolveFightScreenWinTypeAsset(
+  display: MugenFightScreenDisplayDefinitions | undefined,
+  side: 0 | 1,
+  type: MugenFightScreenWinTypeName,
+): MugenFightScreenWinTypeAsset | undefined {
+  if (!display?.winType) return undefined;
+  return display.winType[side === 0 ? "p1" : "p2"][type];
 }
 
 export function resolveRoundDisplayAsset(

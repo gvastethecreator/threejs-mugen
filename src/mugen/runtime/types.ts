@@ -646,6 +646,17 @@ export type RoundSnapshot = {
 export type RuntimeRoundOutcomeKind = "ko" | "double-ko" | "time-over" | "draw";
 export type RuntimeRoundWinnerDisplayKind = "win" | "draw";
 export type RuntimeRoundResultDisplayFamily = "win" | "aiWin" | "aiLose";
+export type RuntimeRoundWinTypeName =
+  | "normal"
+  | "special"
+  | "hyper"
+  | "cheese"
+  | "time"
+  | "throw"
+  | "suicide"
+  | "teammate"
+  | "perfect"
+  | "clutch";
 
 export type RuntimeRoundResultDisplaySoundVariant = [
   RuntimeRoundAnnouncementSound | undefined,
@@ -681,6 +692,7 @@ export type RuntimeRoundWinnerDisplaySelection = {
   family: RuntimeRoundResultDisplayFamily;
   side: 0 | 1;
   variant: number;
+  winType?: RuntimeRoundWinTypeName;
 };
 
 export type RuntimeRoundWinnerDisplaySnapshot = {

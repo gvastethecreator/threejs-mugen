@@ -175,7 +175,7 @@ describe("RuntimeRoundSystem", () => {
       },
     });
     round.finishIfNeeded(
-      { label: "CPU", life: 600, side: 1, playerControlled: false, variantIndex: 1 },
+      { label: "CPU", life: 600, side: 1, playerControlled: false, variantIndex: 1, winType: "perfect" },
       { label: "Player", life: 0, side: 0, playerControlled: true },
     );
 
@@ -187,6 +187,7 @@ describe("RuntimeRoundSystem", () => {
         family: "aiWin",
         side: 0,
         variant: 1,
+        winType: "perfect",
       },
     });
 

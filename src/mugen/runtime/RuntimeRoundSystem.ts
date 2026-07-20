@@ -8,6 +8,7 @@ import type {
   RuntimeRoundResultDisplayFamily,
   RuntimeRoundResultDisplaySoundVariant,
   RuntimeRoundShutterSnapshot,
+  RuntimeRoundWinTypeName,
   RuntimeRoundWinnerDisplayKind,
   RuntimeRoundWinnerDisplaySelection,
   RuntimeRoundWinnerDisplaySnapshot,
@@ -95,6 +96,7 @@ export type RuntimeRoundParticipant = {
   side?: 0 | 1;
   playerControlled?: boolean;
   variantIndex?: number;
+  winType?: RuntimeRoundWinTypeName;
 };
 
 export type RuntimeRoundFinishResult = {
@@ -800,6 +802,7 @@ function resolveWinnerDisplaySelection(
     family,
     side: family === "aiWin" ? loserSide : winnerSide,
     variant: boundedResultVariant(winner.variantIndex),
+    ...(winner.winType ? { winType: winner.winType } : {}),
   };
 }
 
