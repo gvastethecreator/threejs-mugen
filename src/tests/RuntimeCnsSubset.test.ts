@@ -208,6 +208,22 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("NumProjID(77) = 1", { self: state, numProj: (id) => (id === 77 ? 1 : 0) })).toBe(1);
   });
 
+  it("evaluates IKEMEN HelperVar ownprojectile with a profile-scoped helper context", () => {
+    const state = runtimeState();
+
+    expect(evaluateExpression("HelperVar(ownprojectile) = 1", {
+      self: state,
+      isHelper: true,
+      helperOwnProjectile: true,
+    })).toBe(1);
+    expect(evaluateExpression("HelperVar(ownprojectile) = 0", {
+      self: state,
+      isHelper: true,
+      helperOwnProjectile: false,
+    })).toBe(1);
+    expect(evaluateExpression("HelperVar(ownprojectile) = 0", { self: state })).toBe(1);
+  });
+
   it("evaluates legacy projectile trigger suffix and second-form timing syntax", () => {
     const state = runtimeState();
     const context = {

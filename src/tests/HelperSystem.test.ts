@@ -285,6 +285,28 @@ describe("HelperSystem", () => {
     expect(paused.age).toBe(0);
   });
 
+  it("exposes explicit ownprojectile through IKEMEN HelperVar", () => {
+    const runtimeProgram = {
+      states: [
+        stateProgram(
+          stateDef(6000),
+          [compiledControllerIr(6000, "VarSet", ["HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
+        ),
+      ],
+    };
+
+    const owned = helper({ ownProjectile: true, runtimeProgram, vars: [0] });
+    const rootOwned = helper({ ownProjectile: false, runtimeProgram, vars: [0] });
+    const legacy = helper({ ownProjectile: true, runtimeProgram, vars: [0] });
+    advanceRuntimeHelpers([owned], stage, { runtimeProfile: "ikemen-go" });
+    advanceRuntimeHelpers([rootOwned], stage, { runtimeProfile: "ikemen-go" });
+    advanceRuntimeHelpers([legacy], stage, { runtimeProfile: "mugen-1.1" });
+
+    expect(owned.vars[0]).toBe(1);
+    expect(rootOwned.vars[0]).toBe(0);
+    expect(legacy.vars[0]).toBe(0);
+  });
+
   it("carries a source-scoped default HitFlag into Helper HitDef execution", () => {
     const hitDef = compiledControllerIr(6000, "HitDef", [], { damage: "20" });
     const imported = helper({

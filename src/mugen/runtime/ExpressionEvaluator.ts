@@ -46,6 +46,7 @@ export type ExpressionContext = {
   rootTeamSide?: number;
   isHelper?: boolean;
   helperId?: number;
+  helperOwnProjectile?: boolean;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
@@ -838,7 +839,7 @@ class ExpressionParser {
     if (lower === "projcanceltime") {
       return this.context.projCancelTime?.() ?? -1;
     }
-    if (/^(s|c|a|l|i|h|n|sc|na|sa|ha)$/i.test(identifier)) {
+    if (/^(s|c|a|l|i|h|n|sc|na|sa|ha|ownprojectile)$/i.test(identifier)) {
       return identifier.toUpperCase();
     }
     this.context.reportUnsupported?.(identifier);
@@ -870,6 +871,14 @@ class ExpressionParser {
     }
     if (lower === "gethitvar") {
       return this.context.getHitVar?.(String(args[0] ?? "")) ?? defaultHitVar(String(args[0] ?? ""));
+    }
+    if (lower === "helpervar") {
+      const key = String(args[0] ?? "").toLowerCase();
+      if (key === "ownprojectile") {
+        return this.context.isHelper && this.context.helperOwnProjectile === true ? 1 : 0;
+      }
+      this.context.reportUnsupported?.(`helpervar(${key})`);
+      return 0;
     }
     if (lower === "ifelse") {
       if (isFailedRedirect(args[0] ?? 0)) {

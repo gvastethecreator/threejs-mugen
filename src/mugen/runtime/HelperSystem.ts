@@ -1548,6 +1548,7 @@ function helperExpressionContext(
     | "projectileContact"
     | "projectileContactTime"
     | "projectileCancelTime"
+    | "runtimeProfile"
   > = {},
 ) {
   const opponentRoster = helperOpponentRoster(helper, options);
@@ -1570,6 +1571,7 @@ function helperExpressionContext(
     rootTeamSide: runtimeActorTeamSide({ id: helper.rootId ?? helper.ownerId }),
     isHelper: true,
     helperId: helper.helperId,
+    helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
     stageTime: options.stageTime,
