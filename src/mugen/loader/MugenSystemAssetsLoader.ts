@@ -8,6 +8,7 @@ import type {
   MugenFightScreenFont,
   MugenFightScreenLayerNo,
   MugenFightScreenLayoutAsset,
+  MugenFightScreenPaletteFx,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -696,6 +697,7 @@ function layoutAsset(section: Record<string, string>, prefix: string): MugenFigh
     vfacing: facingValue(section, `${prefix}.vfacing`),
     layerNo: layerNoValue(section, `${prefix}.layerno`),
     angle: numberValue(section, `${prefix}.angle`),
+    paletteFx: paletteFxValue(section, `${prefix}.palfx`),
     window: integerQuadValue(section, `${prefix}.window`),
     blend: getValue(section, [`${prefix}.trans`]),
   };
@@ -737,6 +739,44 @@ function layerNoValue(section: Record<string, string>, key: string): MugenFightS
   if (value === undefined) return undefined;
   const rounded = Math.round(value);
   return rounded >= -1 && rounded <= 2 ? rounded as MugenFightScreenLayerNo : undefined;
+}
+
+function paletteFxValue(section: Record<string, string>, prefix: string): MugenFightScreenPaletteFx | undefined {
+  const asset: MugenFightScreenPaletteFx = {
+    time: integerValue(section, `${prefix}.time`),
+    add: integerTripletValue(section, `${prefix}.add`),
+    mul: integerTripletValue(section, `${prefix}.mul`),
+    color: numberValue(section, `${prefix}.color`),
+    invertAll: booleanValue(section, `${prefix}.invertall`),
+  };
+  if (!Object.values(asset).some((value) => value !== undefined)) {
+    return undefined;
+  }
+  return Object.fromEntries(
+    Object.entries(asset).filter(([, value]) => value !== undefined),
+  ) as MugenFightScreenPaletteFx;
+}
+
+function integerValue(section: Record<string, string>, key: string): number | undefined {
+  const value = numberValue(section, key);
+  return value === undefined ? undefined : Math.round(value);
+}
+
+function integerTripletValue(section: Record<string, string>, key: string): [number, number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 3 || values.some((value) => !Number.isFinite(value))) return undefined;
+  return values.map((value) => Math.round(value)) as [number, number, number];
+}
+
+function booleanValue(section: Record<string, string>, key: string): boolean | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const value = raw.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(value)) return true;
+  if (["0", "false", "no", "off"].includes(value)) return false;
+  return undefined;
 }
 
 function fontValue(section: Record<string, string>, key: string): [number, number, number] | undefined {

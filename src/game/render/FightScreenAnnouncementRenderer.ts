@@ -20,6 +20,7 @@ import {
   layoutFightScreenFontText,
   resolveFightScreenFontPalette,
 } from "./FightScreenFontRenderer";
+import { applyPaletteFxMaterial, type RenderPaletteFx } from "./PaletteFxMaterial";
 
 export type FightScreenAnnouncementViewport = {
   x: number;
@@ -69,6 +70,8 @@ export type FightScreenAnnouncementDiagnostics = {
   layerNoCulled?: number;
   angleApplied?: number;
   angleCulled?: number;
+  paletteFxApplied?: number;
+  paletteFxExpired?: number;
   fallbackReason?: string;
 };
 
@@ -123,6 +126,8 @@ type FightScreenLayoutRenderResult = {
   layerNoCulled: number;
   angleApplied: number;
   angleCulled: number;
+  paletteFxApplied: number;
+  paletteFxExpired: number;
 };
 
 type FightScreenLayoutCollectionResult = {
@@ -133,6 +138,8 @@ type FightScreenLayoutCollectionResult = {
   layerNoCulled: number;
   angleApplied: number;
   angleCulled: number;
+  paletteFxApplied: number;
+  paletteFxExpired: number;
 };
 
 type FightScreenTextRenderResult = {
@@ -181,6 +188,8 @@ export class FightScreenAnnouncementRenderer {
     layerNoCulled: 0,
     angleApplied: 0,
     angleCulled: 0,
+    paletteFxApplied: 0,
+    paletteFxExpired: 0,
   };
 
   constructor(private readonly textures: TextureStore) {
@@ -533,6 +542,8 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled: backgroundResult.layerNoCulled + topResult.layerNoCulled,
       angleApplied: backgroundResult.angleApplied + topResult.angleApplied,
       angleCulled: backgroundResult.angleCulled + topResult.angleCulled,
+      paletteFxApplied: backgroundResult.paletteFxApplied + topResult.paletteFxApplied,
+      paletteFxExpired: backgroundResult.paletteFxExpired + topResult.paletteFxExpired,
     };
     this.backgroundGroup.visible = backgroundResult.resolved > 0;
     this.topGroup.visible = topResult.resolved > 0;
@@ -554,6 +565,8 @@ export class FightScreenAnnouncementRenderer {
     let layerNoCulled = 0;
     let angleApplied = 0;
     let angleCulled = 0;
+    let paletteFxApplied = 0;
+    let paletteFxExpired = 0;
     for (const [index, layout] of layouts.entries()) {
       const resolvedFrame = resolveFightScreenLayoutFrame(layout, frameTick, this.animations);
       if (!resolvedFrame) continue;
@@ -587,6 +600,9 @@ export class FightScreenAnnouncementRenderer {
       if (layout.window) windowApplied += 1;
       if (layout.layerNo !== undefined) layerNoApplied += 1;
       if (layout.angle !== undefined) angleApplied += 1;
+      const paletteFx = resolveFightScreenPaletteFx(layout.paletteFx, frameTick);
+      if (layout.paletteFx && paletteFx) paletteFxApplied += 1;
+      if (layout.paletteFx && !paletteFx) paletteFxExpired += 1;
       const mesh = this.ensureLayoutMesh(index, meshPool, group);
       mesh.visible = true;
       mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
@@ -594,8 +610,7 @@ export class FightScreenAnnouncementRenderer {
       mesh.rotation.z = degreesToRadians(layout.angle ?? 0);
       applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
-      mesh.material.color.setHex(0xffffff);
-      mesh.material.opacity = 1;
+      applyPaletteFxMaterial(mesh.material, paletteFx);
       mesh.material.blending = blend === "additive" ? THREE.AdditiveBlending : THREE.NormalBlending;
       applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
       mesh.material.needsUpdate = true;
@@ -613,6 +628,8 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled,
       angleApplied,
       angleCulled,
+      paletteFxApplied,
+      paletteFxExpired,
     };
   }
 
@@ -655,6 +672,8 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled: 0,
       angleApplied: 0,
       angleCulled: 0,
+      paletteFxApplied: 0,
+      paletteFxExpired: 0,
     };
   }
 
@@ -992,6 +1011,35 @@ function signedMagnitude(value: number, magnitude: number): number {
 
 function degreesToRadians(value: number): number {
   return (Number.isFinite(value) ? value : 0) * Math.PI / 180;
+}
+
+function resolveFightScreenPaletteFx(
+  paletteFx: MugenFightScreenLayoutAsset["paletteFx"],
+  frameTick: number,
+): RenderPaletteFx | undefined {
+  if (!paletteFx) return undefined;
+  const time = paletteFx.time !== undefined && Number.isFinite(paletteFx.time)
+    ? Math.round(paletteFx.time)
+    : -1;
+  const color = paletteFx.color;
+  const tick = Math.max(0, Math.round(frameTick));
+  if (time === 0 || (time > 0 && tick >= time)) return undefined;
+  return {
+    remaining: time > 0 ? Math.max(1, time - tick) : time,
+    time,
+    add: finitePaletteTriplet(paletteFx.add, [0, 0, 0]),
+    mul: finitePaletteTriplet(paletteFx.mul, [256, 256, 256]),
+    color: color !== undefined && Number.isFinite(color) ? color : 256,
+    invert: paletteFx.invertAll ?? false,
+  };
+}
+
+function finitePaletteTriplet(
+  value: [number, number, number] | undefined,
+  fallback: [number, number, number],
+): [number, number, number] {
+  if (!value || value.some((component) => !Number.isFinite(component))) return fallback;
+  return value.map((component) => Math.round(component)) as [number, number, number];
 }
 
 function applyFightScreenMeshUv(geometry: THREE.PlaneGeometry, uv: FightScreenPlacementUv): void {

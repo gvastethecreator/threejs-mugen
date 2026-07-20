@@ -1,5 +1,6 @@
 /** @vitest-environment jsdom */
 
+import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import { FightScreenAnnouncementRenderer } from "../game/render/FightScreenAnnouncementRenderer";
 import { TextureStore } from "../game/render/TextureStore";
@@ -112,7 +113,20 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
             { animationNo: 7002, offset: [160, 100], layerNo: 0, window: [140, 80, 40, 40] },
             { sprite: [9100, 0], offset: [160, 100], angle: 15, window: [140, 80, 40, 40] },
           ],
-          top: { sprite: [9100, 1], offset: [160, 120], facing: -1, layerNo: 1, angle: 15 },
+          top: {
+            sprite: [9100, 1],
+            offset: [160, 120],
+            facing: -1,
+            layerNo: 1,
+            angle: 15,
+            paletteFx: {
+              time: 3,
+              add: [32, 0, 0],
+              mul: [64, 32, 32],
+              color: 128,
+              invertAll: true,
+            },
+          },
         },
       },
       spriteArchive: {
@@ -141,11 +155,18 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       layerNoCulled: 0,
       angleApplied: 1,
       angleCulled: 1,
+      paletteFxApplied: 1,
+      paletteFxExpired: 0,
     });
     const backgroundGroup = renderer.group.children[0]!;
     const topGroup = renderer.group.children[3]!;
     expect(backgroundGroup.children[0]?.renderOrder).toBeLessThan(topGroup.children[0]?.renderOrder ?? Number.POSITIVE_INFINITY);
     expect(topGroup.children[0]?.rotation.z).toBeCloseTo(15 * Math.PI / 180);
+    const topMesh = topGroup.children[0] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+    expect(topMesh.material.color.getHex()).not.toBe(0xffffff);
+    await renderer.update(snapshot(3), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+    expect(renderer.getDiagnostics()).toMatchObject({ paletteFxApplied: 0, paletteFxExpired: 1 });
+    expect(topMesh.material.color.getHex()).toBe(0xffffff);
     renderer.dispose();
     textures.dispose();
   });
@@ -190,7 +211,7 @@ function createFont(text: string): MugenFightScreenFont {
   };
 }
 
-function snapshot(): MugenSnapshot {
+function snapshot(elapsed = 0): MugenSnapshot {
   return {
     round: {
       announcement: {
@@ -202,7 +223,7 @@ function snapshot(): MugenSnapshot {
         round: {
           phase: "active",
           skipped: false,
-          elapsed: 0,
+          elapsed,
           animationStart: 0,
           soundTime: 0,
           soundDue: false,

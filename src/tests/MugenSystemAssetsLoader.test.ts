@@ -58,6 +58,11 @@ round.default.top.spr = 9100, 1
 round.default.top.offset = 160, 120
 round.default.top.scale = 1, 1
 round.default.top.layerno = 1
+round.default.top.palfx.time = 3
+round.default.top.palfx.add = 32, 0, 0
+round.default.top.palfx.mul = 64, 32, 32
+round.default.top.palfx.color = 128
+round.default.top.palfx.invertall = true
 round.default.bg0.anim = 7002
 round.default.bg0.offset = 160, 100
 round.default.bg0.layerno = 0
@@ -189,6 +194,13 @@ File = standard.sff
             offset: [160, 120],
             scale: [1, 1],
             layerNo: 1,
+            paletteFx: {
+              time: 3,
+              add: [32, 0, 0],
+              mul: [64, 32, 32],
+              color: 128,
+              invertAll: true,
+            },
           },
           background: [
             { animationNo: 7002, offset: [160, 100], layerNo: 0, angle: 15, window: [80, 40, 160, 120] },

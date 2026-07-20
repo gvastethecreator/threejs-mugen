@@ -48,6 +48,14 @@ export type MugenFightScreenFont = {
 
 export type MugenFightScreenLayerNo = -1 | 0 | 1 | 2;
 
+export type MugenFightScreenPaletteFx = {
+  time?: number;
+  add?: [number, number, number];
+  mul?: [number, number, number];
+  color?: number;
+  invertAll?: boolean;
+};
+
 export type MugenFightScreenLayoutAsset = {
   animationNo?: number;
   sprite?: [number, number];
@@ -57,6 +65,7 @@ export type MugenFightScreenLayoutAsset = {
   vfacing?: 1 | -1;
   layerNo?: MugenFightScreenLayerNo;
   angle?: number;
+  paletteFx?: MugenFightScreenPaletteFx;
   window?: [number, number, number, number];
   blend?: string;
 };
