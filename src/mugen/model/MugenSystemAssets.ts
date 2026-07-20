@@ -47,6 +47,7 @@ export type MugenFightScreenFont = {
 };
 
 export type MugenFightScreenLayerNo = -1 | 0 | 1 | 2;
+export type MugenFightScreenProjection = "orthographic" | "perspective" | "perspective2";
 
 export type MugenFightScreenPaletteFx = {
   time?: number;
@@ -68,6 +69,8 @@ export type MugenFightScreenLayoutAsset = {
   xAngle?: number;
   yAngle?: number;
   xShear?: number;
+  projection?: MugenFightScreenProjection;
+  focalLength?: number;
   paletteFx?: MugenFightScreenPaletteFx;
   window?: [number, number, number, number];
   blend?: string;

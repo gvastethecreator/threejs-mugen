@@ -292,6 +292,100 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     renderer.dispose();
     textures.dispose();
   });
+
+  it("projects a perspective layout quad with finite focal length", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          top: {
+            sprite: [9100, 0],
+            offset: [160, 120],
+            projection: "perspective",
+            focalLength: 96,
+            angle: 8,
+            xAngle: 24,
+            yAngle: -16,
+            xShear: 0.2,
+          },
+        },
+      },
+      spriteArchive: {
+        version: "v1",
+        sprites: [createSprite(9100, 0, 24, 12)],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      resolved: true,
+      topResolved: 1,
+      projectionApplied: 1,
+      projectionCulled: 0,
+      focalLengthApplied: 1,
+      focalLengthCulled: 0,
+    });
+    const topGroup = renderer.group.children[3]!;
+    const topMesh = topGroup.children[0] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+    const position = topMesh.geometry.getAttribute("position") as THREE.BufferAttribute;
+    const topWidth = Math.abs(position.getX(1) - position.getX(0));
+    const bottomWidth = Math.abs(position.getX(3) - position.getX(2));
+    expect(topMesh.scale.x).toBe(1);
+    expect(topMesh.rotation.x).toBe(0);
+    expect(topMesh.rotation.y).toBe(0);
+    expect(topWidth).not.toBeCloseTo(bottomWidth, 2);
+    renderer.dispose();
+    textures.dispose();
+  });
+
+  it("keeps perspective2 layouts explicit and culled", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          background: [{ sprite: [9100, 0], offset: [140, 120] }],
+          top: {
+            sprite: [9100, 0],
+            offset: [180, 120],
+            projection: "perspective2",
+            focalLength: 64,
+          },
+        },
+      },
+      spriteArchive: {
+        version: "v1",
+        sprites: [createSprite(9100, 0, 24, 12)],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      resolved: true,
+      backgroundResolved: 1,
+      topResolved: 0,
+      projectionApplied: 0,
+      projectionCulled: 1,
+      focalLengthApplied: 0,
+      focalLengthCulled: 1,
+    });
+    expect(renderer.group.children[3]?.visible).toBe(false);
+    renderer.dispose();
+    textures.dispose();
+  });
 });
 
 function createSprite(group: number, index: number, width: number, height: number) {

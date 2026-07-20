@@ -42,6 +42,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Carry FightScreen layout xangle and yangle](tickets/308-fightscreen-layout-x-y-angle.md) - resolved at bounded orthographic transform scope: authored `xangle`/`yangle` now reach top/background meshes with the source X sign and separate applied/culled diagnostics; source aspect and anchor correction, transformed-window clipping, perspective, focal length, text/primary transform ownership, browser asset parity, and full parity remain open.
 
+- [Carry FightScreen layout projection](tickets/309-fightscreen-layout-projection.md) - resolved at bounded perspective scope: typed `projection`/`focallength` reach top/background layouts, finite `perspective` quads apply source-signed local transforms, and `perspective2` plus transformed windows stay explicit culls; exact frustum/aspect parity, clipping, tile/parallax, text/primary transform ownership, browser asset parity, and full parity remain open.
+
 - [Global checkpoint after T302](../../../docs/research/2026-07-20-global-checkpoint-after-t302.md) - green at `7c6da75e`: 237 files / 2516 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.
 
 - [Global checkpoint after T306](../../../docs/research/2026-07-20-global-checkpoint-after-t306.md) - green at `dc15736b`: 237 files / 2518 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.

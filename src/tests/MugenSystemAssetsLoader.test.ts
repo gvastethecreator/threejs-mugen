@@ -69,6 +69,8 @@ round.default.top.scale = 1, 1
 round.default.top.layerno = 1
 round.default.top.xangle = 10
 round.default.top.yangle = -20
+round.default.top.projection = perspective
+round.default.top.focallength = 512
 round.default.top.palfx.time = 3
 round.default.top.palfx.add = 32, 0, 0
 round.default.top.palfx.mul = 64, 32, 32
@@ -223,6 +225,8 @@ File = standard.sff
             layerNo: 1,
             xAngle: 10,
             yAngle: -20,
+            projection: "perspective",
+            focalLength: 512,
             paletteFx: {
               time: 3,
               add: [32, 0, 0],

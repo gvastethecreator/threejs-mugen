@@ -76,6 +76,10 @@ export type FightScreenAnnouncementDiagnostics = {
   yAngleCulled?: number;
   xShearApplied?: number;
   xShearCulled?: number;
+  projectionApplied?: number;
+  projectionCulled?: number;
+  focalLengthApplied?: number;
+  focalLengthCulled?: number;
   paletteFxApplied?: number;
   paletteFxExpired?: number;
   primaryPaletteFxApplied?: number;
@@ -142,6 +146,10 @@ type FightScreenLayoutRenderResult = {
   yAngleCulled: number;
   xShearApplied: number;
   xShearCulled: number;
+  projectionApplied: number;
+  projectionCulled: number;
+  focalLengthApplied: number;
+  focalLengthCulled: number;
   paletteFxApplied: number;
   paletteFxExpired: number;
 };
@@ -160,6 +168,10 @@ type FightScreenLayoutCollectionResult = {
   yAngleCulled: number;
   xShearApplied: number;
   xShearCulled: number;
+  projectionApplied: number;
+  projectionCulled: number;
+  focalLengthApplied: number;
+  focalLengthCulled: number;
   paletteFxApplied: number;
   paletteFxExpired: number;
 };
@@ -218,6 +230,10 @@ export class FightScreenAnnouncementRenderer {
     yAngleCulled: 0,
     xShearApplied: 0,
     xShearCulled: 0,
+    projectionApplied: 0,
+    projectionCulled: 0,
+    focalLengthApplied: 0,
+    focalLengthCulled: 0,
     paletteFxApplied: 0,
     paletteFxExpired: 0,
   };
@@ -582,6 +598,10 @@ export class FightScreenAnnouncementRenderer {
       yAngleCulled: backgroundResult.yAngleCulled + topResult.yAngleCulled,
       xShearApplied: backgroundResult.xShearApplied + topResult.xShearApplied,
       xShearCulled: backgroundResult.xShearCulled + topResult.xShearCulled,
+      projectionApplied: backgroundResult.projectionApplied + topResult.projectionApplied,
+      projectionCulled: backgroundResult.projectionCulled + topResult.projectionCulled,
+      focalLengthApplied: backgroundResult.focalLengthApplied + topResult.focalLengthApplied,
+      focalLengthCulled: backgroundResult.focalLengthCulled + topResult.focalLengthCulled,
       paletteFxApplied: backgroundResult.paletteFxApplied + topResult.paletteFxApplied,
       paletteFxExpired: backgroundResult.paletteFxExpired + topResult.paletteFxExpired,
     };
@@ -611,6 +631,10 @@ export class FightScreenAnnouncementRenderer {
     let yAngleCulled = 0;
     let xShearApplied = 0;
     let xShearCulled = 0;
+    let projectionApplied = 0;
+    let projectionCulled = 0;
+    let focalLengthApplied = 0;
+    let focalLengthCulled = 0;
     let paletteFxApplied = 0;
     let paletteFxExpired = 0;
     for (const [index, layout] of layouts.entries()) {
@@ -621,11 +645,17 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame.spriteIndex,
       );
       if (!sprite) continue;
+      if (layout.projection === "perspective2") {
+        projectionCulled += 1;
+        if (layout.focalLength !== undefined) focalLengthCulled += 1;
+        continue;
+      }
       if (layout.window && (
         layout.angle !== undefined
         || layout.xAngle !== undefined
         || layout.yAngle !== undefined
         || layout.xShear !== undefined
+        || layout.projection === "perspective"
       )) {
         if (layout.angle !== undefined) angleCulled += 1;
         if (layout.xAngle !== undefined) xAngleCulled += 1;
@@ -657,19 +687,36 @@ export class FightScreenAnnouncementRenderer {
       if (layout.xAngle !== undefined) xAngleApplied += 1;
       if (layout.yAngle !== undefined) yAngleApplied += 1;
       if (layout.xShear !== undefined) xShearApplied += 1;
+      if (layout.projection === "perspective") {
+        projectionApplied += 1;
+        if (layout.focalLength !== undefined) focalLengthApplied += 1;
+      }
       const paletteFx = resolveFightScreenPaletteFx(layout.paletteFx, frameTick);
       if (layout.paletteFx && paletteFx) paletteFxApplied += 1;
       if (layout.paletteFx && !paletteFx) paletteFxExpired += 1;
       const mesh = this.ensureLayoutMesh(index, meshPool, group);
       mesh.visible = true;
       mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
-      mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
-      mesh.rotation.set(
-        -degreesToRadians(layout.xAngle ?? 0),
-        degreesToRadians(layout.yAngle ?? 0),
-        degreesToRadians(layout.angle ?? 0),
-      );
-      applyFightScreenMeshShear(mesh.geometry, layout.xShear);
+      if (layout.projection === "perspective") {
+        mesh.scale.set(1, 1, 1);
+        mesh.rotation.set(0, 0, 0);
+        applyFightScreenPerspective(
+          mesh.geometry,
+          clippedPlacement.width,
+          clippedPlacement.height,
+          clippedPlacement.scaleX,
+          clippedPlacement.scaleY,
+          layout,
+        );
+      } else {
+        mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
+        mesh.rotation.set(
+          -degreesToRadians(layout.xAngle ?? 0),
+          degreesToRadians(layout.yAngle ?? 0),
+          degreesToRadians(layout.angle ?? 0),
+        );
+        applyFightScreenMeshShear(mesh.geometry, layout.xShear);
+      }
       applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
       applyPaletteFxMaterial(mesh.material, paletteFx);
@@ -696,6 +743,10 @@ export class FightScreenAnnouncementRenderer {
       yAngleCulled,
       xShearApplied,
       xShearCulled,
+      projectionApplied,
+      projectionCulled,
+      focalLengthApplied,
+      focalLengthCulled,
       paletteFxApplied,
       paletteFxExpired,
     };
@@ -746,6 +797,10 @@ export class FightScreenAnnouncementRenderer {
       yAngleCulled: 0,
       xShearApplied: 0,
       xShearCulled: 0,
+      projectionApplied: 0,
+      projectionCulled: 0,
+      focalLengthApplied: 0,
+      focalLengthCulled: 0,
       paletteFxApplied: 0,
       paletteFxExpired: 0,
     };
@@ -1109,9 +1164,51 @@ function applyFightScreenMeshShear(geometry: THREE.PlaneGeometry, value: number 
   ];
   for (const [index, [x, y]] of vertices.entries()) {
     attribute.setX(index, x + shear * y);
+    attribute.setY(index, y);
+    attribute.setZ(index, 0);
   }
   attribute.needsUpdate = true;
   geometry.computeBoundingSphere();
+}
+
+function applyFightScreenPerspective(
+  geometry: THREE.PlaneGeometry,
+  width: number,
+  height: number,
+  scaleX: number,
+  scaleY: number,
+  layout: MugenFightScreenLayoutAsset,
+): void {
+  const focalLength = finiteFocalLength(layout.focalLength);
+  const rotation = new THREE.Euler(
+    -degreesToRadians(layout.xAngle ?? 0),
+    degreesToRadians(layout.yAngle ?? 0),
+    degreesToRadians(layout.angle ?? 0),
+    "XYZ",
+  );
+  const shear = Number.isFinite(layout.xShear) ? -(layout.xShear as number) : 0;
+  const flipX = scaleX < 0 ? -1 : 1;
+  const flipY = scaleY < 0 ? -1 : 1;
+  const attribute = geometry.getAttribute("position") as THREE.BufferAttribute;
+  const vertices: Array<[number, number]> = [
+    [-width / 2, height / 2],
+    [width / 2, height / 2],
+    [-width / 2, -height / 2],
+    [width / 2, -height / 2],
+  ];
+  for (const [index, [x, y]] of vertices.entries()) {
+    const point = new THREE.Vector3(x * flipX, y * flipY, 0);
+    point.x += shear * point.y;
+    point.applyEuler(rotation);
+    const perspectiveScale = focalLength / Math.max(1, focalLength - point.z);
+    attribute.setXYZ(index, point.x * perspectiveScale, point.y * perspectiveScale, 0);
+  }
+  attribute.needsUpdate = true;
+  geometry.computeBoundingSphere();
+}
+
+function finiteFocalLength(value: number | undefined): number {
+  return value !== undefined && Number.isFinite(value) && value > 0 ? value : 2048;
 }
 
 function resolveFightScreenPaletteFx(

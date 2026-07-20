@@ -9,6 +9,7 @@ import type {
   MugenFightScreenLayerNo,
   MugenFightScreenLayoutAsset,
   MugenFightScreenPaletteFx,
+  MugenFightScreenProjection,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -702,6 +703,8 @@ function layoutAsset(section: Record<string, string>, prefix: string): MugenFigh
     xAngle: numberValue(section, `${prefix}.xangle`),
     yAngle: numberValue(section, `${prefix}.yangle`),
     xShear: numberValue(section, `${prefix}.xshear`),
+    projection: projectionValue(section, `${prefix}.projection`),
+    focalLength: numberValue(section, `${prefix}.focallength`),
     paletteFx: paletteFxValue(section, `${prefix}.palfx`),
     window: integerQuadValue(section, `${prefix}.window`),
     blend: getValue(section, [`${prefix}.trans`]),
@@ -744,6 +747,15 @@ function layerNoValue(section: Record<string, string>, key: string): MugenFightS
   if (value === undefined) return undefined;
   const rounded = Math.round(value);
   return rounded >= -1 && rounded <= 2 ? rounded as MugenFightScreenLayerNo : undefined;
+}
+
+function projectionValue(section: Record<string, string>, key: string): MugenFightScreenProjection | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const value = raw.trim().toLowerCase();
+  return value === "orthographic" || value === "perspective" || value === "perspective2"
+    ? value
+    : undefined;
 }
 
 function paletteFxValue(section: Record<string, string>, prefix: string): MugenFightScreenPaletteFx | undefined {
