@@ -457,6 +457,7 @@ export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "constants"
     | "runtimeProfile"
     | "stageBounds"
     | "gameSpace"
@@ -1112,6 +1113,7 @@ function applyRuntimeHelperTargetController(
   effect: "target" | "bindtotarget",
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "constants"
     | "stageBounds"
     | "gameSpace"
     | "stageTime"
@@ -1186,6 +1188,7 @@ function applyRuntimeHelperTargetController(
       recordDispatch: (selection) => {
         if (redirect) redirectedSelection = selection;
       },
+      constants: options.constants,
       scaleIncomingDamage: options.scaleTargetDamage,
       canEnterTargetState: redirect?.canEnterTargetState,
       enterTargetState: (target, stateId) =>

@@ -4822,6 +4822,7 @@ function runActiveStateControllers(
           });
           return result.entered;
         },
+        constants: target.definition.constants,
         getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
       });
       if (redirectLease) {
@@ -5518,6 +5519,7 @@ function runStateEntrySetupControllers(
             });
             return result.entered;
           },
+          constants: target.definition.constants,
         });
         if (redirectLease) {
           redirectedTargetDispatchWorld.execute(redirectLease, applyDispatch);

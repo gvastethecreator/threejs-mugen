@@ -83,6 +83,76 @@ describe("TargetSystem", () => {
     expect(stranger.runtime.life).toBe(120);
   });
 
+  it("applies TargetLifeAdd red-life and dizzy defaults from the effective life delta", () => {
+    const actor = targetActor("p1", { targets: [{ actorId: "p2", targetId: 77, age: 0 }] });
+    const target = targetActor("p2", {
+      runtime: {
+        life: 100,
+        lifeMax: 1000,
+        redLife: 100,
+        dizzyPoints: 100,
+        hitVars: { sourceAttr: "S,NA" },
+      },
+    });
+
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetLifeAdd", { id: "77", value: "-20" }),
+    });
+
+    expect(target.runtime.life).toBe(80);
+    expect(target.runtime.redLife).toBe(85);
+    expect(target.runtime.dizzyPoints).toBe(64);
+    expect(target.runtime.hitVars?.kill).toBe(true);
+  });
+
+  it("honors TargetLifeAdd flags and a target constant override", () => {
+    const actor = targetActor("p1", { targets: [{ actorId: "p2", targetId: 77, age: 0 }] });
+    const target = targetActor("p2", {
+      runtime: {
+        life: 100,
+        redLife: 100,
+        dizzyPoints: 100,
+        hitVars: { sourceAttr: "S,HA" },
+      },
+    });
+
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetLifeAdd", { id: "77", value: "-20", dizzy: "1", redlife: "1" }),
+      getTargetConst: (_target, name) => ({
+        "default.lifetoredlifemul": 0.75,
+        "super.lifetoredlifemul": 0.5,
+        "default.lifetodizzypointsmul": 1.8,
+        "super.lifetodizzypointsmul": 0.25,
+      }[name]),
+    });
+
+    expect(target.runtime.life).toBe(80);
+    expect(target.runtime.redLife).toBe(90);
+    expect(target.runtime.dizzyPoints).toBe(95);
+    expect(target.runtime.hitVars?.kill).toBe(true);
+  });
+
+  it("can disable TargetLifeAdd red-life and dizzy side effects", () => {
+    const actor = targetActor("p1", { targets: [{ actorId: "p2", targetId: 77, age: 0 }] });
+    const target = targetActor("p2", {
+      runtime: { life: 100, redLife: 100, dizzyPoints: 100 },
+    });
+
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetLifeAdd", { id: "77", value: "-20", dizzy: "0", redlife: "0" }),
+    });
+
+    expect(target.runtime.life).toBe(80);
+    expect(target.runtime.redLife).toBe(100);
+    expect(target.runtime.dizzyPoints).toBe(100);
+  });
+
   it("wraps target memory mutation behind RuntimeTargetWorld", () => {
     const world = new RuntimeTargetWorld();
     const actor = targetActor("p1", {
@@ -296,7 +366,16 @@ describe("TargetSystem", () => {
       actor,
       candidateTargets: [target],
       controller: controller("TargetLifeAdd", { id: "77", value: "-20" }),
-      operation: { kind: "target", controllerType: "targetlifeadd", requestedId: 77, value: -20, absolute: false, kill: true },
+      operation: {
+        kind: "target",
+        controllerType: "targetlifeadd",
+        requestedId: 77,
+        value: -20,
+        absolute: false,
+        kill: true,
+        dizzy: false,
+        redLife: false,
+      },
       onOperation: (operation) => operations.push(operation.controllerType),
       scaleIncomingDamage: (_runtime, damage) => damage + 5,
     });

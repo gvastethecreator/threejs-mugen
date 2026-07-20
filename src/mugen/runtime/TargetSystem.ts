@@ -8,6 +8,9 @@ import {
   applyRuntimePowerDelta,
   applyRuntimeRedLifeAdd,
 } from "./RuntimeResourceSystem";
+import { runtimeDizzyPointsMultiplier } from "./DizzyPointsDefaults";
+import { runtimeRedLifeMultiplier } from "./RedLifeDefaults";
+import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
 import type {
   CharacterRuntimeState,
   RuntimeRedirectedTargetDispatchOperationClass,
@@ -76,6 +79,8 @@ export type RuntimeTargetControllerOptions<TActor extends RuntimeTargetControlle
   controller: MugenStateController;
   operation?: TargetControllerOp;
   onOperation?: (operation: TargetControllerOp) => void;
+  constants?: RuntimeResourceConstants;
+  getTargetConst?: (target: TActor, name: string) => number | undefined;
   scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   canEnterTargetState?: (target: TActor, stateId: number) => boolean;
   enterTargetState?: (target: TActor, stateId: number) => unknown;
@@ -127,6 +132,7 @@ export type RuntimeTargetControllerDispatchOptions<TActor extends RuntimeTargetW
   recordOperation?: (actor: TActor, operation: RuntimeTargetControllerDispatchOperation) => void;
   recordTargetLifeAdd?: (sourceActor: TActor, targetActor: TActor, lifeBefore: number) => void;
   recordDispatch?: (selection: RuntimeTargetControllerDispatchSelection) => void;
+  constants?: RuntimeResourceConstants;
   scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   canEnterTargetState?: (target: TActor, stateId: number) => boolean;
   enterTargetState?: (target: TActor, stateId: number) => unknown;
@@ -245,6 +251,8 @@ export class RuntimeTargetControllerDispatchWorld {
           recordedOperation = true;
           options.recordOperation?.(options.actor, operation);
         },
+        constants: options.constants,
+        getTargetConst: options.getTargetConst,
         scaleIncomingDamage: options.scaleIncomingDamage,
         canEnterTargetState: options.canEnterTargetState,
         enterTargetState: options.enterTargetState,
@@ -454,9 +462,26 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       const value = typed?.value ?? firstNumber(findControllerParam(options.controller, "value")) ?? 0;
       const absolute = typed?.absolute ?? (firstNumber(findControllerParam(options.controller, "absolute")) ?? 0) !== 0;
       const kill = typed?.kill ?? (firstNumber(findControllerParam(options.controller, "kill")) ?? 1) !== 0;
+      const dizzy = typed?.dizzy ?? (firstNumber(findControllerParam(options.controller, "dizzy")) ?? 1) !== 0;
+      const redLife = typed?.redLife ?? (firstNumber(findControllerParam(options.controller, "redlife")) ?? 1) !== 0;
       const scaledDamage = options.scaleIncomingDamage ?? ((_runtime, damage) => Math.round(damage));
       const delta = value < 0 && !absolute ? -scaledDamage(target.runtime, Math.abs(value)) : Math.round(value);
+      const lifeBefore = target.runtime.life;
       applyRuntimeLifeAdd(target.runtime, delta, kill);
+      const lifeDelta = target.runtime.life - lifeBefore;
+      if (lifeDelta !== 0) {
+        const constants = runtimeTargetResourceConstants(options, target);
+        const sourceAttr = target.runtime.hitVars?.sourceAttr;
+        if (redLife) {
+          applyRuntimeRedLifeAdd(target.runtime, lifeDelta * runtimeRedLifeMultiplier(sourceAttr, constants), true);
+        }
+        if (dizzy && target.runtime.dizzyPoints !== 0 && target.runtime.assertSpecial?.noDizzyPointsDamage !== true) {
+          applyRuntimeDizzyPointsAdd(target.runtime, lifeDelta * runtimeDizzyPointsMultiplier(sourceAttr, constants));
+        }
+      }
+      if (delta !== 0) {
+        target.runtime.hitVars = { ...target.runtime.hitVars, kill };
+      }
     } else if (type === "targetredlifeadd") {
       const typed = options.operation?.controllerType === "targetredlifeadd" ? options.operation : undefined;
       const value = typed?.value ?? firstNumber(findControllerParam(options.controller, "value")) ?? 0;
@@ -527,6 +552,25 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
   }
 
   return { controllerType: type, matchedTargets: targets.length, operationExecuted: Boolean(options.operation) };
+}
+
+function runtimeTargetResourceConstants<TActor extends RuntimeTargetControllerActor>(
+  options: RuntimeTargetControllerOptions<TActor>,
+  target: TActor,
+): RuntimeResourceConstants {
+  const constants = { ...(options.constants ?? {}) };
+  for (const name of [
+    "default.lifetoredlifemul",
+    "super.lifetoredlifemul",
+    "default.lifetodizzypointsmul",
+    "super.lifetodizzypointsmul",
+  ]) {
+    const value = options.getTargetConst?.(target, name);
+    if (value !== undefined) {
+      constants[name] = value;
+    }
+  }
+  return constants;
 }
 
 export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetWorldActor>(

@@ -802,6 +802,8 @@ value = 1
       value: -20,
       absolute: true,
       kill: false,
+      dizzy: true,
+      redLife: true,
       redirectPlayerIdExpression: "57",
     });
     expect(redirectedRedLife.operation).toEqual({
