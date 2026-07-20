@@ -118,6 +118,7 @@ export type RuntimeHelper = {
   moveType: CharacterRuntimeState["moveType"];
   physics: CharacterRuntimeState["physics"];
   keyCtrl?: boolean;
+  ownPalette?: boolean;
   ownProjectile?: boolean;
   lifeMax: number;
   life: number;
@@ -295,6 +296,7 @@ export type RuntimeHelperSpawnInput = {
   action: MugenAnimationAction;
   stateNo?: number;
   animNo: number;
+  ownPalette?: boolean;
   ownProjectile?: boolean;
   initialStandby?: boolean;
   initialControl?: boolean;
@@ -352,6 +354,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     ctrl: input.initialControl ?? (initialState?.ctrl ?? 1) !== 0,
     keyCtrl,
+    ownPalette: input.ownPalette ?? operation?.ownPalette,
     ownProjectile: input.ownProjectile ?? operation?.ownProjectile,
     stateType: "S",
     moveType: "I",
@@ -1576,6 +1579,7 @@ function helperExpressionContext(
     helperType: helper.helperType,
     helperVarEnabled: options.runtimeProfile === "ikemen-go",
     helperKeyCtrl: options.runtimeProfile === "ikemen-go" && helper.keyCtrl === true,
+    helperOwnPalette: options.runtimeProfile === "ikemen-go" && helper.ownPalette === true,
     helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,

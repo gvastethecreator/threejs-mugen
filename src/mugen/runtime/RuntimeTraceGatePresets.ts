@@ -45782,6 +45782,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       branchAnimNo: 934,
       helperType: 1,
       keyCtrl: true,
+      ownPalette: true,
       ownProjectile: true,
     },
   });
@@ -45802,7 +45803,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       label: "Synthetic imported HelperVar route",
       source: "mixed",
       notes: [
-        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), and HelperVar(ownprojectile) after the Helper controller enables keyctrl and ownprojectile. It does not claim nested helper identity, dynamic helper-variable writes, or full MUGEN/IKEMEN HelperVar parity.",
+        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), and HelperVar(ownprojectile) after the Helper controller enables keyctrl, ownpal, and ownprojectile. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, or full MUGEN/IKEMEN HelperVar parity.",
       ],
     },
     gates: [
@@ -48420,6 +48421,7 @@ export type SyntheticImportedTraceFighterOptions = {
     branchAnimNo?: number;
     helperType?: number;
     keyCtrl?: boolean;
+    ownPalette?: boolean;
     ownProjectile?: boolean;
   };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
@@ -49029,6 +49031,7 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   pos: options.helperPos,
   postype: options.helperPostype,
   keyCtrl: options.helperVarRoute?.keyCtrl,
+  ownPalette: options.helperVarRoute?.ownPalette,
   ownProjectile: options.helperVarRoute?.ownProjectile,
 }) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
@@ -54820,6 +54823,7 @@ function helperControllerBlock(
     pos?: [number, number];
     postype?: string;
     keyCtrl?: boolean;
+    ownPalette?: boolean;
     ownProjectile?: boolean;
   },
 ): string {
@@ -54833,6 +54837,7 @@ function helperControllerBlock(
   const pos = pause?.pos ?? [-44, -28];
   const postype = pause?.postype ?? "p1";
   const keyCtrlLine = pause?.keyCtrl === undefined ? "" : `keyctrl = ${pause.keyCtrl ? 1 : 0}`;
+  const ownPaletteLine = pause?.ownPalette === undefined ? "" : `ownpal = ${pause.ownPalette ? 1 : 0}`;
   const ownProjectileLine = pause?.ownProjectile === undefined ? "" : `ownprojectile = ${pause.ownProjectile ? 1 : 0}`;
   return `
 [State 200, Visual Helper]
@@ -54854,6 +54859,7 @@ ${pauseMoveTimeLine}
 ${superMoveTimeLine}
 ${ignoreHitPauseLine}
 ${keyCtrlLine}
+${ownPaletteLine}
 ${ownProjectileLine}
 `;
 }
@@ -56610,6 +56616,7 @@ function helperVarRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOpt
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const helperType = route.helperType ?? 1;
   const keyCtrl = route.keyCtrl ?? true;
+  const ownPalette = route.ownPalette ?? true;
   const ownProjectile = route.ownProjectile ?? true;
   return `
 [Statedef 1200]
@@ -56624,6 +56631,7 @@ type = ChangeState
 trigger1 = HelperVar(helpertype) = ${helperType}
 trigger1 = HelperVar(id) = 42
 trigger1 = HelperVar(keyctrl) = ${keyCtrl ? 1 : 0}
+trigger1 = HelperVar(ownpal) = ${ownPalette ? 1 : 0}
 trigger1 = HelperVar(ownprojectile) = ${ownProjectile ? 1 : 0}
 value = ${route.branchStateNo}
 ctrl = 0

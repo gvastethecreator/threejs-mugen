@@ -48,6 +48,7 @@ export type ExpressionContext = {
   helperId?: number;
   helperVarEnabled?: boolean;
   helperKeyCtrl?: boolean;
+  helperOwnPalette?: boolean;
   helperOwnProjectile?: boolean;
   helperType?: number;
   animExists?: (animationId: number) => boolean;
@@ -888,6 +889,9 @@ class ExpressionParser {
       }
       if (key === "keyctrl") {
         return this.context.helperKeyCtrl === true ? 1 : 0;
+      }
+      if (key === "ownpal") {
+        return this.context.isHelper && this.context.helperOwnPalette === true ? 1 : 0;
       }
       if (key === "ownprojectile") {
         return this.context.isHelper && this.context.helperOwnProjectile === true ? 1 : 0;

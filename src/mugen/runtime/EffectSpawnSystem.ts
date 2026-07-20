@@ -63,6 +63,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
   runtimeProfile?: RuntimeCompatibilityProfile;
   resolveHelperStandby?: (operation: HelperControllerOp) => boolean | undefined;
+  resolveHelperOwnPalette?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperOwnProjectile?: (operation: HelperControllerOp) => boolean | undefined;
 };
 
@@ -151,6 +152,7 @@ export class RuntimeEffectSpawnWorld {
     operation?: HelperControllerOp,
     initialStandby = false,
     initialOwnProjectile?: boolean,
+    initialOwnPalette?: boolean,
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
@@ -178,6 +180,7 @@ export class RuntimeEffectSpawnWorld {
       action,
       stateNo,
       animNo,
+      ownPalette: initialOwnPalette,
       ownProjectile: initialOwnProjectile,
       initialStandby,
       initialControl: (state?.ctrl ?? 1) !== 0,
@@ -460,9 +463,11 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
       if (initialStandby === "blocked") return 0;
       const initialOwnProjectile = resolveInitialHelperOwnProjectile(options, helperOperation);
       if (initialOwnProjectile === "blocked") return 0;
+      const initialOwnPalette = resolveInitialHelperOwnPalette(options, helperOperation);
+      if (initialOwnPalette === "blocked") return 0;
       const operationForSpawn = options.runtimeProfile === "ikemen-go"
         ? helperOperation
-        : stripHelperOwnProjectileOperation(options.controller.source, helperOperation);
+        : stripHelperOwnPaletteOperation(options.controller.source, stripHelperOwnProjectileOperation(options.controller.source, helperOperation));
       return effectSpawnWorld.spawnHelper(
         actor,
         opponent,
@@ -470,6 +475,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         operationForSpawn,
         initialStandby,
         initialOwnProjectile,
+        initialOwnPalette,
       )
         ? 1
         : 0;
@@ -525,6 +531,22 @@ function resolveInitialHelperOwnProjectile<TActor extends RuntimeEffectSpawnActo
   return operation.ownProjectile;
 }
 
+function resolveInitialHelperOwnPalette<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: HelperControllerOp | undefined,
+): boolean | undefined | "blocked" {
+  if (options.runtimeProfile !== "ikemen-go") return undefined;
+  const authored = operation?.ownPalette !== undefined ||
+    operation?.ownPaletteExpression !== undefined ||
+    findParam(options.controller.source, "ownpal") !== undefined;
+  if (!authored) return undefined;
+  if (!operation) return "blocked";
+  if (operation.ownPaletteExpression !== undefined) {
+    return options.resolveHelperOwnPalette?.(operation) ?? "blocked";
+  }
+  return operation.ownPalette;
+}
+
 function stripHelperOwnProjectileOperation(
   controller: MugenStateController,
   operation: HelperControllerOp | undefined,
@@ -536,4 +558,17 @@ function stripHelperOwnProjectileOperation(
     ...withoutOwnProjectile
   } = operation;
   return withoutOwnProjectile;
+}
+
+function stripHelperOwnPaletteOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  if (!operation || findParam(controller, "ownpal") === undefined) return operation;
+  const {
+    ownPalette: _ownPalette,
+    ownPaletteExpression: _ownPaletteExpression,
+    ...withoutOwnPalette
+  } = operation;
+  return withoutOwnPalette;
 }

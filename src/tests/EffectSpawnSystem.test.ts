@@ -326,6 +326,42 @@ describe("EffectSpawnSystem", () => {
     expect(effectActorWorld.helpers("p1")[0]?.ownProjectile).toBeUndefined();
   });
 
+  it("resolves Helper ownpal only for IKEMEN and fails closed for dynamic values", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const fighter = actor("p1", effectActorWorld, {}, definition("p1", [baseAction, helperAction], [state(301, 920)]));
+    fighter.runtimeProgram = { states: [compileStateProgram(state(301, 920))] };
+    const opponent = actor("p2", effectActorWorld);
+    const dispatch = (
+      runtimeProfile: "mugen-1.1" | "ikemen-go" | "unknown",
+      ownPalette: string | undefined,
+      resolve?: () => boolean | undefined,
+    ) =>
+      dispatchWorld.apply({
+        actor: fighter,
+        opponent,
+        controller: compileControllerIr(controller("Helper", {
+          stateno: "301",
+          ...(ownPalette === undefined ? {} : { ownpal: ownPalette }),
+        })),
+        effect: "helper",
+        effectSpawnWorld: spawnWorld,
+        runtimeProfile,
+        resolveHelperOwnPalette: resolve,
+      });
+
+    expect(dispatch("ikemen-go", "1").changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.ownPalette).toBe(true);
+
+    expect(dispatch("ikemen-go", "var(0)", () => false).changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.ownPalette).toBe(false);
+
+    expect(dispatch("ikemen-go", "var(0)").changed).toBe(false);
+    expect(dispatch("unknown", "1").changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.ownPalette).toBeUndefined();
+  });
+
   it("owns helper removal dispatch for current visual helper actors", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

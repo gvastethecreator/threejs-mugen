@@ -291,14 +291,14 @@ describe("HelperSystem", () => {
       states: [
         stateProgram(
           stateDef(6000),
-          [compiledControllerIr(6000, "VarSet", ["HelperVar(helpertype) = 1 && HelperVar(id) = 200 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
+          [compiledControllerIr(6000, "VarSet", ["HelperVar(helpertype) = 1 && HelperVar(id) = 200 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
         ),
       ],
     };
 
-    const owned = helper({ keyCtrl: true, ownProjectile: true, runtimeProgram, vars: [0] });
-    const rootOwned = helper({ ownProjectile: false, runtimeProgram, vars: [0] });
-    const legacy = helper({ ownProjectile: true, runtimeProgram, vars: [0] });
+    const owned = helper({ keyCtrl: true, ownPalette: true, ownProjectile: true, runtimeProgram, vars: [0] });
+    const rootOwned = helper({ ownPalette: false, ownProjectile: false, runtimeProgram, vars: [0] });
+    const legacy = helper({ ownPalette: true, ownProjectile: true, runtimeProgram, vars: [0] });
     advanceRuntimeHelpers([owned], stage, { runtimeProfile: "ikemen-go" });
     advanceRuntimeHelpers([rootOwned], stage, { runtimeProfile: "ikemen-go" });
     advanceRuntimeHelpers([legacy], stage, { runtimeProfile: "mugen-1.1" });
