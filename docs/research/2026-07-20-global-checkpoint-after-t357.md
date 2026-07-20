@@ -1,7 +1,7 @@
 # Global checkpoint after T357
 
 Date: 2026-07-20
-Head: `8a6c498d`
+Head: `e434c10e`
 Feature commit: `5f17d948`
 Documentation commit: `8a6c498d`
 Status: green for the bounded Ikemen projectile target collision block
