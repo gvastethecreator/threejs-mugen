@@ -240,6 +240,28 @@ describe("DirectCombatSystem", () => {
     expect(attacker.runtime.roundWinType).toBe(winType);
   });
 
+  it("carries explicit direct-hit source identity into GetHitVar metadata", () => {
+    const attacker = actor("p1", "Attacker", { playerNo: 1 });
+    const defender = actor("p2", "Defender", { life: 40 });
+
+    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, move(), {
+      kind: "hit",
+      damage: 20,
+      kill: true,
+      pause: 1,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerNo: 1,
+      sourceActorId: "p1",
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+    });
+  });
+
   it("records a guard KO as cheese", () => {
     const world = new RuntimeDirectCombatWorld();
     const attacker = actor("p1", "Attacker");
@@ -446,13 +468,15 @@ describe("DirectCombatSystem", () => {
 });
 
 type ActorOverrides = Partial<CharacterRuntimeState> &
-  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun" | "hitDefTargets" | "pendingHitDefTargets">>;
+  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun" | "hitDefTargets" | "pendingHitDefTargets" | "playerNo" | "rootId">>;
 
 function actor(id: string, label: string, overrides: ActorOverrides = {}): RuntimeDirectCombatActor & { removedExplodsOnGetHit: number } {
   const state = runtimeState(overrides);
   let removedExplodsOnGetHit = 0;
   return {
     id,
+    playerNo: overrides.playerNo,
+    rootId: overrides.rootId,
     label,
     definition: { constants: {} },
     runtime: state,

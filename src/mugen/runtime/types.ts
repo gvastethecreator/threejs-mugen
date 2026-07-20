@@ -208,6 +208,10 @@ export type RuntimeReversalDef = {
 export type RuntimeGetHitVars = {
   damage?: number;
   kill?: boolean;
+  sourcePlayerNo?: number;
+  sourceActorId?: string;
+  sourceRootId?: string;
+  sourceRootOwned?: boolean;
   hitId?: number;
   chainId?: number;
   hitCount?: number;

@@ -174,6 +174,33 @@ describe("ProjectileCombatSystem", () => {
     expect(attacker.runtime.roundWinType).toBeUndefined();
   });
 
+  it("carries explicit projectile source identity into GetHitVar metadata", () => {
+    let projectiles = [projectile({ attr: "S,SP", damage: 10 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }), 1);
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 100 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerNo: 1,
+      sourceActorId: "p1",
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+    });
+  });
+
   it("applies the same depth admission to helper-parented root-store projectiles", () => {
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
     const defender = actor("p2", "P2", runtimeState({
@@ -1108,10 +1135,11 @@ describe("ProjectileCombatSystem", () => {
   });
 });
 
-function actor(id: string, label: string, runtime: CharacterRuntimeState) {
+function actor(id: string, label: string, runtime: CharacterRuntimeState, playerNo?: number) {
   return {
     id,
     label,
+    ...(playerNo === undefined ? {} : { playerNo }),
     runtime,
     hitPause: 0,
     hitStun: 0,

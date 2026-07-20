@@ -14,6 +14,26 @@ type RuntimeRootSelfKoActor = {
   runtime: Pick<CharacterRuntimeState, "life" | "moveType" | "roundWinType" | "teamState">;
 };
 
+export type RuntimeRoundHitSourceActor = {
+  id: string;
+  playerNo?: number;
+  rootId?: string;
+  rootOwned?: boolean;
+};
+
+export function runtimeRoundHitSourceMetadata(
+  source: RuntimeRoundHitSourceActor,
+): Pick<NonNullable<CharacterRuntimeState["hitVars"]>, "sourcePlayerNo" | "sourceActorId" | "sourceRootId" | "sourceRootOwned"> | undefined {
+  if (source.playerNo === undefined) return undefined;
+  const rootId = source.rootId ?? source.id;
+  return {
+    sourcePlayerNo: source.playerNo,
+    sourceActorId: source.id,
+    sourceRootId: rootId,
+    sourceRootOwned: source.rootOwned ?? source.id === rootId,
+  };
+}
+
 export function recordRuntimeRoundWinType(
   attacker: RuntimeRoundWinTypeActor,
   defender: RuntimeRoundWinTypeDefender,

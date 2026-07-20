@@ -29,10 +29,14 @@ import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { MugenAffectTeam } from "../model/MugenTeam";
 import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
-import { recordRuntimeRoundWinType } from "./RuntimeRoundWinTypeSystem";
+import {
+  recordRuntimeRoundWinType,
+  runtimeRoundHitSourceMetadata,
+} from "./RuntimeRoundWinTypeSystem";
 
 export type RuntimeProjectileCombatActor = {
   id: string;
+  playerNo?: number;
   label: string;
   runtime: CharacterRuntimeState;
   hitPause: number;
@@ -245,7 +249,7 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
-        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, true, result.damage, result.stun, result.pause, result.kill);
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(attacker, projectile, true, result.damage, result.stun, result.pause, result.kill);
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -261,7 +265,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
       defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
-      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill);
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(attacker, projectile, false, result.damage, result.stun, result.pause, result.kill);
       input.applyHitState?.(attacker, defender, projectile);
       input.recordReceivedDamage?.(defender, result.damage);
       log(
@@ -381,6 +385,7 @@ function runtimeHitFlagRejectionLabel(
 }
 
 function runtimeGetHitVarsFromProjectileResult(
+  attacker: RuntimeProjectileCombatActor,
   projectile: RuntimeProjectile,
   guarded: boolean,
   damage: number,
@@ -388,9 +393,16 @@ function runtimeGetHitVarsFromProjectileResult(
   hitShakeTime: number,
   kill: boolean,
 ): CharacterRuntimeState["hitVars"] {
+  const sourceMetadata = runtimeRoundHitSourceMetadata({
+    id: attacker.id,
+    playerNo: attacker.playerNo,
+    rootId: projectile.rootId,
+    rootOwned: projectile.parentId === projectile.rootId,
+  });
   return {
     damage: Math.max(0, Math.round(damage)),
     kill,
+    ...(sourceMetadata ?? {}),
     hitId: projectile.targetId,
     ...(projectile.chainId !== undefined ? { chainId: projectile.chainId } : {}),
     hitCount: projectile.hitDefHitCount ?? 1,

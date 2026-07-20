@@ -19,7 +19,10 @@ import {
 } from "./ContactMemorySystem";
 import { applyRuntimeControl, applyRuntimeDizzyPointsAdd, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
-import { recordRuntimeRoundWinType } from "./RuntimeRoundWinTypeSystem";
+import {
+  recordRuntimeRoundWinType,
+  runtimeRoundHitSourceMetadata,
+} from "./RuntimeRoundWinTypeSystem";
 import {
   bufferRuntimeHitDefTarget,
   type RuntimeHitDefContactMemoryActor,
@@ -27,6 +30,8 @@ import {
 
 export type RuntimeDirectCombatActor = {
   id: string;
+  playerNo?: number;
+  rootId?: string;
   effectOwnerId?: string;
   label: string;
   definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile">;
@@ -200,7 +205,7 @@ export class RuntimeDirectCombatWorld {
       damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
-    });
+    }, attacker);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
@@ -250,7 +255,7 @@ export class RuntimeDirectCombatWorld {
       damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
-    });
+    }, attacker);
     defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
     applyHitSnap(attacker, defender, move);
     if (result.hitVelocityY !== undefined) {
@@ -339,10 +344,18 @@ export function interruptRuntimeDirectMove(actor: RuntimeDirectCombatActor, expe
 function runtimeGetHitVarsFromMove(
   move: DemoMove,
   timing: { guarded?: boolean; damage: number; hitShakeTime: number; hitTime: number },
+  source?: RuntimeDirectCombatActor,
 ): CharacterRuntimeState["hitVars"] {
+  const sourceMetadata = source === undefined ? undefined : runtimeRoundHitSourceMetadata({
+    id: source.id,
+    playerNo: source.playerNo,
+    rootId: source.rootId,
+    rootOwned: source.rootId === undefined || source.rootId === source.id,
+  });
   return {
     damage: Math.max(0, Math.round(timing.damage)),
     kill: timing.guarded ? (move.guardKill ?? true) : (move.kill ?? true),
+    ...(sourceMetadata ?? {}),
     ...(move.hitVars?.hitId !== undefined ? { hitId: move.hitVars.hitId } : {}),
     ...(move.hitVars?.chainId !== undefined ? { chainId: move.hitVars.chainId } : {}),
     ...(move.hitVars?.hitCount !== undefined ? { hitCount: move.hitVars.hitCount } : {}),

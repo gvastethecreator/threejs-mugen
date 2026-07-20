@@ -186,6 +186,8 @@ export class RuntimeHelperCombatWorld {
 function helperDirectCombatActor(helper: RuntimeHelper, owner: RuntimeHelperCombatOwner): RuntimeHelperDirectCombatActor {
   return {
     id: helper.serialId,
+    playerNo: helper.playerNo,
+    rootId: helper.rootId,
     effectOwnerId: owner.id,
     label: `Helper ${helper.name ?? helper.helperId ?? helper.stateNo ?? helper.animNo}`,
     definition: owner.definition,
