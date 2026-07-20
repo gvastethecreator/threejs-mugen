@@ -48,7 +48,8 @@ time = 20
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const helperIdentity = compileExpression("IsHelper && IsHelper(42)");
     const helperIdentityFunction = compileExpression("IsHelper(42)");
-    const helperVar = compileExpression("HelperVar(ownprojectile) = 1");
+    const helperVar = compileExpression("HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1");
+    const unsupportedHelperVar = compileExpression("HelperVar(ownpal) = 1");
     const characterIdentity = compileExpression("ID >= 56 && PlayerNo = 1 && EnemyNear, ID >= 56");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
     const enemyNear = compileExpression("enemynear, stateno = 5000");
@@ -121,6 +122,7 @@ time = 20
     expect(helperIdentityFunction.supportLevel).toBe("executable");
     expect(helperVar.supportLevel).toBe("executable");
     expect(helperVar.functions).toEqual(["HelperVar"]);
+    expect(unsupportedHelperVar.supportLevel).toBe("unsupported");
     expect(helperIdentityFunction.functions).toEqual(["IsHelper"]);
     expect(helperIdentityFunction.identifiers).toEqual([]);
     expect(characterIdentity.supportLevel).toBe("executable");

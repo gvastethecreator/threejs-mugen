@@ -285,17 +285,17 @@ describe("HelperSystem", () => {
     expect(paused.age).toBe(0);
   });
 
-  it("exposes explicit ownprojectile through IKEMEN HelperVar", () => {
+  it("exposes profile-scoped HelperVar fields through the IKEMEN micro-VM", () => {
     const runtimeProgram = {
       states: [
         stateProgram(
           stateDef(6000),
-          [compiledControllerIr(6000, "VarSet", ["HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
+          [compiledControllerIr(6000, "VarSet", ["HelperVar(id) = 200 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
         ),
       ],
     };
 
-    const owned = helper({ ownProjectile: true, runtimeProgram, vars: [0] });
+    const owned = helper({ keyCtrl: true, ownProjectile: true, runtimeProgram, vars: [0] });
     const rootOwned = helper({ ownProjectile: false, runtimeProgram, vars: [0] });
     const legacy = helper({ ownProjectile: true, runtimeProgram, vars: [0] });
     advanceRuntimeHelpers([owned], stage, { runtimeProfile: "ikemen-go" });

@@ -96,7 +96,7 @@ export function expressionSupportLevel(expression: string): CompileSupportLevel 
 
 function stripRawFunctionArguments(expression: string): string {
   return expression
-    .replace(/\b(helpervar)\s*\(\s*ownprojectile\s*\)/gi, (_match, name: string) => `${name}()`)
+    .replace(/\b(helpervar)\s*\(\s*(?:id|keyctrl|ownprojectile)\s*\)/gi, (_match, name: string) => `${name}()`)
     .replace(/\b(const|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
 }
 
@@ -325,7 +325,7 @@ const supportedExpressionFunctions = new Set([
   "var",
 ]);
 
-const supportedExpressionLiterals = new Set(["a", "c", "h", "i", "l", "n", "s", "sc", "na", "sa", "ha", "ownprojectile"]);
+const supportedExpressionLiterals = new Set(["a", "c", "h", "i", "l", "n", "s", "sc", "na", "sa", "ha"]);
 
 function isFunctionCall(expression: string, identifier: string, index: number): boolean {
   return expression.slice(index + identifier.length).trimStart()[0] === "(";

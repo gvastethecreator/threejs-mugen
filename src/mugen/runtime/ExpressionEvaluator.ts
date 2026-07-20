@@ -46,6 +46,8 @@ export type ExpressionContext = {
   rootTeamSide?: number;
   isHelper?: boolean;
   helperId?: number;
+  helperVarEnabled?: boolean;
+  helperKeyCtrl?: boolean;
   helperOwnProjectile?: boolean;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
@@ -839,7 +841,7 @@ class ExpressionParser {
     if (lower === "projcanceltime") {
       return this.context.projCancelTime?.() ?? -1;
     }
-    if (/^(s|c|a|l|i|h|n|sc|na|sa|ha|ownprojectile)$/i.test(identifier)) {
+    if (/^(s|c|a|l|i|h|n|sc|na|sa|ha)$/i.test(identifier)) {
       return identifier.toUpperCase();
     }
     this.context.reportUnsupported?.(identifier);
@@ -874,6 +876,15 @@ class ExpressionParser {
     }
     if (lower === "helpervar") {
       const key = String(args[0] ?? "").toLowerCase();
+      if (!this.context.helperVarEnabled) {
+        return 0;
+      }
+      if (key === "id") {
+        return this.context.helperId ?? 0;
+      }
+      if (key === "keyctrl") {
+        return this.context.helperKeyCtrl === true ? 1 : 0;
+      }
       if (key === "ownprojectile") {
         return this.context.isHelper && this.context.helperOwnProjectile === true ? 1 : 0;
       }
@@ -1219,7 +1230,7 @@ function tokenize(expression: string): Token[] {
   return tokens;
 }
 
-const rawArgumentFunctions = new Set(["cond", "const", "gethitvar", "hitdefattr"]);
+const rawArgumentFunctions = new Set(["cond", "const", "gethitvar", "helpervar", "hitdefattr"]);
 
 function pushRawArg(args: string[], tokens: Token[]): void {
   if (tokens.length === 0 && args.length === 0) {

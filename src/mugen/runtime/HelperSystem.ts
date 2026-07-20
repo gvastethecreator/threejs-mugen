@@ -1571,6 +1571,8 @@ function helperExpressionContext(
     rootTeamSide: runtimeActorTeamSide({ id: helper.rootId ?? helper.ownerId }),
     isHelper: true,
     helperId: helper.helperId,
+    helperVarEnabled: options.runtimeProfile === "ikemen-go",
+    helperKeyCtrl: options.runtimeProfile === "ikemen-go" && helper.keyCtrl === true,
     helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
