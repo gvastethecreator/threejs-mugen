@@ -1047,7 +1047,7 @@ export function resolveFightScreenAnnouncementSelection(
   const winnerDisplay = outcome?.winnerDisplay;
   const postRoundFrame = round.postRound?.frame ?? 0;
   if (winnerDisplay?.phase === "active") {
-    const winnerAsset = resolveFightScreenWinnerDisplayAsset(display, winnerDisplay.kind);
+    const winnerAsset = resolveFightScreenWinnerDisplayAsset(display, winnerDisplay.kind, winnerDisplay.selection);
     if (winnerAsset) {
       return {
         kind: winnerDisplay.kind,

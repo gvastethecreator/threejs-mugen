@@ -176,6 +176,62 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       asset: display.win,
       track: { animationStart: 4, elapsed: 0 },
     });
+    const selectedResultDisplay: MugenFightScreenDisplayDefinitions = {
+      ...display,
+      result: {
+        win: {
+          variants: [
+            { sides: [{ text: "P1 result" }, { text: "P2 result" }] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+          ],
+        },
+        aiWin: {
+          variants: [
+            { sides: [{ text: "You lose" }, { text: "AI wins" }] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+          ],
+        },
+        aiLose: {
+          variants: [
+            { sides: [{ text: "You win" }, { text: "P2 wins" }] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+          ],
+        },
+      },
+    };
+    const selectedWinner = outcomeSnapshot("ko", "Nova Boxer");
+    selectedWinner.round!.postRound!.outcome = {
+      schema: "RuntimeRoundOutcome/v0",
+      kind: "ko",
+      displayStartFrame: 0,
+      soundTime: 0,
+      soundDue: false,
+      showDraw: false,
+      winnerDisplay: {
+        schema: "RuntimeRoundWinnerDisplay/v0",
+        kind: "win",
+        phase: "active",
+        displayStartFrame: 0,
+        soundTime: 0,
+        soundDue: false,
+        selection: {
+          schema: "RuntimeRoundWinnerDisplaySelection/v0",
+          family: "aiWin",
+          side: 1,
+          variant: 0,
+        },
+      },
+    };
+    expect(resolveFightScreenAnnouncementSelection(selectedWinner.round, selectedResultDisplay)).toMatchObject({
+      kind: "win",
+      asset: selectedResultDisplay.result?.aiWin.variants[0]?.sides[1],
+    });
     const drawWinner = outcomeSnapshot("timeover", "Draw");
     drawWinner.round!.postRound!.outcome = {
       schema: "RuntimeRoundOutcome/v0",

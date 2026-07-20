@@ -114,8 +114,8 @@ export class RuntimeMatchRoundWorld {
       return undefined;
     }
     const finish = options.round.finishIfNeeded(
-      { label: options.p1.label, life: options.p1.runtime.life },
-      { label: options.p2.label, life: options.p2.runtime.life },
+      { label: options.p1.label, life: options.p1.runtime.life, side: 0 },
+      { label: options.p2.label, life: options.p2.runtime.life, side: 1 },
       { noKoSlow: globalAssertSpecial.noKoSlow },
     );
     if (!finish) {

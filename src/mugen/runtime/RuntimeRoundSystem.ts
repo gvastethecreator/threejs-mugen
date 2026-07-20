@@ -5,8 +5,11 @@ import type {
   RuntimeRoundOutcomeKind,
   RuntimeRoundOutcomeSnapshot,
   RuntimeRoundOutcomeTiming,
+  RuntimeRoundResultDisplayFamily,
+  RuntimeRoundResultDisplaySoundVariant,
   RuntimeRoundShutterSnapshot,
   RuntimeRoundWinnerDisplayKind,
+  RuntimeRoundWinnerDisplaySelection,
   RuntimeRoundWinnerDisplaySnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
@@ -89,6 +92,9 @@ export const DEFAULT_RUNTIME_POST_KO_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.postK
 export type RuntimeRoundParticipant = {
   label: string;
   life: number;
+  side?: 0 | 1;
+  playerControlled?: boolean;
+  variantIndex?: number;
 };
 
 export type RuntimeRoundFinishResult = {
@@ -111,6 +117,7 @@ export class RuntimeRoundSystem {
   private timerFrames: number;
   private state: RoundSnapshot["state"] = "fight";
   private winner?: string;
+  private winnerDisplaySelection?: RuntimeRoundWinnerDisplaySelection;
   private over = false;
   private postRoundFrame = 0;
   private postRoundRemaining = 0;
@@ -293,6 +300,7 @@ export class RuntimeRoundSystem {
 
     this.state = this.timerFrames <= 0 ? "timeover" : "ko";
     this.winner = resolveRoundWinner(left, right);
+    this.winnerDisplaySelection = resolveWinnerDisplaySelection(left, right);
     this.noKoSlow = this.state === "ko" && options.noKoSlow === true;
     this.postRoundFrame = 0;
     this.postRoundRemaining = this.state === "ko" || this.state === "timeover" ? this.timing.postKoFrames : 1;
@@ -325,6 +333,7 @@ export class RuntimeRoundSystem {
     this.timerFrames = boundedRoundFrames(timerFrames);
     this.state = "fight";
     this.winner = undefined;
+    this.winnerDisplaySelection = undefined;
     this.over = false;
     this.postRoundFrame = 0;
     this.postRoundRemaining = 0;
@@ -414,7 +423,9 @@ export class RuntimeRoundSystem {
     if (!kind) return undefined;
     const displayStartFrame = this.timing.postKoPhase4StartFrames + timing.winTimeFrames;
     const soundTime = this.timing.postKoPhase4StartFrames + timing.winSoundTimeFrames;
-    const sound = kind === "draw" ? timing.drawSound : timing.winSound;
+    const sound = kind === "draw"
+      ? timing.drawSound
+      : resolveWinnerDisplaySound(timing, this.winnerDisplaySelection);
     return {
       schema: "RuntimeRoundWinnerDisplay/v0",
       kind,
@@ -423,6 +434,7 @@ export class RuntimeRoundSystem {
       soundTime,
       soundDue: Boolean(sound && this.postRoundFrame === soundTime),
       ...(sound ? { sound: { ...sound } } : {}),
+      ...(this.winnerDisplaySelection ? { selection: { ...this.winnerDisplaySelection } } : {}),
     };
   }
 
@@ -705,6 +717,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
   const timeOverSound = normalizeOutcomeSound(value.timeOverSound);
   const winSound = normalizeOutcomeSound(value.winSound);
   const drawSound = normalizeOutcomeSound(value.drawSound);
+  const resultSounds = normalizeResultDisplaySounds(value.resultSounds);
   return {
     koTimeFrames,
     koSoundTimeFrames,
@@ -720,6 +733,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
     winSoundTimeFrames,
     ...(winSound ? { winSound } : {}),
     ...(drawSound ? { drawSound } : {}),
+    ...(resultSounds ? { resultSounds } : {}),
   };
 }
 
@@ -729,6 +743,23 @@ function normalizeOutcomeSound(value: RuntimeRoundOutcomeTiming["koSound"]): Run
     group: Math.max(0, Math.round(value.group)),
     index: Math.max(0, Math.round(value.index)),
     soundPrefix: value.soundPrefix?.trim().toLowerCase() || "fs",
+  };
+}
+
+function normalizeResultDisplaySounds(
+  value: RuntimeRoundOutcomeTiming["resultSounds"],
+): RuntimeRoundOutcomeTiming["resultSounds"] {
+  if (!value) return undefined;
+  const normalizeFamily = (family: typeof value.win) => ({
+    variants: family.variants.map((variant): RuntimeRoundResultDisplaySoundVariant => [
+      normalizeOutcomeSound(variant[0]),
+      normalizeOutcomeSound(variant[1]),
+    ]),
+  });
+  return {
+    win: normalizeFamily(value.win),
+    aiWin: normalizeFamily(value.aiWin),
+    aiLose: normalizeFamily(value.aiLose),
   };
 }
 
@@ -747,6 +778,48 @@ function resolveRuntimeRoundWinnerDisplayKind(
 ): RuntimeRoundWinnerDisplayKind | undefined {
   if (state === "ko" && winner === "Draw" && !showDraw) return undefined;
   return winner === "Draw" ? "draw" : "win";
+}
+
+function resolveWinnerDisplaySelection(
+  left: RuntimeRoundParticipant,
+  right: RuntimeRoundParticipant,
+): RuntimeRoundWinnerDisplaySelection | undefined {
+  if (left.life === right.life) return undefined;
+  const leftWins = left.life > right.life;
+  const winner = leftWins ? left : right;
+  const loser = leftWins ? right : left;
+  const winnerSide = winner.side ?? (leftWins ? 0 : 1);
+  const loserSide = loser.side ?? (leftWins ? 1 : 0);
+  const family: RuntimeRoundResultDisplayFamily = winner.playerControlled === false && loser.playerControlled === true
+    ? "aiWin"
+    : winner.playerControlled === true && loser.playerControlled === false
+      ? "aiLose"
+      : "win";
+  return {
+    schema: "RuntimeRoundWinnerDisplaySelection/v0",
+    family,
+    side: family === "aiWin" ? loserSide : winnerSide,
+    variant: boundedResultVariant(winner.variantIndex),
+  };
+}
+
+function resolveWinnerDisplaySound(
+  timing: RuntimeRoundOutcomeTiming,
+  selection: RuntimeRoundWinnerDisplaySelection | undefined,
+): RuntimeRoundOutcomeTiming["winSound"] {
+  const family = selection?.family ?? "win";
+  const variant = boundedResultVariant(selection?.variant);
+  const side = selection?.side ?? 0;
+  const sounds = timing.resultSounds?.[family];
+  const selected = sounds?.variants[variant]?.[side];
+  if (selected) return selected;
+  if (variant >= 2) return sounds?.variants[1]?.[side] ?? timing.winSound;
+  return timing.winSound;
+}
+
+function boundedResultVariant(value: number | undefined): number {
+  if (value === undefined || !Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(3, Math.round(value)));
 }
 
 function resolveRuntimeRoundOutcomeTrack(

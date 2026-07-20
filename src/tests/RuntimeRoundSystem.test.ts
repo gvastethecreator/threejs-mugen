@@ -5,6 +5,12 @@ import {
   resolveRuntimeRoundTiming,
   RuntimeRoundSystem,
 } from "../mugen/runtime/RuntimeRoundSystem";
+import type { RuntimeRoundAnnouncementSound } from "../mugen/runtime/RuntimeRoundAnnouncementSystem";
+
+const soundPair = (
+  left?: RuntimeRoundAnnouncementSound,
+  right?: RuntimeRoundAnnouncementSound,
+): [RuntimeRoundAnnouncementSound | undefined, RuntimeRoundAnnouncementSound | undefined] => [left, right];
 
 describe("RuntimeRoundSystem", () => {
   it("owns the fight timer snapshot without ending a live round", () => {
@@ -71,6 +77,25 @@ describe("RuntimeRoundSystem", () => {
         winSoundTimeFrames: 5,
         winSound: { group: 7, index: 5, soundPrefix: "fs" },
         drawSound: { group: 7, index: 4, soundPrefix: "fs" },
+        resultSounds: {
+          win: {
+            variants: [
+              soundPair({ group: 8, index: 6, soundPrefix: "fs" }),
+              soundPair(undefined, { group: 8, index: 7, soundPrefix: "fs" }),
+              soundPair(),
+              soundPair(),
+            ],
+          },
+          aiWin: {
+            variants: [
+              soundPair(),
+              soundPair({ group: 9, index: 1, soundPrefix: "fs" }),
+            ],
+          },
+          aiLose: {
+            variants: [soundPair({ group: 9, index: 2, soundPrefix: "fs" })],
+          },
+        },
       },
     };
     const round = new RuntimeRoundSystem(1, "ikemen-go", timing);
@@ -91,7 +116,13 @@ describe("RuntimeRoundSystem", () => {
         displayStartFrame: 51,
         soundTime: 50,
         soundDue: false,
-        sound: { group: 7, index: 5, soundPrefix: "fs" },
+        sound: { group: 8, index: 6, soundPrefix: "fs" },
+        selection: {
+          schema: "RuntimeRoundWinnerDisplaySelection/v0",
+          family: "win",
+          side: 0,
+          variant: 0,
+        },
       },
     });
 
@@ -122,6 +153,70 @@ describe("RuntimeRoundSystem", () => {
     });
     hiddenDrawRound.finishIfNeeded({ label: "P1", life: 0 }, { label: "P2", life: 0 });
     expect(hiddenDrawRound.snapshot().postRound?.outcome).not.toHaveProperty("winnerDisplay");
+  });
+
+  it("selects the active side and sound for AI result families", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      outcome: {
+        koTimeFrames: 1,
+        koSoundTimeFrames: 1,
+        doubleKoTimeFrames: 1,
+        doubleKoSoundTimeFrames: 1,
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 1,
+        timeOverSoundTimeFrames: 1,
+        winTimeFrames: 1,
+        winSoundTimeFrames: 1,
+        resultSounds: {
+          win: { variants: [] },
+          aiWin: { variants: [soundPair(), soundPair({ group: 9, index: 1, soundPrefix: "fs" })] },
+          aiLose: { variants: [soundPair({ group: 9, index: 2, soundPrefix: "fs" })] },
+        },
+      },
+    });
+    round.finishIfNeeded(
+      { label: "CPU", life: 600, side: 1, playerControlled: false, variantIndex: 1 },
+      { label: "Player", life: 0, side: 0, playerControlled: true },
+    );
+
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay).toMatchObject({
+      kind: "win",
+      sound: { group: 9, index: 1, soundPrefix: "fs" },
+      selection: {
+        schema: "RuntimeRoundWinnerDisplaySelection/v0",
+        family: "aiWin",
+        side: 0,
+        variant: 1,
+      },
+    });
+
+    const playerWin = new RuntimeRoundSystem(1, "ikemen-go", {
+      outcome: {
+        koTimeFrames: 1,
+        koSoundTimeFrames: 1,
+        doubleKoTimeFrames: 1,
+        doubleKoSoundTimeFrames: 1,
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 1,
+        timeOverSoundTimeFrames: 1,
+        winTimeFrames: 1,
+        winSoundTimeFrames: 1,
+        resultSounds: {
+          win: { variants: [] },
+          aiWin: { variants: [] },
+          aiLose: { variants: [soundPair({ group: 9, index: 2, soundPrefix: "fs" })] },
+        },
+      },
+    });
+    playerWin.finishIfNeeded(
+      { label: "Player", life: 600, side: 0, playerControlled: true },
+      { label: "CPU", life: 0, side: 1, playerControlled: false },
+    );
+    expect(playerWin.snapshot().postRound?.outcome?.winnerDisplay?.selection).toMatchObject({
+      family: "aiLose",
+      side: 0,
+      variant: 0,
+    });
   });
 
   it("advances the bounded KO slowdown and fades back to normal speed", () => {

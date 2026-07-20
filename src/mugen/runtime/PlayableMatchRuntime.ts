@@ -11,6 +11,7 @@ import type { MugenCollisionBoxType } from "../model/CollisionBox";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type {
   MugenFightScreenAssets,
+  MugenFightScreenResultDisplayDefinitions,
   MugenFightScreenTiming,
 } from "../model/MugenSystemAssets";
 import {
@@ -6371,7 +6372,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     source?.winTime,
     source?.winSoundTime,
   ].some((value) => value !== undefined);
-  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw || display?.win);
+  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw || display?.win || display?.result);
   if (!hasSourceTiming && !hasDisplay) return undefined;
 
   const koTimeFrames = source?.koTime ?? 0;
@@ -6381,6 +6382,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
   const timeOverSound = runtimeAnnouncementSound(display?.timeOver?.sound) ?? koSound;
   const winSound = runtimeAnnouncementSound(display?.win?.sound);
   const drawSound = runtimeAnnouncementSound(display?.draw?.sound) ?? timeOverSound;
+  const resultSounds = runtimeResultDisplaySounds(display?.result);
   return {
     koTimeFrames,
     koSoundTimeFrames,
@@ -6396,6 +6398,26 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     winSoundTimeFrames: source?.winSoundTime ?? source?.winTime ?? 0,
     ...(winSound ? { winSound } : {}),
     ...(drawSound ? { drawSound } : {}),
+    ...(resultSounds ? { resultSounds } : {}),
+  };
+}
+
+function runtimeResultDisplaySounds(
+  result: MugenFightScreenResultDisplayDefinitions | undefined,
+): RuntimeRoundOutcomeTiming["resultSounds"] {
+  if (!result) return undefined;
+  const hasSound = Object.values(result).some((family) => family.variants.some(({ sides }) => sides.some((asset) => asset?.sound !== undefined)));
+  if (!hasSound) return undefined;
+  const mapFamily = (family: MugenFightScreenResultDisplayDefinitions["win"]) => ({
+    variants: family.variants.map(({ sides }) => [
+      runtimeAnnouncementSound(sides[0]?.sound),
+      runtimeAnnouncementSound(sides[1]?.sound),
+    ] as [ReturnType<typeof runtimeAnnouncementSound>, ReturnType<typeof runtimeAnnouncementSound>]),
+  });
+  return {
+    win: mapFamily(result.win),
+    aiWin: mapFamily(result.aiWin),
+    aiLose: mapFamily(result.aiLose),
   };
 }
 
