@@ -1,7 +1,7 @@
 # Global checkpoint after T353
 
 Date: 2026-07-20
-Head: `1649624f`
+Head: `5013933a`
 Feature commit: `37a9e8bc`
 Documentation commit: `1649624f`
 Status: green for the bounded Ikemen clsnproxy root-box block
