@@ -2,6 +2,7 @@
 
 Status: resolved at bounded explicit ownership scope  
 Date: 2026-07-20
+Feature commit: `a908b104`
 
 ## Question
 
