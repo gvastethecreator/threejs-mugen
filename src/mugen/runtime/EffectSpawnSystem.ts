@@ -67,6 +67,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveHelperOwnProjectile?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperPreserve?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperOwnClsnScale?: (operation: HelperControllerOp) => boolean | undefined;
+  resolveHelperClsnProxy?: (operation: HelperControllerOp) => boolean | undefined;
 };
 
 export type RuntimeEffectSpawnControllerDispatchResult = {
@@ -157,6 +158,7 @@ export class RuntimeEffectSpawnWorld {
     initialOwnPalette?: boolean,
     initialPreserve?: boolean,
     initialOwnClsnScale?: boolean,
+    initialClsnProxy?: boolean,
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
@@ -188,6 +190,7 @@ export class RuntimeEffectSpawnWorld {
       ownProjectile: initialOwnProjectile,
       preserve: initialPreserve,
       ownClsnScale: initialOwnClsnScale,
+      clsnProxy: initialClsnProxy,
       initialStandby,
       initialControl: (state?.ctrl ?? 1) !== 0,
       pos: {
@@ -475,9 +478,11 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
       if (initialPreserve === "blocked") return 0;
       const initialOwnClsnScale = resolveInitialHelperOwnClsnScale(options, helperOperation);
       if (initialOwnClsnScale === "blocked") return 0;
+      const initialClsnProxy = resolveInitialHelperClsnProxy(options, helperOperation);
+      if (initialClsnProxy === "blocked") return 0;
       const operationForSpawn = options.runtimeProfile === "ikemen-go"
         ? helperOperation
-        : stripHelperOwnClsnScaleOperation(options.controller.source, stripHelperPreserveOperation(options.controller.source, stripHelperOwnPaletteOperation(options.controller.source, stripHelperOwnProjectileOperation(options.controller.source, helperOperation))));
+        : stripHelperClsnProxyOperation(options.controller.source, stripHelperOwnClsnScaleOperation(options.controller.source, stripHelperPreserveOperation(options.controller.source, stripHelperOwnPaletteOperation(options.controller.source, stripHelperOwnProjectileOperation(options.controller.source, helperOperation)))));
       return effectSpawnWorld.spawnHelper(
         actor,
         opponent,
@@ -488,6 +493,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         initialOwnPalette,
         initialPreserve,
         initialOwnClsnScale,
+        initialClsnProxy,
       )
         ? 1
         : 0;
@@ -591,6 +597,22 @@ function resolveInitialHelperOwnClsnScale<TActor extends RuntimeEffectSpawnActor
   return operation.ownClsnScale;
 }
 
+function resolveInitialHelperClsnProxy<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: HelperControllerOp | undefined,
+): boolean | undefined | "blocked" {
+  if (options.runtimeProfile !== "ikemen-go") return undefined;
+  const authored = operation?.clsnProxy !== undefined ||
+    operation?.clsnProxyExpression !== undefined ||
+    findParam(options.controller.source, "clsnproxy") !== undefined;
+  if (!authored) return undefined;
+  if (!operation) return "blocked";
+  if (operation.clsnProxyExpression !== undefined) {
+    return options.resolveHelperClsnProxy?.(operation) ?? "blocked";
+  }
+  return operation.clsnProxy;
+}
+
 function stripHelperOwnProjectileOperation(
   controller: MugenStateController,
   operation: HelperControllerOp | undefined,
@@ -641,4 +663,17 @@ function stripHelperOwnClsnScaleOperation(
     ...withoutOwnClsnScale
   } = operation;
   return withoutOwnClsnScale;
+}
+
+function stripHelperClsnProxyOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  if (!operation || findParam(controller, "clsnproxy") === undefined) return operation;
+  const {
+    clsnProxy: _clsnProxy,
+    clsnProxyExpression: _clsnProxyExpression,
+    ...withoutClsnProxy
+  } = operation;
+  return withoutClsnProxy;
 }

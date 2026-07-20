@@ -122,6 +122,7 @@ export type RuntimeHelper = {
   ownProjectile?: boolean;
   preserve?: boolean;
   ownClsnScale?: boolean;
+  clsnProxy?: boolean;
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -277,7 +278,8 @@ export type RuntimeHelperRemovalFilter = {
 export function runtimeHelperCanDirectlyInteract(helper: RuntimeHelper): boolean {
   return helper.destroyed !== true &&
     helper.teamState?.disabled !== true &&
-    helper.teamState?.standby !== true;
+    helper.teamState?.standby !== true &&
+    helper.clsnProxy !== true;
 }
 
 export type RuntimeHelperSpawnInput = {
@@ -302,6 +304,7 @@ export type RuntimeHelperSpawnInput = {
   ownProjectile?: boolean;
   preserve?: boolean;
   ownClsnScale?: boolean;
+  clsnProxy?: boolean;
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
@@ -362,6 +365,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     ownProjectile: input.ownProjectile ?? operation?.ownProjectile,
     preserve: input.preserve ?? operation?.preserve,
     ownClsnScale: input.ownClsnScale ?? operation?.ownClsnScale,
+    clsnProxy: input.clsnProxy ?? operation?.clsnProxy,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -1589,6 +1593,7 @@ function helperExpressionContext(
     helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
     helperPreserve: options.runtimeProfile === "ikemen-go" && helper.preserve === true,
     helperOwnClsnScale: options.runtimeProfile === "ikemen-go" && helper.ownClsnScale === true,
+    helperClsnProxy: options.runtimeProfile === "ikemen-go" && helper.clsnProxy === true,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
     stageTime: options.stageTime,

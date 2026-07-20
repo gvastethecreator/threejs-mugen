@@ -52,6 +52,7 @@ export type ExpressionContext = {
   helperOwnProjectile?: boolean;
   helperPreserve?: boolean;
   helperOwnClsnScale?: boolean;
+  helperClsnProxy?: boolean;
   helperType?: number;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
@@ -903,6 +904,9 @@ class ExpressionParser {
       }
       if (key === "ownclsnscale") {
         return this.context.isHelper && this.context.helperOwnClsnScale === true ? 1 : 0;
+      }
+      if (key === "clsnproxy") {
+        return this.context.isHelper && this.context.helperClsnProxy === true ? 1 : 0;
       }
       this.context.reportUnsupported?.(`helpervar(${key})`);
       return 0;

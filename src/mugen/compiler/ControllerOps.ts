@@ -261,6 +261,8 @@ export type HelperControllerOp = {
   preserveExpression?: string;
   ownClsnScale?: boolean;
   ownClsnScaleExpression?: string;
+  clsnProxy?: boolean;
+  clsnProxyExpression?: string;
   pos?: MugenProjectileVector;
   velocity?: [number, number];
   scale?: [number, number];
@@ -2146,6 +2148,22 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
       ownClsnScaleExpression = compiledOwnClsnScale.normalized;
     }
   }
+  const clsnProxyRaw = findParam(controller, "clsnproxy");
+  let clsnProxy: boolean | undefined;
+  let clsnProxyExpression: string | undefined;
+  if (clsnProxyRaw !== undefined) {
+    const trimmedClsnProxy = clsnProxyRaw.trim();
+    const staticClsnProxy = Number(trimmedClsnProxy);
+    if (Number.isFinite(staticClsnProxy)) {
+      clsnProxy = staticClsnProxy !== 0;
+    } else {
+      if (!hasValidScalarExpressionStructure(clsnProxyRaw)) return undefined;
+      const compiledClsnProxy = compileExpression(clsnProxyRaw);
+      if (compiledClsnProxy.supportLevel === "unsupported") return undefined;
+      clsnProxy = false;
+      clsnProxyExpression = compiledClsnProxy.normalized;
+    }
+  }
   return definedObject({
     kind: "helper" as const,
     helperId: firstNumber(findParam(controller, "id")),
@@ -2163,6 +2181,8 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     preserveExpression,
     ownClsnScale,
     ownClsnScaleExpression,
+    clsnProxy,
+    clsnProxyExpression,
     pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
     scale: scalePairWithDefaultOrUndefined(helperScalePair(controller)),

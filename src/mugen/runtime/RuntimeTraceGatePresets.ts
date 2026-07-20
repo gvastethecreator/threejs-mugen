@@ -45786,6 +45786,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       ownProjectile: true,
       preserve: true,
       ownClsnScale: true,
+      clsnProxy: true,
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({
@@ -45805,7 +45806,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       label: "Synthetic imported HelperVar route",
       source: "mixed",
       notes: [
-        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), HelperVar(ownprojectile), HelperVar(preserve), and HelperVar(ownclsnscale) after the Helper controller enables keyctrl, ownpal, ownprojectile, preserve, and ownclsnscale. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, collision-scale geometry, round-reset persistence, or full MUGEN/IKEMEN HelperVar parity.",
+        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), HelperVar(ownprojectile), HelperVar(preserve), HelperVar(ownclsnscale), and HelperVar(clsnproxy) after the Helper controller enables those fields. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, collision-box proxy extension, collision-scale geometry, round-reset persistence, or full MUGEN/IKEMEN HelperVar parity.",
       ],
     },
     gates: [
@@ -48427,6 +48428,7 @@ export type SyntheticImportedTraceFighterOptions = {
       ownProjectile?: boolean;
       preserve?: boolean;
       ownClsnScale?: boolean;
+      clsnProxy?: boolean;
   };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
@@ -49039,6 +49041,7 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   ownProjectile: options.helperVarRoute?.ownProjectile,
   preserve: options.helperVarRoute?.preserve,
   ownClsnScale: options.helperVarRoute?.ownClsnScale,
+  clsnProxy: options.helperVarRoute?.clsnProxy,
 }) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
@@ -54833,6 +54836,7 @@ function helperControllerBlock(
     ownProjectile?: boolean;
     preserve?: boolean;
     ownClsnScale?: boolean;
+    clsnProxy?: boolean;
   },
 ): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
@@ -54849,6 +54853,7 @@ function helperControllerBlock(
   const ownProjectileLine = pause?.ownProjectile === undefined ? "" : `ownprojectile = ${pause.ownProjectile ? 1 : 0}`;
   const preserveLine = pause?.preserve === undefined ? "" : `preserve = ${pause.preserve ? 1 : 0}`;
   const ownClsnScaleLine = pause?.ownClsnScale === undefined ? "" : `ownclsnscale = ${pause.ownClsnScale ? 1 : 0}`;
+  const clsnProxyLine = pause?.clsnProxy === undefined ? "" : `clsnproxy = ${pause.clsnProxy ? 1 : 0}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -54873,6 +54878,7 @@ ${ownPaletteLine}
 ${ownProjectileLine}
 ${preserveLine}
 ${ownClsnScaleLine}
+${clsnProxyLine}
 `;
 }
 
@@ -56632,6 +56638,7 @@ function helperVarRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOpt
   const ownProjectile = route.ownProjectile ?? true;
   const preserve = route.preserve ?? true;
   const ownClsnScale = route.ownClsnScale ?? true;
+  const clsnProxy = route.clsnProxy ?? true;
   return `
 [Statedef 1200]
 type = S
@@ -56649,6 +56656,7 @@ trigger1 = HelperVar(ownpal) = ${ownPalette ? 1 : 0}
 trigger1 = HelperVar(ownprojectile) = ${ownProjectile ? 1 : 0}
 trigger1 = HelperVar(preserve) = ${preserve ? 1 : 0}
 trigger1 = HelperVar(ownclsnscale) = ${ownClsnScale ? 1 : 0}
+trigger1 = HelperVar(clsnproxy) = ${clsnProxy ? 1 : 0}
 value = ${route.branchStateNo}
 ctrl = 0
 

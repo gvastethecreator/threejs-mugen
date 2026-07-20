@@ -4773,6 +4773,22 @@ function runActiveStateControllers(
                     createPlayerIdTarget(actor),
                   )
               : undefined,
+          resolveHelperClsnProxy:
+            effect === "helper" && options.runtimeProfile === "ikemen-go"
+              ? (operation) =>
+                  resolveDispatchBoolean(
+                    operation.clsnProxy,
+                    operation.clsnProxyExpression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  )
+              : undefined,
           resolveProjectileSound:
             effect === "projectile"
               ? (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)

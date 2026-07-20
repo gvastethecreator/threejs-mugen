@@ -106,6 +106,37 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(audioOperations).toEqual(["p1:S5,1"]);
   });
 
+  it("excludes clsnproxy Helpers from direct HitDef admission", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "42", name: '"Proxy"' }));
+    helper.clsnProxy = true;
+    helper.currentMove = move({ damage: 25 });
+    helper.moveTick = 1;
+    const defender = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+
+    new RuntimeHelperCombatWorld().resolveDirect({
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld: new RuntimeTargetWorld(),
+      runtimeTick: 33,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: stateHooks([], [5000]),
+    });
+
+    expect(helper.hasHit).toBe(false);
+    expect(helper.targets).toEqual([]);
+    expect(defender.runtime.life).toBe(100);
+  });
+
   it("admits nested Helper direct HitDef source identity through verified ancestry", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();

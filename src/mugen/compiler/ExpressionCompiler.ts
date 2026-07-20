@@ -96,7 +96,7 @@ export function expressionSupportLevel(expression: string): CompileSupportLevel 
 
 function stripRawFunctionArguments(expression: string): string {
   return expression
-    .replace(/\b(helpervar)\s*\(\s*(?:helpertype|id|keyctrl|ownclsnscale|ownpal|ownprojectile|preserve)\s*\)/gi, (_match, name: string) => `${name}()`)
+    .replace(/\b(helpervar)\s*\(\s*(?:helpertype|id|keyctrl|clsnproxy|ownclsnscale|ownpal|ownprojectile|preserve)\s*\)/gi, (_match, name: string) => `${name}()`)
     .replace(/\b(const|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
 }
 
