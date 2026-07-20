@@ -132,6 +132,17 @@ ai.win.text = AI wins
 p1.ai.win.text = You lose
 ai.lose.text = You win versus AI
 p2.ai.lose.text = P2 wins versus AI
+p1.n.pos = 120, 200
+p1.n.text.text = Normal win
+p1.n.text.font = 1, 0, 0, 240, 220, 200, 255
+p1.n.bg.anim = 7002
+p1.n.time = 12
+p1.n.displaytime = 18
+p1.n.snd = 7, 2
+p1.n.sndtime = 4
+p1.perfect.text.text = Perfect win
+p2.perfect.text.text = P2 perfect win
+p2.clutch.text.text = P2 clutch win
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -325,6 +336,26 @@ File = standard.sff
     });
     expect(resultDisplays?.aiLose.variants[0]).toEqual({
       sides: [{ text: "You win versus AI" }, { text: "P2 wins versus AI" }],
+    });
+    expect(character.systemAssets?.fightScreenAssets?.display?.winType).toEqual({
+      p1: {
+        normal: {
+          sound: [7, 2],
+          text: "Normal win",
+          font: [1, 0, 0],
+          fontColor: [240, 220, 200, 255],
+          background: { animationNo: 7002 },
+          time: 12,
+          displayTime: 18,
+          soundTime: 4,
+          offset: [120, 200],
+        },
+        perfect: { text: "Perfect win" },
+      },
+      p2: {
+        perfect: { text: "P2 perfect win" },
+        clutch: { text: "P2 clutch win" },
+      },
     });
     expect(character.systemAssets?.fightScreenAssets?.display?.round.get(1)).toEqual({
       animationNo: 7002,

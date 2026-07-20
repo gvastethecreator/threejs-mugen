@@ -13,6 +13,8 @@ import type {
   MugenFightScreenProjection,
   MugenFightScreenResultDisplayDefinitions,
   MugenFightScreenTiming,
+  MugenFightScreenWinTypeDefinitions,
+  MugenFightScreenWinTypeName,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
   MugenSystemHitSparkLibrarySource,
@@ -651,6 +653,7 @@ function parseFightScreenDisplayDefinitions(
     draw: displayAsset(section, "draw"),
     win: displayAsset(section, "win"),
     result: parseFightScreenResultDisplayDefinitions(section),
+    winType: parseFightScreenWinTypeDefinitions(section),
   };
   return definitions.round.size > 0
     || definitions.roundDefault !== undefined
@@ -663,8 +666,62 @@ function parseFightScreenDisplayDefinitions(
     || definitions.draw !== undefined
     || definitions.win !== undefined
     || definitions.result !== undefined
+    || definitions.winType !== undefined
     ? definitions
     : undefined;
+}
+
+function parseFightScreenWinTypeDefinitions(
+  section: Record<string, string>,
+): MugenFightScreenWinTypeDefinitions | undefined {
+  const prefixes: Array<[MugenFightScreenWinTypeName, string]> = [
+    ["normal", "n"],
+    ["special", "s"],
+    ["hyper", "h"],
+    ["cheese", "c"],
+    ["time", "t"],
+    ["throw", "throw"],
+    ["suicide", "suicide"],
+    ["teammate", "teammate"],
+    ["perfect", "perfect"],
+    ["clutch", "clutch"],
+  ];
+  const parseSide = (side: "p1" | "p2") => Object.fromEntries(
+    prefixes.flatMap(([name, suffix]) => {
+      const asset = winTypeAsset(section, `${side}.${suffix}`);
+      return asset ? [[name, asset] as const] : [];
+    }),
+  ) as Partial<Record<MugenFightScreenWinTypeName, MugenFightScreenWinTypeDefinitions["p1"][MugenFightScreenWinTypeName]>>;
+  const definitions: MugenFightScreenWinTypeDefinitions = {
+    p1: parseSide("p1"),
+    p2: parseSide("p2"),
+  };
+  return Object.values(definitions).some((side) => Object.keys(side).length > 0) ? definitions : undefined;
+}
+
+function winTypeAsset(
+  section: Record<string, string>,
+  prefix: string,
+): MugenFightScreenWinTypeDefinitions["p1"][MugenFightScreenWinTypeName] {
+  const textLayout = layoutTransform(section, `${prefix}.text`);
+  const background = layoutAsset(section, `${prefix}.bg`);
+  const asset = {
+    sound: soundValue(section, `${prefix}.snd`),
+    text: getValue(section, [`${prefix}.text.text`]),
+    font: fontValue(section, `${prefix}.text.font`),
+    fontColor: fontColorValue(section, `${prefix}.text.font`),
+    textPaletteFx: paletteFxValue(section, `${prefix}.text.palfx`),
+    ...(textLayout ? { textLayout } : {}),
+    ...(background ? { background } : {}),
+    time: numberValue(section, `${prefix}.time`),
+    displayTime: numberValue(section, `${prefix}.displaytime`),
+    soundTime: numberValue(section, `${prefix}.sndtime`),
+    offset: pairValue(section, `${prefix}.pos`),
+  };
+  if (!Object.values(asset).some((value) => value !== undefined)) return undefined;
+  return Object.fromEntries(
+    Object.entries(asset).filter(([, value]) => value !== undefined),
+  ) as MugenFightScreenWinTypeDefinitions["p1"][MugenFightScreenWinTypeName];
 }
 
 function parseFightScreenResultDisplayDefinitions(

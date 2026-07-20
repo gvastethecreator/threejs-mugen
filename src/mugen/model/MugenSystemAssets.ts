@@ -120,6 +120,37 @@ export type MugenFightScreenResultDisplaySelection = {
   variant: number;
 };
 
+export type MugenFightScreenWinTypeName =
+  | "normal"
+  | "special"
+  | "hyper"
+  | "cheese"
+  | "time"
+  | "throw"
+  | "suicide"
+  | "teammate"
+  | "perfect"
+  | "clutch";
+
+export type MugenFightScreenWinTypeAsset = {
+  sound?: [number, number];
+  text?: string;
+  font?: [number, number, number];
+  fontColor?: [number, number, number, number];
+  textPaletteFx?: MugenFightScreenPaletteFx;
+  textLayout?: MugenFightScreenLayoutTransform;
+  background?: MugenFightScreenLayoutAsset;
+  time?: number;
+  displayTime?: number;
+  soundTime?: number;
+  offset?: [number, number];
+};
+
+export type MugenFightScreenWinTypeDefinitions = {
+  p1: Partial<Record<MugenFightScreenWinTypeName, MugenFightScreenWinTypeAsset>>;
+  p2: Partial<Record<MugenFightScreenWinTypeName, MugenFightScreenWinTypeAsset>>;
+};
+
 export type MugenFightScreenDisplayDefinitions = {
   round: Map<number, MugenFightScreenDisplayAsset>;
   roundDefault?: MugenFightScreenDisplayAsset;
@@ -132,6 +163,7 @@ export type MugenFightScreenDisplayDefinitions = {
   draw?: MugenFightScreenDisplayAsset;
   win?: MugenFightScreenDisplayAsset;
   result?: MugenFightScreenResultDisplayDefinitions;
+  winType?: MugenFightScreenWinTypeDefinitions;
 };
 
 export type MugenFightScreenTiming = {
