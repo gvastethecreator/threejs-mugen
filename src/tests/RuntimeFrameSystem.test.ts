@@ -58,6 +58,16 @@ describe("RuntimeFrameSystem", () => {
     expect(actor.currentAction.frames[0]?.clsn1).toEqual([{ x1: 1, y1: -8, x2: 12, y2: -1 }]);
   });
 
+  it("applies the per-tick TransformClsn scale after collision overrides", () => {
+    const world = new RuntimeFrameWorld();
+    const actor = frameActor();
+    actor.runtime.clsnOverrides = [{ group: 1, index: -1, rect: { x1: -4, y1: -6, x2: 8, y2: 10 } }];
+    actor.runtime.clsnScaleMultiplier = { x: 2, y: 0.5 };
+
+    expect(world.currentAttackBoxes(actor)).toEqual([{ x1: -8, y1: -3, x2: 16, y2: 5 }]);
+    expect(world.currentHurtBoxes(actor)).toEqual([{ x1: -32, y1: -24, x2: 32, y2: 0 }]);
+  });
+
   it("applies Clsn1 overrides to every AIR box during active moves", () => {
     const world = new RuntimeFrameWorld();
     const actor = frameActor({

@@ -75,6 +75,19 @@ describe("RuntimeHelperCollisionSystem", () => {
       { x1: -3, y1: -2, x2: 3, y2: 2 },
     ]);
   });
+
+  it("applies a Helper TransformClsn multiplier on top of its collision scale", () => {
+    const transformed = proxy("transformed", "root", "root", { x: 0, y: 0 }, 1, {
+      ownClsnScale: true,
+      scale: { x: 2, y: 0.5 },
+      clsnScaleMultiplier: { x: 0.25, y: 4 },
+      clsn2: [{ x1: 1, y1: -2, x2: 5, y2: 4 }],
+    });
+
+    expect(mergeRuntimeHelperProxyCollisionBoxes(root({ x: 0, y: 0 }, 1), [], [transformed], "clsn2")).toEqual([
+      { x1: 0.5, y1: -4, x2: 2.5, y2: 8 },
+    ]);
+  });
 });
 
 function root(pos: { x: number; y: number }, facing: 1 | -1): RuntimeHelperCollisionParent {
@@ -89,7 +102,7 @@ function proxy(
   facing: 1 | -1,
   options: ProxyOptions = {},
 ): RuntimeHelperCollisionProxy {
-  const { clsn1, clsn2, clsnProxy, ownClsnScale, scale, ...actorOptions } = options;
+  const { clsn1, clsn2, clsnProxy, ownClsnScale, scale, clsnScaleMultiplier, ...actorOptions } = options;
   return {
     serialId,
     parentId,
@@ -103,6 +116,7 @@ function proxy(
     pos,
     facing,
     scale: scale ?? { x: 1, y: 1 },
+    clsnScaleMultiplier,
     ...actorOptions,
   };
 }
@@ -111,6 +125,7 @@ type ProxyOptions = Partial<Pick<RuntimeHelperCollisionProxy, "destroyed" | "tea
   clsnProxy?: boolean;
   ownClsnScale?: boolean;
   scale?: { x: number; y: number };
+  clsnScaleMultiplier?: { x: number; y: number };
   clsn1?: CollisionBox[];
   clsn2?: CollisionBox[];
 };

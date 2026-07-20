@@ -1206,6 +1206,11 @@ async function main() {
       artifact: presets.createSyntheticImportedWidthTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-transformclsn-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedTransformClsnScaleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-width-dynamic",
       required: true,
       artifact: presets.createSyntheticImportedDynamicWidthTraceArtifact(),

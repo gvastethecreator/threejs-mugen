@@ -596,6 +596,27 @@ describe("StateControllerExecutor", () => {
     expect(irResult.vel).toEqual({ x: 4, y: -3 });
   });
 
+  it("accumulates TransformClsn scale and reports the bounded angle gap", () => {
+    let state = runtimeState({ vars: [2] });
+    const unsupported: string[] = [];
+    const staticController = compileControllerIr(controller("TransformClsn", { scale: "2,0.5", redirectid: "59" }));
+    const dynamicController = compileControllerIr(controller("TransformClsn", { scale: "var(0),0.25" }));
+
+    state = executeControllerIr(staticController, state, (item) => unsupported.push(item));
+    state = executeControllerIr(dynamicController, state, (item) => unsupported.push(item));
+    state = executeStateController(controller("TransformClsn", { angle: "15" }), state, (item) => unsupported.push(item));
+
+    expect(staticController.operation).toEqual({
+      kind: "collision-transform",
+      controllerType: "transformclsn",
+      scale: [2, 0.5],
+      redirectPlayerIdExpression: "59",
+    });
+    expect(dynamicController.operation).toBeUndefined();
+    expect(state.clsnScaleMultiplier).toEqual({ x: 4, y: 0.125 });
+    expect(unsupported).toEqual(["TransformClsn:angle"]);
+  });
+
   it("keeps controller GetHitVar fall.recover independent from recovery timer", () => {
     const state = runtimeState({
       hitFall: {

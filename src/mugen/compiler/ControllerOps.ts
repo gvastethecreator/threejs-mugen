@@ -429,6 +429,13 @@ export type CollisionControllerOp =
       redirectPlayerIdExpression?: string;
     };
 
+export type CollisionTransformControllerOp = {
+  kind: "collision-transform";
+  controllerType: "transformclsn";
+  scale: [number, number];
+  redirectPlayerIdExpression?: string;
+};
+
 export type MetadataControllerOp = {
   kind: "metadata";
   controllerType: "statetypeset";
@@ -647,6 +654,7 @@ export type ControllerOp =
   | KinematicControllerOp
   | BoundsControllerOp
   | CollisionControllerOp
+  | CollisionTransformControllerOp
   | MetadataControllerOp
   | OrientationControllerOp
   | SpriteEffectControllerOp
@@ -675,6 +683,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "overrideclsn") {
     return compileOverrideClsnControllerOp(controller);
+  }
+  if (type === "transformclsn") {
+    return compileTransformClsnControllerOp(controller);
   }
   if (type === "depth") {
     return compileDepthControllerOp(controller);
@@ -1108,6 +1119,18 @@ function compileOverrideClsnControllerOp(controller: MugenStateController): Coll
     group,
     index: Math.trunc(index),
     rect: [Math.min(rawX1, rawX2), Math.min(rawY1, rawY2), Math.max(rawX1, rawX2), Math.max(rawY1, rawY2)],
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
+  };
+}
+
+function compileTransformClsnControllerOp(controller: MugenStateController): CollisionTransformControllerOp | undefined {
+  const scale = strictNumberPair(findParam(controller, "scale"));
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (!scale || redirectPlayerIdExpression === "invalid") return undefined;
+  return {
+    kind: "collision-transform",
+    controllerType: "transformclsn",
+    scale: [scale[0], scale[1] ?? 1],
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }

@@ -3,6 +3,7 @@ import type {
   AssertSpecialControllerOp,
   BoundsControllerOp,
   CollisionControllerOp,
+  CollisionTransformControllerOp,
   HitFallControllerOp,
   KinematicControllerOp,
   MetadataControllerOp,
@@ -43,6 +44,7 @@ import { RuntimeBoundsControllerWorld } from "./BoundsControllerSystem";
 import { RuntimeKinematicControllerWorld } from "./KinematicControllerSystem";
 import { RuntimeAnimationControllerWorld } from "./AnimationControllerSystem";
 import { RuntimeStateTransitionControllerWorld } from "./StateTransitionControllerSystem";
+import { RuntimeCollisionTransformWorld } from "./RuntimeCollisionTransformSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 export type { RuntimeControllerEvaluationContext } from "./RuntimeControllerExpressionContextSystem";
@@ -57,6 +59,7 @@ const boundsControllerWorld = new RuntimeBoundsControllerWorld();
 const kinematicControllerWorld = new RuntimeKinematicControllerWorld();
 const animationControllerWorld = new RuntimeAnimationControllerWorld();
 const stateTransitionControllerWorld = new RuntimeStateTransitionControllerWorld();
+const collisionTransformWorld = new RuntimeCollisionTransformWorld();
 
 export function executeStateController(
   controller: MugenStateController,
@@ -198,6 +201,24 @@ export function executeControllerIr(
     applyVariableRangeSet(next, controller, context, variableOperation(controller, "varrangeset"));
   } else if (type === "playerpush") {
     boundsControllerWorld.applyPlayerPushController(next, controller, collisionOperation(controller, "playerpush"), context);
+  } else if (type === "transformclsn") {
+    const applied = collisionTransformWorld.applyController(
+      next,
+      controller,
+      collisionTransformOperation(controller),
+      context,
+    );
+    const hasScaleParam = collisionTransformOperation(controller)?.scale !== undefined || findParam(controller, "scale") !== undefined;
+    if (!applied && hasScaleParam) {
+      reportUnsupported(`${controller.type}:scale`);
+    }
+    const hasAngleParam = findParam(controller, "angle") !== undefined;
+    if (hasAngleParam) {
+      reportUnsupported(`${controller.type}:angle`);
+    }
+    if (!hasScaleParam && !hasAngleParam) {
+      reportUnsupported(`${controller.type}:scale`);
+    }
   } else if (type === "turn") {
     const operation = orientationOperation(controller, "turn");
     if (controller.operation && !operation) {
@@ -330,6 +351,12 @@ function collisionOperation<T extends CollisionControllerOp["controllerType"]>(
 ): Extract<CollisionControllerOp, { controllerType: T }> | undefined {
   return controller.operation?.kind === "collision" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<CollisionControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function collisionTransformOperation(controller: ControllerIr): CollisionTransformControllerOp | undefined {
+  return controller.operation?.kind === "collision-transform" && controller.operation.controllerType === "transformclsn"
+    ? controller.operation
     : undefined;
 }
 

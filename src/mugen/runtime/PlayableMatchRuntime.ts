@@ -474,6 +474,7 @@ type RootControllerRedirectHandler = (
     | "depth"
     | "height"
     | "overrideclsn"
+    | "transformclsn"
     | "screenbound"
     | "playerpush"
     | RedirectableTargetControllerType
@@ -2782,6 +2783,7 @@ export class PlayableMatchRuntime {
       | "depth"
       | "height"
       | "overrideclsn"
+      | "transformclsn"
       | "screenbound"
       | "playerpush"
       | RedirectableTargetControllerType
@@ -5067,9 +5069,14 @@ function runActiveStateControllers(
         createPlayerIdTarget(actor),
       );
       const redirectableBoundsController = dispatch.controller.normalizedType === "screenbound" || dispatch.controller.normalizedType === "playerpush";
+      const redirectableCollisionTransform = dispatch.controller.normalizedType === "transformclsn";
       const redirectableResourceType = redirectableResourceControllerType(dispatch.controller);
       const redirectExpression = redirectableResourceType !== undefined
         ? resourceControllerRedirectExpression(dispatch.controller)
+        : redirectableCollisionTransform
+          ? ((dispatch.controller.operation?.kind === "collision-transform"
+              ? dispatch.controller.operation.redirectPlayerIdExpression
+              : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
         : redirectableBoundsController
           ? (((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound") ||
                 (dispatch.controller.operation?.kind === "collision" && dispatch.controller.operation.controllerType === "playerpush")
@@ -5077,9 +5084,11 @@ function runActiveStateControllers(
               : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
           : undefined;
       const redirectControllerType = redirectableResourceType ??
-        (redirectableBoundsController
-          ? dispatch.controller.normalizedType as "screenbound" | "playerpush"
-          : undefined);
+        (redirectableCollisionTransform
+          ? "transformclsn"
+          : redirectableBoundsController
+            ? dispatch.controller.normalizedType as "screenbound" | "playerpush"
+            : undefined);
       const resourceRedirectLease = redirectExpression && redirectableResourceType !== undefined
         ? options.onRootTargetDispatchLease?.(
             fighter,

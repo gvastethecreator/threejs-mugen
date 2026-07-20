@@ -34,6 +34,11 @@ import type {
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
+import {
+  resolveRuntimeCollisionTransformControllerOperation,
+  RuntimeCollisionTransformWorld,
+  scaleRuntimeCollisionBoxes,
+} from "./RuntimeCollisionTransformSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import {
@@ -123,6 +128,7 @@ export type RuntimeHelper = {
   preserve?: boolean;
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
+  clsnScaleMultiplier?: { x: number; y: number };
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -305,6 +311,7 @@ export type RuntimeHelperSpawnInput = {
   preserve?: boolean;
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
+  clsnScaleMultiplier?: { x: number; y: number };
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
@@ -366,6 +373,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     preserve: input.preserve ?? operation?.preserve,
     ownClsnScale: input.ownClsnScale ?? operation?.ownClsnScale,
     clsnProxy: input.clsnProxy ?? operation?.clsnProxy,
+    clsnScaleMultiplier: input.clsnScaleMultiplier,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -408,6 +416,7 @@ export function advanceRuntimeHelperActor(
   stage: Pick<MugenStageDefinition, "bounds">,
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
+  helperCollisionTransformWorld.resetFrame(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
   if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4) === "destroyed") {
     return false;
@@ -961,8 +970,8 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         },
         runtime,
         frame,
-        clsn1: frame.clsn1.map(cloneBox),
-        clsn2: frame.clsn2.map(cloneBox),
+        clsn1: scaleRuntimeCollisionBoxes(frame.clsn1.map(cloneBox), helper.clsnScaleMultiplier),
+        clsn2: scaleRuntimeCollisionBoxes(frame.clsn2.map(cloneBox), helper.clsnScaleMultiplier),
         soundEvents: helper.soundEvents.map((event) => ({ ...event })),
         hitEffectEvents: helper.hitEffectEvents.map((event) => ({ ...event })),
       };
@@ -1000,11 +1009,13 @@ const helperRuntimeControllers = new Set([
   "varadd",
   "varrandom",
   "varrangeset",
+  "transformclsn",
   "null",
 ]);
 
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
 const helperControllerDispatchWorld = new RuntimeControllerDispatchWorld();
+const helperCollisionTransformWorld = new RuntimeCollisionTransformWorld();
 export const helperTargetWorld = new RuntimeTargetWorld();
 const helperTargetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const redirectedTargetDispatchWorld = new RuntimeRedirectedTargetDispatchWorld();
@@ -1017,6 +1028,14 @@ export function activateRuntimeHelperHitDef(
   options?: Parameters<typeof resolveHelperNumber>[3] & Pick<RuntimeHelperAdvanceOptions, "constants" | "defaultHitFlag">,
 ): boolean {
   const runtime = helperRuntimeState(helper);
+  const frame = helper.action.frames[helper.frameIndex];
+  const collisionFrame = frame
+    ? {
+        ...frame,
+        clsn1: scaleRuntimeCollisionBoxes(frame.clsn1, helper.clsnScaleMultiplier),
+        clsn2: scaleRuntimeCollisionBoxes(frame.clsn2, helper.clsnScaleMultiplier),
+      }
+    : undefined;
   const actor = {
     runtime,
     currentMove: helper.currentMove,
@@ -1031,7 +1050,7 @@ export function activateRuntimeHelperHitDef(
     actor,
     controller,
     defaultHitFlag: options?.defaultHitFlag,
-    frame: helper.action.frames[helper.frameIndex],
+    frame: collisionFrame,
     resolveSoundValue: options
       ? (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options)
       : undefined,
@@ -1298,6 +1317,12 @@ function resolveHelperResourceController(
   helper: RuntimeHelper,
   context: Parameters<typeof resolveRuntimeResourceControllerOperation>[2],
 ): ControllerIr | undefined {
+  if (controller.normalizedType === "transformclsn") {
+    const operation = controller.operation?.kind === "collision-transform"
+      ? controller.operation
+      : resolveRuntimeCollisionTransformControllerOperation(controller, helperRuntimeState(helper), context);
+    return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
+  }
   const operation = controller.operation?.kind === "resource"
     ? controller.operation
     : resolveRuntimeResourceControllerOperation(controller, helperRuntimeState(helper), context);
@@ -1671,6 +1696,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     sysvars: [...helper.sysvars],
     fvars: [...helper.fvars],
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
+    ...(helper.clsnScaleMultiplier === undefined ? {} : { clsnScaleMultiplier: { ...helper.clsnScaleMultiplier } }),
     targetCount: helper.targets.length,
     targetRefs: helper.targets.map((target) => ({ ...target })),
     targetBindings: helper.targetBindings.map((binding) => ({
@@ -1733,6 +1759,9 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.vars = [...runtime.vars];
   helper.sysvars = [...(runtime.sysvars ?? [])];
   helper.fvars = [...runtime.fvars];
+  helper.clsnScaleMultiplier = runtime.clsnScaleMultiplier
+    ? { ...runtime.clsnScaleMultiplier }
+    : undefined;
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {

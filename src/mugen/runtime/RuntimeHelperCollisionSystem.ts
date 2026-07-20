@@ -9,7 +9,7 @@ export type RuntimeHelperCollisionParent = {
 
 export type RuntimeHelperCollisionProxy = Pick<
   RuntimeHelper,
-  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale"
+  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale" | "clsnScaleMultiplier"
 >;
 
 export type RuntimeHelperCollisionBoxType = "clsn1" | "clsn2";
@@ -62,9 +62,10 @@ export function runtimeHelperProxyCollisionBoxes(
     visited.add(helper.serialId);
     if (!isActiveProxy(parent, helper)) continue;
 
-    const scale = helper.ownClsnScale === true
+    const baseScale = helper.ownClsnScale === true
       ? helper.scale
       : options.animationOwnerScale;
+    const scale = multiplyCollisionScale(baseScale, helper.clsnScaleMultiplier);
     for (const box of runtimeHelperCurrentCollisionBoxes(helper, boxType)) {
       output.push(relativeCollisionBox(parent, helperWorldBox(helper, scaleCollisionBox(box, scale))));
     }
@@ -83,6 +84,17 @@ function scaleCollisionBox(box: CollisionBox, scale: RuntimeCollisionScale | und
     x2: Math.max(x1, x2),
     y1: Math.min(y1, y2),
     y2: Math.max(y1, y2),
+  };
+}
+
+function multiplyCollisionScale(
+  base: RuntimeCollisionScale | undefined,
+  multiplier: RuntimeCollisionScale | undefined,
+): RuntimeCollisionScale | undefined {
+  if (!base && !multiplier) return undefined;
+  return {
+    x: finiteScale(base?.x) * finiteScale(multiplier?.x),
+    y: finiteScale(base?.y) * finiteScale(multiplier?.y),
   };
 }
 

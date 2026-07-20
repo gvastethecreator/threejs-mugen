@@ -129,6 +129,7 @@ const runtimeControllers = new Set([
   "varadd",
   "varrandom",
   "varrangeset",
+  "transformclsn",
   "playerpush",
   "turn",
   "tagin",

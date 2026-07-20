@@ -35,6 +35,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   width: partial("body width"),
   height: partial("body height"),
   overrideclsn: partial("collision override"),
+  transformclsn: partial("collision scale"),
   depth: partial("body depth"),
   fallenvshake: partial("camera shake"),
   assertspecial: partial("runtime flags"),

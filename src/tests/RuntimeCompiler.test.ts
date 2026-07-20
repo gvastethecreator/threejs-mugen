@@ -1198,6 +1198,21 @@ value = 1
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static TransformClsn scale and leaves expression values for runtime", () => {
+    const value = compileControllerIr(controller(200, "TransformClsn", [], { scale: "2,-0.5", redirectid: "59" }));
+    const topOnly = compileControllerIr(controller(200, "TransformClsn", [], { scale: "1.5" }));
+    const dynamic = compileControllerIr(controller(200, "TransformClsn", [], { scale: "var(0),0.5" }));
+
+    expect(value.operation).toEqual({
+      kind: "collision-transform",
+      controllerType: "transformclsn",
+      scale: [2, -0.5],
+      redirectPlayerIdExpression: "59",
+    });
+    expect(topOnly.operation).toEqual({ kind: "collision-transform", controllerType: "transformclsn", scale: [1.5, 1] });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static OverrideClsn modifiers and leaves dynamic payloads for runtime", () => {
     const value = compileControllerIr(controller(200, "OverrideClsn", [], { group: "Size", index: "-1", rect: "30,10,-20,-40", redirectid: "59" }));
     const clear = compileControllerIr(controller(200, "OverrideClsn", [], { group: "None" }));

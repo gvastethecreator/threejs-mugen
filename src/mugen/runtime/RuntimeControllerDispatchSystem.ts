@@ -11,6 +11,7 @@ import { resolveRuntimeKinematicControllerOperation } from "./KinematicControlle
 import { resolveRuntimeResourceControllerOperation } from "./RuntimeResourceSystem";
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import { resolveRuntimeStateTypeSetControllerOperation } from "./StateTypeSystem";
+import { resolveRuntimeCollisionTransformControllerOperation } from "./RuntimeCollisionTransformSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerDispatchActor = {
@@ -97,6 +98,9 @@ function resolveDynamicRecordedOperation(
   }
   if (controller.normalizedType === "attackmulset" || controller.normalizedType === "defencemulset") {
     return resolveRuntimeDamageScaleControllerOperation(controller, runtime, controller.normalizedType, context);
+  }
+  if (controller.normalizedType === "transformclsn") {
+    return resolveRuntimeCollisionTransformControllerOperation(controller, runtime, context);
   }
   const resourceOperation = resolveRuntimeResourceControllerOperation(controller, runtime, context);
   if (resourceOperation) {

@@ -17,6 +17,7 @@ import type { RuntimeContactPresentationActor } from "./RuntimeContactPresentati
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeTargetWorld } from "./TargetSystem";
+import { scaleRuntimeCollisionBoxes } from "./RuntimeCollisionTransformSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type { RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
@@ -104,7 +105,10 @@ export class RuntimeHelperCombatWorld {
       if (!move || attacker.hasHit || move.requiresHitDef || move.isReversal || !runtimeHelperMoveIsActive(move, attacker.moveTick)) {
         continue;
       }
-      const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
+      const attackBox = runtimeWorldBox(
+        attacker.runtime,
+        scaleRuntimeCollisionBoxes([move.hitbox], attacker.runtime.clsnScaleMultiplier)[0] ?? move.hitbox,
+      );
       const reversal = input.reversalWorld.findActive(input.defender, move, attackBox, {
         isMoveActive: runtimeHelperMoveIsActive,
         worldBox: runtimeWorldBox,

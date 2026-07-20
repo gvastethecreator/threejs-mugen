@@ -74,6 +74,7 @@ export type RuntimeTraceActor = {
   renderOpacity?: number;
   shadowVisible?: false;
   renderScale?: { x: number; y: number };
+  collisionScaleMultiplier?: { x: number; y: number };
   renderAngle?: number;
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
@@ -562,6 +563,10 @@ export type RuntimeTraceActorFrameRequirement = {
   observedScaleXAtMost?: number;
   observedScaleYAtLeast?: number;
   observedScaleYAtMost?: number;
+  observedCollisionScaleXAtLeast?: number;
+  observedCollisionScaleXAtMost?: number;
+  observedCollisionScaleYAtLeast?: number;
+  observedCollisionScaleYAtMost?: number;
   observedOpacityAtLeast?: number;
   observedOpacityAtMost?: number;
   shadowVisible?: boolean;
@@ -662,6 +667,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxVelZ?: number;
   minScale: { x: number; y: number };
   maxScale: { x: number; y: number };
+  minCollisionScale: { x: number; y: number };
+  maxCollisionScale: { x: number; y: number };
   minOpacity: number;
   maxOpacity: number;
   shadowVisible?: false;
@@ -1885,6 +1892,14 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 x: Math.max(existing.maxScale.x, actor.renderScale?.x ?? 1),
                 y: Math.max(existing.maxScale.y, actor.renderScale?.y ?? 1),
               },
+              minCollisionScale: {
+                x: Math.min(existing.minCollisionScale.x, actor.collisionScaleMultiplier?.x ?? 1),
+                y: Math.min(existing.minCollisionScale.y, actor.collisionScaleMultiplier?.y ?? 1),
+              },
+              maxCollisionScale: {
+                x: Math.max(existing.maxCollisionScale.x, actor.collisionScaleMultiplier?.x ?? 1),
+                y: Math.max(existing.maxCollisionScale.y, actor.collisionScaleMultiplier?.y ?? 1),
+              },
               minOpacity: Math.min(existing.minOpacity, actor.renderOpacity ?? 1),
               maxOpacity: Math.max(existing.maxOpacity, actor.renderOpacity ?? 1),
               shadowVisible: actor.shadowVisible === false ? false : existing.shadowVisible,
@@ -1983,6 +1998,14 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxVelZ: actor.combatDepth?.velocity,
               minScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
+              minCollisionScale: {
+                x: actor.collisionScaleMultiplier?.x ?? 1,
+                y: actor.collisionScaleMultiplier?.y ?? 1,
+              },
+              maxCollisionScale: {
+                x: actor.collisionScaleMultiplier?.x ?? 1,
+                y: actor.collisionScaleMultiplier?.y ?? 1,
+              },
               minOpacity: actor.renderOpacity ?? 1,
               maxOpacity: actor.renderOpacity ?? 1,
               shadowVisible: actor.shadowVisible === false ? false : undefined,
@@ -3407,6 +3430,9 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.teamStandby === true ? "ts1" : "ts0",
     actor.clsn1Count,
     actor.clsn2Count,
+    actor.collisionScaleMultiplier === undefined
+      ? "cs*"
+      : `cs${actor.collisionScaleMultiplier.x},${actor.collisionScaleMultiplier.y}`,
     actor.bodyWidth?.front === undefined ? "wf*" : `wf${actor.bodyWidth.front}`,
     actor.bodyWidth?.back === undefined ? "wb*" : `wb${actor.bodyWidth.back}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
@@ -3445,6 +3471,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.teamStandby ? "ts1" : "ts0",
     actor.clsn1Count,
     actor.clsn2Count,
+    `cs${actor.minCollisionScale.x},${actor.maxCollisionScale.x}:${actor.minCollisionScale.y},${actor.maxCollisionScale.y}`,
     `life${actor.minLife}:${actor.maxLife}`,
     `power${actor.minPower}:${actor.maxPower}`,
     `guardpoints${actor.minGuardPoints}:${actor.maxGuardPoints}`,
@@ -3557,6 +3584,10 @@ function matchesActorFrameRequirement(
     (requirement.observedScaleXAtMost === undefined || actor.minScale.x <= requirement.observedScaleXAtMost) &&
     (requirement.observedScaleYAtLeast === undefined || actor.maxScale.y >= requirement.observedScaleYAtLeast) &&
     (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost) &&
+    (requirement.observedCollisionScaleXAtLeast === undefined || actor.maxCollisionScale.x >= requirement.observedCollisionScaleXAtLeast) &&
+    (requirement.observedCollisionScaleXAtMost === undefined || actor.minCollisionScale.x <= requirement.observedCollisionScaleXAtMost) &&
+    (requirement.observedCollisionScaleYAtLeast === undefined || actor.maxCollisionScale.y >= requirement.observedCollisionScaleYAtLeast) &&
+    (requirement.observedCollisionScaleYAtMost === undefined || actor.minCollisionScale.y <= requirement.observedCollisionScaleYAtMost) &&
     (requirement.observedOpacityAtLeast === undefined || actor.maxOpacity >= requirement.observedOpacityAtLeast) &&
     (requirement.observedOpacityAtMost === undefined || actor.minOpacity <= requirement.observedOpacityAtMost) &&
     (requirement.shadowVisible === undefined || (actor.shadowVisible ?? true) === requirement.shadowVisible) &&
@@ -3966,6 +3997,14 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
           y: roundTraceNumber(actor.runtime.renderScale.y),
         }
       : undefined,
+    ...(actor.runtime.clsnScaleMultiplier
+      ? {
+          collisionScaleMultiplier: {
+            x: roundTraceNumber(actor.runtime.clsnScaleMultiplier.x),
+            y: roundTraceNumber(actor.runtime.clsnScaleMultiplier.y),
+          },
+        }
+      : {}),
     renderOpacity: actor.runtime.renderOpacity === undefined ? undefined : roundTraceNumber(actor.runtime.renderOpacity),
     shadowVisible: actor.shadowVisible === false ? false : undefined,
     renderAngle: actor.runtime.renderAngle === undefined ? undefined : roundTraceNumber(actor.runtime.renderAngle),

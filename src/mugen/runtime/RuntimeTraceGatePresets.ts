@@ -9522,6 +9522,60 @@ export function createSyntheticImportedWidthTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedTransformClsnScaleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-transformclsn-scale",
+    displayName: "Synthetic Imported TransformClsn Scale",
+    withTransformClsn: { scale: [2, 0.5] },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-transformclsn-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-transformclsn-scale-golden",
+      label: "Synthetic imported TransformClsn scale route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported TransformClsn scale trace proves a static per-tick collision multiplier reaches typed controller-operation telemetry and root collision-scale evidence for Clsn1/Clsn2. It does not claim TransformClsn angle rotation, size-box scaling, animlocalscl/localcoord composition, helper/projectile breadth, renderer parity, or full MUGEN/IKEMEN collision parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-transformclsn-scale-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "TransformClsn", "HitDef"],
+        requiredExecutedOperations: ["collision-transform", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 200,
+            animNo: 200,
+            observedCollisionScaleXAtLeast: 2,
+            observedCollisionScaleXAtMost: 2,
+            observedCollisionScaleYAtLeast: 0.5,
+            observedCollisionScaleYAtMost: 0.5,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDynamicWidthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -48496,6 +48550,10 @@ export type SyntheticImportedTraceFighterOptions = {
     value?: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withTransformClsn?: {
+    scale: SyntheticPairExpression;
+    redirectId?: SyntheticNumberExpression;
+  };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withDynamicStateTypeSet?: {
     stateType?: string;
@@ -48908,6 +48966,7 @@ ${options.withDynamicPosAdd === undefined ? "" : dynamicPosAddControllerBlock(op
 ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bottomParamVelSetRoute) : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
+${options.withTransformClsn === undefined ? "" : transformClsnControllerBlock(options.withTransformClsn)}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -50368,6 +50427,19 @@ function widthControllerBlock(width: [number, number?]): string {
 type = Width
 trigger1 = Time >= 0
 player = ${width[0]},${width[1] ?? width[0]}
+`;
+}
+
+function transformClsnControllerBlock(
+  options: NonNullable<SyntheticImportedTraceFighterOptions["withTransformClsn"]>,
+): string {
+  const redirectIdLine = options.redirectId === undefined ? "" : `redirectid = ${options.redirectId}`;
+  return `
+[State 200, TransformClsn Scale Probe]
+type = TransformClsn
+trigger1 = Time >= 0
+scale = ${options.scale.join(",")}
+${redirectIdLine}
 `;
 }
 

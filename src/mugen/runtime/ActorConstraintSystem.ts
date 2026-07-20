@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "bodyHeightDelta" | "clsnOverrides" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "bodyHeightDelta" | "clsnOverrides" | "clsnScaleMultiplier" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -56,6 +56,7 @@ export class RuntimeActorConstraintWorld {
     state.bodyWidthDelta = undefined;
     state.bodyHeightDelta = undefined;
     state.clsnOverrides = undefined;
+    state.clsnScaleMultiplier = undefined;
     if (state.combatDepth?.baseSize) {
       state.combatDepth.size = state.combatDepth.baseSize;
       state.combatDepth.baseSize = undefined;
