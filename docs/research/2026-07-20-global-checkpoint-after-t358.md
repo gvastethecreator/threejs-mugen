@@ -1,7 +1,7 @@
 # Global checkpoint after T358
 
 Date: 2026-07-20
-Head: `5b14dc39`
+Head: `9ea07987`
 Feature commit: `edad5bb2`
 Documentation commit: `5b14dc39`
 Status: green for the bounded TransformClsn scale block
