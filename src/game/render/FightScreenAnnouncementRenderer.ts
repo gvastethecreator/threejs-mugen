@@ -15,7 +15,10 @@ import { SffSpriteProvider } from "../textures/SffSpriteProvider";
 import { applyThreePresentationOrder, resolvePresentationOrder } from "./PresentationOrder";
 import { resolveRoundFadeAnimationFrame } from "./RoundFadeRenderer";
 import { TextureStore } from "./TextureStore";
-import { resolveFightScreenAnnouncementCompletion } from "../../mugen/runtime/FightScreenAnimationSemantics";
+import {
+  resolveFightScreenAnimationCompletion,
+  resolveFightScreenAnnouncementCompletion,
+} from "../../mugen/runtime/FightScreenAnimationSemantics";
 import {
   formatFightScreenText,
   layoutFightScreenFontText,
@@ -56,7 +59,7 @@ export type FightScreenAnnouncementDiagnostics = {
   active: boolean;
   configured: boolean;
   resolved: boolean;
-  kind?: "round" | "fight";
+  kind?: FightScreenAnnouncementKind;
   mode?: RuntimeRoundAnnouncementSnapshot["mode"];
   roundNo?: number;
   actionNo?: number;
@@ -137,12 +140,14 @@ const FULL_FIGHT_SCREEN_PLACEMENT_UV: FightScreenPlacementUv = {
 };
 
 type FightScreenAnnouncementSelection = {
-  kind: "round" | "fight";
+  kind: FightScreenAnnouncementKind;
   track: RuntimeRoundAnnouncementSnapshot["round"];
   asset?: MugenFightScreenDisplayAsset;
   mode: RuntimeRoundAnnouncementSnapshot["mode"];
   roundNo: number;
 };
+
+export type FightScreenAnnouncementKind = "round" | "fight" | "ko" | "double-ko" | "time-over" | "draw";
 
 type FightScreenMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
 type FightScreenLayoutMesh = FightScreenMesh;
@@ -344,15 +349,23 @@ export class FightScreenAnnouncementRenderer {
     const actionNo = selection.asset.animationNo;
     const action = actionNo === undefined ? undefined : this.animations.get(actionNo);
     const frameTick = announcementFrameTick(selection.track);
-    const completion = resolveFightScreenAnnouncementCompletion(
+    const completion = selection.kind === "round" || selection.kind === "fight"
+      ? resolveFightScreenAnnouncementCompletion(
+        this.display,
+        this.animations,
+        selection.kind,
+        selection.mode,
+        selection.roundNo,
+      )
+      : resolveFightScreenAnimationCompletion(selection.asset, this.animations);
+    const displayTime = selection.asset.displayTime;
+    const displayLayers = resolveFightScreenDisplayLayers(
       this.display,
-      this.animations,
       selection.kind,
       selection.mode,
       selection.roundNo,
+      selection.asset,
     );
-    const displayTime = selection.asset.displayTime;
-    const displayLayers = resolveFightScreenDisplayLayers(this.display, selection.kind, selection.mode, selection.roundNo);
     const hasDisplayLayers = hasRenderableFightScreenLayers(displayLayers);
     const textCanUseImmediateCompletion = (!action || actionNo === undefined)
       && Boolean(selection.asset.text && selection.asset.font)
@@ -1003,28 +1016,64 @@ export function resolveFightScreenAnnouncementSelection(
   display: MugenFightScreenDisplayDefinitions | undefined,
 ): FightScreenAnnouncementSelection | undefined {
   const announcement = round?.announcement;
-  if (!announcement || announcement.visibility !== "visible") {
-    return undefined;
+  if (announcement?.visibility === "visible") {
+    if (announcement.phase === "round") {
+      return {
+        kind: "round",
+        track: announcement.round,
+        asset: resolveRoundDisplayAsset(display, announcement.mode, announcement.roundNo),
+        mode: announcement.mode,
+        roundNo: announcement.roundNo,
+      };
+    }
+    if (announcement.phase === "fight") {
+      return {
+        kind: "fight",
+        track: announcement.fight,
+        asset: display?.fight,
+        mode: announcement.mode,
+        roundNo: announcement.roundNo,
+      };
+    }
   }
-  if (announcement.phase === "round") {
-    return {
-      kind: "round",
-      track: announcement.round,
-      asset: resolveRoundDisplayAsset(display, announcement.mode, announcement.roundNo),
-      mode: announcement.mode,
-      roundNo: announcement.roundNo,
-    };
-  }
-  if (announcement.phase === "fight") {
-    return {
-      kind: "fight",
-      track: announcement.fight,
-      asset: display?.fight,
-      mode: announcement.mode,
-      roundNo: announcement.roundNo,
-    };
-  }
-  return undefined;
+  if (!round || round.state === "fight") return undefined;
+  const kind = resolveFightScreenOutcomeKind(round);
+  const asset = resolveFightScreenOutcomeAsset(display, kind);
+  if (!asset) return undefined;
+  return {
+    kind,
+    track: {
+      phase: "active",
+      skipped: false,
+      elapsed: round.postRound?.frame ?? 0,
+      animationStart: 0,
+      soundTime: 0,
+      soundDue: false,
+    },
+    asset,
+    mode: announcement?.mode ?? "normal",
+    roundNo: round.roundNo ?? 1,
+  };
+}
+
+export function resolveFightScreenOutcomeKind(round: RoundSnapshot): Exclude<FightScreenAnnouncementKind, "round" | "fight"> {
+  if (round.state === "timeover") return round.winner === "Draw" ? "draw" : "time-over";
+  return round.winner === "Draw" ? "double-ko" : "ko";
+}
+
+export function resolveFightScreenOutcomeAsset(
+  display: MugenFightScreenDisplayDefinitions | undefined,
+  kind: Exclude<FightScreenAnnouncementKind, "round" | "fight">,
+): MugenFightScreenDisplayAsset | undefined {
+  if (!display) return undefined;
+  const candidates = kind === "ko"
+    ? [display.ko]
+    : kind === "double-ko"
+      ? [display.doubleKo, display.ko]
+      : kind === "time-over"
+        ? [display.timeOver]
+        : [display.draw, display.timeOver];
+  return candidates.find((asset): asset is MugenFightScreenDisplayAsset => asset !== undefined);
 }
 
 export function resolveRoundDisplayAsset(
@@ -1044,15 +1093,22 @@ export function resolveRoundDisplayAsset(
 
 export function resolveFightScreenDisplayLayers(
   display: MugenFightScreenDisplayDefinitions | undefined,
-  kind: "round" | "fight",
+  kind: FightScreenAnnouncementKind,
   mode: RuntimeRoundAnnouncementSnapshot["mode"],
   roundNo: number,
+  selectedAsset?: MugenFightScreenDisplayAsset,
 ): FightScreenDisplayLayers {
   if (!display) return { background: [] };
   if (kind === "fight") {
     return {
       background: display.fight?.background ?? [],
       ...(display.fight?.top ? { top: display.fight.top } : {}),
+    };
+  }
+  if (kind !== "round") {
+    return {
+      background: selectedAsset?.background ?? [],
+      ...(selectedAsset?.top ? { top: selectedAsset.top } : {}),
     };
   }
   const variant = resolveRoundVariantDisplayAsset(display, mode, roundNo);

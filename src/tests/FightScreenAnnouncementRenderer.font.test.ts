@@ -2,10 +2,18 @@
 
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { FightScreenAnnouncementRenderer } from "../game/render/FightScreenAnnouncementRenderer";
+import {
+  FightScreenAnnouncementRenderer,
+  resolveFightScreenAnnouncementSelection,
+  resolveFightScreenOutcomeKind,
+} from "../game/render/FightScreenAnnouncementRenderer";
 import { TextureStore } from "../game/render/TextureStore";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
-import type { MugenFightScreenAssets, MugenFightScreenFont } from "../mugen/model/MugenSystemAssets";
+import type {
+  MugenFightScreenAssets,
+  MugenFightScreenDisplayDefinitions,
+  MugenFightScreenFont,
+} from "../mugen/model/MugenSystemAssets";
 import type { MugenSnapshot } from "../mugen/runtime/types";
 
 describe("FightScreenAnnouncementRenderer bitmap text", () => {
@@ -84,6 +92,53 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     expect(textMesh.userData.fightScreenPolygonGeometry).toBe(true);
     expect((textMesh.geometry.getAttribute("position") as THREE.BufferAttribute).count).toBeGreaterThanOrEqual(3);
     expect(textMesh.rotation.z).toBe(0);
+    renderer.dispose();
+    textures.dispose();
+  });
+
+  it("selects and renders the bounded KO display family from the round outcome", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const font = createFont("KO");
+    const display: MugenFightScreenDisplayDefinitions = {
+      round: new Map(),
+      ko: { text: "KO", font: [1, 0, 0], offset: [160, 100] },
+      doubleKo: { text: "Double KO", font: [1, 0, 0], offset: [160, 100] },
+      timeOver: { text: "Time Over", font: [1, 0, 0], offset: [160, 100] },
+      draw: { text: "Draw", font: [1, 0, 0], offset: [160, 100] },
+    };
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display,
+      fonts: new Map([[1, font]]),
+      diagnostics: [],
+    });
+
+    const outcome = outcomeSnapshot("ko", "Nova Boxer");
+    await renderer.update(outcome, { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      active: true,
+      resolved: true,
+      kind: "ko",
+      text: "KO",
+      glyphCount: 2,
+    });
+    expect(resolveFightScreenAnnouncementSelection(outcome.round, display)).toMatchObject({ kind: "ko" });
+    expect(resolveFightScreenAnnouncementSelection(outcomeSnapshot("ko", "Draw").round, display)).toMatchObject({
+      kind: "double-ko",
+      asset: display.doubleKo,
+    });
+    expect(resolveFightScreenAnnouncementSelection(outcomeSnapshot("timeover", "Nova Boxer").round, display)).toMatchObject({
+      kind: "time-over",
+      asset: display.timeOver,
+    });
+    expect(resolveFightScreenAnnouncementSelection(outcomeSnapshot("timeover", "Draw").round, display)).toMatchObject({
+      kind: "draw",
+      asset: display.draw,
+    });
+    expect(resolveFightScreenOutcomeKind(outcomeSnapshot("ko", "Draw").round!)).toBe("double-ko");
     renderer.dispose();
     textures.dispose();
   });
@@ -522,4 +577,32 @@ function snapshot(elapsed = 0): MugenSnapshot {
       },
     },
   } as unknown as MugenSnapshot;
+}
+
+function outcomeSnapshot(state: "ko" | "timeover", winner: string, frame = 0): MugenSnapshot {
+  const base = snapshot();
+  return {
+    ...base,
+    round: {
+      ...(base.round ?? {}),
+      state,
+      timer: 0,
+      roundNo: 2,
+      winner,
+      message: state === "timeover"
+        ? winner === "Draw" ? "Time over - draw" : "Time over"
+        : winner === "Draw" ? "Double KO" : `${winner} wins`,
+      announcement: undefined,
+      postRound: {
+        schema: "RuntimePostRound/v0",
+        frame,
+        remaining: Math.max(0, 255 - frame),
+        duration: 255,
+        slowRemaining: 0,
+        slowDuration: 0,
+        playbackRate: 1,
+        noKoSlow: false,
+      },
+    },
+  };
 }

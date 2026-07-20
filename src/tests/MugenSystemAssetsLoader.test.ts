@@ -106,6 +106,21 @@ fight.sndtime = 1
 fight.snd = 7, 1
 fight.anim = 7002
 fight.offset = 160, 110
+ko.time = 3
+ko.sndtime = 2
+ko.anim = 7002
+ko.text = KO
+ko.font = 1, 0, 0
+dko.time = 4
+dko.sndtime = 3
+dko.showdraw = true
+dko.text = Double KO
+dko.font = 1, 0, 0
+to.time = 5
+to.sndtime = 4
+to.anim = 7002
+draw.text = Draw
+draw.font = 1, 0, 0
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -181,6 +196,13 @@ File = standard.sff
       fightTime: 5,
       fightSoundTime: 1,
       fightSound: [7, 1],
+      koTime: 3,
+      koSoundTime: 2,
+      doubleKoTime: 4,
+      doubleKoSoundTime: 3,
+      doubleKoShowDraw: true,
+      timeOverTime: 5,
+      timeOverSoundTime: 4,
       startWaitTime: 12,
       controlTime: 30,
       shutterTime: 15,
@@ -273,6 +295,10 @@ File = standard.sff
         roundSingle: { animationNo: 7002, sound: [8, 3] },
         roundFinal: { animationNo: 7002, sound: [8, 4] },
         fight: { animationNo: 7002, sound: [7, 1], offset: [160, 110] },
+        ko: { animationNo: 7002, text: "KO", font: [1, 0, 0] },
+        doubleKo: { text: "Double KO", font: [1, 0, 0] },
+        timeOver: { animationNo: 7002 },
+        draw: { text: "Draw", font: [1, 0, 0] },
       },
     });
     expect(character.systemAssets?.fightScreenAssets?.display?.round.get(1)).toEqual({

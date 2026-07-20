@@ -600,6 +600,15 @@ function parseFightScreenTiming(
     fightTime: numberValue(section, "fight.time"),
     fightSoundTime: numberValue(section, "fight.sndtime"),
     fightSound: soundValue(section, "fight.snd"),
+    koTime: numberValue(section, "ko.time"),
+    koSoundTime: numberValue(section, "ko.sndtime"),
+    doubleKoTime: numberValue(section, "dko.time"),
+    doubleKoSoundTime: numberValue(section, "dko.sndtime"),
+    doubleKoShowDraw: booleanValue(section, "dko.showdraw"),
+    timeOverTime: numberValue(section, "to.time"),
+    timeOverSoundTime: numberValue(section, "to.sndtime"),
+    winTime: numberValue(section, "win.time"),
+    winSoundTime: numberValue(section, "win.sndtime"),
     shutterTime: numberValue(section, "shutter.time"),
     shutterColor: colorValue(section, "shutter.col"),
     fadeInTime: numberValue(section, "fadein.time"),
@@ -635,12 +644,20 @@ function parseFightScreenDisplayDefinitions(
     roundSingle: displayAsset(section, "round.single"),
     roundFinal: displayAsset(section, "round.final"),
     fight: displayAsset(section, "fight"),
+    ko: displayAsset(section, "ko"),
+    doubleKo: displayAsset(section, "dko"),
+    timeOver: displayAsset(section, "to"),
+    draw: displayAsset(section, "draw"),
   };
   return definitions.round.size > 0
     || definitions.roundDefault !== undefined
     || definitions.roundSingle !== undefined
     || definitions.roundFinal !== undefined
     || definitions.fight !== undefined
+    || definitions.ko !== undefined
+    || definitions.doubleKo !== undefined
+    || definitions.timeOver !== undefined
+    || definitions.draw !== undefined
     ? definitions
     : undefined;
 }

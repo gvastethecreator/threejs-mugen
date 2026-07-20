@@ -104,6 +104,10 @@ export type MugenFightScreenDisplayDefinitions = {
   roundSingle?: MugenFightScreenDisplayAsset;
   roundFinal?: MugenFightScreenDisplayAsset;
   fight?: MugenFightScreenDisplayAsset;
+  ko?: MugenFightScreenDisplayAsset;
+  doubleKo?: MugenFightScreenDisplayAsset;
+  timeOver?: MugenFightScreenDisplayAsset;
+  draw?: MugenFightScreenDisplayAsset;
 };
 
 export type MugenFightScreenTiming = {
@@ -122,6 +126,15 @@ export type MugenFightScreenTiming = {
   fightTime?: number;
   fightSoundTime?: number;
   fightSound?: [number, number];
+  koTime?: number;
+  koSoundTime?: number;
+  doubleKoTime?: number;
+  doubleKoSoundTime?: number;
+  doubleKoShowDraw?: boolean;
+  timeOverTime?: number;
+  timeOverSoundTime?: number;
+  winTime?: number;
+  winSoundTime?: number;
   shutterTime?: number;
   shutterColor?: [number, number, number];
   fadeInTime?: number;
