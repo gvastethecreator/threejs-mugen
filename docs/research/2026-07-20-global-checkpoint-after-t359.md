@@ -1,7 +1,7 @@
 # Global checkpoint after T359
 
 Date: 2026-07-20
-Head: `be339861`
+Head: `272bb10b`
 Feature commit: `38fb0f0a`
 Documentation commit: `be339861`
 Status: green for the bounded TransformClsn angle block
