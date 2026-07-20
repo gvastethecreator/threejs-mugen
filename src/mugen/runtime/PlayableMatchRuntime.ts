@@ -117,7 +117,7 @@ import {
   type RuntimeCharacterIdentityRegistry,
 } from "./RuntimeCharacterIdentitySystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
-import { mergeRuntimeHelperProxyCollisionBoxes } from "./RuntimeHelperCollisionSystem";
+import { mergeRuntimeHelperProxyCollisionBoxes, type RuntimeCollisionScale } from "./RuntimeHelperCollisionSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
 import {
@@ -5359,7 +5359,9 @@ function getRuntimeHurtBoxes(
 ): MugenAnimationFrame["clsn2"] | undefined {
   const base = frameWorld.currentHurtBoxes(fighter);
   return helpers?.length
-    ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2")
+    ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2", {
+        animationOwnerScale: runtimeDefinitionCollisionScale(fighter.definition.constants),
+      })
     : base;
 }
 
@@ -5371,13 +5373,17 @@ function getRuntimeCollisionBoxes(
   if (boxType === "clsn1") {
     const base = frameWorld.currentAttackBoxes(fighter);
     return helpers?.length
-      ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn1")
+      ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn1", {
+          animationOwnerScale: runtimeDefinitionCollisionScale(fighter.definition.constants),
+        })
       : base;
   }
   if (boxType === "clsn2") {
     const base = frameWorld.currentHurtBoxes(fighter);
     return helpers?.length
-      ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2")
+      ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2", {
+          animationOwnerScale: runtimeDefinitionCollisionScale(fighter.definition.constants),
+        })
       : base;
   }
   if (boxType === "size") return [runtimePushSizeBox(fighter)];
@@ -5386,6 +5392,17 @@ function getRuntimeCollisionBoxes(
 
 function runtimeCollisionParent(fighter: FighterMatchState) {
   return { id: fighter.id, pos: fighter.runtime.pos, facing: fighter.runtime.facing };
+}
+
+function runtimeDefinitionCollisionScale(constants?: Record<string, number>): RuntimeCollisionScale {
+  return {
+    x: finiteRuntimeCollisionScale(constants?.["size.xscale"]),
+    y: finiteRuntimeCollisionScale(constants?.["size.yscale"]),
+  };
+}
+
+function finiteRuntimeCollisionScale(value: number | undefined): number {
+  return value !== undefined && Number.isFinite(value) ? value : 1;
 }
 
 function runtimePushSizeBox(fighter: FighterMatchState) {

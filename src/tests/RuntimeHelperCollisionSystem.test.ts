@@ -55,6 +55,26 @@ describe("RuntimeHelperCollisionSystem", () => {
     expect(runtimeHelperCurrentCollisionBoxes(helper, "clsn2")).toEqual([{ x1: -4, y1: -5, x2: 6, y2: 7 }]);
     expect(runtimeHelperCurrentCollisionBoxes({ action, frameIndex: 4 }, "clsn2")).toEqual([]);
   });
+
+  it("selects own Helper scale or inherited animation-owner scale for proxy boxes", () => {
+    const ownScale = proxy("own-scale", "root", "root", { x: 0, y: 0 }, 1, {
+      ownClsnScale: true,
+      scale: { x: 2, y: 0.5 },
+      clsn2: [{ x1: 1, y1: -2, x2: 5, y2: 4 }],
+    });
+    const inheritedScale = proxy("inherited-scale", "root", "root", { x: 0, y: 0 }, 1, {
+      ownClsnScale: false,
+      scale: { x: 9, y: 9 },
+      clsn2: [{ x1: -1, y1: -1, x2: 1, y2: 1 }],
+    });
+
+    expect(mergeRuntimeHelperProxyCollisionBoxes(root({ x: 0, y: 0 }, 1), [], [ownScale, inheritedScale], "clsn2", {
+      animationOwnerScale: { x: 3, y: 2 },
+    })).toEqual([
+      { x1: 2, y1: -1, x2: 10, y2: 2 },
+      { x1: -3, y1: -2, x2: 3, y2: 2 },
+    ]);
+  });
 });
 
 function root(pos: { x: number; y: number }, facing: 1 | -1): RuntimeHelperCollisionParent {
@@ -69,24 +89,28 @@ function proxy(
   facing: 1 | -1,
   options: ProxyOptions = {},
 ): RuntimeHelperCollisionProxy {
-  const { clsn1, clsn2, clsnProxy, ...actorOptions } = options;
+  const { clsn1, clsn2, clsnProxy, ownClsnScale, scale, ...actorOptions } = options;
   return {
     serialId,
     parentId,
     rootId,
     clsnProxy: clsnProxy ?? true,
+    ownClsnScale,
     destroyed: false,
     teamState: { disabled: false, standby: false, overKo: false, playerType: false },
     action: actionWithBoxes({ clsn1, clsn2 }),
     frameIndex: 0,
     pos,
     facing,
+    scale: scale ?? { x: 1, y: 1 },
     ...actorOptions,
   };
 }
 
 type ProxyOptions = Partial<Pick<RuntimeHelperCollisionProxy, "destroyed" | "teamState">> & {
   clsnProxy?: boolean;
+  ownClsnScale?: boolean;
+  scale?: { x: number; y: number };
   clsn1?: CollisionBox[];
   clsn2?: CollisionBox[];
 };

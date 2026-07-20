@@ -9059,6 +9059,8 @@ value = 0
     helper!.clsnProxy = true;
     helper!.parentId = "p1";
     helper!.rootId = "p1";
+    helper!.ownClsnScale = true;
+    helper!.scale = { x: 2, y: 0.5 };
     helper!.pos = { x: internals.p1.runtime.pos.x + 100, y: internals.p1.runtime.pos.y };
     helper!.facing = 1;
     helper!.frameIndex = 0;
@@ -9069,7 +9071,7 @@ value = 0
         : frame),
     };
 
-    expect(internals.runtimeHurtBoxes(internals.p1)).toContainEqual({ x1: 96, y1: -20, x2: 116, y2: 4 });
+    expect(internals.runtimeHurtBoxes(internals.p1)).toContainEqual({ x1: 92, y1: -10, x2: 132, y2: 2 });
   });
 
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {

@@ -9,10 +9,14 @@ export type RuntimeHelperCollisionParent = {
 
 export type RuntimeHelperCollisionProxy = Pick<
   RuntimeHelper,
-  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing"
+  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale"
 >;
 
 export type RuntimeHelperCollisionBoxType = "clsn1" | "clsn2";
+export type RuntimeCollisionScale = { x: number; y: number };
+export type RuntimeHelperCollisionScaleOptions = {
+  animationOwnerScale?: RuntimeCollisionScale;
+};
 
 export function runtimeHelperCurrentCollisionBoxes(
   helper: Pick<RuntimeHelper, "action" | "frameIndex">,
@@ -28,10 +32,11 @@ export function mergeRuntimeHelperProxyCollisionBoxes(
   baseBoxes: readonly CollisionBox[],
   helpers: readonly RuntimeHelperCollisionProxy[],
   boxType: RuntimeHelperCollisionBoxType,
+  options: RuntimeHelperCollisionScaleOptions = {},
 ): CollisionBox[] {
   return [
     ...baseBoxes.map((box) => ({ ...box })),
-    ...runtimeHelperProxyCollisionBoxes(parent, helpers, boxType),
+    ...runtimeHelperProxyCollisionBoxes(parent, helpers, boxType, options),
   ];
 }
 
@@ -39,6 +44,7 @@ export function runtimeHelperProxyCollisionBoxes(
   parent: RuntimeHelperCollisionParent,
   helpers: readonly RuntimeHelperCollisionProxy[],
   boxType: RuntimeHelperCollisionBoxType,
+  options: RuntimeHelperCollisionScaleOptions = {},
 ): CollisionBox[] {
   const childrenByParent = new Map<string, RuntimeHelperCollisionProxy[]>();
   for (const helper of helpers) {
@@ -56,12 +62,32 @@ export function runtimeHelperProxyCollisionBoxes(
     visited.add(helper.serialId);
     if (!isActiveProxy(parent, helper)) continue;
 
+    const scale = helper.ownClsnScale === true
+      ? helper.scale
+      : options.animationOwnerScale;
     for (const box of runtimeHelperCurrentCollisionBoxes(helper, boxType)) {
-      output.push(relativeCollisionBox(parent, helperWorldBox(helper, box)));
+      output.push(relativeCollisionBox(parent, helperWorldBox(helper, scaleCollisionBox(box, scale))));
     }
     queue.push(...(childrenByParent.get(helper.serialId) ?? []));
   }
   return output;
+}
+
+function scaleCollisionBox(box: CollisionBox, scale: RuntimeCollisionScale | undefined): CollisionBox {
+  const x1 = box.x1 * finiteScale(scale?.x);
+  const x2 = box.x2 * finiteScale(scale?.x);
+  const y1 = box.y1 * finiteScale(scale?.y);
+  const y2 = box.y2 * finiteScale(scale?.y);
+  return {
+    x1: Math.min(x1, x2),
+    x2: Math.max(x1, x2),
+    y1: Math.min(y1, y2),
+    y2: Math.max(y1, y2),
+  };
+}
+
+function finiteScale(value: number | undefined): number {
+  return value !== undefined && Number.isFinite(value) ? value : 1;
 }
 
 function isActiveProxy(parent: RuntimeHelperCollisionParent, helper: RuntimeHelperCollisionProxy): boolean {
