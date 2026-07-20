@@ -13,6 +13,7 @@ import type {
   MugenFightScreenAssets,
   MugenFightScreenResultDisplayDefinitions,
   MugenFightScreenTiming,
+  MugenFightScreenWinTypeDefinitions,
 } from "../model/MugenSystemAssets";
 import {
   matchesMugenStateIdentity,
@@ -6372,7 +6373,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     source?.winTime,
     source?.winSoundTime,
   ].some((value) => value !== undefined);
-  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw || display?.win || display?.result);
+  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw || display?.win || display?.result || display?.winType);
   if (!hasSourceTiming && !hasDisplay) return undefined;
 
   const koTimeFrames = source?.koTime ?? 0;
@@ -6383,6 +6384,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
   const winSound = runtimeAnnouncementSound(display?.win?.sound);
   const drawSound = runtimeAnnouncementSound(display?.draw?.sound) ?? timeOverSound;
   const resultSounds = runtimeResultDisplaySounds(display?.result);
+  const winTypeSounds = runtimeWinTypeSounds(display?.winType);
   return {
     koTimeFrames,
     koSoundTimeFrames,
@@ -6399,6 +6401,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     ...(winSound ? { winSound } : {}),
     ...(drawSound ? { drawSound } : {}),
     ...(resultSounds ? { resultSounds } : {}),
+    ...(winTypeSounds ? { winTypeSounds } : {}),
   };
 }
 
@@ -6419,6 +6422,27 @@ function runtimeResultDisplaySounds(
     aiWin: mapFamily(result.aiWin),
     aiLose: mapFamily(result.aiLose),
   };
+}
+
+function runtimeWinTypeSounds(
+  definitions: MugenFightScreenWinTypeDefinitions | undefined,
+): RuntimeRoundOutcomeTiming["winTypeSounds"] {
+  if (!definitions) return undefined;
+  const mapSide = (side: MugenFightScreenWinTypeDefinitions["p1"]) => Object.fromEntries(
+    Object.entries(side).flatMap(([name, asset]) => {
+      const sound = runtimeAnnouncementSound(asset?.sound);
+      if (!asset || !sound) return [];
+      return [[name, {
+        soundTimeFrames: asset.soundTime ?? asset.time ?? 0,
+        sound,
+      }]];
+    }),
+  ) as NonNullable<RuntimeRoundOutcomeTiming["winTypeSounds"]>["p1"];
+  const mapped: NonNullable<RuntimeRoundOutcomeTiming["winTypeSounds"]> = {
+    p1: mapSide(definitions.p1),
+    p2: mapSide(definitions.p2),
+  };
+  return Object.keys(mapped.p1).length > 0 || Object.keys(mapped.p2).length > 0 ? mapped : undefined;
 }
 
 function runtimeAnnouncementSound(

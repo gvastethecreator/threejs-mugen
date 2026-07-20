@@ -146,8 +146,8 @@ export class MugenAudioSystem {
     if (!roundAnnouncementSound) {
       this.lastRoundAnnouncementSoundKey = undefined;
     }
-    const roundOutcomeSound = resolveRoundOutcomeSound(snapshot);
-    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound && !roundAnnouncementSound && !roundOutcomeSound)) {
+    const roundOutcomeSounds = resolveRoundOutcomeSounds(snapshot);
+    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound && !roundAnnouncementSound && roundOutcomeSounds.length === 0)) {
       return;
     }
     for (const actor of soundActors) {
@@ -185,7 +185,7 @@ export class MugenAudioSystem {
     if (roundAnnouncementSound) {
       this.processRoundAnnouncementSound(roundAnnouncementSound, snapshot);
     }
-    if (roundOutcomeSound) {
+    for (const roundOutcomeSound of roundOutcomeSounds) {
       this.processRoundAnnouncementSound(roundOutcomeSound, snapshot);
     }
   }
@@ -453,28 +453,39 @@ function resolveRoundAnnouncementSound(
   return undefined;
 }
 
-function resolveRoundOutcomeSound(
+function resolveRoundOutcomeSounds(
   snapshot: MugenSnapshot,
-): {
+): Array<{
   kind: RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
   sound: RuntimeRoundAnnouncementSound;
   elapsed: number;
-} | undefined {
+}> {
   const outcome = snapshot.round?.postRound?.outcome;
   const winnerDisplay = outcome?.winnerDisplay;
+  const elapsed = snapshot.round?.postRound?.frame ?? 0;
+  const sounds: Array<{
+    kind: RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
+    sound: RuntimeRoundAnnouncementSound;
+    elapsed: number;
+  }> = [];
+  if (winnerDisplay?.winTypeSoundDue && winnerDisplay.winTypeSound) {
+    sounds.push({
+      kind: winnerDisplay.kind,
+      sound: winnerDisplay.winTypeSound,
+      elapsed,
+    });
+  }
   if (winnerDisplay?.phase === "active" && winnerDisplay.soundDue && winnerDisplay.sound) {
-    return {
+    sounds.push({
       kind: winnerDisplay.kind,
       sound: winnerDisplay.sound,
-      elapsed: snapshot.round?.postRound?.frame ?? 0,
-    };
+      elapsed,
+    });
   }
-  if (!outcome?.soundDue || !outcome.sound) return undefined;
-  return {
-    kind: outcome.kind,
-    sound: outcome.sound,
-    elapsed: snapshot.round?.postRound?.frame ?? 0,
-  };
+  if (outcome?.soundDue && outcome.sound) {
+    sounds.push({ kind: outcome.kind, sound: outcome.sound, elapsed });
+  }
+  return sounds;
 }
 
 function runtimeAudioChannelKey(actorId: string, channel: number): string {

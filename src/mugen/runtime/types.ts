@@ -669,6 +669,16 @@ export type RuntimeRoundResultDisplaySounds = {
   aiLose: { variants: RuntimeRoundResultDisplaySoundVariant[] };
 };
 
+export type RuntimeRoundWinTypeSound = {
+  soundTimeFrames: number;
+  sound: RuntimeRoundAnnouncementSound;
+};
+
+export type RuntimeRoundWinTypeSounds = {
+  p1: Partial<Record<RuntimeRoundWinTypeName, RuntimeRoundWinTypeSound>>;
+  p2: Partial<Record<RuntimeRoundWinTypeName, RuntimeRoundWinTypeSound>>;
+};
+
 export type RuntimeRoundOutcomeTiming = {
   koTimeFrames: number;
   koSoundTimeFrames: number;
@@ -685,6 +695,7 @@ export type RuntimeRoundOutcomeTiming = {
   winSound?: RuntimeRoundAnnouncementSound;
   drawSound?: RuntimeRoundAnnouncementSound;
   resultSounds?: RuntimeRoundResultDisplaySounds;
+  winTypeSounds?: RuntimeRoundWinTypeSounds;
 };
 
 export type RuntimeRoundWinnerDisplaySelection = {
@@ -704,6 +715,9 @@ export type RuntimeRoundWinnerDisplaySnapshot = {
   soundTime: number;
   soundDue: boolean;
   sound?: RuntimeRoundAnnouncementSound;
+  winTypeSoundTime?: number;
+  winTypeSoundDue?: boolean;
+  winTypeSound?: RuntimeRoundAnnouncementSound;
   selection?: RuntimeRoundWinnerDisplaySelection;
 };
 

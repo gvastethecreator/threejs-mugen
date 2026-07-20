@@ -239,6 +239,51 @@ describe("RuntimeRoundSystem", () => {
     expect(round.snapshot()).toMatchObject({ roundPhase: 4 });
   });
 
+  it("emits a selected win type sound edge before the winner display becomes active", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      postKoPhase4StartFrames: 0,
+      outcome: {
+        koTimeFrames: 1,
+        koSoundTimeFrames: 1,
+        doubleKoTimeFrames: 1,
+        doubleKoSoundTimeFrames: 1,
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 1,
+        timeOverSoundTimeFrames: 1,
+        winTimeFrames: 5,
+        winSoundTimeFrames: 5,
+        winTypeSounds: {
+          p1: {
+            perfect: {
+              soundTimeFrames: 2,
+              sound: { group: 7, index: 9, soundPrefix: "fs" },
+            },
+          },
+          p2: {},
+        },
+      },
+    });
+    round.finishIfNeeded(
+      { label: "P1", life: 600, side: 0, playerControlled: true, winType: "perfect" },
+      { label: "P2", life: 0, side: 1, playerControlled: false },
+    );
+
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay).toMatchObject({
+      phase: "pending",
+      displayStartFrame: 5,
+      winTypeSoundTime: 2,
+      winTypeSoundDue: false,
+      winTypeSound: { group: 7, index: 9, soundPrefix: "fs" },
+    });
+    round.tickTimer();
+    round.tickTimer();
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay).toMatchObject({
+      phase: "pending",
+      winTypeSoundTime: 2,
+      winTypeSoundDue: true,
+    });
+  });
+
   it("opens phase 4 before the post-KO terminal window completes", () => {
     const round = new RuntimeRoundSystem();
     round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });

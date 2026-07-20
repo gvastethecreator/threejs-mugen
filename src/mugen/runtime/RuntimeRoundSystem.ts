@@ -9,6 +9,8 @@ import type {
   RuntimeRoundResultDisplaySoundVariant,
   RuntimeRoundShutterSnapshot,
   RuntimeRoundWinTypeName,
+  RuntimeRoundWinTypeSound,
+  RuntimeRoundWinTypeSounds,
   RuntimeRoundWinnerDisplayKind,
   RuntimeRoundWinnerDisplaySelection,
   RuntimeRoundWinnerDisplaySnapshot,
@@ -428,6 +430,12 @@ export class RuntimeRoundSystem {
     const sound = kind === "draw"
       ? timing.drawSound
       : resolveWinnerDisplaySound(timing, this.winnerDisplaySelection);
+    const winTypeSound = kind === "draw"
+      ? undefined
+      : resolveWinnerDisplayWinTypeSound(timing, this.winnerDisplaySelection);
+    const winTypeSoundTime = winTypeSound
+      ? this.timing.postKoPhase4StartFrames + winTypeSound.soundTimeFrames
+      : undefined;
     return {
       schema: "RuntimeRoundWinnerDisplay/v0",
       kind,
@@ -436,6 +444,11 @@ export class RuntimeRoundSystem {
       soundTime,
       soundDue: Boolean(sound && this.postRoundFrame === soundTime),
       ...(sound ? { sound: { ...sound } } : {}),
+      ...(winTypeSound ? {
+        winTypeSoundTime,
+        winTypeSoundDue: this.postRoundFrame === winTypeSoundTime,
+        winTypeSound: { ...winTypeSound.sound },
+      } : {}),
       ...(this.winnerDisplaySelection ? { selection: { ...this.winnerDisplaySelection } } : {}),
     };
   }
@@ -720,6 +733,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
   const winSound = normalizeOutcomeSound(value.winSound);
   const drawSound = normalizeOutcomeSound(value.drawSound);
   const resultSounds = normalizeResultDisplaySounds(value.resultSounds);
+  const winTypeSounds = normalizeWinTypeSounds(value.winTypeSounds);
   return {
     koTimeFrames,
     koSoundTimeFrames,
@@ -736,6 +750,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
     ...(winSound ? { winSound } : {}),
     ...(drawSound ? { drawSound } : {}),
     ...(resultSounds ? { resultSounds } : {}),
+    ...(winTypeSounds ? { winTypeSounds } : {}),
   };
 }
 
@@ -763,6 +778,28 @@ function normalizeResultDisplaySounds(
     aiWin: normalizeFamily(value.aiWin),
     aiLose: normalizeFamily(value.aiLose),
   };
+}
+
+function normalizeWinTypeSounds(
+  value: RuntimeRoundOutcomeTiming["winTypeSounds"],
+): RuntimeRoundOutcomeTiming["winTypeSounds"] {
+  if (!value) return undefined;
+  const normalizeSide = (side: typeof value.p1) => Object.fromEntries(
+    Object.entries(side).flatMap(([name, sound]) => {
+      if (!sound) return [];
+      const normalizedSound = normalizeOutcomeSound(sound.sound);
+      if (!normalizedSound) return [];
+      return [[name, {
+        soundTimeFrames: boundedTimingFrames(sound.soundTimeFrames, 0),
+        sound: normalizedSound,
+      } satisfies RuntimeRoundWinTypeSound]];
+    }),
+  ) as typeof value.p1;
+  const normalized: RuntimeRoundWinTypeSounds = {
+    p1: normalizeSide(value.p1),
+    p2: normalizeSide(value.p2),
+  };
+  return Object.values(normalized).some((side) => Object.keys(side).length > 0) ? normalized : undefined;
 }
 
 function resolveRuntimeRoundOutcomeKind(
@@ -819,6 +856,16 @@ function resolveWinnerDisplaySound(
   if (selected) return selected;
   if (variant >= 2) return sounds?.variants[1]?.[side] ?? timing.winSound;
   return timing.winSound;
+}
+
+function resolveWinnerDisplayWinTypeSound(
+  timing: RuntimeRoundOutcomeTiming,
+  selection: RuntimeRoundWinnerDisplaySelection | undefined,
+): RuntimeRoundWinTypeSound | undefined {
+  const winType = selection?.winType;
+  if (!winType) return undefined;
+  const side = selection.winnerSide ?? selection.side;
+  return timing.winTypeSounds?.[side === 0 ? "p1" : "p2"][winType];
 }
 
 function boundedResultVariant(value: number | undefined): number {
