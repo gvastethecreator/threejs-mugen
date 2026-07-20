@@ -49,6 +49,7 @@ export type ExpressionContext = {
   helperVarEnabled?: boolean;
   helperKeyCtrl?: boolean;
   helperOwnProjectile?: boolean;
+  helperType?: number;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
@@ -881,6 +882,9 @@ class ExpressionParser {
       }
       if (key === "id") {
         return this.context.helperId ?? 0;
+      }
+      if (key === "helpertype") {
+        return this.context.helperType ?? 0;
       }
       if (key === "keyctrl") {
         return this.context.helperKeyCtrl === true ? 1 : 0;

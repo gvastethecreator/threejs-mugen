@@ -211,10 +211,11 @@ describe("ExpressionEvaluator", () => {
   it("evaluates profile-scoped IKEMEN HelperVar fields", () => {
     const state = runtimeState();
 
-    expect(evaluateExpression("HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1", {
+    expect(evaluateExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1", {
       self: state,
       isHelper: true,
       helperVarEnabled: true,
+      helperType: 1,
       helperId: 42,
       helperKeyCtrl: true,
       helperOwnProjectile: true,

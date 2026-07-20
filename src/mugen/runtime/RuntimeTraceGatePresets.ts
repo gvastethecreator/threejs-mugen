@@ -45780,6 +45780,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
     helperVarRoute: {
       branchStateNo: 1214,
       branchAnimNo: 934,
+      helperType: 1,
       keyCtrl: true,
       ownProjectile: true,
     },
@@ -45801,7 +45802,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       label: "Synthetic imported HelperVar route",
       source: "mixed",
       notes: [
-        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(id), HelperVar(keyctrl), and HelperVar(ownprojectile) after the Helper controller enables keyctrl and ownprojectile. It does not claim nested helper identity, dynamic helper-variable writes, or full MUGEN/IKEMEN HelperVar parity.",
+        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), and HelperVar(ownprojectile) after the Helper controller enables keyctrl and ownprojectile. It does not claim nested helper identity, dynamic helper-variable writes, or full MUGEN/IKEMEN HelperVar parity.",
       ],
     },
     gates: [
@@ -48417,6 +48418,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperVarRoute?: {
     branchStateNo: number;
     branchAnimNo?: number;
+    helperType?: number;
     keyCtrl?: boolean;
     ownProjectile?: boolean;
   };
@@ -56606,6 +56608,7 @@ ctrl = 0
 
 function helperVarRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperVarRoute"]>): string {
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const helperType = route.helperType ?? 1;
   const keyCtrl = route.keyCtrl ?? true;
   const ownProjectile = route.ownProjectile ?? true;
   return `
@@ -56618,6 +56621,7 @@ ctrl = 0
 
 [State 1200, HelperVar Branch]
 type = ChangeState
+trigger1 = HelperVar(helpertype) = ${helperType}
 trigger1 = HelperVar(id) = 42
 trigger1 = HelperVar(keyctrl) = ${keyCtrl ? 1 : 0}
 trigger1 = HelperVar(ownprojectile) = ${ownProjectile ? 1 : 0}

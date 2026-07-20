@@ -180,6 +180,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     serialId: "p1-helper-0",
     runOrderId: 3,
     helperId: 200,
+    helperType: 1,
     name: "Burst",
     actorKind: "helper",
     ownerId: "p1",
@@ -290,7 +291,7 @@ describe("HelperSystem", () => {
       states: [
         stateProgram(
           stateDef(6000),
-          [compiledControllerIr(6000, "VarSet", ["HelperVar(id) = 200 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
+          [compiledControllerIr(6000, "VarSet", ["HelperVar(helpertype) = 1 && HelperVar(id) = 200 && HelperVar(keyctrl) = 1 && HelperVar(ownprojectile) = 1"], { v: "0", value: "1" })],
         ),
       ],
     };
@@ -789,6 +790,7 @@ describe("HelperSystem", () => {
     expect(created).toMatchObject({
       serialId: "p1-helper-1",
       helperId: 440,
+      helperType: 1,
       name: "spark helper",
       actorKind: "helper",
       ownerId: "p1",

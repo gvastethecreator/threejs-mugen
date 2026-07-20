@@ -81,6 +81,7 @@ export type RuntimeHelper = {
   runOrderId: number;
   runOrder?: number;
   helperId?: number;
+  helperType?: number;
   name?: string;
   actorKind: "helper";
   teamState?: RuntimeTeamState;
@@ -316,6 +317,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     destroyed: false,
     runOrderId: input.runOrderId ?? Number.MAX_SAFE_INTEGER,
     helperId: operation?.helperId ?? firstNumber(findControllerParam(input.controller, "id")),
+    helperType: 1,
     name: operation?.name ?? stripMugenString(findControllerParam(input.controller, "name")),
     ...identity,
     teamState: {
@@ -1571,6 +1573,7 @@ function helperExpressionContext(
     rootTeamSide: runtimeActorTeamSide({ id: helper.rootId ?? helper.ownerId }),
     isHelper: true,
     helperId: helper.helperId,
+    helperType: helper.helperType,
     helperVarEnabled: options.runtimeProfile === "ikemen-go",
     helperKeyCtrl: options.runtimeProfile === "ikemen-go" && helper.keyCtrl === true,
     helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
