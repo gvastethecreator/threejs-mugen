@@ -693,6 +693,7 @@ function layoutAsset(section: Record<string, string>, prefix: string): MugenFigh
     scale: pairValue(section, `${prefix}.scale`),
     facing: facingValue(section, `${prefix}.facing`),
     vfacing: facingValue(section, `${prefix}.vfacing`),
+    window: integerQuadValue(section, `${prefix}.window`),
     blend: getValue(section, [`${prefix}.trans`]),
   };
   if (!Object.values(asset).some((value) => value !== undefined)) {
@@ -714,6 +715,18 @@ function pairValue(section: Record<string, string>, key: string): [number, numbe
 function integerPairValue(section: Record<string, string>, key: string): [number, number] | undefined {
   const value = pairValue(section, key);
   return value ? [Math.round(value[0]), Math.round(value[1])] : undefined;
+}
+
+function integerQuadValue(section: Record<string, string>, key: string): [number, number, number, number] | undefined {
+  const raw = getValue(section, [key]);
+  if (raw === undefined) return undefined;
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 4 || values.some((value) => !Number.isFinite(value))) return undefined;
+  const x1 = Math.round(values[0]!);
+  const y1 = Math.round(values[1]!);
+  const x2 = Math.round(values[2]!);
+  const y2 = Math.round(values[3]!);
+  return [Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1)];
 }
 
 function fontValue(section: Record<string, string>, key: string): [number, number, number] | undefined {

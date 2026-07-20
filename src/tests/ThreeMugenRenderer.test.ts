@@ -6,6 +6,7 @@ import {
   resolveRoundShutterPresentation,
 } from "../game/render/ThreeMugenRenderer";
 import {
+  clipFightScreenPlacement,
   projectFightScreenSprite,
   resolveFightScreenAnnouncementSelection,
   resolveRoundDisplayAsset,
@@ -254,6 +255,33 @@ describe("FightScreenAnnouncementRenderer asset selection", () => {
       scaleX: 64,
       scaleY: 24,
     });
+  });
+
+  it("clips FightScreen layout placements to a local window and returns UV bounds", () => {
+    const placement = projectFightScreenSprite(
+      { x: 0, y: 0, width: 640, height: 360, zoom: 1 },
+      [320, 240],
+      { width: 80, height: 40, axisX: 0, axisY: 0 },
+      { offsetX: 0, offsetY: 0, flip: "" },
+      { offset: [160, 100], scale: [1, 1], facing: 1, vfacing: 1 },
+    );
+
+    expect(clipFightScreenPlacement(
+      placement,
+      { x: 0, y: 0, width: 640, height: 360, zoom: 1 },
+      [320, 240],
+      [150, 90, 30, 20],
+    )).toMatchObject({
+      width: 40,
+      height: 15,
+      uv: { u1: 0, u2: 0.25, v1: 0.75, v2: 1 },
+    });
+    expect(clipFightScreenPlacement(
+      placement,
+      { x: 0, y: 0, width: 640, height: 360, zoom: 1 },
+      [320, 240],
+      [0, 0, 20, 20],
+    )).toBeUndefined();
   });
 });
 

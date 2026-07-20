@@ -59,6 +59,7 @@ round.default.top.offset = 160, 120
 round.default.top.scale = 1, 1
 round.default.bg0.anim = 7002
 round.default.bg0.offset = 160, 100
+round.default.bg0.window = 80, 40, 240, 160
 round1.snd = 8, 1
 round1.anim = 7002
 round1.offset = 161, 101
@@ -186,7 +187,7 @@ File = standard.sff
             scale: [1, 1],
           },
           background: [
-            { animationNo: 7002, offset: [160, 100] },
+            { animationNo: 7002, offset: [160, 100], window: [80, 40, 160, 120] },
           ],
         },
         roundSingle: { animationNo: 7002, sound: [8, 3] },

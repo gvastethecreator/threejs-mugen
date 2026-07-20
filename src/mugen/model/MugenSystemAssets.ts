@@ -53,6 +53,7 @@ export type MugenFightScreenLayoutAsset = {
   scale?: [number, number];
   facing?: 1 | -1;
   vfacing?: 1 | -1;
+  window?: [number, number, number, number];
   blend?: string;
 };
 

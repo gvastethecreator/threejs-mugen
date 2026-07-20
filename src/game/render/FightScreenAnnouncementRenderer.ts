@@ -63,6 +63,8 @@ export type FightScreenAnnouncementDiagnostics = {
   backgroundResolved?: number;
   topLayerCount?: number;
   topResolved?: number;
+  windowApplied?: number;
+  windowCulled?: number;
   fallbackReason?: string;
 };
 
@@ -73,6 +75,22 @@ export type FightScreenAnnouncementPlacement = {
   height: number;
   scaleX: number;
   scaleY: number;
+};
+
+export type FightScreenPlacementUv = {
+  u1: number;
+  v1: number;
+  u2: number;
+  v2: number;
+};
+
+type FightScreenClippedPlacement = FightScreenAnnouncementPlacement & { uv?: FightScreenPlacementUv };
+
+const FULL_FIGHT_SCREEN_PLACEMENT_UV: FightScreenPlacementUv = {
+  u1: 0,
+  v1: 0,
+  u2: 1,
+  v2: 1,
 };
 
 type FightScreenAnnouncementSelection = {
@@ -95,6 +113,14 @@ type FightScreenLayoutRenderResult = {
   backgroundResolved: number;
   topLayerCount: number;
   topResolved: number;
+  windowApplied: number;
+  windowCulled: number;
+};
+
+type FightScreenLayoutCollectionResult = {
+  resolved: number;
+  windowApplied: number;
+  windowCulled: number;
 };
 
 type FightScreenTextRenderResult = {
@@ -137,6 +163,8 @@ export class FightScreenAnnouncementRenderer {
     backgroundResolved: 0,
     topLayerCount: 0,
     topResolved: 0,
+    windowApplied: 0,
+    windowCulled: 0,
   };
 
   constructor(private readonly textures: TextureStore) {
@@ -462,7 +490,7 @@ export class FightScreenAnnouncementRenderer {
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
   ): Promise<FightScreenLayoutRenderResult> {
     this.hideLayoutMeshes();
-    const backgroundResolved = await this.renderLayoutCollection(
+    const backgroundResult = await this.renderLayoutCollection(
       layers.background,
       this.backgroundMeshes,
       this.backgroundGroup,
@@ -470,7 +498,7 @@ export class FightScreenAnnouncementRenderer {
       viewport,
       "background",
     );
-    const topResolved = await this.renderLayoutCollection(
+    const topResult = await this.renderLayoutCollection(
       layers.top ? [layers.top] : [],
       this.topMeshes,
       this.topGroup,
@@ -480,12 +508,14 @@ export class FightScreenAnnouncementRenderer {
     );
     this.layerDiagnostics = {
       backgroundLayerCount: layers.background.length,
-      backgroundResolved,
+      backgroundResolved: backgroundResult.resolved,
       topLayerCount: layers.top ? 1 : 0,
-      topResolved,
+      topResolved: topResult.resolved,
+      windowApplied: backgroundResult.windowApplied + topResult.windowApplied,
+      windowCulled: backgroundResult.windowCulled + topResult.windowCulled,
     };
-    this.backgroundGroup.visible = backgroundResolved > 0;
-    this.topGroup.visible = topResolved > 0;
+    this.backgroundGroup.visible = backgroundResult.resolved > 0;
+    this.topGroup.visible = topResult.resolved > 0;
     return this.layerDiagnostics;
   }
 
@@ -496,8 +526,10 @@ export class FightScreenAnnouncementRenderer {
     frameTick: number,
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
     kind: "background" | "top",
-  ): Promise<number> {
+  ): Promise<FightScreenLayoutCollectionResult> {
     let resolved = 0;
+    let windowApplied = 0;
+    let windowCulled = 0;
     for (const [index, layout] of layouts.entries()) {
       const resolvedFrame = resolveFightScreenLayoutFrame(layout, frameTick, this.animations);
       if (!resolvedFrame) continue;
@@ -513,11 +545,18 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame,
         layout,
       );
+      const clippedPlacement = clipFightScreenPlacement(placement, viewport, this.coordinate, layout.window);
+      if (!clippedPlacement) {
+        if (layout.window) windowCulled += 1;
+        continue;
+      }
+      if (layout.window) windowApplied += 1;
       const mesh = this.ensureLayoutMesh(index, meshPool, group);
       const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
       mesh.visible = true;
-      mesh.position.set(placement.x, placement.y, 0);
-      mesh.scale.set(placement.scaleX, placement.scaleY, 1);
+      mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
+      mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
+      applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
       mesh.material.color.setHex(0xffffff);
       mesh.material.opacity = 1;
@@ -542,7 +581,7 @@ export class FightScreenAnnouncementRenderer {
       const mesh = meshPool[index];
       if (mesh) mesh.visible = false;
     }
-    return resolved;
+    return { resolved, windowApplied, windowCulled };
   }
 
   private ensureLayoutMesh(
@@ -578,6 +617,8 @@ export class FightScreenAnnouncementRenderer {
       backgroundResolved: 0,
       topLayerCount: 0,
       topResolved: 0,
+      windowApplied: 0,
+      windowCulled: 0,
     };
   }
 
@@ -817,6 +858,53 @@ export function projectFightScreenSprite(
   };
 }
 
+export function clipFightScreenPlacement(
+  placement: FightScreenAnnouncementPlacement,
+  viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
+  coordinate: [number, number],
+  window: [number, number, number, number] | undefined,
+): FightScreenClippedPlacement | undefined {
+  if (!window) return placement;
+  const zoom = Math.max(0.01, viewport.zoom);
+  const worldWidth = viewport.width / zoom;
+  const worldHeight = viewport.height / zoom;
+  const coordinateWidth = positiveCoordinate(coordinate[0], 320);
+  const coordinateHeight = positiveCoordinate(coordinate[1], 240);
+  const coordinateScaleX = worldWidth / coordinateWidth;
+  const coordinateScaleY = worldHeight / coordinateHeight;
+  const viewportLeft = viewport.x - worldWidth / 2;
+  const viewportTop = viewport.y + worldHeight / 2;
+  const windowLeft = viewportLeft + window[0] * coordinateScaleX;
+  const windowRight = windowLeft + window[2] * coordinateScaleX;
+  const windowTop = viewportTop - window[1] * coordinateScaleY;
+  const windowBottom = windowTop - window[3] * coordinateScaleY;
+  const spriteLeft = placement.x - placement.width / 2;
+  const spriteRight = placement.x + placement.width / 2;
+  const spriteBottom = placement.y - placement.height / 2;
+  const spriteTop = placement.y + placement.height / 2;
+  const clippedLeft = Math.max(spriteLeft, windowLeft);
+  const clippedRight = Math.min(spriteRight, windowRight);
+  const clippedBottom = Math.max(spriteBottom, windowBottom);
+  const clippedTop = Math.min(spriteTop, windowTop);
+  if (clippedRight <= clippedLeft || clippedTop <= clippedBottom || placement.width <= 0 || placement.height <= 0) {
+    return undefined;
+  }
+  const u1 = (clippedLeft - spriteLeft) / placement.width;
+  const u2 = (clippedRight - spriteLeft) / placement.width;
+  const v1 = (clippedBottom - spriteBottom) / placement.height;
+  const v2 = (clippedTop - spriteBottom) / placement.height;
+  return {
+    ...placement,
+    x: (clippedLeft + clippedRight) / 2,
+    y: (clippedBottom + clippedTop) / 2,
+    width: clippedRight - clippedLeft,
+    height: clippedTop - clippedBottom,
+    scaleX: signedMagnitude(placement.scaleX, clippedRight - clippedLeft),
+    scaleY: signedMagnitude(placement.scaleY, clippedTop - clippedBottom),
+    uv: { u1, v1, u2, v2 },
+  };
+}
+
 function announcementFrameTick(track: RuntimeRoundAnnouncementSnapshot["round"]): number {
   return Math.max(0, track.elapsed - track.animationStart);
 }
@@ -831,6 +919,19 @@ function finiteScale(value: number | undefined): number {
 
 function isAdditiveBlend(value: string | undefined): boolean {
   return value?.toLowerCase().includes("add") ?? false;
+}
+
+function signedMagnitude(value: number, magnitude: number): number {
+  return value < 0 ? -magnitude : magnitude;
+}
+
+function applyFightScreenMeshUv(geometry: THREE.PlaneGeometry, uv: FightScreenPlacementUv): void {
+  const attribute = geometry.getAttribute("uv") as THREE.BufferAttribute;
+  attribute.setXY(0, uv.u1, uv.v2);
+  attribute.setXY(1, uv.u2, uv.v2);
+  attribute.setXY(2, uv.u1, uv.v1);
+  attribute.setXY(3, uv.u2, uv.v1);
+  attribute.needsUpdate = true;
 }
 
 function hasFightScreenDisplayContent(asset: MugenFightScreenDisplayAsset | undefined): boolean {
