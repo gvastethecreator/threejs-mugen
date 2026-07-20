@@ -2,6 +2,7 @@
 
 Status: resolved at bounded HelperVar field scope
 Date: 2026-07-20
+Feature commit: `2ce64ca1`
 
 ## Question
 
