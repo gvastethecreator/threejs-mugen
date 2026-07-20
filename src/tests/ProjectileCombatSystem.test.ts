@@ -198,6 +198,8 @@ describe("ProjectileCombatSystem", () => {
       sourceActorId: "p1",
       sourceRootId: "p1",
       sourceRootOwned: true,
+      sourceAttr: "S,SP",
+      sourceGuardKo: false,
     });
   });
 

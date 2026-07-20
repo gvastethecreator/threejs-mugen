@@ -244,7 +244,7 @@ describe("DirectCombatSystem", () => {
     const attacker = actor("p1", "Attacker", { playerNo: 1 });
     const defender = actor("p2", "Defender", { life: 40 });
 
-    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, move(), {
+    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, move({ attr: "S,HA" }), {
       kind: "hit",
       damage: 20,
       kill: true,
@@ -259,6 +259,8 @@ describe("DirectCombatSystem", () => {
       sourceActorId: "p1",
       sourceRootId: "p1",
       sourceRootOwned: true,
+      sourceAttr: "S,HA",
+      sourceGuardKo: false,
     });
   });
 

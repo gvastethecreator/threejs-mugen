@@ -212,6 +212,8 @@ export type RuntimeGetHitVars = {
   sourceActorId?: string;
   sourceRootId?: string;
   sourceRootOwned?: boolean;
+  sourceAttr?: string;
+  sourceGuardKo?: boolean;
   hitId?: number;
   chainId?: number;
   hitCount?: number;

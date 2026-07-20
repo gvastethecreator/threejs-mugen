@@ -21,11 +21,13 @@ export type RuntimeRoundHitSourceActor = {
   playerNo?: number;
   rootId?: string;
   rootOwned?: boolean;
+  attr?: string;
+  guardKo?: boolean;
 };
 
 export function runtimeRoundHitSourceMetadata(
   source: RuntimeRoundHitSourceActor,
-): Pick<NonNullable<CharacterRuntimeState["hitVars"]>, "sourcePlayerNo" | "sourceActorId" | "sourceRootId" | "sourceRootOwned"> | undefined {
+): Pick<NonNullable<CharacterRuntimeState["hitVars"]>, "sourcePlayerNo" | "sourceActorId" | "sourceRootId" | "sourceRootOwned" | "sourceAttr" | "sourceGuardKo"> | undefined {
   if (source.playerNo === undefined) return undefined;
   const rootId = source.rootId ?? source.id;
   return {
@@ -33,6 +35,8 @@ export function runtimeRoundHitSourceMetadata(
     sourceActorId: source.id,
     sourceRootId: rootId,
     sourceRootOwned: source.rootOwned ?? source.id === rootId,
+    ...(source.attr === undefined ? {} : { sourceAttr: source.attr }),
+    ...(source.guardKo === undefined ? {} : { sourceGuardKo: source.guardKo }),
   };
 }
 
@@ -107,5 +111,13 @@ function recordRuntimeHitStateKoCause(
   const sourceSide = runtimeTeamSideFromId(source.sourceRootId);
   if (victimSide !== undefined && victimSide === sourceSide) {
     winner.runtime.roundWinType = "teammate";
+    return;
+  }
+  if (source.sourceGuardKo === true) {
+    winner.runtime.roundWinType = "cheese";
+    return;
+  }
+  if (source.sourceAttr !== undefined) {
+    winner.runtime.roundWinType = resolveRuntimeRoundWinTypeFromAttack(source.sourceAttr);
   }
 }

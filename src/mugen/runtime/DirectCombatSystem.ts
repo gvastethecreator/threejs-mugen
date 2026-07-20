@@ -205,6 +205,7 @@ export class RuntimeDirectCombatWorld {
       damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
+      sourceGuardKo: defender.runtime.life <= 0,
     }, attacker);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
@@ -255,6 +256,7 @@ export class RuntimeDirectCombatWorld {
       damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
+      sourceGuardKo: false,
     }, attacker);
     defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
     applyHitSnap(attacker, defender, move);
@@ -343,7 +345,7 @@ export function interruptRuntimeDirectMove(actor: RuntimeDirectCombatActor, expe
 
 function runtimeGetHitVarsFromMove(
   move: DemoMove,
-  timing: { guarded?: boolean; damage: number; hitShakeTime: number; hitTime: number },
+  timing: { guarded?: boolean; damage: number; hitShakeTime: number; hitTime: number; sourceGuardKo?: boolean },
   source?: RuntimeDirectCombatActor,
 ): CharacterRuntimeState["hitVars"] {
   const sourceMetadata = source === undefined ? undefined : runtimeRoundHitSourceMetadata({
@@ -351,6 +353,8 @@ function runtimeGetHitVarsFromMove(
     playerNo: source.playerNo,
     rootId: source.rootId,
     rootOwned: source.rootId === undefined || source.rootId === source.id,
+    attr: move.attr ?? "S,NA",
+    guardKo: timing.sourceGuardKo,
   });
   return {
     damage: Math.max(0, Math.round(timing.damage)),

@@ -43,6 +43,25 @@ describe("RuntimeRoundWinTypeSystem", () => {
   });
 
   it.each([
+    ["hyper", "S,HA", false],
+    ["cheese", "S,NA", true],
+  ] as const)("preserves rival %s cause through hit-state KO metadata", (_label, sourceAttr, sourceGuardKo) => {
+    const victim = actor("p1", 0, "H", true, 1, {
+      sourcePlayerNo: 2,
+      sourceActorId: "p2",
+      sourceRootId: "p2",
+      sourceRootOwned: true,
+      sourceAttr,
+      sourceGuardKo,
+    });
+    const winner = actor("p2", 100, "I");
+
+    recordRuntimeRootSelfKoCause(victim, winner, 100, victim.id);
+
+    expect(winner.runtime.roundWinType).toBe(_label);
+  });
+
+  it.each([
     ["helper-owned", actor("p1-helper-0", 0, "I", false), actor("p2", 100, "I"), "p1-helper-0"],
     ["received-hit state", actor("p1", 0, "H"), actor("p2", 100, "I"), "p1"],
     ["wrong source owner", actor("p1", 0, "I"), actor("p2", 100, "I"), "p2"],
