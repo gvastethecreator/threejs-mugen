@@ -1,7 +1,7 @@
 # Global checkpoint after T355
 
 Date: 2026-07-20
-Head: `991e478b`
+Head: `af02e73d`
 Feature commit: `aaf262e8`
 Documentation commit: `991e478b`
 Status: green for the bounded Ikemen root HitDef attack-box block
