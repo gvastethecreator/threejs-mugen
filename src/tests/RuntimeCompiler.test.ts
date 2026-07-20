@@ -819,6 +819,7 @@ value = 1
       controllerType: "targetguardpointsadd",
       requestedId: 3,
       value: -20,
+      absolute: false,
       redirectPlayerIdExpression: "56",
     });
     expect(redirectedDizzyPoints.operation).toEqual({
@@ -826,6 +827,7 @@ value = 1
       controllerType: "targetdizzypointsadd",
       requestedId: 3,
       value: -30,
+      absolute: false,
       redirectPlayerIdExpression: "56",
     });
     expect(redirectedPower.operation).toEqual({

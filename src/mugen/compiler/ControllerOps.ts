@@ -89,8 +89,8 @@ export type TargetControllerOp =
   | ({ kind: "target"; controllerType: "targetdrop"; excludeId?: number; keepOne: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean; dizzy?: boolean; redLife?: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetredlifeadd"; requestedId?: number; value: number; absolute: boolean } & RedirectableTargetControllerOp)
-  | ({ kind: "target"; controllerType: "targetguardpointsadd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
-  | ({ kind: "target"; controllerType: "targetdizzypointsadd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
+  | ({ kind: "target"; controllerType: "targetguardpointsadd"; requestedId?: number; value: number; absolute?: boolean } & RedirectableTargetControllerOp)
+  | ({ kind: "target"; controllerType: "targetdizzypointsadd"; requestedId?: number; value: number; absolute?: boolean } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number } & RedirectableTargetControllerOp)
   | ({ kind: "target"; controllerType: "targetveladd"; requestedId?: number; x: number; y: number } & RedirectableTargetControllerOp)
@@ -1743,6 +1743,7 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
       controllerType: "targetguardpointsadd",
       requestedId,
       value: firstNumber(findParam(controller, "value")) ?? 0,
+      absolute: (firstNumber(findParam(controller, "absolute")) ?? 0) !== 0,
       ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     };
   }
@@ -1754,6 +1755,7 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
       controllerType: "targetdizzypointsadd",
       requestedId,
       value: firstNumber(findParam(controller, "value")) ?? 0,
+      absolute: (firstNumber(findParam(controller, "absolute")) ?? 0) !== 0,
       ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     };
   }

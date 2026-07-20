@@ -153,6 +153,74 @@ describe("TargetSystem", () => {
     expect(target.runtime.dizzyPoints).toBe(100);
   });
 
+  it("applies target resource absolute flags and incoming scaling", () => {
+    const actor = targetActor("p1", {
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
+    });
+    const target = targetActor("p2", {
+      runtime: {
+        life: 100,
+        redLife: 200,
+        guardPoints: 100,
+        guardPointsMax: 200,
+        dizzyPoints: 100,
+        dizzyPointsMax: 200,
+        defenseMultiplier: 2,
+      },
+    });
+
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetRedLifeAdd", { id: "77", value: "-30" }),
+    });
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetGuardPointsAdd", { id: "77", value: "-20" }),
+    });
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetDizzyPointsAdd", { id: "77", value: "-20", absolute: "1" }),
+    });
+
+    expect(target.runtime.redLife).toBe(140);
+    expect(target.runtime.guardPoints).toBe(60);
+    expect(target.runtime.dizzyPoints).toBe(80);
+  });
+
+  it("blocks target resource damage through No*Damage flags", () => {
+    const actor = targetActor("p1", { targets: [{ actorId: "p2", targetId: 77, age: 0 }] });
+    const target = targetActor("p2", {
+      runtime: {
+        life: 100,
+        redLife: 100,
+        guardPoints: 100,
+        dizzyPoints: 100,
+        assertSpecial: {
+          flags: ["noredlifedamage", "noguardpointsdamage", "nodizzypointsdamage"],
+          globalFlags: [],
+          noRedLifeDamage: true,
+          noGuardPointsDamage: true,
+          noDizzyPointsDamage: true,
+        },
+      },
+    });
+
+    for (const type of ["TargetRedLifeAdd", "TargetGuardPointsAdd", "TargetDizzyPointsAdd"]) {
+      applyRuntimeTargetController({
+        actor,
+        candidateTargets: [target],
+        controller: controller(type, { id: "77", value: "-20" }),
+      });
+    }
+
+    expect(target.runtime.redLife).toBe(100);
+    expect(target.runtime.guardPoints).toBe(100);
+    expect(target.runtime.dizzyPoints).toBe(100);
+  });
+
   it("wraps target memory mutation behind RuntimeTargetWorld", () => {
     const world = new RuntimeTargetWorld();
     const actor = targetActor("p1", {

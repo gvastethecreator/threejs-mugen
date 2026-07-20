@@ -45,6 +45,38 @@ flag3 = ProjTypeCollision
     expect(actor.runtime.renderOpacity).toBe(0);
   });
 
+  it("normalizes target resource damage guards", () => {
+    const actor = actorWithProgram("imported", `
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+
+[State 0, Target Resource Guards]
+type = AssertSpecial
+trigger1 = 1
+flag = NoRedLifeDamage
+flag2 = NoGuardPointsDamage
+flag3 = NoDizzyPointsDamage
+`);
+
+    const result = new RuntimeAssertSpecialWorld().applyPreFacing({
+      actor,
+      opponent: actorWithProgram("demo", ""),
+      tick: 1,
+      triggersPass: () => true,
+      executeController: (controller, target) => executeControllerIr(controller, target.runtime, () => undefined),
+    });
+
+    expect(result).toEqual({ applied: 1, skipped: false });
+    expect(actor.runtime.assertSpecial).toMatchObject({
+      noRedLifeDamage: true,
+      noGuardPointsDamage: true,
+      noDizzyPointsDamage: true,
+    });
+  });
+
   it("normalizes NoFallDefenceUp for Common1 recovery", () => {
     const actor = actorWithProgram("imported", `
 [Statedef 0]

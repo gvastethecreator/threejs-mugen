@@ -1,6 +1,7 @@
 import type { BindToTargetControllerOp, TargetControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
+import { scaleRuntimeIncomingAmount } from "./CombatResolver";
 import {
   applyRuntimeDizzyPointsAdd,
   applyRuntimeGuardPointsAdd,
@@ -486,19 +487,24 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       const typed = options.operation?.controllerType === "targetredlifeadd" ? options.operation : undefined;
       const value = typed?.value ?? firstNumber(findControllerParam(options.controller, "value")) ?? 0;
       const absolute = typed?.absolute ?? (firstNumber(findControllerParam(options.controller, "absolute")) ?? 0) !== 0;
-      applyRuntimeRedLifeAdd(target.runtime, value, absolute);
+      if (target.runtime.assertSpecial?.noRedLifeDamage !== true) {
+        const delta = resolveTargetResourceDelta(target.runtime, value, absolute, true);
+        applyRuntimeRedLifeAdd(target.runtime, delta, true);
+      }
     } else if (type === "targetguardpointsadd") {
-      const value =
-        options.operation?.controllerType === "targetguardpointsadd"
-          ? options.operation.value
-          : firstNumber(findControllerParam(options.controller, "value")) ?? 0;
-      applyRuntimeGuardPointsAdd(target.runtime, value);
+      const typed = options.operation?.controllerType === "targetguardpointsadd" ? options.operation : undefined;
+      const value = typed?.value ?? firstNumber(findControllerParam(options.controller, "value")) ?? 0;
+      const absolute = typed?.absolute ?? (firstNumber(findControllerParam(options.controller, "absolute")) ?? 0) !== 0;
+      if (target.runtime.assertSpecial?.noGuardPointsDamage !== true) {
+        applyRuntimeGuardPointsAdd(target.runtime, resolveTargetResourceDelta(target.runtime, value, absolute, false));
+      }
     } else if (type === "targetdizzypointsadd") {
-      const value =
-        options.operation?.controllerType === "targetdizzypointsadd"
-          ? options.operation.value
-          : firstNumber(findControllerParam(options.controller, "value")) ?? 0;
-      applyRuntimeDizzyPointsAdd(target.runtime, value);
+      const typed = options.operation?.controllerType === "targetdizzypointsadd" ? options.operation : undefined;
+      const value = typed?.value ?? firstNumber(findControllerParam(options.controller, "value")) ?? 0;
+      const absolute = typed?.absolute ?? (firstNumber(findControllerParam(options.controller, "absolute")) ?? 0) !== 0;
+      if (target.runtime.dizzyPoints !== 0 && target.runtime.assertSpecial?.noDizzyPointsDamage !== true) {
+        applyRuntimeDizzyPointsAdd(target.runtime, resolveTargetResourceDelta(target.runtime, value, absolute, false));
+      }
     } else if (type === "targetpoweradd") {
       const value =
         options.operation?.controllerType === "targetpoweradd"
@@ -571,6 +577,25 @@ function runtimeTargetResourceConstants<TActor extends RuntimeTargetControllerAc
     }
   }
   return constants;
+}
+
+function resolveTargetResourceDelta(
+  runtime: CharacterRuntimeState,
+  value: number,
+  absolute: boolean,
+  boundToLife: boolean,
+): number {
+  let delta = absolute ? value : scaleRuntimeIncomingAmount(runtime, value);
+  if (delta > 0 && delta < 1) {
+    delta = 1;
+  }
+  if (boundToLife && delta > runtime.life) {
+    delta = runtime.life;
+  }
+  if (delta >= runtime.life && runtime.life > 0) {
+    delta = runtime.life - 1;
+  }
+  return Math.round(delta);
 }
 
 export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetWorldActor>(

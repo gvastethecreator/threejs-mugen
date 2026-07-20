@@ -270,6 +270,8 @@ export type RuntimeAssertSpecial = {
   noCrouchGuard?: boolean;
   noAirGuard?: boolean;
   noDizzyPointsDamage?: boolean;
+  noGuardPointsDamage?: boolean;
+  noRedLifeDamage?: boolean;
   unguardable?: boolean;
   noKo?: boolean;
   noKoSlow?: boolean;
