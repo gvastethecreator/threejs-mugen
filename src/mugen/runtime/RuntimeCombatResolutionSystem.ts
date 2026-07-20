@@ -141,6 +141,7 @@ export type RuntimeCombatResolutionReversalClashInput<TActor extends RuntimeComb
   reverser: TActor;
   getter: TActor;
   reversalWorld: RuntimeReversalWorld;
+  getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   log: (line: string) => void;
@@ -235,10 +236,12 @@ export class RuntimeCombatResolutionWorld {
       : input.reverser.hasHit) {
       return { kind: "skipped", reason: "already-hit" };
     }
+    const getterAttackBoxes = resolveRuntimeAttackBoxes(input.getter, getterMove, input.getCollisionBoxes)
+      .map((box) => runtimeWorldBox(input.getter.runtime, box));
     const active = input.reversalWorld.findActive(
       input.reverser,
       getterMove,
-      runtimeWorldBox(input.getter.runtime, getterMove.hitbox),
+      getterAttackBoxes,
       {
         isMoveActive: runtimeMoveIsActive,
         worldBox: runtimeWorldBox,
@@ -309,9 +312,10 @@ export class RuntimeCombatResolutionWorld {
     }
 
     const attackBoxes = resolveRuntimeAttackBoxes(attacker, move, input.getCollisionBoxes);
-    const attackBox = attackBoxes[0] ? runtimeWorldBox(attacker.runtime, attackBoxes[0]) : undefined;
-    const reversal = attackBox
-      ? input.reversalWorld.findActive(defender, move, attackBox, {
+    const attackWorldBoxes = attackBoxes
+      .map((box) => runtimeWorldBox(attacker.runtime, box));
+    const reversal = attackWorldBoxes.length > 0
+      ? input.reversalWorld.findActive(defender, move, attackWorldBoxes, {
         isMoveActive: runtimeMoveIsActive,
         worldBox: runtimeWorldBox,
         boxesIntersect: collisionBoxesIntersect,
@@ -513,8 +517,9 @@ export class RuntimeCombatResolutionWorld {
       return undefined;
     }
     const attackBoxes = resolveRuntimeAttackBoxes(attacker, move, input.getCollisionBoxes);
-    const attackBox = attackBoxes[0] ? runtimeWorldBox(attacker.runtime, attackBoxes[0]) : undefined;
-    if (attackBox && input.reversalWorld.findActive(defender, move, attackBox, {
+    const attackWorldBoxes = attackBoxes
+      .map((box) => runtimeWorldBox(attacker.runtime, box));
+    if (attackWorldBoxes.length > 0 && input.reversalWorld.findActive(defender, move, attackWorldBoxes, {
       isMoveActive: runtimeMoveIsActive,
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,

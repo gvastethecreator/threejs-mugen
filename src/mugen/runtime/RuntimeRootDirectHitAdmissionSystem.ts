@@ -100,7 +100,7 @@ export class RuntimeRootDirectHitAdmissionWorld {
     for (const getter of getters.filter(isActiveReversal)) {
       for (const attacker of roots.filter(isActiveReversal)) {
         if (attacker === getter) continue;
-        const reason = inspectReversalClash(attacker, getter);
+        const reason = inspectReversalClash(attacker, getter, input);
         reversalClashDecisions.push({ attackerId: attacker.id, getterId: getter.id, reason });
         if (reason === "admitted") admittedReversalClashPairIds.push(`${attacker.id}->${getter.id}`);
       }
@@ -119,9 +119,10 @@ export class RuntimeRootDirectHitAdmissionWorld {
   }
 }
 
-function inspectReversalClash(
-  attacker: RuntimeRootDirectHitAdmissionActor,
-  getter: RuntimeRootDirectHitAdmissionActor,
+function inspectReversalClash<TActor extends RuntimeRootDirectHitAdmissionActor>(
+  attacker: TActor,
+  getter: TActor,
+  input: RuntimeRootDirectHitAdmissionInput<TActor>,
 ): RuntimeRootReversalClashAdmissionReason {
   if (attacker.side === getter.side) return "same-side";
   const attackerMove = attacker.currentMove!;
@@ -131,7 +132,9 @@ function inspectReversalClash(
   if (!hasRuntimeDepthContact(attacker, attackerMove, getter, getterMove.attackDepth ?? getter.runtime.combatDepth?.attack)) {
     return "no-contact";
   }
-  return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, attackerMove.hitbox), getter.runtime, [getterMove.hitbox])
+  const attackerBoxes = resolveRootAttackBoxes(attacker, attackerMove, input);
+  const getterBoxes = resolveRootAttackBoxes(getter, getterMove, input);
+  return hasRootCollisionBoxPair(attacker, attackerBoxes, getter, getterBoxes)
     ? "admitted"
     : "no-contact";
 }

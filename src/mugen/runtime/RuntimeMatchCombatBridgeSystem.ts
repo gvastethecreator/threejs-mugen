@@ -105,6 +105,7 @@ export class RuntimeMatchCombatBridgeWorld {
           reverser,
           getter,
           reversalWorld: input.reversalWorld,
+          getCollisionBoxes: input.getCollisionBoxes,
           hitStateTransitionWorld: input.hitStateTransitionWorld,
           stateHooks: input.combatStateHooks,
           log: input.log,

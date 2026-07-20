@@ -166,7 +166,7 @@ export class RuntimeReversalWorld {
   findActive<TActor extends RuntimeReversalActor>(
     defender: TActor,
     incomingMove: DemoMove,
-    incomingAttackBox: CollisionBox,
+    incomingAttackBox: CollisionBox | readonly CollisionBox[],
     hooks: Pick<RuntimeReversalHooks<TActor>, "isMoveActive" | "worldBox" | "boxesIntersect" | "attrMatches">,
   ): DemoMove | undefined {
     const reversal = defender.currentMove;
@@ -180,7 +180,9 @@ export class RuntimeReversalWorld {
       return undefined;
     }
     const reversalBox = hooks.worldBox(defender.runtime, reversal.hitbox);
-    return hooks.boxesIntersect(reversalBox, incomingAttackBox) ? reversal : undefined;
+    return incomingCollisionBoxes(incomingAttackBox).some((box) => hooks.boxesIntersect(reversalBox, box))
+      ? reversal
+      : undefined;
   }
 
   apply<TReverser extends RuntimeReversalActor, TAttacker extends RuntimeReversalActor>(
@@ -233,6 +235,10 @@ export class RuntimeReversalWorld {
     }
     actor.runtime.reversal = undefined;
   }
+}
+
+function incomingCollisionBoxes(value: CollisionBox | readonly CollisionBox[]): readonly CollisionBox[] {
+  return Array.isArray(value) ? value as readonly CollisionBox[] : [value as CollisionBox];
 }
 
 function normalizedNumberPair(value: string | undefined): [number, number] | undefined {

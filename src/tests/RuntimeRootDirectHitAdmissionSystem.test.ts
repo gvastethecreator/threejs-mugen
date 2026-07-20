@@ -45,6 +45,22 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.reversalClashDecisions).toContainEqual({ attackerId: "p3", getterId: "p1", reason: "same-side" });
   });
 
+  it("uses resolved root Clsn1 boxes for ReversalDef clash admission", () => {
+    const attacker = actor("p1", 1, 1, 0, { reversal: true });
+    const getter = actor("p2", 2, 2, 10, { reversal: true });
+    attacker.currentMove = reversalMove({ hitbox: { x1: 200, y1: -20, x2: 220, y2: 0 } });
+    getter.currentMove = reversalMove({ hitbox: { x1: 200, y1: -20, x2: 220, y2: 0 } });
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [attacker, getter],
+      getHurtBoxes: () => hurt,
+      getCollisionBoxes: (_root, boxType) =>
+        boxType === "clsn1" ? [{ x1: 0, y1: -20, x2: 20, y2: 0 }] : undefined,
+    });
+
+    expect(result.admittedReversalClashPairIds).toEqual(["p2->p1", "p1->p2"]);
+  });
+
   it("matches the directed attacker's ReversalDef filter against the getter attack attr", () => {
     const getter = actor("p1", 1, 1, 0, { reversal: true });
     const attacker = actor("p2", 2, 2, 0, { reversal: true });
@@ -345,7 +361,7 @@ function actor(
 }
 
 function reversalMove(
-  attrs: { attr?: string; reversalAttr?: string } = {},
+  attrs: { attr?: string; reversalAttr?: string; hitbox?: CollisionBox } = {},
 ): NonNullable<RuntimeRootDirectHitAdmissionActor["currentMove"]> {
   return {
     actionId: 0,
@@ -360,6 +376,6 @@ function reversalMove(
     hitPause: 0,
     hitStun: 0,
     push: 0,
-    hitbox: { x1: -20, y1: -20, x2: 20, y2: 0 },
+    hitbox: attrs.hitbox ?? { x1: -20, y1: -20, x2: 20, y2: 0 },
   };
 }

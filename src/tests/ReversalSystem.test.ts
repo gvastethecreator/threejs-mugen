@@ -126,6 +126,20 @@ describe("ReversalSystem", () => {
     expect(world.findActive(defender, incoming, incoming.hitbox, findHooks({ isMoveActive: () => false }))).toBeUndefined();
   });
 
+  it("accepts any resolved world attack box for ReversalDef contact", () => {
+    const world = new RuntimeReversalWorld();
+    const defender = actor("p2", "Defender", { pos: { x: 10, y: 0 } });
+    const incoming = move({ attr: "SA,AA", hitbox: { x1: 200, y1: -20, x2: 220, y2: -5 } });
+    world.activate(defender, {
+      attr: "SA,AA",
+      hitbox: { x1: 0, y1: -22, x2: 18, y2: -4 },
+      hitPause: 4,
+    });
+
+    expect(world.findActive(defender, incoming, [incoming.hitbox, { x1: 10, y1: -20, x2: 20, y2: -5 }], findHooks()))
+      .toMatchObject({ isReversal: true, reversalAttr: "SA,AA" });
+  });
+
   it("does not let canDefenderBeHit short-circuit ReversalDef detection", () => {
     const world = new RuntimeReversalWorld();
     const defender = actor("p2", "Defender", { pos: { x: 18, y: 0 } });

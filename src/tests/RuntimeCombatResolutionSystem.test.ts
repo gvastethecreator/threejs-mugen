@@ -720,6 +720,50 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(100);
   });
 
+  it("checks every resolved root Clsn1 box before direct ReversalDef contact", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 200 }),
+      currentMove: move({ attr: "S,NA", hitbox: { x1: 100, y1: -30, x2: 120, y2: -2 } }),
+      moveTick: 2,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    reversalWorld.activate(defender, {
+      attr: "S,NA",
+      hitbox: { x1: 0, y1: -40, x2: 50, y2: -1 },
+      hitPause: 5,
+      p1StateNo: 777,
+      p2StateNo: 888,
+    });
+
+    const result = world.resolveDirect({
+      attacker,
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld,
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 19,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      getCollisionBoxes: (target, boxType) =>
+        target.id === "p1" && boxType === "clsn1"
+          ? [{ x1: 0, y1: -30, x2: 36, y2: -2 }]
+          : undefined,
+      canDefenderBeHit: () => false,
+      stateHooks: hooks(),
+      log: () => undefined,
+    });
+
+    expect(result).toMatchObject({ kind: "reversal", message: "P2 reversed P1 p1->777 p2->888" });
+  });
+
   it("applies only the first directed ReversalDef clash candidate", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const reversalWorld = new RuntimeReversalWorld(contactWorld);
@@ -729,7 +773,9 @@ describe("RuntimeCombatResolutionSystem", () => {
     for (const fighter of [p1, p2]) {
       reversalWorld.activate(fighter, {
         attr: "S,NA",
-        hitbox: { x1: -40, y1: -40, x2: 40, y2: -1 },
+        hitbox: fighter === p1
+          ? { x1: 200, y1: -40, x2: 240, y2: -1 }
+          : { x1: -40, y1: -40, x2: 40, y2: -1 },
         hitPause: 3,
         targetId: 127,
       });
@@ -737,6 +783,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     const logs: string[] = [];
     const input = {
       reversalWorld,
+      getCollisionBoxes: (_actor: TestActor, boxType: "clsn1" | "clsn2" | "size" | "none") =>
+        boxType === "clsn1" ? [{ x1: -40, y1: -40, x2: 40, y2: -1 }] : undefined,
       hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
       stateHooks: hooks(),
       log: (line: string) => logs.push(line),
