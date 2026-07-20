@@ -5,7 +5,6 @@ import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import {
   applyRuntimeDamage,
   canRuntimeDamageKill,
-  parseHitAttribute,
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
@@ -20,6 +19,7 @@ import {
 } from "./ContactMemorySystem";
 import { applyRuntimeControl, applyRuntimeDizzyPointsAdd, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
+import { recordRuntimeRoundWinType } from "./RuntimeRoundWinTypeSystem";
 import {
   bufferRuntimeHitDefTarget,
   type RuntimeHitDefContactMemoryActor,
@@ -185,7 +185,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardControlTime = result.controlTime ?? 0;
     defender.runtime.guarding = true;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
-    recordRuntimeRoundWinType(attacker, defender, move, result.kind, lifeBefore);
+    recordRuntimeRoundWinType(attacker, defender, move.attr, result.kind, lifeBefore);
     if (result.guardPoints !== undefined) {
       applyRuntimeGuardPointsAdd(defender.runtime, result.guardPoints);
     }
@@ -235,7 +235,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guarding = false;
     defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
-    recordRuntimeRoundWinType(attacker, defender, move, result.kind, lifeBefore);
+    recordRuntimeRoundWinType(attacker, defender, move.attr, result.kind, lifeBefore);
     const previousDizzyPoints = defender.runtime.dizzyPoints ?? defender.runtime.dizzyPointsMax ?? 1000;
     if (result.dizzyPoints !== undefined) {
       applyRuntimeDizzyPointsAdd(defender.runtime, result.dizzyPoints);
@@ -317,30 +317,6 @@ function applyResolvedSpritePriority(
     ...(previousValue !== undefined ? { previousValue } : {}),
     ...resolved,
   };
-}
-
-function recordRuntimeRoundWinType(
-  attacker: RuntimeDirectCombatActor,
-  defender: RuntimeDirectCombatActor,
-  move: DemoMove,
-  contactKind: RuntimeCombatHitResult["kind"],
-  lifeBefore: number,
-): void {
-  if (lifeBefore <= 0 || defender.runtime.life > 0) return;
-  if (contactKind === "guard") {
-    attacker.runtime.roundWinType = "cheese";
-    return;
-  }
-  const types = parseHitAttribute(move.attr ?? "S,NA").types;
-  if (["HA", "HT", "HP"].some((type) => types.has(type))) {
-    attacker.runtime.roundWinType = "hyper";
-  } else if (["SA", "ST", "SP"].some((type) => types.has(type))) {
-    attacker.runtime.roundWinType = "special";
-  } else if (["NT", "ST", "HT", "AT"].some((type) => types.has(type))) {
-    attacker.runtime.roundWinType = "throw";
-  } else {
-    attacker.runtime.roundWinType = "normal";
-  }
 }
 
 function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<RuntimeDirectPriorityHooks, "isMoveActive">): DemoMove | undefined {

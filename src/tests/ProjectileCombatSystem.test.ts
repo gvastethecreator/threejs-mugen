@@ -96,6 +96,84 @@ describe("ProjectileCombatSystem", () => {
     expect(touching).toEqual([]);
   });
 
+  it.each([
+    ["S,NA", "normal"],
+    ["S,SA", "special"],
+    ["S,HA", "hyper"],
+    ["S,NT", "throw"],
+  ] as const)("records %s for a root-owned projectile KO", (attr, winType) => {
+    let projectiles = [projectile({ attr, damage: 31 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 31,
+    }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe(winType);
+  });
+
+  it("uses the projectile combat default attr for a root-owned KO", () => {
+    let projectiles = [projectile({ attr: undefined, damage: 31 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 31 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe("special");
+  });
+
+  it("does not promote a helper-owned projectile to a root win cause", () => {
+    let projectiles = [projectile({ attr: "S,HA", damage: 31, parentId: "p1-helper-0", rootId: "p1" })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 31 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBeUndefined();
+  });
+
   it("applies the same depth admission to helper-parented root-store projectiles", () => {
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
     const defender = actor("p2", "P2", runtimeState({

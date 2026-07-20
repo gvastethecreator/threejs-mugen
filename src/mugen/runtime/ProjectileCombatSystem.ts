@@ -29,6 +29,7 @@ import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { MugenAffectTeam } from "../model/MugenTeam";
 import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
+import { recordRuntimeRoundWinType } from "./RuntimeRoundWinTypeSystem";
 
 export type RuntimeProjectileCombatActor = {
   id: string;
@@ -218,9 +219,13 @@ export class RuntimeProjectileCombatWorld {
       });
       recordRuntimeProjectileContact(projectile, result.kind);
       input.rememberTarget(attacker, defender, projectile.targetId, projectile);
+      const lifeBefore = defender.runtime.life;
       attacker.hitPause = result.pause;
       defender.hitPause = result.pause;
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+      recordRuntimeRoundWinType(attacker, defender, projectile.attr ?? "S,SP", result.kind, lifeBefore, {
+        sourceEligible: projectile.parentId === projectile.rootId,
+      });
       defender.runtime.vel.x = projectile.facing * result.push;
       defender.runtime.hitVelocity = { x: projectile.facing * result.push, y: result.hitVelocityY ?? 0 };
       applyRuntimeCornerPush(attacker.runtime, defender.runtime, input.stageBounds, result.cornerPush, result.push);
