@@ -9041,6 +9041,37 @@ value = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.helper).toBe(1);
   });
 
+  it("extends an IKEMEN root hurt box with an active clsnproxy Helper", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const imported = createImportedFixture({ withStateMove: false, withHelper: true });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const internals = runtime as unknown as {
+      p1: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1 } };
+      runtimeHurtBoxes: (fighter: unknown) => Array<{ x1: number; y1: number; x2: number; y2: number }>;
+    };
+    const helper = effectActorWorld.helpers("p1")[0];
+    expect(helper).toBeDefined();
+    helper!.clsnProxy = true;
+    helper!.parentId = "p1";
+    helper!.rootId = "p1";
+    helper!.pos = { x: internals.p1.runtime.pos.x + 100, y: internals.p1.runtime.pos.y };
+    helper!.facing = 1;
+    helper!.frameIndex = 0;
+    helper!.action = {
+      ...helper!.action,
+      frames: helper!.action.frames.map((frame, index) => index === 0
+        ? { ...frame, clsn2: [{ x1: -4, y1: -20, x2: 16, y2: 4 }] }
+        : frame),
+    };
+
+    expect(internals.runtimeHurtBoxes(internals.p1)).toContainEqual({ x1: 96, y1: -20, x2: 116, y2: 4 });
+  });
+
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {
     const defender = createImportedFixture({
       id: "removeongethit-defender",

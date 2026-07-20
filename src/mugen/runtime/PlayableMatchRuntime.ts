@@ -117,6 +117,7 @@ import {
   type RuntimeCharacterIdentityRegistry,
 } from "./RuntimeCharacterIdentitySystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
+import { mergeRuntimeHelperProxyCollisionBoxes } from "./RuntimeHelperCollisionSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
 import {
@@ -740,6 +741,24 @@ export class PlayableMatchRuntime {
   private attachHelperHandlers(): void {
     this.attachHelperTargetStateHandlers();
     this.attachHelperPauseHandlers();
+  }
+
+  private runtimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
+    return getRuntimeHurtBoxes(
+      fighter,
+      this.runtimeProfile === "ikemen-go" ? this.effectActorWorld.helpers(fighter.id) : undefined,
+    );
+  }
+
+  private runtimeCollisionBoxes(
+    fighter: FighterMatchState,
+    boxType: MugenCollisionBoxType,
+  ): MugenAnimationFrame["clsn1"] {
+    return getRuntimeCollisionBoxes(
+      fighter,
+      boxType,
+      this.runtimeProfile === "ikemen-go" ? this.effectActorWorld.helpers(fighter.id) : undefined,
+    );
   }
 
   private attachHelperTargetStateHandlers(): void {
@@ -2036,8 +2055,8 @@ export class PlayableMatchRuntime {
           runtimeTick: this.tick,
           stageBounds: this.stage.bounds,
           gameSpace,
-          getHurtBoxes: getRuntimeHurtBoxes,
-          getCollisionBoxes: getRuntimeCollisionBoxes,
+          getHurtBoxes: (fighter) => this.runtimeHurtBoxes(fighter),
+          getCollisionBoxes: (fighter, boxType) => this.runtimeCollisionBoxes(fighter, boxType),
           isHelperRootOwned: this.runtimeProfile === "ikemen-go"
             ? (helper, ownerId) => this.verifiedRootForHelper(helper)?.id === ownerId
             : undefined,
@@ -2105,11 +2124,11 @@ export class PlayableMatchRuntime {
               })),
               getHurtBoxes: (candidate) => {
                 const root = roots.find(({ id }) => id === candidate.id);
-                return root ? getRuntimeHurtBoxes(root) : undefined;
+                return root ? this.runtimeHurtBoxes(root) : undefined;
               },
               getCollisionBoxes: (candidate, boxType) => {
                 const root = roots.find(({ id }) => id === candidate.id);
-                return root ? getRuntimeCollisionBoxes(root, boxType) : undefined;
+                return root ? this.runtimeCollisionBoxes(root, boxType) : undefined;
               },
             });
             for (const id of this.lastRootHitAdmission.rootIds) recordPhase("post-fighter:hit-admission", id);
@@ -5334,15 +5353,39 @@ function advanceContactTimers(fighter: FighterMatchState): void {
   fighter.contactWorld.advance(fighter.contact);
 }
 
-function getRuntimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
-  return frameWorld.currentHurtBoxes(fighter);
+function getRuntimeHurtBoxes(
+  fighter: FighterMatchState,
+  helpers?: readonly RuntimeHelper[],
+): MugenAnimationFrame["clsn2"] | undefined {
+  const base = frameWorld.currentHurtBoxes(fighter);
+  return helpers?.length
+    ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2")
+    : base;
 }
 
-function getRuntimeCollisionBoxes(fighter: FighterMatchState, boxType: MugenCollisionBoxType): MugenAnimationFrame["clsn1"] {
-  if (boxType === "clsn1") return frameWorld.currentAttackBoxes(fighter);
-  if (boxType === "clsn2") return frameWorld.currentHurtBoxes(fighter);
+function getRuntimeCollisionBoxes(
+  fighter: FighterMatchState,
+  boxType: MugenCollisionBoxType,
+  helpers?: readonly RuntimeHelper[],
+): MugenAnimationFrame["clsn1"] {
+  if (boxType === "clsn1") {
+    const base = frameWorld.currentAttackBoxes(fighter);
+    return helpers?.length
+      ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn1")
+      : base;
+  }
+  if (boxType === "clsn2") {
+    const base = frameWorld.currentHurtBoxes(fighter);
+    return helpers?.length
+      ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2")
+      : base;
+  }
   if (boxType === "size") return [runtimePushSizeBox(fighter)];
   return [];
+}
+
+function runtimeCollisionParent(fighter: FighterMatchState) {
+  return { id: fighter.id, pos: fighter.runtime.pos, facing: fighter.runtime.facing };
 }
 
 function runtimePushSizeBox(fighter: FighterMatchState) {
