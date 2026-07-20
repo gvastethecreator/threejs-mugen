@@ -45770,6 +45770,65 @@ export function createSyntheticImportedHelperNumProjTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helpervar-attacker",
+    displayName: "Synthetic Imported HelperVar Attacker",
+    withHelper: true,
+    helperVarRoute: {
+      branchStateNo: 1214,
+      branchAnimNo: 934,
+      keyCtrl: true,
+      ownProjectile: true,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: attacker,
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: options.runtimeProfile ?? "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-helpervar-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helpervar-golden",
+      label: "Synthetic imported HelperVar route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(id), HelperVar(keyctrl), and HelperVar(ownprojectile) after the Helper controller enables keyctrl and ownprojectile. It does not claim nested helper identity, dynamic helper-variable writes, or full MUGEN/IKEMEN HelperVar parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helpervar-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1214, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperBindToParentTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -48355,6 +48414,12 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileId?: number;
     pos?: [number, number];
   };
+  helperVarRoute?: {
+    branchStateNo: number;
+    branchAnimNo?: number;
+    keyCtrl?: boolean;
+    ownProjectile?: boolean;
+  };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   withExplod?: boolean;
@@ -48961,6 +49026,8 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   triggerTime: options.helperTriggerTime,
   pos: options.helperPos,
   postype: options.helperPostype,
+  keyCtrl: options.helperVarRoute?.keyCtrl,
+  ownProjectile: options.helperVarRoute?.ownProjectile,
 }) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
@@ -49064,6 +49131,7 @@ ${options.helperHitDefRoute ? helperHitDefRouteBlock(options.helperHitDefRoute) 
 ${options.helperNumExplodRoute ? helperNumExplodRouteBlock(options.helperNumExplodRoute) : ""}
 ${options.helperNumHelperRoute ? helperNumHelperRouteBlock(options.helperNumHelperRoute) : ""}
 ${options.helperNumProjRoute ? helperNumProjRouteBlock(options.helperNumProjRoute) : ""}
+${options.helperVarRoute ? helperVarRouteBlock(options.helperVarRoute) : ""}
 ${options.helperBindToParentRoute ? helperBindToParentRouteBlock(options.helperBindToParentRoute) : ""}
 ${options.helperBindToRootRoute ? helperBindToRootRouteBlock(options.helperBindToRootRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
@@ -49744,6 +49812,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                   ],
                   [options.helperNumProjRoute.projectileAnimNo, projectileTraceAction(options.helperNumProjRoute.projectileAnimNo)],
                 ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperVarRoute === undefined
+              ? []
+              : ([[
+                  options.helperVarRoute.branchAnimNo ?? options.helperVarRoute.branchStateNo,
+                  helperTraceAction(options.helperVarRoute.branchAnimNo ?? options.helperVarRoute.branchStateNo),
+                ]] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperBindToParentRoute?.animNo === undefined
               ? []
               : ([[options.helperBindToParentRoute.animNo, helperTraceAction(options.helperBindToParentRoute.animNo)]] as Array<[
@@ -54743,6 +54817,8 @@ function helperControllerBlock(
     triggerTime?: number;
     pos?: [number, number];
     postype?: string;
+    keyCtrl?: boolean;
+    ownProjectile?: boolean;
   },
 ): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
@@ -54754,6 +54830,8 @@ function helperControllerBlock(
   const triggerTime = pause?.triggerTime ?? 2;
   const pos = pause?.pos ?? [-44, -28];
   const postype = pause?.postype ?? "p1";
+  const keyCtrlLine = pause?.keyCtrl === undefined ? "" : `keyctrl = ${pause.keyCtrl ? 1 : 0}`;
+  const ownProjectileLine = pause?.ownProjectile === undefined ? "" : `ownprojectile = ${pause.ownProjectile ? 1 : 0}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -54773,6 +54851,8 @@ ${scaleLine}
 ${pauseMoveTimeLine}
 ${superMoveTimeLine}
 ${ignoreHitPauseLine}
+${keyCtrlLine}
+${ownProjectileLine}
 `;
 }
 
@@ -56512,6 +56592,35 @@ projremove = 0
 [State 1200, Helper NumProj Branch]
 type = ChangeState
 trigger1 = NumProjID(${projectileId}) > 0
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
+ctrl = 0
+`;
+}
+
+function helperVarRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperVarRoute"]>): string {
+  const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const keyCtrl = route.keyCtrl ?? true;
+  const ownProjectile = route.ownProjectile ?? true;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, HelperVar Branch]
+type = ChangeState
+trigger1 = HelperVar(id) = 42
+trigger1 = HelperVar(keyctrl) = ${keyCtrl ? 1 : 0}
+trigger1 = HelperVar(ownprojectile) = ${ownProjectile ? 1 : 0}
 value = ${route.branchStateNo}
 ctrl = 0
 
