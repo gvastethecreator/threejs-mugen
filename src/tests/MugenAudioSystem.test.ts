@@ -380,6 +380,60 @@ describe("MugenAudioSystem", () => {
     expect(audioContext.sources).toHaveLength(1);
   });
 
+  it("plays distinct perfect and normal win type edges from one snapshot", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(undefined, { fs: archive(2) });
+    await system.unlock();
+
+    const round = {
+      state: "ko",
+      timer: 0,
+      message: "P1 wins",
+      postRound: {
+        schema: "RuntimePostRound/v0",
+        frame: 4,
+        remaining: 3,
+        duration: 5,
+        slowRemaining: 0,
+        slowDuration: 0,
+        playbackRate: 1,
+        noKoSlow: true,
+        outcome: {
+          schema: "RuntimeRoundOutcome/v0",
+          kind: "ko",
+          displayStartFrame: 5,
+          soundTime: 5,
+          soundDue: false,
+          showDraw: false,
+          winnerDisplay: {
+            schema: "RuntimeRoundWinnerDisplay/v0",
+            kind: "win",
+            phase: "pending",
+            displayStartFrame: 5,
+            soundTime: 5,
+            soundDue: false,
+            winTypeSounds: [
+              { name: "perfect", soundTime: 4, soundDue: true, sound: { group: 5, index: 0, soundPrefix: "fs" } },
+              { name: "normal", soundTime: 4, soundDue: true, sound: { group: 5, index: 1, soundPrefix: "fs" } },
+            ],
+          },
+        },
+      },
+    } as NonNullable<MugenSnapshot["round"]>;
+    system.processSnapshot(audioSnapshot([], round));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(2));
+
+    system.processSnapshot(audioSnapshot([], round));
+    expect(system.getDiagnostics().played).toBe(2);
+    expect(audioContext.sources).toHaveLength(2);
+  });
+
   it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });

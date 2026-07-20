@@ -705,6 +705,14 @@ export type RuntimeRoundWinnerDisplaySelection = {
   winnerSide?: 0 | 1;
   variant: number;
   winType?: RuntimeRoundWinTypeName;
+  winTypes?: readonly RuntimeRoundWinTypeName[];
+};
+
+export type RuntimeRoundWinTypeSoundEdge = {
+  name: RuntimeRoundWinTypeName;
+  soundTime: number;
+  soundDue: boolean;
+  sound?: RuntimeRoundAnnouncementSound;
 };
 
 export type RuntimeRoundWinnerDisplaySnapshot = {
@@ -718,6 +726,7 @@ export type RuntimeRoundWinnerDisplaySnapshot = {
   winTypeSoundTime?: number;
   winTypeSoundDue?: boolean;
   winTypeSound?: RuntimeRoundAnnouncementSound;
+  winTypeSounds?: RuntimeRoundWinTypeSoundEdge[];
   selection?: RuntimeRoundWinnerDisplaySelection;
 };
 

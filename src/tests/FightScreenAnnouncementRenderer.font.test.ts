@@ -366,6 +366,13 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
             displayTime: 3,
             background: { sprite: [9100, 0], offset: [4, 5], layerNo: 0 },
           },
+          normal: {
+            text: "NORMAL",
+            font: [1, 0, 0],
+            offset: [160, 105],
+            time: 0,
+            displayTime: 3,
+          },
         },
       },
     };
@@ -396,6 +403,7 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
         winnerSide: 1,
         variant: 0,
         winType: "perfect",
+        winTypes: ["perfect", "normal"],
       },
     } as const;
     const winner = outcomeSnapshot("ko", "P2", 0);
@@ -423,6 +431,10 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       resolved: true,
       winType: { name: "perfect", side: 1, active: true, resolved: true, text: "PERFECT", backgroundResolved: 1 },
     });
+    expect(renderer.getDiagnostics().winTypes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: "perfect", active: true, resolved: true }),
+      expect.objectContaining({ name: "normal", active: true, resolved: true, text: "NORMAL" }),
+    ]));
     expect(renderer.group.children[4]?.visible).toBe(true);
     expect(renderer.group.children[5]?.visible).toBe(true);
 

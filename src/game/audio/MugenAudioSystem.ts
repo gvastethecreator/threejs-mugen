@@ -101,7 +101,8 @@ export class MugenAudioSystem {
   private missing = 0;
   private channelRequestSequence = 0;
   private lastRoundFadeSoundKey?: string;
-  private lastRoundAnnouncementSoundKey?: string;
+  private readonly roundAnnouncementSoundKeys = new Set<string>();
+  private roundAnnouncementSoundStateKey?: string;
 
   setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
     this.stopAll();
@@ -120,7 +121,8 @@ export class MugenAudioSystem {
     this.played = 0;
     this.skipped = 0;
     this.missing = 0;
-    this.lastRoundAnnouncementSoundKey = undefined;
+    this.roundAnnouncementSoundKeys.clear();
+    this.roundAnnouncementSoundStateKey = undefined;
   }
 
   async unlock(): Promise<void> {
@@ -142,10 +144,12 @@ export class MugenAudioSystem {
       this.lastRoundFadeSoundKey = undefined;
     }
     const hasRoundFadeSound = Boolean(roundFade?.active && roundFade.sound);
-    const roundAnnouncementSound = resolveRoundAnnouncementSound(snapshot);
-    if (!roundAnnouncementSound) {
-      this.lastRoundAnnouncementSoundKey = undefined;
+    const roundAnnouncementSoundStateKey = `${snapshot.round?.roundNo ?? 1}:${snapshot.round?.state ?? "none"}`;
+    if (this.roundAnnouncementSoundStateKey !== roundAnnouncementSoundStateKey) {
+      this.roundAnnouncementSoundKeys.clear();
+      this.roundAnnouncementSoundStateKey = roundAnnouncementSoundStateKey;
     }
+    const roundAnnouncementSound = resolveRoundAnnouncementSound(snapshot);
     const roundOutcomeSounds = resolveRoundOutcomeSounds(snapshot);
     if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound && !roundAnnouncementSound && roundOutcomeSounds.length === 0)) {
       return;
@@ -206,7 +210,8 @@ export class MugenAudioSystem {
 
   stopAll(): void {
     this.lastRoundFadeSoundKey = undefined;
-    this.lastRoundAnnouncementSoundKey = undefined;
+    this.roundAnnouncementSoundKeys.clear();
+    this.roundAnnouncementSoundStateKey = undefined;
     this.pendingChannels.clear();
     for (const handle of this.activeChannels.clear()) {
       handle.source.stop();
@@ -321,14 +326,15 @@ export class MugenAudioSystem {
       kind: "round" | "fight" | RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
       sound: RuntimeRoundAnnouncementSound;
       elapsed: number;
+      identity?: string;
     },
     snapshot: MugenSnapshot,
   ): void {
-    const key = `${snapshot.round?.roundNo ?? 1}:${input.kind}:${input.elapsed}:${input.sound.soundPrefix}:${input.sound.group},${input.sound.index}`;
-    if (this.lastRoundAnnouncementSoundKey === key) {
+    const key = `${snapshot.round?.roundNo ?? 1}:${input.kind}:${input.identity ?? "default"}:${input.elapsed}:${input.sound.soundPrefix}:${input.sound.group},${input.sound.index}`;
+    if (this.roundAnnouncementSoundKeys.has(key)) {
       return;
     }
-    this.lastRoundAnnouncementSoundKey = key;
+    this.roundAnnouncementSoundKeys.add(key);
     const actor = snapshot.actors[0] ?? {
       id: "__round-announcement__",
       runtime: {
@@ -459,6 +465,7 @@ function resolveRoundOutcomeSounds(
   kind: RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
   sound: RuntimeRoundAnnouncementSound;
   elapsed: number;
+  identity?: string;
 }> {
   const outcome = snapshot.round?.postRound?.outcome;
   const winnerDisplay = outcome?.winnerDisplay;
@@ -467,12 +474,24 @@ function resolveRoundOutcomeSounds(
     kind: RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
     sound: RuntimeRoundAnnouncementSound;
     elapsed: number;
+    identity?: string;
   }> = [];
-  if (winnerDisplay?.winTypeSoundDue && winnerDisplay.winTypeSound) {
+  if (winnerDisplay?.winTypeSounds) {
+    for (const edge of winnerDisplay.winTypeSounds) {
+      if (!edge.soundDue || !edge.sound) continue;
+      sounds.push({
+        kind: winnerDisplay.kind,
+        sound: edge.sound,
+        elapsed,
+        identity: `win-type:${edge.name}`,
+      });
+    }
+  } else if (winnerDisplay?.winTypeSoundDue && winnerDisplay.winTypeSound) {
     sounds.push({
       kind: winnerDisplay.kind,
       sound: winnerDisplay.winTypeSound,
       elapsed,
+      identity: "win-type:primary",
     });
   }
   if (winnerDisplay?.phase === "active" && winnerDisplay.soundDue && winnerDisplay.sound) {

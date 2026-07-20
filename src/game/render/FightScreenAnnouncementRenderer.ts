@@ -95,14 +95,8 @@ export type FightScreenAnnouncementDiagnostics = {
   backgroundResolved?: number;
   topLayerCount?: number;
   topResolved?: number;
-  winType?: {
-    name: MugenFightScreenWinTypeName;
-    side: 0 | 1;
-    active: boolean;
-    resolved: boolean;
-    text?: string;
-    backgroundResolved?: number;
-  };
+  winType?: FightScreenWinTypeDiagnostic;
+  winTypes?: FightScreenWinTypeDiagnostic[];
   windowApplied?: number;
   windowCulled?: number;
   layerNoApplied?: number;
@@ -128,6 +122,15 @@ export type FightScreenAnnouncementDiagnostics = {
   primaryTransform?: FightScreenTransformDiagnostics;
   textTransform?: FightScreenTransformDiagnostics;
   fallbackReason?: string;
+};
+
+export type FightScreenWinTypeDiagnostic = {
+  name: MugenFightScreenWinTypeName;
+  side: 0 | 1;
+  active: boolean;
+  resolved: boolean;
+  text?: string;
+  backgroundResolved?: number;
 };
 
 export type FightScreenAnnouncementPlacement = {
@@ -164,6 +167,11 @@ type FightScreenAnnouncementSelection = {
     side: 0 | 1;
     asset: MugenFightScreenWinTypeAsset;
   };
+  winTypes?: Array<{
+    name: MugenFightScreenWinTypeName;
+    side: 0 | 1;
+    asset: MugenFightScreenWinTypeAsset;
+  }>;
   mode: RuntimeRoundAnnouncementSnapshot["mode"];
   roundNo: number;
 };
@@ -241,6 +249,7 @@ type FightScreenLayoutCollectionResult = {
 
 type FightScreenTextRenderResult = {
   rendered: boolean;
+  meshSlotCount?: number;
   text?: string;
   font?: { index: number; bank: number; alignment: number; format: MugenFightScreenFont["format"] };
   glyphCount?: number;
@@ -258,7 +267,13 @@ type FightScreenTextRenderResult = {
   fallbackReason?: string;
 };
 
-type FightScreenWinTypeRenderResult = NonNullable<FightScreenAnnouncementDiagnostics["winType"]>;
+type FightScreenWinTypeRenderResult = FightScreenWinTypeDiagnostic;
+type FightScreenWinTypeRenderSummary = {
+  primary: FightScreenWinTypeRenderResult;
+  records: FightScreenWinTypeRenderResult[];
+  resolved: boolean;
+  windowOpen: boolean;
+};
 
 type FightScreenTransformApplicationResult = FightScreenTransformDiagnostics & {
   placement?: FightScreenClippedPlacement;
@@ -381,7 +396,8 @@ export class FightScreenAnnouncementRenderer {
     const actionNo = selection.asset.animationNo;
     const action = actionNo === undefined ? undefined : this.animations.get(actionNo);
     const frameTick = announcementFrameTick(selection.track);
-    const winTypeWindowOpen = isFightScreenWinTypeWindowOpen(selection.winType?.asset, frameTick);
+    const winTypeSelections = selection.winTypes ?? (selection.winType ? [selection.winType] : undefined);
+    const winTypeWindowOpen = isFightScreenWinTypeWindowOpen(winTypeSelections, frameTick);
     const completion = selection.kind === "round" || selection.kind === "fight"
       ? resolveFightScreenAnnouncementCompletion(
         this.display,
@@ -427,13 +443,13 @@ export class FightScreenAnnouncementRenderer {
     this.hideTextMeshes();
     const layoutResult = await this.renderDisplayLayers(displayLayers, frameTick, viewport);
     const hasResolvedLayers = layoutResult.backgroundResolved > 0 || layoutResult.topResolved > 0;
-    const winTypeRender = await this.renderWinTypeOverlay(selection.winType, selection.roundNo, frameTick, viewport);
+    const winTypeRender = await this.renderWinTypeOverlay(winTypeSelections, selection.roundNo, frameTick, viewport);
     const hasResolvedWinType = winTypeRender?.resolved ?? false;
     const hasResolvedContent = hasResolvedLayers || hasResolvedWinType;
     if (actionNo === undefined) {
       const textResult = this.renderText(selection.asset, selection.roundNo, frameTick, viewport);
       if (textResult.rendered || hasResolvedContent || winTypeWindowOpen) {
-        const { rendered: _rendered, ...textDiagnostics } = textResult;
+        const { rendered: _rendered, meshSlotCount: _meshSlotCount, ...textDiagnostics } = textResult;
         this.diagnostics = {
           ...baseDiagnostics,
           configured: true,
@@ -446,7 +462,7 @@ export class FightScreenAnnouncementRenderer {
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
           ...(textResult.rendered ? textDiagnostics : {}),
-          ...(winTypeRender ? { winType: winTypeRender } : {}),
+          ...winTypeDiagnostics(winTypeRender),
         };
         return;
       }
@@ -466,7 +482,7 @@ export class FightScreenAnnouncementRenderer {
     if (!action) {
       const textResult = this.renderText(selection.asset, selection.roundNo, frameTick, viewport);
       if (textResult.rendered || hasResolvedContent || winTypeWindowOpen) {
-        const { rendered: _rendered, ...textDiagnostics } = textResult;
+        const { rendered: _rendered, meshSlotCount: _meshSlotCount, ...textDiagnostics } = textResult;
         this.diagnostics = {
           ...baseDiagnostics,
           configured: true,
@@ -480,7 +496,7 @@ export class FightScreenAnnouncementRenderer {
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
           ...(textResult.rendered ? textDiagnostics : {}),
-          ...(winTypeRender ? { winType: winTypeRender } : {}),
+          ...winTypeDiagnostics(winTypeRender),
         };
         return;
       }
@@ -513,7 +529,7 @@ export class FightScreenAnnouncementRenderer {
             completionReason: completion.reason,
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
-          ...(winTypeRender ? { winType: winTypeRender } : {}),
+          ...winTypeDiagnostics(winTypeRender),
         };
         return;
       }
@@ -550,7 +566,7 @@ export class FightScreenAnnouncementRenderer {
             completionReason: completion.reason,
           } : {}),
           ...(displayTime === undefined ? {} : { displayTime }),
-          ...(winTypeRender ? { winType: winTypeRender } : {}),
+          ...winTypeDiagnostics(winTypeRender),
         };
         return;
       }
@@ -608,7 +624,7 @@ export class FightScreenAnnouncementRenderer {
         } : {}),
         ...(displayTime === undefined ? {} : { displayTime }),
         primaryTransform,
-        ...(winTypeRender ? { winType: winTypeRender } : {}),
+        ...winTypeDiagnostics(winTypeRender),
       } satisfies FightScreenAnnouncementDiagnostics;
       if (hasResolvedContent || winTypeWindowOpen) {
         this.diagnostics = commonDiagnostics;
@@ -639,7 +655,7 @@ export class FightScreenAnnouncementRenderer {
         completionReason: completion.reason,
       } : {}),
       ...(displayTime === undefined ? {} : { displayTime }),
-      ...(winTypeRender ? { winType: winTypeRender } : {}),
+      ...winTypeDiagnostics(winTypeRender),
       ...(selection.asset.paletteFx ? {
         primaryPaletteFxApplied: primaryPaletteFx ? 1 : 0,
         primaryPaletteFxExpired: primaryPaletteFx ? 0 : 1,
@@ -750,66 +766,89 @@ export class FightScreenAnnouncementRenderer {
   }
 
   private async renderWinTypeOverlay(
-    winType: FightScreenAnnouncementSelection["winType"],
+    winTypes: FightScreenAnnouncementSelection["winTypes"],
     roundNo: number,
     frameTick: number,
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
-  ): Promise<FightScreenWinTypeRenderResult | undefined> {
-    if (!winType) return undefined;
+  ): Promise<FightScreenWinTypeRenderSummary | undefined> {
+    if (!winTypes || winTypes.length === 0) return undefined;
     this.hideWinTypeOverlay();
-    const timing = resolveFightScreenWinTypeTiming(winType.asset, frameTick);
-    const baseResult: FightScreenWinTypeRenderResult = {
-      name: winType.name,
-      side: winType.side,
-      active: timing.active,
-      resolved: false,
-      ...(winType.asset.text ? { text: formatFightScreenText(winType.asset.text, roundNo) } : {}),
-    };
-    if (!timing.active) return baseResult;
-
-    const outerOffset = winType.asset.offset ?? [0, 0];
-    const background = winType.asset.background
-      ? {
-        ...winType.asset.background,
-        offset: [
-          (winType.asset.background.offset?.[0] ?? 0) + outerOffset[0],
-          (winType.asset.background.offset?.[1] ?? 0) + outerOffset[1],
-        ] as [number, number],
+    const records: FightScreenWinTypeRenderResult[] = [];
+    let backgroundMeshOffset = 0;
+    let textMeshOffset = 0;
+    let windowOpen = false;
+    for (const winType of winTypes) {
+      const timing = resolveFightScreenWinTypeTiming(winType.asset, frameTick);
+      windowOpen ||= timing.windowOpen;
+      const baseResult: FightScreenWinTypeRenderResult = {
+        name: winType.name,
+        side: winType.side,
+        active: timing.active,
+        resolved: false,
+        ...(winType.asset.text ? { text: formatFightScreenText(winType.asset.text, roundNo) } : {}),
+      };
+      if (!timing.active) {
+        records.push(baseResult);
+        continue;
       }
-      : undefined;
-    const backgroundResult = await this.renderLayoutCollection(
-      background ? [background] : [],
-      this.winTypeBackgroundMeshes,
-      this.winTypeBackgroundGroup,
-      frameTick,
-      viewport,
-      "background",
-    );
-    this.winTypeBackgroundGroup.visible = backgroundResult.resolved > 0;
 
-    const textResult = this.renderText(
-      {
-        ...(winType.asset.text === undefined ? {} : { text: winType.asset.text }),
-        ...(winType.asset.font === undefined ? {} : { font: winType.asset.font }),
-        ...(winType.asset.fontColor === undefined ? {} : { fontColor: winType.asset.fontColor }),
-        ...(winType.asset.textPaletteFx === undefined ? {} : { textPaletteFx: winType.asset.textPaletteFx }),
-        ...(winType.asset.textLayout === undefined ? {} : { textLayout: winType.asset.textLayout }),
-        ...(winType.asset.offset === undefined ? {} : { offset: winType.asset.offset }),
-        ...(winType.asset.displayTime === undefined ? {} : { displayTime: winType.asset.displayTime }),
-      },
-      roundNo,
-      frameTick,
-      viewport,
-      this.winTypeTextGroup,
-      this.winTypeTextMeshes,
-    );
-    const result: FightScreenWinTypeRenderResult = {
-      ...baseResult,
-      resolved: backgroundResult.resolved > 0 || textResult.rendered,
-      ...(textResult.text ? { text: textResult.text } : {}),
-      ...(backgroundResult.resolved > 0 ? { backgroundResolved: backgroundResult.resolved } : {}),
+      const outerOffset = winType.asset.offset ?? [0, 0];
+      const background = winType.asset.background
+        ? {
+          ...winType.asset.background,
+          offset: [
+            (winType.asset.background.offset?.[0] ?? 0) + outerOffset[0],
+            (winType.asset.background.offset?.[1] ?? 0) + outerOffset[1],
+          ] as [number, number],
+        }
+        : undefined;
+      const backgroundResult = await this.renderLayoutCollection(
+        background ? [background] : [],
+        this.winTypeBackgroundMeshes,
+        this.winTypeBackgroundGroup,
+        frameTick,
+        viewport,
+        "background",
+        backgroundMeshOffset,
+      );
+      backgroundMeshOffset += background ? 1 : 0;
+
+      const textResult = this.renderText(
+        {
+          ...(winType.asset.text === undefined ? {} : { text: winType.asset.text }),
+          ...(winType.asset.font === undefined ? {} : { font: winType.asset.font }),
+          ...(winType.asset.fontColor === undefined ? {} : { fontColor: winType.asset.fontColor }),
+          ...(winType.asset.textPaletteFx === undefined ? {} : { textPaletteFx: winType.asset.textPaletteFx }),
+          ...(winType.asset.textLayout === undefined ? {} : { textLayout: winType.asset.textLayout }),
+          ...(winType.asset.offset === undefined ? {} : { offset: winType.asset.offset }),
+          ...(winType.asset.displayTime === undefined ? {} : { displayTime: winType.asset.displayTime }),
+        },
+        roundNo,
+        frameTick,
+        viewport,
+        this.winTypeTextGroup,
+        this.winTypeTextMeshes,
+        textMeshOffset,
+        false,
+      );
+      textMeshOffset += textResult.meshSlotCount ?? 0;
+      records.push({
+        ...baseResult,
+        resolved: backgroundResult.resolved > 0 || textResult.rendered,
+        ...(textResult.text ? { text: textResult.text } : {}),
+        ...(backgroundResult.resolved > 0 ? { backgroundResolved: backgroundResult.resolved } : {}),
+      });
+      this.winTypeBackgroundGroup.visible = this.winTypeBackgroundMeshes.some((mesh) => mesh?.visible === true);
+      this.winTypeTextGroup.visible = this.winTypeTextMeshes.some((mesh) => mesh?.visible === true);
+    }
+    const primary = records[0];
+    if (!primary) return undefined;
+    return {
+      primary,
+      records,
+      resolved: records.some((record) => record.resolved),
+      windowOpen,
     };
-    return result;
   }
 
   private async renderLayoutCollection(
@@ -819,6 +858,7 @@ export class FightScreenAnnouncementRenderer {
     frameTick: number,
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
     kind: "background" | "top",
+    meshOffset = 0,
   ): Promise<FightScreenLayoutCollectionResult> {
     let resolved = 0;
     let windowApplied = 0;
@@ -865,7 +905,7 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame,
         layout,
       );
-      const mesh = this.ensureLayoutMesh(index, meshPool, group);
+      const mesh = this.ensureLayoutMesh(meshOffset + index, meshPool, group);
       const transformResult = applyFightScreenLayoutTransform(
         mesh,
         placement,
@@ -896,7 +936,7 @@ export class FightScreenAnnouncementRenderer {
       mesh.material.needsUpdate = true;
       resolved += 1;
     }
-    for (let index = layouts.length; index < meshPool.length; index += 1) {
+    for (let index = meshOffset + layouts.length; index < meshPool.length; index += 1) {
       const mesh = meshPool[index];
       if (mesh) mesh.visible = false;
     }
@@ -1003,6 +1043,8 @@ export class FightScreenAnnouncementRenderer {
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
     targetGroup: THREE.Group = this.textGroup,
     targetMeshes: Array<FightScreenMesh | undefined> = this.textMeshes,
+    meshOffset = 0,
+    clearTargetMeshes = true,
   ): FightScreenTextRenderResult {
     const textTemplate = asset.text;
     const fontTuple = asset.font;
@@ -1044,10 +1086,12 @@ export class FightScreenAnnouncementRenderer {
     const textTransform = asset.textLayout ?? asset.layout;
     const textTransformDiagnostics = createFightScreenTransformDiagnostics();
     const textPaletteFx = resolveFightScreenPaletteFx(asset.textPaletteFx, frameTick);
-    this.hideTextMeshes(targetGroup, targetMeshes);
+    if (clearTargetMeshes) {
+      this.hideTextMeshes(targetGroup, targetMeshes);
+    }
     for (const [glyphIndex, glyph] of layout.glyphs.entries()) {
       if (!glyph.sprite) continue;
-      const textMesh = this.ensureTextMesh(glyphIndex, targetGroup, targetMeshes);
+      const textMesh = this.ensureTextMesh(meshOffset + glyphIndex, targetGroup, targetMeshes);
       const placement = projectFightScreenSprite(
         viewport,
         this.coordinate,
@@ -1091,6 +1135,7 @@ export class FightScreenAnnouncementRenderer {
     targetGroup.visible = true;
     return {
       rendered: true,
+      meshSlotCount: layout.glyphs.length,
       text,
       font: { index: fontIndex, bank, alignment, format: font.format },
       glyphCount: layout.glyphs.filter((glyph) => glyph.sprite).length,
@@ -1176,9 +1221,12 @@ export function resolveFightScreenAnnouncementSelection(
     if (winnerAsset) {
       const winTypeName = winnerDisplay.selection?.winType;
       const winTypeSide = winnerDisplay.selection?.winnerSide ?? winnerDisplay.selection?.side ?? 0;
-      const winTypeAsset = winTypeName === undefined
-        ? undefined
-        : resolveFightScreenWinTypeAsset(display, winTypeSide, winTypeName);
+      const winTypeNames = winnerDisplay.selection?.winTypes
+        ?? (winTypeName === undefined ? [] : [winTypeName]);
+      const winTypeSelections = winTypeNames.flatMap((name) => {
+        const asset = resolveFightScreenWinTypeAsset(display, winTypeSide, name);
+        return asset ? [{ name, side: winTypeSide, asset }] : [];
+      });
       return {
         kind: winnerDisplay.kind,
         track: {
@@ -1191,9 +1239,8 @@ export function resolveFightScreenAnnouncementSelection(
           ...(winnerDisplay.sound ? { sound: { ...winnerDisplay.sound } } : {}),
         },
         asset: winnerAsset,
-        ...(winTypeName !== undefined && winTypeAsset ? {
-          winType: { name: winTypeName, side: winTypeSide, asset: winTypeAsset },
-        } : {}),
+        ...(winTypeSelections[0] ? { winType: winTypeSelections[0] } : {}),
+        ...(winTypeSelections.length > 0 ? { winTypes: winTypeSelections } : {}),
         mode: round.announcement?.mode ?? "normal",
         roundNo: round.announcement?.roundNo ?? round.roundNo ?? 1,
       };
@@ -1299,8 +1346,21 @@ export function resolveFightScreenWinTypeTiming(
   };
 }
 
-function isFightScreenWinTypeWindowOpen(asset: MugenFightScreenWinTypeAsset | undefined, frameTick: number): boolean {
-  return asset !== undefined && resolveFightScreenWinTypeTiming(asset, frameTick).windowOpen;
+function isFightScreenWinTypeWindowOpen(
+  winTypes: FightScreenAnnouncementSelection["winTypes"],
+  frameTick: number,
+): boolean {
+  return Boolean(winTypes?.some(({ asset }) => resolveFightScreenWinTypeTiming(asset, frameTick).windowOpen));
+}
+
+function winTypeDiagnostics(
+  summary: FightScreenWinTypeRenderSummary | undefined,
+): Pick<FightScreenAnnouncementDiagnostics, "winType" | "winTypes"> {
+  if (!summary) return {};
+  return {
+    winType: summary.primary,
+    winTypes: summary.records,
+  };
 }
 
 export function resolveRoundDisplayAsset(

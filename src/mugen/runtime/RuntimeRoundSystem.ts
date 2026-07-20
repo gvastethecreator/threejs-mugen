@@ -430,12 +430,15 @@ export class RuntimeRoundSystem {
     const sound = kind === "draw"
       ? timing.drawSound
       : resolveWinnerDisplaySound(timing, this.winnerDisplaySelection);
-    const winTypeSound = kind === "draw"
-      ? undefined
-      : resolveWinnerDisplayWinTypeSound(timing, this.winnerDisplaySelection);
-    const winTypeSoundTime = winTypeSound
-      ? this.timing.postKoPhase4StartFrames + winTypeSound.soundTimeFrames
-      : undefined;
+    const winTypeSoundEdges = kind === "draw"
+      ? []
+      : resolveWinnerDisplayWinTypeSoundEdges(timing, this.winnerDisplaySelection)
+        .map(({ name, sound }) => ({
+          name,
+          soundTime: this.timing.postKoPhase4StartFrames + sound.soundTimeFrames,
+          sound: sound.sound,
+        }));
+    const primaryWinTypeSound = winTypeSoundEdges[0];
     return {
       schema: "RuntimeRoundWinnerDisplay/v0",
       kind,
@@ -444,10 +447,18 @@ export class RuntimeRoundSystem {
       soundTime,
       soundDue: Boolean(sound && this.postRoundFrame === soundTime),
       ...(sound ? { sound: { ...sound } } : {}),
-      ...(winTypeSound ? {
-        winTypeSoundTime,
-        winTypeSoundDue: this.postRoundFrame === winTypeSoundTime,
-        winTypeSound: { ...winTypeSound.sound },
+      ...(primaryWinTypeSound ? {
+        winTypeSoundTime: primaryWinTypeSound.soundTime,
+        winTypeSoundDue: this.postRoundFrame === primaryWinTypeSound.soundTime,
+        ...(primaryWinTypeSound.sound ? { winTypeSound: { ...primaryWinTypeSound.sound } } : {}),
+      } : {}),
+      ...(winTypeSoundEdges.length > 0 ? {
+        winTypeSounds: winTypeSoundEdges.map((edge) => ({
+          name: edge.name,
+          soundTime: edge.soundTime,
+          soundDue: this.postRoundFrame === edge.soundTime,
+          ...(edge.sound ? { sound: { ...edge.sound } } : {}),
+        })),
       } : {}),
       ...(this.winnerDisplaySelection ? { selection: { ...this.winnerDisplaySelection } } : {}),
     };
@@ -840,7 +851,10 @@ function resolveWinnerDisplaySelection(
     side: family === "aiWin" ? loserSide : winnerSide,
     winnerSide,
     variant: boundedResultVariant(winner.variantIndex),
-    ...(winner.winType ? { winType: winner.winType } : {}),
+    ...(winner.winType ? {
+      winType: winner.winType,
+      winTypes: resolveWinnerDisplayWinTypeNames(winner.winType),
+    } : {}),
   };
 }
 
@@ -858,14 +872,24 @@ function resolveWinnerDisplaySound(
   return timing.winSound;
 }
 
-function resolveWinnerDisplayWinTypeSound(
+function resolveWinnerDisplayWinTypeSoundEdges(
   timing: RuntimeRoundOutcomeTiming,
   selection: RuntimeRoundWinnerDisplaySelection | undefined,
-): RuntimeRoundWinTypeSound | undefined {
-  const winType = selection?.winType;
-  if (!winType) return undefined;
-  const side = selection.winnerSide ?? selection.side;
-  return timing.winTypeSounds?.[side === 0 ? "p1" : "p2"][winType];
+): Array<{ name: RuntimeRoundWinTypeName; sound: RuntimeRoundWinTypeSound }> {
+  const winTypes = selection?.winTypes ?? (selection?.winType ? [selection.winType] : []);
+  if (winTypes.length === 0) return [];
+  const side = selection?.winnerSide ?? selection?.side ?? 0;
+  const sounds = timing.winTypeSounds?.[side === 0 ? "p1" : "p2"];
+  return winTypes.flatMap((name) => {
+    const sound = sounds?.[name];
+    return sound ? [{ name, sound }] : [];
+  });
+}
+
+function resolveWinnerDisplayWinTypeNames(winType: RuntimeRoundWinTypeName): RuntimeRoundWinTypeName[] {
+  return winType === "perfect" || winType === "clutch"
+    ? [winType, "normal"]
+    : [winType];
 }
 
 function boundedResultVariant(value: number | undefined): number {

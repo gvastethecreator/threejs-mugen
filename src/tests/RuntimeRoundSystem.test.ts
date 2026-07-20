@@ -284,6 +284,60 @@ describe("RuntimeRoundSystem", () => {
     });
   });
 
+  it("composes perfect win type sound edges with the base normal record", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      postKoPhase4StartFrames: 0,
+      outcome: {
+        koTimeFrames: 1,
+        koSoundTimeFrames: 1,
+        doubleKoTimeFrames: 1,
+        doubleKoSoundTimeFrames: 1,
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 1,
+        timeOverSoundTimeFrames: 1,
+        winTimeFrames: 6,
+        winSoundTimeFrames: 6,
+        winTypeSounds: {
+          p1: {
+            perfect: {
+              soundTimeFrames: 2,
+              sound: { group: 5, index: 0, soundPrefix: "fs" },
+            },
+            normal: {
+              soundTimeFrames: 4,
+              sound: { group: 5, index: 1, soundPrefix: "fs" },
+            },
+          },
+          p2: {},
+        },
+      },
+    });
+    round.finishIfNeeded(
+      { label: "P1", life: 600, side: 0, playerControlled: true, winType: "perfect" },
+      { label: "P2", life: 0, side: 1, playerControlled: false },
+    );
+
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay).toMatchObject({
+      selection: { winType: "perfect", winTypes: ["perfect", "normal"] },
+      winTypeSounds: [
+        { name: "perfect", soundTime: 2, soundDue: false, sound: { group: 5, index: 0, soundPrefix: "fs" } },
+        { name: "normal", soundTime: 4, soundDue: false, sound: { group: 5, index: 1, soundPrefix: "fs" } },
+      ],
+    });
+    round.tickTimer();
+    round.tickTimer();
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay?.winTypeSounds).toMatchObject([
+      { name: "perfect", soundDue: true },
+      { name: "normal", soundDue: false },
+    ]);
+    round.tickTimer();
+    round.tickTimer();
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay?.winTypeSounds).toMatchObject([
+      { name: "perfect", soundDue: false },
+      { name: "normal", soundDue: true },
+    ]);
+  });
+
   it("opens phase 4 before the post-KO terminal window completes", () => {
     const round = new RuntimeRoundSystem();
     round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
