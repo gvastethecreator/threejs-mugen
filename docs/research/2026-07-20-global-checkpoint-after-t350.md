@@ -1,7 +1,7 @@
 # Global checkpoint after T350
 
 Date: 2026-07-20
-Head: `d44a8f1e`
+Head: `58bcc0b7`
 Feature commit: `9f0ecd65`
 Documentation commit: `d44a8f1e`
 Status: green for the bounded Ikemen HelperVar block
