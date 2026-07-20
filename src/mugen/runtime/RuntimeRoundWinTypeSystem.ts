@@ -1,5 +1,6 @@
 import { parseHitAttribute } from "./CombatResolver";
 import type { CharacterRuntimeState, RuntimeRoundWinTypeName } from "./types";
+import { runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 
 type RuntimeRoundWinTypeActor = {
   runtime: Pick<CharacterRuntimeState, "roundWinType">;
@@ -11,7 +12,8 @@ type RuntimeRoundWinTypeDefender = {
 
 type RuntimeRootSelfKoActor = {
   id: string;
-  runtime: Pick<CharacterRuntimeState, "life" | "moveType" | "roundWinType" | "teamState">;
+  playerNo?: number;
+  runtime: Pick<CharacterRuntimeState, "life" | "moveType" | "roundWinType" | "teamState" | "hitVars">;
 };
 
 export type RuntimeRoundHitSourceActor = {
@@ -62,11 +64,14 @@ export function recordRuntimeRootSelfKoCause(
   lifeBefore: number,
   sourceOwnerId: string | undefined,
 ): void {
+  if (victim.runtime.moveType === "H") {
+    recordRuntimeHitStateKoCause(victim, winner);
+    return;
+  }
   if (
     sourceOwnerId !== victim.id ||
     lifeBefore <= 0 ||
     victim.runtime.life > 0 ||
-    victim.runtime.moveType === "H" ||
     victim.runtime.teamState?.playerType !== true ||
     victim.runtime.teamState.disabled ||
     winner.runtime.teamState?.playerType !== true ||
@@ -75,4 +80,32 @@ export function recordRuntimeRootSelfKoCause(
     return;
   }
   winner.runtime.roundWinType = "suicide";
+}
+
+function recordRuntimeHitStateKoCause(
+  victim: RuntimeRootSelfKoActor & { runtime: Pick<CharacterRuntimeState, "hitVars"> },
+  winner: RuntimeRootSelfKoActor,
+): void {
+  const source = victim.runtime.hitVars;
+  if (
+    victim.playerNo === undefined ||
+    source?.sourcePlayerNo === undefined ||
+    source.sourceRootId === undefined ||
+    source.sourceRootOwned !== true ||
+    victim.runtime.teamState?.playerType !== true ||
+    victim.runtime.teamState.disabled ||
+    winner.runtime.teamState?.playerType !== true ||
+    winner.runtime.teamState.disabled
+  ) {
+    return;
+  }
+  if (victim.playerNo === source.sourcePlayerNo) {
+    winner.runtime.roundWinType = "suicide";
+    return;
+  }
+  const victimSide = runtimeTeamSideFromId(victim.id);
+  const sourceSide = runtimeTeamSideFromId(source.sourceRootId);
+  if (victimSide !== undefined && victimSide === sourceSide) {
+    winner.runtime.roundWinType = "teammate";
+  }
 }

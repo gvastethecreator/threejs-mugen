@@ -17,7 +17,7 @@ describe("RuntimeRoundWinTypeSystem", () => {
   });
 
   it("records a root-owned self KO on the opposing root", () => {
-    const victim = actor("p1", 0, "I");
+    const victim = actor("p1", 0, "I", true, 1);
     const winner = actor("p2", 100, "I");
 
     recordRuntimeRootSelfKoCause(victim, winner, 100, "p1");
@@ -26,10 +26,39 @@ describe("RuntimeRoundWinTypeSystem", () => {
   });
 
   it.each([
+    ["hit-state suicide", "p1", 1, 1, "p1", "suicide"],
+    ["hit-state teammate", "p1", 1, 3, "p3", "teammate"],
+  ] as const)("records %s from explicit hit source identity", (_label, victimId, victimPlayerNo, sourcePlayerNo, sourceRootId, expected) => {
+    const victim = actor(victimId, 0, "H", true, victimPlayerNo, {
+      sourcePlayerNo,
+      sourceActorId: sourceRootId,
+      sourceRootId,
+      sourceRootOwned: true,
+    });
+    const winner = actor("p2", 100, "I");
+
+    recordRuntimeRootSelfKoCause(victim, winner, 100, victim.id);
+
+    expect(winner.runtime.roundWinType).toBe(expected);
+  });
+
+  it.each([
     ["helper-owned", actor("p1-helper-0", 0, "I", false), actor("p2", 100, "I"), "p1-helper-0"],
     ["received-hit state", actor("p1", 0, "H"), actor("p2", 100, "I"), "p1"],
     ["wrong source owner", actor("p1", 0, "I"), actor("p2", 100, "I"), "p2"],
     ["still alive", actor("p1", 10, "I"), actor("p2", 100, "I"), "p1"],
+    ["helper projectile source", actor("p1", 0, "H", true, 1, {
+      sourcePlayerNo: 1,
+      sourceActorId: "p1",
+      sourceRootId: "p1",
+      sourceRootOwned: false,
+    }), actor("p2", 100, "I"), "p1"],
+    ["opposing hit source", actor("p1", 0, "H", true, 1, {
+      sourcePlayerNo: 2,
+      sourceActorId: "p2",
+      sourceRootId: "p2",
+      sourceRootOwned: true,
+    }), actor("p2", 100, "I"), "p1"],
   ] as const)("does not classify %s as suicide", (_label, victim, winner, ownerId) => {
     recordRuntimeRootSelfKoCause(victim, winner, 100, ownerId);
 
@@ -42,14 +71,18 @@ function actor(
   life: number,
   moveType: CharacterRuntimeState["moveType"],
   playerType = true,
+  playerNo?: number,
+  hitVars: CharacterRuntimeState["hitVars"] = undefined,
 ) {
   return {
     id,
+    ...(playerNo === undefined ? {} : { playerNo }),
     runtime: {
       life,
       moveType,
       roundWinType: undefined,
+      hitVars,
       teamState: { disabled: false, standby: false, overKo: false, playerType },
-    } satisfies Pick<CharacterRuntimeState, "life" | "moveType" | "roundWinType" | "teamState">,
+    } satisfies Pick<CharacterRuntimeState, "life" | "moveType" | "roundWinType" | "teamState" | "hitVars">,
   };
 }
