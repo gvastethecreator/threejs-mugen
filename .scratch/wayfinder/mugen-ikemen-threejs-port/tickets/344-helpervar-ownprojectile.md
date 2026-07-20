@@ -2,6 +2,7 @@
 
 Status: resolved at bounded Helper-local query scope
 Date: 2026-07-20
+Feature commit: `8bd3ba2c`
 
 ## Question
 
