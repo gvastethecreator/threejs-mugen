@@ -70,6 +70,10 @@ export type FightScreenAnnouncementDiagnostics = {
   layerNoCulled?: number;
   angleApplied?: number;
   angleCulled?: number;
+  xAngleApplied?: number;
+  xAngleCulled?: number;
+  yAngleApplied?: number;
+  yAngleCulled?: number;
   xShearApplied?: number;
   xShearCulled?: number;
   paletteFxApplied?: number;
@@ -132,6 +136,10 @@ type FightScreenLayoutRenderResult = {
   layerNoCulled: number;
   angleApplied: number;
   angleCulled: number;
+  xAngleApplied: number;
+  xAngleCulled: number;
+  yAngleApplied: number;
+  yAngleCulled: number;
   xShearApplied: number;
   xShearCulled: number;
   paletteFxApplied: number;
@@ -146,6 +154,10 @@ type FightScreenLayoutCollectionResult = {
   layerNoCulled: number;
   angleApplied: number;
   angleCulled: number;
+  xAngleApplied: number;
+  xAngleCulled: number;
+  yAngleApplied: number;
+  yAngleCulled: number;
   xShearApplied: number;
   xShearCulled: number;
   paletteFxApplied: number;
@@ -200,6 +212,10 @@ export class FightScreenAnnouncementRenderer {
     layerNoCulled: 0,
     angleApplied: 0,
     angleCulled: 0,
+    xAngleApplied: 0,
+    xAngleCulled: 0,
+    yAngleApplied: 0,
+    yAngleCulled: 0,
     xShearApplied: 0,
     xShearCulled: 0,
     paletteFxApplied: 0,
@@ -560,6 +576,10 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled: backgroundResult.layerNoCulled + topResult.layerNoCulled,
       angleApplied: backgroundResult.angleApplied + topResult.angleApplied,
       angleCulled: backgroundResult.angleCulled + topResult.angleCulled,
+      xAngleApplied: backgroundResult.xAngleApplied + topResult.xAngleApplied,
+      xAngleCulled: backgroundResult.xAngleCulled + topResult.xAngleCulled,
+      yAngleApplied: backgroundResult.yAngleApplied + topResult.yAngleApplied,
+      yAngleCulled: backgroundResult.yAngleCulled + topResult.yAngleCulled,
       xShearApplied: backgroundResult.xShearApplied + topResult.xShearApplied,
       xShearCulled: backgroundResult.xShearCulled + topResult.xShearCulled,
       paletteFxApplied: backgroundResult.paletteFxApplied + topResult.paletteFxApplied,
@@ -585,6 +605,10 @@ export class FightScreenAnnouncementRenderer {
     let layerNoCulled = 0;
     let angleApplied = 0;
     let angleCulled = 0;
+    let xAngleApplied = 0;
+    let xAngleCulled = 0;
+    let yAngleApplied = 0;
+    let yAngleCulled = 0;
     let xShearApplied = 0;
     let xShearCulled = 0;
     let paletteFxApplied = 0;
@@ -597,8 +621,15 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame.spriteIndex,
       );
       if (!sprite) continue;
-      if (layout.window && (layout.angle !== undefined || layout.xShear !== undefined)) {
+      if (layout.window && (
+        layout.angle !== undefined
+        || layout.xAngle !== undefined
+        || layout.yAngle !== undefined
+        || layout.xShear !== undefined
+      )) {
         if (layout.angle !== undefined) angleCulled += 1;
+        if (layout.xAngle !== undefined) xAngleCulled += 1;
+        if (layout.yAngle !== undefined) yAngleCulled += 1;
         if (layout.xShear !== undefined) xShearCulled += 1;
         continue;
       }
@@ -623,6 +654,8 @@ export class FightScreenAnnouncementRenderer {
       if (layout.window) windowApplied += 1;
       if (layout.layerNo !== undefined) layerNoApplied += 1;
       if (layout.angle !== undefined) angleApplied += 1;
+      if (layout.xAngle !== undefined) xAngleApplied += 1;
+      if (layout.yAngle !== undefined) yAngleApplied += 1;
       if (layout.xShear !== undefined) xShearApplied += 1;
       const paletteFx = resolveFightScreenPaletteFx(layout.paletteFx, frameTick);
       if (layout.paletteFx && paletteFx) paletteFxApplied += 1;
@@ -631,7 +664,11 @@ export class FightScreenAnnouncementRenderer {
       mesh.visible = true;
       mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
       mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
-      mesh.rotation.z = degreesToRadians(layout.angle ?? 0);
+      mesh.rotation.set(
+        -degreesToRadians(layout.xAngle ?? 0),
+        degreesToRadians(layout.yAngle ?? 0),
+        degreesToRadians(layout.angle ?? 0),
+      );
       applyFightScreenMeshShear(mesh.geometry, layout.xShear);
       applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
@@ -653,6 +690,10 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled,
       angleApplied,
       angleCulled,
+      xAngleApplied,
+      xAngleCulled,
+      yAngleApplied,
+      yAngleCulled,
       xShearApplied,
       xShearCulled,
       paletteFxApplied,
@@ -699,6 +740,10 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled: 0,
       angleApplied: 0,
       angleCulled: 0,
+      xAngleApplied: 0,
+      xAngleCulled: 0,
+      yAngleApplied: 0,
+      yAngleCulled: 0,
       xShearApplied: 0,
       xShearCulled: 0,
       paletteFxApplied: 0,

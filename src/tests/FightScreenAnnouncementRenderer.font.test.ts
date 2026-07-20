@@ -213,7 +213,15 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
         roundDefault: {
           background: [
             { animationNo: 7002, offset: [160, 100], layerNo: 0, window: [140, 80, 40, 40] },
-            { sprite: [9100, 0], offset: [160, 100], angle: 15, xShear: 0.25, window: [140, 80, 40, 40] },
+            {
+              sprite: [9100, 0],
+              offset: [160, 100],
+              angle: 15,
+              xAngle: 5,
+              yAngle: -6,
+              xShear: 0.25,
+              window: [140, 80, 40, 40],
+            },
           ],
           top: {
             sprite: [9100, 1],
@@ -221,6 +229,8 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
             facing: -1,
             layerNo: 1,
             angle: 15,
+            xAngle: 10,
+            yAngle: -20,
             xShear: -0.25,
             paletteFx: {
               time: 3,
@@ -258,6 +268,10 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       layerNoCulled: 0,
       angleApplied: 1,
       angleCulled: 1,
+      xAngleApplied: 1,
+      xAngleCulled: 1,
+      yAngleApplied: 1,
+      yAngleCulled: 1,
       xShearApplied: 1,
       xShearCulled: 1,
       paletteFxApplied: 1,
@@ -267,6 +281,8 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     const topGroup = renderer.group.children[3]!;
     expect(backgroundGroup.children[0]?.renderOrder).toBeLessThan(topGroup.children[0]?.renderOrder ?? Number.POSITIVE_INFINITY);
     expect(topGroup.children[0]?.rotation.z).toBeCloseTo(15 * Math.PI / 180);
+    expect(topGroup.children[0]?.rotation.x).toBeCloseTo(-10 * Math.PI / 180);
+    expect(topGroup.children[0]?.rotation.y).toBeCloseTo(-20 * Math.PI / 180);
     const topMesh = topGroup.children[0] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
     expect(topMesh.material.color.getHex()).not.toBe(0xffffff);
     expect((topMesh.geometry.getAttribute("position") as THREE.BufferAttribute).getX(0)).not.toBe(-0.5);
