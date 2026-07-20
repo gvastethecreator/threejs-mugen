@@ -1000,7 +1000,7 @@ export class PlayableMatchRuntime {
     ) {
       return;
     }
-    const callerRoot = this.rootForHelper(helper);
+    const callerRoot = this.verifiedRootForHelper(helper);
     if (!callerRoot || callerRoot.id !== root.id) return;
     recordRuntimeRootSelfKoCause(
       root,
@@ -1012,15 +1012,30 @@ export class PlayableMatchRuntime {
 
   private verifiedRootForHelper(helper: RuntimeHelper): FighterMatchState | undefined {
     const root = this.characterRoots().find((candidate) => candidate.id === helper.rootId);
-    if (
-      !root ||
-      helper.parentId !== root.id ||
-      helper.playerNo === undefined ||
-      helper.rootPlayerNo !== helper.playerNo
-    ) {
+    if (!root || helper.playerNo === undefined || root.playerNo === undefined || root.playerId === undefined) {
       return undefined;
     }
-    return root;
+    const helpers = this.characterRoots().flatMap((candidate) => this.effectActorWorld.helpers(candidate.id));
+    const helperById = new Map(helpers.map((candidate) => [candidate.serialId, candidate]));
+    let current: RuntimeHelper | undefined = helperById.get(helper.serialId);
+    const visited = new Set<string>();
+    while (current) {
+      if (
+        visited.has(current.serialId) ||
+        current.rootId !== root.id ||
+        current.playerNo !== root.playerNo ||
+        current.rootPlayerNo !== root.playerNo ||
+        current.rootPlayerId !== root.playerId ||
+        current.parentPlayerNo !== root.playerNo ||
+        current.parentPlayerId !== this.characterIdentity?.playerIdFor(current.parentId)
+      ) {
+        return undefined;
+      }
+      visited.add(current.serialId);
+      if (current.parentId === root.id) return root;
+      current = helperById.get(current.parentId);
+    }
+    return undefined;
   }
 
   private verifiedRootForTargetActor(target: RuntimeTargetWorldActor): FighterMatchState | undefined {

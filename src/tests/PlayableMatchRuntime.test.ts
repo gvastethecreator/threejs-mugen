@@ -5,8 +5,9 @@ import { parseCns } from "../mugen/parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
 import { bgCtrlLabStage, trainingStage } from "../mugen/runtime/demoStage";
 import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
-import { runtimeHelperCanDirectlyInteract } from "../mugen/runtime/HelperSystem";
+import { runtimeHelperCanDirectlyInteract, type RuntimeHelperProgram } from "../mugen/runtime/HelperSystem";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
+import type { RuntimeTarget } from "../mugen/runtime/TargetSystem";
 
 describe("PlayableMatchRuntime", () => {
   it("starts a two-fighter round on the training stage", () => {
@@ -8073,6 +8074,115 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
     expect(snapshot.logs.some((line) => line.includes("Blocked bindtotarget RedirectID"))).toBe(false);
+  });
+
+  it("records a nested Helper TargetLifeAdd RedirectID cause through its parent chain", () => {
+    const fighter = createImportedFixture({
+      id: "nested-helper-target-life-cause",
+      withStateMove: false,
+      helperStateControllers: `
+[State 1200, Nested Helper Target Life KO]
+type = TargetLifeAdd
+trigger1 = Time = 0
+id = 77
+value = -1000
+absolute = 1
+kill = 1
+RedirectID = 57
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+    const internals = runtime as unknown as {
+      p1: { runtimeProgram?: RuntimeHelperProgram };
+      p2: { targets: RuntimeTarget[] };
+    };
+    const helperController = parseCns(`
+[State 0, Manual Helper]
+type = Helper
+id = 43
+stateno = 0
+anim = 920
+`).controllers[0];
+    if (!helperController) {
+      throw new Error("Expected manual Helper controller");
+    }
+    const helperAction = fighter.animations.get(920);
+    if (!helperAction) {
+      throw new Error("Expected helper animation 920");
+    }
+    const parent = effectActorWorld.spawnHelper("p1", {
+      controller: helperController,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      spriteOwnerId: fighter.id,
+      spriteOwnerDefinitionId: fighter.id,
+      spriteOwnerLabel: fighter.displayName,
+      localCoord: fighter.localCoord,
+      animations: fighter.animations,
+      action: helperAction,
+      runtimeProgram: { states: [] },
+      stateNo: 0,
+      animNo: 920,
+      pos: { x: -20, y: -28 },
+      fallbackFacing: 1,
+    });
+    const nested = effectActorWorld.spawnHelper("p1", {
+      controller: helperController,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: parent.serialId,
+      spriteOwnerId: fighter.id,
+      spriteOwnerDefinitionId: fighter.id,
+      spriteOwnerLabel: fighter.displayName,
+      localCoord: fighter.localCoord,
+      animations: fighter.animations,
+      action: helperAction,
+      runtimeProgram: internals.p1.runtimeProgram,
+      stateNo: 1200,
+      animNo: 920,
+      pos: { x: -20, y: -28 },
+      fallbackFacing: 1,
+    });
+    internals.p2.targets = [{ actorId: "p1", targetId: 77, age: 0 }];
+
+    expect(nested.parentId).toBe(parent.serialId);
+    expect(nested.rootId).toBe("p1");
+    expect(parent.action.frames).toHaveLength(1);
+    expect(nested.action.frames).toHaveLength(1);
+    expect(runtime.getCharacterIdentity()?.characters).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: parent.serialId, rootId: "p1", parentId: "p1", playerNo: 1 }),
+        expect.objectContaining({ actorId: nested.serialId, rootId: "p1", parentId: parent.serialId, playerNo: 1 }),
+      ]),
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    for (let frame = 0; frame < 8 && (snapshot.actors[0]?.runtime.life ?? 1000) > 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("normal");
+    expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          route: "helper-to-root",
+          callerId: nested.serialId,
+          destinationId: "p2",
+          controllerType: "targetlifeadd",
+          operationClass: "target-resource",
+          requestedId: 77,
+          selectedTargetIds: ["p1"],
+          sourceStateNo: 1200,
+        }),
+      ]),
+    );
+    expect(snapshot.logs.some((line) => line.includes("Blocked TargetLifeAdd RedirectID"))).toBe(false);
   });
 
   it("characterizes a Helper TargetPowerAdd RedirectID through a destination Helper", () => {
