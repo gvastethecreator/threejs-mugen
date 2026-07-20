@@ -13,10 +13,20 @@ export type RuntimeCollisionScaleMultiplier = {
   y: number;
 };
 
-export type RuntimeCollisionTransformState = Pick<CharacterRuntimeState, "clsnScaleMultiplier">;
+export type RuntimeCollisionBox = CollisionBox & {
+  collisionTransformDisabled?: true;
+  runtimeRotation?: {
+    angle: number;
+    pivotX: number;
+    pivotY: number;
+  };
+};
+
+export type RuntimeCollisionTransformState = Pick<CharacterRuntimeState, "clsnScaleMultiplier" | "clsnAngle">;
 
 export type RuntimeCollisionTransformResolver = {
   resolveScale: (key: "scale") => [number, number?] | undefined;
+  resolveAngle: () => number | undefined;
 };
 
 export function resolveRuntimeCollisionTransformControllerOperation(
@@ -25,12 +35,14 @@ export function resolveRuntimeCollisionTransformControllerOperation(
   context: RuntimeControllerEvaluationContext = {},
 ): CollisionTransformControllerOp | undefined {
   const scale = resolveScale(controller, state, context);
-  if (!scale) return undefined;
+  const angle = resolveAngle(controller, state, context);
+  if (!scale && angle === undefined) return undefined;
   const redirectPlayerIdExpression = findControllerParam(controller, "redirectid")?.trim();
   return {
     kind: "collision-transform",
     controllerType: "transformclsn",
-    scale: [scale[0], scale[1] ?? 1],
+    ...(scale ? { scale: [scale[0], scale[1] ?? 1] as [number, number] } : {}),
+    ...(angle === undefined ? {} : { angle }),
     ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
   };
 }
@@ -38,6 +50,7 @@ export function resolveRuntimeCollisionTransformControllerOperation(
 export class RuntimeCollisionTransformWorld {
   resetFrame(state: RuntimeCollisionTransformState): void {
     state.clsnScaleMultiplier = undefined;
+    state.clsnAngle = undefined;
   }
 
   applyController(
@@ -48,17 +61,24 @@ export class RuntimeCollisionTransformWorld {
     resolver?: RuntimeCollisionTransformResolver,
   ): CollisionTransformControllerOp | undefined {
     const scale = operation?.scale ?? resolver?.resolveScale("scale") ?? resolveScale(controller, state, context);
-    if (!scale) return undefined;
+    const angle = operation?.angle ?? resolver?.resolveAngle() ?? resolveAngle(controller, state, context);
+    if (!scale && angle === undefined) return undefined;
 
-    const current = state.clsnScaleMultiplier ?? { x: 1, y: 1 };
-    state.clsnScaleMultiplier = {
-      x: current.x * scale[0],
-      y: current.y * (scale[1] ?? 1),
-    };
+    if (scale) {
+      const current = state.clsnScaleMultiplier ?? { x: 1, y: 1 };
+      state.clsnScaleMultiplier = {
+        x: current.x * scale[0],
+        y: current.y * (scale[1] ?? 1),
+      };
+    }
+    if (angle !== undefined) {
+      state.clsnAngle = (state.clsnAngle ?? 0) + angle;
+    }
     return {
       kind: "collision-transform",
       controllerType: "transformclsn",
-      scale: [scale[0], scale[1] ?? 1],
+      ...(scale ? { scale: [scale[0], scale[1] ?? 1] as [number, number] } : {}),
+      ...(angle === undefined ? {} : { angle }),
       ...(operation?.redirectPlayerIdExpression === undefined
         ? {}
         : { redirectPlayerIdExpression: operation.redirectPlayerIdExpression }),
@@ -98,6 +118,16 @@ function resolveScale(
   if (values.length === 0 || values[0] === undefined) return undefined;
   if (values.length > 2 || values.some((value) => value === undefined)) return undefined;
   return [values[0], values[1]];
+}
+
+function resolveAngle(
+  controller: Pick<ControllerIr, "params">,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+): number | undefined {
+  const raw = findControllerParam(controller, "angle");
+  if (raw === undefined || raw.includes(",")) return undefined;
+  return evaluateRuntimeControllerNumber(raw.trim(), state, context);
 }
 
 function finiteScale(value: number | undefined): number {

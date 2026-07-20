@@ -1201,6 +1201,7 @@ value = 1
   it("compiles static TransformClsn scale and leaves expression values for runtime", () => {
     const value = compileControllerIr(controller(200, "TransformClsn", [], { scale: "2,-0.5", redirectid: "59" }));
     const topOnly = compileControllerIr(controller(200, "TransformClsn", [], { scale: "1.5" }));
+    const angle = compileControllerIr(controller(200, "TransformClsn", [], { angle: "45" }));
     const dynamic = compileControllerIr(controller(200, "TransformClsn", [], { scale: "var(0),0.5" }));
 
     expect(value.operation).toEqual({
@@ -1210,6 +1211,7 @@ value = 1
       redirectPlayerIdExpression: "59",
     });
     expect(topOnly.operation).toEqual({ kind: "collision-transform", controllerType: "transformclsn", scale: [1.5, 1] });
+    expect(angle.operation).toEqual({ kind: "collision-transform", controllerType: "transformclsn", angle: 45 });
     expect(dynamic.operation).toBeUndefined();
   });
 

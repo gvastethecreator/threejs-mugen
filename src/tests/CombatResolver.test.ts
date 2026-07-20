@@ -44,6 +44,28 @@ describe("CombatResolver", () => {
     expect(hasRuntimeBoxContact(attackBox, defender, [{ x1: -30, y1: -32, x2: -12, y2: -4 }])).toBe(false);
   });
 
+  it("checks rotated collision boxes around the actor origin", () => {
+    const attacker = actor({ pos: { x: 0, y: 0 }, facing: 1, clsnAngle: 90 });
+    const defender = actor({ pos: { x: -5, y: -5 }, facing: 1 });
+    const attack = { x1: 0, y1: -10, x2: 10, y2: 0 };
+    const hurt = { x1: -2, y1: -2, x2: 2, y2: 2 };
+
+    expect(hasRuntimeBoxContact(runtimeWorldBox(attacker, attack), defender, [hurt])).toBe(true);
+    expect(hasRuntimeBoxContact(runtimeWorldBox({ ...attacker, clsnAngle: 0 }, attack), defender, [hurt])).toBe(false);
+  });
+
+  it("keeps size collision boxes unrotated", () => {
+    expect(runtimeWorldBox(
+      actor({ pos: { x: 10, y: -20 }, facing: 1, clsnAngle: 90 }),
+      { x1: -8, y1: -40, x2: 24, y2: -10, collisionTransformDisabled: true },
+    )).toEqual({
+      x1: 2,
+      x2: 34,
+      y1: -60,
+      y2: -30,
+    });
+  });
+
   it("checks bounded guard distance without requiring hitbox contact", () => {
     const attacker = actor({ pos: { x: -95, y: 0 }, facing: 1 });
     const defender = actor({ pos: { x: 95, y: 0 }, facing: -1 });

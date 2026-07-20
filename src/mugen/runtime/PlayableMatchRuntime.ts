@@ -108,6 +108,7 @@ import {
   type RuntimeMatchTickPhaseId,
 } from "./RuntimeMatchTickScheduleSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
+import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import {
@@ -5378,7 +5379,7 @@ function getRuntimeCollisionBoxes(
   fighter: FighterMatchState,
   boxType: MugenCollisionBoxType,
   helpers?: readonly RuntimeHelper[],
-): MugenAnimationFrame["clsn1"] {
+): RuntimeCollisionBox[] {
   if (boxType === "clsn1") {
     const base = frameWorld.currentAttackBoxes(fighter);
     return helpers?.length
@@ -5395,7 +5396,7 @@ function getRuntimeCollisionBoxes(
         })
       : base;
   }
-  if (boxType === "size") return [runtimePushSizeBox(fighter)];
+  if (boxType === "size") return [{ ...runtimePushSizeBox(fighter), collisionTransformDisabled: true }];
   return [];
 }
 

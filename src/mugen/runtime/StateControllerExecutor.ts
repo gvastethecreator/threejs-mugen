@@ -202,18 +202,19 @@ export function executeControllerIr(
   } else if (type === "playerpush") {
     boundsControllerWorld.applyPlayerPushController(next, controller, collisionOperation(controller, "playerpush"), context);
   } else if (type === "transformclsn") {
+    const operation = collisionTransformOperation(controller);
+    const hasScaleParam = operation?.scale !== undefined || findParam(controller, "scale") !== undefined;
+    const hasAngleParam = operation?.angle !== undefined || findParam(controller, "angle") !== undefined;
     const applied = collisionTransformWorld.applyController(
       next,
       controller,
-      collisionTransformOperation(controller),
+      operation,
       context,
     );
-    const hasScaleParam = collisionTransformOperation(controller)?.scale !== undefined || findParam(controller, "scale") !== undefined;
-    if (!applied && hasScaleParam) {
+    if (hasScaleParam && applied?.scale === undefined) {
       reportUnsupported(`${controller.type}:scale`);
     }
-    const hasAngleParam = findParam(controller, "angle") !== undefined;
-    if (hasAngleParam) {
+    if (hasAngleParam && applied?.angle === undefined) {
       reportUnsupported(`${controller.type}:angle`);
     }
     if (!hasScaleParam && !hasAngleParam) {

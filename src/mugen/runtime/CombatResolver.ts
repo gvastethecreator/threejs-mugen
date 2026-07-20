@@ -1,5 +1,6 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
+import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
 
 export type RuntimeCombatAttack = {
   damage: number;
@@ -64,25 +65,92 @@ export type RuntimeCombatHitResult =
 
 export const DEFAULT_RUNTIME_GUARD_DISTANCE = 96;
 
-export function runtimeWorldBox(actor: Pick<CharacterRuntimeState, "pos" | "facing">, box: CollisionBox): CollisionBox {
-  if (actor.facing === 1) {
-    return {
-      x1: actor.pos.x + box.x1,
-      x2: actor.pos.x + box.x2,
-      y1: actor.pos.y + box.y1,
-      y2: actor.pos.y + box.y2,
-    };
+export function runtimeWorldBox(
+  actor: Pick<CharacterRuntimeState, "pos" | "facing"> & Partial<Pick<CharacterRuntimeState, "clsnAngle">>,
+  box: RuntimeCollisionBox,
+): RuntimeCollisionBox {
+  const worldBox = actor.facing === 1
+    ? {
+        x1: actor.pos.x + box.x1,
+        x2: actor.pos.x + box.x2,
+        y1: actor.pos.y + box.y1,
+        y2: actor.pos.y + box.y2,
+      }
+    : {
+        x1: actor.pos.x - box.x2,
+        x2: actor.pos.x - box.x1,
+        y1: actor.pos.y + box.y1,
+        y2: actor.pos.y + box.y2,
+      };
+  if (box.collisionTransformDisabled || actor.clsnAngle === undefined || actor.clsnAngle === 0) {
+    return worldBox;
   }
   return {
-    x1: actor.pos.x - box.x2,
-    x2: actor.pos.x - box.x1,
-    y1: actor.pos.y + box.y1,
-    y2: actor.pos.y + box.y2,
+    ...worldBox,
+    runtimeRotation: {
+      angle: -((actor.clsnAngle * actor.facing) * Math.PI) / 180,
+      pivotX: actor.pos.x,
+      pivotY: actor.pos.y,
+    },
   };
 }
 
 export function collisionBoxesIntersect(a: CollisionBox, b: CollisionBox): boolean {
+  const left = a as RuntimeCollisionBox;
+  const right = b as RuntimeCollisionBox;
+  if (left.runtimeRotation || right.runtimeRotation) {
+    return rotatedCollisionBoxesIntersect(left, right);
+  }
   return a.x1 < b.x2 && a.x2 > b.x1 && a.y1 < b.y2 && a.y2 > b.y1;
+}
+
+function rotatedCollisionBoxesIntersect(a: RuntimeCollisionBox, b: RuntimeCollisionBox): boolean {
+  const left = collisionBoxCorners(a);
+  const right = collisionBoxCorners(b);
+  const axes = [...collisionBoxAxes(left), ...collisionBoxAxes(right)];
+  return axes.every((axis) => {
+    const leftRange = projectCollisionCorners(left, axis);
+    const rightRange = projectCollisionCorners(right, axis);
+    return leftRange.max >= rightRange.min && rightRange.max >= leftRange.min;
+  });
+}
+
+function collisionBoxCorners(box: RuntimeCollisionBox): Array<{ x: number; y: number }> {
+  const corners = [
+    { x: box.x1, y: box.y1 },
+    { x: box.x2, y: box.y1 },
+    { x: box.x2, y: box.y2 },
+    { x: box.x1, y: box.y2 },
+  ];
+  const rotation = box.runtimeRotation;
+  if (!rotation) return corners;
+  const cosine = Math.cos(rotation.angle);
+  const sine = Math.sin(rotation.angle);
+  return corners.map((corner) => {
+    const dx = corner.x - rotation.pivotX;
+    const dy = corner.y - rotation.pivotY;
+    return {
+      x: cosine * dx - sine * dy + rotation.pivotX,
+      y: sine * dx + cosine * dy + rotation.pivotY,
+    };
+  });
+}
+
+function collisionBoxAxes(corners: readonly { x: number; y: number }[]): Array<{ x: number; y: number }> {
+  return corners.map((corner, index) => {
+    const next = corners[(index + 1) % corners.length]!;
+    const edgeX = next.x - corner.x;
+    const edgeY = next.y - corner.y;
+    return { x: -edgeY, y: edgeX };
+  });
+}
+
+function projectCollisionCorners(
+  corners: readonly { x: number; y: number }[],
+  axis: { x: number; y: number },
+): { min: number; max: number } {
+  const values = corners.map((corner) => corner.x * axis.x + corner.y * axis.y);
+  return { min: Math.min(...values), max: Math.max(...values) };
 }
 
 export function hasRuntimeBoxContact(

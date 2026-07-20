@@ -1,7 +1,7 @@
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeFighterAdvanceActor = {
-  runtime: Pick<CharacterRuntimeState, "combatDepth" | "pos" | "renderAngle" | "renderScale" | "clsnScaleMultiplier">;
+  runtime: Pick<CharacterRuntimeState, "combatDepth" | "pos" | "renderAngle" | "renderScale" | "clsnScaleMultiplier" | "clsnAngle">;
 };
 
 export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor> = {
@@ -47,6 +47,7 @@ export class RuntimeFighterAdvanceWorld {
     actor.runtime.renderAngle = undefined;
     actor.runtime.renderScale = undefined;
     actor.runtime.clsnScaleMultiplier = undefined;
+    actor.runtime.clsnAngle = undefined;
     hooks.advanceStateClock(actor);
     hooks.resetFrameConstraints(actor);
     hooks.tickHitFallRecoveryWindow(actor);

@@ -596,15 +596,17 @@ describe("StateControllerExecutor", () => {
     expect(irResult.vel).toEqual({ x: 4, y: -3 });
   });
 
-  it("accumulates TransformClsn scale and reports the bounded angle gap", () => {
+  it("accumulates TransformClsn scale and angle per tick", () => {
     let state = runtimeState({ vars: [2] });
     const unsupported: string[] = [];
     const staticController = compileControllerIr(controller("TransformClsn", { scale: "2,0.5", redirectid: "59" }));
     const dynamicController = compileControllerIr(controller("TransformClsn", { scale: "var(0),0.25" }));
+    const angleController = compileControllerIr(controller("TransformClsn", { angle: "15" }));
+    const mixedInvalidController = compileControllerIr(controller("TransformClsn", { scale: "2", angle: "" }));
 
     state = executeControllerIr(staticController, state, (item) => unsupported.push(item));
     state = executeControllerIr(dynamicController, state, (item) => unsupported.push(item));
-    state = executeStateController(controller("TransformClsn", { angle: "15" }), state, (item) => unsupported.push(item));
+    state = executeControllerIr(angleController, state, (item) => unsupported.push(item));
 
     expect(staticController.operation).toEqual({
       kind: "collision-transform",
@@ -613,8 +615,16 @@ describe("StateControllerExecutor", () => {
       redirectPlayerIdExpression: "59",
     });
     expect(dynamicController.operation).toBeUndefined();
+    expect(angleController.operation).toEqual({ kind: "collision-transform", controllerType: "transformclsn", angle: 15 });
     expect(state.clsnScaleMultiplier).toEqual({ x: 4, y: 0.125 });
-    expect(unsupported).toEqual(["TransformClsn:angle"]);
+    expect(state.clsnAngle).toBe(15);
+    expect(unsupported).toEqual([]);
+
+    const mixedUnsupported: string[] = [];
+    const mixedState = executeControllerIr(mixedInvalidController, runtimeState(), (item) => mixedUnsupported.push(item));
+    expect(mixedState.clsnScaleMultiplier).toEqual({ x: 2, y: 1 });
+    expect(mixedState.clsnAngle).toBeUndefined();
+    expect(mixedUnsupported).toEqual(["TransformClsn:angle"]);
   });
 
   it("keeps controller GetHitVar fall.recover independent from recovery timer", () => {

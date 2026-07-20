@@ -427,6 +427,7 @@ import {
   createSyntheticImportedControllerParamRootRedirectTraceArtifact,
   createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedTransformClsnScaleTraceArtifact,
+  createSyntheticImportedTransformClsnAngleTraceArtifact,
   createSyntheticImportedDynamicWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedDynamicStateTypeSetTraceArtifact,
@@ -12074,6 +12075,39 @@ describe("RuntimeTraceGatePresets", () => {
           animNo: 200,
           minCollisionScale: { x: 2, y: 0.5 },
           maxCollisionScale: { x: 2, y: 0.5 },
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported TransformClsn angle artifact with rotated collision evidence", () => {
+    const artifact = createSyntheticImportedTransformClsnAngleTraceArtifact({ generatedAt: "2026-07-20T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-transformclsn-angle-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-transformclsn-angle-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.TransformClsn).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["collision-transform"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          minCollisionAngle: 45,
+          maxCollisionAngle: 45,
         }),
       ]),
     );

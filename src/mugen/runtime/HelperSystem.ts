@@ -129,6 +129,7 @@ export type RuntimeHelper = {
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
   clsnScaleMultiplier?: { x: number; y: number };
+  clsnAngle?: number;
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -312,6 +313,7 @@ export type RuntimeHelperSpawnInput = {
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
   clsnScaleMultiplier?: { x: number; y: number };
+  clsnAngle?: number;
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
@@ -374,6 +376,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     ownClsnScale: input.ownClsnScale ?? operation?.ownClsnScale,
     clsnProxy: input.clsnProxy ?? operation?.clsnProxy,
     clsnScaleMultiplier: input.clsnScaleMultiplier,
+    clsnAngle: input.clsnAngle,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -1697,6 +1700,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     fvars: [...helper.fvars],
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
     ...(helper.clsnScaleMultiplier === undefined ? {} : { clsnScaleMultiplier: { ...helper.clsnScaleMultiplier } }),
+    ...(helper.clsnAngle === undefined ? {} : { clsnAngle: helper.clsnAngle }),
     targetCount: helper.targets.length,
     targetRefs: helper.targets.map((target) => ({ ...target })),
     targetBindings: helper.targetBindings.map((binding) => ({
@@ -1762,6 +1766,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.clsnScaleMultiplier = runtime.clsnScaleMultiplier
     ? { ...runtime.clsnScaleMultiplier }
     : undefined;
+  helper.clsnAngle = runtime.clsnAngle;
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {

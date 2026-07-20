@@ -38,6 +38,7 @@ export type CharacterRuntimeState = {
   bodyHeightDelta?: { top: number; bottom: number };
   clsnOverrides?: RuntimeCollisionOverride[];
   clsnScaleMultiplier?: { x: number; y: number };
+  clsnAngle?: number;
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;

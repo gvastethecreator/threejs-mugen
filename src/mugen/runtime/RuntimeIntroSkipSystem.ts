@@ -32,6 +32,7 @@ export function resetRuntimeIntroSkipActor(
   runtime.bodyHeightDelta = undefined;
   runtime.clsnOverrides = undefined;
   runtime.clsnScaleMultiplier = undefined;
+  runtime.clsnAngle = undefined;
   runtime.posFreeze = undefined;
   runtime.screenBound = undefined;
   runtime.stageBound = undefined;

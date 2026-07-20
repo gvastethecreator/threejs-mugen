@@ -432,7 +432,8 @@ export type CollisionControllerOp =
 export type CollisionTransformControllerOp = {
   kind: "collision-transform";
   controllerType: "transformclsn";
-  scale: [number, number];
+  scale?: [number, number];
+  angle?: number;
   redirectPlayerIdExpression?: string;
 };
 
@@ -1125,12 +1126,17 @@ function compileOverrideClsnControllerOp(controller: MugenStateController): Coll
 
 function compileTransformClsnControllerOp(controller: MugenStateController): CollisionTransformControllerOp | undefined {
   const scale = strictNumberPair(findParam(controller, "scale"));
+  const angleRaw = findParam(controller, "angle");
+  const angle = angleRaw === undefined ? undefined : strictNumberSingle(angleRaw);
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
-  if (!scale || redirectPlayerIdExpression === "invalid") return undefined;
+  if ((!scale && angle === undefined) || (angleRaw !== undefined && angle === undefined) || redirectPlayerIdExpression === "invalid") {
+    return undefined;
+  }
   return {
     kind: "collision-transform",
     controllerType: "transformclsn",
-    scale: [scale[0], scale[1] ?? 1],
+    ...(scale ? { scale: [scale[0], scale[1] ?? 1] as [number, number] } : {}),
+    ...(angle === undefined ? {} : { angle }),
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }
@@ -2473,6 +2479,14 @@ function strictNumberPair(value: string | undefined): [number, number?] | undefi
     return undefined;
   }
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
+}
+
+function strictNumberSingle(value: string | undefined): number | undefined {
+  if (!value || value.includes(",")) {
+    return undefined;
+  }
+  const numberValue = Number(value.trim());
+  return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
 function strictNumberPairExact(value: string | undefined): [number, number] | undefined {

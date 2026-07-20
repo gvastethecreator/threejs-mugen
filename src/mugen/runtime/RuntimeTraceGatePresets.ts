@@ -9576,6 +9576,58 @@ export function createSyntheticImportedTransformClsnScaleTraceArtifact(
   });
 }
 
+export function createSyntheticImportedTransformClsnAngleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-transformclsn-angle",
+    displayName: "Synthetic Imported TransformClsn Angle",
+    withTransformClsn: { angle: 45 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-transformclsn-angle-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-transformclsn-angle-golden",
+      label: "Synthetic imported TransformClsn angle route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported TransformClsn angle trace proves a static per-tick collision angle reaches typed controller-operation telemetry and rotated root collision intersection. It does not claim proxy-local angle composition, size-box rotation, animlocalscl/localcoord composition, renderer parity, or full MUGEN/IKEMEN collision parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-transformclsn-angle-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "TransformClsn", "HitDef"],
+        requiredExecutedOperations: ["collision-transform", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 200,
+            animNo: 200,
+            observedCollisionAngleAtLeast: 45,
+            observedCollisionAngleAtMost: 45,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDynamicWidthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -48551,7 +48603,8 @@ export type SyntheticImportedTraceFighterOptions = {
     vars?: Array<{ index: number; value: number }>;
   };
   withTransformClsn?: {
-    scale: SyntheticPairExpression;
+    scale?: SyntheticPairExpression;
+    angle?: SyntheticNumberExpression;
     redirectId?: SyntheticNumberExpression;
   };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
@@ -50434,11 +50487,14 @@ function transformClsnControllerBlock(
   options: NonNullable<SyntheticImportedTraceFighterOptions["withTransformClsn"]>,
 ): string {
   const redirectIdLine = options.redirectId === undefined ? "" : `redirectid = ${options.redirectId}`;
+  const scaleLine = options.scale === undefined ? "" : `scale = ${options.scale.join(",")}`;
+  const angleLine = options.angle === undefined ? "" : `angle = ${options.angle}`;
   return `
-[State 200, TransformClsn Scale Probe]
+[State 200, TransformClsn Probe]
 type = TransformClsn
 trigger1 = Time >= 0
-scale = ${options.scale.join(",")}
+${scaleLine}
+${angleLine}
 ${redirectIdLine}
 `;
 }
