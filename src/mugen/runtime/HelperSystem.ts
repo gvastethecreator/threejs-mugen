@@ -223,6 +223,12 @@ export type RuntimeHelperAdvanceOptions = {
     operation: ControllerOp,
     lifeBefore?: number,
   ) => void;
+  onTargetLifeAdd?: (
+    helper: RuntimeHelper,
+    sourceActor: RuntimeTargetWorldActor,
+    targetActor: RuntimeTargetWorldActor,
+    lifeBefore: number,
+  ) => void;
   onRedirectedTargetDispatch?: (
     helper: RuntimeHelper,
     target: RuntimeTargetWorldActor,
@@ -474,6 +480,7 @@ export function runRuntimeHelperStateControllers(
     | "onResourceRedirectBlocked"
     | "onRedirectedController"
     | "onRedirectedOperation"
+    | "onTargetLifeAdd"
     | "onRedirectedTargetDispatch"
     | "enterTargetState"
     | "enterRedirectedTargetState"
@@ -1125,6 +1132,7 @@ function applyRuntimeHelperTargetController(
     | "onTargetRedirectBlocked"
     | "onRedirectedController"
     | "onRedirectedOperation"
+    | "onTargetLifeAdd"
     | "onRedirectedTargetDispatch"
     | "enterTargetState"
     | "enterRedirectedTargetState"
@@ -1173,6 +1181,8 @@ function applyRuntimeHelperTargetController(
         options.onOperation?.(helper, operation);
         if (redirect) options.onRedirectedOperation?.(helper, actor, operation);
       },
+      recordTargetLifeAdd: (sourceActor, targetActor, lifeBefore) =>
+        options.onTargetLifeAdd?.(helper, sourceActor, targetActor, lifeBefore),
       recordDispatch: (selection) => {
         if (redirect) redirectedSelection = selection;
       },

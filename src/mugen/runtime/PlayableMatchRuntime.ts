@@ -1010,6 +1010,49 @@ export class PlayableMatchRuntime {
     );
   }
 
+  private verifiedRootForHelper(helper: RuntimeHelper): FighterMatchState | undefined {
+    const root = this.characterRoots().find((candidate) => candidate.id === helper.rootId);
+    if (
+      !root ||
+      helper.parentId !== root.id ||
+      helper.playerNo === undefined ||
+      helper.rootPlayerNo !== helper.playerNo
+    ) {
+      return undefined;
+    }
+    return root;
+  }
+
+  private verifiedRootForTargetActor(target: RuntimeTargetWorldActor): FighterMatchState | undefined {
+    const root = this.characterRoots().find((candidate) => candidate.id === target.id);
+    if (root) return root;
+    const helper = this.characterRoots()
+      .flatMap((candidate) => this.effectActorWorld.helpers(candidate.id))
+      .find((candidate) => candidate.serialId === target.id);
+    return helper ? this.verifiedRootForHelper(helper) : undefined;
+  }
+
+  private recordHelperTargetLifeKoCause(
+    helper: RuntimeHelper,
+    sourceActor: RuntimeTargetWorldActor,
+    targetActor: RuntimeTargetWorldActor,
+    lifeBefore: number,
+  ): void {
+    if (!this.verifiedRootForHelper(helper)) return;
+    const sourceIsRoot = this.characterRoots().some((candidate) => candidate.id === sourceActor.id);
+    const sourceIsLocalHelper = sourceActor.id === helper.serialId;
+    if (!sourceIsRoot && !sourceIsLocalHelper) return;
+    const sourceRoot = this.verifiedRootForTargetActor(sourceActor);
+    const victimRoot = this.characterRoots().find((candidate) => candidate.id === targetActor.id);
+    if (!sourceRoot || !victimRoot) return;
+    recordRuntimeTargetLifeKoCause(
+      victimRoot,
+      this.opponentForRoot(victimRoot),
+      lifeBefore,
+      sourceRoot.id,
+    );
+  }
+
   private recordHelperRedirectedTargetDispatch(
     helper: RuntimeHelper,
     target: RuntimeTargetWorldActor,
@@ -1587,6 +1630,8 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (helper, target, operation, lifeBefore) =>
             this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
+          onTargetLifeAdd: (helper, sourceActor, targetActor, lifeBefore) =>
+            this.recordHelperTargetLifeKoCause(helper, sourceActor, targetActor, lifeBefore),
           onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
             this.recordHelperRedirectedTargetDispatch(
               helper,
@@ -1838,6 +1883,8 @@ export class PlayableMatchRuntime {
                   this.recordHelperRedirectedController(target, controller),
                 onRedirectedOperation: (helper, target, operation, lifeBefore) =>
                   this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
+                onTargetLifeAdd: (helper, sourceActor, targetActor, lifeBefore) =>
+                  this.recordHelperTargetLifeKoCause(helper, sourceActor, targetActor, lifeBefore),
                 onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
                   this.recordHelperRedirectedTargetDispatch(
                     helper,
@@ -1942,6 +1989,8 @@ export class PlayableMatchRuntime {
             this.recordHelperRedirectedController(target, controller),
           onHelperRedirectedOperation: (helper, target, operation, lifeBefore) =>
             this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
+          onTargetLifeAdd: (helper, sourceActor, targetActor, lifeBefore) =>
+            this.recordHelperTargetLifeKoCause(helper, sourceActor, targetActor, lifeBefore),
           onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
             this.recordHelperRedirectedTargetDispatch(
               helper,
@@ -2363,6 +2412,8 @@ export class PlayableMatchRuntime {
               this.recordHelperRedirectedController(target, controller),
             onRedirectedOperation: (helper, target, operation, lifeBefore) =>
               this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
+            onTargetLifeAdd: (helper, sourceActor, targetActor, lifeBefore) =>
+              this.recordHelperTargetLifeKoCause(helper, sourceActor, targetActor, lifeBefore),
             onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
               this.recordHelperRedirectedTargetDispatch(
                 helper,

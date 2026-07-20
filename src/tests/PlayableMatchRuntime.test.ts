@@ -7971,6 +7971,54 @@ RedirectID = 57
     );
   });
 
+  it("records a root Helper TargetLifeAdd RedirectID cause", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Helper Target Life KO]
+type = TargetLifeAdd
+trigger1 = Time = 1
+id = 77
+value = -1000
+absolute = 1
+kill = 1
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "helper-target-life-redirect-destination",
+      multiFrameAction: { id: 200, durations: [48] },
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, { runtimeProfile: "ikemen-go" });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20 && snapshot.actors[1]?.runtime.targetCount !== 1; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[1]?.runtime.targetCount).toBe(1);
+
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && (snapshot.actors[0]?.runtime.life ?? 1000) > 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("normal");
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked TargetLifeAdd RedirectID"))).toBe(false);
+  });
+
   it("routes a Helper BindToTarget RedirectID through the destination root target memory", () => {
     const caller = createImportedFixture({
       withHelper: true,
@@ -8079,6 +8127,41 @@ RedirectID = ID + 1
     expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches?.some(
       (observation) => observation.mutatedActorIds.includes("p1-helper-0"),
     )).toBe(false);
+  });
+
+  it("keeps Helper-to-Helper TargetLifeAdd result cause fail-closed", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Helper-to-Helper Target Life KO]
+type = TargetLifeAdd
+trigger1 = Time = 1
+id = 77
+value = -1000
+absolute = 1
+kill = 1
+RedirectID = ID + 1
+`,
+    });
+    const destination = createImportedFixture({ withHelper: true });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["x"]) });
+    const destinationHelper = effectActorWorld.helpers("p2")[0];
+    expect(destinationHelper).toBeDefined();
+    destinationHelper!.targets = [{ actorId: "p1", targetId: 77, age: 0 }];
+
+    for (let frame = 0; frame < 4; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[0]?.runtime.roundWinType).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBeUndefined();
   });
 
   it("buffers imported CMD inputs entered during hit pause when buffer.hitpause is enabled", () => {
