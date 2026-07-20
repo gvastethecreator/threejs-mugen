@@ -3355,6 +3355,7 @@ export class PlayableMatchRuntime {
       round: this.round,
       resetRound: options.preserveRound !== true,
       roundTimerFrames: this.roundTimerFrames,
+      preserveHelpers: options.preserveRound === true && this.runtimeProfile === "ikemen-go",
       pauseWorld: this.pauseWorld,
       envColorWorld: this.envColorWorld,
       effectActorWorld: this.effectActorWorld,

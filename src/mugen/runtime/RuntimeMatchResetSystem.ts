@@ -4,12 +4,16 @@ export type RuntimeMatchResetFighterStart = {
   facing: 1 | -1;
 };
 
+export type RuntimeMatchResetEffectOptions = {
+  preserveHelpers?: boolean;
+};
+
 export type RuntimeMatchResetRound = {
   reset: (frames?: number) => void;
 };
 
-export type RuntimeMatchResettableWorld = {
-  reset: () => void;
+export type RuntimeMatchResettableWorld<TOptions = undefined> = {
+  reset: (options?: TOptions) => void;
 };
 
 export type RuntimeMatchResetInput<TActor extends object, TDefinition> = {
@@ -22,9 +26,10 @@ export type RuntimeMatchResetInput<TActor extends object, TDefinition> = {
   round: RuntimeMatchResetRound;
   resetRound?: boolean;
   roundTimerFrames?: number;
+  preserveHelpers?: boolean;
   pauseWorld: RuntimeMatchResettableWorld;
   envColorWorld: RuntimeMatchResettableWorld;
-  effectActorWorld: RuntimeMatchResettableWorld;
+  effectActorWorld: RuntimeMatchResettableWorld<RuntimeMatchResetEffectOptions>;
   reserveActors?: Array<{
     actor: TActor;
     id: string;
@@ -49,7 +54,7 @@ export class RuntimeMatchResetWorld {
     }
     input.pauseWorld.reset();
     input.envColorWorld.reset();
-    input.effectActorWorld.reset();
+    input.effectActorWorld.reset({ preserveHelpers: input.preserveHelpers === true });
 
     replaceObjectContents(input.p1, input.createFighter("p1", input.p1Definition, input.p1Start));
     replaceObjectContents(input.p2, input.createFighter("p2", input.p2Definition, input.p2Start));

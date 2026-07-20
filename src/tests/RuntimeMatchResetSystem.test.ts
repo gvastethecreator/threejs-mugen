@@ -30,7 +30,8 @@ describe("RuntimeMatchResetWorld", () => {
       round: { reset: (frames) => calls.push(`round:${frames}`) },
       pauseWorld: { reset: () => calls.push("pause") },
       envColorWorld: { reset: () => calls.push("env-color") },
-      effectActorWorld: { reset: () => calls.push("effects") },
+      effectActorWorld: { reset: (options) => calls.push(`effects:${options?.preserveHelpers === true}`) },
+      preserveHelpers: true,
       reserveActors: [{
         actor: p3,
         id: "p3",
@@ -76,7 +77,7 @@ describe("RuntimeMatchResetWorld", () => {
       "round:3600",
       "pause",
       "env-color",
-      "effects",
+      "effects:true",
       "create:p1:nova:-80:1",
       "create:p2:mira:80:-1",
       "create:p3:reserve:-80:1",

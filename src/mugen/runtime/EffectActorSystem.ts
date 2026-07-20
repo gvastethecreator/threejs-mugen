@@ -88,6 +88,10 @@ export type RuntimeEffectActorStoreSummary = {
 
 export type RuntimeEffectActorCountKind = "explod" | "helper" | "projectile";
 
+export type RuntimeEffectActorResetOptions = {
+  preserveHelpers?: boolean;
+};
+
 export type RuntimeHelperLifecycleObserver = {
   onSpawn?: (helper: RuntimeHelper) => void;
   onRemove?: (helper: RuntimeHelper) => void;
@@ -165,11 +169,13 @@ export class RuntimeEffectActorWorld {
     return () => this.helperLifecycleObservers.delete(observer);
   }
 
-  reset(): void {
+  reset(options: RuntimeEffectActorResetOptions = {}): void {
     const stores = uniqueRuntimeEffectActorStores(this.stores);
-    this.notifyHelpersRemoved(stores.flatMap(({ helpers }) => helpers));
-    for (const store of stores) resetRuntimeEffectActorStore(store);
-    this.nextHelperRunOrderId = 3;
+    this.notifyHelpersRemoved(stores.flatMap(({ helpers }) =>
+      options.preserveHelpers === true ? helpers.filter((helper) => helper.preserve !== true) : helpers,
+    ));
+    for (const store of stores) resetRuntimeEffectActorStore(store, options);
+    this.nextHelperRunOrderId = normalizeRuntimeHelperRunOrderIds(this.stores);
   }
 
   resetOwner(ownerId: string): void {
@@ -423,12 +429,19 @@ export function createRuntimeEffectActorStores(): RuntimeEffectActorStores {
   };
 }
 
-export function resetRuntimeEffectActorStore(store: RuntimeEffectActorStore): void {
+export function resetRuntimeEffectActorStore(
+  store: RuntimeEffectActorStore,
+  options: RuntimeEffectActorResetOptions = {},
+): void {
+  const preservedHelpers = options.preserveHelpers === true
+    ? store.helpers.filter((helper) => helper.preserve === true)
+    : [];
+  const nextHelperSerial = options.preserveHelpers === true ? store.nextHelperSerial : 0;
   store.explods = [];
-  store.helpers = [];
+  store.helpers = preservedHelpers;
   store.projectiles = [];
   store.nextExplodSerial = 0;
-  store.nextHelperSerial = 0;
+  store.nextHelperSerial = nextHelperSerial;
   store.nextProjectileSerial = 0;
 }
 

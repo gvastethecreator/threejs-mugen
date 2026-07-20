@@ -284,6 +284,32 @@ describe("EffectActorSystem", () => {
     expect(removed).toEqual(["p1-helper-0"]);
   });
 
+  it("keeps only preserved Helpers through an Ikemen round reset and retains serial identity", () => {
+    const world = new RuntimeEffectActorWorld();
+    const removed: string[] = [];
+    world.observeHelperLifecycle({ onRemove: (helper) => removed.push(helper.serialId) });
+
+    const preserved = world.spawnHelper("p1", helperInput({ id: "20" }));
+    preserved.preserve = true;
+    const transient = world.spawnHelper("p1", helperInput({ id: "21" }));
+    world.spawnExplod("p1", explodInput({ id: "10" }));
+    world.spawnProjectile("p1", projectileInput({ projid: "30" }));
+
+    world.reset({ preserveHelpers: true });
+
+    expect(world.helpers("p1")).toEqual([preserved]);
+    expect(world.projectiles("p1")).toEqual([]);
+    expect(world.explodSnapshots("p1", 0)).toEqual([]);
+    expect(removed).toEqual([transient.serialId]);
+
+    const next = world.spawnHelper("p1", helperInput({ id: "22" }));
+    expect(next.serialId).toBe("p1-helper-2");
+
+    world.reset();
+    expect(world.helpers("p1")).toEqual([]);
+    expect(removed).toEqual([transient.serialId, next.serialId, preserved.serialId]);
+  });
+
   it("runs a bounded helper-local state program for movement and animation", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
