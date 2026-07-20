@@ -160,6 +160,7 @@ import {
   describeStudioSemanticDraft,
   type StudioSemanticDraftPreflight,
 } from "./StudioSemanticDraft";
+import { getStudioSourceDiagnosticRange } from "./StudioSourceDiagnostics";
 import {
   createIndexedDbSourceHandleStore,
   createMemorySourceHandleStore,
@@ -1252,6 +1253,11 @@ export class App {
         void this.saveStudioSourceDocument();
       } else if (action === "discard-source-document") {
         this.discardStudioSourceDocument();
+      } else if (action === "focus-source-diagnostic") {
+        event.preventDefault();
+        const line = Number(target.closest<HTMLElement>("[data-source-diagnostic-line]")?.dataset.sourceDiagnosticLine);
+        this.focusStudioSourceDiagnostic(line);
+        return;
       } else if (action === "load-zip") {
         this.root.querySelector<HTMLInputElement>("#zip-input")?.click();
       } else if (action === "load-folder") {
@@ -2405,6 +2411,16 @@ export class App {
     this.updateUi();
   }
 
+  private focusStudioSourceDiagnostic(line: number): void {
+    const editor = this.root.querySelector<HTMLTextAreaElement>("[data-source-editor]");
+    const range = getStudioSourceDiagnosticRange(editor?.value ?? "", line);
+    if (!editor || !range) {
+      return;
+    }
+    editor.focus();
+    editor.setSelectionRange(range.start, range.end);
+  }
+
   private scheduleStudioSourceSemanticPreflight(): void {
     this.cancelStudioSourceSemanticPreflight();
     this.studioSourceSemanticPreflightTimer = window.setTimeout(() => {
@@ -2427,6 +2443,7 @@ export class App {
     const status = this.root.querySelector<HTMLElement>("[data-source-editor-status]");
     const save = this.root.querySelector<HTMLButtonElement>('[data-action="save-source-document"]');
     const discard = this.root.querySelector<HTMLButtonElement>('[data-action="discard-source-document"]');
+    const diagnostics = this.root.querySelector<HTMLElement>("[data-source-diagnostics]");
     if (!draft || !status || !save || !discard) {
       return;
     }
@@ -2437,6 +2454,9 @@ export class App {
     status.textContent = plan?.status === "ready" ? semanticDetail : plan?.detail ?? "Unsaved local edit";
     save.disabled = !draft.dirty || plan?.status !== "ready" || !preflight || !canWriteStudioSemanticDraft(preflight);
     discard.disabled = !draft.dirty;
+    if (diagnostics) {
+      diagnostics.innerHTML = this.renderStudioSourceDiagnosticRows(preflight);
+    }
   }
 
   private refreshStudioSourceSemanticDraft(): void {
@@ -8039,6 +8059,7 @@ export class App {
         <textarea data-source-editor="true" aria-label="Source document text" spellcheck="false"${editable ? "" : " readonly"}>${escapeHtml(draft.text)}</textarea>
         <div class="studio-source-editor-status" data-source-editor-status>${escapeHtml(editorStatus)}</div>
         <small class="list-meta">Semantic ${escapeHtml(preflight.status)} / digest ${escapeHtml(preflight.draftDigest)} / diagnostics ${preflight.diagnostics.length}</small>
+        <div class="studio-source-diagnostics" data-source-diagnostics aria-label="Source diagnostics">${this.renderStudioSourceDiagnosticRows(preflight)}</div>
         ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / compensation ${escapeHtml(receipt.compensation.status)} / ${escapeHtml(receipt.digest)}</small>` : ""}
         <div class="row-actions studio-source-editor-actions">
           <button type="button" data-action="save-source-document"${!draft.dirty || !editable || !canWriteStudioSemanticDraft(preflight) ? " disabled" : ""}>Save &amp; Reimport</button>
@@ -8046,6 +8067,21 @@ export class App {
         </div>
       </section>
     `;
+  }
+
+  private renderStudioSourceDiagnosticRows(preflight: StudioSemanticDraftPreflight | undefined): string {
+    if (!preflight?.diagnostics.length) {
+      return `<small class="list-meta">No semantic diagnostics.</small>`;
+    }
+    return preflight.diagnostics.map((diagnostic) => {
+      const line = diagnostic.line;
+      const location = line !== undefined ? `line ${line}` : "document";
+      const action = line !== undefined
+        ? `<button type="button" class="studio-source-diagnostic" data-source-diagnostic data-action="focus-source-diagnostic" data-source-diagnostic-line="${line}" aria-label="Focus ${escapeHtml(location)} diagnostic">`
+        : `<div class="studio-source-diagnostic" data-source-diagnostic role="group">`;
+      const close = line !== undefined ? "</button>" : "</div>";
+      return `${action}<span class="studio-source-diagnostic-severity is-${diagnostic.severity}">${escapeHtml(diagnostic.severity)}</span><span class="studio-source-diagnostic-location mono">${escapeHtml(location)}</span><span class="studio-source-diagnostic-message">${escapeHtml(diagnostic.message)}</span>${close}`;
+    }).join("");
   }
 
   private renderProjectBundlePanel(): string {

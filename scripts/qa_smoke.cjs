@@ -2296,6 +2296,34 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   };
   await setSourceEditorText(`${originalSourceText}\nnot-a-key-value`);
   await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === true);
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.semanticPreflight?.status === "invalid", null, { timeout: 5000 });
+  const invalidSourceDiagnostic = await page.evaluate(() => {
+    const diagnostics = [...document.querySelectorAll('[data-source-diagnostic]')];
+    const lineDiagnostics = [...document.querySelectorAll('[data-source-diagnostic-line]')];
+    const editor = document.querySelector('[data-source-editor]');
+    return {
+      count: diagnostics.length,
+      hasDiagnosticsPanel: Boolean(document.querySelector('[data-source-diagnostics]')),
+      firstLine: lineDiagnostics[0]?.getAttribute('data-source-diagnostic-line'),
+      selectionBefore: editor instanceof HTMLTextAreaElement ? [editor.selectionStart, editor.selectionEnd] : [],
+    };
+  });
+  if (!invalidSourceDiagnostic.hasDiagnosticsPanel || invalidSourceDiagnostic.count < 1 || !invalidSourceDiagnostic.firstLine) {
+    throw new Error(`Studio semantic diagnostics were not rendered for the invalid draft: ${JSON.stringify(invalidSourceDiagnostic)}`);
+  }
+  await page.locator('[data-source-diagnostic-line]').first().click();
+  const focusedDiagnostic = await page.evaluate(() => {
+    const editor = document.querySelector('[data-source-editor]');
+    const line = Number(document.querySelector('[data-source-diagnostic-line]')?.getAttribute('data-source-diagnostic-line'));
+    return {
+      focused: document.activeElement === editor,
+      line,
+      selectionLength: editor instanceof HTMLTextAreaElement ? editor.selectionEnd - editor.selectionStart : 0,
+    };
+  });
+  if (!focusedDiagnostic.focused || focusedDiagnostic.selectionLength <= 0 || !Number.isInteger(focusedDiagnostic.line)) {
+    throw new Error(`Studio semantic diagnostic navigation did not focus the source line: ${JSON.stringify(focusedDiagnostic)}`);
+  }
   await setSourceEditorText(`${originalSourceText}\n; qa explicit source edit`);
   await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === false);
   await page.locator('[data-action="save-source-document"]').click();
@@ -2340,6 +2368,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
       bodyHasFolderHandle: bodyText.toLowerCase().includes("folder") && bodyText.includes("Handle: granted"),
       bodyHasSourceEditor: bodyText.includes("Source document") && bodyText.includes("Save & Reimport"),
       bodyHasSemanticPreflight: bodyText.includes("Semantic ready"),
+      sourceDiagnosticsPanel: Boolean(document.querySelector("[data-source-diagnostics]")),
       bodyHasSourceWriteReceipt: bodyText.includes("Write receipt:"),
       sourceEditorVisible: Boolean(document.querySelector("[data-source-editor]")),
       explicitReimport: bridge?.sourceImportTransaction?.reason === "explicit-reimport",
