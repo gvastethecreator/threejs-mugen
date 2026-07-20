@@ -32,6 +32,7 @@ import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import {
   recordRuntimeRoundWinType,
   runtimeRoundHitSourceMetadata,
+  type RuntimeRoundHitSourceActor,
 } from "./RuntimeRoundWinTypeSystem";
 
 export type RuntimeProjectileCombatActor = {
@@ -53,6 +54,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   getTargetCollisionBoxes?: (defender: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   holdingBack: boolean;
   canDefenderBeHit?: (defender: TActor) => boolean;
+  resolveProjectileHitSource?: (attacker: TActor, projectile: RuntimeProjectile) => RuntimeRoundHitSourceActor | undefined;
   log: (line: string) => void;
   rememberTarget: (
     attacker: TActor,
@@ -223,12 +225,13 @@ export class RuntimeProjectileCombatWorld {
       });
       recordRuntimeProjectileContact(projectile, result.kind);
       input.rememberTarget(attacker, defender, projectile.targetId, projectile);
+      const source = resolveRuntimeProjectileHitSource(input, attacker, projectile);
       const lifeBefore = defender.runtime.life;
       attacker.hitPause = result.pause;
       defender.hitPause = result.pause;
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
       recordRuntimeRoundWinType(attacker, defender, projectile.attr ?? "S,SP", result.kind, lifeBefore, {
-        sourceEligible: projectile.parentId === projectile.rootId,
+        sourceEligible: source?.rootOwned === true,
       });
       defender.runtime.vel.x = projectile.facing * result.push;
       defender.runtime.hitVelocity = { x: projectile.facing * result.push, y: result.hitVelocityY ?? 0 };
@@ -249,7 +252,7 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
-        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(attacker, projectile, true, result.damage, result.stun, result.pause, result.kill, defender.runtime.life <= 0);
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, true, result.damage, result.stun, result.pause, result.kill, source, defender.runtime.life <= 0);
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -265,7 +268,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
       defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
-      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(attacker, projectile, false, result.damage, result.stun, result.pause, result.kill, false);
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill, source, false);
       input.applyHitState?.(attacker, defender, projectile);
       input.recordReceivedDamage?.(defender, result.damage);
       log(
@@ -384,21 +387,37 @@ function runtimeHitFlagRejectionLabel(
   return "HitFlag +";
 }
 
+function resolveRuntimeProjectileHitSource<TActor extends RuntimeProjectileCombatActor>(
+  input: RuntimeProjectileCombatInput<TActor>,
+  attacker: TActor,
+  projectile: RuntimeProjectile,
+): RuntimeRoundHitSourceActor | undefined {
+  if (input.resolveProjectileHitSource) {
+    return input.resolveProjectileHitSource(attacker, projectile);
+  }
+  if (projectile.parentId !== projectile.rootId || projectile.rootId !== attacker.id) {
+    return undefined;
+  }
+  return {
+    id: attacker.id,
+    playerNo: attacker.playerNo,
+    rootId: projectile.rootId,
+    rootOwned: true,
+  };
+}
+
 function runtimeGetHitVarsFromProjectileResult(
-  attacker: RuntimeProjectileCombatActor,
   projectile: RuntimeProjectile,
   guarded: boolean,
   damage: number,
   hitTime: number,
   hitShakeTime: number,
   kill: boolean,
+  source: RuntimeRoundHitSourceActor | undefined,
   guardKo: boolean,
 ): CharacterRuntimeState["hitVars"] {
-  const sourceMetadata = runtimeRoundHitSourceMetadata({
-    id: attacker.id,
-    playerNo: attacker.playerNo,
-    rootId: projectile.rootId,
-    rootOwned: projectile.parentId === projectile.rootId,
+  const sourceMetadata = source === undefined ? undefined : runtimeRoundHitSourceMetadata({
+    ...source,
     attr: projectile.attr ?? "S,SP",
     guardKo,
   });

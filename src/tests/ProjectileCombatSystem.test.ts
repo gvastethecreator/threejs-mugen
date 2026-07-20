@@ -174,6 +174,43 @@ describe("ProjectileCombatSystem", () => {
     expect(attacker.runtime.roundWinType).toBeUndefined();
   });
 
+  it("admits a verified helper-owned projectile source into the root win cause", () => {
+    let projectiles = [projectile({ attr: "S,HA", damage: 31, parentId: "p1-helper-0", rootId: "p1" })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }), 1);
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 31 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      resolveProjectileHitSource: (_attacker, entry) => ({
+        id: entry.parentId,
+        playerNo: 1,
+        rootId: "p1",
+        rootOwned: true,
+      }),
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe("hyper");
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerNo: 1,
+      sourceActorId: "p1-helper-0",
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+      sourceAttr: "S,HA",
+      sourceGuardKo: false,
+    });
+  });
+
   it("carries explicit projectile source identity into GetHitVar metadata", () => {
     let projectiles = [projectile({ attr: "S,SP", damage: 10 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }), 1);

@@ -28,6 +28,7 @@ import type {
 } from "../mugen/runtime/ProjectileCombatSystem";
 import { resolveRuntimeProjectileCombat } from "../mugen/runtime/ProjectileCombatSystem";
 import type { RuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
+import type { RuntimeHelper } from "../mugen/runtime/HelperSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -1006,6 +1007,59 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(attacker.hitEffectEvents[0]).toMatchObject({ type: "HitSpark", kind: "hit", sparkNo: 7001, contactKind: "hit" });
   });
 
+  it("carries verified Helper Projectile identity into the hit-state result path", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const projectile = projectileActor({
+      attr: "S,HA",
+      damage: 31,
+      parentId: "p1-helper-0",
+      rootId: "p1",
+    });
+    const helper = {
+      serialId: "p1-helper-0",
+      rootId: "p1",
+      parentId: "p1",
+      playerNo: 1,
+      rootPlayerNo: 1,
+      stateNo: 6000,
+      contact: createRuntimeContactMemory(),
+    } as RuntimeHelper;
+    const attacker = actor("p1", "P1", contactWorld, {
+      playerNo: 1,
+      runtime: runtimeState({ pos: { x: 0, y: 0 }, stateNo: 300 }),
+      projectiles: [projectile],
+      helpers: [helper],
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 31 }),
+    });
+
+    new RuntimeCombatResolutionWorld().resolveProjectile({
+      attacker,
+      defender,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      effectLifecycleWorld: { markGetHit: () => undefined },
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 12,
+      getHurtBoxes: () => [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      stateHooks: hooks(),
+      log: () => undefined,
+    });
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe("hyper");
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerNo: 1,
+      sourceActorId: "p1-helper-0",
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+    });
+  });
+
   it("routes Projectile p2stateno through target hit-state ownership when no HitOverride is active", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({ projectileId: 88, p2StateNo: 889, p2GetP1State: false });
@@ -1050,6 +1104,7 @@ type ProjectileResolver = <TActor extends RuntimeProjectileCombatActor>(
 ) => void;
 
 type ActorOptions = {
+  playerNo?: number;
   runtime?: CharacterRuntimeState;
   currentMove?: DemoMove;
   moveTick?: number;
@@ -1058,6 +1113,7 @@ type ActorOptions = {
   pendingHitDefTargets?: string[];
   projectileResolver?: ProjectileResolver;
   projectiles?: RuntimeProjectile[];
+  helpers?: RuntimeHelper[];
 };
 
 function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorld, options: ActorOptions = {}): TestActor {
@@ -1067,6 +1123,7 @@ function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorl
   return {
     id,
     label,
+    ...(options.playerNo === undefined ? {} : { playerNo: options.playerNo }),
     definition: {
       source: "demo",
       constants: {},
@@ -1116,7 +1173,7 @@ function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorl
           });
         }
       },
-      helpers: () => [],
+      helpers: () => options.helpers ?? [],
     },
   };
 }

@@ -38,6 +38,7 @@ import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
+import type { RuntimeRoundHitSourceActor } from "./RuntimeRoundWinTypeSystem";
 import {
   bufferRuntimeHitDefTarget,
   hasRuntimeHitDefTarget,
@@ -57,6 +58,7 @@ function directHitDirectionKey(attackerId: string, defenderId: string): string {
 export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
   RuntimeContactPresentationActor & {
     label: string;
+    playerNo?: number;
     runtime: CharacterRuntimeState;
     currentMove?: DemoMove;
     currentMoveLabel?: string;
@@ -602,6 +604,7 @@ export class RuntimeCombatResolutionWorld {
       defenderLocalCoord: input.defender.definition.localCoord,
       getTargetCollisionBoxes: (target, boxType) =>
         input.getCollisionBoxes?.(target, boxType) ?? (boxType === "clsn2" ? hurtBoxes : undefined),
+      resolveProjectileHitSource: (attacker, projectile) => runtimeProjectileHitSource(attacker, projectile),
       projectileCollisionMode,
       projectileDefense: projectileDefenseMove
         ? {
@@ -955,5 +958,33 @@ function runtimeProjectileIncomingMove(projectile: RuntimeProjectile): DemoMove 
     push: projectile.push,
     guardFlag: projectile.guardFlag,
     hitbox: projectile.hitbox,
+  };
+}
+
+function runtimeProjectileHitSource<TActor extends RuntimeCombatResolutionActor>(
+  attacker: TActor,
+  projectile: RuntimeProjectile,
+): RuntimeRoundHitSourceActor | undefined {
+  if (projectile.parentId === attacker.id && projectile.rootId === attacker.id) {
+    return {
+      id: attacker.id,
+      playerNo: attacker.playerNo,
+      rootId: attacker.id,
+      rootOwned: true,
+    };
+  }
+  const helper = attacker.effectActorWorld.helpers(attacker.id).find((candidate) => candidate.serialId === projectile.parentId);
+  if (!helper) return undefined;
+  return {
+    id: helper.serialId,
+    playerNo: helper.playerNo,
+    rootId: helper.rootId,
+    rootOwned: projectile.rootId === attacker.id &&
+      helper.rootId === attacker.id &&
+      projectile.parentId === helper.serialId &&
+      helper.parentId === helper.rootId &&
+      helper.playerNo !== undefined &&
+      helper.playerNo === attacker.playerNo &&
+      helper.rootPlayerNo === helper.playerNo,
   };
 }
