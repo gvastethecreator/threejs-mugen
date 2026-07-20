@@ -70,6 +70,8 @@ export type FightScreenAnnouncementDiagnostics = {
   layerNoCulled?: number;
   angleApplied?: number;
   angleCulled?: number;
+  xShearApplied?: number;
+  xShearCulled?: number;
   paletteFxApplied?: number;
   paletteFxExpired?: number;
   primaryPaletteFxApplied?: number;
@@ -130,6 +132,8 @@ type FightScreenLayoutRenderResult = {
   layerNoCulled: number;
   angleApplied: number;
   angleCulled: number;
+  xShearApplied: number;
+  xShearCulled: number;
   paletteFxApplied: number;
   paletteFxExpired: number;
 };
@@ -142,6 +146,8 @@ type FightScreenLayoutCollectionResult = {
   layerNoCulled: number;
   angleApplied: number;
   angleCulled: number;
+  xShearApplied: number;
+  xShearCulled: number;
   paletteFxApplied: number;
   paletteFxExpired: number;
 };
@@ -194,6 +200,8 @@ export class FightScreenAnnouncementRenderer {
     layerNoCulled: 0,
     angleApplied: 0,
     angleCulled: 0,
+    xShearApplied: 0,
+    xShearCulled: 0,
     paletteFxApplied: 0,
     paletteFxExpired: 0,
   };
@@ -552,6 +560,8 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled: backgroundResult.layerNoCulled + topResult.layerNoCulled,
       angleApplied: backgroundResult.angleApplied + topResult.angleApplied,
       angleCulled: backgroundResult.angleCulled + topResult.angleCulled,
+      xShearApplied: backgroundResult.xShearApplied + topResult.xShearApplied,
+      xShearCulled: backgroundResult.xShearCulled + topResult.xShearCulled,
       paletteFxApplied: backgroundResult.paletteFxApplied + topResult.paletteFxApplied,
       paletteFxExpired: backgroundResult.paletteFxExpired + topResult.paletteFxExpired,
     };
@@ -575,6 +585,8 @@ export class FightScreenAnnouncementRenderer {
     let layerNoCulled = 0;
     let angleApplied = 0;
     let angleCulled = 0;
+    let xShearApplied = 0;
+    let xShearCulled = 0;
     let paletteFxApplied = 0;
     let paletteFxExpired = 0;
     for (const [index, layout] of layouts.entries()) {
@@ -585,8 +597,9 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame.spriteIndex,
       );
       if (!sprite) continue;
-      if (layout.angle !== undefined && layout.window) {
-        angleCulled += 1;
+      if (layout.window && (layout.angle !== undefined || layout.xShear !== undefined)) {
+        if (layout.angle !== undefined) angleCulled += 1;
+        if (layout.xShear !== undefined) xShearCulled += 1;
         continue;
       }
       const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
@@ -610,6 +623,7 @@ export class FightScreenAnnouncementRenderer {
       if (layout.window) windowApplied += 1;
       if (layout.layerNo !== undefined) layerNoApplied += 1;
       if (layout.angle !== undefined) angleApplied += 1;
+      if (layout.xShear !== undefined) xShearApplied += 1;
       const paletteFx = resolveFightScreenPaletteFx(layout.paletteFx, frameTick);
       if (layout.paletteFx && paletteFx) paletteFxApplied += 1;
       if (layout.paletteFx && !paletteFx) paletteFxExpired += 1;
@@ -618,6 +632,7 @@ export class FightScreenAnnouncementRenderer {
       mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
       mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
       mesh.rotation.z = degreesToRadians(layout.angle ?? 0);
+      applyFightScreenMeshShear(mesh.geometry, layout.xShear);
       applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
       applyPaletteFxMaterial(mesh.material, paletteFx);
@@ -638,6 +653,8 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled,
       angleApplied,
       angleCulled,
+      xShearApplied,
+      xShearCulled,
       paletteFxApplied,
       paletteFxExpired,
     };
@@ -682,6 +699,8 @@ export class FightScreenAnnouncementRenderer {
       layerNoCulled: 0,
       angleApplied: 0,
       angleCulled: 0,
+      xShearApplied: 0,
+      xShearCulled: 0,
       paletteFxApplied: 0,
       paletteFxExpired: 0,
     };
@@ -1032,6 +1051,22 @@ function signedMagnitude(value: number, magnitude: number): number {
 
 function degreesToRadians(value: number): number {
   return (Number.isFinite(value) ? value : 0) * Math.PI / 180;
+}
+
+function applyFightScreenMeshShear(geometry: THREE.PlaneGeometry, value: number | undefined): void {
+  const shear = Number.isFinite(value) ? -(value as number) : 0;
+  const attribute = geometry.getAttribute("position") as THREE.BufferAttribute;
+  const vertices: Array<[number, number]> = [
+    [-0.5, 0.5],
+    [0.5, 0.5],
+    [-0.5, -0.5],
+    [0.5, -0.5],
+  ];
+  for (const [index, [x, y]] of vertices.entries()) {
+    attribute.setX(index, x + shear * y);
+  }
+  attribute.needsUpdate = true;
+  geometry.computeBoundingSphere();
 }
 
 function resolveFightScreenPaletteFx(

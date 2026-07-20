@@ -38,6 +38,8 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Carry FightScreen FSText PalFX](tickets/306-fightscreen-text-palfx.md) - resolved at bounded bitmap-text scope: `text.palfx` fields now reach bitmap glyph materials while preserving authored font color and frame-clock expiry diagnostics; TrueType/binary FNT, exact text palette math, sinusoidal fields, hue, invertblend, interpolation, KO/winner families, browser asset parity, and full parity remain open.
 
+- [Carry FightScreen layout xshear](tickets/307-fightscreen-layout-xshear.md) - resolved at bounded centered-shear scope: authored `xshear` now reshapes top/background meshes without a window and reports applied/culled entries; source offset correction, shear plus window clipping, xangle/yangle, projection, focal length, text/primary transform ownership, browser asset parity, and full parity remain open.
+
 - [Global checkpoint after T302](../../../docs/research/2026-07-20-global-checkpoint-after-t302.md) - green at `7c6da75e`: 237 files / 2516 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.
 
 - [Global checkpoint after T306](../../../docs/research/2026-07-20-global-checkpoint-after-t306.md) - green at `dc15736b`: 237 files / 2518 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.

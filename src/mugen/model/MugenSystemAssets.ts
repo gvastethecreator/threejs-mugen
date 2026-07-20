@@ -65,6 +65,7 @@ export type MugenFightScreenLayoutAsset = {
   vfacing?: 1 | -1;
   layerNo?: MugenFightScreenLayerNo;
   angle?: number;
+  xShear?: number;
   paletteFx?: MugenFightScreenPaletteFx;
   window?: [number, number, number, number];
   blend?: string;

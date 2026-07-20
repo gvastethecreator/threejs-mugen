@@ -213,7 +213,7 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
         roundDefault: {
           background: [
             { animationNo: 7002, offset: [160, 100], layerNo: 0, window: [140, 80, 40, 40] },
-            { sprite: [9100, 0], offset: [160, 100], angle: 15, window: [140, 80, 40, 40] },
+            { sprite: [9100, 0], offset: [160, 100], angle: 15, xShear: 0.25, window: [140, 80, 40, 40] },
           ],
           top: {
             sprite: [9100, 1],
@@ -221,6 +221,7 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
             facing: -1,
             layerNo: 1,
             angle: 15,
+            xShear: -0.25,
             paletteFx: {
               time: 3,
               add: [32, 0, 0],
@@ -257,6 +258,8 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       layerNoCulled: 0,
       angleApplied: 1,
       angleCulled: 1,
+      xShearApplied: 1,
+      xShearCulled: 1,
       paletteFxApplied: 1,
       paletteFxExpired: 0,
     });
@@ -266,6 +269,7 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     expect(topGroup.children[0]?.rotation.z).toBeCloseTo(15 * Math.PI / 180);
     const topMesh = topGroup.children[0] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
     expect(topMesh.material.color.getHex()).not.toBe(0xffffff);
+    expect((topMesh.geometry.getAttribute("position") as THREE.BufferAttribute).getX(0)).not.toBe(-0.5);
     await renderer.update(snapshot(3), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
     expect(renderer.getDiagnostics()).toMatchObject({ paletteFxApplied: 0, paletteFxExpired: 1 });
     expect(topMesh.material.color.getHex()).toBe(0xffffff);
