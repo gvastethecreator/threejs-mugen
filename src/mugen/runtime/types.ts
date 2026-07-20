@@ -15,6 +15,7 @@ import type { RuntimeTurnsContinuationResult } from "./RuntimeTurnsContinuationS
 import type { RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
 import type {
   RuntimeRoundAnnouncementSnapshot,
+  RuntimeRoundAnnouncementSound,
   RuntimeRoundAnnouncementTiming,
 } from "./RuntimeRoundAnnouncementSystem";
 import type {
@@ -637,8 +638,37 @@ export type RoundSnapshot = {
     slowDuration: number;
     playbackRate: number;
     noKoSlow: boolean;
+    outcome?: RuntimeRoundOutcomeSnapshot;
     fadeOut?: RuntimeRoundFadeSnapshot;
   };
+};
+
+export type RuntimeRoundOutcomeKind = "ko" | "double-ko" | "time-over" | "draw";
+
+export type RuntimeRoundOutcomeTiming = {
+  koTimeFrames: number;
+  koSoundTimeFrames: number;
+  koSound?: RuntimeRoundAnnouncementSound;
+  doubleKoTimeFrames: number;
+  doubleKoSoundTimeFrames: number;
+  doubleKoSound?: RuntimeRoundAnnouncementSound;
+  doubleKoShowDraw: boolean;
+  timeOverTimeFrames: number;
+  timeOverSoundTimeFrames: number;
+  timeOverSound?: RuntimeRoundAnnouncementSound;
+  winTimeFrames: number;
+  winSoundTimeFrames: number;
+  drawSound?: RuntimeRoundAnnouncementSound;
+};
+
+export type RuntimeRoundOutcomeSnapshot = {
+  schema: "RuntimeRoundOutcome/v0";
+  kind: RuntimeRoundOutcomeKind;
+  displayStartFrame: number;
+  soundTime: number;
+  soundDue: boolean;
+  showDraw: boolean;
+  sound?: RuntimeRoundAnnouncementSound;
 };
 
 export type RuntimeRoundIntroSnapshot = {

@@ -10,7 +10,11 @@ import type {
 import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/model/MugenAnimation";
 import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
 import type { RuntimeRoundAnnouncementSnapshot } from "../../mugen/runtime/RuntimeRoundAnnouncementSystem";
-import type { MugenSnapshot, RoundSnapshot } from "../../mugen/runtime/types";
+import type {
+  MugenSnapshot,
+  RoundSnapshot,
+  RuntimeRoundOutcomeKind,
+} from "../../mugen/runtime/types";
 import { SffSpriteProvider } from "../textures/SffSpriteProvider";
 import { applyThreePresentationOrder, resolvePresentationOrder } from "./PresentationOrder";
 import { resolveRoundFadeAnimationFrame } from "./RoundFadeRenderer";
@@ -147,7 +151,7 @@ type FightScreenAnnouncementSelection = {
   roundNo: number;
 };
 
-export type FightScreenAnnouncementKind = "round" | "fight" | "ko" | "double-ko" | "time-over" | "draw";
+export type FightScreenAnnouncementKind = "round" | "fight" | RuntimeRoundOutcomeKind;
 
 type FightScreenMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
 type FightScreenLayoutMesh = FightScreenMesh;
@@ -327,14 +331,14 @@ export class FightScreenAnnouncementRenderer {
   async update(snapshot: MugenSnapshot, viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">): Promise<void> {
     const selection = resolveFightScreenAnnouncementSelection(snapshot.round, this.display);
     const baseDiagnostics: FightScreenAnnouncementDiagnostics = {
-      active: Boolean(selection),
+      active: selection?.track.phase === "active",
       configured: Boolean(this.display) || this.animations.size > 0 || this.fonts.size > 0,
       resolved: false,
       ...(selection?.kind ? { kind: selection.kind } : {}),
       ...(selection?.mode ? { mode: selection.mode } : {}),
       ...(selection ? { roundNo: selection.roundNo } : {}),
     };
-    if (!selection) {
+    if (!selection || selection.track.phase !== "active") {
       this.hide(baseDiagnostics);
       return;
     }
@@ -1040,15 +1044,19 @@ export function resolveFightScreenAnnouncementSelection(
   const kind = resolveFightScreenOutcomeKind(round);
   const asset = resolveFightScreenOutcomeAsset(display, kind);
   if (!asset) return undefined;
+  const outcome = round.postRound?.outcome;
+  const postRoundFrame = round.postRound?.frame ?? 0;
+  const displayStartFrame = outcome?.displayStartFrame ?? 0;
   return {
     kind,
     track: {
-      phase: "active",
+      phase: postRoundFrame >= displayStartFrame ? "active" : "pending",
       skipped: false,
-      elapsed: round.postRound?.frame ?? 0,
-      animationStart: 0,
-      soundTime: 0,
-      soundDue: false,
+      elapsed: postRoundFrame,
+      animationStart: displayStartFrame,
+      soundTime: outcome?.soundTime ?? 0,
+      soundDue: outcome?.soundDue ?? false,
+      ...(outcome?.sound ? { sound: { ...outcome.sound } } : {}),
     },
     asset,
     mode: announcement?.mode ?? "normal",
@@ -1057,6 +1065,7 @@ export function resolveFightScreenAnnouncementSelection(
 }
 
 export function resolveFightScreenOutcomeKind(round: RoundSnapshot): Exclude<FightScreenAnnouncementKind, "round" | "fight"> {
+  if (round.postRound?.outcome?.kind) return round.postRound.outcome.kind;
   if (round.state === "timeover") return round.winner === "Draw" ? "draw" : "time-over";
   return round.winner === "Draw" ? "double-ko" : "ko";
 }

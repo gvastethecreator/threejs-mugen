@@ -4289,6 +4289,15 @@ RedirectID = 999
       overWaitTime: 2,
       overWinTime: 3,
       overTime: 8,
+      koTime: 4,
+      koSoundTime: 3,
+      doubleKoTime: 5,
+      doubleKoSoundTime: 4,
+      doubleKoShowDraw: true,
+      timeOverTime: 6,
+      timeOverSoundTime: 5,
+      winTime: 7,
+      winSoundTime: 6,
       fadeOutTime: 4,
       fadeOutColor: [12, 34, 56],
     };
@@ -4307,7 +4316,19 @@ RedirectID = 999
       snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
     }
 
-    expect(snapshot.round).toMatchObject({ roundPhase: 4, postRound: { frame: 2 } });
+    expect(snapshot.round).toMatchObject({
+      roundPhase: 4,
+      postRound: {
+        frame: 2,
+        outcome: {
+          kind: "ko",
+          displayStartFrame: 4,
+          soundTime: 3,
+          soundDue: false,
+          showDraw: true,
+        },
+      },
+    });
     expect(snapshot.round).not.toHaveProperty("winPose");
 
     for (let frame = 0; frame < 10 && snapshot.round?.winPose?.status !== "started"; frame += 1) {

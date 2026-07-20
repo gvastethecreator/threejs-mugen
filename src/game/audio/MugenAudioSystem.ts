@@ -1,5 +1,11 @@
 import { findSound, type MugenSound, type SndArchive } from "../../mugen/model/MugenSound";
-import type { ActorSnapshot, MugenSnapshot, RuntimeRoundFadeSnapshot, RuntimeSoundEvent } from "../../mugen/runtime/types";
+import type {
+  ActorSnapshot,
+  MugenSnapshot,
+  RuntimeRoundFadeSnapshot,
+  RuntimeRoundOutcomeSnapshot,
+  RuntimeSoundEvent,
+} from "../../mugen/runtime/types";
 import type { RuntimeRoundAnnouncementSound } from "../../mugen/runtime/RuntimeRoundAnnouncementSystem";
 
 export type MugenAudioDiagnostics = {
@@ -139,7 +145,8 @@ export class MugenAudioSystem {
     if (!roundAnnouncementSound) {
       this.lastRoundAnnouncementSoundKey = undefined;
     }
-    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound && !roundAnnouncementSound)) {
+    const roundOutcomeSound = resolveRoundOutcomeSound(snapshot);
+    if (!this.hasAnyArchive() || (soundActors.length === 0 && !hasRoundFadeSound && !roundAnnouncementSound && !roundOutcomeSound)) {
       return;
     }
     for (const actor of soundActors) {
@@ -176,6 +183,9 @@ export class MugenAudioSystem {
     }
     if (roundAnnouncementSound) {
       this.processRoundAnnouncementSound(roundAnnouncementSound, snapshot);
+    }
+    if (roundOutcomeSound) {
+      this.processRoundAnnouncementSound(roundOutcomeSound, snapshot);
     }
   }
 
@@ -306,7 +316,7 @@ export class MugenAudioSystem {
   }
 
   private processRoundAnnouncementSound(
-    input: { kind: "round" | "fight"; sound: RuntimeRoundAnnouncementSound; elapsed: number },
+    input: { kind: "round" | "fight" | RuntimeRoundOutcomeSnapshot["kind"]; sound: RuntimeRoundAnnouncementSound; elapsed: number },
     snapshot: MugenSnapshot,
   ): void {
     const key = `${snapshot.round?.roundNo ?? 1}:${input.kind}:${input.elapsed}:${input.sound.soundPrefix}:${input.sound.group},${input.sound.index}`;
@@ -436,6 +446,18 @@ function resolveRoundAnnouncementSound(
     return { kind: "fight", sound: announcement.fight.sound, elapsed: announcement.fight.elapsed };
   }
   return undefined;
+}
+
+function resolveRoundOutcomeSound(
+  snapshot: MugenSnapshot,
+): { kind: RuntimeRoundOutcomeSnapshot["kind"]; sound: RuntimeRoundAnnouncementSound; elapsed: number } | undefined {
+  const outcome = snapshot.round?.postRound?.outcome;
+  if (!outcome?.soundDue || !outcome.sound) return undefined;
+  return {
+    kind: outcome.kind,
+    sound: outcome.sound,
+    elapsed: snapshot.round?.postRound?.frame ?? 0,
+  };
 }
 
 function runtimeAudioChannelKey(actorId: string, channel: number): string {

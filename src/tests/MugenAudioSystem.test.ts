@@ -236,6 +236,49 @@ describe("MugenAudioSystem", () => {
     expect(audioContext.sources).toHaveLength(1);
   });
 
+  it("plays a FightScreen outcome sound once at its imported post-round edge", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(undefined, { fs: archive(1) });
+    await system.unlock();
+
+    const snapshot = audioSnapshot([], {
+      state: "ko",
+      timer: 0,
+      message: "P1 wins",
+      postRound: {
+        schema: "RuntimePostRound/v0",
+        frame: 2,
+        remaining: 2,
+        duration: 4,
+        slowRemaining: 0,
+        slowDuration: 0,
+        playbackRate: 1,
+        noKoSlow: true,
+        outcome: {
+          schema: "RuntimeRoundOutcome/v0",
+          kind: "ko",
+          displayStartFrame: 3,
+          soundTime: 2,
+          soundDue: true,
+          showDraw: false,
+          sound: { group: 5, index: 0, soundPrefix: "fs" },
+        },
+      },
+    });
+    system.processSnapshot(snapshot);
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(1));
+
+    system.processSnapshot(snapshot);
+    expect(system.getDiagnostics().played).toBe(1);
+    expect(audioContext.sources).toHaveLength(1);
+  });
+
   it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });

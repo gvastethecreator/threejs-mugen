@@ -139,6 +139,19 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       asset: display.draw,
     });
     expect(resolveFightScreenOutcomeKind(outcomeSnapshot("ko", "Draw").round!)).toBe("double-ko");
+    const pending = outcomeSnapshot("ko", "Nova Boxer");
+    pending.round!.postRound!.outcome = {
+      schema: "RuntimeRoundOutcome/v0",
+      kind: "ko",
+      displayStartFrame: 3,
+      soundTime: 2,
+      soundDue: false,
+      showDraw: false,
+    };
+    expect(resolveFightScreenAnnouncementSelection(pending.round, display)).toMatchObject({
+      kind: "ko",
+      track: { phase: "pending", animationStart: 3, elapsed: 0 },
+    });
     renderer.dispose();
     textures.dispose();
   });

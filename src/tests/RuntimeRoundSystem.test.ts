@@ -54,6 +54,53 @@ describe("RuntimeRoundSystem", () => {
     expect(round.finishIfNeeded({ label: "P1", life: 0 }, { label: "P2", life: 600 })).toBeUndefined();
   });
 
+  it("projects imported FightScreen outcome timing and one-shot sound edges", () => {
+    const timing = {
+      outcome: {
+        koTimeFrames: 3,
+        koSoundTimeFrames: 2,
+        koSound: { group: 7, index: 1, soundPrefix: "fs" },
+        doubleKoTimeFrames: 4,
+        doubleKoSoundTimeFrames: 3,
+        doubleKoSound: { group: 7, index: 2, soundPrefix: "fs" },
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 5,
+        timeOverSoundTimeFrames: 4,
+        timeOverSound: { group: 7, index: 3, soundPrefix: "fs" },
+        winTimeFrames: 6,
+        winSoundTimeFrames: 5,
+        drawSound: { group: 7, index: 4, soundPrefix: "fs" },
+      },
+    };
+    const round = new RuntimeRoundSystem(1, "ikemen-go", timing);
+    round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
+
+    expect(round.snapshot().postRound?.outcome).toEqual({
+      schema: "RuntimeRoundOutcome/v0",
+      kind: "ko",
+      displayStartFrame: 3,
+      soundTime: 2,
+      soundDue: false,
+      showDraw: true,
+      sound: { group: 7, index: 1, soundPrefix: "fs" },
+    });
+
+    round.tickTimer();
+    expect(round.snapshot().postRound?.outcome?.soundDue).toBe(false);
+    round.tickTimer();
+    expect(round.snapshot().postRound?.outcome).toMatchObject({ kind: "ko", soundTime: 2, soundDue: true });
+
+    const drawRound = new RuntimeRoundSystem(0, "ikemen-go", timing);
+    drawRound.finishIfNeeded({ label: "P1", life: 0 }, { label: "P2", life: 0 });
+    expect(drawRound.snapshot().postRound?.outcome).toMatchObject({
+      kind: "draw",
+      displayStartFrame: 6,
+      soundTime: 5,
+      showDraw: true,
+      sound: { group: 7, index: 4, soundPrefix: "fs" },
+    });
+  });
+
   it("advances the bounded KO slowdown and fades back to normal speed", () => {
     const round = new RuntimeRoundSystem();
     round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });

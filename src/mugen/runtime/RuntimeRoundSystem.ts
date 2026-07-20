@@ -2,6 +2,9 @@ import type {
   RoundSnapshot,
   RuntimeRoundFadeSnapshot,
   RuntimeRoundIntroSnapshot,
+  RuntimeRoundOutcomeKind,
+  RuntimeRoundOutcomeSnapshot,
+  RuntimeRoundOutcomeTiming,
   RuntimeRoundShutterSnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
@@ -36,6 +39,7 @@ export type RuntimeRoundTiming = {
   fadeOutAnimationNo?: number;
   fadeOutAnimationDurationFrames?: number;
   fadeOutSound?: [number, number];
+  outcome?: RuntimeRoundOutcomeTiming;
   postKoFrames: number;
   koSlowFrames: number;
   koSlowFadeFrames: number;
@@ -362,6 +366,8 @@ export class RuntimeRoundSystem {
         playbackRate: this.playbackRate,
         noKoSlow: this.noKoSlow,
       };
+      const outcome = this.roundOutcomeSnapshot();
+      if (outcome) snapshot.postRound.outcome = outcome;
       const fadeOut = this.roundFadeSnapshot();
       if (fadeOut) snapshot.postRound.fadeOut = fadeOut;
     } else {
@@ -381,6 +387,22 @@ export class RuntimeRoundSystem {
       }
     }
     return snapshot;
+  }
+
+  private roundOutcomeSnapshot(): RuntimeRoundOutcomeSnapshot | undefined {
+    const timing = this.timing.outcome;
+    if (!timing) return undefined;
+    const kind = resolveRuntimeRoundOutcomeKind(this.state, this.winner);
+    const track = resolveRuntimeRoundOutcomeTrack(kind, timing);
+    return {
+      schema: "RuntimeRoundOutcome/v0",
+      kind,
+      displayStartFrame: track.displayStartFrame,
+      soundTime: track.soundTime,
+      soundDue: Boolean(track.sound && this.postRoundFrame === track.soundTime),
+      showDraw: timing.doubleKoShowDraw,
+      ...(track.sound ? { sound: { ...track.sound } } : {}),
+    };
   }
 
   private roundFadeSnapshot(): RuntimeRoundFadeSnapshot | undefined {
@@ -567,6 +589,7 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     DEFAULT_RUNTIME_ROUND_TIMING.controlTimeFrames,
   );
   const announcement = overrides.announcement;
+  const outcome = normalizeOutcomeTiming(overrides.outcome);
   const shutterTimeFrames = boundedTimingFrames(
     overrides.shutterTimeFrames,
     DEFAULT_RUNTIME_ROUND_TIMING.shutterTimeFrames,
@@ -638,10 +661,91 @@ export function resolveRuntimeRoundTiming(overrides: Partial<RuntimeRoundTiming>
     ...(fadeOutAnimationNo !== undefined ? { fadeOutAnimationNo } : {}),
     ...(fadeOutAnimationDurationFrames > 0 ? { fadeOutAnimationDurationFrames } : {}),
     ...(fadeOutSound ? { fadeOutSound } : {}),
+    ...(outcome ? { outcome } : {}),
     postKoFrames,
     koSlowFrames,
     koSlowFadeFrames,
     koSlowRate,
+  };
+}
+
+function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): RuntimeRoundOutcomeTiming | undefined {
+  if (!value) return undefined;
+  const koTimeFrames = boundedTimingFrames(value.koTimeFrames, 0);
+  const koSoundTimeFrames = boundedTimingFrames(value.koSoundTimeFrames, koTimeFrames);
+  const doubleKoTimeFrames = boundedTimingFrames(value.doubleKoTimeFrames, koTimeFrames);
+  const doubleKoSoundTimeFrames = boundedTimingFrames(value.doubleKoSoundTimeFrames, koSoundTimeFrames);
+  const timeOverTimeFrames = boundedTimingFrames(value.timeOverTimeFrames, koTimeFrames);
+  const timeOverSoundTimeFrames = boundedTimingFrames(value.timeOverSoundTimeFrames, koSoundTimeFrames);
+  const winTimeFrames = boundedTimingFrames(value.winTimeFrames, 0);
+  const winSoundTimeFrames = boundedTimingFrames(value.winSoundTimeFrames, winTimeFrames);
+  const koSound = normalizeOutcomeSound(value.koSound);
+  const doubleKoSound = normalizeOutcomeSound(value.doubleKoSound);
+  const timeOverSound = normalizeOutcomeSound(value.timeOverSound);
+  const drawSound = normalizeOutcomeSound(value.drawSound);
+  return {
+    koTimeFrames,
+    koSoundTimeFrames,
+    ...(koSound ? { koSound } : {}),
+    doubleKoTimeFrames,
+    doubleKoSoundTimeFrames,
+    ...(doubleKoSound ? { doubleKoSound } : {}),
+    doubleKoShowDraw: value.doubleKoShowDraw === true,
+    timeOverTimeFrames,
+    timeOverSoundTimeFrames,
+    ...(timeOverSound ? { timeOverSound } : {}),
+    winTimeFrames,
+    winSoundTimeFrames,
+    ...(drawSound ? { drawSound } : {}),
+  };
+}
+
+function normalizeOutcomeSound(value: RuntimeRoundOutcomeTiming["koSound"]): RuntimeRoundOutcomeTiming["koSound"] {
+  if (!value || !Number.isFinite(value.group) || !Number.isFinite(value.index)) return undefined;
+  return {
+    group: Math.max(0, Math.round(value.group)),
+    index: Math.max(0, Math.round(value.index)),
+    soundPrefix: value.soundPrefix?.trim().toLowerCase() || "fs",
+  };
+}
+
+function resolveRuntimeRoundOutcomeKind(
+  state: RoundSnapshot["state"],
+  winner: string | undefined,
+): RuntimeRoundOutcomeKind {
+  if (state === "timeover") return winner === "Draw" ? "draw" : "time-over";
+  return winner === "Draw" ? "double-ko" : "ko";
+}
+
+function resolveRuntimeRoundOutcomeTrack(
+  kind: RuntimeRoundOutcomeKind,
+  timing: RuntimeRoundOutcomeTiming,
+): { displayStartFrame: number; soundTime: number; sound?: RuntimeRoundOutcomeTiming["koSound"] } {
+  if (kind === "double-ko") {
+    return {
+      displayStartFrame: timing.doubleKoTimeFrames,
+      soundTime: timing.doubleKoSoundTimeFrames,
+      ...(timing.doubleKoSound ? { sound: timing.doubleKoSound } : {}),
+    };
+  }
+  if (kind === "time-over") {
+    return {
+      displayStartFrame: timing.timeOverTimeFrames,
+      soundTime: timing.timeOverSoundTimeFrames,
+      ...(timing.timeOverSound ? { sound: timing.timeOverSound } : {}),
+    };
+  }
+  if (kind === "draw") {
+    return {
+      displayStartFrame: timing.winTimeFrames,
+      soundTime: timing.winSoundTimeFrames,
+      ...(timing.drawSound ? { sound: timing.drawSound } : {}),
+    };
+  }
+  return {
+    displayStartFrame: timing.koTimeFrames,
+    soundTime: timing.koSoundTimeFrames,
+    ...(timing.koSound ? { sound: timing.koSound } : {}),
   };
 }
 

@@ -172,7 +172,10 @@ import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveController
 import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
-import { RuntimeRoundSystem, type RuntimeRoundTiming } from "./RuntimeRoundSystem";
+import {
+  RuntimeRoundSystem,
+  type RuntimeRoundTiming,
+} from "./RuntimeRoundSystem";
 import { resolveRuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
 import {
   resolveFightScreenAnimationCompletion,
@@ -306,6 +309,7 @@ import type {
   CharacterRuntimeState,
   MugenSnapshot,
   RoundSnapshot,
+  RuntimeRoundOutcomeTiming,
   RuntimeRedirectedTargetDispatchWriteback,
 } from "./types";
 import type { ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
@@ -6306,6 +6310,7 @@ function runtimeRoundTimingFromFightScreen(
   const fightAnimationEndFrames = display === undefined
     ? undefined
     : resolveFightScreenAnnouncementCompletion(display, animations, "fight", "normal", 1)?.frame ?? 0;
+  const outcome = runtimeRoundOutcomeTimingFromFightScreen(source, display);
   const timing: Partial<RuntimeRoundTiming> = {
     overHitTimeFrames: source?.overHitTime,
     postKoPhase4StartFrames: source?.overWaitTime,
@@ -6343,11 +6348,53 @@ function runtimeRoundTimingFromFightScreen(
     fadeOutAnimationNo: source?.fadeOutAnimationNo,
     fadeOutAnimationDurationFrames: source?.fadeOutAnimationDuration,
     fadeOutSound: source?.fadeOutSound,
+    ...(outcome ? { outcome } : {}),
     koSlowFrames: source?.slowTime,
     koSlowFadeFrames: source?.slowFadeTime,
     koSlowRate: source?.slowSpeed,
   };
   return Object.values(timing).some((value) => value !== undefined) ? timing : undefined;
+}
+
+function runtimeRoundOutcomeTimingFromFightScreen(
+  source?: MugenFightScreenTiming,
+  display?: MugenFightScreenAssets["display"],
+): RuntimeRoundOutcomeTiming | undefined {
+  const hasSourceTiming = [
+    source?.koTime,
+    source?.koSoundTime,
+    source?.doubleKoTime,
+    source?.doubleKoSoundTime,
+    source?.doubleKoShowDraw,
+    source?.timeOverTime,
+    source?.timeOverSoundTime,
+    source?.winTime,
+    source?.winSoundTime,
+  ].some((value) => value !== undefined);
+  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw);
+  if (!hasSourceTiming && !hasDisplay) return undefined;
+
+  const koTimeFrames = source?.koTime ?? 0;
+  const koSoundTimeFrames = source?.koSoundTime ?? koTimeFrames;
+  const koSound = runtimeAnnouncementSound(display?.ko?.sound);
+  const doubleKoSound = runtimeAnnouncementSound(display?.doubleKo?.sound) ?? koSound;
+  const timeOverSound = runtimeAnnouncementSound(display?.timeOver?.sound) ?? koSound;
+  const drawSound = runtimeAnnouncementSound(display?.draw?.sound) ?? timeOverSound;
+  return {
+    koTimeFrames,
+    koSoundTimeFrames,
+    ...(koSound ? { koSound } : {}),
+    doubleKoTimeFrames: source?.doubleKoTime ?? koTimeFrames,
+    doubleKoSoundTimeFrames: source?.doubleKoSoundTime ?? koSoundTimeFrames,
+    ...(doubleKoSound ? { doubleKoSound } : {}),
+    doubleKoShowDraw: source?.doubleKoShowDraw === true,
+    timeOverTimeFrames: source?.timeOverTime ?? koTimeFrames,
+    timeOverSoundTimeFrames: source?.timeOverSoundTime ?? koSoundTimeFrames,
+    ...(timeOverSound ? { timeOverSound } : {}),
+    winTimeFrames: source?.winTime ?? 0,
+    winSoundTimeFrames: source?.winSoundTime ?? source?.winTime ?? 0,
+    ...(drawSound ? { drawSound } : {}),
+  };
 }
 
 function runtimeAnnouncementSound(
