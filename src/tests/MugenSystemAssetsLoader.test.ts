@@ -61,6 +61,7 @@ round.default.top.layerno = 1
 round.default.bg0.anim = 7002
 round.default.bg0.offset = 160, 100
 round.default.bg0.layerno = 0
+round.default.bg0.angle = 15
 round.default.bg0.window = 80, 40, 240, 160
 round1.snd = 8, 1
 round1.anim = 7002
@@ -190,7 +191,7 @@ File = standard.sff
             layerNo: 1,
           },
           background: [
-            { animationNo: 7002, offset: [160, 100], layerNo: 0, window: [80, 40, 160, 120] },
+            { animationNo: 7002, offset: [160, 100], layerNo: 0, angle: 15, window: [80, 40, 160, 120] },
           ],
         },
         roundSingle: { animationNo: 7002, sound: [8, 3] },

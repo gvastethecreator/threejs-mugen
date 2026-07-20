@@ -67,6 +67,8 @@ export type FightScreenAnnouncementDiagnostics = {
   windowCulled?: number;
   layerNoApplied?: number;
   layerNoCulled?: number;
+  angleApplied?: number;
+  angleCulled?: number;
   fallbackReason?: string;
 };
 
@@ -119,6 +121,8 @@ type FightScreenLayoutRenderResult = {
   windowCulled: number;
   layerNoApplied: number;
   layerNoCulled: number;
+  angleApplied: number;
+  angleCulled: number;
 };
 
 type FightScreenLayoutCollectionResult = {
@@ -127,6 +131,8 @@ type FightScreenLayoutCollectionResult = {
   windowCulled: number;
   layerNoApplied: number;
   layerNoCulled: number;
+  angleApplied: number;
+  angleCulled: number;
 };
 
 type FightScreenTextRenderResult = {
@@ -173,6 +179,8 @@ export class FightScreenAnnouncementRenderer {
     windowCulled: 0,
     layerNoApplied: 0,
     layerNoCulled: 0,
+    angleApplied: 0,
+    angleCulled: 0,
   };
 
   constructor(private readonly textures: TextureStore) {
@@ -523,6 +531,8 @@ export class FightScreenAnnouncementRenderer {
       windowCulled: backgroundResult.windowCulled + topResult.windowCulled,
       layerNoApplied: backgroundResult.layerNoApplied + topResult.layerNoApplied,
       layerNoCulled: backgroundResult.layerNoCulled + topResult.layerNoCulled,
+      angleApplied: backgroundResult.angleApplied + topResult.angleApplied,
+      angleCulled: backgroundResult.angleCulled + topResult.angleCulled,
     };
     this.backgroundGroup.visible = backgroundResult.resolved > 0;
     this.topGroup.visible = topResult.resolved > 0;
@@ -542,6 +552,8 @@ export class FightScreenAnnouncementRenderer {
     let windowCulled = 0;
     let layerNoApplied = 0;
     let layerNoCulled = 0;
+    let angleApplied = 0;
+    let angleCulled = 0;
     for (const [index, layout] of layouts.entries()) {
       const resolvedFrame = resolveFightScreenLayoutFrame(layout, frameTick, this.animations);
       if (!resolvedFrame) continue;
@@ -550,6 +562,10 @@ export class FightScreenAnnouncementRenderer {
         resolvedFrame.frame.spriteIndex,
       );
       if (!sprite) continue;
+      if (layout.angle !== undefined && layout.window) {
+        angleCulled += 1;
+        continue;
+      }
       const blend = isAdditiveBlend(resolvedFrame.frame.blend ?? layout.blend) ? "additive" : "alpha";
       const presentationOrder = resolveFightScreenLayoutPresentationOrder(layout.layerNo, kind, index, blend);
       if (!presentationOrder) {
@@ -570,10 +586,12 @@ export class FightScreenAnnouncementRenderer {
       }
       if (layout.window) windowApplied += 1;
       if (layout.layerNo !== undefined) layerNoApplied += 1;
+      if (layout.angle !== undefined) angleApplied += 1;
       const mesh = this.ensureLayoutMesh(index, meshPool, group);
       mesh.visible = true;
       mesh.position.set(clippedPlacement.x, clippedPlacement.y, 0);
       mesh.scale.set(clippedPlacement.scaleX, clippedPlacement.scaleY, 1);
+      mesh.rotation.z = degreesToRadians(layout.angle ?? 0);
       applyFightScreenMeshUv(mesh.geometry, clippedPlacement.uv ?? FULL_FIGHT_SCREEN_PLACEMENT_UV);
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
       mesh.material.color.setHex(0xffffff);
@@ -587,7 +605,15 @@ export class FightScreenAnnouncementRenderer {
       const mesh = meshPool[index];
       if (mesh) mesh.visible = false;
     }
-    return { resolved, windowApplied, windowCulled, layerNoApplied, layerNoCulled };
+    return {
+      resolved,
+      windowApplied,
+      windowCulled,
+      layerNoApplied,
+      layerNoCulled,
+      angleApplied,
+      angleCulled,
+    };
   }
 
   private ensureLayoutMesh(
@@ -627,6 +653,8 @@ export class FightScreenAnnouncementRenderer {
       windowCulled: 0,
       layerNoApplied: 0,
       layerNoCulled: 0,
+      angleApplied: 0,
+      angleCulled: 0,
     };
   }
 
@@ -960,6 +988,10 @@ function resolveFightScreenLayoutPresentationOrder(
 
 function signedMagnitude(value: number, magnitude: number): number {
   return value < 0 ? -magnitude : magnitude;
+}
+
+function degreesToRadians(value: number): number {
+  return (Number.isFinite(value) ? value : 0) * Math.PI / 180;
 }
 
 function applyFightScreenMeshUv(geometry: THREE.PlaneGeometry, uv: FightScreenPlacementUv): void {

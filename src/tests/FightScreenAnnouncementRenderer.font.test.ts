@@ -108,8 +108,11 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       display: {
         round: new Map(),
         roundDefault: {
-          background: [{ animationNo: 7002, offset: [160, 100], layerNo: 0, window: [140, 80, 40, 40] }],
-          top: { sprite: [9100, 1], offset: [160, 120], facing: -1, layerNo: 1 },
+          background: [
+            { animationNo: 7002, offset: [160, 100], layerNo: 0, window: [140, 80, 40, 40] },
+            { sprite: [9100, 0], offset: [160, 100], angle: 15, window: [140, 80, 40, 40] },
+          ],
+          top: { sprite: [9100, 1], offset: [160, 120], facing: -1, layerNo: 1, angle: 15 },
         },
       },
       spriteArchive: {
@@ -128,7 +131,7 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     expect(renderer.getDiagnostics()).toMatchObject({
       active: true,
       resolved: true,
-      backgroundLayerCount: 1,
+      backgroundLayerCount: 2,
       backgroundResolved: 1,
       topLayerCount: 1,
       topResolved: 1,
@@ -136,10 +139,13 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       windowCulled: 0,
       layerNoApplied: 2,
       layerNoCulled: 0,
+      angleApplied: 1,
+      angleCulled: 1,
     });
     const backgroundGroup = renderer.group.children[0]!;
     const topGroup = renderer.group.children[3]!;
     expect(backgroundGroup.children[0]?.renderOrder).toBeLessThan(topGroup.children[0]?.renderOrder ?? Number.POSITIVE_INFINITY);
+    expect(topGroup.children[0]?.rotation.z).toBeCloseTo(15 * Math.PI / 180);
     renderer.dispose();
     textures.dispose();
   });

@@ -695,6 +695,7 @@ function layoutAsset(section: Record<string, string>, prefix: string): MugenFigh
     facing: facingValue(section, `${prefix}.facing`),
     vfacing: facingValue(section, `${prefix}.vfacing`),
     layerNo: layerNoValue(section, `${prefix}.layerno`),
+    angle: numberValue(section, `${prefix}.angle`),
     window: integerQuadValue(section, `${prefix}.window`),
     blend: getValue(section, [`${prefix}.trans`]),
   };
