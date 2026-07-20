@@ -23,6 +23,7 @@ export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
   label: string;
   runtime: {
     life: number;
+    lifeMax?: number;
   };
 };
 
@@ -114,8 +115,18 @@ export class RuntimeMatchRoundWorld {
       return undefined;
     }
     const finish = options.round.finishIfNeeded(
-      { label: options.p1.label, life: options.p1.runtime.life, side: 0 },
-      { label: options.p2.label, life: options.p2.runtime.life, side: 1 },
+      {
+        label: options.p1.label,
+        life: options.p1.runtime.life,
+        lifeMax: options.p1.runtime.lifeMax,
+        side: 0,
+      },
+      {
+        label: options.p2.label,
+        life: options.p2.runtime.life,
+        lifeMax: options.p2.runtime.lifeMax,
+        side: 1,
+      },
       { noKoSlow: globalAssertSpecial.noKoSlow },
     );
     if (!finish) {

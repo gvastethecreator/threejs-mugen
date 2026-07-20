@@ -95,6 +95,35 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.isOver).toBe(false);
   });
 
+  it("forwards lifeMax into the source-shaped win type derivation", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      outcome: {
+        koTimeFrames: 1,
+        koSoundTimeFrames: 1,
+        doubleKoTimeFrames: 1,
+        doubleKoSoundTimeFrames: 1,
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 1,
+        timeOverSoundTimeFrames: 1,
+        winTimeFrames: 1,
+        winSoundTimeFrames: 1,
+      },
+    });
+
+    new RuntimeMatchRoundWorld().finishIfNeeded({
+      round,
+      p1: actorWithLifeMax("P1", 1000, 1000),
+      p2: actorWithLifeMax("P2", 0, 1000),
+      stopPlaying: () => undefined,
+      log: () => undefined,
+    });
+
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay?.selection).toMatchObject({
+      winType: "perfect",
+      winTypes: ["perfect", "normal"],
+    });
+  });
+
   it("stops playing only after the post-KO timeline completes", () => {
     const round = new RuntimeRoundSystem();
     const world = new RuntimeMatchRoundWorld();
@@ -309,9 +338,14 @@ type TestMatchRoundActor = {
   label: string;
   runtime: {
     life: number;
+    lifeMax?: number;
     assertSpecial?: { flags: string[]; globalFlags: string[]; timerFreeze?: boolean; roundNotOver?: boolean };
   };
 };
+
+function actorWithLifeMax(label: string, life: number, lifeMax: number): TestMatchRoundActor {
+  return { label, runtime: { life, lifeMax } };
+}
 
 function actor(
   label: string,

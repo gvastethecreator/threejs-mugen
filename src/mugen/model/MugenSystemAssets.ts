@@ -187,6 +187,7 @@ export type MugenFightScreenTiming = {
   doubleKoTime?: number;
   doubleKoSoundTime?: number;
   doubleKoShowDraw?: boolean;
+  clutchThresholdPercent?: number;
   timeOverTime?: number;
   timeOverSoundTime?: number;
   winTime?: number;

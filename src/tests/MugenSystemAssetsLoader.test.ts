@@ -114,6 +114,7 @@ ko.font = 1, 0, 0
 dko.time = 4
 dko.sndtime = 3
 dko.showdraw = true
+clutch.threshold = 10
 dko.text = Double KO
 dko.font = 1, 0, 0
 to.time = 5
@@ -223,6 +224,7 @@ File = standard.sff
       doubleKoTime: 4,
       doubleKoSoundTime: 3,
       doubleKoShowDraw: true,
+      clutchThresholdPercent: 10,
       timeOverTime: 5,
       timeOverSoundTime: 4,
       startWaitTime: 12,

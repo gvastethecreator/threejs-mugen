@@ -6393,6 +6393,9 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     doubleKoSoundTimeFrames: source?.doubleKoSoundTime ?? koSoundTimeFrames,
     ...(doubleKoSound ? { doubleKoSound } : {}),
     doubleKoShowDraw: source?.doubleKoShowDraw === true,
+    ...(source?.clutchThresholdPercent === undefined ? {} : {
+      clutchThresholdPercent: source.clutchThresholdPercent,
+    }),
     timeOverTimeFrames: source?.timeOverTime ?? koTimeFrames,
     timeOverSoundTimeFrames: source?.timeOverSoundTime ?? koSoundTimeFrames,
     ...(timeOverSound ? { timeOverSound } : {}),

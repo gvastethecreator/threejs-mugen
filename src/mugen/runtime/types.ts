@@ -687,6 +687,7 @@ export type RuntimeRoundOutcomeTiming = {
   doubleKoSoundTimeFrames: number;
   doubleKoSound?: RuntimeRoundAnnouncementSound;
   doubleKoShowDraw: boolean;
+  clutchThresholdPercent?: number;
   timeOverTimeFrames: number;
   timeOverSoundTimeFrames: number;
   timeOverSound?: RuntimeRoundAnnouncementSound;

@@ -12,6 +12,18 @@ const soundPair = (
   right?: RuntimeRoundAnnouncementSound,
 ): [RuntimeRoundAnnouncementSound | undefined, RuntimeRoundAnnouncementSound | undefined] => [left, right];
 
+const outcomeTiming = {
+  koTimeFrames: 1,
+  koSoundTimeFrames: 1,
+  doubleKoTimeFrames: 1,
+  doubleKoSoundTimeFrames: 1,
+  doubleKoShowDraw: true,
+  timeOverTimeFrames: 1,
+  timeOverSoundTimeFrames: 1,
+  winTimeFrames: 1,
+  winSoundTimeFrames: 1,
+};
+
 describe("RuntimeRoundSystem", () => {
   it("owns the fight timer snapshot without ending a live round", () => {
     const round = new RuntimeRoundSystem(61);
@@ -219,6 +231,42 @@ describe("RuntimeRoundSystem", () => {
       side: 0,
       variant: 0,
     });
+  });
+
+  it("derives perfect and clutch from life facts and preserves an explicit base record", () => {
+    const perfectRound = new RuntimeRoundSystem(1, "ikemen-go", { outcome: outcomeTiming });
+    perfectRound.finishIfNeeded(
+      { label: "P1", life: 1000, lifeMax: 1000, side: 0, winTypeBase: "special" },
+      { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+    );
+
+    expect(perfectRound.snapshot().postRound?.outcome?.winnerDisplay?.selection).toMatchObject({
+      winType: "perfect",
+      winTypes: ["perfect", "special"],
+    });
+
+    const clutchRound = new RuntimeRoundSystem(1, "ikemen-go", {
+      outcome: { ...outcomeTiming, clutchThresholdPercent: 20 },
+    });
+    clutchRound.finishIfNeeded(
+      { label: "P1", life: 200, lifeMax: 1000, side: 0, winType: "special" },
+      { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+    );
+
+    expect(clutchRound.snapshot().postRound?.outcome?.winnerDisplay?.selection).toMatchObject({
+      winType: "clutch",
+      winTypes: ["clutch", "special"],
+    });
+  });
+
+  it("keeps the win type absent when live lifeMax evidence is unavailable", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", { outcome: outcomeTiming });
+    round.finishIfNeeded(
+      { label: "P1", life: 1000, side: 0 },
+      { label: "P2", life: 0, side: 1 },
+    );
+
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay?.selection).not.toHaveProperty("winType");
   });
 
   it("advances the bounded KO slowdown and fades back to normal speed", () => {

@@ -91,14 +91,17 @@ export const DEFAULT_RUNTIME_KO_SLOW_FADE_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.
 export const DEFAULT_RUNTIME_KO_SLOW_RATE = DEFAULT_RUNTIME_ROUND_TIMING.koSlowRate;
 export const DEFAULT_RUNTIME_POST_KO_PHASE4_START_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.postKoPhase4StartFrames;
 export const DEFAULT_RUNTIME_POST_KO_FRAMES = DEFAULT_RUNTIME_ROUND_TIMING.postKoFrames;
+export const DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT = 10;
 
 export type RuntimeRoundParticipant = {
   label: string;
   life: number;
+  lifeMax?: number;
   side?: 0 | 1;
   playerControlled?: boolean;
   variantIndex?: number;
   winType?: RuntimeRoundWinTypeName;
+  winTypeBase?: RuntimeRoundWinTypeName;
 };
 
 export type RuntimeRoundFinishResult = {
@@ -304,7 +307,7 @@ export class RuntimeRoundSystem {
 
     this.state = this.timerFrames <= 0 ? "timeover" : "ko";
     this.winner = resolveRoundWinner(left, right);
-    this.winnerDisplaySelection = resolveWinnerDisplaySelection(left, right);
+    this.winnerDisplaySelection = resolveWinnerDisplaySelection(left, right, this.timing.outcome);
     this.noKoSlow = this.state === "ko" && options.noKoSlow === true;
     this.postRoundFrame = 0;
     this.postRoundRemaining = this.state === "ko" || this.state === "timeover" ? this.timing.postKoFrames : 1;
@@ -738,6 +741,10 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
   const timeOverSoundTimeFrames = boundedTimingFrames(value.timeOverSoundTimeFrames, koSoundTimeFrames);
   const winTimeFrames = boundedTimingFrames(value.winTimeFrames, 0);
   const winSoundTimeFrames = boundedTimingFrames(value.winSoundTimeFrames, winTimeFrames);
+  const clutchThresholdPercent = boundedPercent(
+    value.clutchThresholdPercent,
+    DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT,
+  );
   const koSound = normalizeOutcomeSound(value.koSound);
   const doubleKoSound = normalizeOutcomeSound(value.doubleKoSound);
   const timeOverSound = normalizeOutcomeSound(value.timeOverSound);
@@ -753,6 +760,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
     doubleKoSoundTimeFrames,
     ...(doubleKoSound ? { doubleKoSound } : {}),
     doubleKoShowDraw: value.doubleKoShowDraw === true,
+    clutchThresholdPercent,
     timeOverTimeFrames,
     timeOverSoundTimeFrames,
     ...(timeOverSound ? { timeOverSound } : {}),
@@ -833,6 +841,7 @@ function resolveRuntimeRoundWinnerDisplayKind(
 function resolveWinnerDisplaySelection(
   left: RuntimeRoundParticipant,
   right: RuntimeRoundParticipant,
+  timing: RuntimeRoundOutcomeTiming | undefined,
 ): RuntimeRoundWinnerDisplaySelection | undefined {
   if (left.life === right.life) return undefined;
   const leftWins = left.life > right.life;
@@ -845,17 +854,38 @@ function resolveWinnerDisplaySelection(
     : winner.playerControlled === true && loser.playerControlled === false
       ? "aiLose"
       : "win";
+  const winType = resolveWinnerWinType(winner, timing?.clutchThresholdPercent);
+  const baseWinType = winner.winTypeBase ?? (
+    winner.winType === undefined || winner.winType === "perfect" || winner.winType === "clutch"
+      ? undefined
+      : winner.winType
+  );
   return {
     schema: "RuntimeRoundWinnerDisplaySelection/v0",
     family,
     side: family === "aiWin" ? loserSide : winnerSide,
     winnerSide,
     variant: boundedResultVariant(winner.variantIndex),
-    ...(winner.winType ? {
-      winType: winner.winType,
-      winTypes: resolveWinnerDisplayWinTypeNames(winner.winType),
+    ...(winType ? {
+      winType,
+      winTypes: resolveWinnerDisplayWinTypeNames(winType, baseWinType),
     } : {}),
   };
+}
+
+function resolveWinnerWinType(
+  winner: RuntimeRoundParticipant,
+  clutchThresholdPercent = DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT,
+): RuntimeRoundWinTypeName | undefined {
+  if (winner.winType === "perfect" || winner.winType === "clutch") return winner.winType;
+  const lifeMax = winner.lifeMax;
+  if (lifeMax === undefined || !Number.isFinite(lifeMax) || lifeMax <= 0 || !Number.isFinite(winner.life)) {
+    return winner.winType;
+  }
+  if (winner.life >= lifeMax) return "perfect";
+  const threshold = boundedPercent(clutchThresholdPercent, DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT);
+  if (winner.life <= lifeMax * (threshold / 100)) return "clutch";
+  return winner.winType;
 }
 
 function resolveWinnerDisplaySound(
@@ -886,9 +916,12 @@ function resolveWinnerDisplayWinTypeSoundEdges(
   });
 }
 
-function resolveWinnerDisplayWinTypeNames(winType: RuntimeRoundWinTypeName): RuntimeRoundWinTypeName[] {
+function resolveWinnerDisplayWinTypeNames(
+  winType: RuntimeRoundWinTypeName,
+  baseWinType?: RuntimeRoundWinTypeName,
+): RuntimeRoundWinTypeName[] {
   return winType === "perfect" || winType === "clutch"
-    ? [winType, "normal"]
+    ? [winType, baseWinType === "perfect" || baseWinType === "clutch" ? "normal" : baseWinType ?? "normal"]
     : [winType];
 }
 
@@ -946,4 +979,9 @@ function boundedOptionalInteger(value: number | undefined): number | undefined {
 function boundedTimingFrames(value: number | undefined, fallback: number): number {
   if (value === undefined || !Number.isFinite(value)) return fallback;
   return Math.max(0, Math.round(value));
+}
+
+function boundedPercent(value: number | undefined, fallback: number): number {
+  if (value === undefined || !Number.isFinite(value)) return fallback;
+  return Math.max(0, Math.min(100, value));
 }

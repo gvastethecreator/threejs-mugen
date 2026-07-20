@@ -608,6 +608,7 @@ function parseFightScreenTiming(
     doubleKoTime: numberValue(section, "dko.time"),
     doubleKoSoundTime: numberValue(section, "dko.sndtime"),
     doubleKoShowDraw: booleanValue(section, "dko.showdraw"),
+    clutchThresholdPercent: numberValue(section, "clutch.threshold"),
     timeOverTime: numberValue(section, "to.time"),
     timeOverSoundTime: numberValue(section, "to.sndtime"),
     winTime: numberValue(section, "win.time"),
