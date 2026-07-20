@@ -54,6 +54,15 @@ round.default.font = 1, 0, 0, 256, 128, 64
 round.default.displaytime = 60
 round.default.offset = 160, 100
 round.default.scale = 1.2, 0.8
+round.default.palfx.time = 3
+round.default.palfx.add = 32, 0, 0
+round.default.palfx.mul = 64, 32, 32
+round.default.palfx.color = 128
+round.default.palfx.invertall = true
+round.default.text.palfx.time = 3
+round.default.text.palfx.add = 16, 0, 0
+round.default.text.palfx.mul = 128, 64, 64
+round.default.text.palfx.color = 192
 round.default.top.spr = 9100, 1
 round.default.top.offset = 160, 120
 round.default.top.scale = 1, 1
@@ -189,6 +198,19 @@ File = standard.sff
           displayTime: 60,
           offset: [160, 100],
           scale: [1.2, 0.8],
+          paletteFx: {
+            time: 3,
+            add: [32, 0, 0],
+            mul: [64, 32, 32],
+            color: 128,
+            invertAll: true,
+          },
+          textPaletteFx: {
+            time: 3,
+            add: [16, 0, 0],
+            mul: [128, 64, 64],
+            color: 192,
+          },
           top: {
             sprite: [9100, 1],
             offset: [160, 120],

@@ -34,6 +34,10 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 - [Carry FightScreen layout PalFX](tickets/304-fightscreen-layout-palfx.md) - resolved at bounded material-effect scope: `palfx.time`, `add`, `mul`, `color`, and `invertall` now load for top/background layouts, apply through the shared material adapter, expire on the announcement frame clock, and report applied/expired counts; sinusoidal fields, hue, invertblend, interpolation, exact palette math, primary text effects, browser asset parity, and full parity remain open.
 
+- [Carry primary AnimTextSnd PalFX](tickets/305-fightscreen-primary-palfx.md) - resolved at bounded primary-AIR scope: the display-level `palfx` fields now reach the primary FightScreen AIR material with frame-clock expiry diagnostics; primary exact palette math, text PalFX, sinusoidal fields, hue, invertblend, interpolation, KO/winner families, browser asset parity, and full parity remain open.
+
+- [Carry FightScreen FSText PalFX](tickets/306-fightscreen-text-palfx.md) - resolved at bounded bitmap-text scope: `text.palfx` fields now reach bitmap glyph materials while preserving authored font color and frame-clock expiry diagnostics; TrueType/binary FNT, exact text palette math, sinusoidal fields, hue, invertblend, interpolation, KO/winner families, browser asset parity, and full parity remain open.
+
 - [Global checkpoint after T302](../../../docs/research/2026-07-20-global-checkpoint-after-t302.md) - green at `7c6da75e`: 237 files / 2516 tests, 633/633 traces, boundaries, redirect, CSS budget, asset hygiene, build, and browser smoke pass; scores and compatibility claims remain unchanged.
 
 - [Index FightScreen display variants](tickets/294-fightscreen-display-variants.md) - resolved at definition and sound-selection scope: numbered/default/single/final/fight `AnimTextSnd` references, layout metadata, and bounded runtime sound precedence are imported; AIR/FNT/SFF rendering and exact `AnimTextSnd` completion remain the next renderer boundary.

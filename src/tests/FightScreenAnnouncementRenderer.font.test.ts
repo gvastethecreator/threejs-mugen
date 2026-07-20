@@ -44,6 +44,47 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     textures.dispose();
   });
 
+  it("applies the FSText palette effect while preserving authored font color", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const font = createFont("A");
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map(),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          text: "A",
+          font: [1, 0, 0],
+          fontColor: [128, 255, 255, 255],
+          displayTime: 10,
+          textPaletteFx: {
+            time: 3,
+            add: [16, 0, 0],
+            mul: [128, 64, 64],
+            color: 192,
+          },
+        },
+      },
+      fonts: new Map([[1, font]]),
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({ text: "A", textPaletteFxApplied: 1, textPaletteFxExpired: 0 });
+    const textGroup = renderer.group.children[2]!;
+    const textMesh = textGroup.children[0] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+    expect(textMesh.material.color.r).toBeLessThan(128 / 255);
+
+    await renderer.update(snapshot(3), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({ textPaletteFxApplied: 0, textPaletteFxExpired: 1 });
+    expect(textMesh.material.color.r).toBeCloseTo(128 / 255);
+    renderer.dispose();
+    textures.dispose();
+  });
+
   it("presents a non-zero indexed font bank through the FightScreen path", async () => {
     const textures = new TextureStore();
     const renderer = new FightScreenAnnouncementRenderer(textures);
@@ -80,6 +121,67 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       paletteBank: { requested: 1, resolved: 1, source: "sff" },
       glyphCount: 1,
     });
+    renderer.dispose();
+    textures.dispose();
+  });
+
+  it("applies the primary AnimTextSnd palette effect for its active frame window", async () => {
+    const textures = new TextureStore();
+    const renderer = new FightScreenAnnouncementRenderer(textures);
+    const action: MugenAnimationAction = {
+      id: 7002,
+      frames: [{
+        spriteGroup: 9100,
+        spriteIndex: 0,
+        offsetX: 0,
+        offsetY: 0,
+        duration: 10,
+        flip: "",
+        clsn1: [],
+        clsn2: [],
+        raw: "9100,0,0,0,10",
+        line: 1,
+      }],
+      rawLines: [],
+    };
+    renderer.setAssets({
+      sourcePath: "data/fight.def",
+      animations: new Map([[7002, action]]),
+      display: {
+        round: new Map(),
+        roundDefault: {
+          animationNo: 7002,
+          paletteFx: {
+            time: 3,
+            add: [32, 0, 0],
+            mul: [64, 32, 32],
+            color: 128,
+            invertAll: true,
+          },
+        },
+      },
+      spriteArchive: {
+        version: "v1",
+        sprites: [createSprite(9100, 0, 24, 12)],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+
+    await renderer.update(snapshot(), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      actionNo: 7002,
+      primaryPaletteFxApplied: 1,
+      primaryPaletteFxExpired: 0,
+    });
+    const primaryMesh = renderer.group.children[1] as THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+    expect(primaryMesh.material.color.getHex()).not.toBe(0xffffff);
+
+    await renderer.update(snapshot(3), { x: 0, y: 0, width: 640, height: 360, zoom: 1 });
+
+    expect(renderer.getDiagnostics()).toMatchObject({ primaryPaletteFxApplied: 0, primaryPaletteFxExpired: 1 });
+    expect(primaryMesh.material.color.getHex()).toBe(0xffffff);
     renderer.dispose();
     textures.dispose();
   });

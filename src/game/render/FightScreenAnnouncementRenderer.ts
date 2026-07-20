@@ -72,6 +72,10 @@ export type FightScreenAnnouncementDiagnostics = {
   angleCulled?: number;
   paletteFxApplied?: number;
   paletteFxExpired?: number;
+  primaryPaletteFxApplied?: number;
+  primaryPaletteFxExpired?: number;
+  textPaletteFxApplied?: number;
+  textPaletteFxExpired?: number;
   fallbackReason?: string;
 };
 
@@ -155,6 +159,8 @@ type FightScreenTextRenderResult = {
     resolved: number;
     source: "sff" | "sprite" | "missing";
   };
+  textPaletteFxApplied?: number;
+  textPaletteFxExpired?: number;
   fallbackReason?: string;
 };
 
@@ -293,7 +299,7 @@ export class FightScreenAnnouncementRenderer {
     const layoutResult = await this.renderDisplayLayers(displayLayers, frameTick, viewport);
     const hasResolvedLayers = layoutResult.backgroundResolved > 0 || layoutResult.topResolved > 0;
     if (actionNo === undefined) {
-      const textResult = this.renderText(selection.asset, selection.roundNo, viewport);
+      const textResult = this.renderText(selection.asset, selection.roundNo, frameTick, viewport);
       if (textResult.rendered || hasResolvedLayers) {
         const { rendered: _rendered, ...textDiagnostics } = textResult;
         this.diagnostics = {
@@ -325,7 +331,7 @@ export class FightScreenAnnouncementRenderer {
       return;
     }
     if (!action) {
-      const textResult = this.renderText(selection.asset, selection.roundNo, viewport);
+      const textResult = this.renderText(selection.asset, selection.roundNo, frameTick, viewport);
       if (textResult.rendered || hasResolvedLayers) {
         const { rendered: _rendered, ...textDiagnostics } = textResult;
         this.diagnostics = {
@@ -434,8 +440,8 @@ export class FightScreenAnnouncementRenderer {
     this.mesh.position.set(placement.x, placement.y, 10.4);
     this.mesh.scale.set(placement.scaleX, placement.scaleY, 1);
     this.mesh.material.map = this.textures.getTexture(sprite, "fight-screen");
-    this.mesh.material.color.setHex(0xffffff);
-    this.mesh.material.opacity = 1;
+    const primaryPaletteFx = resolveFightScreenPaletteFx(selection.asset.paletteFx, frameTick);
+    applyPaletteFxMaterial(this.mesh.material, primaryPaletteFx);
     this.mesh.material.blending = isAdditiveBlend(animationFrame.frame.blend) ? THREE.AdditiveBlending : THREE.NormalBlending;
     applyThreePresentationOrder(
       this.mesh,
@@ -465,6 +471,10 @@ export class FightScreenAnnouncementRenderer {
         completionReason: completion.reason,
       } : {}),
       ...(displayTime === undefined ? {} : { displayTime }),
+      ...(selection.asset.paletteFx ? {
+        primaryPaletteFxApplied: primaryPaletteFx ? 1 : 0,
+        primaryPaletteFxExpired: primaryPaletteFx ? 0 : 1,
+      } : {}),
       sprite: {
         group: sprite.group,
         index: sprite.index,
@@ -690,6 +700,7 @@ export class FightScreenAnnouncementRenderer {
   private renderText(
     asset: MugenFightScreenDisplayAsset,
     roundNo: number,
+    frameTick: number,
     viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">,
   ): FightScreenTextRenderResult {
     const textTemplate = asset.text;
@@ -729,6 +740,7 @@ export class FightScreenAnnouncementRenderer {
       origin[0] + font.offset[0],
       origin[1] + font.offset[1] - fontHeight + 1,
     ];
+    const textPaletteFx = resolveFightScreenPaletteFx(asset.textPaletteFx, frameTick);
     this.mesh.visible = false;
     this.hideTextMeshes();
     for (const [glyphIndex, glyph] of layout.glyphs.entries()) {
@@ -746,8 +758,13 @@ export class FightScreenAnnouncementRenderer {
       textMesh.scale.set(placement.scaleX, placement.scaleY, 1);
       textMesh.material.map = this.textures.getTexture(glyph.sprite, `fight-screen-font-${fontIndex}-${font.sourcePath}`);
       const color = asset.fontColor ?? [255, 255, 255, 255];
-      textMesh.material.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
-      textMesh.material.opacity = Math.max(0, Math.min(1, color[3] / 255));
+      const fontOpacity = Math.max(0, Math.min(1, color[3] / 255));
+      applyPaletteFxMaterial(textMesh.material, textPaletteFx, fontOpacity);
+      if (textPaletteFx) {
+        textMesh.material.color.multiply(new THREE.Color(color[0] / 255, color[1] / 255, color[2] / 255));
+      } else {
+        textMesh.material.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
+      }
       textMesh.material.blending = THREE.NormalBlending;
       applyThreePresentationOrder(
         textMesh,
@@ -778,6 +795,10 @@ export class FightScreenAnnouncementRenderer {
       ...(layout.missingCharacters.length > 0 ? { missingCharacters: layout.missingCharacters } : {}),
       textWidth: layout.width,
       textLineCount: layout.lines.length,
+      ...(asset.textPaletteFx ? {
+        textPaletteFxApplied: textPaletteFx ? 1 : 0,
+        textPaletteFxExpired: textPaletteFx ? 0 : 1,
+      } : {}),
     };
   }
 

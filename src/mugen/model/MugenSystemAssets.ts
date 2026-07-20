@@ -76,6 +76,8 @@ export type MugenFightScreenDisplayAsset = {
   text?: string;
   font?: [number, number, number];
   fontColor?: [number, number, number, number];
+  paletteFx?: MugenFightScreenPaletteFx;
+  textPaletteFx?: MugenFightScreenPaletteFx;
   background?: MugenFightScreenLayoutAsset[];
   top?: MugenFightScreenLayoutAsset;
   displayTime?: number;

@@ -655,6 +655,8 @@ function displayAsset(
     text: getValue(section, [`${prefix}.text`]),
     font: fontValue(section, `${prefix}.font`),
     fontColor: fontColorValue(section, `${prefix}.font`),
+    paletteFx: paletteFxValue(section, `${prefix}.palfx`),
+    textPaletteFx: paletteFxValue(section, `${prefix}.text.palfx`),
     ...(background.length > 0 ? { background } : {}),
     ...(top ? { top } : {}),
     displayTime: numberValue(section, `${prefix}.displaytime`),
