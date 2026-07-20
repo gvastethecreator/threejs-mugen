@@ -50,6 +50,7 @@ export type ExpressionContext = {
   helperKeyCtrl?: boolean;
   helperOwnPalette?: boolean;
   helperOwnProjectile?: boolean;
+  helperPreserve?: boolean;
   helperType?: number;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
@@ -895,6 +896,9 @@ class ExpressionParser {
       }
       if (key === "ownprojectile") {
         return this.context.isHelper && this.context.helperOwnProjectile === true ? 1 : 0;
+      }
+      if (key === "preserve") {
+        return this.context.isHelper && this.context.helperPreserve === true ? 1 : 0;
       }
       this.context.reportUnsupported?.(`helpervar(${key})`);
       return 0;

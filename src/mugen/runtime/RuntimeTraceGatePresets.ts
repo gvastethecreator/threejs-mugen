@@ -45784,6 +45784,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       keyCtrl: true,
       ownPalette: true,
       ownProjectile: true,
+      preserve: true,
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({
@@ -45803,7 +45804,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       label: "Synthetic imported HelperVar route",
       source: "mixed",
       notes: [
-        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), and HelperVar(ownprojectile) after the Helper controller enables keyctrl, ownpal, and ownprojectile. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, or full MUGEN/IKEMEN HelperVar parity.",
+        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), HelperVar(ownprojectile), and HelperVar(preserve) after the Helper controller enables keyctrl, ownpal, ownprojectile, and preserve. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, round-reset persistence, or full MUGEN/IKEMEN HelperVar parity.",
       ],
     },
     gates: [
@@ -48419,10 +48420,11 @@ export type SyntheticImportedTraceFighterOptions = {
   helperVarRoute?: {
     branchStateNo: number;
     branchAnimNo?: number;
-    helperType?: number;
-    keyCtrl?: boolean;
-    ownPalette?: boolean;
-    ownProjectile?: boolean;
+      helperType?: number;
+      keyCtrl?: boolean;
+      ownPalette?: boolean;
+      ownProjectile?: boolean;
+      preserve?: boolean;
   };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
@@ -49033,6 +49035,7 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   keyCtrl: options.helperVarRoute?.keyCtrl,
   ownPalette: options.helperVarRoute?.ownPalette,
   ownProjectile: options.helperVarRoute?.ownProjectile,
+  preserve: options.helperVarRoute?.preserve,
 }) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
@@ -54825,6 +54828,7 @@ function helperControllerBlock(
     keyCtrl?: boolean;
     ownPalette?: boolean;
     ownProjectile?: boolean;
+    preserve?: boolean;
   },
 ): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
@@ -54839,6 +54843,7 @@ function helperControllerBlock(
   const keyCtrlLine = pause?.keyCtrl === undefined ? "" : `keyctrl = ${pause.keyCtrl ? 1 : 0}`;
   const ownPaletteLine = pause?.ownPalette === undefined ? "" : `ownpal = ${pause.ownPalette ? 1 : 0}`;
   const ownProjectileLine = pause?.ownProjectile === undefined ? "" : `ownprojectile = ${pause.ownProjectile ? 1 : 0}`;
+  const preserveLine = pause?.preserve === undefined ? "" : `preserve = ${pause.preserve ? 1 : 0}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -54861,6 +54866,7 @@ ${ignoreHitPauseLine}
 ${keyCtrlLine}
 ${ownPaletteLine}
 ${ownProjectileLine}
+${preserveLine}
 `;
 }
 
@@ -56618,6 +56624,7 @@ function helperVarRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOpt
   const keyCtrl = route.keyCtrl ?? true;
   const ownPalette = route.ownPalette ?? true;
   const ownProjectile = route.ownProjectile ?? true;
+  const preserve = route.preserve ?? true;
   return `
 [Statedef 1200]
 type = S
@@ -56633,6 +56640,7 @@ trigger1 = HelperVar(id) = 42
 trigger1 = HelperVar(keyctrl) = ${keyCtrl ? 1 : 0}
 trigger1 = HelperVar(ownpal) = ${ownPalette ? 1 : 0}
 trigger1 = HelperVar(ownprojectile) = ${ownProjectile ? 1 : 0}
+trigger1 = HelperVar(preserve) = ${preserve ? 1 : 0}
 value = ${route.branchStateNo}
 ctrl = 0
 

@@ -4741,6 +4741,22 @@ function runActiveStateControllers(
                     createPlayerIdTarget(actor),
                   )
               : undefined,
+          resolveHelperPreserve:
+            effect === "helper" && options.runtimeProfile === "ikemen-go"
+              ? (operation) =>
+                  resolveDispatchBoolean(
+                    operation.preserve,
+                    operation.preserveExpression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  )
+              : undefined,
           resolveProjectileSound:
             effect === "projectile"
               ? (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)

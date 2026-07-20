@@ -48,7 +48,7 @@ time = 20
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const helperIdentity = compileExpression("IsHelper && IsHelper(42)");
     const helperIdentityFunction = compileExpression("IsHelper(42)");
-    const helperVar = compileExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1");
+    const helperVar = compileExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1 && HelperVar(preserve) = 1");
     const unsupportedHelperVar = compileExpression("HelperVar(ownclsnscale) = 1");
     const characterIdentity = compileExpression("ID >= 56 && PlayerNo = 1 && EnemyNear, ID >= 56");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
@@ -273,7 +273,7 @@ value = 1
     expect(getControllerSupport("BindToRoot").runtimeLabel).toBe("bounded helper binding");
   });
 
-  it("compiles Helper ownprojectile and ownpal as static and expression-backed metadata", () => {
+  it("compiles Helper boolean metadata as static and expression-backed values", () => {
     expect(compileControllerIr(controller(200, "Helper", [], { ownprojectile: "1" })).operation).toMatchObject({
       kind: "helper",
       ownProjectile: true,
@@ -291,6 +291,15 @@ value = 1
       kind: "helper",
       ownPalette: false,
       ownPaletteExpression: "var(0)",
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { preserve: "1" })).operation).toMatchObject({
+      kind: "helper",
+      preserve: true,
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { preserve: "var(0)" })).operation).toMatchObject({
+      kind: "helper",
+      preserve: false,
+      preserveExpression: "var(0)",
     });
   });
 

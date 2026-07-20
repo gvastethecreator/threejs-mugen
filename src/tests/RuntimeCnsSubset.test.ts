@@ -211,7 +211,7 @@ describe("ExpressionEvaluator", () => {
   it("evaluates profile-scoped IKEMEN HelperVar fields", () => {
     const state = runtimeState();
 
-    expect(evaluateExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1", {
+    expect(evaluateExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1 && HelperVar(preserve) = 1", {
       self: state,
       isHelper: true,
       helperVarEnabled: true,
@@ -220,6 +220,7 @@ describe("ExpressionEvaluator", () => {
       helperKeyCtrl: true,
       helperOwnPalette: true,
       helperOwnProjectile: true,
+      helperPreserve: true,
     })).toBe(1);
     expect(evaluateExpression("HelperVar(ownpal) = 0", {
       self: state,
@@ -227,13 +228,19 @@ describe("ExpressionEvaluator", () => {
       helperVarEnabled: true,
       helperOwnPalette: false,
     })).toBe(1);
+    expect(evaluateExpression("HelperVar(preserve) = 0", {
+      self: state,
+      isHelper: true,
+      helperVarEnabled: true,
+      helperPreserve: false,
+    })).toBe(1);
     expect(evaluateExpression("HelperVar(ownprojectile) = 0", {
       self: state,
       isHelper: true,
       helperVarEnabled: true,
       helperOwnProjectile: false,
     })).toBe(1);
-    expect(evaluateExpression("HelperVar(id) = 0 && HelperVar(keyctrl) = 0 && HelperVar(ownpal) = 0 && HelperVar(ownprojectile) = 0", { self: state })).toBe(1);
+    expect(evaluateExpression("HelperVar(id) = 0 && HelperVar(keyctrl) = 0 && HelperVar(ownpal) = 0 && HelperVar(ownprojectile) = 0 && HelperVar(preserve) = 0", { self: state })).toBe(1);
   });
 
   it("evaluates legacy projectile trigger suffix and second-form timing syntax", () => {

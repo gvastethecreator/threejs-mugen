@@ -120,6 +120,7 @@ export type RuntimeHelper = {
   keyCtrl?: boolean;
   ownPalette?: boolean;
   ownProjectile?: boolean;
+  preserve?: boolean;
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -298,6 +299,7 @@ export type RuntimeHelperSpawnInput = {
   animNo: number;
   ownPalette?: boolean;
   ownProjectile?: boolean;
+  preserve?: boolean;
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
@@ -356,6 +358,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     keyCtrl,
     ownPalette: input.ownPalette ?? operation?.ownPalette,
     ownProjectile: input.ownProjectile ?? operation?.ownProjectile,
+    preserve: input.preserve ?? operation?.preserve,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -1581,6 +1584,7 @@ function helperExpressionContext(
     helperKeyCtrl: options.runtimeProfile === "ikemen-go" && helper.keyCtrl === true,
     helperOwnPalette: options.runtimeProfile === "ikemen-go" && helper.ownPalette === true,
     helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
+    helperPreserve: options.runtimeProfile === "ikemen-go" && helper.preserve === true,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
     stageTime: options.stageTime,

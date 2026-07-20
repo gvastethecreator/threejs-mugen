@@ -257,6 +257,8 @@ export type HelperControllerOp = {
   ownProjectileExpression?: string;
   ownPalette?: boolean;
   ownPaletteExpression?: string;
+  preserve?: boolean;
+  preserveExpression?: string;
   pos?: MugenProjectileVector;
   velocity?: [number, number];
   scale?: [number, number];
@@ -2110,6 +2112,22 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
       ownPaletteExpression = compiledOwnPalette.normalized;
     }
   }
+  const preserveRaw = findParam(controller, "preserve");
+  let preserve: boolean | undefined;
+  let preserveExpression: string | undefined;
+  if (preserveRaw !== undefined) {
+    const trimmedPreserve = preserveRaw.trim();
+    const staticPreserve = Number(trimmedPreserve);
+    if (Number.isFinite(staticPreserve)) {
+      preserve = staticPreserve !== 0;
+    } else {
+      if (!hasValidScalarExpressionStructure(preserveRaw)) return undefined;
+      const compiledPreserve = compileExpression(preserveRaw);
+      if (compiledPreserve.supportLevel === "unsupported") return undefined;
+      preserve = false;
+      preserveExpression = compiledPreserve.normalized;
+    }
+  }
   return definedObject({
     kind: "helper" as const,
     helperId: firstNumber(findParam(controller, "id")),
@@ -2123,6 +2141,8 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     ownProjectileExpression,
     ownPalette,
     ownPaletteExpression,
+    preserve,
+    preserveExpression,
     pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
     scale: scalePairWithDefaultOrUndefined(helperScalePair(controller)),
