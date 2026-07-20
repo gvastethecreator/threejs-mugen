@@ -1,4 +1,9 @@
 # Roadmap Release Targets
+
+Last updated: 2026-07-18
+
+This document translates the scorecard and roadmap into release trains. It does not replace `docs/PORT_COMPLETION_SCORECARD.md`; scores still move only when evidence moves. This file answers: what is the next usable milestone, what gates unlock it, and what stays blocked.
+
 ## 2026-07-18 T288 bounded release checkpoint
 
 HEAD `a12a2672` and Entry 562 close only the timer-owned FightScreen
@@ -8,9 +13,68 @@ release or score movement. Exact global asset clearing, announcements/display
 suppression, dialogue, Common1/ZSS, teams/Turns, rollback/netplay, and full
 parity remain release blockers.
 
-Last updated: 2026-06-28
+## 2026-07-18 Post-Wayfinder-256 Release Override
 
-This document translates the scorecard and roadmap into release trains. It does not replace `docs/PORT_COMPLETION_SCORECARD.md`; scores still move only when evidence moves. This file answers: what is the next usable milestone, what gates unlock it, and what stays blocked.
+HEAD `50801d84`, Entry 555, and Wayfinder 256 do not move a release or score.
+Studio can make and export local diagnostic/release decisions, and Nova has one
+ready asset policy record, but the tracked corpus is not current-HEAD evidence,
+the present full-project fixture is release-blocked, Common.Fx lacks browser
+proof, and independent character breadth remains insufficient.
+
+Release work must fail closed through source-authority reconciliation,
+changed-source evidence, persisted reanalysis, a second character-centered
+legal route, one releaseable saved-project fixture, crash/multi-file source
+durability, and a second asset record. Full contracts:
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-229 Release Override
+
+HEAD `83f85bae`, Entry 555, and Wayfinder 229 do not move a release or score.
+The corpus has two required legal passing routes, Studio has productive gate,
+receipt, and multi-kind scanner records, and one asset has permission/path
+hygiene. Release remains blocked by stale claim/revision binding, aggregate
+release semantics, the reserved asset policy, and insufficient independent
+character breadth. Diagnostic export may remain available with explicit
+blockers; release must fail closed. Full contracts:
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-209 Release Override
+
+Entry 555 and the later unnumbered Wayfinder 209 checkpoint do not move a
+release or score. The next release discriminator is not another projectile
+microfeature: restore the evidence baseline, harden snapshot freshness, and
+prove a second repository-authored CC0 route. Studio release progress requires
+real gate records and explicit diagnostic/release intent; assets require one
+path-clean first-party policy decision; scanner requires a productive v1
+consumer. Runtime ownership work reduces risk but earns no release claim by
+itself. Full contracts:
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical 2026-07-15 Post-Entry-554 Release Override
+
+Entry 554 remains the maximum numbered ledger entry. Audited HEAD 05d85137 is
+the later report frontier at 633/633 traces after bounded root/helper
+RedirectID expansion. Scores remain unchanged. The next release discriminators
+are a materialized/fresh corpus snapshot, one independent legal route,
+evidence-backed Studio greens, one complete asset release record, and a
+production scanner consumer. Redirect dispatch, helper TargetState, atomic
+Turns, State 5900, and RoundState are risk-reduction gates, not release or
+score claims on their own.
+
+Current contracts:
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+Older next-slice menus below are historical when they conflict.
+
+## Historical 2026-07-15 Entry 549 Release Override
+
+Entry 549 is the committed evidence frontier. The MUGEN-lite route, first
+corpus, Practical MUGEN 36 adjudication, one legal stage journey, bounded Turns,
+StudioSemanticDraft/v0, AssetProvenance/v2, and PackageAnalysis/v0 are closed
+at their stated ceilings. The next release discriminators are a materialized
+corpus snapshot, evidence-backed Studio readiness, one complete asset release
+record, and a production scanner consumer. Runtime breadth continues through a
+redirected-target seam, atomic Turns transition, and phase-aware RoundState.
+No score moves from this release-plan reconciliation.
 
 ## Release Train Summary
 
@@ -87,7 +151,7 @@ Required public-facing wording:
 | R5 scanner | Focused tests plus normal gates; runtime anti-claims explicit. |
 | R6 modular contracts | Boundary tests or docs-only note; no fighting-specific leakage. |
 
-## Current Next Slice Menu
+## Historical Next Slice Menu
 
 Use `docs/ROADMAP_PACKAGE_MILESTONES.md` for package selection and `docs/ROADMAP_EXECUTION_BOARD.md` for exact queue status. The safe next slices are:
 

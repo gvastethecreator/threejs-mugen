@@ -1,4 +1,9 @@
 # Roadmap Progress System
+
+Last updated: 2026-07-18
+
+This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
+
 ## Current control override: T288 / Entry 562 frontier
 
 Implementation HEAD is `a12a2672`; T288 closes the bounded FightScreen
@@ -12,12 +17,6 @@ checkpoint is pending. Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
 The next executable gate is FightScreen announcement/display ownership. Exact
 global asset clearing, display suppression, motif/dialogue, Common1/ZSS,
 teams/Turns, rollback/netplay, and full parity are not implied by T288.
-
-Last updated: 2026-07-14
-
-This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
-
-Current control override: numbered backlog maximum 510 is the active implementation cursor. Entries 477-509 closed or bounded the compatibility journey, milestone/package, global-AssertSpecial, team-round, lifebar, resource-bank, Helper-resource, red-life, guard-point, auxiliary-projection, and explicit dizzy-point sequence. Entry 510 closes defender-owned direct HitDef dizzy suppression with 591/591 trace artifacts; full repository gates are batched for the next round. Scores remain unchanged pending a versioned compatibility-corpus adjudication. See `docs/research/2026-07-14-dizzy-points-suppression.md`.
 
 ## Historical control override: T287 / Entry 561 frontier
 
@@ -49,19 +48,87 @@ independent character-breadth slice. Exact character intro control/reset,
 screenpack transforms, motif/dialogue, Common1/ZSS, teams/Turns, rollback/
 netplay, and full parity are not implied by T286.
 
-## Current control override: T285 / Entry 559 frontier
+## Historical control override: post-T268 frontier
 
-Implementation HEAD is `c688f04d`; T285 closes the bounded FightScreen
-`fadein.time`/`fadein.col`/`fadein.anim`/`fadein.snd` loader, reset-owned
-pre-round runtime, AIR/SFF renderer, reverse fallback, and global audio path.
-The grouped gate is 233/233 files, 2479/2479 tests, TypeScript 7, build,
-633/633 traces, boundaries, CSS budget, and 64 browser capture paths with
-zero console/page errors. Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+The latest runtime HEAD is `b241cc65`; the concurrent roadmap docs retain the
+open Wayfinder 257 work. The latest grouped aggregate is 633/633 traces and
+the full suite is 231/231 files and 2435/2435 tests. Scores remain 65 / 36 / 20
+/ 10-12 / 6-8 / 25.
 
-The next executable gate is an independent source-backed round/intro or
-character-breadth slice. Exact intro/shutter/frame-start order, timer/input
-gating, screenpack transforms, motif/dialogue/skip, Common1/ZSS, teams/Turns,
-rollback/netplay, and full parity are not implied by T285.
+Do not replan Wayfinders 230-256: asset/release/evidence/export, redirected
+dispatch, global-state/common-source loading, helper buffers, and base SOCD
+are closed at their written ceilings. T266-T268 now provide source manifest
+metadata, bounded stateful SOCD, and explicit resolution authority. Next
+reconcile normative `05b7d98` with mutable local `044da720` and complete
+semantic review; settle match-level input ownership and Common.Fx browser
+evidence; then proceed through state-5900 provenance, round phases, atomic
+Turns, global projectile order, character breadth, reanalysis, and
+non-vacuous evidence extraction. Full contracts:
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical control override: post-Wayfinder-229 frontier
+
+The audited control tuple is HEAD `83f85bae`, maximum numbered Entry 555, and
+latest lane closeout Wayfinder 229. Since Wayfinder 209, bounded AffectTeam,
+projectile depth, snapshot v1.1 plus the second CC0 stage route, Studio evidence
+and write receipts, productive PackageAnalysis v1/multikind, and asset
+permission/path hygiene closed. Do not plan them again. Scores remain
+65 / 36 / 20 / 10-12 / 6-8 / 25. The latest declared trace aggregate is
+633/633; the latest declared full suite is Wayfinder 221 at 2294/2294, not a
+whole-HEAD projection.
+
+Next use revision-bound evidence and reconcile snapshot claims; then close the
+reserved asset policy, redirected lease/ADR, atomic Turns and round phases,
+global projectile order, a second character-centered route, scanner
+reanalysis, and non-vacuous modular boundaries. The exact contracts are in
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical control override: post-Wayfinder-209 frontier
+
+Entry 555 is the maximum numbered backlog entry. Wayfinder 209 then closed as
+an unnumbered runtime checkpoint at audited HEAD `90ab79b7`. The latest report
+keeps `qa:trace` at 633/633 (599 required, 34 optional) and reports the full
+suite at 2262/2263 with one residual scheduling-contract failure. Scores remain
+65 / 36 / 20 / 10-12 / 6-8 / 25.
+
+Do not plan Wayfinder 209 again and do not treat the materialized
+`CompatibilityCorpusSnapshot/v1` as independent breadth or freshness proof.
+Resume with control/baseline/pin reconciliation, snapshot v1.1, a second
+repository-authored CC0 route, redirected-lease acceptance gaps, and atomic
+Turns/round phases. Product lanes remain GateEvidenceResult, source receipts,
+PackageAnalysis v1, one asset release decision, and only then shared Evidence.
+The exact 30 task contracts are in
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical control override: post-Entry-554 frontier
+
+Entry 554 remains the maximum numbered backlog entry and declares 617/617
+traces. The implementation chain then continued for 30 commits without new
+numeric backlog headings. At audited HEAD 05d85137 the latest committed report
+declares 633/633 traces, 599 required and 34 optional, through bounded root and
+helper auxiliary Target resource RedirectID. Call this the post-Entry-554
+report frontier; do not invent Entries 555 onward.
+
+No score moved. The next evidence order is control reconciliation, a
+materialized CompatibilityCorpusSnapshot/v1, an independent legal route,
+redirected-target dispatch ADR/characterization, atomic Turns plus State 5900
+and RoundState policy, then evidence-backed Studio/scanner/asset consumers.
+The 30 task contracts and claims are in
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+Older current/next selectors below are historical unless this override points
+to them explicitly.
+
+Historical Entry-549 control override: numbered backlog maximum 549 is the committed
+implementation cursor. Entries 517-549 close bounded round/Turns progression,
+the first compatibility corpus and score adjudication, one legal stage journey,
+BGCtrl/stage behavior, Studio semantic preflight, PackageAnalysis/v0,
+AssetProvenance/v2, root identity reads, and root RedirectID through active-CNS
+TargetPowerAdd. Entry 530 is the only score movement: Practical MUGEN 35 -> 36.
+The uncommitted State -1 TargetPowerAdd diff is reserved in-flight work, not
+evidence. Next prioritize a materialized corpus snapshot, a target-family
+dispatch seam, atomic Turns preflight/commit, evidence-backed Studio readiness,
+one complete asset release record, and a real PackageAnalysis consumer. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
 
 ## Source Of Truth Stack
 
@@ -187,7 +254,7 @@ Next:
 - one or two safe cuts from ROADMAP_EXECUTION_BOARD
 ```
 
-## Current Priority Rule
+## Historical Current Priority Rule
 
 Default next work remains:
 

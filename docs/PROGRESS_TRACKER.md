@@ -1,4 +1,5 @@
 ﻿# Progress Tracker
+
 ## Current implementation report - T288 / Entry 562 (2026-07-18)
 
 - Implementation HEAD: `a12a2672`; documentation closeout follows in a
@@ -19,8 +20,6 @@
   skipping, dialogue, Common1/ZSS, teams/Turns, rollback/netplay, and full
   parity remain open.
 - Next research gate: select FightScreen announcement/display ownership.
-
-## Current runtime report - 2026-07-16 Entry 555
 
 ## Previous implementation report - T287 / Entry 561 (2026-07-18)
 
@@ -66,39 +65,134 @@
   and full parity remain open.
 - Next research gate: select announcement/shutter/skip ownership or an
   independent character-breadth boundary.
-## Current implementation report - T285 / Entry 559 (2026-07-18)
 
-- Implementation HEAD: `c688f04d`; documentation closeout follows in a
-  separate commit. Maximum current ledger entry: 559; latest closed lane:
-  Wayfinder T285.
-- Imported `[Round]` fade-in time/color/animation/sound now flow through
-  loader, reset-owned pre-round snapshot, Three.js FightFX AIR/SFF
-  presentation, reverse color fallback, and global audio. Missing assets fail
-  closed to fallback with diagnostics.
-- Current gates: focused 4 files / 41 tests; full 233 files / 2479 tests;
-  TypeScript 7.0.2; Vite build with 316 modules; 633/633 traces; repository,
-  redirect, and CSS budget checks; browser smoke 64 capture paths with 0
-  console issues and 0 page errors.
-- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime and
-  presentation slice does not move compatibility scores.
-- Claim ceiling: fade-in time/color/animation/sound parsing, AIR duration
-  resolution, reset/next-round snapshot state, bounded FightFX presentation,
-  reverse color fallback, one-shot global audio, and explicit diagnostics.
-  Exact intro/shutter/frame-start order, timer/input gating, motif/dialogue/
-  skip, Common1/ZSS, teams/Turns, rollback/netplay, and full parity remain
-  open.
-- Next research gate: select an independent source-backed round/intro or
-  character-breadth boundary.
+## Current daily roadmap report - post-T268 (2026-07-18)
+
+- Current cursors: observed working HEAD `064e2db0`; audited evidence HEAD
+  `50801d84`; maximum numbered Entry 555; latest closed lane Wayfinder 256.
+- Wayfinder 257 Common1 fall defense is in progress and is not counted.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+- Latest declared gates: 231/231 files, 2435/2435 tests, 633/633 traces.
+- Wayfinders 230-256 close bounded release/evidence/export, redirected
+  ownership, global states/common sources, helper buffers, and base SOCD;
+  T266-T268 add source manifest metadata, stateful SOCD, and authority
+  diagnostics at bounded scope.
+- P0 gaps: normative/local source reconciliation and semantic review,
+  match-level input config ownership, current evidence rebuild, and Common.Fx
+  browser proof.
+- Then: state-5900 provenance, round phases, atomic Turns, global projectile
+  order, second character route, reanalysis/release durability and non-vacuous
+  modular extraction.
+- Full audit and 30 tasks:
+  `docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+- Lower current/latest sections that contradict this override are historical.
+
+## Historical daily roadmap report - post-Wayfinder 229 (2026-07-16)
+
+- Current tuple: audited HEAD `83f85bae`, maximum numbered Entry 555, latest
+  lane closeout Wayfinder 229.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+- Latest declared trace aggregate: 633/633. Latest declared full suite:
+  Wayfinder 221, 220/220 files and 2294/2294 tests; no whole-HEAD projection.
+- AffectTeam/depth, snapshot v1.1 and the second legal stage route,
+  GateEvidence/write receipt v0, PackageAnalysis v1/multikind, and asset
+  permission/path hygiene are closed at bounded scope.
+- AssetReleasePolicy/v0 is now implemented and verified: Nova is the only
+  fresh releaseable record; 9 other records remain diagnostic-only.
+- Next: revision-bound evidence and snapshot claim reconciliation; redirected
+  lease/ADR; atomic Turns/round phases; global projectile order; second
+  character route; scanner reanalysis; non-vacuous modular boundaries.
+- Full audit and 30 tasks:
+  `docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+- Lower “current/latest” sections that contradict this override are historical.
+
+## Historical daily roadmap report - post-Wayfinder 209 (2026-07-16)
+
+- Audited HEAD is `90ab79b7`; Entry 555 is the maximum numbered entry and
+  Wayfinder 209 is closed as the later unnumbered runtime checkpoint.
+- Latest reported gates are 633/633 traces and 2262/2263 full-suite tests.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+- Snapshot v1 exists but does not yet prove freshness or independent breadth.
+- ADR 0006 stays Proposed: the current lease lacks complete generation,
+  failure, selected/mutated actor, and telemetry ownership.
+- Turns is not atomic; its current round-counter policy is not IKEMEN parity;
+  State 5900 lacks provenance and `RoundState` remains constant `2`.
+- Next: control/baseline/pin, snapshot v1.1 + second first-party CC0 route,
+  lease v1.1, atomic Turns/round phases, then product trust gates.
+- Full audit and 30 tasks:
+  `docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Current generated-asset report - 2026-07-16 T28
+
+- Wayfinder 229 closes bounded path and permission hygiene for generated assets.
+- Nova Boxer now has repository-owned asset-permission/v0 metadata, verified
+  CC0-1.0 license reference, 2 source digests, and 11 output digests.
+- qa:assets:hygiene passes 62 public text files and 13/13 digest checks with
+  zero violations.
+- qa:smoke passes in 312.5s with zero console/page errors. Studio and ZIP
+  provenance both mark Nova ready; ZIP path and digest mismatch counts are
+  zero.
+- This does not move compatibility scores or claim legal approval, imported
+  MUGEN credit, IKEMEN execution, or full parity.
+- Next: AssetReleasePolicy/v0 as a separate release contract.
+
+## Current generated-asset release report - 2026-07-16 T29
+
+- `mugen-web-sandbox/asset-release-policy/v0` is a separate fail-closed layer
+  above AssetProvenance/v2.
+- Required permission, license, digest, transform, QA, collision, and
+  playtest evidence now expose status plus freshness. Unknown, failed, stale,
+  or non-fresh evidence blocks release while diagnostic export remains usable.
+- Final ZIP/browser evidence: 1 ready record, 9 diagnostic-only records; Nova
+  is `ready`/`canRelease: true`; 0 page errors and 0 console issues.
+- Focused policy batch: 13/13 tests. TypeScript 7 typecheck passes. Final
+  `qa:smoke` passes in 398.9s.
+- Claim ceiling unchanged: no legal approval, imported MUGEN credit, IKEMEN
+  execution, parity, or score movement.
+- Next: revision-bind policy artifacts before a shared EvidenceContract.
+
+## Current SPDX boundary report - 2026-07-16 T28
+
+- Permission/provenance license parsing now exposes
+  `mugen-web-sandbox/spdx-expression-subset/v0`.
+- Supported forms: one identifier, `AND`, and `OR`. Parentheses, `+`, `WITH`,
+  `LicenseRef`, `DocumentRef`, and line breaks fail closed.
+- Focused batch: 4 files / 16 tests. TypeScript 7, asset hygiene, node syntax,
+  and final `qa:smoke` pass in 432.2s with 0 page/console errors.
+- This profile is syntax-only; no full SPDX conformance, License List match,
+  legal approval, imported MUGEN credit, IKEMEN execution, parity, or score
+  movement is claimed.
+- Next: bind revision/freshness facts into shared evidence without widening
+  the license profile implicitly.
+
+## Historical numbered runtime report - 2026-07-16 Entry 555
 
 - `ProjTypeCollision` v1 is implemented and committed in `c068de80`.
 - Typed `AssertSpecial`, strict projectile `Clsn2`, `HitFlag = P` cancellation, and paired-player `Clsn2` direct/priority admission are covered.
 - Focal batch: 5 files / 110 tests. TypeScript 7, build, boundaries, and `qa:trace` 633/633 (599 required / 34 optional) pass.
 - Full `pnpm test`: 2257/2259; two unrelated pre-existing failures remain and are recorded in the closeout report.
 - Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. No score movement.
-- Next runtime frontier: Wayfinder 209, exact projectile trade/cancellation ordering and remaining `p2` collision parameters.
+- Wayfinder 209 subsequently closed the bounded trade-box and `p2clsn*` selector cut; `affectteam`, depth, exact cancel/hitpause, proxies, rollback/netplay, and parity remain open.
 - See `docs/reports/2026-07-16-projtypecollision-v1-closeout.md`.
 
-## Daily roadmap report - 2026-07-15 Entry 554
+## Historical daily roadmap report - 2026-07-15 post-Entry-554 frontier
+
+- Entry 554 remains the maximum numbered backlog entry; audited HEAD 05d85137
+  is a later unnumbered report frontier.
+- The latest committed report declares 633/633 traces, 599 required and 34
+  optional, through bounded root/helper auxiliary Target resource RedirectID.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+- The new architecture findings are broad helper-wrapper writeback, collapsed
+  helper telemetry identity, separately blocked helper TargetState ownership,
+  non-atomic Turns handoff, hardcoded RoundState 2, and time-dependent corpus
+  and PackageAnalysis checksums.
+- Next: control/pin reconciliation, corpus snapshot and independent legal
+  breadth, proposed ADR 0006, atomic Turns/round phases, then product trust
+  consumers.
+- See
+  docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical daily roadmap report - 2026-07-15 Entry 554
 
 - Entry 554 and 617/617 traces are the committed evidence frontier. Active CNS
   and imported State -1 TargetFacing now have required root RedirectID routes
@@ -1478,7 +1572,7 @@ Latest global report: Runtime/audio now isolates numbered Web Audio channels by 
 
 Latest global report: Runtime/port remains at 524/524 trace artifacts, 493 required and 31 optional. The newest R1 slice upgrades five first-generation helper-local direct HitDef/persistence routes to resolve `S5,0/1/2/3` or `S6,4` and record owner-attributed typed `audio:playsnd`, including a fail-closed no-audio proof on HitBy rejection. TypeScript remains 7.0.2. Studio/UI, IKEMEN scanner, modular-engine boundaries, and published completion scores do not move in this runtime-only cut; no visual smoke is required because no renderer or UI surface changed.
 
-## Lane Checkpoints
+## Historical Lane Checkpoints
 
 Use this table to avoid mixing unrelated "latest" facts:
 
@@ -2105,7 +2199,7 @@ Previous runtime/port addendum: `synthetic-imported-default-fall-official-air-re
 | Horizon | Score | Meaning |
 | --- | ---: | --- |
 | Playable private sandbox | 65 / 100 | Local match is playable with generated/native fighters, imported KFM route, stages, debug panels, and Studio workflow. |
-| Practical MUGEN compatibility by layers | 35 / 100 | DEF/AIR/CMD/CNS/SFF/SND pieces exist, many controllers/triggers have bounded gates, but broad character compatibility remains partial. |
+| Practical MUGEN compatibility by layers | 36 / 100 | The written practical-MVP threshold is met at its first point; DEF/AIR/CMD/CNS/SFF/SND pieces and bounded routes exist, while broad character compatibility remains partial. |
 | MUGEN 1.0/1.1 MVP port | 20 / 100 | Infrastructure is in place for KFM/Common1-style authored routes, but exact VM/combat/helper/screenpack parity is still open. |
 | Full MUGEN/Ikemen-GO port | 10-12 / 100 | Foundation exists. Full VM parity, helpers, redirects, teams, lifebars/screenpacks, Lua/ZSS, exact tick order, rollback/netplay, and broad fixture matrix remain future work. |
 

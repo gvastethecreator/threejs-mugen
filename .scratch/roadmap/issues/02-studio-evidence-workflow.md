@@ -7,6 +7,59 @@ Labels: studio, visual-qa, docs, ready-for-agent
 
 Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
 
+## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
+
+EvidenceEnvelope/Studio integration, SourceWriteReceipt compensation,
+ProjectReleaseDecision and deterministic semantic export are closed bounded;
+do not recreate them. Next prove a changed-source stale envelope in the
+browser, persist PackageAnalysis reanalysis and semantic diff, produce one
+releaseable saved-project decision, then add crash/multi-file source recovery.
+Diagnostic export remains separate from release and every stale/missing/wrong-
+revision fact must fail closed. See
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-229 Daily Audit Override
+
+GateEvidence/v0, SourceWriteReceipt/v0, promoted snapshot/reopen QA, and
+productive multi-kind PackageAnalysis export are closed. Do not recreate their
+first consumers. Next bind gate facts to subject, producer, project, target,
+and artifact revisions; aggregate diagnostic versus release decisions; add
+write compensation and deterministic semantic export; then persist
+PackageAnalysis reanalysis/diff. Dirty AssetReleasePolicy work is reserved and
+not evidence. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-209 Daily Audit Override
+
+No Studio/product source changed after the prior audit. Symbolic playtest and
+boundary greens remain. Implement GateEvidenceResult/v0 plus real CLI-produced
+records; Build and Evidence must consume the same freshness result. Separate
+diagnostic export from release, then add SourceWriteReceipt/v0 with preimage
+and compensating restore. Missing/stale/tampered evidence blocks release. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical 2026-07-15 Post-Entry-554 Daily Audit Override
+
+The post-554 runtime chain does not close a Studio trust gate. StudioModel
+still has symbolic/hardcoded ok gates, so GateEvidenceResult/v0 remains first:
+each green needs command, tool/ruleset version, timestamp, digest, target, and
+freshness, while missing/stale evidence blocks export. Then add
+SourceWriteReceipt/v0 with before/after identities and a compensating restore
+for post-close failure. PackageAnalysis and asset-release consumers follow.
+Scores do not move. See
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical 2026-07-15 Daily Audit Override
+
+StudioSemanticDraft/v0 and its bounded existing-file folder write/reimport route
+are closed. The next trust gate is GateEvidenceResult/v0: every green must name
+the command, tool/ruleset version, timestamp, digest, and freshness; missing or
+stale evidence must not be exportable. Follow with SourceWriteReceipt/v0 and an
+explicit compensating restore after post-close failure. ZIP write, create/delete,
+watch/merge, multi-file transactions, structured-editor breadth, multi-project
+storage, and product export remain blocked. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
 ## 2026-07-14 Daily Audit Override
 
 Entries 484-505 close local edit history, dirty navigation, autosave, versioned project index, storage conflict, source transactions/read models, provenance v0/v1, persistent ZIP handles, folder recovery, and bounded existing-file folder editing. The old source-identity/write selector is historical.

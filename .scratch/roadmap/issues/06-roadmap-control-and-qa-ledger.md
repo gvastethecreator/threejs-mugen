@@ -7,7 +7,72 @@ Labels: docs, roadmap, ready-for-agent
 
 Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized so future work does not drift into partial claims or stale task lists.
 
+## Current Post-T268 Reconciliation
+
+Runtime closeout HEAD is `b241cc65`; concurrent roadmap edits retain open
+Wayfinder 257, excluded from claims. Entry 555 and Wayfinder 256 are historical
+control cursors. T266-T268 provide current grouped gates of 633/633 traces and
+231/231 files / 2435/2435 tests. Scores remain unchanged. Current docs must not
+replan Wayfinders 230-256 or project their old evidence to later
+HEADs. `CONTEXT.md` and the root milestone focus remain stale outside this
+automation's write surface. The current 30-task contract is
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical Post-Wayfinder-229 Reconciliation
+
+The control tuple is audited HEAD `83f85bae`, maximum numbered Entry 555, and
+latest lane closeout Wayfinder 229. The latest declared trace aggregate is
+633/633; Wayfinder 221 owns the latest declared full suite at 2294/2294, which
+must not be projected onto later HEADs. Scores remain unchanged. Current docs
+must not replan gates closed in Wayfinders 210-229 or count dirty source.
+`CONTEXT.md` and the root milestone focus remain stale outside this
+automation's write surface. The 30-task contract is
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical Post-Wayfinder-209 Reconciliation
+
+Entry 555 is the maximum numbered ledger entry and Wayfinder 209 is a later
+unnumbered closeout at HEAD `90ab79b7`. Current documents must not call 209
+next or Entry 554 maximum. The latest report declares 633/633 traces and
+2262/2263 full-suite tests; scores remain unchanged. `CONTEXT.md` remains a
+stale root-file cursor outside this automation's permitted write surface. The
+current 30-task contract is
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical Post-Entry-554 Reconciliation
+
+Entry 554 is the maximum numbered ledger entry and declares 617/617 traces.
+Thirty later commits lead to audited HEAD 05d85137 and a latest report frontier
+of 633/633, 599 required and 34 optional. Do not synthesize Entries 555 onward.
+Update active owner docs to name this split cursor, and add a durable rule for
+numbered versus unnumbered closeouts. Scores remain unchanged. CONTEXT.md
+remains a stale root-file cursor outside this automation's allowed write
+surface. Full contracts:
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical Current Entry-549 Reconciliation
+
+Entry 549 is the committed cursor and declares 610/610 traces. The dirty
+State -1 TargetPowerAdd follow-up is reserved work, not evidence. Entries
+539-542 close the old StudioSemanticDraft, PackageAnalysis/v0, and
+AssetProvenance/v2 selectors. This reconciliation changes no score and leaves
+`CONTEXT.md` recorded as a stale root-file cursor outside the automation's
+allowed write surface. Current task contracts live in
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
+## Historical Entry-525 Reconciliation
+
+The committed implementation cursor is Entry 525. `CompatibilityCorpus/v0`
+provides the legal/portable/optional denominator over existing journey
+references and has no score effect. Evidence is 210 test files / 2125 tests,
+TypeScript 7 build, boundaries, CSS budget, and 600/600 traces. The next
+control gate is written score-band adjudication followed by one independent
+legal stage/package route. The detailed report is
+`docs/reports/2026-07-14-compatibility-corpus-v0.md`.
+
 ## Next Useful Cuts
+
+- Current entry-516 reconciliation: numbered backlog maximum 516 declares 598/598 traces, 564 required and 34 optional, with scores unchanged. The old 505/510 selectors are superseded. Preserve uncommitted match-outcome/state-5900 work as in-flight, not evidence, and avoid allocating entry 517 from a docs-only audit while that owner is active. `CONTEXT.md` remains a known stale root-file cursor outside this automation's permitted edit surface. The current plan is recorded in `docs/research/2026-07-14-daily-roadmap-architecture-audit-entry-516.md`.
 
 - Current 2026-07-14 daily audit: numbered backlog maximum 505 supersedes entry 476 and Wayfinder 127. The entry-505 report declares 587/587 traces. The prior journey/milestone/independent-package/global-flag/team-round/lifebar/resource/Helper-resource queue is closed. Scores remain unchanged; the next control gate is a versioned compatibility corpus followed by explicit score-band adjudication. `CONTEXT.md` and the root milestone rule remain stale but are outside this automation's allowed edit surface.
 

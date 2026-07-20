@@ -7,6 +7,39 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
+
+Wayfinders 230-256 close redirected ownership, helper/global state scheduling,
+Common CNS/config sources, helper command buffers, and bounded SOCD; T266-T268
+now close source metadata, per-seat temporal SOCD, and authority diagnostics at
+bounded scope. The next runtime gates are normative/local source reconciliation
+and semantic review, match config ownership, Common.Fx browser proof,
+state-5900 provenance, RuntimeRoundPhase, atomic Turns, and a global
+three-plus projectile schedule. A second character-centered CC0 journey is the
+next score discriminator. Scores remain unchanged. Full contracts:
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-229 Daily Audit Override
+
+AffectTeam/TeamSide and projectile Z/depth, `projdepthbound`, ModifyProjectile,
+helper spawn, and helper-parented depth admission are closed through Wayfinder
+215; do not schedule them again. Next runtime order is redirected lease v1.1
+and ADR 0006, helper-destination TargetState research, atomic Turns, state-5900
+provenance and RuntimeRoundPhase, then one global projectile order before proxy
+or multi-root breadth. A second character-centered CC0 journey is the next
+corpus discriminator. Scores remain unchanged. Full contracts:
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-209 Daily Audit Override
+
+Wayfinder 209 is closed after Entry 555; do not schedule it again. First
+restore the 2262/2263 scheduling baseline and source authority. Then harden
+snapshot freshness plus a second repository-authored CC0 route. Runtime order:
+lease v1.1 before ADR 0006 acceptance; helper TargetState ADR; atomic Turns;
+State 5900 provenance and RuntimeRoundPhase; projectile `affectteam`, depth,
+then exact global cancel/hitpause order. Scores stay unchanged. Full contracts:
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
 ## 2026-07-16 Entry-555 runtime lane note
 
 Entry 555 closes bounded IKEMEN `ProjTypeCollision`: typed
@@ -14,11 +47,60 @@ Entry 555 closes bounded IKEMEN `ProjTypeCollision`: typed
 cancellation, and paired-player `Clsn2` direct/priority admission. Focal
 110/110, TypeScript 7, build, boundaries, and 633/633 trace artifacts pass;
 scores remain unchanged. Full-suite residual failures are unrelated and named
-in `docs/reports/2026-07-16-projtypecollision-v1-closeout.md`. Next: Wayfinder
-209 for exact projectile trade/cancellation ordering and remaining `p2`
-collision parameters. Full parity remains blocked.
+in `docs/reports/2026-07-16-projtypecollision-v1-closeout.md`. Wayfinder 209
+subsequently closed bounded trade-box and `p2clsn*` selectors. `affectteam`,
+depth, exact global order, proxies, rollback/netplay, and parity remain blocked.
 
-## 2026-07-14 Daily Audit Override
+## Historical 2026-07-15 Post-Entry-554 Daily Audit Override
+
+Entry 554 remains the maximum numbered backlog entry. Audited HEAD 05d85137 is
+the later 633/633 report frontier after bounded root/helper RedirectID
+expansion through auxiliary Target resources. Do not rebuild the closed
+TargetDrop, TargetBind, TargetState, BindToTarget, helper-to-root,
+helper-to-helper, or auxiliary-resource routes, and do not infer score
+movement.
+
+Next runtime/evidence order: materialize CompatibilityCorpusSnapshot/v1 and add
+independent legal breadth; characterize all four redirected-target paths;
+decide proposed ADR 0006; add explicit selection, mutation, and telemetry
+identity; migrate root/helper adapters; decide helper-destination TargetState
+and ordering separately; then make Turns atomic and model State 5900/RoundState.
+See
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical 2026-07-15 Entry-549 Daily Audit Override
+
+Entry 549 closes root-only active-CNS TargetPowerAdd RedirectID at 610/610
+traces. Preserve the dirty State -1 follow-up and let its owner close it before
+refactoring. Then materialize CompatibilityCorpusSnapshot/v1, extract one
+redirected-target dispatch owner shared by active/State -1, and add active
+TargetLifeAdd as the next controller consumer. In parallel, make Turns
+preflight/commit atomic and resolve RoundState/state-5900 policy. Helpers,
+projectiles, neutral identity, teams, target-family breadth, motif, rollback,
+netplay, and score movement remain blocked. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
+## 2026-07-14 Entry-525 Closeout
+
+`CompatibilityCorpus/v0` is implemented over `CompatibilityJourney/v1`. The
+aggregate separates `required-legal`, `portable-legal`, and `optional-private`
+routes, records exact route and unsupported-feature density, and never copies
+binary payloads. Focused 3/3 tests and the broad 210-file / 2125-test, TypeScript
+7 build, boundaries, CSS, and 600/600 trace gates pass. Scores remain
+unchanged.
+
+Next adjudicate the written score band from this corpus version, then add one
+repository-authored or independently legal stage/package route. Keep stage
+camera/localcoord, ordered BG/layers, bounded BGCtrl, and `resetBG` separate
+from zoom and screenpack parity.
+
+## 2026-07-14 Entry-516 Daily Audit Override
+
+Entry 516 supersedes the entry-505 selector and declares 598/598 traces without score movement. Entries 506-516 close the intervening guard/dizzy/red-life/LifeShare/lifecycle/HUD/round-reset gates; do not rebuild them.
+
+Next create `CompatibilityCorpus/v0` with stable package identity, legal/portable/optional route classes, exact route coverage, and unsupported/failure density. Adjudicate the written score band from that envelope, then add one repository-authored or otherwise independently legal stage/package route. A useful first stage cut owns camera/localcoord, ordered normal/animated BG, layer 0/1, bounded BGCtrl timing, and `resetBG`; defer zoom and screenpack parity. Claim only the measured corpus and stage envelope.
+
+## Previous 2026-07-14 Daily Audit Override
 
 Entry 505 is current truth and the entry-505 report declares 587/587 traces. Entries 477-483 close the previously selected landing, journey-v1, bounded M2 decision, ACT/palette, and independent legal character package/routes. Do not rebuild those gates.
 

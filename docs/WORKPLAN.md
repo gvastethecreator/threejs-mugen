@@ -1,4 +1,5 @@
 # Workplan
+
 ## Active implementation frontier - T288 / Entry 562 (2026-07-18)
 
 T288 is implemented in `a12a2672`. The imported FightScreen shutter signal now
@@ -12,8 +13,6 @@ Keep exact `clearPlayerAssets`, global effects, announcements, display
 suppression, dialogue, Common1/ZSS, screenpack transforms, teams/Turns,
 rollback/netplay, and full parity outside this bounded slice. The next
 implementation is the source-backed announcement/display ownership boundary.
-
-## Current runtime checkpoint - 2026-07-16 Entry 555
 
 ## Previous implementation frontier - T287 / Entry 561 (2026-07-18)
 
@@ -43,31 +42,70 @@ The next implementation may start only after selecting announcement/shutter/
 skip ownership or independent character breadth. Keep exact character intro
 control/reset, dialogue, Common1/ZSS, screenpack transforms, teams/Turns,
 rollback/netplay, and full parity outside this bounded timing slice.
-## Active implementation frontier - T285 / Entry 559 (2026-07-18)
 
-T285 is implemented and verified in `c688f04d`. The imported FightScreen
-fade-in time/color/animation/sound bridge is now source-backed through loader,
-reset-owned runtime state, renderer, and global audio, with fail-closed
-fallback diagnostics. The checkpoint passes 233/233 test files, 2479/2479
-tests, TypeScript 7, build, 633/633 traces, boundaries, CSS budget, and
-64-path browser smoke.
+## Current daily architecture plan - post-T268 (2026-07-18)
 
-The next implementation may start only after selecting an independent
-source-backed round/intro or character-breadth gate. Keep exact
-intro/shutter/frame-start order, timer/input gating, screenpack transforms,
-motif/dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay, and full
-parity outside the bounded fade bridge.
+Preserve runtime closeout HEAD `b241cc65` alongside concurrent roadmap work /
+Entry 555 historical cursor, and execute
+T01-T30 from
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+T269 starts with normative/local source reconciliation and semantic review;
+stateful SOCD is closed at reconstructed Set scope, while match-level config
+ownership and Common.Fx browser proof remain open. Then proceed through Common
+provenance,
+state-5900/round/Turns, global projectile order, independent character
+breadth, Studio reanalysis/release/durability, a second asset record, and
+non-vacuous evidence-core extraction. No score moves from this plan.
+
+## Historical daily architecture plan - post-Wayfinder 229 (2026-07-16)
+
+Preserve the tuple HEAD `83f85bae` / Entry 555 / Wayfinder 229 and execute
+T01-T30 from
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+First reconcile evidence revisions and snapshot claims, then audit the reserved
+AssetReleasePolicy closeout. Runtime ownership proceeds through redirected
+lease v1.1/ADR, atomic Turns, state-5900 provenance and round phases, then one
+global projectile order. Breadth, scanner reanalysis, shared evidence facts,
+and non-vacuous modular boundaries follow. Older execution-authority and
+checkpoint tables are historical when they conflict with this plan.
+
+## Historical daily architecture plan - post-Wayfinder 209 (2026-07-16)
+
+Preserve Entry 555 and the closed unnumbered Wayfinder 209 checkpoint. No score
+moves. Execute T01-T30 from
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`
+in dependency order. First gates are cursor/full-suite/source-pin authority,
+then snapshot freshness and a second repository-authored CC0 route. Runtime
+ownership proceeds through lease v1.1, atomic Turns, and profile-owned round
+semantics. Product work remains a separate evidence/release/scanner/asset
+chain; shared extraction waits for productive consumers.
+
+## Historical numbered runtime checkpoint - 2026-07-16 Entry 555
 
 Entry 555 closes bounded `ProjTypeCollision` runtime semantics: typed
 `AssertSpecial` capability, strict projectile `Clsn2`, `HitFlag = P`
 cancellation, and paired-player `Clsn2` direct/priority admission. Focal
 coverage is 110/110; TypeScript 7, build, boundaries, and 633/633 trace
 artifacts pass. Scores remain unchanged. The full suite still has two unrelated
-pre-existing failures recorded in the closeout report. Next: Wayfinder 209,
-source-backed projectile trade/cancellation ordering and remaining `p2`
-collision parameters.
+pre-existing failures recorded in the closeout report. Wayfinder 209 then
+closed the bounded trade-box and `p2clsn*` selector cut; do not schedule it
+again.
 
-## Daily architecture plan - 2026-07-15 Entry 554
+## Historical daily architecture plan - 2026-07-15 post-Entry-554 frontier
+
+Entry 554 remains the maximum numbered backlog entry; audited HEAD 05d85137 is
+the later 633/633 report frontier. Preserve the completed root/helper
+RedirectID chain and do not retroactively allocate entries. No score moves.
+
+Execute the 30 tasks in the dependency order recorded in
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+The first implementation-bearing gates are corpus materialization after
+control/pin reconciliation, redirected-target characterization before proposed
+ADR 0006 migration, and RuntimeTurnsTransitionPlan/v1 before any additional
+round claim. Product gates stay separate. Helper-destination TargetState
+remains blocked until its ownership ADR is accepted.
+
+## Historical daily architecture plan - 2026-07-15 Entry 554
 
 Entry 554 closes the bounded root-only TargetFacing RedirectID route for
 active CNS and imported State -1 setup. Next, research and select one
@@ -1407,7 +1445,7 @@ Rules added by the review:
 - Shared-core extraction starts with stable Studio/Build/Evidence contracts and later generic snapshot/render/audio/debug interfaces. Do not promote `src/game`, `MugenSnapshot`, or fighting renderer/audio types to shared core until import-boundary checks pass.
 - The first platformer is a contract proof only: level/tile model, player, simple platform collision, camera, collectible, hazard, one enemy, snapshot, Studio playtest route, and QA smoke. It remains blocked until fighting smoke/trace still pass.
 
-## Current Execution Authority
+## Historical Execution Authority
 
 This table is the tie-breaker when older roadmap docs repeat similar queues. Build from top to bottom unless a newer round explicitly documents why it is taking a parallel evidence-only slice. A row is not "done" because code exists; it is done when the acceptance artifact, closeout, allowed claim, and blocked claim language all line up.
 
@@ -1490,7 +1528,7 @@ These are the current mandatory cuts before the plan expands into larger Studio 
 | 4 | Studio actionable status contract | First cut done: generated/imported asset records, gates, evidence records, Build readiness, selected asset UI, `project.json`, and QA bridge now carry/display severity, impact, evidence ids, blockers, exportability, and next action. Source-package relink now has a first explicit Build Center affordance. | Next cut should persist those records across sessions, compare evidence, add persistent source handles, and turn regenerate actions into explicit affordances. |
 | 5 | Evidence persistence and comparison | Second persistence/comparison/review/scrubber cut done: exported trace artifacts are stored in browser-local evidence history with project id, entry, source packages, checksum, stale/current status, QA bridge exposure, current-vs-persisted checksum/frame/event/gate deltas, a visible Trace Comparison Review, and a Trace Frame Scrubber with per-frame actor/effect/input/event deltas plus World Delta rows. | Next cut should add replay-style multi-frame diff views across multiple artifacts, persist more record kinds, and add regenerate plus persistent-source actions from stale/missing-source states. |
 
-## Current Active Cuts
+## Historical Active Cuts
 
 1. **Stabilize custom get-hit evidence**
    - Owner: Runtime / QA.
@@ -1716,7 +1754,7 @@ Blocked until gates pass:
 | SF3 Ryu demo | Parser/report stress. | Parse/report without crash; runtime playability not required yet. |
 | Imported stage | Presentation gate. | Stage report plus visual rendered/fallback/unsupported layer evidence. |
 
-## Current Checkpoint
+## Historical Checkpoint
 
 Static IKEMEN TagIn `leader` now resolves one-based stable PlayerNo only in explicit Tag mode, validates the same-side root before any Tag mutation, and rotates live mutable order after caller state/member/control while preserving stable slots and non-order consumers. Wayfinder 066 next maps dynamic Tag parameter evaluation from pinned source before widening compilation.
 

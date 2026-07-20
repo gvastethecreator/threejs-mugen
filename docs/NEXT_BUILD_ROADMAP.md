@@ -1,7 +1,5 @@
 ﻿# Next Build Roadmap
 
-## Current runtime queue - 2026-07-16 Entry 555
-
 ## Current implementation frontier - T287 / Entry 561 (2026-07-18)
 
 T287 closes a bounded imported FightScreen intro shutter/skip path in
@@ -35,7 +33,7 @@ independent character-breadth route. Do not claim exact character intro
 control/reset, `RoundNoSkip`, dialogue, Common1/ZSS, screenpack transforms,
 teams/Turns, rollback/netplay, or full parity from T286.
 
-## Current implementation frontier - T285 / Entry 559 (2026-07-18)
+## Previous implementation frontier - T285 / Entry 559 (2026-07-18)
 
 T285 is closed at a bounded FightScreen round-start boundary. Imported
 `fadein.time`/`fadein.col`/`fadein.anim`/`fadein.snd` now resolve through
@@ -50,13 +48,116 @@ Exact intro/shutter ordering, timer/input gating, screenpack localcoord
 transforms, motif/dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay,
 and full parity remain blocked.
 
-Entry 555 is closed and evidence-backed at bounded `ProjTypeCollision` scope.
-Next runtime cut: Wayfinder 209, characterize exact projectile trade and
-cancellation ordering plus remaining `p2` collision parameters. Preserve the
-current claim ceiling: no score movement, rollback/netplay, or full parity.
-Product, Studio, asset, scanner, and modular lanes remain separate.
+## Current cross-lane queue - post-Wayfinder 256
 
-## 2026-07-14 implementation override - entry 510 and the next evidence envelope
+Do not reopen Wayfinders 230-256. Execute the new 30-task chain in dependency
+order: (1) reconcile control/source/evidence authority and Common.Fx browser
+proof; (2) replace SOCD modes 1/3's single-Set ordering with persistent
+per-seat state and explicit match config authority; (3) publish Common source
+provenance and scanner-only unsupported policies; (4) add state-5900
+provenance, round phases and an atomic Turns transaction; (5) centralize
+three-plus projectile order; (6) prove a second character-centered CC0 route;
+(7) close changed-source reanalysis, release and source-durability gates; and
+(8) extract generic evidence facts only behind non-vacuous boundaries. See
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical cross-lane queue - post-Wayfinder 229
+
+Do not reopen AffectTeam, projectile depth, snapshot v1.1, the second legal
+stage route, GateEvidence v0, SourceWriteReceipt v0, PackageAnalysis v1 or its
+multi-kind consumer, or asset path/permission hygiene. In dependency order:
+(1) bind evidence to subject/producer/artifact revisions and reconcile snapshot
+claims; (2) audit the reserved AssetReleasePolicy closeout; (3) complete
+redirect lease v1.1 and ADR 0006; (4) plan and commit Turns atomically, then
+state-5900 provenance and round phases; (5) define global projectile order;
+(6) add character-centered breadth and presentation proof; (7) add scanner
+reanalysis and only then extract shared evidence facts behind non-vacuous
+boundaries. The 30 contracts are in
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical numbered runtime queue - 2026-07-16 Entry 555
+
+Entry 555 is closed and evidence-backed at bounded `ProjTypeCollision` scope.
+Wayfinder 209 then closed bounded projectile trade-box and `p2clsn*` selector
+behavior. Do not plan it again. Preserve the current claim ceiling: no score
+movement, exact cancel/hitpause order, proxy, rollback/netplay, or full parity.
+
+## Historical cross-lane queue - post-Wayfinder 209
+
+Execute in dependency order: (1) reconcile the cursor and residual full-suite
+contract; (2) keep `05b7d98...` normative and classify local `044da...` as a
+non-normative cache; (3) harden CompatibilityCorpusSnapshot v1.1; (4) prove a
+second repository-authored CC0 route; (5) separately adjudicate score; (6)
+complete redirected lease v1.1 before accepting ADR 0006; (7) make Turns
+atomic; (8) add State 5900 provenance and RuntimeRoundPhase; (9) split
+projectile affectteam, depth, and exact ordering; (10) replace Studio symbolic
+greens, then connect scanner/assets and shared Evidence. The 30 executable
+contracts are in
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical 2026-07-15 planning override - post-Entry-554 frontier
+
+Preserve Entry 554 as the maximum numbered backlog entry. Audited HEAD
+05d85137 and the latest report establish an unnumbered 633/633 frontier after
+bounded root/helper RedirectID expansion. Do not recreate already closed
+TargetDrop, TargetBind, TargetState, BindToTarget, helper-to-root,
+helper-to-helper, or auxiliary Target resource gates. Do not move scores.
+
+Next dependency order: (1) reconcile the control cursor and checkpoint policy;
+(2) reconcile the Ikemen source pin; (3) materialize corpus snapshot v1; (4)
+prove deterministic freshness; (5) add independent legal package/stage
+breadth; (6) adjudicate only against the written score band; (7) characterize
+all redirected-target paths and decide proposed ADR 0006; (8) add explicit
+selection, mutation, and telemetry identity; (9) migrate root/helper adapters;
+(10) decide helper TargetState and ordering separately; (11) make Turns
+transactional; (12) decide State 5900 and RoundState phases; (13) replace
+symbolic Studio greens; (14) add write receipts; (15) surface PackageAnalysis
+and one releasable asset record; (16) only then promote shared Evidence.
+
+The 30 small tasks, dependencies, acceptance evidence, risks, and claim
+ceilings are in
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+Older Current Checkpoint and Next 10 Build Slices sections below are historical.
+
+## Historical 2026-07-15 planning override - Entry 549
+
+Entry 549 is the committed evidence cursor. Preserve the concurrent State -1
+TargetPowerAdd RedirectID diff and let its owner close it independently; do not
+count it or allocate its entry from this docs pass. Entries 517-549 supersede
+the old Turns, corpus, stage, StudioSemanticDraft, PackageAnalysis, provenance,
+and root-identity selectors. Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25.
+
+Next ten by dependency: (1) close the reserved State -1 cut; (2) materialize
+CompatibilityCorpusSnapshot/v1; (3) extract RuntimeRedirectedTargetDispatch/v0;
+(4) add active TargetLifeAdd RedirectID; (5) add
+RuntimeTurnsTransitionPlan/v1; (6) decide state-5900 policy and model
+RuntimeRoundPhase/v0/RoundState; (7) replace hardcoded Trust Chain greens with
+GateEvidenceResult/v0; (8) create PackageAnalysis/v1 and a production consumer;
+(9) prove AssetReleasePolicy/v0 on one complete first-party/generated record;
+(10) add SourceWriteReceipt/v0, then promote EvidenceContract/v0 as the first
+shared module with two real consumers. Full contracts are in
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
+## 2026-07-14 implementation checkpoint - Entry 525
+
+`CompatibilityCorpus/v0` is now implemented and broadly verified. It indexes
+journey evidence by legal/portable/optional class, preserves exact route and
+unsupported-feature density, and fails closed on missing required evidence or
+tampered normalized payloads. Scores remain unchanged.
+
+Next dependency order: (1) adjudicate the written score band against this
+corpus version; (2) add one repository-authored or independently legal
+stage/package route; (3) connect automatic Turns decision -> handoff -> reset
+-> state 5900 -> continuation; (4) `StudioSemanticDraft/v0`; (5)
+`AssetProvenance/v2`; (6) scanner-only `PackageAnalysis/v0`.
+
+## 2026-07-14 planning override - entry 516 and remaining evidence order
+
+Backlog entry 518 is the current closeout and declares 600/600 traces without score movement. Gates 511-518 closed the dizzy-default/scaling/break, red-life, match-outcome/state-5900, and sequential round-context sequence; do not rebuild them.
+
+Build next by dependency: (1) `CompatibilityCorpus/v0`; (2) explicit score-band adjudication; (3) one repository-authored or otherwise independently legal stage/package route; (4) automate Turns decision -> handoff -> state-5900 -> continuation over the verified round context; (5) `StudioSemanticDraft/v0`; (6) `AssetProvenance/v2`; (7) scanner-only `PackageAnalysis/v0`; and (8) promote one shared Project/Evidence/Build contract only after two real consumers exist. Scores move only at task 2 when the written corpus criteria justify it. See `docs/research/2026-07-14-round-context-sequence.md`.
+
+## Previous 2026-07-14 implementation override - entry 510
 
 Backlog entry 510 is the active cursor. The previously selected air-guard, journey-v1, M2 adjudication, palette/independent-package, global flag, team-round/handoff/lifebar/resource-bank, Helper-local-resource, red-life, guard-point, auxiliary-projection, and explicit dizzy-point sequence is closed or bounded. Defender-owned direct HitDef suppression is now closed without score movement.
 
@@ -131,7 +232,7 @@ This is the tactical roadmap for the next autonomous build rounds. It sits below
 
 Docs-only changes here do not move scores.
 
-## Current Checkpoint
+## Historical Current Checkpoint
 
 ```txt
 Entry 476 - current numbered committed frontier
@@ -3228,7 +3329,7 @@ Do not reselect `RuntimeActiveControllerHookSetWorld` ownership as fresh next wo
 
 Do not reselect `RuntimeEffectActorAdvanceWorld` ownership as fresh next work; the effect-actor active/presentation advance order boundary is now closed and focused-tested.
 
-## Next 10 Build Slices
+## Historical Next 10 Build Slices
 
 | Order | Lane | Slice | Evidence | Score impact |
 | ---: | --- | --- | --- | --- |

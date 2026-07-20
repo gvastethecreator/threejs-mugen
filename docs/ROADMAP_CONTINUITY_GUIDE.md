@@ -1,4 +1,9 @@
 # Roadmap Continuity Guide
+
+Last updated: 2026-07-18
+
+This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
+
 ## 2026-07-18 T288 continuation checkpoint
 
 Resume from implementation HEAD `a12a2672`, Entry 562, and Wayfinder T288.
@@ -8,11 +13,89 @@ with source-backed FightScreen announcement/display ownership, preserve the
 T288 claim ceiling, and keep the pre-existing dirty roadmap/research files
 untouched unless they are explicitly part of the next closeout.
 
-Last updated: 2026-07-14
+## 2026-07-18 Post-T268 Daily Audit Override
 
-This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
+Resume from runtime HEAD `b241cc65`, with Entry 555 and Wayfinder 256 retained
+as historical roadmap cursors. The grouped current checkpoint is 633/633 traces
+and 231/231 files / 2435/2435 tests. Do not replan closed
+release/evidence/redirect/global state/common loader/helper buffer/SOCD slices;
+T266-T268 are closed at their written ceilings.
 
-## 2026-07-14 Daily Audit Override
+First reconcile normative `05b7d98` with local `044da720` and classify semantic
+deltas, settle match-config authority, rebuild current evidence, and obtain
+Common.Fx browser proof. Then follow T15-T30 for round/Turns/projectile
+determinism, legal character breadth, product trust and modular extraction.
+Full task contracts:
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-229 Daily Audit Override
+
+Resume from HEAD `83f85bae`, Entry 555, and Wayfinder 229. Treat 633/633 as the
+latest declared trace aggregate and Wayfinder 221's 2294/2294 as the latest
+declared full suite, not a current-HEAD rerun. Preserve concurrent dirty
+AssetReleasePolicy work as reserved and do not count it. The next work is the
+30-task dependency chain in
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`;
+older selectors are historical. Never replan AffectTeam/depth, snapshot v1.1,
+the second CC0 stage route, GateEvidence/receipt v0, PackageAnalysis v1 and its
+consumer, or asset hygiene.
+
+## Historical 2026-07-16 Post-Wayfinder-209 Daily Audit Override
+
+Entry 555 is the maximum numbered ledger entry; Wayfinder 209 is a later
+unnumbered checkpoint. Do not rebuild it. Resume with: control and 2262/2263
+baseline reconciliation; immutable IKEMEN pin; snapshot v1.1; a second
+repository-authored CC0 route; lease v1.1 before ADR 0006 acceptance; atomic
+Turns plus State 5900/RoundState; then separated projectile and product trust
+gates. Scores stay unchanged. The exact 30 tasks are in
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical 2026-07-15 Post-Entry-554 Daily Audit Override
+
+Entry 554 is the maximum numbered ledger entry. Audited HEAD 05d85137 is an
+unnumbered report frontier at 633/633 traces after bounded root/helper
+RedirectID expansion. Do not rebuild those closeouts, invent Entries 555
+onward, or infer score movement.
+
+Resume in this order: reconcile control and the Ikemen pin; materialize corpus
+snapshot v1 and independent legal breadth; characterize and centralize
+redirected-target dispatch with explicit mutation/telemetry identity; decide
+helper TargetState separately; make Turns preflight/commit atomic; resolve
+State 5900 and RoundState; then add real Studio, scanner, asset, and shared
+Evidence consumers. The exact 30 tasks are in
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+Older current/next sections below are historical when they conflict.
+
+## Historical 2026-07-15 Entry-549 Daily Audit Override
+
+Entry 549 and 610/610 traces are the committed frontier. Do not rebuild the
+closed Turns continuation, corpus/adjudication, legal stage journey, BGCtrl,
+StudioSemanticDraft, PackageAnalysis/v0, AssetProvenance/v2, root identity, or
+active TargetPowerAdd RedirectID gates. Preserve the dirty State -1 follow-up
+as in-flight work.
+
+Continue with a materialized corpus snapshot, then a target-family dispatch
+seam and active TargetLifeAdd. Before expanding team modes, make Turns
+preflight/commit atomic and model RoundState after resolving state-5900 policy.
+In product lanes, replace hardcoded readiness with evidence artifacts, surface
+PackageAnalysis in a real consumer, prove one complete asset release record,
+and promote only the resulting Evidence contract into shared core. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
+## 2026-07-14 Entry-516 Daily Audit Override
+
+Entry 525 closes the first `CompatibilityCorpus/v0` denominator. Required
+legal, portable legal, and optional private evidence are distinct, binary
+payloads stay outside the index, and normalized/checksum drift fails closed.
+Scores remain unchanged. Continue with written score-band adjudication, then
+one independent legal stage/package route. The I2 route remains automatic Turns
+decision -> handoff -> resource reset -> state-5900 -> continuation.
+
+Entry 518 supersedes the entry-516 selector. Do not rebuild omitted dizzy defaults/scaling/break, red-life `LifeShare`, lifecycle rebind, HUD meters, match outcome/state 5900, or sequential round context.
+
+Continue the product lane with `CompatibilityCorpus/v0`, written score adjudication, and one independent legal stage/package route. In the I2 runtime lane, connect automatic Turns decision -> handoff -> resource reset -> state-5900 -> continuation over the verified 1 -> 2 -> 3 context. In parallel, Studio preflights semantics before writing; provenance v2 stays fail-closed; scanner analysis precedes shared-core promotion. See `docs/research/2026-07-14-round-context-sequence.md`.
+
+## Previous 2026-07-14 Daily Audit Override
 
 Entry 510 supersedes the entry-505 implementation cursor. Do not rebuild journey-v1, M2 adjudication, the independent character routes, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, auxiliary projection, dizzy mutation, or bounded folder editing.
 
@@ -64,7 +147,7 @@ The project is not currently trying to claim full MUGEN or IKEMEN parity. It is 
 | 6 | I2 IKEMEN bounded runtime | Explicit-profile semantics advance through source-pinned, isolated gates. | Focused runtime tests, required traces, blocked consumer claims. |
 | 7 | M1 Modular engine | Shared contracts prove no fighting-specific leakage. | `pnpm check:boundaries`, contract tests, docs. |
 
-## Next Useful Runtime Gates
+## Historical Next Useful Runtime Gates
 
 Current R1 truth: bounded post-KO / `NoKOSlow` and one legal end-to-end MUGEN-format fixture journey are closed. After Wayfinder 127 closes independently, aggregate the existing route as `CompatibilityJourney/v1`, adjudicate the written MUGEN-lite milestone without documentary score inflation, then add one materially independent legal package or ACT/palette route.
 

@@ -7,6 +7,60 @@ Labels: ikemen-scan, docs, ready-for-agent
 
 Use Ikemen-GO as a reference source for compatibility planning while keeping near-term support to scanner/reporting unless a bounded runtime feature is explicitly gated.
 
+## 2026-07-18 Post-Wayfinder-256 source and reanalysis override
+
+PackageAnalysis/v1 and productive Studio/export consumers are closed. Keep
+`05b7d98...` normative, but stop calling local `044da720...` pinned: the cache
+does not contain the normative object and has untracked files. First create a
+validated source-authority manifest and classify relevant semantic deltas.
+Then persist deterministic reanalysis/diff for source, ruleset, and upstream
+changes. Common ZSS/Lua/Modules remain located scanner findings, not runtime
+support. See
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-229 source and reanalysis override
+
+PackageAnalysis/v1 and its persisted/exported character, stage, system, and
+screenpack consumer are closed. Keep `05b7d98...` normative and do not assign
+another v1/first-consumer task. Next make analyzer/ruleset/upstream authority a
+validated manifest, then support deterministic reanalysis and semantic diff
+when source or rules drift. Independent fixtures must keep unknown/malformed
+findings visible. Scanner evidence earns no runtime, render, ZSS, or Lua credit.
+See `docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical 2026-07-16 Source and consumer override
+
+Keep `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703` as the normative source pin.
+The local shallow `044da720...` checkout is a non-normative cache 46 commits
+behind, not a reason to downgrade the pin. Build PackageAnalysis/v1 with
+source/semantic digests, analyzer/ruleset/upstream identity, nested fail-closed
+validation and targetable locations; then prove a productive VFS/Studio
+consumer for character, stage, system, and screenpack. Scanner recognition
+earns no runtime credit. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical 2026-07-15 Post-Entry-554 Daily Audit Override
+
+PackageAnalysis/v0 still has no production consumer and hashes observation time
+inside its payload checksum. Build v1 with semantic/source digests, analyzer and
+ruleset identity, selected upstream revision, nested fail-closed validation,
+freshness, and targetable source locations; then add one Studio Build/Evidence
+Adapter. The issue 07 declared source pin and current shallow local Ikemen
+snapshot disagree, so reconcile that pin before new normative runtime/scanner
+claims. Recognition remains scanner-only. See
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical 2026-07-15 Daily Audit Override
+
+PackageAnalysis/v0 is closed-bounded but has no production consumer. The next
+I1 gate is PackageAnalysis/v1 plus a Studio Evidence/Build adapter: add source
+SHA-256, analyzer/ruleset/pinned-upstream identity, a semantic digest independent
+of observation time, nested fail-closed validation, and targetable source
+locations. This remains static analysis and earns no runtime compatibility
+credit. ZSS/Lua execution, model stages, screenpack runtime, rollback, netplay,
+and full IKEMEN parity remain blocked. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
 ## Next Useful Cuts
 
 - 2026-07-14 closeout: `PackageAnalysis/v0` now provides a versioned VFS/package scanner entry shared by character, stage, system and screenpack inputs. Findings carry source location, dependency, MUGEN profile/version or `ikemen-go-scan` metadata, and recognized/unsupported/unknown status. Mixed, stage-only, and system-only fixtures pass through the same contract; runtime claims remain unchanged.

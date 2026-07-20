@@ -6,6 +6,44 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-18 Post-T268 lane override
+
+Wayfinders 230-256 close redirected ownership, helper/root global states,
+Common CNS/config sources, helper command buffers and bounded SOCD. T266 adds
+the source manifest contract; T267 preserves per-seat `SocdFirst` state for
+modes 1/3; T268 exposes runtime/package/profile authority and conflicts. Keep
+`05b7d98...` normative; local `044da720...` remains a mutable non-normative
+cache until actual manifest/delta and semantic review. Next I2 order is that
+reconciliation, match-level input config ownership, state-5900 provenance,
+RuntimeRoundPhase, atomic Turns, then one global 3+ projectile order oracle
+before proxies/multi-root breadth. See
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+Observed HEAD `064e2db0` contains open Wayfinder 257 Common1 fall-defense work
+that cites `044da720` as pinned. Preserve it as concurrent work, but do not
+count or widen its claim until source authority and its closeout gates exist.
+
+## Historical 2026-07-16 Post-Wayfinder-229 lane override
+
+Wayfinders 210-215 close bounded AffectTeam and projectile depth semantics;
+they are prerequisites, not the next queue. Keep `05b7d98...` normative. Next
+I2 cuts are typed redirected lease ownership and ADR 0006, atomic Turns, source-
+proven state 5900, profile-owned RoundState phases/expressions, then one global
+3+ projectile order oracle before proxy/helper/multi-root microcuts. Scanner
+v1 remains static evidence and earns no I2 execution credit. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical 2026-07-16 Post-Wayfinder-209 lane override
+
+Wayfinder 209 is closed. Keep `05b7d98...` normative; treat local shallow
+`044da720...` as a non-normative cache. Entry 519's Turns continuation remains
+a bounded local policy, not IKEMEN parity: current counters differ from pinned
+upstream, the transition is not atomic, State 5900 lacks source provenance,
+and `RoundState` remains constant `2`. Next I2 architecture cuts are lease v1.1,
+atomic Turns, phase/provenance, then projectile `affectteam`, depth, exact
+order, and proxies as separate gates. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
 ## 2026-07-16 Entry-555 lane note
 
 The bounded `ProjTypeCollision` policy is implemented in `c068de80`.
@@ -13,9 +51,56 @@ The bounded `ProjTypeCollision` policy is implemented in `c068de80`.
 paired-player `Clsn2` admission are proven by focal tests and the 633/633
 trace corpus. Exact IKEMEN projectile trade ordering, `p2` collision options,
 team/depth/order semantics, rollback/netplay, and full parity remain blocked.
-Next: Wayfinder 209 research/implementation.
+Wayfinder 209 subsequently closed bounded trade-box and `p2clsn*` selectors;
+do not schedule it again.
 
-## 2026-07-14 Daily Audit Override
+## Historical 2026-07-15 Post-Entry-554 Lane Note
+
+Entry 554 remains the maximum numbered ledger entry; audited HEAD 05d85137 is
+the later 633/633 report frontier. The post-554 chain closes bounded
+root/helper RedirectID variants through auxiliary Target resources. It does
+not close helper State -1, helper-destination TargetState, root-to-helper
+policy, recursive redirects, exact multi-target ordering, Projectile/team/
+neutral ownership, persistence, rollback/netplay, or parity.
+
+Before more behavior, reconcile this issue's declared Ikemen revision
+05b7d98a with the current shallow local reference 044da720. Then characterize
+dispatch and decide proposed ADR 0006. Helper TargetState needs a separate
+state-owner/SelfState/lifetime decision. Turns needs a revisioned all-or-nothing
+plan, a State 5900 source policy, and RuntimeRoundPhase/v0 before dynamic
+RoundState. See
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical 2026-07-15 Entry-549 Lane Note
+
+Entries 519-524 close bounded automatic Turns continuation and match outcome;
+Entries 543-549 close root identity plus root-only RedirectID through active
+TargetPowerAdd. The dirty State -1 follow-up is reserved and not evidence.
+After it closes, extract a target-family dispatch seam before active
+TargetLifeAdd. Separately, preflight all Turns invariants before handoff and
+model RoundState only after deciding the normal-versus-Turns state-5900 policy.
+Helper/projectile/neutral/team target semantics, exact Simul/Tag/Turns
+choreography, ZSS/Lua, model stages, rollback, netplay, and parity remain
+blocked. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
+## 2026-07-14 Entry-525 Lane Note
+
+The R1 `CompatibilityCorpus/v0` boundary is closed without widening the I2
+runtime topology. Turns outcome, draw limits, match-win mutation, and corpus
+aggregation remain typed seams; Lua/ZSS execution, exact motif/round
+choreography, rollback/netplay, and full IKEMEN parity remain blocked. Keep the
+next I2 implementation on the existing decision -> handoff -> reset ->
+state-5900 -> continuation route and do not infer team runtime breadth from the
+corpus index.
+
+## 2026-07-14 Entry-516 Daily Audit Override
+
+Entries 511-516 supersede the open resource sequence below: omitted dizzy defaults, `AttackMulSet` scaling, dizzy break, red-life `LifeShare`, lifecycle rebind, HUD, and the first next-round resource reset are closed bounded gates. Entry 516 declares 598/598 traces; scores do not move.
+
+Match-outcome/state-5900 source and tests appeared as concurrent uncommitted work during this audit. They are reserved to that owner and are not evidence. At closeout, require explicit distinction between round outcome, MUGEN-observable match-over timing, round phase/win poses, state-5900 source precedence (character then Common1), and per-actor `RoundsExisted`. Afterward, gate 1 -> 2 -> 3 without a full-reset round-number collapse, then automate Turns decision -> handoff -> 5900 -> continuation. Simul/Tag exact choreography, motif, ZSS/Lua, rollback, and netplay remain blocked.
+
+## Previous 2026-07-14 Daily Audit Override
 
 Entries 495-510 close bounded global AssertSpecial ownership, team-round decision, explicit Turns handoff and required trace, team lifebar/HUD projection, root life/power bank ownership/mutation/routes, Helper-local life/power, explicit direct red-life/guard-points routes, auxiliary-resource projection, actor-local dizzy-point mutation, and defender-side dizzy suppression. They do not close dizzy default/break policy, red-life LifeShare mutation, automatic Turns continuation, slot/reference and resource reset, exact Simul/Tag/Turns timing, motif bars, ZSS/Lua, rollback, or netplay.
 

@@ -1,4 +1,5 @@
 ﻿# Roadmap Package Milestones
+
 ## Current bounded runtime package - T288 / Entry 562
 
 HEAD `a12a2672` closes the T288 FightScreen actor-reset boundary after the
@@ -10,17 +11,103 @@ tests and TypeScript 7 pass; broad evidence is pending. Scores stay unchanged.
 The next package discriminator is announcement/display ownership, not a claim
 of full FightScreen parity.
 
-## Current runtime package - 2026-07-16 Entry 555
+## Historical package reconciliation - post-T268
+
+The current runtime tuple is HEAD `b241cc65`; Entry 555 / Wayfinder 256 remain
+historical roadmap cursors. Evidence, release decision, redirected ownership,
+global-state/common-source loading, helper command buffers, and bounded SOCD
+are implemented at named scopes. T266-T268 add source authority metadata,
+stateful SOCD, and authority diagnostics. The latest full checkpoint is
+231/231 files, 2435/2435 tests and 633/633 traces.
+Scores stay unchanged.
+
+The next package discriminator is not another closed loader feature. Establish
+the normative/local source delta and semantic review; settle match-level input
+configuration ownership; then prove round/Turns/projectile determinism and a
+second independent character-centered legal route. Product milestones remain
+changed-source evidence, persisted reanalysis, one releaseable project and a
+second asset record. Full contracts:
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical package reconciliation - post-Wayfinder 229
+
+The current tuple is HEAD `83f85bae` / Entry 555 / Wayfinder 229. Snapshot v1.1
+and two required legal routes are materialized; Studio has real gate, receipt,
+and multi-kind scanner records; the first asset permission record is path- and
+digest-clean. These facts do not move scores or prove current-HEAD release
+readiness. Next package discriminators are revision-bound evidence, internally
+consistent snapshot claims, a second character-centered compatibility route,
+and an explicit release decision. Runtime risk proceeds through redirected
+lease ownership, atomic Turns/round phase, and global projectile order. Full
+contracts: `docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical numbered runtime package - 2026-07-16 Entry 555
 
 The runtime package now has bounded `ProjTypeCollision` evidence: typed
 `AssertSpecial` capability, strict projectile `Clsn2`, `HitFlag = P` cancel, and
 paired-player `Clsn2` direct/priority admission. Focal coverage is 110/110;
 TypeScript 7, build, boundaries, and `qa:trace` 633/633 pass. Scores do not
-move. Keep exact projectile trade ordering, `p2clsncheck`, `p2clsnrequire`,
-`affectteam`, depth/order, rollback/netplay, and full parity as separate gates.
-Next package cut: Wayfinder 209.
+move. Keep `affectteam`, depth/order, exact cancel/hitpause timing,
+rollback/netplay, and full parity as separate gates.
+Wayfinder 209 subsequently closed the bounded trade-box and `p2clsn*` selector
+cut. It did not close `affectteam`, depth/Z, global scheduling, exact
+cancel/hitpause, proxy flattening, rollback/netplay, or parity.
 
-## 2026-07-14 daily audit override
+## Historical 2026-07-16 post-Wayfinder-209 package reconciliation
+
+The package discriminator remains evidence breadth: harden the snapshot
+producer, add a second repository-authored CC0 route, and adjudicate only after
+that route has loader, trace, and browser proof. Restore the 2262/2263 baseline
+and immutable source pin first. Runtime architecture then proceeds through
+lease v1.1, atomic Turns, phase/state-5900 provenance, and separated projectile
+policy cuts. Full contracts:
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## Historical 2026-07-15 post-Entry-554 planning reconciliation
+
+Entry 554 remains the maximum numbered ledger entry. At audited HEAD 05d85137,
+the latest report frontier is 633/633 traces, 599 required and 34 optional,
+after bounded root/helper RedirectID expansion. Scores do not move. The package
+discriminator remains material evidence, not controller count: first restore
+the control cursor, then materialize CompatibilityCorpusSnapshot/v1 and add one
+independent legal route. Runtime risk then reduces through proposed ADR 0006,
+explicit mutation sets, helper TargetState ownership research, and an atomic
+Turns/round-phase plan. Product lanes remain separate.
+
+The current 30-task contract is
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+Older package ladders and next selectors below are historical where they
+conflict with this reconciliation.
+
+## Historical 2026-07-15 Entry 549 planning reconciliation
+
+Entry 549 is the committed frontier: 610/610 traces and no score movement after
+Entry 530's bounded Practical MUGEN 35 -> 36 adjudication. The current dirty
+State -1 TargetPowerAdd RedirectID cut is reserved, not evidence. Once it closes,
+the package discriminator is a materialized CompatibilityCorpusSnapshot/v1,
+not another schema-only or micro-controller count. Runtime risk then reduces
+through a target-family dispatch seam, active TargetLifeAdd RedirectID, atomic
+Turns preflight/commit, and phase-aware RoundState. Studio, assets, scanner, and
+modular lanes retain separate claim ceilings. See
+`docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
+
+## 2026-07-14 Entry 525 closeout
+
+`CompatibilityCorpus/v0` is implemented as an immutable, deterministic index
+over `CompatibilityJourney/v1`. Required legal, portable legal, and optional
+private routes are explicit; package payloads are not copied; unsupported and
+unavailable density remains visible. Focal 3/3 tests, broad 210/2125 tests,
+TypeScript 7 build, boundaries, CSS budget, and 600/600 traces pass. Scores do
+not move. Next: adjudicate the written score band, then add one independent
+legal stage/package route.
+
+## 2026-07-14 entry-516 planning reconciliation
+
+Entry 518 supersedes the entry-516 selector. Omitted dizzy defaults, `AttackMulSet` dizzy scaling, dizzy break, red-life `LifeShare`, lifecycle rebind, HUD presentation, match outcome/state 5900, and sequential per-root round context are closed bounded gates. The entry declares 600/600 traces and no score movement.
+
+Keep the product discriminator ordered as `CompatibilityCorpus/v0 -> score-band adjudication -> one independent legal stage/package route`. In I2, connect automatic Turns decision -> handoff -> resource reset -> state-5900 -> continuation over the now-verified 1 -> 2 -> 3 context. Match outcome, round phase, per-actor `RoundsExisted`, state-5900 resolution, and the transition transaction remain distinct ownership axes. Studio semantic preflight, provenance v2, package analysis, and later modular extraction remain parallel lanes with separate claim ceilings. See `docs/research/2026-07-14-round-context-sequence.md`.
+
+## Previous 2026-07-14 daily audit override
 
 Entry 510 supersedes the entry-505 selector. M2 remains accepted only at bounded fixture scope; palette evidence, a second legal MIT character package, Studio source identity/transaction/provenance/folder editing, global AssertSpecial, explicit Turns handoff, team lifebar/HUD, root life/power banks, Helper-local life/power, red-life, guard points, auxiliary projection, explicit dizzy-point mutation, and direct dizzy suppression are closed or bounded gates. Entry 510 closes its focal trace with 591/591 artifacts; full repository gates are batched and scores do not move.
 
@@ -70,7 +157,7 @@ This file is the compact package ladder between the scorecard and the local issu
 
 Docs-only changes here do not move scores. Scores move only through trace, test, fixture, visual QA, or build/export evidence.
 
-## Active Package Ladder
+## Historical Package Ladder (superseded by the post-Entry-554 override)
 
 | Package | Status | Next proof | Required evidence | Blocked claim |
 | --- | --- | --- | --- | --- |
@@ -95,7 +182,7 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 | M5 IKEMEN scanner-plus | IKEMEN-only assets are recognized and reported without runtime overclaim. | Source-mapped scanner tests for ZSS/Lua/config/screenpack/stage/system signals. |
 | M6 Modular engine seed | Shared contracts can support future non-fighting projects. | Boundary tests prove shared packages do not import MUGEN/CNS/CMD/HitDef/Common1 runtime concepts. |
 
-## Next Recommended Slice
+## Historical Next Recommended Slice
 
 Current override: entry 476 is the latest numbered committed gate. Wayfinder 127 is already in progress and owns the immediate dirty runtime/test diff. After its independent closeout, select `CompatibilityJourney/v1` and MUGEN-lite adjudication before another I2 behavior slice. The entry-411/body-push and older inert-root ladders below are historical.
 

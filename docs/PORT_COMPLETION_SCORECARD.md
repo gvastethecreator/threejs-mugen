@@ -1,4 +1,5 @@
 ﻿# Port Completion Scorecard
+
 ## 2026-07-18 T288 bounded FightScreen intro-skip character-reset checkpoint
 
 The current implementation frontier is HEAD `a12a2672`, Entry 562, and
@@ -12,7 +13,6 @@ compatibility history. The focused gate is 5 files / 392 tests plus TypeScript
 This does not move a score. Exact global asset clearing, announcement or
 round/fight display suppression, dialogue, Common1/ZSS, motif/localcoord,
 teams/Turns, rollback/netplay, and full parity remain blocked.
-## 2026-07-16 Entry 555 runtime evidence
 
 ## 2026-07-18 T287 bounded FightScreen intro shutter/skip checkpoint
 
@@ -48,7 +48,7 @@ screenpack transforms, teams/Turns, rollback/netplay, and full parity remain
 blocked. The existing Vite chunk-size warning remains non-blocking; no score
 movement follows from this bounded phase/timer evidence.
 
-## 2026-07-18 T285 bounded FightScreen round-start checkpoint
+## Previous 2026-07-18 T285 bounded FightScreen round-start checkpoint
 
 The current implementation frontier is HEAD `c688f04d`, Entry 559, and
 Wayfinder T285. Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. Imported
@@ -65,6 +65,52 @@ Common1/ZSS, teams/Turns, rollback/netplay, and full MUGEN/IKEMEN parity remain
 blocked. The next score-relevant work still requires current
 corpus/independent-breadth adjudication and a separate source-backed gate.
 
+## 2026-07-18 post-Wayfinder-256 architecture audit
+
+The audited tuple is HEAD `b241cc65`, Entry 555, and the T266-T268 closeout.
+Scores stay
+**65 / 36 / 20 / 10-12 / 6-8 / 25**. Wayfinders 230-256 add substantial
+bounded product/runtime/loader/input evidence, but no written band
+adjudication. The latest declared checkpoint is 231/231 files, 2435/2435 tests
+and 633/633 traces.
+
+The next score review requires a current corpus rebuild, a second independent
+character-centered legal journey, and a separate adjudication. Stateful SOCD
+1/3 is now bounded at the reconstructed Set boundary, while raw event/InputBuffer
+parity and match-level config ownership remain open. Common.Fx lacks browser
+proof; source authority has a manifest contract but normative checkout
+reconciliation and semantic review remain open.
+Documentation and architecture do not move scores. See
+`docs/research/2026-07-18-daily-roadmap-architecture-audit-post-wayfinder-256.md`.
+
+## Historical 2026-07-16 post-Wayfinder-229 architecture audit
+
+The audited tuple is HEAD `83f85bae`, Entry 555, and Wayfinder 229. Scores stay
+**65 / 36 / 20 / 10-12 / 6-8 / 25**. Snapshot v1.1 now records two required
+legal passing routes, but its embedded claim strings remain stale and the new
+route is stage-centered rather than independent character breadth. The latest
+declared full suite is Wayfinder 221 at 2294/2294; subsequent focused/QA
+closeouts are not a whole-HEAD suite claim. The next score review requires a
+versioned claim reconciliation, a separate written adjudication, and later a
+second character-centered legal journey. Architecture, product gates, and
+documentation do not move compatibility scores. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-229.md`.
+
+## Historical 2026-07-16 post-Wayfinder-209 architecture audit
+
+Entry 555 is the maximum numbered entry and Wayfinder 209 is the later
+unnumbered runtime checkpoint. The branch reports 633/633 traces and 2262/2263
+full-suite tests. `CompatibilityCorpusSnapshot/v1` is materialized but still
+represents one required route, zero portable routes, and a hardcoded old source
+revision; it does not establish independent breadth or freshness. Scores stay
+**65 / 36 / 20 / 10-12 / 6-8 / 25**. The next score consideration requires a
+fresh snapshot, a second repository-authored CC0 route with loader/trace/
+browser proof, and a separate written adjudication. Architecture and docs do
+not move scores. See
+`docs/research/2026-07-16-daily-roadmap-architecture-audit-post-wayfinder-209.md`.
+
+## 2026-07-16 Entry 555 runtime evidence
+
 Entry 555 closes a bounded `ProjTypeCollision` runtime policy: typed
 `AssertSpecial` capability, strict projectile `Clsn2` contact, `HitFlag = P`
 cancel, and paired-player `Clsn2` direct/priority admission. Focal 110/110,
@@ -74,6 +120,34 @@ not a new written compatibility-band threshold. Exact projectile trade
 ordering, remaining `p2` collision parameters, rollback/netplay, and full
 MUGEN/IKEMEN parity remain open. Full-suite residual failures are recorded in
 `docs/reports/2026-07-16-projtypecollision-v1-closeout.md`.
+
+## Historical 2026-07-15 post-Entry-554 architecture audit
+
+Entry 554 remains the maximum numbered backlog entry. Audited HEAD 05d85137
+establishes a later report frontier at 633/633 traces, 599 required and 34
+optional, through bounded root/helper auxiliary Target resource RedirectID.
+The work is concentrated in one ownership/controller family and does not meet
+a new score threshold. Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**.
+
+Next score consideration requires a materialized compatibility snapshot plus
+materially independent legal package/stage breadth and a separate written
+adjudication. Dispatch refactors, Turns architecture, scanner consumers,
+Studio trust contracts, asset release records, and docs do not move MUGEN or
+IKEMEN scores by themselves. The detailed Studio 25 and modular-engine 10
+estimates must stay distinct even though the summary table currently combines
+their horizon label. See
+docs/research/2026-07-15-daily-roadmap-architecture-audit-post-entry-554.md.
+
+## Historical 2026-07-15 Entry 549 architecture audit
+
+The committed frontier is Entry 549 with 610/610 declared traces. Entries
+531-549 add bounded stage, Studio/scanner/provenance, identity, and root-only
+RedirectID evidence, but do not satisfy another written score-band threshold.
+Scores remain **65 / 36 / 20 / 10-12 / 6-8 / 25**. The dirty State -1
+TargetPowerAdd follow-up is not counted. Next score consideration requires a
+materialized corpus snapshot and new independent package breadth; docs,
+refactors, scanner consumers, and product trust contracts do not move scores.
+See `docs/research/2026-07-15-daily-roadmap-architecture-audit-entry-549.md`.
 
 ## 2026-07-14 Entry 530 score-band adjudication
 
@@ -85,6 +159,30 @@ compatibility moves from **35 to 36 / 100**. The private sandbox remains 65,
 MUGEN 1.0/1.1 MVP remains 20, full MUGEN remains 10-12, IKEMEN remains 6-8,
 and Creator Studio remains 25. This is a minimum threshold promotion, not
 public breadth, commercial redistribution, or full MUGEN/IKEMEN parity.
+
+## 2026-07-14 Entry 525 compatibility corpus closeout
+
+Entry 525 adds the first immutable `CompatibilityCorpus/v0` denominator over
+the existing journey evidence. Required legal, portable legal, and optional
+private routes remain separate, and the aggregate exposes package identity,
+route coverage, unsupported-feature density, diagnostics, and checksum without
+copying binary payloads. Focused 3/3 tests, the full 210-file / 2125-test
+suite, TypeScript 7 build, boundaries, CSS budget, and 600/600 trace artifacts
+pass. Scores remain unchanged: this is an evidence-index boundary, not a new
+compatibility route. Written score-band adjudication, an independent legal
+stage/package, public breadth, and full MUGEN/IKEMEN parity remain open.
+
+## 2026-07-14 Entry 518 focal closeout
+
+Entry 518 closes bounded sequential per-root round context. The reset
+transaction preserves the live counter, CNS exposes `RoundNo`/
+`RoundsExisted`/`MatchOver`, and the required imported trace proves two KO
+transitions through rounds 1 -> 2 -> 3 for both roots. Focal coverage passes
+202 focal tests and the full suite passes 207 files / 2102 tests; TypeScript 7,
+build, boundaries, CSS budget, desktop/mobile/Studio smoke, and 600/600 traces
+(566 required / 34 optional) pass. Scores remain unchanged. Turns continuation,
+winpose/motif ownership, rollback/netplay, and full MUGEN/IKEMEN parity remain
+open.
 
 ## 2026-07-14 Entry 517 focal closeout
 
@@ -270,7 +368,7 @@ Automatic common KO sound and tick-active `NoKOSnd` suppression are green under 
 
 Contextual player/common SND routing is green under focused tests and 524/524 traces. Score unchanged because broader ownership and full audio parity remain open.
 
-Last updated: 2026-07-13
+Last updated: 2026-07-15
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
@@ -288,7 +386,7 @@ Latest evidence note: five required first-generation helper direct-HitDef/persis
 | Practical MUGEN compatibility | 36 / 100 | The written practical MVP threshold is met by passed local official KFM common routes, visible reports, the legal journey, and one optional-private official stage route; broad character compatibility remains partial. |
 | MUGEN 1.0/1.1 MVP port | 20 / 100 | Enough parser/runtime/render infrastructure exists to keep marching toward KFM/Common1-style compatibility, but exact VM, combat, helpers, screenpack, palette, audio, and tick-order parity remain open. |
 | Full MUGEN-compatible engine | 10-12 / 100 | Foundation and evidence discipline exist. Complete behavior parity across real characters/stages/screenpacks is still a large engine project. |
-| Full IKEMEN-GO-class port | 6-8 / 100 | Scanner/reporting plus bounded explicit-profile scheduling/topology/Tag/Helper, active-root motion/presentation/constraints/push, and exercised direct admission/contact/priority/reversal/depth/HitOverride/guard routes exist. Direct native input/AI, plural Helper/Projectile combat, team defeat/replacement, round/lifebars/resources, exact Tag ZSS/Lua choreography, screenpacks, rollback/netplay, and broad team semantics remain absent. |
+| Full IKEMEN-GO-class port | 6-8 / 100 | Scanner/reporting plus bounded explicit-profile scheduling/topology/Tag/Helper, active-root combat, team decision/handoff, lifebar/resource/red-life/dizzy seams, bounded automatic Turns continuation, root identity reads, and root-only RedirectID exist. Direct reserve input/AI, plural Helper/Projectile combat, exact Simul/Tag/round choreography, motif/screenpack, ZSS/Lua, rollback/netplay, and broad team semantics remain absent. |
 | Creator Studio / modular engine | 25 / 100 | Studio workbench/evidence/build/assets surfaces exist. Real authoring, persistent asset DB, export pipeline, and non-fighting modules are still early. |
 
 ## What "Usable" Means Next
@@ -317,11 +415,20 @@ Target score for that milestone: playable sandbox 75+, practical MUGEN compatibi
 | 76-90 | Near-parity MUGEN | Exact-ish CNS/CMD/tick/combat/helper/projectile/screenpack behavior for a broad regression corpus. |
 | 91-100 | Full engine parity | IKEMEN/MUGEN edge behavior, ZSS/Lua where applicable, teams, rollback/netplay, screenpacks, audio/video parity, tooling, release QA. |
 
-The project is currently in the **16-35 partial runtime band** for imported compatibility and in the **56-75 practical playable band** for the private native sandbox.
+The project is currently at the first point of the **36-55 practical MVP
+band** for imported compatibility and in the **56-75 practical playable band**
+for the private native sandbox. This minimum promotion does not demonstrate
+broad package compatibility.
 
 ## Evidence Ledger
 
-Current aggregate override: entry 529 declares 600/600 artifacts, 566 required and 34 optional. Entry 530 promotes only Practical MUGEN compatibility to 36/100; all other scores remain unchanged. Older aggregate paragraphs below are historical snapshots and must not be read as current totals.
+Current aggregate override: the latest declared trace aggregate is 633/633,
+599 required and 34 optional. Entry 530 remains the only score movement,
+promoting Practical MUGEN compatibility to 36/100; all other scores remain
+unchanged. Wayfinder 221 is the latest declared full suite at 2294/2294, while
+later lane closeouts carry only their stated focused/browser/QA evidence.
+Older aggregate paragraphs below are historical snapshots and must not be read
+as current totals.
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |
@@ -558,18 +665,18 @@ The latest optional official KFM get-hit oracle is `kfm-official-default-crouch-
 
 Practical reading: from today's evidence, a private playable sandbox is roughly two-thirds usable, a practical MUGEN subset is about one-third there, and a full IKEMEN-GO-class port remains a multi-stage engine project.
 
-## Next Ten Gates
+## Historical Next Ten Gates
 
-1. Done: I2 inert-root P3-P8/cap/start/reset/isolation evidence.
-2. Done: I2 `RuntimeRootParticipation/v0` diagnostics with structural and per-consumer ownership separated.
-3. R1 bounded post-KO / `NoKOSlow` ordered timeline.
-4. I2 plural batch standby transition and active ids by side, with no one-active-root assumption.
-5. I2 identity/Player/Partner versus Enemy/P2 eligibility matrix, then standby-root CNS schedule and same-tick TagIn/TagOut trace as a later separate gate.
-6. Studio source handle/fingerprint/permission, conflict, write/reimport, invalidation, and rollback.
-7. Permission-aware, content-addressed `AssetProvenance/v0` plus motion/scale/baseline QA.
-8. I1 VFS/package scanner shared by character/stage/system/screenpack, with source/versioned findings.
-9. One fixture-backed palette/ACT or BGCtrl vertical slice with runtime/browser evidence.
-10. One real shared Project/Evidence/Build contract with a production consumer, MUGEN adapter, and non-vacuous boundary proof.
+1. Close the reserved State -1 TargetPowerAdd RedirectID cut independently.
+2. Materialize `CompatibilityCorpusSnapshot/v1` from actual journey artifacts.
+3. Extract `RuntimeRedirectedTargetDispatch/v0` after the reserved cut.
+4. Add active `TargetLifeAdd RedirectID` through that seam.
+5. Preflight and commit Turns through `RuntimeTurnsTransitionPlan/v1`.
+6. Decide state-5900 missing-state policy and model phase-aware `RoundState`.
+7. Replace hardcoded Studio greens with fresh `GateEvidenceResult/v0` artifacts.
+8. Create `PackageAnalysis/v1` and surface it through a production consumer.
+9. Prove `AssetReleasePolicy/v0` on one complete owned/generated record.
+10. Add `SourceWriteReceipt/v0`, then extract `EvidenceContract/v0` with two real consumers.
 
 ## Score Movement Rules
 
