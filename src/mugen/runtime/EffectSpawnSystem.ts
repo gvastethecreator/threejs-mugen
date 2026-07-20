@@ -63,6 +63,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
   runtimeProfile?: RuntimeCompatibilityProfile;
   resolveHelperStandby?: (operation: HelperControllerOp) => boolean | undefined;
+  resolveHelperOwnProjectile?: (operation: HelperControllerOp) => boolean | undefined;
 };
 
 export type RuntimeEffectSpawnControllerDispatchResult = {
@@ -149,6 +150,7 @@ export class RuntimeEffectSpawnWorld {
     controller: MugenStateController,
     operation?: HelperControllerOp,
     initialStandby = false,
+    initialOwnProjectile?: boolean,
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
@@ -176,6 +178,7 @@ export class RuntimeEffectSpawnWorld {
       action,
       stateNo,
       animNo,
+      ownProjectile: initialOwnProjectile,
       initialStandby,
       initialControl: (state?.ctrl ?? 1) !== 0,
       pos: {
@@ -455,12 +458,18 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
       const helperOperation = operation?.kind === "helper" ? operation : undefined;
       const initialStandby = resolveInitialHelperStandby(options, helperOperation);
       if (initialStandby === "blocked") return 0;
+      const initialOwnProjectile = resolveInitialHelperOwnProjectile(options, helperOperation);
+      if (initialOwnProjectile === "blocked") return 0;
+      const operationForSpawn = options.runtimeProfile === "ikemen-go"
+        ? helperOperation
+        : stripHelperOwnProjectileOperation(options.controller.source, helperOperation);
       return effectSpawnWorld.spawnHelper(
         actor,
         opponent,
         controller.source,
-        helperOperation,
+        operationForSpawn,
         initialStandby,
+        initialOwnProjectile,
       )
         ? 1
         : 0;
@@ -498,4 +507,33 @@ function resolveInitialHelperStandby<TActor extends RuntimeEffectSpawnActor>(
   if (operation.standby !== undefined) return operation.standby;
   if (!operation.standbyExpression) return "blocked";
   return options.resolveHelperStandby?.(operation) ?? "blocked";
+}
+
+function resolveInitialHelperOwnProjectile<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: HelperControllerOp | undefined,
+): boolean | undefined | "blocked" {
+  if (options.runtimeProfile !== "ikemen-go") return undefined;
+  const authored = operation?.ownProjectile !== undefined ||
+    operation?.ownProjectileExpression !== undefined ||
+    findParam(options.controller.source, "ownprojectile") !== undefined;
+  if (!authored) return undefined;
+  if (!operation) return "blocked";
+  if (operation.ownProjectileExpression !== undefined) {
+    return options.resolveHelperOwnProjectile?.(operation) ?? "blocked";
+  }
+  return operation.ownProjectile;
+}
+
+function stripHelperOwnProjectileOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  if (!operation || findParam(controller, "ownprojectile") === undefined) return operation;
+  const {
+    ownProjectile: _ownProjectile,
+    ownProjectileExpression: _ownProjectileExpression,
+    ...withoutOwnProjectile
+  } = operation;
+  return withoutOwnProjectile;
 }

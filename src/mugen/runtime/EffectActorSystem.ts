@@ -324,7 +324,7 @@ export class RuntimeEffectActorWorld {
   }
 
   modifyProjectiles(ownerId: string, input: RuntimeProjectileModifyInput): number {
-    return modifyRuntimeProjectileActors(this.getStore(ownerId), input);
+    return modifyRuntimeProjectileActors(this.getStore(ownerId), input, ownerId);
   }
 
   advanceProjectiles(ownerId: string, stage: RuntimeProjectileStage): void {
@@ -337,7 +337,10 @@ export class RuntimeEffectActorWorld {
 
   countProjectiles(ownerId: string, projectileId?: number): number {
     return this.projectiles(ownerId).filter(
-      (projectile) => !projectile.removalReason && (projectileId === undefined || projectile.projectileId === projectileId),
+      (projectile) =>
+        !projectile.removalReason &&
+        projectile.ownerId === ownerId &&
+        (projectileId === undefined || projectile.projectileId === projectileId),
     ).length;
   }
 
@@ -619,7 +622,7 @@ export function spawnRuntimeHelperProjectileActor(
   return spawnRuntimeProjectileActor(store, helper.ownerId, {
     controller: controller.source,
     operation,
-    ownerId: helper.ownerId,
+    ownerId: helper.ownProjectile === true ? helper.serialId : helper.ownerId,
     rootId: helper.rootId,
     parentId: helper.serialId,
     spriteOwnerId: helper.spriteOwnerId,
@@ -700,7 +703,7 @@ export function modifyRuntimeHelperProjectileActors(
   const operation = modifyProjectileOperation(controller);
   const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(controller, "projid") ?? findControllerParam(controller, "id"));
   const helperProjectiles = store.projectiles.filter(
-    (projectile) => projectile.parentId === helper.serialId && (projectileId === undefined || projectile.projectileId === projectileId),
+    (projectile) => helperOwnsProjectile(helper, projectile) && (projectileId === undefined || projectile.projectileId === projectileId),
   );
   return modifyRuntimeProjectiles(helperProjectiles, {
     controller: controller.source,
@@ -735,7 +738,7 @@ export function countRuntimeHelperProjectileActors(
   return store.projectiles.filter((projectile) => {
     return (
       !projectile.removalReason &&
-      projectile.parentId === helper.serialId &&
+      helperOwnsProjectile(helper, projectile) &&
       (projectileId === undefined || projectile.projectileId === projectileId)
     );
   }).length;
@@ -748,7 +751,7 @@ export function hasRuntimeHelperProjectileContact(
   projectileId?: number,
 ): boolean {
   return store.projectiles.some((projectile) => {
-    return projectile.parentId === helper.serialId && hasRuntimeProjectileContact(projectile, kind, projectileId);
+    return helperOwnsProjectile(helper, projectile) && hasRuntimeProjectileContact(projectile, kind, projectileId);
   });
 }
 
@@ -776,7 +779,7 @@ function latestRuntimeHelperProjectileContact(
   return store.projectiles
     .filter((projectile) => {
       return (
-        projectile.parentId === helper.serialId &&
+        helperOwnsProjectile(helper, projectile) &&
         projectile.lastContactTime !== undefined &&
         (projectileId === undefined || projectile.projectileId === projectileId)
       );
@@ -796,10 +799,20 @@ export function runtimeHelperProjectileCancelTime(
   projectileId?: number,
 ): number {
   const times = store.projectiles
-    .filter((projectile) => projectile.parentId === helper.serialId)
+    .filter((projectile) => helperOwnsProjectile(helper, projectile))
     .map((projectile) => runtimeProjectileCancelTime(projectile, projectileId))
     .filter((time) => time >= 0);
   return times.length === 0 ? -1 : Math.min(...times);
+}
+
+function helperOwnsProjectile(helper: RuntimeHelper, projectile: RuntimeProjectile): boolean {
+  if (helper.ownProjectile === true) {
+    return projectile.ownerId === helper.serialId;
+  }
+  if (helper.ownProjectile === false) {
+    return false;
+  }
+  return projectile.parentId === helper.serialId;
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
@@ -829,8 +842,15 @@ export function spawnRuntimeProjectileActor(
   return projectile;
 }
 
-export function modifyRuntimeProjectileActors(store: RuntimeEffectActorStore, input: RuntimeProjectileModifyInput): number {
-  return modifyRuntimeProjectiles(store.projectiles, input);
+export function modifyRuntimeProjectileActors(
+  store: RuntimeEffectActorStore,
+  input: RuntimeProjectileModifyInput,
+  ownerId?: string,
+): number {
+  const projectiles = ownerId === undefined
+    ? store.projectiles
+    : store.projectiles.filter((projectile) => projectile.ownerId === ownerId);
+  return modifyRuntimeProjectiles(projectiles, input);
 }
 
 export function advanceRuntimeProjectileActors(

@@ -268,6 +268,18 @@ value = 1
     expect(getControllerSupport("BindToRoot").runtimeLabel).toBe("bounded helper binding");
   });
 
+  it("compiles Helper ownprojectile as static and expression-backed metadata", () => {
+    expect(compileControllerIr(controller(200, "Helper", [], { ownprojectile: "1" })).operation).toMatchObject({
+      kind: "helper",
+      ownProjectile: true,
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { ownprojectile: "var(0)" })).operation).toMatchObject({
+      kind: "helper",
+      ownProjectile: false,
+      ownProjectileExpression: "var(0)",
+    });
+  });
+
   it("compiles accepted no-op controllers into typed operations", () => {
     expect(compileControllerIr(controller(200, "Null", [])).operation).toEqual({ kind: "noop", controllerType: "null" });
     expect(compileControllerIr(controller(200, "ForceFeedback", [], { time: "8" })).operation).toEqual({

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
+import { compileControllerIr, compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -10,6 +10,7 @@ import {
   createRuntimeEffectActorStore,
   createRuntimeEffectActorStores,
   hasRuntimeHelperProjectileContact,
+  modifyRuntimeHelperProjectileActors,
   removeRuntimeHelperActors,
   removeRuntimeExplodActors,
   removeRuntimeExplodActorsOnGetHit,
@@ -26,7 +27,12 @@ import {
   spawnRuntimeProjectileActor,
   summarizeRuntimeEffectActorStore,
 } from "../mugen/runtime/EffectActorSystem";
-import { advanceRuntimeProjectiles, markRuntimeProjectileForRemoval, recordRuntimeProjectileContact } from "../mugen/runtime/ProjectileSystem";
+import {
+  advanceRuntimeProjectiles,
+  markRuntimeProjectileForRemoval,
+  recordRuntimeProjectileContact,
+  runtimeProjectileTeamSide,
+} from "../mugen/runtime/ProjectileSystem";
 
 describe("EffectActorSystem", () => {
   it("owns effect actor serials, bounded stores, and renderer snapshots", () => {
@@ -1344,6 +1350,93 @@ describe("EffectActorSystem", () => {
       hitSoundValue: { rawPrefix: "S", group: 5, index: 4 },
       guardSoundValue: { rawPrefix: "S", group: 6, index: 0 },
     });
+  });
+
+  it("uses Helper ownprojectile identity for ownership queries and mutation", () => {
+    const store = createRuntimeEffectActorStore();
+    const rootProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8852", projanim: "930", projhits: "2" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      ownProjectile: true,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8852", projanim: "930", projremovetime: "24", projhits: "2" }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    expect(helperProjectile).toMatchObject({
+      ownerId: helper.serialId,
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+    expect(helperProjectile.removalReason).toBeUndefined();
+    expect(helperProjectile.terminalPlayback).toBeUndefined();
+    expect(countRuntimeHelperProjectileActors(store, helper, 8852)).toBe(1);
+
+    recordRuntimeProjectileContact(rootProjectile, "hit");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit", 8852)).toBe(false);
+    recordRuntimeProjectileContact(helperProjectile, "hit");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit", 8852)).toBe(true);
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit", 8852)).toBe(0);
+
+    const modifyController = compileControllerIr(
+      controller("ModifyProjectile", { projid: "8852", projpriority: "8" }),
+    );
+    expect(modifyController.operation).toMatchObject({ kind: "modifyprojectile", projectileId: 8852, priority: 8 });
+    expect(modifyRuntimeHelperProjectileActors(store, helper, modifyController)).toBe(1);
+    expect(helperProjectile.priority).toBe(8);
+    expect(rootProjectile.priority).toBe(1);
+  });
+
+  it("keeps root projectile queries scoped away from Helper-owned projectiles", () => {
+    const world = new RuntimeEffectActorWorld();
+    const rootProjectile = world.spawnProjectile("p1", projectileInput({ projid: "8853", projanim: "930", projhits: "2" }));
+    const helper = world.spawnHelper("p1", {
+      ...helperInput({ id: "44", anim: "900" }),
+      ownProjectile: true,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8853", projanim: "930", projremovetime: "24", projhits: "2" }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+
+    world.advanceHelpers("p1", { bounds: { left: -160, right: 160 } });
+
+    const helperProjectile = world.projectiles("p1").find((projectile) => projectile.parentId === helper.serialId)!;
+    expect(world.countProjectiles("p1", 8853)).toBe(1);
+    expect(runtimeProjectileTeamSide(helperProjectile)).toBe(1);
+
+    const modifyController = compileControllerIr(
+      controller("ModifyProjectile", { projid: "8853", projpriority: "8" }),
+    );
+    const modifyOperation = modifyController.operation?.kind === "modifyprojectile" ? modifyController.operation : undefined;
+    expect(world.modifyProjectiles("p1", {
+      controller: modifyController.source,
+      operation: modifyOperation,
+    })).toBe(1);
+    expect(rootProjectile.priority).toBe(8);
+    expect(helperProjectile.priority).toBe(1);
   });
 
   it("keeps lowercase helper fvar sound expressions distinct from F-prefixed sound refs", () => {

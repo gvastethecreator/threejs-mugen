@@ -117,6 +117,7 @@ export type RuntimeHelper = {
   moveType: CharacterRuntimeState["moveType"];
   physics: CharacterRuntimeState["physics"];
   keyCtrl?: boolean;
+  ownProjectile?: boolean;
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -293,6 +294,7 @@ export type RuntimeHelperSpawnInput = {
   action: MugenAnimationAction;
   stateNo?: number;
   animNo: number;
+  ownProjectile?: boolean;
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
@@ -348,6 +350,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     ctrl: input.initialControl ?? (initialState?.ctrl ?? 1) !== 0,
     keyCtrl,
+    ownProjectile: input.ownProjectile ?? operation?.ownProjectile,
     stateType: "S",
     moveType: "I",
     physics: "N",

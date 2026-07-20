@@ -727,7 +727,9 @@ export function runtimeProjectileHasOppositeTeamSide(
 }
 
 export function runtimeProjectileTeamSide(projectile: RuntimeProjectile): RuntimeTeamSide | undefined {
-  return projectile.teamSide ?? runtimeTeamSideFromId(projectile.ownerId);
+  return projectile.teamSide ??
+    runtimeTeamSideFromId(projectile.ownerId) ??
+    runtimeTeamSideFromId(projectile.rootId);
 }
 
 export function runtimeProjectileAffectTeamAllows(projectile: RuntimeProjectile, targetId: string): boolean {
