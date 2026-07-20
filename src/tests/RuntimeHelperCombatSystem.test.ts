@@ -106,6 +106,53 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(audioOperations).toEqual(["p1:S5,1"]);
   });
 
+  it("admits nested Helper direct HitDef source identity through verified ancestry", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const parent = effectActorWorld.spawnHelper("p1", helperInput({ id: "47", name: '"Parent"' }));
+    const nested = effectActorWorld.spawnHelper("p1", {
+      ...helperInput({ id: "48", name: '"Nested"' }),
+      parentId: parent.serialId,
+    });
+    parent.playerNo = 1;
+    parent.rootPlayerNo = 1;
+    nested.playerNo = 1;
+    nested.rootPlayerNo = 1;
+    nested.currentMove = move({ damage: 17 });
+    nested.moveTick = 1;
+    const defender = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+
+    new RuntimeHelperCombatWorld().resolveDirect({
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld,
+      runtimeTick: 34,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: stateHooks([], [5000]),
+      isHelperRootOwned: (helper, ownerId) =>
+        helper.serialId === nested.serialId &&
+        helper.parentId === parent.serialId &&
+        helper.rootId === ownerId,
+    });
+
+    expect(nested.hasHit).toBe(true);
+    expect(defender.runtime.life).toBe(83);
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourceActorId: nested.serialId,
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+    });
+  });
+
   it("rejects helper direct HitDef admission against a falling target without F", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();

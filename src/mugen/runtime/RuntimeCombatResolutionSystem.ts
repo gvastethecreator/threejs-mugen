@@ -35,6 +35,7 @@ import type { RuntimeReversalWorld } from "./ReversalSystem";
 import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
 import type { CharacterRuntimeState } from "./types";
 import type { RuntimeProjectile } from "./ProjectileSystem";
+import type { RuntimeHelperRootOwnershipResolver } from "./RuntimeHelperCombatSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
@@ -121,6 +122,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TActor) => boolean;
+  isHelperRootOwned?: RuntimeHelperRootOwnershipResolver;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   rememberProjectileTarget?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
@@ -604,7 +606,8 @@ export class RuntimeCombatResolutionWorld {
       defenderLocalCoord: input.defender.definition.localCoord,
       getTargetCollisionBoxes: (target, boxType) =>
         input.getCollisionBoxes?.(target, boxType) ?? (boxType === "clsn2" ? hurtBoxes : undefined),
-      resolveProjectileHitSource: (attacker, projectile) => runtimeProjectileHitSource(attacker, projectile),
+      resolveProjectileHitSource: (attacker, projectile) =>
+        runtimeProjectileHitSource(attacker, projectile, input.isHelperRootOwned),
       projectileCollisionMode,
       projectileDefense: projectileDefenseMove
         ? {
@@ -964,6 +967,7 @@ function runtimeProjectileIncomingMove(projectile: RuntimeProjectile): DemoMove 
 function runtimeProjectileHitSource<TActor extends RuntimeCombatResolutionActor>(
   attacker: TActor,
   projectile: RuntimeProjectile,
+  isHelperRootOwned?: RuntimeHelperRootOwnershipResolver,
 ): RuntimeRoundHitSourceActor | undefined {
   if (projectile.parentId === attacker.id && projectile.rootId === attacker.id) {
     return {
@@ -975,16 +979,21 @@ function runtimeProjectileHitSource<TActor extends RuntimeCombatResolutionActor>
   }
   const helper = attacker.effectActorWorld.helpers(attacker.id).find((candidate) => candidate.serialId === projectile.parentId);
   if (!helper) return undefined;
-  return {
-    id: helper.serialId,
-    playerNo: helper.playerNo,
-    rootId: helper.rootId,
-    rootOwned: projectile.rootId === attacker.id &&
+  const rootOwned = isHelperRootOwned
+    ? projectile.rootId === attacker.id &&
+      projectile.parentId === helper.serialId &&
+      isHelperRootOwned(helper, attacker.id)
+    : projectile.rootId === attacker.id &&
       helper.rootId === attacker.id &&
       projectile.parentId === helper.serialId &&
       helper.parentId === helper.rootId &&
       helper.playerNo !== undefined &&
       helper.playerNo === attacker.playerNo &&
-      helper.rootPlayerNo === helper.playerNo,
+      helper.rootPlayerNo === helper.playerNo;
+  return {
+    id: helper.serialId,
+    playerNo: helper.playerNo,
+    rootId: helper.rootId,
+    rootOwned,
   };
 }

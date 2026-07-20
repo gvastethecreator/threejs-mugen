@@ -17,6 +17,7 @@ import type {
 import type {
   RuntimeHelperCombatDefender,
   RuntimeHelperCombatOwner,
+  RuntimeHelperRootOwnershipResolver,
   RuntimeHelperCombatStateHooks,
   RuntimeHelperCombatWorld,
 } from "./RuntimeHelperCombatSystem";
@@ -48,6 +49,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (actor: TActor) => CollisionBox[] | undefined;
   getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
+  isHelperRootOwned?: RuntimeHelperRootOwnershipResolver;
   combatStateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   helperStateHooks: RuntimeHelperCombatStateHooks<TActor>;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
@@ -145,6 +147,7 @@ export class RuntimeMatchCombatBridgeWorld {
           getHurtBoxes: input.getHurtBoxes,
           getCollisionBoxes: input.getCollisionBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
+          isHelperRootOwned: input.isHelperRootOwned,
           recordAudioOperation: input.recordAudioOperation,
           stateHooks: input.combatStateHooks,
           rememberProjectileTarget: input.rememberProjectileTarget,
@@ -165,6 +168,7 @@ export class RuntimeMatchCombatBridgeWorld {
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
+          isHelperRootOwned: input.isHelperRootOwned,
           stateHooks: input.helperStateHooks,
           recordAudioOperation: (_owner, operation) => input.recordAudioOperation?.(attacker, operation),
           defaultHurtBoxes: input.defaultHurtBoxes,

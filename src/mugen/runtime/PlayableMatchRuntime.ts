@@ -2035,6 +2035,9 @@ export class PlayableMatchRuntime {
           gameSpace,
           getHurtBoxes: getRuntimeHurtBoxes,
           getCollisionBoxes: getRuntimeCollisionBoxes,
+          isHelperRootOwned: this.runtimeProfile === "ikemen-go"
+            ? (helper, ownerId) => this.verifiedRootForHelper(helper)?.id === ownerId
+            : undefined,
           combatStateHooks: runtimeCombatStateHooks,
           helperStateHooks: runtimeHelperCombatStateHooks,
           recordAudioOperation: (actor, audioOperation: AudioControllerOp) =>

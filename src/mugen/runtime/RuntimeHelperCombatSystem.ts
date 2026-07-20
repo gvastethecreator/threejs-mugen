@@ -58,6 +58,8 @@ export type RuntimeHelperCombatStateHooks<TDefender extends RuntimeHelperCombatD
   ) => void;
 };
 
+export type RuntimeHelperRootOwnershipResolver = (helper: RuntimeHelper, ownerId: string) => boolean;
+
 export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefender = RuntimeHelperCombatDefender> = {
   owner: RuntimeHelperCombatOwner;
   defender: TDefender;
@@ -71,6 +73,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (defender: TDefender) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TDefender) => boolean;
+  isHelperRootOwned?: RuntimeHelperRootOwnershipResolver;
   stateHooks: RuntimeHelperCombatStateHooks<TDefender>;
   recordAudioOperation?: (owner: RuntimeHelperCombatOwner, operation: AudioControllerOp) => void;
   defaultHurtBoxes?: CollisionBox[];
@@ -96,7 +99,7 @@ export class RuntimeHelperCombatWorld {
       if (!runtimeHelperCanDirectlyInteract(helper)) {
         continue;
       }
-      const attacker = helperDirectCombatActor(helper, input.owner);
+      const attacker = helperDirectCombatActor(helper, input.owner, input.isHelperRootOwned);
       const move = attacker.currentMove;
       if (!move || attacker.hasHit || move.requiresHitDef || move.isReversal || !runtimeHelperMoveIsActive(move, attacker.moveTick)) {
         continue;
@@ -183,15 +186,21 @@ export class RuntimeHelperCombatWorld {
   }
 }
 
-function helperDirectCombatActor(helper: RuntimeHelper, owner: RuntimeHelperCombatOwner): RuntimeHelperDirectCombatActor {
+function helperDirectCombatActor(
+  helper: RuntimeHelper,
+  owner: RuntimeHelperCombatOwner,
+  isHelperRootOwned?: RuntimeHelperRootOwnershipResolver,
+): RuntimeHelperDirectCombatActor {
   return {
     id: helper.serialId,
     playerNo: helper.playerNo,
     rootId: helper.rootId,
-    rootOwned: helper.rootId === owner.id &&
-      helper.parentId === helper.rootId &&
-      helper.playerNo !== undefined &&
-      helper.rootPlayerNo === helper.playerNo,
+    rootOwned: isHelperRootOwned
+      ? isHelperRootOwned(helper, owner.id)
+      : helper.rootId === owner.id &&
+        helper.parentId === helper.rootId &&
+        helper.playerNo !== undefined &&
+        helper.rootPlayerNo === helper.playerNo,
     effectOwnerId: owner.id,
     label: `Helper ${helper.name ?? helper.helperId ?? helper.stateNo ?? helper.animNo}`,
     definition: owner.definition,

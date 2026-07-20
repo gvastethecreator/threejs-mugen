@@ -1060,6 +1060,63 @@ describe("RuntimeCombatResolutionSystem", () => {
     });
   });
 
+  it("carries nested Helper Projectile identity through verified ancestry", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const projectile = projectileActor({
+      attr: "S,HA",
+      damage: 31,
+      parentId: "p1-helper-nested",
+      rootId: "p1",
+    });
+    const helper = {
+      serialId: "p1-helper-nested",
+      rootId: "p1",
+      parentId: "p1-helper-parent",
+      playerNo: 1,
+      rootPlayerNo: 1,
+      stateNo: 6000,
+      contact: createRuntimeContactMemory(),
+    } as RuntimeHelper;
+    const attacker = actor("p1", "P1", contactWorld, {
+      playerNo: 1,
+      runtime: runtimeState({ pos: { x: 0, y: 0 }, stateNo: 300 }),
+      projectiles: [projectile],
+      helpers: [helper],
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 31 }),
+    });
+
+    new RuntimeCombatResolutionWorld().resolveProjectile({
+      attacker,
+      defender,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      effectLifecycleWorld: { markGetHit: () => undefined },
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 12,
+      getHurtBoxes: () => [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      stateHooks: hooks(),
+      isHelperRootOwned: (candidate, ownerId) =>
+        candidate.serialId === helper.serialId &&
+        candidate.parentId === "p1-helper-parent" &&
+        candidate.rootId === ownerId,
+      log: () => undefined,
+    });
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe("hyper");
+    expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerNo: 1,
+      sourceActorId: helper.serialId,
+      sourceRootId: "p1",
+      sourceRootOwned: true,
+    });
+  });
+
   it("routes Projectile p2stateno through target hit-state ownership when no HitOverride is active", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({ projectileId: 88, p2StateNo: 889, p2GetP1State: false });

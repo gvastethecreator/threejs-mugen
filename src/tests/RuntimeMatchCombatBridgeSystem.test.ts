@@ -27,6 +27,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
     const combatStateHooks = tagged<object>("combat-hooks");
     const helperStateHooks = tagged<object>("helper-hooks");
     const defaultHurtBoxes = [{ x1: -1, y1: -2, x2: 3, y2: 4 }];
+    const isHelperRootOwned = () => true;
 
     const bridge = new RuntimeMatchCombatBridgeWorld().createResolvers({
       combatResolutionWorld: {
@@ -49,7 +50,9 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           return { kind: "skipped", reason: "missing-move" };
         },
         resolveProjectile: (input) => {
-          calls.push(`projectile:${input.attacker.id}:${input.defender.id}:${tagOf(input.effectLifecycleWorld)}:${tagOf(input.reversalWorld)}`);
+          calls.push(
+            `projectile:${input.attacker.id}:${input.defender.id}:${tagOf(input.effectLifecycleWorld)}:${tagOf(input.reversalWorld)}:${input.isHelperRootOwned === isHelperRootOwned}`,
+          );
           input.rememberProjectileTarget?.(input.attacker, input.defender, projectile);
           input.recordAudioOperation?.(input.attacker, { kind: "audio", controllerType: "playsnd", value: "S6,0" });
           input.log("projectile-log");
@@ -58,7 +61,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       helperCombatWorld: {
         resolveDirect: (input) => {
           calls.push(
-            `helper:${input.owner.id}:${input.defender.id}:${tagOf(input.targetWorld)}:${tagOf(input.reversalWorld)}:${tagOf(input.stateHooks)}:${input.defaultHurtBoxes?.length ?? 0}`,
+            `helper:${input.owner.id}:${input.defender.id}:${tagOf(input.targetWorld)}:${tagOf(input.reversalWorld)}:${tagOf(input.stateHooks)}:${input.defaultHurtBoxes?.length ?? 0}:${input.isHelperRootOwned === isHelperRootOwned}`,
           );
           input.getHurtBoxes(input.defender);
           input.recordAudioOperation?.(input.owner, { kind: "audio", controllerType: "playsnd", value: "S5,1" });
@@ -79,6 +82,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
         calls.push(`hurt:${target.id}`);
         return defaultHurtBoxes;
       },
+      isHelperRootOwned,
       combatStateHooks: combatStateHooks as never,
       helperStateHooks: helperStateHooks as never,
       defaultHurtBoxes,
@@ -99,11 +103,11 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       "direct:p1:p2:77:combat-hooks",
       "hurt:p2",
       "log:direct-log",
-      "projectile:p1:p2:effect-lifecycle:reversal",
+      "projectile:p1:p2:effect-lifecycle:reversal:true",
       "remember:p1:p2:proj-1",
       "audio:p1:S6,0",
       "log:projectile-log",
-      "helper:p1:p2:target-world:reversal:helper-hooks:1",
+      "helper:p1:p2:target-world:reversal:helper-hooks:1:true",
       "hurt:p2",
       "audio:p1:S5,1",
       "log:helper-log",
