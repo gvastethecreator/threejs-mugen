@@ -218,7 +218,7 @@ import {
   applyRuntimePowerDelta,
   resolveRuntimeResourceControllerOperation,
 } from "./RuntimeResourceSystem";
-import { recordRuntimeRootSelfKoCause } from "./RuntimeRoundWinTypeSystem";
+import { recordRuntimeRootSelfKoCause, recordRuntimeTargetLifeKoCause } from "./RuntimeRoundWinTypeSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
@@ -4313,6 +4313,29 @@ type ActiveControllerRunOptions = {
   roundNoDamage?: boolean;
 };
 
+function recordRootTargetLifeKoCause(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  characters: readonly FighterMatchState[] | undefined,
+  sourceActor: RuntimeTargetWorldActor,
+  targetActor: RuntimeTargetWorldActor,
+  lifeBefore: number,
+): void {
+  const roots = [fighter, opponent, ...(characters ?? [])];
+  const sourceRoot = roots.find((root) => root.id === sourceActor.id);
+  const victimRoot = roots.find((root) => root.id === targetActor.id);
+  if (
+    !sourceRoot ||
+    !victimRoot ||
+    (sourceRoot !== fighter && sourceRoot !== opponent) ||
+    (victimRoot !== fighter && victimRoot !== opponent)
+  ) {
+    return;
+  }
+  const winner = victimRoot === fighter ? opponent : fighter;
+  recordRuntimeTargetLifeKoCause(victimRoot, winner, lifeBefore, sourceRoot.id);
+}
+
 function runActiveStateControllers(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
@@ -4710,6 +4733,8 @@ function runActiveStateControllers(
             runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
           }
         },
+        recordTargetLifeAdd: (sourceActor, targetActor, lifeBefore) =>
+          recordRootTargetLifeKoCause(fighter, opponent, options.characters, sourceActor, targetActor, lifeBefore),
         recordDispatch: (selection) => {
           if (redirectExpression === undefined) return;
           compatibilityTelemetryWorld.recordRedirectedTargetDispatch(
@@ -5405,6 +5430,8 @@ function runStateEntrySetupControllers(
               compatibilityTelemetryWorld.recordOperation(fighter, operation);
             }
           },
+          recordTargetLifeAdd: (sourceActor, targetActor, lifeBefore) =>
+            recordRootTargetLifeKoCause(fighter, opponent, characters, sourceActor, targetActor, lifeBefore),
           recordDispatch: (selection) => {
             if (redirectExpression === undefined) return;
             compatibilityTelemetryWorld.recordRedirectedTargetDispatch(

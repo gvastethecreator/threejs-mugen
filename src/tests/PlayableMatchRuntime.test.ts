@@ -6298,6 +6298,55 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("records a root TargetLifeAdd RedirectID cause from the destination root", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-life-ko-redirect-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      passiveTargetController: `
+[State 0, Redirected Target Life KO]
+type = TargetLifeAdd
+trigger1 = Time = 0
+id = 77
+value = -1000
+absolute = 1
+kill = 1
+RedirectID = 57
+`,
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-life-ko-redirect-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && (snapshot.actors[0]?.runtime.life ?? 1000) > 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("normal");
+  });
+
   it("routes state-entry TargetPowerAdd RedirectID through the target owner target memory", () => {
     const redirectedCaller = createImportedFixture({
       id: "target-state-entry-redirect-caller",
@@ -6384,6 +6433,76 @@ value = 1
         }),
       ]),
     );
+  });
+
+  it("records a state-entry root TargetLifeAdd RedirectID cause", () => {
+    const redirectedCaller = createImportedFixture({
+      id: "target-life-entry-ko-caller",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+    });
+    const redirectedTarget = createImportedFixture({
+      id: "target-life-entry-ko-target",
+      withStateMove: true,
+      hitDefDamage: 0,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [48] },
+      stateEntryResourceController: `
+[State -1, Redirected Entry Target Life KO]
+type = TargetLifeAdd
+triggerall = var(30) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+id = 77
+value = -1000
+absolute = 1
+kill = 1
+RedirectID = 56
+
+[State -1, Redirected Entry Target Life KO Gate]
+triggerall = var(30) = 0
+triggerall = StageTime >= 40
+triggerall = NumTarget(77) > 0
+trigger1 = 1
+type = VarSet
+v = 30
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(
+      redirectedCaller,
+      redirectedTarget,
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      { runtimeProfile: "ikemen-go" },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 20; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    }
+    for (let frame = 0; frame < 80; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 100 && (snapshot.actors[1]?.runtime.life ?? 1000) > 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[1]?.runtime.life).toBe(0);
+    expect(snapshot.actors[0]?.runtime.roundWinType).toBe("normal");
   });
 
   it("routes active TargetVelAdd and TargetVelSet RedirectID through the target owner target memory", () => {

@@ -125,6 +125,7 @@ export type RuntimeTargetControllerDispatchOptions<TActor extends RuntimeTargetW
   targetWorld: RuntimeTargetWorld;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: RuntimeTargetControllerDispatchOperation) => void;
+  recordTargetLifeAdd?: (sourceActor: TActor, targetActor: TActor, lifeBefore: number) => void;
   recordDispatch?: (selection: RuntimeTargetControllerDispatchSelection) => void;
   scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   canEnterTargetState?: (target: TActor, stateId: number) => boolean;
@@ -228,6 +229,7 @@ export class RuntimeTargetControllerDispatchWorld {
     let recordedOperation = false;
     const beforeTargets = options.actor.targets.map((target) => ({ ...target }));
     const beforeBindings = options.actor.targetBindings.map((binding) => ({ ...binding, offset: { ...binding.offset } }));
+    const beforeCandidateLives = new Map(options.candidateTargets.map((candidate) => [candidate.id, candidate.runtime.life] as const));
     const beforeBindingSubjects = new Map(
       options.candidateTargets.map((candidate) => [candidate.id, candidate.runtime.hitVars?.isBound] as const),
     );
@@ -247,15 +249,22 @@ export class RuntimeTargetControllerDispatchWorld {
         canEnterTargetState: options.canEnterTargetState,
         enterTargetState: options.enterTargetState,
       });
-      options.recordDispatch?.(
-        createRuntimeTargetControllerDispatchSelection(
-          options,
-          result,
-          beforeTargets,
-          beforeBindings,
-          beforeBindingSubjects,
-        ),
+      const selection = createRuntimeTargetControllerDispatchSelection(
+        options,
+        result,
+        beforeTargets,
+        beforeBindings,
+        beforeBindingSubjects,
       );
+      if (result.controllerType === "targetlifeadd" && result.matchedTargets > 0) {
+        for (const target of options.candidateTargets) {
+          if (!selection.selectedTargetIds.includes(target.id)) continue;
+          const lifeBefore = beforeCandidateLives.get(target.id);
+          if (lifeBefore === undefined) continue;
+          options.recordTargetLifeAdd?.(options.actor, target, lifeBefore);
+        }
+      }
+      options.recordDispatch?.(selection);
       return {
         ...result,
         recordedController: Boolean(options.recordController),

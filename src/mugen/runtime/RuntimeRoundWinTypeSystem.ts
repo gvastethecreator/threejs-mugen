@@ -86,6 +86,47 @@ export function recordRuntimeRootSelfKoCause(
   winner.runtime.roundWinType = "suicide";
 }
 
+export function recordRuntimeTargetLifeKoCause(
+  victim: RuntimeRootSelfKoActor,
+  winner: RuntimeRootSelfKoActor,
+  lifeBefore: number,
+  sourceRootId: string | undefined,
+): void {
+  if (
+    sourceRootId === undefined ||
+    lifeBefore <= 0 ||
+    victim.runtime.life > 0 ||
+    victim.runtime.teamState?.playerType !== true ||
+    victim.runtime.teamState.disabled ||
+    winner.runtime.teamState?.playerType !== true ||
+    winner.runtime.teamState.disabled
+  ) {
+    return;
+  }
+  if (victim.runtime.moveType === "H") {
+    recordRuntimeHitStateKoCause(victim, winner);
+    return;
+  }
+  if (sourceRootId === victim.id) {
+    winner.runtime.roundWinType = "suicide";
+    return;
+  }
+  const victimSide = runtimeTeamSideFromId(victim.id);
+  const sourceSide = runtimeTeamSideFromId(sourceRootId);
+  if (victimSide !== undefined && victimSide === sourceSide) {
+    winner.runtime.roundWinType = "teammate";
+    return;
+  }
+  const source = victim.runtime.hitVars;
+  if (source?.sourceGuardKo === true) {
+    winner.runtime.roundWinType = "cheese";
+    return;
+  }
+  winner.runtime.roundWinType = source?.sourceAttr === undefined
+    ? "normal"
+    : resolveRuntimeRoundWinTypeFromAttack(source.sourceAttr);
+}
+
 function recordRuntimeHitStateKoCause(
   victim: RuntimeRootSelfKoActor & { runtime: Pick<CharacterRuntimeState, "hitVars"> },
   winner: RuntimeRootSelfKoActor,
