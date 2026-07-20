@@ -66,6 +66,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveHelperOwnPalette?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperOwnProjectile?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperPreserve?: (operation: HelperControllerOp) => boolean | undefined;
+  resolveHelperOwnClsnScale?: (operation: HelperControllerOp) => boolean | undefined;
 };
 
 export type RuntimeEffectSpawnControllerDispatchResult = {
@@ -155,6 +156,7 @@ export class RuntimeEffectSpawnWorld {
     initialOwnProjectile?: boolean,
     initialOwnPalette?: boolean,
     initialPreserve?: boolean,
+    initialOwnClsnScale?: boolean,
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
@@ -185,6 +187,7 @@ export class RuntimeEffectSpawnWorld {
       ownPalette: initialOwnPalette,
       ownProjectile: initialOwnProjectile,
       preserve: initialPreserve,
+      ownClsnScale: initialOwnClsnScale,
       initialStandby,
       initialControl: (state?.ctrl ?? 1) !== 0,
       pos: {
@@ -470,9 +473,11 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
       if (initialOwnPalette === "blocked") return 0;
       const initialPreserve = resolveInitialHelperPreserve(options, helperOperation);
       if (initialPreserve === "blocked") return 0;
+      const initialOwnClsnScale = resolveInitialHelperOwnClsnScale(options, helperOperation);
+      if (initialOwnClsnScale === "blocked") return 0;
       const operationForSpawn = options.runtimeProfile === "ikemen-go"
         ? helperOperation
-        : stripHelperPreserveOperation(options.controller.source, stripHelperOwnPaletteOperation(options.controller.source, stripHelperOwnProjectileOperation(options.controller.source, helperOperation)));
+        : stripHelperOwnClsnScaleOperation(options.controller.source, stripHelperPreserveOperation(options.controller.source, stripHelperOwnPaletteOperation(options.controller.source, stripHelperOwnProjectileOperation(options.controller.source, helperOperation))));
       return effectSpawnWorld.spawnHelper(
         actor,
         opponent,
@@ -482,6 +487,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         initialOwnProjectile,
         initialOwnPalette,
         initialPreserve,
+        initialOwnClsnScale,
       )
         ? 1
         : 0;
@@ -569,6 +575,22 @@ function resolveInitialHelperPreserve<TActor extends RuntimeEffectSpawnActor>(
   return operation.preserve;
 }
 
+function resolveInitialHelperOwnClsnScale<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: HelperControllerOp | undefined,
+): boolean | undefined | "blocked" {
+  if (options.runtimeProfile !== "ikemen-go") return undefined;
+  const authored = operation?.ownClsnScale !== undefined ||
+    operation?.ownClsnScaleExpression !== undefined ||
+    findParam(options.controller.source, "ownclsnscale") !== undefined;
+  if (!authored) return undefined;
+  if (!operation) return "blocked";
+  if (operation.ownClsnScaleExpression !== undefined) {
+    return options.resolveHelperOwnClsnScale?.(operation) ?? "blocked";
+  }
+  return operation.ownClsnScale;
+}
+
 function stripHelperOwnProjectileOperation(
   controller: MugenStateController,
   operation: HelperControllerOp | undefined,
@@ -606,4 +628,17 @@ function stripHelperPreserveOperation(
     ...withoutPreserve
   } = operation;
   return withoutPreserve;
+}
+
+function stripHelperOwnClsnScaleOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  if (!operation || findParam(controller, "ownclsnscale") === undefined) return operation;
+  const {
+    ownClsnScale: _ownClsnScale,
+    ownClsnScaleExpression: _ownClsnScaleExpression,
+    ...withoutOwnClsnScale
+  } = operation;
+  return withoutOwnClsnScale;
 }

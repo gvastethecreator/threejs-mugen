@@ -45785,6 +45785,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       ownPalette: true,
       ownProjectile: true,
       preserve: true,
+      ownClsnScale: true,
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({
@@ -45804,7 +45805,7 @@ export function createSyntheticImportedHelperVarTraceArtifact(options: RuntimeTr
       label: "Synthetic imported HelperVar route",
       source: "mixed",
       notes: [
-        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), HelperVar(ownprojectile), and HelperVar(preserve) after the Helper controller enables keyctrl, ownpal, ownprojectile, and preserve. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, round-reset persistence, or full MUGEN/IKEMEN HelperVar parity.",
+        "Synthetic imported HelperVar trace proves the bounded Ikemen helper-local micro-VM can evaluate HelperVar(helpertype), HelperVar(id), HelperVar(keyctrl), HelperVar(ownpal), HelperVar(ownprojectile), HelperVar(preserve), and HelperVar(ownclsnscale) after the Helper controller enables keyctrl, ownpal, ownprojectile, preserve, and ownclsnscale. It does not claim nested helper identity, dynamic helper-variable writes, palette remapping, collision-scale geometry, round-reset persistence, or full MUGEN/IKEMEN HelperVar parity.",
       ],
     },
     gates: [
@@ -48425,6 +48426,7 @@ export type SyntheticImportedTraceFighterOptions = {
       ownPalette?: boolean;
       ownProjectile?: boolean;
       preserve?: boolean;
+      ownClsnScale?: boolean;
   };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
@@ -49036,6 +49038,7 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   ownPalette: options.helperVarRoute?.ownPalette,
   ownProjectile: options.helperVarRoute?.ownProjectile,
   preserve: options.helperVarRoute?.preserve,
+  ownClsnScale: options.helperVarRoute?.ownClsnScale,
 }) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
@@ -54829,6 +54832,7 @@ function helperControllerBlock(
     ownPalette?: boolean;
     ownProjectile?: boolean;
     preserve?: boolean;
+    ownClsnScale?: boolean;
   },
 ): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
@@ -54844,6 +54848,7 @@ function helperControllerBlock(
   const ownPaletteLine = pause?.ownPalette === undefined ? "" : `ownpal = ${pause.ownPalette ? 1 : 0}`;
   const ownProjectileLine = pause?.ownProjectile === undefined ? "" : `ownprojectile = ${pause.ownProjectile ? 1 : 0}`;
   const preserveLine = pause?.preserve === undefined ? "" : `preserve = ${pause.preserve ? 1 : 0}`;
+  const ownClsnScaleLine = pause?.ownClsnScale === undefined ? "" : `ownclsnscale = ${pause.ownClsnScale ? 1 : 0}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -54867,6 +54872,7 @@ ${keyCtrlLine}
 ${ownPaletteLine}
 ${ownProjectileLine}
 ${preserveLine}
+${ownClsnScaleLine}
 `;
 }
 
@@ -56625,6 +56631,7 @@ function helperVarRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOpt
   const ownPalette = route.ownPalette ?? true;
   const ownProjectile = route.ownProjectile ?? true;
   const preserve = route.preserve ?? true;
+  const ownClsnScale = route.ownClsnScale ?? true;
   return `
 [Statedef 1200]
 type = S
@@ -56641,6 +56648,7 @@ trigger1 = HelperVar(keyctrl) = ${keyCtrl ? 1 : 0}
 trigger1 = HelperVar(ownpal) = ${ownPalette ? 1 : 0}
 trigger1 = HelperVar(ownprojectile) = ${ownProjectile ? 1 : 0}
 trigger1 = HelperVar(preserve) = ${preserve ? 1 : 0}
+trigger1 = HelperVar(ownclsnscale) = ${ownClsnScale ? 1 : 0}
 value = ${route.branchStateNo}
 ctrl = 0
 

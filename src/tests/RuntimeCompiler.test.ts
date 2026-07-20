@@ -48,8 +48,8 @@ time = 20
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const helperIdentity = compileExpression("IsHelper && IsHelper(42)");
     const helperIdentityFunction = compileExpression("IsHelper(42)");
-    const helperVar = compileExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1 && HelperVar(preserve) = 1");
-    const unsupportedHelperVar = compileExpression("HelperVar(ownclsnscale) = 1");
+    const helperVar = compileExpression("HelperVar(helpertype) = 1 && HelperVar(id) = 42 && HelperVar(keyctrl) = 1 && HelperVar(ownpal) = 1 && HelperVar(ownprojectile) = 1 && HelperVar(preserve) = 1 && HelperVar(ownclsnscale) = 1");
+    const unsupportedHelperVar = compileExpression("HelperVar(clsnproxy) = 1");
     const characterIdentity = compileExpression("ID >= 56 && PlayerNo = 1 && EnemyNear, ID >= 56");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
     const enemyNear = compileExpression("enemynear, stateno = 5000");
@@ -300,6 +300,15 @@ value = 1
       kind: "helper",
       preserve: false,
       preserveExpression: "var(0)",
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { ownclsnscale: "1" })).operation).toMatchObject({
+      kind: "helper",
+      ownClsnScale: true,
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { ownclsnscale: "var(0)" })).operation).toMatchObject({
+      kind: "helper",
+      ownClsnScale: false,
+      ownClsnScaleExpression: "var(0)",
     });
   });
 

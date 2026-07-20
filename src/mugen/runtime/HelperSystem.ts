@@ -121,6 +121,7 @@ export type RuntimeHelper = {
   ownPalette?: boolean;
   ownProjectile?: boolean;
   preserve?: boolean;
+  ownClsnScale?: boolean;
   lifeMax: number;
   life: number;
   guardPointsMax?: number;
@@ -300,6 +301,7 @@ export type RuntimeHelperSpawnInput = {
   ownPalette?: boolean;
   ownProjectile?: boolean;
   preserve?: boolean;
+  ownClsnScale?: boolean;
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
@@ -359,6 +361,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     ownPalette: input.ownPalette ?? operation?.ownPalette,
     ownProjectile: input.ownProjectile ?? operation?.ownProjectile,
     preserve: input.preserve ?? operation?.preserve,
+    ownClsnScale: input.ownClsnScale ?? operation?.ownClsnScale,
     stateType: "S",
     moveType: "I",
     physics: "N",
@@ -1585,6 +1588,7 @@ function helperExpressionContext(
     helperOwnPalette: options.runtimeProfile === "ikemen-go" && helper.ownPalette === true,
     helperOwnProjectile: options.runtimeProfile === "ikemen-go" && helper.ownProjectile === true,
     helperPreserve: options.runtimeProfile === "ikemen-go" && helper.preserve === true,
+    helperOwnClsnScale: options.runtimeProfile === "ikemen-go" && helper.ownClsnScale === true,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
     stageTime: options.stageTime,

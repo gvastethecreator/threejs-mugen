@@ -259,6 +259,8 @@ export type HelperControllerOp = {
   ownPaletteExpression?: string;
   preserve?: boolean;
   preserveExpression?: string;
+  ownClsnScale?: boolean;
+  ownClsnScaleExpression?: string;
   pos?: MugenProjectileVector;
   velocity?: [number, number];
   scale?: [number, number];
@@ -2128,6 +2130,22 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
       preserveExpression = compiledPreserve.normalized;
     }
   }
+  const ownClsnScaleRaw = findParam(controller, "ownclsnscale");
+  let ownClsnScale: boolean | undefined;
+  let ownClsnScaleExpression: string | undefined;
+  if (ownClsnScaleRaw !== undefined) {
+    const trimmedOwnClsnScale = ownClsnScaleRaw.trim();
+    const staticOwnClsnScale = Number(trimmedOwnClsnScale);
+    if (Number.isFinite(staticOwnClsnScale)) {
+      ownClsnScale = staticOwnClsnScale !== 0;
+    } else {
+      if (!hasValidScalarExpressionStructure(ownClsnScaleRaw)) return undefined;
+      const compiledOwnClsnScale = compileExpression(ownClsnScaleRaw);
+      if (compiledOwnClsnScale.supportLevel === "unsupported") return undefined;
+      ownClsnScale = false;
+      ownClsnScaleExpression = compiledOwnClsnScale.normalized;
+    }
+  }
   return definedObject({
     kind: "helper" as const,
     helperId: firstNumber(findParam(controller, "id")),
@@ -2143,6 +2161,8 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     ownPaletteExpression,
     preserve,
     preserveExpression,
+    ownClsnScale,
+    ownClsnScaleExpression,
     pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
     scale: scalePairWithDefaultOrUndefined(helperScalePair(controller)),
