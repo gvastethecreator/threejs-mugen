@@ -6,6 +6,7 @@ import {
   FightScreenAnnouncementRenderer,
   resolveFightScreenAnnouncementSelection,
   resolveFightScreenOutcomeKind,
+  resolveFightScreenResultDisplayAsset,
 } from "../game/render/FightScreenAnnouncementRenderer";
 import { TextureStore } from "../game/render/TextureStore";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
@@ -198,6 +199,52 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     });
     renderer.dispose();
     textures.dispose();
+  });
+
+  it("selects p1/p2 and AI result variants with source-scoped fallback", () => {
+    const p1Win = { text: "P1 wins" };
+    const p2Win = { text: "P2 wins" };
+    const winTwoP1 = { text: "P1 wins twice" };
+    const winTwoP2 = { text: "P2 wins twice" };
+    const display: MugenFightScreenDisplayDefinitions = {
+      round: new Map(),
+      result: {
+        win: {
+          variants: [
+            { sides: [p1Win, p2Win] },
+            { sides: [winTwoP1, winTwoP2] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+          ],
+        },
+        aiWin: {
+          variants: [
+            { sides: [{ text: "You lose" }, { text: "AI wins" }] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+          ],
+        },
+        aiLose: {
+          variants: [
+            { sides: [{ text: "You win" }, { text: "P2 wins" }] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+            { sides: [undefined, undefined] },
+          ],
+        },
+      },
+    };
+
+    expect(resolveFightScreenResultDisplayAsset(display, { family: "win", side: 0, variant: 0 })).toBe(p1Win);
+    expect(resolveFightScreenResultDisplayAsset(display, { family: "win", side: 1, variant: 1 })).toBe(winTwoP2);
+    expect(resolveFightScreenResultDisplayAsset(display, { family: "win", side: 0, variant: 3 })).toBe(winTwoP1);
+    expect(resolveFightScreenResultDisplayAsset(display, { family: "aiWin", side: 0, variant: 0 })).toMatchObject({
+      text: "You lose",
+    });
+    expect(resolveFightScreenResultDisplayAsset(display, { family: "aiLose", side: 1, variant: 0 })).toMatchObject({
+      text: "P2 wins",
+    });
   });
 
   it("applies the FSText palette effect while preserving authored font color", async () => {

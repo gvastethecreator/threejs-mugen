@@ -6,6 +6,7 @@ import type {
   MugenFightScreenFont,
   MugenFightScreenLayoutAsset,
   MugenFightScreenLayoutTransform,
+  MugenFightScreenResultDisplaySelection,
 } from "../../mugen/model/MugenSystemAssets";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/model/MugenAnimation";
 import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
@@ -1110,9 +1111,25 @@ export function resolveFightScreenOutcomeAsset(
 export function resolveFightScreenWinnerDisplayAsset(
   display: MugenFightScreenDisplayDefinitions | undefined,
   kind: RuntimeRoundWinnerDisplayKind,
+  selection?: MugenFightScreenResultDisplaySelection,
 ): MugenFightScreenDisplayAsset | undefined {
   if (!display) return undefined;
-  return kind === "draw" ? display.draw : display.win;
+  if (kind === "draw") return display.draw;
+  return resolveFightScreenResultDisplayAsset(display, selection ?? { family: "win", side: 0, variant: 0 })
+    ?? display.win;
+}
+
+export function resolveFightScreenResultDisplayAsset(
+  display: MugenFightScreenDisplayDefinitions | undefined,
+  selection: MugenFightScreenResultDisplaySelection,
+): MugenFightScreenDisplayAsset | undefined {
+  const family = display?.result?.[selection.family];
+  if (!family) return undefined;
+  const variant = boundedResultVariant(selection.variant);
+  const requested = family.variants[variant]?.sides[selection.side];
+  if (requested) return requested;
+  if (variant >= 2) return family.variants[1]?.sides[selection.side];
+  return undefined;
 }
 
 export function resolveRoundDisplayAsset(
@@ -1700,6 +1717,11 @@ function applyFightScreenMeshUv(geometry: THREE.BufferGeometry, uv: FightScreenP
   attribute.setXY(2, uv.u1, uv.v1);
   attribute.setXY(3, uv.u2, uv.v1);
   attribute.needsUpdate = true;
+}
+
+function boundedResultVariant(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(3, Math.round(value)));
 }
 
 function hasFightScreenDisplayContent(asset: MugenFightScreenDisplayAsset | undefined): boolean {

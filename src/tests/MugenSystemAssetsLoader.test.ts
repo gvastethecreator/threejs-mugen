@@ -123,6 +123,15 @@ draw.text = Draw
 draw.font = 1, 0, 0
 win.text = You win
 win.font = 1, 0, 0
+win2.text = You win 2
+p1.win.text = P1 win
+p2.win.text = P2 win
+p1.win2.text = P1 win 2
+p2.win2.text = P2 win 2
+ai.win.text = AI wins
+p1.ai.win.text = You lose
+ai.lose.text = You win versus AI
+p2.ai.lose.text = P2 wins versus AI
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -303,6 +312,19 @@ File = standard.sff
         draw: { text: "Draw", font: [1, 0, 0] },
         win: { text: "You win", font: [1, 0, 0] },
       },
+    });
+    const resultDisplays = character.systemAssets?.fightScreenAssets?.display?.result;
+    expect(resultDisplays?.win.variants[0]).toEqual({
+      sides: [{ text: "P1 win" }, { text: "P2 win" }],
+    });
+    expect(resultDisplays?.win.variants[1]).toEqual({
+      sides: [{ text: "P1 win 2" }, { text: "P2 win 2" }],
+    });
+    expect(resultDisplays?.aiWin.variants[0]).toEqual({
+      sides: [{ text: "You lose" }, { text: "AI wins" }],
+    });
+    expect(resultDisplays?.aiLose.variants[0]).toEqual({
+      sides: [{ text: "You win versus AI" }, { text: "P2 wins versus AI" }],
     });
     expect(character.systemAssets?.fightScreenAssets?.display?.round.get(1)).toEqual({
       animationNo: 7002,

@@ -98,6 +98,28 @@ export type MugenFightScreenDisplayAsset = {
   vfacing?: 1 | -1;
 };
 
+export type MugenFightScreenResultDisplayFamily = "win" | "aiWin" | "aiLose";
+
+export type MugenFightScreenResultDisplayVariant = {
+  sides: [MugenFightScreenDisplayAsset | undefined, MugenFightScreenDisplayAsset | undefined];
+};
+
+export type MugenFightScreenResultDisplayFamilyDefinition = {
+  variants: MugenFightScreenResultDisplayVariant[];
+};
+
+export type MugenFightScreenResultDisplayDefinitions = {
+  win: MugenFightScreenResultDisplayFamilyDefinition;
+  aiWin: MugenFightScreenResultDisplayFamilyDefinition;
+  aiLose: MugenFightScreenResultDisplayFamilyDefinition;
+};
+
+export type MugenFightScreenResultDisplaySelection = {
+  family: MugenFightScreenResultDisplayFamily;
+  side: 0 | 1;
+  variant: number;
+};
+
 export type MugenFightScreenDisplayDefinitions = {
   round: Map<number, MugenFightScreenDisplayAsset>;
   roundDefault?: MugenFightScreenDisplayAsset;
@@ -109,6 +131,7 @@ export type MugenFightScreenDisplayDefinitions = {
   timeOver?: MugenFightScreenDisplayAsset;
   draw?: MugenFightScreenDisplayAsset;
   win?: MugenFightScreenDisplayAsset;
+  result?: MugenFightScreenResultDisplayDefinitions;
 };
 
 export type MugenFightScreenTiming = {

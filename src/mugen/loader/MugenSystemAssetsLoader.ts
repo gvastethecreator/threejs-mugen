@@ -11,6 +11,7 @@ import type {
   MugenFightScreenLayoutTransform,
   MugenFightScreenPaletteFx,
   MugenFightScreenProjection,
+  MugenFightScreenResultDisplayDefinitions,
   MugenFightScreenTiming,
   MugenSystemAssets,
   MugenSystemHitSparkLibrary,
@@ -649,6 +650,7 @@ function parseFightScreenDisplayDefinitions(
     timeOver: displayAsset(section, "to"),
     draw: displayAsset(section, "draw"),
     win: displayAsset(section, "win"),
+    result: parseFightScreenResultDisplayDefinitions(section),
   };
   return definitions.round.size > 0
     || definitions.roundDefault !== undefined
@@ -660,8 +662,37 @@ function parseFightScreenDisplayDefinitions(
     || definitions.timeOver !== undefined
     || definitions.draw !== undefined
     || definitions.win !== undefined
+    || definitions.result !== undefined
     ? definitions
     : undefined;
+}
+
+function parseFightScreenResultDisplayDefinitions(
+  section: Record<string, string>,
+): MugenFightScreenResultDisplayDefinitions | undefined {
+  const result: MugenFightScreenResultDisplayDefinitions = {
+    win: resultDisplayFamily(section, "win"),
+    aiWin: resultDisplayFamily(section, "ai.win"),
+    aiLose: resultDisplayFamily(section, "ai.lose"),
+  };
+  return Object.values(result).some((family) => family.variants.some(({ sides }) => sides.some(Boolean)))
+    ? result
+    : undefined;
+}
+
+function resultDisplayFamily(
+  section: Record<string, string>,
+  prefix: string,
+): MugenFightScreenResultDisplayDefinitions["win"] {
+  return {
+    variants: ["", "2", "3", "4"].map((suffix) => {
+      const sourcePrefix = `${prefix}${suffix}`;
+      const common = displayAsset(section, sourcePrefix);
+      const p1 = displayAsset(section, `p1.${sourcePrefix}`) ?? common;
+      const p2 = displayAsset(section, `p2.${sourcePrefix}`) ?? common;
+      return { sides: [p1, p2] };
+    }),
+  };
 }
 
 function displayAsset(
