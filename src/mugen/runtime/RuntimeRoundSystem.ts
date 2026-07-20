@@ -299,7 +299,10 @@ export class RuntimeRoundSystem {
   finishIfNeeded(
     left: RuntimeRoundParticipant,
     right: RuntimeRoundParticipant,
-    options: { noKoSlow?: boolean } = {},
+    options: {
+      noKoSlow?: boolean;
+      participants?: readonly RuntimeRoundParticipant[];
+    } = {},
   ): RuntimeRoundFinishResult | undefined {
     if (this.state !== "fight" || this.currentPhase !== 2 || !this.shouldFinish(left, right)) {
       return undefined;
@@ -307,7 +310,12 @@ export class RuntimeRoundSystem {
 
     this.state = this.timerFrames <= 0 ? "timeover" : "ko";
     this.winner = resolveRoundWinner(left, right);
-    this.winnerDisplaySelection = resolveWinnerDisplaySelection(left, right, this.timing.outcome);
+    this.winnerDisplaySelection = resolveWinnerDisplaySelection(
+      left,
+      right,
+      this.timing.outcome,
+      options.participants,
+    );
     this.noKoSlow = this.state === "ko" && options.noKoSlow === true;
     this.postRoundFrame = 0;
     this.postRoundRemaining = this.state === "ko" || this.state === "timeover" ? this.timing.postKoFrames : 1;
@@ -842,6 +850,7 @@ function resolveWinnerDisplaySelection(
   left: RuntimeRoundParticipant,
   right: RuntimeRoundParticipant,
   timing: RuntimeRoundOutcomeTiming | undefined,
+  participants: readonly RuntimeRoundParticipant[] | undefined,
 ): RuntimeRoundWinnerDisplaySelection | undefined {
   if (left.life === right.life) return undefined;
   const leftWins = left.life > right.life;
@@ -854,7 +863,12 @@ function resolveWinnerDisplaySelection(
     : winner.playerControlled === true && loser.playerControlled === false
       ? "aiLose"
       : "win";
-  const winType = resolveWinnerWinType(winner, timing?.clutchThresholdPercent);
+  const winType = resolveWinnerWinType(
+    winner,
+    winnerSide,
+    timing?.clutchThresholdPercent,
+    participants,
+  );
   const baseWinType = winner.winTypeBase ?? (
     winner.winType === undefined || winner.winType === "perfect" || winner.winType === "clutch"
       ? undefined
@@ -875,16 +889,28 @@ function resolveWinnerDisplaySelection(
 
 function resolveWinnerWinType(
   winner: RuntimeRoundParticipant,
+  winnerSide: 0 | 1,
   clutchThresholdPercent = DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT,
+  participants?: readonly RuntimeRoundParticipant[],
 ): RuntimeRoundWinTypeName | undefined {
   if (winner.winType === "perfect" || winner.winType === "clutch") return winner.winType;
-  const lifeMax = winner.lifeMax;
-  if (lifeMax === undefined || !Number.isFinite(lifeMax) || lifeMax <= 0 || !Number.isFinite(winner.life)) {
+  const team = participants?.filter((participant) => participant.side === winnerSide) ?? [];
+  const members = team.length === 0
+    ? [winner]
+    : team.some((participant) => participant.label === winner.label)
+      ? team
+      : [...team, winner];
+  if (members.some((participant) => (
+    participant.lifeMax === undefined
+    || !Number.isFinite(participant.lifeMax)
+    || participant.lifeMax <= 0
+    || !Number.isFinite(participant.life)
+  ))) {
     return winner.winType;
   }
-  if (winner.life >= lifeMax) return "perfect";
   const threshold = boundedPercent(clutchThresholdPercent, DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT);
-  if (winner.life <= lifeMax * (threshold / 100)) return "clutch";
+  if (members.every((participant) => participant.life >= participant.lifeMax!)) return "perfect";
+  if (members.every((participant) => participant.life <= participant.lifeMax! * (threshold / 100))) return "clutch";
   return winner.winType;
 }
 

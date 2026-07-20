@@ -269,6 +269,41 @@ describe("RuntimeRoundSystem", () => {
     expect(round.snapshot().postRound?.outcome?.winnerDisplay?.selection).not.toHaveProperty("winType");
   });
 
+  it("requires every winning-team member for perfect and clutch derivation", () => {
+    const damagedTeamRound = new RuntimeRoundSystem(1, "ikemen-go", { outcome: outcomeTiming });
+    damagedTeamRound.finishIfNeeded(
+      { label: "P1", life: 1000, lifeMax: 1000, side: 0 },
+      { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+      {
+        participants: [
+          { label: "P1", life: 1000, lifeMax: 1000, side: 0 },
+          { label: "P3", life: 999, lifeMax: 1000, side: 0 },
+          { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+        ],
+      },
+    );
+
+    expect(damagedTeamRound.snapshot().postRound?.outcome?.winnerDisplay?.selection).not.toHaveProperty("winType");
+
+    const clutchTeamRound = new RuntimeRoundSystem(1, "ikemen-go", { outcome: outcomeTiming });
+    clutchTeamRound.finishIfNeeded(
+      { label: "P1", life: 100, lifeMax: 1000, side: 0 },
+      { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+      {
+        participants: [
+          { label: "P1", life: 100, lifeMax: 1000, side: 0 },
+          { label: "P3", life: 100, lifeMax: 1000, side: 0 },
+          { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+        ],
+      },
+    );
+
+    expect(clutchTeamRound.snapshot().postRound?.outcome?.winnerDisplay?.selection).toMatchObject({
+      winType: "clutch",
+      winTypes: ["clutch", "normal"],
+    });
+  });
+
   it("advances the bounded KO slowdown and fades back to normal speed", () => {
     const round = new RuntimeRoundSystem();
     round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });

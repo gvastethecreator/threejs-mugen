@@ -124,6 +124,37 @@ describe("RuntimeMatchRoundWorld", () => {
     });
   });
 
+  it("forwards team outcome participants to the round decision", () => {
+    const round = new RuntimeRoundSystem(1, "ikemen-go", {
+      outcome: {
+        koTimeFrames: 1,
+        koSoundTimeFrames: 1,
+        doubleKoTimeFrames: 1,
+        doubleKoSoundTimeFrames: 1,
+        doubleKoShowDraw: true,
+        timeOverTimeFrames: 1,
+        timeOverSoundTimeFrames: 1,
+        winTimeFrames: 1,
+        winSoundTimeFrames: 1,
+      },
+    });
+
+    new RuntimeMatchRoundWorld().finishIfNeeded({
+      round,
+      p1: actorWithLifeMax("P1", 1000, 1000),
+      p2: actorWithLifeMax("P2", 0, 1000),
+      participants: [
+        { label: "P1", life: 1000, lifeMax: 1000, side: 0 },
+        { label: "P3", life: 500, lifeMax: 1000, side: 0 },
+        { label: "P2", life: 0, lifeMax: 1000, side: 1 },
+      ],
+      stopPlaying: () => undefined,
+      log: () => undefined,
+    });
+
+    expect(round.snapshot().postRound?.outcome?.winnerDisplay?.selection).not.toHaveProperty("winType");
+  });
+
   it("stops playing only after the post-KO timeline completes", () => {
     const round = new RuntimeRoundSystem();
     const world = new RuntimeMatchRoundWorld();

@@ -176,6 +176,7 @@ import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import {
   RuntimeRoundSystem,
+  type RuntimeRoundParticipant,
   type RuntimeRoundTiming,
 } from "./RuntimeRoundSystem";
 import { resolveRuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
@@ -1084,6 +1085,19 @@ export class PlayableMatchRuntime {
         ...(memberNo === undefined ? {} : { memberNo }),
         teamState,
       } satisfies RuntimeTeamRoundHandoffActor;
+    });
+  }
+
+  private teamRoundOutcomeParticipants(): RuntimeRoundParticipant[] {
+    return this.characterRoots().flatMap((root) => {
+      const side = runtimeTeamSide(root);
+      if (side === undefined) return [];
+      return [{
+        label: root.label,
+        life: root.runtime.life,
+        lifeMax: root.runtime.lifeMax,
+        side: side === 1 ? 0 : 1,
+      }];
     });
   }
 
@@ -2077,6 +2091,7 @@ export class PlayableMatchRuntime {
           p1: activeP1,
           p2: activeP2,
           tick: this.tick,
+          participants: this.teamGameplayActive() ? this.teamRoundOutcomeParticipants() : undefined,
           stopPlaying: () => {
             this.playing = false;
           },

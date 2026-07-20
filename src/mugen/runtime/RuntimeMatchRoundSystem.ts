@@ -1,4 +1,5 @@
 import type {
+  RuntimeRoundParticipant,
   RuntimeRoundFinishResult,
   RuntimeRoundSystem,
   RuntimeRoundTickOptions,
@@ -40,6 +41,7 @@ export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor
   p1: TActor;
   p2: TActor;
   tick?: number;
+  participants?: readonly RuntimeRoundParticipant[];
   stopPlaying: () => void;
   log: (message: string) => void;
   emitKoSound?: (actor: TActor) => void;
@@ -127,7 +129,10 @@ export class RuntimeMatchRoundWorld {
         lifeMax: options.p2.runtime.lifeMax,
         side: 1,
       },
-      { noKoSlow: globalAssertSpecial.noKoSlow },
+      {
+        noKoSlow: globalAssertSpecial.noKoSlow,
+        participants: options.participants,
+      },
     );
     if (!finish) {
       return undefined;
