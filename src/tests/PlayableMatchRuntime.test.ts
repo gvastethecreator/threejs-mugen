@@ -7907,6 +7907,37 @@ RedirectID = 999
     expect(snapshot.logs.some((line) => line.includes("Blocked lifeset RedirectID 999"))).toBe(true);
   });
 
+  it("blocks Helper RedirectID after its parent chain becomes stale", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Stale Helper Redirect]
+type = PowerSet
+trigger1 = Time = 1
+value = 777
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({ id: "stale-helper-redirect-destination" });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = effectActorWorld.helpers("p1")[0];
+    expect(helper).toBeDefined();
+    helper!.parentId = "missing-parent";
+
+    for (let frame = 0; frame < 24; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[1]?.runtime.power).toBe(0);
+    expect(snapshot.logs.some((line) => line.includes("Blocked powerset RedirectID 57"))).toBe(true);
+  });
+
   it("routes a Helper TargetPowerAdd RedirectID through the destination root target memory", () => {
     const caller = createImportedFixture({
       withHelper: true,

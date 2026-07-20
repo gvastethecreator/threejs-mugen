@@ -877,6 +877,7 @@ export class PlayableMatchRuntime {
     candidateProjection?: readonly RuntimeTargetWorldActor[],
   ): RuntimeHelperTargetRedirect | undefined {
     if (this.runtimeProfile !== "ikemen-go") return undefined;
+    if (!this.verifiedRootForHelper(helper)) return undefined;
     const redirectExpression = helperTargetControllerRedirectExpression(controller);
     if (redirectExpression === undefined) return undefined;
     const identity = this.characterIdentity?.findByPlayerId(playerId);
@@ -1077,7 +1078,9 @@ export class PlayableMatchRuntime {
     writeback: RuntimeRedirectedTargetDispatchWriteback,
     destinationRevision?: string,
   ): void {
-    const callerRoot = this.rootForHelper(helper);
+    const callerRoot = this.runtimeProfile === "ikemen-go"
+      ? this.verifiedRootForHelper(helper)
+      : this.rootForHelper(helper);
     if (!callerRoot) return;
     const destinationRoot = this.characterRoots().find((candidate) => candidate.id === target.id);
     const stateOwner = selection.controllerType === "targetstate" ? this.rootForRedirectedTarget(target) : destinationRoot;
