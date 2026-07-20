@@ -604,7 +604,9 @@ export class RuntimeCombatResolutionWorld {
   resolveProjectile<TActor extends RuntimeCombatResolutionActor>(
     input: RuntimeCombatResolutionProjectileInput<TActor>,
   ): void {
-    const hurtBoxes = input.getHurtBoxes?.(input.defender) ?? defaultHurtBoxes;
+    const hurtBoxes = input.getCollisionBoxes?.(input.defender, "clsn2")
+      ?? input.getHurtBoxes?.(input.defender)
+      ?? defaultHurtBoxes;
     const projectileCollisionMode = Boolean(input.defender.runtime.assertSpecial?.projTypeCollision);
     const projectileDefenseMove = getActiveRuntimeProjectileDefenseMove(input.defender);
     input.attacker.effectActorWorld.resolveProjectileCombat(input.attacker.id, {

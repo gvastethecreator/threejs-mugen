@@ -928,6 +928,51 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(logs.some((line) => line.includes("HitFlag P"))).toBe(true);
   });
 
+  it("uses the resolved root Clsn2 boxes for projectile target contact", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const projectile = projectileActor({
+      action: {
+        ...sparkAction(910),
+        frames: [{
+          ...sparkAction(910).frames[0],
+          clsn1: [{ x1: 6, y1: -18, x2: 34, y2: 6 }],
+        }],
+      },
+    });
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 300 }),
+      projectiles: [projectile],
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 0, y: 0 }, stateNo: 5000, life: 100 }),
+    });
+    const logs: string[] = [];
+
+    new RuntimeCombatResolutionWorld().resolveProjectile({
+      attacker,
+      defender,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      effectLifecycleWorld: { markGetHit: () => undefined },
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 12,
+      getHurtBoxes: () => [{ x1: 100, y1: -40, x2: 124, y2: 0 }],
+      getCollisionBoxes: (target, boxType) =>
+        target.id === "p2" && boxType === "clsn2"
+          ? [{ x1: 6, y1: -18, x2: 34, y2: 6 }]
+          : undefined,
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(defender.runtime.life).toBe(88);
+    expect(projectile).toMatchObject({ removalReason: "hit", hasHit: true });
+    expect(logs.some((line) => line.includes("P1 projectile hit P2 for 12"))).toBe(true);
+  });
+
   it("uses paired Clsn2 boxes for direct contact when both players assert ProjTypeCollision", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
