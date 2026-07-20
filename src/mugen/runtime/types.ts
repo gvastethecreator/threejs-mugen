@@ -117,6 +117,7 @@ export type CharacterRuntimeState = {
   frameIndex: number;
   lifeMax?: number;
   life: number;
+  roundWinType?: RuntimeRoundWinTypeName;
   guardPointsMax?: number;
   guardPoints?: number;
   dizzyPointsMax?: number;

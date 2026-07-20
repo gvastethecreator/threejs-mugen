@@ -25,6 +25,7 @@ export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
   runtime: {
     life: number;
     lifeMax?: number;
+    roundWinType?: RuntimeRoundParticipant["winType"];
   };
 };
 
@@ -122,12 +123,14 @@ export class RuntimeMatchRoundWorld {
         life: options.p1.runtime.life,
         lifeMax: options.p1.runtime.lifeMax,
         side: 0,
+        ...(options.p1.runtime.roundWinType === undefined ? {} : { winType: options.p1.runtime.roundWinType }),
       },
       {
         label: options.p2.label,
         life: options.p2.runtime.life,
         lifeMax: options.p2.runtime.lifeMax,
         side: 1,
+        ...(options.p2.runtime.roundWinType === undefined ? {} : { winType: options.p2.runtime.roundWinType }),
       },
       {
         noKoSlow: globalAssertSpecial.noKoSlow,

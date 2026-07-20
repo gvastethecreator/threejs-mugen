@@ -863,16 +863,13 @@ function resolveWinnerDisplaySelection(
     : winner.playerControlled === true && loser.playerControlled === false
       ? "aiLose"
       : "win";
+  const baseWinType = resolveWinnerBaseWinType(winner, winnerSide, participants);
   const winType = resolveWinnerWinType(
     winner,
     winnerSide,
     timing?.clutchThresholdPercent,
     participants,
-  );
-  const baseWinType = winner.winTypeBase ?? (
-    winner.winType === undefined || winner.winType === "perfect" || winner.winType === "clutch"
-      ? undefined
-      : winner.winType
+    baseWinType,
   );
   return {
     schema: "RuntimeRoundWinnerDisplaySelection/v0",
@@ -892,6 +889,7 @@ function resolveWinnerWinType(
   winnerSide: 0 | 1,
   clutchThresholdPercent = DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT,
   participants?: readonly RuntimeRoundParticipant[],
+  baseWinType?: RuntimeRoundWinTypeName,
 ): RuntimeRoundWinTypeName | undefined {
   if (winner.winType === "perfect" || winner.winType === "clutch") return winner.winType;
   const team = participants?.filter((participant) => participant.side === winnerSide) ?? [];
@@ -906,12 +904,30 @@ function resolveWinnerWinType(
     || participant.lifeMax <= 0
     || !Number.isFinite(participant.life)
   ))) {
-    return winner.winType;
+    return baseWinType;
   }
   const threshold = boundedPercent(clutchThresholdPercent, DEFAULT_RUNTIME_CLUTCH_THRESHOLD_PERCENT);
   if (members.every((participant) => participant.life >= participant.lifeMax!)) return "perfect";
   if (members.every((participant) => participant.life <= participant.lifeMax! * (threshold / 100))) return "clutch";
-  return winner.winType;
+  return baseWinType;
+}
+
+function resolveWinnerBaseWinType(
+  winner: RuntimeRoundParticipant,
+  winnerSide: 0 | 1,
+  participants?: readonly RuntimeRoundParticipant[],
+): RuntimeRoundWinTypeName | undefined {
+  if (winner.winTypeBase !== undefined) return normalizeBaseWinType(winner.winTypeBase);
+  if (winner.winType !== undefined) return normalizeBaseWinType(winner.winType);
+  const teamBase = participants
+    ?.filter((participant) => participant.side === winnerSide)
+    .map((participant) => participant.winTypeBase ?? participant.winType)
+    .find((winType): winType is RuntimeRoundWinTypeName => winType !== undefined);
+  return teamBase === undefined ? undefined : normalizeBaseWinType(teamBase);
+}
+
+function normalizeBaseWinType(winType: RuntimeRoundWinTypeName): RuntimeRoundWinTypeName | undefined {
+  return winType === "perfect" || winType === "clutch" ? undefined : winType;
 }
 
 function resolveWinnerDisplaySound(

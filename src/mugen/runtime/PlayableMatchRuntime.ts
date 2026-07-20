@@ -1097,6 +1097,7 @@ export class PlayableMatchRuntime {
         life: root.runtime.life,
         lifeMax: root.runtime.lifeMax,
         side: side === 1 ? 0 : 1,
+        ...(root.runtime.roundWinType === undefined ? {} : { winType: root.runtime.roundWinType }),
       }];
     });
   }

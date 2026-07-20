@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { RuntimeMatchRoundWorld } from "../mugen/runtime/RuntimeMatchRoundSystem";
 import { resolveRuntimeRoundAnnouncementTiming } from "../mugen/runtime/RuntimeRoundAnnouncementSystem";
 import { RuntimeRoundSystem } from "../mugen/runtime/RuntimeRoundSystem";
+import type { RuntimeRoundWinTypeName } from "../mugen/runtime/types";
 
 describe("RuntimeMatchRoundWorld", () => {
   it("owns the normal match timer tick delegation", () => {
@@ -112,7 +113,7 @@ describe("RuntimeMatchRoundWorld", () => {
 
     new RuntimeMatchRoundWorld().finishIfNeeded({
       round,
-      p1: actorWithLifeMax("P1", 1000, 1000),
+      p1: actorWithLifeMax("P1", 1000, 1000, "special"),
       p2: actorWithLifeMax("P2", 0, 1000),
       stopPlaying: () => undefined,
       log: () => undefined,
@@ -120,7 +121,7 @@ describe("RuntimeMatchRoundWorld", () => {
 
     expect(round.snapshot().postRound?.outcome?.winnerDisplay?.selection).toMatchObject({
       winType: "perfect",
-      winTypes: ["perfect", "normal"],
+      winTypes: ["perfect", "special"],
     });
   });
 
@@ -370,12 +371,20 @@ type TestMatchRoundActor = {
   runtime: {
     life: number;
     lifeMax?: number;
+    roundWinType?: RuntimeRoundWinTypeName;
     assertSpecial?: { flags: string[]; globalFlags: string[]; timerFreeze?: boolean; roundNotOver?: boolean };
   };
 };
 
-function actorWithLifeMax(label: string, life: number, lifeMax: number): TestMatchRoundActor {
-  return { label, runtime: { life, lifeMax } };
+function actorWithLifeMax(label: string, life: number, lifeMax: number, roundWinType?: RuntimeRoundWinTypeName): TestMatchRoundActor {
+  return {
+    label,
+    runtime: {
+      life,
+      lifeMax,
+      ...(roundWinType === undefined ? {} : { roundWinType }),
+    },
+  };
 }
 
 function actor(

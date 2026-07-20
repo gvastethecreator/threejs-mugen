@@ -216,6 +216,49 @@ describe("DirectCombatSystem", () => {
     expect(runtimeReceivedDamageValue(defender.contact, 130)).toBe(0);
   });
 
+  it.each([
+    ["S,NA", "normal"],
+    ["S,SA", "special"],
+    ["S,HA", "hyper"],
+    ["S,NT", "throw"],
+  ] as const)("records %s as the direct KO base win type", (attr, winType) => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", { life: 10 });
+
+    world.applyResolvedHit(attacker, defender, move({ attr }), {
+      kind: "hit",
+      damage: 20,
+      kill: true,
+      pause: 1,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe(winType);
+  });
+
+  it("records a guard KO as cheese", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", { life: 10 });
+
+    world.applyResolvedHit(attacker, defender, move(), {
+      kind: "guard",
+      damage: 20,
+      kill: true,
+      pause: 1,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.life).toBe(0);
+    expect(attacker.runtime.roundWinType).toBe("cheese");
+  });
+
   it("applies bounded hit results, hitFall metadata, and received damage", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeDirectCombatWorld(contactWorld);
