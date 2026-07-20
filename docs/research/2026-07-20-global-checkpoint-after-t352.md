@@ -1,7 +1,7 @@
 # Global checkpoint after T352
 
 Date: 2026-07-20
-Head: `385d5700`
+Head: `5741293c`
 Feature commit: `3d61ad92`
 Documentation commit: `385d5700`
 Status: green for the bounded Ikemen Helper preserve round-reset block
