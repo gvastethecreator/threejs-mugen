@@ -648,6 +648,7 @@ function parseFightScreenDisplayDefinitions(
     doubleKo: displayAsset(section, "dko"),
     timeOver: displayAsset(section, "to"),
     draw: displayAsset(section, "draw"),
+    win: displayAsset(section, "win"),
   };
   return definitions.round.size > 0
     || definitions.roundDefault !== undefined
@@ -658,6 +659,7 @@ function parseFightScreenDisplayDefinitions(
     || definitions.doubleKo !== undefined
     || definitions.timeOver !== undefined
     || definitions.draw !== undefined
+    || definitions.win !== undefined
     ? definitions
     : undefined;
 }

@@ -644,6 +644,7 @@ export type RoundSnapshot = {
 };
 
 export type RuntimeRoundOutcomeKind = "ko" | "double-ko" | "time-over" | "draw";
+export type RuntimeRoundWinnerDisplayKind = "win" | "draw";
 
 export type RuntimeRoundOutcomeTiming = {
   koTimeFrames: number;
@@ -658,7 +659,18 @@ export type RuntimeRoundOutcomeTiming = {
   timeOverSound?: RuntimeRoundAnnouncementSound;
   winTimeFrames: number;
   winSoundTimeFrames: number;
+  winSound?: RuntimeRoundAnnouncementSound;
   drawSound?: RuntimeRoundAnnouncementSound;
+};
+
+export type RuntimeRoundWinnerDisplaySnapshot = {
+  schema: "RuntimeRoundWinnerDisplay/v0";
+  kind: RuntimeRoundWinnerDisplayKind;
+  phase: "pending" | "active";
+  displayStartFrame: number;
+  soundTime: number;
+  soundDue: boolean;
+  sound?: RuntimeRoundAnnouncementSound;
 };
 
 export type RuntimeRoundOutcomeSnapshot = {
@@ -669,6 +681,7 @@ export type RuntimeRoundOutcomeSnapshot = {
   soundDue: boolean;
   showDraw: boolean;
   sound?: RuntimeRoundAnnouncementSound;
+  winnerDisplay?: RuntimeRoundWinnerDisplaySnapshot;
 };
 
 export type RuntimeRoundIntroSnapshot = {

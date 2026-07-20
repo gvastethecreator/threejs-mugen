@@ -108,6 +108,7 @@ export type MugenFightScreenDisplayDefinitions = {
   doubleKo?: MugenFightScreenDisplayAsset;
   timeOver?: MugenFightScreenDisplayAsset;
   draw?: MugenFightScreenDisplayAsset;
+  win?: MugenFightScreenDisplayAsset;
 };
 
 export type MugenFightScreenTiming = {

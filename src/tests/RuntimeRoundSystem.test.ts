@@ -69,6 +69,7 @@ describe("RuntimeRoundSystem", () => {
         timeOverSound: { group: 7, index: 3, soundPrefix: "fs" },
         winTimeFrames: 6,
         winSoundTimeFrames: 5,
+        winSound: { group: 7, index: 5, soundPrefix: "fs" },
         drawSound: { group: 7, index: 4, soundPrefix: "fs" },
       },
     };
@@ -83,6 +84,15 @@ describe("RuntimeRoundSystem", () => {
       soundDue: false,
       showDraw: true,
       sound: { group: 7, index: 1, soundPrefix: "fs" },
+      winnerDisplay: {
+        schema: "RuntimeRoundWinnerDisplay/v0",
+        kind: "win",
+        phase: "pending",
+        displayStartFrame: 51,
+        soundTime: 50,
+        soundDue: false,
+        sound: { group: 7, index: 5, soundPrefix: "fs" },
+      },
     });
 
     round.tickTimer();
@@ -93,12 +103,25 @@ describe("RuntimeRoundSystem", () => {
     const drawRound = new RuntimeRoundSystem(0, "ikemen-go", timing);
     drawRound.finishIfNeeded({ label: "P1", life: 0 }, { label: "P2", life: 0 });
     expect(drawRound.snapshot().postRound?.outcome).toMatchObject({
-      kind: "draw",
-      displayStartFrame: 6,
-      soundTime: 5,
+      kind: "time-over",
+      displayStartFrame: 5,
+      soundTime: 4,
       showDraw: true,
-      sound: { group: 7, index: 4, soundPrefix: "fs" },
+      sound: { group: 7, index: 3, soundPrefix: "fs" },
+      winnerDisplay: {
+        kind: "draw",
+        phase: "pending",
+        displayStartFrame: 51,
+        soundTime: 50,
+        sound: { group: 7, index: 4, soundPrefix: "fs" },
+      },
     });
+
+    const hiddenDrawRound = new RuntimeRoundSystem(1, "ikemen-go", {
+      outcome: { ...timing.outcome, doubleKoShowDraw: false },
+    });
+    hiddenDrawRound.finishIfNeeded({ label: "P1", life: 0 }, { label: "P2", life: 0 });
+    expect(hiddenDrawRound.snapshot().postRound?.outcome).not.toHaveProperty("winnerDisplay");
   });
 
   it("advances the bounded KO slowdown and fades back to normal speed", () => {

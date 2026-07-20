@@ -121,6 +121,8 @@ to.sndtime = 4
 to.anim = 7002
 draw.text = Draw
 draw.font = 1, 0, 0
+win.text = You win
+win.font = 1, 0, 0
 start.waittime = 12
 ctrl.time = 30
 shutter.time = 15
@@ -299,6 +301,7 @@ File = standard.sff
         doubleKo: { text: "Double KO", font: [1, 0, 0] },
         timeOver: { animationNo: 7002 },
         draw: { text: "Draw", font: [1, 0, 0] },
+        win: { text: "You win", font: [1, 0, 0] },
       },
     });
     expect(character.systemAssets?.fightScreenAssets?.display?.round.get(1)).toEqual({

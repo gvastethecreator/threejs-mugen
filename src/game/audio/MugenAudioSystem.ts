@@ -4,6 +4,7 @@ import type {
   MugenSnapshot,
   RuntimeRoundFadeSnapshot,
   RuntimeRoundOutcomeSnapshot,
+  RuntimeRoundWinnerDisplayKind,
   RuntimeSoundEvent,
 } from "../../mugen/runtime/types";
 import type { RuntimeRoundAnnouncementSound } from "../../mugen/runtime/RuntimeRoundAnnouncementSystem";
@@ -316,7 +317,11 @@ export class MugenAudioSystem {
   }
 
   private processRoundAnnouncementSound(
-    input: { kind: "round" | "fight" | RuntimeRoundOutcomeSnapshot["kind"]; sound: RuntimeRoundAnnouncementSound; elapsed: number },
+    input: {
+      kind: "round" | "fight" | RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
+      sound: RuntimeRoundAnnouncementSound;
+      elapsed: number;
+    },
     snapshot: MugenSnapshot,
   ): void {
     const key = `${snapshot.round?.roundNo ?? 1}:${input.kind}:${input.elapsed}:${input.sound.soundPrefix}:${input.sound.group},${input.sound.index}`;
@@ -450,8 +455,20 @@ function resolveRoundAnnouncementSound(
 
 function resolveRoundOutcomeSound(
   snapshot: MugenSnapshot,
-): { kind: RuntimeRoundOutcomeSnapshot["kind"]; sound: RuntimeRoundAnnouncementSound; elapsed: number } | undefined {
+): {
+  kind: RuntimeRoundOutcomeSnapshot["kind"] | RuntimeRoundWinnerDisplayKind;
+  sound: RuntimeRoundAnnouncementSound;
+  elapsed: number;
+} | undefined {
   const outcome = snapshot.round?.postRound?.outcome;
+  const winnerDisplay = outcome?.winnerDisplay;
+  if (winnerDisplay?.phase === "active" && winnerDisplay.soundDue && winnerDisplay.sound) {
+    return {
+      kind: winnerDisplay.kind,
+      sound: winnerDisplay.sound,
+      elapsed: snapshot.round?.postRound?.frame ?? 0,
+    };
+  }
   if (!outcome?.soundDue || !outcome.sound) return undefined;
   return {
     kind: outcome.kind,

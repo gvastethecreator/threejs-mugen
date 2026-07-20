@@ -6371,7 +6371,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     source?.winTime,
     source?.winSoundTime,
   ].some((value) => value !== undefined);
-  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw);
+  const hasDisplay = Boolean(display?.ko || display?.doubleKo || display?.timeOver || display?.draw || display?.win);
   if (!hasSourceTiming && !hasDisplay) return undefined;
 
   const koTimeFrames = source?.koTime ?? 0;
@@ -6379,6 +6379,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
   const koSound = runtimeAnnouncementSound(display?.ko?.sound);
   const doubleKoSound = runtimeAnnouncementSound(display?.doubleKo?.sound) ?? koSound;
   const timeOverSound = runtimeAnnouncementSound(display?.timeOver?.sound) ?? koSound;
+  const winSound = runtimeAnnouncementSound(display?.win?.sound);
   const drawSound = runtimeAnnouncementSound(display?.draw?.sound) ?? timeOverSound;
   return {
     koTimeFrames,
@@ -6393,6 +6394,7 @@ function runtimeRoundOutcomeTimingFromFightScreen(
     ...(timeOverSound ? { timeOverSound } : {}),
     winTimeFrames: source?.winTime ?? 0,
     winSoundTimeFrames: source?.winSoundTime ?? source?.winTime ?? 0,
+    ...(winSound ? { winSound } : {}),
     ...(drawSound ? { drawSound } : {}),
   };
 }

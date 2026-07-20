@@ -106,6 +106,7 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
       doubleKo: { text: "Double KO", font: [1, 0, 0], offset: [160, 100] },
       timeOver: { text: "Time Over", font: [1, 0, 0], offset: [160, 100] },
       draw: { text: "Draw", font: [1, 0, 0], offset: [160, 100] },
+      win: { text: "You win", font: [1, 0, 0], offset: [160, 100] },
     };
     renderer.setAssets({
       sourcePath: "data/fight.def",
@@ -151,6 +152,49 @@ describe("FightScreenAnnouncementRenderer bitmap text", () => {
     expect(resolveFightScreenAnnouncementSelection(pending.round, display)).toMatchObject({
       kind: "ko",
       track: { phase: "pending", animationStart: 3, elapsed: 0 },
+    });
+    const winner = outcomeSnapshot("ko", "Nova Boxer");
+    winner.round!.postRound!.outcome = {
+      schema: "RuntimeRoundOutcome/v0",
+      kind: "ko",
+      displayStartFrame: 0,
+      soundTime: 0,
+      soundDue: false,
+      showDraw: false,
+      winnerDisplay: {
+        schema: "RuntimeRoundWinnerDisplay/v0",
+        kind: "win",
+        phase: "active",
+        displayStartFrame: 4,
+        soundTime: 5,
+        soundDue: false,
+      },
+    };
+    expect(resolveFightScreenAnnouncementSelection(winner.round, display)).toMatchObject({
+      kind: "win",
+      asset: display.win,
+      track: { animationStart: 4, elapsed: 0 },
+    });
+    const drawWinner = outcomeSnapshot("timeover", "Draw");
+    drawWinner.round!.postRound!.outcome = {
+      schema: "RuntimeRoundOutcome/v0",
+      kind: "time-over",
+      displayStartFrame: 5,
+      soundTime: 4,
+      soundDue: false,
+      showDraw: true,
+      winnerDisplay: {
+        schema: "RuntimeRoundWinnerDisplay/v0",
+        kind: "draw",
+        phase: "active",
+        displayStartFrame: 45,
+        soundTime: 50,
+        soundDue: false,
+      },
+    };
+    expect(resolveFightScreenAnnouncementSelection(drawWinner.round, display)).toMatchObject({
+      kind: "draw",
+      asset: display.draw,
     });
     renderer.dispose();
     textures.dispose();

@@ -14,6 +14,7 @@ import type {
   MugenSnapshot,
   RoundSnapshot,
   RuntimeRoundOutcomeKind,
+  RuntimeRoundWinnerDisplayKind,
 } from "../../mugen/runtime/types";
 import { SffSpriteProvider } from "../textures/SffSpriteProvider";
 import { applyThreePresentationOrder, resolvePresentationOrder } from "./PresentationOrder";
@@ -151,7 +152,7 @@ type FightScreenAnnouncementSelection = {
   roundNo: number;
 };
 
-export type FightScreenAnnouncementKind = "round" | "fight" | RuntimeRoundOutcomeKind;
+export type FightScreenAnnouncementKind = "round" | "fight" | RuntimeRoundOutcomeKind | RuntimeRoundWinnerDisplayKind;
 
 type FightScreenMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
 type FightScreenLayoutMesh = FightScreenMesh;
@@ -1041,11 +1042,32 @@ export function resolveFightScreenAnnouncementSelection(
     }
   }
   if (!round || round.state === "fight") return undefined;
+  const outcome = round.postRound?.outcome;
+  const winnerDisplay = outcome?.winnerDisplay;
+  const postRoundFrame = round.postRound?.frame ?? 0;
+  if (winnerDisplay?.phase === "active") {
+    const winnerAsset = resolveFightScreenWinnerDisplayAsset(display, winnerDisplay.kind);
+    if (winnerAsset) {
+      return {
+        kind: winnerDisplay.kind,
+        track: {
+          phase: "active",
+          skipped: false,
+          elapsed: postRoundFrame,
+          animationStart: winnerDisplay.displayStartFrame,
+          soundTime: winnerDisplay.soundTime,
+          soundDue: winnerDisplay.soundDue,
+          ...(winnerDisplay.sound ? { sound: { ...winnerDisplay.sound } } : {}),
+        },
+        asset: winnerAsset,
+        mode: round.announcement?.mode ?? "normal",
+        roundNo: round.announcement?.roundNo ?? round.roundNo ?? 1,
+      };
+    }
+  }
   const kind = resolveFightScreenOutcomeKind(round);
   const asset = resolveFightScreenOutcomeAsset(display, kind);
   if (!asset) return undefined;
-  const outcome = round.postRound?.outcome;
-  const postRoundFrame = round.postRound?.frame ?? 0;
   const displayStartFrame = outcome?.displayStartFrame ?? 0;
   return {
     kind,
@@ -1083,6 +1105,14 @@ export function resolveFightScreenOutcomeAsset(
         ? [display.timeOver]
         : [display.draw, display.timeOver];
   return candidates.find((asset): asset is MugenFightScreenDisplayAsset => asset !== undefined);
+}
+
+export function resolveFightScreenWinnerDisplayAsset(
+  display: MugenFightScreenDisplayDefinitions | undefined,
+  kind: RuntimeRoundWinnerDisplayKind,
+): MugenFightScreenDisplayAsset | undefined {
+  if (!display) return undefined;
+  return kind === "draw" ? display.draw : display.win;
 }
 
 export function resolveRoundDisplayAsset(

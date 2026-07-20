@@ -279,6 +279,54 @@ describe("MugenAudioSystem", () => {
     expect(audioContext.sources).toHaveLength(1);
   });
 
+  it("plays the imported winner display sound at its active draw phase", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(undefined, { fs: archive(1) });
+    await system.unlock();
+
+    system.processSnapshot(audioSnapshot([], {
+      state: "timeover",
+      timer: 0,
+      message: "Time over - draw",
+      postRound: {
+        schema: "RuntimePostRound/v0",
+        frame: 50,
+        remaining: 2,
+        duration: 52,
+        slowRemaining: 0,
+        slowDuration: 0,
+        playbackRate: 1,
+        noKoSlow: true,
+        outcome: {
+          schema: "RuntimeRoundOutcome/v0",
+          kind: "time-over",
+          displayStartFrame: 5,
+          soundTime: 4,
+          soundDue: false,
+          showDraw: true,
+          winnerDisplay: {
+            schema: "RuntimeRoundWinnerDisplay/v0",
+            kind: "draw",
+            phase: "active",
+            displayStartFrame: 45,
+            soundTime: 50,
+            soundDue: true,
+            sound: { group: 5, index: 0, soundPrefix: "fs" },
+          },
+        },
+      },
+    }));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(1));
+
+    expect(audioContext.sources).toHaveLength(1);
+  });
+
   it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
     expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });

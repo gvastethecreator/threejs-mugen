@@ -6,6 +6,8 @@ import type {
   RuntimeRoundOutcomeSnapshot,
   RuntimeRoundOutcomeTiming,
   RuntimeRoundShutterSnapshot,
+  RuntimeRoundWinnerDisplayKind,
+  RuntimeRoundWinnerDisplaySnapshot,
 } from "./types";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { RuntimeRoundPhaseWorld, type RuntimeRoundPhase } from "./RuntimeRoundPhaseSystem";
@@ -394,6 +396,7 @@ export class RuntimeRoundSystem {
     if (!timing) return undefined;
     const kind = resolveRuntimeRoundOutcomeKind(this.state, this.winner);
     const track = resolveRuntimeRoundOutcomeTrack(kind, timing);
+    const winnerDisplay = this.roundWinnerDisplaySnapshot(timing);
     return {
       schema: "RuntimeRoundOutcome/v0",
       kind,
@@ -402,6 +405,24 @@ export class RuntimeRoundSystem {
       soundDue: Boolean(track.sound && this.postRoundFrame === track.soundTime),
       showDraw: timing.doubleKoShowDraw,
       ...(track.sound ? { sound: { ...track.sound } } : {}),
+      ...(winnerDisplay ? { winnerDisplay } : {}),
+    };
+  }
+
+  private roundWinnerDisplaySnapshot(timing: RuntimeRoundOutcomeTiming): RuntimeRoundWinnerDisplaySnapshot | undefined {
+    const kind = resolveRuntimeRoundWinnerDisplayKind(this.state, this.winner, timing.doubleKoShowDraw);
+    if (!kind) return undefined;
+    const displayStartFrame = this.timing.postKoPhase4StartFrames + timing.winTimeFrames;
+    const soundTime = this.timing.postKoPhase4StartFrames + timing.winSoundTimeFrames;
+    const sound = kind === "draw" ? timing.drawSound : timing.winSound;
+    return {
+      schema: "RuntimeRoundWinnerDisplay/v0",
+      kind,
+      phase: this.postRoundFrame >= displayStartFrame ? "active" : "pending",
+      displayStartFrame,
+      soundTime,
+      soundDue: Boolean(sound && this.postRoundFrame === soundTime),
+      ...(sound ? { sound: { ...sound } } : {}),
     };
   }
 
@@ -682,6 +703,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
   const koSound = normalizeOutcomeSound(value.koSound);
   const doubleKoSound = normalizeOutcomeSound(value.doubleKoSound);
   const timeOverSound = normalizeOutcomeSound(value.timeOverSound);
+  const winSound = normalizeOutcomeSound(value.winSound);
   const drawSound = normalizeOutcomeSound(value.drawSound);
   return {
     koTimeFrames,
@@ -696,6 +718,7 @@ function normalizeOutcomeTiming(value: RuntimeRoundOutcomeTiming | undefined): R
     ...(timeOverSound ? { timeOverSound } : {}),
     winTimeFrames,
     winSoundTimeFrames,
+    ...(winSound ? { winSound } : {}),
     ...(drawSound ? { drawSound } : {}),
   };
 }
@@ -713,8 +736,17 @@ function resolveRuntimeRoundOutcomeKind(
   state: RoundSnapshot["state"],
   winner: string | undefined,
 ): RuntimeRoundOutcomeKind {
-  if (state === "timeover") return winner === "Draw" ? "draw" : "time-over";
+  if (state === "timeover") return "time-over";
   return winner === "Draw" ? "double-ko" : "ko";
+}
+
+function resolveRuntimeRoundWinnerDisplayKind(
+  state: RoundSnapshot["state"],
+  winner: string | undefined,
+  showDraw: boolean,
+): RuntimeRoundWinnerDisplayKind | undefined {
+  if (state === "ko" && winner === "Draw" && !showDraw) return undefined;
+  return winner === "Draw" ? "draw" : "win";
 }
 
 function resolveRuntimeRoundOutcomeTrack(
