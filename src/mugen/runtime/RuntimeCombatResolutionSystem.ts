@@ -195,7 +195,7 @@ export class RuntimeCombatResolutionWorld {
       collisionBoxes: (actor, move, opponent) =>
         usesRuntimeProjectileCollisionPair(actor, opponent)
           ? input.getHurtBoxes?.(actor as TActor) ?? defaultHurtBoxes
-          : [move.hitbox],
+          : resolveRuntimeAttackBoxes(actor as TActor, move, input.getCollisionBoxes),
       contact: (left, leftMove, right, rightMove) =>
         resolveRuntimePriorityContact(
           left,
@@ -308,13 +308,16 @@ export class RuntimeCombatResolutionWorld {
       return { kind: "skipped", reason: "affectteam-rejected" };
     }
 
-    const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
-    const reversal = input.reversalWorld.findActive(defender, move, attackBox, {
-      isMoveActive: runtimeMoveIsActive,
-      worldBox: runtimeWorldBox,
-      boxesIntersect: collisionBoxesIntersect,
-      attrMatches: hitAttributeMatches,
-    });
+    const attackBoxes = resolveRuntimeAttackBoxes(attacker, move, input.getCollisionBoxes);
+    const attackBox = attackBoxes[0] ? runtimeWorldBox(attacker.runtime, attackBoxes[0]) : undefined;
+    const reversal = attackBox
+      ? input.reversalWorld.findActive(defender, move, attackBox, {
+        isMoveActive: runtimeMoveIsActive,
+        worldBox: runtimeWorldBox,
+        boxesIntersect: collisionBoxesIntersect,
+        attrMatches: hitAttributeMatches,
+      })
+      : undefined;
     if (reversal) {
       const outcome = input.reversalWorld.apply(defender, attacker, reversal, {
         rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),
@@ -352,7 +355,7 @@ export class RuntimeCombatResolutionWorld {
           defender.runtime,
           targetBoxes,
         )
-      : hasRuntimeBoxContact(attackBox, defender.runtime, targetBoxes);
+      : hasRuntimeAttackBoxContact(attacker, attackBoxes, defender, targetBoxes);
     if (!hasContact) {
       return { kind: "skipped", reason: "no-contact" };
     }
@@ -509,8 +512,9 @@ export class RuntimeCombatResolutionWorld {
     if (!runtimeMoveAffectTeamAllows(attacker, move, defender)) {
       return undefined;
     }
-    const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
-    if (input.reversalWorld.findActive(defender, move, attackBox, {
+    const attackBoxes = resolveRuntimeAttackBoxes(attacker, move, input.getCollisionBoxes);
+    const attackBox = attackBoxes[0] ? runtimeWorldBox(attacker.runtime, attackBoxes[0]) : undefined;
+    if (attackBox && input.reversalWorld.findActive(defender, move, attackBox, {
       isMoveActive: runtimeMoveIsActive,
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
@@ -534,7 +538,7 @@ export class RuntimeCombatResolutionWorld {
           defender.runtime,
           targetBoxes,
         )
-      : hasRuntimeBoxContact(attackBox, defender.runtime, targetBoxes);
+      : hasRuntimeAttackBoxContact(attacker, attackBoxes, defender, targetBoxes);
     if (!hasContact || input.canDefenderBeHit?.(defender) === false) {
       return undefined;
     }
@@ -826,6 +830,8 @@ function resolveRuntimePriorityContact<TActor extends RuntimeMoveCollisionActor>
     const rightBoxes = getCollisionBoxes?.(right, "clsn2") ?? getHurtBoxes?.(right) ?? defaultHurtBoxes;
     return hasRuntimeCollisionBoxPair(left.runtime, leftBoxes, right.runtime, rightBoxes);
   }
+  const leftAttackBoxes = resolveRuntimeAttackBoxes(left, leftMove, getCollisionBoxes);
+  const rightAttackBoxes = resolveRuntimeAttackBoxes(right, rightMove, getCollisionBoxes);
   const leftTargetBoxes = resolveRuntimeMoveTargetBoxes(
     right,
     leftMove,
@@ -841,8 +847,8 @@ function resolveRuntimePriorityContact<TActor extends RuntimeMoveCollisionActor>
     false,
   );
   return Boolean(
-    (leftTargetBoxes && hasRuntimeBoxContact(runtimeWorldBox(left.runtime, leftMove.hitbox), right.runtime, leftTargetBoxes)) ||
-    (rightTargetBoxes && hasRuntimeBoxContact(runtimeWorldBox(right.runtime, rightMove.hitbox), left.runtime, rightTargetBoxes)),
+    (leftTargetBoxes && hasRuntimeAttackBoxContact(left, leftAttackBoxes, right, leftTargetBoxes)) ||
+    (rightTargetBoxes && hasRuntimeAttackBoxContact(right, rightAttackBoxes, left, rightTargetBoxes)),
   );
 }
 
@@ -873,6 +879,25 @@ function resolveRuntimeMoveTargetBoxes<TActor extends RuntimeMoveCollisionActor>
     return [];
   }
   return getCollisionBoxes?.(defender, selectedType) ?? (selectedType === "clsn2" ? defaultHurtBoxes : undefined);
+}
+
+function resolveRuntimeAttackBoxes<TActor extends RuntimeMoveCollisionActor>(
+  attacker: TActor,
+  move: DemoMove,
+  getCollisionBoxes: ((actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined) | undefined,
+): CollisionBox[] {
+  return getCollisionBoxes?.(attacker, "clsn1") ?? [move.hitbox];
+}
+
+function hasRuntimeAttackBoxContact<TAttacker extends RuntimeMoveCollisionActor, TDefender extends RuntimeMoveCollisionActor>(
+  attacker: TAttacker,
+  attackBoxes: readonly CollisionBox[],
+  defender: TDefender,
+  targetBoxes: readonly CollisionBox[],
+): boolean {
+  return attackBoxes.some((attackBox) =>
+    hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, attackBox), defender.runtime, [...targetBoxes]),
+  );
 }
 
 function runtimeMoveRequiredBoxesExist<TActor extends RuntimeMoveCollisionActor>(

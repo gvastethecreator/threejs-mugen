@@ -71,6 +71,23 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "no-contact" });
   });
 
+  it("uses the resolved root Clsn1 boxes for direct admission", () => {
+    const attacker = actor("p1", 1, 1, 0, { move: true });
+    const getter = actor("p2", 2, 2, 10);
+    attacker.currentMove!.hitbox = { x1: 100, y1: -20, x2: 120, y2: 0 };
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [attacker, getter],
+      getHurtBoxes: () => hurt,
+      getCollisionBoxes: (root, boxType) =>
+        root.id === "p1" && boxType === "clsn1"
+          ? [{ x1: 0, y1: -20, x2: 20, y2: 0 }]
+          : undefined,
+    });
+
+    expect(result.admittedPairIds).toEqual(["p1->p2"]);
+  });
+
   it("rejects an explicit direct HitDef without F against a falling getter", () => {
     const attacker = actor("p1", 1, 1, 0, { move: true, hitFlag: "H,L,A" });
     const getter = actor("p2", 2, 2, 0, { falling: true });

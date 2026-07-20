@@ -160,12 +160,14 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   const pairedCollision = usesRootProjectileCollisionPair(attacker, getter);
   const attackerBoxes = pairedCollision
     ? resolveRootCollisionBoxes(attacker, "clsn2", input)
-    : [move.hitbox];
+    : resolveRootAttackBoxes(attacker, move, input);
   if (!attackerBoxes?.length) return "missing-hurt-box";
   if (pairedCollision) {
     return hasRootCollisionBoxPair(attacker, attackerBoxes, getter, targetBoxes) ? "admitted" : "no-contact";
   }
-  return hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, move.hitbox), getter.runtime, [...targetBoxes])
+  return attackerBoxes.some((attackerBox) =>
+    hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, attackerBox), getter.runtime, [...targetBoxes]),
+  )
     ? "admitted"
     : "no-contact";
 }
@@ -203,6 +205,14 @@ function resolveRootCollisionBoxes<TActor extends RuntimeRootDirectHitAdmissionA
 ): readonly CollisionBox[] | undefined {
   if (boxType === "none") return [];
   return input.getCollisionBoxes?.(actor, boxType) ?? (boxType === "clsn2" ? input.getHurtBoxes(actor) : undefined);
+}
+
+function resolveRootAttackBoxes<TActor extends RuntimeRootDirectHitAdmissionActor>(
+  attacker: TActor,
+  move: DemoMove,
+  input: RuntimeRootDirectHitAdmissionInput<TActor>,
+): readonly CollisionBox[] {
+  return input.getCollisionBoxes?.(attacker, "clsn1") ?? [move.hitbox];
 }
 
 function usesRootProjectileCollisionPair(

@@ -927,6 +927,30 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(81);
   });
 
+  it("uses the resolved root Clsn1 boxes for direct HitDef contact", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ hitbox: { x1: 100, y1: -30, x2: 120, y2: -2 }, damage: 19 }),
+      moveTick: 1,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, life: 100 }),
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker,
+      defender,
+      ...base,
+      getCollisionBoxes: (target, boxType) =>
+        target.id === "p1" && boxType === "clsn1"
+          ? [{ x1: 0, y1: -30, x2: 36, y2: -2 }]
+          : undefined,
+    })).toMatchObject({ kind: "hit", damage: 19 });
+    expect(defender.runtime.life).toBe(81);
+  });
+
   it("uses paired Clsn2 boxes for priority clash admission when both players assert ProjTypeCollision", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
