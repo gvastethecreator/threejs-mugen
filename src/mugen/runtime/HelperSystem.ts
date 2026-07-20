@@ -221,6 +221,7 @@ export type RuntimeHelperAdvanceOptions = {
     helper: RuntimeHelper,
     target: RuntimeTargetWorldActor,
     operation: ControllerOp,
+    lifeBefore?: number,
   ) => void;
   onRedirectedTargetDispatch?: (
     helper: RuntimeHelper,
@@ -603,13 +604,14 @@ export function runRuntimeHelperStateControllers(
         continue;
       }
       const applyDispatch = () => {
+        const lifeBefore = actor.runtime.life;
         const result = helperControllerDispatchWorld.apply(actor, redirectedController, {
           context,
           recordController: () => redirect
             ? options.onRedirectedController?.(helper, actor, controller.source)
             : options.onController?.(helper, controller),
           recordOperation: (_actor, operation) => redirect
-            ? options.onRedirectedOperation?.(helper, actor, operation)
+            ? options.onRedirectedOperation?.(helper, actor, operation, lifeBefore)
             : options.onOperation?.(helper, operation),
         });
         if (!redirect) {

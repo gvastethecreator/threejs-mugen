@@ -2690,6 +2690,48 @@ value = 650
     expect(snapshot.compatibilitySession?.actors.some((actor) => (actor.executedOperations["resource:powerset"] ?? 0) >= 1)).toBe(true);
   });
 
+  it("records a same-root active resource RedirectID as a suicide cause", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Same Root LifeSet]
+type = LifeSet
+trigger1 = 1
+value = 0
+RedirectID = 56
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("suicide");
+  });
+
+  it("records a same-root state-entry resource RedirectID as a suicide cause", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      stateEntryResourceController: `
+[State -1, Same Root Entry LifeSet]
+type = LifeSet
+trigger1 = 1
+value = 0
+RedirectID = 56
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("suicide");
+  });
+
   it("routes active ModifyProjectile RedirectID through the destination store with caller values", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const caller = createImportedFixture({
@@ -7616,6 +7658,55 @@ RedirectID = 57
     expect(snapshot.actors[0]?.runtime.life).toBe(1000);
     expect(snapshot.actors[1]?.runtime.life).toBe(875);
     expect(snapshot.logs.some((line) => line.includes("Blocked LifeAdd RedirectID"))).toBe(false);
+  });
+
+  it("records a same-root Helper LifeSet RedirectID as a suicide cause", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Same Root Helper Life]
+type = LifeSet
+trigger1 = Time = 1
+value = 0
+RedirectID = 56
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 24 && snapshot.actors[0]?.runtime.life !== 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(0);
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBe("suicide");
+  });
+
+  it("keeps a cross-root Helper resource RedirectID cause fail-closed", () => {
+    const caller = createImportedFixture({
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Cross Root Helper Life]
+type = LifeSet
+trigger1 = Time = 1
+value = 0
+RedirectID = 57
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 24 && snapshot.actors[1]?.runtime.life !== 0; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[1]?.runtime.life).toBe(0);
+    expect(snapshot.actors[0]?.runtime.roundWinType).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.roundWinType).toBeUndefined();
   });
 
   it("routes a Helper PowerSet RedirectID through a destination helper resource lease", () => {

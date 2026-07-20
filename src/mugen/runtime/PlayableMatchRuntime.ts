@@ -985,11 +985,29 @@ export class PlayableMatchRuntime {
   }
 
   private recordHelperRedirectedOperation(
+    helper: RuntimeHelper,
     target: RuntimeHelperTargetRedirect["actor"],
     operation: ControllerOp,
+    lifeBefore?: number,
   ): void {
     const root = this.rootForRedirectedTarget(target);
     if (root) compatibilityTelemetryWorld.recordOperation(root, operation);
+    if (
+      lifeBefore === undefined ||
+      operation.kind !== "resource" ||
+      (operation.controllerType !== "lifeadd" && operation.controllerType !== "lifeset") ||
+      target.id !== root?.id
+    ) {
+      return;
+    }
+    const callerRoot = this.rootForHelper(helper);
+    if (!callerRoot || callerRoot.id !== root.id) return;
+    recordRuntimeRootSelfKoCause(
+      root,
+      this.opponentForRoot(root),
+      lifeBefore,
+      root.stateOwner?.id ?? root.id,
+    );
   }
 
   private recordHelperRedirectedTargetDispatch(
@@ -1567,8 +1585,8 @@ export class PlayableMatchRuntime {
             this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
           onHelperRedirectedController: (_helper, target, controller) =>
             this.recordHelperRedirectedController(target, controller),
-          onHelperRedirectedOperation: (_helper, target, operation) =>
-            this.recordHelperRedirectedOperation(target, operation),
+          onHelperRedirectedOperation: (helper, target, operation, lifeBefore) =>
+            this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
           onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
             this.recordHelperRedirectedTargetDispatch(
               helper,
@@ -1818,8 +1836,8 @@ export class PlayableMatchRuntime {
                   this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
                 onRedirectedController: (_helper, target, controller) =>
                   this.recordHelperRedirectedController(target, controller),
-                onRedirectedOperation: (_helper, target, operation) =>
-                  this.recordHelperRedirectedOperation(target, operation),
+                onRedirectedOperation: (helper, target, operation, lifeBefore) =>
+                  this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
                 onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
                   this.recordHelperRedirectedTargetDispatch(
                     helper,
@@ -1922,8 +1940,8 @@ export class PlayableMatchRuntime {
             this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
           onHelperRedirectedController: (_helper, target, controller) =>
             this.recordHelperRedirectedController(target, controller),
-          onHelperRedirectedOperation: (_helper, target, operation) =>
-            this.recordHelperRedirectedOperation(target, operation),
+          onHelperRedirectedOperation: (helper, target, operation, lifeBefore) =>
+            this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
           onHelperRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
             this.recordHelperRedirectedTargetDispatch(
               helper,
@@ -2343,8 +2361,8 @@ export class PlayableMatchRuntime {
               this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
             onRedirectedController: (_helper, target, controller) =>
               this.recordHelperRedirectedController(target, controller),
-            onRedirectedOperation: (_helper, target, operation) =>
-              this.recordHelperRedirectedOperation(target, operation),
+            onRedirectedOperation: (helper, target, operation, lifeBefore) =>
+              this.recordHelperRedirectedOperation(helper, target, operation, lifeBefore),
             onRedirectedTargetDispatch: (helper, target, selection, redirectPlayerId, redirectExpression, writeback, destinationRevision) =>
               this.recordHelperRedirectedTargetDispatch(
                 helper,
@@ -4906,8 +4924,13 @@ function runActiveStateControllers(
           roundNoDamage: options.roundNoDamage,
           ...runtimeActiveControllerTelemetryHooks,
         });
-        if (target === fighter && redirectExpression === undefined) {
-          recordRuntimeRootSelfKoCause(fighter, opponent, lifeBefore, owner.id);
+        if (target === fighter) {
+          recordRuntimeRootSelfKoCause(
+            target,
+            opponent,
+            lifeBefore,
+            redirectExpression === undefined ? owner.id : target.stateOwner?.id ?? target.id,
+          );
         }
         if (mirrorRedirectedResourceTelemetry && redirectedController.operation) {
           runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
@@ -5473,8 +5496,13 @@ function runStateEntrySetupControllers(
             }
           },
         });
-        if (target === fighter && target === actor && redirectExpression === undefined) {
-          recordRuntimeRootSelfKoCause(fighter, opponent, lifeBefore, actor.id);
+        if (target === fighter && target === actor) {
+          recordRuntimeRootSelfKoCause(
+            target,
+            opponent,
+            lifeBefore,
+            redirectExpression === undefined ? actor.id : target.stateOwner?.id ?? target.id,
+          );
         }
       };
       if (resourceRedirectLease) {
