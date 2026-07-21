@@ -9184,6 +9184,60 @@ rect = -7,-18,11,6
     expect(runtimeWorldBox(internals.p1.runtime, proxyBox!)).toEqual(proxyBox);
   });
 
+  it("routes IKEMEN root Width and Height RedirectID with destination localcoord scale", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        passiveResourceController: `
+[State 0, Width Front]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 18
+
+[State 0, Width Back]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 9
+
+[State 0, Redirected Width]
+type = Width
+trigger1 = Time = 0
+player = var(0),var(1)
+RedirectID = 57
+
+[State 0, Redirected Height]
+type = Height
+trigger1 = Time = 0
+value = 12.5,2.25
+RedirectID = 57
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+    };
+    const destination = {
+      ...createImportedFixture({ id: "redirected-width-destination", withStateMove: false }),
+      localCoord: [640, 480] as [number, number],
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.bodyWidth).toEqual({ front: 39, back: 39 });
+    expect(snapshot.actors[1]?.runtime.bodyWidth).toEqual({ front: 36, back: 18 });
+    expect(snapshot.actors[1]?.runtime.bodyHeightDelta).toEqual({ top: 25, bottom: 4.5 });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Width).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Width).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Height).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:width"]).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:height"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Width RedirectID"))).toBe(false);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Height RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({
@@ -9223,6 +9277,51 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.OverrideClsn).toBe(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:overrideclsn"]).toBe(1);
     expect(snapshot.logs.some((line) => line.includes("Blocked OverrideClsn RedirectID"))).toBe(false);
+  });
+
+  it("routes IKEMEN Helper Width and Height RedirectID to a root with localcoord scale", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Redirected Width]
+type = Width
+trigger1 = Time = 0
+player = 18,9
+RedirectID = 57
+
+[State 1200, Redirected Height]
+type = Height
+trigger1 = Time = 0
+value = 12.5,2.25
+RedirectID = 57
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+    };
+    const destination = {
+      ...createImportedFixture({ id: "redirected-helper-constraint-destination", withStateMove: false }),
+      localCoord: [640, 480] as [number, number],
+    };
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]?.bodyWidthDelta).toBeUndefined();
+    expect(effectActorWorld.helpers("p1")[0]?.bodyHeightDelta).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.bodyWidth).toEqual({ front: 36, back: 18 });
+    expect(snapshot.actors[1]?.runtime.bodyHeightDelta).toEqual({ top: 25, bottom: 4.5 });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Width).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Height).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:width"]).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:height"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Width RedirectID"))).toBe(false);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Height RedirectID"))).toBe(false);
   });
 
   it("uses Helper OverrideClsn Size in runtime P2BodyDist with root localcoords", () => {

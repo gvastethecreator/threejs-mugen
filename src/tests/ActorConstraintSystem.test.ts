@@ -71,6 +71,31 @@ describe("ActorConstraintSystem", () => {
     expect(result).toEqual({ recordedController: true, recordedOperation: true });
   });
 
+  it("scales redirected Width values at the destination constraint boundary", () => {
+    const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
+    const actor = { runtime: actorState() };
+    const ir = compileControllerIr(controller("Width", { player: "18,9", redirectid: "57" }));
+    const operations: unknown[] = [];
+
+    dispatchWorld.apply({
+      actor,
+      controller: ir,
+      actorConstraintWorld: new RuntimeActorConstraintWorld(),
+      valueScale: 2,
+      recordOperation: (_actor, operation) => operations.push(operation),
+    });
+
+    expect(actor.runtime.bodyWidth).toEqual({ front: 36, back: 18 });
+    expect(actor.runtime.bodyWidthDelta).toEqual({ front: 36, back: 18 });
+    expect(operations).toEqual([{
+      kind: "collision",
+      controllerType: "width",
+      front: 36,
+      back: 18,
+      redirectPlayerIdExpression: "57",
+    }]);
+  });
+
   it("applies static and dynamic Height deltas with redirect localcoord scaling", () => {
     const world = new RuntimeActorConstraintWorld();
     const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();

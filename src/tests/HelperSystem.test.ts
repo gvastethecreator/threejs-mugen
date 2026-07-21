@@ -405,6 +405,66 @@ describe("HelperSystem", () => {
     expect(unsupported).toEqual(["Width", "Height"]);
   });
 
+  it("routes Helper Width and Height RedirectID through destination state with localcoord scale", () => {
+    const width = compiledControllerIr(6000, "Width", ["Time = 0"], {
+      player: "var(0), var(1)",
+      redirectid: "57",
+    });
+    const height = compiledControllerIr(6000, "Height", ["Time = 0"], {
+      value: "fvar(0), fvar(1)",
+      redirectid: "57",
+    });
+    const destinationHelper = helper({ serialId: "p2-helper-destination", localCoord: [640, 480] });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const caller = helper({
+      serialId: "p1-helper-caller",
+      localCoord: [320, 240],
+      vars: [18, 9],
+      fvars: [12.5, 2.25],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [width, height])] },
+    });
+    const committed: string[] = [];
+    const redirectedControllers: string[] = [];
+    const redirectedOperations: string[] = [];
+
+    advanceRuntimeHelpers([caller], stage, {
+      runtimeProfile: "ikemen-go",
+      resolveResourceRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [],
+              commitActor: (target) => {
+                committed.push(target.id);
+                applyRuntimeStateToHelper(destinationHelper, target.runtime);
+                syncRuntimeHelperTargetActor(destinationHelper, target);
+              },
+            }
+          : undefined,
+      onRedirectedController: (_helper, target, controller) => redirectedControllers.push(`${target.id}:${controller.type}`),
+      onRedirectedOperation: (_helper, target, operation) => {
+        if (operation.kind === "collision") {
+          redirectedOperations.push(`${target.id}:${operation.controllerType}:${"front" in operation ? `${operation.front},${operation.back}` : `${operation.top},${operation.bottom}`}`);
+        }
+      },
+    });
+
+    expect(caller.bodyWidthDelta).toBeUndefined();
+    expect(caller.bodyHeightDelta).toBeUndefined();
+    expect(destinationHelper.bodyWidth).toEqual({ front: 36, back: 18 });
+    expect(destinationHelper.bodyWidthDelta).toEqual({ front: 36, back: 18 });
+    expect(destinationHelper.bodyHeightDelta).toEqual({ top: 25, bottom: 4.5 });
+    expect(committed).toEqual(["p2-helper-destination", "p2-helper-destination"]);
+    expect(redirectedControllers).toEqual([
+      "p2-helper-destination:Width",
+      "p2-helper-destination:Height",
+    ]);
+    expect(redirectedOperations).toEqual([
+      "p2-helper-destination:width:36,18",
+      "p2-helper-destination:height:25,4.5",
+    ]);
+  });
+
   it("runs local Helper OverrideClsn with dynamic values, snapshots it, and resets it per frame", () => {
     const override = compiledControllerIr(6000, "OverrideClsn", ["Time = 0"], {
       group: "var(0)",

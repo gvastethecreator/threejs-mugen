@@ -737,15 +737,33 @@ export function runRuntimeHelperStateControllers(
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "width") {
-      if (!applyRuntimeHelperWidthController(helper, controller, options)) {
-        options.onUnsupportedController?.(helper, controller);
+      const result = applyRuntimeHelperWidthController(helper, controller, options);
+      if (result) {
+        if (result.redirectedTarget) {
+          options.onRedirectedController?.(helper, result.redirectedTarget, controller.source);
+          options.onRedirectedOperation?.(helper, result.redirectedTarget, result.operation);
+        } else {
+          options.onController?.(helper, controller);
+          options.onOperation?.(helper, result.operation);
+        }
+        continue;
       }
+      options.onUnsupportedController?.(helper, controller);
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "height") {
-      if (!applyRuntimeHelperHeightController(helper, controller, options)) {
-        options.onUnsupportedController?.(helper, controller);
+      const result = applyRuntimeHelperHeightController(helper, controller, options);
+      if (result) {
+        if (result.redirectedTarget) {
+          options.onRedirectedController?.(helper, result.redirectedTarget, controller.source);
+          options.onRedirectedOperation?.(helper, result.redirectedTarget, result.operation);
+        } else {
+          options.onController?.(helper, controller);
+          options.onOperation?.(helper, result.operation);
+        }
+        continue;
       }
+      options.onUnsupportedController?.(helper, controller);
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "overrideclsn") {
@@ -1242,52 +1260,131 @@ type RuntimeHelperCollisionOverrideControllerResult = {
   redirectedTarget?: RuntimeTargetWorldActor;
 };
 
+type RuntimeHelperConstraintControllerResult = {
+  operation:
+    | Extract<ControllerOp, { kind: "collision"; controllerType: "width" }>
+    | Extract<ControllerOp, { kind: "collision"; controllerType: "height" }>;
+  redirectedTarget?: RuntimeTargetWorldActor;
+};
+
 function applyRuntimeHelperWidthController(
   helper: RuntimeHelper,
   controller: ControllerIr,
   options: Parameters<typeof runRuntimeHelperStateControllers>[1],
-): boolean {
-  if (helperControllerRedirectExpression(controller) !== undefined) return false;
-  const actor = runtimeHelperTargetActor(helper);
-  let applied = false;
-  helperActorConstraintControllerDispatchWorld.apply({
-    actor,
-    controller,
-    actorConstraintWorld: helperActorConstraintWorld,
-    resolveWidth: helperWidthResolver(helper, controller, options),
-    recordController: () => options.onController?.(helper, controller),
-    recordOperation: (_actor, operation) => {
-      applied = true;
-      options.onOperation?.(helper, operation);
-    },
+): RuntimeHelperConstraintControllerResult | undefined {
+  const redirectExpression = helperControllerRedirectExpression(controller);
+  if (redirectExpression === undefined) {
+    const actor = runtimeHelperTargetActor(helper);
+    let appliedOperation: Extract<ControllerOp, { kind: "collision"; controllerType: "width" }> | undefined;
+    helperActorConstraintControllerDispatchWorld.apply({
+      actor,
+      controller,
+      actorConstraintWorld: helperActorConstraintWorld,
+      resolveWidth: helperWidthResolver(helper, controller, options),
+      recordOperation: (_actor, operation) => {
+        if (operation.controllerType === "width") appliedOperation = operation;
+      },
+    });
+    if (!appliedOperation) return undefined;
+    applyRuntimeStateToHelper(helper, actor.runtime);
+    return { operation: appliedOperation };
+  }
+
+  const redirectPlayerId = resolveHelperNumber(helper, undefined, redirectExpression, options);
+  const redirect = redirectPlayerId === undefined
+    ? undefined
+    : options.resolveResourceRedirect?.(helper, Math.trunc(redirectPlayerId), controller);
+  if (!redirect) {
+    options.onResourceRedirectBlocked?.(
+      helper,
+      controller,
+      redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
+    );
+    return undefined;
+  }
+
+  const actor = redirect.lease?.destination ?? redirect.actor;
+  const candidateTargets = redirect.lease
+    ? [...redirect.lease.candidateTargets]
+    : redirect.candidateTargets;
+  const callerWidth = helper.localCoord?.[0] ?? 320;
+  const targetWidth = actor.definition?.localCoord?.[0] ?? 320;
+  const dispatch = executeRuntimeHelperRedirect(redirect, actor, candidateTargets, () => {
+    let appliedOperation: Extract<ControllerOp, { kind: "collision"; controllerType: "width" }> | undefined;
+    helperActorConstraintControllerDispatchWorld.apply({
+      actor,
+      controller,
+      actorConstraintWorld: helperActorConstraintWorld,
+      resolveWidth: helperWidthResolver(helper, controller, options),
+      valueScale: targetWidth / callerWidth,
+      recordOperation: (_actor, operation) => {
+        if (operation.controllerType === "width") appliedOperation = operation;
+      },
+    });
+    return appliedOperation;
   });
-  if (!applied) return false;
-  applyRuntimeStateToHelper(helper, actor.runtime);
-  return true;
+  if (!dispatch.executed || !dispatch.value) return undefined;
+  return { operation: dispatch.value, redirectedTarget: actor };
 }
 
 function applyRuntimeHelperHeightController(
   helper: RuntimeHelper,
   controller: ControllerIr,
   options: Parameters<typeof runRuntimeHelperStateControllers>[1],
-): boolean {
-  if (helperControllerRedirectExpression(controller) !== undefined) return false;
-  const actor = runtimeHelperTargetActor(helper);
-  let applied = false;
-  helperActorConstraintControllerDispatchWorld.applyHeight({
-    actor,
-    controller,
-    actorConstraintWorld: helperActorConstraintWorld,
-    resolveHeight: helperHeightResolver(helper, controller, options),
-    recordController: () => options.onController?.(helper, controller),
-    recordOperation: (_actor, operation) => {
-      applied = true;
-      options.onOperation?.(helper, operation);
-    },
+): RuntimeHelperConstraintControllerResult | undefined {
+  const redirectExpression = helperControllerRedirectExpression(controller);
+  if (redirectExpression === undefined) {
+    const actor = runtimeHelperTargetActor(helper);
+    let appliedOperation: Extract<ControllerOp, { kind: "collision"; controllerType: "height" }> | undefined;
+    helperActorConstraintControllerDispatchWorld.applyHeight({
+      actor,
+      controller,
+      actorConstraintWorld: helperActorConstraintWorld,
+      resolveHeight: helperHeightResolver(helper, controller, options),
+      recordOperation: (_actor, operation) => {
+        if (operation.controllerType === "height") appliedOperation = operation;
+      },
+    });
+    if (!appliedOperation) return undefined;
+    applyRuntimeStateToHelper(helper, actor.runtime);
+    return { operation: appliedOperation };
+  }
+
+  const redirectPlayerId = resolveHelperNumber(helper, undefined, redirectExpression, options);
+  const redirect = redirectPlayerId === undefined
+    ? undefined
+    : options.resolveResourceRedirect?.(helper, Math.trunc(redirectPlayerId), controller);
+  if (!redirect) {
+    options.onResourceRedirectBlocked?.(
+      helper,
+      controller,
+      redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
+    );
+    return undefined;
+  }
+
+  const actor = redirect.lease?.destination ?? redirect.actor;
+  const candidateTargets = redirect.lease
+    ? [...redirect.lease.candidateTargets]
+    : redirect.candidateTargets;
+  const callerWidth = helper.localCoord?.[0] ?? 320;
+  const targetWidth = actor.definition?.localCoord?.[0] ?? 320;
+  const dispatch = executeRuntimeHelperRedirect(redirect, actor, candidateTargets, () => {
+    let appliedOperation: Extract<ControllerOp, { kind: "collision"; controllerType: "height" }> | undefined;
+    helperActorConstraintControllerDispatchWorld.applyHeight({
+      actor,
+      controller,
+      actorConstraintWorld: helperActorConstraintWorld,
+      resolveHeight: helperHeightResolver(helper, controller, options),
+      valueScale: targetWidth / callerWidth,
+      recordOperation: (_actor, operation) => {
+        if (operation.controllerType === "height") appliedOperation = operation;
+      },
+    });
+    return appliedOperation;
   });
-  if (!applied) return false;
-  applyRuntimeStateToHelper(helper, actor.runtime);
-  return true;
+  if (!dispatch.executed || !dispatch.value) return undefined;
+  return { operation: dispatch.value, redirectedTarget: actor };
 }
 
 function helperWidthResolver(

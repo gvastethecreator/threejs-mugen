@@ -479,6 +479,7 @@ type RootControllerRedirectHandler = (
   expression: string,
   context: ReturnType<typeof runtimeControllerContext>,
   controllerType:
+    | "width"
     | "depth"
     | "height"
     | "overrideclsn"
@@ -489,6 +490,10 @@ type RootControllerRedirectHandler = (
     | RedirectableResourceControllerType
     | RedirectableEffectControllerType,
 ) => FighterMatchState | undefined;
+type RootConstraintRedirectDeferralHandler = (
+  target: FighterMatchState,
+  dispatch: () => void,
+) => void;
 type RootTargetDispatchLeaseHandler = (
   caller: FighterMatchState,
   expression: string,
@@ -592,6 +597,8 @@ export class PlayableMatchRuntime {
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly deferredInputControls = new Map<FighterMatchState, () => RuntimeInputControlResult>();
+  private readonly frameConstraintResetRoots = new Set<string>();
+  private readonly deferredRootConstraintRedirects = new Map<string, Array<() => void>>();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
   private readonly animationWorld = new RuntimeAnimationWorld();
   private readonly stunWorld = new RuntimeStunWorld();
@@ -1889,8 +1896,9 @@ export class PlayableMatchRuntime {
       },
       advanceFighters: () => {
         recordPhase("active:fighter-advance");
+        this.beginRootConstraintDeferrals();
         if (this.runtimeProfile === "ikemen-go") {
-          return matchActorAdvanceWorld.advance({
+          const result = matchActorAdvanceWorld.advance({
             runOrder: preparedActorRunOrder,
             opponentOf: (fighter) => this.opponentForRoot(fighter),
             participationOf: (fighter) => rootAdvancePhases.phaseOf(fighter),
@@ -1935,6 +1943,8 @@ export class PlayableMatchRuntime {
                 this.characterRoots(),
                 this.rootInputControlRunner(fighter),
                 this.round.roundNoDamage,
+                (actor) => this.markRootConstraintReset(actor),
+                (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
               );
             },
             advanceHelper: (helper) => {
@@ -1998,8 +2008,10 @@ export class PlayableMatchRuntime {
               });
             },
           });
+          this.flushRootConstraintDeferrals();
+          return result;
         }
-        return matchFighterAdvanceWorld.advancePair({
+        const result = matchFighterAdvanceWorld.advancePair({
           p1: activeP1,
           p2: activeP2,
           runtimeProfile: this.runtimeProfile,
@@ -2036,12 +2048,16 @@ export class PlayableMatchRuntime {
               this.characterRoots(),
               this.rootInputControlRunner(fighter),
               this.round.roundNoDamage,
+              (actor) => this.markRootConstraintReset(actor),
+              (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
             applyAutoGuardStart(defender, attacker, this.guardWorld);
           },
         });
+        this.flushRootConstraintDeferrals();
+        return result;
       },
       advancePostFighter: () => {
         recordPhase("active:post-fighter");
@@ -2645,6 +2661,7 @@ export class PlayableMatchRuntime {
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
     this.actorConstraintWorld.resetFrameConstraints(fighter.runtime);
+    this.markRootConstraintReset(fighter);
     this.hitOverrideWorld.tickSlots(fighter.runtime);
     const tickStartPos = {
       ...fighter.runtime.pos,
@@ -2678,6 +2695,7 @@ export class PlayableMatchRuntime {
               onTeamStandby: (caller, operation, context) => this.applyTeamStandbyController(caller, operation, context),
               onRootRedirect: (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
+              deferRootConstraintRedirect: (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
               onRootTargetDispatchLease: (caller, expression, context, controllerType, phase, candidates) =>
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
@@ -2834,6 +2852,7 @@ export class PlayableMatchRuntime {
     expression: string,
     context: ReturnType<typeof runtimeControllerContext>,
     controllerType:
+      | "width"
       | "depth"
       | "height"
       | "overrideclsn"
@@ -2854,6 +2873,35 @@ export class PlayableMatchRuntime {
     if (playerId === undefined || playerId < 0) return block(playerId ?? "invalid");
     const identity = this.characterIdentity?.findByPlayerId(playerId);
     return identity?.fighter ?? block(playerId);
+  }
+
+  private beginRootConstraintDeferrals(): void {
+    this.frameConstraintResetRoots.clear();
+    this.deferredRootConstraintRedirects.clear();
+  }
+
+  private markRootConstraintReset(fighter: FighterMatchState): void {
+    this.frameConstraintResetRoots.add(fighter.id);
+    const deferred = this.deferredRootConstraintRedirects.get(fighter.id);
+    if (!deferred) return;
+    this.deferredRootConstraintRedirects.delete(fighter.id);
+    for (const dispatch of deferred) dispatch();
+  }
+
+  private deferRootConstraintRedirect(target: FighterMatchState, dispatch: () => void): void {
+    if (this.frameConstraintResetRoots.has(target.id)) {
+      dispatch();
+      return;
+    }
+    const deferred = this.deferredRootConstraintRedirects.get(target.id) ?? [];
+    deferred.push(dispatch);
+    this.deferredRootConstraintRedirects.set(target.id, deferred);
+  }
+
+  private flushRootConstraintDeferrals(): void {
+    const deferred = [...this.deferredRootConstraintRedirects.values()].flat();
+    this.deferredRootConstraintRedirects.clear();
+    for (const dispatch of deferred) dispatch();
   }
 
   private applyHelperOwnedSelfTeamStandbyController(
@@ -4264,6 +4312,8 @@ function advanceFighter(
   characters?: readonly FighterMatchState[],
   runDeferredInputControl?: () => boolean,
   roundNoDamage = false,
+  onFrameConstraintReset?: (fighter: FighterMatchState) => void,
+  deferRootConstraintRedirect?: RootConstraintRedirectDeferralHandler,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
@@ -4271,7 +4321,10 @@ function advanceFighter(
     tickHitOverrideSlots: (actor) => hitOverrideWorld.tickSlots(actor.runtime),
     advanceContactTimers,
     advanceStateClock: (actor) => stateClockWorld.advance(actor),
-    resetFrameConstraints: (actor) => actorConstraintWorld.resetFrameConstraints(actor.runtime),
+    resetFrameConstraints: (actor) => {
+      actorConstraintWorld.resetFrameConstraints(actor.runtime);
+      onFrameConstraintReset?.(actor);
+    },
     tickHitFallRecoveryWindow: (actor) => recoveryWorld.tickHitFallRecoveryWindow(actor),
     shouldPreserveImportedStateMoveType,
     advanceStun: (actor, preserveImportedStateMoveType) => {
@@ -4329,6 +4382,7 @@ function advanceFighter(
           includeStateEntries:
             fighter.definition.source === "imported" && runDeferredInputControl !== undefined,
           runDeferredInputControl,
+          deferRootConstraintRedirect,
         },
       );
     },
@@ -4454,6 +4508,7 @@ type ActiveControllerRunOptions = {
   onBlocked?: (controller: ControllerIr, route: string) => void;
   onTeamStandby?: TeamStandbyControllerHandler;
   onRootRedirect?: RootControllerRedirectHandler;
+  deferRootConstraintRedirect?: RootConstraintRedirectDeferralHandler;
   onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler;
   playerIdTarget?: PlayerIdTargetResolver;
   characters?: readonly FighterMatchState[];
@@ -4553,15 +4608,50 @@ function runActiveStateControllers(
       });
     },
     width: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
-      actorConstraintControllerDispatchWorld.apply({
-        actor: fighter,
-        controller,
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectExpression =
+        (controller.operation?.kind === "collision" && controller.operation.controllerType === "width"
+          ? controller.operation.redirectPlayerIdExpression
+          : undefined) ?? findControllerParam(controller, "redirectid")?.trim();
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "width")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "width-redirect");
+        return;
+      }
+      const callerWidth = actor.definition.localCoord?.[0] ?? 320;
+      const targetWidth = target.definition.localCoord?.[0] ?? 320;
+      const defer = redirectExpression !== undefined && target !== fighter
+        ? options.deferRootConstraintRedirect
+        : undefined;
+      const dispatchController = defer
+        ? materializeWidthConstraintController(controller, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+        : controller;
+      if (!dispatchController) return;
+      const apply = () => actorConstraintControllerDispatchWorld.apply({
+        actor: target,
+        controller: dispatchController,
         actorConstraintWorld,
         resolveWidth: {
           resolvePair: (key) => resolveWidthPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         },
+        valueScale: targetWidth / callerWidth,
         ...runtimeActiveControllerTelemetryHooks,
       });
+      if (defer) {
+        defer(target, apply);
+      } else {
+        apply();
+      }
     },
     height: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(
@@ -4586,9 +4676,16 @@ function runActiveStateControllers(
       }
       const callerWidth = actor.definition.localCoord?.[0] ?? 320;
       const targetWidth = target.definition.localCoord?.[0] ?? 320;
-      actorConstraintControllerDispatchWorld.applyHeight({
+      const defer = redirectExpression !== undefined && target !== fighter
+        ? options.deferRootConstraintRedirect
+        : undefined;
+      const dispatchController = defer
+        ? materializeHeightConstraintController(controller, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+        : controller;
+      if (!dispatchController) return;
+      const apply = () => actorConstraintControllerDispatchWorld.applyHeight({
         actor: target,
-        controller,
+        controller: dispatchController,
         actorConstraintWorld,
         resolveHeight: {
           resolvePair: (key) => resolveHeightPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
@@ -4596,6 +4693,11 @@ function runActiveStateControllers(
         valueScale: targetWidth / callerWidth,
         ...runtimeActiveControllerTelemetryHooks,
       });
+      if (defer) {
+        defer(target, apply);
+      } else {
+        apply();
+      }
     },
     overrideClsn: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
@@ -5954,6 +6056,62 @@ function resolveHeightPairParam(
   if (!bottomExpression) return [top];
   const bottom = resolveDispatchFloat(undefined, bottomExpression, actor, opponent, stateOwner, stageBounds, tick);
   return bottom === undefined ? undefined : [top, bottom];
+}
+
+function materializeWidthConstraintController(
+  controller: ControllerIr,
+  actor: FighterMatchState,
+  opponent: FighterMatchState,
+  stateOwner: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "width"
+    ? controller.operation
+    : undefined;
+  if (operation) return controller;
+  const pair =
+    resolveWidthPairParam(controller, "player", actor, opponent, stateOwner, stageBounds, tick) ??
+    resolveWidthPairParam(controller, "value", actor, opponent, stateOwner, stageBounds, tick);
+  if (!pair) return undefined;
+  const redirectPlayerIdExpression = findControllerParam(controller.source, "redirectid")?.trim();
+  return {
+    ...controller,
+    operation: {
+      kind: "collision",
+      controllerType: "width",
+      front: pair[0],
+      back: pair[1] ?? pair[0],
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+    },
+  };
+}
+
+function materializeHeightConstraintController(
+  controller: ControllerIr,
+  actor: FighterMatchState,
+  opponent: FighterMatchState,
+  stateOwner: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "height"
+    ? controller.operation
+    : undefined;
+  if (operation) return controller;
+  const pair = resolveHeightPairParam(controller, "value", actor, opponent, stateOwner, stageBounds, tick);
+  if (!pair) return undefined;
+  const redirectPlayerIdExpression = findControllerParam(controller.source, "redirectid")?.trim();
+  return {
+    ...controller,
+    operation: {
+      kind: "collision",
+      controllerType: "height",
+      top: pair[0],
+      bottom: pair[1] ?? 0,
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+    },
+  };
 }
 
 function resolveDepthPairParam(

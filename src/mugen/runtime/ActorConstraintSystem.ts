@@ -15,6 +15,7 @@ export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { run
   controller: ControllerIr;
   actorConstraintWorld: RuntimeActorConstraintWorld;
   resolveWidth?: RuntimeWidthResolver;
+  valueScale?: number;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: CollisionControllerOp) => void;
 };
@@ -115,6 +116,7 @@ export class RuntimeActorConstraintWorld {
     controller: MugenStateController,
     operation?: Extract<CollisionControllerOp, { controllerType: "width" }>,
     resolveWidth?: RuntimeWidthResolver,
+    valueScale = 1,
   ): Extract<CollisionControllerOp, { controllerType: "width" }> | undefined {
     const pair = operation
       ? undefined
@@ -125,11 +127,13 @@ export class RuntimeActorConstraintWorld {
     if (front === undefined) {
       return undefined;
     }
+    const redirectPlayerIdExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
     const appliedOperation: Extract<CollisionControllerOp, { controllerType: "width" }> = {
       kind: "collision",
       controllerType: "width",
-      front: clampBodyWidth(front),
-      back: clampBodyWidth(operation?.back ?? pair?.[1] ?? front),
+      front: clampBodyWidth(front * valueScale),
+      back: clampBodyWidth((operation?.back ?? pair?.[1] ?? front) * valueScale),
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
     };
     state.bodyWidth = {
       front: appliedOperation.front,
@@ -274,6 +278,7 @@ export class RuntimeActorConstraintControllerDispatchWorld {
       options.controller.source,
       operation,
       options.resolveWidth,
+      options.valueScale,
     );
     if (appliedOperation) {
       options.recordOperation?.(options.actor, appliedOperation);

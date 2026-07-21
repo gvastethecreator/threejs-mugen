@@ -397,6 +397,7 @@ export type CollisionControllerOp =
       controllerType: "width";
       front: number;
       back: number;
+      redirectPlayerIdExpression?: string;
     }
     | {
         kind: "collision";
@@ -1079,7 +1080,8 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
 
 function compileWidthControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
   const pair = strictNumberPair(findParam(controller, "player") ?? findParam(controller, "value"));
-  if (!pair) {
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (!pair || redirectPlayerIdExpression === "invalid") {
     return undefined;
   }
   return {
@@ -1087,6 +1089,7 @@ function compileWidthControllerOp(controller: MugenStateController): CollisionCo
     controllerType: "width",
     front: clampStaticBodyWidth(pair[0]),
     back: clampStaticBodyWidth(pair[1] ?? pair[0]),
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }
 
