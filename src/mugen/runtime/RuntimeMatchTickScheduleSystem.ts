@@ -182,7 +182,7 @@ const TICK_PHASES: Record<RuntimeMatchTickPhaseId, RuntimeMatchTickPhase> = {
     "post-fighter:body-push",
     "RuntimeRootBodyPushWorld",
     ["fighter.runtime.pos"],
-    ["eligible root body overlap resolved before combat"],
+    ["eligible root and Helper body overlap resolved before combat"],
   ),
   "post-fighter:hit-admission": phase(
     "post-fighter:hit-admission",

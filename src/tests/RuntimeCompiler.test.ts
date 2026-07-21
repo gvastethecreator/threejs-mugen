@@ -1974,6 +1974,7 @@ value = 1
         supermovetime: "4",
         postype: "p1",
         facing: "1",
+        helpertype: "player",
         keyctrl: "1",
         standby: "-2",
         removetime: "30",
@@ -1996,6 +1997,7 @@ value = 1
       superMoveTime: 4,
       postype: "p1",
       facing: 1,
+      helperType: 2,
       standby: true,
       removeTime: 30,
       spritePriority: 8,
@@ -2014,6 +2016,21 @@ value = 1
 
     for (const standby of ["", "(", "1, 0"]) {
       expect(compileControllerIr(controller(200, "Helper", [], { standby })).operation).toBeUndefined();
+    }
+  });
+
+  it("compiles normal and player HelperType while rejecting unsupported variants", () => {
+    expect(compileControllerIr(controller(200, "Helper", [], { helpertype: "normal" })).operation).toMatchObject({
+      kind: "helper",
+      helperType: 1,
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { helpertype: "player" })).operation).toMatchObject({
+      kind: "helper",
+      helperType: 2,
+    });
+
+    for (const helpertype of ["", "projectile", "var(0)"]) {
+      expect(compileControllerIr(controller(200, "Helper", [], { helpertype })).operation).toBeUndefined();
     }
   });
 

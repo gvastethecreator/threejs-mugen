@@ -72,6 +72,7 @@ import {
   helperTargetControllerRedirectExpression,
   helperTargetWorld,
   helperRuntimeState,
+  runtimeHelperCurrentCollisionBoxes,
   runtimeHelperTargetActor,
   syncRuntimeHelperTargetActor,
   type RuntimeHelper,
@@ -108,7 +109,7 @@ import {
   type RuntimeMatchTickPhaseId,
 } from "./RuntimeMatchTickScheduleSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
-import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
+import { scaleRuntimeCollisionBoxes, type RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import {
@@ -160,7 +161,13 @@ import { RuntimeRootAdvancePhaseWorld, type RuntimeRootAdvancePhase } from "./Ru
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
 import { RuntimeCollisionOverrideWorld, type RuntimeCollisionOverrideResolver } from "./RuntimeCollisionOverrideSystem";
-import { resolveRuntimePushSizeBox, RuntimeRootBodyPushWorld, type RuntimeRootBodyPushDiagnostic, usesMugenPlayerPushMinimumWidth } from "./RuntimeRootBodyPushSystem";
+import {
+  resolveRuntimePushSizeBox,
+  RuntimeRootBodyPushWorld,
+  type RuntimeRootBodyPushActor,
+  type RuntimeRootBodyPushDiagnostic,
+  usesMugenPlayerPushMinimumWidth,
+} from "./RuntimeRootBodyPushSystem";
 import {
   RuntimeRootDirectHitAdmissionWorld,
   type RuntimeRootDirectHitAdmissionDiagnostic,
@@ -1586,6 +1593,40 @@ export class PlayableMatchRuntime {
     );
   }
 
+  private activeHelperBodyPushParticipants(): Array<
+    Omit<RuntimeRootBodyPushActor, "runtime"> & { runtime: CharacterRuntimeState; helper: RuntimeHelper }
+  > {
+    return this.activeRoots.flatMap((owner) => {
+      const side = runtimeTeamSide(owner);
+      if (side === undefined) return [];
+      return this.effectActorWorld.helpers(owner.id)
+        .filter((helper) =>
+          helper.destroyed !== true &&
+          helper.teamState?.disabled !== true &&
+          helper.teamState?.standby !== true &&
+          helper.playerPush === true,
+        )
+        .map((helper) => ({
+          helper,
+          id: helper.serialId,
+          side,
+          teamState: helper.teamState!,
+          runtime: helperRuntimeState(helper),
+          localCoord: helper.localCoord ?? owner.definition.localCoord,
+          weight: owner.definition.constants?.["size.weight"],
+          pushFactor: owner.definition.constants?.["size.pushfactor"],
+          sizeBox: resolveRuntimePushSizeBox(owner.definition.constants, helper.stateType),
+          hurtBoxes: scaleRuntimeCollisionBoxes(
+            runtimeHelperCurrentCollisionBoxes(helper, "clsn2"),
+            helper.clsnScaleMultiplier,
+          ),
+          sizePushOnly: helper.assertSpecial?.flags.includes("sizepushonly"),
+          moveType: helper.moveType,
+          mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(owner.definition),
+        }));
+    });
+  }
+
   private advanceOneTick(input: MatchInput): void {
     this.tick += 1;
     this.deferredInputControls.clear();
@@ -2087,6 +2128,7 @@ export class PlayableMatchRuntime {
           } : undefined,
           advanceBodyPush: this.teamGameplayActive() ? () => {
             const roots = this.characterRoots();
+            const helperParticipants = this.activeHelperBodyPushParticipants();
             this.lastRootBodyPush = rootBodyPushWorld.advance({
               tagMode: true,
               roots: roots.map((root) => ({
@@ -2107,10 +2149,15 @@ export class PlayableMatchRuntime {
                 { id: activeP1.id, side: 1, teamState: activeP1.runtime.teamState!, runtime: activeP1.runtime, localCoord: activeP1.definition.localCoord, weight: activeP1.definition.constants?.["size.weight"], pushFactor: activeP1.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(activeP1), hurtBoxes: frameWorld.currentHurtBoxes(activeP1), sizePushOnly: activeP1.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: activeP1.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(activeP1.definition) },
                 { id: activeP2.id, side: 2, teamState: activeP2.runtime.teamState!, runtime: activeP2.runtime, localCoord: activeP2.definition.localCoord, weight: activeP2.definition.constants?.["size.weight"], pushFactor: activeP2.definition.constants?.["size.pushfactor"], sizeBox: runtimePushSizeBox(activeP2), hurtBoxes: frameWorld.currentHurtBoxes(activeP2), sizePushOnly: activeP2.runtime.assertSpecial?.flags.includes("sizepushonly"), moveType: activeP2.runtime.moveType, mugenMinimumWidth: usesMugenPlayerPushMinimumWidth(activeP2.definition) },
               ],
+              helperParticipants,
               stage: this.stage,
               actorConstraintWorld: this.actorConstraintWorld,
             });
-            for (const id of this.lastRootBodyPush.rootIds) recordPhase("post-fighter:body-push", id);
+            for (const helper of helperParticipants) applyRuntimeStateToHelper(helper.helper, helper.runtime);
+            for (const id of [
+              ...this.lastRootBodyPush.rootIds,
+              ...(this.lastRootBodyPush.helperIds ?? []),
+            ]) recordPhase("post-fighter:body-push", id);
           } : undefined,
           inspectHitAdmission: this.teamGameplayActive() ? () => {
             const roots = this.characterRoots();

@@ -247,6 +247,7 @@ export type ModifyProjectileControllerOp = {
 export type HelperControllerOp = {
   kind: "helper";
   helperId?: number;
+  helperType?: 1 | 2;
   name?: string;
   stateNo?: number;
   animNo?: number;
@@ -2097,6 +2098,8 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
 }
 
 function compileHelperControllerOp(controller: MugenStateController): HelperControllerOp | undefined {
+  const helperType = compileHelperType(findParam(controller, "helpertype"));
+  if (helperType === "invalid") return undefined;
   const standbyRaw = findParam(controller, "standby");
   let standby: boolean | undefined;
   let standbyExpression: string | undefined;
@@ -2196,6 +2199,7 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
   return definedObject({
     kind: "helper" as const,
     helperId: firstNumber(findParam(controller, "id")),
+    helperType,
     name: stripMugenString(findParam(controller, "name")),
     stateNo: firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value")),
     animNo: firstNumber(findParam(controller, "anim")),
@@ -2223,6 +2227,14 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 3,
   });
+}
+
+function compileHelperType(raw: string | undefined): 1 | 2 | "invalid" | undefined {
+  if (raw === undefined) return undefined;
+  const value = raw.trim().toLowerCase();
+  if (value === "normal") return 1;
+  if (value === "player") return 2;
+  return "invalid";
 }
 
 function helperScalePair(controller: MugenStateController): [number, number?] | undefined {

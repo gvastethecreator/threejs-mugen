@@ -125,6 +125,9 @@ export type RuntimeHelper = {
   pos: { x: number; y: number; z?: number };
   vel: { x: number; y: number };
   bodyWidth?: { front: number; back: number };
+  playerPush?: boolean;
+  pushPriority?: number;
+  pushAffectTeam?: -1 | 0 | 1;
   scale: { x: number; y: number };
   facing: 1 | -1;
   ctrl: boolean;
@@ -348,6 +351,7 @@ export type RuntimeHelperSpawnInput = {
 
 export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelper {
   const operation = input.operation;
+  const helperType = operation?.helperType ?? 1;
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const keyCtrl = operation?.keyCtrl ?? booleanNumber(findControllerParam(input.controller, "keyctrl")) ?? false;
   const identity = resolveActorIdentity(input);
@@ -360,7 +364,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     destroyed: false,
     runOrderId: input.runOrderId ?? Number.MAX_SAFE_INTEGER,
     helperId: operation?.helperId ?? firstNumber(findControllerParam(input.controller, "id")),
-    helperType: 1,
+    helperType,
     name: operation?.name ?? stripMugenString(findControllerParam(input.controller, "name")),
     ...identity,
     teamState: {
@@ -391,6 +395,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     pos: input.pos,
     vel: helperVelocity(input.controller, operation),
     bodyWidth: input.bodyWidth,
+    ...(helperType === 2 ? { playerPush: true, pushPriority: 0, pushAffectTeam: 1 as const } : {}),
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     ctrl: input.initialControl ?? (initialState?.ctrl ?? 1) !== 0,
@@ -447,10 +452,12 @@ export function advanceRuntimeHelperActor(
   helperCollisionTransformWorld.resetFrame(helper);
   helperCollisionOverrideWorld.resetFrame(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
+  const canAdvance = canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind);
+  if (canAdvance) resetRuntimeHelperPlayerPush(helper, controllerOptions.runtimeProfile);
   if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4) === "destroyed") {
     return false;
   }
-  if (canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind)) {
+  if (canAdvance) {
     helper.assertSpecial = undefined;
     if (helper.keyCtrl === true && controllerOptions.runtimeProfile === "ikemen-go") {
       if (runRuntimeHelperStateControllers(helper, controllerOptions, -3) === "destroyed") {
@@ -1046,6 +1053,7 @@ const helperRuntimeControllers = new Set([
   "posadd",
   "gravity",
   "ctrlset",
+  "playerpush",
   "lifeadd",
   "lifeset",
   "redlifeadd",
@@ -1863,6 +1871,9 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     powerMax: helper.powerMax,
     power: helper.power,
     bodyWidth: helper.bodyWidth ? { ...helper.bodyWidth } : undefined,
+    ...(helper.playerPush === undefined ? {} : { playerPush: helper.playerPush }),
+    ...(helper.pushPriority === undefined ? {} : { pushPriority: helper.pushPriority }),
+    ...(helper.pushAffectTeam === undefined ? {} : { pushAffectTeam: helper.pushAffectTeam }),
     ctrl: helper.ctrl,
     stateType: helper.stateType,
     moveType: helper.moveType,
@@ -1930,6 +1941,9 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;
   helper.power = runtime.power;
+  helper.playerPush = runtime.playerPush;
+  helper.pushPriority = runtime.pushPriority;
+  helper.pushAffectTeam = runtime.pushAffectTeam;
   helper.ctrl = runtime.ctrl;
   helper.stateType = runtime.stateType;
   helper.moveType = runtime.moveType;
@@ -1946,6 +1960,22 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
     ? { ...runtime.clsnScaleMultiplier }
     : undefined;
   helper.clsnAngle = runtime.clsnAngle;
+}
+
+function resetRuntimeHelperPlayerPush(
+  helper: RuntimeHelper,
+  runtimeProfile: RuntimeHelperAdvanceOptions["runtimeProfile"],
+): void {
+  if (runtimeProfile !== "ikemen-go") return;
+  if (helper.helperType === 2) {
+    helper.playerPush = true;
+    helper.pushPriority = 0;
+    helper.pushAffectTeam = 1;
+    return;
+  }
+  helper.playerPush = undefined;
+  helper.pushPriority = undefined;
+  helper.pushAffectTeam = undefined;
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {

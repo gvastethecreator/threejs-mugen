@@ -49,6 +49,20 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(roots.map((root) => root.runtime.pos.x)).toEqual([0, 10, 5]);
   });
 
+  it("includes explicit Helper participants without rewriting root diagnostics", () => {
+    const roots = [actor("p1", 1, -100), actor("p2", 2, 20)];
+    const helper = actor("p1-helper-0", 1, 10, { playerType: false });
+
+    const diagnostic = advance(roots, true, [helper]);
+
+    expect(diagnostic.rootIds).toEqual(["p1", "p2"]);
+    expect(diagnostic.helperIds).toEqual(["p1-helper-0"]);
+    expect(diagnostic.participantIds).toEqual(["p1", "p2", "p1-helper-0"]);
+    expect(diagnostic.pairIds).toEqual([["p2", "p1-helper-0"]]);
+    expect(diagnostic.movedRootIds).toEqual(["p2"]);
+    expect(diagnostic.movedHelperIds).toEqual(["p1-helper-0"]);
+  });
+
   it("reclamps moved roots and rejects duplicate identities", () => {
     const roots = [actor("p1", 1, -95), actor("p2", 2, -90)];
     const diagnostic = advance(roots, true);
@@ -299,11 +313,16 @@ describe("RuntimeRootBodyPushWorld", () => {
   });
 });
 
-function advance(roots: RuntimeRootBodyPushActor[], tagMode: boolean) {
+function advance(
+  roots: RuntimeRootBodyPushActor[],
+  tagMode: boolean,
+  helperParticipants?: RuntimeRootBodyPushActor[],
+) {
   return new RuntimeRootBodyPushWorld().advance({
     tagMode,
     roots,
     playableRoots: [roots[0]!, roots[1]!],
+    helperParticipants,
     stage: { bounds: { left: -100, right: 100 } },
     actorConstraintWorld: new RuntimeActorConstraintWorld(),
   });

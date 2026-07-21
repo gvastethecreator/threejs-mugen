@@ -9286,6 +9286,107 @@ value = P2BodyDist Y
     expect(effectActorWorld.helpers("p1")[0]?.vars.slice(0, 2)).toEqual([24, 160]);
   });
 
+  it("includes an imported player Helper in IKEMEN Tag PlayerPush", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const caller = createImportedFixture({
+      withStateMove: false,
+      withHelper: true,
+      helperType: "player",
+      helperStateControllers: `
+[State 1200, Player Helper Position]
+type = PosSet
+trigger1 = Time = 0
+x = 10
+y = 0
+`,
+    });
+    const opponent = createImportedFixture({ id: "player-helper-push-opponent", withStateMove: false });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -100, y: 0, facing: 1 as const },
+        p2: { x: 20, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, opponent, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({ helperType: 2, playerPush: true });
+    expect(snapshot.rootBodyPush).toMatchObject({
+      rootIds: ["p1", "p2"],
+      helperIds: ["p1-helper-0"],
+      participantIds: ["p1", "p2", "p1-helper-0"],
+      pairIds: [["p2", "p1-helper-0"]],
+      movedRootIds: ["p2"],
+      movedHelperIds: ["p1-helper-0"],
+    });
+    expect(snapshot.actors[1]?.runtime.pos.x).not.toBe(20);
+    expect(effectActorWorld.helpers("p1")[0]?.pos.x).not.toBe(10);
+    expect(
+      snapshot.tickSchedule?.phases.some(
+        (phase) => phase.id === "post-fighter:body-push" && phase.actorId === "p1-helper-0",
+      ),
+    ).toBe(true);
+  });
+
+  it("includes an imported normal Helper when its current IKEMEN PlayerPush enables it", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const caller = createImportedFixture({
+      withStateMove: false,
+      withHelper: true,
+      helperType: "normal",
+      helperStateControllers: `
+[State 1200, Normal Helper Position]
+type = PosSet
+trigger1 = Time = 0
+x = 10
+y = 0
+
+[State 1200, Normal Helper Push]
+type = PlayerPush
+trigger1 = Time = 0
+value = 1
+priority = 4
+affectteam = E
+`,
+    });
+    const opponent = createImportedFixture({ id: "normal-helper-push-opponent", withStateMove: false });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -100, y: 0, facing: 1 as const },
+        p2: { x: 20, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, opponent, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({
+      helperType: 1,
+      playerPush: true,
+      pushPriority: 4,
+      pushAffectTeam: 1,
+    });
+    expect(snapshot.rootBodyPush).toMatchObject({
+      helperIds: ["p1-helper-0"],
+      pairIds: [["p2", "p1-helper-0"]],
+      movedRootIds: ["p2"],
+      movedHelperIds: [],
+    });
+    expect(snapshot.actors[1]?.runtime.pos.x).not.toBe(20);
+    expect(effectActorWorld.helpers("p1")[0]?.pos.x).toBe(10);
+  });
+
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {
     const defender = createImportedFixture({
       id: "removeongethit-defender",
@@ -9499,6 +9600,7 @@ function createImportedFixture(
     stateVelSet?: string;
     withProjectile?: boolean;
     withHelper?: boolean;
+    helperType?: "normal" | "player";
     helperStandby?: number | string;
     helperKeyCtrl?: boolean;
     helperPreSpawnVarSet?: { index: number; value: number | string };
@@ -9970,6 +10072,7 @@ trigger1 = Time = 0
 id = 42
 name = "Buddy"
 stateno = 1200
+${options.helperType === undefined ? "" : `helpertype = ${options.helperType}`}
 ${options.helperStandby === undefined ? "" : `standby = ${options.helperStandby}`}
 ${options.helperKeyCtrl ? "keyctrl = 1" : ""}
 pos = -44,-28

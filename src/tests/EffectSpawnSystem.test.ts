@@ -470,6 +470,46 @@ describe("EffectSpawnSystem", () => {
     expect(effectActorWorld.helpers("p1")[0]?.clsnProxy).toBeUndefined();
   });
 
+  it("fails closed for unsupported HelperType values before spawning", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld);
+
+    const projectileType = dispatchWorld.apply({
+      actor: fighter,
+      opponent,
+      controller: compileControllerIr(controller("Helper", { helpertype: "projectile", anim: "920" })),
+      effect: "helper",
+      effectSpawnWorld: spawnWorld,
+      runtimeProfile: "ikemen-go",
+      recordController: () => undefined,
+    });
+
+    expect(projectileType).toMatchObject({
+      changed: false,
+      changedCount: 0,
+      recordedController: true,
+      recordedOperation: false,
+    });
+    expect(spawnWorld.spawnHelper(fighter, opponent, controller("Helper", { helpertype: "var(0)", anim: "920" }))).toBe(false);
+    expect(effectActorWorld.helpers("p1")).toEqual([]);
+
+    const legacyPlayerType = dispatchWorld.apply({
+      actor: fighter,
+      opponent,
+      controller: compileControllerIr(controller("Helper", { helpertype: "player", anim: "920" })),
+      effect: "helper",
+      effectSpawnWorld: spawnWorld,
+      runtimeProfile: "mugen-1.1",
+    });
+
+    expect(legacyPlayerType.changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({ helperType: 1 });
+    expect(effectActorWorld.helpers("p1")[0]?.playerPush).toBeUndefined();
+  });
+
   it("owns helper removal dispatch for current visual helper actors", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

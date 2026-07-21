@@ -160,6 +160,7 @@ export class RuntimeEffectSpawnWorld {
     initialOwnClsnScale?: boolean,
     initialClsnProxy?: boolean,
   ): boolean {
+    if (!supportsHelperType(controller, operation)) return false;
     const owner = effectSpriteOwner(fighter);
     const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
     const state = findActorState(owner, stateNo);
@@ -357,6 +358,14 @@ function effectSpriteOwner(actor: RuntimeEffectSpawnActor): RuntimeEffectSpawnAc
   return actor.stateOwner ?? actor;
 }
 
+function supportsHelperType(controller: MugenStateController, operation: HelperControllerOp | undefined): boolean {
+  if (operation?.helperType !== undefined) return true;
+  const raw = findParam(controller, "helpertype");
+  if (raw === undefined) return true;
+  const helperType = raw.trim().toLowerCase();
+  return helperType === "normal" || helperType === "player";
+}
+
 function findActorState(actor: RuntimeEffectSpawnActor, stateNo: number | undefined): MugenStateDef | undefined {
   if (stateNo === undefined) {
     return undefined;
@@ -482,7 +491,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
       if (initialClsnProxy === "blocked") return 0;
       const operationForSpawn = options.runtimeProfile === "ikemen-go"
         ? helperOperation
-        : stripHelperClsnProxyOperation(options.controller.source, stripHelperOwnClsnScaleOperation(options.controller.source, stripHelperPreserveOperation(options.controller.source, stripHelperOwnPaletteOperation(options.controller.source, stripHelperOwnProjectileOperation(options.controller.source, helperOperation)))));
+        : stripIkemenHelperOperation(options.controller.source, helperOperation);
       return effectSpawnWorld.spawnHelper(
         actor,
         opponent,
@@ -624,6 +633,34 @@ function stripHelperOwnProjectileOperation(
     ...withoutOwnProjectile
   } = operation;
   return withoutOwnProjectile;
+}
+
+function stripIkemenHelperOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  return stripHelperClsnProxyOperation(
+    controller,
+    stripHelperOwnClsnScaleOperation(
+      controller,
+      stripHelperPreserveOperation(
+        controller,
+        stripHelperOwnPaletteOperation(
+          controller,
+          stripHelperOwnProjectileOperation(controller, stripHelperTypeOperation(controller, operation)),
+        ),
+      ),
+    ),
+  );
+}
+
+function stripHelperTypeOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  if (!operation || findParam(controller, "helpertype") === undefined) return operation;
+  const { helperType: _helperType, ...withoutHelperType } = operation;
+  return withoutHelperType;
 }
 
 function stripHelperOwnPaletteOperation(

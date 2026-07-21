@@ -229,6 +229,53 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("resets explicit IKEMEN player Helper PlayerPush state before controllers", () => {
+    const player = helper({
+      helperType: 2,
+      playerPush: false,
+      pushPriority: 8,
+      pushAffectTeam: -1,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(-4), [
+          compiledControllerIr(-4, "PlayerPush", ["Time = 0"], {
+            value: "0",
+            priority: "3",
+            affectteam: "B",
+          }),
+        ])],
+      },
+    });
+
+    advanceRuntimeHelpers([player], stage, { runtimeProfile: "ikemen-go" });
+    expect(player).toMatchObject({ playerPush: false, pushPriority: 3, pushAffectTeam: 0 });
+
+    advanceRuntimeHelpers([player], stage, { runtimeProfile: "ikemen-go" });
+    expect(player).toMatchObject({ playerPush: true, pushPriority: 0, pushAffectTeam: 1 });
+  });
+
+  it("lets an explicit IKEMEN normal Helper opt into PlayerPush for its current frame", () => {
+    const normal = helper({
+      helperType: 1,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "PlayerPush", ["Time = 0"], {
+            value: "1",
+            priority: "4",
+            affectteam: "F",
+          }),
+        ])],
+      },
+    });
+
+    advanceRuntimeHelpers([normal], stage, { runtimeProfile: "ikemen-go" });
+    expect(normal).toMatchObject({ playerPush: true, pushPriority: 4, pushAffectTeam: -1 });
+
+    advanceRuntimeHelpers([normal], stage, { runtimeProfile: "ikemen-go" });
+    expect(normal.playerPush).toBeUndefined();
+    expect(normal.pushPriority).toBeUndefined();
+    expect(normal.pushAffectTeam).toBeUndefined();
+  });
+
   it("runs IKEMEN helper States -4, -3, and -2 before State -1, then +1 after current", () => {
     const runtimeProgram = {
       states: [

@@ -27,12 +27,16 @@ export type RuntimeRootBodyPushDiagnostic = {
   rootIds: string[];
   pairIds: Array<[string, string]>;
   movedRootIds: string[];
+  participantIds?: string[];
+  helperIds?: string[];
+  movedHelperIds?: string[];
 };
 
 export type RuntimeRootBodyPushInput = {
   tagMode: boolean;
   roots: readonly RuntimeRootBodyPushActor[];
   playableRoots: readonly [RuntimeRootBodyPushActor, RuntimeRootBodyPushActor];
+  helperParticipants?: readonly RuntimeRootBodyPushActor[];
   stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>;
   actorConstraintWorld: Pick<
     RuntimeActorConstraintWorld,
@@ -64,16 +68,20 @@ export class RuntimeRootBodyPushWorld {
   advance(input: RuntimeRootBodyPushInput): RuntimeRootBodyPushDiagnostic {
     assertUniqueRoots(input.roots);
     const roots = input.tagMode ? input.roots.filter(eligibleTagRoot) : [...input.playableRoots];
-    const before = new Map(roots.map((root) => [root.id, {
+    const helpers = input.helperParticipants ?? [];
+    assertUniqueHelpers(helpers);
+    assertUniqueParticipants([...roots, ...helpers]);
+    const participants = [...roots, ...helpers];
+    const before = new Map(participants.map((root) => [root.id, {
       x: root.runtime.pos.x,
       z: root.runtime.combatDepth?.position,
     }]));
     const pairIds: Array<[string, string]> = [];
 
-    for (let leftIndex = 0; leftIndex < roots.length; leftIndex += 1) {
-      for (let rightIndex = leftIndex + 1; rightIndex < roots.length; rightIndex += 1) {
-        const left = roots[leftIndex]!;
-        const right = roots[rightIndex]!;
+    for (let leftIndex = 0; leftIndex < participants.length; leftIndex += 1) {
+      for (let rightIndex = leftIndex + 1; rightIndex < participants.length; rightIndex += 1) {
+        const left = participants[leftIndex]!;
+        const right = participants[rightIndex]!;
         if (!canPairPush(left, right) || !hasPushGeometry(left, right)) continue;
         pairIds.push([left.id, right.id]);
         input.actorConstraintWorld.separate(
@@ -85,7 +93,7 @@ export class RuntimeRootBodyPushWorld {
         );
       }
     }
-    for (const root of roots) {
+    for (const root of participants) {
       input.actorConstraintWorld.clampBodyPushToStage(root.runtime, input.stage);
       input.actorConstraintWorld.clampBodyPushDepthToStage(root.runtime, input.stage, root.localCoord);
     }
@@ -99,6 +107,14 @@ export class RuntimeRootBodyPushWorld {
         const prior = before.get(root.id);
         return root.runtime.pos.x !== prior?.x || root.runtime.combatDepth?.position !== prior?.z;
       }).map(({ id }) => id),
+      ...(helpers.length === 0 ? {} : {
+        participantIds: participants.map(({ id }) => id),
+        helperIds: helpers.map(({ id }) => id),
+        movedHelperIds: helpers.filter((helper) => {
+          const prior = before.get(helper.id);
+          return helper.runtime.pos.x !== prior?.x || helper.runtime.combatDepth?.position !== prior?.z;
+        }).map(({ id }) => id),
+      }),
     };
   }
 }
@@ -222,5 +238,21 @@ function assertUniqueRoots(roots: readonly RuntimeRootBodyPushActor[]): void {
   for (const root of roots) {
     if (ids.has(root.id)) throw new Error(`Duplicate root body-push actor ${root.id}`);
     ids.add(root.id);
+  }
+}
+
+function assertUniqueHelpers(helpers: readonly RuntimeRootBodyPushActor[]): void {
+  const ids = new Set<string>();
+  for (const helper of helpers) {
+    if (ids.has(helper.id)) throw new Error(`Duplicate helper body-push actor ${helper.id}`);
+    ids.add(helper.id);
+  }
+}
+
+function assertUniqueParticipants(participants: readonly RuntimeRootBodyPushActor[]): void {
+  const ids = new Set<string>();
+  for (const participant of participants) {
+    if (ids.has(participant.id)) throw new Error(`Duplicate body-push participant ${participant.id}`);
+    ids.add(participant.id);
   }
 }
