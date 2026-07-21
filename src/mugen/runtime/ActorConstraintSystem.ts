@@ -7,7 +7,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
-  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "bodyHeightDelta" | "clsnOverrides" | "clsnScaleMultiplier" | "clsnAngle" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
+  "pos" | "combatDepth" | "facing" | "bodyWidth" | "bodyWidthDelta" | "edgeWidth" | "bodyHeightDelta" | "clsnOverrides" | "clsnScaleMultiplier" | "clsnAngle" | "playerPush" | "pushPriority" | "pushAffectTeam" | "posFreeze" | "screenBound" | "stageBound"
 >;
 
 export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
@@ -21,7 +21,7 @@ export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { run
 };
 
 export type RuntimeWidthResolver = {
-  resolvePair(key: "player" | "value"): [number, number?] | undefined;
+  resolvePair(key: "edge" | "player" | "value"): [number, number?] | undefined;
 };
 
 export type RuntimeHeightResolver = {
@@ -74,6 +74,7 @@ export class RuntimeActorConstraintWorld {
   ): void {
     state.bodyWidth = baseBodyWidth ? { ...baseBodyWidth } : undefined;
     state.bodyWidthDelta = undefined;
+    state.edgeWidth = undefined;
     state.bodyHeightDelta = undefined;
   }
 
@@ -123,28 +124,67 @@ export class RuntimeActorConstraintWorld {
     resolveWidth?: RuntimeWidthResolver,
     valueScale = 1,
   ): Extract<CollisionControllerOp, { controllerType: "width" }> | undefined {
-    const pair = operation
-      ? undefined
-      : resolveWidth?.resolvePair("player") ??
-        resolveWidth?.resolvePair("value") ??
-        numberPair(findControllerParam(controller, "player") ?? findControllerParam(controller, "value"));
-    const front = operation?.front ?? pair?.[0];
-    if (front === undefined) {
-      return undefined;
+    const edgeRaw = findControllerParam(controller, "edge");
+    const playerRaw = findControllerParam(controller, "player");
+    const mode = operation?.mode ??
+      (edgeRaw !== undefined ? (playerRaw === undefined ? "edge" : undefined) : playerRaw === undefined ? "value" : undefined);
+    let playerPair: [number, number?] | undefined;
+    let edgePair: [number, number?] | undefined;
+
+    if (operation) {
+      if (mode !== "edge") playerPair = [operation.front, operation.back];
+      if (mode === "edge") {
+        edgePair = [operation.front, operation.back];
+      } else if (mode === "value") {
+        edgePair = [operation.edgeFront ?? operation.front, operation.edgeBack ?? operation.back];
+      } else if (operation.edgeFront !== undefined) {
+        edgePair = [operation.edgeFront, operation.edgeBack ?? operation.edgeFront];
+      }
+    } else {
+      if (edgeRaw !== undefined) {
+        edgePair = resolveWidth?.resolvePair("edge") ?? numberPair(edgeRaw);
+        if (!edgePair) return undefined;
+      }
+      if (playerRaw !== undefined) {
+        playerPair = resolveWidth?.resolvePair("player") ?? numberPair(playerRaw);
+        if (!playerPair) return undefined;
+      }
+      if (edgeRaw === undefined && playerRaw === undefined) {
+        const value = resolveWidth?.resolvePair("value") ?? numberPair(findControllerParam(controller, "value"));
+        if (!value) return undefined;
+        playerPair = value;
+        edgePair = value;
+      }
     }
+
+    if (!playerPair && !edgePair) return undefined;
+    const player = playerPair
+      ? {
+          front: clampBodyWidth(playerPair[0] * valueScale),
+          back: clampBodyWidth((playerPair[1] ?? playerPair[0]) * valueScale),
+        }
+      : undefined;
+    const edge = edgePair
+      ? {
+          front: edgePair[0] * valueScale,
+          back: (edgePair[1] ?? edgePair[0]) * valueScale,
+        }
+      : undefined;
     const redirectPlayerIdExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
     const appliedOperation: Extract<CollisionControllerOp, { controllerType: "width" }> = {
       kind: "collision",
       controllerType: "width",
-      front: clampBodyWidth(front * valueScale),
-      back: clampBodyWidth((operation?.back ?? pair?.[1] ?? front) * valueScale),
+      front: player?.front ?? edge!.front,
+      back: player?.back ?? edge!.back,
+      ...(mode === "edge" ? { mode: "edge" as const } : mode === "value" ? { mode: "value" as const } : {}),
+      ...(edge && mode !== "edge" ? { edgeFront: edge.front, edgeBack: edge.back } : {}),
       ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
     };
-    state.bodyWidth = {
-      front: appliedOperation.front,
-      back: appliedOperation.back,
-    };
-    state.bodyWidthDelta = { ...state.bodyWidth };
+    if (player) {
+      state.bodyWidth = { ...player };
+      state.bodyWidthDelta = { ...player };
+    }
+    if (edge) state.edgeWidth = { ...edge };
     return appliedOperation;
   }
 
@@ -189,7 +229,7 @@ export class RuntimeActorConstraintWorld {
     actorLocalCoord?: { width: number } | readonly [number, number],
   ): void {
     if (state.screenBound?.bound !== false) {
-      state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
+      this.clampXToStage(state, stage);
     }
     if (!stage.depthBounds || !state.combatDepth || state.stageBound === false) return;
 
@@ -202,7 +242,12 @@ export class RuntimeActorConstraintWorld {
   }
 
   clampBodyPushToStage(state: RuntimeActorConstraintState, stage: Pick<MugenStageDefinition, "bounds">): void {
-    state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
+    this.clampXToStage(state, stage);
+  }
+
+  clampWidthEdgeToStage(state: RuntimeActorConstraintState, stage: Pick<MugenStageDefinition, "bounds">): void {
+    if (!state.edgeWidth || state.screenBound?.bound === false) return;
+    this.clampXToStage(state, stage);
   }
 
   clampBodyPushDepthToStage(
@@ -219,6 +264,19 @@ export class RuntimeActorConstraintWorld {
     const top = (stage.depthBounds.top * stageScale) / actorScale + (state.combatDepth.edge?.[0] ?? 0);
     const bottom = (stage.depthBounds.bottom * stageScale) / actorScale - (state.combatDepth.edge?.[1] ?? 0);
     state.combatDepth.position = Math.max(top, Math.min(bottom, state.combatDepth.position));
+  }
+
+  private clampXToStage(
+    state: RuntimeActorConstraintState,
+    stage: Pick<MugenStageDefinition, "bounds">,
+  ): void {
+    const edge = state.edgeWidth;
+    const leftInset = edge ? (state.facing > 0 ? edge.back : edge.front) : 0;
+    const rightInset = edge ? (state.facing > 0 ? edge.front : edge.back) : 0;
+    const left = stage.bounds.left + leftInset;
+    const right = stage.bounds.right - rightInset;
+    if (left > right) return;
+    state.pos.x = Math.max(left, Math.min(right, state.pos.x));
   }
 
   separate(

@@ -9204,7 +9204,7 @@ value = 9
 [State 0, Redirected Width]
 type = Width
 trigger1 = Time = 0
-player = var(0),var(1)
+value = var(0),var(1)
 RedirectID = 57
 
 [State 0, Redirected Height]
@@ -9228,6 +9228,7 @@ RedirectID = 57
 
     expect(snapshot.actors[0]?.runtime.bodyWidth).toEqual({ front: 39, back: 39 });
     expect(snapshot.actors[1]?.runtime.bodyWidth).toEqual({ front: 36, back: 18 });
+    expect(snapshot.actors[1]?.runtime.edgeWidth).toEqual({ front: 36, back: 18 });
     expect(snapshot.actors[1]?.runtime.bodyHeightDelta).toEqual({ top: 25, bottom: 4.5 });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Width).toBeUndefined();
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Width).toBe(1);

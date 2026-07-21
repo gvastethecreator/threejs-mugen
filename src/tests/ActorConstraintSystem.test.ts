@@ -96,6 +96,82 @@ describe("ActorConstraintSystem", () => {
     }]);
   });
 
+  it("retains one-frame Width edge state, combines value shorthand, and clamps facing-aware X bounds", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const state = actorState({ pos: { x: 80, y: 0 } });
+
+    const edge = world.applyWidth(state, controller("Width", { edge: "8,3" }));
+    expect(edge).toEqual({ kind: "collision", controllerType: "width", front: 8, back: 3, mode: "edge" });
+    expect(state.bodyWidthDelta).toBeUndefined();
+    expect(state.edgeWidth).toEqual({ front: 8, back: 3 });
+
+    world.clampToStage(state, { bounds: { left: -40, right: 40 } });
+    expect(state.pos.x).toBe(32);
+    state.pos.x = -80;
+    world.clampBodyPushToStage(state, { bounds: { left: -40, right: 40 } });
+    expect(state.pos.x).toBe(-37);
+
+    state.facing = -1;
+    state.pos.x = 80;
+    world.clampToStage(state, { bounds: { left: -40, right: 40 } });
+    expect(state.pos.x).toBe(37);
+
+    const combined = world.applyWidth(state, controller("Width", { edge: "7,3", player: "18,4" }));
+    expect(combined).toEqual({
+      kind: "collision",
+      controllerType: "width",
+      front: 18,
+      back: 4,
+      edgeFront: 7,
+      edgeBack: 3,
+    });
+    expect(state.bodyWidthDelta).toEqual({ front: 18, back: 4 });
+    expect(state.edgeWidth).toEqual({ front: 7, back: 3 });
+
+    const value = world.applyWidth(state, controller("Width", { value: "12,4" }));
+    expect(value).toEqual({
+      kind: "collision",
+      controllerType: "width",
+      front: 12,
+      back: 4,
+      mode: "value",
+      edgeFront: 12,
+      edgeBack: 4,
+    });
+    expect(state.bodyWidthDelta).toEqual({ front: 12, back: 4 });
+    expect(state.edgeWidth).toEqual({ front: 12, back: 4 });
+
+    world.resetFrameConstraints(state);
+    expect(state.edgeWidth).toBeUndefined();
+  });
+
+  it("scales Width edge values before mutating a redirected destination", () => {
+    const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
+    const actor = { runtime: actorState() };
+    const ir = compileControllerIr(controller("Width", { edge: "var(0),var(1)", redirectid: "57" }));
+    const operations: unknown[] = [];
+
+    dispatchWorld.apply({
+      actor,
+      controller: ir,
+      actorConstraintWorld: new RuntimeActorConstraintWorld(),
+      resolveWidth: { resolvePair: (key) => (key === "edge" ? [6, 2] : undefined) },
+      valueScale: 2,
+      recordOperation: (_actor, operation) => operations.push(operation),
+    });
+
+    expect(actor.runtime.bodyWidthDelta).toBeUndefined();
+    expect(actor.runtime.edgeWidth).toEqual({ front: 12, back: 4 });
+    expect(operations).toEqual([{
+      kind: "collision",
+      controllerType: "width",
+      front: 12,
+      back: 4,
+      mode: "edge",
+      redirectPlayerIdExpression: "57",
+    }]);
+  });
+
   it("applies static and dynamic Height deltas with redirect localcoord scaling", () => {
     const world = new RuntimeActorConstraintWorld();
     const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();

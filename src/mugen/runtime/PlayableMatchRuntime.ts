@@ -6085,10 +6085,22 @@ function materializeWidthConstraintController(
     ? controller.operation
     : undefined;
   if (operation) return controller;
-  const pair =
-    resolveWidthPairParam(controller, "player", actor, opponent, stateOwner, stageBounds, tick) ??
-    resolveWidthPairParam(controller, "value", actor, opponent, stateOwner, stageBounds, tick);
-  if (!pair) return undefined;
+  const edgeRaw = findControllerParam(controller.source, "edge");
+  const playerRaw = findControllerParam(controller.source, "player");
+  const edge = edgeRaw === undefined
+    ? undefined
+    : resolveWidthPairParam(controller, "edge", actor, opponent, stateOwner, stageBounds, tick);
+  const player = playerRaw === undefined
+    ? undefined
+    : resolveWidthPairParam(controller, "player", actor, opponent, stateOwner, stageBounds, tick);
+  if ((edgeRaw !== undefined && !edge) || (playerRaw !== undefined && !player)) return undefined;
+  const value = edgeRaw === undefined && playerRaw === undefined
+    ? resolveWidthPairParam(controller, "value", actor, opponent, stateOwner, stageBounds, tick)
+    : undefined;
+  if (!edge && !player && !value) return undefined;
+  const body = player ?? value;
+  const edgePair = edge ?? value;
+  const pair = body ?? edgePair!;
   const redirectPlayerIdExpression = findControllerParam(controller.source, "redirectid")?.trim();
   return {
     ...controller,
@@ -6097,6 +6109,8 @@ function materializeWidthConstraintController(
       controllerType: "width",
       front: pair[0],
       back: pair[1] ?? pair[0],
+      ...(body === undefined ? { mode: "edge" as const } : value ? { mode: "value" as const } : {}),
+      ...(edgePair && body ? { edgeFront: edgePair[0], edgeBack: edgePair[1] ?? edgePair[0] } : {}),
       ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
     },
   };

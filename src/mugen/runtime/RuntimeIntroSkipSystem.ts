@@ -29,6 +29,7 @@ export function resetRuntimeIntroSkipActor(
   }
   runtime.facing = start.facing;
   runtime.bodyWidthDelta = undefined;
+  runtime.edgeWidth = undefined;
   runtime.bodyHeightDelta = undefined;
   runtime.clsnOverrides = undefined;
   runtime.clsnScaleMultiplier = undefined;

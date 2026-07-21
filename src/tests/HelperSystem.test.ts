@@ -442,25 +442,33 @@ describe("HelperSystem", () => {
     expect(unsupported).toEqual(["Depth"]);
   });
 
-  it("fails closed for Helper Width edge and Helper constraint RedirectID", () => {
+  it("applies one-frame Helper Width edge state and keeps unresolved RedirectID fail-closed", () => {
     const widthEdge = compiledControllerIr(6000, "Width", ["Time = 0"], { edge: "30,20" });
     const heightRedirect = compiledControllerIr(6000, "Height", ["Time = 0"], { value: "12,4", redirectid: "57" });
-    const actor = helper({ runtimeProgram: { states: [stateProgram(stateDef(6000), [widthEdge, heightRedirect])] } });
+    const actor = helper({
+      pos: { x: 80, y: 0 },
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [widthEdge, heightRedirect])] },
+    });
     const unsupported: string[] = [];
 
-    advanceRuntimeHelpers([actor], stage, {
+    advanceRuntimeHelpers([actor], { bounds: { left: -40, right: 40 } }, {
       runtimeProfile: "ikemen-go",
       onUnsupportedController: (_helper, controller) => unsupported.push(controller.type),
     });
 
     expect(actor.bodyWidthDelta).toBeUndefined();
+    expect(actor.edgeWidth).toEqual({ front: 30, back: 20 });
+    expect(actor.pos.x).toBe(10);
     expect(actor.bodyHeightDelta).toBeUndefined();
-    expect(unsupported).toEqual(["Width", "Height"]);
+    expect(unsupported).toEqual(["Height"]);
+
+    advanceRuntimeHelpers([actor], { bounds: { left: -40, right: 40 } }, { runtimeProfile: "ikemen-go" });
+    expect(actor.edgeWidth).toBeUndefined();
   });
 
   it("routes Helper Width and Height RedirectID through destination state with localcoord scale", () => {
     const width = compiledControllerIr(6000, "Width", ["Time = 0"], {
-      player: "var(0), var(1)",
+      value: "var(0), var(1)",
       redirectid: "57",
     });
     const height = compiledControllerIr(6000, "Height", ["Time = 0"], {
@@ -516,6 +524,7 @@ describe("HelperSystem", () => {
     expect(caller.bodyHeightDelta).toBeUndefined();
     expect(destinationHelper.bodyWidth).toEqual({ front: 36, back: 18 });
     expect(destinationHelper.bodyWidthDelta).toEqual({ front: 36, back: 18 });
+    expect(destinationHelper.edgeWidth).toEqual({ front: 36, back: 18 });
     expect(destinationHelper.bodyHeightDelta).toEqual({ top: 25, bottom: 4.5 });
     expect(destinationHelper.combatDepth).toMatchObject({ size: [39, 29], edge: [36, 25] });
     expect(committed).toEqual(["p2-helper-destination", "p2-helper-destination", "p2-helper-destination"]);

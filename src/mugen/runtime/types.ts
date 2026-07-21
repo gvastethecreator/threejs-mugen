@@ -35,6 +35,7 @@ export type CharacterRuntimeState = {
   facing: 1 | -1;
   bodyWidth?: { front: number; back: number };
   bodyWidthDelta?: { front: number; back: number };
+  edgeWidth?: { front: number; back: number };
   bodyHeightDelta?: { top: number; bottom: number };
   clsnOverrides?: RuntimeCollisionOverride[];
   clsnScaleMultiplier?: { x: number; y: number };

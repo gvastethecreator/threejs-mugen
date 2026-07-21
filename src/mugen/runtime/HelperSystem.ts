@@ -136,6 +136,7 @@ export type RuntimeHelper = {
   baseBodyWidth?: { front: number; back: number };
   bodyWidth?: { front: number; back: number };
   bodyWidthDelta?: { front: number; back: number };
+  edgeWidth?: { front: number; back: number };
   bodyHeightDelta?: { top: number; bottom: number };
   playerPush?: boolean;
   pushPriority?: number;
@@ -510,6 +511,7 @@ export function advanceRuntimeHelperActor(
     return false;
   }
   helperActorConstraintWorld.clampBodyPushDepthToStage(helper, stage, helper.localCoord);
+  helperActorConstraintWorld.clampWidthEdgeToStage(helper, stage);
   if (helper.combatDepth) helper.pos.z = helper.combatDepth.position;
   return (
     helper.pos.x >= stage.bounds.left - margin &&
@@ -2195,6 +2197,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     ...(helper.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(helper.combatDepth) }),
     bodyWidth: helper.bodyWidth ? { ...helper.bodyWidth } : undefined,
     ...(helper.bodyWidthDelta === undefined ? {} : { bodyWidthDelta: { ...helper.bodyWidthDelta } }),
+    ...(helper.edgeWidth === undefined ? {} : { edgeWidth: { ...helper.edgeWidth } }),
     ...(helper.bodyHeightDelta === undefined ? {} : { bodyHeightDelta: { ...helper.bodyHeightDelta } }),
     ...(helper.playerPush === undefined ? {} : { playerPush: helper.playerPush }),
     ...(helper.pushPriority === undefined ? {} : { pushPriority: helper.pushPriority }),
@@ -2283,6 +2286,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.power = runtime.power;
   helper.bodyWidth = runtime.bodyWidth ? { ...runtime.bodyWidth } : undefined;
   helper.bodyWidthDelta = runtime.bodyWidthDelta ? { ...runtime.bodyWidthDelta } : undefined;
+  helper.edgeWidth = runtime.edgeWidth ? { ...runtime.edgeWidth } : undefined;
   helper.bodyHeightDelta = runtime.bodyHeightDelta ? { ...runtime.bodyHeightDelta } : undefined;
   helper.playerPush = runtime.playerPush;
   helper.pushPriority = runtime.pushPriority;

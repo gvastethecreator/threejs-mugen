@@ -397,6 +397,9 @@ export type CollisionControllerOp =
       controllerType: "width";
       front: number;
       back: number;
+      mode?: "edge" | "value";
+      edgeFront?: number;
+      edgeBack?: number;
       redirectPlayerIdExpression?: string;
     }
     | {
@@ -1079,16 +1082,35 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
 }
 
 function compileWidthControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
-  const pair = strictNumberPair(findParam(controller, "player") ?? findParam(controller, "value"));
+  const edgeRaw = findParam(controller, "edge");
+  const playerRaw = findParam(controller, "player");
+  const valueRaw = findParam(controller, "value");
+  const edge = edgeRaw === undefined ? undefined : strictNumberPair(edgeRaw);
+  const player = playerRaw === undefined ? undefined : strictNumberPair(playerRaw);
+  const value = edgeRaw === undefined && playerRaw === undefined
+    ? strictNumberPair(valueRaw)
+    : undefined;
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
-  if (!pair || redirectPlayerIdExpression === "invalid") {
+  if (
+    (edgeRaw !== undefined && !edge) ||
+    (playerRaw !== undefined && !player) ||
+    (edgeRaw === undefined && playerRaw === undefined && !value) ||
+    redirectPlayerIdExpression === "invalid"
+  ) {
     return undefined;
   }
+  const body = player ?? value;
+  const edgePair = edge ?? value;
+  const pair = body ?? edgePair!;
   return {
     kind: "collision",
     controllerType: "width",
-    front: clampStaticBodyWidth(pair[0]),
-    back: clampStaticBodyWidth(pair[1] ?? pair[0]),
+    front: body ? clampStaticBodyWidth(pair[0]) : pair[0],
+    back: body ? clampStaticBodyWidth(pair[1] ?? pair[0]) : pair[1] ?? pair[0],
+    ...(body === undefined ? { mode: "edge" as const } : value ? { mode: "value" as const } : {}),
+    ...(edgePair && body
+      ? { edgeFront: edgePair[0], edgeBack: edgePair[1] ?? edgePair[0] }
+      : {}),
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }
