@@ -9091,6 +9091,60 @@ value = 0
     expect(runtimeWorldBox(internals.p1.runtime, proxyBox!)).toEqual(proxyBox);
   });
 
+  it("extends an IKEMEN root hurt box with a Helper clsnproxy OverrideClsn", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const imported = createImportedFixture({
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Proxy collision override]
+type = OverrideClsn
+trigger1 = Time = 0
+group = Clsn2
+index = -1
+rect = -7,-18,11,6
+`,
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const internals = runtime as unknown as {
+      p1: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1; clsnAngle?: number } };
+      runtimeHurtBoxes: (fighter: unknown) => RuntimeCollisionBox[];
+    };
+    const helper = effectActorWorld.helpers("p1")[0];
+    expect(helper?.clsnOverrides).toEqual([
+      { group: 2, index: -1, rect: { x1: -7, y1: -18, x2: 11, y2: 6 } },
+    ]);
+    helper!.clsnProxy = true;
+    helper!.parentId = "p1";
+    helper!.rootId = "p1";
+    helper!.ownClsnScale = true;
+    helper!.scale = { x: 2, y: 0.5 };
+    helper!.pos = { x: internals.p1.runtime.pos.x + 100, y: internals.p1.runtime.pos.y };
+    helper!.facing = 1;
+    helper!.clsnAngle = 90;
+    internals.p1.runtime.clsnAngle = 45;
+
+    const proxyBox = internals.runtimeHurtBoxes(internals.p1).find((box) => box.coordinateSpace === "world");
+    expect(proxyBox).toEqual({
+      x1: internals.p1.runtime.pos.x + 86,
+      y1: internals.p1.runtime.pos.y - 9,
+      x2: internals.p1.runtime.pos.x + 122,
+      y2: internals.p1.runtime.pos.y + 3,
+      coordinateSpace: "world",
+      runtimeRotation: {
+        angle: -Math.PI / 2,
+        pivotX: internals.p1.runtime.pos.x + 100,
+        pivotY: internals.p1.runtime.pos.y,
+      },
+    });
+    expect(runtimeWorldBox(internals.p1.runtime, proxyBox!)).toEqual(proxyBox);
+  });
+
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {
     const defender = createImportedFixture({
       id: "removeongethit-defender",

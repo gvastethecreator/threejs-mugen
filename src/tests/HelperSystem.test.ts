@@ -308,6 +308,62 @@ describe("HelperSystem", () => {
     expect(legacy.vars[0]).toBe(0);
   });
 
+  it("runs local Helper OverrideClsn with dynamic values, snapshots it, and resets it per frame", () => {
+    const override = compiledControllerIr(6000, "OverrideClsn", ["Time = 0"], {
+      group: "var(0)",
+      index: "var(1)",
+      rect: "var(2), fvar(0), var(3), 4",
+    });
+    const actor = helper({
+      vars: [2, -1, 8, -4],
+      fvars: [-8.5],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [override])] },
+    });
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([actor], stage, {
+      onOperation: (_helper, operation) => {
+        if (operation.kind === "collision" && operation.controllerType === "overrideclsn") {
+          operations.push(`${operation.group}:${operation.index}:${operation.rect.join(",")}`);
+        }
+      },
+    });
+
+    expect(actor.clsnOverrides).toEqual([
+      { group: 2, index: -1, rect: { x1: -4, y1: -8.5, x2: 8, y2: 4 } },
+    ]);
+    expect(operations).toEqual(["2:-1:-4,-8.5,8,4"]);
+    const [snapshot] = runtimeHelpersToSnapshots([actor], 6000);
+    expect(snapshot?.clsn2).toEqual([{ x1: -4, y1: -8.5, x2: 8, y2: 4 }]);
+    expect(snapshot?.runtime.clsnOverrides).toEqual(actor.clsnOverrides);
+    expect(snapshot?.runtime.clsnOverrides).not.toBe(actor.clsnOverrides);
+
+    advanceRuntimeHelpers([actor], stage);
+
+    expect(actor.clsnOverrides).toBeUndefined();
+  });
+
+  it("keeps Helper OverrideClsn RedirectID closed until its destination route exists", () => {
+    const blocked = helper({
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [compiledControllerIr(6000, "OverrideClsn", [], {
+          group: "Clsn2",
+          index: "-1",
+          rect: "-4,-8,8,4",
+          redirectid: "57",
+        })])],
+      },
+    });
+    const unsupported: string[] = [];
+
+    advanceRuntimeHelpers([blocked], stage, {
+      onUnsupportedController: (_helper, controller) => unsupported.push(controller.type),
+    });
+
+    expect(blocked.clsnOverrides).toBeUndefined();
+    expect(unsupported).toEqual(["OverrideClsn"]);
+  });
+
   it("carries a source-scoped default HitFlag into Helper HitDef execution", () => {
     const hitDef = compiledControllerIr(6000, "HitDef", [], { damage: "20" });
     const imported = helper({

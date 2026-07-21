@@ -5,6 +5,7 @@ import type {
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
+import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStageDefinition } from "../model/MugenStage";
@@ -39,6 +40,12 @@ import {
   RuntimeCollisionTransformWorld,
   scaleRuntimeCollisionBoxes,
 } from "./RuntimeCollisionTransformSystem";
+import {
+  applyCollisionOverrides,
+  RuntimeCollisionOverrideWorld,
+  type RuntimeCollisionOverride,
+  type RuntimeCollisionOverrideResolver,
+} from "./RuntimeCollisionOverrideSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import {
@@ -128,6 +135,7 @@ export type RuntimeHelper = {
   preserve?: boolean;
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
+  clsnOverrides?: RuntimeCollisionOverride[];
   clsnScaleMultiplier?: { x: number; y: number };
   clsnAngle?: number;
   lifeMax: number;
@@ -158,6 +166,18 @@ export type RuntimeHelper = {
   hitEffectEvents: RuntimeHitEffectEvent[];
   ownerBind?: RuntimeHelperOwnerBind;
 };
+
+export type RuntimeHelperCollisionBoxType = "clsn1" | "clsn2";
+
+export function runtimeHelperCurrentCollisionBoxes(
+  helper: Pick<RuntimeHelper, "action" | "frameIndex" | "clsnOverrides">,
+  boxType: RuntimeHelperCollisionBoxType,
+): CollisionBox[] {
+  const frame = helper.action.frames[helper.frameIndex];
+  const group = boxType === "clsn1" ? 1 : 2;
+  const boxes = boxType === "clsn1" ? frame?.clsn1 : frame?.clsn2;
+  return applyCollisionOverrides(boxes ?? [], helper.clsnOverrides, group);
+}
 
 export type RuntimeHelperOwnerBind = {
   target: "parent" | "root";
@@ -420,6 +440,7 @@ export function advanceRuntimeHelperActor(
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
   helperCollisionTransformWorld.resetFrame(helper);
+  helperCollisionOverrideWorld.resetFrame(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
   if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4) === "destroyed") {
     return false;
@@ -678,6 +699,16 @@ export function runRuntimeHelperStateControllers(
     if (dispatch.kind === "side-effect" && dispatch.effect === "hitdef") {
       if (activateRuntimeHelperHitDef(helper, controller, helperHitDefWorld, options)) {
         options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "overrideclsn") {
+      const applied = applyRuntimeHelperCollisionOverrideController(helper, controller, options);
+      if (applied) {
+        options.onController?.(helper, controller);
+        options.onOperation?.(helper, applied);
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
@@ -973,8 +1004,8 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         },
         runtime,
         frame,
-        clsn1: scaleRuntimeCollisionBoxes(frame.clsn1.map(cloneBox), helper.clsnScaleMultiplier),
-        clsn2: scaleRuntimeCollisionBoxes(frame.clsn2.map(cloneBox), helper.clsnScaleMultiplier),
+        clsn1: scaleRuntimeCollisionBoxes(runtimeHelperCurrentCollisionBoxes(helper, "clsn1"), helper.clsnScaleMultiplier),
+        clsn2: scaleRuntimeCollisionBoxes(runtimeHelperCurrentCollisionBoxes(helper, "clsn2"), helper.clsnScaleMultiplier),
         soundEvents: helper.soundEvents.map((event) => ({ ...event })),
         hitEffectEvents: helper.hitEffectEvents.map((event) => ({ ...event })),
       };
@@ -1019,6 +1050,7 @@ const helperRuntimeControllers = new Set([
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
 const helperControllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const helperCollisionTransformWorld = new RuntimeCollisionTransformWorld();
+const helperCollisionOverrideWorld = new RuntimeCollisionOverrideWorld();
 export const helperTargetWorld = new RuntimeTargetWorld();
 const helperTargetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const redirectedTargetDispatchWorld = new RuntimeRedirectedTargetDispatchWorld();
@@ -1035,8 +1067,8 @@ export function activateRuntimeHelperHitDef(
   const collisionFrame = frame
     ? {
         ...frame,
-        clsn1: scaleRuntimeCollisionBoxes(frame.clsn1, helper.clsnScaleMultiplier),
-        clsn2: scaleRuntimeCollisionBoxes(frame.clsn2, helper.clsnScaleMultiplier),
+        clsn1: scaleRuntimeCollisionBoxes(runtimeHelperCurrentCollisionBoxes(helper, "clsn1"), helper.clsnScaleMultiplier),
+        clsn2: scaleRuntimeCollisionBoxes(runtimeHelperCurrentCollisionBoxes(helper, "clsn2"), helper.clsnScaleMultiplier),
       }
     : undefined;
   const actor = {
@@ -1135,6 +1167,57 @@ function helperPauseControllerParamResolvers(
     posX: () => pos()?.[0],
     posY: () => pos()?.[1],
   };
+}
+
+function applyRuntimeHelperCollisionOverrideController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+) {
+  if (helperControllerRedirectExpression(controller) !== undefined) {
+    return undefined;
+  }
+  const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
+    ? controller.operation
+    : undefined;
+  return helperCollisionOverrideWorld.apply(
+    helper,
+    controller.source,
+    operation,
+    helperCollisionOverrideParams(helper, controller, options),
+  );
+}
+
+function helperCollisionOverrideParams(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimeCollisionOverrideResolver {
+  return {
+    resolveNumber: (key) => resolveHelperNumber(helper, undefined, findControllerParam(controller.source, key), options),
+    resolveRect: (key) => {
+      const raw = findControllerParam(controller.source, key);
+      if (raw === undefined) return undefined;
+      const expressions = splitHelperTopLevelExpressions(raw);
+      if (expressions.length < 1 || expressions.length > 4 || expressions.some((expression) => !expression)) {
+        return undefined;
+      }
+      const values = expressions.map((expression) => resolveHelperFloat(helper, expression, options));
+      return values.some((value) => value === undefined)
+        ? undefined
+        : values as [number, number?, number?, number?];
+    },
+  };
+}
+
+function splitHelperTopLevelExpressions(raw: string): string[] {
+  const expressions: string[] = [];
+  let start = 0;
+  for (const end of [...topLevelCommaIndices(raw), raw.length]) {
+    expressions.push(raw.slice(start, end).trim());
+    start = end + 1;
+  }
+  return expressions;
 }
 
 function splitHelperSoundValueExpressions(raw: string): [string, string] | undefined {
@@ -1699,6 +1782,9 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     sysvars: [...helper.sysvars],
     fvars: [...helper.fvars],
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
+    ...(helper.clsnOverrides === undefined
+      ? {}
+      : { clsnOverrides: helper.clsnOverrides.map((override) => ({ ...override, rect: { ...override.rect } })) }),
     ...(helper.clsnScaleMultiplier === undefined ? {} : { clsnScaleMultiplier: { ...helper.clsnScaleMultiplier } }),
     ...(helper.clsnAngle === undefined ? {} : { clsnAngle: helper.clsnAngle }),
     targetCount: helper.targets.length,
@@ -1730,6 +1816,9 @@ function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRu
     vars: [...state.vars],
     sysvars: state.sysvars ? [...state.sysvars] : undefined,
     fvars: [...state.fvars],
+    ...(state.clsnOverrides === undefined
+      ? {}
+      : { clsnOverrides: state.clsnOverrides.map((override) => ({ ...override, rect: { ...override.rect } })) }),
   };
 }
 
@@ -1763,6 +1852,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.vars = [...runtime.vars];
   helper.sysvars = [...(runtime.sysvars ?? [])];
   helper.fvars = [...runtime.fvars];
+  helper.clsnOverrides = runtime.clsnOverrides?.map((override) => ({ ...override, rect: { ...override.rect } }));
   helper.clsnScaleMultiplier = runtime.clsnScaleMultiplier
     ? { ...runtime.clsnScaleMultiplier }
     : undefined;
@@ -1930,10 +2020,6 @@ function resolveActorIdentity(input: RuntimeHelperSpawnInput): Pick<
   const rootId = input.rootId ?? ownerId;
   const parentId = input.parentId ?? ownerId;
   return { actorKind: "helper", ownerId, rootId, parentId };
-}
-
-function cloneBox<T extends { x1: number; y1: number; x2: number; y2: number }>(box: T): T {
-  return { ...box };
 }
 
 function firstNumber(value: string | undefined): number | undefined {

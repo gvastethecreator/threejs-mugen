@@ -57,6 +57,37 @@ describe("RuntimeHelperCollisionSystem", () => {
     expect(runtimeHelperCurrentCollisionBoxes({ action, frameIndex: 4 }, "clsn2")).toEqual([]);
   });
 
+  it("applies Helper OverrideClsn before proxy scaling, facing, and TransformClsn angle", () => {
+    const overridden = proxy("overridden", "root", "root", { x: 120, y: 20 }, -1, {
+      ownClsnScale: true,
+      scale: { x: 2, y: 0.5 },
+      clsnScaleMultiplier: { x: 0.25, y: 4 },
+      clsnAngle: 90,
+      clsn2: [{ x1: -30, y1: -40, x2: 30, y2: 0 }],
+      clsnOverrides: [{ group: 2, index: -1, rect: { x1: -4, y1: -10, x2: 16, y2: 4 } }],
+    });
+
+    expect(runtimeHelperCurrentCollisionBoxes(overridden, "clsn2")).toEqual([
+      { x1: -4, y1: -10, x2: 16, y2: 4 },
+    ]);
+    expect(mergeRuntimeHelperProxyCollisionBoxes(root({ x: 100, y: 20 }, 1), [], [overridden], "clsn2", {
+      outputSpace: "world",
+    })).toEqual([
+      {
+        x1: 112,
+        y1: 0,
+        x2: 122,
+        y2: 28,
+        coordinateSpace: "world",
+        runtimeRotation: {
+          angle: Math.PI / 2,
+          pivotX: 120,
+          pivotY: 20,
+        },
+      },
+    ]);
+  });
+
   it("selects own Helper scale or inherited animation-owner scale for proxy boxes", () => {
     const ownScale = proxy("own-scale", "root", "root", { x: 0, y: 0 }, 1, {
       ownClsnScale: true,
@@ -195,7 +226,7 @@ function proxy(
   };
 }
 
-type ProxyOptions = Partial<Pick<RuntimeHelperCollisionProxy, "destroyed" | "teamState">> & {
+type ProxyOptions = Partial<Pick<RuntimeHelperCollisionProxy, "destroyed" | "teamState" | "clsnOverrides">> & {
   clsnProxy?: boolean;
   ownClsnScale?: boolean;
   scale?: { x: number; y: number };

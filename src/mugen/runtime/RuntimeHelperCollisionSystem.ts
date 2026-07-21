@@ -1,6 +1,13 @@
 import type { CollisionBox } from "../model/CollisionBox";
-import type { RuntimeHelper } from "./HelperSystem";
+import {
+  runtimeHelperCurrentCollisionBoxes,
+  type RuntimeHelper,
+  type RuntimeHelperCollisionBoxType,
+} from "./HelperSystem";
 import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
+
+export { runtimeHelperCurrentCollisionBoxes } from "./HelperSystem";
+export type { RuntimeHelperCollisionBoxType } from "./HelperSystem";
 
 export type RuntimeHelperCollisionParent = {
   id: string;
@@ -10,25 +17,15 @@ export type RuntimeHelperCollisionParent = {
 
 export type RuntimeHelperCollisionProxy = Pick<
   RuntimeHelper,
-  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale" | "clsnScaleMultiplier" | "clsnAngle"
+  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale" | "clsnOverrides" | "clsnScaleMultiplier" | "clsnAngle"
 >;
 
-export type RuntimeHelperCollisionBoxType = "clsn1" | "clsn2";
 export type RuntimeCollisionScale = { x: number; y: number };
 export type RuntimeHelperCollisionOutputSpace = "parent-local" | "world";
 export type RuntimeHelperCollisionScaleOptions = {
   animationOwnerScale?: RuntimeCollisionScale;
   outputSpace?: RuntimeHelperCollisionOutputSpace;
 };
-
-export function runtimeHelperCurrentCollisionBoxes(
-  helper: Pick<RuntimeHelper, "action" | "frameIndex">,
-  boxType: RuntimeHelperCollisionBoxType,
-): CollisionBox[] {
-  const frame = helper.action.frames[helper.frameIndex];
-  const boxes = boxType === "clsn1" ? frame?.clsn1 : frame?.clsn2;
-  return boxes?.map((box) => ({ ...box })) ?? [];
-}
 
 export function mergeRuntimeHelperProxyCollisionBoxes(
   parent: RuntimeHelperCollisionParent,
