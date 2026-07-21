@@ -7858,6 +7858,45 @@ RedirectID = ID + 1
     expect(snapshot.logs.some((line) => line.includes("Blocked PowerSet RedirectID"))).toBe(false);
   });
 
+  it("routes Helper OverrideClsn RedirectID through a destination helper resource lease", () => {
+    const destination = {
+      ...createImportedFixture({ id: "helper-clsn-destination", withStateMove: false, withHelper: true }),
+      localCoord: [640, 480] as [number, number],
+    };
+    const caller = {
+      ...createImportedFixture({
+        id: "helper-clsn-caller",
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Redirected Helper collision override]
+type = OverrideClsn
+trigger1 = Time = 0
+group = Clsn2
+index = -1
+rect = -7,-18,11,6
+RedirectID = ID - 1
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+    };
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(destination, caller, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["x"]) });
+
+    expect(effectActorWorld.helpers("p2")[0]?.clsnOverrides).toBeUndefined();
+    expect(effectActorWorld.helpers("p1")[0]?.clsnOverrides).toEqual([
+      { group: 2, index: -1, rect: { x1: -14, y1: -36, x2: 22, y2: 12 } },
+    ]);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.OverrideClsn).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["collision:overrideclsn"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked OverrideClsn RedirectID"))).toBe(false);
+  });
+
   it("keeps a Helper resource without RedirectID local", () => {
     const caller = createImportedFixture({
       withHelper: true,
