@@ -14,6 +14,7 @@ export type RuntimeCollisionScaleMultiplier = {
 };
 
 export type RuntimeCollisionBox = CollisionBox & {
+  coordinateSpace?: "world";
   collisionTransformDisabled?: true;
   runtimeRotation?: {
     angle: number;

@@ -5,8 +5,10 @@ import { parseCns } from "../mugen/parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
 import { bgCtrlLabStage, trainingStage } from "../mugen/runtime/demoStage";
 import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
+import { runtimeWorldBox } from "../mugen/runtime/CombatResolver";
 import { runtimeHelperCanDirectlyInteract, type RuntimeHelperProgram } from "../mugen/runtime/HelperSystem";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
+import type { RuntimeCollisionBox } from "../mugen/runtime/RuntimeCollisionTransformSystem";
 import type { RuntimeTarget } from "../mugen/runtime/TargetSystem";
 
 describe("PlayableMatchRuntime", () => {
@@ -9051,8 +9053,8 @@ value = 0
 
     runtime.step({ p1: new Set(["x"]), p2: new Set() });
     const internals = runtime as unknown as {
-      p1: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1 } };
-      runtimeHurtBoxes: (fighter: unknown) => Array<{ x1: number; y1: number; x2: number; y2: number }>;
+      p1: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1; clsnAngle?: number } };
+      runtimeHurtBoxes: (fighter: unknown) => RuntimeCollisionBox[];
     };
     const helper = effectActorWorld.helpers("p1")[0];
     expect(helper).toBeDefined();
@@ -9063,6 +9065,8 @@ value = 0
     helper!.scale = { x: 2, y: 0.5 };
     helper!.pos = { x: internals.p1.runtime.pos.x + 100, y: internals.p1.runtime.pos.y };
     helper!.facing = 1;
+    helper!.clsnAngle = 90;
+    internals.p1.runtime.clsnAngle = 45;
     helper!.frameIndex = 0;
     helper!.action = {
       ...helper!.action,
@@ -9071,7 +9075,20 @@ value = 0
         : frame),
     };
 
-    expect(internals.runtimeHurtBoxes(internals.p1)).toContainEqual({ x1: 92, y1: -10, x2: 132, y2: 2 });
+    const proxyBox = internals.runtimeHurtBoxes(internals.p1).find((box) => box.coordinateSpace === "world");
+    expect(proxyBox).toEqual({
+      x1: internals.p1.runtime.pos.x + 92,
+      y1: internals.p1.runtime.pos.y - 10,
+      x2: internals.p1.runtime.pos.x + 132,
+      y2: internals.p1.runtime.pos.y + 2,
+      coordinateSpace: "world",
+      runtimeRotation: {
+        angle: -Math.PI / 2,
+        pivotX: internals.p1.runtime.pos.x + 100,
+        pivotY: internals.p1.runtime.pos.y,
+      },
+    });
+    expect(runtimeWorldBox(internals.p1.runtime, proxyBox!)).toEqual(proxyBox);
   });
 
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {

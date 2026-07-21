@@ -745,7 +745,7 @@ export class PlayableMatchRuntime {
     this.attachHelperPauseHandlers();
   }
 
-  private runtimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
+  private runtimeHurtBoxes(fighter: FighterMatchState): RuntimeCollisionBox[] {
     return getRuntimeHurtBoxes(
       fighter,
       this.runtimeProfile === "ikemen-go" ? this.effectActorWorld.helpers(fighter.id) : undefined,
@@ -755,7 +755,7 @@ export class PlayableMatchRuntime {
   private runtimeCollisionBoxes(
     fighter: FighterMatchState,
     boxType: MugenCollisionBoxType,
-  ): MugenAnimationFrame["clsn1"] {
+  ): RuntimeCollisionBox[] {
     return getRuntimeCollisionBoxes(
       fighter,
       boxType,
@@ -5366,11 +5366,12 @@ function advanceContactTimers(fighter: FighterMatchState): void {
 function getRuntimeHurtBoxes(
   fighter: FighterMatchState,
   helpers?: readonly RuntimeHelper[],
-): MugenAnimationFrame["clsn2"] | undefined {
+): RuntimeCollisionBox[] {
   const base = frameWorld.currentHurtBoxes(fighter);
   return helpers?.length
     ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2", {
         animationOwnerScale: runtimeDefinitionCollisionScale(fighter.definition.constants),
+        outputSpace: "world",
       })
     : base;
 }
@@ -5385,6 +5386,7 @@ function getRuntimeCollisionBoxes(
     return helpers?.length
       ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn1", {
           animationOwnerScale: runtimeDefinitionCollisionScale(fighter.definition.constants),
+          outputSpace: "world",
         })
       : base;
   }
@@ -5393,6 +5395,7 @@ function getRuntimeCollisionBoxes(
     return helpers?.length
       ? mergeRuntimeHelperProxyCollisionBoxes(runtimeCollisionParent(fighter), base, helpers, "clsn2", {
           animationOwnerScale: runtimeDefinitionCollisionScale(fighter.definition.constants),
+          outputSpace: "world",
         })
       : base;
   }

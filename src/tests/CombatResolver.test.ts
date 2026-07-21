@@ -15,6 +15,7 @@ import {
   scaleRuntimeIncomingDamage,
   scaleRuntimeOutgoingDamage,
 } from "../mugen/runtime/CombatResolver";
+import type { RuntimeCollisionBox } from "../mugen/runtime/RuntimeCollisionTransformSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("CombatResolver", () => {
@@ -64,6 +65,25 @@ describe("CombatResolver", () => {
       y1: -60,
       y2: -30,
     });
+  });
+
+  it("preserves a world-space proxy box across a root collision transform", () => {
+    const defender = actor({ pos: { x: 300, y: 0 }, facing: -1, clsnAngle: 45 });
+    const proxyBox: RuntimeCollisionBox = {
+      x1: 110,
+      y1: -10,
+      x2: 130,
+      y2: 10,
+      coordinateSpace: "world",
+      runtimeRotation: {
+        angle: Math.PI / 2,
+        pivotX: 120,
+        pivotY: 0,
+      },
+    };
+
+    expect(runtimeWorldBox(defender, proxyBox)).toEqual(proxyBox);
+    expect(hasRuntimeBoxContact({ x1: 115, y1: -5, x2: 125, y2: 5 }, defender, [proxyBox])).toBe(true);
   });
 
   it("checks bounded guard distance without requiring hitbox contact", () => {

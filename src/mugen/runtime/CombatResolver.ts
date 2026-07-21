@@ -69,6 +69,11 @@ export function runtimeWorldBox(
   actor: Pick<CharacterRuntimeState, "pos" | "facing"> & Partial<Pick<CharacterRuntimeState, "clsnAngle">>,
   box: RuntimeCollisionBox,
 ): RuntimeCollisionBox {
+  if (box.coordinateSpace === "world") {
+    return box.runtimeRotation
+      ? { ...box, runtimeRotation: { ...box.runtimeRotation } }
+      : { ...box };
+  }
   const worldBox = actor.facing === 1
     ? {
         x1: actor.pos.x + box.x1,
@@ -80,10 +85,12 @@ export function runtimeWorldBox(
         x1: actor.pos.x - box.x2,
         x2: actor.pos.x - box.x1,
         y1: actor.pos.y + box.y1,
-        y2: actor.pos.y + box.y2,
+      y2: actor.pos.y + box.y2,
       };
   if (box.collisionTransformDisabled || actor.clsnAngle === undefined || actor.clsnAngle === 0) {
-    return worldBox;
+    return box.runtimeRotation
+      ? { ...worldBox, runtimeRotation: { ...box.runtimeRotation } }
+      : worldBox;
   }
   return {
     ...worldBox,

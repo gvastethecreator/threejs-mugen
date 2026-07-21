@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { CollisionBox } from "../mugen/model/CollisionBox";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
+import { runtimeWorldBox } from "../mugen/runtime/CombatResolver";
 import {
   mergeRuntimeHelperProxyCollisionBoxes,
   runtimeHelperCurrentCollisionBoxes,
@@ -25,8 +26,8 @@ describe("RuntimeHelperCollisionSystem", () => {
     expect(mergeRuntimeHelperProxyCollisionBoxes(parent, [{ x1: -20, y1: -40, x2: 20, y2: 0 }], [direct, nested, ordinaryChild], "clsn2"))
       .toEqual([
         { x1: -20, y1: -40, x2: 20, y2: 0 },
-        { x1: 12, y1: -10, x2: 32, y2: 10 },
-        { x1: 25, y1: -10, x2: 45, y2: 4 },
+        { x1: 12, y1: -10, x2: 32, y2: 10, collisionTransformDisabled: true },
+        { x1: 25, y1: -10, x2: 45, y2: 4, collisionTransformDisabled: true },
       ]);
   });
 
@@ -71,8 +72,8 @@ describe("RuntimeHelperCollisionSystem", () => {
     expect(mergeRuntimeHelperProxyCollisionBoxes(root({ x: 0, y: 0 }, 1), [], [ownScale, inheritedScale], "clsn2", {
       animationOwnerScale: { x: 3, y: 2 },
     })).toEqual([
-      { x1: 2, y1: -1, x2: 10, y2: 2 },
-      { x1: -3, y1: -2, x2: 3, y2: 2 },
+      { x1: 2, y1: -1, x2: 10, y2: 2, collisionTransformDisabled: true },
+      { x1: -3, y1: -2, x2: 3, y2: 2, collisionTransformDisabled: true },
     ]);
   });
 
@@ -85,8 +86,81 @@ describe("RuntimeHelperCollisionSystem", () => {
     });
 
     expect(mergeRuntimeHelperProxyCollisionBoxes(root({ x: 0, y: 0 }, 1), [], [transformed], "clsn2")).toEqual([
-      { x1: 0.5, y1: -4, x2: 2.5, y2: 8 },
+      { x1: 0.5, y1: -4, x2: 2.5, y2: 8, collisionTransformDisabled: true },
     ]);
+  });
+
+  it("keeps a proxy's own TransformClsn angle in world collision space", () => {
+    const transformed = proxy("transformed", "root", "root", { x: 120, y: 22 }, 1, {
+      clsnAngle: 90,
+      clsn2: [{ x1: 0, y1: -10, x2: 10, y2: 0 }],
+    });
+    const mirrored = proxy("mirrored", "root", "root", { x: 150, y: 22 }, -1, {
+      clsnAngle: 90,
+      clsn2: [{ x1: 0, y1: -10, x2: 10, y2: 0 }],
+    });
+
+    expect(mergeRuntimeHelperProxyCollisionBoxes(root({ x: 100, y: 20 }, -1), [], [transformed, mirrored], "clsn2", {
+      outputSpace: "world",
+    })).toEqual([
+      {
+        x1: 120,
+        y1: 12,
+        x2: 130,
+        y2: 22,
+        coordinateSpace: "world",
+        runtimeRotation: {
+          angle: -Math.PI / 2,
+          pivotX: 120,
+          pivotY: 22,
+        },
+      },
+      {
+        x1: 140,
+        y1: 12,
+        x2: 150,
+        y2: 22,
+        coordinateSpace: "world",
+        runtimeRotation: {
+          angle: Math.PI / 2,
+          pivotX: 150,
+          pivotY: 22,
+        },
+      },
+    ]);
+  });
+
+  it("keeps parent-local proxy geometry outside the root TransformClsn angle", () => {
+    const parent = root({ x: 100, y: 20 }, -1);
+    const transformed = proxy("transformed", "root", "root", { x: 120, y: 22 }, 1, {
+      clsnAngle: 90,
+      clsn2: [{ x1: 0, y1: -10, x2: 10, y2: 0 }],
+    });
+    const [localBox] = mergeRuntimeHelperProxyCollisionBoxes(parent, [], [transformed], "clsn2");
+
+    expect(localBox).toEqual({
+      x1: -30,
+      y1: -8,
+      x2: -20,
+      y2: 2,
+      collisionTransformDisabled: true,
+      runtimeRotation: {
+        angle: -Math.PI / 2,
+        pivotX: 120,
+        pivotY: 22,
+      },
+    });
+    expect(runtimeWorldBox({ ...parent, clsnAngle: 45 }, localBox!)).toEqual({
+      x1: 120,
+      y1: 12,
+      x2: 130,
+      y2: 22,
+      runtimeRotation: {
+        angle: -Math.PI / 2,
+        pivotX: 120,
+        pivotY: 22,
+      },
+    });
   });
 });
 
@@ -126,6 +200,7 @@ type ProxyOptions = Partial<Pick<RuntimeHelperCollisionProxy, "destroyed" | "tea
   ownClsnScale?: boolean;
   scale?: { x: number; y: number };
   clsnScaleMultiplier?: { x: number; y: number };
+  clsnAngle?: number;
   clsn1?: CollisionBox[];
   clsn2?: CollisionBox[];
 };

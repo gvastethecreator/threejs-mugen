@@ -1,5 +1,6 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { RuntimeHelper } from "./HelperSystem";
+import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
 
 export type RuntimeHelperCollisionParent = {
   id: string;
@@ -9,13 +10,15 @@ export type RuntimeHelperCollisionParent = {
 
 export type RuntimeHelperCollisionProxy = Pick<
   RuntimeHelper,
-  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale" | "clsnScaleMultiplier"
+  "serialId" | "parentId" | "rootId" | "clsnProxy" | "destroyed" | "teamState" | "action" | "frameIndex" | "pos" | "facing" | "scale" | "ownClsnScale" | "clsnScaleMultiplier" | "clsnAngle"
 >;
 
 export type RuntimeHelperCollisionBoxType = "clsn1" | "clsn2";
 export type RuntimeCollisionScale = { x: number; y: number };
+export type RuntimeHelperCollisionOutputSpace = "parent-local" | "world";
 export type RuntimeHelperCollisionScaleOptions = {
   animationOwnerScale?: RuntimeCollisionScale;
+  outputSpace?: RuntimeHelperCollisionOutputSpace;
 };
 
 export function runtimeHelperCurrentCollisionBoxes(
@@ -33,7 +36,7 @@ export function mergeRuntimeHelperProxyCollisionBoxes(
   helpers: readonly RuntimeHelperCollisionProxy[],
   boxType: RuntimeHelperCollisionBoxType,
   options: RuntimeHelperCollisionScaleOptions = {},
-): CollisionBox[] {
+): RuntimeCollisionBox[] {
   return [
     ...baseBoxes.map((box) => ({ ...box })),
     ...runtimeHelperProxyCollisionBoxes(parent, helpers, boxType, options),
@@ -45,7 +48,7 @@ export function runtimeHelperProxyCollisionBoxes(
   helpers: readonly RuntimeHelperCollisionProxy[],
   boxType: RuntimeHelperCollisionBoxType,
   options: RuntimeHelperCollisionScaleOptions = {},
-): CollisionBox[] {
+): RuntimeCollisionBox[] {
   const childrenByParent = new Map<string, RuntimeHelperCollisionProxy[]>();
   for (const helper of helpers) {
     const children = childrenByParent.get(helper.parentId) ?? [];
@@ -53,7 +56,7 @@ export function runtimeHelperProxyCollisionBoxes(
     childrenByParent.set(helper.parentId, children);
   }
 
-  const output: CollisionBox[] = [];
+  const output: RuntimeCollisionBox[] = [];
   const visited = new Set<string>();
   const queue = [...(childrenByParent.get(parent.id) ?? [])];
   for (let index = 0; index < queue.length; index += 1) {
@@ -67,7 +70,10 @@ export function runtimeHelperProxyCollisionBoxes(
       : options.animationOwnerScale;
     const scale = multiplyCollisionScale(baseScale, helper.clsnScaleMultiplier);
     for (const box of runtimeHelperCurrentCollisionBoxes(helper, boxType)) {
-      output.push(relativeCollisionBox(parent, helperWorldBox(helper, scaleCollisionBox(box, scale))));
+      const worldBox = helperWorldCollisionBox(helper, scaleCollisionBox(box, scale));
+      output.push(options.outputSpace === "world"
+        ? { ...worldBox, coordinateSpace: "world" }
+        : relativeCollisionBox(parent, worldBox));
     }
     queue.push(...(childrenByParent.get(helper.serialId) ?? []));
   }
@@ -110,6 +116,19 @@ function isActiveProxy(parent: RuntimeHelperCollisionParent, helper: RuntimeHelp
     && (helper.rootId === undefined || helper.rootId === parent.id);
 }
 
+function helperWorldCollisionBox(helper: RuntimeHelperCollisionProxy, box: CollisionBox): RuntimeCollisionBox {
+  const worldBox = helperWorldBox(helper, box);
+  if (helper.clsnAngle === undefined || helper.clsnAngle === 0) return worldBox;
+  return {
+    ...worldBox,
+    runtimeRotation: {
+      angle: -((helper.clsnAngle * helper.facing) * Math.PI) / 180,
+      pivotX: helper.pos.x,
+      pivotY: helper.pos.y,
+    },
+  };
+}
+
 function helperWorldBox(helper: RuntimeHelperCollisionProxy, box: CollisionBox): CollisionBox {
   if (helper.facing === 1) {
     return {
@@ -127,9 +146,11 @@ function helperWorldBox(helper: RuntimeHelperCollisionProxy, box: CollisionBox):
   };
 }
 
-function relativeCollisionBox(parent: RuntimeHelperCollisionParent, world: CollisionBox): CollisionBox {
+function relativeCollisionBox(parent: RuntimeHelperCollisionParent, world: RuntimeCollisionBox): RuntimeCollisionBox {
   if (parent.facing === 1) {
     return {
+      ...world,
+      collisionTransformDisabled: true,
       x1: world.x1 - parent.pos.x,
       x2: world.x2 - parent.pos.x,
       y1: world.y1 - parent.pos.y,
@@ -137,6 +158,8 @@ function relativeCollisionBox(parent: RuntimeHelperCollisionParent, world: Colli
     };
   }
   return {
+    ...world,
+    collisionTransformDisabled: true,
     x1: parent.pos.x - world.x2,
     x2: parent.pos.x - world.x1,
     y1: world.y1 - parent.pos.y,
