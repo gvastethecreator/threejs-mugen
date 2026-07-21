@@ -26,6 +26,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
   RuntimeHelperAdvanceOptions,
   | "defaultHitFlag"
   | "constants"
+  | "opponentConstants"
   | "runtimeProfile"
   | "commandActive"
   | "commandInput"
@@ -33,6 +34,8 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "stageTime"
   | "runtimeTick"
   | "opponentRoster"
+  | "opponentLocalCoord"
+  | "p2BodyDistYUsesSizeBoxes"
   | "pauseKind"
   | "resolveTargetRedirect"
   | "resolveResourceRedirect"
@@ -50,6 +53,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
 export type RuntimeEffectHelperContext = {
   defaultHitFlag?: RuntimeHelperAdvanceOptions["defaultHitFlag"];
   constants?: RuntimeHelperAdvanceOptions["constants"];
+  opponentConstants?: RuntimeHelperAdvanceOptions["opponentConstants"];
   runtimeProfile?: RuntimeHelperAdvanceOptions["runtimeProfile"];
   commandActive?: RuntimeHelperAdvanceOptions["commandActive"];
   commandInput?: RuntimeHelperAdvanceOptions["commandInput"];
@@ -58,6 +62,8 @@ export type RuntimeEffectHelperContext = {
   opponentId?: string;
   opponentState?: CharacterRuntimeState;
   opponentRoster?: RuntimeHelperAdvanceOptions["opponentRoster"];
+  opponentLocalCoord?: RuntimeHelperAdvanceOptions["opponentLocalCoord"];
+  p2BodyDistYUsesSizeBoxes?: RuntimeHelperAdvanceOptions["p2BodyDistYUsesSizeBoxes"];
   gameSpace?: RuntimeHelperAdvanceOptions["gameSpace"];
   stageTime?: number;
   runtimeTick?: number;

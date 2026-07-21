@@ -343,6 +343,39 @@ describe("HelperSystem", () => {
     expect(actor.clsnOverrides).toBeUndefined();
   });
 
+  it("uses local Helper OverrideClsn Size for P2BodyDist", () => {
+    const override = compiledControllerIr(6000, "OverrideClsn", ["Time = 0"], {
+      group: "Size",
+      index: "-1",
+      rect: "-4,-80,30,-20",
+    });
+    const probeX = compiledControllerIr(6000, "VarSet", ["Time = 0"], { v: "0", value: "P2BodyDist X" });
+    const probeY = compiledControllerIr(6000, "VarSet", ["Time = 0"], { v: "1", value: "P2BodyDist Y" });
+    const actor = helper({
+      localCoord: [320, 240],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [override, probeX, probeY])] },
+    });
+    const opponent = helper({
+      serialId: "p2-helper-opponent",
+      pos: { x: 128, y: 300 },
+      facing: -1,
+    });
+
+    advanceRuntimeHelpers([actor], stage, {
+      constants: { "size.ground.back": 8, "size.ground.front": 10, "size.height": 60 },
+      opponentConstants: { "size.ground.back": 12, "size.ground.front": 20, "size.height": 120 },
+      opponentId: "p2",
+      opponentState: helperRuntimeState(opponent),
+      opponentLocalCoord: [640, 480],
+      p2BodyDistYUsesSizeBoxes: true,
+    });
+
+    expect(actor.clsnOverrides).toEqual([
+      { group: 3, index: -1, rect: { x1: -4, y1: -80, x2: 30, y2: -20 } },
+    ]);
+    expect(actor.vars.slice(0, 2)).toEqual([24, 110]);
+  });
+
   it("reports unsupported Helper OverrideClsn RedirectID without a live resource target", () => {
     const blocked = helper({
       runtimeProgram: {
@@ -413,6 +446,51 @@ describe("HelperSystem", () => {
     expect(committed).toEqual(["p2-helper-destination"]);
     expect(redirectedControllers).toEqual(["p2-helper-destination:OverrideClsn"]);
     expect(redirectedOperations).toEqual(["p2-helper-destination:2:-1:-8,-17,16,8"]);
+  });
+
+  it("uses a RedirectID Helper OverrideClsn Size on the primary P2BodyDist target", () => {
+    const redirect = compiledControllerIr(6000, "OverrideClsn", ["Time = 0"], {
+      group: "Size",
+      index: "-1",
+      rect: "-10,-50,4,0",
+      redirectid: "57",
+    });
+    const probeX = compiledControllerIr(6000, "VarSet", ["Time = 0"], { v: "0", value: "P2BodyDist X" });
+    const probeY = compiledControllerIr(6000, "VarSet", ["Time = 0"], { v: "1", value: "P2BodyDist Y" });
+    const caller = helper({
+      serialId: "p1-helper-caller",
+      localCoord: [320, 240],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [redirect, probeX, probeY])] },
+    });
+    const opponent = helper({
+      serialId: "p2-helper-opponent",
+      pos: { x: 128, y: 300 },
+      facing: -1,
+    });
+    const destinationActor = {
+      id: "p2",
+      definition: { localCoord: [640, 480] as [number, number] },
+      runtime: helperRuntimeState(opponent),
+      targets: [],
+      targetBindings: [],
+    };
+
+    advanceRuntimeHelpers([caller], stage, {
+      constants: { "size.ground.back": 8, "size.ground.front": 10, "size.height": 60 },
+      opponentConstants: { "size.ground.back": 12, "size.ground.front": 20, "size.height": 120 },
+      opponentId: "p2",
+      opponentState: destinationActor.runtime,
+      opponentLocalCoord: [640, 480],
+      p2BodyDistYUsesSizeBoxes: true,
+      resolveResourceRedirect: (_helper, playerId) => playerId === 57
+        ? { actor: destinationActor, candidateTargets: [destinationActor] }
+        : undefined,
+    });
+
+    expect(destinationActor.runtime.clsnOverrides).toEqual([
+      { group: 3, index: -1, rect: { x1: -20, y1: -100, x2: 8, y2: 0 } },
+    ]);
+    expect(caller.vars.slice(0, 2)).toEqual([50, 100]);
   });
 
   it("carries a source-scoped default HitFlag into Helper HitDef execution", () => {

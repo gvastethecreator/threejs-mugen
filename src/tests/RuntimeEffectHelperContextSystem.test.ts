@@ -55,6 +55,27 @@ describe("RuntimeEffectHelperContextWorld", () => {
     expect(context.opponentRoster).toBe(suppliedRoster);
   });
 
+  it("forwards Helper P2BodyDist size inputs through the typed context", () => {
+    const actor = contextActor("p1", 0);
+    const opponent = contextActor("p2", 40);
+
+    const context = new RuntimeEffectHelperContextWorld().create({
+      actor,
+      opponent,
+      options: {
+        constants: { "size.height": 60 },
+        opponentConstants: { "size.height": 120 },
+        opponentLocalCoord: [640, 480],
+        p2BodyDistYUsesSizeBoxes: true,
+      },
+    });
+
+    expect(context.constants).toEqual({ "size.height": 60 });
+    expect(context.opponentConstants).toEqual({ "size.height": 120 });
+    expect(context.opponentLocalCoord).toEqual([640, 480]);
+    expect(context.p2BodyDistYUsesSizeBoxes).toBe(true);
+  });
+
   it("forwards target candidates plus helper target-state and telemetry hooks", () => {
     const enterTargetState = () => undefined;
     const onController: RuntimeHelperAdvanceOptions["onController"] = () => undefined;

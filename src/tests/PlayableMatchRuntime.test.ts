@@ -9225,6 +9225,67 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked OverrideClsn RedirectID"))).toBe(false);
   });
 
+  it("uses Helper OverrideClsn Size in runtime P2BodyDist with root localcoords", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Helper position]
+type = PosSet
+trigger1 = Time = 0
+x = 0
+y = -200
+
+[State 1200, Helper Size]
+type = OverrideClsn
+trigger1 = Time = 0
+group = Size
+index = -1
+rect = -4,-80,30,-20
+
+[State 1200, Helper P2BodyDist X]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = P2BodyDist X
+
+[State 1200, Helper P2BodyDist Y]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = P2BodyDist Y
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+      ikemenVersion: "0.99",
+      constants: { "size.ground.back": 8, "size.ground.front": 10, "size.height": 60 },
+    };
+    const opponent = {
+      ...createImportedFixture({ id: "helper-size-opponent", withStateMove: false }),
+      localCoord: [640, 480] as [number, number],
+      ikemenVersion: "0.99",
+      constants: { "size.ground.back": 12, "size.ground.front": 20, "size.height": 120 },
+    };
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, opponent, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+    const internals = runtime as unknown as {
+      p2: { runtime: { pos: { x: number; y: number }; facing: 1 | -1 } };
+    };
+    internals.p2.runtime.pos = { x: 128, y: 0 };
+    internals.p2.runtime.facing = -1;
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]?.clsnOverrides).toEqual([
+      { group: 3, index: -1, rect: { x1: -4, y1: -80, x2: 30, y2: -20 } },
+    ]);
+    expect(effectActorWorld.helpers("p1")[0]?.vars.slice(0, 2)).toEqual([24, 160]);
+  });
+
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {
     const defender = createImportedFixture({
       id: "removeongethit-defender",

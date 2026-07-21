@@ -28,6 +28,8 @@ import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
 import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
+import { resolveRuntimePushSizeBox } from "./RuntimeRootBodyPushSystem";
+import { runtimeCurrentSizeBox, type RuntimeSizeBoxState } from "./RuntimeSizeBoxSystem";
 import type {
   RuntimeModifyProjectileNumberParam,
   RuntimeModifyProjectilePairParam,
@@ -203,6 +205,7 @@ export type RuntimeHelperResourceRedirect = RuntimeHelperTargetRedirect;
 
 export type RuntimeHelperAdvanceOptions = {
   constants?: RuntimeResourceConstants;
+  opponentConstants?: RuntimeResourceConstants;
   defaultHitFlag?: string;
   pauseKind?: RuntimeHelperPauseKind;
   runtimeProfile?: RuntimeCompatibilityProfile;
@@ -216,6 +219,8 @@ export type RuntimeHelperAdvanceOptions = {
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentState?: CharacterRuntimeState;
+  opponentLocalCoord?: [number, number];
+  p2BodyDistYUsesSizeBoxes?: boolean;
   opponentStates?: CharacterRuntimeState[];
   opponentRoster?: readonly RuntimeHelperOpponentEntry[];
   countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
@@ -509,6 +514,7 @@ export function runRuntimeHelperStateControllers(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "constants"
+    | "opponentConstants"
     | "runtimeProfile"
     | "stageBounds"
     | "gameSpace"
@@ -520,6 +526,8 @@ export function runRuntimeHelperStateControllers(
     | "opponentState"
     | "opponentStates"
     | "opponentRoster"
+    | "opponentLocalCoord"
+    | "p2BodyDistYUsesSizeBoxes"
     | "countExplods"
     | "countHelpers"
     | "countProjectiles"
@@ -640,6 +648,14 @@ export function runRuntimeHelperStateControllers(
         stageTime: options.stageTime,
         commandActive: expressionContext.commandActive,
         opponent: expressionContext.opponent,
+        localCoord: expressionContext.localCoord,
+        opponentLocalCoord: expressionContext.opponentLocalCoord,
+        outputLocalCoord: expressionContext.outputLocalCoord,
+        sizeBoxX: expressionContext.sizeBoxX,
+        opponentSizeBoxX: expressionContext.opponentSizeBoxX,
+        sizeBoxY: expressionContext.sizeBoxY,
+        opponentSizeBoxY: expressionContext.opponentSizeBoxY,
+        p2BodyDistYUsesSizeBoxes: expressionContext.p2BodyDistYUsesSizeBoxes,
         parent: expressionContext.parent,
         parentPlayerId: expressionContext.parentPlayerId,
         parentPlayerNo: expressionContext.parentPlayerNo,
@@ -1487,27 +1503,35 @@ function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, r
   );
 }
 
+type RuntimeHelperExpressionOptions = Pick<
+  RuntimeHelperAdvanceOptions,
+  | "constants"
+  | "opponentConstants"
+  | "stageBounds"
+  | "gameSpace"
+  | "stageTime"
+  | "commandActive"
+  | "opponentId"
+  | "parentState"
+  | "rootState"
+  | "opponentState"
+  | "opponentStates"
+  | "opponentRoster"
+  | "opponentLocalCoord"
+  | "p2BodyDistYUsesSizeBoxes"
+  | "countExplods"
+  | "countHelpers"
+  | "countProjectiles"
+  | "projectileContact"
+  | "projectileContactTime"
+  | "projectileCancelTime"
+  | "runtimeProfile"
+>;
+
 function helperTriggersPass(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Pick<
-    RuntimeHelperAdvanceOptions,
-    | "stageBounds"
-    | "gameSpace"
-    | "stageTime"
-    | "commandActive"
-    | "opponentId"
-    | "parentState"
-    | "rootState"
-    | "opponentState"
-    | "opponentStates"
-    | "opponentRoster"
-    | "countExplods"
-    | "countHelpers"
-    | "countProjectiles"
-    | "projectileContact"
-    | "projectileContactTime"
-  >,
+  options: RuntimeHelperExpressionOptions,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
   if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, options)))) {
@@ -1534,24 +1558,7 @@ function resolveHelperNumber(
   helper: RuntimeHelper,
   value: number | undefined,
   expression: string | undefined,
-  options: Pick<
-    RuntimeHelperAdvanceOptions,
-    | "stageBounds"
-    | "gameSpace"
-    | "stageTime"
-    | "commandActive"
-    | "opponentId"
-    | "parentState"
-    | "rootState"
-    | "opponentState"
-    | "opponentStates"
-    | "opponentRoster"
-    | "countExplods"
-    | "countHelpers"
-    | "countProjectiles"
-    | "projectileContact"
-    | "projectileContactTime"
-  >,
+  options: RuntimeHelperExpressionOptions,
 ): number | undefined {
   if (value !== undefined) {
     return value;
@@ -1712,28 +1719,11 @@ function applyRuntimeHelperOwnerBind(
 
 function helperExpressionContext(
   helper: RuntimeHelper,
-  options: Pick<
-    RuntimeHelperAdvanceOptions,
-    | "stageBounds"
-    | "gameSpace"
-    | "stageTime"
-    | "commandActive"
-    | "opponentId"
-    | "parentState"
-    | "rootState"
-    | "opponentState"
-    | "opponentStates"
-    | "countExplods"
-    | "countHelpers"
-    | "countProjectiles"
-    | "projectileContact"
-    | "projectileContactTime"
-    | "projectileCancelTime"
-    | "runtimeProfile"
-  > = {},
+  options: RuntimeHelperExpressionOptions = {},
 ) {
   const opponentRoster = helperOpponentRoster(helper, options);
   const currentOpponent = opponentRoster[0];
+  const includeWidth = options.p2BodyDistYUsesSizeBoxes === true;
   return {
     self: helperExpressionRuntimeState(helper),
     playerId: helper.playerId,
@@ -1760,6 +1750,18 @@ function helperExpressionContext(
     helperPreserve: options.runtimeProfile === "ikemen-go" && helper.preserve === true,
     helperOwnClsnScale: options.runtimeProfile === "ikemen-go" && helper.ownClsnScale === true,
     helperClsnProxy: options.runtimeProfile === "ikemen-go" && helper.clsnProxy === true,
+    localCoord: helper.localCoord,
+    opponentLocalCoord: options.opponentLocalCoord,
+    outputLocalCoord: helper.localCoord,
+    sizeBoxX: helperExpressionSizeBoxX(helper, options.constants, includeWidth),
+    opponentSizeBoxX: currentOpponent
+      ? helperExpressionSizeBoxX(currentOpponent.runtime, options.opponentConstants, includeWidth)
+      : undefined,
+    sizeBoxY: helperExpressionSizeBoxY(helper, options.constants, includeWidth),
+    opponentSizeBoxY: currentOpponent
+      ? helperExpressionSizeBoxY(currentOpponent.runtime, options.opponentConstants, includeWidth)
+      : undefined,
+    p2BodyDistYUsesSizeBoxes: options.p2BodyDistYUsesSizeBoxes,
     stageBounds: options.stageBounds,
     gameSpace: options.gameSpace,
     stageTime: options.stageTime,
@@ -1787,6 +1789,38 @@ function helperExpressionContext(
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => matchesMugenStateIdentity(candidate, stateNo)) ?? false,
   };
+}
+
+type RuntimeHelperExpressionSizeState = Pick<CharacterRuntimeState, "stateType"> & RuntimeSizeBoxState;
+
+function helperExpressionSizeBoxX(
+  state: RuntimeHelperExpressionSizeState,
+  constants: RuntimeResourceConstants | undefined,
+  includeWidth: boolean,
+): { x1: number; x2: number } | null {
+  const projected = runtimeCurrentSizeBox(
+    state,
+    resolveRuntimePushSizeBox(constants, helperExpressionSizeStateType(state.stateType)),
+    { includeHeight: false, includeWidth },
+  );
+  return projected ? { x1: projected.x1, x2: projected.x2 } : null;
+}
+
+function helperExpressionSizeBoxY(
+  state: RuntimeHelperExpressionSizeState,
+  constants: RuntimeResourceConstants | undefined,
+  includeHeight: boolean,
+): { y1: number; y2: number } | null {
+  const projected = runtimeCurrentSizeBox(
+    state,
+    resolveRuntimePushSizeBox(constants, helperExpressionSizeStateType(state.stateType)),
+    { includeHeight, includeWidth: false },
+  );
+  return projected ? { y1: projected.y1, y2: projected.y2 } : null;
+}
+
+function helperExpressionSizeStateType(stateType: CharacterRuntimeState["stateType"]): "S" | "C" | "A" | "L" {
+  return stateType === "C" || stateType === "A" || stateType === "L" ? stateType : "S";
 }
 
 function helperExpressionRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {

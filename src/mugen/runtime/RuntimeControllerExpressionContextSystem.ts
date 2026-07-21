@@ -17,6 +17,12 @@ export type RuntimeControllerEvaluationContext = {
   gameSpace?: ExpressionGameSpace;
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
+  outputLocalCoord?: [number, number];
+  sizeBoxX?: { x1: number; x2: number } | null;
+  opponentSizeBoxX?: { x1: number; x2: number } | null;
+  sizeBoxY?: { y1: number; y2: number } | null;
+  opponentSizeBoxY?: { y1: number; y2: number } | null;
+  p2BodyDistYUsesSizeBoxes?: boolean;
   parentLocalCoord?: [number, number];
   rootLocalCoord?: [number, number];
   stageTime?: number;
@@ -67,6 +73,12 @@ export function createRuntimeControllerExpressionContext(
     gameSpace: context.gameSpace,
     localCoord: context.localCoord,
     opponentLocalCoord: context.opponentLocalCoord,
+    outputLocalCoord: context.outputLocalCoord,
+    sizeBoxX: context.sizeBoxX,
+    opponentSizeBoxX: context.opponentSizeBoxX,
+    sizeBoxY: context.sizeBoxY,
+    opponentSizeBoxY: context.opponentSizeBoxY,
+    p2BodyDistYUsesSizeBoxes: context.p2BodyDistYUsesSizeBoxes,
     parentLocalCoord: context.parentLocalCoord,
     rootLocalCoord: context.rootLocalCoord,
     stageTime: context.stageTime,

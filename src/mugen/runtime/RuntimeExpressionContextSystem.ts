@@ -13,7 +13,7 @@ import type { RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
-import { applyCollisionOverrides } from "./RuntimeCollisionOverrideSystem";
+import { runtimeCurrentSizeBox } from "./RuntimeSizeBoxSystem";
 
 export { runtimeHitVar, type RuntimeHitVarTiming } from "./RuntimeHitVarSystem";
 
@@ -362,10 +362,7 @@ function runtimeExpressionSizeBoxX(
     ? actor.runtime.stateType
     : "S";
   const box = resolveRuntimePushSizeBox(actor.definition.constants, stateType);
-  const delta = includeWidth ? actor.runtime.bodyWidthDelta : undefined;
-  const x1 = box.x1 - (delta?.back ?? 0);
-  const x2 = box.x2 + (delta?.front ?? 0);
-  const projected = applyCollisionOverrides([{ ...box, x1: Math.min(x1, x2), x2: Math.max(x1, x2) }], actor.runtime.clsnOverrides, 3)[0];
+  const projected = runtimeCurrentSizeBox(actor.runtime, box, { includeHeight: false, includeWidth });
   return projected ? { x1: projected.x1, x2: projected.x2 } : null;
 }
 
@@ -377,10 +374,7 @@ function runtimeExpressionSizeBoxY(
     ? actor.runtime.stateType
     : "S";
   const box = resolveRuntimePushSizeBox(actor.definition.constants, stateType);
-  const delta = includeHeight ? actor.runtime.bodyHeightDelta : undefined;
-  const y1 = box.y1 - (delta?.top ?? 0);
-  const y2 = box.y2 + (delta?.bottom ?? 0);
-  const projected = applyCollisionOverrides([{ ...box, y1: Math.min(y1, y2), y2: Math.max(y1, y2) }], actor.runtime.clsnOverrides, 3)[0];
+  const projected = runtimeCurrentSizeBox(actor.runtime, box, { includeHeight, includeWidth: false });
   return projected ? { y1: projected.y1, y2: projected.y2 } : null;
 }
 
