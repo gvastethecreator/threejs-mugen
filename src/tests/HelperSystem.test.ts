@@ -343,7 +343,7 @@ describe("HelperSystem", () => {
     expect(actor.clsnOverrides).toBeUndefined();
   });
 
-  it("keeps Helper OverrideClsn RedirectID closed until its destination route exists", () => {
+  it("reports unsupported Helper OverrideClsn RedirectID without a live resource target", () => {
     const blocked = helper({
       runtimeProgram: {
         states: [stateProgram(stateDef(6000), [compiledControllerIr(6000, "OverrideClsn", [], {
@@ -362,6 +362,57 @@ describe("HelperSystem", () => {
 
     expect(blocked.clsnOverrides).toBeUndefined();
     expect(unsupported).toEqual(["OverrideClsn"]);
+  });
+
+  it("routes Helper OverrideClsn RedirectID through destination state with localcoord scale", () => {
+    const override = compiledControllerIr(6000, "OverrideClsn", ["Time = 0"], {
+      group: "var(0)",
+      index: "var(1)",
+      rect: "var(2), fvar(0), var(3), 4",
+      redirectid: "57",
+    });
+    const destinationHelper = helper({ serialId: "p2-helper-destination", localCoord: [640, 480] });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const caller = helper({
+      serialId: "p1-helper-caller",
+      localCoord: [320, 240],
+      vars: [2, -1, 8, -4],
+      fvars: [-8.5],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [override])] },
+    });
+    const committed: string[] = [];
+    const redirectedControllers: string[] = [];
+    const redirectedOperations: string[] = [];
+
+    advanceRuntimeHelpers([caller], stage, {
+      resolveResourceRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [],
+              commitActor: (target) => {
+                committed.push(target.id);
+                applyRuntimeStateToHelper(destinationHelper, target.runtime);
+                syncRuntimeHelperTargetActor(destinationHelper, target);
+              },
+            }
+          : undefined,
+      onRedirectedController: (_helper, target, controller) => redirectedControllers.push(`${target.id}:${controller.type}`),
+      onRedirectedOperation: (_helper, target, operation) => {
+        if (operation.kind === "collision" && operation.controllerType === "overrideclsn") {
+          redirectedOperations.push(`${target.id}:${operation.group}:${operation.index}:${operation.rect.join(",")}`);
+        }
+      },
+    });
+
+    expect(destinationActor.definition).toEqual({ localCoord: [640, 480] });
+    expect(caller.clsnOverrides).toBeUndefined();
+    expect(destinationHelper.clsnOverrides).toEqual([
+      { group: 2, index: -1, rect: { x1: -8, y1: -17, x2: 16, y2: 8 } },
+    ]);
+    expect(committed).toEqual(["p2-helper-destination"]);
+    expect(redirectedControllers).toEqual(["p2-helper-destination:OverrideClsn"]);
+    expect(redirectedOperations).toEqual(["p2-helper-destination:2:-1:-8,-17,16,8"]);
   });
 
   it("carries a source-scoped default HitFlag into Helper HitDef execution", () => {

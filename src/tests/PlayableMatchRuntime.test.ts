@@ -9145,6 +9145,47 @@ rect = -7,-18,11,6
     expect(runtimeWorldBox(internals.p1.runtime, proxyBox!)).toEqual(proxyBox);
   });
 
+  it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Redirected collision override]
+type = OverrideClsn
+trigger1 = Time = 0
+group = Clsn2
+index = -1
+rect = -7,-18,11,6
+RedirectID = 57
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+    };
+    const destination = {
+      ...createImportedFixture({ id: "redirected-clsn-destination", withStateMove: false }),
+      localCoord: [640, 480] as [number, number],
+    };
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { runtime: { clsnOverrides?: unknown } };
+    };
+
+    expect(effectActorWorld.helpers("p1")[0]?.clsnOverrides).toBeUndefined();
+    expect(internals.p2.runtime.clsnOverrides).toEqual([
+      { group: 2, index: -1, rect: { x1: -14, y1: -36, x2: 22, y2: 12 } },
+    ]);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.OverrideClsn).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:overrideclsn"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked OverrideClsn RedirectID"))).toBe(false);
+  });
+
   it("removes imported Explods flagged with removeongethit when the owner is hit", () => {
     const defender = createImportedFixture({
       id: "removeongethit-defender",

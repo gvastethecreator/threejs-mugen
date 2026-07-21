@@ -705,10 +705,15 @@ export function runRuntimeHelperStateControllers(
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "overrideclsn") {
-      const applied = applyRuntimeHelperCollisionOverrideController(helper, controller, options);
-      if (applied) {
-        options.onController?.(helper, controller);
-        options.onOperation?.(helper, applied);
+      const result = applyRuntimeHelperCollisionOverrideController(helper, controller, options);
+      if (result) {
+        if (result.redirectedTarget) {
+          options.onRedirectedController?.(helper, result.redirectedTarget, controller.source);
+          options.onRedirectedOperation?.(helper, result.redirectedTarget, result.operation);
+        } else {
+          options.onController?.(helper, controller);
+          options.onOperation?.(helper, result.operation);
+        }
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
@@ -1169,23 +1174,68 @@ function helperPauseControllerParamResolvers(
   };
 }
 
+type RuntimeHelperCollisionOverrideControllerResult = {
+  operation: Extract<ControllerOp, { kind: "collision"; controllerType: "overrideclsn" }>;
+  redirectedTarget?: RuntimeTargetWorldActor;
+};
+
 function applyRuntimeHelperCollisionOverrideController(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Parameters<typeof resolveHelperNumber>[3],
-) {
-  if (helperControllerRedirectExpression(controller) !== undefined) {
-    return undefined;
-  }
+  options: Parameters<typeof resolveHelperNumber>[3] & Pick<
+    RuntimeHelperAdvanceOptions,
+    "resolveResourceRedirect" | "onResourceRedirectBlocked"
+  >,
+): RuntimeHelperCollisionOverrideControllerResult | undefined {
   const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
     ? controller.operation
     : undefined;
-  return helperCollisionOverrideWorld.apply(
-    helper,
+  const redirectExpression = helperControllerRedirectExpression(controller);
+  if (redirectExpression === undefined) {
+    const applied = helperCollisionOverrideWorld.apply(
+      helper,
+      controller.source,
+      operation,
+      helperCollisionOverrideParams(helper, controller, options),
+    );
+    return applied === undefined ? undefined : { operation: applied };
+  }
+
+  const redirectPlayerId = resolveHelperNumber(helper, undefined, redirectExpression, options);
+  const redirect = redirectPlayerId === undefined
+    ? undefined
+    : options.resolveResourceRedirect?.(helper, Math.trunc(redirectPlayerId), controller);
+  if (!redirect) {
+    options.onResourceRedirectBlocked?.(
+      helper,
+      controller,
+      redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
+    );
+    return undefined;
+  }
+
+  const actor = redirect.lease?.destination ?? redirect.actor;
+  const candidateTargets = redirect.lease
+    ? [...redirect.lease.candidateTargets]
+    : redirect.candidateTargets;
+  const callerWidth = helper.localCoord?.[0] ?? 320;
+  const targetWidth = actor.definition?.localCoord?.[0] ?? 320;
+  const applyDispatch = () => helperCollisionOverrideWorld.apply(
+    actor.runtime,
     controller.source,
     operation,
     helperCollisionOverrideParams(helper, controller, options),
+    targetWidth / callerWidth,
   );
+  const commitRedirect = (applied: RuntimeHelperCollisionOverrideControllerResult["operation"] | undefined) => {
+    if (applied) commitRuntimeHelperRedirect(redirect, actor, candidateTargets);
+  };
+  const dispatch = redirect.lease
+    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, (_lease, applied) => commitRedirect(applied))
+    : { executed: true, value: applyDispatch() };
+  if (!redirect.lease && dispatch.executed) commitRedirect(dispatch.value);
+  if (!dispatch.executed || !dispatch.value) return undefined;
+  return { operation: dispatch.value, redirectedTarget: actor };
 }
 
 function helperCollisionOverrideParams(
@@ -1963,6 +2013,7 @@ function helperTargetRedirect(
 export function runtimeHelperTargetActor(helper: RuntimeHelper): RuntimeTargetWorldActor {
   return {
     id: helper.serialId,
+    ...(helper.localCoord === undefined ? {} : { definition: { localCoord: [...helper.localCoord] as [number, number] } }),
     runtime: helperRuntimeState(helper),
     targets: helper.targets,
     targetBindings: helper.targetBindings,
