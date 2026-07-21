@@ -9334,6 +9334,63 @@ y = 0
     ).toBe(true);
   });
 
+  it("uses current Helper Width and Height in IKEMEN Tag PlayerPush geometry", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const caller = createImportedFixture({
+      withStateMove: false,
+      withHelper: true,
+      helperType: "player",
+      helperStateControllers: `
+[State 1200, Player Helper Position]
+type = PosSet
+trigger1 = Time = 0
+x = 0
+y = 0
+
+[State 1200, Player Helper Size Push]
+type = AssertSpecial
+trigger1 = Time = 0
+flag = SizePushOnly
+
+[State 1200, Player Helper Width]
+type = Width
+trigger1 = Time = 0
+value = 12,0
+
+[State 1200, Player Helper Height]
+type = Height
+trigger1 = Time = 0
+value = 12,0
+`,
+    });
+    const opponent = createImportedFixture({ id: "player-helper-size-opponent", withStateMove: false });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -100, y: 0, facing: 1 as const },
+        p2: { x: 40, y: -70, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, opponent, closeStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({
+      bodyWidthDelta: { front: 12, back: 1 },
+      bodyHeightDelta: { top: 12, bottom: 0 },
+    });
+    expect(snapshot.rootBodyPush).toMatchObject({
+      helperIds: ["p1-helper-0"],
+      pairIds: [["p2", "p1-helper-0"]],
+      movedRootIds: ["p2"],
+      movedHelperIds: ["p1-helper-0"],
+    });
+  });
+
   it("includes an imported normal Helper when its current IKEMEN PlayerPush enables it", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const caller = createImportedFixture({

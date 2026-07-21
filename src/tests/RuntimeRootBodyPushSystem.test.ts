@@ -288,6 +288,26 @@ describe("RuntimeRootBodyPushWorld", () => {
     expect(advance(roots, true).pairIds).toEqual([]);
   });
 
+  it("composes Helper Width and Height deltas before participant push admission", () => {
+    const roots = [actor("p1", 1, -100), actor("p2", 2, 40)];
+    const helper = actor("p1-helper-0", 1, 0);
+    roots[1]!.runtime.pos.y = -70;
+    helper.sizePushOnly = true;
+
+    expect(advance(roots, true, [helper]).pairIds).toEqual([]);
+
+    helper.runtime.bodyWidthDelta = { front: 10, back: 0 };
+    helper.runtime.bodyHeightDelta = { top: 12, bottom: 0 };
+    const result = advance(roots, true, [helper]);
+
+    expect(result).toMatchObject({
+      helperIds: ["p1-helper-0"],
+      pairIds: [["p2", "p1-helper-0"]],
+      movedRootIds: ["p2"],
+      movedHelperIds: ["p1-helper-0"],
+    });
+  });
+
   it("uses OverrideClsn size boxes for PlayerPush geometry", () => {
     const roots = [actor("p1", 1, 0), actor("p2", 2, 40)];
     roots[0]!.sizePushOnly = true;

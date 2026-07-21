@@ -52,9 +52,7 @@ export class RuntimeActorConstraintWorld {
     state.posFreeze = undefined;
     state.screenBound = undefined;
     state.stageBound = undefined;
-    state.bodyWidth = { front: 39, back: 39 };
-    state.bodyWidthDelta = undefined;
-    state.bodyHeightDelta = undefined;
+    this.resetFrameSizeConstraints(state, { front: 39, back: 39 });
     state.clsnOverrides = undefined;
     state.clsnScaleMultiplier = undefined;
     state.clsnAngle = undefined;
@@ -63,6 +61,15 @@ export class RuntimeActorConstraintWorld {
       state.combatDepth.baseSize = undefined;
     }
     if (state.combatDepth) state.combatDepth.edge = undefined;
+  }
+
+  resetFrameSizeConstraints(
+    state: RuntimeActorConstraintState,
+    baseBodyWidth?: { front: number; back: number },
+  ): void {
+    state.bodyWidth = baseBodyWidth ? { ...baseBodyWidth } : undefined;
+    state.bodyWidthDelta = undefined;
+    state.bodyHeightDelta = undefined;
   }
 
   applyDepth(

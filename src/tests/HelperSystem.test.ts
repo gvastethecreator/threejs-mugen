@@ -355,6 +355,56 @@ describe("HelperSystem", () => {
     expect(legacy.vars[0]).toBe(0);
   });
 
+  it("applies dynamic local Helper Width and Height constraints for one frame", () => {
+    const width = compiledControllerIr(6000, "Width", ["Time = 0"], { player: "var(0), var(1)" });
+    const height = compiledControllerIr(6000, "Height", ["Time = 0"], { value: "fvar(0), fvar(1)" });
+    const actor = helper({
+      vars: [18, 44],
+      fvars: [12.5, 2.25],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [width, height])] },
+    });
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([actor], stage, {
+      runtimeProfile: "ikemen-go",
+      onOperation: (_helper, operation) => {
+        if (operation.kind === "collision") {
+          operations.push(`${operation.controllerType}:${"front" in operation ? `${operation.front},${operation.back}` : `${operation.top},${operation.bottom}`}`);
+        }
+      },
+    });
+
+    expect(actor.bodyWidth).toEqual({ front: 18, back: 44 });
+    expect(actor.bodyWidthDelta).toEqual({ front: 18, back: 44 });
+    expect(actor.bodyHeightDelta).toEqual({ top: 12.5, bottom: 2.25 });
+    expect(operations).toEqual(["width:18,44", "height:12.5,2.25"]);
+    const [snapshot] = runtimeHelpersToSnapshots([actor], 6000);
+    expect(snapshot?.runtime.bodyWidthDelta).toEqual({ front: 18, back: 44 });
+    expect(snapshot?.runtime.bodyHeightDelta).toEqual({ top: 12.5, bottom: 2.25 });
+
+    advanceRuntimeHelpers([actor], stage, { runtimeProfile: "ikemen-go" });
+
+    expect(actor.bodyWidth).toBeUndefined();
+    expect(actor.bodyWidthDelta).toBeUndefined();
+    expect(actor.bodyHeightDelta).toBeUndefined();
+  });
+
+  it("fails closed for Helper Width edge and Helper constraint RedirectID", () => {
+    const widthEdge = compiledControllerIr(6000, "Width", ["Time = 0"], { edge: "30,20" });
+    const heightRedirect = compiledControllerIr(6000, "Height", ["Time = 0"], { value: "12,4", redirectid: "57" });
+    const actor = helper({ runtimeProgram: { states: [stateProgram(stateDef(6000), [widthEdge, heightRedirect])] } });
+    const unsupported: string[] = [];
+
+    advanceRuntimeHelpers([actor], stage, {
+      runtimeProfile: "ikemen-go",
+      onUnsupportedController: (_helper, controller) => unsupported.push(controller.type),
+    });
+
+    expect(actor.bodyWidthDelta).toBeUndefined();
+    expect(actor.bodyHeightDelta).toBeUndefined();
+    expect(unsupported).toEqual(["Width", "Height"]);
+  });
+
   it("runs local Helper OverrideClsn with dynamic values, snapshots it, and resets it per frame", () => {
     const override = compiledControllerIr(6000, "OverrideClsn", ["Time = 0"], {
       group: "var(0)",

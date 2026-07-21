@@ -38,6 +38,12 @@ import type {
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import {
+  RuntimeActorConstraintControllerDispatchWorld,
+  RuntimeActorConstraintWorld,
+  type RuntimeHeightResolver,
+  type RuntimeWidthResolver,
+} from "./ActorConstraintSystem";
+import {
   resolveRuntimeCollisionTransformControllerOperation,
   RuntimeCollisionTransformWorld,
   scaleRuntimeCollisionBoxes,
@@ -124,7 +130,10 @@ export type RuntimeHelper = {
   bindToTarget?: RuntimeTargetBinding;
   pos: { x: number; y: number; z?: number };
   vel: { x: number; y: number };
+  baseBodyWidth?: { front: number; back: number };
   bodyWidth?: { front: number; back: number };
+  bodyWidthDelta?: { front: number; back: number };
+  bodyHeightDelta?: { top: number; bottom: number };
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;
@@ -394,7 +403,12 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     targetBindings: [],
     pos: input.pos,
     vel: helperVelocity(input.controller, operation),
-    bodyWidth: input.bodyWidth,
+    ...(input.bodyWidth === undefined
+      ? {}
+      : {
+          baseBodyWidth: { ...input.bodyWidth },
+          bodyWidth: { ...input.bodyWidth },
+        }),
     ...(helperType === 2 ? { playerPush: true, pushPriority: 0, pushAffectTeam: 1 as const } : {}),
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
@@ -451,6 +465,7 @@ export function advanceRuntimeHelperActor(
 ): boolean {
   helperCollisionTransformWorld.resetFrame(helper);
   helperCollisionOverrideWorld.resetFrame(helper);
+  helperActorConstraintWorld.resetFrameSizeConstraints(helper, helper.baseBodyWidth);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
   const canAdvance = canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind);
   if (canAdvance) resetRuntimeHelperPlayerPush(helper, controllerOptions.runtimeProfile);
@@ -721,6 +736,18 @@ export function runRuntimeHelperStateControllers(
       options.onUnsupportedController?.(helper, controller);
       continue;
     }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "width") {
+      if (!applyRuntimeHelperWidthController(helper, controller, options)) {
+        options.onUnsupportedController?.(helper, controller);
+      }
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "height") {
+      if (!applyRuntimeHelperHeightController(helper, controller, options)) {
+        options.onUnsupportedController?.(helper, controller);
+      }
+      continue;
+    }
     if (dispatch.kind === "side-effect" && dispatch.effect === "overrideclsn") {
       const result = applyRuntimeHelperCollisionOverrideController(helper, controller, options);
       if (result) {
@@ -958,6 +985,22 @@ function resolveHelperExpressionPair(
   return best?.pair;
 }
 
+function resolveHelperFloatExpressionPair(
+  helper: RuntimeHelper,
+  raw: string,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number?] | undefined {
+  const expressions = splitHelperTopLevelExpressions(raw);
+  if (expressions.length < 1 || expressions.length > 2 || expressions.some((expression) => !expression)) {
+    return undefined;
+  }
+  const values = expressions.map((expression) => resolveHelperFloat(helper, expression, options));
+  if (values.some((value) => value === undefined)) return undefined;
+  return values.length === 1
+    ? [values[0]!]
+    : [values[0]!, values[1]!];
+}
+
 function topLevelCommaIndices(raw: string): number[] {
   const indices: number[] = [];
   let depth = 0;
@@ -1072,6 +1115,8 @@ const helperRuntimeControllers = new Set([
 
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
 const helperControllerDispatchWorld = new RuntimeControllerDispatchWorld();
+const helperActorConstraintWorld = new RuntimeActorConstraintWorld();
+const helperActorConstraintControllerDispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
 const helperCollisionTransformWorld = new RuntimeCollisionTransformWorld();
 const helperCollisionOverrideWorld = new RuntimeCollisionOverrideWorld();
 export const helperTargetWorld = new RuntimeTargetWorld();
@@ -1196,6 +1241,80 @@ type RuntimeHelperCollisionOverrideControllerResult = {
   operation: Extract<ControllerOp, { kind: "collision"; controllerType: "overrideclsn" }>;
   redirectedTarget?: RuntimeTargetWorldActor;
 };
+
+function applyRuntimeHelperWidthController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+): boolean {
+  if (helperControllerRedirectExpression(controller) !== undefined) return false;
+  const actor = runtimeHelperTargetActor(helper);
+  let applied = false;
+  helperActorConstraintControllerDispatchWorld.apply({
+    actor,
+    controller,
+    actorConstraintWorld: helperActorConstraintWorld,
+    resolveWidth: helperWidthResolver(helper, controller, options),
+    recordController: () => options.onController?.(helper, controller),
+    recordOperation: (_actor, operation) => {
+      applied = true;
+      options.onOperation?.(helper, operation);
+    },
+  });
+  if (!applied) return false;
+  applyRuntimeStateToHelper(helper, actor.runtime);
+  return true;
+}
+
+function applyRuntimeHelperHeightController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+): boolean {
+  if (helperControllerRedirectExpression(controller) !== undefined) return false;
+  const actor = runtimeHelperTargetActor(helper);
+  let applied = false;
+  helperActorConstraintControllerDispatchWorld.applyHeight({
+    actor,
+    controller,
+    actorConstraintWorld: helperActorConstraintWorld,
+    resolveHeight: helperHeightResolver(helper, controller, options),
+    recordController: () => options.onController?.(helper, controller),
+    recordOperation: (_actor, operation) => {
+      applied = true;
+      options.onOperation?.(helper, operation);
+    },
+  });
+  if (!applied) return false;
+  applyRuntimeStateToHelper(helper, actor.runtime);
+  return true;
+}
+
+function helperWidthResolver(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+): RuntimeWidthResolver {
+  return {
+    resolvePair: (key) => {
+      const raw = findControllerParam(controller.source, key);
+      return raw === undefined ? undefined : resolveHelperExpressionPair(helper, raw, options);
+    },
+  };
+}
+
+function helperHeightResolver(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+): RuntimeHeightResolver {
+  return {
+    resolvePair: (key) => {
+      const raw = findControllerParam(controller.source, key);
+      return raw === undefined ? undefined : resolveHelperFloatExpressionPair(helper, raw, options);
+    },
+  };
+}
 
 function applyRuntimeHelperCollisionOverrideController(
   helper: RuntimeHelper,
@@ -1871,6 +1990,8 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     powerMax: helper.powerMax,
     power: helper.power,
     bodyWidth: helper.bodyWidth ? { ...helper.bodyWidth } : undefined,
+    ...(helper.bodyWidthDelta === undefined ? {} : { bodyWidthDelta: { ...helper.bodyWidthDelta } }),
+    ...(helper.bodyHeightDelta === undefined ? {} : { bodyHeightDelta: { ...helper.bodyHeightDelta } }),
     ...(helper.playerPush === undefined ? {} : { playerPush: helper.playerPush }),
     ...(helper.pushPriority === undefined ? {} : { pushPriority: helper.pushPriority }),
     ...(helper.pushAffectTeam === undefined ? {} : { pushAffectTeam: helper.pushAffectTeam }),
@@ -1941,6 +2062,9 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;
   helper.power = runtime.power;
+  helper.bodyWidth = runtime.bodyWidth ? { ...runtime.bodyWidth } : undefined;
+  helper.bodyWidthDelta = runtime.bodyWidthDelta ? { ...runtime.bodyWidthDelta } : undefined;
+  helper.bodyHeightDelta = runtime.bodyHeightDelta ? { ...runtime.bodyHeightDelta } : undefined;
   helper.playerPush = runtime.playerPush;
   helper.pushPriority = runtime.pushPriority;
   helper.pushAffectTeam = runtime.pushAffectTeam;
