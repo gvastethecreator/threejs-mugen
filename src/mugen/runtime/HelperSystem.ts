@@ -679,13 +679,7 @@ export function runRuntimeHelperStateControllers(
         }
         return result;
       };
-      const commitRedirect = () => {
-        if (redirect) commitRuntimeHelperRedirect(redirect, actor, candidateTargets);
-      };
-      const dispatch = redirect?.lease
-        ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, commitRedirect)
-        : { executed: true, value: applyDispatch() };
-      if (redirect && !redirect.lease && dispatch.executed) commitRedirect();
+      const dispatch = executeRuntimeHelperRedirect(redirect, actor, candidateTargets, applyDispatch);
       if (!dispatch.executed || !dispatch.value) {
         options.onUnsupportedController?.(helper, controller);
       }
@@ -1227,13 +1221,7 @@ function applyRuntimeHelperCollisionOverrideController(
     helperCollisionOverrideParams(helper, controller, options),
     targetWidth / callerWidth,
   );
-  const commitRedirect = (applied: RuntimeHelperCollisionOverrideControllerResult["operation"] | undefined) => {
-    if (applied) commitRuntimeHelperRedirect(redirect, actor, candidateTargets);
-  };
-  const dispatch = redirect.lease
-    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, (_lease, applied) => commitRedirect(applied))
-    : { executed: true, value: applyDispatch() };
-  if (!redirect.lease && dispatch.executed) commitRedirect(dispatch.value);
+  const dispatch = executeRuntimeHelperRedirect(redirect, actor, candidateTargets, applyDispatch);
   if (!dispatch.executed || !dispatch.value) return undefined;
   return { operation: dispatch.value, redirectedTarget: actor };
 }
@@ -1371,15 +1359,13 @@ function applyRuntimeHelperTargetController(
     });
     return result;
   };
-  const commitRedirect = () => {
-    if (redirect) {
-      commitRuntimeHelperRedirect(redirect, actor, candidateTargets, redirectedSelection?.mutatedActorIds);
-    }
-  };
-  const dispatch = redirect?.lease
-    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, commitRedirect)
-    : { executed: true, value: applyDispatch() };
-  if (redirect && !redirect.lease && dispatch.executed) commitRedirect();
+  const dispatch = executeRuntimeHelperRedirect(
+    redirect,
+    actor,
+    candidateTargets,
+    applyDispatch,
+    () => redirectedSelection?.mutatedActorIds,
+  );
   if (!dispatch.executed || !dispatch.value) return false;
   const result = dispatch.value;
   if (redirect && redirectedSelection && redirectPlayerId !== undefined) {
@@ -1430,6 +1416,25 @@ function commitRuntimeHelperRedirect(
     const committedActor = actorsById.get(actorId);
     if (committedActor) redirect.commitActor(committedActor);
   }
+}
+
+function executeRuntimeHelperRedirect<T>(
+  redirect: RuntimeHelperTargetRedirect | undefined,
+  actor: RuntimeTargetWorldActor,
+  candidateTargets: RuntimeTargetWorldActor[],
+  applyDispatch: () => T,
+  mutationActorIds?: (value: T) => readonly string[] | undefined,
+) {
+  const commitRedirect = (value: T | undefined) => {
+    if (redirect && value !== undefined) {
+      commitRuntimeHelperRedirect(redirect, actor, candidateTargets, mutationActorIds?.(value));
+    }
+  };
+  const dispatch = redirect?.lease
+    ? redirectedTargetDispatchWorld.execute(redirect.lease, applyDispatch, (_lease, value) => commitRedirect(value))
+    : { executed: true, value: applyDispatch() };
+  if (redirect && !redirect.lease && dispatch.executed) commitRedirect(dispatch.value);
+  return dispatch;
 }
 
 export function helperControllerRedirectExpression(controller: ControllerIr): string | undefined {

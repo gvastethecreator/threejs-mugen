@@ -14,7 +14,8 @@ requirePattern(files.lease, /export function createRuntimeRedirectedTargetDispat
 const helperCommitOwnerStart = files.helper.indexOf("function commitRuntimeHelperRedirect");
 requireAbsent(files.helper.slice(0, helperCommitOwnerStart), /redirect\.commitActor/g, "adapter-owned helper writeback callback");
 requireCount(files.helper.slice(helperCommitOwnerStart), /redirect\.commitActor/g, 2, "helper writeback callback has one owner");
-requireCount(files.helper, /commitRuntimeHelperRedirect\(/g, 3, "helper redirect commit has one definition and two adapter calls");
+requirePattern(files.helper, /function executeRuntimeHelperRedirect[\s\S]*commitRuntimeHelperRedirect[\s\S]*redirectedTargetDispatchWorld\.execute/, "helper redirect execution has one shared adapter");
+requireCount(files.helper, /commitRuntimeHelperRedirect\(/g, 2, "helper redirect commit has one definition and one shared adapter call");
 requireAbsent(files.helper, /new Set<RuntimeTargetWorldActor>\(\[actor, \.\.\.candidateTargets\]\)/, "broad wrapper writeback loop");
 requireAbsent(files.runtime, /recordRedirectedTargetDispatch\(\s*(?:fighter|callerRoot),\s*\{/, "adapter-owned redirect observation object");
 requireCount(files.runtime, /createRuntimeRedirectedTargetDispatchObservation\(/g, 3, "root/helper adapters use the shared observation builder");
