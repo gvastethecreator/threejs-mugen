@@ -4753,16 +4753,31 @@ function runActiveStateControllers(
         options.onBlocked?.(controller, "depth-redirect");
         return;
       }
-      actorConstraintControllerDispatchWorld.applyDepth({
+      const callerWidth = actor.definition.localCoord?.[0] ?? 320;
+      const targetWidth = target.definition.localCoord?.[0] ?? 320;
+      const defer = redirectExpression !== undefined && target !== fighter
+        ? options.deferRootConstraintRedirect
+        : undefined;
+      const dispatchController = defer
+        ? materializeDepthConstraintController(controller, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+        : controller;
+      if (!dispatchController) return;
+      const apply = () => actorConstraintControllerDispatchWorld.applyDepth({
         actor: target,
-        controller,
+        controller: dispatchController,
         actorConstraintWorld,
         resolveDepth: {
           resolvePair: (key) =>
             resolveDepthPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         },
+        valueScale: targetWidth / callerWidth,
         ...runtimeActiveControllerTelemetryHooks,
       });
+      if (defer) {
+        defer(target, apply);
+      } else {
+        apply();
+      }
     },
     fallEnvShake: ({ controller }) => {
       matchEnvShakeBridgeWorld.applyFallController({
@@ -6107,6 +6122,39 @@ function materializeHeightConstraintController(
     operation: {
       kind: "collision",
       controllerType: "height",
+      top: pair[0],
+      bottom: pair[1] ?? 0,
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+    },
+  };
+}
+
+function materializeDepthConstraintController(
+  controller: ControllerIr,
+  actor: FighterMatchState,
+  opponent: FighterMatchState,
+  stateOwner: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "depth"
+    ? controller.operation
+    : undefined;
+  if (operation) return controller;
+  const mode = findControllerParam(controller.source, "edge") !== undefined
+    ? "edge"
+    : findControllerParam(controller.source, "player") !== undefined
+      ? "player"
+      : "value";
+  const pair = resolveDepthPairParam(controller, mode, actor, opponent, stateOwner, stageBounds, tick);
+  if (!pair) return undefined;
+  const redirectPlayerIdExpression = findControllerParam(controller.source, "redirectid")?.trim();
+  return {
+    ...controller,
+    operation: {
+      kind: "collision",
+      controllerType: "depth",
+      mode,
       top: pair[0],
       bottom: pair[1] ?? 0,
       ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),

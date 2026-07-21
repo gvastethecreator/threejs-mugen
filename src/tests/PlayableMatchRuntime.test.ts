@@ -9238,6 +9238,37 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked Height RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root Depth RedirectID with destination localcoord scale after target reset", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        passiveResourceController: `
+[State 0, Redirected Depth]
+type = Depth
+trigger1 = Time = 0
+value = 12.5,2.25
+RedirectID = 57
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+    };
+    const destination = {
+      ...createImportedFixture({ id: "redirected-depth-destination", withStateMove: false }),
+      localCoord: [640, 480] as [number, number],
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.combatDepth).toMatchObject({ size: [3, 3] });
+    expect(snapshot.actors[1]?.runtime.combatDepth).toMatchObject({ size: [28, 7.5], edge: [25, 4.5] });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Depth).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:depth"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Depth RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({
@@ -9322,6 +9353,45 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:height"]).toBe(1);
     expect(snapshot.logs.some((line) => line.includes("Blocked Width RedirectID"))).toBe(false);
     expect(snapshot.logs.some((line) => line.includes("Blocked Height RedirectID"))).toBe(false);
+  });
+
+  it("runs IKEMEN Helper Depth locally and redirects a scaled depth pair to a root", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Local Depth]
+type = Depth
+trigger1 = Time = 0
+value = 6,8
+
+[State 1200, Redirected Depth]
+type = Depth
+trigger1 = Time = 0
+player = 12.5,2.25
+RedirectID = 57
+`,
+      }),
+      localCoord: [320, 240] as [number, number],
+    };
+    const destination = {
+      ...createImportedFixture({ id: "redirected-helper-depth-destination", withStateMove: false }),
+      localCoord: [640, 480] as [number, number],
+    };
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]?.combatDepth).toMatchObject({ size: [9, 11], edge: [6, 8] });
+    expect(snapshot.actors[1]?.runtime.combatDepth).toMatchObject({ size: [28, 7.5] });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.Depth).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:depth"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked Depth RedirectID"))).toBe(false);
   });
 
   it("uses Helper OverrideClsn Size in runtime P2BodyDist with root localcoords", () => {

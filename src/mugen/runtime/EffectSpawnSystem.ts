@@ -159,6 +159,7 @@ export class RuntimeEffectSpawnWorld {
     initialPreserve?: boolean,
     initialOwnClsnScale?: boolean,
     initialClsnProxy?: boolean,
+    runtimeProfile?: RuntimeCompatibilityProfile,
   ): boolean {
     if (!supportsHelperType(controller, operation)) return false;
     const owner = effectSpriteOwner(fighter);
@@ -198,6 +199,14 @@ export class RuntimeEffectSpawnWorld {
         ...resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos),
         ...(spawnDepth === 0 ? {} : { z: spawnDepth }),
       },
+      ...(runtimeProfile === "ikemen-go"
+        ? {
+            combatDepth: {
+              ...runtimeCombatDepthFromConstants(owner.definition.constants),
+              position: spawnDepth,
+            },
+          }
+        : {}),
       fallbackFacing: fighter.runtime.facing,
     });
     return true;
@@ -503,6 +512,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         initialPreserve,
         initialOwnClsnScale,
         initialClsnProxy,
+        options.runtimeProfile,
       )
         ? 1
         : 0;

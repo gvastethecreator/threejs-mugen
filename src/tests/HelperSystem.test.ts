@@ -34,6 +34,12 @@ const stage: Pick<MugenStageDefinition, "bounds"> = {
   },
 };
 
+const depthStage: Pick<MugenStageDefinition, "bounds" | "depthBounds" | "localCoord"> = {
+  ...stage,
+  depthBounds: { top: -20, bottom: 30 },
+  localCoord: { width: 320, height: 240 },
+};
+
 const action: MugenAnimationAction = {
   id: 6100,
   loopStart: 0,
@@ -368,8 +374,10 @@ describe("HelperSystem", () => {
     advanceRuntimeHelpers([actor], stage, {
       runtimeProfile: "ikemen-go",
       onOperation: (_helper, operation) => {
-        if (operation.kind === "collision") {
-          operations.push(`${operation.controllerType}:${"front" in operation ? `${operation.front},${operation.back}` : `${operation.top},${operation.bottom}`}`);
+        if (operation.kind === "collision" && "front" in operation) {
+          operations.push(`${operation.controllerType}:${operation.front},${operation.back}`);
+        } else if (operation.kind === "collision" && "top" in operation) {
+          operations.push(`${operation.controllerType}:${operation.top},${operation.bottom}`);
         }
       },
     });
@@ -387,6 +395,51 @@ describe("HelperSystem", () => {
     expect(actor.bodyWidth).toBeUndefined();
     expect(actor.bodyWidthDelta).toBeUndefined();
     expect(actor.bodyHeightDelta).toBeUndefined();
+  });
+
+  it("applies dynamic IKEMEN Helper Depth value state for one frame and clamps current Z bounds", () => {
+    const depth = compiledControllerIr(6000, "Depth", ["Time = 0"], { value: "var(0), fvar(0)" });
+    const actor = helper({
+      pos: { x: 0, y: 0, z: 100 },
+      combatDepth: { position: 100, velocity: 0, size: [3, 4], attack: [4, 4] },
+      vars: [6],
+      fvars: [8.5],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [depth])] },
+    });
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([actor], depthStage, {
+      runtimeProfile: "ikemen-go",
+      onOperation: (_helper, operation) => {
+        if (operation.kind === "collision" && operation.controllerType === "depth") {
+          operations.push(`${operation.controllerType}:${operation.mode}:${operation.top},${operation.bottom}`);
+        }
+      },
+    });
+
+    expect(actor.combatDepth).toMatchObject({ size: [9, 12.5], baseSize: [3, 4], edge: [6, 8.5], position: 21.5 });
+    expect(actor.pos.z).toBe(21.5);
+    expect(operations).toEqual(["depth:value:6,8.5"]);
+    const [snapshot] = runtimeHelpersToSnapshots([actor], 6000);
+    expect(snapshot?.runtime.combatDepth).toMatchObject({ size: [9, 12.5], edge: [6, 8.5], position: 21.5 });
+
+    advanceRuntimeHelpers([actor], depthStage, { runtimeProfile: "ikemen-go" });
+
+    expect(actor.combatDepth).toMatchObject({ size: [3, 4], position: 21.5 });
+    expect(actor.combatDepth?.baseSize).toBeUndefined();
+    expect(actor.combatDepth?.edge).toBeUndefined();
+
+    const legacy = helper({
+      combatDepth: { position: 0, velocity: 0, size: [3, 4], attack: [4, 4] },
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [depth])] },
+    });
+    const unsupported: string[] = [];
+    advanceRuntimeHelpers([legacy], depthStage, {
+      runtimeProfile: "mugen-1.1",
+      onUnsupportedController: (_helper, controller) => unsupported.push(controller.type),
+    });
+    expect(legacy.combatDepth).toMatchObject({ size: [3, 4] });
+    expect(unsupported).toEqual(["Depth"]);
   });
 
   it("fails closed for Helper Width edge and Helper constraint RedirectID", () => {
@@ -414,14 +467,22 @@ describe("HelperSystem", () => {
       value: "fvar(0), fvar(1)",
       redirectid: "57",
     });
-    const destinationHelper = helper({ serialId: "p2-helper-destination", localCoord: [640, 480] });
+    const depth = compiledControllerIr(6000, "Depth", ["Time = 0"], {
+      value: "var(0), fvar(0)",
+      redirectid: "57",
+    });
+    const destinationHelper = helper({
+      serialId: "p2-helper-destination",
+      localCoord: [640, 480],
+      combatDepth: { position: 0, velocity: 0, size: [3, 4], attack: [4, 4] },
+    });
     const destinationActor = runtimeHelperTargetActor(destinationHelper);
     const caller = helper({
       serialId: "p1-helper-caller",
       localCoord: [320, 240],
       vars: [18, 9],
       fvars: [12.5, 2.25],
-      runtimeProgram: { states: [stateProgram(stateDef(6000), [width, height])] },
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [width, height, depth])] },
     });
     const committed: string[] = [];
     const redirectedControllers: string[] = [];
@@ -443,8 +504,10 @@ describe("HelperSystem", () => {
           : undefined,
       onRedirectedController: (_helper, target, controller) => redirectedControllers.push(`${target.id}:${controller.type}`),
       onRedirectedOperation: (_helper, target, operation) => {
-        if (operation.kind === "collision") {
-          redirectedOperations.push(`${target.id}:${operation.controllerType}:${"front" in operation ? `${operation.front},${operation.back}` : `${operation.top},${operation.bottom}`}`);
+        if (operation.kind === "collision" && "front" in operation) {
+          redirectedOperations.push(`${target.id}:${operation.controllerType}:${operation.front},${operation.back}`);
+        } else if (operation.kind === "collision" && "top" in operation) {
+          redirectedOperations.push(`${target.id}:${operation.controllerType}:${operation.top},${operation.bottom}`);
         }
       },
     });
@@ -454,14 +517,17 @@ describe("HelperSystem", () => {
     expect(destinationHelper.bodyWidth).toEqual({ front: 36, back: 18 });
     expect(destinationHelper.bodyWidthDelta).toEqual({ front: 36, back: 18 });
     expect(destinationHelper.bodyHeightDelta).toEqual({ top: 25, bottom: 4.5 });
-    expect(committed).toEqual(["p2-helper-destination", "p2-helper-destination"]);
+    expect(destinationHelper.combatDepth).toMatchObject({ size: [39, 29], edge: [36, 25] });
+    expect(committed).toEqual(["p2-helper-destination", "p2-helper-destination", "p2-helper-destination"]);
     expect(redirectedControllers).toEqual([
       "p2-helper-destination:Width",
       "p2-helper-destination:Height",
+      "p2-helper-destination:Depth",
     ]);
     expect(redirectedOperations).toEqual([
       "p2-helper-destination:width:36,18",
       "p2-helper-destination:height:25,4.5",
+      "p2-helper-destination:depth:36,25",
     ]);
   });
 

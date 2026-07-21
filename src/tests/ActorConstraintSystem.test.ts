@@ -229,6 +229,29 @@ describe("ActorConstraintSystem", () => {
     expect(state.combatDepth).toMatchObject({ size: [9, 11], edge: [6, 8] });
   });
 
+  it("scales Depth values before mutating a redirected destination", () => {
+    const world = new RuntimeActorConstraintWorld();
+    const state = actorState({ combatDepth: { position: 0, velocity: 0, size: [3, 4], attack: [4, 4] } });
+
+    const applied = world.applyDepth(
+      state,
+      controller("Depth", { value: "var(0),var(1)", redirectid: "57" }),
+      undefined,
+      { resolvePair: (key) => (key === "value" ? [6, 8] : undefined) },
+      2,
+    );
+
+    expect(applied).toEqual({
+      kind: "collision",
+      controllerType: "depth",
+      mode: "value",
+      top: 12,
+      bottom: 16,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(state.combatDepth).toMatchObject({ size: [15, 20], edge: [12, 16] });
+  });
+
   it("separates overlapping actors using facing-aware body widths", () => {
     const world = new RuntimeActorConstraintWorld();
     const left = actorState({ pos: { x: 0, y: 0 }, facing: 1, bodyWidth: { front: 20, back: 10 } });

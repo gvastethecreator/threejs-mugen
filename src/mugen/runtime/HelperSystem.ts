@@ -40,6 +40,7 @@ import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSyste
 import {
   RuntimeActorConstraintControllerDispatchWorld,
   RuntimeActorConstraintWorld,
+  type RuntimeDepthResolver,
   type RuntimeHeightResolver,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
@@ -77,6 +78,7 @@ import {
 import type {
   ActorSnapshot,
   CharacterRuntimeState,
+  RuntimeCombatDepth,
   RuntimeHitEffectEvent,
   RuntimeRedirectedTargetDispatchWriteback,
   RuntimeSoundEvent,
@@ -130,6 +132,7 @@ export type RuntimeHelper = {
   bindToTarget?: RuntimeTargetBinding;
   pos: { x: number; y: number; z?: number };
   vel: { x: number; y: number };
+  combatDepth?: RuntimeCombatDepth;
   baseBodyWidth?: { front: number; back: number };
   bodyWidth?: { front: number; back: number };
   bodyWidthDelta?: { front: number; back: number };
@@ -354,8 +357,14 @@ export type RuntimeHelperSpawnInput = {
   initialStandby?: boolean;
   initialControl?: boolean;
   pos: { x: number; y: number; z?: number };
+  combatDepth?: RuntimeCombatDepth;
   bodyWidth?: { front: number; back: number };
   fallbackFacing: 1 | -1;
+};
+
+export type RuntimeHelperStage = Pick<MugenStageDefinition, "bounds"> & {
+  depthBounds?: MugenStageDefinition["depthBounds"];
+  localCoord?: Partial<MugenStageDefinition["localCoord"]>;
 };
 
 export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelper {
@@ -401,8 +410,9 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     contact: createRuntimeContactMemory(),
     targets: [],
     targetBindings: [],
-    pos: input.pos,
+    pos: { ...input.pos },
     vel: helperVelocity(input.controller, operation),
+    ...(input.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(input.combatDepth) }),
     ...(input.bodyWidth === undefined
       ? {}
       : {
@@ -452,7 +462,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
 
 export function advanceRuntimeHelpers(
   helpers: RuntimeHelper[],
-  stage: Pick<MugenStageDefinition, "bounds">,
+  stage: RuntimeHelperStage,
   options: RuntimeHelperAdvanceOptions = {},
 ): RuntimeHelper[] {
   return helpers.filter((helper) => advanceRuntimeHelperActor(helper, stage, options));
@@ -460,12 +470,13 @@ export function advanceRuntimeHelpers(
 
 export function advanceRuntimeHelperActor(
   helper: RuntimeHelper,
-  stage: Pick<MugenStageDefinition, "bounds">,
+  stage: RuntimeHelperStage,
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
   helperCollisionTransformWorld.resetFrame(helper);
   helperCollisionOverrideWorld.resetFrame(helper);
   helperActorConstraintWorld.resetFrameSizeConstraints(helper, helper.baseBodyWidth);
+  helperActorConstraintWorld.resetFrameDepthConstraints(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
   const canAdvance = canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind);
   if (canAdvance) resetRuntimeHelperPlayerPush(helper, controllerOptions.runtimeProfile);
@@ -498,6 +509,8 @@ export function advanceRuntimeHelperActor(
   if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
     return false;
   }
+  helperActorConstraintWorld.clampBodyPushDepthToStage(helper, stage, helper.localCoord);
+  if (helper.combatDepth) helper.pos.z = helper.combatDepth.position;
   return (
     helper.pos.x >= stage.bounds.left - margin &&
     helper.pos.x <= stage.bounds.right + margin &&
@@ -753,6 +766,23 @@ export function runRuntimeHelperStateControllers(
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "height") {
       const result = applyRuntimeHelperHeightController(helper, controller, options);
+      if (result) {
+        if (result.redirectedTarget) {
+          options.onRedirectedController?.(helper, result.redirectedTarget, controller.source);
+          options.onRedirectedOperation?.(helper, result.redirectedTarget, result.operation);
+        } else {
+          options.onController?.(helper, controller);
+          options.onOperation?.(helper, result.operation);
+        }
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "depth") {
+      const result = options.runtimeProfile === "ikemen-go"
+        ? applyRuntimeHelperDepthController(helper, controller, options)
+        : undefined;
       if (result) {
         if (result.redirectedTarget) {
           options.onRedirectedController?.(helper, result.redirectedTarget, controller.source);
@@ -1260,17 +1290,20 @@ type RuntimeHelperCollisionOverrideControllerResult = {
   redirectedTarget?: RuntimeTargetWorldActor;
 };
 
+type RuntimeHelperControllerOptions = NonNullable<Parameters<typeof runRuntimeHelperStateControllers>[1]>;
+
 type RuntimeHelperConstraintControllerResult = {
   operation:
     | Extract<ControllerOp, { kind: "collision"; controllerType: "width" }>
-    | Extract<ControllerOp, { kind: "collision"; controllerType: "height" }>;
+    | Extract<ControllerOp, { kind: "collision"; controllerType: "height" }>
+    | Extract<ControllerOp, { kind: "collision"; controllerType: "depth" }>;
   redirectedTarget?: RuntimeTargetWorldActor;
 };
 
 function applyRuntimeHelperWidthController(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+  options: RuntimeHelperControllerOptions,
 ): RuntimeHelperConstraintControllerResult | undefined {
   const redirectExpression = helperControllerRedirectExpression(controller);
   if (redirectExpression === undefined) {
@@ -1330,7 +1363,7 @@ function applyRuntimeHelperWidthController(
 function applyRuntimeHelperHeightController(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+  options: RuntimeHelperControllerOptions,
 ): RuntimeHelperConstraintControllerResult | undefined {
   const redirectExpression = helperControllerRedirectExpression(controller);
   if (redirectExpression === undefined) {
@@ -1387,10 +1420,70 @@ function applyRuntimeHelperHeightController(
   return { operation: dispatch.value, redirectedTarget: actor };
 }
 
+function applyRuntimeHelperDepthController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: RuntimeHelperControllerOptions,
+): RuntimeHelperConstraintControllerResult | undefined {
+  const redirectExpression = helperControllerRedirectExpression(controller);
+  if (redirectExpression === undefined) {
+    const actor = runtimeHelperTargetActor(helper);
+    let appliedOperation: Extract<ControllerOp, { kind: "collision"; controllerType: "depth" }> | undefined;
+    helperActorConstraintControllerDispatchWorld.applyDepth({
+      actor,
+      controller,
+      actorConstraintWorld: helperActorConstraintWorld,
+      resolveDepth: helperDepthResolver(helper, controller, options),
+      recordOperation: (_actor, operation) => {
+        if (operation.controllerType === "depth") appliedOperation = operation;
+      },
+    });
+    if (!appliedOperation) return undefined;
+    applyRuntimeStateToHelper(helper, actor.runtime);
+    return { operation: appliedOperation };
+  }
+
+  const redirectPlayerId = resolveHelperNumber(helper, undefined, redirectExpression, options);
+  const redirect = redirectPlayerId === undefined
+    ? undefined
+    : options.resolveResourceRedirect?.(helper, Math.trunc(redirectPlayerId), controller);
+  if (!redirect) {
+    options.onResourceRedirectBlocked?.(
+      helper,
+      controller,
+      redirectPlayerId === undefined ? "invalid" : Math.trunc(redirectPlayerId),
+    );
+    return undefined;
+  }
+
+  const actor = redirect.lease?.destination ?? redirect.actor;
+  const candidateTargets = redirect.lease
+    ? [...redirect.lease.candidateTargets]
+    : redirect.candidateTargets;
+  const callerWidth = helper.localCoord?.[0] ?? 320;
+  const targetWidth = actor.definition?.localCoord?.[0] ?? 320;
+  const dispatch = executeRuntimeHelperRedirect(redirect, actor, candidateTargets, () => {
+    let appliedOperation: Extract<ControllerOp, { kind: "collision"; controllerType: "depth" }> | undefined;
+    helperActorConstraintControllerDispatchWorld.applyDepth({
+      actor,
+      controller,
+      actorConstraintWorld: helperActorConstraintWorld,
+      resolveDepth: helperDepthResolver(helper, controller, options),
+      valueScale: targetWidth / callerWidth,
+      recordOperation: (_actor, operation) => {
+        if (operation.controllerType === "depth") appliedOperation = operation;
+      },
+    });
+    return appliedOperation;
+  });
+  if (!dispatch.executed || !dispatch.value) return undefined;
+  return { operation: dispatch.value, redirectedTarget: actor };
+}
+
 function helperWidthResolver(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+  options: RuntimeHelperControllerOptions,
 ): RuntimeWidthResolver {
   return {
     resolvePair: (key) => {
@@ -1403,8 +1496,21 @@ function helperWidthResolver(
 function helperHeightResolver(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Parameters<typeof runRuntimeHelperStateControllers>[1],
+  options: RuntimeHelperControllerOptions,
 ): RuntimeHeightResolver {
+  return {
+    resolvePair: (key) => {
+      const raw = findControllerParam(controller.source, key);
+      return raw === undefined ? undefined : resolveHelperFloatExpressionPair(helper, raw, options);
+    },
+  };
+}
+
+function helperDepthResolver(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: RuntimeHelperControllerOptions,
+): RuntimeDepthResolver {
   return {
     resolvePair: (key) => {
       const raw = findControllerParam(controller.source, key);
@@ -2086,6 +2192,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
       : { superPauseDefenseMultiplier: helper.superPauseDefenseMultiplier }),
     powerMax: helper.powerMax,
     power: helper.power,
+    ...(helper.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(helper.combatDepth) }),
     bodyWidth: helper.bodyWidth ? { ...helper.bodyWidth } : undefined,
     ...(helper.bodyWidthDelta === undefined ? {} : { bodyWidthDelta: { ...helper.bodyWidthDelta } }),
     ...(helper.bodyHeightDelta === undefined ? {} : { bodyHeightDelta: { ...helper.bodyHeightDelta } }),
@@ -2126,11 +2233,22 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
   };
 }
 
+function cloneRuntimeCombatDepth(depth: RuntimeCombatDepth): RuntimeCombatDepth {
+  return {
+    ...depth,
+    size: [...depth.size] as [number, number],
+    attack: [...depth.attack] as [number, number],
+    ...(depth.baseSize === undefined ? {} : { baseSize: [...depth.baseSize] as [number, number] }),
+    ...(depth.edge === undefined ? {} : { edge: [...depth.edge] as [number, number] }),
+  };
+}
+
 function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRuntimeState {
   return {
     ...state,
     pos: { ...state.pos },
     vel: { ...state.vel },
+    ...(state.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(state.combatDepth) }),
     vars: [...state.vars],
     sysvars: state.sysvars ? [...state.sysvars] : undefined,
     fvars: [...state.fvars],
@@ -2142,7 +2260,11 @@ function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRu
 
 export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRuntimeState): void {
   helper.teamState = runtime.teamState ? { ...runtime.teamState } : helper.teamState;
-  helper.pos = { ...runtime.pos };
+  helper.combatDepth = runtime.combatDepth === undefined ? undefined : cloneRuntimeCombatDepth(runtime.combatDepth);
+  helper.pos = {
+    ...runtime.pos,
+    ...(helper.combatDepth ? { z: helper.combatDepth.position } : helper.pos.z === undefined ? {} : { z: helper.pos.z }),
+  };
   helper.vel = { ...runtime.vel };
   helper.facing = runtime.facing;
   helper.stateNo = runtime.stateNo;

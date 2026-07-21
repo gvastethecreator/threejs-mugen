@@ -33,6 +33,7 @@ import {
   type RuntimeHelperAdvanceOptions,
   type RuntimeHelperRemovalFilter,
   type RuntimeHelperSpawnInput,
+  type RuntimeHelperStage,
 } from "./HelperSystem";
 import {
   advanceRuntimeProjectiles,
@@ -288,7 +289,7 @@ export class RuntimeEffectActorWorld {
     return destroyed;
   }
 
-  advanceHelpers(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
+  advanceHelpers(ownerId: string, stage: RuntimeHelperStage, options?: RuntimeHelperAdvanceOptions): void {
     const store = this.getStore(ownerId);
     const previous = [...store.helpers];
     advanceRuntimeHelperActors(store, stage, options);
@@ -298,7 +299,7 @@ export class RuntimeEffectActorWorld {
   advanceHelper(
     ownerId: string,
     helper: RuntimeHelper,
-    stage: Pick<MugenStageDefinition, "bounds">,
+    stage: RuntimeHelperStage,
   options?: RuntimeHelperAdvanceOptions,
 ): boolean {
     const store = this.getStore(ownerId);
@@ -523,7 +524,7 @@ export function spawnRuntimeHelperActor(
 
 export function advanceRuntimeHelperActors(
   store: RuntimeEffectActorStore,
-  stage: Pick<MugenStageDefinition, "bounds">,
+  stage: RuntimeHelperStage,
   options?: RuntimeHelperAdvanceOptions,
 ): void {
   store.helpers = advanceRuntimeHelpers(store.helpers, stage, createRuntimeHelperAdvanceOptions(store, stage, options));
@@ -531,7 +532,7 @@ export function advanceRuntimeHelperActors(
 
 function createRuntimeHelperAdvanceOptions(
   store: RuntimeEffectActorStore,
-  stage: Pick<MugenStageDefinition, "bounds">,
+  stage: RuntimeHelperStage,
   options?: RuntimeHelperAdvanceOptions,
 ): RuntimeHelperAdvanceOptions {
   return {

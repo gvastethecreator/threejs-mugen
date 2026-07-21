@@ -57,6 +57,10 @@ export class RuntimeActorConstraintWorld {
     state.clsnOverrides = undefined;
     state.clsnScaleMultiplier = undefined;
     state.clsnAngle = undefined;
+    this.resetFrameDepthConstraints(state);
+  }
+
+  resetFrameDepthConstraints(state: RuntimeActorConstraintState): void {
     if (state.combatDepth?.baseSize) {
       state.combatDepth.size = state.combatDepth.baseSize;
       state.combatDepth.baseSize = undefined;
@@ -78,6 +82,7 @@ export class RuntimeActorConstraintWorld {
     controller: MugenStateController,
     operation?: Extract<CollisionControllerOp, { controllerType: "depth" }>,
     resolveDepth?: RuntimeDepthResolver,
+    valueScale = 1,
   ): Extract<CollisionControllerOp, { controllerType: "depth" }> | undefined {
     if (!state.combatDepth) return undefined;
     const mode =
@@ -96,8 +101,8 @@ export class RuntimeActorConstraintWorld {
       kind: "collision",
       controllerType: "depth",
       mode,
-      top: pair[0],
-      bottom: pair[1] ?? 0,
+      top: pair[0] * valueScale,
+      bottom: (pair[1] ?? 0) * valueScale,
       ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
     };
     if (mode === "player" || mode === "value") {
@@ -202,7 +207,10 @@ export class RuntimeActorConstraintWorld {
 
   clampBodyPushDepthToStage(
     state: RuntimeActorConstraintState,
-    stage: Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>,
+    stage: {
+      depthBounds?: MugenStageDefinition["depthBounds"];
+      localCoord?: Partial<MugenStageDefinition["localCoord"]>;
+    },
     actorLocalCoord?: readonly [number, number],
   ): void {
     if (!stage.depthBounds || !state.combatDepth || state.stageBound === false) return;
@@ -302,6 +310,7 @@ export class RuntimeActorConstraintControllerDispatchWorld {
       options.controller.source,
       operation,
       options.resolveDepth,
+      options.valueScale,
     );
     if (appliedOperation) options.recordOperation?.(options.actor, appliedOperation);
     return {
