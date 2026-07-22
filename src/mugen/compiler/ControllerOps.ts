@@ -605,6 +605,7 @@ export type ReversalDefControllerOp = {
   p2StateNo?: number;
   targetId?: number;
   attackDepth?: [number, number];
+  redirectPlayerIdExpression?: string;
 };
 
 export type DamageScaleControllerOp = {
@@ -1636,8 +1637,17 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
   const p2StateNo = staticOptionalNumberParam(controller, "p2stateno");
   const targetId = staticOptionalNumberParam(controller, "id");
-  const attackDepth = normalizedNumberPair(findParam(controller, "attack.depth"));
-  if (hitPause === undefined || p1StateNo === false || p2StateNo === false || targetId === false) {
+  const attackDepthRaw = findParam(controller, "attack.depth");
+  const attackDepth = normalizedNumberPair(attackDepthRaw);
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (
+    hitPause === undefined ||
+    p1StateNo === false ||
+    p2StateNo === false ||
+    targetId === false ||
+    (attackDepthRaw !== undefined && attackDepth === undefined) ||
+    redirectPlayerIdExpression === "invalid"
+  ) {
     return undefined;
   }
   const operation = definedObject({
@@ -1648,6 +1658,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p2StateNo: p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo)),
     targetId: targetId === true ? undefined : Math.max(0, Math.round(targetId)),
     attackDepth,
+    redirectPlayerIdExpression: redirectPlayerIdExpression === undefined ? undefined : redirectPlayerIdExpression,
   });
   return operation as ReversalDefControllerOp;
 }

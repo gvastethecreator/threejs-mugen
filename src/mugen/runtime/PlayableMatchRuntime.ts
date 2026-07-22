@@ -506,6 +506,7 @@ type RootControllerRedirectHandler = (
     | "playerpush"
     | RedirectableHitEligibilityControllerType
     | RedirectableHitOverrideControllerType
+    | RedirectableReversalDefControllerType
     | RedirectableTargetControllerType
     | RedirectableResourceControllerType
     | RedirectableEffectControllerType,
@@ -540,6 +541,7 @@ type RedirectableResourceControllerType =
 type RedirectableEffectControllerType = "projectile" | "modifyprojectile";
 type RedirectableHitEligibilityControllerType = "hitby" | "nothitby";
 type RedirectableHitOverrideControllerType = "hitoverride";
+type RedirectableReversalDefControllerType = "reversaldef";
 type RedirectableTargetControllerType =
   | "targetlifeadd"
   | "targetredlifeadd"
@@ -2900,6 +2902,7 @@ export class PlayableMatchRuntime {
       | "playerpush"
       | RedirectableHitEligibilityControllerType
       | RedirectableHitOverrideControllerType
+      | RedirectableReversalDefControllerType
       | RedirectableTargetControllerType
       | RedirectableResourceControllerType
       | RedirectableEffectControllerType,
@@ -4192,6 +4195,10 @@ function redirectableHitOverrideControllerType(controller: ControllerIr): Redire
   return controller.normalizedType === "hitoverride" ? controller.normalizedType : undefined;
 }
 
+function redirectableReversalDefControllerType(controller: ControllerIr): RedirectableReversalDefControllerType | undefined {
+  return controller.normalizedType === "reversaldef" ? controller.normalizedType : undefined;
+}
+
 function resourceControllerRedirectExpression(controller: ControllerIr): string | undefined {
   if (redirectableResourceControllerType(controller) === undefined) {
     return undefined;
@@ -4251,6 +4258,23 @@ function hitOverrideControllerRedirectExpression(controller: ControllerIr): stri
     return undefined;
   }
   const compiledExpression = controller.operation?.kind === "hitoverride"
+    ? controller.operation.redirectPlayerIdExpression
+    : undefined;
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller, "redirectid");
+  if (rawExpression === undefined) {
+    return undefined;
+  }
+  return rawExpression.trim() || "invalid";
+}
+
+function reversalDefControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  if (redirectableReversalDefControllerType(controller) === undefined) {
+    return undefined;
+  }
+  const compiledExpression = controller.operation?.kind === "reversaldef"
     ? controller.operation.redirectPlayerIdExpression
     : undefined;
   if (compiledExpression !== undefined) {
@@ -4796,11 +4820,33 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    reversalDef: ({ controller }) => {
+    reversalDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectExpression = reversalDefControllerRedirectExpression(controller);
+      const operation = controller.operation?.kind === "reversaldef" ? controller.operation : undefined;
+      if (redirectExpression !== undefined && !operation) {
+        options.onBlocked?.(controller, "reversaldef-redirect-value");
+        return;
+      }
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "reversaldef")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "reversaldef-redirect");
+        return;
+      }
       reversalControllerDispatchWorld.apply({
-        actor: fighter,
+        actor: target,
         controller,
-        hitbox: frameWorld.firstCurrentAttackBox(fighter),
+        hitbox: frameWorld.firstCurrentAttackBox(target),
         reversalWorld,
         ...runtimeActiveControllerTelemetryHooks,
       });

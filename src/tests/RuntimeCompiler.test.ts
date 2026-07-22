@@ -1576,6 +1576,7 @@ value = 1
         p2stateno: "778",
         id: "88",
         "attack.depth": "6, 9",
+        redirectid: "57",
       }),
     );
     const dynamic = compileControllerIr(
@@ -1593,6 +1594,7 @@ value = 1
       p2StateNo: 778,
       targetId: 88,
       attackDepth: [6, 9],
+      redirectPlayerIdExpression: "57",
     });
     expect(dynamic.operation).toBeUndefined();
   });

@@ -12297,6 +12297,72 @@ export function createSyntheticImportedIkemenRootHitOverrideRedirectTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenRootReversalDefRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-reversaldef-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ReversalDef Redirect Caller",
+    rootReversalDefRedirectRoute: {
+      redirectId: 57,
+      attr: "SA,AA",
+      hitPause: 3,
+      p1StateNo: 777,
+      targetId: 88,
+      attackDepth: [6, 9],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-reversaldef-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ReversalDef Redirect Receiver",
+    withHitDef: false,
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3, trigger: "Time < 0" },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-reversaldef-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-reversaldef-redirect-golden",
+      label: "Synthetic imported IKEMEN root ReversalDef RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves a ReversalDef RedirectID destination, applies the caller's static ReversalDef payload to the receiver's current Clsn1, and reverses a matching root HitDef. Dynamic ReversalDef fields, Helpers, guard flags, reset timing, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-reversaldef-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 777,
+            animNo: 777,
+            life: 1000,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48397,6 +48463,7 @@ export type SyntheticImportedTraceFighterOptions = {
     hitPause?: number;
     targetId?: number;
     clsn1Extent?: number;
+    trigger?: string;
   };
   passiveControllerStates?: Array<{
     stateNo: number;
@@ -49296,9 +49363,19 @@ export type SyntheticImportedTraceFighterOptions = {
     forceAir?: SyntheticNumberExpression;
     forceGuard?: SyntheticNumberExpression;
     keepState?: SyntheticNumberExpression;
+    triggerTime?: number;
     guardFlag?: string;
     guardFlagNot?: string;
     vars?: Array<{ index: number; value: number }>;
+  };
+  rootReversalDefRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    attr: string;
+    hitPause?: number;
+    p1StateNo?: number;
+    p2StateNo?: number;
+    targetId?: number;
+    attackDepth?: [number, number];
   };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withDynamicStateTypeSet?: {
@@ -49363,7 +49440,6 @@ export type SyntheticImportedTraceFighterOptions = {
     color?: string;
     invertAll?: string;
     vars?: Array<{ index: number; value: number }>;
-    triggerTime?: number;
   };
   withTrans?: string;
   withDynamicTrans?: {
@@ -49737,6 +49813,7 @@ ${options.rootTransformClsnRedirectRoute ? rootTransformClsnRedirectControllerBl
 ${options.rootOverrideClsnRedirectRoute ? rootOverrideClsnRedirectControllerBlock(options.rootOverrideClsnRedirectRoute) : ""}
 ${options.rootHitEligibilityRedirectRoute ? rootHitEligibilityRedirectControllerBlock(options.rootHitEligibilityRedirectRoute) : ""}
 ${options.rootHitOverrideRedirectRoute ? rootHitOverrideRedirectControllerBlock(options.rootHitOverrideRedirectRoute) : ""}
+${options.rootReversalDefRedirectRoute ? rootReversalDefRedirectControllerBlock(options.rootReversalDefRedirectRoute) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -50994,7 +51071,7 @@ function passiveReversalDefController(
   return `
 [State ${stateNo}, Passive ReversalDef${suffix}]
 type = ReversalDef
-trigger1 = 1
+trigger1 = ${config.trigger ?? "1"}
 reversal.attr = ${config.attr}
 pausetime = ${hitPause},${hitPause}
 p1stateno = ${config.p1StateNo}
@@ -51324,7 +51401,7 @@ value = ${seed.value}
   return `${vars}
 [State 200, Root HitOverride Redirect]
 type = HitOverride
-trigger1 = Time = 0
+trigger1 = Time = ${route.triggerTime ?? 0}
 attr = ${route.attr}
 ${slotLine}
 ${stateNoLine}
@@ -51334,6 +51411,28 @@ ${forceGuardLine}
 ${keepStateLine}
 ${guardFlagLine}
 ${guardFlagNotLine}
+redirectid = ${route.redirectId}
+`;
+}
+
+function rootReversalDefRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootReversalDefRedirectRoute"]>,
+): string {
+  const hitPause = route.hitPause ?? 0;
+  const p1StateNoLine = route.p1StateNo === undefined ? "" : `p1stateno = ${route.p1StateNo}`;
+  const p2StateNoLine = route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}`;
+  const targetIdLine = route.targetId === undefined ? "" : `id = ${route.targetId}`;
+  const attackDepthLine = route.attackDepth === undefined ? "" : `attack.depth = ${route.attackDepth.join(",")}`;
+  return `
+[State 200, Root ReversalDef Redirect]
+type = ReversalDef
+trigger1 = Time = 0
+reversal.attr = ${route.attr}
+pausetime = ${hitPause},${hitPause}
+${p1StateNoLine}
+${p2StateNoLine}
+${targetIdLine}
+${attackDepthLine}
 redirectid = ${route.redirectId}
 `;
 }
@@ -51397,7 +51496,7 @@ y = -8
 
 [State 200, Kinematic PosAdd Probe]
 type = PosAdd
-trigger1 = Time = ${route.triggerTime ?? 0}
+trigger1 = Time = 0
 x = 6
 y = -2
 `;

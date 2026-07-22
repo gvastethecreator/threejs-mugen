@@ -1541,6 +1541,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootHitOverrideRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-reversaldef-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootReversalDefRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-helper-self-tag",
       required: true,
       artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),

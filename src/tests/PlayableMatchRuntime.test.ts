@@ -9732,6 +9732,92 @@ value = 0
     expect(snapshot.logs.some((line) => line.includes("Blocked HitOverride RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root ReversalDef RedirectID with static caller payload", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected ReversalDef]
+type = ReversalDef
+trigger1 = Time = 1
+reversal.attr = SA,AA
+pausetime = 3,3
+p1stateno = 777
+id = 88
+attack.depth = 6,9
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-reversaldef-destination",
+      withStateMove: false,
+      passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3 },
+      passiveReversalTrigger: "Time < 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const armed = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { runtime: { reversal?: unknown }; currentMove?: { targetId?: number } };
+    };
+
+    expect(internals.p2.runtime.reversal).toMatchObject({
+      attr: "SA,AA",
+      hitPause: 3,
+      p1StateNo: 777,
+      attackDepth: [6, 9],
+    });
+    expect(internals.p2.currentMove?.targetId).toBe(88);
+    expect(armed.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+    expect(armed.compatibilitySession?.actors[1]?.executedOperations.reversaldef).toBe(1);
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ life: 1000, stateNo: 777, moveType: "A" });
+    expect(snapshot.actors[0]?.runtime.moveType).toBe("H");
+    expect(snapshot.logs.some((line) => line.includes("Blocked ReversalDef RedirectID"))).toBe(false);
+    expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
+  });
+
+  it("blocks redirected ReversalDef with dynamic payload fields", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Dynamic Redirected ReversalDef]
+type = ReversalDef
+trigger1 = Time = 0
+reversal.attr = SA,AA
+p1stateno = var(0)
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "blocked-root-reversaldef-destination",
+      withStateMove: false,
+      passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3 },
+      passiveReversalTrigger: "Time < 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { runtime: { reversal?: unknown } };
+    };
+
+    expect(internals.p2.runtime.reversal).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBeUndefined();
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({
@@ -10400,6 +10486,7 @@ function createImportedFixture(
     passiveHitBy?: string;
     passiveHitOverride?: { attr: string; stateNo: number; forceAir?: boolean };
     passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number };
+    passiveReversalTrigger?: string;
     passiveAssertSpecialFlags?: string[];
     passiveAssertSpecialTrigger?: string;
     passiveTagController?: "TagIn" | "TagOut";
@@ -10674,7 +10761,7 @@ forceair = ${options.passiveHitOverride.forceAir ? 1 : 0}
       ? `
 [State 0, Reversal Counter]
 type = ReversalDef
-trigger1 = 1
+trigger1 = ${options.passiveReversalTrigger ?? "1"}
 reversal.attr = ${options.passiveReversalDef.attr}
 pausetime = ${options.passiveReversalDef.hitPause ?? 0},${options.passiveReversalDef.hitPause ?? 0}
 p1stateno = ${options.passiveReversalDef.p1StateNo}
