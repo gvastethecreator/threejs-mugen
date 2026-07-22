@@ -1740,6 +1740,38 @@ value = 1
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static ReversalDef and root ModifyReversalDef reversal.guardflag values", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "reversal.guardflag": "m" }),
+    );
+    const redirected = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.guardflag": "H, A", redirectid: "57" }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.guardflag": "var(1)", redirectid: "57" }),
+    );
+    const unsupported = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.guardflag": "F", redirectid: "57" }),
+    );
+    const negative = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.guardflag.not": "H", redirectid: "57" }),
+    );
+
+    expect(reversal.operation).toMatchObject({
+      kind: "reversaldef",
+      attr: "S,NA",
+      reversalGuardFlag: "M",
+    });
+    expect(redirected.operation).toEqual({
+      kind: "modifyreversaldef",
+      reversalGuardFlag: "HA",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamic.operation).toBeUndefined();
+    expect(unsupported.operation).toBeUndefined();
+    expect(negative.operation).toBeUndefined();
+  });
+
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
     const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));

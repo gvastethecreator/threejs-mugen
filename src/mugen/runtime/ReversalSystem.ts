@@ -6,6 +6,7 @@ import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
+import { runtimeGuardFlagOverlaps } from "./CombatResolver";
 import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -30,6 +31,7 @@ export type RuntimeReversalActor = {
 
 export type RuntimeReversalActivation = {
   attr: string;
+  reversalGuardFlag?: string;
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
@@ -65,6 +67,10 @@ export type RuntimeReversalOutcome = {
   p1StateNo?: number;
   p2StateNo?: number;
   message: string;
+};
+
+export type RuntimeReversalIncomingOptions = {
+  incomingUnguardable?: boolean;
 };
 
 export type RuntimeReversalControllerDispatchOptions<TActor extends RuntimeReversalActor> = {
@@ -115,6 +121,7 @@ export class RuntimeReversalControllerDispatchWorld {
     }
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
+      reversalGuardFlag: operation?.reversalGuardFlag,
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
@@ -162,6 +169,10 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation.reversalAttr !== undefined) {
       existing.reversalAttr = operation.reversalAttr;
       runtimeReversal.attr = operation.reversalAttr;
+    }
+    if (operation.reversalGuardFlag !== undefined) {
+      existing.reversalGuardFlag = operation.reversalGuardFlag;
+      runtimeReversal.reversalGuardFlag = operation.reversalGuardFlag;
     }
     if (operation.hitPause !== undefined) {
       existing.hitPause = operation.hitPause;
@@ -221,6 +232,7 @@ export class RuntimeReversalWorld {
       targetId: activation.targetId,
       isReversal: true,
       reversalAttr: attr,
+      reversalGuardFlag: activation.reversalGuardFlag,
       p1StateNo: activation.p1StateNo,
       p2StateNo: activation.p2StateNo,
       hitPause: activation.hitPause,
@@ -235,6 +247,7 @@ export class RuntimeReversalWorld {
     fighter.runtime.reversal = {
       attr,
       hitPause: activation.hitPause,
+      ...(activation.reversalGuardFlag === undefined ? {} : { reversalGuardFlag: activation.reversalGuardFlag }),
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       ...(activation.p1StateNo !== undefined ? { p1StateNo: activation.p1StateNo } : {}),
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
@@ -247,6 +260,7 @@ export class RuntimeReversalWorld {
     incomingMove: DemoMove,
     incomingAttackBox: CollisionBox | readonly CollisionBox[],
     hooks: Pick<RuntimeReversalHooks<TActor>, "isMoveActive" | "worldBox" | "boxesIntersect" | "attrMatches">,
+    incoming: RuntimeReversalIncomingOptions = {},
   ): DemoMove | undefined {
     const reversal = defender.currentMove;
     if (!reversal?.isReversal || defender.hasHit || !reversal.reversalAttr) {
@@ -256,6 +270,12 @@ export class RuntimeReversalWorld {
       return undefined;
     }
     if (!hooks.attrMatches(reversal.reversalAttr, incomingMove.attr ?? "S,NA")) {
+      return undefined;
+    }
+    if (
+      reversal.reversalGuardFlag
+      && (incoming.incomingUnguardable || !runtimeGuardFlagOverlaps(reversal.reversalGuardFlag, incomingMove.guardFlag ?? "MA"))
+    ) {
       return undefined;
     }
     const reversalBox = hooks.worldBox(defender.runtime, reversal.hitbox);

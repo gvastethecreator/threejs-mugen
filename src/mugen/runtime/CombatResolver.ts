@@ -510,28 +510,28 @@ function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeStat
 }
 
 function hitOverrideGuardFlagsMatch(slot: RuntimeHitOverrideSlot, attackGuardFlag: string): boolean {
-  if (slot.guardFlag && !guardFlagOverlaps(slot.guardFlag, attackGuardFlag)) {
+  if (slot.guardFlag && !runtimeGuardFlagOverlaps(slot.guardFlag, attackGuardFlag)) {
     return false;
   }
-  if (slot.guardFlagNot && guardFlagOverlaps(slot.guardFlagNot, attackGuardFlag)) {
+  if (slot.guardFlagNot && runtimeGuardFlagOverlaps(slot.guardFlagNot, attackGuardFlag)) {
     return false;
   }
   return true;
 }
 
-function guardFlagOverlaps(filter: string, attackGuardFlag: string): boolean {
+export function runtimeGuardFlagOverlaps(filter: string, attackGuardFlag: string): boolean {
   const filterFlags = normalizeGuardFlagSet(filter);
   const attackFlags = normalizeGuardFlagSet(attackGuardFlag);
   return [...filterFlags].some((flag) => attackFlags.has(flag));
 }
 
-function normalizeGuardFlagSet(value: string): Set<"H" | "L" | "A"> {
-  const flags = new Set<"H" | "L" | "A">();
+function normalizeGuardFlagSet(value: string): Set<string> {
+  const flags = new Set<string>();
   for (const char of value.toUpperCase()) {
     if (char === "M") {
       flags.add("H");
       flags.add("L");
-    } else if (char === "H" || char === "L" || char === "A") {
+    } else if (char === "H" || char === "L" || char === "A" || char === "F" || char === "D" || char === "P" || char === "-" || char === "+") {
       flags.add(char);
     }
   }

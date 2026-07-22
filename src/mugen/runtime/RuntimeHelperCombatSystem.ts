@@ -114,7 +114,7 @@ export class RuntimeHelperCombatWorld {
         worldBox: runtimeWorldBox,
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
-      });
+      }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable });
       if (reversal) {
         const outcome = input.reversalWorld.apply(input.defender, attacker, reversal, {
           rememberTarget: () => undefined,

@@ -248,6 +248,7 @@ export class RuntimeCombatResolutionWorld {
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
       },
+      { incomingUnguardable: input.getter.runtime.assertSpecial?.unguardable },
     );
     if (active !== reversal) return { kind: "skipped", reason: "no-match" };
     if (!hasRuntimeCombatDepthContact({
@@ -320,7 +321,7 @@ export class RuntimeCombatResolutionWorld {
         worldBox: runtimeWorldBox,
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
-      })
+      }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })
       : undefined;
     if (reversal) {
       const outcome = input.reversalWorld.apply(defender, attacker, reversal, {
@@ -524,7 +525,7 @@ export class RuntimeCombatResolutionWorld {
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
       attrMatches: hitAttributeMatches,
-    })) return undefined;
+    }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })) return undefined;
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
     const targetBoxes = resolveRuntimeMoveTargetBoxes(
       defender,
@@ -664,7 +665,7 @@ export class RuntimeCombatResolutionWorld {
           worldBox: runtimeWorldBox,
           boxesIntersect: collisionBoxesIntersect,
           attrMatches: hitAttributeMatches,
-        });
+        }, { incomingUnguardable: source.runtime.assertSpecial?.unguardable });
         if (!reversal) {
           return false;
         }

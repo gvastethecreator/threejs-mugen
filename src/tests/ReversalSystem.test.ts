@@ -199,6 +199,43 @@ describe("ReversalSystem", () => {
     expect(calls).toEqual(["888:false"]);
   });
 
+  it("modifies reversal.guardflag in place and filters matching guardable attacks", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser");
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      reversalGuardFlag: "A",
+      hitbox: box(),
+      hitPause: 3,
+    });
+    const activeMove = reverser.currentMove;
+    const activeReversal = reverser.runtime.reversal;
+
+    const result = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", { "reversal.guardflag": "H", redirectid: "57" })),
+    });
+
+    expect(result).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyreversaldef", reversalGuardFlag: "H" },
+    });
+    expect(reverser.currentMove).toBe(activeMove);
+    expect(reverser.runtime.reversal).toBe(activeReversal);
+    expect(reverser.currentMove).toMatchObject({ reversalGuardFlag: "H" });
+    expect(reverser.runtime.reversal).toMatchObject({ reversalGuardFlag: "H" });
+
+    const high = move({ attr: "S,NA", guardFlag: "H", hitbox: box() });
+    const middle = move({ attr: "S,NA", guardFlag: "M", hitbox: box() });
+    const air = move({ attr: "S,NA", guardFlag: "A", hitbox: box() });
+
+    expect(reversalWorld.findActive(reverser, high, high.hitbox, findHooks())).toBe(activeMove);
+    expect(reversalWorld.findActive(reverser, middle, middle.hitbox, findHooks())).toBe(activeMove);
+    expect(reversalWorld.findActive(reverser, air, air.hitbox, findHooks())).toBeUndefined();
+    expect(reversalWorld.findActive(reverser, high, high.hitbox, findHooks(), { incomingUnguardable: true })).toBeUndefined();
+  });
+
   it("activates and clears bounded ReversalDef runtime state", () => {
     const world = new RuntimeReversalWorld();
     const fighter = actor("p1", "Reverser", { stateNo: 300 });

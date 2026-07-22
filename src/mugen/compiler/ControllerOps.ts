@@ -80,6 +80,7 @@ export type ModifyReversalDefControllerOp = {
   kind: "modifyreversaldef";
   redirectPlayerIdExpression: string;
   reversalAttr?: string;
+  reversalGuardFlag?: string;
   hitPause?: number;
   p1StateNo?: number;
   p2StateNo?: number;
@@ -620,6 +621,7 @@ export type HitOverrideControllerOp = {
 export type ReversalDefControllerOp = {
   kind: "reversaldef";
   attr: string;
+  reversalGuardFlag?: string;
   hitPause: number;
   p1StateNo?: number;
   p2StateNo?: number;
@@ -1661,6 +1663,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   if (!attr) {
     return undefined;
   }
+  const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
   const hitPause = staticNumberParam(controller, "pausetime", 0);
   const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
   const p2StateNo = staticOptionalNumberParam(controller, "p2stateno");
@@ -1670,6 +1673,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   if (
     hitPause === undefined ||
+    reversalGuardFlag === false ||
     p1StateNo === false ||
     p2StateNo === false ||
     targetId === false ||
@@ -1681,6 +1685,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const operation = definedObject({
     kind: "reversaldef" as const,
     attr,
+    reversalGuardFlag: reversalGuardFlag === true ? undefined : reversalGuardFlag,
     hitPause: Math.max(0, Math.round(hitPause)),
     p1StateNo: p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo)),
     p2StateNo: p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo)),
@@ -1813,6 +1818,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "type",
     "redirectid",
     "reversal.attr",
+    "reversal.guardflag",
     "pausetime",
     "p1stateno",
     "p2stateno",
@@ -1824,6 +1830,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     return undefined;
   }
   const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"))?.trim();
+  const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
   const hitPauseRaw = findParam(controller, "pausetime");
   const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
   const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
@@ -1835,6 +1842,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   if (
     reversalAttr === "" ||
+    reversalGuardFlag === false ||
     (hitPauseRaw !== undefined && !hitPausePair) ||
     p1StateNo === false ||
     p2StateNo === false ||
@@ -1856,6 +1864,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     : [attackDepthPair[0], attackDepthPair[1] ?? attackDepthPair[0]] as [number, number];
   if (
     reversalAttr === undefined &&
+    reversalGuardFlag === true &&
     hitPause === undefined &&
     normalizedP1StateNo === undefined &&
     normalizedP2StateNo === undefined &&
@@ -1869,6 +1878,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     kind: "modifyreversaldef",
     redirectPlayerIdExpression,
     ...(reversalAttr === undefined ? {} : { reversalAttr }),
+    ...(reversalGuardFlag === true ? {} : { reversalGuardFlag }),
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
     ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
@@ -2594,6 +2604,18 @@ function staticOptionalStrictNumberParam(controller: MugenStateController, key: 
     return true;
   }
   return strictNumberSingle(raw) ?? false;
+}
+
+function staticOptionalReversalGuardFlagParam(controller: MugenStateController, key: string): string | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return true;
+  }
+  const value = stripMugenString(raw)?.replace(/[\s,]+/g, "").toUpperCase();
+  if (!value || !/^[HLMA]+$/.test(value)) {
+    return false;
+  }
+  return value;
 }
 
 function staticOptionalBooleanParam(controller: MugenStateController, key: string): boolean | undefined {

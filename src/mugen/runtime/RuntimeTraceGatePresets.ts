@@ -12774,6 +12774,80 @@ export function createSyntheticImportedIkemenRootModifyReversalDefP2OwnerRedirec
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefGuardFlagRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 96;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms an air-only reversal while caller stays out of reach", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects reversal guardflag before counter contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef GuardFlag Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      guardFlag: "H",
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      reversalGuardFlag: "H",
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef GuardFlag Redirect Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,NA",
+      reversalGuardFlag: "A",
+      p1StateNo: 777,
+      hitPause: 3,
+      targetId,
+      trigger: "Time = 0",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyReversalDef reversal.guardflag RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root changes one active receiver reversal from a nonmatching air guard filter to a matching high guard filter before counter contact. It covers static positive H/L/M/A matching only. reversal.guardflag.not, wider HitFlag forms, dynamic values, Helpers, teams, source scheduling, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48869,6 +48943,7 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveHitOverrides?: SyntheticImportedPassiveHitOverride[];
   passiveReversalDef?: {
     attr: string;
+    reversalGuardFlag?: string;
     p1StateNo: number;
     p2StateNo?: number;
     hitPause?: number;
@@ -49346,6 +49421,7 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   rootModifyReversalDefRedirectRoute?: {
     attr?: string;
+    reversalGuardFlag?: string;
     hitPause?: number;
     p1StateNo?: number;
     p2StateNo?: number;
@@ -51504,6 +51580,7 @@ function passiveReversalDefController(
 type = ReversalDef
 trigger1 = ${config.trigger ?? "1"}
 reversal.attr = ${config.attr}
+${config.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${config.reversalGuardFlag}`}
 pausetime = ${hitPause},${hitPause}
 p1stateno = ${config.p1StateNo}
 ${config.p2StateNo === undefined ? "" : `p2stateno = ${config.p2StateNo}`}
@@ -56221,6 +56298,7 @@ function rootModifyReversalDefRedirectControllerBlock(
 type = ModifyReversalDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
 ${route.attr === undefined ? "" : `reversal.attr = ${route.attr}`}
+${route.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${route.reversalGuardFlag}`}
 ${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
 ${route.p1StateNo === undefined ? "" : `p1stateno = ${route.p1StateNo}`}
 ${route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}`}
