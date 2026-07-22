@@ -9444,6 +9444,57 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked PosFreeze RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN Helper PlayerPush RedirectID to a root with caller-owned dynamic policy", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Redirected PlayerPush value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 0
+
+[State 1200, Redirected PlayerPush priority]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 4
+
+[State 1200, Redirected PlayerPush]
+type = PlayerPush
+trigger1 = Time = 0
+value = var(0)
+priority = var(1)
+affectteam = B
+RedirectID = 57
+`,
+      }),
+    };
+    const destination = createImportedFixture({
+      id: "redirected-helper-playerpush-destination",
+      withStateMove: false,
+    });
+    const farStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -180, y: 0, facing: 1 as const },
+        p2: { x: 180, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, farStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ playerPush: false, pushPriority: 4, pushAffectTeam: 0 });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.PlayerPush).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:playerpush"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked PlayerPush RedirectID"))).toBe(false);
+  });
+
   it("runs IKEMEN Helper Depth locally and redirects a scaled depth pair to a root", () => {
     const caller = {
       ...createImportedFixture({

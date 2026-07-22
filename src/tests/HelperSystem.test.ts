@@ -538,6 +538,52 @@ describe("HelperSystem", () => {
     expect(destinationHelper.posFreezeAppliedTick).toBeUndefined();
   });
 
+  it("materializes dynamic Helper PlayerPush RedirectID in the caller and retains it through a later Helper reset", () => {
+    const redirected = compiledControllerIr(6000, "PlayerPush", ["Time = 0"], {
+      value: "var(0)",
+      priority: "var(1)",
+      affectteam: "B",
+      redirectid: "57",
+    });
+    const destinationHelper = helper({
+      serialId: "p2-helper-playerpush-destination",
+      helperType: 2,
+      vars: [1, 99],
+      playerPush: true,
+      pushPriority: 0,
+      pushAffectTeam: 1,
+    });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const caller = helper({
+      serialId: "p1-helper-playerpush-caller",
+      vars: [0, 4],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [redirected])] },
+    });
+
+    advanceRuntimeHelpers([caller, destinationHelper], stage, {
+      runtimeProfile: "ikemen-go",
+      runtimeTick: 44,
+      resolveResourceRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [],
+              onPlayerPushApplied: () => {
+                destinationHelper.playerPushAppliedTick = 44;
+              },
+              commitActor: (target) => {
+                applyRuntimeStateToHelper(destinationHelper, target.runtime);
+                syncRuntimeHelperTargetActor(destinationHelper, target);
+              },
+            }
+          : undefined,
+    });
+
+    expect(caller.playerPush).toBeUndefined();
+    expect(destinationHelper).toMatchObject({ playerPush: false, pushPriority: 4, pushAffectTeam: 0 });
+    expect(destinationHelper.playerPushAppliedTick).toBeUndefined();
+  });
+
   it("applies dynamic Helper ScreenBound state, projects current bounds, snapshots it, and resets next frame", () => {
     const screenBound = compiledControllerIr(6000, "ScreenBound", ["Time = 0"], {
       value: "var(0)",

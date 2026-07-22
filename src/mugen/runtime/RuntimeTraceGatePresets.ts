@@ -11735,6 +11735,95 @@ export function createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "spawn Helper and redirect dynamic PlayerPush to P2", p1: ["x"], p2: [], frames: 1 },
+    { label: "retain Helper lifecycle evidence after redirect", p1: [], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-playerpush-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Helper PlayerPush Redirect Caller",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPlayerPushRedirectRoute: {
+      redirectId: 57,
+      value: "var(0)",
+      priority: "var(1)",
+      affectTeam: "B",
+      vars: [
+        { index: 0, value: 0 },
+        { index: 1, value: 4 },
+      ],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-playerpush-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Helper PlayerPush Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-helper-playerpush-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-helper-playerpush-redirect-golden",
+      label: "Synthetic imported IKEMEN Helper PlayerPush RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a same-tick Helper evaluates dynamic PlayerPush values in caller context, routes the typed policy through RedirectID to P2, and exposes target push disablement. Exact CharList scheduling, hitpause reset order, nested Helpers, collision geometry, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-helper-playerpush-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "PlayerPush"],
+        requiredExecutedOperations: ["helper", "collision:playerpush"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            playerPush: false,
+            minFrames: 1,
+          },
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1200,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minAge: 1 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "same-tick Helper PlayerPush redirect", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48347,6 +48436,13 @@ export type SyntheticImportedTraceFighterOptions = {
     value?: SyntheticNumberExpression;
     vars?: Array<{ index: number; value: number }>;
   };
+  helperPlayerPushRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    value?: SyntheticNumberExpression;
+    priority?: SyntheticNumberExpression;
+    affectTeam?: "E" | "F" | "B";
+    vars?: Array<{ index: number; value: number }>;
+  };
   helperDynamicVelAddRoute?: { stateNo: number; animNo?: number };
   helperDynamicVelMulRoute?: { stateNo: number; animNo?: number };
   helperDynamicPosSetRoute?: { stateNo: number; animNo?: number };
@@ -49331,6 +49427,7 @@ ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNe
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
 ${options.helperPosFreezeRedirectRoute ? helperPosFreezeRedirectRouteBlock(options.helperPosFreezeRedirectRoute) : ""}
+${options.helperPlayerPushRedirectRoute ? helperPlayerPushRedirectRouteBlock(options.helperPlayerPushRedirectRoute) : ""}
 ${options.helperDynamicVelAddRoute ? helperDynamicVelAddRouteBlock(options.helperDynamicVelAddRoute) : ""}
 ${options.helperDynamicVelMulRoute ? helperDynamicVelMulRouteBlock(options.helperDynamicVelMulRoute) : ""}
 ${options.helperDynamicPosSetRoute ? helperDynamicPosSetRouteBlock(options.helperDynamicPosSetRoute) : ""}
@@ -55462,6 +55559,38 @@ ${vars}
 type = PosFreeze
 trigger1 = Time = 0
 value = ${route.value ?? 1}
+redirectid = ${route.redirectId}
+`;
+}
+
+function helperPlayerPushRedirectRouteBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["helperPlayerPushRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 1200, Helper PlayerPush Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+${vars}
+[State 1200, Helper PlayerPush Redirect]
+type = PlayerPush
+trigger1 = Time = 0
+value = ${route.value ?? 1}
+priority = ${route.priority ?? 0}
+affectteam = ${route.affectTeam ?? "E"}
 redirectid = ${route.redirectId}
 `;
 }

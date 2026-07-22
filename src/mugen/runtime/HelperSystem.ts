@@ -45,6 +45,7 @@ import {
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
 import {
+  resolveRuntimePlayerPushControllerOperation,
   resolveRuntimePosFreezeControllerOperation,
   resolveRuntimeScreenBoundControllerOperation,
 } from "./BoundsControllerSystem";
@@ -149,6 +150,7 @@ export type RuntimeHelper = {
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;
+  playerPushAppliedTick?: number;
   scale: { x: number; y: number };
   facing: 1 | -1;
   ctrl: boolean;
@@ -223,6 +225,7 @@ export type RuntimeHelperTargetRedirect = {
   canEnterTargetState?: (target: RuntimeTargetWorldActor, stateId: number) => boolean;
   commitActor?: (actor: RuntimeTargetWorldActor) => void;
   onPosFreezeApplied?: (actor: RuntimeTargetWorldActor, runtimeTick: number | undefined) => void;
+  onPlayerPushApplied?: (actor: RuntimeTargetWorldActor, runtimeTick: number | undefined) => void;
   lease?: RuntimeRedirectedTargetDispatchLease<RuntimeTargetWorldActor>;
 };
 
@@ -491,7 +494,16 @@ export function advanceRuntimeHelperActor(
     options.runtimeTick !== undefined && helper.posFreezeAppliedTick === options.runtimeTick
       ? helper.posFreeze
       : undefined;
+  const redirectedPlayerPush =
+    options.runtimeTick !== undefined && helper.playerPushAppliedTick === options.runtimeTick
+      ? {
+          playerPush: helper.playerPush,
+          pushPriority: helper.pushPriority,
+          pushAffectTeam: helper.pushAffectTeam,
+        }
+      : undefined;
   helper.posFreezeAppliedTick = undefined;
+  helper.playerPushAppliedTick = undefined;
   helperCollisionTransformWorld.resetFrame(helper);
   helperCollisionOverrideWorld.resetFrame(helper);
   helperActorConstraintWorld.resetFrameBoundsConstraints(helper);
@@ -500,7 +512,14 @@ export function advanceRuntimeHelperActor(
   helperActorConstraintWorld.resetFrameDepthConstraints(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
   const canAdvance = canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind);
-  if (canAdvance) resetRuntimeHelperPlayerPush(helper, controllerOptions.runtimeProfile);
+  if (canAdvance) {
+    resetRuntimeHelperPlayerPush(helper, controllerOptions.runtimeProfile);
+    if (redirectedPlayerPush) {
+      helper.playerPush = redirectedPlayerPush.playerPush;
+      helper.pushPriority = redirectedPlayerPush.pushPriority;
+      helper.pushAffectTeam = redirectedPlayerPush.pushAffectTeam;
+    }
+  }
   if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4) === "destroyed") {
     return false;
   }
@@ -761,6 +780,13 @@ export function runRuntimeHelperStateControllers(
           redirectedController.operation.controllerType === "posfreeze"
         ) {
           redirect.onPosFreezeApplied?.(actor, options.runtimeTick);
+        }
+        if (
+          redirect &&
+          redirectedController.operation?.kind === "collision" &&
+          redirectedController.operation.controllerType === "playerpush"
+        ) {
+          redirect.onPlayerPushApplied?.(actor, options.runtimeTick);
         }
         return result;
       };
@@ -1844,6 +1870,12 @@ function resolveHelperResourceController(
     const operation = controller.operation?.kind === "collision-transform"
       ? controller.operation
       : resolveRuntimeCollisionTransformControllerOperation(controller, helperRuntimeState(helper), context);
+    return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
+  }
+  if (controller.normalizedType === "playerpush") {
+    const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "playerpush"
+      ? controller.operation
+      : resolveRuntimePlayerPushControllerOperation(controller, helperRuntimeState(helper), context);
     return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
   }
   if (controller.normalizedType === "screenbound") {

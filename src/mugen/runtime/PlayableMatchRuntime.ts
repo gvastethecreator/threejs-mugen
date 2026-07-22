@@ -993,6 +993,9 @@ export class PlayableMatchRuntime {
             onPosFreezeApplied: (_actor: RuntimeTargetWorldActor, runtimeTick: number | undefined) => {
               destinationHelper.posFreezeAppliedTick = runtimeTick ?? this.tick;
             },
+            onPlayerPushApplied: (_actor: RuntimeTargetWorldActor, runtimeTick: number | undefined) => {
+              destinationHelper.playerPushAppliedTick = runtimeTick ?? this.tick;
+            },
           }),
       lease,
       commitActor: (actor) => {

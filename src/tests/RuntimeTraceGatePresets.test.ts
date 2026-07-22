@@ -163,6 +163,7 @@ import {
   createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact,
+  createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17430,6 +17431,33 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
       { label: "same-tick Helper PosFreeze redirect", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+    ]);
+  });
+
+  it("creates a required IKEMEN Helper PlayerPush RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-helper-playerpush-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-helper-playerpush-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      Helper: 1,
+      PlayerPush: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      helper: 1,
+      "collision:playerpush": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", playerPush: false }),
+      expect.objectContaining({ actorId: "p1-helper-0", source: "effect", actorKind: "helper", stateNo: 1200 }),
+    ]));
+    expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
+      { label: "same-tick Helper PlayerPush redirect", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
     ]);
   });
 
