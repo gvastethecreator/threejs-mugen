@@ -1,5 +1,19 @@
 ﻿# Progress Tracker
 
+## Runtime reversal guard filter report - T386-T387 (2026-07-22)
+
+- Runtime feature commits: `7c63118f` and `5f4667e1`.
+- ReversalDef and root ModifyReversalDef RedirectID now retain static positive
+  and negative H/L/M/A guard filters on the active move and reversal metadata.
+- Positive overlap requires a guardable incoming move. Negative overlap blocks
+  only a guardable incoming move. `M` expands to high and low in both paths.
+- Required imported traces change active receiver filters before counter
+  contact. The focused compiler, reversal, playable-match, trace, and
+  CombatResolver batch passes 5 files / 1049 tests.
+- Script syntax and diff hygiene pass. Scores stay 65 / 36 / 20 / 10-12 / 6-8
+  / 25. Wider flags, dynamic values, Helpers as receivers, source timing, and
+  full parity remain blocked. Global checks stay queued.
+
 ## Runtime p2 owner report - T385 (2026-07-22)
 
 - Runtime feature commit: `32d904a5`.

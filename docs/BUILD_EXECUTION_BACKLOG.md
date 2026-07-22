@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## Entry 572 - ReversalDef negative guard filter RedirectID
+
+Closed static `reversal.guardflag.not` in `5f4667e1` across ReversalDef
+activation and root ModifyReversalDef RedirectID. Negative overlap blocks a
+guardable incoming move; an unguardable incoming move bypasses the negative
+filter. The mutation retains active move identity and receiver contact state.
+
+Verification: grouped compiler, reversal, playable-match, trace, and
+CombatResolver coverage passes 5 files / 1049 tests. Required
+`synthetic-imported-ikemen-root-modifyreversaldef-guardflag-not-redirect`
+changes a high-blocking receiver filter to air before high counter contact.
+Script syntax and diff hygiene pass. TypeScript, complete Vitest, trace
+aggregate, build, and boundaries stay queued. No score movement. Claim allowed:
+static H/L/M/A negative filtering under explicit `ikemen-go`. Claim blocked:
+wider flags, positive changes beyond T386, dynamic values, Helpers as receivers,
+teams, source timing, renderer behavior, rollback/netplay, and full parity.
+
+## Entry 571 - ReversalDef positive guard filter RedirectID
+
+Closed static `reversal.guardflag` in `7c63118f` across ReversalDef activation
+and root ModifyReversalDef RedirectID. Positive overlap uses H/L/M/A matching,
+expands `M` to high and low, and rejects unguardable incoming attacks. The
+shared overlap helper also corrects local HitOverride `M` matching.
+
+Verification: grouped compiler, reversal, playable-match, trace, and
+CombatResolver coverage passes 5 files / 1049 tests. Required
+`synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect` changes
+an air filter to high before counter contact. Script syntax and diff hygiene
+pass. TypeScript, complete Vitest, trace aggregate, build, and boundaries stay
+queued. No score movement. Claim allowed: static H/L/M/A positive filtering
+under explicit `ikemen-go`. Claim blocked: negative filtering beyond T387,
+wider flags, dynamic values, Helpers as receivers, teams, source timing,
+renderer behavior, rollback/netplay, and full parity.
+
 ## Entry 570 - root ModifyReversalDef p2 owner RedirectID
 
 Closed source-backed root ModifyReversalDef `p2getp1state` RedirectID in

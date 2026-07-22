@@ -1,15 +1,15 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T385 (2026-07-22)
+## Current runtime compatibility board - T387 (2026-07-22)
 
-T384 `eddddc8a` adds static root `ModifyReversalDef p2stateno` through
-caller-evaluated RedirectID. T385 `32d904a5` adds the separate static
-`p2getp1state` override on the same active receiver. Pinned IKEMEN-GO source
-sets receiver ownership when shared mutation writes `p2stateno`, then accepts
-the separate field as an override. Required evidence proves explicit zero sends
-the countered attacker through its own state `888` with no custom-state owner.
-Guard fields, Helpers, other inherited HitDef fields, dynamic values, source
-timing, and full parity remain outside the current claim.
+T386 `7c63118f` adds static positive `reversal.guardflag` and T387
+`5f4667e1` adds the separate static negative `reversal.guardflag.not` across
+ReversalDef activation and active root ModifyReversalDef RedirectID. Pinned
+IKEMEN-GO admission requires positive overlap, rejects positive filters for an
+unguardable incoming attack, and bypasses only negative overlap for that attack.
+Required traces prove root mutation changes each active receiver filter before
+counter contact. Wider HitFlag forms, dynamic values, Helpers as receivers,
+teams, source timing, and full parity remain outside the current claim.
 
 ## Global runtime checkpoint after T383 (2026-07-22)
 

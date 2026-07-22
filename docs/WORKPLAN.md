@@ -1,5 +1,20 @@
 # Workplan
 
+## Runtime reversal guard filter checkpoint - T386-T387 (2026-07-22)
+
+T386 `7c63118f` and T387 `5f4667e1` close static H/L/M/A positive and negative
+ReversalDef guard filters across activation and root ModifyReversalDef RedirectID.
+Positive matching rejects unguardable incoming attacks; negative matching blocks
+only guardable incoming attacks. The focused compiler, reversal, playable-match,
+trace, and CombatResolver batch passes 5 files / 1049 tests. Script syntax and
+diff hygiene pass. Scores do not move.
+
+Next, audit one remaining inherited ModifyReversalDef field with a separate
+source contract and trace. Wider flags, dynamic values, Helpers as receivers,
+teams, source timing, and full parity remain blocked. TypeScript, full Vitest,
+trace aggregate, build, and boundaries stay queued for the next grouped
+runtime checkpoint.
+
 ## Runtime p2 owner checkpoint - T385 (2026-07-22)
 
 T385 closes in `32d904a5`. Static root ModifyReversalDef RedirectID now writes
