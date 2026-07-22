@@ -1,5 +1,28 @@
 ﻿# Progress Tracker
 
+## Runtime constraint report - T374/T375 (2026-07-22)
+
+- Runtime feature commit: `0dfac1ff`. This focused checkpoint does not replace
+  the separate FightScreen or Studio frontiers.
+- Root PosFreeze RedirectID now materializes caller-owned dynamic policy,
+  carries its local Z axis through typed dispatch, and retains existing
+  later-root reset/preservation ordering.
+- Root TransformClsn RedirectID now materializes caller-owned dynamic scale and
+  angle before destination dispatch, then defers a later root through collision
+  transform reset.
+- Gates: focused bounds, compiler, Helper, imported match, and trace coverage
+  passes 5 files / 1041 tests. Diff hygiene passes. TypeScript, complete
+  Vitest, trace aggregate, build, and boundary checks remain queued for the
+  larger runtime checkpoint selected by the user.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current root PosFreeze and TransformClsn RedirectID with
+  caller values under current actor order. Exact corner push/collision geometry,
+  CharList order, hitpause/reset parity, nested ownership, renderer/upstream
+  differentials, rollback/netplay, and full parity remain open.
+- Next constraint frontier: audit any remaining root generic RedirectID route,
+  then run the broader grouped verification checkpoint.
+
 ## Runtime constraint report - T373 (2026-07-22)
 
 - Runtime feature commit: `9ff8cf90`. This focused checkpoint does not replace

@@ -628,3 +628,20 @@ bounds reset, while required trace evidence records destination screen/camera
 flags and `bounds:screenbound`. Helper scheduling breadth, exact screen/stage
 and camera behavior, CharList order, hitpause/reset parity, nested ownership,
 renderer proof, and full parity remain unsupported.
+
+Root PosFreeze RedirectID addendum: PosFreeze is executed-partial for current
+roots under the explicit IKEMEN profile. Dynamic caller `value` materializes
+before a verified root destination write, and its typed operation retains the
+current local Z policy instead of re-evaluating the destination variable. A
+later root receives the write after its one-frame bounds reset and preserves
+the captured position through the existing hook. Exact corner push, Helper
+scheduling breadth, hitpause/reset parity, nested ownership, renderer proof,
+and full parity remain unsupported.
+
+Root TransformClsn RedirectID addendum: TransformClsn is executed-partial for
+current roots under the explicit IKEMEN profile. Dynamic caller `scale` and
+`angle` materialize before a verified root destination write. A later root
+receives the transform after collision-transform reset, while required trace
+evidence records destination scale/angle and `collision-transform`. Exact
+collision geometry, Helper scheduling breadth, hitpause/reset parity, nested
+ownership, renderer proof, and full parity remain unsupported.

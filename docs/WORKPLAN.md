@@ -1,5 +1,23 @@
 # Workplan
 
+## Runtime constraint checkpoint - T374/T375 (2026-07-22)
+
+T374 and T375 close in `0dfac1ff`. Root active-controller PosFreeze RedirectID
+now materializes dynamic caller policy, preserves local Z policy in typed
+dispatch, and retains the existing later-root reset/preservation boundary.
+Root TransformClsn RedirectID now materializes dynamic caller scale/angle and
+defers a later root until collision-transform reset is complete. Focused
+compiler, bounds, Helper, imported match, and trace coverage passes 5 files /
+1041 tests. Diff hygiene passes. The broad typecheck, full suite, trace
+aggregate, build, and boundary checks remain deliberately queued for the next
+larger runtime batch; browser smoke is N/A for this runtime-only slice.
+
+Keep exact corner push/collision geometry, Helper scheduling breadth, CharList
+ordering, hitpause/reset parity, nested ownership, renderer/upstream
+differentials, rollback/netplay, and full parity outside this bounded lane. The
+next source-backed audit should find any remaining generic root RedirectID gap
+before the broader verification checkpoint.
+
 ## Runtime constraint checkpoint - T373 (2026-07-22)
 
 T373 closes in `9ff8cf90`. Root active-controller ScreenBound RedirectID now
