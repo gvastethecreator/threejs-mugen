@@ -12217,6 +12217,86 @@ export function createSyntheticImportedIkemenRootNotHitByRedirectTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenRootHitOverrideRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-hitoverride-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root HitOverride Redirect Caller",
+    guardFlag: "H",
+    rootHitOverrideRedirectRoute: {
+      redirectId: 57,
+      attr: "S,NA",
+      slot: "var(0) - 7",
+      stateNo: "var(2)",
+      time: "var(0)",
+      forceAir: "var(3)",
+      forceGuard: "var(4)",
+      keepState: "var(5)",
+      triggerTime: 1,
+      guardFlag: "MA",
+      guardFlagNot: "A",
+      vars: [
+        { index: 0, value: 9 },
+        { index: 2, value: 777 },
+        { index: 3, value: 0 },
+        { index: 4, value: 0 },
+        { index: 5, value: 0 },
+      ],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-hitoverride-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root HitOverride Redirect Receiver",
+    withHitDef: false,
+    passiveHitOverride: { attr: "A,SA", stateNo: 777, trigger: "Time < 0" },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-hitoverride-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-hitoverride-redirect-golden",
+      label: "Synthetic imported IKEMEN root HitOverride RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves a HitOverride RedirectID destination, materializes caller slot/state/time fields before receiver dispatch, and routes the matching HitDef into the destination override state. Exact time corner values, Helpers, teams, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-hitoverride-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitOverride"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "hitoverride"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredEventSubstrings: ["HitOverride slot 2"],
+        requiredCombatReasons: ["override"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 777,
+            animNo: 777,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49207,6 +49287,19 @@ export type SyntheticImportedTraceFighterOptions = {
     time?: SyntheticNumberExpression;
     vars?: Array<{ index: number; value: number }>;
   };
+  rootHitOverrideRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    attr: string;
+    slot?: SyntheticNumberExpression;
+    stateNo?: SyntheticNumberExpression;
+    time?: SyntheticNumberExpression;
+    forceAir?: SyntheticNumberExpression;
+    forceGuard?: SyntheticNumberExpression;
+    keepState?: SyntheticNumberExpression;
+    guardFlag?: string;
+    guardFlagNot?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withDynamicStateTypeSet?: {
     stateType?: string;
@@ -49270,6 +49363,7 @@ export type SyntheticImportedTraceFighterOptions = {
     color?: string;
     invertAll?: string;
     vars?: Array<{ index: number; value: number }>;
+    triggerTime?: number;
   };
   withTrans?: string;
   withDynamicTrans?: {
@@ -49642,6 +49736,7 @@ ${options.withTransformClsn === undefined ? "" : transformClsnControllerBlock(op
 ${options.rootTransformClsnRedirectRoute ? rootTransformClsnRedirectControllerBlock(options.rootTransformClsnRedirectRoute) : ""}
 ${options.rootOverrideClsnRedirectRoute ? rootOverrideClsnRedirectControllerBlock(options.rootOverrideClsnRedirectRoute) : ""}
 ${options.rootHitEligibilityRedirectRoute ? rootHitEligibilityRedirectControllerBlock(options.rootHitEligibilityRedirectRoute) : ""}
+${options.rootHitOverrideRedirectRoute ? rootHitOverrideRedirectControllerBlock(options.rootHitOverrideRedirectRoute) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -51204,6 +51299,45 @@ redirectid = ${route.redirectId}
 `;
 }
 
+function rootHitOverrideRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootHitOverrideRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root HitOverride Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  const slotLine = route.slot === undefined ? "" : `slot = ${route.slot}`;
+  const stateNoLine = route.stateNo === undefined ? "" : `stateno = ${route.stateNo}`;
+  const timeLine = route.time === undefined ? "" : `time = ${route.time}`;
+  const forceAirLine = route.forceAir === undefined ? "" : `forceair = ${route.forceAir}`;
+  const forceGuardLine = route.forceGuard === undefined ? "" : `forceguard = ${route.forceGuard}`;
+  const keepStateLine = route.keepState === undefined ? "" : `keepstate = ${route.keepState}`;
+  const guardFlagLine = route.guardFlag === undefined ? "" : `guardflag = ${route.guardFlag}`;
+  const guardFlagNotLine = route.guardFlagNot === undefined ? "" : `guardflag.not = ${route.guardFlagNot}`;
+  return `${vars}
+[State 200, Root HitOverride Redirect]
+type = HitOverride
+trigger1 = Time = 0
+attr = ${route.attr}
+${slotLine}
+${stateNoLine}
+${timeLine}
+${forceAirLine}
+${forceGuardLine}
+${keepStateLine}
+${guardFlagLine}
+${guardFlagNotLine}
+redirectid = ${route.redirectId}
+`;
+}
+
 function dynamicWidthControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicWidth"]>): string {
   const varSeeds =
     options.vars
@@ -51263,7 +51397,7 @@ y = -8
 
 [State 200, Kinematic PosAdd Probe]
 type = PosAdd
-trigger1 = Time = 0
+trigger1 = Time = ${route.triggerTime ?? 0}
 x = 6
 y = -2
 `;

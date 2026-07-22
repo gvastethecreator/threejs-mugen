@@ -3,6 +3,7 @@ import type { HitEligibilityControllerOp, HitOverrideControllerOp } from "../mug
 import type { ControllerIr } from "../mugen/compiler/RuntimeIr";
 import {
   resolveRuntimeHitEligibilityControllerOperation,
+  resolveRuntimeHitOverrideControllerOperation,
   RuntimeHitDefenseWorld,
   type RuntimeHitDefenseControllerSource,
 } from "../mugen/runtime/HitDefenseSystem";
@@ -69,6 +70,39 @@ describe("RuntimeHitDefenseWorld", () => {
         { slot: 1, attr: "S,NA", remaining: 9 },
         { slot: 2, attr: "A,SA", remaining: 9 },
       ],
+    });
+  });
+
+  it("materializes dynamic HitOverride fields in the caller context", () => {
+    const operation = resolveRuntimeHitOverrideControllerOperation(
+      {
+        ...controller({
+          attr: "S,NA",
+          slot: "var(0)",
+          stateno: "var(1)",
+          time: "var(2)",
+          forceair: "var(3)",
+          forceguard: "var(4)",
+          keepstate: "var(5)",
+          guardflag: '"MA"',
+          "guardflag.not": "A",
+        }),
+        normalizedType: "hitoverride",
+      } as ControllerIr,
+      runtime({ vars: [2, 777, 9, 1, 0, 1] }),
+    );
+
+    expect(operation).toEqual({
+      kind: "hitoverride",
+      slot: 2,
+      attr: "S,NA",
+      remaining: 9,
+      stateNo: 777,
+      guardFlag: "MA",
+      guardFlagNot: "A",
+      forceAir: true,
+      forceGuard: false,
+      keepState: true,
     });
   });
 

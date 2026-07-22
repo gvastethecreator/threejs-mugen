@@ -594,6 +594,7 @@ export type HitOverrideControllerOp = {
   forceAir: boolean;
   forceGuard: boolean;
   keepState: boolean;
+  redirectPlayerIdExpression?: string;
 };
 
 export type ReversalDefControllerOp = {
@@ -1598,7 +1599,16 @@ function compileHitOverrideControllerOp(controller: MugenStateController): HitOv
   const forceAir = staticOptionalBooleanParam(controller, "forceair") ?? false;
   const forceGuard = staticOptionalBooleanParam(controller, "forceguard") ?? false;
   const keepState = staticOptionalBooleanParam(controller, "keepstate") ?? false;
-  if (slot === undefined || remaining === undefined || stateNo === false || forceAir === undefined || forceGuard === undefined || keepState === undefined) {
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (
+    slot === undefined ||
+    remaining === undefined ||
+    stateNo === false ||
+    forceAir === undefined ||
+    forceGuard === undefined ||
+    keepState === undefined ||
+    redirectPlayerIdExpression === "invalid"
+  ) {
     return undefined;
   }
   const operation = definedObject({
@@ -1612,6 +1622,7 @@ function compileHitOverrideControllerOp(controller: MugenStateController): HitOv
     forceAir,
     forceGuard,
     keepState,
+    redirectPlayerIdExpression: redirectPlayerIdExpression === undefined ? undefined : redirectPlayerIdExpression,
   });
   return operation as HitOverrideControllerOp;
 }

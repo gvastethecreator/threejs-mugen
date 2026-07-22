@@ -123,6 +123,35 @@ export function resolveRuntimeHitEligibilityControllerOperation(
   };
 }
 
+export function resolveRuntimeHitOverrideControllerOperation(
+  controller: ControllerIr,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): HitOverrideControllerOp | undefined {
+  if (controller.normalizedType !== "hitoverride") {
+    return undefined;
+  }
+  const slot = clampIndex(Math.round(numberParam(controller, state, context, "slot") ?? 0), 7);
+  const attr = findParam(controller, "attr")?.trim() ?? "";
+  const remaining = controllerDuration(numberParam(controller, state, context, "time") ?? 1);
+  const stateNo = numberParam(controller, state, context, "stateno", "value");
+  const guardFlag = stringParam(controller, "guardflag");
+  const guardFlagNot = stringParam(controller, "guardflag.not");
+
+  return {
+    kind: "hitoverride",
+    slot,
+    attr,
+    remaining,
+    ...(stateNo === undefined || stateNo < 0 ? {} : { stateNo }),
+    ...(guardFlag === undefined ? {} : { guardFlag }),
+    ...(guardFlagNot === undefined ? {} : { guardFlagNot }),
+    forceAir: (numberParam(controller, state, context, "forceair") ?? 0) !== 0,
+    forceGuard: (numberParam(controller, state, context, "forceguard") ?? 0) !== 0,
+    keepState: (numberParam(controller, state, context, "keepstate") ?? 0) !== 0,
+  };
+}
+
 function numberParam(
   controller: RuntimeHitDefenseControllerSource,
   state: CharacterRuntimeState,

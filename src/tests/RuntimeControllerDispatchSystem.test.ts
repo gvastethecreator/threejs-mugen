@@ -110,6 +110,50 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(true);
   });
 
+  it("records bounded dynamic HitOverride as typed telemetry after resolving params", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ vars: [2, 777, 9, 1, 0, 1] });
+    const controller = compileControllerIr(controllerSource("HitOverride", {
+      attr: "S,NA",
+      slot: "var(0)",
+      stateno: "var(1)",
+      time: "var(2)",
+      forceair: "var(3)",
+      forceguard: "var(4)",
+      keepstate: "var(5)",
+    }));
+    const recordedOperations: ControllerOp[] = [];
+
+    const result = world.apply(actor, controller, {
+      recordOperation: (_actor, operation) => recordedOperations.push(operation),
+    });
+
+    expect(actor.runtime.hitOverrides).toEqual([
+      {
+        slot: 2,
+        attr: "S,NA",
+        remaining: 9,
+        stateNo: 777,
+        forceAir: true,
+        forceGuard: false,
+        keepState: true,
+      },
+    ]);
+    expect(recordedOperations).toEqual([
+      {
+        kind: "hitoverride",
+        slot: 2,
+        attr: "S,NA",
+        remaining: 9,
+        stateNo: 777,
+        forceAir: true,
+        forceGuard: false,
+        keepState: true,
+      },
+    ]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
   it("records bounded dynamic PosAdd as typed kinematic telemetry after resolving params", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ pos: { x: -3, y: 6 }, vars: [11, -18] });

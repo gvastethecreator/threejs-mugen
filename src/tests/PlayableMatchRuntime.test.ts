@@ -9614,6 +9614,124 @@ RedirectID = 56
     expect(snapshot.logs.some((line) => line.includes("Blocked NotHitBy RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root HitOverride RedirectID with caller dynamic fields", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected HitOverride time]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 9
+
+[State 0, Redirected HitOverride state]
+type = VarSet
+trigger1 = Time = 0
+v = 2
+value = 777
+
+[State 0, Redirected HitOverride force air]
+type = VarSet
+trigger1 = Time = 0
+v = 3
+value = 1
+
+[State 0, Redirected HitOverride force guard]
+type = VarSet
+trigger1 = Time = 0
+v = 4
+value = 0
+
+[State 0, Redirected HitOverride keep state]
+type = VarSet
+trigger1 = Time = 0
+v = 5
+value = 1
+
+[State 0, Redirected HitOverride]
+type = HitOverride
+trigger1 = Time = 1
+attr = S,NA
+slot = var(0) - 7
+stateno = var(2)
+time = var(0)
+forceair = var(3)
+forceguard = var(4)
+keepstate = var(5)
+guardflag = MA
+guardflag.not = A
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-hitoverride-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Target override time]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 99
+
+[State 0, Target override slot]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 6
+
+[State 0, Target override state]
+type = VarSet
+trigger1 = Time = 0
+v = 2
+value = 999
+
+[State 0, Target override force air]
+type = VarSet
+trigger1 = Time = 0
+v = 3
+value = 0
+
+[State 0, Target override force guard]
+type = VarSet
+trigger1 = Time = 0
+v = 4
+value = 1
+
+[State 0, Target override keep state]
+type = VarSet
+trigger1 = Time = 0
+v = 5
+value = 0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { runtime: { hitOverrides?: unknown } };
+    };
+
+    expect(internals.p2.runtime.hitOverrides).toEqual([
+      {
+        slot: 2,
+        attr: "S,NA",
+        remaining: 8,
+        stateNo: 777,
+        guardFlag: "MA",
+        guardFlagNot: "A",
+        forceAir: true,
+        forceGuard: false,
+        keepState: true,
+      },
+    ]);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.HitOverride).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations.hitoverride).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked HitOverride RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({

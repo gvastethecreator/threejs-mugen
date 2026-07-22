@@ -1530,6 +1530,7 @@ value = 1
         forceair: "1",
         forceguard: "0",
         keepstate: "1",
+        redirectid: "57",
       }),
     );
     const dynamic = compileControllerIr(controller(200, "HitOverride", [], { attr: "S,NA", stateno: "Const(data.life)" }));
@@ -1561,6 +1562,7 @@ value = 1
       forceAir: true,
       forceGuard: false,
       keepState: true,
+      redirectPlayerIdExpression: "57",
     });
     expect(dynamic.operation).toBeUndefined();
   });

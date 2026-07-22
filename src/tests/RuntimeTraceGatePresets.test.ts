@@ -170,6 +170,7 @@ import {
   createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact,
   createSyntheticImportedIkemenRootOverrideClsnRedirectTraceArtifact,
   createSyntheticImportedIkemenRootNotHitByRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootHitOverrideRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17603,6 +17604,30 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedOperations["eligibility:nothitby"]).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("reject");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("reject");
+  });
+
+  it("creates a required IKEMEN root HitOverride RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootHitOverrideRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-hitoverride-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-hitoverride-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: 5,
+      HitOverride: 1,
+      HitDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "variable:varset": 5,
+      hitoverride: 1,
+      hitdef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("override");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("override");
   });
 
   it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {
