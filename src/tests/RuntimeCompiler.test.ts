@@ -1142,6 +1142,7 @@ value = 1
   it("compiles static bounds controllers into typed operations", () => {
     const posFreeze = compileControllerIr(controller(200, "PosFreeze", [], { x: "1", y: "0" }));
     const posFreezeDefault = compileControllerIr(controller(200, "PosFreeze", [], {}));
+    const posFreezeRedirect = compileControllerIr(controller(200, "PosFreeze", [], { value: "1", redirectid: "ID + var(0)" }));
     const screenBound = compileControllerIr(controller(200, "ScreenBound", [], { value: "0", movecamera: "0,1" }));
     const screenStageBound = compileControllerIr(controller(200, "ScreenBound", [], { stagebound: "0" }));
     const redirected = compileControllerIr(controller(200, "ScreenBound", [], { value: "1", redirectid: "ID + var(0)" }));
@@ -1150,6 +1151,13 @@ value = 1
 
     expect(posFreeze.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
     expect(posFreezeDefault.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: true });
+    expect(posFreezeRedirect.operation).toEqual({
+      kind: "bounds",
+      controllerType: "posfreeze",
+      x: true,
+      y: true,
+      redirectPlayerIdExpression: "ID + var(0)",
+    });
     expect(screenBound.operation).toEqual({
       kind: "bounds",
       controllerType: "screenbound",

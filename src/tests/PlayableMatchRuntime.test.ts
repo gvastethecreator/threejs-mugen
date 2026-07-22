@@ -9395,6 +9395,55 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked ScreenBound RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN Helper PosFreeze RedirectID to a root and restores its current-tick position", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Redirected PosFreeze value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 1
+
+[State 1200, Redirected PosFreeze]
+type = PosFreeze
+trigger1 = Time = 0
+value = var(0)
+RedirectID = 57
+`,
+      }),
+    };
+    const destination = createImportedFixture({
+      id: "redirected-helper-posfreeze-destination",
+      withStateMove: false,
+      stateVelSet: "7,-3,5",
+    });
+    const movedStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -180, y: -12, facing: 1 as const },
+        p2: { x: 180, y: -4, facing: -1 as const },
+      },
+    };
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, movedStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]?.posFreeze).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.pos).toEqual({ x: 180, y: -4 });
+    expect(snapshot.actors[1]?.runtime.combatDepth?.position).toBe(0);
+    expect(snapshot.actors[1]?.runtime.posFreeze).toEqual({ x: true, y: true, z: true });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.PosFreeze).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["bounds:posfreeze"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked PosFreeze RedirectID"))).toBe(false);
+  });
+
   it("runs IKEMEN Helper Depth locally and redirects a scaled depth pair to a root", () => {
     const caller = {
       ...createImportedFixture({

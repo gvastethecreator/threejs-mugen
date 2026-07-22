@@ -466,6 +466,78 @@ describe("HelperSystem", () => {
     expect(actor.edgeWidth).toBeUndefined();
   });
 
+  it("applies dynamic Helper PosFreeze for one tick and carries a redirected freeze into a later Helper", () => {
+    const posFreeze = compiledControllerIr(6000, "PosFreeze", ["Time = 0"], { value: "var(0)" });
+    const actor = helper({
+      pos: { x: 18, y: -9, z: 4 },
+      vel: { x: 7, y: -3 },
+      combatDepth: { position: 4, velocity: 2, size: [3, 4], attack: [4, 4] },
+      vars: [1],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [posFreeze])] },
+    });
+
+    advanceRuntimeHelpers([actor], depthStage, { runtimeProfile: "ikemen-go", runtimeTick: 40 });
+
+    expect(actor.pos).toEqual({ x: 18, y: -9, z: 4 });
+    expect(actor.posFreeze).toEqual({ x: true, y: true, z: true });
+    expect(runtimeHelpersToSnapshots([actor], 6000)[0]?.runtime.posFreeze).toEqual({ x: true, y: true, z: true });
+
+    advanceRuntimeHelpers([actor], depthStage, { runtimeProfile: "ikemen-go", runtimeTick: 41 });
+
+    expect(actor.pos).toEqual({ x: 25, y: -12, z: 4 });
+    expect(actor.posFreeze).toBeUndefined();
+
+    const unfrozen = helper({
+      pos: { x: -12, y: 3 },
+      vel: { x: 4, y: -1 },
+      vars: [0],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [posFreeze])] },
+    });
+    advanceRuntimeHelpers([unfrozen], stage, { runtimeProfile: "ikemen-go", runtimeTick: 42 });
+    expect(unfrozen.pos).toEqual({ x: -8, y: 2 });
+    expect(unfrozen.posFreeze).toEqual({ x: false, y: false, z: false });
+
+    const redirected = compiledControllerIr(6000, "PosFreeze", ["Time = 0"], {
+      value: "var(0)",
+      redirectid: "57",
+    });
+    const destinationHelper = helper({
+      serialId: "p2-helper-posfreeze-destination",
+      pos: { x: 30, y: -6 },
+      vel: { x: 5, y: -2 },
+    });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const caller = helper({
+      serialId: "p1-helper-posfreeze-caller",
+      vars: [1],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [redirected])] },
+    });
+
+    advanceRuntimeHelpers([caller, destinationHelper], stage, {
+      runtimeProfile: "ikemen-go",
+      runtimeTick: 43,
+      resolveResourceRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [],
+              onPosFreezeApplied: () => {
+                destinationHelper.posFreezeAppliedTick = 43;
+              },
+              commitActor: (target) => {
+                applyRuntimeStateToHelper(destinationHelper, target.runtime);
+                syncRuntimeHelperTargetActor(destinationHelper, target);
+              },
+            }
+          : undefined,
+    });
+
+    expect(caller.posFreeze).toBeUndefined();
+    expect(destinationHelper.pos).toEqual({ x: 30, y: -6 });
+    expect(destinationHelper.posFreeze).toEqual({ x: true, y: true, z: true });
+    expect(destinationHelper.posFreezeAppliedTick).toBeUndefined();
+  });
+
   it("applies dynamic Helper ScreenBound state, projects current bounds, snapshots it, and resets next frame", () => {
     const screenBound = compiledControllerIr(6000, "ScreenBound", ["Time = 0"], {
       value: "var(0)",

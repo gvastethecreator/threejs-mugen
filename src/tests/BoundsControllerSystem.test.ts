@@ -62,7 +62,7 @@ describe("BoundsControllerSystem", () => {
       x: true,
       y: false,
     });
-    expect(state.posFreeze).toEqual({ x: true, y: false, z: true });
+    expect(state.posFreeze).toEqual({ x: true, y: false, z: false });
     expect(typedResult.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
 
     const rawResult = world.applyPosFreezeController(state, source("PosFreeze", { x: "0", y: "1" }));

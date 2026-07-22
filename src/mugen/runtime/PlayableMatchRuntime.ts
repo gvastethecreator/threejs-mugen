@@ -484,6 +484,7 @@ type RootControllerRedirectHandler = (
     | "height"
     | "overrideclsn"
     | "transformclsn"
+    | "posfreeze"
     | "screenbound"
     | "playerpush"
     | RedirectableTargetControllerType
@@ -599,6 +600,7 @@ export class PlayableMatchRuntime {
   private readonly deferredInputControls = new Map<FighterMatchState, () => RuntimeInputControlResult>();
   private readonly frameConstraintResetRoots = new Set<string>();
   private readonly deferredRootConstraintRedirects = new Map<string, Array<() => void>>();
+  private readonly framePosFreezeStarts = new Map<string, { x: number; y: number; z: number }>();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
   private readonly animationWorld = new RuntimeAnimationWorld();
   private readonly stunWorld = new RuntimeStunWorld();
@@ -985,6 +987,13 @@ export class PlayableMatchRuntime {
       candidateTargets,
       ...(destinationStateOwner === undefined ? {} : { stateOwner: destinationStateOwner }),
       ...(canEnterTargetState === undefined ? {} : { canEnterTargetState }),
+      ...(destinationHelper === undefined
+        ? {}
+        : {
+            onPosFreezeApplied: (_actor: RuntimeTargetWorldActor, runtimeTick: number | undefined) => {
+              destinationHelper.posFreezeAppliedTick = runtimeTick ?? this.tick;
+            },
+          }),
       lease,
       commitActor: (actor) => {
         const targetHelper = helperById.get(actor.id)?.helper;
@@ -1028,6 +1037,9 @@ export class PlayableMatchRuntime {
   ): void {
     const root = this.rootForRedirectedTarget(target);
     if (root) compatibilityTelemetryWorld.recordOperation(root, operation);
+    if (operation.kind === "bounds" && operation.controllerType === "posfreeze") {
+      this.preserveFramePosFreeze(target);
+    }
     if (
       lifeBefore === undefined ||
       operation.kind !== "resource" ||
@@ -1684,6 +1696,7 @@ export class PlayableMatchRuntime {
       applyPreFacingAssertSpecial: (fighter, opponent) => this.applyPreFacingAssertSpecial(fighter, opponent),
       updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
     });
+    this.captureFramePosFreezeStarts();
     for (const root of this.characterRoots()) collisionOverrideWorld.resetFrame(root.runtime);
 
     const branchResult = matchTickBranchWorld.advance({
@@ -2696,6 +2709,7 @@ export class PlayableMatchRuntime {
               onRootRedirect: (caller, expression, context, controllerType) =>
                 this.resolveRootControllerRedirect(caller, expression, context, controllerType),
               deferRootConstraintRedirect: (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
+              onRedirectedPosFreeze: (target) => this.preserveFramePosFreeze(target),
               onRootTargetDispatchLease: (caller, expression, context, controllerType, phase, candidates) =>
                 this.resolveRootTargetDispatchLease(caller, expression, context, controllerType, phase, candidates),
               playerIdTarget: (caller, playerId) => this.resolvePlayerIdTarget(caller, playerId),
@@ -2857,6 +2871,7 @@ export class PlayableMatchRuntime {
       | "height"
       | "overrideclsn"
       | "transformclsn"
+      | "posfreeze"
       | "screenbound"
       | "playerpush"
       | RedirectableTargetControllerType
@@ -2878,6 +2893,33 @@ export class PlayableMatchRuntime {
   private beginRootConstraintDeferrals(): void {
     this.frameConstraintResetRoots.clear();
     this.deferredRootConstraintRedirects.clear();
+  }
+
+  private captureFramePosFreezeStarts(): void {
+    this.framePosFreezeStarts.clear();
+    for (const root of this.characterRoots()) {
+      this.rememberFramePosFreezeStart(root.id, root.runtime.pos, root.runtime.combatDepth?.position);
+      for (const helper of this.effectActorWorld.helpers(root.id)) {
+        this.rememberFramePosFreezeStart(helper.serialId, helper.pos, helper.combatDepth?.position ?? helper.pos.z);
+      }
+    }
+  }
+
+  private rememberFramePosFreezeStart(
+    actorId: string,
+    pos: { x: number; y: number; z?: number },
+    combatDepthPosition?: number,
+  ): void {
+    this.framePosFreezeStarts.set(actorId, {
+      x: pos.x,
+      y: pos.y,
+      z: combatDepthPosition ?? pos.z ?? 0,
+    });
+  }
+
+  private preserveFramePosFreeze(target: Pick<RuntimeTargetWorldActor, "id" | "runtime">): void {
+    const tickStartPos = this.framePosFreezeStarts.get(target.id);
+    if (tickStartPos) this.actorConstraintWorld.preserveFrozenPosition(target.runtime, tickStartPos);
   }
 
   private markRootConstraintReset(fighter: FighterMatchState): void {
@@ -4509,6 +4551,7 @@ type ActiveControllerRunOptions = {
   onTeamStandby?: TeamStandbyControllerHandler;
   onRootRedirect?: RootControllerRedirectHandler;
   deferRootConstraintRedirect?: RootConstraintRedirectDeferralHandler;
+  onRedirectedPosFreeze?: (target: FighterMatchState) => void;
   onRootTargetDispatchLease?: RootTargetDispatchLeaseHandler;
   playerIdTarget?: PlayerIdTargetResolver;
   characters?: readonly FighterMatchState[];
@@ -5239,7 +5282,10 @@ function runActiveStateControllers(
         gameSpace,
         createPlayerIdTarget(actor),
       );
-      const redirectableBoundsController = dispatch.controller.normalizedType === "screenbound" || dispatch.controller.normalizedType === "playerpush";
+      const redirectableBoundsController =
+        dispatch.controller.normalizedType === "posfreeze" ||
+        dispatch.controller.normalizedType === "screenbound" ||
+        dispatch.controller.normalizedType === "playerpush";
       const redirectableCollisionTransform = dispatch.controller.normalizedType === "transformclsn";
       const redirectableResourceType = redirectableResourceControllerType(dispatch.controller);
       const redirectExpression = redirectableResourceType !== undefined
@@ -5249,7 +5295,8 @@ function runActiveStateControllers(
               ? dispatch.controller.operation.redirectPlayerIdExpression
               : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
         : redirectableBoundsController
-          ? (((dispatch.controller.operation?.kind === "bounds" && dispatch.controller.operation.controllerType === "screenbound") ||
+          ? (((dispatch.controller.operation?.kind === "bounds" &&
+                (dispatch.controller.operation.controllerType === "posfreeze" || dispatch.controller.operation.controllerType === "screenbound")) ||
                 (dispatch.controller.operation?.kind === "collision" && dispatch.controller.operation.controllerType === "playerpush")
               ? dispatch.controller.operation.redirectPlayerIdExpression
               : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
@@ -5258,7 +5305,7 @@ function runActiveStateControllers(
         (redirectableCollisionTransform
           ? "transformclsn"
           : redirectableBoundsController
-            ? dispatch.controller.normalizedType as "screenbound" | "playerpush"
+            ? dispatch.controller.normalizedType as "posfreeze" | "screenbound" | "playerpush"
             : undefined);
       const resourceRedirectLease = redirectExpression && redirectableResourceType !== undefined
         ? options.onRootTargetDispatchLease?.(
@@ -5281,6 +5328,10 @@ function runActiveStateControllers(
         options.onBlocked?.(dispatch.controller, `${redirectControllerType ?? "root"}-redirect`);
         return;
       }
+      const deferPosFreezeRedirect =
+        dispatch.controller.normalizedType === "posfreeze" && redirectExpression !== undefined && target !== fighter
+          ? options.deferRootConstraintRedirect
+          : undefined;
       const applyDispatch = () => {
         const redirectedController = redirectableResourceType !== undefined && redirectExpression
           ? resolveRedirectedResourceController(dispatch.controller, actor, context)
@@ -5302,6 +5353,13 @@ function runActiveStateControllers(
           roundNoDamage: options.roundNoDamage,
           ...runtimeActiveControllerTelemetryHooks,
         });
+        if (
+          target !== fighter &&
+          dispatch.controller.normalizedType === "posfreeze" &&
+          target.runtime.posFreeze !== undefined
+        ) {
+          options.onRedirectedPosFreeze?.(target);
+        }
         if (target === fighter) {
           recordRuntimeRootSelfKoCause(
             target,
@@ -5314,7 +5372,9 @@ function runActiveStateControllers(
           runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
         }
       };
-      if (resourceRedirectLease) {
+      if (deferPosFreezeRedirect) {
+        deferPosFreezeRedirect(target, applyDispatch);
+      } else if (resourceRedirectLease) {
         redirectedTargetDispatchWorld.execute(resourceRedirectLease, applyDispatch);
       } else {
         applyDispatch();

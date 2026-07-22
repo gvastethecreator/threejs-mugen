@@ -380,6 +380,7 @@ export type BoundsControllerOp =
       controllerType: "posfreeze";
       x: boolean;
       y: boolean;
+      redirectPlayerIdExpression?: string;
     }
   | {
       kind: "bounds";
@@ -1040,10 +1041,11 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
     const valueRaw = findParam(controller, "value");
     const xRaw = findParam(controller, "x");
     const yRaw = findParam(controller, "y");
+    const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
     const value = optionalBooleanParam(valueRaw);
     const x = optionalBooleanParam(xRaw);
     const y = optionalBooleanParam(yRaw);
-    if (value === "invalid" || x === "invalid" || y === "invalid") {
+    if (value === "invalid" || x === "invalid" || y === "invalid" || redirectPlayerIdExpression === "invalid") {
       return undefined;
     }
     const freeze = value === undefined ? x === undefined && y === undefined : value;
@@ -1052,6 +1054,7 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
       controllerType: "posfreeze",
       x: value === undefined ? x ?? freeze : freeze,
       y: value === undefined ? y ?? freeze : freeze,
+      ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     };
   }
 

@@ -162,6 +162,7 @@ import {
   createSyntheticImportedIkemenRunFirstTraceArtifact,
   createSyntheticImportedIkemenRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
+  createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17402,6 +17403,33 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
       { label: "same-tick appended helper advance", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+    ]);
+  });
+
+  it("creates a required IKEMEN Helper PosFreeze RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-helper-posfreeze-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-helper-posfreeze-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      Helper: 1,
+      PosFreeze: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      helper: 1,
+      "bounds:posfreeze": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", posFreezeX: true, posFreezeY: true }),
+      expect.objectContaining({ actorId: "p1-helper-0", source: "effect", actorKind: "helper", stateNo: 1200 }),
+    ]));
+    expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
+      { label: "same-tick Helper PosFreeze redirect", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
     ]);
   });
 

@@ -33,10 +33,12 @@ export class RuntimeBoundsControllerWorld {
     context: RuntimeControllerEvaluationContext = {},
   ): RuntimeBoundsControllerResult {
     const appliedOperation = operation ?? resolveRuntimePosFreezeControllerOperation(controller, state, context);
+    const value = numberParam(controller, state, context, "value");
+    const hasAxisParameter = findParam(controller, "x") !== undefined || findParam(controller, "y") !== undefined;
     state.posFreeze = {
       x: appliedOperation.x,
       y: appliedOperation.y,
-      z: findParam(controller, "value") !== undefined || (findParam(controller, "x") === undefined && findParam(controller, "y") === undefined),
+      z: value !== undefined ? value !== 0 : !hasAxisParameter,
     };
     return { applied: true, controllerType: "posfreeze", operation: appliedOperation };
   }
@@ -88,12 +90,14 @@ export function resolveRuntimePosFreezeControllerOperation(
   const value = numberParam(controller, state, context, "value");
   const x = numberParam(controller, state, context, "x");
   const y = numberParam(controller, state, context, "y");
+  const redirectPlayerIdExpression = findParam(controller, "redirectid")?.trim();
   const freeze = value !== undefined ? value !== 0 : x === undefined && y === undefined;
   return {
     kind: "bounds",
     controllerType: "posfreeze",
     x: value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze,
     y: value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze,
+    ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
   };
 }
 

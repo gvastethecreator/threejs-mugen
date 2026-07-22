@@ -44,7 +44,10 @@ import {
   type RuntimeHeightResolver,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
-import { resolveRuntimeScreenBoundControllerOperation } from "./BoundsControllerSystem";
+import {
+  resolveRuntimePosFreezeControllerOperation,
+  resolveRuntimeScreenBoundControllerOperation,
+} from "./BoundsControllerSystem";
 import {
   resolveRuntimeCollisionTransformControllerOperation,
   RuntimeCollisionTransformWorld,
@@ -139,6 +142,8 @@ export type RuntimeHelper = {
   bodyWidthDelta?: { front: number; back: number };
   edgeWidth?: { front: number; back: number };
   bodyHeightDelta?: { top: number; bottom: number };
+  posFreeze?: CharacterRuntimeState["posFreeze"];
+  posFreezeAppliedTick?: number;
   screenBound?: CharacterRuntimeState["screenBound"];
   stageBound?: CharacterRuntimeState["stageBound"];
   playerPush?: boolean;
@@ -217,6 +222,7 @@ export type RuntimeHelperTargetRedirect = {
   stateOwner?: RuntimeTargetWorldActor;
   canEnterTargetState?: (target: RuntimeTargetWorldActor, stateId: number) => boolean;
   commitActor?: (actor: RuntimeTargetWorldActor) => void;
+  onPosFreezeApplied?: (actor: RuntimeTargetWorldActor, runtimeTick: number | undefined) => void;
   lease?: RuntimeRedirectedTargetDispatchLease<RuntimeTargetWorldActor>;
 };
 
@@ -477,9 +483,19 @@ export function advanceRuntimeHelperActor(
   stage: RuntimeHelperStage,
   options: RuntimeHelperAdvanceOptions = {},
 ): boolean {
+  const tickStartPos = {
+    ...helper.pos,
+    z: helper.combatDepth?.position ?? helper.pos.z ?? 0,
+  };
+  const redirectedPosFreeze =
+    options.runtimeTick !== undefined && helper.posFreezeAppliedTick === options.runtimeTick
+      ? helper.posFreeze
+      : undefined;
+  helper.posFreezeAppliedTick = undefined;
   helperCollisionTransformWorld.resetFrame(helper);
   helperCollisionOverrideWorld.resetFrame(helper);
   helperActorConstraintWorld.resetFrameBoundsConstraints(helper);
+  if (redirectedPosFreeze) helper.posFreeze = { ...redirectedPosFreeze };
   helperActorConstraintWorld.resetFrameSizeConstraints(helper, helper.baseBodyWidth);
   helperActorConstraintWorld.resetFrameDepthConstraints(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
@@ -514,6 +530,7 @@ export function advanceRuntimeHelperActor(
   if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
     return false;
   }
+  helperActorConstraintWorld.preserveFrozenPosition(helper, tickStartPos);
   if (helper.screenBound?.bound === true) {
     helperActorConstraintWorld.clampToStage(helper, stage, helper.localCoord);
   } else {
@@ -737,6 +754,13 @@ export function runRuntimeHelperStateControllers(
         if (!redirect) {
           applyRuntimeStateToHelper(helper, actor.runtime);
           syncRuntimeHelperTargetActor(helper, actor);
+        }
+        if (
+          redirect &&
+          redirectedController.operation?.kind === "bounds" &&
+          redirectedController.operation.controllerType === "posfreeze"
+        ) {
+          redirect.onPosFreezeApplied?.(actor, options.runtimeTick);
         }
         return result;
       };
@@ -1154,6 +1178,7 @@ const helperRuntimeControllers = new Set([
   "posadd",
   "gravity",
   "ctrlset",
+  "posfreeze",
   "screenbound",
   "playerpush",
   "lifeadd",
@@ -1827,6 +1852,12 @@ function resolveHelperResourceController(
       : resolveRuntimeScreenBoundControllerOperation(controller, helperRuntimeState(helper), context);
     return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
   }
+  if (controller.normalizedType === "posfreeze") {
+    const operation = controller.operation?.kind === "bounds" && controller.operation.controllerType === "posfreeze"
+      ? controller.operation
+      : resolveRuntimePosFreezeControllerOperation(controller, helperRuntimeState(helper), context);
+    return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
+  }
   const operation = controller.operation?.kind === "resource"
     ? controller.operation
     : resolveRuntimeResourceControllerOperation(controller, helperRuntimeState(helper), context);
@@ -2214,6 +2245,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     ...(helper.bodyWidthDelta === undefined ? {} : { bodyWidthDelta: { ...helper.bodyWidthDelta } }),
     ...(helper.edgeWidth === undefined ? {} : { edgeWidth: { ...helper.edgeWidth } }),
     ...(helper.bodyHeightDelta === undefined ? {} : { bodyHeightDelta: { ...helper.bodyHeightDelta } }),
+    ...(helper.posFreeze === undefined ? {} : { posFreeze: { ...helper.posFreeze } }),
     ...(helper.screenBound === undefined ? {} : { screenBound: { ...helper.screenBound } }),
     ...(helper.stageBound === undefined ? {} : { stageBound: helper.stageBound }),
     ...(helper.playerPush === undefined ? {} : { playerPush: helper.playerPush }),
@@ -2305,6 +2337,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.bodyWidthDelta = runtime.bodyWidthDelta ? { ...runtime.bodyWidthDelta } : undefined;
   helper.edgeWidth = runtime.edgeWidth ? { ...runtime.edgeWidth } : undefined;
   helper.bodyHeightDelta = runtime.bodyHeightDelta ? { ...runtime.bodyHeightDelta } : undefined;
+  helper.posFreeze = runtime.posFreeze ? { ...runtime.posFreeze } : undefined;
   helper.screenBound = runtime.screenBound ? { ...runtime.screenBound } : undefined;
   helper.stageBound = runtime.stageBound;
   helper.playerPush = runtime.playerPush;

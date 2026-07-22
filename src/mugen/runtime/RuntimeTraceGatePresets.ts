@@ -11650,6 +11650,91 @@ export function createSyntheticImportedIkemenHelperRunOrderTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "spawn Helper and redirect dynamic PosFreeze to P2", p1: ["x"], p2: [], frames: 1 },
+    { label: "retain Helper lifecycle evidence after redirect", p1: [], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-posfreeze-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Helper PosFreeze Redirect Caller",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPosFreezeRedirectRoute: {
+      redirectId: 57,
+      value: "var(0)",
+      vars: [{ index: 0, value: 1 }],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-posfreeze-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Helper PosFreeze Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-helper-posfreeze-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-helper-posfreeze-redirect-golden",
+      label: "Synthetic imported IKEMEN Helper PosFreeze RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a same-tick Helper evaluates value in caller context, routes PosFreeze through RedirectID to P2, records typed bounds evidence, and exposes the target frame freeze. Corner-push detail, pause/hitpause, nested Helpers, future-spawn targets, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-helper-posfreeze-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "PosFreeze"],
+        requiredExecutedOperations: ["helper", "bounds:posfreeze"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            posFreezeX: true,
+            posFreezeY: true,
+            minFrames: 1,
+          },
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1200,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minAge: 1 },
+        ],
+        requiredTickSchedulePhaseSequences: [
+          { label: "same-tick Helper PosFreeze redirect", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48257,6 +48342,11 @@ export type SyntheticImportedTraceFighterOptions = {
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
   helperParentRootRedirectRoute?: { stateNo: number; animNo?: number };
   helperControllerParamRedirectRoute?: { stateNo: number; animNo?: number };
+  helperPosFreezeRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    value?: SyntheticNumberExpression;
+    vars?: Array<{ index: number; value: number }>;
+  };
   helperDynamicVelAddRoute?: { stateNo: number; animNo?: number };
   helperDynamicVelMulRoute?: { stateNo: number; animNo?: number };
   helperDynamicPosSetRoute?: { stateNo: number; animNo?: number };
@@ -49240,6 +49330,7 @@ ${options.helperResourceRoute ? helperResourceRouteBlock(options.helperResourceR
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
+${options.helperPosFreezeRedirectRoute ? helperPosFreezeRedirectRouteBlock(options.helperPosFreezeRedirectRoute) : ""}
 ${options.helperDynamicVelAddRoute ? helperDynamicVelAddRouteBlock(options.helperDynamicVelAddRoute) : ""}
 ${options.helperDynamicVelMulRoute ? helperDynamicVelMulRouteBlock(options.helperDynamicVelMulRoute) : ""}
 ${options.helperDynamicPosSetRoute ? helperDynamicPosSetRouteBlock(options.helperDynamicPosSetRoute) : ""}
@@ -55342,6 +55433,36 @@ movetype = I
 physics = N
 anim = ${animNo}
 ctrl = 0
+`;
+}
+
+function helperPosFreezeRedirectRouteBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["helperPosFreezeRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 1200, Helper PosFreeze Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+${vars}
+[State 1200, Helper PosFreeze Redirect]
+type = PosFreeze
+trigger1 = Time = 0
+value = ${route.value ?? 1}
+redirectid = ${route.redirectId}
 `;
 }
 

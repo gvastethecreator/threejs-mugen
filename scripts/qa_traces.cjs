@@ -1496,6 +1496,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenHelperRunOrderTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-helper-posfreeze-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-helper-self-tag",
       required: true,
       artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),
