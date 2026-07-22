@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { MugenStateController } from "../mugen/model/MugenState";
-import { applyCollisionOverrides, RuntimeCollisionOverrideWorld, type RuntimeCollisionOverrideState } from "../mugen/runtime/RuntimeCollisionOverrideSystem";
+import {
+  applyCollisionOverrides,
+  resolveRuntimeCollisionOverrideControllerOperation,
+  RuntimeCollisionOverrideWorld,
+  type RuntimeCollisionOverrideState,
+} from "../mugen/runtime/RuntimeCollisionOverrideSystem";
+import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeCollisionOverrideWorld", () => {
   it("normalizes and appends an out-of-range static box", () => {
@@ -37,8 +43,45 @@ describe("RuntimeCollisionOverrideWorld", () => {
     world.resetFrame(state);
     expect(state.clsnOverrides).toBeUndefined();
   });
+
+  it("materializes dynamic controller params into a typed caller operation", () => {
+    const operation = resolveRuntimeCollisionOverrideControllerOperation(
+      { params: { group: "var(0)", index: "var(1)", rect: "fvar(0),-2,var(2),4", redirectid: "57" } },
+      runtime({ vars: [2, -1, 11], fvars: [7] }),
+    );
+
+    expect(operation).toEqual({
+      kind: "collision",
+      controllerType: "overrideclsn",
+      group: 2,
+      index: -1,
+      rect: [7, -2, 11, 4],
+      redirectPlayerIdExpression: "57",
+    });
+  });
 });
 
 function controller(params: Record<string, string>): MugenStateController {
   return { stateId: 200, type: "OverrideClsn", params, triggers: [], line: 1, rawHeader: "State 200, Override" };
+}
+
+function runtime(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {
+  return {
+    pos: { x: 0, y: 0 },
+    vel: { x: 0, y: 0 },
+    facing: 1,
+    stateNo: 0,
+    animNo: 0,
+    animTime: 0,
+    frameIndex: 0,
+    life: 1000,
+    power: 0,
+    ctrl: true,
+    stateType: "S",
+    moveType: "I",
+    physics: "S",
+    vars: [],
+    fvars: [],
+    ...overrides,
+  };
 }

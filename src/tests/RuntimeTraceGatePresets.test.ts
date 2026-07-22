@@ -168,6 +168,7 @@ import {
   createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact,
   createSyntheticImportedIkemenRootPosFreezeRedirectTraceArtifact,
   createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootOverrideClsnRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17561,6 +17562,29 @@ describe("RuntimeTraceGatePresets", () => {
         minCollisionAngle: 30,
         maxCollisionAngle: 30,
       }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root OverrideClsn RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootOverrideClsnRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-overrideclsn-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-overrideclsn-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: 1,
+      OverrideClsn: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "variable:varset": 1,
+      "collision:overrideclsn": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", clsn2Count: 2 }),
     ]));
   });
 

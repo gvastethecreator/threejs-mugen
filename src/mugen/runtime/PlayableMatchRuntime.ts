@@ -169,7 +169,11 @@ import {
 import { RuntimeRootAdvancePhaseWorld, type RuntimeRootAdvancePhase } from "./RuntimeRootAdvancePhaseSystem";
 import { RuntimeRootMotionAdvanceWorld } from "./RuntimeRootMotionAdvanceSystem";
 import { RuntimeRootPresentationWorld } from "./RuntimeRootPresentationSystem";
-import { RuntimeCollisionOverrideWorld, type RuntimeCollisionOverrideResolver } from "./RuntimeCollisionOverrideSystem";
+import {
+  resolveRuntimeCollisionOverrideControllerOperation,
+  RuntimeCollisionOverrideWorld,
+  type RuntimeCollisionOverrideResolver,
+} from "./RuntimeCollisionOverrideSystem";
 import {
   resolveRuntimePushSizeBox,
   RuntimeRootBodyPushWorld,
@@ -4303,6 +4307,17 @@ function materializeTransformClsnRedirectController(
   return operation === undefined ? undefined : controller.operation === operation ? controller : { ...controller, operation };
 }
 
+function materializeOverrideClsnRedirectController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
+    ? controller.operation
+    : resolveRuntimeCollisionOverrideControllerOperation(controller, caller.runtime, context);
+  return operation === undefined ? undefined : controller.operation === operation ? controller : { ...controller, operation };
+}
+
 function materializeScreenBoundRedirectController(
   controller: ControllerIr,
   caller: FighterMatchState,
@@ -4829,17 +4844,37 @@ function runActiveStateControllers(
         options.onBlocked?.(controller, "overrideclsn-redirect");
         return;
       }
-      runtimeActiveControllerTelemetryHooks.recordController(target, controller.source);
       const callerWidth = actor.definition.localCoord?.[0] ?? 320;
       const targetWidth = target.definition.localCoord?.[0] ?? 320;
-      const applied = collisionOverrideWorld.apply(
-        target.runtime,
-        controller.source,
-        operation,
-        resolveCollisionOverrideParams(controller, actor, targetOpponent, stateOwner, stageBounds, activeTick),
-        targetWidth / callerWidth,
-      );
-      if (applied) runtimeActiveControllerTelemetryHooks.recordOperation(target, applied);
+      const defer = redirectExpression !== undefined && target !== fighter
+        ? options.deferRootConstraintRedirect
+        : undefined;
+      const dispatchController = defer
+        ? materializeOverrideClsnRedirectController(controller, actor, context)
+        : controller;
+      if (!dispatchController) return;
+      const dispatchOperation =
+        dispatchController.operation?.kind === "collision" && dispatchController.operation.controllerType === "overrideclsn"
+          ? dispatchController.operation
+          : undefined;
+      const apply = () => {
+        runtimeActiveControllerTelemetryHooks.recordController(target, dispatchController.source);
+        const applied = collisionOverrideWorld.apply(
+          target.runtime,
+          dispatchController.source,
+          dispatchOperation,
+          dispatchOperation === undefined
+            ? resolveCollisionOverrideParams(controller, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+            : undefined,
+          targetWidth / callerWidth,
+        );
+        if (applied) runtimeActiveControllerTelemetryHooks.recordOperation(target, applied);
+      };
+      if (defer) {
+        defer(target, apply);
+      } else {
+        apply();
+      }
     },
     depth: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(

@@ -1,7 +1,13 @@
 import type { CollisionControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
+import {
+  evaluateRuntimeControllerNumber,
+  type RuntimeControllerEvaluationContext,
+} from "./RuntimeControllerExpressionContextSystem";
 import { findControllerParam } from "./StateProgramExecutor";
+import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeCollisionOverride = {
   group: 1 | 2 | 3;
@@ -17,6 +23,49 @@ export type RuntimeCollisionOverrideResolver = {
   resolveNumber(key: "group" | "index"): number | undefined;
   resolveRect(key: "rect"): [number, number?, number?, number?] | undefined;
 };
+
+export type RuntimeCollisionOverrideControllerSource = Pick<ControllerIr, "params">;
+
+export function resolveRuntimeCollisionOverrideControllerOperation(
+  controller: RuntimeCollisionOverrideControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): Extract<CollisionControllerOp, { controllerType: "overrideclsn" }> | undefined {
+  const groupRaw = findControllerParam(controller, "group");
+  const group = resolveGroup(
+    groupRaw,
+    groupRaw === undefined ? undefined : evaluateRuntimeControllerNumber(groupRaw.trim(), state, context),
+  );
+  if (group === undefined) return undefined;
+
+  const redirectPlayerIdExpression = findControllerParam(controller, "redirectid")?.trim();
+  if (group === 0) {
+    return {
+      kind: "collision",
+      controllerType: "overrideclsn",
+      group,
+      index: 0,
+      rect: [0, 0, 0, 0],
+      ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+    };
+  }
+
+  const indexRaw = findControllerParam(controller, "index");
+  const index = indexRaw === undefined ? 0 : evaluateRuntimeControllerNumber(indexRaw.trim(), state, context);
+  if (index === undefined || !Number.isFinite(index)) return undefined;
+
+  const rect = resolveRuntimeRect(controller, state, context);
+  if (rect === undefined) return undefined;
+
+  return {
+    kind: "collision",
+    controllerType: "overrideclsn",
+    group,
+    index: Math.trunc(index),
+    rect,
+    ...(redirectPlayerIdExpression ? { redirectPlayerIdExpression } : {}),
+  };
+}
 
 export class RuntimeCollisionOverrideWorld {
   resetFrame(state: RuntimeCollisionOverrideState): void {
@@ -83,12 +132,12 @@ export function applyCollisionOverrides(
 }
 
 function resolveGroup(raw: string | undefined, dynamic: number | undefined): 0 | 1 | 2 | 3 | undefined {
-  if (dynamic !== undefined) return dynamic >= 0 && dynamic <= 3 ? Math.trunc(dynamic) as 0 | 1 | 2 | 3 : undefined;
   const token = raw?.trim().toLowerCase();
   if (token === "none") return 0;
   if (token === "clsn1") return 1;
   if (token === "clsn2") return 2;
   if (token === "size") return 3;
+  if (dynamic !== undefined) return dynamic >= 0 && dynamic <= 3 ? Math.trunc(dynamic) as 0 | 1 | 2 | 3 : undefined;
   const numeric = parseNumber(raw);
   return numeric !== undefined && numeric >= 0 && numeric <= 3 ? Math.trunc(numeric) as 0 | 1 | 2 | 3 : undefined;
 }
@@ -104,4 +153,18 @@ function parseRect(raw: string | undefined): [number, number?, number?, number?]
   const values = raw.split(",").map((value) => Number(value.trim()));
   if (values.length < 1 || values.length > 4 || values.some((value) => !Number.isFinite(value))) return undefined;
   return values as [number, number?, number?, number?];
+}
+
+function resolveRuntimeRect(
+  controller: RuntimeCollisionOverrideControllerSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+): [number, number, number, number] | undefined {
+  const raw = findControllerParam(controller, "rect");
+  if (raw === undefined) return [0, 0, 0, 0];
+  const expressions = raw.split(",").map((part) => part.trim());
+  if (expressions.length < 1 || expressions.length > 4 || expressions.some((part) => !part)) return undefined;
+  const values = expressions.map((expression) => evaluateRuntimeControllerNumber(expression, state, context));
+  if (values.some((value) => value === undefined || !Number.isFinite(value))) return undefined;
+  return [values[0]!, values[1] ?? 0, values[2] ?? 0, values[3] ?? 0];
 }

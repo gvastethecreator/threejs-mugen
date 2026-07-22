@@ -12092,6 +12092,69 @@ export function createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtif
   });
 }
 
+export function createSyntheticImportedIkemenRootOverrideClsnRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "redirect dynamic root OverrideClsn to P2", p1: ["x"], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-overrideclsn-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root OverrideClsn Redirect Caller",
+    withHitDef: false,
+    rootOverrideClsnRedirectRoute: {
+      redirectId: 57,
+      group: "Clsn2",
+      index: 9,
+      rect: ["var(0)", -2, 11, 4],
+      vars: [{ index: 0, value: 7 }],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-overrideclsn-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root OverrideClsn Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-overrideclsn-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-overrideclsn-redirect-golden",
+      label: "Synthetic imported IKEMEN root OverrideClsn RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root materializes dynamic OverrideClsn values in caller context, defers a later-root RedirectID write through collision reset, and exposes the added destination hurt box. Exact collision geometry, CharList scheduling, hitpause, Helpers, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-overrideclsn-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "OverrideClsn"],
+        requiredExecutedOperations: ["variable:varset", "collision:overrideclsn"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            clsn2Count: 2,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49067,6 +49130,13 @@ export type SyntheticImportedTraceFighterOptions = {
     angle?: SyntheticNumberExpression;
     vars?: Array<{ index: number; value: number }>;
   };
+  rootOverrideClsnRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    group?: "Clsn1" | "Clsn2" | "Size";
+    index?: SyntheticNumberExpression;
+    rect?: [SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression];
+    vars?: Array<{ index: number; value: number }>;
+  };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withDynamicStateTypeSet?: {
     stateType?: string;
@@ -49500,6 +49570,7 @@ ${options.withWidthController ? widthControllerBlock(options.withWidthController
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
 ${options.withTransformClsn === undefined ? "" : transformClsnControllerBlock(options.withTransformClsn)}
 ${options.rootTransformClsnRedirectRoute ? rootTransformClsnRedirectControllerBlock(options.rootTransformClsnRedirectRoute) : ""}
+${options.rootOverrideClsnRedirectRoute ? rootOverrideClsnRedirectControllerBlock(options.rootOverrideClsnRedirectRoute) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -51006,6 +51077,31 @@ type = TransformClsn
 trigger1 = Time = 0
 ${scaleLine}
 ${angleLine}
+redirectid = ${route.redirectId}
+`;
+}
+
+function rootOverrideClsnRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootOverrideClsnRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root OverrideClsn Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  return `${vars}
+[State 200, Root OverrideClsn Redirect]
+type = OverrideClsn
+trigger1 = Time = 0
+group = ${route.group ?? "Clsn2"}
+index = ${route.index ?? 9}
+rect = ${(route.rect ?? [-7, -2, 11, 4]).join(",")}
 redirectid = ${route.redirectId}
 `;
 }

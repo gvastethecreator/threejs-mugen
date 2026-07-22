@@ -9482,6 +9482,67 @@ value = 0
     expect(snapshot.logs.some((line) => line.includes("Blocked TransformClsn RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root OverrideClsn RedirectID with caller dynamic values after target reset", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected OverrideClsn rect]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 7
+
+[State 0, Redirected OverrideClsn index]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = -1
+
+[State 0, Redirected OverrideClsn]
+type = OverrideClsn
+trigger1 = Time = 0
+group = Clsn2
+index = var(1)
+rect = var(0),-2,11,4
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-overrideclsn-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Rewrite caller dynamic rect]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 99
+RedirectID = 56
+`,
+    });
+    const farStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -180, y: 0, facing: 1 as const },
+        p2: { x: 180, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, farStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { runtime: { clsnOverrides?: unknown } };
+    };
+
+    expect(internals.p2.runtime.clsnOverrides).toEqual([
+      { group: 2, index: -1, rect: { x1: 7, y1: -2, x2: 11, y2: 4 } },
+    ]);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.OverrideClsn).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision:overrideclsn"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked OverrideClsn RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({
