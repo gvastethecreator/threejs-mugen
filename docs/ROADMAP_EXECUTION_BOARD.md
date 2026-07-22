@@ -1,22 +1,23 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T381 (2026-07-22)
+## Current runtime compatibility board - T382 (2026-07-22)
 
-T381 closes root `ModifyHitDef RedirectID` in `86cf7040`. A valid caller
+T382 closes root `ModifyReversalDef RedirectID` in `0f30280e`. A valid caller
 expression now resolves one verified IKEMEN root and patches only its existing
-normal HitDef with static `damage` or `damage,guardDamage`. The receiver keeps
-move identity, active frame, contact memory, control, and telemetry. The
-required trace proves the modified receiver-owned contact; focused runtime
-coverage also proves `var(0)` selection and unknown, inactive, and reversal
-paths block before mutation. The focal gate passes 7 files / 1054 tests.
-Scores stay unchanged.
+reversal with static `reversal.attr`. The receiver keeps move identity, active
+frame, contact state, reversal timing/state payload, control, and telemetry.
+The required trace proves the modified receiver-owned counter contact; focused
+runtime coverage also proves `var(0)` selection and missing active-reversal or
+unsupported paths block before mutation. The focal gate passes 7 files / 1050
+tests. Scores stay unchanged.
 
-Allowed claim: static root-to-root `ModifyHitDef` damage mutation through a
-caller-evaluated RedirectID under explicit `ikemen-go`. Blocked: all other
-ModifyHitDef fields, dynamic payloads, exact scheduler/hitpause behavior,
-Helpers, custom states, teams, rollback/netplay, renderer work, and full
-MUGEN/IKEMEN parity. Typecheck, full Vitest, trace aggregate, build, and
-boundary checks remain deliberately queued for the next runtime batch.
+Allowed claim: static root-to-root `ModifyReversalDef` attr mutation through a
+caller-evaluated RedirectID under explicit `ikemen-go`. Blocked:
+`reversal.guardflag`, `reversal.guardflag.not`, inherited HitDef fields,
+dynamic payloads, exact scheduler/hitpause behavior, Helpers, custom states,
+teams, rollback/netplay, renderer work, and full MUGEN/IKEMEN parity. Typecheck,
+full Vitest, trace aggregate, build, and boundary checks remain deliberately
+queued for the next runtime batch.
 
 ## Current implementation board - T288 / Entry 562 (2026-07-18)
 

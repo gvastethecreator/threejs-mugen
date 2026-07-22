@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 566 - root ModifyReversalDef RedirectID
+
+Closed the source-backed root ModifyReversalDef RedirectID cut in `0f30280e`.
+The typed operation admits only caller-evaluated RedirectID and static
+`reversal.attr`. The active root route resolves one verified IKEMEN receiver,
+then mutates its existing reversal in place without rearming it or clearing
+contact state. Missing active reversal, malformed, unsupported, and unknown
+routes fail closed before mutation.
+
+Verification: compiler, reversal dispatch, imported-match, and trace coverage
+passes 7 files / 1050 tests; diff hygiene and `node --check scripts/qa_traces.cjs`
+pass. The required `synthetic-imported-ikemen-root-modifyreversaldef-redirect`
+trace proves receiver-owned counter contact after mutation. TypeScript typecheck,
+complete Vitest, trace aggregate, build, and boundaries remain intentionally
+deferred to the next runtime checkpoint. No score movement. Claim allowed: one
+static root-to-root ModifyReversalDef attr mutation through caller-evaluated
+RedirectID under explicit `ikemen-go`. Claim blocked: guard fields, inherited
+HitDef fields, dynamic payloads, source-exact scheduling/hitpause, Helpers,
+custom states, teams, rollback/netplay, renderer behavior, and full parity. See
+Wayfinder T382.
+
 ## Entry 565 - root ModifyHitDef RedirectID
 
 Closed the source-backed root ModifyHitDef RedirectID cut in `86cf7040`. The
