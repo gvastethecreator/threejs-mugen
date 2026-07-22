@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 564 - root HitDef RedirectID
+
+Closed the source-backed root HitDef RedirectID cut in `fb470c82`. The typed
+HitDef operation retains a valid RedirectID expression. The active side-effect
+route evaluates it in caller context, resolves one verified IKEMEN root, then
+uses receiver source defaults, constants, and current Clsn1 while preserving
+the caller source context. The required trace proves receiver-owned direct
+contact; runtime coverage proves `var(0)` receiver selection and unknown-root
+blocking before mutation.
+
+Verification: compiler, imported-match, and trace coverage passes 3 files /
+996 tests; diff hygiene passes. TypeScript typecheck, complete Vitest, trace
+aggregate, build, and boundaries remain intentionally deferred to the next
+runtime checkpoint. No score movement. Claim allowed: one static root-to-root
+HitDef payload through caller-evaluated RedirectID under explicit `ikemen-go`.
+Claim blocked: dynamic HitDef payloads, ModifyHitDef, source-exact
+reset/finalization and scheduler behavior, hitpause, Helpers, custom states,
+teams, rollback/netplay, renderer behavior, and full parity. See Wayfinder
+T380.
+
 ## Entry 563 - root HitOverride and ReversalDef RedirectID
 
 Closed two source-backed IKEMEN root RedirectID cuts. T378 in `1e28e811`

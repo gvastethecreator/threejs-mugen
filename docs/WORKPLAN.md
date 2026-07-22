@@ -1,19 +1,17 @@
 # Workplan
 
-## Runtime redirect checkpoint - T378/T379 (2026-07-22)
+## Runtime redirect checkpoint - T380 (2026-07-22)
 
-T378 closes in `1e28e811`: root active-controller HitOverride RedirectID now
-resolves one verified IKEMEN root and materializes caller `slot`, `stateno`,
-`time`, boolean, and guard fields before existing hit-defense dispatch. T379
-closes in `d5b8777a`: root static ReversalDef RedirectID now resolves the
-verified destination in its separate side-effect path, activates the
-destination current Clsn1 reversal state, and blocks a redirected dynamic
-payload before mutation. Required imported traces cover the override and
-reversal outcomes. Grouped compiler, hit-defense, imported-match, and trace
-coverage passes 5 files / 1014 tests; diff hygiene passes.
+T380 closes in `fb470c82`: root HitDef RedirectID now preserves a valid caller
+expression, resolves one verified IKEMEN receiver, and activates a static
+caller payload with receiver-owned current Clsn1, constants, source defaults,
+and telemetry. The required imported trace proves receiver-owned direct
+contact; focused runtime coverage proves variable target selection and an
+unknown receiver cannot mutate the destination. Compiler, imported-match, and
+trace coverage passes 3 files / 996 tests; diff hygiene passes.
 
-Keep exact source scheduler and time behavior, dynamic ReversalDef payloads,
-full HitDef/reversal semantics, Helpers/custom states/teams, hitpause,
+Keep dynamic HitDef payload fields, ModifyHitDef, exact source reset,
+finalization, scheduler, and hitpause behavior, Helpers/custom states/teams,
 rollback/netplay, rendering, and full parity outside this lane. The broad
 typecheck, full suite, trace aggregate, build, and boundary checks stay queued
 for the next larger runtime batch; browser smoke is N/A for this runtime-only
