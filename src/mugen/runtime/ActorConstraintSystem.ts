@@ -229,7 +229,10 @@ export class RuntimeActorConstraintWorld {
 
   clampToStage(
     state: RuntimeActorConstraintState,
-    stage: Pick<MugenStageDefinition, "bounds"> & Partial<Pick<MugenStageDefinition, "depthBounds" | "localCoord">>,
+    stage: Pick<MugenStageDefinition, "bounds"> & {
+      depthBounds?: MugenStageDefinition["depthBounds"];
+      localCoord?: Partial<MugenStageDefinition["localCoord"]>;
+    },
     actorLocalCoord?: { width: number } | readonly [number, number],
   ): void {
     if (state.screenBound?.bound !== false) {
