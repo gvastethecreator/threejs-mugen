@@ -203,6 +203,7 @@ export type RuntimeHitOverrideSlot = {
 export type RuntimeReversalDef = {
   attr: string;
   reversalGuardFlag?: string;
+  reversalGuardFlagNot?: string;
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;

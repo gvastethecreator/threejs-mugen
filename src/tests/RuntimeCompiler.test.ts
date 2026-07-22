@@ -1670,7 +1670,7 @@ value = 1
       controller(200, "ModifyReversalDef", [], { pausetime: "6", redirectid: "57" }),
     );
     const unsupportedPayload = compileControllerIr(
-      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", "reversal.guardflag": "MA", redirectid: "57" }),
+      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", "guard.kill": "1", redirectid: "57" }),
     );
     const dynamicPayload = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { pausetime: "var(1),7", redirectid: "57" }),
@@ -1740,15 +1740,22 @@ value = 1
     expect(dynamic.operation).toBeUndefined();
   });
 
-  it("compiles static ReversalDef and root ModifyReversalDef reversal.guardflag values", () => {
+  it("compiles static ReversalDef and root ModifyReversalDef reversal guard filters", () => {
     const reversal = compileControllerIr(
-      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "reversal.guardflag": "m" }),
+      controller(200, "ReversalDef", [], {
+        "reversal.attr": "S,NA",
+        "reversal.guardflag": "m",
+        "reversal.guardflag.not": "a",
+      }),
     );
     const redirected = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.guardflag": "H, A", redirectid: "57" }),
     );
     const dynamic = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.guardflag": "var(1)", redirectid: "57" }),
+    );
+    const dynamicNegative = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.guardflag.not": "var(1)", redirectid: "57" }),
     );
     const unsupported = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.guardflag": "F", redirectid: "57" }),
@@ -1761,6 +1768,7 @@ value = 1
       kind: "reversaldef",
       attr: "S,NA",
       reversalGuardFlag: "M",
+      reversalGuardFlagNot: "A",
     });
     expect(redirected.operation).toEqual({
       kind: "modifyreversaldef",
@@ -1768,8 +1776,13 @@ value = 1
       redirectPlayerIdExpression: "57",
     });
     expect(dynamic.operation).toBeUndefined();
+    expect(dynamicNegative.operation).toBeUndefined();
     expect(unsupported.operation).toBeUndefined();
-    expect(negative.operation).toBeUndefined();
+    expect(negative.operation).toEqual({
+      kind: "modifyreversaldef",
+      reversalGuardFlagNot: "H",
+      redirectPlayerIdExpression: "57",
+    });
   });
 
   it("compiles static damage scale controllers into typed operations", () => {

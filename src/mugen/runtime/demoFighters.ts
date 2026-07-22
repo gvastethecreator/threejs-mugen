@@ -46,6 +46,7 @@ export type DemoMove = {
   isReversal?: boolean;
   reversalAttr?: string;
   reversalGuardFlag?: string;
+  reversalGuardFlagNot?: string;
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;

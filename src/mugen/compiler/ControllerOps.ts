@@ -81,6 +81,7 @@ export type ModifyReversalDefControllerOp = {
   redirectPlayerIdExpression: string;
   reversalAttr?: string;
   reversalGuardFlag?: string;
+  reversalGuardFlagNot?: string;
   hitPause?: number;
   p1StateNo?: number;
   p2StateNo?: number;
@@ -622,6 +623,7 @@ export type ReversalDefControllerOp = {
   kind: "reversaldef";
   attr: string;
   reversalGuardFlag?: string;
+  reversalGuardFlagNot?: string;
   hitPause: number;
   p1StateNo?: number;
   p2StateNo?: number;
@@ -1664,6 +1666,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     return undefined;
   }
   const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
+  const reversalGuardFlagNot = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag.not");
   const hitPause = staticNumberParam(controller, "pausetime", 0);
   const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
   const p2StateNo = staticOptionalNumberParam(controller, "p2stateno");
@@ -1674,6 +1677,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   if (
     hitPause === undefined ||
     reversalGuardFlag === false ||
+    reversalGuardFlagNot === false ||
     p1StateNo === false ||
     p2StateNo === false ||
     targetId === false ||
@@ -1686,6 +1690,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     kind: "reversaldef" as const,
     attr,
     reversalGuardFlag: reversalGuardFlag === true ? undefined : reversalGuardFlag,
+    reversalGuardFlagNot: reversalGuardFlagNot === true ? undefined : reversalGuardFlagNot,
     hitPause: Math.max(0, Math.round(hitPause)),
     p1StateNo: p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo)),
     p2StateNo: p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo)),
@@ -1819,6 +1824,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "redirectid",
     "reversal.attr",
     "reversal.guardflag",
+    "reversal.guardflag.not",
     "pausetime",
     "p1stateno",
     "p2stateno",
@@ -1831,6 +1837,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   }
   const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"))?.trim();
   const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
+  const reversalGuardFlagNot = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag.not");
   const hitPauseRaw = findParam(controller, "pausetime");
   const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
   const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
@@ -1843,6 +1850,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   if (
     reversalAttr === "" ||
     reversalGuardFlag === false ||
+    reversalGuardFlagNot === false ||
     (hitPauseRaw !== undefined && !hitPausePair) ||
     p1StateNo === false ||
     p2StateNo === false ||
@@ -1865,6 +1873,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   if (
     reversalAttr === undefined &&
     reversalGuardFlag === true &&
+    reversalGuardFlagNot === true &&
     hitPause === undefined &&
     normalizedP1StateNo === undefined &&
     normalizedP2StateNo === undefined &&
@@ -1879,6 +1888,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     redirectPlayerIdExpression,
     ...(reversalAttr === undefined ? {} : { reversalAttr }),
     ...(reversalGuardFlag === true ? {} : { reversalGuardFlag }),
+    ...(reversalGuardFlagNot === true ? {} : { reversalGuardFlagNot }),
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
     ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),

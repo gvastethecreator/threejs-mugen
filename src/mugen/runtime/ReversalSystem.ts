@@ -32,6 +32,7 @@ export type RuntimeReversalActor = {
 export type RuntimeReversalActivation = {
   attr: string;
   reversalGuardFlag?: string;
+  reversalGuardFlagNot?: string;
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
@@ -122,6 +123,7 @@ export class RuntimeReversalControllerDispatchWorld {
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
+      reversalGuardFlagNot: operation?.reversalGuardFlagNot,
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
@@ -173,6 +175,10 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation.reversalGuardFlag !== undefined) {
       existing.reversalGuardFlag = operation.reversalGuardFlag;
       runtimeReversal.reversalGuardFlag = operation.reversalGuardFlag;
+    }
+    if (operation.reversalGuardFlagNot !== undefined) {
+      existing.reversalGuardFlagNot = operation.reversalGuardFlagNot;
+      runtimeReversal.reversalGuardFlagNot = operation.reversalGuardFlagNot;
     }
     if (operation.hitPause !== undefined) {
       existing.hitPause = operation.hitPause;
@@ -233,6 +239,7 @@ export class RuntimeReversalWorld {
       isReversal: true,
       reversalAttr: attr,
       reversalGuardFlag: activation.reversalGuardFlag,
+      reversalGuardFlagNot: activation.reversalGuardFlagNot,
       p1StateNo: activation.p1StateNo,
       p2StateNo: activation.p2StateNo,
       hitPause: activation.hitPause,
@@ -248,6 +255,7 @@ export class RuntimeReversalWorld {
       attr,
       hitPause: activation.hitPause,
       ...(activation.reversalGuardFlag === undefined ? {} : { reversalGuardFlag: activation.reversalGuardFlag }),
+      ...(activation.reversalGuardFlagNot === undefined ? {} : { reversalGuardFlagNot: activation.reversalGuardFlagNot }),
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       ...(activation.p1StateNo !== undefined ? { p1StateNo: activation.p1StateNo } : {}),
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
@@ -275,6 +283,13 @@ export class RuntimeReversalWorld {
     if (
       reversal.reversalGuardFlag
       && (incoming.incomingUnguardable || !runtimeGuardFlagOverlaps(reversal.reversalGuardFlag, incomingMove.guardFlag ?? "MA"))
+    ) {
+      return undefined;
+    }
+    if (
+      reversal.reversalGuardFlagNot
+      && !incoming.incomingUnguardable
+      && runtimeGuardFlagOverlaps(reversal.reversalGuardFlagNot, incomingMove.guardFlag ?? "MA")
     ) {
       return undefined;
     }

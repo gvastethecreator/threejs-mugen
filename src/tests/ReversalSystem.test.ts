@@ -211,6 +211,9 @@ describe("ReversalSystem", () => {
     });
     const activeMove = reverser.currentMove;
     const activeReversal = reverser.runtime.reversal;
+    const initialHigh = move({ attr: "S,NA", guardFlag: "H", hitbox: box() });
+
+    expect(reversalWorld.findActive(reverser, initialHigh, initialHigh.hitbox, findHooks())).toBeUndefined();
 
     const result = dispatchWorld.modify({
       actor: reverser,
@@ -234,6 +237,44 @@ describe("ReversalSystem", () => {
     expect(reversalWorld.findActive(reverser, middle, middle.hitbox, findHooks())).toBe(activeMove);
     expect(reversalWorld.findActive(reverser, air, air.hitbox, findHooks())).toBeUndefined();
     expect(reversalWorld.findActive(reverser, high, high.hitbox, findHooks(), { incomingUnguardable: true })).toBeUndefined();
+  });
+
+  it("modifies reversal.guardflag.not in place and bypasses it for unguardable attacks", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser");
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      reversalGuardFlagNot: "H",
+      hitbox: box(),
+      hitPause: 3,
+    });
+    const activeMove = reverser.currentMove;
+    const activeReversal = reverser.runtime.reversal;
+    const initialHigh = move({ attr: "S,NA", guardFlag: "H", hitbox: box() });
+
+    expect(reversalWorld.findActive(reverser, initialHigh, initialHigh.hitbox, findHooks())).toBeUndefined();
+
+    const result = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", { "reversal.guardflag.not": "M", redirectid: "57" })),
+    });
+
+    expect(result).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyreversaldef", reversalGuardFlagNot: "M" },
+    });
+    expect(reverser.currentMove).toBe(activeMove);
+    expect(reverser.runtime.reversal).toBe(activeReversal);
+    expect(reverser.currentMove).toMatchObject({ reversalGuardFlagNot: "M" });
+    expect(reverser.runtime.reversal).toMatchObject({ reversalGuardFlagNot: "M" });
+
+    const high = move({ attr: "S,NA", guardFlag: "H", hitbox: box() });
+    const air = move({ attr: "S,NA", guardFlag: "A", hitbox: box() });
+
+    expect(reversalWorld.findActive(reverser, high, high.hitbox, findHooks())).toBeUndefined();
+    expect(reversalWorld.findActive(reverser, air, air.hitbox, findHooks())).toBe(activeMove);
+    expect(reversalWorld.findActive(reverser, high, high.hitbox, findHooks(), { incomingUnguardable: true })).toBe(activeMove);
   });
 
   it("activates and clears bounded ReversalDef runtime state", () => {
