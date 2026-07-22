@@ -9933,6 +9933,8 @@ type = ModifyReversalDef
 trigger1 = Time = 1
 reversal.attr = S,NA
 pausetime = 7,11
+p1sprpriority = 5
+p2sprpriority = -4
 p1stateno = 778
 id = 92
 attack.depth = 4,8
@@ -9942,7 +9944,16 @@ RedirectID = var(0)
     const destination = createImportedFixture({
       id: "redirected-root-modifyreversaldef-destination",
       withStateMove: false,
-      passiveReversalDef: { attr: "S,SP", p1StateNo: 777, p2StateNo: 779, hitPause: 3, targetId: 91, attackDepth: [1, 2] },
+      passiveReversalDef: {
+        attr: "S,SP",
+        p1StateNo: 777,
+        p2StateNo: 779,
+        hitPause: 3,
+        p1SpritePriority: 4,
+        p2SpritePriority: -3,
+        targetId: 91,
+        attackDepth: [1, 2],
+      },
       passiveReversalTrigger: "Time = 0",
     });
     const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
@@ -9955,6 +9966,8 @@ RedirectID = var(0)
         currentMove?: {
           reversalAttr?: string;
           hitPause?: number;
+          p1SpritePriority?: number;
+          p2SpritePriority?: number;
           p1StateNo?: number;
           p2StateNo?: number;
           targetId?: number;
@@ -9964,6 +9977,8 @@ RedirectID = var(0)
           reversal?: {
             attr?: string;
             hitPause?: number;
+            p1SpritePriority?: number;
+            p2SpritePriority?: number;
             p1StateNo?: number;
             p2StateNo?: number;
             attackDepth?: [number, number];
@@ -9980,6 +9995,8 @@ RedirectID = var(0)
     expect(internals.p2.currentMove).toMatchObject({
       reversalAttr: "S,NA",
       hitPause: 7,
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
       p1StateNo: 778,
       p2StateNo: 779,
       targetId: 92,
@@ -9988,6 +10005,8 @@ RedirectID = var(0)
     expect(internals.p2.runtime.reversal).toMatchObject({
       attr: "S,NA",
       hitPause: 7,
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
       p1StateNo: 778,
       p2StateNo: 779,
       attackDepth: [4, 8],
@@ -10950,6 +10969,8 @@ function createImportedFixture(
       p1StateNo: number;
       p2StateNo?: number;
       hitPause?: number;
+      p1SpritePriority?: number;
+      p2SpritePriority?: number;
       targetId?: number;
       attackDepth?: [number, number?];
     };
@@ -11233,6 +11254,8 @@ reversal.attr = ${options.passiveReversalDef.attr}
 ${options.passiveReversalDef.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${options.passiveReversalDef.reversalGuardFlag}`}
 ${options.passiveReversalDef.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${options.passiveReversalDef.reversalGuardFlagNot}`}
 pausetime = ${options.passiveReversalDef.hitPause ?? 0},${options.passiveReversalDef.hitPause ?? 0}
+${options.passiveReversalDef.p1SpritePriority === undefined ? "" : `p1sprpriority = ${options.passiveReversalDef.p1SpritePriority}`}
+${options.passiveReversalDef.p2SpritePriority === undefined ? "" : `p2sprpriority = ${options.passiveReversalDef.p2SpritePriority}`}
 p1stateno = ${options.passiveReversalDef.p1StateNo}
 ${options.passiveReversalDef.p2StateNo !== undefined ? `p2stateno = ${options.passiveReversalDef.p2StateNo}` : ""}
 ${options.passiveReversalDef.targetId === undefined ? "" : `id = ${options.passiveReversalDef.targetId}`}

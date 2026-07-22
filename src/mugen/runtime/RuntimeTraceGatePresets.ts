@@ -12922,6 +12922,110 @@ export function createSyntheticImportedIkemenRootModifyReversalDefGuardFlagNotRe
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 98;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a prioritized ReversalDef while caller stays out of reach", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects static sprite priorities before counter contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef Sprite Priority Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef Sprite Priority Redirect Receiver",
+    withHitDef: false,
+    hitDefPriorityProfile: "mugen-1.1",
+    passiveReversalDef: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      hitPause: 3,
+      p1SpritePriority: 4,
+      p2SpritePriority: -3,
+      targetId,
+      trigger: "Time = 0",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyReversalDef sprite-priority RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root changes static p1sprpriority and p2sprpriority on one active receiver ReversalDef through RedirectID before counter contact. It records the shared accepted-HitDef priority telemetry on the reverser and incoming attacker. Dynamic values, sprpriority aliases, omitted IKEMEN priority defaults, Helpers, HitOverride arbitration, renderer ordering, teams, source scheduling, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            spritePriority: -4,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p2",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 2,
+            hitDefSpritePrioritySource: "authored",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            spritePriority: 5,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p1",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 1,
+            hitDefSpritePrioritySource: "authored",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49022,6 +49126,8 @@ export type SyntheticImportedTraceFighterOptions = {
     p1StateNo: number;
     p2StateNo?: number;
     hitPause?: number;
+    p1SpritePriority?: number;
+    p2SpritePriority?: number;
     targetId?: number;
     attackDepth?: [number, number?];
     clsn1Extent?: number;
@@ -49499,6 +49605,8 @@ export type SyntheticImportedTraceFighterOptions = {
     reversalGuardFlag?: string;
     reversalGuardFlagNot?: string;
     hitPause?: number;
+    p1SpritePriority?: number;
+    p2SpritePriority?: number;
     p1StateNo?: number;
     p2StateNo?: number;
     p2GetP1State?: boolean;
@@ -51659,6 +51767,8 @@ reversal.attr = ${config.attr}
 ${config.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${config.reversalGuardFlag}`}
 ${config.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${config.reversalGuardFlagNot}`}
 pausetime = ${hitPause},${hitPause}
+${config.p1SpritePriority === undefined ? "" : `p1sprpriority = ${config.p1SpritePriority}`}
+${config.p2SpritePriority === undefined ? "" : `p2sprpriority = ${config.p2SpritePriority}`}
 p1stateno = ${config.p1StateNo}
 ${config.p2StateNo === undefined ? "" : `p2stateno = ${config.p2StateNo}`}
 ${config.targetId === undefined ? "" : `id = ${config.targetId}`}
@@ -56378,6 +56488,8 @@ ${route.attr === undefined ? "" : `reversal.attr = ${route.attr}`}
 ${route.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${route.reversalGuardFlag}`}
 ${route.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${route.reversalGuardFlagNot}`}
 ${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
+${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
+${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}
 ${route.p1StateNo === undefined ? "" : `p1stateno = ${route.p1StateNo}`}
 ${route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}`}
 ${route.p2GetP1State === undefined ? "" : `p2getp1state = ${route.p2GetP1State ? 1 : 0}`}

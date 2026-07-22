@@ -180,6 +180,7 @@ import {
   createSyntheticImportedIkemenRootModifyReversalDefP2OwnerRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefGuardFlagRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefGuardFlagNotRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17885,6 +17886,49 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors).toContainEqual(
       expect.objectContaining({ id: "p2", stateNo: 777, animNo: 777 }),
+    );
+  });
+
+  it("creates a required IKEMEN root ModifyReversalDef sprite-priority RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ReversalDef: 1,
+      ModifyReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      reversaldef: 1,
+      modifyreversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 98 }),
+    );
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          spritePriority: -4,
+          hitDefSpritePriorityRole: "p2",
+          hitDefSpritePrioritySource: "authored",
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          spritePriority: 5,
+          hitDefSpritePriorityRole: "p1",
+          hitDefSpritePrioritySource: "authored",
+        }),
+      ]),
     );
   });
 

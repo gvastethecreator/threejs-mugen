@@ -146,6 +146,63 @@ describe("ReversalSystem", () => {
     expect(recordedOperations).toEqual(["modifyreversaldef"]);
   });
 
+  it("applies static ReversalDef sprite priorities after a ModifyReversalDef mutation", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { spritePriority: 1 });
+    const attacker = actor("p1", "Attacker", { spritePriority: 2, currentMove: move(), currentMoveLabel: "Punch" });
+    reverser.definition = { constants: {}, hitDefPriorityProfile: "mugen-1.1" };
+
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: box(),
+      hitPause: 3,
+      p1SpritePriority: 4,
+      p2SpritePriority: -3,
+    });
+
+    const modified = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        p1sprpriority: "5",
+        p2sprpriority: "-4",
+        redirectid: "57",
+      })),
+    });
+
+    expect(modified).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyreversaldef", p1SpritePriority: 5, p2SpritePriority: -4 },
+    });
+    expect(reverser.currentMove).toMatchObject({ p1SpritePriority: 5, p2SpritePriority: -4 });
+    expect(reverser.runtime.reversal).toMatchObject({ p1SpritePriority: 5, p2SpritePriority: -4 });
+
+    reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks());
+
+    expect(reverser.runtime).toMatchObject({
+      spritePriority: 5,
+      hitDefSpritePriority: {
+        profile: "mugen-1.1",
+        role: "p1",
+        contactKind: "hit",
+        previousValue: 1,
+        source: "authored",
+        supported: true,
+      },
+    });
+    expect(attacker.runtime).toMatchObject({
+      spritePriority: -4,
+      hitDefSpritePriority: {
+        profile: "mugen-1.1",
+        role: "p2",
+        contactKind: "hit",
+        previousValue: 2,
+        source: "authored",
+        supported: true,
+      },
+    });
+  });
+
   it("blocks ModifyReversalDef without an active reversal or typed operation", () => {
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
     const fighter = actor("p1", "Reverser");

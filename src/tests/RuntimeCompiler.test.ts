@@ -1785,6 +1785,44 @@ value = 1
     });
   });
 
+  it("compiles static ReversalDef and root ModifyReversalDef sprite priorities", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], {
+        "reversal.attr": "S,NA",
+        p1sprpriority: "4",
+        p2sprpriority: "-3",
+      }),
+    );
+    const redirected = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], {
+        p1sprpriority: "5",
+        p2sprpriority: "-4",
+        redirectid: "57",
+      }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p1sprpriority: "var(1)", redirectid: "57" }),
+    );
+    const dynamicNegative = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2sprpriority: "fvar(1)", redirectid: "57" }),
+    );
+
+    expect(reversal.operation).toMatchObject({
+      kind: "reversaldef",
+      attr: "S,NA",
+      p1SpritePriority: 4,
+      p2SpritePriority: -3,
+    });
+    expect(redirected.operation).toEqual({
+      kind: "modifyreversaldef",
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamic.operation).toBeUndefined();
+    expect(dynamicNegative.operation).toBeUndefined();
+  });
+
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
     const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));

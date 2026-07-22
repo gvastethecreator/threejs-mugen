@@ -7,6 +7,7 @@ import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
 import { runtimeGuardFlagOverlaps } from "./CombatResolver";
+import { applyRuntimeHitDefSpritePriorityContact } from "./HitDefSpritePrioritySystem";
 import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -15,7 +16,7 @@ import type { CharacterRuntimeState } from "./types";
 export type RuntimeReversalActor = {
   id: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "constants">;
+  definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile">;
   runtime: CharacterRuntimeState;
   currentMove?: DemoMove;
   currentMoveLabel?: string;
@@ -36,6 +37,8 @@ export type RuntimeReversalActivation = {
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
+  p1SpritePriority?: number;
+  p2SpritePriority?: number;
   p1StateNo?: number;
   p2StateNo?: number;
   targetId?: number;
@@ -127,6 +130,8 @@ export class RuntimeReversalControllerDispatchWorld {
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
+      p1SpritePriority: operation?.p1SpritePriority,
+      p2SpritePriority: operation?.p2SpritePriority,
       p1StateNo: operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno")),
       p2StateNo: operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno")),
       targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
@@ -184,6 +189,14 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.hitPause = operation.hitPause;
       runtimeReversal.hitPause = operation.hitPause;
     }
+    if (operation.p1SpritePriority !== undefined) {
+      existing.p1SpritePriority = operation.p1SpritePriority;
+      runtimeReversal.p1SpritePriority = operation.p1SpritePriority;
+    }
+    if (operation.p2SpritePriority !== undefined) {
+      existing.p2SpritePriority = operation.p2SpritePriority;
+      runtimeReversal.p2SpritePriority = operation.p2SpritePriority;
+    }
     if (operation.p1StateNo !== undefined) {
       existing.p1StateNo = operation.p1StateNo;
       runtimeReversal.p1StateNo = operation.p1StateNo;
@@ -240,6 +253,8 @@ export class RuntimeReversalWorld {
       reversalAttr: attr,
       reversalGuardFlag: activation.reversalGuardFlag,
       reversalGuardFlagNot: activation.reversalGuardFlagNot,
+      p1SpritePriority: activation.p1SpritePriority,
+      p2SpritePriority: activation.p2SpritePriority,
       p1StateNo: activation.p1StateNo,
       p2StateNo: activation.p2StateNo,
       hitPause: activation.hitPause,
@@ -256,6 +271,8 @@ export class RuntimeReversalWorld {
       hitPause: activation.hitPause,
       ...(activation.reversalGuardFlag === undefined ? {} : { reversalGuardFlag: activation.reversalGuardFlag }),
       ...(activation.reversalGuardFlagNot === undefined ? {} : { reversalGuardFlagNot: activation.reversalGuardFlagNot }),
+      ...(activation.p1SpritePriority === undefined ? {} : { p1SpritePriority: activation.p1SpritePriority }),
+      ...(activation.p2SpritePriority === undefined ? {} : { p2SpritePriority: activation.p2SpritePriority }),
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       ...(activation.p1StateNo !== undefined ? { p1StateNo: activation.p1StateNo } : {}),
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
@@ -330,6 +347,13 @@ export class RuntimeReversalWorld {
     if (p2StateNo !== undefined) {
       hooks.enterTargetHitState(attacker, reverser, p2StateNo, reversal.p2GetP1State ?? true);
     }
+    applyRuntimeHitDefSpritePriorityContact(
+      reverser,
+      attacker,
+      reversal,
+      "hit",
+      reverser.definition.hitDefPriorityProfile ?? "unknown",
+    );
 
     const p1 = p1StateNo !== undefined ? ` p1->${p1StateNo}` : "";
     const p2 = p2StateNo !== undefined ? ` p2->${p2StateNo}` : "";

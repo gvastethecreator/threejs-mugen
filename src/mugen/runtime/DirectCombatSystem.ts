@@ -8,11 +8,8 @@ import {
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
-import {
-  resolveRuntimeHitDefSpritePriorities,
-  type RuntimeHitDefPriorityProfile,
-  type RuntimeResolvedHitDefSpritePriority,
-} from "./HitDefPriorityPolicy";
+import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
+import { applyRuntimeHitDefSpritePriorityContact } from "./HitDefSpritePrioritySystem";
 import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
@@ -282,49 +279,6 @@ export class RuntimeDirectCombatWorld {
 
 function priorityTypeLabel(type: NonNullable<DemoMove["priorityType"]>): "Hit" | "Miss" | "Dodge" {
   return type === "hit" ? "Hit" : type === "miss" ? "Miss" : "Dodge";
-}
-
-function applyRuntimeHitDefSpritePriorityContact<TActor extends RuntimeDirectCombatActor>(
-  attacker: TActor,
-  defender: TActor,
-  move: DemoMove,
-  contactKind: RuntimeCombatHitResult["kind"],
-  profile: RuntimeHitDefPriorityProfile,
-): void {
-  const priorities = resolveRuntimeHitDefSpritePriorities({
-    profile,
-    authored: {
-      p1: move.p1SpritePriority,
-      p2: move.p2SpritePriority,
-    },
-    current: {
-      p1: attacker.runtime.spritePriority ?? 0,
-      p2: defender.runtime.spritePriority ?? 0,
-    },
-  });
-  applyResolvedSpritePriority(attacker.runtime, profile, "p1", contactKind, priorities.p1);
-  applyResolvedSpritePriority(defender.runtime, profile, "p2", contactKind, priorities.p2);
-}
-
-function applyResolvedSpritePriority(
-  runtime: CharacterRuntimeState,
-  profile: RuntimeHitDefPriorityProfile,
-  role: "p1" | "p2",
-  contactKind: RuntimeCombatHitResult["kind"],
-  resolved: RuntimeResolvedHitDefSpritePriority,
-): void {
-  if (resolved.source === "preserve-current" && runtime.spritePriority === undefined) {
-    return;
-  }
-  const previousValue = runtime.spritePriority;
-  runtime.spritePriority = resolved.value;
-  runtime.hitDefSpritePriority = {
-    profile,
-    role,
-    contactKind,
-    ...(previousValue !== undefined ? { previousValue } : {}),
-    ...resolved,
-  };
 }
 
 function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<RuntimeDirectPriorityHooks, "isMoveActive">): DemoMove | undefined {
