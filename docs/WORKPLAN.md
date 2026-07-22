@@ -1,5 +1,22 @@
 # Workplan
 
+## Runtime constraint checkpoint - T373 (2026-07-22)
+
+T373 closes in `9ff8cf90`. Root active-controller ScreenBound RedirectID now
+materializes dynamic caller-owned `value`, `movecamera`, and `stagebound`
+before it writes a verified root target. A later target receives the policy
+after its one-frame bounds reset. Focused compiler, bounds, Helper, imported
+match, and trace coverage passes 5 files / 1036 tests. Diff hygiene passes.
+The broad typecheck, full suite, trace aggregate, build, and boundary checks
+remain deliberately queued for the next larger runtime batch; browser smoke is
+N/A for this runtime-only slice.
+
+Keep helper scheduling breadth, exact screen/stage and camera behavior,
+CharList ordering, hitpause/reset parity, nested ownership, renderer/upstream
+differentials, rollback/netplay, and full parity outside this bounded lane. The
+next source-backed audit should examine root PosFreeze RedirectID caller
+evaluation and target reset order.
+
 ## Runtime constraint checkpoint - T371/T372 (2026-07-22)
 
 T371 and T372 close in `54c1e980` and `3f5f4a5`. Current first-generation

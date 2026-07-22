@@ -619,3 +619,12 @@ one-frame reset; later Helper targets restore the incoming enabled, priority,
 and team policy through their reset. Exact CharList ordering, hitpause/reset
 parity, collision and corner geometry, nested ownership, renderer proof, and
 full parity remain unsupported.
+
+Root ScreenBound RedirectID addendum: ScreenBound is executed-partial for
+current roots under the explicit IKEMEN profile. Static and dynamic `value`,
+`movecamera`, and `stagebound` materialize in the caller before a verified
+root destination write. A later root receives the policy after its one-frame
+bounds reset, while required trace evidence records destination screen/camera
+flags and `bounds:screenbound`. Helper scheduling breadth, exact screen/stage
+and camera behavior, CharList order, hitpause/reset parity, nested ownership,
+renderer proof, and full parity remain unsupported.

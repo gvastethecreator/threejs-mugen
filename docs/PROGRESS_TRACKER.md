@@ -1,5 +1,25 @@
 ﻿# Progress Tracker
 
+## Runtime constraint report - T373 (2026-07-22)
+
+- Runtime feature commit: `9ff8cf90`. This focused checkpoint does not replace
+  the separate FightScreen or Studio frontiers.
+- Root ScreenBound RedirectID now materializes caller-owned dynamic `value`,
+  `movecamera`, and `stagebound` before a verified destination write. A later
+  root receives the policy after its one-frame bounds reset.
+- Gates: focused bounds, compiler, Helper, imported match, and trace coverage
+  passes 5 files / 1036 tests. Diff hygiene passes. TypeScript, complete
+  Vitest, trace aggregate, build, and boundary checks remain queued for the
+  larger runtime checkpoint selected by the user.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current root ScreenBound RedirectID with caller bounds policy
+  under current actor order. Exact screen/stage and camera behavior, CharList
+  order, hitpause/reset parity, nested ownership, renderer/upstream
+  differentials, rollback/netplay, and full parity remain open.
+- Next constraint frontier: audit root PosFreeze RedirectID caller evaluation
+  and reset order before a broader grouped verification checkpoint.
+
 ## Runtime constraint report - T371/T372 (2026-07-22)
 
 - Runtime lane commits: `54c1e980` and `3f5f4a5`. This focused checkpoint does
