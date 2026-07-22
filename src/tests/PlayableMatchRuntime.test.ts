@@ -9356,6 +9356,45 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked Height RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN Helper ScreenBound RedirectID to a root with caller values", () => {
+    const caller = {
+      ...createImportedFixture({
+        withStateMove: false,
+        withHelper: true,
+        helperStateControllers: `
+[State 1200, Redirected ScreenBound value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 0
+
+[State 1200, Redirected ScreenBound]
+type = ScreenBound
+trigger1 = Time = 0
+value = var(0)
+movecamera = 1,1
+stagebound = 0
+RedirectID = 57
+`,
+      }),
+    };
+    const destination = createImportedFixture({ id: "redirected-helper-screenbound-destination", withStateMove: false });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(effectActorWorld.helpers("p1")[0]?.screenBound).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.screenBound).toEqual({ bound: false, moveCameraX: true, moveCameraY: true });
+    expect(snapshot.actors[1]?.runtime.stageBound).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ScreenBound).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["bounds:screenbound"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked ScreenBound RedirectID"))).toBe(false);
+  });
+
   it("runs IKEMEN Helper Depth locally and redirects a scaled depth pair to a root", () => {
     const caller = {
       ...createImportedFixture({

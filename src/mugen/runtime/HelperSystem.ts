@@ -44,6 +44,7 @@ import {
   type RuntimeHeightResolver,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
+import { resolveRuntimeScreenBoundControllerOperation } from "./BoundsControllerSystem";
 import {
   resolveRuntimeCollisionTransformControllerOperation,
   RuntimeCollisionTransformWorld,
@@ -138,6 +139,8 @@ export type RuntimeHelper = {
   bodyWidthDelta?: { front: number; back: number };
   edgeWidth?: { front: number; back: number };
   bodyHeightDelta?: { top: number; bottom: number };
+  screenBound?: CharacterRuntimeState["screenBound"];
+  stageBound?: CharacterRuntimeState["stageBound"];
   playerPush?: boolean;
   pushPriority?: number;
   pushAffectTeam?: -1 | 0 | 1;
@@ -476,6 +479,7 @@ export function advanceRuntimeHelperActor(
 ): boolean {
   helperCollisionTransformWorld.resetFrame(helper);
   helperCollisionOverrideWorld.resetFrame(helper);
+  helperActorConstraintWorld.resetFrameBoundsConstraints(helper);
   helperActorConstraintWorld.resetFrameSizeConstraints(helper, helper.baseBodyWidth);
   helperActorConstraintWorld.resetFrameDepthConstraints(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
@@ -510,8 +514,12 @@ export function advanceRuntimeHelperActor(
   if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
     return false;
   }
+  if (helper.screenBound?.bound === true) {
+    helperActorConstraintWorld.clampToStage(helper, stage, helper.localCoord);
+  } else {
+    helperActorConstraintWorld.clampWidthEdgeToStage(helper, stage);
+  }
   helperActorConstraintWorld.clampBodyPushDepthToStage(helper, stage, helper.localCoord);
-  helperActorConstraintWorld.clampWidthEdgeToStage(helper, stage);
   if (helper.combatDepth) helper.pos.z = helper.combatDepth.position;
   return (
     helper.pos.x >= stage.bounds.left - margin &&
@@ -1146,6 +1154,7 @@ const helperRuntimeControllers = new Set([
   "posadd",
   "gravity",
   "ctrlset",
+  "screenbound",
   "playerpush",
   "lifeadd",
   "lifeset",
@@ -1812,6 +1821,12 @@ function resolveHelperResourceController(
       : resolveRuntimeCollisionTransformControllerOperation(controller, helperRuntimeState(helper), context);
     return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
   }
+  if (controller.normalizedType === "screenbound") {
+    const operation = controller.operation?.kind === "bounds" && controller.operation.controllerType === "screenbound"
+      ? controller.operation
+      : resolveRuntimeScreenBoundControllerOperation(controller, helperRuntimeState(helper), context);
+    return operation ? (controller.operation === operation ? controller : { ...controller, operation }) : undefined;
+  }
   const operation = controller.operation?.kind === "resource"
     ? controller.operation
     : resolveRuntimeResourceControllerOperation(controller, helperRuntimeState(helper), context);
@@ -2199,6 +2214,8 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     ...(helper.bodyWidthDelta === undefined ? {} : { bodyWidthDelta: { ...helper.bodyWidthDelta } }),
     ...(helper.edgeWidth === undefined ? {} : { edgeWidth: { ...helper.edgeWidth } }),
     ...(helper.bodyHeightDelta === undefined ? {} : { bodyHeightDelta: { ...helper.bodyHeightDelta } }),
+    ...(helper.screenBound === undefined ? {} : { screenBound: { ...helper.screenBound } }),
+    ...(helper.stageBound === undefined ? {} : { stageBound: helper.stageBound }),
     ...(helper.playerPush === undefined ? {} : { playerPush: helper.playerPush }),
     ...(helper.pushPriority === undefined ? {} : { pushPriority: helper.pushPriority }),
     ...(helper.pushAffectTeam === undefined ? {} : { pushAffectTeam: helper.pushAffectTeam }),
@@ -2288,6 +2305,8 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.bodyWidthDelta = runtime.bodyWidthDelta ? { ...runtime.bodyWidthDelta } : undefined;
   helper.edgeWidth = runtime.edgeWidth ? { ...runtime.edgeWidth } : undefined;
   helper.bodyHeightDelta = runtime.bodyHeightDelta ? { ...runtime.bodyHeightDelta } : undefined;
+  helper.screenBound = runtime.screenBound ? { ...runtime.screenBound } : undefined;
+  helper.stageBound = runtime.stageBound;
   helper.playerPush = runtime.playerPush;
   helper.pushPriority = runtime.pushPriority;
   helper.pushAffectTeam = runtime.pushAffectTeam;

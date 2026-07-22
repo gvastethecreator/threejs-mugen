@@ -50,9 +50,7 @@ export class RuntimeActorConstraintWorld {
     state.playerPush = true;
     state.pushPriority = 0;
     state.pushAffectTeam = 1;
-    state.posFreeze = undefined;
-    state.screenBound = undefined;
-    state.stageBound = undefined;
+    this.resetFrameBoundsConstraints(state);
     this.resetFrameSizeConstraints(state, { front: 39, back: 39 });
     state.clsnOverrides = undefined;
     state.clsnScaleMultiplier = undefined;
@@ -66,6 +64,12 @@ export class RuntimeActorConstraintWorld {
       state.combatDepth.baseSize = undefined;
     }
     if (state.combatDepth) state.combatDepth.edge = undefined;
+  }
+
+  resetFrameBoundsConstraints(state: RuntimeActorConstraintState): void {
+    state.posFreeze = undefined;
+    state.screenBound = undefined;
+    state.stageBound = undefined;
   }
 
   resetFrameSizeConstraints(

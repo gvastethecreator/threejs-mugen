@@ -466,6 +466,137 @@ describe("HelperSystem", () => {
     expect(actor.edgeWidth).toBeUndefined();
   });
 
+  it("applies dynamic Helper ScreenBound state, projects current bounds, snapshots it, and resets next frame", () => {
+    const screenBound = compiledControllerIr(6000, "ScreenBound", ["Time = 0"], {
+      value: "var(0)",
+      movecamera: "var(1),var(2)",
+      stagebound: "var(3)",
+    });
+    const actor = helper({
+      pos: { x: 80, y: 0, z: 100 },
+      combatDepth: { position: 100, velocity: 0, size: [3, 4], attack: [4, 4] },
+      vars: [1, 1, 0, 0],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [screenBound])] },
+    });
+    const operations: string[] = [];
+    const boundedStage = {
+      bounds: { left: -40, right: 40 },
+      depthBounds: { top: -10, bottom: 10 },
+    };
+
+    advanceRuntimeHelpers([actor], boundedStage, {
+      runtimeProfile: "ikemen-go",
+      onOperation: (_helper, operation) => {
+        if (operation.kind === "bounds" && operation.controllerType === "screenbound") {
+          operations.push(
+            String(operation.bound) +
+              ":" +
+              String(operation.moveCameraX) +
+              ":" +
+              String(operation.moveCameraY) +
+              ":" +
+              String(operation.stageBound),
+          );
+        }
+      },
+    });
+
+    expect(actor.pos.x).toBe(40);
+    expect(actor.combatDepth?.position).toBe(100);
+    expect(actor.screenBound).toEqual({ bound: true, moveCameraX: true, moveCameraY: false });
+    expect(actor.stageBound).toBe(false);
+    expect(operations).toEqual(["true:true:false:false"]);
+    const [snapshot] = runtimeHelpersToSnapshots([actor], 6000);
+    expect(snapshot?.runtime.screenBound).toEqual({ bound: true, moveCameraX: true, moveCameraY: false });
+    expect(snapshot?.runtime.stageBound).toBe(false);
+
+    advanceRuntimeHelpers([actor], boundedStage, { runtimeProfile: "ikemen-go" });
+
+    expect(actor.screenBound).toBeUndefined();
+    expect(actor.stageBound).toBeUndefined();
+    expect(actor.combatDepth?.position).toBe(10);
+  });
+
+  it("routes Helper ScreenBound RedirectID through a verified destination with caller values", () => {
+    const screenBound = compiledControllerIr(6000, "ScreenBound", ["Time = 0"], {
+      value: "var(0)",
+      movecamera: "var(1),var(2)",
+      stagebound: "var(3)",
+      redirectid: "57",
+    });
+    const destinationHelper = helper({ serialId: "p2-helper-screenbound-destination" });
+    const destinationActor = runtimeHelperTargetActor(destinationHelper);
+    const caller = helper({
+      serialId: "p1-helper-screenbound-caller",
+      vars: [0, 1, 1, 0],
+      runtimeProgram: { states: [stateProgram(stateDef(6000), [screenBound])] },
+    });
+    const committed: string[] = [];
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([caller], stage, {
+      runtimeProfile: "ikemen-go",
+      resolveResourceRedirect: (_helper, playerId) =>
+        playerId === 57
+          ? {
+              actor: destinationActor,
+              candidateTargets: [],
+              commitActor: (target) => {
+                committed.push(target.id);
+                applyRuntimeStateToHelper(destinationHelper, target.runtime);
+                syncRuntimeHelperTargetActor(destinationHelper, target);
+              },
+            }
+          : undefined,
+      onRedirectedOperation: (_helper, target, operation) => {
+        if (operation.kind === "bounds" && operation.controllerType === "screenbound") {
+          operations.push(
+            target.id +
+              ":" +
+              String(operation.bound) +
+              ":" +
+              String(operation.moveCameraX) +
+              ":" +
+              String(operation.moveCameraY) +
+              ":" +
+              String(operation.stageBound),
+          );
+        }
+      },
+    });
+
+    expect(caller.screenBound).toBeUndefined();
+    expect(caller.stageBound).toBeUndefined();
+    expect(destinationHelper.screenBound).toEqual({ bound: false, moveCameraX: true, moveCameraY: true });
+    expect(destinationHelper.stageBound).toBe(false);
+    expect(committed).toEqual(["p2-helper-screenbound-destination"]);
+    expect(operations).toEqual(["p2-helper-screenbound-destination:false:true:true:false"]);
+
+    const invalid = helper({
+      runtimeProgram: {
+        states: [
+          stateProgram(
+            stateDef(6000),
+            [
+              compiledControllerIr(6000, "ScreenBound", ["Time = 0"], {
+                value: "1",
+                redirectid: "999",
+              }),
+            ],
+          ),
+        ],
+      },
+    });
+    const unsupported: string[] = [];
+    advanceRuntimeHelpers([invalid], stage, {
+      runtimeProfile: "ikemen-go",
+      onUnsupportedController: (_helper, controller) => unsupported.push(controller.type),
+    });
+
+    expect(invalid.screenBound).toBeUndefined();
+    expect(unsupported).toEqual(["ScreenBound"]);
+  });
+
   it("routes Helper Width and Height RedirectID through destination state with localcoord scale", () => {
     const width = compiledControllerIr(6000, "Width", ["Time = 0"], {
       value: "var(0), var(1)",
