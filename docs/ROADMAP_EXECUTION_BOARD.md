@@ -1,5 +1,22 @@
 ﻿# Roadmap Execution Board
 
+## Current runtime compatibility board - T378/T379 (2026-07-22)
+
+T378 closes root `HitOverride RedirectID` in `1e28e811`; it resolves one
+verified IKEMEN root and materializes the bounded dynamic caller payload before
+receiver slot dispatch. T379 closes root static `ReversalDef RedirectID` in
+`d5b8777a`; the separate side-effect dispatcher resolves the target, uses its
+current Clsn1 box, and blocks redirected dynamic payloads before mutation.
+The grouped focal gate passes 5 files / 1014 tests. Scores stay unchanged.
+
+Allowed claim: current root-to-root HitOverride RedirectID with caller dynamic
+slot/state/time/boolean/guard values, plus static ReversalDef RedirectID with
+receiver-owned reversal activation. Blocked: exact source scheduling and time
+corners, dynamic ReversalDef fields, full HitDef/reversal semantics, Helpers,
+custom states, teams, hitpause, rollback/netplay, renderer work, and full
+MUGEN/IKEMEN parity. Typecheck, full Vitest, trace aggregate, build, and
+boundary checks remain deliberately queued for the next runtime batch.
+
 ## Current implementation board - T288 / Entry 562 (2026-07-18)
 
 T288 closes the bounded imported FightScreen character-reset path in

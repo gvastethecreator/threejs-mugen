@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## Entry 563 - root HitOverride and ReversalDef RedirectID
+
+Closed two source-backed IKEMEN root RedirectID cuts. T378 in `1e28e811`
+extends the typed HitOverride operation and generic active-controller route so
+one verified root receives caller-materialized dynamic slot, state, time,
+boolean, and guard values. Its required trace proves receiver slot `2` routes
+a matching direct HitDef through the override state. T379 in `d5b8777a`
+extends the static ReversalDef operation and dedicated side-effect route so one
+verified root owns reversal activation through its current Clsn1 box; a
+redirected controller without a static typed operation blocks before target
+mutation. Its required trace proves the receiver reverses the matching root
+HitDef.
+
+Verification: grouped compiler, hit-defense, imported-match, and trace tests
+pass 5 files / 1014 tests; diff hygiene passes. TypeScript typecheck, complete
+Vitest, trace aggregate, build, and boundaries remain intentionally deferred to
+the next runtime checkpoint. No score movement. Claim allowed: one explicit
+`ikemen-go` root-to-root HitOverride redirect with bounded caller evaluation,
+and one static root-to-root ReversalDef redirect with receiver-owned reversal
+activation. Claim blocked: source-exact scheduling/time behavior, dynamic
+ReversalDef fields, full HitDef/reversal parameter breadth, Helpers, custom
+states, teams, hitpause, rollback/netplay, renderer behavior, and full parity.
+See Wayfinder T378 and T379.
+
 ## Entry 562 - bounded FightScreen intro-skip character reset
 
 Closed the source-backed actor-reset continuation after T287 in `a12a2672`.

@@ -1,5 +1,25 @@
 # Workplan
 
+## Runtime redirect checkpoint - T378/T379 (2026-07-22)
+
+T378 closes in `1e28e811`: root active-controller HitOverride RedirectID now
+resolves one verified IKEMEN root and materializes caller `slot`, `stateno`,
+`time`, boolean, and guard fields before existing hit-defense dispatch. T379
+closes in `d5b8777a`: root static ReversalDef RedirectID now resolves the
+verified destination in its separate side-effect path, activates the
+destination current Clsn1 reversal state, and blocks a redirected dynamic
+payload before mutation. Required imported traces cover the override and
+reversal outcomes. Grouped compiler, hit-defense, imported-match, and trace
+coverage passes 5 files / 1014 tests; diff hygiene passes.
+
+Keep exact source scheduler and time behavior, dynamic ReversalDef payloads,
+full HitDef/reversal semantics, Helpers/custom states/teams, hitpause,
+rollback/netplay, rendering, and full parity outside this lane. The broad
+typecheck, full suite, trace aggregate, build, and boundary checks stay queued
+for the next larger runtime batch; browser smoke is N/A for this runtime-only
+checkpoint. Audit the next source-backed root RedirectID family before that
+batch.
+
 ## Runtime hit-eligibility checkpoint - T377 (2026-07-22)
 
 T377 closes in `37ab9baf`. Root active-controller legacy HitBy/NotHitBy
