@@ -380,6 +380,7 @@ export type BoundsControllerOp =
       controllerType: "posfreeze";
       x: boolean;
       y: boolean;
+      z?: boolean;
       redirectPlayerIdExpression?: string;
     }
   | {

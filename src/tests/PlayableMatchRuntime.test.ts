@@ -9374,6 +9374,114 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked ScreenBound RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root PosFreeze RedirectID with caller dynamic policy after target reset", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected PosFreeze value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 1
+
+[State 0, Redirected PosFreeze]
+type = PosFreeze
+trigger1 = Time = 0
+value = var(0)
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-posfreeze-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Destination PosFreeze value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 0
+`,
+    });
+    const farStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -180, y: 0, facing: 1 as const },
+        p2: { x: 180, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, farStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime.posFreeze).toEqual({ x: true, y: true, z: true });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.PosFreeze).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["bounds:posfreeze"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked PosFreeze RedirectID"))).toBe(false);
+  });
+
+  it("routes IKEMEN root TransformClsn RedirectID with caller dynamic values after target reset", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected TransformClsn scale]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 2
+
+[State 0, Redirected TransformClsn angle]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 30
+
+[State 0, Redirected TransformClsn]
+type = TransformClsn
+trigger1 = Time = 0
+scale = var(0),var(0)
+angle = var(1)
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-transformclsn-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Destination TransformClsn scale]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 0
+
+[State 0, Destination TransformClsn angle]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 0
+`,
+    });
+    const farStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -180, y: 0, facing: 1 as const },
+        p2: { x: 180, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, farStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime.clsnScaleMultiplier).toEqual({ x: 2, y: 2 });
+    expect(snapshot.actors[1]?.runtime.clsnAngle).toBe(30);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TransformClsn).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["collision-transform"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked TransformClsn RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({

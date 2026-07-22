@@ -1516,6 +1516,16 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-posfreeze-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootPosFreezeRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-root-transformclsn-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-helper-self-tag",
       required: true,
       artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),

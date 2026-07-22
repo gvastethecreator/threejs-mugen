@@ -11960,6 +11960,138 @@ export function createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenRootPosFreezeRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "redirect dynamic root PosFreeze to P2", p1: ["x"], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-posfreeze-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root PosFreeze Redirect Caller",
+    withHitDef: false,
+    rootPosFreezeRedirectRoute: {
+      redirectId: 57,
+      value: "var(0)",
+      vars: [{ index: 0, value: 1 }],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-posfreeze-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root PosFreeze Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-posfreeze-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-posfreeze-redirect-golden",
+      label: "Synthetic imported IKEMEN root PosFreeze RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root materializes dynamic PosFreeze value in caller context, defers a later-root RedirectID write through bounds reset, and exposes destination freeze state. Exact corner push, CharList scheduling, hitpause, Helpers, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-posfreeze-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "PosFreeze"],
+        requiredExecutedOperations: ["variable:varset", "bounds:posfreeze"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            posFreezeX: true,
+            posFreezeY: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "redirect dynamic root TransformClsn to P2", p1: ["x"], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-transformclsn-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root TransformClsn Redirect Caller",
+    withHitDef: false,
+    rootTransformClsnRedirectRoute: {
+      redirectId: 57,
+      scale: ["var(0)", "var(0)"],
+      angle: "var(1)",
+      vars: [
+        { index: 0, value: 2 },
+        { index: 1, value: 30 },
+      ],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-transformclsn-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root TransformClsn Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-transformclsn-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-transformclsn-redirect-golden",
+      label: "Synthetic imported IKEMEN root TransformClsn RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root materializes dynamic TransformClsn scale and angle in caller context, defers a later-root RedirectID write through collision reset, and exposes destination collision-transform state. Exact collision geometry, CharList scheduling, hitpause, Helpers, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-transformclsn-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "TransformClsn"],
+        requiredExecutedOperations: ["variable:varset", "collision-transform"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            observedCollisionScaleXAtLeast: 2,
+            observedCollisionScaleXAtMost: 2,
+            observedCollisionScaleYAtLeast: 2,
+            observedCollisionScaleYAtMost: 2,
+            observedCollisionAngleAtLeast: 30,
+            observedCollisionAngleAtMost: 30,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48929,6 +49061,12 @@ export type SyntheticImportedTraceFighterOptions = {
     angle?: SyntheticNumberExpression;
     redirectId?: SyntheticNumberExpression;
   };
+  rootTransformClsnRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    scale?: SyntheticPairExpression;
+    angle?: SyntheticNumberExpression;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withDynamicStateTypeSet?: {
     stateType?: string;
@@ -48953,6 +49091,11 @@ export type SyntheticImportedTraceFighterOptions = {
     value?: SyntheticNumberExpression;
     moveCamera?: [SyntheticNumberExpression, SyntheticNumberExpression];
     stageBound?: SyntheticNumberExpression;
+    vars?: Array<{ index: number; value: number }>;
+  };
+  rootPosFreezeRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    value?: SyntheticNumberExpression;
     vars?: Array<{ index: number; value: number }>;
   };
   withDynamicPosFreeze?: {
@@ -49356,12 +49499,14 @@ ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bott
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
 ${options.withTransformClsn === undefined ? "" : transformClsnControllerBlock(options.withTransformClsn)}
+${options.rootTransformClsnRedirectRoute ? rootTransformClsnRedirectControllerBlock(options.rootTransformClsnRedirectRoute) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.rootPlayerPushRedirectRoute ? rootPlayerPushRedirectControllerBlock(options.rootPlayerPushRedirectRoute) : ""}
 ${options.rootScreenBoundRedirectRoute ? rootScreenBoundRedirectControllerBlock(options.rootScreenBoundRedirectRoute) : ""}
+${options.rootPosFreezeRedirectRoute ? rootPosFreezeRedirectControllerBlock(options.rootPosFreezeRedirectRoute) : ""}
 ${options.withDynamicPosFreeze === undefined ? "" : dynamicPosFreezeControllerBlock(options.withDynamicPosFreeze)}
 ${options.withDynamicScreenBound === undefined ? "" : dynamicScreenBoundControllerBlock(options.withDynamicScreenBound)}
 ${options.withTurn ? turnControllerBlock() : ""}
@@ -50839,6 +50984,32 @@ ${redirectIdLine}
 `;
 }
 
+function rootTransformClsnRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootTransformClsnRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root TransformClsn Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  const scaleLine = route.scale === undefined ? "" : `scale = ${route.scale.join(",")}`;
+  const angleLine = route.angle === undefined ? "" : `angle = ${route.angle}`;
+  return `${vars}
+[State 200, Root TransformClsn Redirect]
+type = TransformClsn
+trigger1 = Time = 0
+${scaleLine}
+${angleLine}
+redirectid = ${route.redirectId}
+`;
+}
+
 function dynamicWidthControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicWidth"]>): string {
   const varSeeds =
     options.vars
@@ -51152,6 +51323,29 @@ trigger1 = Time = 0
 value = ${route.value ?? 0}
 movecamera = ${route.moveCamera?.join(",") ?? "0,0"}
 stagebound = ${route.stageBound ?? 1}
+redirectid = ${route.redirectId}
+`;
+}
+
+function rootPosFreezeRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootPosFreezeRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root PosFreeze Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  return `${vars}
+[State 200, Root PosFreeze Redirect]
+type = PosFreeze
+trigger1 = Time = 0
+value = ${route.value ?? 1}
 redirectid = ${route.redirectId}
 `;
 }

@@ -35,6 +35,7 @@ import {
   RuntimeAudioWorld,
 } from "./AudioEventSystem";
 import {
+  resolveRuntimePosFreezeControllerOperation,
   resolveRuntimePlayerPushControllerOperation,
   resolveRuntimeScreenBoundControllerOperation,
 } from "./BoundsControllerSystem";
@@ -113,7 +114,11 @@ import {
   type RuntimeMatchTickPhaseId,
 } from "./RuntimeMatchTickScheduleSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
-import { scaleRuntimeCollisionBoxes, type RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
+import {
+  resolveRuntimeCollisionTransformControllerOperation,
+  scaleRuntimeCollisionBoxes,
+  type RuntimeCollisionBox,
+} from "./RuntimeCollisionTransformSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import {
@@ -4266,6 +4271,38 @@ function materializePlayerPushRedirectController(
   return controller.operation === operation ? controller : { ...controller, operation };
 }
 
+function materializePosFreezeRedirectController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr {
+  if (controller.operation?.kind === "bounds" && controller.operation.controllerType === "posfreeze") {
+    return controller;
+  }
+  const operation = resolveRuntimePosFreezeControllerOperation(controller, caller.runtime, context);
+  const hasValueParameter = findControllerParam(controller, "value") !== undefined;
+  const hasAxisParameter =
+    findControllerParam(controller, "x") !== undefined || findControllerParam(controller, "y") !== undefined;
+  return {
+    ...controller,
+    operation: {
+      ...operation,
+      z: hasValueParameter ? operation.x : !hasAxisParameter,
+    },
+  };
+}
+
+function materializeTransformClsnRedirectController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "collision-transform"
+    ? controller.operation
+    : resolveRuntimeCollisionTransformControllerOperation(controller, caller.runtime, context);
+  return operation === undefined ? undefined : controller.operation === operation ? controller : { ...controller, operation };
+}
+
 function materializeScreenBoundRedirectController(
   controller: ControllerIr,
   caller: FighterMatchState,
@@ -5358,7 +5395,8 @@ function runActiveStateControllers(
         return;
       }
       const deferredConstraintRedirect =
-        (dispatch.controller.normalizedType === "posfreeze" ||
+        (dispatch.controller.normalizedType === "transformclsn" ||
+          dispatch.controller.normalizedType === "posfreeze" ||
           dispatch.controller.normalizedType === "screenbound" ||
           dispatch.controller.normalizedType === "playerpush") &&
         redirectExpression !== undefined &&
@@ -5369,6 +5407,14 @@ function runActiveStateControllers(
         dispatch.controller.normalizedType === "playerpush" && redirectExpression !== undefined
           ? materializePlayerPushRedirectController(dispatch.controller, actor, context)
           : undefined;
+      const materializedPosFreezeController =
+        dispatch.controller.normalizedType === "posfreeze" && redirectExpression !== undefined
+          ? materializePosFreezeRedirectController(dispatch.controller, actor, context)
+          : undefined;
+      const materializedTransformClsnController =
+        dispatch.controller.normalizedType === "transformclsn" && redirectExpression !== undefined
+          ? materializeTransformClsnRedirectController(dispatch.controller, actor, context)
+          : undefined;
       const materializedScreenBoundController =
         dispatch.controller.normalizedType === "screenbound" && redirectExpression !== undefined
           ? materializeScreenBoundRedirectController(dispatch.controller, actor, context)
@@ -5376,7 +5422,11 @@ function runActiveStateControllers(
       const applyDispatch = () => {
         const redirectedController = redirectableResourceType !== undefined && redirectExpression
           ? resolveRedirectedResourceController(dispatch.controller, actor, context)
-          : materializedPlayerPushController ?? materializedScreenBoundController ?? dispatch.controller;
+          : materializedTransformClsnController ??
+            materializedPosFreezeController ??
+            materializedPlayerPushController ??
+            materializedScreenBoundController ??
+            dispatch.controller;
         if (!redirectedController) {
           options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);
           return;

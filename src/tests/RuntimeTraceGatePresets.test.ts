@@ -166,6 +166,8 @@ import {
   createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact,
   createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact,
   createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootPosFreezeRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17506,6 +17508,59 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p2", source: "imported", screenBound: true, moveCameraX: true, moveCameraY: true }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root PosFreeze RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootPosFreezeRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-posfreeze-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-posfreeze-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: 1,
+      PosFreeze: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "variable:varset": 1,
+      "bounds:posfreeze": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", posFreezeX: true, posFreezeY: true }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root TransformClsn RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-transformclsn-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-transformclsn-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: 2,
+      TransformClsn: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "variable:varset": 2,
+      "collision-transform": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p2",
+        source: "imported",
+        minCollisionScale: { x: 2, y: 2 },
+        maxCollisionScale: { x: 2, y: 2 },
+        minCollisionAngle: 30,
+        maxCollisionAngle: 30,
+      }),
     ]));
   });
 

@@ -83,6 +83,19 @@ describe("BoundsControllerSystem", () => {
     expect(result.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
   });
 
+  it("uses materialized PosFreeze Z policy instead of destination expression state", () => {
+    const world = new RuntimeBoundsControllerWorld();
+    const state = runtimeState({ vars: [0] });
+
+    world.applyPosFreezeController(
+      state,
+      source("PosFreeze", { value: "var(0)" }),
+      { kind: "bounds", controllerType: "posfreeze", x: true, y: true, z: true },
+    );
+
+    expect(state.posFreeze).toEqual({ x: true, y: true, z: true });
+  });
+
   it("applies ScreenBound typed operations and raw expression fallback", () => {
     const world = new RuntimeBoundsControllerWorld();
     const state = runtimeState();

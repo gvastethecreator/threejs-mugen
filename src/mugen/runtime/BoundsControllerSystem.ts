@@ -38,7 +38,7 @@ export class RuntimeBoundsControllerWorld {
     state.posFreeze = {
       x: appliedOperation.x,
       y: appliedOperation.y,
-      z: value !== undefined ? value !== 0 : !hasAxisParameter,
+      z: appliedOperation.z ?? (value !== undefined ? value !== 0 : !hasAxisParameter),
     };
     return { applied: true, controllerType: "posfreeze", operation: appliedOperation };
   }
