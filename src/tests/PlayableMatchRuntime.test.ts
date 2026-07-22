@@ -9316,6 +9316,64 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("Blocked PlayerPush RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root ScreenBound RedirectID with caller dynamic bounds after target reset", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected ScreenBound value]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 1
+
+[State 0, Redirected ScreenBound camera X]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 1
+
+[State 0, Redirected ScreenBound camera Y]
+type = VarSet
+trigger1 = Time = 0
+v = 2
+value = 1
+
+[State 0, Redirected ScreenBound stage]
+type = VarSet
+trigger1 = Time = 0
+v = 3
+value = 0
+
+[State 0, Redirected ScreenBound]
+type = ScreenBound
+trigger1 = Time = 0
+value = var(0)
+movecamera = var(1),var(2)
+stagebound = var(3)
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({ id: "redirected-root-screenbound-destination", withStateMove: false });
+    const farStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -180, y: 0, facing: 1 as const },
+        p2: { x: 180, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(caller, destination, farStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime.screenBound).toEqual({ bound: true, moveCameraX: true, moveCameraY: true });
+    expect(snapshot.actors[1]?.runtime.stageBound).toBe(false);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ScreenBound).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["bounds:screenbound"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked ScreenBound RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({

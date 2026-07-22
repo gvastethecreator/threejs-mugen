@@ -165,6 +165,7 @@ import {
   createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact,
   createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17482,6 +17483,29 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p2", source: "imported", playerPush: false }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root ScreenBound RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-screenbound-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-screenbound-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: 4,
+      ScreenBound: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "variable:varset": 4,
+      "bounds:screenbound": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", screenBound: true, moveCameraX: true, moveCameraY: true }),
     ]));
   });
 

@@ -1511,6 +1511,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-screenbound-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-helper-self-tag",
       required: true,
       artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),

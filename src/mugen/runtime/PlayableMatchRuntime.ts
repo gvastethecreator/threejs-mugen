@@ -34,7 +34,10 @@ import {
   type RuntimeResolvedSoundValue,
   RuntimeAudioWorld,
 } from "./AudioEventSystem";
-import { resolveRuntimePlayerPushControllerOperation } from "./BoundsControllerSystem";
+import {
+  resolveRuntimePlayerPushControllerOperation,
+  resolveRuntimeScreenBoundControllerOperation,
+} from "./BoundsControllerSystem";
 import {
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
@@ -4263,6 +4266,17 @@ function materializePlayerPushRedirectController(
   return controller.operation === operation ? controller : { ...controller, operation };
 }
 
+function materializeScreenBoundRedirectController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr {
+  const operation = controller.operation?.kind === "bounds" && controller.operation.controllerType === "screenbound"
+    ? controller.operation
+    : resolveRuntimeScreenBoundControllerOperation(controller, caller.runtime, context);
+  return controller.operation === operation ? controller : { ...controller, operation };
+}
+
 function handlePlayerInput(
   fighter: FighterMatchState,
   input: Set<string>,
@@ -5344,7 +5358,9 @@ function runActiveStateControllers(
         return;
       }
       const deferredConstraintRedirect =
-        (dispatch.controller.normalizedType === "posfreeze" || dispatch.controller.normalizedType === "playerpush") &&
+        (dispatch.controller.normalizedType === "posfreeze" ||
+          dispatch.controller.normalizedType === "screenbound" ||
+          dispatch.controller.normalizedType === "playerpush") &&
         redirectExpression !== undefined &&
         target !== fighter
           ? options.deferRootConstraintRedirect
@@ -5353,10 +5369,14 @@ function runActiveStateControllers(
         dispatch.controller.normalizedType === "playerpush" && redirectExpression !== undefined
           ? materializePlayerPushRedirectController(dispatch.controller, actor, context)
           : undefined;
+      const materializedScreenBoundController =
+        dispatch.controller.normalizedType === "screenbound" && redirectExpression !== undefined
+          ? materializeScreenBoundRedirectController(dispatch.controller, actor, context)
+          : undefined;
       const applyDispatch = () => {
         const redirectedController = redirectableResourceType !== undefined && redirectExpression
           ? resolveRedirectedResourceController(dispatch.controller, actor, context)
-          : materializedPlayerPushController ?? dispatch.controller;
+          : materializedPlayerPushController ?? materializedScreenBoundController ?? dispatch.controller;
         if (!redirectedController) {
           options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);
           return;

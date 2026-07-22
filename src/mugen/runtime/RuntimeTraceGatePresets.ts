@@ -11890,6 +11890,76 @@ export function createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact
   });
 }
 
+export function createSyntheticImportedIkemenRootScreenBoundRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "redirect dynamic root ScreenBound to P2", p1: ["x"], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-screenbound-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ScreenBound Redirect Caller",
+    withHitDef: false,
+    rootScreenBoundRedirectRoute: {
+      redirectId: 57,
+      value: "var(0)",
+      moveCamera: ["var(1)", "var(2)"],
+      stageBound: "var(3)",
+      vars: [
+        { index: 0, value: 1 },
+        { index: 1, value: 1 },
+        { index: 2, value: 1 },
+        { index: 3, value: 0 },
+      ],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-screenbound-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ScreenBound Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-screenbound-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-screenbound-redirect-golden",
+      label: "Synthetic imported IKEMEN root ScreenBound RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root materializes dynamic ScreenBound values in caller context, defers a later-root RedirectID write through bounds reset, and exposes destination screen/camera state. Exact screen/stage behavior, camera tracking, CharList scheduling, hitpause, Helpers, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-screenbound-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "ScreenBound"],
+        requiredExecutedOperations: ["variable:varset", "bounds:screenbound"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            screenBound: true,
+            moveCameraX: true,
+            moveCameraY: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48878,6 +48948,13 @@ export type SyntheticImportedTraceFighterOptions = {
     affectTeam?: "E" | "F" | "B";
     vars?: Array<{ index: number; value: number }>;
   };
+  rootScreenBoundRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    value?: SyntheticNumberExpression;
+    moveCamera?: [SyntheticNumberExpression, SyntheticNumberExpression];
+    stageBound?: SyntheticNumberExpression;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withDynamicPosFreeze?: {
     value?: string;
     x?: string;
@@ -49284,6 +49361,7 @@ ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetContro
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.rootPlayerPushRedirectRoute ? rootPlayerPushRedirectControllerBlock(options.rootPlayerPushRedirectRoute) : ""}
+${options.rootScreenBoundRedirectRoute ? rootScreenBoundRedirectControllerBlock(options.rootScreenBoundRedirectRoute) : ""}
 ${options.withDynamicPosFreeze === undefined ? "" : dynamicPosFreezeControllerBlock(options.withDynamicPosFreeze)}
 ${options.withDynamicScreenBound === undefined ? "" : dynamicScreenBoundControllerBlock(options.withDynamicScreenBound)}
 ${options.withTurn ? turnControllerBlock() : ""}
@@ -51049,6 +51127,31 @@ trigger1 = Time = 0
 value = ${route.value ?? 1}
 priority = ${route.priority ?? 0}
 affectteam = ${route.affectTeam ?? "E"}
+redirectid = ${route.redirectId}
+`;
+}
+
+function rootScreenBoundRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootScreenBoundRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root ScreenBound Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  return `${vars}
+[State 200, Root ScreenBound Redirect]
+type = ScreenBound
+trigger1 = Time = 0
+value = ${route.value ?? 0}
+movecamera = ${route.moveCamera?.join(",") ?? "0,0"}
+stagebound = ${route.stageBound ?? 1}
 redirectid = ${route.redirectId}
 `;
 }
