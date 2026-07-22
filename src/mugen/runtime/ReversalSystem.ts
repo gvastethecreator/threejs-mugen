@@ -175,6 +175,10 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.p2StateNo = operation.p2StateNo;
       runtimeReversal.p2StateNo = operation.p2StateNo;
     }
+    if (operation.p2GetP1State !== undefined) {
+      existing.p2GetP1State = operation.p2GetP1State;
+      runtimeReversal.p2GetP1State = operation.p2GetP1State;
+    }
     if (operation.targetId !== undefined) {
       existing.targetId = operation.targetId;
     }
@@ -289,7 +293,7 @@ export class RuntimeReversalWorld {
       this.clear(reverser, false);
     }
     if (p2StateNo !== undefined) {
-      hooks.enterTargetHitState(attacker, reverser, p2StateNo, true);
+      hooks.enterTargetHitState(attacker, reverser, p2StateNo, reversal.p2GetP1State ?? true);
     }
 
     const p1 = p1StateNo !== undefined ? ` p1->${p1StateNo}` : "";

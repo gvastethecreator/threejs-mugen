@@ -204,6 +204,7 @@ export type RuntimeReversalDef = {
   attr: string;
   p1StateNo?: number;
   p2StateNo?: number;
+  p2GetP1State?: boolean;
   hitPause: number;
   attackDepth?: [number, number];
 };

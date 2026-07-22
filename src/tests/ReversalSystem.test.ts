@@ -162,6 +162,43 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("modifies p2getp1state in place and sends the target through its own state route", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { stateNo: 300 });
+    const attacker = actor("p1", "Attacker", { stateNo: 200, currentMove: move(), currentMoveLabel: "Punch" });
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: box(),
+      hitPause: 3,
+      p1StateNo: 777,
+      p2StateNo: 888,
+    });
+    const activeMove = reverser.currentMove;
+    const activeReversal = reverser.runtime.reversal;
+
+    const result = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", { p2getp1state: "0", redirectid: "57" })),
+    });
+
+    expect(result).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyreversaldef", p2GetP1State: false },
+    });
+    expect(reverser.currentMove).toBe(activeMove);
+    expect(reverser.runtime.reversal).toBe(activeReversal);
+    expect(reverser.currentMove).toMatchObject({ p2StateNo: 888, p2GetP1State: false });
+    expect(reverser.runtime.reversal).toMatchObject({ p2StateNo: 888, p2GetP1State: false });
+
+    const calls: string[] = [];
+    reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks({
+      enterTargetHitState: (_target, _owner, stateNo, getP1State) => calls.push(`${stateNo}:${getP1State}`),
+    }));
+
+    expect(calls).toEqual(["888:false"]);
+  });
+
   it("activates and clears bounded ReversalDef runtime state", () => {
     const world = new RuntimeReversalWorld();
     const fighter = actor("p1", "Reverser", { stateNo: 300 });

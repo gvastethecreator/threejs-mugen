@@ -177,6 +177,7 @@ import {
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefP2OwnerRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17753,7 +17754,6 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {
   it("creates a required IKEMEN root ModifyReversalDef p2stateno RedirectID artifact", () => {
     const artifact = createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact({
       generatedAt: "2026-07-22T00:00:00.000Z",
@@ -17787,6 +17787,40 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a required IKEMEN root ModifyReversalDef p2getp1state RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefP2OwnerRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyreversaldef-p2owner-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyreversaldef-p2owner-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ReversalDef: 1,
+      ModifyReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      reversaldef: 1,
+      modifyreversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 95 }),
+    );
+    const p1 = artifact.trace.finalActors.find((actor) => actor.id === "p1");
+    expect(p1).toMatchObject({ id: "p1", stateNo: 888, animNo: 888 });
+    expect(p1?.customOwnerId).toBeUndefined();
+    expect(artifact.trace.finalActors).toContainEqual(
+      expect.objectContaining({ id: "p2", stateNo: 777, animNo: 777 }),
+    );
+  });
+
+  it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {
     const artifact = createSyntheticImportedIkemenHelperSelfTagTraceArtifact({
       generatedAt: "2026-07-11T00:00:00.000Z",
     });

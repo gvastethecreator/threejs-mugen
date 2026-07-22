@@ -1715,6 +1715,31 @@ value = 1
     expect(malformedRedirect.operation).toBeUndefined();
   });
 
+  it("compiles static root ModifyReversalDef p2getp1state RedirectID values and rejects dynamic input", () => {
+    const targetOwned = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2getp1state: "0", redirectid: "57" }),
+    );
+    const receiverOwned = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2stateno: "889", p2getp1state: "2", redirectid: "var(0)" }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2getp1state: "var(1)", redirectid: "57" }),
+    );
+
+    expect(targetOwned.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2GetP1State: false,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(receiverOwned.operation).toMatchObject({
+      kind: "modifyreversaldef",
+      p2StateNo: 889,
+      p2GetP1State: true,
+      redirectPlayerIdExpression: "var(0)",
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
     const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));
