@@ -1,5 +1,27 @@
 ﻿# Progress Tracker
 
+## Runtime constraint report - T371/T372 (2026-07-22)
+
+- Runtime lane commits: `54c1e980` and `3f5f4a5`. This focused checkpoint does
+  not replace the separate FightScreen or Studio frontiers.
+- Current first-generation Helpers now route PlayerPush through verified
+  RedirectID with static or dynamic caller-owned policy. A later Helper target
+  keeps the incoming enabled, priority, and team policy through its reset.
+- Roots now materialize redirected dynamic PlayerPush in the caller and defer
+  writes to a later root until after that root resets its one-frame policy.
+- Gates: focused compiler, bounds, Helper, imported match, and trace coverage
+  passes 5 files / 1034 tests. Diff hygiene passes. TypeScript, complete
+  Vitest, trace aggregate, build, and boundary checks remain queued for the
+  larger runtime checkpoint selected by the user.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current Helper and root PlayerPush RedirectID with caller
+  policy under current actor order. Exact CharList ordering, hitpause,
+  collision/corner geometry, nested ownership, renderer/upstream differentials,
+  rollback/netplay, and full parity remain open.
+- Next constraint frontier: audit root ScreenBound RedirectID caller evaluation
+  and reset order before it is claimed as a broad bounds route.
+
 ## Runtime constraint report - T370 (2026-07-22)
 
 - Runtime lane HEAD: `6bbeb6f7`; documentation closeout follows in a separate

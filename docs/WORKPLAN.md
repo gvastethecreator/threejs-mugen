@@ -1,5 +1,22 @@
 # Workplan
 
+## Runtime constraint checkpoint - T371/T372 (2026-07-22)
+
+T371 and T372 close in `54c1e980` and `3f5f4a5`. Current first-generation
+Helpers now materialize static/dynamic PlayerPush policy in the caller before
+verified RedirectID writeback and retain a later Helper target's policy through
+its reset. Root PlayerPush RedirectID now materializes dynamic caller values
+before dispatch and defers a later root write until after the target reset.
+Focused compiler, bounds, Helper, imported match, and trace coverage passes 5
+files / 1034 tests. Diff hygiene passes. The broad typecheck, full suite,
+trace aggregate, build, and boundary checks remain deliberately queued for the
+next larger runtime batch; browser smoke is N/A for this runtime-only slice.
+
+Keep exact CharList scheduling, hitpause/reset parity, collision and corner
+geometry, nested ownership, renderer/upstream differentials, rollback/netplay,
+and full parity outside this bounded lane. The next source-backed audit should
+examine root ScreenBound RedirectID caller evaluation and target reset order.
+
 ## Runtime constraint checkpoint - T370 (2026-07-22)
 
 T370 closes in `6bbeb6f7`. Current first-generation Helpers now retain

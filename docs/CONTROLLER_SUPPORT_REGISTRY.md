@@ -610,3 +610,12 @@ already-advanced Helper destinations restore their captured match-frame
 position. An explicit false value clears X, Y, and Z. Exact corner push,
 pause/hitpause, scheduler parity, nested ownership, spawned-this-tick starts,
 renderer proof, and full parity remain unsupported.
+
+PlayerPush RedirectID addendum: PlayerPush is executed-partial for current
+roots and first-generation Helpers under the explicit IKEMEN profile. Static
+and dynamic `value`/`priority` policy materializes in the caller before the
+verified destination write. Root routes defer a later target until after its
+one-frame reset; later Helper targets restore the incoming enabled, priority,
+and team policy through their reset. Exact CharList ordering, hitpause/reset
+parity, collision and corner geometry, nested ownership, renderer proof, and
+full parity remain unsupported.
