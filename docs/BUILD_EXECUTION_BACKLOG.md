@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 570 - root ModifyReversalDef p2 owner RedirectID
+
+Closed source-backed root ModifyReversalDef `p2getp1state` RedirectID in
+`32d904a5`. The typed operation accepts a static scalar and one
+caller-evaluated RedirectID, then mutates the verified active reversal in
+place. An explicit false value sends the countered target through its own state
+data and clears receiver-owned custom-state metadata, while a missing value
+keeps the existing true default.
+
+Verification: the shared focused compiler, reversal dispatch, active-side-
+effect, state executor, root CNS, imported-match, and trace run passes 7 files
+/ 1057 tests. Required
+`synthetic-imported-ikemen-root-modifyreversaldef-p2owner-redirect` evidence
+ends with P1 in self-owned state `888`, without `customOwnerId`, and P2 in
+state `777`. Script syntax and diff hygiene pass. TypeScript, complete Vitest,
+trace aggregate, build, and boundaries remain deliberately deferred to the next
+runtime batch. No score movement. Claim allowed: static root-to-root p2 owner
+override through caller-evaluated RedirectID under explicit `ikemen-go`. Claim
+blocked: guard fields, other HitDef fields, dynamic values, Helpers, teams,
+source timing, renderer behavior, rollback/netplay, and full parity. See
+Wayfinder T385.
+
 ## Entry 569 - root ModifyReversalDef p2 state RedirectID
 
 Closed source-backed root ModifyReversalDef `p2stateno` RedirectID in

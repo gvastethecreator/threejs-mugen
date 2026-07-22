@@ -1,5 +1,18 @@
 # Workplan
 
+## Runtime p2 owner checkpoint - T385 (2026-07-22)
+
+T385 closes in `32d904a5`. Static root ModifyReversalDef RedirectID now writes
+`p2getp1state` on one active verified reversal in place. An explicit zero sends
+the countered attacker into its own state `888`, with no receiver-owned custom
+state data. The shared focused batch passes 7 files / 1057 tests; script syntax
+and diff hygiene pass. Scores do not move.
+
+Next, audit one guard-field slice with a separate source contract and target
+state proof. Dynamic values, Helpers, teams, source timing, and full parity
+remain blocked. TypeScript, full Vitest, trace aggregate, build, and boundaries
+stay queued for the next grouped runtime checkpoint.
+
 ## Runtime p2 state checkpoint - T384 (2026-07-22)
 
 T384 closes in `eddddc8a`. Static root ModifyReversalDef RedirectID now writes

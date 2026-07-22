@@ -1,5 +1,18 @@
 ﻿# Progress Tracker
 
+## Runtime p2 owner report - T385 (2026-07-22)
+
+- Runtime feature commit: `32d904a5`.
+- Root ModifyReversalDef RedirectID now accepts static `p2getp1state` and
+  mutates an already-active verified receiver without resetting move or contact
+  state.
+- Evidence: required imported trace ends with countered P1 in its own state
+  `888`, `animationSource: "self"`, and no `customOwnerId`.
+- The shared focused compiler, dispatch, state executor, imported-match, and
+  trace batch passes 7 files / 1057 tests. Script syntax and diff hygiene pass.
+- Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. Guard fields remain next in
+  this family. Global checks remain deferred to the next batch.
+
 ## Runtime p2 state report - T384 (2026-07-22)
 
 - Runtime feature commit: `eddddc8a`.

@@ -2,14 +2,14 @@
 
 ## Current runtime compatibility board - T385 (2026-07-22)
 
-T384 closes in `eddddc8a`: static root `ModifyReversalDef p2stateno` through
-caller-evaluated RedirectID now mutates one active receiver in place. The
-countered attacker enters the receiver-owned state and records that owner. T385
-remains active for the separate static `p2getp1state` override. Pinned
-IKEMEN-GO source sets `p2getp1state = true` whenever shared HitDef mutation
-writes `p2stateno`, then allows the distinct field to override that owner rule.
+T384 `eddddc8a` adds static root `ModifyReversalDef p2stateno` through
+caller-evaluated RedirectID. T385 `32d904a5` adds the separate static
+`p2getp1state` override on the same active receiver. Pinned IKEMEN-GO source
+sets receiver ownership when shared mutation writes `p2stateno`, then accepts
+the separate field as an override. Required evidence proves explicit zero sends
+the countered attacker through its own state `888` with no custom-state owner.
 Guard fields, Helpers, other inherited HitDef fields, dynamic values, source
-timing, and full parity remain outside the active scope.
+timing, and full parity remain outside the current claim.
 
 ## Global runtime checkpoint after T383 (2026-07-22)
 
