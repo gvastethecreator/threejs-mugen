@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { HitEligibilityControllerOp, HitOverrideControllerOp } from "../mugen/compiler/ControllerOps";
+import type { ControllerIr } from "../mugen/compiler/RuntimeIr";
 import {
+  resolveRuntimeHitEligibilityControllerOperation,
   RuntimeHitDefenseWorld,
   type RuntimeHitDefenseControllerSource,
 } from "../mugen/runtime/HitDefenseSystem";
@@ -47,6 +49,26 @@ describe("RuntimeHitDefenseWorld", () => {
     expect(state.hitBy).toEqual({
       slot1: { mode: "deny", attr: "SCA", remaining: Number.POSITIVE_INFINITY },
       slot2: { mode: "deny", attr: "A,SA", remaining: Number.POSITIVE_INFINITY },
+    });
+  });
+
+  it("materializes dynamic HitBy values in the caller context", () => {
+    const operation = resolveRuntimeHitEligibilityControllerOperation(
+      {
+        ...controller({ value: "S,NA", value2: "A,SA", time: "var(0)" }),
+        normalizedType: "hitby",
+      } as ControllerIr,
+      runtime({ vars: [9] }),
+    );
+
+    expect(operation).toEqual({
+      kind: "eligibility",
+      controllerType: "hitby",
+      mode: "allow",
+      slots: [
+        { slot: 1, attr: "S,NA", remaining: 9 },
+        { slot: 2, attr: "A,SA", remaining: 9 },
+      ],
     });
   });
 

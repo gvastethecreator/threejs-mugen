@@ -12155,6 +12155,68 @@ export function createSyntheticImportedIkemenRootOverrideClsnRedirectTraceArtifa
   });
 }
 
+export function createSyntheticImportedIkemenRootNotHitByRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-nothitby-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root NotHitBy Redirect Caller",
+    rootHitEligibilityRedirectRoute: {
+      controllerType: "NotHitBy",
+      redirectId: 57,
+      value: "S,NA",
+      time: "var(0)",
+      vars: [{ index: 0, value: 9 }],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-nothitby-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root NotHitBy Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-nothitby-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-nothitby-redirect-golden",
+      label: "Synthetic imported IKEMEN root NotHitBy RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves a NotHitBy RedirectID destination, materializes a dynamic duration in caller context, and applies the receiver eligibility before combat. New attr/slot syntax, exact slot decay order, Helpers, teams, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-nothitby-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "NotHitBy"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "eligibility:nothitby"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reject"],
+        requiredCombatReasons: ["reject"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49137,6 +49199,14 @@ export type SyntheticImportedTraceFighterOptions = {
     rect?: [SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression];
     vars?: Array<{ index: number; value: number }>;
   };
+  rootHitEligibilityRedirectRoute?: {
+    controllerType: "HitBy" | "NotHitBy";
+    redirectId: SyntheticNumberExpression;
+    value: string;
+    value2?: string;
+    time?: SyntheticNumberExpression;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withDynamicStateTypeSet?: {
     stateType?: string;
@@ -49571,6 +49641,7 @@ ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(opti
 ${options.withTransformClsn === undefined ? "" : transformClsnControllerBlock(options.withTransformClsn)}
 ${options.rootTransformClsnRedirectRoute ? rootTransformClsnRedirectControllerBlock(options.rootTransformClsnRedirectRoute) : ""}
 ${options.rootOverrideClsnRedirectRoute ? rootOverrideClsnRedirectControllerBlock(options.rootOverrideClsnRedirectRoute) : ""}
+${options.rootHitEligibilityRedirectRoute ? rootHitEligibilityRedirectControllerBlock(options.rootHitEligibilityRedirectRoute) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -51102,6 +51173,33 @@ trigger1 = Time = 0
 group = ${route.group ?? "Clsn2"}
 index = ${route.index ?? 9}
 rect = ${(route.rect ?? [-7, -2, 11, 4]).join(",")}
+redirectid = ${route.redirectId}
+`;
+}
+
+function rootHitEligibilityRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootHitEligibilityRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root ${route.controllerType} Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  const value2Line = route.value2 === undefined ? "" : `value2 = ${route.value2}`;
+  const timeLine = route.time === undefined ? "" : `time = ${route.time}`;
+  return `${vars}
+[State 200, Root ${route.controllerType} Redirect]
+type = ${route.controllerType}
+trigger1 = Time = 0
+value = ${route.value}
+${value2Line}
+${timeLine}
 redirectid = ${route.redirectId}
 `;
 }

@@ -580,6 +580,7 @@ export type HitEligibilityControllerOp = {
   controllerType: "hitby" | "nothitby";
   mode: "allow" | "deny";
   slots: Array<{ slot: 1 | 2; attr: string; remaining: number }>;
+  redirectPlayerIdExpression?: string;
 };
 
 export type HitOverrideControllerOp = {
@@ -1559,7 +1560,8 @@ function compileHitEligibilityControllerOp(
   type: "hitby" | "nothitby",
 ): HitEligibilityControllerOp | undefined {
   const remaining = staticDurationParam(controller, "time", 1);
-  if (remaining === undefined) {
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (remaining === undefined || redirectPlayerIdExpression === "invalid") {
     return undefined;
   }
   const value = stripMugenString(findParam(controller, "value"));
@@ -1579,6 +1581,7 @@ function compileHitEligibilityControllerOp(
     controllerType: type,
     mode: type === "hitby" ? "allow" : "deny",
     slots,
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
   };
 }
 

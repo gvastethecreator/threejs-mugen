@@ -93,6 +93,36 @@ export class RuntimeHitDefenseWorld {
   }
 }
 
+export function resolveRuntimeHitEligibilityControllerOperation(
+  controller: ControllerIr,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): HitEligibilityControllerOp | undefined {
+  const controllerType = controller.normalizedType;
+  if (controllerType !== "hitby" && controllerType !== "nothitby") {
+    return undefined;
+  }
+  const remaining = controllerDuration(numberParam(controller, state, context, "time") ?? 1);
+  const slots: HitEligibilityControllerOp["slots"] = [];
+  const value = findParam(controller, "value")?.trim();
+  const value2 = findParam(controller, "value2")?.trim();
+  if (value) {
+    slots.push({ slot: 1, attr: value, remaining });
+  }
+  if (value2) {
+    slots.push({ slot: 2, attr: value2, remaining });
+  }
+  if (slots.length === 0) {
+    return undefined;
+  }
+  return {
+    kind: "eligibility",
+    controllerType,
+    mode: controllerType === "hitby" ? "allow" : "deny",
+    slots,
+  };
+}
+
 function numberParam(
   controller: RuntimeHitDefenseControllerSource,
   state: CharacterRuntimeState,

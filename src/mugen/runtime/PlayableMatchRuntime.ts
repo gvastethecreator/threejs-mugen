@@ -174,6 +174,7 @@ import {
   RuntimeCollisionOverrideWorld,
   type RuntimeCollisionOverrideResolver,
 } from "./RuntimeCollisionOverrideSystem";
+import { resolveRuntimeHitEligibilityControllerOperation } from "./HitDefenseSystem";
 import {
   resolveRuntimePushSizeBox,
   RuntimeRootBodyPushWorld,
@@ -500,6 +501,7 @@ type RootControllerRedirectHandler = (
     | "posfreeze"
     | "screenbound"
     | "playerpush"
+    | RedirectableHitEligibilityControllerType
     | RedirectableTargetControllerType
     | RedirectableResourceControllerType
     | RedirectableEffectControllerType,
@@ -532,6 +534,7 @@ type RedirectableResourceControllerType =
   | "poweradd"
   | "powerset";
 type RedirectableEffectControllerType = "projectile" | "modifyprojectile";
+type RedirectableHitEligibilityControllerType = "hitby" | "nothitby";
 type RedirectableTargetControllerType =
   | "targetlifeadd"
   | "targetredlifeadd"
@@ -2890,6 +2893,7 @@ export class PlayableMatchRuntime {
       | "posfreeze"
       | "screenbound"
       | "playerpush"
+      | RedirectableHitEligibilityControllerType
       | RedirectableTargetControllerType
       | RedirectableResourceControllerType
       | RedirectableEffectControllerType,
@@ -4172,6 +4176,12 @@ function redirectableEffectControllerType(controller: ControllerIr): Redirectabl
     : undefined;
 }
 
+function redirectableHitEligibilityControllerType(controller: ControllerIr): RedirectableHitEligibilityControllerType | undefined {
+  return controller.normalizedType === "hitby" || controller.normalizedType === "nothitby"
+    ? controller.normalizedType
+    : undefined;
+}
+
 function resourceControllerRedirectExpression(controller: ControllerIr): string | undefined {
   if (redirectableResourceControllerType(controller) === undefined) {
     return undefined;
@@ -4199,6 +4209,23 @@ function effectControllerRedirectExpression(controller: ControllerIr): string | 
     (operation?.kind === "projectile" || operation?.kind === "modifyprojectile")
       ? operation.redirectPlayerIdExpression
       : undefined;
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller, "redirectid");
+  if (rawExpression === undefined) {
+    return undefined;
+  }
+  return rawExpression.trim() || "invalid";
+}
+
+function hitEligibilityControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  if (redirectableHitEligibilityControllerType(controller) === undefined) {
+    return undefined;
+  }
+  const compiledExpression = controller.operation?.kind === "eligibility"
+    ? controller.operation.redirectPlayerIdExpression
+    : undefined;
   if (compiledExpression !== undefined) {
     return compiledExpression.trim() || "invalid";
   }
@@ -4315,6 +4342,17 @@ function materializeOverrideClsnRedirectController(
   const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "overrideclsn"
     ? controller.operation
     : resolveRuntimeCollisionOverrideControllerOperation(controller, caller.runtime, context);
+  return operation === undefined ? undefined : controller.operation === operation ? controller : { ...controller, operation };
+}
+
+function materializeHitEligibilityRedirectController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr | undefined {
+  const operation = controller.operation?.kind === "eligibility"
+    ? controller.operation
+    : resolveRuntimeHitEligibilityControllerOperation(controller, caller.runtime, context);
   return operation === undefined ? undefined : controller.operation === operation ? controller : { ...controller, operation };
 }
 
@@ -5388,9 +5426,12 @@ function runActiveStateControllers(
         dispatch.controller.normalizedType === "screenbound" ||
         dispatch.controller.normalizedType === "playerpush";
       const redirectableCollisionTransform = dispatch.controller.normalizedType === "transformclsn";
+      const redirectableHitEligibilityType = redirectableHitEligibilityControllerType(dispatch.controller);
       const redirectableResourceType = redirectableResourceControllerType(dispatch.controller);
       const redirectExpression = redirectableResourceType !== undefined
         ? resourceControllerRedirectExpression(dispatch.controller)
+        : redirectableHitEligibilityType !== undefined
+          ? hitEligibilityControllerRedirectExpression(dispatch.controller)
         : redirectableCollisionTransform
           ? ((dispatch.controller.operation?.kind === "collision-transform"
               ? dispatch.controller.operation.redirectPlayerIdExpression
@@ -5403,6 +5444,7 @@ function runActiveStateControllers(
               : undefined) ?? findControllerParam(dispatch.controller, "redirectid")?.trim())
           : undefined;
       const redirectControllerType = redirectableResourceType ??
+        redirectableHitEligibilityType ??
         (redirectableCollisionTransform
           ? "transformclsn"
           : redirectableBoundsController
@@ -5454,6 +5496,10 @@ function runActiveStateControllers(
         dispatch.controller.normalizedType === "screenbound" && redirectExpression !== undefined
           ? materializeScreenBoundRedirectController(dispatch.controller, actor, context)
           : undefined;
+      const materializedHitEligibilityController =
+        redirectableHitEligibilityType !== undefined && redirectExpression !== undefined
+          ? materializeHitEligibilityRedirectController(dispatch.controller, actor, context)
+          : undefined;
       const applyDispatch = () => {
         const redirectedController = redirectableResourceType !== undefined && redirectExpression
           ? resolveRedirectedResourceController(dispatch.controller, actor, context)
@@ -5461,6 +5507,7 @@ function runActiveStateControllers(
             materializedPosFreezeController ??
             materializedPlayerPushController ??
             materializedScreenBoundController ??
+            materializedHitEligibilityController ??
             dispatch.controller;
         if (!redirectedController) {
           options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);

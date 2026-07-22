@@ -1515,7 +1515,9 @@ value = 1
   });
 
   it("compiles static hit eligibility controllers into typed operations", () => {
-    const hitBy = compileControllerIr(controller(200, "HitBy", [], { value: "S,NA", value2: "A,SA", time: "8" }));
+    const hitBy = compileControllerIr(
+      controller(200, "HitBy", [], { value: "S,NA", value2: "A,SA", time: "8", redirectid: "57" }),
+    );
     const notHitBy = compileControllerIr(controller(200, "NotHitBy", [], { value: "SCA", time: "12" }));
     const override = compileControllerIr(
       controller(200, "HitOverride", [], {
@@ -1540,6 +1542,7 @@ value = 1
         { slot: 1, attr: "S,NA", remaining: 8 },
         { slot: 2, attr: "A,SA", remaining: 8 },
       ],
+      redirectPlayerIdExpression: "57",
     });
     expect(notHitBy.operation).toEqual({
       kind: "eligibility",

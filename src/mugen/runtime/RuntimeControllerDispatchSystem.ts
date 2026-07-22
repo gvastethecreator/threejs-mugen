@@ -12,6 +12,7 @@ import { resolveRuntimeResourceControllerOperation } from "./RuntimeResourceSyst
 import { executeControllerIr, type RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import { resolveRuntimeStateTypeSetControllerOperation } from "./StateTypeSystem";
 import { resolveRuntimeCollisionTransformControllerOperation } from "./RuntimeCollisionTransformSystem";
+import { resolveRuntimeHitEligibilityControllerOperation } from "./HitDefenseSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerDispatchActor = {
@@ -101,6 +102,9 @@ function resolveDynamicRecordedOperation(
   }
   if (controller.normalizedType === "transformclsn") {
     return resolveRuntimeCollisionTransformControllerOperation(controller, runtime, context);
+  }
+  if (controller.normalizedType === "hitby" || controller.normalizedType === "nothitby") {
+    return resolveRuntimeHitEligibilityControllerOperation(controller, runtime, context);
   }
   const resourceOperation = resolveRuntimeResourceControllerOperation(controller, runtime, context);
   if (resourceOperation) {

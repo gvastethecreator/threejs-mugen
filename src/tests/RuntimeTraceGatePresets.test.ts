@@ -169,6 +169,7 @@ import {
   createSyntheticImportedIkemenRootPosFreezeRedirectTraceArtifact,
   createSyntheticImportedIkemenRootTransformClsnRedirectTraceArtifact,
   createSyntheticImportedIkemenRootOverrideClsnRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootNotHitByRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17586,6 +17587,22 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p2", source: "imported", clsn2Count: 2 }),
     ]));
+  });
+
+  it("creates a required IKEMEN root NotHitBy RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootNotHitByRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-nothitby-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-nothitby-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.NotHitBy).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["eligibility:nothitby"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reject");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reject");
   });
 
   it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {

@@ -9543,6 +9543,77 @@ RedirectID = 56
     expect(snapshot.logs.some((line) => line.includes("Blocked OverrideClsn RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root HitBy and NotHitBy RedirectID with caller dynamic durations", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected HitBy time]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 9
+
+[State 0, Redirected NotHitBy time]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 7
+
+[State 0, Redirected HitBy]
+type = HitBy
+trigger1 = Time = 0
+value = S,NA
+time = var(0)
+RedirectID = 57
+
+[State 0, Redirected NotHitBy]
+type = NotHitBy
+trigger1 = Time = 0
+value2 = A,SA
+time = var(1)
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-hit-eligibility-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Rewrite caller eligibility durations]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 99
+RedirectID = 56
+
+[State 0, Rewrite caller eligibility duration two]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 99
+RedirectID = 56
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { runtime: { hitBy?: unknown } };
+    };
+
+    expect(internals.p2.runtime.hitBy).toEqual({
+      slot1: { mode: "allow", attr: "S,NA", remaining: 8 },
+      slot2: { mode: "deny", attr: "A,SA", remaining: 6 },
+    });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.HitBy).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.NotHitBy).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["eligibility:hitby"]).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["eligibility:nothitby"]).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Blocked HitBy RedirectID"))).toBe(false);
+    expect(snapshot.logs.some((line) => line.includes("Blocked NotHitBy RedirectID"))).toBe(false);
+  });
+
   it("routes IKEMEN Helper OverrideClsn RedirectID to a root with localcoord scale", () => {
     const caller = {
       ...createImportedFixture({
