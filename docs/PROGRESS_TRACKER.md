@@ -1,6 +1,33 @@
 ﻿# Progress Tracker
 
-## Runtime redirect report - T382 (2026-07-22)
+## Runtime core redirect report - T383 (2026-07-22)
+
+- Runtime feature commit: `739ac163`. This focused checkpoint does not replace
+  the separate FightScreen or Studio frontiers.
+- Root ModifyReversalDef RedirectID now supports a static subset of
+  `reversal.attr`, first local `pausetime`, `p1stateno`, `id`, and
+  `attack.depth`. The receiver keeps its move object, contact state,
+  frame/control state, and telemetry.
+- Evidence: the required imported core trace proves a widened attack-depth
+  payload admits counter contact, then the receiver enters changed `p1stateno`
+  and writes changed target id. Runtime tests cover field mutation, pair
+  cloning, prior `p2stateno` preservation, variable target selection, and
+  unsupported payloads.
+- Gates: compiler, reversal dispatch, imported-match, and trace coverage passes
+  7 files / 1051 tests. Diff hygiene and QA script syntax pass. TypeScript,
+  complete Vitest, trace aggregate, build, and boundary checks follow in the
+  grouped runtime checkpoint selected by the user.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: static root ModifyReversalDef core mutation through a
+  caller-evaluated RedirectID under explicit `ikemen-go`. `p2stateno`, guard
+  fields, other inherited HitDef fields, dynamic payloads, exact
+  scheduler/hitpause behavior, Helpers, custom states, teams, renderer
+  behavior, rollback/netplay, and full parity remain open.
+- Next constraint frontier: execute the grouped runtime checkpoint before
+  selecting another source-backed family.
+
+## Previous runtime redirect report - T382 (2026-07-22)
 
 - Runtime feature commit: `0f30280e`. This focused checkpoint does not replace
   the separate FightScreen or Studio frontiers.

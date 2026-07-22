@@ -1,6 +1,23 @@
 # Workplan
 
-## Runtime redirect checkpoint - T382 (2026-07-22)
+## Runtime core redirect checkpoint - T383 (2026-07-22)
+
+T383 closes in `739ac163`: root ModifyReversalDef RedirectID now resolves a
+valid caller expression to one verified active receiver and patches any
+supplied static `reversal.attr`, first local `pausetime`, `p1stateno`, `id`,
+and `attack.depth`. The receiver retains move identity, active frame, contact
+state, control, and telemetry. The required imported trace proves the changed
+depth admits counter contact, followed by changed counter state and target
+metadata. Compiler, dispatch, imported-match, and trace coverage passes 7
+files / 1051 tests; diff hygiene and QA script syntax pass.
+
+Keep `p2stateno`, `p2getp1state`, guard fields, all other inherited HitDef
+fields, dynamic payloads, exact source scheduling and hitpause, Helpers/custom
+states/teams, rollback/netplay, rendering, and full parity outside this lane.
+Run the broad typecheck, full suite, trace aggregate, build, and boundary
+checks now; browser smoke is N/A for this runtime-only checkpoint.
+
+## Previous runtime redirect checkpoint - T382 (2026-07-22)
 
 T382 closes in `0f30280e`: root ModifyReversalDef RedirectID now resolves a
 valid caller expression to one verified receiver and mutates its existing

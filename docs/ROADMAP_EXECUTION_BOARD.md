@@ -1,6 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T382 (2026-07-22)
+## Current runtime compatibility board - T383 (2026-07-22)
+
+T383 closes the local core `ModifyReversalDef RedirectID` continuation in
+`739ac163`. A valid caller expression can patch one verified active root
+reversal with any supplied static `reversal.attr`, first `pausetime` value,
+`p1stateno`, `id`, and `attack.depth`. The receiver keeps move identity,
+contact state, frame/control state, and telemetry. The required core trace
+proves changed attack depth admits receiver-owned counter contact, then changed
+state and target metadata take effect. Focused runtime coverage passes 7 files
+/ 1051 tests. Scores stay unchanged.
+
+Allowed claim: static root-to-root core ModifyReversalDef mutation through a
+caller-evaluated RedirectID under explicit `ikemen-go`. Blocked: `p2stateno`,
+`p2getp1state`, guard fields, all other inherited HitDef fields, dynamic
+payloads, exact scheduler/hitpause behavior, Helpers, custom states, teams,
+rollback/netplay, renderer work, and full MUGEN/IKEMEN parity. The grouped
+typecheck, full Vitest, trace aggregate, build, and boundary checkpoint follows
+this batch.
+
+## Previous runtime compatibility board - T382 (2026-07-22)
 
 T382 closes root `ModifyReversalDef RedirectID` in `0f30280e`. A valid caller
 expression now resolves one verified IKEMEN root and patches only its existing
