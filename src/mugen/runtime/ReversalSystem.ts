@@ -171,6 +171,10 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.p1StateNo = operation.p1StateNo;
       runtimeReversal.p1StateNo = operation.p1StateNo;
     }
+    if (operation.p2StateNo !== undefined) {
+      existing.p2StateNo = operation.p2StateNo;
+      runtimeReversal.p2StateNo = operation.p2StateNo;
+    }
     if (operation.targetId !== undefined) {
       existing.targetId = operation.targetId;
     }

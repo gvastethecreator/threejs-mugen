@@ -98,6 +98,7 @@ describe("ReversalSystem", () => {
         "reversal.attr": "S,NA",
         pausetime: "7,11",
         p1stateno: "778",
+        p2stateno: "780",
         id: "92",
         "attack.depth": "4,8",
         redirectid: "57",
@@ -113,6 +114,7 @@ describe("ReversalSystem", () => {
         reversalAttr: "S,NA",
         hitPause: 7,
         p1StateNo: 778,
+        p2StateNo: 780,
         targetId: 92,
         attackDepth: [4, 8],
       },
@@ -124,7 +126,7 @@ describe("ReversalSystem", () => {
       reversalAttr: "S,NA",
       hitPause: 7,
       p1StateNo: 778,
-      p2StateNo: 779,
+      p2StateNo: 780,
       targetId: 92,
       attackDepth: [4, 8],
     });
@@ -132,7 +134,7 @@ describe("ReversalSystem", () => {
       attr: "S,NA",
       hitPause: 7,
       p1StateNo: 778,
-      p2StateNo: 779,
+      p2StateNo: 780,
       attackDepth: [4, 8],
     });
     expect(fighter.currentMove?.attackDepth).not.toBe(fighter.runtime.reversal?.attackDepth);
@@ -266,7 +268,7 @@ describe("ReversalSystem", () => {
     const result = world.apply(reverser, attacker, reversal, hooks({
       rememberTarget: (_source, _target, targetId) => calls.push(`target:${targetId}`),
       enterState: (_target, stateNo) => calls.push(`p1:${stateNo}`),
-      enterTargetHitState: (_target, _owner, stateNo) => calls.push(`p2:${stateNo}`),
+      enterTargetHitState: (_target, _owner, stateNo, getP1State) => calls.push(`p2:${stateNo}:${getP1State}`),
     }));
 
     expect(result.message).toBe("Reverser reversed Attacker p1->777 p2->778");
@@ -287,7 +289,7 @@ describe("ReversalSystem", () => {
     expect(reverser.runtime.power).toBe(3000);
     expect(contactWorld.calls).toEqual(["reversed:200"]);
     expect(runtimeMoveReversedValue(attacker.contact, 200)).toBe(0);
-    expect(calls).toEqual(["target:4", "p1:777", "p2:778"]);
+    expect(calls).toEqual(["target:4", "p1:777", "p2:778:true"]);
   });
 
   it("clears active reversal when p1 state cannot be entered", () => {

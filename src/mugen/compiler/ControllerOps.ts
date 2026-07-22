@@ -82,6 +82,7 @@ export type ModifyReversalDefControllerOp = {
   reversalAttr?: string;
   hitPause?: number;
   p1StateNo?: number;
+  p2StateNo?: number;
   targetId?: number;
   attackDepth?: [number, number];
 };
@@ -1807,7 +1808,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
 }
 
 function compileModifyReversalDefControllerOp(controller: MugenStateController): ModifyReversalDefControllerOp | undefined {
-  const allowedParams = new Set(["type", "redirectid", "reversal.attr", "pausetime", "p1stateno", "id", "attack.depth"]);
+  const allowedParams = new Set(["type", "redirectid", "reversal.attr", "pausetime", "p1stateno", "p2stateno", "id", "attack.depth"]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
   }
@@ -1815,6 +1816,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const hitPauseRaw = findParam(controller, "pausetime");
   const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
   const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
+  const p2StateNo = staticOptionalStrictNumberParam(controller, "p2stateno");
   const targetId = staticOptionalStrictNumberParam(controller, "id");
   const attackDepthRaw = findParam(controller, "attack.depth");
   const attackDepthPair = attackDepthRaw === undefined ? undefined : strictStaticNumberPair(attackDepthRaw);
@@ -1823,6 +1825,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     reversalAttr === "" ||
     (hitPauseRaw !== undefined && !hitPausePair) ||
     p1StateNo === false ||
+    p2StateNo === false ||
     targetId === false ||
     (attackDepthRaw !== undefined && !attackDepthPair) ||
     redirectPlayerIdExpression === undefined ||
@@ -1832,6 +1835,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   }
   const hitPause = hitPausePair === undefined ? undefined : Math.max(0, Math.round(hitPausePair[0]));
   const normalizedP1StateNo = p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo));
+  const normalizedP2StateNo = p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo));
   const normalizedTargetId = targetId === true ? undefined : Math.max(0, Math.round(targetId));
   const attackDepth = attackDepthPair === undefined
     ? undefined
@@ -1840,6 +1844,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     reversalAttr === undefined &&
     hitPause === undefined &&
     normalizedP1StateNo === undefined &&
+    normalizedP2StateNo === undefined &&
     normalizedTargetId === undefined &&
     attackDepth === undefined
   ) {
@@ -1851,6 +1856,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(reversalAttr === undefined ? {} : { reversalAttr }),
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
+    ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
     ...(normalizedTargetId === undefined ? {} : { targetId: normalizedTargetId }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
   };

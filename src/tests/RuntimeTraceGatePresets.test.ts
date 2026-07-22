@@ -176,6 +176,7 @@ import {
   createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17753,6 +17754,39 @@ describe("RuntimeTraceGatePresets", () => {
   });
 
   it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {
+  it("creates a required IKEMEN root ModifyReversalDef p2stateno RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ReversalDef: 1,
+      ModifyReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      reversaldef: 1,
+      modifyreversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 94 }),
+    );
+    expect(artifact.trace.finalActors).toContainEqual(
+      expect.objectContaining({ id: "p1", stateNo: 889, animNo: 889, customOwnerId: "p2" }),
+    );
+    expect(artifact.trace.finalActors).toContainEqual(
+      expect.objectContaining({ id: "p2", stateNo: 777, animNo: 777 }),
+    );
+  });
+
     const artifact = createSyntheticImportedIkemenHelperSelfTagTraceArtifact({
       generatedAt: "2026-07-11T00:00:00.000Z",
     });

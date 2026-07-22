@@ -1660,6 +1660,7 @@ value = 1
         "reversal.attr": "S,NA",
         pausetime: "7,11",
         p1stateno: "778",
+        p2stateno: "779",
         id: "92",
         "attack.depth": "4,8",
         redirectid: "var(0)",
@@ -1674,8 +1675,8 @@ value = 1
     const dynamicPayload = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { pausetime: "var(1),7", redirectid: "57" }),
     );
-    const unsupportedP2State = compileControllerIr(
-      controller(200, "ModifyReversalDef", [], { p2stateno: "778", redirectid: "57" }),
+    const dynamicP2State = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2stateno: "var(1)", redirectid: "57" }),
     );
     const missingRedirect = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA" }),
@@ -1694,6 +1695,7 @@ value = 1
         reversalAttr: "S,NA",
         hitPause: 7,
         p1StateNo: 778,
+        p2StateNo: 779,
         targetId: 92,
         attackDepth: [4, 8],
         redirectPlayerIdExpression: "var(0)",
@@ -1706,7 +1708,7 @@ value = 1
     });
     expect(unsupportedPayload.supportLevel).toBe("unsupported");
     expect(dynamicPayload.operation).toBeUndefined();
-    expect(unsupportedP2State.operation).toBeUndefined();
+    expect(dynamicP2State.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(missingRedirect.operation).toBeUndefined();
     expect(emptyPayload.operation).toBeUndefined();

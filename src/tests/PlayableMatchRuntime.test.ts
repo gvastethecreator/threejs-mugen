@@ -10000,6 +10000,55 @@ RedirectID = var(0)
     expect(modified.logs.some((line) => line.includes("Blocked ModifyReversalDef RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root ModifyReversalDef p2stateno through the receiver-owned custom state", () => {
+    const caller = createImportedFixture({
+      passiveResourceController: `
+[State 0, Redirected ModifyReversalDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected ModifyReversalDef p2 state]
+type = ModifyReversalDef
+trigger1 = Time = 1
+p2stateno = 889
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-modifyreversaldef-p2state-destination",
+      withStateMove: false,
+      extraStateNos: [889],
+      passiveReversalDef: { attr: "S,NA", p1StateNo: 777, p2StateNo: 888, hitPause: 3, targetId: 94 },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+    const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
+    expect(countered.actors[0]?.runtime.stateNo).toBe(889);
+    expect(countered.actors[0]?.runtime.animNo).toBe(889);
+    expect(countered.actors[0]?.runtime.animationSource).toBe("state-owner");
+    expect(countered.actors[0]?.runtime.customState).toEqual({ ownerId: "p2", stateNo: 889, getP1State: true });
+    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
+    expect(countered.logs.some((line) => line.includes("p2->889"))).toBe(true);
+    expect(countered.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
+    expect(countered.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
   it("blocks IKEMEN root ModifyHitDef RedirectID when the receiver is unknown", () => {
     const caller = createImportedFixture({
       withStateMove: false,

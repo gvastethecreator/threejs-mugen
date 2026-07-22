@@ -12624,6 +12624,81 @@ export function createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTr
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 94;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a ReversalDef with an old p2 state while caller stays out of reach", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects p2stateno before receiver counter contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef P2 State Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      posZ: 7,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      p2StateNo: 889,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef P2 State Redirect Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      p2StateNo: 888,
+      hitPause: 3,
+      targetId,
+      trigger: "Time = 0",
+    },
+    customStateRoute: { startStateNo: 889, selfStateAfter: 4 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyReversalDef p2stateno RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves static ModifyReversalDef p2stateno through RedirectID, mutates one active receiver reversal in place, and routes the countered attacker into the receiver-owned state. IKEMEN sets p2getp1state while writing p2stateno; this fixture only covers that fixed owner route. Explicit p2getp1state, guard fields, other inherited HitDef fields, Helpers, broader custom-state execution, teams, source scheduling, and full parity remain outside the fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 889, animNo: 889, customOwnerId: "p2", moveType: "H", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49198,6 +49273,7 @@ export type SyntheticImportedTraceFighterOptions = {
     attr?: string;
     hitPause?: number;
     p1StateNo?: number;
+    p2StateNo?: number;
     targetId?: number;
     attackDepth?: [number, number?];
     redirectId: SyntheticNumberExpression;
@@ -56070,6 +56146,7 @@ type = ModifyReversalDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
 ${route.attr === undefined ? "" : `reversal.attr = ${route.attr}`}
 ${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
+${route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}`}
 ${route.p1StateNo === undefined ? "" : `p1stateno = ${route.p1StateNo}`}
 ${route.targetId === undefined ? "" : `id = ${route.targetId}`}
 ${route.attackDepth === undefined ? "" : `attack.depth = ${route.attackDepth.join(",")}`}
