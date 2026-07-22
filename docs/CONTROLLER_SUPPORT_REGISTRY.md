@@ -645,3 +645,12 @@ receives the transform after collision-transform reset, while required trace
 evidence records destination scale/angle and `collision-transform`. Exact
 collision geometry, Helper scheduling breadth, hitpause/reset parity, nested
 ownership, renderer proof, and full parity remain unsupported.
+
+Root OverrideClsn RedirectID addendum: OverrideClsn is executed-partial for
+current roots under the explicit IKEMEN profile. Dynamic caller `group`,
+`index`, and `rect` materialize before a verified root destination write, and
+authored `Clsn1`, `Clsn2`, `Size`, and `None` groups retain their textual
+meaning. A later root receives the override after collision reset. Required
+trace evidence records target `clsn2Count` and `collision:overrideclsn`.
+Exact collision geometry, source scheduling, Helper/nested ownership,
+hitpause/reset parity, renderer proof, and full parity remain unsupported.

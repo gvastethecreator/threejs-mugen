@@ -1,5 +1,21 @@
 # Workplan
 
+## Runtime collision checkpoint - T376 (2026-07-22)
+
+T376 closes in `865af29b`. Root active-side-effect OverrideClsn RedirectID now
+materializes dynamic caller group, index, and rectangle values before it writes
+a verified root target. A later target receives the override after collision
+reset, and textual authored collision groups retain their meaning. Focused
+collision-override, imported-match, and trace coverage passes 3 files / 933
+tests. Diff hygiene passes. The broad typecheck, full suite, trace aggregate,
+build, and boundary checks remain deliberately queued for the next larger
+runtime batch; browser smoke is N/A for this runtime-only slice.
+
+Keep exact collision geometry, source scheduler order, Helper/nested ownership,
+hitpause/reset parity, renderer/upstream differentials, rollback/netplay, and
+full parity outside this bounded lane. The next source-backed audit should
+check remaining root RedirectID controller families before grouped validation.
+
 ## Runtime constraint checkpoint - T374/T375 (2026-07-22)
 
 T374 and T375 close in `0dfac1ff`. Root active-controller PosFreeze RedirectID

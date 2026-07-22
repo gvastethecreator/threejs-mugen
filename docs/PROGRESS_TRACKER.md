@@ -1,5 +1,27 @@
 ﻿# Progress Tracker
 
+## Runtime collision report - T376 (2026-07-22)
+
+- Runtime feature commit: `865af29b`. This focused checkpoint does not replace
+  the separate FightScreen or Studio frontiers.
+- Root OverrideClsn RedirectID now materializes caller-owned dynamic group,
+  index, and rectangle values before target dispatch. A later root receives
+  the override after its collision reset, and textual collision groups retain
+  their authored meaning.
+- Gates: focused collision-override, imported-match, and trace coverage passes
+  3 files / 933 tests. Diff hygiene passes. TypeScript, complete Vitest, trace
+  aggregate, build, and boundary checks remain queued for the larger runtime
+  checkpoint selected by the user.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current root OverrideClsn RedirectID with caller values,
+  existing localcoord scale, and current reset order. Exact collision geometry,
+  source scheduling, Helper/nested ownership, hitpause/reset parity,
+  renderer/upstream differentials, rollback/netplay, and full parity remain
+  open.
+- Next constraint frontier: audit the remaining source-supported root
+  RedirectID routes before the broader grouped verification checkpoint.
+
 ## Runtime constraint report - T374/T375 (2026-07-22)
 
 - Runtime feature commit: `0dfac1ff`. This focused checkpoint does not replace
