@@ -1,5 +1,17 @@
 ﻿# Progress Tracker
 
+## Runtime p2 state report - T384 (2026-07-22)
+
+- Runtime feature commit: `eddddc8a`.
+- Root ModifyReversalDef RedirectID now accepts static `p2stateno` and mutates
+  an already-active verified receiver without resetting move or contact state.
+- Evidence: required imported trace ends with the countered P1 in receiver P2
+  state `889` and `customOwnerId: "p2"`.
+- Focused compiler, dispatch, state executor, imported-match, and trace batch:
+  7 files / 1057 tests passed. Script syntax and diff hygiene pass.
+- Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. T385 owns the separate explicit
+  `p2getp1state` override. Global checks remain deferred to the next batch.
+
 ## Global runtime checkpoint report - T383 (2026-07-22)
 
 - Audited head: `38d62678`, following T381 `86cf7040`, T382 `0f30280e`, and

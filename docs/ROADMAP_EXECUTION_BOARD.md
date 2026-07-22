@@ -1,5 +1,16 @@
 ﻿# Roadmap Execution Board
 
+## Current runtime compatibility board - T385 (2026-07-22)
+
+T384 closes in `eddddc8a`: static root `ModifyReversalDef p2stateno` through
+caller-evaluated RedirectID now mutates one active receiver in place. The
+countered attacker enters the receiver-owned state and records that owner. T385
+remains active for the separate static `p2getp1state` override. Pinned
+IKEMEN-GO source sets `p2getp1state = true` whenever shared HitDef mutation
+writes `p2stateno`, then allows the distinct field to override that owner rule.
+Guard fields, Helpers, other inherited HitDef fields, dynamic values, source
+timing, and full parity remain outside the active scope.
+
 ## Global runtime checkpoint after T383 (2026-07-22)
 
 The grouped T381-T383 runtime checkpoint closes at `38d62678`. TypeScript 7,

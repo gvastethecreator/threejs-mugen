@@ -1,5 +1,18 @@
 # Workplan
 
+## Runtime p2 state checkpoint - T384 (2026-07-22)
+
+T384 closes in `eddddc8a`. Static root ModifyReversalDef RedirectID now writes
+`p2stateno` onto one active verified reversal in place. Counter contact enters
+the attacker into receiver state `889` with receiver-owned custom-state data.
+Focused coverage passes 7 files / 1057 tests; script syntax and diff hygiene
+pass. Scores do not move.
+
+Keep explicit `p2getp1state` in T385. Guard fields, other inherited HitDef
+fields, dynamic values, Helpers, teams, source timing, and full parity remain
+blocked. TypeScript, full Vitest, trace aggregate, build, and boundaries stay
+queued for the next grouped runtime checkpoint.
+
 ## Global runtime checkpoint after T383 (2026-07-22)
 
 The grouped T381-T383 runtime checkpoint passed at `38d62678`: TypeScript 7,

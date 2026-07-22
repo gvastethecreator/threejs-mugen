@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 569 - root ModifyReversalDef p2 state RedirectID
+
+Closed source-backed root ModifyReversalDef `p2stateno` RedirectID in
+`eddddc8a`. The typed operation accepts a static non-negative state number and
+one caller-evaluated RedirectID, then mutates the verified active reversal in
+place. Counter contact sends the target through the receiver-owned state branch
+and preserves move identity, contact state, frame/control state, and telemetry.
+
+Verification: focused compiler, reversal dispatch, active-side-effect, state
+executor, root CNS, imported-match, and trace coverage passes 7 files / 1057
+tests. The required
+`synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect` artifact
+ends with P1 in receiver P2 state `889` and owner `p2`. Script syntax and diff
+hygiene pass. TypeScript, complete Vitest, trace aggregate, build, and
+boundaries remain deliberately deferred to the next runtime batch. No score
+movement. Claim allowed: static root-to-root p2 state mutation through
+caller-evaluated RedirectID under explicit `ikemen-go`. Claim blocked: explicit
+`p2getp1state`, guard fields, other HitDef fields, dynamic values, Helpers,
+teams, source timing, renderer behavior, rollback/netplay, and full parity. See
+Wayfinder T384.
+
 ## Entry 568 - global runtime checkpoint after T383
 
 Closed the grouped T381-T383 runtime checkpoint at `38d62678`. TypeScript 7,
