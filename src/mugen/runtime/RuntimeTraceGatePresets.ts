@@ -12484,6 +12484,68 @@ export function createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifa
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 91;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a non-matching ReversalDef out of range", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects static ModifyReversalDef before receiver contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: { attr: "S,NA", redirectId: 57, trigger: "Time >= 1" },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef Redirect Receiver",
+    withHitDef: false,
+    passiveReversalDef: { attr: "S,SP", p1StateNo: 777, hitPause: 3, targetId, trigger: "Time = 0" },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyReversalDef RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves one static ModifyReversalDef RedirectID destination and mutates its already active ReversalDef attr in place before receiver-owned counter contact. Guard flags, other inherited HitDef fields, Helpers, custom states, teams, source scheduling, hitpause, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49053,6 +49115,11 @@ export type SyntheticImportedTraceFighterOptions = {
     redirectId: SyntheticNumberExpression;
     trigger?: string;
   };
+  rootModifyReversalDefRedirectRoute?: {
+    attr: string;
+    redirectId: SyntheticNumberExpression;
+    trigger?: string;
+  };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -49903,6 +49970,7 @@ ${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandR
 ${options.activeRootMotionRoute ? activeRootMotionRouteBlock(options.activeRootMotionRoute) : ""}
 ${options.activeRootHitDefRoute ? activeRootHitDefRouteBlock(options.activeRootHitDefRoute) : ""}
 ${options.rootModifyHitDefRedirectRoute ? rootModifyHitDefRedirectControllerBlock(options.rootModifyHitDefRedirectRoute) : ""}
+${options.rootModifyReversalDefRedirectRoute ? rootModifyReversalDefRedirectControllerBlock(options.rootModifyReversalDefRedirectRoute) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
@@ -55905,6 +55973,18 @@ function rootModifyHitDefRedirectControllerBlock(
 type = ModifyHitDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
 damage = ${damageValue}
+redirectid = ${route.redirectId}
+`;
+}
+
+function rootModifyReversalDefRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootModifyReversalDefRedirectRoute"]>,
+): string {
+  return `
+[State 0, Root ModifyReversalDef Redirect]
+type = ModifyReversalDef
+trigger1 = ${route.trigger ?? "Time >= 1"}
+reversal.attr = ${route.attr}
 redirectid = ${route.redirectId}
 `;
 }

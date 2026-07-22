@@ -12,6 +12,7 @@ describe("RuntimeActiveSideEffectDispatchWorld", () => {
   it.each([
     ["hitdef", "hitdef", "hitDef"],
     ["modifyhitdef", "modifyhitdef", "modifyHitDef"],
+    ["modifyreversaldef", "modifyreversaldef", "modifyReversalDef"],
     ["reversaldef", "reversaldef", "reversalDef"],
     ["width", "width", "width"],
     ["height", "height", "height"],
@@ -109,6 +110,7 @@ function routeHooks(calls: string[]): RuntimeActiveSideEffectDispatchHooks<Actor
   return {
     hitDef: push("hitDef"),
     modifyHitDef: push("modifyHitDef"),
+    modifyReversalDef: push("modifyReversalDef"),
     reversalDef: push("reversalDef"),
     width: push("width"),
     height: push("height"),

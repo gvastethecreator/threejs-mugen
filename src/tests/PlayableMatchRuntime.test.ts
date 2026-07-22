@@ -9918,6 +9918,52 @@ ground.velocity = 0,0
     expect(modified.logs.some((line) => line.includes("Blocked ModifyHitDef RedirectID"))).toBe(false);
   });
 
+  it("routes IKEMEN root ModifyReversalDef RedirectID to an active receiver without resetting its move", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected ModifyReversalDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected ModifyReversalDef]
+type = ModifyReversalDef
+trigger1 = Time = 1
+reversal.attr = S,NA
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-modifyreversaldef-destination",
+      withStateMove: false,
+      passiveReversalDef: { attr: "S,SP", p1StateNo: 777, hitPause: 3, targetId: 91 },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { currentMove?: { reversalAttr?: string }; runtime: { reversal?: { attr?: string } } };
+    };
+    const receiverMove = internals.p2.currentMove;
+    const receiverReversal = internals.p2.runtime.reversal;
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(internals.p2.currentMove).toBe(receiverMove);
+    expect(internals.p2.runtime.reversal).toBe(receiverReversal);
+    expect(internals.p2.currentMove).toMatchObject({ reversalAttr: "S,NA" });
+    expect(internals.p2.runtime.reversal).toMatchObject({ attr: "S,NA" });
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.reversaldef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
+    expect(modified.logs.some((line) => line.includes("Blocked ModifyReversalDef RedirectID"))).toBe(false);
+  });
+
   it("blocks IKEMEN root ModifyHitDef RedirectID when the receiver is unknown", () => {
     const caller = createImportedFixture({
       withStateMove: false,

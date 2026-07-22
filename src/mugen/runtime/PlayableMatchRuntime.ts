@@ -543,7 +543,7 @@ type RedirectableEffectControllerType = "projectile" | "modifyprojectile";
 type RedirectableHitDefControllerType = "hitdef" | "modifyhitdef";
 type RedirectableHitEligibilityControllerType = "hitby" | "nothitby";
 type RedirectableHitOverrideControllerType = "hitoverride";
-type RedirectableReversalDefControllerType = "reversaldef";
+type RedirectableReversalDefControllerType = "reversaldef" | "modifyreversaldef";
 type RedirectableTargetControllerType =
   | "targetlifeadd"
   | "targetredlifeadd"
@@ -4205,7 +4205,9 @@ function redirectableHitOverrideControllerType(controller: ControllerIr): Redire
 }
 
 function redirectableReversalDefControllerType(controller: ControllerIr): RedirectableReversalDefControllerType | undefined {
-  return controller.normalizedType === "reversaldef" ? controller.normalizedType : undefined;
+  return controller.normalizedType === "reversaldef" || controller.normalizedType === "modifyreversaldef"
+    ? controller.normalizedType
+    : undefined;
 }
 
 function resourceControllerRedirectExpression(controller: ControllerIr): string | undefined {
@@ -4300,7 +4302,7 @@ function reversalDefControllerRedirectExpression(controller: ControllerIr): stri
   if (redirectableReversalDefControllerType(controller) === undefined) {
     return undefined;
   }
-  const compiledExpression = controller.operation?.kind === "reversaldef"
+  const compiledExpression = controller.operation?.kind === "reversaldef" || controller.operation?.kind === "modifyreversaldef"
     ? controller.operation.redirectPlayerIdExpression
     : undefined;
   if (compiledExpression !== undefined) {
@@ -4894,6 +4896,39 @@ function runActiveStateControllers(
       });
       if (!result.modified) {
         options.onBlocked?.(controller, `modifyhitdef-${result.reason ?? "unsupported-operation"}`);
+      }
+    },
+    modifyReversalDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      if (actor !== fighter || stateOwner !== actor) {
+        options.onBlocked?.(controller, "modifyreversaldef-root-only");
+        return;
+      }
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectExpression = reversalDefControllerRedirectExpression(controller);
+      if (!redirectExpression) {
+        options.onBlocked?.(controller, "modifyreversaldef-redirect");
+        return;
+      }
+      const target = options.onRootRedirect?.(fighter, redirectExpression, context, "modifyreversaldef");
+      if (!target) {
+        options.onBlocked?.(controller, "modifyreversaldef-redirect");
+        return;
+      }
+      const result = reversalControllerDispatchWorld.modify({
+        actor: target,
+        controller,
+        ...runtimeActiveControllerTelemetryHooks,
+      });
+      if (!result.modified) {
+        options.onBlocked?.(controller, `modifyreversaldef-${result.reason ?? "unsupported-operation"}`);
       }
     },
     reversalDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {

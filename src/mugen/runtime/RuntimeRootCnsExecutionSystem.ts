@@ -39,7 +39,7 @@ export const ACTIVE_MOTION_ROOT_CNS_CAPABILITIES: RuntimeActiveControllerCapabil
     "playerpush",
     "hitoverride",
   ],
-  sideEffects: ["hitdef", "modifyhitdef", "reversaldef", "width", "height", "overrideclsn", "depth"],
+  sideEffects: ["hitdef", "modifyhitdef", "modifyreversaldef", "reversaldef", "width", "height", "overrideclsn", "depth"],
 };
 
 export class RuntimeRootCnsExecutionWorld {

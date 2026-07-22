@@ -174,6 +174,7 @@ import {
   createSyntheticImportedIkemenRootReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17690,6 +17691,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("hit");
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 90 }),
+    );
+  });
+
+  it("creates a required IKEMEN root ModifyReversalDef RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyreversaldef-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ReversalDef: 1,
+      ModifyReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      reversaldef: 1,
+      modifyreversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 91 }),
     );
   });
 

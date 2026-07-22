@@ -1654,6 +1654,34 @@ value = 1
     expect(oversizedPair.operation).toBeUndefined();
   });
 
+  it("compiles static root ModifyReversalDef RedirectID attrs and rejects unsupported payloads", () => {
+    const modified = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", redirectid: "var(0)" }),
+    );
+    const unsupportedPayload = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", "reversal.guardflag": "MA", redirectid: "57" }),
+    );
+    const missingRedirect = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA" }),
+    );
+    const malformedRedirect = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", redirectid: "var(" }),
+    );
+
+    expect(modified).toMatchObject({
+      supportLevel: "partial",
+      operation: {
+        kind: "modifyreversaldef",
+        reversalAttr: "S,NA",
+        redirectPlayerIdExpression: "var(0)",
+      },
+    });
+    expect(unsupportedPayload.supportLevel).toBe("unsupported");
+    expect(unsupportedPayload.operation).toBeUndefined();
+    expect(missingRedirect.operation).toBeUndefined();
+    expect(malformedRedirect.operation).toBeUndefined();
+  });
+
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
     const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));

@@ -9,6 +9,7 @@ type RuntimeActiveSideEffectDispatch = Extract<StateProgramDispatch, { kind: "si
 export type RuntimeActiveSideEffectRoute =
   | "hitdef"
   | "modifyhitdef"
+  | "modifyreversaldef"
   | "reversaldef"
   | "width"
   | "height"
@@ -37,6 +38,7 @@ export type RuntimeActiveSideEffectDispatchHandlerInput<TActor, TEffect extends 
 export type RuntimeActiveSideEffectDispatchHooks<TActor> = {
   hitDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "hitdef">) => void;
   modifyHitDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "modifyhitdef">) => void;
+  modifyReversalDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "modifyreversaldef">) => void;
   reversalDef?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "reversaldef">) => void;
   width?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "width">) => void;
   height?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "height">) => void;
@@ -97,6 +99,10 @@ export class RuntimeActiveSideEffectDispatchWorld {
       input.hooks.hitDef?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "hitdef">);
     } else if (input.dispatch.effect === "modifyhitdef") {
       input.hooks.modifyHitDef?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "modifyhitdef">);
+    } else if (input.dispatch.effect === "modifyreversaldef") {
+      input.hooks.modifyReversalDef?.(
+        handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "modifyreversaldef">,
+      );
     } else if (input.dispatch.effect === "reversaldef") {
       input.hooks.reversalDef?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "reversaldef">);
     } else if (input.dispatch.effect === "width") {
@@ -146,6 +152,7 @@ export class RuntimeActiveSideEffectDispatchWorld {
 export function runtimeActiveSideEffectRoute(effect: StateProgramSideEffect): RuntimeActiveSideEffectRoute {
   if (effect === "hitdef") return "hitdef";
   if (effect === "modifyhitdef") return "modifyhitdef";
+  if (effect === "modifyreversaldef") return "modifyreversaldef";
   if (effect === "reversaldef") return "reversaldef";
   if (effect === "width") return "width";
   if (effect === "height") return "height";
@@ -168,6 +175,7 @@ function activeSideEffectHookExists<TActor>(
 ): boolean {
   if (route === "hitdef") return Boolean(hooks.hitDef);
   if (route === "modifyhitdef") return Boolean(hooks.modifyHitDef);
+  if (route === "modifyreversaldef") return Boolean(hooks.modifyReversalDef);
   if (route === "reversaldef") return Boolean(hooks.reversalDef);
   if (route === "width") return Boolean(hooks.width);
   if (route === "height") return Boolean(hooks.height);

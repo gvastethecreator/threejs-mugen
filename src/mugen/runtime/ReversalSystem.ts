@@ -1,4 +1,4 @@
-import type { ReversalDefControllerOp } from "../compiler/ControllerOps";
+import type { ModifyReversalDefControllerOp, ReversalDefControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
@@ -83,6 +83,21 @@ export type RuntimeReversalControllerDispatchResult = {
   operation?: ReversalDefControllerOp;
 };
 
+export type RuntimeModifyReversalDefControllerDispatchOptions<TActor extends RuntimeReversalActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: ModifyReversalDefControllerOp) => void;
+};
+
+export type RuntimeModifyReversalDefControllerDispatchResult = {
+  modified: boolean;
+  reason?: "unsupported-operation" | "missing-active-reversal";
+  recordedController: boolean;
+  recordedOperation: boolean;
+  operation?: ModifyReversalDefControllerOp;
+};
+
 export class RuntimeReversalControllerDispatchWorld {
   apply<TActor extends RuntimeReversalActor>({
     actor,
@@ -114,6 +129,45 @@ export class RuntimeReversalControllerDispatchWorld {
       recordedController: recordController !== undefined,
       recordedOperation: operation !== undefined && recordOperation !== undefined,
       ...(operation ? { operation } : {}),
+    };
+  }
+
+  modify<TActor extends RuntimeReversalActor>({
+    actor,
+    controller,
+    recordController,
+    recordOperation,
+  }: RuntimeModifyReversalDefControllerDispatchOptions<TActor>): RuntimeModifyReversalDefControllerDispatchResult {
+    const operation = controller.operation?.kind === "modifyreversaldef" ? controller.operation : undefined;
+    if (!operation) {
+      return {
+        modified: false,
+        reason: "unsupported-operation",
+        recordedController: false,
+        recordedOperation: false,
+      };
+    }
+
+    const existing = actor.currentMove;
+    const runtimeReversal = actor.runtime.reversal;
+    if (!existing?.isReversal || !existing.reversalAttr || !runtimeReversal?.attr) {
+      return {
+        modified: false,
+        reason: "missing-active-reversal",
+        recordedController: false,
+        recordedOperation: false,
+      };
+    }
+
+    existing.reversalAttr = operation.reversalAttr;
+    runtimeReversal.attr = operation.reversalAttr;
+    recordController?.(actor, controller.source);
+    recordOperation?.(actor, operation);
+    return {
+      modified: true,
+      recordedController: recordController !== undefined,
+      recordedOperation: recordOperation !== undefined,
+      operation,
     };
   }
 }

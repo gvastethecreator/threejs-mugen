@@ -26,6 +26,7 @@ describe("RuntimeRootCnsExecutionWorld", () => {
     expect(ACTIVE_MOTION_ROOT_CNS_CAPABILITIES.sideEffects).toEqual([
       "hitdef",
       "modifyhitdef",
+      "modifyreversaldef",
       "reversaldef",
       "width",
       "height",

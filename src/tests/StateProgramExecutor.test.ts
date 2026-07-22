@@ -58,6 +58,9 @@ describe("StateProgramExecutor dispatch", () => {
     const modifyHit = dispatchStateProgramController(
       compileControllerIr(controller("ModifyHitDef", { damage: "30", redirectid: "57" })),
     );
+    const modifyReversal = dispatchStateProgramController(
+      compileControllerIr(controller("ModifyReversalDef", { "reversal.attr": "S,NA", redirectid: "57" })),
+    );
     const target = dispatchStateProgramController(compileControllerIr(controller("TargetLifeAdd", { value: "-20" })));
     const reset = dispatchStateProgramController(compileControllerIr(controller("MoveHitReset", {})));
     const hitAdd = dispatchStateProgramController(compileControllerIr(controller("HitAdd", { value: "2" })));
@@ -68,6 +71,7 @@ describe("StateProgramExecutor dispatch", () => {
     expect(isStateEntrySetupDispatch(vel)).toBe(false);
     expect(hit).toMatchObject({ kind: "side-effect", effect: "hitdef" });
     expect(modifyHit).toMatchObject({ kind: "side-effect", effect: "modifyhitdef" });
+    expect(modifyReversal).toMatchObject({ kind: "side-effect", effect: "modifyreversaldef" });
     expect(target).toMatchObject({ kind: "side-effect", effect: "target" });
     expect(reset).toMatchObject({ kind: "side-effect", effect: "contact" });
     expect(hitAdd).toMatchObject({ kind: "side-effect", effect: "contact" });

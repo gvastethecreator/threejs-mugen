@@ -29,6 +29,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   statetypeset: partial("state metadata"),
   hitdef: partial("combat"),
   modifyhitdef: partial("active HitDef mutation"),
+  modifyreversaldef: partial("active ReversalDef mutation"),
   reversaldef: partial("counter combat"),
   playerpush: partial("body push"),
   posfreeze: partial("tick movement"),
@@ -139,10 +140,17 @@ export function compileControllerIr(controller: MugenStateController, context: C
   const operation = compileControllerOp(controller, context);
   const boundedTagController = normalizedType === "tagin" || normalizedType === "tagout";
   const boundedModifyHitDefController = normalizedType === "modifyhitdef";
-  const requiresTypedOperation = boundedTagController || boundedModifyHitDefController;
+  const boundedModifyReversalDefController = normalizedType === "modifyreversaldef";
+  const requiresTypedOperation = boundedTagController || boundedModifyHitDefController || boundedModifyReversalDefController;
   if (requiresTypedOperation && !operation) {
     unsupportedFeatures.add(
-      `${controller.type}:${boundedModifyHitDefController ? "static-damage-redirect" : "optional-params"}`,
+      `${controller.type}:${
+        boundedModifyHitDefController
+          ? "static-damage-redirect"
+          : boundedModifyReversalDefController
+            ? "static-reversal-attr-redirect"
+            : "optional-params"
+      }`,
     );
   }
   return {

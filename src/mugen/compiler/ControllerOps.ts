@@ -76,6 +76,12 @@ export type ModifyHitDefControllerOp = {
   guardDamage?: number;
 };
 
+export type ModifyReversalDefControllerOp = {
+  kind: "modifyreversaldef";
+  redirectPlayerIdExpression: string;
+  reversalAttr: string;
+};
+
 export type HitDefFallOp = {
   enabled?: boolean;
   xVelocity?: number;
@@ -766,6 +772,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "reversaldef") {
     return compileReversalDefControllerOp(controller);
+  }
+  if (type === "modifyreversaldef") {
+    return compileModifyReversalDefControllerOp(controller);
   }
   if (type === "attackmulset" || type === "defencemulset") {
     return compileDamageScaleControllerOp(controller, type);
@@ -1789,6 +1798,23 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     redirectPlayerIdExpression,
     damage: damage[0],
     ...(damage[1] === undefined ? {} : { guardDamage: damage[1] }),
+  };
+}
+
+function compileModifyReversalDefControllerOp(controller: MugenStateController): ModifyReversalDefControllerOp | undefined {
+  const allowedParams = new Set(["type", "redirectid", "reversal.attr"]);
+  if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
+    return undefined;
+  }
+  const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"));
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (!reversalAttr || redirectPlayerIdExpression === undefined || redirectPlayerIdExpression === "invalid") {
+    return undefined;
+  }
+  return {
+    kind: "modifyreversaldef",
+    redirectPlayerIdExpression,
+    reversalAttr,
   };
 }
 

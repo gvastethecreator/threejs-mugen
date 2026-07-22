@@ -3,6 +3,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 export type StateProgramSideEffect =
   | "hitdef"
   | "modifyhitdef"
+  | "modifyreversaldef"
   | "reversaldef"
   | "width"
   | "height"
@@ -70,6 +71,7 @@ export type StateProgramDispatch =
 const sideEffects: Record<string, StateProgramSideEffect> = {
   hitdef: "hitdef",
   modifyhitdef: "modifyhitdef",
+  modifyreversaldef: "modifyreversaldef",
   reversaldef: "reversaldef",
   width: "width",
   height: "height",

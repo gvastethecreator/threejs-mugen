@@ -70,6 +70,62 @@ describe("ReversalSystem", () => {
     expect(fighter.runtime.reversal?.attackDepth).toEqual([6, 6]);
   });
 
+  it("mutates an active ReversalDef in place without clearing contact state", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const fighter = actor("p1", "Reverser", { stateNo: 300 });
+    reversalWorld.activate(fighter, {
+      attr: "S,SP",
+      hitbox: { x1: 1, y1: -40, x2: 32, y2: -8 },
+      hitPause: 3,
+      p1StateNo: 777,
+      targetId: 9,
+    });
+    const activeMove = fighter.currentMove;
+    const activeReversal = fighter.runtime.reversal;
+    fighter.moveTick = 6;
+    fighter.hasHit = true;
+    fighter.hitDefTargets = ["p2"];
+    fighter.pendingHitDefTargets = ["p3"];
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.modify({
+      actor: fighter,
+      controller: compileControllerIr(controller("ModifyReversalDef", { "reversal.attr": "S,NA", redirectid: "57" })),
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
+    });
+
+    expect(result).toMatchObject({ modified: true, operation: { kind: "modifyreversaldef", reversalAttr: "S,NA" } });
+    expect(fighter.currentMove).toBe(activeMove);
+    expect(fighter.runtime.reversal).toBe(activeReversal);
+    expect(fighter.currentMove).toMatchObject({ isReversal: true, reversalAttr: "S,NA", p1StateNo: 777, targetId: 9 });
+    expect(fighter.runtime.reversal).toMatchObject({ attr: "S,NA", hitPause: 3, p1StateNo: 777 });
+    expect(fighter.moveTick).toBe(6);
+    expect(fighter.hasHit).toBe(true);
+    expect(fighter.hitDefTargets).toEqual(["p2"]);
+    expect(fighter.pendingHitDefTargets).toEqual(["p3"]);
+    expect(recordedControllers).toEqual(["ModifyReversalDef"]);
+    expect(recordedOperations).toEqual(["modifyreversaldef"]);
+  });
+
+  it("blocks ModifyReversalDef without an active reversal or typed operation", () => {
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const fighter = actor("p1", "Reverser");
+    const operation = compileControllerIr(controller("ModifyReversalDef", { "reversal.attr": "S,NA", redirectid: "57" }));
+    const unsupported = compileControllerIr(controller("ModifyReversalDef", { "reversal.attr": "S,NA" }));
+
+    expect(dispatchWorld.modify({ actor: fighter, controller: operation })).toMatchObject({
+      modified: false,
+      reason: "missing-active-reversal",
+    });
+    expect(dispatchWorld.modify({ actor: fighter, controller: unsupported })).toMatchObject({
+      modified: false,
+      reason: "unsupported-operation",
+    });
+  });
+
   it("activates and clears bounded ReversalDef runtime state", () => {
     const world = new RuntimeReversalWorld();
     const fighter = actor("p1", "Reverser", { stateNo: 300 });
