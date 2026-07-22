@@ -1551,6 +1551,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-modifyhitdef-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-helper-self-tag",
       required: true,
       artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),

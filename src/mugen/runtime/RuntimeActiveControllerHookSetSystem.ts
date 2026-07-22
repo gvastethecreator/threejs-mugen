@@ -19,6 +19,7 @@ export type RuntimeActiveControllerHookSetInput<TActor extends RuntimeActiveStat
   applyControl: RuntimeActiveStateDispatchHooks<TActor>["applyControl"];
   changeAction: RuntimeActiveStateDispatchHooks<TActor>["changeAction"];
   hitDef: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["hitDef"]>;
+  modifyHitDef: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["modifyHitDef"]>;
   reversalDef: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["reversalDef"]>;
   width: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["width"]>;
   height: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["height"]>;
@@ -59,6 +60,7 @@ export class RuntimeActiveControllerHookSetWorld {
       },
       sideEffectHooks: {
         hitDef: input.hitDef,
+        modifyHitDef: input.modifyHitDef,
         reversalDef: input.reversalDef,
         width: input.width,
         height: input.height,

@@ -1613,6 +1613,47 @@ value = 1
     expect(invalidRedirect.operation).toBeUndefined();
   });
 
+  it("compiles static root ModifyHitDef RedirectID damage pairs and rejects unsupported payloads", () => {
+    const modified = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41,8", redirectid: "var(0)" }),
+    );
+    const primaryDamageOnly = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "57" }),
+    );
+    const dynamicPayload = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "var(1)", redirectid: "57" }),
+    );
+    const unsupportedPayload = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", guardflag: "MA", redirectid: "57" }),
+    );
+    const malformedRedirect = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "var(" }),
+    );
+    const oversizedPair = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41,8,4", redirectid: "57" }),
+    );
+
+    expect(modified).toMatchObject({
+      supportLevel: "partial",
+      operation: {
+        kind: "modifyhitdef",
+        damage: 41,
+        guardDamage: 8,
+        redirectPlayerIdExpression: "var(0)",
+      },
+    });
+    expect(primaryDamageOnly.operation).toEqual({
+      kind: "modifyhitdef",
+      damage: 41,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamicPayload.supportLevel).toBe("unsupported");
+    expect(dynamicPayload.operation).toBeUndefined();
+    expect(unsupportedPayload.operation).toBeUndefined();
+    expect(malformedRedirect.operation).toBeUndefined();
+    expect(oversizedPair.operation).toBeUndefined();
+  });
+
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
     const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));

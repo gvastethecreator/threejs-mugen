@@ -12419,6 +12419,71 @@ export function createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact(
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const initialDamage = 5;
+  const damage = 41;
+  const guardDamage = 8;
+  const targetId = 90;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a normal HitDef out of range", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects static ModifyHitDef before receiver contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId: 0,
+      hitDefTrigger: "0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyHitDefRedirectRoute: { damage: [damage, guardDamage], redirectId: 57, trigger: "Time >= 1" },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Redirect Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: initialDamage, targetId, hitDefTrigger: "Time = 0", clsn1Extent: 64 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyhitdef-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyhitdef-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyHitDef RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves one static ModifyHitDef RedirectID destination and mutates an already active receiver normal HitDef in place before receiver-owned contact. Dynamic fields, other ModifyHitDef parameters, Helpers, custom states, teams, source scheduling, hitpause, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyhitdef-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ModifyHitDef"],
+        requiredExecutedOperations: ["hitdef", "modifyhitdef"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 - damage },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48983,6 +49048,11 @@ export type SyntheticImportedTraceFighterOptions = {
     playerPushPolicy?: { priority: number; affectTeam: "E" | "F" | "B"; redirectId?: number };
     hitDefTrigger?: string;
   };
+  rootModifyHitDefRedirectRoute?: {
+    damage: [number, number?];
+    redirectId: SyntheticNumberExpression;
+    trigger?: string;
+  };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   runOrderEntry?: { expected: number; minGameTime: number; stateNo: number };
   gameTimeEntry?: { minGameTime: number; stateNo: number };
@@ -49832,6 +49902,7 @@ ${options.standbyPlayerIdStateEntry === undefined ? "" : playerIdStateEntryBlock
 ${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandRoute) : ""}
 ${options.activeRootMotionRoute ? activeRootMotionRouteBlock(options.activeRootMotionRoute) : ""}
 ${options.activeRootHitDefRoute ? activeRootHitDefRouteBlock(options.activeRootHitDefRoute) : ""}
+${options.rootModifyHitDefRedirectRoute ? rootModifyHitDefRedirectControllerBlock(options.rootModifyHitDefRedirectRoute) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
@@ -55821,6 +55892,20 @@ guardflag = ${route.guardFlag ?? "MA"}
 ${route.pauseTime === undefined ? "" : `pausetime = ${route.pauseTime},${route.pauseTime}\n`}
 ${route.guardPause === undefined ? "" : `guard.pausetime = ${route.guardPause},${route.guardPause}\n`}
 ${route.guardDistance === undefined ? "" : `guard.dist = ${route.guardDistance}\n`}
+`;
+}
+
+function rootModifyHitDefRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootModifyHitDefRedirectRoute"]>,
+): string {
+  const [damage, guardDamage] = route.damage;
+  const damageValue = guardDamage === undefined ? String(damage) : `${damage}, ${guardDamage}`;
+  return `
+[State 0, Root ModifyHitDef Redirect]
+type = ModifyHitDef
+trigger1 = ${route.trigger ?? "Time >= 1"}
+damage = ${damageValue}
+redirectid = ${route.redirectId}
 `;
 }
 

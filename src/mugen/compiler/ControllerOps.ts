@@ -69,6 +69,13 @@ export type HitDefControllerOp = {
   fall: HitDefFallOp;
 };
 
+export type ModifyHitDefControllerOp = {
+  kind: "modifyhitdef";
+  redirectPlayerIdExpression: string;
+  damage: number;
+  guardDamage?: number;
+};
+
 export type HitDefFallOp = {
   enabled?: boolean;
   xVelocity?: number;
@@ -646,6 +653,7 @@ export type TeamStandbyControllerOp = {
 
 export type ControllerOp =
   | HitDefControllerOp
+  | ModifyHitDefControllerOp
   | TargetControllerOp
   | BindToTargetControllerOp
   | PauseControllerOp
@@ -770,6 +778,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "hitdef") {
     return compileHitDefControllerOp(controller, context);
+  }
+  if (type === "modifyhitdef") {
+    return compileModifyHitDefControllerOp(controller);
   }
   if (type.startsWith("target")) {
     return compileTargetControllerOp(controller);
@@ -1752,6 +1763,33 @@ function compileHitDefControllerOp(
     sparkXy: numberPair(findParam(controller, "sparkxy")),
     fall: compileHitDefFallOp(controller),
   });
+}
+
+function compileModifyHitDefControllerOp(controller: MugenStateController): ModifyHitDefControllerOp | undefined {
+  const allowedParams = new Set(["type", "redirectid", "damage"]);
+  if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
+    return undefined;
+  }
+  const damageRaw = findParam(controller, "damage");
+  const damage = strictNumberPair(damageRaw);
+  const damageParts = damageRaw?.split(",").map((part) => part.trim());
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (
+    !damage ||
+    !damageParts ||
+    damageParts.length > 2 ||
+    damageParts.some((part) => part.length === 0) ||
+    redirectPlayerIdExpression === undefined ||
+    redirectPlayerIdExpression === "invalid"
+  ) {
+    return undefined;
+  }
+  return {
+    kind: "modifyhitdef",
+    redirectPlayerIdExpression,
+    damage: damage[0],
+    ...(damage[1] === undefined ? {} : { guardDamage: damage[1] }),
+  };
 }
 
 function hitDefSparkParam(

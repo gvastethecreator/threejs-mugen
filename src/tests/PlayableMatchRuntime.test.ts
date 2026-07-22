@@ -9866,6 +9866,98 @@ RedirectID = 999
     expect(snapshot.logs.some((line) => line.includes("Blocked hitdef RedirectID 999"))).toBe(true);
   });
 
+  it("routes IKEMEN root ModifyHitDef RedirectID to an active receiver without resetting its move", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected ModifyHitDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected ModifyHitDef]
+type = ModifyHitDef
+trigger1 = Time = 1
+damage = 61
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-modifyhitdef-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Receiver HitDef]
+type = HitDef
+trigger1 = Time = 0
+attr = S,NA
+damage = 12,4
+id = 91
+pausetime = 0,0
+ground.hittime = 8
+ground.velocity = 0,0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { currentMove?: { damage?: number; guardDamage?: number; attr?: string } };
+    };
+    const receiverMove = internals.p2.currentMove;
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(internals.p2.currentMove).toBe(receiverMove);
+    expect(internals.p2.currentMove).toMatchObject({ damage: 61, guardDamage: 4, attr: "S,NA" });
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.hitdef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyhitdef).toBe(1);
+    expect(modified.logs.some((line) => line.includes("Blocked ModifyHitDef RedirectID"))).toBe(false);
+  });
+
+  it("blocks IKEMEN root ModifyHitDef RedirectID when the receiver is unknown", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Unknown ModifyHitDef receiver]
+type = ModifyHitDef
+trigger1 = Time = 0
+damage = 61,9
+RedirectID = 999
+`,
+    });
+    const destination = createImportedFixture({
+      id: "blocked-root-modifyhitdef-destination",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Receiver HitDef]
+type = HitDef
+trigger1 = Time = 0
+attr = S,NA
+damage = 12,4
+id = 91
+pausetime = 0,0
+ground.hittime = 8
+ground.velocity = 0,0
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { currentMove?: { damage?: number; guardDamage?: number } };
+    };
+
+    expect(internals.p2.currentMove).toMatchObject({ damage: 12, guardDamage: 4 });
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked modifyhitdef RedirectID 999"))).toBe(true);
+  });
+
   it("blocks redirected ReversalDef with dynamic payload fields", () => {
     const caller = createImportedFixture({
       withStateMove: false,

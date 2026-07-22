@@ -540,7 +540,7 @@ type RedirectableResourceControllerType =
   | "poweradd"
   | "powerset";
 type RedirectableEffectControllerType = "projectile" | "modifyprojectile";
-type RedirectableHitDefControllerType = "hitdef";
+type RedirectableHitDefControllerType = "hitdef" | "modifyhitdef";
 type RedirectableHitEligibilityControllerType = "hitby" | "nothitby";
 type RedirectableHitOverrideControllerType = "hitoverride";
 type RedirectableReversalDefControllerType = "reversaldef";
@@ -4195,7 +4195,9 @@ function redirectableHitEligibilityControllerType(controller: ControllerIr): Red
 }
 
 function redirectableHitDefControllerType(controller: ControllerIr): RedirectableHitDefControllerType | undefined {
-  return controller.normalizedType === "hitdef" ? controller.normalizedType : undefined;
+  return controller.normalizedType === "hitdef" || controller.normalizedType === "modifyhitdef"
+    ? controller.normalizedType
+    : undefined;
 }
 
 function redirectableHitOverrideControllerType(controller: ControllerIr): RedirectableHitOverrideControllerType | undefined {
@@ -4281,7 +4283,7 @@ function hitDefControllerRedirectExpression(controller: ControllerIr): string | 
   if (redirectableHitDefControllerType(controller) === undefined) {
     return undefined;
   }
-  const compiledExpression = controller.operation?.kind === "hitdef"
+  const compiledExpression = controller.operation?.kind === "hitdef" || controller.operation?.kind === "modifyhitdef"
     ? controller.operation.redirectPlayerIdExpression
     : undefined;
   if (compiledExpression !== undefined) {
@@ -4860,6 +4862,39 @@ function runActiveStateControllers(
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });
+    },
+    modifyHitDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      if (actor !== fighter || stateOwner !== actor) {
+        options.onBlocked?.(controller, "modifyhitdef-root-only");
+        return;
+      }
+      const context = runtimeControllerContext(
+        actor,
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectExpression = hitDefControllerRedirectExpression(controller);
+      if (!redirectExpression) {
+        options.onBlocked?.(controller, "modifyhitdef-redirect");
+        return;
+      }
+      const target = options.onRootRedirect?.(fighter, redirectExpression, context, "modifyhitdef");
+      if (!target) {
+        options.onBlocked?.(controller, "modifyhitdef-redirect");
+        return;
+      }
+      const result = hitDefControllerDispatchWorld.modify({
+        actor: target,
+        controller,
+        ...runtimeActiveControllerTelemetryHooks,
+      });
+      if (!result.modified) {
+        options.onBlocked?.(controller, `modifyhitdef-${result.reason ?? "unsupported-operation"}`);
+      }
     },
     reversalDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(

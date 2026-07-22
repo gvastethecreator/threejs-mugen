@@ -55,6 +55,9 @@ describe("StateProgramExecutor dispatch", () => {
   it("separates shared runtime controllers from side-effect systems", () => {
     const vel = dispatchStateProgramController(compileControllerIr(controller("VelSet", { x: "2" })));
     const hit = dispatchStateProgramController(compileControllerIr(controller("HitDef", { damage: "30" })));
+    const modifyHit = dispatchStateProgramController(
+      compileControllerIr(controller("ModifyHitDef", { damage: "30", redirectid: "57" })),
+    );
     const target = dispatchStateProgramController(compileControllerIr(controller("TargetLifeAdd", { value: "-20" })));
     const reset = dispatchStateProgramController(compileControllerIr(controller("MoveHitReset", {})));
     const hitAdd = dispatchStateProgramController(compileControllerIr(controller("HitAdd", { value: "2" })));
@@ -64,6 +67,7 @@ describe("StateProgramExecutor dispatch", () => {
     expect(vel.kind).toBe("runtime-controller");
     expect(isStateEntrySetupDispatch(vel)).toBe(false);
     expect(hit).toMatchObject({ kind: "side-effect", effect: "hitdef" });
+    expect(modifyHit).toMatchObject({ kind: "side-effect", effect: "modifyhitdef" });
     expect(target).toMatchObject({ kind: "side-effect", effect: "target" });
     expect(reset).toMatchObject({ kind: "side-effect", effect: "contact" });
     expect(hitAdd).toMatchObject({ kind: "side-effect", effect: "contact" });

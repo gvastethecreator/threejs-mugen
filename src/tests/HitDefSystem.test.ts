@@ -447,6 +447,63 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(recordedControllers).toEqual(["HitDef"]);
     expect(recordedOperations).toEqual(["hitdef"]);
   });
+
+  it("mutates an active normal HitDef in place without clearing contact memory", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "30,6" })),
+      frame: activeFrame(),
+    });
+    const activeMove = actor.currentMove;
+    actor.hasHit = true;
+    actor.hitDefTargets = ["p2"];
+    actor.pendingHitDefTargets = ["p3"];
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { damage: "61", redirectid: "57" })),
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
+    });
+
+    expect(result).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", damage: 61 } });
+    expect(actor.currentMove).toBe(activeMove);
+    expect(actor.currentMove).toMatchObject({ damage: 61, guardDamage: 6, attr: "S,NA" });
+    expect(actor.hasHit).toBe(true);
+    expect(actor.hitDefTargets).toEqual(["p2"]);
+    expect(actor.pendingHitDefTargets).toEqual(["p3"]);
+    expect(recordedControllers).toEqual(["ModifyHitDef"]);
+    expect(recordedOperations).toEqual(["modifyhitdef"]);
+  });
+
+  it("blocks ModifyHitDef without a normal active HitDef or against a reversal", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const operation = compileControllerIr(controller("ModifyHitDef", { damage: "61,9", redirectid: "57" }));
+    const inactive = hitDefActor();
+    const inactiveResult = world.modify({ actor: inactive, controller: operation });
+
+    const reversal = hitDefActor();
+    world.apply({
+      actor: reversal,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "30,6" })),
+      frame: activeFrame(),
+    });
+    const reversalMove = reversal.currentMove;
+    if (!reversalMove) {
+      throw new Error("Expected active HitDef");
+    }
+    reversalMove.isReversal = true;
+    const reversalResult = world.modify({ actor: reversal, controller: operation });
+
+    expect(inactiveResult).toMatchObject({ modified: false, reason: "missing-normal-hitdef" });
+    expect(reversalResult).toMatchObject({ modified: false, reason: "missing-normal-hitdef" });
+    expect(reversal.currentMove).toBe(reversalMove);
+    expect(reversal.currentMove).toMatchObject({ damage: 30, guardDamage: 6 });
+  });
 });
 
 function activeFrame(): MugenAnimationFrame {

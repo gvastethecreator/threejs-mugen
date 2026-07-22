@@ -1,4 +1,4 @@
-import type { HitDefControllerOp } from "../compiler/ControllerOps";
+import type { HitDefControllerOp, ModifyHitDefControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { CollisionBox } from "../model/CollisionBox";
@@ -49,6 +49,21 @@ export type RuntimeHitDefControllerDispatchResult = {
   recordedController: boolean;
   recordedOperation: boolean;
   operation?: HitDefControllerOp;
+};
+
+export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeHitDefControllerDispatchActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: ModifyHitDefControllerOp) => void;
+};
+
+export type RuntimeModifyHitDefControllerDispatchResult = {
+  modified: boolean;
+  reason?: "missing-normal-hitdef" | "unsupported-operation";
+  recordedController: boolean;
+  recordedOperation: boolean;
+  operation?: ModifyHitDefControllerOp;
 };
 
 export class RuntimeHitDefControllerDispatchWorld {
@@ -256,6 +271,53 @@ export class RuntimeHitDefControllerDispatchWorld {
       recordedController: recordController !== undefined,
       recordedOperation: operation !== undefined && recordOperation !== undefined,
       ...(operation ? { operation } : {}),
+    };
+  }
+
+  modify<TActor extends RuntimeHitDefControllerDispatchActor>({
+    actor,
+    controller,
+    recordController,
+    recordOperation,
+  }: RuntimeModifyHitDefControllerDispatchOptions<TActor>): RuntimeModifyHitDefControllerDispatchResult {
+    const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
+    if (!operation) {
+      return {
+        modified: false,
+        reason: "unsupported-operation",
+        recordedController: false,
+        recordedOperation: false,
+      };
+    }
+
+    const existing = actor.currentMove;
+    if (
+      !existing ||
+      existing.requiresHitDef ||
+      existing.isReversal ||
+      actor.runtime.reversal !== undefined ||
+      actor.runtime.moveType !== "A" ||
+      !existing.attr
+    ) {
+      return {
+        modified: false,
+        reason: "missing-normal-hitdef",
+        recordedController: false,
+        recordedOperation: false,
+      };
+    }
+
+    existing.damage = operation.damage;
+    if (operation.guardDamage !== undefined) {
+      existing.guardDamage = operation.guardDamage;
+    }
+    recordController?.(actor, controller.source);
+    recordOperation?.(actor, operation);
+    return {
+      modified: true,
+      recordedController: recordController !== undefined,
+      recordedOperation: recordOperation !== undefined,
+      operation,
     };
   }
 }

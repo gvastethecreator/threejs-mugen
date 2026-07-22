@@ -11,6 +11,7 @@ import type { StateProgramDispatch, StateProgramSideEffect } from "../mugen/runt
 describe("RuntimeActiveSideEffectDispatchWorld", () => {
   it.each([
     ["hitdef", "hitdef", "hitDef"],
+    ["modifyhitdef", "modifyhitdef", "modifyHitDef"],
     ["reversaldef", "reversaldef", "reversalDef"],
     ["width", "width", "width"],
     ["height", "height", "height"],
@@ -107,6 +108,7 @@ function routeHooks(calls: string[]): RuntimeActiveSideEffectDispatchHooks<Actor
   };
   return {
     hitDef: push("hitDef"),
+    modifyHitDef: push("modifyHitDef"),
     reversalDef: push("reversalDef"),
     width: push("width"),
     height: push("height"),

@@ -28,6 +28,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   ctrlset: partial("control"),
   statetypeset: partial("state metadata"),
   hitdef: partial("combat"),
+  modifyhitdef: partial("active HitDef mutation"),
   reversaldef: partial("counter combat"),
   playerpush: partial("body push"),
   posfreeze: partial("tick movement"),
@@ -137,8 +138,12 @@ export function compileControllerIr(controller: MugenStateController, context: C
 
   const operation = compileControllerOp(controller, context);
   const boundedTagController = normalizedType === "tagin" || normalizedType === "tagout";
-  if (boundedTagController && !operation) {
-    unsupportedFeatures.add(`${controller.type}:optional-params`);
+  const boundedModifyHitDefController = normalizedType === "modifyhitdef";
+  const requiresTypedOperation = boundedTagController || boundedModifyHitDefController;
+  if (requiresTypedOperation && !operation) {
+    unsupportedFeatures.add(
+      `${controller.type}:${boundedModifyHitDefController ? "static-damage-redirect" : "optional-params"}`,
+    );
   }
   return {
     source: controller,
@@ -147,7 +152,7 @@ export function compileControllerIr(controller: MugenStateController, context: C
     name: controller.name,
     type: controller.type,
     normalizedType,
-    supportLevel: boundedTagController && !operation ? "unsupported" : support.level,
+    supportLevel: requiresTypedOperation && !operation ? "unsupported" : support.level,
     triggers,
     params: controller.params,
     ...(operation ? { operation } : {}),
