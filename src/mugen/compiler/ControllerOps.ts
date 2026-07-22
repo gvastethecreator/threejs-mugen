@@ -79,7 +79,11 @@ export type ModifyHitDefControllerOp = {
 export type ModifyReversalDefControllerOp = {
   kind: "modifyreversaldef";
   redirectPlayerIdExpression: string;
-  reversalAttr: string;
+  reversalAttr?: string;
+  hitPause?: number;
+  p1StateNo?: number;
+  targetId?: number;
+  attackDepth?: [number, number];
 };
 
 export type HitDefFallOp = {
@@ -1802,19 +1806,52 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
 }
 
 function compileModifyReversalDefControllerOp(controller: MugenStateController): ModifyReversalDefControllerOp | undefined {
-  const allowedParams = new Set(["type", "redirectid", "reversal.attr"]);
+  const allowedParams = new Set(["type", "redirectid", "reversal.attr", "pausetime", "p1stateno", "id", "attack.depth"]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
   }
-  const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"));
+  const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"))?.trim();
+  const hitPauseRaw = findParam(controller, "pausetime");
+  const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
+  const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
+  const targetId = staticOptionalStrictNumberParam(controller, "id");
+  const attackDepthRaw = findParam(controller, "attack.depth");
+  const attackDepthPair = attackDepthRaw === undefined ? undefined : strictStaticNumberPair(attackDepthRaw);
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
-  if (!reversalAttr || redirectPlayerIdExpression === undefined || redirectPlayerIdExpression === "invalid") {
+  if (
+    reversalAttr === "" ||
+    (hitPauseRaw !== undefined && !hitPausePair) ||
+    p1StateNo === false ||
+    targetId === false ||
+    (attackDepthRaw !== undefined && !attackDepthPair) ||
+    redirectPlayerIdExpression === undefined ||
+    redirectPlayerIdExpression === "invalid"
+  ) {
+    return undefined;
+  }
+  const hitPause = hitPausePair === undefined ? undefined : Math.max(0, Math.round(hitPausePair[0]));
+  const normalizedP1StateNo = p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo));
+  const normalizedTargetId = targetId === true ? undefined : Math.max(0, Math.round(targetId));
+  const attackDepth = attackDepthPair === undefined
+    ? undefined
+    : [attackDepthPair[0], attackDepthPair[1] ?? attackDepthPair[0]] as [number, number];
+  if (
+    reversalAttr === undefined &&
+    hitPause === undefined &&
+    normalizedP1StateNo === undefined &&
+    normalizedTargetId === undefined &&
+    attackDepth === undefined
+  ) {
     return undefined;
   }
   return {
     kind: "modifyreversaldef",
     redirectPlayerIdExpression,
-    reversalAttr,
+    ...(reversalAttr === undefined ? {} : { reversalAttr }),
+    ...(hitPause === undefined ? {} : { hitPause }),
+    ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
+    ...(normalizedTargetId === undefined ? {} : { targetId: normalizedTargetId }),
+    ...(attackDepth === undefined ? {} : { attackDepth }),
   };
 }
 
@@ -2528,6 +2565,14 @@ function staticOptionalNumberParam(controller: MugenStateController, ...keys: st
   return true;
 }
 
+function staticOptionalStrictNumberParam(controller: MugenStateController, key: string): number | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return true;
+  }
+  return strictNumberSingle(raw) ?? false;
+}
+
 function staticOptionalBooleanParam(controller: MugenStateController, key: string): boolean | undefined {
   const raw = findParam(controller, key);
   if (raw === undefined) {
@@ -2616,6 +2661,14 @@ function strictNumberPair(value: string | undefined): [number, number?] | undefi
     return undefined;
   }
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
+}
+
+function strictStaticNumberPair(value: string): [number, number?] | undefined {
+  const parts = value.split(",").map((part) => part.trim());
+  if (parts.length === 0 || parts.length > 2 || parts.some((part) => part.length === 0)) {
+    return undefined;
+  }
+  return strictNumberPair(value);
 }
 
 function strictNumberSingle(value: string | undefined): number | undefined {

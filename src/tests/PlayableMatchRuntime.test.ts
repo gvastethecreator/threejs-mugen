@@ -9918,7 +9918,7 @@ ground.velocity = 0,0
     expect(modified.logs.some((line) => line.includes("Blocked ModifyHitDef RedirectID"))).toBe(false);
   });
 
-  it("routes IKEMEN root ModifyReversalDef RedirectID to an active receiver without resetting its move", () => {
+  it("routes IKEMEN root ModifyReversalDef RedirectID core fields to an active receiver without resetting its move", () => {
     const caller = createImportedFixture({
       withStateMove: false,
       passiveResourceController: `
@@ -9932,13 +9932,17 @@ value = 57
 type = ModifyReversalDef
 trigger1 = Time = 1
 reversal.attr = S,NA
+pausetime = 7,11
+p1stateno = 778
+id = 92
+attack.depth = 4,8
 RedirectID = var(0)
 `,
     });
     const destination = createImportedFixture({
       id: "redirected-root-modifyreversaldef-destination",
       withStateMove: false,
-      passiveReversalDef: { attr: "S,SP", p1StateNo: 777, hitPause: 3, targetId: 91 },
+      passiveReversalDef: { attr: "S,SP", p1StateNo: 777, p2StateNo: 779, hitPause: 3, targetId: 91, attackDepth: [1, 2] },
       passiveReversalTrigger: "Time = 0",
     });
     const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
@@ -9947,7 +9951,25 @@ RedirectID = var(0)
 
     runtime.step({ p1: new Set(), p2: new Set() });
     const internals = runtime as unknown as {
-      p2: { currentMove?: { reversalAttr?: string }; runtime: { reversal?: { attr?: string } } };
+      p2: {
+        currentMove?: {
+          reversalAttr?: string;
+          hitPause?: number;
+          p1StateNo?: number;
+          p2StateNo?: number;
+          targetId?: number;
+          attackDepth?: [number, number];
+        };
+        runtime: {
+          reversal?: {
+            attr?: string;
+            hitPause?: number;
+            p1StateNo?: number;
+            p2StateNo?: number;
+            attackDepth?: [number, number];
+          };
+        };
+      };
     };
     const receiverMove = internals.p2.currentMove;
     const receiverReversal = internals.p2.runtime.reversal;
@@ -9955,8 +9977,22 @@ RedirectID = var(0)
 
     expect(internals.p2.currentMove).toBe(receiverMove);
     expect(internals.p2.runtime.reversal).toBe(receiverReversal);
-    expect(internals.p2.currentMove).toMatchObject({ reversalAttr: "S,NA" });
-    expect(internals.p2.runtime.reversal).toMatchObject({ attr: "S,NA" });
+    expect(internals.p2.currentMove).toMatchObject({
+      reversalAttr: "S,NA",
+      hitPause: 7,
+      p1StateNo: 778,
+      p2StateNo: 779,
+      targetId: 92,
+      attackDepth: [4, 8],
+    });
+    expect(internals.p2.runtime.reversal).toMatchObject({
+      attr: "S,NA",
+      hitPause: 7,
+      p1StateNo: 778,
+      p2StateNo: 779,
+      attackDepth: [4, 8],
+    });
+    expect(internals.p2.currentMove?.attackDepth).not.toBe(internals.p2.runtime.reversal?.attackDepth);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.reversaldef).toBe(1);
@@ -10702,7 +10738,14 @@ function createImportedFixture(
     passiveNotHitBy?: string;
     passiveHitBy?: string;
     passiveHitOverride?: { attr: string; stateNo: number; forceAir?: boolean };
-    passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number };
+    passiveReversalDef?: {
+      attr: string;
+      p1StateNo: number;
+      p2StateNo?: number;
+      hitPause?: number;
+      targetId?: number;
+      attackDepth?: [number, number?];
+    };
     passiveReversalTrigger?: string;
     passiveAssertSpecialFlags?: string[];
     passiveAssertSpecialTrigger?: string;
@@ -10983,6 +11026,8 @@ reversal.attr = ${options.passiveReversalDef.attr}
 pausetime = ${options.passiveReversalDef.hitPause ?? 0},${options.passiveReversalDef.hitPause ?? 0}
 p1stateno = ${options.passiveReversalDef.p1StateNo}
 ${options.passiveReversalDef.p2StateNo !== undefined ? `p2stateno = ${options.passiveReversalDef.p2StateNo}` : ""}
+${options.passiveReversalDef.targetId === undefined ? "" : `id = ${options.passiveReversalDef.targetId}`}
+${options.passiveReversalDef.attackDepth === undefined ? "" : `attack.depth = ${options.passiveReversalDef.attackDepth.join(",")}`}
 `
       : "",
     options.passiveAssertSpecialFlags?.length

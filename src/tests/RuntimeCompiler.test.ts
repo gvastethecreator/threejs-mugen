@@ -1654,15 +1654,34 @@ value = 1
     expect(oversizedPair.operation).toBeUndefined();
   });
 
-  it("compiles static root ModifyReversalDef RedirectID attrs and rejects unsupported payloads", () => {
+  it("compiles static root ModifyReversalDef RedirectID core fields and rejects unsupported payloads", () => {
     const modified = compileControllerIr(
-      controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", redirectid: "var(0)" }),
+      controller(200, "ModifyReversalDef", [], {
+        "reversal.attr": "S,NA",
+        pausetime: "7,11",
+        p1stateno: "778",
+        id: "92",
+        "attack.depth": "4,8",
+        redirectid: "var(0)",
+      }),
+    );
+    const coreOnly = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { pausetime: "6", redirectid: "57" }),
     );
     const unsupportedPayload = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", "reversal.guardflag": "MA", redirectid: "57" }),
     );
+    const dynamicPayload = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { pausetime: "var(1),7", redirectid: "57" }),
+    );
+    const unsupportedP2State = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2stateno: "778", redirectid: "57" }),
+    );
     const missingRedirect = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA" }),
+    );
+    const emptyPayload = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { redirectid: "57" }),
     );
     const malformedRedirect = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA", redirectid: "var(" }),
@@ -1673,12 +1692,24 @@ value = 1
       operation: {
         kind: "modifyreversaldef",
         reversalAttr: "S,NA",
+        hitPause: 7,
+        p1StateNo: 778,
+        targetId: 92,
+        attackDepth: [4, 8],
         redirectPlayerIdExpression: "var(0)",
       },
     });
+    expect(coreOnly.operation).toEqual({
+      kind: "modifyreversaldef",
+      hitPause: 6,
+      redirectPlayerIdExpression: "57",
+    });
     expect(unsupportedPayload.supportLevel).toBe("unsupported");
+    expect(dynamicPayload.operation).toBeUndefined();
+    expect(unsupportedP2State.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(missingRedirect.operation).toBeUndefined();
+    expect(emptyPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
   });
 

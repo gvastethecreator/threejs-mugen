@@ -79,7 +79,9 @@ describe("ReversalSystem", () => {
       hitbox: { x1: 1, y1: -40, x2: 32, y2: -8 },
       hitPause: 3,
       p1StateNo: 777,
+      p2StateNo: 779,
       targetId: 9,
+      attackDepth: [1, 2],
     });
     const activeMove = fighter.currentMove;
     const activeReversal = fighter.runtime.reversal;
@@ -92,16 +94,48 @@ describe("ReversalSystem", () => {
 
     const result = dispatchWorld.modify({
       actor: fighter,
-      controller: compileControllerIr(controller("ModifyReversalDef", { "reversal.attr": "S,NA", redirectid: "57" })),
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        "reversal.attr": "S,NA",
+        pausetime: "7,11",
+        p1stateno: "778",
+        id: "92",
+        "attack.depth": "4,8",
+        redirectid: "57",
+      })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
       recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
     });
 
-    expect(result).toMatchObject({ modified: true, operation: { kind: "modifyreversaldef", reversalAttr: "S,NA" } });
+    expect(result).toMatchObject({
+      modified: true,
+      operation: {
+        kind: "modifyreversaldef",
+        reversalAttr: "S,NA",
+        hitPause: 7,
+        p1StateNo: 778,
+        targetId: 92,
+        attackDepth: [4, 8],
+      },
+    });
     expect(fighter.currentMove).toBe(activeMove);
     expect(fighter.runtime.reversal).toBe(activeReversal);
-    expect(fighter.currentMove).toMatchObject({ isReversal: true, reversalAttr: "S,NA", p1StateNo: 777, targetId: 9 });
-    expect(fighter.runtime.reversal).toMatchObject({ attr: "S,NA", hitPause: 3, p1StateNo: 777 });
+    expect(fighter.currentMove).toMatchObject({
+      isReversal: true,
+      reversalAttr: "S,NA",
+      hitPause: 7,
+      p1StateNo: 778,
+      p2StateNo: 779,
+      targetId: 92,
+      attackDepth: [4, 8],
+    });
+    expect(fighter.runtime.reversal).toMatchObject({
+      attr: "S,NA",
+      hitPause: 7,
+      p1StateNo: 778,
+      p2StateNo: 779,
+      attackDepth: [4, 8],
+    });
+    expect(fighter.currentMove?.attackDepth).not.toBe(fighter.runtime.reversal?.attackDepth);
     expect(fighter.moveTick).toBe(6);
     expect(fighter.hasHit).toBe(true);
     expect(fighter.hitDefTargets).toEqual(["p2"]);

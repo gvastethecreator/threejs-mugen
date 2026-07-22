@@ -148,7 +148,7 @@ export function compileControllerIr(controller: MugenStateController, context: C
         boundedModifyHitDefController
           ? "static-damage-redirect"
           : boundedModifyReversalDefController
-            ? "static-reversal-attr-redirect"
+            ? "static-reversaldef-core-redirect"
             : "optional-params"
       }`,
     );

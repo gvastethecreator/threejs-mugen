@@ -159,8 +159,25 @@ export class RuntimeReversalControllerDispatchWorld {
       };
     }
 
-    existing.reversalAttr = operation.reversalAttr;
-    runtimeReversal.attr = operation.reversalAttr;
+    if (operation.reversalAttr !== undefined) {
+      existing.reversalAttr = operation.reversalAttr;
+      runtimeReversal.attr = operation.reversalAttr;
+    }
+    if (operation.hitPause !== undefined) {
+      existing.hitPause = operation.hitPause;
+      runtimeReversal.hitPause = operation.hitPause;
+    }
+    if (operation.p1StateNo !== undefined) {
+      existing.p1StateNo = operation.p1StateNo;
+      runtimeReversal.p1StateNo = operation.p1StateNo;
+    }
+    if (operation.targetId !== undefined) {
+      existing.targetId = operation.targetId;
+    }
+    if (operation.attackDepth !== undefined) {
+      existing.attackDepth = [...operation.attackDepth] as [number, number];
+      runtimeReversal.attackDepth = [...operation.attackDepth] as [number, number];
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {
