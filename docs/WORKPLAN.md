@@ -1,5 +1,22 @@
 # Workplan
 
+## Runtime hit-eligibility checkpoint - T377 (2026-07-22)
+
+T377 closes in `37ab9baf`. Root active-controller legacy HitBy/NotHitBy
+RedirectID now resolves a verified IKEMEN root and materializes dynamic caller
+duration before it applies receiver slots through the existing hit-defense
+boundary. The required imported trace proves redirected NotHitBy rejects a
+matching contact. Focused compiler, hit-defense, imported-match, and trace
+coverage passes 4 files / 994 tests. Diff hygiene passes. The broad typecheck,
+full suite, trace aggregate, build, and boundary checks remain deliberately
+queued for the next larger runtime batch; browser smoke is N/A for this
+runtime-only slice.
+
+Keep IKEMEN new hit-eligibility syntax, exact attr/slot timing, source
+scheduling, Helper/custom-state and team ownership, hitpause, rollback/netplay,
+and full parity outside this bounded lane. The next source-backed audit should
+check remaining root RedirectID controller families before grouped validation.
+
 ## Runtime collision checkpoint - T376 (2026-07-22)
 
 T376 closes in `865af29b`. Root active-side-effect OverrideClsn RedirectID now

@@ -1,5 +1,26 @@
 ﻿# Progress Tracker
 
+## Runtime hit-eligibility report - T377 (2026-07-22)
+
+- Runtime feature commit: `37ab9baf`. This focused checkpoint does not replace
+  the separate FightScreen or Studio frontiers.
+- Root HitBy/NotHitBy RedirectID now resolves one verified IKEMEN root and
+  materializes legacy caller `value`/`value2` slots plus dynamic `time` before
+  receiver dispatch. The required trace proves redirected NotHitBy rejection
+  of a matching P1 contact on P2.
+- Gates: focused compiler, hit-defense, imported-match, and trace coverage
+  passes 4 files / 994 tests. Diff hygiene passes. TypeScript, complete
+  Vitest, trace aggregate, build, and boundary checks remain queued for the
+  larger runtime checkpoint selected by the user.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current root legacy HitBy/NotHitBy RedirectID with caller
+  values, dynamic duration, receiver telemetry, and required reject trace.
+  IKEMEN new syntax, exact attr/slot timing, source scheduling, Helpers/custom
+  states, teams, hitpause, rollback/netplay, and full parity remain open.
+- Next constraint frontier: audit the remaining source-supported root
+  RedirectID routes before the broader grouped verification checkpoint.
+
 ## Runtime collision report - T376 (2026-07-22)
 
 - Runtime feature commit: `865af29b`. This focused checkpoint does not replace
