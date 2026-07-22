@@ -1,22 +1,22 @@
 # Workplan
 
-## Runtime redirect checkpoint - T380 (2026-07-22)
+## Runtime redirect checkpoint - T381 (2026-07-22)
 
-T380 closes in `fb470c82`: root HitDef RedirectID now preserves a valid caller
-expression, resolves one verified IKEMEN receiver, and activates a static
-caller payload with receiver-owned current Clsn1, constants, source defaults,
-and telemetry. The required imported trace proves receiver-owned direct
-contact; focused runtime coverage proves variable target selection and an
-unknown receiver cannot mutate the destination. Compiler, imported-match, and
-trace coverage passes 3 files / 996 tests; diff hygiene passes.
+T381 closes in `86cf7040`: root ModifyHitDef RedirectID now resolves a valid
+caller expression to one verified receiver and mutates its existing normal
+HitDef with a static `damage` value or pair. The receiver retains move identity,
+active frame, contact memory, control, and telemetry. The required imported
+trace proves receiver-owned contact after mutation; focused coverage proves
+variable target selection and unknown/inactive/reversal routes cannot mutate the
+destination. Compiler, dispatch, imported-match, and trace coverage passes 7
+files / 1054 tests; diff hygiene and QA script syntax pass.
 
-Keep dynamic HitDef payload fields, ModifyHitDef, exact source reset,
-finalization, scheduler, and hitpause behavior, Helpers/custom states/teams,
-rollback/netplay, rendering, and full parity outside this lane. The broad
-typecheck, full suite, trace aggregate, build, and boundary checks stay queued
-for the next larger runtime batch; browser smoke is N/A for this runtime-only
-checkpoint. Audit the next source-backed root RedirectID family before that
-batch.
+Keep all other ModifyHitDef fields, dynamic payloads, exact source scheduling
+and hitpause, Helpers/custom states/teams, rollback/netplay, rendering, and
+full parity outside this lane. The broad typecheck, full suite, trace aggregate,
+build, and boundary checks stay queued for the next larger runtime batch;
+browser smoke is N/A for this runtime-only checkpoint. Audit the next
+source-backed redirect or active-HitDef mutation family before that batch.
 
 ## Runtime hit-eligibility checkpoint - T377 (2026-07-22)
 

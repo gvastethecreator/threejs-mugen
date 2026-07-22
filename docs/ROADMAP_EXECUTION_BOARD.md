@@ -1,21 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T380 (2026-07-22)
+## Current runtime compatibility board - T381 (2026-07-22)
 
-T380 closes root `HitDef RedirectID` in `fb470c82`. A valid caller expression
-now resolves one verified IKEMEN root before the HitDef side-effect dispatcher
-uses the receiver current Clsn1, constants, source defaults, and telemetry.
-The required trace proves a receiver-owned direct contact; targeted runtime
-coverage also proves `var(0)` receiver selection and unknown-receiver blocking.
-The focal gate passes 3 files / 996 tests. Scores stay unchanged.
+T381 closes root `ModifyHitDef RedirectID` in `86cf7040`. A valid caller
+expression now resolves one verified IKEMEN root and patches only its existing
+normal HitDef with static `damage` or `damage,guardDamage`. The receiver keeps
+move identity, active frame, contact memory, control, and telemetry. The
+required trace proves the modified receiver-owned contact; focused runtime
+coverage also proves `var(0)` selection and unknown, inactive, and reversal
+paths block before mutation. The focal gate passes 7 files / 1054 tests.
+Scores stay unchanged.
 
-Allowed claim: static root-to-root HitDef payload activation through a
-caller-evaluated RedirectID, with receiver-owned attack state. Blocked: dynamic
-HitDef payload fields, ModifyHitDef, exact reset/finalization and scheduler
-timing, hitpause, Helpers, custom states, teams, rollback/netplay, renderer
-work, and full MUGEN/IKEMEN parity. Typecheck, full Vitest, trace aggregate,
-build, and boundary checks remain deliberately queued for the next runtime
-batch.
+Allowed claim: static root-to-root `ModifyHitDef` damage mutation through a
+caller-evaluated RedirectID under explicit `ikemen-go`. Blocked: all other
+ModifyHitDef fields, dynamic payloads, exact scheduler/hitpause behavior,
+Helpers, custom states, teams, rollback/netplay, renderer work, and full
+MUGEN/IKEMEN parity. Typecheck, full Vitest, trace aggregate, build, and
+boundary checks remain deliberately queued for the next runtime batch.
 
 ## Current implementation board - T288 / Entry 562 (2026-07-18)
 

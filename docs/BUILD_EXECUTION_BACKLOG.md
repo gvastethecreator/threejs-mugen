@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 565 - root ModifyHitDef RedirectID
+
+Closed the source-backed root ModifyHitDef RedirectID cut in `86cf7040`. The
+typed operation admits only a caller-evaluated RedirectID and static `damage`
+or `damage,guardDamage`. The active root route resolves one verified IKEMEN
+receiver, then mutates its existing normal HitDef in place without rearming it
+or clearing contact state. Inactive, reversal, malformed, dynamic, unsupported,
+and unknown routes fail closed before mutation.
+
+Verification: compiler, dispatch, imported-match, and trace coverage passes 7
+files / 1054 tests; diff hygiene and `node --check scripts/qa_traces.cjs` pass.
+The required `synthetic-imported-ikemen-root-modifyhitdef-redirect` trace proves
+receiver-owned direct contact after mutation. TypeScript typecheck, complete
+Vitest, trace aggregate, build, and boundaries remain intentionally deferred to
+the next runtime checkpoint. No score movement. Claim allowed: one static
+root-to-root ModifyHitDef damage mutation through caller-evaluated RedirectID
+under explicit `ikemen-go`. Claim blocked: other fields, dynamic payloads,
+source-exact scheduling/hitpause, Helpers, custom states, teams,
+rollback/netplay, renderer behavior, and full parity. See Wayfinder T381.
+
 ## Entry 564 - root HitDef RedirectID
 
 Closed the source-backed root HitDef RedirectID cut in `fb470c82`. The typed

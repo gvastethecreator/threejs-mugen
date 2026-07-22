@@ -1,29 +1,29 @@
 ﻿# Progress Tracker
 
-## Runtime redirect report - T380 (2026-07-22)
+## Runtime redirect report - T381 (2026-07-22)
 
-- Runtime feature commit: `fb470c82`. This focused checkpoint does not replace
+- Runtime feature commit: `86cf7040`. This focused checkpoint does not replace
   the separate FightScreen or Studio frontiers.
-- Root HitDef RedirectID now preserves a valid caller expression, resolves one
-  verified IKEMEN receiver, and activates the caller static HitDef payload with
-  the receiver current Clsn1, constants, source defaults, and telemetry.
-- Evidence: the required trace records receiver-owned direct contact, the
-  runtime test covers `var(0)` receiver selection, and an unknown receiver
-  blocks without target mutation. The compiler rejects malformed RedirectID
-  syntax.
-- Gates: compiler, imported-match, and trace coverage passes 3 files / 996
-  tests. Diff hygiene passes. TypeScript, complete Vitest, trace aggregate,
-  build, and boundary checks remain queued for the larger runtime checkpoint
-  selected by the user.
+- Root ModifyHitDef RedirectID now resolves one valid caller expression to one
+  verified active normal HitDef and changes only static primary/guard damage.
+  The receiver keeps its move object, contact memory, frame/control state, and
+  telemetry.
+- Evidence: the required imported trace records receiver-owned contact after
+  mutation; runtime tests cover `var(0)` selection, move identity, unknown
+  receiver blocking, and inactive/reversal rejection. The compiler rejects
+  malformed, dynamic, oversized, and unsupported payloads.
+- Gates: compiler, dispatch, imported-match, and trace coverage passes 7 files
+  / 1054 tests. Diff hygiene and QA script syntax pass. TypeScript, complete
+  Vitest, trace aggregate, build, and boundary checks remain queued for the
+  larger runtime checkpoint selected by the user.
 - Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
   does not move compatibility scores.
-- Claim ceiling: static root HitDef payload activation through a caller-evaluated
-  RedirectID under explicit `ikemen-go`. Dynamic HitDef payload fields,
-  ModifyHitDef, exact reset/finalization, scheduler and hitpause behavior,
-  Helpers, custom states, teams, renderer behavior, rollback/netplay, and full
-  parity remain open.
-- Next constraint frontier: audit the next source-supported root RedirectID
-  family before the broader grouped verification checkpoint.
+- Claim ceiling: static root ModifyHitDef `damage` mutation through a
+  caller-evaluated RedirectID under explicit `ikemen-go`. Other fields, dynamic
+  payloads, exact scheduler/hitpause behavior, Helpers, custom states, teams,
+  renderer behavior, rollback/netplay, and full parity remain open.
+- Next constraint frontier: audit the remaining source-supported root redirect
+  and active-HitDef mutation families before the broader grouped checkpoint.
 
 ## Runtime hit-eligibility report - T377 (2026-07-22)
 
