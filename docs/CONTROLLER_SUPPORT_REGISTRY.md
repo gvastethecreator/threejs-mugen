@@ -596,6 +596,17 @@ Helper ScreenBound addendum: ScreenBound is executed-partial for current
 first-generation Helpers under the explicit IKEMEN profile. Static and dynamic
 value, movecamera, and stagebound state flow through typed bounds operations,
 per-frame reset, snapshots, current X/Z projection, and verified RedirectID
-writeback. Camera flags remain state evidence only. Camera tracking, PosFreeze,
-exact screen/stage semantics, scheduler order, nested ownership, renderer
-proof, and full parity remain unsupported.
+writeback. Camera flags remain state evidence only. Camera tracking, exact
+screen/stage semantics, scheduler order, nested ownership, renderer proof, and
+full parity remain unsupported.
+
+Helper PosFreeze addendum: PosFreeze is executed-partial for current
+first-generation Helpers under the explicit IKEMEN profile. Static and dynamic
+caller values flow through typed bounds dispatch; Helper state resets each
+frame, captures the local start position, and restores it before the current
+stage constraints. Verified RedirectID writes use caller evaluation and retain
+a later Helper target's incoming current-tick freeze through reset. Root and
+already-advanced Helper destinations restore their captured match-frame
+position. An explicit false value clears X, Y, and Z. Exact corner push,
+pause/hitpause, scheduler parity, nested ownership, spawned-this-tick starts,
+renderer proof, and full parity remain unsupported.

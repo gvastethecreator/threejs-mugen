@@ -1,5 +1,24 @@
 # Workplan
 
+## Runtime constraint checkpoint - T370 (2026-07-22)
+
+T370 closes in `6bbeb6f7`. Current first-generation Helpers now retain
+one-frame PosFreeze state with static/dynamic caller values, typed dispatch,
+verified RedirectID writeback, and current frame-start restoration for root or
+already-advanced Helper targets. A later Helper target retains a redirected
+freeze across its frame reset. Focused compiler, bounds, Helper, and imported
+match coverage passes 4 files / 407 tests, and the required imported
+Helper-to-root trace gate passes. Diff hygiene passed before commit. The broad
+typecheck, full suite, trace aggregate, build, and boundary checks remain
+queued for a grouped runtime checkpoint; browser smoke is N/A for this
+runtime-only slice.
+
+Keep exact corner push, pause/hitpause, source scheduling, nested and recursive
+ownership, spawned-this-tick starts, renderer/upstream differentials,
+rollback/netplay, and full parity outside this bounded lane. The next
+constraint work should keep narrowing current-Helper controller ownership or
+open the explicit pause/order contract before broader parity work.
+
 ## Runtime constraint checkpoint - T368/T369 (2026-07-22)
 
 This is a lane-specific checkpoint. It does not replace the separate current

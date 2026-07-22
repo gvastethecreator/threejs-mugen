@@ -1,5 +1,29 @@
 ﻿# Progress Tracker
 
+## Runtime constraint report - T370 (2026-07-22)
+
+- Runtime lane HEAD: `6bbeb6f7`; documentation closeout follows in a separate
+  commit. This focused result does not replace the separate FightScreen or
+  Studio frontiers.
+- Current first-generation Helpers now retain one-frame PosFreeze state,
+  including static and dynamic caller values, typed dispatch, verified
+  RedirectID writeback, and frame-start restoration for root or Helper
+  destinations that have already advanced. A later Helper destination keeps
+  the incoming freeze through its reset.
+- Gates: focused compiler, bounds, Helper, and imported match coverage passes
+  4 files / 407 tests. The required imported Helper-to-root trace gate passes.
+  Diff hygiene passed before commit. The broad typecheck, complete suite,
+  trace aggregate, build, and boundary checks remain queued for the grouped
+  runtime checkpoint.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current Helper PosFreeze state and verified RedirectID under
+  the current actor order. Exact corner push, pause/hitpause, source scheduler
+  parity, nested ownership, renderer/upstream differentials, rollback/netplay,
+  and full parity remain open.
+- Next constraint frontier: a source-backed pause/order boundary or another
+  isolated current-Helper controller gap, followed by the grouped checkpoint.
+
 ## Runtime constraint report - T368/T369 (2026-07-22)
 
 - Runtime lane HEAD: ac8283dc; documentation closeout follows in a separate
