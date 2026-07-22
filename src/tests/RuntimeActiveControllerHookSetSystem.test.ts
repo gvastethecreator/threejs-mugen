@@ -24,6 +24,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
         return true;
       },
       hitDef: () => calls.push("hitdef"),
+      modifyHitDef: () => calls.push("modifyhitdef"),
+      modifyReversalDef: () => calls.push("modifyreversaldef"),
       reversalDef: () => calls.push("reversaldef"),
       width: () => calls.push("width"),
       height: () => calls.push("height"),
@@ -51,6 +53,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     expect(hookSet.stateHooks.applyControl).toBe(input.applyControl);
     expect(hookSet.stateHooks.changeAction).toBe(input.changeAction);
     expect(hookSet.sideEffectHooks.hitDef).toBe(input.hitDef);
+    expect(hookSet.sideEffectHooks.modifyHitDef).toBe(input.modifyHitDef);
+    expect(hookSet.sideEffectHooks.modifyReversalDef).toBe(input.modifyReversalDef);
     expect(hookSet.sideEffectHooks.reversalDef).toBe(input.reversalDef);
     expect(hookSet.sideEffectHooks.width).toBe(input.width);
     expect(hookSet.sideEffectHooks.height).toBe(input.height);
@@ -78,6 +82,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     hookSet.stateHooks.applyControl(actor(), false);
     hookSet.stateHooks.changeAction(actor(), 210, "self", actor(), {});
     hookSet.sideEffectHooks.hitDef?.(undefined as never);
+    hookSet.sideEffectHooks.modifyHitDef?.(undefined as never);
+    hookSet.sideEffectHooks.modifyReversalDef?.(undefined as never);
     hookSet.sideEffectHooks.reversalDef?.(undefined as never);
     hookSet.sideEffectHooks.width?.(undefined as never);
     hookSet.sideEffectHooks.height?.(undefined as never);
@@ -103,6 +109,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       "ctrl:false",
       "anim:210",
       "hitdef",
+      "modifyhitdef",
+      "modifyreversaldef",
       "reversaldef",
       "width",
       "height",
@@ -131,6 +139,8 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       applyControl: () => undefined,
       changeAction: () => false,
       hitDef: () => undefined,
+      modifyHitDef: () => undefined,
+      modifyReversalDef: () => undefined,
       reversalDef: () => undefined,
       width: () => undefined,
       height: () => undefined,

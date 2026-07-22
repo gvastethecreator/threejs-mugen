@@ -664,6 +664,7 @@ export type TeamStandbyControllerOp = {
 export type ControllerOp =
   | HitDefControllerOp
   | ModifyHitDefControllerOp
+  | ModifyReversalDefControllerOp
   | TargetControllerOp
   | BindToTargetControllerOp
   | PauseControllerOp
