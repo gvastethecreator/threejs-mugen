@@ -1,15 +1,16 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T387 (2026-07-22)
+## Current runtime compatibility board - T388 (2026-07-22)
 
-T386 `7c63118f` adds static positive `reversal.guardflag` and T387
-`5f4667e1` adds the separate static negative `reversal.guardflag.not` across
-ReversalDef activation and active root ModifyReversalDef RedirectID. Pinned
-IKEMEN-GO admission requires positive overlap, rejects positive filters for an
-unguardable incoming attack, and bypasses only negative overlap for that attack.
-Required traces prove root mutation changes each active receiver filter before
-counter contact. Wider HitFlag forms, dynamic values, Helpers as receivers,
-teams, source timing, and full parity remain outside the current claim.
+T388 `b245afb0` adds static `p1sprpriority` and `p2sprpriority` across
+ReversalDef activation and active root ModifyReversalDef RedirectID. The
+accepted reversal calls the same profile-aware priority policy as direct
+HitDef contact, with the reverser as p1 and incoming attacker as p2. Required
+trace evidence proves root mutation changes `4/-3` to `5/-4` before counter
+contact and preserves authored role/provenance telemetry. Dynamic values,
+aliases, omitted IKEMEN default-policy claims, HitOverride arbitration,
+Helpers as receivers, renderer ordering, teams, source timing, and full parity
+remain outside the current claim.
 
 ## Global runtime checkpoint after T383 (2026-07-22)
 

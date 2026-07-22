@@ -1,5 +1,22 @@
 # Workplan
 
+## Runtime reversal sprite priority checkpoint - T388 (2026-07-22)
+
+T388 `b245afb0` closes static ReversalDef `p1sprpriority` and
+`p2sprpriority` across activation and root ModifyReversalDef RedirectID. The
+shared accepted-HitDef policy applies the latest active values after a counter
+and records role/provenance telemetry for both actors. Focused compiler,
+reversal, playable-match, trace, and DirectCombat coverage passes 5 files /
+1052 tests. TypeScript 7, script syntax, and diff hygiene pass. Scores do not
+move.
+
+Next, audit a distinct inherited ReversalDef field or the missing
+ReversalDef-versus-HitOverride arbitration needed for `missonoverride`.
+Dynamic values, aliases, omitted defaults, Helpers as receivers, renderer
+ordering, teams, source timing, and full parity remain blocked. Full Vitest,
+trace aggregate, build, and boundaries stay queued for the grouped runtime
+checkpoint.
+
 ## Runtime reversal guard filter checkpoint - T386-T387 (2026-07-22)
 
 T386 `7c63118f` and T387 `5f4667e1` close static H/L/M/A positive and negative

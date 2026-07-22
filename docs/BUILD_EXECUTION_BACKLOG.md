@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 573 - ReversalDef sprite priority RedirectID
+
+Closed static `p1sprpriority` and `p2sprpriority` in `b245afb0` across
+ReversalDef activation and root ModifyReversalDef RedirectID. Successful
+counter contact now uses `HitDefSpritePrioritySystem`, shared with direct
+HitDef contact, where the reverser is p1 and the incoming attacker is p2.
+Active mutation keeps move identity and contact state.
+
+Verification: grouped compiler, reversal, playable-match, trace, and
+DirectCombat coverage passes 5 files / 1052 tests. `pnpm typecheck`, script
+syntax, and diff hygiene pass. Required
+`synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect`
+changes `4/-3` to `5/-4` before counter contact and proves authored priority
+telemetry. Full Vitest, trace aggregate, build, and boundaries stay queued. No
+score movement. Claim allowed: static priority fields under explicit
+`ikemen-go`. Claim blocked: dynamic values, aliases, omitted IKEMEN defaults,
+HitOverride/`missonoverride` arbitration, Helpers as receivers, renderer
+ordering, teams, source timing, rollback/netplay, and full parity.
+
 ## Entry 572 - ReversalDef negative guard filter RedirectID
 
 Closed static `reversal.guardflag.not` in `5f4667e1` across ReversalDef

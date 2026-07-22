@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Runtime reversal sprite priority report - T388 (2026-07-22)
+
+- Runtime feature commit: `b245afb0`.
+- ReversalDef and root ModifyReversalDef RedirectID now retain static
+  `p1sprpriority` and `p2sprpriority` on an active reversal.
+- Successful counter contact uses the shared accepted-HitDef priority policy:
+  the reverser gets p1 and the incoming attacker gets p2 with current
+  profile, previous-value, source, and supported telemetry.
+- Required imported evidence changes an active receiver from `4/-3` to `5/-4`
+  before counter contact. Focused compiler, reversal, playable-match, trace,
+  and DirectCombat coverage passes 5 files / 1052 tests; TypeScript 7 passes.
+- Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. Dynamic values, aliases,
+  omitted defaults, HitOverride/`missonoverride` arbitration, Helpers as
+  receivers, renderer ordering, source timing, and full parity remain blocked.
+
 ## Runtime reversal guard filter report - T386-T387 (2026-07-22)
 
 - Runtime feature commits: `7c63118f` and `5f4667e1`.
