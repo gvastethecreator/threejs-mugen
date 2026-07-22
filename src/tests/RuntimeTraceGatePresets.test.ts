@@ -164,6 +164,7 @@ import {
   createSyntheticImportedIkemenHelperRunOrderTraceArtifact,
   createSyntheticImportedIkemenHelperPosFreezeRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17459,6 +17460,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredTickSchedulePhaseSequences).toEqual([
       { label: "same-tick Helper PlayerPush redirect", frameIndex: 0, phase: "helper:controllers", actorIds: ["p1-helper-0"] },
     ]);
+  });
+
+  it("creates a required IKEMEN root PlayerPush RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-playerpush-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-playerpush-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: 2,
+      PlayerPush: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      "variable:varset": 2,
+      "collision:playerpush": 1,
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", playerPush: false }),
+    ]));
   });
 
   it("creates a required IKEMEN Helper-owned self Tag cycle artifact", () => {

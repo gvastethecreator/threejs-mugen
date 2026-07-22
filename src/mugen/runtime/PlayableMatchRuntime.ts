@@ -34,6 +34,7 @@ import {
   type RuntimeResolvedSoundValue,
   RuntimeAudioWorld,
 } from "./AudioEventSystem";
+import { resolveRuntimePlayerPushControllerOperation } from "./BoundsControllerSystem";
 import {
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
@@ -4251,6 +4252,17 @@ function resolveRedirectedResourceController(
   return controller.operation === operation ? controller : { ...controller, operation };
 }
 
+function materializePlayerPushRedirectController(
+  controller: ControllerIr,
+  caller: FighterMatchState,
+  context: ReturnType<typeof runtimeControllerContext>,
+): ControllerIr {
+  const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "playerpush"
+    ? controller.operation
+    : resolveRuntimePlayerPushControllerOperation(controller, caller.runtime, context);
+  return controller.operation === operation ? controller : { ...controller, operation };
+}
+
 function handlePlayerInput(
   fighter: FighterMatchState,
   input: Set<string>,
@@ -5331,14 +5343,20 @@ function runActiveStateControllers(
         options.onBlocked?.(dispatch.controller, `${redirectControllerType ?? "root"}-redirect`);
         return;
       }
-      const deferPosFreezeRedirect =
-        dispatch.controller.normalizedType === "posfreeze" && redirectExpression !== undefined && target !== fighter
+      const deferredConstraintRedirect =
+        (dispatch.controller.normalizedType === "posfreeze" || dispatch.controller.normalizedType === "playerpush") &&
+        redirectExpression !== undefined &&
+        target !== fighter
           ? options.deferRootConstraintRedirect
+          : undefined;
+      const materializedPlayerPushController =
+        dispatch.controller.normalizedType === "playerpush" && redirectExpression !== undefined
+          ? materializePlayerPushRedirectController(dispatch.controller, actor, context)
           : undefined;
       const applyDispatch = () => {
         const redirectedController = redirectableResourceType !== undefined && redirectExpression
           ? resolveRedirectedResourceController(dispatch.controller, actor, context)
-          : dispatch.controller;
+          : materializedPlayerPushController ?? dispatch.controller;
         if (!redirectedController) {
           options.onBlocked?.(dispatch.controller, `${redirectableResourceType}-redirect-value`);
           return;
@@ -5375,8 +5393,8 @@ function runActiveStateControllers(
           runtimeActiveControllerTelemetryHooks.recordOperation(fighter, redirectedController.operation);
         }
       };
-      if (deferPosFreezeRedirect) {
-        deferPosFreezeRedirect(target, applyDispatch);
+      if (deferredConstraintRedirect) {
+        deferredConstraintRedirect(target, applyDispatch);
       } else if (resourceRedirectLease) {
         redirectedTargetDispatchWorld.execute(resourceRedirectLease, applyDispatch);
       } else {

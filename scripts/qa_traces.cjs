@@ -1506,6 +1506,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-playerpush-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-helper-self-tag",
       required: true,
       artifact: presets.createSyntheticImportedIkemenHelperSelfTagTraceArtifact(),

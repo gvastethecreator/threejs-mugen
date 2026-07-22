@@ -11824,6 +11824,72 @@ export function createSyntheticImportedIkemenHelperPlayerPushRedirectTraceArtifa
   });
 }
 
+export function createSyntheticImportedIkemenRootPlayerPushRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "redirect dynamic root PlayerPush to P2", p1: ["x"], p2: [], frames: 1 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-playerpush-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root PlayerPush Redirect Caller",
+    withHitDef: false,
+    rootPlayerPushRedirectRoute: {
+      redirectId: 57,
+      value: "var(0)",
+      priority: "var(1)",
+      affectTeam: "B",
+      vars: [
+        { index: 0, value: 0 },
+        { index: 1, value: 4 },
+      ],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-playerpush-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root PlayerPush Redirect Receiver",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-playerpush-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-playerpush-redirect-golden",
+      label: "Synthetic imported IKEMEN root PlayerPush RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root materializes dynamic PlayerPush values in caller context, defers a later-root RedirectID write through frame reset, and exposes target push disablement. Exact CharList scheduling, hitpause reset order, Helpers, collision geometry, rollback, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-playerpush-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "PlayerPush"],
+        requiredExecutedOperations: ["variable:varset", "collision:playerpush"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            playerPush: false,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48805,6 +48871,13 @@ export type SyntheticImportedTraceFighterOptions = {
     value: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  rootPlayerPushRedirectRoute?: {
+    redirectId: SyntheticNumberExpression;
+    value?: SyntheticNumberExpression;
+    priority?: SyntheticNumberExpression;
+    affectTeam?: "E" | "F" | "B";
+    vars?: Array<{ index: number; value: number }>;
+  };
   withDynamicPosFreeze?: {
     value?: string;
     x?: string;
@@ -49210,6 +49283,7 @@ ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSe
 ${options.withDynamicStateTypeSet === undefined ? "" : dynamicStateTypeSetControllerBlock(options.withDynamicStateTypeSet)}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
+${options.rootPlayerPushRedirectRoute ? rootPlayerPushRedirectControllerBlock(options.rootPlayerPushRedirectRoute) : ""}
 ${options.withDynamicPosFreeze === undefined ? "" : dynamicPosFreezeControllerBlock(options.withDynamicPosFreeze)}
 ${options.withDynamicScreenBound === undefined ? "" : dynamicScreenBoundControllerBlock(options.withDynamicScreenBound)}
 ${options.withTurn ? turnControllerBlock() : ""}
@@ -50951,6 +51025,31 @@ value = ${seed.value}
 type = PlayerPush
 trigger1 = Time >= 0
 value = ${options.value}
+`;
+}
+
+function rootPlayerPushRedirectControllerBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["rootPlayerPushRedirectRoute"]>,
+): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 200, Root PlayerPush Redirect Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  return `${vars}
+[State 200, Root PlayerPush Redirect]
+type = PlayerPush
+trigger1 = Time = 0
+value = ${route.value ?? 1}
+priority = ${route.priority ?? 0}
+affectteam = ${route.affectTeam ?? "E"}
+redirectid = ${route.redirectId}
 `;
 }
 
