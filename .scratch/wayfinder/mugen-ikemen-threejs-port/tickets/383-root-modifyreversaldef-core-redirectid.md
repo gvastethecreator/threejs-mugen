@@ -74,5 +74,7 @@ telemetry remain intact; the target id remains move metadata only.
   proves a widened attack-depth payload admits counter contact, then the
   receiver enters changed `p1stateno` and records changed `id`.
 - `git diff --check` and `node --check scripts/qa_traces.cjs` passed.
-- The grouped TypeScript, full Vitest, trace aggregate, build, and boundary
-  checkpoint follows this feature batch.
+- Grouped checkpoint after T383: TypeScript 7, full Vitest 241 files / 2706
+  tests, Trace QA 650 artifacts, production build, both boundaries, and diff
+  hygiene passed. See
+  [global checkpoint](../../../../docs/research/2026-07-22-global-checkpoint-after-t383.md).

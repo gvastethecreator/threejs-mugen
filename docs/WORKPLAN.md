@@ -1,6 +1,18 @@
 # Workplan
 
-## Runtime core redirect checkpoint - T383 (2026-07-22)
+## Global runtime checkpoint after T383 (2026-07-22)
+
+The grouped T381-T383 runtime checkpoint passed at `38d62678`: TypeScript 7,
+full Vitest (241 files / 2706 tests), Trace QA (650 artifacts), production
+build, repository boundaries, redirect boundary, and diff hygiene all pass.
+The checkpoint repairs the deferred ModifyReversalDef `ControllerOp` union and
+hook-set fixture type debt. Browser smoke is N/A for this runtime-only batch.
+
+Keep the claim ceiling unchanged. Before a new controller cut, audit one
+isolated source-backed family with explicit local state and receiver ownership.
+Keep remaining ModifyReversalDef `p2stateno` and guard-field work separate.
+
+## Previous runtime core redirect checkpoint - T383 (2026-07-22)
 
 T383 closes in `739ac163`: root ModifyReversalDef RedirectID now resolves a
 valid caller expression to one verified active receiver and patches any
@@ -14,8 +26,8 @@ files / 1051 tests; diff hygiene and QA script syntax pass.
 Keep `p2stateno`, `p2getp1state`, guard fields, all other inherited HitDef
 fields, dynamic payloads, exact source scheduling and hitpause, Helpers/custom
 states/teams, rollback/netplay, rendering, and full parity outside this lane.
-Run the broad typecheck, full suite, trace aggregate, build, and boundary
-checks now; browser smoke is N/A for this runtime-only checkpoint.
+The broad typecheck, full suite, trace aggregate, build, and boundary checks
+passed at `38d62678`; browser smoke remains N/A for this runtime-only checkpoint.
 
 ## Previous runtime redirect checkpoint - T382 (2026-07-22)
 

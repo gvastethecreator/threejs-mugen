@@ -50,3 +50,9 @@ Focused compiler, reversal dispatch, imported-match, and trace coverage passes
 7 files / 1051 tests. The new required trace proves depth admission, changed
 counter state, and changed target id. The grouped checkpoint remains a separate
 record.
+
+## Checkpoint Result
+
+The [global checkpoint after T383](2026-07-22-global-checkpoint-after-t383.md)
+passed TypeScript 7, full Vitest, trace QA, production build, both boundary
+guards, and diff hygiene. The claim ceiling remains unchanged.

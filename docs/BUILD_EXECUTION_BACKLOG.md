@@ -1,6 +1,18 @@
 # Build Execution Backlog
 
-## Entry 567 - root ModifyReversalDef core RedirectID
+## Entry 568 - global runtime checkpoint after T383
+
+Closed the grouped T381-T383 runtime checkpoint at `38d62678`. TypeScript 7,
+full Vitest (241 files / 2706 tests), Trace QA (650 artifacts: 616 required and
+34 optional), production build (329 modules), repository boundaries,
+redirect-boundary, and diff hygiene pass. The checkpoint found the deferred
+ModifyReversalDef `ControllerOp` union entry and hook-set fixture callbacks;
+the type-only repair is included in the audited head. The build keeps the
+existing large-chunk advisory and full Vitest emits two jsdom canvas notices.
+Browser smoke is N/A for this runtime-only batch. No score movement. See
+`docs/research/2026-07-22-global-checkpoint-after-t383.md`.
+
+## Previous Entry 567 - root ModifyReversalDef core RedirectID
 
 Closed the source-backed root ModifyReversalDef core RedirectID cut in
 `739ac163`. The typed operation requires caller-evaluated RedirectID and one
@@ -16,7 +28,7 @@ pass. The required
 `synthetic-imported-ikemen-root-modifyreversaldef-core-redirect` trace proves
 widened depth admission, changed counter state, and changed target metadata.
 TypeScript typecheck, complete Vitest, trace aggregate, build, and boundaries
-follow in the grouped checkpoint. No score movement. Claim allowed: one static
+passed in the grouped checkpoint at `38d62678`. No score movement. Claim allowed: one static
 root-to-root core ModifyReversalDef mutation through caller-evaluated RedirectID
 under explicit `ikemen-go`. Claim blocked: `p2stateno`, guard fields, other
 HitDef fields, dynamic payloads, source-exact scheduling/hitpause, Helpers,

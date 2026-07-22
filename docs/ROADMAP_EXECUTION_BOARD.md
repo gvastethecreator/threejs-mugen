@@ -1,6 +1,16 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T383 (2026-07-22)
+## Global runtime checkpoint after T383 (2026-07-22)
+
+The grouped T381-T383 runtime checkpoint closes at `38d62678`. TypeScript 7,
+full Vitest (241 files / 2706 tests), Trace QA (650 artifacts: 616 required and
+34 optional), the 329-module production build, repository boundary,
+redirect-boundary, and diff hygiene pass. The checkpoint repaired the deferred
+ModifyReversalDef `ControllerOp` union and hook-set fixture type debt. Browser
+smoke is N/A for this runtime-only batch; scores stay unchanged. See
+`docs/research/2026-07-22-global-checkpoint-after-t383.md`.
+
+## Previous runtime compatibility board - T383 (2026-07-22)
 
 T383 closes the local core `ModifyReversalDef RedirectID` continuation in
 `739ac163`. A valid caller expression can patch one verified active root
@@ -16,8 +26,8 @@ caller-evaluated RedirectID under explicit `ikemen-go`. Blocked: `p2stateno`,
 `p2getp1state`, guard fields, all other inherited HitDef fields, dynamic
 payloads, exact scheduler/hitpause behavior, Helpers, custom states, teams,
 rollback/netplay, renderer work, and full MUGEN/IKEMEN parity. The grouped
-typecheck, full Vitest, trace aggregate, build, and boundary checkpoint follows
-this batch.
+typecheck, full Vitest, trace aggregate, build, and boundary checkpoint passed
+at `38d62678`.
 
 ## Previous runtime compatibility board - T382 (2026-07-22)
 

@@ -1,6 +1,20 @@
 ﻿# Progress Tracker
 
-## Runtime core redirect report - T383 (2026-07-22)
+## Global runtime checkpoint report - T383 (2026-07-22)
+
+- Audited head: `38d62678`, following T381 `86cf7040`, T382 `0f30280e`, and
+  T383 `739ac163`.
+- TypeScript 7 passed after the deferred operation-union and hook-fixture type
+  repair. Full Vitest passes 241 files / 2706 tests.
+- Trace QA passes 650 artifacts: 616 required and 34 optional. Production build
+  passes with 329 modules, 2123.17 kB before gzip, and 531.19 kB gzip output.
+- Repository boundary, redirect-boundary, and diff hygiene pass. The build
+  retains its large-chunk advisory; full Vitest emits two known jsdom canvas
+  notices. Browser smoke is N/A for this runtime-only batch.
+- Scores and the bounded ModifyHitDef/ModifyReversalDef claim ceiling remain
+  unchanged. See `docs/research/2026-07-22-global-checkpoint-after-t383.md`.
+
+## Previous runtime core redirect report - T383 (2026-07-22)
 
 - Runtime feature commit: `739ac163`. This focused checkpoint does not replace
   the separate FightScreen or Studio frontiers.
@@ -15,8 +29,8 @@
   unsupported payloads.
 - Gates: compiler, reversal dispatch, imported-match, and trace coverage passes
   7 files / 1051 tests. Diff hygiene and QA script syntax pass. TypeScript,
-  complete Vitest, trace aggregate, build, and boundary checks follow in the
-  grouped runtime checkpoint selected by the user.
+  complete Vitest, trace aggregate, build, and boundary checks passed in the
+  grouped runtime checkpoint at `38d62678`.
 - Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
   does not move compatibility scores.
 - Claim ceiling: static root ModifyReversalDef core mutation through a
