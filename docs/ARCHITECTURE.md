@@ -207,6 +207,15 @@ The official CNS docs describe state controllers as tick-evaluated trigger/actio
 - Treat unsupported controllers and triggers as compatibility-report facts, not fatal errors.
 - Keep compatibility profiles explicit as the project grows toward MUGEN 1.0, MUGEN 1.1, and selected IKEMEN-GO behavior.
 
+Constraint execution addendum: RuntimeActorConstraintWorld now owns one-frame
+Width edge/player/value state for current roots and first-generation Helpers,
+including facing-aware current X insets. RuntimeBoundsControllerWorld still
+owns ScreenBound setup, while HelperSystem carries the resulting ScreenBound
+and StageBound state through per-frame reset, snapshots, and verified
+RedirectID writeback before the existing X/Z projection. The port does not
+claim camera behavior, source scheduler order, nested Helper ownership, or
+upstream parity from this boundary.
+
 ## Current Milestone Scope
 
 The app now has two modes:

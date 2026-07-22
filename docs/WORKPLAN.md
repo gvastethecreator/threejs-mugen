@@ -1,5 +1,24 @@
 # Workplan
 
+## Runtime constraint checkpoint - T368/T369 (2026-07-22)
+
+This is a lane-specific checkpoint. It does not replace the separate current
+FightScreen or Studio execution frontiers.
+
+T368 and T369 close in 42e2fabe, 0f420d44, and ac8283dc. Current root and
+first-generation Helper Width retain distinct edge/player/value state with
+facing-aware X projection. First-generation Helpers now retain one-frame
+ScreenBound/StageBound state, current X/Z projection, snapshots, and verified
+RedirectID writeback. Focused 4-file / 411-test coverage, full 241-file /
+2661-test coverage, TypeScript 7, trace QA 636/636, both boundary guards,
+diff hygiene, and a 329-module build pass. Browser smoke is N/A for this
+runtime-only batch. Scores remain unchanged.
+
+Keep camera tracking, exact screen/stage behavior, PosFreeze Helper support,
+source scheduling, nested ownership, renderer/upstream differentials,
+rollback/netplay, and full parity outside this bounded lane. The next
+constraint research cut is Helper PosFreeze ownership and pause ordering.
+
 ## Active implementation frontier - T288 / Entry 562 (2026-07-18)
 
 T288 is implemented in `a12a2672`. The imported FightScreen shutter signal now

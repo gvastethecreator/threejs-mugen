@@ -582,3 +582,20 @@ This is `executed-partial` for static explicit projectile/player admission;
 omitted/default `MAF`, dynamic string expressions, reversals, clash ordering,
 exact projectile pause/contact timing, `acttmp`/`hittmp`, and full parity remain
 unsupported.
+
+Width edge addendum: Width is executed-partial for current root and
+first-generation Helper edge, player, and value pairs. The typed collision
+operation retains edge values separately; value updates both pairs, one-frame
+reset clears them, and current X projection uses facing-aware edge insets.
+Verified RedirectID routes retain caller expression evaluation,
+destination-local-coordinate scale, destination writeback, and fail-closed
+resolution. Exact screen/camera separation, source scheduling, nested
+ownership, renderer proof, and full parity remain unsupported.
+
+Helper ScreenBound addendum: ScreenBound is executed-partial for current
+first-generation Helpers under the explicit IKEMEN profile. Static and dynamic
+value, movecamera, and stagebound state flow through typed bounds operations,
+per-frame reset, snapshots, current X/Z projection, and verified RedirectID
+writeback. Camera flags remain state evidence only. Camera tracking, PosFreeze,
+exact screen/stage semantics, scheduler order, nested ownership, renderer
+proof, and full parity remain unsupported.

@@ -1,5 +1,28 @@
 ﻿# Progress Tracker
 
+## Runtime constraint report - T368/T369 (2026-07-22)
+
+- Runtime lane HEAD: ac8283dc; documentation closeout follows in a separate
+  commit. This lane checkpoint does not replace the separate T288 / Entry 562
+  FightScreen frontier.
+- Current root and first-generation Helper Width now retain edge, player, and
+  value pairs through one-frame reset and facing-aware current X projection.
+  First-generation Helpers now retain ScreenBound/StageBound state through
+  dispatch, snapshots, current X/Z projection, and verified RedirectID
+  writeback.
+- Gates: focused 4 files / 411 tests; full 241 files / 2661 tests; TypeScript
+  7; trace QA 636/636; repository and redirect boundaries; diff hygiene; and a
+  329-module production build. Browser smoke is N/A because no visible surface
+  changed.
+- Scores remain 65 / 36 / 20 / 10-12 / 6-8 / 25. This bounded runtime slice
+  does not move compatibility scores.
+- Claim ceiling: current Width edge/player/value projection and current Helper
+  ScreenBound/StageBound RedirectID state only. Camera tracking, PosFreeze,
+  source scheduler parity, nested ownership, renderer/upstream differentials,
+  rollback/netplay, and full parity remain open.
+- Next constraint frontier: source-backed Helper PosFreeze state, redirect,
+  and pause-order audit.
+
 ## Current implementation report - T288 / Entry 562 (2026-07-18)
 
 - Implementation HEAD: `a12a2672`; documentation closeout follows in a
