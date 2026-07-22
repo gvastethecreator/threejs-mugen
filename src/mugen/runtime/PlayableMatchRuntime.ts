@@ -504,6 +504,7 @@ type RootControllerRedirectHandler = (
     | "posfreeze"
     | "screenbound"
     | "playerpush"
+    | RedirectableHitDefControllerType
     | RedirectableHitEligibilityControllerType
     | RedirectableHitOverrideControllerType
     | RedirectableReversalDefControllerType
@@ -539,6 +540,7 @@ type RedirectableResourceControllerType =
   | "poweradd"
   | "powerset";
 type RedirectableEffectControllerType = "projectile" | "modifyprojectile";
+type RedirectableHitDefControllerType = "hitdef";
 type RedirectableHitEligibilityControllerType = "hitby" | "nothitby";
 type RedirectableHitOverrideControllerType = "hitoverride";
 type RedirectableReversalDefControllerType = "reversaldef";
@@ -2900,6 +2902,7 @@ export class PlayableMatchRuntime {
       | "posfreeze"
       | "screenbound"
       | "playerpush"
+      | RedirectableHitDefControllerType
       | RedirectableHitEligibilityControllerType
       | RedirectableHitOverrideControllerType
       | RedirectableReversalDefControllerType
@@ -4191,6 +4194,10 @@ function redirectableHitEligibilityControllerType(controller: ControllerIr): Red
     : undefined;
 }
 
+function redirectableHitDefControllerType(controller: ControllerIr): RedirectableHitDefControllerType | undefined {
+  return controller.normalizedType === "hitdef" ? controller.normalizedType : undefined;
+}
+
 function redirectableHitOverrideControllerType(controller: ControllerIr): RedirectableHitOverrideControllerType | undefined {
   return controller.normalizedType === "hitoverride" ? controller.normalizedType : undefined;
 }
@@ -4258,6 +4265,23 @@ function hitOverrideControllerRedirectExpression(controller: ControllerIr): stri
     return undefined;
   }
   const compiledExpression = controller.operation?.kind === "hitoverride"
+    ? controller.operation.redirectPlayerIdExpression
+    : undefined;
+  if (compiledExpression !== undefined) {
+    return compiledExpression.trim() || "invalid";
+  }
+  const rawExpression = findControllerParam(controller, "redirectid");
+  if (rawExpression === undefined) {
+    return undefined;
+  }
+  return rawExpression.trim() || "invalid";
+}
+
+function hitDefControllerRedirectExpression(controller: ControllerIr): string | undefined {
+  if (redirectableHitDefControllerType(controller) === undefined) {
+    return undefined;
+  }
+  const compiledExpression = controller.operation?.kind === "hitdef"
     ? controller.operation.redirectPlayerIdExpression
     : undefined;
   if (compiledExpression !== undefined) {
@@ -4810,12 +4834,29 @@ function runActiveStateControllers(
     changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
       changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
     hitDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
-      hitDefControllerDispatchWorld.apply({
+      const context = runtimeControllerContext(
         actor,
-        defaultHitFlag: runtimeDefaultHitFlagForSource(actor.definition.source),
+        stateOwner,
+        activeTick,
+        stageBounds,
+        targetOpponent,
+        gameSpace,
+        createPlayerIdTarget(actor),
+      );
+      const redirectExpression = hitDefControllerRedirectExpression(controller);
+      const target = redirectExpression
+        ? options.onRootRedirect?.(fighter, redirectExpression, context, "hitdef")
+        : fighter;
+      if (!target) {
+        options.onBlocked?.(controller, "hitdef-redirect");
+        return;
+      }
+      hitDefControllerDispatchWorld.apply({
+        actor: target,
+        defaultHitFlag: runtimeDefaultHitFlagForSource(target.definition.source),
         controller,
-        frame: getCurrentCollisionFrame(actor),
-        constants: actor.definition.constants,
+        frame: getCurrentCollisionFrame(target),
+        constants: target.definition.constants,
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });

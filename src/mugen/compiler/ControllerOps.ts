@@ -11,6 +11,7 @@ export type ControllerCompileContext = {
 
 export type HitDefControllerOp = {
   kind: "hitdef";
+  redirectPlayerIdExpression?: string;
   id?: number;
   chainId?: number;
   hitCount?: number;
@@ -1680,15 +1681,21 @@ function compileDamageScaleControllerOp(
   };
 }
 
-function compileHitDefControllerOp(controller: MugenStateController, context: ControllerCompileContext): HitDefControllerOp {
+function compileHitDefControllerOp(
+  controller: MugenStateController,
+  context: ControllerCompileContext,
+): HitDefControllerOp | undefined {
   const damage = numberPair(findParam(controller, "damage"));
   const groundVelocity = numberPair(findParam(controller, "ground.velocity"));
   const airVelocity = numberPair(findParam(controller, "air.velocity"));
   const guardVelocity = numberPair(findParam(controller, "guard.velocity"));
   const airGuardVelocity = numberPair(findParam(controller, "airguard.velocity"));
   const p2StateNo = firstNumber(findParam(controller, "p2stateno"));
+  const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  if (redirectPlayerIdExpression === "invalid") return undefined;
   return definedObject({
     kind: "hitdef" as const,
+    ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     id: firstNumber(findParam(controller, "id")),
     chainId: firstNumber(findParam(controller, "chainid")),
     hitCount: firstNumber(findParam(controller, "numhits")),

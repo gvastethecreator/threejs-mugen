@@ -9787,6 +9787,85 @@ RedirectID = 57
     expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
   });
 
+  it("routes IKEMEN root HitDef RedirectID with a caller-owned target expression", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Redirected HitDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected HitDef]
+type = HitDef
+trigger1 = Time = 1
+attr = S,NA
+damage = 37
+id = 88
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-hitdef-destination",
+      withStateMove: false,
+      passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3 },
+      passiveReversalTrigger: "Time < 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const armed = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { currentMove?: { damage?: number; targetId?: number; attr?: string } };
+    };
+
+    expect(internals.p2.currentMove).toMatchObject({ damage: 37, targetId: 88, attr: "S,NA" });
+    expect(armed.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
+    expect(armed.compatibilitySession?.actors[1]?.executedOperations.hitdef).toBe(1);
+    expect(armed.logs.some((line) => line.includes("Blocked HitDef RedirectID"))).toBe(false);
+  });
+
+  it("blocks IKEMEN root HitDef RedirectID when the receiver is unknown", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Unknown HitDef receiver]
+type = HitDef
+trigger1 = Time = 0
+attr = S,NA
+damage = 37
+RedirectID = 999
+`,
+    });
+    const destination = createImportedFixture({
+      id: "blocked-root-hitdef-destination",
+      withStateMove: false,
+      passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3 },
+      passiveReversalTrigger: "Time < 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: { currentMove?: unknown };
+    };
+
+    expect(internals.p2.currentMove).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBeUndefined();
+    expect(snapshot.logs.some((line) => line.includes("Blocked hitdef RedirectID 999"))).toBe(true);
+  });
+
   it("blocks redirected ReversalDef with dynamic payload fields", () => {
     const caller = createImportedFixture({
       withStateMove: false,

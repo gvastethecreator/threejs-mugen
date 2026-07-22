@@ -1600,9 +1600,17 @@ value = 1
   });
 
   it("duplicates a single attack.depth value in typed HitDef operations", () => {
-    const hitDef = compileControllerIr(controller(200, "HitDef", [], { attr: "S,NA", "attack.depth": "7" }));
+    const hitDef = compileControllerIr(
+      controller(200, "HitDef", [], { attr: "S,NA", "attack.depth": "7", redirectid: "var(0)" }),
+    );
+    const invalidRedirect = compileControllerIr(controller(200, "HitDef", [], { redirectid: "var(" }));
 
-    expect(hitDef.operation).toMatchObject({ kind: "hitdef", attackDepth: [7, 7] });
+    expect(hitDef.operation).toMatchObject({
+      kind: "hitdef",
+      attackDepth: [7, 7],
+      redirectPlayerIdExpression: "var(0)",
+    });
+    expect(invalidRedirect.operation).toBeUndefined();
   });
 
   it("compiles static damage scale controllers into typed operations", () => {

@@ -12363,6 +12363,62 @@ export function createSyntheticImportedIkemenRootReversalDefRedirectTraceArtifac
   });
 }
 
+export function createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 41;
+  const targetId = 89;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "redirected root HitDef arms the receiver", frames: 1, p1: [], p2: [] },
+    { label: "receiver-owned HitDef resolves contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-hitdef-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root HitDef Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage, targetId, redirectId: 57 },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-hitdef-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root HitDef Redirect Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage: 0, targetId: 0, hitDefTrigger: "0", clsn1Extent: 64 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-hitdef-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-hitdef-redirect-golden",
+      label: "Synthetic imported IKEMEN root HitDef RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root resolves one HitDef RedirectID destination and activates the caller static HitDef payload through the receiver current Clsn1. Dynamic HitDef payload fields, Helpers, teams, source scheduling, hitpause, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-hitdef-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 - damage },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -48906,6 +48962,7 @@ export type SyntheticImportedTraceFighterOptions = {
   activeRootHitDefRoute?: {
     damage: number;
     targetId: number;
+    redirectId?: SyntheticNumberExpression;
     guardDistance?: number;
     guardFlag?: string;
     pauseTime?: number;
@@ -55755,6 +55812,7 @@ trigger1 = ${route.hitDefTrigger ?? "1"}
 attr = S, NA
 damage = ${route.damage}, 0
 id = ${route.targetId}
+${route.redirectId === undefined ? "" : `redirectid = ${route.redirectId}`}
 priority = ${route.priority ?? 4}, ${route.priorityType ?? "Hit"}
 pausetime = 0, 0
 ground.hittime = 8
