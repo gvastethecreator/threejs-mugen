@@ -84,6 +84,8 @@ export type ModifyHitDefControllerOp = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  p1SpritePriority?: number;
+  p2SpritePriority?: number;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -1855,6 +1857,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "p1stateno",
     "p2stateno",
     "p2getp1state",
+    "p1sprpriority",
+    "p2sprpriority",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
@@ -1871,6 +1875,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
   const p2StateNo = staticOptionalStrictNumberParam(controller, "p2stateno");
   const p2GetP1State = staticOptionalStrictNumberParam(controller, "p2getp1state");
+  const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
+  const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damage !== undefined ||
@@ -1882,7 +1888,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitFlag !== true ||
     p1StateNo !== true ||
     p2StateNo !== true ||
-    p2GetP1State !== true;
+    p2GetP1State !== true ||
+    p1SpritePriority !== true ||
+    p2SpritePriority !== true;
   if (
     !hasPayload ||
     (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
@@ -1895,6 +1903,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     p1StateNo === false ||
     p2StateNo === false ||
     p2GetP1State === false ||
+    p1SpritePriority === false ||
+    p2SpritePriority === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -1917,6 +1927,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
     ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
     ...(normalizedP2GetP1State === undefined ? {} : { p2GetP1State: normalizedP2GetP1State }),
+    ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
+    ...(p2SpritePriority === true ? {} : { p2SpritePriority }),
   };
 }
 

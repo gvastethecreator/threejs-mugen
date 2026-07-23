@@ -497,6 +497,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p1stateno: "777",
         p2stateno: "888",
         p2getp1state: "0",
+        p1sprpriority: "5",
+        p2sprpriority: "-4",
         redirectid: "57",
       })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
@@ -517,6 +519,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p1StateNo: 777,
         p2StateNo: 888,
         p2GetP1State: false,
+        p1SpritePriority: 5,
+        p2SpritePriority: -4,
       },
     });
     expect(actor.currentMove).toBe(activeMove);
@@ -531,6 +535,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p1StateNo: 777,
       p2StateNo: 888,
       p2GetP1State: false,
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
     });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
@@ -554,6 +560,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p1StateNo: 777,
       p2StateNo: 889,
       p2GetP1State: true,
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
     });
 
     const targetOwnedState = world.modify({
@@ -566,6 +574,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p1StateNo: 777,
       p2StateNo: 889,
       p2GetP1State: false,
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
     });
   });
 

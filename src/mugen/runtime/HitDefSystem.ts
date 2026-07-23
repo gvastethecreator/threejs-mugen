@@ -344,6 +344,12 @@ export class RuntimeHitDefControllerDispatchWorld {
     if (operation.p2GetP1State !== undefined) {
       existing.p2GetP1State = operation.p2GetP1State;
     }
+    if (operation.p1SpritePriority !== undefined) {
+      existing.p1SpritePriority = operation.p1SpritePriority;
+    }
+    if (operation.p2SpritePriority !== undefined) {
+      existing.p2SpritePriority = operation.p2SpritePriority;
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {

@@ -9938,6 +9938,8 @@ hitflag = LAF
 p1stateno = 777
 p2stateno = 888
 p2getp1state = 0
+p1sprpriority = 5
+p2sprpriority = -4
 RedirectID = var(0)
 `,
     });
@@ -9973,6 +9975,8 @@ ground.velocity = 0,0
           p1StateNo?: number;
           p2StateNo?: number;
           p2GetP1State?: boolean;
+          p1SpritePriority?: number;
+          p2SpritePriority?: number;
           hitVars?: { hitId?: number; chainId?: number; hitCount?: number };
         };
       };
@@ -9991,6 +9995,8 @@ ground.velocity = 0,0
       p1StateNo: 777,
       p2StateNo: 888,
       p2GetP1State: false,
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
       hitVars: { hitId: 92, chainId: 13, hitCount: 3 },
     });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);

@@ -12484,6 +12484,103 @@ export function createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifa
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 31;
+  const targetId = 100;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a normal HitDef out of range", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects sprite priorities before receiver contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Sprite Priority Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId: 0,
+      hitDefTrigger: "0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyHitDefRedirectRoute: {
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Sprite Priority Redirect Receiver",
+    withHitDef: false,
+    hitDefPriorityProfile: "mugen-1.1",
+    activeRootHitDefRoute: { damage, targetId, hitDefTrigger: "Time = 0", clsn1Extent: 64 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyHitDef sprite-priority RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root changes static p1sprpriority and p2sprpriority on one active receiver normal HitDef through RedirectID before contact. It records the shared accepted-HitDef priority telemetry on the source and target. Dynamic values, aliases, omitted IKEMEN defaults, Helpers, renderer ordering, teams, source scheduling, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ModifyHitDef"],
+        requiredExecutedOperations: ["hitdef", "modifyhitdef"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            spritePriority: -4,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p2",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 2,
+            hitDefSpritePrioritySource: "authored",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            spritePriority: 5,
+            hitDefSpritePriorityProfile: "mugen-1.1",
+            hitDefSpritePriorityRole: "p1",
+            hitDefSpritePriorityContactKind: "hit",
+            hitDefSpritePriorityPreviousValue: 1,
+            hitDefSpritePrioritySource: "authored",
+            hitDefSpritePrioritySupported: true,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 - damage },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49675,7 +49772,9 @@ export type SyntheticImportedTraceFighterOptions = {
     hitDefTrigger?: string;
   };
   rootModifyHitDefRedirectRoute?: {
-    damage: [number, number?];
+    damage?: [number, number?];
+    p1SpritePriority?: number;
+    p2SpritePriority?: number;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
   };
@@ -56551,13 +56650,16 @@ ${route.guardDistance === undefined ? "" : `guard.dist = ${route.guardDistance}\
 function rootModifyHitDefRedirectControllerBlock(
   route: NonNullable<SyntheticImportedTraceFighterOptions["rootModifyHitDefRedirectRoute"]>,
 ): string {
-  const [damage, guardDamage] = route.damage;
-  const damageValue = guardDamage === undefined ? String(damage) : `${damage}, ${guardDamage}`;
+  const damageValue = route.damage === undefined
+    ? undefined
+    : route.damage[1] === undefined ? String(route.damage[0]) : `${route.damage[0]}, ${route.damage[1]}`;
   return `
 [State 0, Root ModifyHitDef Redirect]
 type = ModifyHitDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
-damage = ${damageValue}
+${damageValue === undefined ? "" : `damage = ${damageValue}`}
+${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
+${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}
 redirectid = ${route.redirectId}
 `;
 }

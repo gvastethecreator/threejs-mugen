@@ -174,6 +174,7 @@ import {
   createSyntheticImportedIkemenRootReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
@@ -17914,6 +17915,47 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 98 }),
+    );
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          spritePriority: -4,
+          hitDefSpritePriorityRole: "p2",
+          hitDefSpritePrioritySource: "authored",
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          spritePriority: 5,
+          hitDefSpritePriorityRole: "p1",
+          hitDefSpritePrioritySource: "authored",
+        }),
+      ]),
+    );
+  });
+
+  it("creates a required IKEMEN root ModifyHitDef sprite-priority RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedirectTraceArtifact({
+      generatedAt: "2026-07-23T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ModifyHitDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      modifyhitdef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("hit");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("hit");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 100 }),
     );
     expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
       expect.arrayContaining([
