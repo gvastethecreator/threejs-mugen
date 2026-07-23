@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T402 (closed, 2026-07-23)
+## Current runtime compatibility board - T403 (closed, 2026-07-23)
+
+T403 closes in `799749b3`. Pinned IKEMEN source delegates `fall.kill` through
+root ModifyHitDef to one active normal receiver and registers it as a boolean
+HitDef field. Static numeric values now mutate only that fall field in place:
+zero clears it and a nonzero value restores it. Required imported RedirectID
+trace evidence proves a receiver with fall enabled and 2000 deferred damage
+leaves its target at one life after `HitFallDamage` consumes `fall.kill = 0`.
+Dynamic values, other fall fields, `hitonce`, `air.juggle`, exact source
+boolean/default behavior, Projectile/Helper routes, timing, and full parity
+remain deferred.
+
+Verification: focused compiler, HitDef, and trace-preset coverage passes 3
+files / 730 tests. Trace-script syntax and diff hygiene pass. The accumulated
+TypeScript 7 gate, larger focal batch, full Vitest, aggregate traces, build,
+and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-modifyhitdef-fall-kill.md`.
+
+Next: select the next source-pinned shared field or reserve the global
+checkpoint for a larger accumulated batch.
+
+## Previous runtime compatibility board - T402 (closed, 2026-07-23)
 
 T402 closes in `a0b3617a`. Pinned IKEMEN source delegates `kill` and
 `guard.kill` through root ModifyHitDef to one active normal receiver and
@@ -9,9 +30,9 @@ the supplied fields in place: zero clears them and a nonzero value restores
 them. Required imported traces prove a redirected `kill = 0` clamps 2000
 direct damage at one life, while `guard.kill = 0` clamps 2000 guarded damage
 at one life. The Tag setup in the guard trace only routes input to its
-defender; it does not claim team behavior. Dynamic values, `fall.kill`, exact
-source boolean/default behavior, Projectile/Helper routes, timing, and full
-parity remain deferred.
+defender; it does not claim team behavior. Dynamic values, exact source
+boolean/default behavior, Projectile/Helper routes, timing, and full parity
+remain deferred.
 
 Verification: focused compiler, HitDef, direct-combat, combat-resolution,
 reversal, imported-route, and trace-preset coverage passes 8 files / 1151

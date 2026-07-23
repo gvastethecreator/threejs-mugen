@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef fall.kill report - T403 (closed, 2026-07-23)
+
+- Pinned IKEMEN source delegates static `fall.kill` through one active normal
+  ModifyHitDef receiver and registers the field as a boolean.
+- Feature commit `799749b3` lowers zero to false and nonzero static values to
+  true, retains omitted-field identity, and mutates active fall metadata in
+  place.
+- Required imported RedirectID trace proves false `fall.kill` survives until
+  deferred 2000 HitFallDamage and clamps the target at one life.
+- Focused compiler, HitDef, and trace-preset coverage passes 3 files / 730
+  tests. Trace-script syntax and diff hygiene pass.
+- The TypeScript 7 gate, larger focal batch, full Vitest, aggregate traces,
+  build, and boundary checks remain queued for the accumulated checkpoint.
+  Scores do not move.
+
 ## Runtime ModifyHitDef kill report - T402 (closed, 2026-07-23)
 
 - Pinned IKEMEN source delegates static `kill` and `guard.kill` through one

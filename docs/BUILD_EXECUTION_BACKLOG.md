@@ -1,5 +1,20 @@
 # Build Execution Backlog
 
+## Entry 583 - ModifyHitDef static fall.kill
+
+Closed T403 in `799749b3`: pinned IKEMEN shared HitDef `fall.kill` now flows
+through root ModifyHitDef. Static zero clears the field and static nonzero
+values restore it on one active normal receiver while retaining move identity,
+contact memory, and fall metadata. Required imported RedirectID trace proves
+false `fall.kill` reaches deferred 2000 HitFallDamage and clamps life at one.
+
+Focused compiler, HitDef, and trace-preset coverage passes 3 files / 730
+tests. Trace-script syntax and diff hygiene pass. Dynamic input, other fall
+fields, `hitonce`, `air.juggle`, exact source boolean/default behavior,
+Projectile/Helper routes, broader team behavior, timing, and full parity remain
+blocked. The accumulated TypeScript 7 gate, full Vitest, aggregate traces,
+build, and boundary checks stay queued. No score movement.
+
 ## Entry 582 - ModifyHitDef static kill fields
 
 Closed T402 in `a0b3617a`: pinned IKEMEN shared HitDef `kill` and `guard.kill`
@@ -13,9 +28,9 @@ input routing.
 Focused compiler, HitDef, direct-combat, combat-resolution, reversal,
 imported-route, and trace-preset coverage passes 8 files / 1151 tests.
 TypeScript 7, trace-script syntax, and diff hygiene pass. Dynamic input,
-`fall.kill`, exact source boolean/default behavior, Projectile/Helper routes,
-broader team behavior, timing, and full parity remain blocked. Full Vitest,
-aggregate traces, build, and boundary checks stay queued. No score movement.
+exact source boolean/default behavior, Projectile/Helper routes, broader team
+behavior, timing, and full parity remain blocked. Full Vitest, aggregate
+traces, build, and boundary checks stay queued. No score movement.
 
 ## Entry 581 - ModifyHitDef static priority
 
