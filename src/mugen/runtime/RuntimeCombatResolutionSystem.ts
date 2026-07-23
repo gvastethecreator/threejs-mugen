@@ -324,6 +324,16 @@ export class RuntimeCombatResolutionWorld {
       }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })
       : undefined;
     if (reversal) {
+      const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA");
+      if (override && shouldRuntimeHitOverrideMissDirect(reversal)) {
+        const missReason =
+          reversal.missOnOverride === true
+            ? "because missonoverride = 1 forces active override miss"
+            : "because active override cannot receive custom-state ReversalDef";
+        const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} ${missReason}`;
+        input.log(message);
+        return { kind: "skipped", reason: "hitoverride-custom-state-miss" };
+      }
       const outcome = input.reversalWorld.apply(defender, attacker, reversal, {
         rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),
         canEnterState: input.stateHooks.canEnterState,

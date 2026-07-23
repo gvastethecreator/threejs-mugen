@@ -181,6 +181,7 @@ import {
   createSyntheticImportedIkemenRootModifyReversalDefGuardFlagRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefGuardFlagNotRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefMissOnOverrideRedirectTraceArtifact,
   createSyntheticImportedIkemenHelperSelfTagTraceArtifact,
   createSyntheticImportedIkemenTagSideCommandTraceArtifact,
   createSyntheticImportedIkemenActiveRootMotionTraceArtifact,
@@ -17929,6 +17930,42 @@ describe("RuntimeTraceGatePresets", () => {
           hitDefSpritePrioritySource: "authored",
         }),
       ]),
+    );
+  });
+
+  it("creates a required IKEMEN root ModifyReversalDef missonoverride RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefMissOnOverrideRedirectTraceArtifact({
+      generatedAt: "2026-07-22T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      HitOverride: 2,
+      ReversalDef: 1,
+      ModifyReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      hitoverride: 2,
+      reversaldef: 1,
+      modifyreversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.eventCategories).not.toContain("override");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 99 }),
+    );
+    expect(artifact.trace.finalActors).toContainEqual(
+      expect.objectContaining({ id: "p1", moveType: "H" }),
+    );
+    expect(artifact.trace.finalActors).toContainEqual(
+      expect.objectContaining({ id: "p2", stateNo: 777, animNo: 777 }),
     );
   });
 

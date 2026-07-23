@@ -1823,6 +1823,36 @@ value = 1
     expect(dynamicNegative.operation).toBeUndefined();
   });
 
+  it("compiles static ReversalDef and root ModifyReversalDef missonoverride values", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], {
+        "reversal.attr": "S,NA",
+        missonoverride: "1",
+      }),
+    );
+    const redirected = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], {
+        missonoverride: "0",
+        redirectid: "57",
+      }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { missonoverride: "var(1)", redirectid: "57" }),
+    );
+
+    expect(reversal.operation).toMatchObject({
+      kind: "reversaldef",
+      attr: "S,NA",
+      missOnOverride: true,
+    });
+    expect(redirected.operation).toEqual({
+      kind: "modifyreversaldef",
+      missOnOverride: false,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static damage scale controllers into typed operations", () => {
     const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
     const dizzyOnly = compileControllerIr(controller(200, "AttackMulSet", [], { dizzypoints: "0.75" }));

@@ -13026,6 +13026,79 @@ export function createSyntheticImportedIkemenRootModifyReversalDefSpritePriority
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefMissOnOverrideRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 99;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a custom-state reversal and matching HitOverride out of reach", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects missonoverride zero before counter contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef MissOnOverride Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      missOnOverride: false,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef MissOnOverride Redirect Receiver",
+    withHitDef: false,
+    passiveHitOverride: { attr: "S,NA", stateNo: 889, slot: 1, time: 30 },
+    passiveReversalDef: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      hitPause: 3,
+      targetId,
+      trigger: "Time = 0",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyReversalDef MissOnOverride RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root changes one active custom-state ReversalDef to missonoverride = 0 while a matching HitOverride is active, then the counter wins direct contact. It covers only static direct arbitration through the current local HitOverride matcher. Default or true miss paths, dynamic values, guard-detail breadth, Projectile and Helper contacts, teams, renderer behavior, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "HitOverride", "ReversalDef", "ModifyReversalDef"],
+        requiredExecutedOperations: ["hitdef", "hitoverride", "reversaldef", "modifyreversaldef"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenHelperSelfTagTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49123,6 +49196,7 @@ export type SyntheticImportedTraceFighterOptions = {
     attr: string;
     reversalGuardFlag?: string;
     reversalGuardFlagNot?: string;
+    missOnOverride?: boolean;
     p1StateNo: number;
     p2StateNo?: number;
     hitPause?: number;
@@ -49604,6 +49678,7 @@ export type SyntheticImportedTraceFighterOptions = {
     attr?: string;
     reversalGuardFlag?: string;
     reversalGuardFlagNot?: string;
+    missOnOverride?: boolean;
     hitPause?: number;
     p1SpritePriority?: number;
     p2SpritePriority?: number;
@@ -51766,6 +51841,7 @@ trigger1 = ${config.trigger ?? "1"}
 reversal.attr = ${config.attr}
 ${config.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${config.reversalGuardFlag}`}
 ${config.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${config.reversalGuardFlagNot}`}
+${config.missOnOverride === undefined ? "" : `missonoverride = ${config.missOnOverride ? 1 : 0}`}
 pausetime = ${hitPause},${hitPause}
 ${config.p1SpritePriority === undefined ? "" : `p1sprpriority = ${config.p1SpritePriority}`}
 ${config.p2SpritePriority === undefined ? "" : `p2sprpriority = ${config.p2SpritePriority}`}
@@ -56487,6 +56563,7 @@ trigger1 = ${route.trigger ?? "Time >= 1"}
 ${route.attr === undefined ? "" : `reversal.attr = ${route.attr}`}
 ${route.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${route.reversalGuardFlag}`}
 ${route.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${route.reversalGuardFlagNot}`}
+${route.missOnOverride === undefined ? "" : `missonoverride = ${route.missOnOverride ? 1 : 0}`}
 ${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
 ${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
 ${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}

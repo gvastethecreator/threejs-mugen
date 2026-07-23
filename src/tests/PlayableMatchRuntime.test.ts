@@ -5863,6 +5863,56 @@ ctrl = 0
     expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
   });
 
+  it("uses root ModifyReversalDef missonoverride zero to counter through a matching HitOverride", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefAttr: "S,NA",
+      passiveResourceController: `
+[State 0, Redirected ModifyReversalDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected ModifyReversalDef missonoverride]
+type = ModifyReversalDef
+trigger1 = Time = 1
+missonoverride = 0
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-modifyreversaldef-missonoverride-destination",
+      withStateMove: false,
+      passiveHitOverride: { attr: "S,NA", stateNo: 889 },
+      passiveReversalDef: { attr: "S,NA", p1StateNo: 777, hitPause: 3 },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const armed = runtime.step({ p1: new Set(), p2: new Set() });
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+    const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(armed.compatibilitySession?.actors[1]?.executedControllers.HitOverride).toBe(1);
+    expect(armed.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
+    expect(countered.actors[0]?.runtime.moveType).toBe("H");
+    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
+    expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
+    expect(countered.logs.some((line) => line.includes("HitOverride slot"))).toBe(false);
+  });
+
   it("evaluates bounded MoveReversed after imported ReversalDef counter contact", () => {
     const attacker = createImportedFixture({
       withStateMove: false,
@@ -10966,6 +11016,7 @@ function createImportedFixture(
       attr: string;
       reversalGuardFlag?: string;
       reversalGuardFlagNot?: string;
+      missOnOverride?: boolean;
       p1StateNo: number;
       p2StateNo?: number;
       hitPause?: number;
@@ -11253,6 +11304,7 @@ trigger1 = ${options.passiveReversalTrigger ?? "1"}
 reversal.attr = ${options.passiveReversalDef.attr}
 ${options.passiveReversalDef.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${options.passiveReversalDef.reversalGuardFlag}`}
 ${options.passiveReversalDef.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${options.passiveReversalDef.reversalGuardFlagNot}`}
+${options.passiveReversalDef.missOnOverride === undefined ? "" : `missonoverride = ${options.passiveReversalDef.missOnOverride ? 1 : 0}`}
 pausetime = ${options.passiveReversalDef.hitPause ?? 0},${options.passiveReversalDef.hitPause ?? 0}
 ${options.passiveReversalDef.p1SpritePriority === undefined ? "" : `p1sprpriority = ${options.passiveReversalDef.p1SpritePriority}`}
 ${options.passiveReversalDef.p2SpritePriority === undefined ? "" : `p2sprpriority = ${options.passiveReversalDef.p2SpritePriority}`}

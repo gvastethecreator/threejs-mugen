@@ -203,6 +203,38 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("mutates static ReversalDef missonoverride without replacing its active state", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser");
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: box(),
+      hitPause: 3,
+      p1StateNo: 777,
+      missOnOverride: true,
+    });
+    const activeMove = reverser.currentMove;
+    const activeReversal = reverser.runtime.reversal;
+
+    const modified = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        missonoverride: "0",
+        redirectid: "57",
+      })),
+    });
+
+    expect(modified).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyreversaldef", missOnOverride: false },
+    });
+    expect(reverser.currentMove).toBe(activeMove);
+    expect(reverser.runtime.reversal).toBe(activeReversal);
+    expect(reverser.currentMove).toMatchObject({ p1StateNo: 777, missOnOverride: false });
+    expect(reverser.runtime.reversal).toMatchObject({ p1StateNo: 777, missOnOverride: false });
+  });
+
   it("blocks ModifyReversalDef without an active reversal or typed operation", () => {
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
     const fighter = actor("p1", "Reverser");

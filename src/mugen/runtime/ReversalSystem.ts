@@ -34,6 +34,7 @@ export type RuntimeReversalActivation = {
   attr: string;
   reversalGuardFlag?: string;
   reversalGuardFlagNot?: string;
+  missOnOverride?: boolean;
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
@@ -127,6 +128,7 @@ export class RuntimeReversalControllerDispatchWorld {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
       reversalGuardFlagNot: operation?.reversalGuardFlagNot,
+      missOnOverride: operation?.missOnOverride,
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
@@ -184,6 +186,10 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation.reversalGuardFlagNot !== undefined) {
       existing.reversalGuardFlagNot = operation.reversalGuardFlagNot;
       runtimeReversal.reversalGuardFlagNot = operation.reversalGuardFlagNot;
+    }
+    if (operation.missOnOverride !== undefined) {
+      existing.missOnOverride = operation.missOnOverride;
+      runtimeReversal.missOnOverride = operation.missOnOverride;
     }
     if (operation.hitPause !== undefined) {
       existing.hitPause = operation.hitPause;
@@ -253,6 +259,7 @@ export class RuntimeReversalWorld {
       reversalAttr: attr,
       reversalGuardFlag: activation.reversalGuardFlag,
       reversalGuardFlagNot: activation.reversalGuardFlagNot,
+      missOnOverride: activation.missOnOverride,
       p1SpritePriority: activation.p1SpritePriority,
       p2SpritePriority: activation.p2SpritePriority,
       p1StateNo: activation.p1StateNo,
@@ -271,6 +278,7 @@ export class RuntimeReversalWorld {
       hitPause: activation.hitPause,
       ...(activation.reversalGuardFlag === undefined ? {} : { reversalGuardFlag: activation.reversalGuardFlag }),
       ...(activation.reversalGuardFlagNot === undefined ? {} : { reversalGuardFlagNot: activation.reversalGuardFlagNot }),
+      ...(activation.missOnOverride === undefined ? {} : { missOnOverride: activation.missOnOverride }),
       ...(activation.p1SpritePriority === undefined ? {} : { p1SpritePriority: activation.p1SpritePriority }),
       ...(activation.p2SpritePriority === undefined ? {} : { p2SpritePriority: activation.p2SpritePriority }),
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
