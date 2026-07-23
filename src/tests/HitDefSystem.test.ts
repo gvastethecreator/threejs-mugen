@@ -255,6 +255,18 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({ priority: 4, priorityType: "hit", attackDepth: [4, 4] });
   });
 
+  it("preserves source-shaped integer HitDef priorities outside the legacy clamps", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const high = hitDefActor();
+    const negative = hitDefActor();
+
+    world.apply({ actor: high, controller: compileControllerIr(controller("HitDef", { priority: "12.8, Dodge" })), frame: activeFrame() });
+    world.apply({ actor: negative, controller: compileControllerIr(controller("HitDef", { priority: "-4.8, Miss" })), frame: activeFrame() });
+
+    expect(high.currentMove).toMatchObject({ priority: 12, priorityType: "dodge" });
+    expect(negative.currentMove).toMatchObject({ priority: -4, priorityType: "miss" });
+  });
+
   it("derives missing airguard.velocity from air.velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
@@ -499,6 +511,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p2getp1state: "0",
         p1sprpriority: "5",
         p2sprpriority: "-4",
+        priority: "12.8, Dodge",
         redirectid: "57",
       })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
@@ -521,6 +534,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p2GetP1State: false,
         p1SpritePriority: 5,
         p2SpritePriority: -4,
+        priority: 12,
+        priorityType: "dodge",
       },
     });
     expect(actor.currentMove).toBe(activeMove);
@@ -537,6 +552,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2GetP1State: false,
       p1SpritePriority: 5,
       p2SpritePriority: -4,
+      priority: 12,
+      priorityType: "dodge",
     });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
@@ -562,6 +579,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2GetP1State: true,
       p1SpritePriority: 5,
       p2SpritePriority: -4,
+      priority: 12,
+      priorityType: "dodge",
     });
 
     const targetOwnedState = world.modify({
@@ -576,6 +595,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2GetP1State: false,
       p1SpritePriority: 5,
       p2SpritePriority: -4,
+      priority: 12,
+      priorityType: "dodge",
     });
   });
 

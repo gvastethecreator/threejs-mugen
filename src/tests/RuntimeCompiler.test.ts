@@ -1650,6 +1650,7 @@ value = 1
         p2getp1state: "0",
         p1sprpriority: "5.8",
         p2sprpriority: "-4.6",
+        priority: "12.8, Dodge",
         redirectid: "var(0)",
       }),
     );
@@ -1701,8 +1702,14 @@ value = 1
     const dynamicP2SpritePriority = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", p2sprpriority: "var(1)", redirectid: "57" }),
     );
+    const dynamicPriority = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", priority: "var(1), Hit", redirectid: "57" }),
+    );
+    const malformedPriority = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", priority: "12, Unknown", redirectid: "57" }),
+    );
     const unsupportedPayload = compileControllerIr(
-      controller(200, "ModifyHitDef", [], { damage: "41", priority: "4", redirectid: "57" }),
+      controller(200, "ModifyHitDef", [], { damage: "41", forcenofall: "1", redirectid: "57" }),
     );
     const malformedRedirect = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "var(" }),
@@ -1731,6 +1738,8 @@ value = 1
         p2GetP1State: false,
         p1SpritePriority: 5,
         p2SpritePriority: -4,
+        priority: 12,
+        priorityType: "dodge",
         redirectPlayerIdExpression: "var(0)",
       },
     });
@@ -1777,6 +1786,9 @@ value = 1
     expect(dynamicP1SpritePriority.operation).toBeUndefined();
     expect(dynamicP2SpritePriority.supportLevel).toBe("unsupported");
     expect(dynamicP2SpritePriority.operation).toBeUndefined();
+    expect(dynamicPriority.supportLevel).toBe("unsupported");
+    expect(dynamicPriority.operation).toBeUndefined();
+    expect(malformedPriority.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();

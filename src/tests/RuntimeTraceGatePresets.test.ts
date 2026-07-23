@@ -175,6 +175,7 @@ import {
   createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyHitDefPriorityRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
@@ -17973,6 +17974,34 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a required IKEMEN root ModifyHitDef priority RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyHitDefPriorityRedirectTraceArtifact({
+      generatedAt: "2026-07-23T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ModifyHitDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      modifyhitdef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toEqual(expect.arrayContaining(["runtime", "hit"]));
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("hit");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 101 }),
+    );
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", life: 969 }),
+      expect.objectContaining({ id: "p2", life: 1000 }),
+    ]));
   });
 
   it("creates a required IKEMEN root ModifyReversalDef attacker-owned HitOverride artifact", () => {

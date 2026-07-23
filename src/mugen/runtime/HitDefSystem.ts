@@ -8,6 +8,7 @@ import type { MugenStateController } from "../model/MugenState";
 import { DEFAULT_RUNTIME_GUARD_DISTANCE } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
+import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
@@ -121,7 +122,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const p2ClsnRequire = operation?.p2ClsnRequire ?? normalizeMugenCollisionBoxType(findParam(source, "p2clsnrequire")) ?? existing?.p2ClsnRequire;
     const hitPause = operation?.pauseTime ?? firstNumber(findParam(source, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
     const hitStun = operation?.groundHitTime ?? firstNumber(findParam(source, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
-    const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")) ?? 4);
+    const priority = normalizeRuntimeHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")));
     const priorityType = operation?.priorityType ?? hitDefPriorityType(findParam(source, "priority")) ?? "hit";
     const groundVelocity = operation?.groundVelocity ?? velocityPair(findParam(source, "ground.velocity"));
     const push = Math.abs(groundVelocity?.[0] ?? existing?.push ?? (damage >= 60 ? 30 : 20));
@@ -350,6 +351,10 @@ export class RuntimeHitDefControllerDispatchWorld {
     if (operation.p2SpritePriority !== undefined) {
       existing.p2SpritePriority = operation.p2SpritePriority;
     }
+    if (operation.priority !== undefined) {
+      existing.priority = operation.priority;
+      existing.priorityType = operation.priorityType ?? "hit";
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {
@@ -487,10 +492,6 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
-}
-
-function clampHitDefPriority(value: number): number {
-  return Math.max(0, Math.min(10, Math.round(value)));
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

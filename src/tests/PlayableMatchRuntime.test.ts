@@ -9940,6 +9940,7 @@ p2stateno = 888
 p2getp1state = 0
 p1sprpriority = 5
 p2sprpriority = -4
+priority = 12, Dodge
 RedirectID = var(0)
 `,
     });
@@ -9977,6 +9978,8 @@ ground.velocity = 0,0
           p2GetP1State?: boolean;
           p1SpritePriority?: number;
           p2SpritePriority?: number;
+          priority?: number;
+          priorityType?: "hit" | "miss" | "dodge";
           hitVars?: { hitId?: number; chainId?: number; hitCount?: number };
         };
       };
@@ -9997,6 +10000,8 @@ ground.velocity = 0,0
       p2GetP1State: false,
       p1SpritePriority: 5,
       p2SpritePriority: -4,
+      priority: 12,
+      priorityType: "dodge",
       hitVars: { hitId: 92, chainId: 13, hitCount: 3 },
     });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);

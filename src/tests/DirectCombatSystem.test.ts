@@ -36,6 +36,22 @@ describe("DirectCombatSystem", () => {
     expect(right.hasHit).toBe(true);
   });
 
+  it("keeps high and negative integer HitDef priorities distinct", () => {
+    const world = new RuntimeDirectCombatWorld();
+
+    expect(world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 12.8 }), moveTick: 1 }),
+      actor("p2", "P2", { currentMove: move({ priority: 8.9 }), moveTick: 1 }),
+      priorityHooks(),
+    )).toMatchObject({ kind: "win", winnerId: "p1", loserId: "p2", message: "HitDef priority clash: P1 priority 12 beat P2 priority 8" });
+
+    expect(world.resolvePriorityClash(
+      actor("p3", "P3", { currentMove: move({ priority: -4.8 }), moveTick: 1 }),
+      actor("p4", "P4", { currentMove: move({ priority: -3.1 }), moveTick: 1 }),
+      priorityHooks(),
+    )).toMatchObject({ kind: "win", winnerId: "p4", loserId: "p3", message: "HitDef priority clash: P4 priority -3 beat P3 priority -4" });
+  });
+
   it("resolves bounded equal-priority direct HitDef trades", () => {
     const world = new RuntimeDirectCombatWorld();
     const left = actor("p1", "P1", { currentMove: move({ priority: 4 }), moveTick: 1 });

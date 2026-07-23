@@ -8,6 +8,7 @@ import {
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
+import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import { applyRuntimeHitDefSpritePriorityContact } from "./HitDefSpritePrioritySystem";
 import {
@@ -109,8 +110,8 @@ export class RuntimeDirectCombatWorld {
     if (!contact) {
       return undefined;
     }
-    const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);
-    const rightPriority = clampHitDefPriority(rightMove.priority ?? 4);
+    const leftPriority = normalizeRuntimeHitDefPriority(leftMove.priority);
+    const rightPriority = normalizeRuntimeHitDefPriority(rightMove.priority);
     if (leftPriority === rightPriority) {
       const leftType = leftMove.priorityType ?? "hit";
       const rightType = rightMove.priorityType ?? "hit";
@@ -374,11 +375,4 @@ function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): Charact
     },
     envShake: fall.envShake,
   };
-}
-
-function clampHitDefPriority(value: number): number {
-  if (!Number.isFinite(value)) {
-    return 4;
-  }
-  return Math.max(1, Math.min(7, Math.round(value)));
 }

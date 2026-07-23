@@ -12581,6 +12581,77 @@ export function createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedir
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyHitDefPriorityRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 31;
+  const targetId = 101;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a low-priority normal HitDef out of range", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects high priority before simultaneous contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Priority Redirect Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 17,
+      targetId: 0,
+      priority: 8,
+      priorityType: "Hit",
+      hitDefTrigger: "Time >= 1",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyHitDefRedirectRoute: {
+      priority: 12,
+      priorityType: "Hit",
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Priority Redirect Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: { damage, targetId, priority: -4, priorityType: "Hit", hitDefTrigger: "Time = 0", clsn1Extent: 64 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyHitDef priority RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root changes static priority on one active receiver normal HitDef through RedirectID before simultaneous direct contact. The receiver retains source-shaped integer 12 and beats priority 8 instead of collapsing to a legacy local clamp. Dynamic values, priority-type breadth, aliases, Projectiles, Helpers, teams, source scheduling, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ModifyHitDef"],
+        requiredExecutedOperations: ["hitdef", "modifyhitdef"],
+        requiredEventCategories: ["runtime", "hit"],
+        requiredEventSubstrings: ["HitDef priority clash", "priority 12 beat", "priority 8"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 - damage },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -49775,6 +49846,8 @@ export type SyntheticImportedTraceFighterOptions = {
     damage?: [number, number?];
     p1SpritePriority?: number;
     p2SpritePriority?: number;
+    priority?: number;
+    priorityType?: "Hit" | "Miss" | "Dodge";
     redirectId: SyntheticNumberExpression;
     trigger?: string;
   };
@@ -56660,6 +56733,7 @@ trigger1 = ${route.trigger ?? "Time >= 1"}
 ${damageValue === undefined ? "" : `damage = ${damageValue}`}
 ${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
 ${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}
+${route.priority === undefined ? "" : `priority = ${route.priority}, ${route.priorityType ?? "Hit"}`}
 redirectid = ${route.redirectId}
 `;
 }
