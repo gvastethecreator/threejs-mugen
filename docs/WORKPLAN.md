@@ -1,21 +1,21 @@
 # Workplan
 
-## Runtime reversal HitOverride topology checkpoint - T390 (2026-07-23)
+## Runtime inherited reversal fields checkpoint - T391-T393 (2026-07-23)
 
-T390 `20324cf` corrects the direct route added around T389 `188c4462`.
-ReversalDef now carries static inherited `attr` and `guardflag`, and direct
-contact checks HitOverride on the countered actor with that payload, reverser
-state, and unguardable context. Omitted custom-state policy and explicit `1`
-miss. Explicit `0` runs the HitOverride redirect rather than reversal p1/p2
-states. Focused compiler, reversal, combat, imported-match, and matcher
-coverage passes 5 files / 452 tests; the required trace ends at state `889`.
-Script syntax and diff hygiene pass. Scores do not move.
+T391 and T393 `a9837e49` add static ReversalDef `p2getp1state` and
+`p2facing` across activation and root ModifyReversalDef mutation. T392
+`3bb7fc3c` adds static HitDef `ignorereversaldef` to direct contact admission.
+`aa992740` proves the imported target-owned state, direct opt-out, direct
+target-facing, and root-mutation target-facing routes. The final grouped
+compiler, HitDef, reversal, combat, imported-match, and matcher batch passes
+6 files / 478 tests; TypeScript 7, trace-script syntax, and diff hygiene pass.
+Scores do not move.
 
-Next, audit a distinct inherited ReversalDef field or a separate direct-contact
-branch with a source-backed contract. Dynamic expressions, Projectile/Helper
-routes, Helper receivers, reversal clashes, exact timing, renderer work, and
-full parity remain blocked. TypeScript, full Vitest, trace aggregate, build,
-and boundaries stay queued for the grouped runtime checkpoint.
+Keep the current claim bounded to static direct root behavior. Dynamic
+expressions, Projectile/Helper routes, Helper receivers, reversal clashes,
+deferred facing/hitpause order, renderer work, and full parity remain blocked.
+Full Vitest, aggregate traces, build, and boundaries stay queued for the next
+larger runtime checkpoint.
 
 ## Runtime reversal sprite priority checkpoint - T388 (2026-07-22)
 

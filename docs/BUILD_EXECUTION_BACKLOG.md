@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 576 - ReversalDef target fields and HitDef reversal opt-out
+
+Closed T391-T393 in `a9837e49`, `3bb7fc3c`, and `aa992740`. Static
+ReversalDef `p2getp1state` now selects target-owned or receiver-owned
+`p2stateno` data; static `p2facing` sets the countered actor from the
+pre-state-entry reverser facing; root ModifyReversalDef RedirectID mutates the
+active target-facing value. Static HitDef `ignorereversaldef` resets with each
+new HitDef and skips direct plus equal-priority ReversalDef admission when
+true.
+
+Verification: `RuntimeCompiler`, `HitDefSystem`, `ReversalSystem`,
+`RuntimeCombatResolutionSystem`, `PlayableMatchRuntime`, and `CombatResolver`
+pass 6 files / 478 tests. TypeScript 7, trace-script syntax, and diff hygiene
+pass. Full Vitest, aggregate traces, build, and boundaries remain queued. No
+score movement.
+
+Claim allowed: static direct root ReversalDef target state/facing and HitDef
+reversal opt-out under explicit `ikemen-go`. Claim blocked: dynamic values,
+Projectile/Helper routes, Helper receivers, reversal clashes, source deferred
+facing/hitpause order, renderer behavior, rollback/netplay, and full parity.
+
 ## Entry 575 - ReversalDef HitOverride topology RedirectID
 
 Closed direct ReversalDef HitOverride topology in `20324cf`. Static inherited

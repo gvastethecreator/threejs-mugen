@@ -1,22 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T390 (2026-07-23)
+## Current runtime compatibility board - T391-T393 (2026-07-23)
 
-T390 `20324cf` corrects direct ReversalDef HitOverride topology after T389
-`188c4462` retained static `missonoverride`. Direct reversal contact now
-queries a slot owned by the countered actor, using the active reversal's
-inherited static `attr` and `guardflag`, plus reverser state and unguardable
-context. Omitted custom-state policy and explicit `1` miss. Explicit `0`
-applies the HitOverride redirect and does not run normal reversal p1/p2
-states. Required imported evidence ends in attacker state `889`, not reversal
-state `777`. Dynamic payloads, Projectile/Helper routes, Helper receivers,
-reversal clashes, exact timing, renderer work, and full parity remain outside
-the claim. Focused checks pass; grouped typecheck, aggregate trace, full
-Vitest, build, and boundaries remain queued.
+T391 `a9837e49` carries static ReversalDef `p2getp1state` into active state
+metadata. T392 `3bb7fc3c` carries static HitDef `ignorereversaldef` into the
+active move and skips direct plus equal-priority reversal admission. T393
+`a9837e49` carries static `p2facing` through ReversalDef and root
+ModifyReversalDef, using the reverser's facing captured before p1 state entry.
+`aa992740` proves the imported target-owned state route, direct opt-out, and
+activation plus RedirectID target-facing routes.
 
-Next: audit another inherited ReversalDef field or a separate direct-contact
-branch with concrete source and local-state semantics before widening this
-family.
+Focused compiler, HitDef, reversal, combat, imported-match, and matcher
+coverage passes 6 files / 478 tests. TypeScript 7 typecheck, trace-script
+syntax, and diff hygiene pass. Full Vitest, aggregate traces, build, and
+boundaries remain queued. Dynamic expressions, Projectile/Helper routes,
+reversal clashes, deferred source facing and hitpause order, renderer work,
+and full parity remain outside this claim.
+
+Next: audit one inherited ReversalDef field with direct source behavior that
+does not depend on the deferred facing route, or isolate that scheduler order
+before widening target-facing coverage.
 
 ## Previous runtime compatibility board - T388 (2026-07-22)
 

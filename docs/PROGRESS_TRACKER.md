@@ -1,20 +1,24 @@
 ﻿# Progress Tracker
 
-## Runtime reversal HitOverride topology report - T390 (2026-07-23)
+## Runtime inherited reversal fields report - T391-T393 (2026-07-23)
 
-- Runtime feature commit: `20324cf`; it corrects the direct topology around
-  T389 `188c4462` field retention.
-- ReversalDef and root ModifyReversalDef RedirectID retain static inherited
-  `attr` / `guardflag` alongside `missonoverride` on active reversal state.
-- Direct matching uses the countered actor's HitOverride slot, the inherited
-  payload, reverser state, and reverser unguardable flag. Omitted custom-state
-  policy and explicit `1` miss; explicit `0` enters the HitOverride route.
-- Focused compiler, reversal, combat, imported-match, and matcher coverage
-  passes 5 files / 452 tests. The required imported trace passes with final
-  countered actor state `889`. Script syntax and diff hygiene pass.
+- Runtime feature commits: `a9837e49` for static ReversalDef target state and
+  facing, `3bb7fc3c` for HitDef reversal opt-out, and `aa992740` for imported
+  P1/P2 coverage.
+- Static zero `p2getp1state` selects the countered target's own
+  `p2stateno` state. Nonzero values retain the active receiver state route.
+- Static `ignorereversaldef` resets to false on a later omitted HitDef and
+  skips direct plus equal-priority ReversalDef admission when true.
+- Static `p2facing` uses sign to set the countered actor relative to the
+  reverser facing captured before p1 state entry. Root ModifyReversalDef can
+  change that active value through RedirectID.
+- Focused compiler, HitDef, reversal, combat, imported-match, and matcher
+  coverage passes 6 files / 478 tests. TypeScript 7, trace-script syntax, and
+  diff hygiene pass.
 - Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. Dynamic values,
-  Projectile/Helper routes, Helper receivers, reversal clashes, exact timing,
-  renderer work, and full parity remain blocked. Grouped gates remain queued.
+  Projectile/Helper routes, Helper receivers, reversal clashes, deferred
+  facing/hitpause order, renderer work, and full parity remain blocked. Full
+  Vitest, aggregate traces, build, and boundaries remain queued.
 
 ## Runtime reversal sprite priority report - T388 (2026-07-22)
 
