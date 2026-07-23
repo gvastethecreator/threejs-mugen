@@ -160,6 +160,7 @@ export type RuntimeDirectCombatResolutionResult =
 export type RuntimeDirectCombatSkipReason =
   | "missing-move"
   | "already-hit"
+  | "hitonce-consumed"
   | "compiled-hitdef"
   | "reversal-move"
   | "inactive"
@@ -282,28 +283,31 @@ export class RuntimeCombatResolutionWorld {
     input: RuntimeCombatResolutionDirectInput<TActor>,
   ): RuntimeDirectCombatResolutionResult {
     const { attacker, defender } = input;
-    if (!attacker.currentMove) {
+    const move = attacker.currentMove;
+    if (!move) {
       return { kind: "skipped", reason: "missing-move" };
     }
     const prioritySkipKey = directHitDirectionKey(attacker.id, defender.id);
-    if (this.priorityFrameSkips.get(prioritySkipKey) === attacker.currentMove) {
+    if (this.priorityFrameSkips.get(prioritySkipKey) === move) {
       this.priorityFrameSkips.delete(prioritySkipKey);
       return { kind: "skipped", reason: "priority-no-hit" };
     }
     const priorityMessageEntry = this.priorityFrameMessages.get(prioritySkipKey);
-    const priorityMessage = priorityMessageEntry?.move === attacker.currentMove ? priorityMessageEntry.message : undefined;
+    const priorityMessage = priorityMessageEntry?.move === move ? priorityMessageEntry.message : undefined;
     this.priorityFrameMessages.delete(prioritySkipKey);
-    if (hasExplicitHitDefContactMemory(attacker)
-      ? hasRuntimeHitDefTarget(attacker, defender.id)
-      : attacker.hasHit) {
-      return { kind: "skipped", reason: "already-hit" };
-    }
-    const move = attacker.currentMove;
     if (move.requiresHitDef) {
       return { kind: "skipped", reason: "compiled-hitdef" };
     }
     if (move.isReversal) {
       return { kind: "skipped", reason: "reversal-move" };
+    }
+    if (hasRuntimeHitOnceConsumed(attacker, move)) {
+      return { kind: "skipped", reason: "hitonce-consumed" };
+    }
+    if (hasExplicitHitDefContactMemory(attacker)
+      ? hasRuntimeHitDefTarget(attacker, defender.id)
+      : attacker.hasHit) {
+      return { kind: "skipped", reason: "already-hit" };
     }
     if (!runtimeMoveIsActive(move, attacker.moveTick)) {
       return { kind: "skipped", reason: "inactive" };
@@ -488,6 +492,7 @@ export class RuntimeCombatResolutionWorld {
     if (pending.length === 0) return 0;
     const actorsById = new Map(input.actors.map((actor) => [actor.id, actor]));
     const preparedHits: Array<{ attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult }> = [];
+    const provisionallyConsumedHitOnceActors = new Set<TActor>();
     const interruptedMoves = new Map<TActor, DemoMove>();
     let resolvedPairs = 0;
     for (const candidate of pending) {
@@ -513,11 +518,13 @@ export class RuntimeCombatResolutionWorld {
         resolvedPairs += 1;
         continue;
       }
-      const first = this.prepareEqualPriorityHit(input, left, right);
-      const second = this.prepareEqualPriorityHit(input, right, left);
+      const first = this.prepareEqualPriorityHit(input, left, right, provisionallyConsumedHitOnceActors);
+      const second = this.prepareEqualPriorityHit(input, right, left, provisionallyConsumedHitOnceActors);
       if (!first || !second) continue;
       input.log(candidate.message);
       preparedHits.push(first, second);
+      if (first.move.hitOnce) provisionallyConsumedHitOnceActors.add(first.attacker);
+      if (second.move.hitOnce) provisionallyConsumedHitOnceActors.add(second.attacker);
       interruptedMoves.set(left, candidate.leftMove);
       interruptedMoves.set(right, candidate.rightMove);
       resolvedPairs += 1;
@@ -536,9 +543,12 @@ export class RuntimeCombatResolutionWorld {
     input: Omit<RuntimeCombatResolutionDirectInput<TActor>, "attacker" | "defender">,
     attacker: TActor,
     defender: TActor,
+    provisionallyConsumedHitOnceActors: ReadonlySet<TActor>,
   ): { attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult } | undefined {
     const move = attacker.currentMove;
     if (!move
+      || hasRuntimeHitOnceConsumed(attacker, move)
+      || (move.hitOnce === true && provisionallyConsumedHitOnceActors.has(attacker))
       || (hasExplicitHitDefContactMemory(attacker) ? hasRuntimeHitDefTarget(attacker, defender.id) : attacker.hasHit)
       || move.requiresHitDef
       || move.isReversal
@@ -846,6 +856,10 @@ export class RuntimeCombatResolutionWorld {
 
 function hasExplicitHitDefContactMemory(actor: RuntimeCombatResolutionActor): boolean {
   return actor.hitDefTargets !== undefined || actor.pendingHitDefTargets !== undefined;
+}
+
+function hasRuntimeHitOnceConsumed(actor: RuntimeCombatResolutionActor, move: DemoMove): boolean {
+  return move.hitOnce === true && actor.hasHit;
 }
 
 type RuntimeMoveCollisionActor = {

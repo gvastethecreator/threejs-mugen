@@ -111,6 +111,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardRedLife = operation?.guardRedLife ?? secondNumber(findParam(source, "redlife")) ?? existing?.guardRedLife;
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
+    const hitOnce = operation?.hitOnce ?? booleanHitDefParam(source, "hitonce") ?? existing?.hitOnce ?? false;
     const hitFlag =
       operation?.hitFlag ??
       stripMugenString(findParam(source, "hitflag")) ??
@@ -201,6 +202,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       ...(redLife === undefined ? {} : { redLife }),
       ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,
+      hitOnce,
       ...(hitFlag === undefined ? {} : { hitFlag }),
       ...(affectTeam === undefined ? {} : { affectTeam }),
       ...(teamSide === undefined ? {} : { teamSide }),
@@ -360,6 +362,9 @@ export class RuntimeHitDefControllerDispatchWorld {
     }
     if (operation.guardKill !== undefined) {
       existing.guardKill = operation.guardKill;
+    }
+    if (operation.hitOnce !== undefined) {
+      existing.hitOnce = operation.hitOnce;
     }
     if (operation.fallKill !== undefined) {
       existing.fall = {

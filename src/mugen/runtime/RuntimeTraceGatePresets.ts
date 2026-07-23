@@ -12911,6 +12911,104 @@ export function createSyntheticImportedIkemenRootModifyHitDefFallKillRedirectTra
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyHitDefHitOnceRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 37;
+  const targetId = 106;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-root-modifyhitdef-hitonce-grid",
+    displayName: "Trace Root ModifyHitDef HitOnce Grid",
+    playerStart: {
+      p1: { x: -20, y: 0, facing: 1 },
+      p2: { x: 20, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a normal HitDef away from both opposing roots", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects hitonce true before receiver reaches both roots", frames: 1, p1: [], p2: [] },
+    { label: "receiver contacts both roots and consumes the first direct hit", frames: 2, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-target-one",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef HitOnce Target One",
+    withHitDef: false,
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef HitOnce Caller",
+    withHitDef: false,
+    rootModifyHitDefRedirectRoute: { hitOnce: true, redirectId: 59, trigger: "Time = 1" },
+  });
+  const p3 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-target-two",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef HitOnce Target Two",
+    withHitDef: false,
+  });
+  const p4 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef HitOnce Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage,
+      targetId,
+      posX: 200,
+      delayedPosX: { x: 0, trigger: "Time >= 2" },
+      hitDefTrigger: "Time = 0",
+      clsn1Extent: 64,
+    },
+  });
+  const world = new MatchWorld({
+    p1,
+    p2,
+    stage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [p3, p4],
+  });
+  world.dispatch({
+    type: "set-root-standby",
+    changes: [
+      { id: "p3", standby: false },
+      { id: "p4", standby: false },
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, {
+    label: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyHitDef hitonce RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN Tag trace proves a root writes static hitonce through RedirectID to one active receiver normal HitDef before the receiver reaches two opposing active roots. The first direct contact consumes the receiver move for later direct targets. Throw defaults, target drop, projectiles, helpers, and juggle rules remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyhitdef-hitonce-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ModifyHitDef"],
+        requiredExecutedOperations: ["hitdef", "modifyhitdef"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p4", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 - damage },
+          { actorId: "p3", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p4", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -50114,6 +50212,7 @@ export type SyntheticImportedTraceFighterOptions = {
     kill?: boolean;
     guardKill?: boolean;
     fallKill?: boolean;
+    hitOnce?: boolean;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
   };
@@ -57006,6 +57105,7 @@ ${route.priority === undefined ? "" : `priority = ${route.priority}, ${route.pri
 ${route.kill === undefined ? "" : `kill = ${route.kill ? 1 : 0}`}
 ${route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`}
 ${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
+${route.hitOnce === undefined ? "" : `hitonce = ${route.hitOnce ? 1 : 0}`}
 redirectid = ${route.redirectId}
 `;
 }

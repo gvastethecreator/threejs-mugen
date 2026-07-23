@@ -29,6 +29,7 @@ export type HitDefControllerOp = {
   guardRedLife?: number;
   kill?: boolean;
   guardKill?: boolean;
+  hitOnce?: boolean;
   priority?: number;
   priorityType?: "hit" | "miss" | "dodge";
   p1SpritePriority?: number;
@@ -91,6 +92,7 @@ export type ModifyHitDefControllerOp = {
   kill?: boolean;
   guardKill?: boolean;
   fallKill?: boolean;
+  hitOnce?: boolean;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -1806,6 +1808,7 @@ function compileHitDefControllerOp(
     dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
+    hitOnce: booleanNumber(findParam(controller, "hitonce")),
     priority: firstNumber(findParam(controller, "priority")),
     priorityType: hitDefPriorityType(findParam(controller, "priority")),
     p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority")),
@@ -1868,6 +1871,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "kill",
     "guard.kill",
     "fall.kill",
+    "hitonce",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
@@ -1890,6 +1894,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const kill = staticOptionalHitDefBooleanParam(controller, "kill");
   const guardKill = staticOptionalHitDefBooleanParam(controller, "guard.kill");
   const fallKill = staticOptionalHitDefBooleanParam(controller, "fall.kill");
+  const hitOnce = staticOptionalHitDefBooleanParam(controller, "hitonce");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damage !== undefined ||
@@ -1907,7 +1912,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     priority !== true ||
     kill !== undefined ||
     guardKill !== undefined ||
-    fallKill !== undefined;
+    fallKill !== undefined ||
+    hitOnce !== undefined;
   if (
     !hasPayload ||
     (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
@@ -1926,6 +1932,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     kill === "invalid" ||
     guardKill === "invalid" ||
     fallKill === "invalid" ||
+    hitOnce === "invalid" ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -1954,6 +1961,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(kill === undefined ? {} : { kill }),
     ...(guardKill === undefined ? {} : { guardKill }),
     ...(fallKill === undefined ? {} : { fallKill }),
+    ...(hitOnce === undefined ? {} : { hitOnce }),
   };
 }
 

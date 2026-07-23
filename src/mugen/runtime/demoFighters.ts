@@ -30,6 +30,7 @@ export type DemoMove = {
   redLife?: number;
   guardRedLife?: number;
   kill?: boolean;
+  hitOnce?: boolean;
   attr?: string;
   hitFlag?: string;
   affectTeam?: MugenAffectTeam;

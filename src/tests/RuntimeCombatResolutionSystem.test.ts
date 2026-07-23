@@ -33,6 +33,66 @@ import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeCombatResolutionSystem", () => {
+  it("consumes a HitDef hitonce across distinct direct targets", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ damage: 25, hitOnce: true }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const firstDefender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, life: 100 }),
+    });
+    const secondDefender = actor("p3", "P3", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(world.resolveDirect({ attacker, defender: firstDefender, ...base })).toMatchObject({ kind: "hit", damage: 25 });
+    expect(world.resolveDirect({ attacker, defender: secondDefender, ...base })).toEqual({ kind: "skipped", reason: "hitonce-consumed" });
+    expect(firstDefender.runtime.life).toBe(75);
+    expect(secondDefender.runtime.life).toBe(100);
+    expect(attacker.pendingHitDefTargets).toEqual(["p2"]);
+  });
+
+  it("consumes HitDef hitonce across queued equal-priority trades", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: move({ damage: 25, priority: 4, hitOnce: true }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const firstOpponent = actor("p2", "P2", contactWorld, {
+      currentMove: move({ damage: 25, priority: 4 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, life: 100 }),
+    });
+    const secondOpponent = actor("p3", "P3", contactWorld, {
+      currentMove: move({ damage: 25, priority: 4 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(world.resolvePriorityClash({ left: attacker, right: firstOpponent, directCombatWorld })).toBeUndefined();
+    expect(world.resolvePriorityClash({ left: attacker, right: secondOpponent, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [attacker, firstOpponent, secondOpponent], ...base })).toBe(1);
+    expect(attacker.runtime.life).toBe(75);
+    expect(firstOpponent.runtime.life).toBe(75);
+    expect(secondOpponent.runtime.life).toBe(100);
+    expect(attacker.pendingHitDefTargets).toEqual(["p2"]);
+  });
+
   it.each([
     ["enemy-only", 1, false],
     ["both-teams", 0, true],

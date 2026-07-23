@@ -123,6 +123,16 @@ describe("DirectCombatSystem", () => {
       priorityHooks(),
     )).toBeUndefined();
     expect(world.resolvePriorityClash(
+      actor("p3", "P3", {
+        currentMove: move({ priority: 6, hitOnce: true }),
+        hasHit: true,
+        hitDefTargets: [],
+        pendingHitDefTargets: [],
+      }),
+      actor("p4", "P4", { currentMove: move({ priority: 3 }) }),
+      priorityHooks(),
+    )).toBeUndefined();
+    expect(world.resolvePriorityClash(
       actor("p1", "P1", { currentMove: move({ priority: 6, isReversal: true }) }),
       actor("p2", "P2", { currentMove: move({ priority: 3 }) }),
       priorityHooks(),

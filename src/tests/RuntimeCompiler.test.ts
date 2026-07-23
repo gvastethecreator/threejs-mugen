@@ -1654,6 +1654,7 @@ value = 1
         kill: "0",
         "guard.kill": "0",
         "fall.kill": "0",
+        hitonce: "0",
         redirectid: "var(0)",
       }),
     );
@@ -1667,7 +1668,7 @@ value = 1
       controller(200, "ModifyHitDef", [], { p1stateno: "777.4", p2stateno: "888.6", redirectid: "57" }),
     );
     const enabledKill = compileControllerIr(
-      controller(200, "ModifyHitDef", [], { kill: "1", "guard.kill": "-2", "fall.kill": "-3", redirectid: "57" }),
+      controller(200, "ModifyHitDef", [], { kill: "1", "guard.kill": "-2", "fall.kill": "-3", hitonce: "-4", redirectid: "57" }),
     );
     const noPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { redirectid: "57" }),
@@ -1723,11 +1724,17 @@ value = 1
     const dynamicFallKill = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", "fall.kill": "var(1)", redirectid: "57" }),
     );
+    const dynamicHitOnce = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", hitonce: "var(1)", redirectid: "57" }),
+    );
     const malformedKill = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", kill: "never", redirectid: "57" }),
     );
     const malformedFallKill = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", "fall.kill": "never", redirectid: "57" }),
+    );
+    const malformedHitOnce = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", hitonce: "never", redirectid: "57" }),
     );
     const unsupportedPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", forcenofall: "1", redirectid: "57" }),
@@ -1764,6 +1771,7 @@ value = 1
         kill: false,
         guardKill: false,
         fallKill: false,
+        hitOnce: false,
         redirectPlayerIdExpression: "var(0)",
       },
     });
@@ -1790,6 +1798,7 @@ value = 1
       kill: true,
       guardKill: true,
       fallKill: true,
+      hitOnce: true,
       redirectPlayerIdExpression: "57",
     });
     expect(noPayload.operation).toBeUndefined();
@@ -1826,8 +1835,11 @@ value = 1
     expect(dynamicGuardKill.operation).toBeUndefined();
     expect(dynamicFallKill.supportLevel).toBe("unsupported");
     expect(dynamicFallKill.operation).toBeUndefined();
+    expect(dynamicHitOnce.supportLevel).toBe("unsupported");
+    expect(dynamicHitOnce.operation).toBeUndefined();
     expect(malformedKill.operation).toBeUndefined();
     expect(malformedFallKill.operation).toBeUndefined();
+    expect(malformedHitOnce.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();

@@ -289,7 +289,8 @@ function priorityTypeLabel(type: NonNullable<DemoMove["priorityType"]>): "Hit" |
 function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<RuntimeDirectPriorityHooks, "isMoveActive">): DemoMove | undefined {
   const move = actor.currentMove;
   const legacyConsumed = actor.hitDefTargets === undefined && actor.pendingHitDefTargets === undefined && actor.hasHit;
-  if (!move || legacyConsumed || move.requiresHitDef || move.isReversal || !hooks.isMoveActive(move, actor.moveTick)) {
+  const hitOnceConsumed = move?.hitOnce === true && actor.hasHit;
+  if (!move || legacyConsumed || hitOnceConsumed || move.requiresHitDef || move.isReversal || !hooks.isMoveActive(move, actor.moveTick)) {
     return undefined;
   }
   return move;

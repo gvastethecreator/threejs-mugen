@@ -51,6 +51,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         missonoverride: "0",
         ignorereversaldef: "1",
         fall: "1",
+        hitonce: "1",
         "fall.damage": "7",
         "fall.yvelocity": "-4.5",
         "fall.recover": "1",
@@ -127,6 +128,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2GetP1State: false,
       missOnOverride: false,
       ignoreReversalDef: true,
+      hitOnce: true,
       fall: {
         enabled: true,
         damage: 7,
@@ -515,6 +517,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         kill: "0",
         "guard.kill": "0",
         "fall.kill": "0",
+        hitonce: "0",
         redirectid: "57",
       })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
@@ -542,6 +545,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         kill: false,
         guardKill: false,
         fallKill: false,
+        hitOnce: false,
       },
     });
     expect(actor.currentMove).toBe(activeMove);
@@ -562,6 +566,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       priorityType: "dodge",
       kill: false,
       guardKill: false,
+      hitOnce: false,
       fall: { enabled: false, kill: false },
     });
     expect(actor.hasHit).toBe(true);
@@ -615,14 +620,14 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     const restoredKill = world.modify({
       actor,
-      controller: compileControllerIr(controller("ModifyHitDef", { kill: "1", "guard.kill": "-2", "fall.kill": "-3", redirectid: "57" })),
+      controller: compileControllerIr(controller("ModifyHitDef", { kill: "1", "guard.kill": "-2", "fall.kill": "-3", hitonce: "-4", redirectid: "57" })),
     });
 
     expect(restoredKill).toMatchObject({
       modified: true,
-      operation: { kind: "modifyhitdef", kill: true, guardKill: true, fallKill: true },
+      operation: { kind: "modifyhitdef", kill: true, guardKill: true, fallKill: true, hitOnce: true },
     });
-    expect(actor.currentMove).toMatchObject({ kill: true, guardKill: true, fall: { enabled: false, kill: true } });
+    expect(actor.currentMove).toMatchObject({ kill: true, guardKill: true, hitOnce: true, fall: { enabled: false, kill: true } });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
     expect(actor.pendingHitDefTargets).toEqual(["p3"]);
