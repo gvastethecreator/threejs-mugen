@@ -81,6 +81,9 @@ export type ModifyHitDefControllerOp = {
   attr?: string;
   guardFlag?: string;
   hitFlag?: string;
+  p1StateNo?: number;
+  p2StateNo?: number;
+  p2GetP1State?: boolean;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -1839,7 +1842,20 @@ function compileHitDefControllerOp(
 }
 
 function compileModifyHitDefControllerOp(controller: MugenStateController): ModifyHitDefControllerOp | undefined {
-  const allowedParams = new Set(["type", "redirectid", "damage", "id", "chainid", "numhits", "attr", "guardflag", "hitflag"]);
+  const allowedParams = new Set([
+    "type",
+    "redirectid",
+    "damage",
+    "id",
+    "chainid",
+    "numhits",
+    "attr",
+    "guardflag",
+    "hitflag",
+    "p1stateno",
+    "p2stateno",
+    "p2getp1state",
+  ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
   }
@@ -1852,6 +1868,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const attr = staticOptionalHitAttributeParam(controller, "attr");
   const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const hitFlag = staticOptionalHitFlagParam(controller, "hitflag");
+  const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
+  const p2StateNo = staticOptionalStrictNumberParam(controller, "p2stateno");
+  const p2GetP1State = staticOptionalStrictNumberParam(controller, "p2getp1state");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damage !== undefined ||
@@ -1860,7 +1879,10 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitCount !== true ||
     attr !== true ||
     guardFlag !== true ||
-    hitFlag !== true;
+    hitFlag !== true ||
+    p1StateNo !== true ||
+    p2StateNo !== true ||
+    p2GetP1State !== true;
   if (
     !hasPayload ||
     (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
@@ -1870,11 +1892,17 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     attr === false ||
     guardFlag === false ||
     hitFlag === false ||
+    p1StateNo === false ||
+    p2StateNo === false ||
+    p2GetP1State === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
     return undefined;
   }
+  const normalizedP1StateNo = p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo));
+  const normalizedP2StateNo = p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo));
+  const normalizedP2GetP1State = p2GetP1State === true ? undefined : p2GetP1State !== 0;
   return {
     kind: "modifyhitdef",
     redirectPlayerIdExpression,
@@ -1886,6 +1914,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(attr === true ? {} : { attr }),
     ...(guardFlag === true ? {} : { guardFlag }),
     ...(hitFlag === true ? {} : { hitFlag }),
+    ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
+    ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
+    ...(normalizedP2GetP1State === undefined ? {} : { p2GetP1State: normalizedP2GetP1State }),
   };
 }
 

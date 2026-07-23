@@ -334,6 +334,16 @@ export class RuntimeHitDefControllerDispatchWorld {
     if (operation.hitFlag !== undefined) {
       existing.hitFlag = operation.hitFlag;
     }
+    if (operation.p1StateNo !== undefined) {
+      existing.p1StateNo = operation.p1StateNo;
+    }
+    if (operation.p2StateNo !== undefined) {
+      existing.p2StateNo = operation.p2StateNo;
+      existing.p2GetP1State = true;
+    }
+    if (operation.p2GetP1State !== undefined) {
+      existing.p2GetP1State = operation.p2GetP1State;
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {

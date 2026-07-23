@@ -9935,6 +9935,9 @@ numhits = 3
 attr = C,HP
 guardflag = H
 hitflag = LAF
+p1stateno = 777
+p2stateno = 888
+p2getp1state = 0
 RedirectID = var(0)
 `,
     });
@@ -9967,6 +9970,9 @@ ground.velocity = 0,0
           attr?: string;
           guardFlag?: string;
           hitFlag?: string;
+          p1StateNo?: number;
+          p2StateNo?: number;
+          p2GetP1State?: boolean;
           hitVars?: { hitId?: number; chainId?: number; hitCount?: number };
         };
       };
@@ -9982,6 +9988,9 @@ ground.velocity = 0,0
       attr: "C,HP",
       guardFlag: "H",
       hitFlag: "LAF",
+      p1StateNo: 777,
+      p2StateNo: 888,
+      p2GetP1State: false,
       hitVars: { hitId: 92, chainId: 13, hitCount: 3 },
     });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);

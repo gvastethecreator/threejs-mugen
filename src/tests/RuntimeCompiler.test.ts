@@ -1645,6 +1645,9 @@ value = 1
         attr: "C,HP",
         guardflag: "H",
         hitflag: "LAF",
+        p1stateno: "777",
+        p2stateno: "888",
+        p2getp1state: "0",
         redirectid: "var(0)",
       }),
     );
@@ -1653,6 +1656,9 @@ value = 1
     );
     const filtersOnly = compileControllerIr(
       controller(200, "ModifyHitDef", [], { attr: "S,NA", guardflag: "MA", hitflag: "MAF", redirectid: "57" }),
+    );
+    const targetStateOnly = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { p1stateno: "777.4", p2stateno: "888.6", redirectid: "57" }),
     );
     const noPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { redirectid: "57" }),
@@ -1677,6 +1683,15 @@ value = 1
     );
     const dynamicHitFlag = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", hitflag: "var(1)", redirectid: "57" }),
+    );
+    const dynamicP1StateNo = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", p1stateno: "var(1)", redirectid: "57" }),
+    );
+    const dynamicP2StateNo = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", p2stateno: "var(1)", redirectid: "57" }),
+    );
+    const dynamicP2GetP1State = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", p2getp1state: "var(1)", redirectid: "57" }),
     );
     const unsupportedPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", priority: "4", redirectid: "57" }),
@@ -1703,6 +1718,9 @@ value = 1
         attr: "C,HP",
         guardFlag: "H",
         hitFlag: "LAF",
+        p1StateNo: 777,
+        p2StateNo: 888,
+        p2GetP1State: false,
         redirectPlayerIdExpression: "var(0)",
       },
     });
@@ -1716,6 +1734,12 @@ value = 1
       attr: "S,NA",
       guardFlag: "MA",
       hitFlag: "MAF",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(targetStateOnly.operation).toEqual({
+      kind: "modifyhitdef",
+      p1StateNo: 777,
+      p2StateNo: 889,
       redirectPlayerIdExpression: "57",
     });
     expect(noPayload.operation).toBeUndefined();
@@ -1733,6 +1757,12 @@ value = 1
     expect(dynamicGuardFlag.operation).toBeUndefined();
     expect(dynamicHitFlag.supportLevel).toBe("unsupported");
     expect(dynamicHitFlag.operation).toBeUndefined();
+    expect(dynamicP1StateNo.supportLevel).toBe("unsupported");
+    expect(dynamicP1StateNo.operation).toBeUndefined();
+    expect(dynamicP2StateNo.supportLevel).toBe("unsupported");
+    expect(dynamicP2StateNo.operation).toBeUndefined();
+    expect(dynamicP2GetP1State.supportLevel).toBe("unsupported");
+    expect(dynamicP2GetP1State.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();

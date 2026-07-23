@@ -494,6 +494,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         attr: "C,HP",
         guardflag: "H",
         hitflag: "LAF",
+        p1stateno: "777",
+        p2stateno: "888",
+        p2getp1state: "0",
         redirectid: "57",
       })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
@@ -511,6 +514,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         attr: "C,HP",
         guardFlag: "H",
         hitFlag: "LAF",
+        p1StateNo: 777,
+        p2StateNo: 888,
+        p2GetP1State: false,
       },
     });
     expect(actor.currentMove).toBe(activeMove);
@@ -522,6 +528,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       hitFlag: "LAF",
       targetId: 91,
       hitVars: { hitId: 91, chainId: 13, hitCount: 3 },
+      p1StateNo: 777,
+      p2StateNo: 888,
+      p2GetP1State: false,
     });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
@@ -529,19 +538,34 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(recordedControllers).toEqual(["ModifyHitDef"]);
     expect(recordedOperations).toEqual(["modifyhitdef"]);
 
-    const retained = world.modify({
+    const defaultedTargetState = world.modify({
       actor,
-      controller: compileControllerIr(controller("ModifyHitDef", { attr: "S,NA", redirectid: "57" })),
+      controller: compileControllerIr(controller("ModifyHitDef", { p2stateno: "889", redirectid: "57" })),
     });
 
-    expect(retained).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", attr: "S,NA" } });
+    expect(defaultedTargetState).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", p2StateNo: 889 } });
     expect(actor.currentMove).toMatchObject({
       damage: 61,
-      attr: "S,NA",
+      attr: "C,HP",
       guardFlag: "H",
       hitFlag: "LAF",
       targetId: 91,
       hitVars: { hitId: 91, chainId: 13, hitCount: 3 },
+      p1StateNo: 777,
+      p2StateNo: 889,
+      p2GetP1State: true,
+    });
+
+    const targetOwnedState = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { p2getp1state: "0", redirectid: "57" })),
+    });
+
+    expect(targetOwnedState).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", p2GetP1State: false } });
+    expect(actor.currentMove).toMatchObject({
+      p1StateNo: 777,
+      p2StateNo: 889,
+      p2GetP1State: false,
     });
   });
 
