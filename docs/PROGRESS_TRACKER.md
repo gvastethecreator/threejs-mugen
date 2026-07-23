@@ -1,21 +1,20 @@
 ﻿# Progress Tracker
 
-## Runtime reversal MissOnOverride report - T389 (2026-07-23)
+## Runtime reversal HitOverride topology report - T390 (2026-07-23)
 
-- Runtime feature commit: `188c4462`.
-- ReversalDef and root ModifyReversalDef RedirectID now retain static
-  `missonoverride` on the active move and runtime reversal metadata.
-- A matching direct HitOverride skips an omitted custom-state reversal or an
-  explicit `1`; explicit `0` lets the counter win and does not enter the
-  override state.
-- Focused compiler/combat/dispatch coverage passes 113 tests,
-  `PlayableMatchRuntime` passes 315, and required imported RedirectID trace
-  passes. Script syntax and diff hygiene pass.
+- Runtime feature commit: `20324cf`; it corrects the direct topology around
+  T389 `188c4462` field retention.
+- ReversalDef and root ModifyReversalDef RedirectID retain static inherited
+  `attr` / `guardflag` alongside `missonoverride` on active reversal state.
+- Direct matching uses the countered actor's HitOverride slot, the inherited
+  payload, reverser state, and reverser unguardable flag. Omitted custom-state
+  policy and explicit `1` miss; explicit `0` enters the HitOverride route.
+- Focused compiler, reversal, combat, imported-match, and matcher coverage
+  passes 5 files / 452 tests. The required imported trace passes with final
+  countered actor state `889`. Script syntax and diff hygiene pass.
 - Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. Dynamic values,
-  Projectile/Helper routes, Helper receivers, wider HitOverride parity, teams,
-  source timing, renderer work, and full parity remain blocked. Grouped gates
-  remain queued; the unrelated team handoff test passed only under a diagnostic
-  20-second limit during external Node load, so aggregate status remains open.
+  Projectile/Helper routes, Helper receivers, reversal clashes, exact timing,
+  renderer work, and full parity remain blocked. Grouped gates remain queued.
 
 ## Runtime reversal sprite priority report - T388 (2026-07-22)
 

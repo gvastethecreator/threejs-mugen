@@ -2,7 +2,8 @@
 
 Type: task
 
-Status: resolved in `188c4462`
+Status: field retention resolved in `188c4462`; topology corrected by T390
+`20324cf`
 
 ## Question
 
@@ -22,26 +23,26 @@ without changing unrelated HitDef paths?
   returns no contact for `missonoverride = 1`, or for its default when a
   non-projectile HitDef-family payload carries `p1stateno` or `p2stateno`.
 
-## Local finding
+## Correction
 
-The local direct resolver finds an active reversal before its normal
-HitOverride route. Its existing HitOverride matcher and
-`shouldRuntimeHitOverrideMissDirect` policy already model the source-shaped
-default for direct custom-state payloads. Reversal activation did not retain
-the field, so it could not use that policy before claiming a counter.
+T389 correctly retained the field and its default/forced direct miss policy.
+Its original direct route queried HitOverride on the reverser and used the
+incoming attack payload. IKEMEN instead queries the countered actor and uses
+the ReversalDef inherited HitDef payload. T390 records and repairs that
+topology.
 
 ## Contract
 
 Under explicit `ikemen-go`, static ReversalDef and root
-ModifyReversalDef RedirectID accept `missonoverride`. With a matching active
-direct HitOverride:
+ModifyReversalDef RedirectID accept `missonoverride`. T390 applies the policy
+only after matching a HitOverride owned by the countered actor against the
+active reversal inherited `attr` and `guardflag`:
 
-- absent field plus `p1stateno` or `p2stateno` skips the reversal;
-- `missonoverride = 0` lets the reversal win;
-- `missonoverride = 1` skips the reversal even without custom-state fields.
+- absent field plus `p1stateno` or `p2stateno` skips the contact;
+- `missonoverride = 0` applies that actor's HitOverride redirect;
+- `missonoverride = 1` skips the contact even without custom-state fields.
 
-The skip records the current direct `hitoverride-custom-state-miss` result and
-does not enter the HitOverride state.
+The explicit-zero route does not run normal ReversalDef p1/p2 states.
 
 ## In scope
 
@@ -59,21 +60,17 @@ rollback/netplay, and full MUGEN/IKEMEN parity.
 
 ## Result
 
-Typed ReversalDef state now keeps `missOnOverride` on the active move and
-runtime metadata. Root RedirectID mutation can write an explicit false value
-without replacing the active reversal. Direct combat queries a matching active
-HitOverride before applying an eligible counter, then uses the shared direct
-miss policy.
+`188c4462` keeps `missOnOverride` on the active move and runtime metadata.
+T390 `20324cf` corrects the actor/payload topology and sends an explicit-zero
+match through the existing HitOverride redirect path.
 
 ## Verification
 
-- `RuntimeCompiler`, `ReversalSystem`, and `RuntimeCombatResolutionSystem`
-  pass 113 tests.
-- `PlayableMatchRuntime` passes 315 tests.
+- `RuntimeCompiler`, `ReversalSystem`, `RuntimeCombatResolutionSystem`,
+  `PlayableMatchRuntime`, and `CombatResolver` pass 5 files / 452 tests.
 - Required
   `synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect`
-  passes and proves a root mutation from the default custom-state miss to an
-  accepted reversal through a matching HitOverride.
+  passes with an attacker-owned HitOverride redirect after explicit zero.
 - `node --check scripts/qa_traces.cjs` and diff hygiene pass.
 - The full trace aggregate, typecheck, full Vitest, build, and boundaries stay
   queued for the grouped runtime checkpoint. Under external Node load, an

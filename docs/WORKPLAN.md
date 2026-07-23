@@ -1,22 +1,21 @@
 # Workplan
 
-## Runtime reversal MissOnOverride checkpoint - T389 (2026-07-23)
+## Runtime reversal HitOverride topology checkpoint - T390 (2026-07-23)
 
-T389 `188c4462` closes static ReversalDef `missonoverride` across activation
-and root ModifyReversalDef RedirectID. The direct resolver checks a matching
-HitOverride before applying a found reversal. Omitted values keep the direct
-custom-state default; `0` admits the reversal and `1` forces the miss. Focused
-compiler/combat/dispatch coverage passes 113 tests, the imported match passes
-315, and the required trace passes. Script syntax and diff hygiene pass.
-Scores do not move.
+T390 `20324cf` corrects the direct route added around T389 `188c4462`.
+ReversalDef now carries static inherited `attr` and `guardflag`, and direct
+contact checks HitOverride on the countered actor with that payload, reverser
+state, and unguardable context. Omitted custom-state policy and explicit `1`
+miss. Explicit `0` runs the HitOverride redirect rather than reversal p1/p2
+states. Focused compiler, reversal, combat, imported-match, and matcher
+coverage passes 5 files / 452 tests; the required trace ends at state `889`.
+Script syntax and diff hygiene pass. Scores do not move.
 
-Next, audit a distinct inherited ReversalDef field with a source-backed
-contract. Dynamic expressions, Projectile/Helper routes, Helper receivers,
-wider HitOverride behavior, teams, renderer work, source timing, and full
-parity remain blocked. TypeScript, full Vitest, trace aggregate, build, and
-boundaries stay queued for the grouped runtime checkpoint. The unrelated team
-handoff artifact passed only in a loaded-host diagnostic with a 20-second
-limit, so it does not close that broad gate.
+Next, audit a distinct inherited ReversalDef field or a separate direct-contact
+branch with a source-backed contract. Dynamic expressions, Projectile/Helper
+routes, Helper receivers, reversal clashes, exact timing, renderer work, and
+full parity remain blocked. TypeScript, full Vitest, trace aggregate, build,
+and boundaries stay queued for the grouped runtime checkpoint.
 
 ## Runtime reversal sprite priority checkpoint - T388 (2026-07-22)
 

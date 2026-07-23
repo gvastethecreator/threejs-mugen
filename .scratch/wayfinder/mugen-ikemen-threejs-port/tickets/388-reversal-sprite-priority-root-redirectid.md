@@ -4,7 +4,8 @@ Type: task
 
 Status: resolved in `b245afb0`
 
-Follow-up: T389 `188c4462` closes bounded direct `missonoverride` arbitration.
+Follow-up: T389 `188c4462` retains bounded direct `missonoverride`; T390
+`20324cf` corrects its HitOverride topology.
 Projectile/Helper routes and wider HitOverride parity remain separate.
 
 ## Question

@@ -1,25 +1,39 @@
 # Build Execution Backlog
 
-## Entry 574 - ReversalDef MissOnOverride RedirectID
+## Entry 575 - ReversalDef HitOverride topology RedirectID
 
-Closed static `missonoverride` in `188c4462` across ReversalDef activation and
-root ModifyReversalDef RedirectID. The active reversal keeps the typed field;
-before direct counter contact, a matching HitOverride applies the existing
-source-shaped default decision. Omitted custom-state payloads skip, explicit
-`0` admits the reversal, and explicit `1` skips it.
+Closed direct ReversalDef HitOverride topology in `20324cf`. Static inherited
+`attr` and `guardflag` now move through ReversalDef activation and root
+ModifyReversalDef RedirectID mutation. Direct reversal contact checks slots on
+the countered actor and uses that active inherited payload, the reverser's
+state, and unguardable context.
+
+Verification: `RuntimeCompiler`, `ReversalSystem`,
+`RuntimeCombatResolutionSystem`, `PlayableMatchRuntime`, and `CombatResolver`
+pass 5 files / 452 tests. Required
+`synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect`
+passes with inherited `S,SP` / `A` payload and attacker-owned HitOverride
+state `889`. Script syntax and diff hygiene pass. Full Vitest, TypeScript,
+trace aggregate, build, and boundaries stay queued. No score movement.
+Claim allowed: static direct ReversalDef/root RedirectID HitOverride topology
+under explicit `ikemen-go`. Claim blocked: dynamic payloads, complete attr
+grammar, Projectile/Helper routes, Helper receivers, reversal clashes, exact
+timing, renderer behavior, rollback/netplay, and full parity.
+
+## Entry 574 - ReversalDef MissOnOverride field retention
+
+Closed static `missonoverride` field retention in `188c4462` across
+ReversalDef activation and root ModifyReversalDef RedirectID. T390 `20324cf`
+corrects the original direct HitOverride actor/payload topology. Omitted
+custom-state payloads and explicit `1` skip a matching countered-actor slot;
+explicit `0` redirects through that slot.
 
 Verification: `RuntimeCompiler`, `ReversalSystem`, and
-`RuntimeCombatResolutionSystem` pass 113 tests; `PlayableMatchRuntime` passes
-315; required
+`RuntimeCombatResolutionSystem` field coverage was superseded by the focused
+T390 5 files / 452 tests; required
 `synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect`
-passes. Script syntax and diff hygiene pass. Full Vitest, TypeScript, trace
-aggregate, build, and boundaries stay queued. During external Node load, an
-unrelated team-handoff trace passed in 8.36 seconds only with a diagnostic
-20-second test limit, so it is not a green aggregate result. No score movement.
-Claim allowed: static direct ReversalDef/root RedirectID arbitration under
-explicit `ikemen-go`. Claim blocked: dynamic values, Projectile/Helper routes,
-Helper receivers, wider HitOverride matching, teams, source timing, renderer
-behavior, rollback/netplay, and full parity.
+passes under the corrected topology. See Entry 575 for the current bounded
+claim and limits.
 
 ## Entry 573 - ReversalDef sprite priority RedirectID
 
