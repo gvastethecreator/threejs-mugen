@@ -1,5 +1,19 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef field report - T397-T398 (closed, 2026-07-23)
+
+- Feature commit `3239e0f0` carries static `attr`, `guardflag`, `hitflag`,
+  `id`, and `chainid` through root ModifyHitDef into one active normal
+  receiver. Field-only mutation retains damage, move identity, and contact
+  memory.
+- Root ID mutation updates both target and hit metadata. Empty, dynamic,
+  malformed, and unsupported payloads remain untyped and do not mutate.
+- Focused compiler, HitDef, direct-combat, CombatResolver, reversal, and
+  imported-match coverage passes 6 files / 467 tests. TypeScript 7,
+  trace-script syntax, and diff hygiene pass.
+- Full Vitest, aggregate traces, build, and boundary checks remain queued for
+  a larger checkpoint. No score movement.
+
 ## Runtime HitDef numhits report - T394-T396 (closed, 2026-07-23)
 
 - Feature commit `c8676b20` carries static `numhits` through direct,

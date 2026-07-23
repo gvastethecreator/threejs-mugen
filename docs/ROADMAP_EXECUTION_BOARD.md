@@ -1,6 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T394-T396 (closed, 2026-07-23)
+## Current runtime compatibility board - T397-T398 (closed, 2026-07-23)
+
+T397-T398 close in `3239e0f0`. Pinned IKEMEN source delegates root
+ModifyHitDef `attr`, `guardflag`, `hitflag`, `id`, and `chainid` into the
+active normal receiver's shared HitDef. Static fields now mutate only supplied
+move filters and identity in place; a field-only update retains damage,
+contact state, and receiver identity. Dynamic input, other fields,
+Projectile/Helper routes, exact timing, and full parity remain outside this
+cut.
+
+Verification: focused compiler, HitDef, direct-combat, CombatResolver,
+reversal, and imported route coverage passes 6 files / 467 tests. TypeScript
+7, trace-script syntax, and diff hygiene pass. Full Vitest, aggregate traces,
+build, and boundaries remain queued. See
+`docs/research/2026-07-23-runtime-modifyhitdef-fields-t397-t398-closeout.md`.
+
+Next: select a new source-pinned runtime frontier or accumulate a larger
+compatibility batch before the next global checkpoint.
+
+## Previous runtime compatibility board - T394-T396 (closed, 2026-07-23)
 
 T394-T396 close in `c8676b20`. Pinned IKEMEN source carries shared HitDef
 `numhits` through ReversalDef, ModifyReversalDef, and ModifyHitDef. Static

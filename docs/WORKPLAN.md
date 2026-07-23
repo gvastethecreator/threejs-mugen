@@ -1,5 +1,15 @@
 # Workplan
 
+## Runtime ModifyHitDef contact fields - T397-T398 (closed, 2026-07-23)
+
+`3239e0f0` carries static `attr`, `guardflag`, `hitflag`, `id`, and `chainid`
+to the active normal receiver's HitDef. Field-only mutation retains damage,
+move identity, contact state, and omitted metadata. The focused batch passes
+6 files / 467 tests plus TypeScript 7, trace-script syntax, and diff hygiene.
+Keep dynamic input, other fields, Projectile/Helper routes, exact timing, and
+full parity outside this slice. Defer global gates to the next grouped
+checkpoint.
+
 ## Runtime HitDef numhits checkpoint - T394-T396 (closed, 2026-07-23)
 
 `c8676b20` carries static `numhits` through direct and reversal contact, root

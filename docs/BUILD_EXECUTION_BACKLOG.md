@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 578 - ModifyHitDef static contact fields
+
+Closed T397-T398 in `3239e0f0`: pinned IKEMEN shared HitDef `attr`,
+`guardflag`, `hitflag`, `id`, and `chainid` now flow through root ModifyHitDef.
+Static values mutate only one active normal receiver in place, retaining
+damage when omitted, move identity, and contact memory. Focused compiler,
+HitDef, direct-combat, CombatResolver, reversal, and imported-route coverage
+passes 6 files / 467 tests. TypeScript 7, trace-script syntax, and diff
+hygiene pass.
+
+Dynamic input, other fields, Projectile/Helper routes, exact timing, teams,
+and full parity remain blocked. Full Vitest, aggregate traces, build, and
+boundary checks stay queued. No score movement.
+
 ## Entry 577 - HitDef numhits contact and mutation
 
 Closed T394-T396 in `c8676b20`: pinned IKEMEN shared HitDef `numhits` now
