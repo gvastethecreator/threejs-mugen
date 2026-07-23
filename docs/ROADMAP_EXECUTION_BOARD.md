@@ -1,6 +1,28 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T401 (closed, 2026-07-23)
+## Current runtime compatibility board - T402 (closed, 2026-07-23)
+
+T402 closes in `a0b3617a`. Pinned IKEMEN source delegates `kill` and
+`guard.kill` through root ModifyHitDef to one active normal receiver and
+registers both as boolean HitDef fields. Static numeric values now mutate only
+the supplied fields in place: zero clears them and a nonzero value restores
+them. Required imported traces prove a redirected `kill = 0` clamps 2000
+direct damage at one life, while `guard.kill = 0` clamps 2000 guarded damage
+at one life. The Tag setup in the guard trace only routes input to its
+defender; it does not claim team behavior. Dynamic values, `fall.kill`, exact
+source boolean/default behavior, Projectile/Helper routes, timing, and full
+parity remain deferred.
+
+Verification: focused compiler, HitDef, direct-combat, combat-resolution,
+reversal, imported-route, and trace-preset coverage passes 8 files / 1151
+tests. TypeScript 7, trace-script syntax, and diff hygiene pass. Full Vitest,
+aggregate traces, build, and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-modifyhitdef-kill.md`.
+
+Next: select another source-pinned shared field or reserve the global
+checkpoint for a larger accumulated batch.
+
+## Previous runtime compatibility board - T401 (closed, 2026-07-23)
 
 T401 closes in `e21ae170`. Pinned IKEMEN source evaluates HitDef priority as
 an integer, permits negative IKEMEN values, and delegates root ModifyHitDef

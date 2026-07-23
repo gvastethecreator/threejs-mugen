@@ -1,5 +1,22 @@
 # Build Execution Backlog
 
+## Entry 582 - ModifyHitDef static kill fields
+
+Closed T402 in `a0b3617a`: pinned IKEMEN shared HitDef `kill` and `guard.kill`
+now flow through root ModifyHitDef. Static zero clears the selected field and
+static nonzero values restore it on one active normal receiver, retaining move
+identity and contact memory. Required imported RedirectID traces prove false
+`kill` clamps 2000 direct damage at one life and false `guard.kill` clamps
+2000 guarded damage at one life. The guard fixture uses Tag only for held-back
+input routing.
+
+Focused compiler, HitDef, direct-combat, combat-resolution, reversal,
+imported-route, and trace-preset coverage passes 8 files / 1151 tests.
+TypeScript 7, trace-script syntax, and diff hygiene pass. Dynamic input,
+`fall.kill`, exact source boolean/default behavior, Projectile/Helper routes,
+broader team behavior, timing, and full parity remain blocked. Full Vitest,
+aggregate traces, build, and boundary checks stay queued. No score movement.
+
 ## Entry 581 - ModifyHitDef static priority
 
 Closed T401 in `e21ae170`: pinned IKEMEN shared HitDef priority now flows

@@ -1,5 +1,18 @@
 # Workplan
 
+## Runtime ModifyHitDef kill slice - T402 (closed, 2026-07-23)
+
+`a0b3617a` carries static root `kill` and `guard.kill` through one active
+normal receiver. Zero clears the selected field and nonzero static values can
+restore it, without resetting move/contact state. Required direct and guarded
+lethal-contact traces prove false values leave the target at one life. The
+guard fixture uses Tag only to route held-back input to the defender. The
+grouped focal batch passes 8 files / 1151 tests plus TypeScript 7,
+trace-script syntax, and diff hygiene. Keep dynamic input, `fall.kill`, exact
+source booleans/defaults, Projectile/Helper routes, broader team behavior,
+timing, and full parity outside this slice. Global Vitest, aggregate traces,
+build, and boundaries remain queued for the larger runtime checkpoint.
+
 ## Runtime ModifyHitDef priority slice - T401 (closed, 2026-07-23)
 
 `e21ae170` carries static root `priority = value[, H|M|D]` through the active

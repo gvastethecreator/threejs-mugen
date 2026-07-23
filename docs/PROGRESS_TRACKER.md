@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef kill report - T402 (closed, 2026-07-23)
+
+- Pinned IKEMEN source delegates static `kill` and `guard.kill` through one
+  active normal ModifyHitDef receiver and registers both fields as booleans.
+- Feature commit `a0b3617a` lowers zero to false and nonzero static values to
+  true, retains omitted-field identity, and mutates active move/contact state
+  in place.
+- Required imported RedirectID traces prove false `kill` clamps 2000 direct
+  damage at one life and false `guard.kill` clamps 2000 guarded damage at one
+  life. The guard fixture uses Tag only for input routing and makes no team
+  claim.
+- Focused compiler, HitDef, direct-combat, combat-resolution, reversal,
+  imported-match, and trace-preset coverage passes 8 files / 1151 tests.
+  TypeScript 7, trace-script syntax, and diff hygiene pass.
+- Full Vitest, aggregate traces, build, and boundary checks remain queued for
+  the larger checkpoint. Scores do not move.
+
 ## Runtime ModifyHitDef priority report - T401 (closed, 2026-07-23)
 
 - Pinned IKEMEN source delegates static priority through active normal
