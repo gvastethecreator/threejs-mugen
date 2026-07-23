@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T403 (closed, 2026-07-23)
+## Current runtime compatibility board - T404 (closed, 2026-07-23)
+
+T404 closes in `c12f54e3`. Pinned IKEMEN source delegates `hitonce` through
+root ModifyHitDef to one active normal receiver and consumes it after direct
+contact. Static numeric values now mutate only that field in place: zero clears
+it and a nonzero value sets it. Direct admission, equal-priority preparation,
+and priority lookup reject the consumed move. Required imported Tag RedirectID
+trace evidence proves P4 reaches two opposing active roots, damages P1 for 37,
+and leaves P3 at full life. Dynamic values, throw defaults, target dropping,
+exact target membership, `air.juggle`, Projectile/Helper routes, timing, and
+full parity remain deferred.
+
+Verification: focused compiler, HitDef, combat-resolution, direct-combat, and
+trace-preset coverage passes 5 files / 794 tests. Trace-script syntax and diff
+hygiene pass. The accumulated TypeScript 7 gate, full Vitest, aggregate traces,
+build, and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-modifyhitdef-hitonce.md`.
+
+Next: audit `air.juggle` as its own source-backed model, or reserve the global
+checkpoint for a larger accumulated batch.
+
+## Previous runtime compatibility board - T403 (closed, 2026-07-23)
 
 T403 closes in `799749b3`. Pinned IKEMEN source delegates `fall.kill` through
 root ModifyHitDef to one active normal receiver and registers it as a boolean
@@ -8,9 +29,8 @@ HitDef field. Static numeric values now mutate only that fall field in place:
 zero clears it and a nonzero value restores it. Required imported RedirectID
 trace evidence proves a receiver with fall enabled and 2000 deferred damage
 leaves its target at one life after `HitFallDamage` consumes `fall.kill = 0`.
-Dynamic values, other fall fields, `hitonce`, `air.juggle`, exact source
-boolean/default behavior, Projectile/Helper routes, timing, and full parity
-remain deferred.
+Dynamic values, other fall fields, `air.juggle`, exact source boolean/default
+behavior, Projectile/Helper routes, timing, and full parity remain deferred.
 
 Verification: focused compiler, HitDef, and trace-preset coverage passes 3
 files / 730 tests. Trace-script syntax and diff hygiene pass. The accumulated

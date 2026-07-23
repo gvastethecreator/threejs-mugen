@@ -1,5 +1,18 @@
 # Workplan
 
+## Runtime ModifyHitDef hitonce slice - T404 (closed, 2026-07-23)
+
+`c12f54e3` carries static root `hitonce` through one active normal receiver.
+Zero clears the supplied field and nonzero static values set it without
+resetting move/contact state. Required active-root Tag trace evidence proves a
+RedirectID-mutated true value lets P4 damage P1 once while P3 remains at full
+life. The focused compiler, HitDef, combat-resolution, direct-combat, and
+trace-preset run passes 5 files / 794 tests plus trace-script syntax and diff
+hygiene. Keep dynamic input, throw defaults, target dropping, exact target
+membership, `air.juggle`, Projectile/Helper routes, timing, and full parity
+outside this slice. The TypeScript 7 gate, global Vitest, aggregate traces,
+build, and boundaries remain queued for the larger runtime checkpoint.
+
 ## Runtime ModifyHitDef fall.kill slice - T403 (closed, 2026-07-23)
 
 `799749b3` carries static root `fall.kill` through one active normal receiver.
@@ -8,9 +21,9 @@ resetting move/contact state. Required deferred-damage trace evidence proves a
 RedirectID-mutated false value leaves the target at one life after
 HitFallDamage. The focused compiler, HitDef, and trace-preset run passes 3
 files / 730 tests plus trace-script syntax and diff hygiene. Keep dynamic
-input, other fall fields, `hitonce`, `air.juggle`, exact source booleans and
-defaults, Projectile/Helper routes, timing, and full parity outside this slice.
-The TypeScript 7 gate, global Vitest, aggregate traces, build, and boundaries
+input, other fall fields, `air.juggle`, exact source booleans and defaults,
+Projectile/Helper routes, timing, and full parity outside this slice. The
+TypeScript 7 gate, global Vitest, aggregate traces, build, and boundaries
 remain queued for the larger runtime checkpoint.
 
 ## Runtime ModifyHitDef kill slice - T402 (closed, 2026-07-23)

@@ -1,5 +1,22 @@
 # Build Execution Backlog
 
+## Entry 584 - ModifyHitDef static hitonce
+
+Closed T404 in `c12f54e3`: pinned IKEMEN shared HitDef `hitonce` now flows
+through root ModifyHitDef. Static zero clears the field and static nonzero
+values set it on one active normal receiver while retaining move identity and
+contact memory. A true local value blocks a later direct target after the
+first contact, including the equal-priority preparation queue. Required
+imported Tag RedirectID trace proves P4 damages P1 for 37 and leaves P3 at full
+life.
+
+Focused compiler, HitDef, combat-resolution, direct-combat, and trace-preset
+coverage passes 5 files / 794 tests. Trace-script syntax and diff hygiene pass.
+Dynamic input, throw defaults, target dropping, exact target membership,
+`air.juggle`, Projectile/Helper routes, broader team behavior, timing, and
+full parity remain blocked. The accumulated TypeScript 7 gate, full Vitest,
+aggregate traces, build, and boundary checks stay queued. No score movement.
+
 ## Entry 583 - ModifyHitDef static fall.kill
 
 Closed T403 in `799749b3`: pinned IKEMEN shared HitDef `fall.kill` now flows
@@ -10,10 +27,10 @@ false `fall.kill` reaches deferred 2000 HitFallDamage and clamps life at one.
 
 Focused compiler, HitDef, and trace-preset coverage passes 3 files / 730
 tests. Trace-script syntax and diff hygiene pass. Dynamic input, other fall
-fields, `hitonce`, `air.juggle`, exact source boolean/default behavior,
-Projectile/Helper routes, broader team behavior, timing, and full parity remain
-blocked. The accumulated TypeScript 7 gate, full Vitest, aggregate traces,
-build, and boundary checks stay queued. No score movement.
+fields, `air.juggle`, exact source boolean/default behavior, Projectile/Helper
+routes, broader team behavior, timing, and full parity remain blocked. The
+accumulated TypeScript 7 gate, full Vitest, aggregate traces, build, and
+boundary checks stay queued. No score movement.
 
 ## Entry 582 - ModifyHitDef static kill fields
 

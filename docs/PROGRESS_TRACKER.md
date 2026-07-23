@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef hitonce report - T404 (closed, 2026-07-23)
+
+- Pinned IKEMEN source delegates static `hitonce` through one active normal
+  ModifyHitDef receiver and consumes it after direct contact.
+- Feature commit `c12f54e3` lowers zero to false and nonzero static values to
+  true, retains omitted-field identity, and mutates active move data in place.
+- Direct admission and the equal-priority queue reserve a true value after its
+  first local contact; priority lookup also ignores the consumed move.
+- Required imported Tag RedirectID trace proves P4 damages P1 for 37 while P3
+  stays at full life.
+- Focused compiler, HitDef, combat-resolution, direct-combat, and trace-preset
+  coverage passes 5 files / 794 tests. Trace-script syntax and diff hygiene
+  pass.
+- The TypeScript 7 gate, full Vitest, aggregate traces, build, and boundary
+  checks remain queued for the accumulated checkpoint. Scores do not move.
+
 ## Runtime ModifyHitDef fall.kill report - T403 (closed, 2026-07-23)
 
 - Pinned IKEMEN source delegates static `fall.kill` through one active normal
