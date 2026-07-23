@@ -287,16 +287,22 @@ function runtimeHitFlagAllowsStateType(
   return hasRuntimeHitFlag(hitFlag, "D");
 }
 
+export type RuntimeHitOverrideMatchOptions = {
+  attackStateType?: CharacterRuntimeState["stateType"];
+  attackUnguardable?: boolean;
+};
+
 export function findRuntimeHitOverride(
   defender: Pick<CharacterRuntimeState, "hitOverrides">,
   attackAttr: string,
   attackGuardFlag = "MA",
+  options: RuntimeHitOverrideMatchOptions = {},
 ): RuntimeHitOverrideSlot | undefined {
   return defender.hitOverrides?.reduce<RuntimeHitOverrideSlot | undefined>((best, slot) => {
     if (
       slot.remaining === 0 ||
-      !hitAttributeMatches(slot.attr, attackAttr) ||
-      !hitOverrideGuardFlagsMatch(slot, attackGuardFlag)
+      !hitOverrideAttributeMatches(slot.attr, attackAttr, options.attackStateType) ||
+      !hitOverrideGuardFlagsMatch(slot, attackGuardFlag, options.attackUnguardable)
     ) {
       return best;
     }
@@ -418,13 +424,33 @@ export function hitAttributeMatches(filter: string, attackAttr: string): boolean
   if (filterParts.states.size > 0 && ![...attackParts.states].some((state) => filterParts.states.has(state))) {
     return false;
   }
-  if (filterParts.types.size === 0) {
+  return hitAttributeTypesMatch(filterParts.types, attackParts.types);
+}
+
+function hitOverrideAttributeMatches(
+  filter: string,
+  attackAttr: string,
+  attackStateType: CharacterRuntimeState["stateType"] | undefined,
+): boolean {
+  if (attackStateType === undefined) {
+    return hitAttributeMatches(filter, attackAttr);
+  }
+  const filterParts = parseHitAttribute(filter);
+  const attackParts = parseHitAttribute(attackAttr);
+  if (filterParts.states.size > 0 && !filterParts.states.has(attackStateType)) {
+    return false;
+  }
+  return hitAttributeTypesMatch(filterParts.types, attackParts.types);
+}
+
+function hitAttributeTypesMatch(filterTypes: Set<string>, attackTypes: Set<string>): boolean {
+  if (filterTypes.size === 0) {
     return true;
   }
-  return [...attackParts.types].some(
+  return [...attackTypes].some(
     (attackType) =>
-      filterParts.types.has(attackType) ||
-      [...filterParts.types].some((filterType) => filterType.length === 2 && filterType[1] === attackType[1]),
+      filterTypes.has(attackType) ||
+      [...filterTypes].some((filterType) => filterType.length === 2 && filterType[1] === attackType[1]),
   );
 }
 
@@ -509,11 +535,15 @@ function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeStat
   return false;
 }
 
-function hitOverrideGuardFlagsMatch(slot: RuntimeHitOverrideSlot, attackGuardFlag: string): boolean {
-  if (slot.guardFlag && !runtimeGuardFlagOverlaps(slot.guardFlag, attackGuardFlag)) {
+function hitOverrideGuardFlagsMatch(
+  slot: RuntimeHitOverrideSlot,
+  attackGuardFlag: string,
+  attackUnguardable = false,
+): boolean {
+  if (slot.guardFlag && (attackUnguardable || !runtimeGuardFlagOverlaps(slot.guardFlag, attackGuardFlag))) {
     return false;
   }
-  if (slot.guardFlagNot && runtimeGuardFlagOverlaps(slot.guardFlagNot, attackGuardFlag)) {
+  if (slot.guardFlagNot && !attackUnguardable && runtimeGuardFlagOverlaps(slot.guardFlagNot, attackGuardFlag)) {
     return false;
   }
   return true;

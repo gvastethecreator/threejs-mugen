@@ -324,15 +324,36 @@ export class RuntimeCombatResolutionWorld {
       }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })
       : undefined;
     if (reversal) {
-      const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA");
+      const reversalHitAttr = reversal.attr ?? "S,NA";
+      const reversalGuardFlag = reversal.guardFlag ?? "MA";
+      const override = findRuntimeHitOverride(attacker.runtime, reversalHitAttr, reversalGuardFlag, {
+        attackStateType: defender.runtime.stateType,
+        attackUnguardable: defender.runtime.assertSpecial?.unguardable,
+      });
       if (override && shouldRuntimeHitOverrideMissDirect(reversal)) {
         const missReason =
           reversal.missOnOverride === true
             ? "because missonoverride = 1 forces active override miss"
             : "because active override cannot receive custom-state ReversalDef";
-        const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} ${missReason}`;
+        const message = `${attacker.label} rejected ${defender.label} ${reversalHitAttr} ${missReason}`;
         input.log(message);
         return { kind: "skipped", reason: "hitoverride-custom-state-miss" };
+      }
+      if (override) {
+        defender.hasHit = true;
+        bufferRuntimeHitDefTarget(defender, attacker.id);
+        this.rememberTarget(defender, attacker, reversal.targetId);
+        const result = input.hitOverrideWorld.applyRedirect(defender, attacker, override, reversal.hitPause, {
+          tryEnterState: (target, stateNo) => {
+            if (!input.stateHooks.canEnterState(target, stateNo)) {
+              return false;
+            }
+            input.stateHooks.enterState(target, stateNo);
+            return true;
+          },
+        });
+        input.log(result.message);
+        return { kind: "hitoverride", message: result.message };
       }
       const outcome = input.reversalWorld.apply(defender, attacker, reversal, {
         rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),

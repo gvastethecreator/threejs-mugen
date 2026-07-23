@@ -1827,11 +1827,15 @@ value = 1
     const reversal = compileControllerIr(
       controller(200, "ReversalDef", [], {
         "reversal.attr": "S,NA",
+        attr: "S,SP",
+        guardflag: "A",
         missonoverride: "1",
       }),
     );
     const redirected = compileControllerIr(
       controller(200, "ModifyReversalDef", [], {
+        attr: "C,HP",
+        guardflag: "H",
         missonoverride: "0",
         redirectid: "57",
       }),
@@ -1839,18 +1843,26 @@ value = 1
     const dynamic = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { missonoverride: "var(1)", redirectid: "57" }),
     );
+    const dynamicPayload = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { attr: "var(1)", redirectid: "57" }),
+    );
 
     expect(reversal.operation).toMatchObject({
       kind: "reversaldef",
       attr: "S,NA",
+      hitDefAttr: "S,SP",
+      guardFlag: "A",
       missOnOverride: true,
     });
     expect(redirected.operation).toEqual({
       kind: "modifyreversaldef",
+      hitDefAttr: "C,HP",
+      guardFlag: "H",
       missOnOverride: false,
       redirectPlayerIdExpression: "57",
     });
     expect(dynamic.operation).toBeUndefined();
+    expect(dynamicPayload.operation).toBeUndefined();
   });
 
   it("compiles static damage scale controllers into typed operations", () => {

@@ -198,6 +198,22 @@ describe("CombatResolver", () => {
     expect(findRuntimeHitOverride(defender, "S,NA", "L")).toMatchObject({ slot: 1, stateNo: 776 });
   });
 
+  it("uses the ReversalDef owner's state and inherited guard payload for HitOverride matching", () => {
+    const defender = actor({
+      hitOverrides: [
+        { slot: 1, attr: "S,SP", stateNo: 776, remaining: 12, guardFlag: "A" },
+        { slot: 2, attr: "S,SP", stateNo: 778, remaining: 12, guardFlagNot: "A" },
+      ],
+    });
+
+    expect(findRuntimeHitOverride(defender, "A,SP", "A", { attackStateType: "S" })).toMatchObject({ slot: 1, stateNo: 776 });
+    expect(findRuntimeHitOverride(defender, "A,SP", "A", { attackStateType: "A" })).toBeUndefined();
+    expect(findRuntimeHitOverride(defender, "A,SP", "A", {
+      attackStateType: "S",
+      attackUnguardable: true,
+    })).toMatchObject({ slot: 2, stateNo: 778 });
+  });
+
   it("resolves scaled hit and guard results", () => {
     const attacker = actor({ attackMultiplier: 1.5 });
     const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });

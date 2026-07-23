@@ -204,6 +204,8 @@ export type RuntimeReversalDef = {
   attr: string;
   reversalGuardFlag?: string;
   reversalGuardFlagNot?: string;
+  hitDefAttr?: string;
+  guardFlag?: string;
   missOnOverride?: boolean;
   p1SpritePriority?: number;
   p2SpritePriority?: number;

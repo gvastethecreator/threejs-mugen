@@ -82,6 +82,8 @@ export type ModifyReversalDefControllerOp = {
   reversalAttr?: string;
   reversalGuardFlag?: string;
   reversalGuardFlagNot?: string;
+  hitDefAttr?: string;
+  guardFlag?: string;
   missOnOverride?: boolean;
   hitPause?: number;
   p1SpritePriority?: number;
@@ -627,6 +629,8 @@ export type ReversalDefControllerOp = {
   attr: string;
   reversalGuardFlag?: string;
   reversalGuardFlagNot?: string;
+  hitDefAttr?: string;
+  guardFlag?: string;
   missOnOverride?: boolean;
   hitPause: number;
   p1SpritePriority?: number;
@@ -1673,6 +1677,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   }
   const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
   const reversalGuardFlagNot = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag.not");
+  const hitDefAttr = staticOptionalReversalHitAttributeParam(controller, "attr");
+  const guardFlag = staticOptionalReversalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
   const hitPause = staticNumberParam(controller, "pausetime", 0);
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
@@ -1687,6 +1693,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitPause === undefined ||
     reversalGuardFlag === false ||
     reversalGuardFlagNot === false ||
+    hitDefAttr === false ||
+    guardFlag === false ||
     missOnOverride === "invalid" ||
     p1SpritePriority === false ||
     p2SpritePriority === false ||
@@ -1703,6 +1711,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     attr,
     reversalGuardFlag: reversalGuardFlag === true ? undefined : reversalGuardFlag,
     reversalGuardFlagNot: reversalGuardFlagNot === true ? undefined : reversalGuardFlagNot,
+    hitDefAttr: hitDefAttr === true ? undefined : hitDefAttr,
+    guardFlag: guardFlag === true ? undefined : guardFlag,
     missOnOverride,
     hitPause: Math.max(0, Math.round(hitPause)),
     p1SpritePriority: p1SpritePriority === true ? undefined : p1SpritePriority,
@@ -1840,6 +1850,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "reversal.attr",
     "reversal.guardflag",
     "reversal.guardflag.not",
+    "attr",
+    "guardflag",
     "missonoverride",
     "pausetime",
     "p1sprpriority",
@@ -1856,6 +1868,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"))?.trim();
   const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
   const reversalGuardFlagNot = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag.not");
+  const hitDefAttr = staticOptionalReversalHitAttributeParam(controller, "attr");
+  const guardFlag = staticOptionalReversalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
   const hitPauseRaw = findParam(controller, "pausetime");
   const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
@@ -1872,6 +1886,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     reversalAttr === "" ||
     reversalGuardFlag === false ||
     reversalGuardFlagNot === false ||
+    hitDefAttr === false ||
+    guardFlag === false ||
     missOnOverride === "invalid" ||
     (hitPauseRaw !== undefined && !hitPausePair) ||
     p1SpritePriority === false ||
@@ -1898,6 +1914,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     reversalAttr === undefined &&
     reversalGuardFlag === true &&
     reversalGuardFlagNot === true &&
+    hitDefAttr === true &&
+    guardFlag === true &&
     missOnOverride === undefined &&
     hitPause === undefined &&
     p1SpritePriority === true &&
@@ -1916,6 +1934,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(reversalAttr === undefined ? {} : { reversalAttr }),
     ...(reversalGuardFlag === true ? {} : { reversalGuardFlag }),
     ...(reversalGuardFlagNot === true ? {} : { reversalGuardFlagNot }),
+    ...(hitDefAttr === true ? {} : { hitDefAttr }),
+    ...(guardFlag === true ? {} : { guardFlag }),
     ...(missOnOverride === undefined ? {} : { missOnOverride }),
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
@@ -2656,6 +2676,19 @@ function staticOptionalReversalGuardFlagParam(controller: MugenStateController, 
     return false;
   }
   return value;
+}
+
+function staticOptionalReversalHitAttributeParam(controller: MugenStateController, key: string): string | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return true;
+  }
+  const value = stripMugenString(raw)?.replace(/\s+/g, "").toUpperCase();
+  const parts = value?.split(",");
+  if (!parts || parts.length < 2 || !/^[SCA]+$/.test(parts[0] ?? "") || parts.slice(1).some((part) => !/^[A-Z]+$/.test(part))) {
+    return false;
+  }
+  return parts.join(",");
 }
 
 function staticOptionalReversalSpritePriorityParam(controller: MugenStateController, key: string): number | true | false {

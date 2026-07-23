@@ -5863,11 +5863,12 @@ ctrl = 0
     expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
   });
 
-  it("uses root ModifyReversalDef missonoverride zero to counter through a matching HitOverride", () => {
+  it("uses root ModifyReversalDef missonoverride zero to redirect through the countered actor's HitOverride", () => {
     const caller = createImportedFixture({
       withStateMove: false,
       hitDefDamage: 37,
       hitDefAttr: "S,NA",
+      passiveHitOverride: { attr: "S,NA", stateNo: 889 },
       passiveResourceController: `
 [State 0, Redirected ModifyReversalDef player id]
 type = VarSet
@@ -5885,7 +5886,6 @@ RedirectID = var(0)
     const destination = createImportedFixture({
       id: "redirected-root-modifyreversaldef-missonoverride-destination",
       withStateMove: false,
-      passiveHitOverride: { attr: "S,NA", stateNo: 889 },
       passiveReversalDef: { attr: "S,NA", p1StateNo: 777, hitPause: 3 },
       passiveReversalTrigger: "Time = 0",
     });
@@ -5903,14 +5903,14 @@ RedirectID = var(0)
     const modified = runtime.step({ p1: new Set(), p2: new Set() });
     const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
 
-    expect(armed.compatibilitySession?.actors[1]?.executedControllers.HitOverride).toBe(1);
+    expect(armed.compatibilitySession?.actors[0]?.executedControllers.HitOverride).toBe(1);
     expect(armed.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
-    expect(countered.actors[0]?.runtime.moveType).toBe("H");
-    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
-    expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
-    expect(countered.logs.some((line) => line.includes("HitOverride slot"))).toBe(false);
+    expect(countered.actors[0]?.runtime.stateNo).toBe(889);
+    expect(countered.actors[1]?.runtime.stateNo).toBe(0);
+    expect(countered.logs.some((line) => line.includes("reversed"))).toBe(false);
+    expect(countered.logs.some((line) => line.includes("HitOverride slot"))).toBe(true);
   });
 
   it("evaluates bounded MoveReversed after imported ReversalDef counter contact", () => {

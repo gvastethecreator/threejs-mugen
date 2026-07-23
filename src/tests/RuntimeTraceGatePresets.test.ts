@@ -17933,7 +17933,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
-  it("creates a required IKEMEN root ModifyReversalDef missonoverride RedirectID artifact", () => {
+  it("creates a required IKEMEN root ModifyReversalDef attacker-owned HitOverride artifact", () => {
     const artifact = createSyntheticImportedIkemenRootModifyReversalDefMissOnOverrideRedirectTraceArtifact({
       generatedAt: "2026-07-22T00:00:00.000Z",
     });
@@ -17955,17 +17955,17 @@ describe("RuntimeTraceGatePresets", () => {
       reversaldef: 1,
       modifyreversaldef: 1,
     });
-    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
-    expect(artifact.gates[0]?.evidence.eventCategories).not.toContain("override");
-    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("override");
+    expect(artifact.gates[0]?.evidence.eventCategories).not.toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("override");
     expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 99 }),
     );
     expect(artifact.trace.finalActors).toContainEqual(
-      expect.objectContaining({ id: "p1", moveType: "H" }),
+      expect.objectContaining({ id: "p1", stateNo: 889, animNo: 889 }),
     );
     expect(artifact.trace.finalActors).toContainEqual(
-      expect.objectContaining({ id: "p2", stateNo: 777, animNo: 777 }),
+      expect.objectContaining({ id: "p2", stateNo: 0, animNo: 0 }),
     );
   });
 

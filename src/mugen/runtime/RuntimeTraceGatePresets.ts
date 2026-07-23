@@ -13032,15 +13032,17 @@ export function createSyntheticImportedIkemenRootModifyReversalDefMissOnOverride
   const targetId = 99;
   const stage = options.stage ?? closeCombatStage();
   const script = expandRuntimeTraceScript([
-    { label: "receiver arms a custom-state reversal and matching HitOverride out of reach", frames: 1, p1: [], p2: [] },
-    { label: "caller redirects missonoverride zero before counter contact", frames: 1, p1: [], p2: [] },
+    { label: "caller arms a matching HitOverride while receiver prepares ReversalDef out of reach", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects missonoverride zero before ReversalDef contact", frames: 1, p1: [], p2: [] },
   ]);
   const p1 = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-caller",
     displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef MissOnOverride Redirect Caller",
     withHitDef: false,
+    passiveHitOverride: { attr: "S,SP", guardFlag: "A", stateNo: 889, slot: 1, time: 30 },
     activeRootHitDefRoute: {
       damage: 0,
+      guardFlag: "H",
       targetId,
       hitDefTrigger: "Time = 0",
       posX: -200,
@@ -13056,9 +13058,10 @@ export function createSyntheticImportedIkemenRootModifyReversalDefMissOnOverride
     id: "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-receiver",
     displayName: "Synthetic Imported IKEMEN Root ModifyReversalDef MissOnOverride Redirect Receiver",
     withHitDef: false,
-    passiveHitOverride: { attr: "S,NA", stateNo: 889, slot: 1, time: 30 },
     passiveReversalDef: {
       attr: "S,NA",
+      hitDefAttr: "S,SP",
+      guardFlag: "A",
       p1StateNo: 777,
       hitPause: 3,
       targetId,
@@ -13077,7 +13080,7 @@ export function createSyntheticImportedIkemenRootModifyReversalDefMissOnOverride
       label: "Synthetic imported IKEMEN root ModifyReversalDef MissOnOverride RedirectID",
       source: "mixed",
       notes: [
-        "Explicit ikemen-go trace proves a root changes one active custom-state ReversalDef to missonoverride = 0 while a matching HitOverride is active, then the counter wins direct contact. It covers only static direct arbitration through the current local HitOverride matcher. Default or true miss paths, dynamic values, guard-detail breadth, Projectile and Helper contacts, teams, renderer behavior, and full parity remain outside this fixture.",
+        "Explicit ikemen-go trace proves a root changes one active custom-state ReversalDef to missonoverride = 0 while the countered actor owns a matching HitOverride. The HitOverride redirects the ReversalDef contact using the inherited attr and guardflag payload. It covers static direct arbitration only. Default or true miss paths, dynamic values, Projectile and Helper contacts, teams, renderer behavior, and full parity remain outside this fixture.",
       ],
     },
     gates: [
@@ -13087,12 +13090,12 @@ export function createSyntheticImportedIkemenRootModifyReversalDefMissOnOverride
         requiredActorKinds: ["player"],
         requiredExecutedControllers: ["HitDef", "HitOverride", "ReversalDef", "ModifyReversalDef"],
         requiredExecutedOperations: ["hitdef", "hitoverride", "reversaldef", "modifyreversaldef"],
-        requiredEventCategories: ["reversal"],
-        requiredCombatReasons: ["reversal"],
+        requiredEventCategories: ["override"],
+        requiredCombatReasons: ["override"],
         requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
         requiredFinalActors: [
-          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000 },
-          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 889, animNo: 889, life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, life: 1000 },
         ],
       },
     ],
@@ -49196,6 +49199,8 @@ export type SyntheticImportedTraceFighterOptions = {
     attr: string;
     reversalGuardFlag?: string;
     reversalGuardFlagNot?: string;
+    hitDefAttr?: string;
+    guardFlag?: string;
     missOnOverride?: boolean;
     p1StateNo: number;
     p2StateNo?: number;
@@ -49678,6 +49683,8 @@ export type SyntheticImportedTraceFighterOptions = {
     attr?: string;
     reversalGuardFlag?: string;
     reversalGuardFlagNot?: string;
+    hitDefAttr?: string;
+    guardFlag?: string;
     missOnOverride?: boolean;
     hitPause?: number;
     p1SpritePriority?: number;
@@ -51841,6 +51848,8 @@ trigger1 = ${config.trigger ?? "1"}
 reversal.attr = ${config.attr}
 ${config.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${config.reversalGuardFlag}`}
 ${config.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${config.reversalGuardFlagNot}`}
+${config.hitDefAttr === undefined ? "" : `attr = ${config.hitDefAttr}`}
+${config.guardFlag === undefined ? "" : `guardflag = ${config.guardFlag}`}
 ${config.missOnOverride === undefined ? "" : `missonoverride = ${config.missOnOverride ? 1 : 0}`}
 pausetime = ${hitPause},${hitPause}
 ${config.p1SpritePriority === undefined ? "" : `p1sprpriority = ${config.p1SpritePriority}`}
@@ -56563,6 +56572,8 @@ trigger1 = ${route.trigger ?? "Time >= 1"}
 ${route.attr === undefined ? "" : `reversal.attr = ${route.attr}`}
 ${route.reversalGuardFlag === undefined ? "" : `reversal.guardflag = ${route.reversalGuardFlag}`}
 ${route.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${route.reversalGuardFlagNot}`}
+${route.hitDefAttr === undefined ? "" : `attr = ${route.hitDefAttr}`}
+${route.guardFlag === undefined ? "" : `guardflag = ${route.guardFlag}`}
 ${route.missOnOverride === undefined ? "" : `missonoverride = ${route.missOnOverride ? 1 : 0}`}
 ${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
 ${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}

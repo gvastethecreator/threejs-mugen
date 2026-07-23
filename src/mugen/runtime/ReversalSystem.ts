@@ -34,6 +34,8 @@ export type RuntimeReversalActivation = {
   attr: string;
   reversalGuardFlag?: string;
   reversalGuardFlagNot?: string;
+  hitDefAttr?: string;
+  guardFlag?: string;
   missOnOverride?: boolean;
   hitbox?: CollisionBox;
   label?: string;
@@ -128,6 +130,8 @@ export class RuntimeReversalControllerDispatchWorld {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
       reversalGuardFlagNot: operation?.reversalGuardFlagNot,
+      hitDefAttr: operation?.hitDefAttr,
+      guardFlag: operation?.guardFlag,
       missOnOverride: operation?.missOnOverride,
       hitbox,
       label: source.name ?? "ReversalDef",
@@ -186,6 +190,14 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation.reversalGuardFlagNot !== undefined) {
       existing.reversalGuardFlagNot = operation.reversalGuardFlagNot;
       runtimeReversal.reversalGuardFlagNot = operation.reversalGuardFlagNot;
+    }
+    if (operation.hitDefAttr !== undefined) {
+      existing.attr = operation.hitDefAttr;
+      runtimeReversal.hitDefAttr = operation.hitDefAttr;
+    }
+    if (operation.guardFlag !== undefined) {
+      existing.guardFlag = operation.guardFlag;
+      runtimeReversal.guardFlag = operation.guardFlag;
     }
     if (operation.missOnOverride !== undefined) {
       existing.missOnOverride = operation.missOnOverride;
@@ -246,6 +258,7 @@ export class RuntimeReversalWorld {
       fighter.runtime.reversal = undefined;
       return false;
     }
+    const hitDefAttr = activation.hitDefAttr?.trim() || "S,NA";
     fighter.currentMove = {
       actionId: fighter.runtime.stateNo,
       startup: 0,
@@ -253,12 +266,13 @@ export class RuntimeReversalWorld {
       activeEnd: 3600,
       recovery: 3600,
       damage: 0,
-      attr: "S,NA",
+      attr: hitDefAttr,
       targetId: activation.targetId,
       isReversal: true,
       reversalAttr: attr,
       reversalGuardFlag: activation.reversalGuardFlag,
       reversalGuardFlagNot: activation.reversalGuardFlagNot,
+      guardFlag: activation.guardFlag,
       missOnOverride: activation.missOnOverride,
       p1SpritePriority: activation.p1SpritePriority,
       p2SpritePriority: activation.p2SpritePriority,
@@ -278,6 +292,8 @@ export class RuntimeReversalWorld {
       hitPause: activation.hitPause,
       ...(activation.reversalGuardFlag === undefined ? {} : { reversalGuardFlag: activation.reversalGuardFlag }),
       ...(activation.reversalGuardFlagNot === undefined ? {} : { reversalGuardFlagNot: activation.reversalGuardFlagNot }),
+      ...(activation.hitDefAttr === undefined ? {} : { hitDefAttr }),
+      ...(activation.guardFlag === undefined ? {} : { guardFlag: activation.guardFlag }),
       ...(activation.missOnOverride === undefined ? {} : { missOnOverride: activation.missOnOverride }),
       ...(activation.p1SpritePriority === undefined ? {} : { p1SpritePriority: activation.p1SpritePriority }),
       ...(activation.p2SpritePriority === undefined ? {} : { p2SpritePriority: activation.p2SpritePriority }),

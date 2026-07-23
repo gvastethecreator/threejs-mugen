@@ -633,13 +633,24 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(logs).toEqual(["P2 rejected P1 S,NA because missonoverride = 1 forces active override miss"]);
   });
 
-  it("applies ReversalDef missonoverride before a matching HitOverride", () => {
-    const createRoute = (missOnOverride: boolean | undefined, p1StateNo: number | undefined) => {
+  it("routes ReversalDef contact through the countered actor's HitOverride payload", () => {
+    const createRoute = ({
+      attackerOverride = false,
+      reverserOverride = false,
+      missOnOverride,
+      p1StateNo = 777,
+    }: {
+      attackerOverride?: boolean;
+      reverserOverride?: boolean;
+      missOnOverride?: boolean;
+      p1StateNo?: number | null;
+    } = {}) => {
       const contactWorld = new RuntimeContactMemoryWorld();
       const reversalWorld = new RuntimeReversalWorld(contactWorld);
+      const override = { slot: 1, attr: "S,SP", stateNo: 889, remaining: 30, guardFlag: "A" };
       const attacker = actor("p1", "P1", contactWorld, {
-        runtime: runtimeState({ stateNo: 200 }),
-        currentMove: move({ attr: "S,NA", targetId: 77 }),
+        runtime: runtimeState({ stateNo: 200, ...(attackerOverride ? { hitOverrides: [override] } : {}) }),
+        currentMove: move({ attr: "S,NA", guardFlag: "H", targetId: 77 }),
         moveTick: 2,
       });
       const defender = actor("p2", "P2", contactWorld, {
@@ -647,60 +658,93 @@ describe("RuntimeCombatResolutionSystem", () => {
           pos: { x: 18, y: 0 },
           stateNo: 0,
           life: 100,
-          hitOverrides: [{ slot: 1, attr: "S,NA", stateNo: 889, remaining: 30 }],
+          ...(reverserOverride ? { hitOverrides: [override] } : {}),
         }),
       });
       reversalWorld.activate(defender, {
         attr: "S,NA",
+        hitDefAttr: "S,SP",
+        guardFlag: "A",
         hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 },
         hitPause: 3,
-        ...(p1StateNo === undefined ? {} : { p1StateNo }),
+        targetId: 77,
+        ...(p1StateNo === null ? {} : { p1StateNo }),
         ...(missOnOverride === undefined ? {} : { missOnOverride }),
       });
       return { attacker, contactWorld, defender, reversalWorld };
     };
 
-    const defaultRoute = createRoute(undefined, 777);
-    const defaultLogs: string[] = [];
-    const defaultResult = new RuntimeCombatResolutionWorld().resolveDirect({
-      attacker: defaultRoute.attacker,
-      defender: defaultRoute.defender,
-      ...directInputBase(defaultRoute.contactWorld, new RuntimeDirectCombatWorld(defaultRoute.contactWorld), defaultLogs),
-      reversalWorld: defaultRoute.reversalWorld,
+    const reverserOwnedOverride = createRoute({ reverserOverride: true });
+    const reverserOwnedLogs: string[] = [];
+    const reverserOwnedResult = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker: reverserOwnedOverride.attacker,
+      defender: reverserOwnedOverride.defender,
+      ...directInputBase(
+        reverserOwnedOverride.contactWorld,
+        new RuntimeDirectCombatWorld(reverserOwnedOverride.contactWorld),
+        reverserOwnedLogs,
+      ),
+      reversalWorld: reverserOwnedOverride.reversalWorld,
     });
 
-    expect(defaultResult).toEqual({ kind: "skipped", reason: "hitoverride-custom-state-miss" });
-    expect(defaultRoute.attacker.hasHit).toBe(false);
-    expect(defaultRoute.defender.runtime.stateNo).toBe(0);
-    expect(defaultRoute.defender.currentMove).toMatchObject({ isReversal: true, p1StateNo: 777 });
-    expect(defaultLogs).toEqual(["P2 rejected P1 S,NA because active override cannot receive custom-state ReversalDef"]);
+    expect(reverserOwnedResult).toMatchObject({ kind: "reversal" });
+    expect(reverserOwnedOverride.attacker.runtime.moveType).toBe("H");
+    expect(reverserOwnedOverride.defender.runtime.stateNo).toBe(777);
+    expect(reverserOwnedLogs).toEqual(["P2 reversed P1 p1->777"]);
 
-    const explicitRoute = createRoute(false, 777);
-    const explicitEntries: string[] = [];
-    const explicitResult = new RuntimeCombatResolutionWorld().resolveDirect({
-      attacker: explicitRoute.attacker,
-      defender: explicitRoute.defender,
-      ...directInputBase(explicitRoute.contactWorld, new RuntimeDirectCombatWorld(explicitRoute.contactWorld), []),
-      reversalWorld: explicitRoute.reversalWorld,
-      stateHooks: hooks(explicitEntries),
+    const defaultMissRoute = createRoute({ attackerOverride: true });
+    const defaultMissLogs: string[] = [];
+    const defaultMissResult = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker: defaultMissRoute.attacker,
+      defender: defaultMissRoute.defender,
+      ...directInputBase(
+        defaultMissRoute.contactWorld,
+        new RuntimeDirectCombatWorld(defaultMissRoute.contactWorld),
+        defaultMissLogs,
+      ),
+      reversalWorld: defaultMissRoute.reversalWorld,
     });
 
-    expect(explicitResult).toMatchObject({ kind: "reversal" });
-    expect(explicitRoute.attacker.runtime.moveType).toBe("H");
-    expect(explicitRoute.defender.runtime.stateNo).toBe(777);
-    expect(explicitEntries).toContain("p2:777:self");
+    expect(defaultMissResult).toEqual({ kind: "skipped", reason: "hitoverride-custom-state-miss" });
+    expect(defaultMissRoute.attacker.hasHit).toBe(false);
+    expect(defaultMissRoute.attacker.runtime.stateNo).toBe(200);
+    expect(defaultMissRoute.defender.runtime.stateNo).toBe(0);
+    expect(defaultMissLogs).toEqual(["P1 rejected P2 S,SP because active override cannot receive custom-state ReversalDef"]);
 
-    const forcedRoute = createRoute(true, undefined);
-    const forcedResult = new RuntimeCombatResolutionWorld().resolveDirect({
-      attacker: forcedRoute.attacker,
-      defender: forcedRoute.defender,
-      ...directInputBase(forcedRoute.contactWorld, new RuntimeDirectCombatWorld(forcedRoute.contactWorld), []),
-      reversalWorld: forcedRoute.reversalWorld,
+    const forcedMissRoute = createRoute({ attackerOverride: true, missOnOverride: true, p1StateNo: null });
+    const forcedMissResult = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker: forcedMissRoute.attacker,
+      defender: forcedMissRoute.defender,
+      ...directInputBase(
+        forcedMissRoute.contactWorld,
+        new RuntimeDirectCombatWorld(forcedMissRoute.contactWorld),
+        [],
+      ),
+      reversalWorld: forcedMissRoute.reversalWorld,
     });
 
-    expect(forcedResult).toEqual({ kind: "skipped", reason: "hitoverride-custom-state-miss" });
-    expect(forcedRoute.attacker.hasHit).toBe(false);
-    expect(forcedRoute.defender.runtime.stateNo).toBe(0);
+    expect(forcedMissResult).toEqual({ kind: "skipped", reason: "hitoverride-custom-state-miss" });
+    expect(forcedMissRoute.attacker.runtime.stateNo).toBe(200);
+    expect(forcedMissRoute.defender.runtime.stateNo).toBe(0);
+
+    const redirectRoute = createRoute({ attackerOverride: true, missOnOverride: false });
+    const redirectResult = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker: redirectRoute.attacker,
+      defender: redirectRoute.defender,
+      ...directInputBase(
+        redirectRoute.contactWorld,
+        new RuntimeDirectCombatWorld(redirectRoute.contactWorld),
+        [],
+      ),
+      reversalWorld: redirectRoute.reversalWorld,
+    });
+
+    expect(redirectResult).toEqual({ kind: "hitoverride", message: "P1 HitOverride slot 1 redirected P2 to state 889" });
+    expect(redirectRoute.attacker.runtime.stateNo).toBe(889);
+    expect(redirectRoute.attacker.runtime.moveType).toBe("I");
+    expect(redirectRoute.defender.hasHit).toBe(true);
+    expect(redirectRoute.defender.runtime.stateNo).toBe(0);
+    expect(redirectRoute.defender.targets).toEqual([{ actorId: "p1", targetId: 77, age: 0 }]);
   });
 
   it("rejects direct HitDef contact while SuperPause unhittable protects the defender", () => {

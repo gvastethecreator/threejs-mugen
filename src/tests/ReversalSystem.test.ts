@@ -26,6 +26,8 @@ describe("ReversalSystem", () => {
     const recordedOperations: string[] = [];
     const ir = compileControllerIr(controller("ReversalDef", {
       "reversal.attr": "SA,AA",
+      attr: "S,SP",
+      guardflag: "A",
       pausetime: "5",
       p1stateno: "777",
       p2stateno: "778",
@@ -50,6 +52,8 @@ describe("ReversalSystem", () => {
     expect(result.operation).toMatchObject({
       kind: "reversaldef",
       attr: "SA,AA",
+      hitDefAttr: "S,SP",
+      guardFlag: "A",
       hitPause: 5,
       p1StateNo: 777,
       p2StateNo: 778,
@@ -59,6 +63,8 @@ describe("ReversalSystem", () => {
     expect(fighter.currentMove).toMatchObject({
       isReversal: true,
       reversalAttr: "SA,AA",
+      attr: "S,SP",
+      guardFlag: "A",
       hitPause: 5,
       p1StateNo: 777,
       p2StateNo: 778,
@@ -68,6 +74,7 @@ describe("ReversalSystem", () => {
     expect(recordedControllers).toEqual(["ReversalDef"]);
     expect(recordedOperations).toEqual(["reversaldef"]);
     expect(fighter.runtime.reversal?.attackDepth).toEqual([6, 6]);
+    expect(fighter.runtime.reversal).toMatchObject({ hitDefAttr: "S,SP", guardFlag: "A" });
   });
 
   it("mutates an active ReversalDef in place without clearing contact state", () => {
@@ -96,6 +103,8 @@ describe("ReversalSystem", () => {
       actor: fighter,
       controller: compileControllerIr(controller("ModifyReversalDef", {
         "reversal.attr": "S,NA",
+        attr: "C,HP",
+        guardflag: "H",
         pausetime: "7,11",
         p1stateno: "778",
         p2stateno: "780",
@@ -112,6 +121,8 @@ describe("ReversalSystem", () => {
       operation: {
         kind: "modifyreversaldef",
         reversalAttr: "S,NA",
+        hitDefAttr: "C,HP",
+        guardFlag: "H",
         hitPause: 7,
         p1StateNo: 778,
         p2StateNo: 780,
@@ -124,6 +135,8 @@ describe("ReversalSystem", () => {
     expect(fighter.currentMove).toMatchObject({
       isReversal: true,
       reversalAttr: "S,NA",
+      attr: "C,HP",
+      guardFlag: "H",
       hitPause: 7,
       p1StateNo: 778,
       p2StateNo: 780,
@@ -132,6 +145,8 @@ describe("ReversalSystem", () => {
     });
     expect(fighter.runtime.reversal).toMatchObject({
       attr: "S,NA",
+      hitDefAttr: "C,HP",
+      guardFlag: "H",
       hitPause: 7,
       p1StateNo: 778,
       p2StateNo: 780,
