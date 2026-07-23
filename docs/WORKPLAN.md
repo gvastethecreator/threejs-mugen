@@ -1,5 +1,16 @@
 # Workplan
 
+## Runtime ModifyHitDef priority slice - T401 (closed, 2026-07-23)
+
+`e21ae170` carries static root `priority = value[, H|M|D]` through the active
+normal receiver path. It retains finite truncated priority values beyond the
+former local clamps and proves a RedirectID-mutated `12` defeats `8` at direct
+contact. The grouped focal batch passes 8 files / 1149 tests plus TypeScript
+7, trace-script syntax, and diff hygiene. Keep dynamic input, exact integer
+overflow, broad priority-type behavior, aliases, defaults, Projectile/Helper
+routes, timing, and full parity outside this slice. Global Vitest, aggregate
+traces, build, and boundaries remain queued for the larger runtime checkpoint.
+
 ## Runtime ModifyHitDef sprite-priority slice - T400 (closed, 2026-07-23)
 
 `f846e862` carries static root `p1sprpriority` and `p2sprpriority` through the

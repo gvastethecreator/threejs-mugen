@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T400 (closed, 2026-07-23)
+## Current runtime compatibility board - T401 (closed, 2026-07-23)
+
+T401 closes in `e21ae170`. Pinned IKEMEN source evaluates HitDef priority as
+an integer, permits negative IKEMEN values, and delegates root ModifyHitDef
+fields through one active normal receiver. Static `priority = value[, H|M|D]`
+now mutates that move in place. Shared direct activation and clash comparison
+retain finite truncated values instead of the former `0..10` and `1..7`
+clamps. Required imported trace evidence proves RedirectID changes a receiver
+from `-4` to priority `12`, which defeats priority `8` at direct contact.
+Dynamic values, exact source integer overflow, broad priority-type behavior,
+aliases, Projectile/Helper routes, timing, and full parity remain deferred.
+
+Verification: focused compiler, HitDef, direct-combat, combat-resolution,
+reversal, imported-route, and trace-preset coverage passes 8 files / 1149
+tests. TypeScript 7, trace-script syntax, and diff hygiene pass. Full Vitest,
+aggregate traces, build, and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-modifyhitdef-priority.md`.
+
+Next: select another source-pinned shared field or reserve the global
+checkpoint for a larger accumulated batch.
+
+## Previous runtime compatibility board - T400 (closed, 2026-07-23)
 
 T400 closes in `f846e862`. Pinned IKEMEN source delegates root ModifyHitDef
 sprite-priority fields to one active normal receiver and evaluates both as

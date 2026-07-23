@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef priority report - T401 (closed, 2026-07-23)
+
+- Pinned IKEMEN source delegates static priority through active normal
+  ModifyHitDef and evaluates it as an integer while leaving negative IKEMEN
+  values unrestricted.
+- Feature commit `e21ae170` lowers finite static `priority = value[, H|M|D]`,
+  retains active move identity/contact state, and unifies direct activation and
+  clash comparison around finite truncation instead of local clamps.
+- Required imported RedirectID trace proves the receiver changes from `-4` to
+  `12`, wins against priority `8`, and applies the expected direct hit.
+- Focused compiler, HitDef, direct-combat, combat-resolution, reversal,
+  imported-match, and trace-preset coverage passes 8 files / 1149 tests.
+  TypeScript 7, trace-script syntax, and diff hygiene pass.
+- Full Vitest, aggregate traces, build, and boundary checks remain queued for
+  the larger checkpoint. Scores do not move.
+
 ## Runtime ModifyHitDef sprite-priority report - T400 (closed, 2026-07-23)
 
 - Pinned IKEMEN source delegates static `p1sprpriority` and `p2sprpriority`
