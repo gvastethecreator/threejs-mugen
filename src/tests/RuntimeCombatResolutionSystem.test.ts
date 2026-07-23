@@ -93,6 +93,49 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(attacker.pendingHitDefTargets).toEqual(["p2"]);
   });
 
+  it("tracks direct IKEMEN air.juggle points, rejects an over-budget contact, and honors NoJuggleCheck", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const logs: string[] = [];
+    const hit = () => move({
+      damage: 17,
+      airJuggle: 3,
+      hitFlag: "H,L,A,F",
+      fall: { enabled: true, velocity: { y: -4 } },
+    });
+    const attacker = actor("p1", "P1", contactWorld, {
+      currentMove: hit(),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({
+        pos: { x: 10, y: 0 },
+        life: 100,
+        moveType: "H",
+        hitFall: { falling: true, damage: 0, velocity: { y: -4 } },
+      }),
+    });
+    defender.definition.constants["data.airjuggle"] = 4;
+    const base = { ...directInputBase(contactWorld, directCombatWorld, logs), runtimeProfile: "ikemen-go" as const };
+
+    expect(world.resolveDirect({ attacker, defender, ...base })).toMatchObject({ kind: "hit", damage: 17 });
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 1 });
+
+    rearmHitDef(attacker, hit());
+    expect(world.resolveDirect({ attacker, defender, ...base })).toEqual({ kind: "skipped", reason: "air-juggle-rejected" });
+    expect(defender.runtime.life).toBe(83);
+    expect(logs).toContain("P2 rejected P1 S,NA via air.juggle");
+
+    attacker.runtime.assertSpecial = { flags: ["nojugglecheck"], globalFlags: [], noJuggleCheck: true };
+    rearmHitDef(attacker, hit());
+    expect(world.resolveDirect({ attacker, defender, ...base })).toMatchObject({ kind: "hit", damage: 17 });
+    expect(defender.runtime.life).toBe(66);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 1 });
+  });
+
   it.each([
     ["enemy-only", 1, false],
     ["both-teams", 0, true],
@@ -1619,6 +1662,15 @@ function runtimeState(overrides: Partial<CharacterRuntimeState> = {}): Character
     fvars: [],
     ...overrides,
   };
+}
+
+function rearmHitDef(actor: TestActor, currentMove: DemoMove): void {
+  actor.currentMove = currentMove;
+  actor.currentMoveLabel = "test";
+  actor.moveTick = 1;
+  actor.hasHit = false;
+  actor.hitDefTargets = [];
+  actor.pendingHitDefTargets = [];
 }
 
 function move(overrides: Partial<DemoMove> = {}): DemoMove {

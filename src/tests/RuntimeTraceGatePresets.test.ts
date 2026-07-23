@@ -180,6 +180,7 @@ import {
   createSyntheticImportedIkemenRootModifyHitDefGuardKillRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefFallKillRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefHitOnceRedirectTraceArtifact,
+  createSyntheticImportedIkemenDirectAirJuggleTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
@@ -18105,6 +18106,27 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p3", life: 1000 }),
       expect.objectContaining({ id: "p4", life: 1000 }),
+    ]));
+  });
+
+  it("creates a required IKEMEN direct air.juggle artifact", () => {
+    const artifact = createSyntheticImportedIkemenDirectAirJuggleTraceArtifact({
+      generatedAt: "2026-07-23T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-direct-air-juggle-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-direct-air-juggle-golden", passed: true, failures: [] }],
+    });
+    const executedControllers = artifact.gates[0]?.evidence.executedControllers;
+    expect(executedControllers?.HitDef).toBeGreaterThanOrEqual(3);
+    expect(executedControllers?.ChangeState).toBeGreaterThanOrEqual(2);
+    expect(executedControllers?.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.eventLines.join("\n")).toContain("via air.juggle");
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", stateNo: 202 }),
+      expect.objectContaining({ id: "p2", life: 966, airJugglePoints: { p1: 1 } }),
     ]));
   });
 

@@ -52,6 +52,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         ignorereversaldef: "1",
         fall: "1",
         hitonce: "1",
+        "air.juggle": "6",
         "fall.damage": "7",
         "fall.yvelocity": "-4.5",
         "fall.recover": "1",
@@ -129,6 +130,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       missOnOverride: false,
       ignoreReversalDef: true,
       hitOnce: true,
+      airJuggle: 6,
       fall: {
         enabled: true,
         damage: 7,
@@ -172,6 +174,32 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
 
     expect(actor.currentMove?.ignoreReversalDef).toBe(false);
+  });
+
+  it("defaults a new HitDef air.juggle to zero instead of inheriting the prior move", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.currentMove = {
+      actionId: 200,
+      startup: 0,
+      activeStart: 0,
+      activeEnd: 1,
+      recovery: 2,
+      damage: 10,
+      airJuggle: 7,
+      hitPause: 1,
+      hitStun: 2,
+      push: 1,
+      hitbox: { x1: 0, y1: -20, x2: 20, y2: 0 },
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30" })),
+      frame: activeFrame(),
+    });
+
+    expect(actor.currentMove?.airJuggle).toBe(0);
   });
 
   it("uses an imported source default only when HitDef omits hitflag", () => {

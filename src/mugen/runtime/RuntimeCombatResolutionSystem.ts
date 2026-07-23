@@ -38,6 +38,7 @@ import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeHelperRootOwnershipResolver } from "./RuntimeHelperCombatSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import type { RuntimeRoundHitSourceActor } from "./RuntimeRoundWinTypeSystem";
 import {
@@ -45,6 +46,10 @@ import {
   hasRuntimeHitDefTarget,
   type RuntimeHitDefContactMemoryActor,
 } from "./RuntimeHitDefContactMemorySystem";
+import {
+  applyRuntimeDirectAirJuggleHit,
+  canRuntimeDirectAirJuggle,
+} from "./RuntimeJuggleSystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -98,6 +103,7 @@ export type RuntimeCombatResolutionDirectInput<TActor extends RuntimeCombatResol
   hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
   contactPresentationWorld: RuntimeContactPresentationWorld;
   runtimeTick: number;
+  runtimeProfile?: RuntimeCompatibilityProfile;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
@@ -161,6 +167,7 @@ export type RuntimeDirectCombatSkipReason =
   | "missing-move"
   | "already-hit"
   | "hitonce-consumed"
+  | "air-juggle-rejected"
   | "compiled-hitdef"
   | "reversal-move"
   | "inactive"
@@ -415,6 +422,16 @@ export class RuntimeCombatResolutionWorld {
       input.log(message);
       return { kind: "skipped", reason: "hitby-rejected" };
     }
+    if (!canRuntimeDirectAirJuggle({
+      profile: input.runtimeProfile,
+      attacker,
+      defender,
+      move,
+    })) {
+      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via air.juggle`;
+      input.log(message);
+      return { kind: "skipped", reason: "air-juggle-rejected" };
+    }
 
     const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA");
     if (override) {
@@ -453,6 +470,7 @@ export class RuntimeCombatResolutionWorld {
       attack: move,
       holdingBack: isRuntimeHoldingBack(defender.currentInput),
     });
+    const targetWasFalling = defender.runtime.hitFall?.falling === true;
     const outcome = input.directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
       applyGuardHit: (target) => this.applyDefaultGuardHitState(target, input.guardWorld, input.stateHooks),
       applyHitStateTransitions: (source, target, moveArg) =>
@@ -469,6 +487,15 @@ export class RuntimeCombatResolutionWorld {
       stageBounds: input.stageBounds,
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
     });
+    if (outcome.kind === "hit") {
+      applyRuntimeDirectAirJuggleHit({
+        profile: input.runtimeProfile,
+        attacker,
+        defender,
+        move,
+        targetWasFalling,
+      });
+    }
     input.contactPresentationWorld.emitHitDefContact({
       attacker,
       defender,
@@ -596,6 +623,14 @@ export class RuntimeCombatResolutionWorld {
       || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
       return undefined;
     }
+    if (!canRuntimeDirectAirJuggle({
+      profile: input.runtimeProfile,
+      attacker,
+      defender,
+      move,
+    })) {
+      return undefined;
+    }
     return {
       attacker,
       defender,
@@ -614,6 +649,7 @@ export class RuntimeCombatResolutionWorld {
     prepared: { attacker: TActor; defender: TActor; move: DemoMove; result: RuntimeCombatHitResult },
   ): RuntimeDirectCombatOutcome {
     const { attacker, defender, move, result } = prepared;
+    const targetWasFalling = defender.runtime.hitFall?.falling === true;
     const outcome = input.directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
       applyGuardHit: (target) => this.applyDefaultGuardHitState(target, input.guardWorld, input.stateHooks),
       applyHitStateTransitions: (source, target, moveArg) =>
@@ -631,6 +667,15 @@ export class RuntimeCombatResolutionWorld {
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
       preserveDefenderMove: true,
     });
+    if (outcome.kind === "hit") {
+      applyRuntimeDirectAirJuggleHit({
+        profile: input.runtimeProfile,
+        attacker,
+        defender,
+        move,
+        targetWasFalling,
+      });
+    }
     input.contactPresentationWorld.emitHitDefContact({
       attacker,
       defender,

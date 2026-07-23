@@ -31,6 +31,7 @@ export type DemoMove = {
   guardRedLife?: number;
   kill?: boolean;
   hitOnce?: boolean;
+  airJuggle?: number;
   attr?: string;
   hitFlag?: string;
   affectTeam?: MugenAffectTeam;

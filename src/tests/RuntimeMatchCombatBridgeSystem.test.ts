@@ -44,7 +44,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           return { kind: "skipped", reason: "no-match" };
         },
         resolveDirect: (input) => {
-          calls.push(`direct:${input.attacker.id}:${input.defender.id}:${input.runtimeTick}:${tagOf(input.stateHooks)}`);
+          calls.push(`direct:${input.attacker.id}:${input.defender.id}:${input.runtimeTick}:${input.runtimeProfile}:${tagOf(input.stateHooks)}`);
           input.getHurtBoxes?.(input.defender);
           input.log("direct-log");
           return { kind: "skipped", reason: "missing-move" };
@@ -78,6 +78,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       effectLifecycleWorld: tagged<Pick<RuntimeEffectLifecycleWorld, "markGetHit">>("effect-lifecycle"),
       targetWorld,
       runtimeTick: 77,
+      runtimeProfile: "ikemen-go",
       getHurtBoxes: (target) => {
         calls.push(`hurt:${target.id}`);
         return defaultHurtBoxes;
@@ -100,7 +101,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
     expect(calls).toEqual([
       "priority:p1:p2:direct-world",
       "reversal-clash:p2:p1",
-      "direct:p1:p2:77:combat-hooks",
+      "direct:p1:p2:77:ikemen-go:combat-hooks",
       "hurt:p2",
       "log:direct-log",
       "projectile:p1:p2:effect-lifecycle:reversal:true",

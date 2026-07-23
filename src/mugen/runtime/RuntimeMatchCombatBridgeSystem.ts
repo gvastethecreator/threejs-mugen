@@ -23,6 +23,7 @@ import type {
 } from "./RuntimeHelperCombatSystem";
 import type { RuntimeReversalWorld } from "./ReversalSystem";
 import type { RuntimeTargetWorld } from "./TargetSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 
 export type RuntimeMatchCombatBridgeActor =
   RuntimeCombatResolutionActor &
@@ -46,6 +47,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "markGetHit">;
   targetWorld: RuntimeTargetWorld;
   runtimeTick: number;
+  runtimeProfile?: RuntimeCompatibilityProfile;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (actor: TActor) => CollisionBox[] | undefined;
   getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
@@ -92,6 +94,7 @@ export class RuntimeMatchCombatBridgeWorld {
           hitStateTransitionWorld: input.hitStateTransitionWorld,
           contactPresentationWorld: input.contactPresentationWorld,
           runtimeTick: input.runtimeTick,
+          runtimeProfile: input.runtimeProfile,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           getCollisionBoxes: input.getCollisionBoxes,
@@ -123,6 +126,7 @@ export class RuntimeMatchCombatBridgeWorld {
           hitStateTransitionWorld: input.hitStateTransitionWorld,
           contactPresentationWorld: input.contactPresentationWorld,
           runtimeTick: input.runtimeTick,
+          runtimeProfile: input.runtimeProfile,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           getCollisionBoxes: input.getCollisionBoxes,

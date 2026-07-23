@@ -30,6 +30,7 @@ export type HitDefControllerOp = {
   kill?: boolean;
   guardKill?: boolean;
   hitOnce?: boolean;
+  airJuggle?: number;
   priority?: number;
   priorityType?: "hit" | "miss" | "dodge";
   p1SpritePriority?: number;
@@ -1809,6 +1810,7 @@ function compileHitDefControllerOp(
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     hitOnce: booleanNumber(findParam(controller, "hitonce")),
+    airJuggle: firstNumber(findParam(controller, "air.juggle")),
     priority: firstNumber(findParam(controller, "priority")),
     priorityType: hitDefPriorityType(findParam(controller, "priority")),
     p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority")),

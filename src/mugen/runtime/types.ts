@@ -50,6 +50,8 @@ export type CharacterRuntimeState = {
   receivedHitSequence?: number;
   hitVars?: RuntimeGetHitVars;
   hitFall?: RuntimeHitFall;
+  /** Remaining IKEMEN air-juggle points, keyed by the direct attacking actor id. */
+  airJugglePoints?: Record<string, number>;
   targetCount?: number;
   targetRefs?: RuntimeTargetSnapshot[];
   targetBindings?: RuntimeTargetBindingSnapshot[];

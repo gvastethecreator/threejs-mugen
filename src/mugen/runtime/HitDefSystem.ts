@@ -112,6 +112,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
     const hitOnce = operation?.hitOnce ?? booleanHitDefParam(source, "hitonce") ?? existing?.hitOnce ?? false;
+    const airJuggle = operation?.airJuggle ?? firstNumber(findParam(source, "air.juggle")) ?? 0;
     const hitFlag =
       operation?.hitFlag ??
       stripMugenString(findParam(source, "hitflag")) ??
@@ -203,6 +204,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,
       hitOnce,
+      ...(airJuggle === undefined ? {} : { airJuggle }),
       ...(hitFlag === undefined ? {} : { hitFlag }),
       ...(affectTeam === undefined ? {} : { affectTeam }),
       ...(teamSide === undefined ? {} : { teamSide }),

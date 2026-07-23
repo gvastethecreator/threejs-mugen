@@ -13009,6 +13009,153 @@ export function createSyntheticImportedIkemenRootModifyHitDefHitOnceRedirectTrac
   });
 }
 
+export function createSyntheticImportedIkemenDirectAirJuggleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 17;
+  const targetId = 405;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "first falling contact consumes three of four target juggle points", frames: 1, p1: ["x"], p2: [] },
+    { label: "second direct HitDef exceeds the remaining point and is rejected", frames: 3, p1: [], p2: [] },
+    { label: "third direct HitDef bypasses the exhausted budget through NoJuggleCheck", frames: 5, p1: [], p2: [] },
+  ]);
+  const baseAttacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-direct-air-juggle-attacker",
+    displayName: "Synthetic Imported IKEMEN Direct Air Juggle Attacker",
+    ikemenVersion: "0.99",
+    withHitDef: false,
+  });
+  const sequenceStates = parseCns(`
+[Statedef 200]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+
+[State 200, Air Juggle First]
+type = HitDef
+trigger1 = Time = 0
+attr = S, NA
+damage = ${damage}, 0
+id = ${targetId}
+priority = 4, Hit
+pausetime = 0, 0
+ground.hittime = 8
+ground.velocity = 0, 0
+fall = 1
+fall.yvelocity = -4
+air.juggle = 3
+
+[State 200, Air Juggle Second State]
+type = ChangeState
+trigger1 = Time >= 1
+value = 201
+
+[Statedef 201]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+
+[State 201, Air Juggle Rejected]
+type = HitDef
+trigger1 = Time = 0
+attr = S, NA
+damage = ${damage}, 0
+id = ${targetId}
+priority = 4, Hit
+pausetime = 0, 0
+ground.hittime = 8
+ground.velocity = 0, 0
+fall = 1
+fall.yvelocity = -4
+air.juggle = 3
+
+[State 201, Air Juggle Bypass State]
+type = ChangeState
+trigger1 = Time >= 1
+value = 202
+
+[Statedef 202]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+
+[State 202, Air Juggle No Check]
+type = AssertSpecial
+trigger1 = Time >= 0
+flag = NoJuggleCheck
+
+[State 202, Air Juggle Bypass]
+type = HitDef
+trigger1 = Time = 0
+attr = S, NA
+damage = ${damage}, 0
+id = ${targetId}
+priority = 4, Hit
+pausetime = 0, 0
+ground.hittime = 8
+ground.velocity = 0, 0
+fall = 1
+fall.yvelocity = -4
+air.juggle = 3
+`).states;
+  const p1: DemoFighterDefinition = {
+    ...baseAttacker,
+    states: [...(baseAttacker.states ?? []).filter((state) => state.id !== 200), ...sequenceStates],
+    stateMoves: new Map(),
+  };
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-direct-air-juggle-defender",
+    displayName: "Synthetic Imported IKEMEN Direct Air Juggle Defender",
+    ikemenVersion: "0.99",
+    withHitDef: false,
+    dataStats: { airjuggle: 4 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-direct-air-juggle-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-direct-air-juggle-golden",
+      label: "Synthetic imported IKEMEN direct air.juggle",
+      source: "mixed",
+      notes: [
+        "Explicit IKEMEN player trace proves static normal HitDef air.juggle spends target data.airjuggle points after a falling contact, rejects one later direct over-budget contact, and lets attacker NoJuggleCheck bypass that admission without spending more points. Projectile, Helper, StateDef juggle, ModifyHitDef air.juggle, target drop, teams, source timing edge cases, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-direct-air-juggle-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: [
+          { type: "HitDef", minCount: 3 },
+          { type: "ChangeState", minCount: 2 },
+          "AssertSpecial",
+        ],
+        requiredExecutedOperations: [{ operation: "hitdef", minCount: 3 }],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via air.juggle"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 202, assertSpecialFlags: ["nojugglecheck"] },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 - damage * 2 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -50169,7 +50316,7 @@ export type SyntheticImportedTraceFighterOptions = {
   p2DistanceStateEntry?: { stateNo: number };
   ownerMetricsStateEntry?: { stateNo: number };
   identityEntry?: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number };
-  dataStats?: { attack?: number; defence?: number; life?: number; power?: number; guardpoints?: number; dizzypoints?: number };
+  dataStats?: { attack?: number; defence?: number; life?: number; power?: number; guardpoints?: number; dizzypoints?: number; airjuggle?: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
@@ -52294,6 +52441,7 @@ function dataConstantsBlock(options: SyntheticImportedTraceFighterOptions): stri
     power: options.resourceMaxEntry?.powerMax ?? options.dataStats?.power,
     guardpoints: options.dataStats?.guardpoints,
     dizzypoints: options.dataStats?.dizzypoints,
+    airjuggle: options.dataStats?.airjuggle,
     attack: options.dataStats?.attack,
     defence: options.dataStats?.defence,
     sparkno: options.dataSparkNo,

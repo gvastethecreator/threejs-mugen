@@ -115,6 +115,7 @@ export type RuntimeTraceActor = {
   assertSpecialFlags?: string[];
   assertSpecialGlobalFlags?: string[];
   hitFall?: RuntimeTraceHitFallSummary;
+  airJugglePoints?: Record<string, number>;
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   soundEvents?: NonNullable<ActorSnapshot["soundEvents"]>;
@@ -4073,6 +4074,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       ? [...actor.runtime.assertSpecial.globalFlags]
       : undefined,
     hitFall: actor.runtime.hitFall ? cloneTraceHitFall(actor.runtime.hitFall) : undefined,
+    airJugglePoints: actor.runtime.airJugglePoints ? { ...actor.runtime.airJugglePoints } : undefined,
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
