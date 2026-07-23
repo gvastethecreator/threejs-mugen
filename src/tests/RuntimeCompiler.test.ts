@@ -1651,6 +1651,8 @@ value = 1
         p1sprpriority: "5.8",
         p2sprpriority: "-4.6",
         priority: "12.8, Dodge",
+        kill: "0",
+        "guard.kill": "0",
         redirectid: "var(0)",
       }),
     );
@@ -1662,6 +1664,9 @@ value = 1
     );
     const targetStateOnly = compileControllerIr(
       controller(200, "ModifyHitDef", [], { p1stateno: "777.4", p2stateno: "888.6", redirectid: "57" }),
+    );
+    const enabledKill = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { kill: "1", "guard.kill": "-2", redirectid: "57" }),
     );
     const noPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { redirectid: "57" }),
@@ -1708,6 +1713,15 @@ value = 1
     const malformedPriority = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", priority: "12, Unknown", redirectid: "57" }),
     );
+    const dynamicKill = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", kill: "var(1)", redirectid: "57" }),
+    );
+    const dynamicGuardKill = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", "guard.kill": "var(1)", redirectid: "57" }),
+    );
+    const malformedKill = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", kill: "never", redirectid: "57" }),
+    );
     const unsupportedPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", forcenofall: "1", redirectid: "57" }),
     );
@@ -1740,6 +1754,8 @@ value = 1
         p2SpritePriority: -4,
         priority: 12,
         priorityType: "dodge",
+        kill: false,
+        guardKill: false,
         redirectPlayerIdExpression: "var(0)",
       },
     });
@@ -1759,6 +1775,12 @@ value = 1
       kind: "modifyhitdef",
       p1StateNo: 777,
       p2StateNo: 889,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(enabledKill.operation).toEqual({
+      kind: "modifyhitdef",
+      kill: true,
+      guardKill: true,
       redirectPlayerIdExpression: "57",
     });
     expect(noPayload.operation).toBeUndefined();
@@ -1789,6 +1811,11 @@ value = 1
     expect(dynamicPriority.supportLevel).toBe("unsupported");
     expect(dynamicPriority.operation).toBeUndefined();
     expect(malformedPriority.operation).toBeUndefined();
+    expect(dynamicKill.supportLevel).toBe("unsupported");
+    expect(dynamicKill.operation).toBeUndefined();
+    expect(dynamicGuardKill.supportLevel).toBe("unsupported");
+    expect(dynamicGuardKill.operation).toBeUndefined();
+    expect(malformedKill.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();

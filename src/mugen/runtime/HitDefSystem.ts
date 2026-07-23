@@ -355,6 +355,12 @@ export class RuntimeHitDefControllerDispatchWorld {
       existing.priority = operation.priority;
       existing.priorityType = operation.priorityType ?? "hit";
     }
+    if (operation.kill !== undefined) {
+      existing.kill = operation.kill;
+    }
+    if (operation.guardKill !== undefined) {
+      existing.guardKill = operation.guardKill;
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {

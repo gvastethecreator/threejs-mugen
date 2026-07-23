@@ -9941,6 +9941,15 @@ p2getp1state = 0
 p1sprpriority = 5
 p2sprpriority = -4
 priority = 12, Dodge
+kill = 0
+guard.kill = 0
+RedirectID = var(0)
+
+[State 0, Restore redirected ModifyHitDef kill flags]
+type = ModifyHitDef
+trigger1 = Time = 2
+kill = 1
+guard.kill = 1
 RedirectID = var(0)
 `,
     });
@@ -9980,6 +9989,8 @@ ground.velocity = 0,0
           p2SpritePriority?: number;
           priority?: number;
           priorityType?: "hit" | "miss" | "dodge";
+          kill?: boolean;
+          guardKill?: boolean;
           hitVars?: { hitId?: number; chainId?: number; hitCount?: number };
         };
       };
@@ -10002,6 +10013,8 @@ ground.velocity = 0,0
       p2SpritePriority: -4,
       priority: 12,
       priorityType: "dodge",
+      kill: false,
+      guardKill: false,
       hitVars: { hitId: 92, chainId: 13, hitCount: 3 },
     });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
@@ -10009,6 +10022,14 @@ ground.velocity = 0,0
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.hitdef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyhitdef).toBe(1);
     expect(modified.logs.some((line) => line.includes("Blocked ModifyHitDef RedirectID"))).toBe(false);
+
+    const restored = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(internals.p2.currentMove).toBe(receiverMove);
+    expect(internals.p2.currentMove).toMatchObject({ kill: true, guardKill: true });
+    expect(restored.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(2);
+    expect(restored.compatibilitySession?.actors[1]?.executedOperations.modifyhitdef).toBe(2);
+    expect(restored.logs.some((line) => line.includes("Blocked ModifyHitDef RedirectID"))).toBe(false);
   });
 
   it("routes IKEMEN root ModifyReversalDef RedirectID core fields to an active receiver without resetting its move", () => {

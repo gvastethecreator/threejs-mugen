@@ -176,6 +176,8 @@ import {
   createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefPriorityRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyHitDefKillRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyHitDefGuardKillRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
@@ -18001,6 +18003,50 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p1", life: 969 }),
       expect.objectContaining({ id: "p2", life: 1000 }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root ModifyHitDef kill RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyHitDefKillRedirectTraceArtifact({
+      generatedAt: "2026-07-23T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyhitdef-kill-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyhitdef-kill-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ HitDef: 1, ModifyHitDef: 1 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({ hitdef: 1, modifyhitdef: 1 });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("hit");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 102 }),
+    );
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", life: 1 }),
+      expect.objectContaining({ id: "p2", life: 1000 }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root ModifyHitDef guard.kill RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyHitDefGuardKillRedirectTraceArtifact({
+      generatedAt: "2026-07-23T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyhitdef-guard-kill-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyhitdef-guard-kill-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({ HitDef: 1, ModifyHitDef: 1 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({ hitdef: 1, modifyhitdef: 1 });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("guard");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p4", actorId: "p3", targetId: 103 }),
+    );
+    expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p3", life: 1 }),
+      expect.objectContaining({ id: "p4", life: 1000 }),
     ]));
   });
 

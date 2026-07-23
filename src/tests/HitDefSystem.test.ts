@@ -512,6 +512,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p1sprpriority: "5",
         p2sprpriority: "-4",
         priority: "12.8, Dodge",
+        kill: "0",
+        "guard.kill": "0",
         redirectid: "57",
       })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
@@ -536,6 +538,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p2SpritePriority: -4,
         priority: 12,
         priorityType: "dodge",
+        kill: false,
+        guardKill: false,
       },
     });
     expect(actor.currentMove).toBe(activeMove);
@@ -554,6 +558,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2SpritePriority: -4,
       priority: 12,
       priorityType: "dodge",
+      kill: false,
+      guardKill: false,
     });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
@@ -581,6 +587,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2SpritePriority: -4,
       priority: 12,
       priorityType: "dodge",
+      kill: false,
+      guardKill: false,
     });
 
     const targetOwnedState = world.modify({
@@ -597,7 +605,23 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2SpritePriority: -4,
       priority: 12,
       priorityType: "dodge",
+      kill: false,
+      guardKill: false,
     });
+
+    const restoredKill = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { kill: "1", "guard.kill": "-2", redirectid: "57" })),
+    });
+
+    expect(restoredKill).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyhitdef", kill: true, guardKill: true },
+    });
+    expect(actor.currentMove).toMatchObject({ kill: true, guardKill: true });
+    expect(actor.hasHit).toBe(true);
+    expect(actor.hitDefTargets).toEqual(["p2"]);
+    expect(actor.pendingHitDefTargets).toEqual(["p3"]);
   });
 
   it("blocks ModifyHitDef without a normal active HitDef or against a reversal", () => {

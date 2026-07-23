@@ -88,6 +88,8 @@ export type ModifyHitDefControllerOp = {
   p2SpritePriority?: number;
   priority?: number;
   priorityType?: "hit" | "miss" | "dodge";
+  kill?: boolean;
+  guardKill?: boolean;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -1862,6 +1864,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "p1sprpriority",
     "p2sprpriority",
     "priority",
+    "kill",
+    "guard.kill",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
@@ -1881,6 +1885,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
   const priority = staticOptionalHitDefPriorityParam(controller);
+  const kill = staticOptionalHitDefBooleanParam(controller, "kill");
+  const guardKill = staticOptionalHitDefBooleanParam(controller, "guard.kill");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damage !== undefined ||
@@ -1895,7 +1901,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     p2GetP1State !== true ||
     p1SpritePriority !== true ||
     p2SpritePriority !== true ||
-    priority !== true;
+    priority !== true ||
+    kill !== undefined ||
+    guardKill !== undefined;
   if (
     !hasPayload ||
     (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
@@ -1911,6 +1919,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     p1SpritePriority === false ||
     p2SpritePriority === false ||
     priority === false ||
+    kill === "invalid" ||
+    guardKill === "invalid" ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -1936,6 +1946,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
     ...(p2SpritePriority === true ? {} : { p2SpritePriority }),
     ...(typeof priority === "object" ? priority : {}),
+    ...(kill === undefined ? {} : { kill }),
+    ...(guardKill === undefined ? {} : { guardKill }),
   };
 }
 
@@ -2833,6 +2845,15 @@ function staticHitDefPriorityType(value: string | undefined): "hit" | "miss" | "
     default:
       return undefined;
   }
+}
+
+function staticOptionalHitDefBooleanParam(controller: MugenStateController, key: string): boolean | undefined | "invalid" {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return undefined;
+  }
+  const value = strictNumberSingle(raw);
+  return value === undefined ? "invalid" : value !== 0;
 }
 
 function staticOptionalReversalFacingParam(controller: MugenStateController, key: string): number | true | false {
