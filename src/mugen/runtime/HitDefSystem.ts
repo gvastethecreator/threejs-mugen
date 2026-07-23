@@ -361,6 +361,13 @@ export class RuntimeHitDefControllerDispatchWorld {
     if (operation.guardKill !== undefined) {
       existing.guardKill = operation.guardKill;
     }
+    if (operation.fallKill !== undefined) {
+      existing.fall = {
+        ...existing.fall,
+        enabled: existing.fall?.enabled ?? false,
+        kill: operation.fallKill,
+      };
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {

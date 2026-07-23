@@ -178,6 +178,7 @@ import {
   createSyntheticImportedIkemenRootModifyHitDefPriorityRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefKillRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefGuardKillRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyHitDefFallKillRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
@@ -18047,6 +18048,36 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p3", life: 1 }),
       expect.objectContaining({ id: "p4", life: 1000 }),
+    ]));
+  });
+
+  it("creates a required IKEMEN root ModifyHitDef fall.kill RedirectID artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyHitDefFallKillRedirectTraceArtifact({
+      generatedAt: "2026-07-23T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ModifyHitDef: 1,
+      HitFallDamage: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      modifyhitdef: 1,
+      "hitfall:hitfalldamage": 1,
+    });
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("hit");
+    expect(artifact.gates[0]?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 105 }),
+    );
+    expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "p1", life: 1, hitFall: expect.objectContaining({ kill: false, damage: 0 }) }),
+      expect.objectContaining({ id: "p2", life: 1000 }),
     ]));
   });
 

@@ -1576,6 +1576,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootModifyHitDefGuardKillRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootModifyHitDefFallKillRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-root-modifyreversaldef-redirect",
       required: true,
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(),

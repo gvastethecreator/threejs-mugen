@@ -90,6 +90,7 @@ export type ModifyHitDefControllerOp = {
   priorityType?: "hit" | "miss" | "dodge";
   kill?: boolean;
   guardKill?: boolean;
+  fallKill?: boolean;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -1866,6 +1867,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "priority",
     "kill",
     "guard.kill",
+    "fall.kill",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
@@ -1887,6 +1889,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const priority = staticOptionalHitDefPriorityParam(controller);
   const kill = staticOptionalHitDefBooleanParam(controller, "kill");
   const guardKill = staticOptionalHitDefBooleanParam(controller, "guard.kill");
+  const fallKill = staticOptionalHitDefBooleanParam(controller, "fall.kill");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damage !== undefined ||
@@ -1903,7 +1906,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     p2SpritePriority !== true ||
     priority !== true ||
     kill !== undefined ||
-    guardKill !== undefined;
+    guardKill !== undefined ||
+    fallKill !== undefined;
   if (
     !hasPayload ||
     (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
@@ -1921,6 +1925,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     priority === false ||
     kill === "invalid" ||
     guardKill === "invalid" ||
+    fallKill === "invalid" ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -1948,6 +1953,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(typeof priority === "object" ? priority : {}),
     ...(kill === undefined ? {} : { kill }),
     ...(guardKill === undefined ? {} : { guardKill }),
+    ...(fallKill === undefined ? {} : { fallKill }),
   };
 }
 

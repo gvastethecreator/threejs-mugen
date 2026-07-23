@@ -514,6 +514,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         priority: "12.8, Dodge",
         kill: "0",
         "guard.kill": "0",
+        "fall.kill": "0",
         redirectid: "57",
       })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
@@ -540,6 +541,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         priorityType: "dodge",
         kill: false,
         guardKill: false,
+        fallKill: false,
       },
     });
     expect(actor.currentMove).toBe(activeMove);
@@ -560,6 +562,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       priorityType: "dodge",
       kill: false,
       guardKill: false,
+      fall: { enabled: false, kill: false },
     });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
@@ -589,6 +592,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       priorityType: "dodge",
       kill: false,
       guardKill: false,
+      fall: { enabled: false, kill: false },
     });
 
     const targetOwnedState = world.modify({
@@ -611,14 +615,14 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     const restoredKill = world.modify({
       actor,
-      controller: compileControllerIr(controller("ModifyHitDef", { kill: "1", "guard.kill": "-2", redirectid: "57" })),
+      controller: compileControllerIr(controller("ModifyHitDef", { kill: "1", "guard.kill": "-2", "fall.kill": "-3", redirectid: "57" })),
     });
 
     expect(restoredKill).toMatchObject({
       modified: true,
-      operation: { kind: "modifyhitdef", kill: true, guardKill: true },
+      operation: { kind: "modifyhitdef", kill: true, guardKill: true, fallKill: true },
     });
-    expect(actor.currentMove).toMatchObject({ kill: true, guardKill: true });
+    expect(actor.currentMove).toMatchObject({ kill: true, guardKill: true, fall: { enabled: false, kill: true } });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
     expect(actor.pendingHitDefTargets).toEqual(["p3"]);

@@ -12831,6 +12831,86 @@ export function createSyntheticImportedIkemenRootModifyHitDefGuardKillRedirectTr
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyHitDefFallKillRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const fallDamage = 2000;
+  const targetId = 105;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a fall-lethal normal HitDef out of range", frames: 1, p1: [], p2: [] },
+    { label: "caller redirects fall kill false before receiver contact", frames: 1, p1: [], p2: [] },
+    { label: "receiver contact resolves deferred nonlethal fall damage", frames: 6, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-caller",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Fall Kill Redirect Caller",
+    withHitDef: false,
+    getHitState: { stateNo: 5100, animNo: 500 },
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId: 0,
+      hitDefTrigger: "0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyHitDefRedirectRoute: { fallKill: false, redirectId: 57, trigger: "Time >= 1" },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-receiver",
+    displayName: "Synthetic Imported IKEMEN Root ModifyHitDef Fall Kill Redirect Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      clsn1Extent: 64,
+      p2StateNo: 5100,
+      p2GetP1State: false,
+      fall: { enabled: true, damage: fallDamage, kill: true, velocity: { y: -4.5 } },
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-golden",
+      label: "Synthetic imported IKEMEN root ModifyHitDef fall.kill RedirectID",
+      source: "mixed",
+      notes: [
+        "Explicit ikemen-go trace proves a root changes static fall.kill on one active receiver normal HitDef through RedirectID before contact. The receiver retains fall.kill false, then deferred 2000 HitFallDamage clamps the target at one life. Dynamic values, kill, guard.kill, other fall fields, Projectiles, Helpers, teams, source scheduling, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ModifyHitDef", "HitFallDamage"],
+        requiredExecutedOperations: ["hitdef", "modifyhitdef", "hitfall:hitfalldamage"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5100,
+            life: 1,
+            hitFall: { falling: false, damage: 0, kill: false },
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -50001,6 +50081,9 @@ export type SyntheticImportedTraceFighterOptions = {
     damage: number;
     guardDamage?: number;
     targetId: number;
+    p2StateNo?: number;
+    p2GetP1State?: boolean;
+    fall?: NonNullable<DemoMove["fall"]>;
     redirectId?: SyntheticNumberExpression;
     guardDistance?: number;
     guardFlag?: string;
@@ -50030,6 +50113,7 @@ export type SyntheticImportedTraceFighterOptions = {
     priorityType?: "Hit" | "Miss" | "Dodge";
     kill?: boolean;
     guardKill?: boolean;
+    fallKill?: boolean;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
   };
@@ -56899,6 +56983,9 @@ guardflag = ${route.guardFlag ?? "MA"}
 ${route.pauseTime === undefined ? "" : `pausetime = ${route.pauseTime},${route.pauseTime}\n`}
 ${route.guardPause === undefined ? "" : `guard.pausetime = ${route.guardPause},${route.guardPause}\n`}
 ${route.guardDistance === undefined ? "" : `guard.dist = ${route.guardDistance}\n`}
+${route.fall === undefined ? "" : fallHitDefBlock(route.fall)}
+${route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}\n`}
+${route.p2GetP1State === undefined ? "" : `p2getp1state = ${route.p2GetP1State ? 1 : 0}\n`}
 `;
 }
 
@@ -56918,6 +57005,7 @@ ${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpriteP
 ${route.priority === undefined ? "" : `priority = ${route.priority}, ${route.priorityType ?? "Hit"}`}
 ${route.kill === undefined ? "" : `kill = ${route.kill ? 1 : 0}`}
 ${route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`}
+${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
 redirectid = ${route.redirectId}
 `;
 }
