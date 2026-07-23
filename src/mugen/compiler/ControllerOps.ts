@@ -73,9 +73,14 @@ export type HitDefControllerOp = {
 export type ModifyHitDefControllerOp = {
   kind: "modifyhitdef";
   redirectPlayerIdExpression: string;
-  damage: number;
+  damage?: number;
   guardDamage?: number;
+  id?: number;
+  chainId?: number;
   hitCount?: number;
+  attr?: string;
+  guardFlag?: string;
+  hitFlag?: string;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -1682,10 +1687,10 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   if (!attr) {
     return undefined;
   }
-  const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
-  const reversalGuardFlagNot = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag.not");
-  const hitDefAttr = staticOptionalReversalHitAttributeParam(controller, "attr");
-  const guardFlag = staticOptionalReversalGuardFlagParam(controller, "guardflag");
+  const reversalGuardFlag = staticOptionalGuardFlagParam(controller, "reversal.guardflag");
+  const reversalGuardFlagNot = staticOptionalGuardFlagParam(controller, "reversal.guardflag.not");
+  const hitDefAttr = staticOptionalHitAttributeParam(controller, "attr");
+  const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
   const hitPause = staticNumberParam(controller, "pausetime", 0);
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
@@ -1834,21 +1839,37 @@ function compileHitDefControllerOp(
 }
 
 function compileModifyHitDefControllerOp(controller: MugenStateController): ModifyHitDefControllerOp | undefined {
-  const allowedParams = new Set(["type", "redirectid", "damage", "numhits"]);
+  const allowedParams = new Set(["type", "redirectid", "damage", "id", "chainid", "numhits", "attr", "guardflag", "hitflag"]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
   }
   const damageRaw = findParam(controller, "damage");
-  const damage = strictNumberPair(damageRaw);
+  const damage = damageRaw === undefined ? undefined : strictNumberPair(damageRaw);
   const damageParts = damageRaw?.split(",").map((part) => part.trim());
+  const id = staticOptionalHitIdParam(controller, "id");
+  const chainId = staticOptionalIntegerParam(controller, "chainid");
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
+  const attr = staticOptionalHitAttributeParam(controller, "attr");
+  const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
+  const hitFlag = staticOptionalHitFlagParam(controller, "hitflag");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
+  const hasPayload =
+    damage !== undefined ||
+    id !== true ||
+    chainId !== true ||
+    hitCount !== true ||
+    attr !== true ||
+    guardFlag !== true ||
+    hitFlag !== true;
   if (
-    !damage ||
-    !damageParts ||
-    damageParts.length > 2 ||
-    damageParts.some((part) => part.length === 0) ||
+    !hasPayload ||
+    (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
+    id === false ||
+    chainId === false ||
     hitCount === false ||
+    attr === false ||
+    guardFlag === false ||
+    hitFlag === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -1857,9 +1878,14 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   return {
     kind: "modifyhitdef",
     redirectPlayerIdExpression,
-    damage: damage[0],
-    ...(damage[1] === undefined ? {} : { guardDamage: damage[1] }),
+    ...(damage === undefined ? {} : { damage: damage[0] }),
+    ...(damage?.[1] === undefined ? {} : { guardDamage: damage[1] }),
+    ...(id === true ? {} : { id }),
+    ...(chainId === true ? {} : { chainId }),
     ...(hitCount === true ? {} : { hitCount }),
+    ...(attr === true ? {} : { attr }),
+    ...(guardFlag === true ? {} : { guardFlag }),
+    ...(hitFlag === true ? {} : { hitFlag }),
   };
 }
 
@@ -1888,10 +1914,10 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     return undefined;
   }
   const reversalAttr = stripMugenString(findParam(controller, "reversal.attr"))?.trim();
-  const reversalGuardFlag = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag");
-  const reversalGuardFlagNot = staticOptionalReversalGuardFlagParam(controller, "reversal.guardflag.not");
-  const hitDefAttr = staticOptionalReversalHitAttributeParam(controller, "attr");
-  const guardFlag = staticOptionalReversalGuardFlagParam(controller, "guardflag");
+  const reversalGuardFlag = staticOptionalGuardFlagParam(controller, "reversal.guardflag");
+  const reversalGuardFlagNot = staticOptionalGuardFlagParam(controller, "reversal.guardflag.not");
+  const hitDefAttr = staticOptionalHitAttributeParam(controller, "attr");
+  const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
   const hitPauseRaw = findParam(controller, "pausetime");
   const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
@@ -2698,7 +2724,7 @@ function staticOptionalStrictNumberParam(controller: MugenStateController, key: 
   return strictNumberSingle(raw) ?? false;
 }
 
-function staticOptionalReversalGuardFlagParam(controller: MugenStateController, key: string): string | true | false {
+function staticOptionalGuardFlagParam(controller: MugenStateController, key: string): string | true | false {
   const raw = findParam(controller, key);
   if (raw === undefined) {
     return true;
@@ -2710,7 +2736,7 @@ function staticOptionalReversalGuardFlagParam(controller: MugenStateController, 
   return value;
 }
 
-function staticOptionalReversalHitAttributeParam(controller: MugenStateController, key: string): string | true | false {
+function staticOptionalHitAttributeParam(controller: MugenStateController, key: string): string | true | false {
   const raw = findParam(controller, key);
   if (raw === undefined) {
     return true;
@@ -2733,9 +2759,26 @@ function staticOptionalReversalFacingParam(controller: MugenStateController, key
   return typeof value === "number" ? Math.trunc(value) : value;
 }
 
-function staticOptionalHitCountParam(controller: MugenStateController, key: string): number | true | false {
+function staticOptionalIntegerParam(controller: MugenStateController, key: string): number | true | false {
   const value = staticOptionalStrictNumberParam(controller, key);
   return typeof value === "number" ? Math.trunc(value) : value;
+}
+
+function staticOptionalHitIdParam(controller: MugenStateController, key: string): number | true | false {
+  const value = staticOptionalIntegerParam(controller, key);
+  return typeof value === "number" ? Math.max(0, value) : value;
+}
+
+function staticOptionalHitCountParam(controller: MugenStateController, key: string): number | true | false {
+  return staticOptionalIntegerParam(controller, key);
+}
+
+function staticOptionalHitFlagParam(controller: MugenStateController, key: string): string | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return true;
+  }
+  return staticHitFlagParam(raw) ?? false;
 }
 
 function staticOptionalReversalBooleanParam(

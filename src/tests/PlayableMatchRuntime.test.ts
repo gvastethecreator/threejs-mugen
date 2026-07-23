@@ -9929,8 +9929,12 @@ value = 57
 [State 0, Redirected ModifyHitDef]
 type = ModifyHitDef
 trigger1 = Time = 1
-damage = 61
+id = 92
+chainid = 13
 numhits = 3
+attr = C,HP
+guardflag = H
+hitflag = LAF
 RedirectID = var(0)
 `,
     });
@@ -9955,13 +9959,31 @@ ground.velocity = 0,0
 
     runtime.step({ p1: new Set(), p2: new Set() });
     const internals = runtime as unknown as {
-      p2: { currentMove?: { damage?: number; guardDamage?: number; attr?: string; hitVars?: { hitCount?: number } } };
+      p2: {
+        currentMove?: {
+          damage?: number;
+          guardDamage?: number;
+          targetId?: number;
+          attr?: string;
+          guardFlag?: string;
+          hitFlag?: string;
+          hitVars?: { hitId?: number; chainId?: number; hitCount?: number };
+        };
+      };
     };
     const receiverMove = internals.p2.currentMove;
     const modified = runtime.step({ p1: new Set(), p2: new Set() });
 
     expect(internals.p2.currentMove).toBe(receiverMove);
-    expect(internals.p2.currentMove).toMatchObject({ damage: 61, guardDamage: 4, attr: "S,NA", hitVars: { hitCount: 3 } });
+    expect(internals.p2.currentMove).toMatchObject({
+      damage: 12,
+      guardDamage: 4,
+      targetId: 92,
+      attr: "C,HP",
+      guardFlag: "H",
+      hitFlag: "LAF",
+      hitVars: { hitId: 92, chainId: 13, hitCount: 3 },
+    });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.hitdef).toBe(1);

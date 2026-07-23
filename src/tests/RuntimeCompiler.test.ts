@@ -1635,12 +1635,27 @@ value = 1
     expect(invalidRedirect.operation).toBeUndefined();
   });
 
-  it("compiles static root ModifyHitDef RedirectID damage pairs and numhits, then rejects unsupported payloads", () => {
+  it("compiles static root ModifyHitDef RedirectID payloads and rejects unsupported values", () => {
     const modified = compileControllerIr(
-      controller(200, "ModifyHitDef", [], { damage: "41,8", numhits: "3", redirectid: "var(0)" }),
+      controller(200, "ModifyHitDef", [], {
+        damage: "41,8",
+        id: "92",
+        chainid: "13",
+        numhits: "3",
+        attr: "C,HP",
+        guardflag: "H",
+        hitflag: "LAF",
+        redirectid: "var(0)",
+      }),
     );
     const primaryDamageOnly = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "57" }),
+    );
+    const filtersOnly = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { attr: "S,NA", guardflag: "MA", hitflag: "MAF", redirectid: "57" }),
+    );
+    const noPayload = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { redirectid: "57" }),
     );
     const dynamicPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "var(1)", redirectid: "57" }),
@@ -1648,14 +1663,32 @@ value = 1
     const dynamicHitCount = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", numhits: "var(1)", redirectid: "57" }),
     );
+    const dynamicId = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", id: "var(1)", redirectid: "57" }),
+    );
+    const dynamicChainId = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", chainid: "var(1)", redirectid: "57" }),
+    );
+    const dynamicAttr = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", attr: "var(1)", redirectid: "57" }),
+    );
+    const dynamicGuardFlag = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", guardflag: "var(1)", redirectid: "57" }),
+    );
+    const dynamicHitFlag = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", hitflag: "var(1)", redirectid: "57" }),
+    );
     const unsupportedPayload = compileControllerIr(
-      controller(200, "ModifyHitDef", [], { damage: "41", guardflag: "MA", redirectid: "57" }),
+      controller(200, "ModifyHitDef", [], { damage: "41", priority: "4", redirectid: "57" }),
     );
     const malformedRedirect = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "var(" }),
     );
     const oversizedPair = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41,8,4", redirectid: "57" }),
+    );
+    const negativeId = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", id: "-3", redirectid: "57" }),
     );
 
     expect(modified).toMatchObject({
@@ -1664,7 +1697,12 @@ value = 1
         kind: "modifyhitdef",
         damage: 41,
         guardDamage: 8,
+        id: 92,
+        chainId: 13,
         hitCount: 3,
+        attr: "C,HP",
+        guardFlag: "H",
+        hitFlag: "LAF",
         redirectPlayerIdExpression: "var(0)",
       },
     });
@@ -1673,13 +1711,32 @@ value = 1
       damage: 41,
       redirectPlayerIdExpression: "57",
     });
+    expect(filtersOnly.operation).toEqual({
+      kind: "modifyhitdef",
+      attr: "S,NA",
+      guardFlag: "MA",
+      hitFlag: "MAF",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(noPayload.operation).toBeUndefined();
     expect(dynamicPayload.supportLevel).toBe("unsupported");
     expect(dynamicPayload.operation).toBeUndefined();
     expect(dynamicHitCount.supportLevel).toBe("unsupported");
     expect(dynamicHitCount.operation).toBeUndefined();
+    expect(dynamicId.supportLevel).toBe("unsupported");
+    expect(dynamicId.operation).toBeUndefined();
+    expect(dynamicChainId.supportLevel).toBe("unsupported");
+    expect(dynamicChainId.operation).toBeUndefined();
+    expect(dynamicAttr.supportLevel).toBe("unsupported");
+    expect(dynamicAttr.operation).toBeUndefined();
+    expect(dynamicGuardFlag.supportLevel).toBe("unsupported");
+    expect(dynamicGuardFlag.operation).toBeUndefined();
+    expect(dynamicHitFlag.supportLevel).toBe("unsupported");
+    expect(dynamicHitFlag.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();
+    expect(negativeId.operation).toEqual({ kind: "modifyhitdef", damage: 41, id: 0, redirectPlayerIdExpression: "57" });
   });
 
   it("compiles static root ModifyReversalDef RedirectID core fields and rejects unsupported payloads", () => {

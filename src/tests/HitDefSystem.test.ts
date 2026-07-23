@@ -486,14 +486,43 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     const result = world.modify({
       actor,
-      controller: compileControllerIr(controller("ModifyHitDef", { damage: "61", numhits: "3", redirectid: "57" })),
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        damage: "61",
+        id: "91",
+        chainid: "13",
+        numhits: "3",
+        attr: "C,HP",
+        guardflag: "H",
+        hitflag: "LAF",
+        redirectid: "57",
+      })),
       recordController: (_actor, source) => recordedControllers.push(source.type),
       recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
     });
 
-    expect(result).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", damage: 61, hitCount: 3 } });
+    expect(result).toMatchObject({
+      modified: true,
+      operation: {
+        kind: "modifyhitdef",
+        damage: 61,
+        id: 91,
+        chainId: 13,
+        hitCount: 3,
+        attr: "C,HP",
+        guardFlag: "H",
+        hitFlag: "LAF",
+      },
+    });
     expect(actor.currentMove).toBe(activeMove);
-    expect(actor.currentMove).toMatchObject({ damage: 61, guardDamage: 6, attr: "S,NA", hitVars: { hitCount: 3 } });
+    expect(actor.currentMove).toMatchObject({
+      damage: 61,
+      guardDamage: 6,
+      attr: "C,HP",
+      guardFlag: "H",
+      hitFlag: "LAF",
+      targetId: 91,
+      hitVars: { hitId: 91, chainId: 13, hitCount: 3 },
+    });
     expect(actor.hasHit).toBe(true);
     expect(actor.hitDefTargets).toEqual(["p2"]);
     expect(actor.pendingHitDefTargets).toEqual(["p3"]);
@@ -502,16 +531,23 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     const retained = world.modify({
       actor,
-      controller: compileControllerIr(controller("ModifyHitDef", { damage: "74", redirectid: "57" })),
+      controller: compileControllerIr(controller("ModifyHitDef", { attr: "S,NA", redirectid: "57" })),
     });
 
-    expect(retained).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", damage: 74 } });
-    expect(actor.currentMove).toMatchObject({ damage: 74, hitVars: { hitCount: 3 } });
+    expect(retained).toMatchObject({ modified: true, operation: { kind: "modifyhitdef", attr: "S,NA" } });
+    expect(actor.currentMove).toMatchObject({
+      damage: 61,
+      attr: "S,NA",
+      guardFlag: "H",
+      hitFlag: "LAF",
+      targetId: 91,
+      hitVars: { hitId: 91, chainId: 13, hitCount: 3 },
+    });
   });
 
   it("blocks ModifyHitDef without a normal active HitDef or against a reversal", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
-    const operation = compileControllerIr(controller("ModifyHitDef", { damage: "61,9", redirectid: "57" }));
+    const operation = compileControllerIr(controller("ModifyHitDef", { attr: "S,NA", redirectid: "57" }));
     const inactive = hitDefActor();
     const inactiveResult = world.modify({ actor: inactive, controller: operation });
 

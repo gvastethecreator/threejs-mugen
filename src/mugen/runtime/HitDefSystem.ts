@@ -309,12 +309,30 @@ export class RuntimeHitDefControllerDispatchWorld {
       };
     }
 
-    existing.damage = operation.damage;
+    if (operation.damage !== undefined) {
+      existing.damage = operation.damage;
+    }
     if (operation.guardDamage !== undefined) {
       existing.guardDamage = operation.guardDamage;
     }
+    if (operation.id !== undefined) {
+      existing.targetId = operation.id;
+      existing.hitVars = { ...existing.hitVars, hitId: operation.id };
+    }
+    if (operation.chainId !== undefined) {
+      existing.hitVars = { ...existing.hitVars, chainId: operation.chainId };
+    }
     if (operation.hitCount !== undefined) {
       existing.hitVars = { ...existing.hitVars, hitCount: operation.hitCount };
+    }
+    if (operation.attr !== undefined) {
+      existing.attr = operation.attr;
+    }
+    if (operation.guardFlag !== undefined) {
+      existing.guardFlag = operation.guardFlag;
+    }
+    if (operation.hitFlag !== undefined) {
+      existing.hitFlag = operation.hitFlag;
     }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
