@@ -75,6 +75,7 @@ export type ModifyHitDefControllerOp = {
   redirectPlayerIdExpression: string;
   damage: number;
   guardDamage?: number;
+  hitCount?: number;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -87,6 +88,7 @@ export type ModifyReversalDefControllerOp = {
   guardFlag?: string;
   missOnOverride?: boolean;
   hitPause?: number;
+  hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   p1StateNo?: number;
@@ -635,6 +637,7 @@ export type ReversalDefControllerOp = {
   guardFlag?: string;
   missOnOverride?: boolean;
   hitPause: number;
+  hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   p1StateNo?: number;
@@ -1685,6 +1688,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const guardFlag = staticOptionalReversalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
   const hitPause = staticNumberParam(controller, "pausetime", 0);
+  const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
   const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
@@ -1702,6 +1706,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitDefAttr === false ||
     guardFlag === false ||
     missOnOverride === "invalid" ||
+    hitCount === false ||
     p1SpritePriority === false ||
     p2SpritePriority === false ||
     p1StateNo === false ||
@@ -1723,6 +1728,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     guardFlag: guardFlag === true ? undefined : guardFlag,
     missOnOverride,
     hitPause: Math.max(0, Math.round(hitPause)),
+    hitCount: hitCount === true ? undefined : hitCount,
     p1SpritePriority: p1SpritePriority === true ? undefined : p1SpritePriority,
     p2SpritePriority: p2SpritePriority === true ? undefined : p2SpritePriority,
     p1StateNo: p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo)),
@@ -1828,19 +1834,21 @@ function compileHitDefControllerOp(
 }
 
 function compileModifyHitDefControllerOp(controller: MugenStateController): ModifyHitDefControllerOp | undefined {
-  const allowedParams = new Set(["type", "redirectid", "damage"]);
+  const allowedParams = new Set(["type", "redirectid", "damage", "numhits"]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
   }
   const damageRaw = findParam(controller, "damage");
   const damage = strictNumberPair(damageRaw);
   const damageParts = damageRaw?.split(",").map((part) => part.trim());
+  const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   if (
     !damage ||
     !damageParts ||
     damageParts.length > 2 ||
     damageParts.some((part) => part.length === 0) ||
+    hitCount === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -1851,6 +1859,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     redirectPlayerIdExpression,
     damage: damage[0],
     ...(damage[1] === undefined ? {} : { guardDamage: damage[1] }),
+    ...(hitCount === true ? {} : { hitCount }),
   };
 }
 
@@ -1865,6 +1874,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "guardflag",
     "missonoverride",
     "pausetime",
+    "numhits",
     "p1sprpriority",
     "p2sprpriority",
     "p1stateno",
@@ -1885,6 +1895,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
   const hitPauseRaw = findParam(controller, "pausetime");
   const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
+  const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
   const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
@@ -1903,6 +1914,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     guardFlag === false ||
     missOnOverride === "invalid" ||
     (hitPauseRaw !== undefined && !hitPausePair) ||
+    hitCount === false ||
     p1SpritePriority === false ||
     p2SpritePriority === false ||
     p1StateNo === false ||
@@ -1917,6 +1929,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     return undefined;
   }
   const hitPause = hitPausePair === undefined ? undefined : Math.max(0, Math.round(hitPausePair[0]));
+  const normalizedHitCount = hitCount === true ? undefined : hitCount;
   const normalizedP1StateNo = p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo));
   const normalizedP2StateNo = p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo));
   const normalizedP2GetP1State = p2GetP1State === true ? undefined : p2GetP1State !== 0;
@@ -1933,6 +1946,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     guardFlag === true &&
     missOnOverride === undefined &&
     hitPause === undefined &&
+    normalizedHitCount === undefined &&
     p1SpritePriority === true &&
     p2SpritePriority === true &&
     normalizedP1StateNo === undefined &&
@@ -1954,6 +1968,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(guardFlag === true ? {} : { guardFlag }),
     ...(missOnOverride === undefined ? {} : { missOnOverride }),
     ...(hitPause === undefined ? {} : { hitPause }),
+    ...(normalizedHitCount === undefined ? {} : { hitCount: normalizedHitCount }),
     ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
     ...(p2SpritePriority === true ? {} : { p2SpritePriority }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
@@ -2714,6 +2729,11 @@ function staticOptionalReversalSpritePriorityParam(controller: MugenStateControl
 }
 
 function staticOptionalReversalFacingParam(controller: MugenStateController, key: string): number | true | false {
+  const value = staticOptionalStrictNumberParam(controller, key);
+  return typeof value === "number" ? Math.trunc(value) : value;
+}
+
+function staticOptionalHitCountParam(controller: MugenStateController, key: string): number | true | false {
   const value = staticOptionalStrictNumberParam(controller, key);
   return typeof value === "number" ? Math.trunc(value) : value;
 }

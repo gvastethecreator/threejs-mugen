@@ -40,6 +40,7 @@ export type RuntimeReversalActivation = {
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
+  hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   p1StateNo?: number;
@@ -138,6 +139,7 @@ export class RuntimeReversalControllerDispatchWorld {
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
+      hitCount: operation?.hitCount ?? staticReversalHitCount(findParam(source, "numhits")),
       p1SpritePriority: operation?.p1SpritePriority,
       p2SpritePriority: operation?.p2SpritePriority,
       p1StateNo: operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno")),
@@ -211,6 +213,10 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.hitPause = operation.hitPause;
       runtimeReversal.hitPause = operation.hitPause;
     }
+    if (operation.hitCount !== undefined) {
+      existing.hitVars = { ...existing.hitVars, hitCount: operation.hitCount };
+      runtimeReversal.hitCount = operation.hitCount;
+    }
     if (operation.p1SpritePriority !== undefined) {
       existing.p1SpritePriority = operation.p1SpritePriority;
       runtimeReversal.p1SpritePriority = operation.p1SpritePriority;
@@ -267,6 +273,7 @@ export class RuntimeReversalWorld {
       return false;
     }
     const hitDefAttr = activation.hitDefAttr?.trim() || "S,NA";
+    const hitCount = normalizedReversalHitCount(activation.hitCount);
     fighter.currentMove = {
       actionId: fighter.runtime.stateNo,
       startup: 0,
@@ -289,6 +296,7 @@ export class RuntimeReversalWorld {
       p2GetP1State: activation.p2GetP1State,
       p2Facing: activation.p2Facing,
       hitPause: activation.hitPause,
+      hitVars: { hitCount },
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       hitStun: 0,
       push: 0,
@@ -312,6 +320,7 @@ export class RuntimeReversalWorld {
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
       ...(activation.p2GetP1State === undefined ? {} : { p2GetP1State: activation.p2GetP1State }),
       ...(activation.p2Facing === undefined ? {} : { p2Facing: activation.p2Facing }),
+      ...(activation.hitCount === undefined ? {} : { hitCount }),
     };
     return true;
   }
@@ -361,6 +370,7 @@ export class RuntimeReversalWorld {
     reverser.hasHit = true;
     attacker.hasHit = true;
     this.contactWorld.markMoveReversed(attacker.contact, attacker.runtime.stateNo);
+    this.contactWorld.markReceivedHits(attacker.contact, attacker.runtime.stateNo, reversal.hitVars?.hitCount ?? 1);
     hooks.rememberTarget(reverser, attacker, reversal.targetId);
     reverser.hitPause = reversal.hitPause;
     attacker.hitPause = reversal.hitPause;
@@ -423,6 +433,18 @@ function normalizedNumberPair(value: string | undefined): [number, number] | und
     return undefined;
   }
   return [values[0], values[1] ?? values[0]];
+}
+
+function staticReversalHitCount(value: string | undefined): number | undefined {
+  if (!value || value.includes(",")) {
+    return undefined;
+  }
+  const parsed = Number(value.trim());
+  return Number.isFinite(parsed) ? Math.trunc(parsed) : undefined;
+}
+
+function normalizedReversalHitCount(value: number | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : 1;
 }
 
 function interruptCurrentMove(actor: RuntimeReversalActor): void {

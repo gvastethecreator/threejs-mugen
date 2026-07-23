@@ -113,6 +113,10 @@ export class RuntimeContactMemoryWorld {
     markRuntimeReceivedDamage(memory, stateNo, damage);
   }
 
+  markReceivedHits(memory: RuntimeContactMemory, stateNo: number, count: number): void {
+    markRuntimeReceivedHits(memory, stateNo, count);
+  }
+
   markProjectileContact(
     memory: RuntimeContactMemory,
     stateNo: number,
@@ -367,8 +371,12 @@ export function markRuntimeMoveReversed(memory: RuntimeContactMemory, stateNo: n
 export function markRuntimeReceivedDamage(memory: RuntimeContactMemory, stateNo: number, damage: number): void {
   memory.receivedDamageState = stateNo;
   memory.receivedDamageAmount = Math.max(0, Math.round(damage));
+  markRuntimeReceivedHits(memory, stateNo, 1);
+}
+
+export function markRuntimeReceivedHits(memory: RuntimeContactMemory, stateNo: number, count: number): void {
   memory.receivedHitsState = stateNo;
-  memory.receivedHitsCount = clampHitCount((memory.receivedHitsCount ?? 0) + 1);
+  memory.receivedHitsCount = clampHitCount((memory.receivedHitsCount ?? 0) + normalizedHitCountDelta(count));
 }
 
 export function markRuntimeProjectileContact(
@@ -499,6 +507,10 @@ export function runtimeProjectileCancelTime(
 
 function clampHitCount(value: number): number {
   return Math.max(0, Math.min(999, Math.round(value)));
+}
+
+function normalizedHitCountDelta(value: number): number {
+  return Number.isFinite(value) ? Math.trunc(value) : 0;
 }
 
 function findControllerParam(controller: MugenStateController, key: string): string | undefined {

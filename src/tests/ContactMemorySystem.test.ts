@@ -11,6 +11,7 @@ import {
   markRuntimeMoveContact,
   markRuntimeProjectileContact,
   markRuntimeReceivedDamage,
+  markRuntimeReceivedHits,
   markRuntimeMoveReversed,
   resetRuntimeMoveContact,
   RuntimeContactControllerDispatchWorld,
@@ -181,6 +182,18 @@ describe("ContactMemorySystem", () => {
     expect(runtimeReceivedHitsValue(memory, 5001)).toBe(0);
   });
 
+  it("adds authored received hits without changing received damage", () => {
+    const memory = createRuntimeContactMemory();
+
+    markRuntimeReceivedDamage(memory, 5000, 31);
+    markRuntimeReceivedHits(memory, 5000, 3);
+
+    expect(runtimeReceivedDamageValue(memory, 5000)).toBe(31);
+    expect(runtimeReceivedHitsValue(memory, 5000)).toBe(4);
+    expect(runtimeReceivedDamageValue(memory, 5001)).toBe(0);
+    expect(runtimeReceivedHitsValue(memory, 5001)).toBe(0);
+  });
+
   it("wraps contact memory mutation and readback behind RuntimeContactMemoryWorld", () => {
     const world = new RuntimeContactMemoryWorld();
     const memory = world.create();
@@ -189,6 +202,7 @@ describe("ContactMemorySystem", () => {
     world.applyHitAdd(memory, 200, 2);
     world.markMoveReversed(memory, 200);
     world.markReceivedDamage(memory, 5000, 31);
+    world.markReceivedHits(memory, 5000, 3);
     world.markProjectileContact(memory, 200, 77, "guard");
     world.markProjectileCancel(memory, 200, 88);
     world.advance(memory);
@@ -198,7 +212,7 @@ describe("ContactMemorySystem", () => {
     expect(world.moveHitCountValue(memory, 200, true)).toBe(1);
     expect(world.moveReversedValue(memory, 200)).toBe(1);
     expect(world.receivedDamageValue(memory, 5000)).toBe(31);
-    expect(world.receivedHitsValue(memory, 5000)).toBe(1);
+    expect(world.receivedHitsValue(memory, 5000)).toBe(4);
     expect(world.hasProjectileContact(memory, 200, "guard", 77)).toBe(true);
     expect(world.projectileContactTime(memory, 200, "guard", 77)).toBe(1);
     expect(world.projectileCancelTime(memory, 200, 88)).toBe(1);

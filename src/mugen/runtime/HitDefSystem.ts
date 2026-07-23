@@ -313,6 +313,9 @@ export class RuntimeHitDefControllerDispatchWorld {
     if (operation.guardDamage !== undefined) {
       existing.guardDamage = operation.guardDamage;
     }
+    if (operation.hitCount !== undefined) {
+      existing.hitVars = { ...existing.hitVars, hitCount: operation.hitCount };
+    }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
     return {

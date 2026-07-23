@@ -269,6 +269,10 @@ export class RuntimeDirectCombatWorld {
       hooks.applyDizzyState?.(defender, move);
     }
     this.contactWorld.markReceivedDamage(defender.contact, defender.runtime.stateNo, result.damage);
+    const receivedHitCount = move.hitVars?.hitCount ?? 1;
+    if (receivedHitCount !== 1) {
+      this.contactWorld.markReceivedHits(defender.contact, defender.runtime.stateNo, receivedHitCount - 1);
+    }
     return {
       kind: "hit",
       damage: result.damage,

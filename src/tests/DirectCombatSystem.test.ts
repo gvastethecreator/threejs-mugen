@@ -6,6 +6,7 @@ import {
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
   runtimeReceivedDamageValue,
+  runtimeReceivedHitsValue,
   type RuntimeContactKind,
   type RuntimeContactMemory,
 } from "../mugen/runtime/ContactMemorySystem";
@@ -405,6 +406,7 @@ describe("DirectCombatSystem", () => {
     expect(runtimeMoveContactValue(attacker.contact, 210, "hit")).toBe(0);
     expect(runtimeMoveHitCountValue(attacker.contact, 210, false)).toBe(1);
     expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(30);
+    expect(runtimeReceivedHitsValue(defender.contact, 5000)).toBe(3);
   });
 
   it("requests the dizzy transition only when a direct hit crosses the resource floor", () => {

@@ -6,6 +6,8 @@ import {
   createRuntimeContactMemory,
   RuntimeContactMemoryWorld,
   runtimeMoveReversedValue,
+  runtimeReceivedDamageValue,
+  runtimeReceivedHitsValue,
   type RuntimeContactMemory,
 } from "../mugen/runtime/ContactMemorySystem";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
@@ -29,6 +31,7 @@ describe("ReversalSystem", () => {
       attr: "S,SP",
       guardflag: "A",
       pausetime: "5",
+      numhits: "3",
       p1stateno: "777",
       p2stateno: "778",
       p2getp1state: "0",
@@ -57,6 +60,7 @@ describe("ReversalSystem", () => {
       hitDefAttr: "S,SP",
       guardFlag: "A",
       hitPause: 5,
+      hitCount: 3,
       p1StateNo: 777,
       p2StateNo: 778,
       p2GetP1State: false,
@@ -70,6 +74,7 @@ describe("ReversalSystem", () => {
       attr: "S,SP",
       guardFlag: "A",
       hitPause: 5,
+      hitVars: { hitCount: 3 },
       p1StateNo: 777,
       p2StateNo: 778,
       p2GetP1State: false,
@@ -83,6 +88,7 @@ describe("ReversalSystem", () => {
     expect(fighter.runtime.reversal).toMatchObject({
       hitDefAttr: "S,SP",
       guardFlag: "A",
+      hitCount: 3,
       p2GetP1State: false,
       p2Facing: -1,
     });
@@ -117,6 +123,7 @@ describe("ReversalSystem", () => {
         attr: "C,HP",
         guardflag: "H",
         pausetime: "7,11",
+        numhits: "4",
         p1stateno: "778",
         p2stateno: "780",
         p2facing: "1",
@@ -136,6 +143,7 @@ describe("ReversalSystem", () => {
         hitDefAttr: "C,HP",
         guardFlag: "H",
         hitPause: 7,
+        hitCount: 4,
         p1StateNo: 778,
         p2StateNo: 780,
         targetId: 92,
@@ -150,6 +158,7 @@ describe("ReversalSystem", () => {
       attr: "C,HP",
       guardFlag: "H",
       hitPause: 7,
+      hitVars: { hitCount: 4 },
       p1StateNo: 778,
       p2StateNo: 780,
       targetId: 92,
@@ -160,6 +169,7 @@ describe("ReversalSystem", () => {
       hitDefAttr: "C,HP",
       guardFlag: "H",
       hitPause: 7,
+      hitCount: 4,
       p1StateNo: 778,
       p2StateNo: 780,
       p2Facing: 1,
@@ -172,6 +182,12 @@ describe("ReversalSystem", () => {
     expect(fighter.pendingHitDefTargets).toEqual(["p3"]);
     expect(recordedControllers).toEqual(["ModifyReversalDef"]);
     expect(recordedOperations).toEqual(["modifyreversaldef"]);
+
+    const attacker = actor("p2", "Attacker", { stateNo: 200, currentMove: move(), currentMoveLabel: "Punch" });
+    reversalWorld.apply(fighter, attacker, fighter.currentMove!, hooks());
+
+    expect(runtimeReceivedDamageValue(attacker.contact, 200)).toBe(0);
+    expect(runtimeReceivedHitsValue(attacker.contact, 200)).toBe(4);
   });
 
   it("applies static ReversalDef sprite priorities after a ModifyReversalDef mutation", () => {
@@ -359,6 +375,24 @@ describe("ReversalSystem", () => {
 
     expect(reverser.runtime.facing).toBe(1);
     expect(attacker.runtime.facing).toBe(-1);
+  });
+
+  it("uses one received hit for a ReversalDef without numhits", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const reverser = actor("p2", "Reverser");
+    const attacker = actor("p1", "Attacker", { stateNo: 200, currentMove: move(), currentMoveLabel: "Punch" });
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: box(),
+      hitPause: 3,
+      p1StateNo: 777,
+    });
+
+    reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks());
+
+    expect(reverser.currentMove?.hitVars).toEqual({ hitCount: 1 });
+    expect(runtimeReceivedDamageValue(attacker.contact, 200)).toBe(0);
+    expect(runtimeReceivedHitsValue(attacker.contact, 200)).toBe(1);
   });
 
   it("modifies reversal.guardflag in place and filters matching guardable attacks", () => {

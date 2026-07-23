@@ -9930,6 +9930,7 @@ value = 57
 type = ModifyHitDef
 trigger1 = Time = 1
 damage = 61
+numhits = 3
 RedirectID = var(0)
 `,
     });
@@ -9954,13 +9955,13 @@ ground.velocity = 0,0
 
     runtime.step({ p1: new Set(), p2: new Set() });
     const internals = runtime as unknown as {
-      p2: { currentMove?: { damage?: number; guardDamage?: number; attr?: string } };
+      p2: { currentMove?: { damage?: number; guardDamage?: number; attr?: string; hitVars?: { hitCount?: number } } };
     };
     const receiverMove = internals.p2.currentMove;
     const modified = runtime.step({ p1: new Set(), p2: new Set() });
 
     expect(internals.p2.currentMove).toBe(receiverMove);
-    expect(internals.p2.currentMove).toMatchObject({ damage: 61, guardDamage: 4, attr: "S,NA" });
+    expect(internals.p2.currentMove).toMatchObject({ damage: 61, guardDamage: 4, attr: "S,NA", hitVars: { hitCount: 3 } });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.hitdef).toBe(1);
@@ -10369,6 +10370,56 @@ RedirectID = var(0)
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
     expect(countered.actors[0]?.runtime.facing).toBe(-1);
+    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
+    expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
+    expect(countered.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
+    expect(countered.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
+  it("routes IKEMEN root ModifyReversalDef numhits through an active receiver", () => {
+    const caller = createImportedFixture({
+      passiveResourceController: `
+[State 0, Redirected ModifyReversalDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected ModifyReversalDef received hits]
+type = ModifyReversalDef
+trigger1 = Time = 1
+numhits = 3
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-modifyreversaldef-numhits-destination",
+      withStateMove: false,
+      passiveReversalDef: {
+        attr: "S,NA",
+        p1StateNo: 777,
+        hitPause: 3,
+        targetId: 96,
+      },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+    const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(modified.actors[1]?.runtime.reversal).toMatchObject({ hitCount: 3 });
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
     expect(countered.actors[1]?.runtime.stateNo).toBe(777);
     expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
     expect(countered.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);

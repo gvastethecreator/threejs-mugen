@@ -1635,15 +1635,18 @@ value = 1
     expect(invalidRedirect.operation).toBeUndefined();
   });
 
-  it("compiles static root ModifyHitDef RedirectID damage pairs and rejects unsupported payloads", () => {
+  it("compiles static root ModifyHitDef RedirectID damage pairs and numhits, then rejects unsupported payloads", () => {
     const modified = compileControllerIr(
-      controller(200, "ModifyHitDef", [], { damage: "41,8", redirectid: "var(0)" }),
+      controller(200, "ModifyHitDef", [], { damage: "41,8", numhits: "3", redirectid: "var(0)" }),
     );
     const primaryDamageOnly = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "57" }),
     );
     const dynamicPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "var(1)", redirectid: "57" }),
+    );
+    const dynamicHitCount = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { damage: "41", numhits: "var(1)", redirectid: "57" }),
     );
     const unsupportedPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", guardflag: "MA", redirectid: "57" }),
@@ -1661,6 +1664,7 @@ value = 1
         kind: "modifyhitdef",
         damage: 41,
         guardDamage: 8,
+        hitCount: 3,
         redirectPlayerIdExpression: "var(0)",
       },
     });
@@ -1671,6 +1675,8 @@ value = 1
     });
     expect(dynamicPayload.supportLevel).toBe("unsupported");
     expect(dynamicPayload.operation).toBeUndefined();
+    expect(dynamicHitCount.supportLevel).toBe("unsupported");
+    expect(dynamicHitCount.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();
@@ -1788,6 +1794,30 @@ value = 1
       redirectPlayerIdExpression: "57",
     });
     expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static ReversalDef and root ModifyReversalDef numhits values", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", numhits: "3" }),
+    );
+    const modified = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { numhits: "4", redirectid: "57" }),
+    );
+    const dynamicReversal = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", numhits: "var(1)" }),
+    );
+    const dynamicModified = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { numhits: "var(1)", redirectid: "57" }),
+    );
+
+    expect(reversal.operation).toMatchObject({ kind: "reversaldef", hitCount: 3 });
+    expect(modified.operation).toEqual({
+      kind: "modifyreversaldef",
+      hitCount: 4,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamicReversal.operation).toBeUndefined();
+    expect(dynamicModified.operation).toBeUndefined();
   });
 
   it("compiles static ReversalDef and root ModifyReversalDef reversal guard filters", () => {
