@@ -1576,16 +1576,27 @@ value = 1
         pausetime: "3,3",
         p1stateno: "777",
         p2stateno: "778",
+        p2getp1state: "0",
+        p2facing: "-2",
         id: "88",
         "attack.depth": "6, 9",
         redirectid: "57",
       }),
+    );
+    const selfOwned = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", p2stateno: "889", p2getp1state: "2" }),
     );
     const dynamic = compileControllerIr(
       controller(200, "ReversalDef", [], {
         "reversal.attr": "SA,AA",
         p1stateno: "Const(data.life)",
       }),
+    );
+    const dynamicP2Get = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", p2getp1state: "var(1)" }),
+    );
+    const dynamicP2Facing = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", p2facing: "var(1)" }),
     );
 
     expect(reversal.operation).toEqual({
@@ -1594,11 +1605,20 @@ value = 1
       hitPause: 3,
       p1StateNo: 777,
       p2StateNo: 778,
+      p2GetP1State: false,
+      p2Facing: -2,
       targetId: 88,
       attackDepth: [6, 9],
       redirectPlayerIdExpression: "57",
     });
+    expect(selfOwned.operation).toMatchObject({
+      kind: "reversaldef",
+      p2StateNo: 889,
+      p2GetP1State: true,
+    });
     expect(dynamic.operation).toBeUndefined();
+    expect(dynamicP2Get.operation).toBeUndefined();
+    expect(dynamicP2Facing.operation).toBeUndefined();
   });
 
   it("duplicates a single attack.depth value in typed HitDef operations", () => {
@@ -1738,6 +1758,34 @@ value = 1
       p2StateNo: 889,
       p2GetP1State: true,
       redirectPlayerIdExpression: "var(0)",
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static ReversalDef and root ModifyReversalDef p2facing values", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", p2facing: "-1" }),
+    );
+    const modified = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2facing: "2", redirectid: "57" }),
+    );
+    const zero = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2facing: "0", redirectid: "57" }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p2facing: "var(1)", redirectid: "57" }),
+    );
+
+    expect(reversal.operation).toMatchObject({ kind: "reversaldef", p2Facing: -1 });
+    expect(modified.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2Facing: 2,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(zero.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2Facing: 0,
+      redirectPlayerIdExpression: "57",
     });
     expect(dynamic.operation).toBeUndefined();
   });

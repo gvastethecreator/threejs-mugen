@@ -212,6 +212,7 @@ export type RuntimeReversalDef = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  p2Facing?: number;
   hitPause: number;
   attackDepth?: [number, number];
 };

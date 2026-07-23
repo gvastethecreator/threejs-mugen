@@ -31,6 +31,8 @@ describe("ReversalSystem", () => {
       pausetime: "5",
       p1stateno: "777",
       p2stateno: "778",
+      p2getp1state: "0",
+      p2facing: "-1",
       id: "9",
       "attack.depth": "6",
     }));
@@ -57,6 +59,8 @@ describe("ReversalSystem", () => {
       hitPause: 5,
       p1StateNo: 777,
       p2StateNo: 778,
+      p2GetP1State: false,
+      p2Facing: -1,
       targetId: 9,
       attackDepth: [6, 6],
     });
@@ -68,13 +72,20 @@ describe("ReversalSystem", () => {
       hitPause: 5,
       p1StateNo: 777,
       p2StateNo: 778,
+      p2GetP1State: false,
+      p2Facing: -1,
       targetId: 9,
       attackDepth: [6, 6],
     });
     expect(recordedControllers).toEqual(["ReversalDef"]);
     expect(recordedOperations).toEqual(["reversaldef"]);
     expect(fighter.runtime.reversal?.attackDepth).toEqual([6, 6]);
-    expect(fighter.runtime.reversal).toMatchObject({ hitDefAttr: "S,SP", guardFlag: "A" });
+    expect(fighter.runtime.reversal).toMatchObject({
+      hitDefAttr: "S,SP",
+      guardFlag: "A",
+      p2GetP1State: false,
+      p2Facing: -1,
+    });
   });
 
   it("mutates an active ReversalDef in place without clearing contact state", () => {
@@ -108,6 +119,7 @@ describe("ReversalSystem", () => {
         pausetime: "7,11",
         p1stateno: "778",
         p2stateno: "780",
+        p2facing: "1",
         id: "92",
         "attack.depth": "4,8",
         redirectid: "57",
@@ -150,6 +162,7 @@ describe("ReversalSystem", () => {
       hitPause: 7,
       p1StateNo: 778,
       p2StateNo: 780,
+      p2Facing: 1,
       attackDepth: [4, 8],
     });
     expect(fighter.currentMove?.attackDepth).not.toBe(fighter.runtime.reversal?.attackDepth);
@@ -301,6 +314,51 @@ describe("ReversalSystem", () => {
     }));
 
     expect(calls).toEqual(["888:false"]);
+  });
+
+  it("applies p2facing to the reversed attacker and leaves zero unchanged", () => {
+    for (const [p2Facing, initialFacing, expectedFacing] of [
+      [-3, 1, -1],
+      [2, -1, 1],
+      [0, 1, 1],
+    ] as const) {
+      const reversalWorld = new RuntimeReversalWorld();
+      const reverser = actor("p2", "Reverser", { facing: -1 });
+      const attacker = actor("p1", "Attacker", { facing: initialFacing, currentMove: move(), currentMoveLabel: "Punch" });
+      reversalWorld.activate(reverser, {
+        attr: "S,NA",
+        hitbox: box(),
+        hitPause: 3,
+        p1StateNo: 777,
+        p2Facing,
+      });
+
+      reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks());
+
+      expect(attacker.runtime.facing).toBe(expectedFacing);
+    }
+  });
+
+  it("uses the reverser facing from before its p1 state entry", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const reverser = actor("p2", "Reverser", { facing: -1 });
+    const attacker = actor("p1", "Attacker", { facing: 1, currentMove: move(), currentMoveLabel: "Punch" });
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: box(),
+      hitPause: 3,
+      p1StateNo: 777,
+      p2Facing: -1,
+    });
+
+    reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks({
+      enterState: (target) => {
+        target.runtime.facing = 1;
+      },
+    }));
+
+    expect(reverser.runtime.facing).toBe(1);
+    expect(attacker.runtime.facing).toBe(-1);
   });
 
   it("modifies reversal.guardflag in place and filters matching guardable attacks", () => {
