@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 577 - HitDef numhits contact and mutation
+
+Closed T394-T396 in `c8676b20`: pinned IKEMEN shared HitDef `numhits` now
+flows through static ReversalDef, root ModifyReversalDef, direct HitDef
+contact, and root ModifyHitDef. Direct and reversal contact add the authored
+count to state-scoped `ReceivedHits`; root mutation retains one active normal
+move. Focused compiler, contact-memory, combat, reversal, HitDef, and
+imported-route coverage passes 6 files / 459 tests. TypeScript 7,
+trace-script syntax, and diff hygiene pass.
+
+FightScreen combo display, score, dynamic input, Projectile/Helper routes,
+teams, source timing, and full parity remain blocked. Full Vitest, aggregate
+traces, build, and boundary checks stay queued. No score movement.
+
 ## Entry 576 - ReversalDef target fields and HitDef reversal opt-out
 
 Closed T391-T393 in `a9837e49`, `3bb7fc3c`, and `aa992740`. Static

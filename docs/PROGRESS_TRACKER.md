@@ -1,5 +1,19 @@
 ﻿# Progress Tracker
 
+## Runtime HitDef numhits report - T394-T396 (closed, 2026-07-23)
+
+- Feature commit `c8676b20` carries static `numhits` through direct,
+  reversal, and root mutation paths while retaining bounded state-scoped
+  contact memory. The source combo display and score path remain out of scope.
+- Direct reversal adds the countered actor's received hits without received
+  damage; a normal direct HitDef reports its authored count; root ModifyHitDef
+  and ModifyReversalDef mutate the active receiver in place.
+- Focused compiler, contact-memory, direct-combat, reversal, HitDef, and
+  imported-match coverage passes 6 files / 459 tests. TypeScript 7,
+  trace-script syntax, and diff hygiene pass.
+- Full Vitest, aggregate traces, build, and boundary checks remain queued for
+  a larger checkpoint. No score movement.
+
 ## Runtime inherited reversal fields report - T391-T393 (2026-07-23)
 
 - Runtime feature commits: `a9837e49` for static ReversalDef target state and

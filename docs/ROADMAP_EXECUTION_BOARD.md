@@ -1,6 +1,24 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T391-T393 (2026-07-23)
+## Current runtime compatibility board - T394-T396 (closed, 2026-07-23)
+
+T394-T396 close in `c8676b20`. Pinned IKEMEN source carries shared HitDef
+`numhits` through ReversalDef, ModifyReversalDef, and ModifyHitDef. Static
+integer input now adds authored state-scoped received hits for direct and
+reversal contact, while root ModifyHitDef updates one active normal HitDef in
+place through RedirectID. FightScreen combo display and score stay outside
+this cut.
+
+Verification: focused compiler, contact-memory, direct-combat, reversal,
+HitDef, and imported-route coverage passes 6 files / 459 tests. TypeScript 7,
+trace-script syntax, and diff hygiene pass. Full Vitest, aggregate traces,
+build, and boundaries remain queued. See
+`docs/research/2026-07-23-runtime-numhits-t394-t396-closeout.md`.
+
+Next: select a new source-pinned runtime frontier or accumulate a larger
+compatibility batch before the next global checkpoint.
+
+## Previous runtime compatibility board - T391-T393 (2026-07-23)
 
 T391 `a9837e49` carries static ReversalDef `p2getp1state` into active state
 metadata. T392 `3bb7fc3c` carries static HitDef `ignorereversaldef` into the

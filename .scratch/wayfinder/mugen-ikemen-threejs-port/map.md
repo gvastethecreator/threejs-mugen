@@ -12,6 +12,12 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 - Use trace gates for runtime compatibility claims; use smoke/browser evidence for visible Studio/runtime UI claims.
 - Current verified toolchain: TypeScript 7.0.2 with explicit `rootDir: "src"` and no TS6 compatibility alias.
 
+## Current Frontier
+
+- [Carry ReversalDef static numhits](tickets/394-reversal-numhits-static.md) - resolved bounded in `c8676b20`: static ReversalDef and root ModifyReversalDef count direct reversal contact through state-scoped `ReceivedHits` without received damage; FightScreen combo display, score, dynamic values, Projectile/Helper, team, and timing parity remain separate.
+- [Carry direct HitDef numhits](tickets/395-hitdef-numhits-receivedhits.md) - resolved bounded in `c8676b20`: the active direct count now reaches state-scoped `ReceivedHits`; Projectile counters, FightScreen combo display, score, dynamic values, teams, and timing parity remain separate.
+- [Carry ModifyHitDef static numhits](tickets/396-modifyhitdef-numhits-static.md) - resolved bounded in `c8676b20`: static root ModifyHitDef changes one active normal receiver count in place through RedirectID; other fields, dynamic values, Projectile/Helper routes, timing parity, and full parity remain separate.
+
 ## Decisions So Far
 
 - [Render FightScreen AIR announcements](tickets/295-fightscreen-announcement-renderer.md) - resolved at bounded AIR/SFF presentation scope: a dedicated screen SFF provider renders selected inline AIR frames with localcoord/layout projection and diagnostics; FNT, exact AnimTextSnd completion, top/background layers, and full visual parity remain open.

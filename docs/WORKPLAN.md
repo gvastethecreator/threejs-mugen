@@ -1,5 +1,14 @@
 # Workplan
 
+## Runtime HitDef numhits checkpoint - T394-T396 (closed, 2026-07-23)
+
+`c8676b20` carries static `numhits` through direct and reversal contact, root
+ModifyReversalDef, and active root ModifyHitDef mutation. The focused batch
+passes 6 files / 459 tests plus TypeScript 7, trace-script syntax, and diff
+hygiene. Keep combo display, score, dynamic input, Projectile/Helper, teams,
+source timing, and full parity outside this slice. Defer global gates to the
+next grouped checkpoint.
+
 ## Runtime inherited reversal fields checkpoint - T391-T393 (2026-07-23)
 
 T391 and T393 `a9837e49` add static ReversalDef `p2getp1state` and
