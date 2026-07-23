@@ -14,6 +14,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Current Frontier
 
+- [Carry ModifyHitDef static target state](tickets/399-modifyhitdef-target-state.md) - resolved bounded in `cb21362e`: static root `p1stateno`, `p2stateno`, and `p2getp1state` mutate active normal state data in source order; dynamic values, source-range behavior, Projectile/Helper, timing, and full parity remain separate.
 - [Carry ModifyHitDef static contact filters](tickets/397-modifyhitdef-contact-filters.md) - resolved bounded in `3239e0f0`: static root fields mutate active normal `attr`, `guardflag`, and `hitflag` in place; dynamic input, other fields, Projectile/Helper routes, timing, and full parity remain separate.
 - [Carry ModifyHitDef static contact identity](tickets/398-modifyhitdef-contact-identity.md) - resolved bounded in `3239e0f0`: static root `id` and `chainid` update active normal target and hit metadata in place; dynamic input, nochainid, other fields, Projectile/Helper routes, timing, and full parity remain separate.
 - [Carry ReversalDef static numhits](tickets/394-reversal-numhits-static.md) - resolved bounded in `c8676b20`: static ReversalDef and root ModifyReversalDef count direct reversal contact through state-scoped `ReceivedHits` without received damage; FightScreen combo display, score, dynamic values, Projectile/Helper, team, and timing parity remain separate.

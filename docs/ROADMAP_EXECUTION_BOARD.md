@@ -1,6 +1,23 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T397-T398 (closed, 2026-07-23)
+## Current runtime compatibility board - T399 (closed, 2026-07-23)
+
+T399 closes in `cb21362e`. IKEMEN's shared HitDef route assigns static
+`p1stateno`, then `p2stateno`, defaults `p2getp1state` to true, and allows an
+explicit value to replace that default. The active normal root receiver now
+keeps that source order under `ikemen-go`. Dynamic input, source-range
+behavior, Projectile/Helper, timing, and full parity remain deferred.
+
+Verification: focused compiler, HitDef, direct-combat, CombatResolver,
+reversal, and imported route coverage passes 6 files / 467 tests. TypeScript
+7, trace-script syntax, and diff hygiene pass. Full Vitest, aggregate traces,
+build, and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-modifyhitdef-target-state.md`.
+
+Next: select another source-pinned shared field or reserve the global
+checkpoint for a larger accumulated batch.
+
+## Previous runtime compatibility board - T397-T398 (closed, 2026-07-23)
 
 T397-T398 close in `3239e0f0`. Pinned IKEMEN source delegates root
 ModifyHitDef `attr`, `guardflag`, `hitflag`, `id`, and `chainid` into the

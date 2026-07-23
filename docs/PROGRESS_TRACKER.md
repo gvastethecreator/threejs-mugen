@@ -1,5 +1,18 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef target-state report - T399 (closed, 2026-07-23)
+
+- Pinned IKEMEN source defines the active shared-HitDef order for
+  `p1stateno`, `p2stateno`, and `p2getp1state`.
+- Feature commit `cb21362e` lowers finite static values, preserves active move
+  identity and contact state, defaults a supplied `p2stateno` to
+  receiver-owned state data, and accepts an explicit target-owned route.
+- Focused compiler, HitDef, direct-combat, CombatResolver, reversal, and
+  imported-match coverage passes 6 files / 467 tests. TypeScript 7,
+  trace-script syntax, and diff hygiene pass.
+- Full Vitest, aggregate traces, build, and boundary checks remain queued for
+  the larger checkpoint. Scores do not move.
+
 ## Runtime ModifyHitDef field report - T397-T398 (closed, 2026-07-23)
 
 - Feature commit `3239e0f0` carries static `attr`, `guardflag`, `hitflag`,

@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 579 - ModifyHitDef static target state
+
+Closed T399 in `cb21362e`: pinned IKEMEN shared HitDef target-state fields
+`p1stateno`, `p2stateno`, and `p2getp1state` now flow through root
+ModifyHitDef. Static values mutate one active normal receiver in place. A
+supplied p2 state sets the receiver-owned default, then an explicit zero
+selects target-owned state data. Focused compiler, HitDef, direct-combat,
+CombatResolver, reversal, and imported-route coverage passes 6 files / 467
+tests. TypeScript 7, trace-script syntax, and diff hygiene pass.
+
+Dynamic input, source-range behavior, Projectile/Helper routes, exact timing,
+teams, and full parity remain blocked. Full Vitest, aggregate traces, build,
+and boundary checks stay queued. No score movement.
+
 ## Entry 578 - ModifyHitDef static contact fields
 
 Closed T397-T398 in `3239e0f0`: pinned IKEMEN shared HitDef `attr`,

@@ -1,5 +1,15 @@
 # Workplan
 
+## Runtime ModifyHitDef target-state slice - T399 (closed, 2026-07-23)
+
+`cb21362e` carries static root `p1stateno`, `p2stateno`, and `p2getp1state`
+through the active normal receiver path. It preserves IKEMEN's `p2stateno`
+default before an explicit route value. The grouped focal batch passes 6 files
+/ 467 tests plus TypeScript 7, trace-script syntax, and diff hygiene. Keep
+dynamic input, source-range behavior, Projectile/Helper routes, exact timing,
+and full parity outside this slice. Global Vitest, aggregate traces, build,
+and boundaries remain queued for the larger runtime checkpoint.
+
 ## Runtime ModifyHitDef contact fields - T397-T398 (closed, 2026-07-23)
 
 `3239e0f0` carries static `attr`, `guardflag`, `hitflag`, `id`, and `chainid`
