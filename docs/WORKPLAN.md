@@ -1,5 +1,23 @@
 # Workplan
 
+## Runtime reversal MissOnOverride checkpoint - T389 (2026-07-23)
+
+T389 `188c4462` closes static ReversalDef `missonoverride` across activation
+and root ModifyReversalDef RedirectID. The direct resolver checks a matching
+HitOverride before applying a found reversal. Omitted values keep the direct
+custom-state default; `0` admits the reversal and `1` forces the miss. Focused
+compiler/combat/dispatch coverage passes 113 tests, the imported match passes
+315, and the required trace passes. Script syntax and diff hygiene pass.
+Scores do not move.
+
+Next, audit a distinct inherited ReversalDef field with a source-backed
+contract. Dynamic expressions, Projectile/Helper routes, Helper receivers,
+wider HitOverride behavior, teams, renderer work, source timing, and full
+parity remain blocked. TypeScript, full Vitest, trace aggregate, build, and
+boundaries stay queued for the grouped runtime checkpoint. The unrelated team
+handoff artifact passed only in a loaded-host diagnostic with a 20-second
+limit, so it does not close that broad gate.
+
 ## Runtime reversal sprite priority checkpoint - T388 (2026-07-22)
 
 T388 `b245afb0` closes static ReversalDef `p1sprpriority` and
@@ -10,12 +28,10 @@ reversal, playable-match, trace, and DirectCombat coverage passes 5 files /
 1052 tests. TypeScript 7, script syntax, and diff hygiene pass. Scores do not
 move.
 
-Next, audit a distinct inherited ReversalDef field or the missing
-ReversalDef-versus-HitOverride arbitration needed for `missonoverride`.
-Dynamic values, aliases, omitted defaults, Helpers as receivers, renderer
-ordering, teams, source timing, and full parity remain blocked. Full Vitest,
-trace aggregate, build, and boundaries stay queued for the grouped runtime
-checkpoint.
+T389 later closes bounded direct `missonoverride` arbitration. Dynamic values,
+aliases, omitted defaults, Helpers as receivers, renderer ordering, teams,
+source timing, and full parity remain blocked. Full Vitest, trace aggregate,
+build, and boundaries stay queued for the grouped runtime checkpoint.
 
 ## Runtime reversal guard filter checkpoint - T386-T387 (2026-07-22)
 

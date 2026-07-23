@@ -1,5 +1,22 @@
 ﻿# Progress Tracker
 
+## Runtime reversal MissOnOverride report - T389 (2026-07-23)
+
+- Runtime feature commit: `188c4462`.
+- ReversalDef and root ModifyReversalDef RedirectID now retain static
+  `missonoverride` on the active move and runtime reversal metadata.
+- A matching direct HitOverride skips an omitted custom-state reversal or an
+  explicit `1`; explicit `0` lets the counter win and does not enter the
+  override state.
+- Focused compiler/combat/dispatch coverage passes 113 tests,
+  `PlayableMatchRuntime` passes 315, and required imported RedirectID trace
+  passes. Script syntax and diff hygiene pass.
+- Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. Dynamic values,
+  Projectile/Helper routes, Helper receivers, wider HitOverride parity, teams,
+  source timing, renderer work, and full parity remain blocked. Grouped gates
+  remain queued; the unrelated team handoff test passed only under a diagnostic
+  20-second limit during external Node load, so aggregate status remains open.
+
 ## Runtime reversal sprite priority report - T388 (2026-07-22)
 
 - Runtime feature commit: `b245afb0`.
@@ -11,9 +28,10 @@
 - Required imported evidence changes an active receiver from `4/-3` to `5/-4`
   before counter contact. Focused compiler, reversal, playable-match, trace,
   and DirectCombat coverage passes 5 files / 1052 tests; TypeScript 7 passes.
-- Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. Dynamic values, aliases,
-  omitted defaults, HitOverride/`missonoverride` arbitration, Helpers as
-  receivers, renderer ordering, source timing, and full parity remain blocked.
+- Scores stay 65 / 36 / 20 / 10-12 / 6-8 / 25. T389 later closes bounded direct
+  `missonoverride` arbitration. Dynamic values, aliases, omitted defaults,
+  Helpers as receivers, renderer ordering, source timing, and full parity
+  remain blocked.
 
 ## Runtime reversal guard filter report - T386-T387 (2026-07-22)
 

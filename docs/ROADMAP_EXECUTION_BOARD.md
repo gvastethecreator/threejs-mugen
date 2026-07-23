@@ -1,6 +1,24 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T388 (2026-07-22)
+## Current runtime compatibility board - T389 (2026-07-23)
+
+T389 `188c4462` adds static `missonoverride` across ReversalDef activation and
+active root ModifyReversalDef RedirectID. With a matching active direct
+HitOverride, the omitted field retains the local source-shaped custom-state
+default, explicit `0` accepts the reversal, and explicit `1` skips it. The
+required imported trace proves root mutation admits the counter and leaves the
+HitOverride state unentered. Dynamic expressions, Projectile/Helper routes,
+Helper receivers, wider HitOverride matching, source timing, teams, renderer
+work, and full parity remain outside the claim. Focused checks pass; the
+grouped typecheck, aggregate trace, full Vitest, build, and boundaries remain
+queued. A loaded-host diagnostic passed the unrelated team-handoff trace at
+8.36 seconds with a 20-second limit; it is not counted as the normal aggregate
+gate.
+
+Next: audit one separate inherited ReversalDef field with concrete source and
+local-state semantics before widening this family.
+
+## Previous runtime compatibility board - T388 (2026-07-22)
 
 T388 `b245afb0` adds static `p1sprpriority` and `p2sprpriority` across
 ReversalDef activation and active root ModifyReversalDef RedirectID. The

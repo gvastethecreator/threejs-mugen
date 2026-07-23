@@ -4,8 +4,8 @@ Type: task
 
 Status: resolved in `b245afb0`
 
-Blocked by: `missonoverride` requires a separate ReversalDef-versus-HitOverride
-arbitration path.
+Follow-up: T389 `188c4462` closes bounded direct `missonoverride` arbitration.
+Projectile/Helper routes and wider HitOverride parity remain separate.
 
 ## Question
 

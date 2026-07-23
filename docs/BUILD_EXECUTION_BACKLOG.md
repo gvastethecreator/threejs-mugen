@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 574 - ReversalDef MissOnOverride RedirectID
+
+Closed static `missonoverride` in `188c4462` across ReversalDef activation and
+root ModifyReversalDef RedirectID. The active reversal keeps the typed field;
+before direct counter contact, a matching HitOverride applies the existing
+source-shaped default decision. Omitted custom-state payloads skip, explicit
+`0` admits the reversal, and explicit `1` skips it.
+
+Verification: `RuntimeCompiler`, `ReversalSystem`, and
+`RuntimeCombatResolutionSystem` pass 113 tests; `PlayableMatchRuntime` passes
+315; required
+`synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect`
+passes. Script syntax and diff hygiene pass. Full Vitest, TypeScript, trace
+aggregate, build, and boundaries stay queued. During external Node load, an
+unrelated team-handoff trace passed in 8.36 seconds only with a diagnostic
+20-second test limit, so it is not a green aggregate result. No score movement.
+Claim allowed: static direct ReversalDef/root RedirectID arbitration under
+explicit `ikemen-go`. Claim blocked: dynamic values, Projectile/Helper routes,
+Helper receivers, wider HitOverride matching, teams, source timing, renderer
+behavior, rollback/netplay, and full parity.
+
 ## Entry 573 - ReversalDef sprite priority RedirectID
 
 Closed static `p1sprpriority` and `p2sprpriority` in `b245afb0` across
