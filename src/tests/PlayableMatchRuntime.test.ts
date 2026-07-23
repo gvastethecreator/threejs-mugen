@@ -10168,6 +10168,108 @@ RedirectID = var(0)
     expect(countered.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
   });
 
+  it("routes static IKEMEN ReversalDef p2getp1state through the target-owned state", () => {
+    const caller = createImportedFixture({ extraStateNos: [888] });
+    const destination = createImportedFixture({
+      id: "static-reversaldef-p2owner-destination",
+      withStateMove: false,
+      passiveReversalDef: {
+        attr: "S,NA",
+        p1StateNo: 777,
+        p2StateNo: 888,
+        p2GetP1State: false,
+        hitPause: 3,
+        targetId: 98,
+      },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const activated = runtime.step({ p1: new Set(), p2: new Set() });
+    const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(activated.actors[1]?.runtime.reversal).toMatchObject({ p2StateNo: 888, p2GetP1State: false });
+    expect(countered.actors[0]?.runtime.stateNo).toBe(888);
+    expect(countered.actors[0]?.runtime.animNo).toBe(888);
+    expect(countered.actors[0]?.runtime.animationSource).toBe("self");
+    expect(countered.actors[0]?.runtime.customState).toBeUndefined();
+    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
+    expect(countered.logs.some((line) => line.includes("p2->888"))).toBe(true);
+    expect(countered.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
+    expect(countered.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
+  it("applies static IKEMEN ReversalDef p2facing to the countered attacker", () => {
+    const caller = createImportedFixture();
+    const destination = createImportedFixture({
+      id: "static-reversaldef-p2facing-destination",
+      withStateMove: false,
+      passiveReversalDef: {
+        attr: "S,NA",
+        p1StateNo: 777,
+        p2Facing: -1,
+        hitPause: 3,
+        targetId: 98,
+      },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(countered.actors[0]?.runtime.facing).toBe(-1);
+    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
+    expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
+    expect(countered.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
+  it("lets an imported HitDef ignore an active ReversalDef", () => {
+    const attacker = createImportedFixture({ ignoreReversalDef: true });
+    const defender = createImportedFixture({
+      id: "ignored-reversaldef-defender",
+      withStateMove: false,
+      passiveReversalDef: { attr: "S,NA", p1StateNo: 777, p2StateNo: 888, hitPause: 3, targetId: 99 },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const activated = runtime.step({ p1: new Set(), p2: new Set() });
+    const resolved = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(activated.actors[1]?.runtime.reversal).toMatchObject({ attr: "S,NA" });
+    expect(resolved.actors[0]?.runtime.moveType).toBe("A");
+    expect(resolved.actors[1]?.runtime.life).toBeLessThan(1000);
+    expect(resolved.actors[1]?.runtime.stateNo).not.toBe(777);
+    expect(resolved.logs.some((line) => line.includes("reversed"))).toBe(false);
+    expect(resolved.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
+    expect(resolved.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
   it("routes IKEMEN root ModifyReversalDef reversal.guardflag through an active receiver", () => {
     const caller = createImportedFixture({
       guardFlag: "H",
@@ -10215,6 +10317,58 @@ RedirectID = var(0)
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
     expect(countered.actors[0]?.runtime.moveType).toBe("H");
+    expect(countered.actors[1]?.runtime.stateNo).toBe(777);
+    expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
+    expect(countered.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
+    expect(countered.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
+  it("routes IKEMEN root ModifyReversalDef p2facing through an active receiver", () => {
+    const caller = createImportedFixture({
+      passiveResourceController: `
+[State 0, Redirected ModifyReversalDef player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Redirected ModifyReversalDef target facing]
+type = ModifyReversalDef
+trigger1 = Time = 1
+p2facing = -1
+RedirectID = var(0)
+`,
+    });
+    const destination = createImportedFixture({
+      id: "redirected-root-modifyreversaldef-p2facing-destination",
+      withStateMove: false,
+      passiveReversalDef: {
+        attr: "S,NA",
+        p1StateNo: 777,
+        p2Facing: 1,
+        hitPause: 3,
+        targetId: 96,
+      },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    }, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+    const countered = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(modified.actors[1]?.runtime.reversal).toMatchObject({ p2Facing: -1 });
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
+    expect(countered.actors[0]?.runtime.facing).toBe(-1);
     expect(countered.actors[1]?.runtime.stateNo).toBe(777);
     expect(countered.logs.some((line) => line.includes("reversed"))).toBe(true);
     expect(countered.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
@@ -10990,6 +11144,7 @@ function createImportedFixture(
     attackStateType?: "S" | "C" | "A" | "L";
     hitDefPriority?: number;
     hitDefTargetId?: number;
+    ignoreReversalDef?: boolean;
     hitDefP1StateNo?: number;
     hitDefP2StateNo?: number;
     hitDefP2GetP1State?: boolean;
@@ -11019,6 +11174,8 @@ function createImportedFixture(
       missOnOverride?: boolean;
       p1StateNo: number;
       p2StateNo?: number;
+      p2GetP1State?: boolean;
+      p2Facing?: number;
       hitPause?: number;
       p1SpritePriority?: number;
       p2SpritePriority?: number;
@@ -11310,6 +11467,8 @@ ${options.passiveReversalDef.p1SpritePriority === undefined ? "" : `p1sprpriorit
 ${options.passiveReversalDef.p2SpritePriority === undefined ? "" : `p2sprpriority = ${options.passiveReversalDef.p2SpritePriority}`}
 p1stateno = ${options.passiveReversalDef.p1StateNo}
 ${options.passiveReversalDef.p2StateNo !== undefined ? `p2stateno = ${options.passiveReversalDef.p2StateNo}` : ""}
+${options.passiveReversalDef.p2StateNo !== undefined && options.passiveReversalDef.p2GetP1State !== undefined ? `p2getp1state = ${options.passiveReversalDef.p2GetP1State ? 1 : 0}` : ""}
+${options.passiveReversalDef.p2Facing === undefined ? "" : `p2facing = ${options.passiveReversalDef.p2Facing}`}
 ${options.passiveReversalDef.targetId === undefined ? "" : `id = ${options.passiveReversalDef.targetId}`}
 ${options.passiveReversalDef.attackDepth === undefined ? "" : `attack.depth = ${options.passiveReversalDef.attackDepth.join(",")}`}
 `
@@ -12089,6 +12248,7 @@ attr = ${hitDefAttr}
 damage = ${damageLine}
 ${hitDefKillLine}
 priority = ${hitDefPriority}, Hit
+${options.ignoreReversalDef === undefined ? "" : `ignorereversaldef = ${options.ignoreReversalDef ? 1 : 0}`}
 ${hitSparkLines}
 ${guardLine}
 ${hitDefCustomStateLines}
