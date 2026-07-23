@@ -14,6 +14,7 @@ Complete the evidence-first route from the private playable sandbox to a fuller 
 
 ## Current Frontier
 
+- [Carry ModifyHitDef static sprite priorities](tickets/400-modifyhitdef-sprite-priority.md) - resolved bounded in `f846e862`: static root `p1sprpriority` and `p2sprpriority` mutate one active normal receiver in place; required direct-contact trace records authored `5/-4` role telemetry. Dynamic values, aliases, omitted/default policy, collision priority, Projectile/Helper, renderer ordering, timing, and full parity remain separate.
 - [Carry ModifyHitDef static target state](tickets/399-modifyhitdef-target-state.md) - resolved bounded in `cb21362e`: static root `p1stateno`, `p2stateno`, and `p2getp1state` mutate active normal state data in source order; dynamic values, source-range behavior, Projectile/Helper, timing, and full parity remain separate.
 - [Carry ModifyHitDef static contact filters](tickets/397-modifyhitdef-contact-filters.md) - resolved bounded in `3239e0f0`: static root fields mutate active normal `attr`, `guardflag`, and `hitflag` in place; dynamic input, other fields, Projectile/Helper routes, timing, and full parity remain separate.
 - [Carry ModifyHitDef static contact identity](tickets/398-modifyhitdef-contact-identity.md) - resolved bounded in `3239e0f0`: static root `id` and `chainid` update active normal target and hit metadata in place; dynamic input, nochainid, other fields, Projectile/Helper routes, timing, and full parity remain separate.

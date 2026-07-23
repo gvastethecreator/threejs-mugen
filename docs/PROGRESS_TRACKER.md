@@ -1,5 +1,21 @@
 ﻿# Progress Tracker
 
+## Runtime ModifyHitDef sprite-priority report - T400 (closed, 2026-07-23)
+
+- Pinned IKEMEN source delegates static `p1sprpriority` and `p2sprpriority`
+  through active normal ModifyHitDef and evaluates them as integers.
+- Feature commit `f846e862` truncates static values, retains active move
+  identity/contact state, and sends changed values through the existing
+  accepted-HitDef priority policy.
+- Required imported RedirectID trace proves receiver-to-target direct contact
+  writes authored `5/-4` with role, profile, previous-value, and provenance
+  telemetry.
+- Focused compiler, HitDef, direct-combat, CombatResolver, reversal,
+  imported-match, and trace-preset coverage passes 7 files / 1109 tests.
+  TypeScript 7, trace-script syntax, and diff hygiene pass.
+- Full Vitest, aggregate traces, build, and boundary checks remain queued for
+  the larger checkpoint. Scores do not move.
+
 ## Runtime ModifyHitDef target-state report - T399 (closed, 2026-07-23)
 
 - Pinned IKEMEN source defines the active shared-HitDef order for

@@ -1,6 +1,26 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T399 (closed, 2026-07-23)
+## Current runtime compatibility board - T400 (closed, 2026-07-23)
+
+T400 closes in `f846e862`. Pinned IKEMEN source delegates root ModifyHitDef
+sprite-priority fields to one active normal receiver and evaluates both as
+integers. Static `p1sprpriority` and `p2sprpriority` now mutate that move in
+place. Required imported trace evidence proves a RedirectID mutation changes
+the receiver-to-target accepted hit priorities to authored `5/-4` with
+role/provenance telemetry. Dynamic values, aliases, omitted/default policy,
+collision priority, Projectile/Helper routes, renderer ordering, timing, and
+full parity remain deferred.
+
+Verification: focused compiler, HitDef, direct-combat, CombatResolver,
+reversal, imported-route, and trace-preset coverage passes 7 files / 1109
+tests. TypeScript 7, trace-script syntax, and diff hygiene pass. Full Vitest,
+aggregate traces, build, and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-modifyhitdef-sprite-priority.md`.
+
+Next: select another source-pinned shared field or reserve the global
+checkpoint for a larger accumulated batch.
+
+## Previous runtime compatibility board - T399 (closed, 2026-07-23)
 
 T399 closes in `cb21362e`. IKEMEN's shared HitDef route assigns static
 `p1stateno`, then `p2stateno`, defaults `p2getp1state` to true, and allows an

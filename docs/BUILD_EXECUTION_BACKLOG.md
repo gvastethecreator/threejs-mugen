@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 580 - ModifyHitDef static sprite priorities
+
+Closed T400 in `f846e862`: pinned IKEMEN shared HitDef `p1sprpriority` and
+`p2sprpriority` now flow through root ModifyHitDef. Static values truncate and
+mutate one active normal receiver in place, retaining move identity and contact
+memory. Required imported RedirectID trace proves accepted direct contact uses
+the authored `5/-4` values and records role/provenance telemetry. Focused
+compiler, HitDef, direct-combat, CombatResolver, reversal, imported-route, and
+trace-preset coverage passes 7 files / 1109 tests. TypeScript 7, trace-script
+syntax, and diff hygiene pass.
+
+Dynamic input, aliases, source-exact omitted/default policy, collision
+priority, Projectile/Helper routes, renderer ordering, exact timing, teams,
+and full parity remain blocked. Full Vitest, aggregate traces, build, and
+boundary checks stay queued. No score movement.
+
 ## Entry 579 - ModifyHitDef static target state
 
 Closed T399 in `cb21362e`: pinned IKEMEN shared HitDef target-state fields

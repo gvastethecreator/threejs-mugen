@@ -1,5 +1,17 @@
 # Workplan
 
+## Runtime ModifyHitDef sprite-priority slice - T400 (closed, 2026-07-23)
+
+`f846e862` carries static root `p1sprpriority` and `p2sprpriority` through the
+active normal receiver path. It truncates static values, retains move/contact
+state, and proves accepted direct contact consumes the RedirectID-mutated
+`5/-4` values with authored role telemetry. The grouped focal batch passes 7
+files / 1109 tests plus TypeScript 7, trace-script syntax, and diff hygiene.
+Keep dynamic input, aliases, omitted/default behavior, collision priority,
+Projectile/Helper routes, renderer ordering, exact timing, and full parity
+outside this slice. Global Vitest, aggregate traces, build, and boundaries
+remain queued for the larger runtime checkpoint.
+
 ## Runtime ModifyHitDef target-state slice - T399 (closed, 2026-07-23)
 
 `cb21362e` carries static root `p1stateno`, `p2stateno`, and `p2getp1state`
