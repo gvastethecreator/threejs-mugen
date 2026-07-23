@@ -55,6 +55,7 @@ export type HitDefControllerOp = {
   p2StateNo?: number;
   p2GetP1State?: boolean;
   missOnOverride?: boolean;
+  ignoreReversalDef?: boolean;
   snap?: [number, number?];
   animType?: number;
   groundType?: number;
@@ -1801,6 +1802,7 @@ function compileHitDefControllerOp(
     p2StateNo,
     p2GetP1State: p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : undefined,
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
+    ignoreReversalDef: booleanNumber(findParam(controller, "ignorereversaldef")),
     snap: numberPair(findParam(controller, "snap")),
     animType: hitAnimType(findParam(controller, "animtype")),
     groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),

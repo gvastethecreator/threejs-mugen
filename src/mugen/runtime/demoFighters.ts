@@ -51,6 +51,7 @@ export type DemoMove = {
   p2StateNo?: number;
   p2GetP1State?: boolean;
   missOnOverride?: boolean;
+  ignoreReversalDef?: boolean;
   defaultTargetStateNo?: number;
   hitPause: number;
   hitStun: number;

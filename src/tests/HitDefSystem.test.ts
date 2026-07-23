@@ -49,6 +49,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p2stateno: "5000",
         p2getp1state: "0",
         missonoverride: "0",
+        ignorereversaldef: "1",
         fall: "1",
         "fall.damage": "7",
         "fall.yvelocity": "-4.5",
@@ -125,6 +126,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p2StateNo: 5000,
       p2GetP1State: false,
       missOnOverride: false,
+      ignoreReversalDef: true,
       fall: {
         enabled: true,
         damage: 7,
@@ -149,6 +151,25 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     expect(result.activated).toBe(true);
     expect(actor.currentMove?.targetId).toBe(0);
+  });
+
+  it("resets ignorereversaldef when the next HitDef omits it", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { ignorereversaldef: "1" })),
+      frame: activeFrame(),
+    });
+    actor.runtime.frameIndex = 1;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30" })),
+      frame: activeFrame(),
+    });
+
+    expect(actor.currentMove?.ignoreReversalDef).toBe(false);
   });
 
   it("uses an imported source default only when HitDef omits hitflag", () => {

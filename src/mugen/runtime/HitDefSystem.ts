@@ -176,6 +176,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno"));
     const p2GetP1State = operation?.p2GetP1State ?? (p2StateNo !== undefined ? (firstNumber(findParam(source, "p2getp1state")) ?? 1) !== 0 : false);
     const missOnOverride = operation?.missOnOverride ?? booleanHitDefParam(source, "missonoverride") ?? existing?.missOnOverride;
+    const ignoreReversalDef = operation?.ignoreReversalDef ?? booleanHitDefParam(source, "ignorereversaldef") ?? false;
     const p1SpritePriority = operation?.p1SpritePriority ?? firstNumber(findParam(source, "p1sprpriority"));
     const p2SpritePriority = operation?.p2SpritePriority ?? firstNumber(findParam(source, "p2sprpriority"));
     const attackDepth =
@@ -254,6 +255,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       p2StateNo,
       p2GetP1State,
       missOnOverride,
+      ignoreReversalDef,
       fall: buildMoveFallData(source, existing, operation),
       hitbox: cloneBox(frame?.clsn1[0] ?? fallbackHitbox),
     };

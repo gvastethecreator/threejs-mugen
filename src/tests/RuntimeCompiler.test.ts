@@ -697,6 +697,7 @@ value = 1
         p2stateno: "5100",
         p2getp1state: "0",
         missonoverride: "0",
+        ignorereversaldef: "1",
         fall: "1",
         "fall.kill": "0",
         "fall.yvelocity": "-7",
@@ -751,6 +752,7 @@ value = 1
       p2StateNo: 5100,
       p2GetP1State: false,
       missOnOverride: false,
+      ignoreReversalDef: true,
       fall: {
         enabled: true,
         kill: false,

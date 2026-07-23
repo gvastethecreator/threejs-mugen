@@ -315,7 +315,7 @@ export class RuntimeCombatResolutionWorld {
     const attackBoxes = resolveRuntimeAttackBoxes(attacker, move, input.getCollisionBoxes);
     const attackWorldBoxes = attackBoxes
       .map((box) => runtimeWorldBox(attacker.runtime, box));
-    const reversal = attackWorldBoxes.length > 0
+    const reversal = !move.ignoreReversalDef && attackWorldBoxes.length > 0
       ? input.reversalWorld.findActive(defender, move, attackWorldBoxes, {
         isMoveActive: runtimeMoveIsActive,
         worldBox: runtimeWorldBox,
@@ -551,7 +551,7 @@ export class RuntimeCombatResolutionWorld {
     const attackBoxes = resolveRuntimeAttackBoxes(attacker, move, input.getCollisionBoxes);
     const attackWorldBoxes = attackBoxes
       .map((box) => runtimeWorldBox(attacker.runtime, box));
-    if (attackWorldBoxes.length > 0 && input.reversalWorld.findActive(defender, move, attackWorldBoxes, {
+    if (!move.ignoreReversalDef && attackWorldBoxes.length > 0 && input.reversalWorld.findActive(defender, move, attackWorldBoxes, {
       isMoveActive: runtimeMoveIsActive,
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,

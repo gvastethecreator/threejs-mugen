@@ -834,6 +834,50 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(100);
   });
 
+  it("lets direct HitDef ignore an active ReversalDef", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 200 }),
+      currentMove: move({ attr: "S,NA", damage: 25, ignoreReversalDef: true }),
+      moveTick: 2,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    reversalWorld.activate(defender, {
+      attr: "S,NA",
+      hitbox: { x1: 0, y1: -40, x2: 50, y2: -1 },
+      hitPause: 5,
+      p1StateNo: 777,
+      p2StateNo: 888,
+    });
+    const logs: string[] = [];
+
+    const result = world.resolveDirect({
+      attacker,
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld,
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 20,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(result).toMatchObject({ kind: "hit", damage: 25 });
+    expect(attacker.hasHit).toBe(true);
+    expect(defender.runtime.life).toBe(75);
+    expect(defender.runtime.stateNo).not.toBe(777);
+    expect(logs).toEqual(["P1 hit P2 for 25"]);
+  });
+
   it("checks every resolved root Clsn1 box before direct ReversalDef contact", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const reversalWorld = new RuntimeReversalWorld(contactWorld);
