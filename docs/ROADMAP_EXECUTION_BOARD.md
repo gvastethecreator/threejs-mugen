@@ -1,6 +1,31 @@
 ﻿# Roadmap Execution Board
 
-## Current runtime compatibility board - T404 (closed, 2026-07-23)
+## Current runtime compatibility board - T405 (closed, 2026-07-23)
+
+T405 closes in `462591ad`. Pinned IKEMEN source stores target juggle points by
+attacker id, defaults the target budget to `data.airjuggle`, and admits an
+IKEMEN direct contact below falling `hittmp` even when its cost exceeds the
+saved points. Static normal direct HitDef `air.juggle` now reaches local move
+metadata. Under explicit `ikemen-go`, the runtime starts a target budget at 15
+when data omits it, retains the remaining value by attacker id, rejects an
+over-budget falling contact, and lets `NoJuggleCheck` bypass it without a
+deduction. Required imported trace evidence proves a 4 point target becomes
+1 after a 3 point hit, rejects the next 3 point contact, then accepts the
+bypass and ends at life 966. StateDef character juggle, omitted-cost
+persistence, attack-state resets, ModifyHitDef, Projectile/Helper routes,
+target membership, timing, and full parity remain deferred.
+
+Verification: focused Juggle, combat-resolution, compiler, HitDef, and
+match-bridge coverage passes 5 files / 130 tests. The focused required trace
+passes 1 test with 647 skipped by its name filter. Trace-script syntax and
+diff hygiene pass. The accumulated TypeScript 7 gate, full Vitest, aggregate
+traces, build, and boundaries remain queued. See
+`docs/research/2026-07-23-ikemen-direct-air-juggle.md`.
+
+Next: audit the source character `juggle` value and StateDef handoff, or take
+the accumulated global checkpoint after a larger runtime batch.
+
+## Previous runtime compatibility board - T404 (closed, 2026-07-23)
 
 T404 closes in `c12f54e3`. Pinned IKEMEN source delegates `hitonce` through
 root ModifyHitDef to one active normal receiver and consumes it after direct

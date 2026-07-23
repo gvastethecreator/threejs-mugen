@@ -1,5 +1,24 @@
 ﻿# Progress Tracker
 
+## Runtime direct air.juggle report - T405 (closed, 2026-07-23)
+
+- Pinned IKEMEN source keeps target juggle points by attacker id, uses target
+  `data.airjuggle`, admits `NoJuggleCheck`, and spends on a falling contact.
+- Feature commit `462591ad` lowers static normal HitDef `air.juggle`, adds an
+  explicit IKEMEN direct budget, carries profile routing through the match
+  bridge, and exposes remaining points in trace snapshots.
+- Required imported trace starts with four target points, spends three,
+  records a rejected later contact, then proves `NoJuggleCheck` hits without
+  another deduction; final target life is 966 and remaining points are one.
+- Focused Juggle, combat-resolution, compiler, HitDef, and match-bridge
+  coverage passes 5 files / 130 tests. The named required trace passes 1 test
+  with 647 tests skipped. Trace syntax and diff hygiene pass.
+- StateDef character `juggle`, omission persistence, reset timing,
+  ModifyHitDef, Projectiles, Helpers, source target scheduling, and full
+  parity remain deferred. The accumulated TypeScript 7 gate, full Vitest,
+  aggregate traces, build, and boundary checks remain queued. Scores do not
+  move.
+
 ## Runtime ModifyHitDef hitonce report - T404 (closed, 2026-07-23)
 
 - Pinned IKEMEN source delegates static `hitonce` through one active normal

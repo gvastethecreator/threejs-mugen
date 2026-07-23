@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 585 - Direct HitDef air.juggle
+
+Closed T405 in `462591ad`: pinned IKEMEN target juggle data now has a bounded
+direct normal HitDef route. Static `air.juggle` reaches the active move.
+Explicit `ikemen-go` reads target `data.airjuggle`, defaults to 15, keeps
+points by direct attacker id, rejects an over-budget falling contact, and lets
+`NoJuggleCheck` pass without spending. Required imported trace proves a four
+point target drops to one after a three point hit, rejects a second contact,
+then takes a bypass hit and ends at life 966.
+
+Focused Juggle, combat-resolution, compiler, HitDef, and match-bridge coverage
+passes 5 files / 130 tests. The named trace passes 1 test with 647 skipped.
+Trace-script syntax and diff hygiene pass. StateDef character juggle,
+omission persistence, reset timing, ModifyHitDef, Projectile/Helper routes,
+exact source target scheduling, and full parity remain blocked. The
+accumulated TypeScript 7 gate, full Vitest, aggregate traces, build, and
+boundary checks stay queued. No score movement.
+
 ## Entry 584 - ModifyHitDef static hitonce
 
 Closed T404 in `c12f54e3`: pinned IKEMEN shared HitDef `hitonce` now flows

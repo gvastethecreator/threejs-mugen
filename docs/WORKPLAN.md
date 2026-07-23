@@ -1,5 +1,20 @@
 # Workplan
 
+## Runtime direct air.juggle slice - T405 (closed, 2026-07-23)
+
+`462591ad` carries static direct normal HitDef `air.juggle` into an explicit
+IKEMEN target budget. Target `data.airjuggle` starts at 15 when absent and
+remaining points stay keyed by direct attacker id. Required imported trace
+evidence proves a 3 point falling hit changes four points to one, rejects the
+next matching hit, and lets `NoJuggleCheck` hit without a second deduction.
+Focused Juggle, combat-resolution, compiler, HitDef, and match-bridge coverage
+passes 5 files / 130 tests. The focused trace passes 1 test with 647 skipped,
+plus trace-script syntax and diff hygiene. Keep StateDef character juggle,
+omission persistence, attack-state reset timing, ModifyHitDef, Projectile and
+Helper routes, source scheduling, and full parity outside this slice. The
+TypeScript 7 gate, global Vitest, aggregate traces, build, and boundaries
+remain queued for the larger runtime checkpoint.
+
 ## Runtime ModifyHitDef hitonce slice - T404 (closed, 2026-07-23)
 
 `c12f54e3` carries static root `hitonce` through one active normal receiver.
