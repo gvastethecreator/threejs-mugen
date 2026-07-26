@@ -7,17 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## 2026-07-26 T406 + DA26-08 runtime override
+## 2026-07-26 current authority override
 
-T406 closed DA26-01..07 (Phase 0): active StateDef/HitDef juggle cost under
-`ikemen-go` with T405 preservation. DA26-08 global checkpoint is green at HEAD
-`7d9b15f8` (242 files / 2768 tests, 663 traces, build, boundaries). Focal edge
-is T406; global cursor is post-T406. Projectile/Helper juggle and ModifyHitDef
-air.juggle remain blocked. Next execute DA26-09..11 control/source authority
-work. See the
-[post-T405 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md),
-[T406 closeout](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
-and [global checkpoint](../../../docs/research/2026-07-26-global-checkpoint-after-t406.md).
+**Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). T406 + DA26-08 global gate `7d9b15f8` closed.
+Control DA26-09..11 closed. Projectile/Helper juggle and ModifyHitDef
+air.juggle remain blocked. **Next runtime-facing after control: DA26-12+**
+only when the board picks a runtime lane; otherwise stay on the selector queue
+starting at DA26-12. See
+[AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md),
+[T406](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
+[global](../../../docs/research/2026-07-26-global-checkpoint-after-t406.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

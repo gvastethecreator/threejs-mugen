@@ -2,12 +2,14 @@
 
 Last updated: 2026-07-26
 
-## Latest docs-only audit checkpoint
+## Latest delivery authority checkpoint
 
-HEAD `c01d5e70` has a focal T405 close and no global or visual promotion.
-T383 remains the global delivery gate; T342 remains the visual/product gate.
-The corpus and Studio gate are stale against HEAD, and the dirty juggle cut has
-no claim. Delivery scores stay unchanged. See the
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). Global delivery gate is **`7d9b15f8`** (DA26-08:
+242/2768 tests, 663 traces, build, boundaries). Focal T406 is closed.
+Visual/product remain T342. Corpus/Studio gates stay stale for score purposes.
+Scores unchanged. Next delivery-facing cut after control: **DA26-12**. See
+[AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
 [2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## Historical bounded runtime checkpoint - T288 / Entry 562

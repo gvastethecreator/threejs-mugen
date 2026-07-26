@@ -4,13 +4,21 @@ Last updated: 2026-07-26
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
-## Current navigation override
+## Current authority selector
 
-Use HEAD `c01d5e70`, Entry 585, focal T405, global T383 and visual/product
-T342. Treat the six dirty juggle sources as excluded work. The source manifest
-still fixes `05b7d98`; T389-T405 cite `4aa0ba38`, so the source-family review
-remains open. Scores stay unchanged. The T287/T288 selectors below are
-historical. Full map: [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+**Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
+[`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
+
+- `closedThrough`: **DA26-11**
+- formal/global: **`7d9b15f8`** (Entry 587 / DA26-08 gate)
+- focal: **T406** `07ad9227`
+- visual/product: **T342** `1085badb`
+- source: epoch dual pins 05b / 4aa (juggle=`same`)
+- next queue: **DA26-12** (FightScreen fixture), then DA26-13+
+- Scores unchanged. Full audit map remains historical context:
+  [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
+The T287/T288 selectors below are **historical**.
 
 Historical 2026-07-18 cursors: implementation HEAD `a12a2672`; maximum ledger Entry
 562; latest closed lane T288. The latest broad checkpoint remains the T287

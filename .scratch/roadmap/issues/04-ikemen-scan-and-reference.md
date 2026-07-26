@@ -9,12 +9,11 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 
 ## 2026-07-26 source and scanner override
 
-PackageAnalysis v1 and its first consumers remain closed. The manifest still
-fixes `05b7d98`; T389-T405 cite `4aa0ba38`. Juggle text matches across both
-pins in four source files, while the current wiki and pinned reset condition
-conflict. Next: SourceAuthorityEpoch by family, persisted analysis diff and a
-capability vector with recognized/parsed/lowered/executed/verified facts. ZSS,
-Lua and Modules stay scanner-only. See DA26-10, DA26-25 and DA26-27 in the
+**Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md).
+SourceAuthorityEpoch/v1 is closed (DA26-10): pins 05b/4aa; juggle=`same`.
+PackageAnalysis v1 remains scanner-only for ZSS/Lua/Modules. Next scanner
+depth cuts stay DA26-25/27 after the live queue head **DA26-12**. See
+[AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md) and the
 [audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## 2026-07-18 Post-Wayfinder-256 source and reanalysis override

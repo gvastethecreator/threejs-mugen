@@ -9,11 +9,9 @@ Prepare the project to become a reusable browser game engine without extracting 
 
 ## 2026-07-26 boundary override
 
-The current script still skips absent roots; `src/core` and platformer roots do
-not exist, and `src/engine` is fully allowlisted. EvidenceEnvelope remains in
-`src/app` and both adapters feed Studio. Next: BoundaryManifest with required,
-optional and planned roots, negative self-tests, then common facts after two
-independent consumers exist. See DA26-29 and DA26-30 in the
+**Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). Boundary script still skips absent roots; modular
+cuts remain DA26-29/30 after live queue **DA26-12+**. See the
 [audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## 2026-07-18 Post-Wayfinder-256 non-vacuous extraction override

@@ -1,10 +1,14 @@
 # Workplan
 
+## Authority selector sync - DA26-11 (closed, 2026-07-26)
+
+Single selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+`closedThrough` DA26-11; next **DA26-12**. Full ladder:
+[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## SourceAuthorityEpoch/Manifest v1 - DA26-10 (closed, 2026-07-26)
 
-Dual-pin per-family provenance is live. Next: DA26-11 authority sync so board,
-issues, and scorecard selectors cite one current control set. Full ladder:
-[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+Dual-pin per-family provenance is live.
 
 ## RoadmapCursor/v1 - DA26-09 (closed, 2026-07-26)
 

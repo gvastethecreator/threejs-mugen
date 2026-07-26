@@ -2,12 +2,12 @@
 
 ## Current next-build override - 2026-07-26
 
-The immediate cut is the reserved StateDef juggle work, subject to its owner.
-First preserve omitted versus explicit `0`, connect explicit HitDef updates,
-prove the post-contact reset and keep T405's reject sequence. Then close the
-focal ticket and run a clean global checkpoint. RoadmapCursor and source epoch
-follow. The T287 queue below is historical; do not reopen its closed gates.
-See [DA26-01 to DA26-11](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). DA26-01..11 are closed (T406, global gate, cursor,
+epoch, authority sync). **Next live cut: DA26-12** FightScreen propio/CC0,
+then DA26-13 browser gate. The T287 queue below is historical; do not reopen
+its closed gates. Full ladder:
+[post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

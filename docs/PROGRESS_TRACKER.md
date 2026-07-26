@@ -1,5 +1,12 @@
 ﻿# Progress Tracker
 
+## Authority selector sync - DA26-11 (closed, 2026-07-26)
+
+- Single current selector: `docs/AUTHORITY_SELECTOR.md` +
+  `docs/evidence/authority-selector-v1.json`.
+- Docs + issues 01–07 point at it; `pnpm audit:authority-references` is the
+  reference auditor. Next queue **DA26-12**. Entry 590. Scores unchanged.
+
 ## SourceAuthorityEpoch/Manifest v1 - DA26-10 (closed, 2026-07-26)
 
 - Dual pins 05b/4aa; families juggle=`same`, others `unreviewed`.
@@ -37,11 +44,11 @@
 
 ## Daily architecture audit - 2026-07-26
 
-- Audit produced DA26-01..30; Phase 0 (DA26-01..07) is closed by T406.
-- DA26-08 closed the global gate at `7d9b15f8` (replaces T383 as global cursor).
-- DA26-09 closed RoadmapCursor/v1; formal/global cursors pin `7d9b15f8`.
-- T342 remains the last visual/product gate.
-- Scores remain unchanged. Remaining cuts start at DA26-10 in the
+- Audit produced DA26-01..30; **DA26-01..11 are closed** (see
+  [AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md)).
+- Global gate `7d9b15f8` replaces T383 as the live global cursor.
+- formal/global cursors pin `7d9b15f8`; T342 remains visual/product.
+- Scores unchanged. Live next cut: **DA26-12** in the
   [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## Runtime direct air.juggle report - T405 (closed, 2026-07-23)

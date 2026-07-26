@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 590 - Authority selector sync (DA26-11)
+
+Closed DA26-11: single current authority selector across main roadmap docs and
+issues 01–07, historical overrides labeled, closed DA26-01..11 removed from the
+live next queue, and `pnpm audit:authority-references` as the reference
+auditor. Artifacts: `docs/AUTHORITY_SELECTOR.md`,
+`docs/evidence/authority-selector-v1.json`. formal/global remain `7d9b15f8`.
+Next queue head **DA26-12**. No score movement.
+
 ## Entry 589 - SourceAuthorityEpoch/Manifest v1 (DA26-10)
 
 Closed DA26-10: dual-pin epoch (05b / 4aa) with per-family status, missing-file

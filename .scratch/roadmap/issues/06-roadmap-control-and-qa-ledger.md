@@ -1,12 +1,11 @@
 # 06 - Roadmap Control And QA Ledger
 
-## 2026-07-26 DA26-09/10 control override
+## 2026-07-26 current authority override (DA26-09..11)
 
-RoadmapCursor/v1 is live (formal/global pin `7d9b15f8`). SourceAuthorityEpoch/v1
-and Manifest v1 are live with dual pins and per-family status; juggle=`same`.
-Artifacts: `docs/evidence/roadmap-cursor-v1.json`,
-`docs/evidence/source-authority-epoch-v1.json`. Next: DA26-11 authority sync.
-Scores do not move.
+**Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). RoadmapCursor/v1, SourceAuthorityEpoch/v1, and the
+single selector/auditor are live. formal/global pin `7d9b15f8`. Next queue:
+**DA26-12**. Scores do not move. Run `pnpm audit:authority-references`.
 
 Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent

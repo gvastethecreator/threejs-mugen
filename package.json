@@ -27,6 +27,8 @@
     "materialize:source-authority": "node scripts/materialize_source_authority_manifest.cjs",
     "materialize:source-authority-epoch": "node scripts/materialize_source_authority_epoch.cjs",
     "materialize:roadmap-cursor": "node scripts/materialize_roadmap_cursor.cjs",
+    "materialize:authority-selector": "node scripts/materialize_authority_selector.cjs",
+    "audit:authority-references": "node scripts/audit_authority_references.cjs",
     "check:boundaries": "node scripts/check_boundaries.cjs",
     "check:redirect-boundary": "node scripts/check_redirected_target_dispatch_boundary.cjs",
     "test": "vitest run",

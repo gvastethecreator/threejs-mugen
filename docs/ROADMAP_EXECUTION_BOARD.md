@@ -1,5 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Current authority selector - DA26-11 (closed, 2026-07-26)
+
+Single live selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) and
+`docs/evidence/authority-selector-v1.json` (`closedThrough` DA26-11). formal/
+global remain `7d9b15f8`. Docs and issues 01–07 point at the selector;
+historical overrides stay labeled. Reference auditor:
+`pnpm audit:authority-references`. Scores do not move.
+
+Next queue head: **DA26-12** FightScreen fixture.
+
 ## Current source authority - DA26-10 Epoch/Manifest v1 (closed, 2026-07-26)
 
 SourceAuthorityEpoch/v1 records pins `05b7d98a` and `4aa0ba38` with per-family
@@ -8,8 +18,6 @@ status. Juggle is `same` under pin-era equality; other families start
 inheriting its claims. Artifact:
 `docs/evidence/source-authority-epoch-v1.json`. ADR 0054. Report:
 `docs/research/2026-07-26-source-authority-epoch-v1.md`. Scores do not move.
-
-Next: DA26-11 authority sync across board/issues/docs selectors.
 
 ## Current control cursor - DA26-09 RoadmapCursor/v1 (closed, 2026-07-26)
 

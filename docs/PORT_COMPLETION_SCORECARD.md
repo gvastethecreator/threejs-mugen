@@ -2,12 +2,13 @@
 
 ## 2026-07-26 audit note - no score movement
 
-Current committed cursors are HEAD `c01d5e70`, Entry 585 and focal T405.
-Global evidence remains T383 at 241 files / 2706 tests / 650 traces plus build
-and boundaries. Visual/product evidence remains T342. The corpus is 383 commits
-behind and 4 of 8 hashes differ. The six dirty juggle sources are excluded.
-Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. Older sections that present
-633 traces or T288 as current are historical. See the
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+Global evidence is DA26-08 at **`7d9b15f8`**: 242 files / 2768 tests / 663
+traces plus build and boundaries (replaces T383 as global cursor). Focal is
+T406. Visual/product remain T342. Corpus still lags HEAD for score adjudication.
+Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. Control closeouts DA26-09..11
+do not move scores. Older sections that present 633 traces or T288 as current
+are historical. See [AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
 [audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## 2026-07-18 historical T288 bounded FightScreen intro-skip character-reset checkpoint

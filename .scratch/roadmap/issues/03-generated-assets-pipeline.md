@@ -9,12 +9,10 @@ Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playa
 
 ## 2026-07-26 asset override
 
-Nova remains the only complete local release-policy chain. Its result stays
-bounded by its current QA and does not establish catalog readiness. Define the
-project asset closure first, then AssetReleasePolicy/v1 and one independent
-repository-owned or generated asset with observed transforms, QA, collision,
-playtest and reopen evidence. No third-party asset may enter this lane. See
-DA26-23 and DA26-28 in the [audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+**Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). Nova remains the only complete local release-policy
+chain. Live queue head is **DA26-12**; asset policy cuts stay DA26-23/28 in the
+[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

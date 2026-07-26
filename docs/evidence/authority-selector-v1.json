@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
+  "generatedAt": "2026-07-26T19:00:00.000Z",
+  "closedThrough": "DA26-11",
+  "nextQueue": [
+    "DA26-12",
+    "DA26-13",
+    "DA26-14",
+    "DA26-15",
+    "DA26-16",
+    "DA26-17",
+    "DA26-18",
+    "DA26-19",
+    "DA26-20",
+    "DA26-21",
+    "DA26-22",
+    "DA26-23",
+    "DA26-24",
+    "DA26-25",
+    "DA26-26",
+    "DA26-27",
+    "DA26-28",
+    "DA26-29",
+    "DA26-30"
+  ],
+  "scores": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "cursors": {
+    "formal": {
+      "sha": "7d9b15f828934a7a25f445b44d72e01cd471027e",
+      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
+      "claimLimit": "Entry 587 formal closeout (DA26-08)"
+    },
+    "focal": {
+      "sha": "07ad9227",
+      "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
+      "claimLimit": "T406 active juggle runtime only"
+    },
+    "global": {
+      "sha": "7d9b15f828934a7a25f445b44d72e01cd471027e",
+      "artifact": "docs/research/2026-07-26-global-checkpoint-after-t406.md",
+      "claimLimit": "global gate TypeScript/Vitest/traces/build/boundaries at 7d9b15f8 only"
+    },
+    "visual": {
+      "sha": "1085badb",
+      "artifact": "docs/research (T342 visual gate)",
+      "claimLimit": "T342 visual only; not HEAD product truth"
+    },
+    "product": {
+      "sha": "1085badb",
+      "artifact": "docs/research (T342 product gate)",
+      "claimLimit": "T342 product only"
+    },
+    "sourceNormative": {
+      "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+      "artifact": "docs/evidence/source-authority-epoch-v1.json",
+      "claimLimit": "normative pin 05b; family provenance in epoch"
+    },
+    "sourceWorking": {
+      "sha": "4aa0ba38f851c52549ba182310e9e53361cd472a",
+      "artifact": "docs/evidence/source-authority-epoch-v1.json",
+      "claimLimit": "working pin 4aa for reviewed families only"
+    }
+  },
+  "artifacts": {
+    "authoritySelectorDoc": "docs/AUTHORITY_SELECTOR.md",
+    "roadmapCursor": "docs/evidence/roadmap-cursor-v1.json",
+    "sourceEpoch": "docs/evidence/source-authority-epoch-v1.json",
+    "globalCheckpointReport": "docs/research/2026-07-26-global-checkpoint-after-t406.md"
+  },
+  "claims": {
+    "allowed": [
+      "historical sections may retain old cursors when labeled historical",
+      "single current authority selector for docs and issues 01-07"
+    ],
+    "blocked": [
+      "projecting T383 or T342 as current global/product without label",
+      "score movement",
+      "using c01d5e70/Entry 585/dirty juggle as live current selectors"
+    ]
+  },
+  "canonicalization": "stable-json/v0",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f5a2c8d1d3cbda7a8a18efa8115f5c946d8ca60d5daa56d212613fb8f5a1589f"
+  }
+}

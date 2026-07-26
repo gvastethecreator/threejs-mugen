@@ -6,11 +6,13 @@ This guide exists so the project can keep moving without losing the thread. It d
 
 ## 2026-07-26 continuation checkpoint
 
-Resume from HEAD `c01d5e70`, Entry 585 and focal T405. Keep global T383,
-visual/product T342 and the dirty juggle exclusion separate. Coordinate with
-the owner of the six modified sources before any edit. Next: source matrix,
-ActiveJuggleCost presence, focused trace, focal closeout, then a global gate on
-a clean SHA. See the [daily audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+**Current authority:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
+(`closedThrough` DA26-11). formal/global gate `7d9b15f8`; focal T406
+`07ad9227`; visual/product T342; source epoch 05b/4aa. Next live cut:
+**DA26-12** FightScreen fixture. DA26-01..11 are closed. See
+[AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
+[daily audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md)
+for the remaining ladder.
 
 ## 2026-07-18 T288 continuation checkpoint
 

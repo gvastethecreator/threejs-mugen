@@ -1,12 +1,14 @@
 ﻿# Roadmap Package Milestones
 
-## Current bounded package override - T405 / Entry 585
+## Current bounded package override - DA26-11 authority + T406
 
-HEAD `c01d5e70` closes the focal direct IKEMEN `air.juggle` slice. Its evidence
-is 5 files / 130 tests plus one filtered required trace. Full TypeScript,
-Vitest, aggregate trace, build and boundary gates remain at T383, 36 commits
-behind. The dirty StateDef juggle work is outside the package until it gains a
-ticket, tests and trace. Scores do not move. See the
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+Focal package T406 (`07ad9227`) closed StateDef/HitDef active juggle; DA26-08
+global gate is green at **`7d9b15f8`** (242/2768 tests, 663 traces, build,
+boundaries). Control packages DA26-09..11 (RoadmapCursor, SourceAuthorityEpoch,
+authority selector) are closed. Scores do not move. Next package cut after
+control: **DA26-12** FightScreen fixture. See
+[AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
 [2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## Historical bounded runtime package - T288 / Entry 562
