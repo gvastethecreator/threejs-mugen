@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 587 - Global checkpoint after T406 (DA26-08)
+
+Closed DA26-08 at HEAD `7d9b15f8`. Full gate: TypeScript 7 typecheck, Vitest
+242 files / 2768 tests, qa:trace 663/663 artifacts (629 required, 34 optional),
+production build 332 modules (JS 2136.15 kB / gzip 534.28 kB), boundaries and
+redirect-boundary. Replaces T383 as the latest global runtime cursor. Browser
+smoke N/A. No score movement. Report:
+`docs/research/2026-07-26-global-checkpoint-after-t406.md`.
+
 ## Entry 586 - StateDef + HitDef active juggle (T406 / DA26 Phase 0)
 
 Closed T406 in `07ad9227`: owned the incomplete six-file StateDef juggle

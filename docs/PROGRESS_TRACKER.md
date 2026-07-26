@@ -1,15 +1,23 @@
 ﻿# Progress Tracker
 
+## Global checkpoint after T406 - DA26-08 (closed, 2026-07-26)
+
+- HEAD `7d9b15f8`: TypeScript 7, 242 files / 2768 tests, 663/663 traces,
+  build, boundaries, redirect-boundary all green.
+- Latest global runtime cursor is now post-T406, not T383.
+- Scores unchanged. Browser smoke N/A.
+- See Entry 587 and `docs/research/2026-07-26-global-checkpoint-after-t406.md`.
+
 ## Runtime StateDef + HitDef active juggle - T406 (closed, 2026-07-26)
 
 - Phase 0 DA26-01..07 closed: owned incomplete juggle write-set, pinned official
   matrix, implemented ActiveJuggleCost presence, profile entry/reset, HitDef
   arming with T405 preservation, and JuggleTrace fields.
 - Claim allowed: direct `ikemen-go` StateDef/HitDef active cost path with focused
-  evidence. Claim blocked: Projectile/Helper, ModifyHitDef air.juggle, global
-  gate, scores.
-- Focused suites + required air.juggle trace + typecheck pass. DA26-08 global
-  checkpoint remains pending. Scores unchanged.
+  evidence. Claim blocked: Projectile/Helper, ModifyHitDef air.juggle, full
+  parity scores.
+- Focused suites + required air.juggle trace + typecheck pass; global gate later
+  closed by Entry 587. Scores unchanged.
 - See Entry 586, board T406 section, and
   `docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md`.
 

@@ -1,14 +1,18 @@
 # Workplan
 
+## Global checkpoint after T406 - DA26-08 (closed, 2026-07-26)
+
+HEAD `7d9b15f8` full gate is green: TypeScript 7, 242/2768 Vitest, 663 traces,
+build, boundaries. Next workplan items are DA26-09 RoadmapCursor/v1, DA26-10
+SourceAuthorityEpoch/Manifest v1, and DA26-11 authority sync. Full ladder:
+[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## Runtime StateDef + HitDef active juggle - T406 (closed, 2026-07-26)
 
 Phase 0 DA26-01..07 is closed. Active character juggle cost arms from StateDef
 `juggle` and explicit HitDef `air.juggle`, preserves omitted HitDef identity,
 resets after falling contact and IKEMEN non-A entry, keeps the T405 rejection
-sequence, and exposes JuggleTrace snapshot fields. Next workplan item is
-DA26-08 global checkpoint on a clean tree, then DA26-09..11 control/source
-cursors. Full ladder:
-[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+sequence, and exposes JuggleTrace snapshot fields.
 
 ## Runtime direct air.juggle slice - T405 (closed, 2026-07-23)
 

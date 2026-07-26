@@ -7,15 +7,17 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## 2026-07-26 T406 runtime override
+## 2026-07-26 T406 + DA26-08 runtime override
 
 T406 closed DA26-01..07 (Phase 0): active StateDef/HitDef juggle cost under
-`ikemen-go` with T405 preservation. Focal edge is T406; T383 remains the last
-global gate until DA26-08. Projectile/Helper juggle and ModifyHitDef air.juggle
-remain blocked. Next execute DA26-08 global checkpoint, then DA26-09..11
-control/source authority work. See the
-[post-T405 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md)
-and [T406 closeout](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md).
+`ikemen-go` with T405 preservation. DA26-08 global checkpoint is green at HEAD
+`7d9b15f8` (242 files / 2768 tests, 663 traces, build, boundaries). Focal edge
+is T406; global cursor is post-T406. Projectile/Helper juggle and ModifyHitDef
+air.juggle remain blocked. Next execute DA26-09..11 control/source authority
+work. See the
+[post-T405 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md),
+[T406 closeout](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
+and [global checkpoint](../../../docs/research/2026-07-26-global-checkpoint-after-t406.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

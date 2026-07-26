@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Current global checkpoint - DA26-08 after T406 (closed, 2026-07-26)
+
+Global gate green at HEAD `7d9b15f8`. TypeScript 7, full Vitest
+(**242 files / 2768 tests**), aggregate traces (**663/663**, 629 required /
+34 optional), production build (332 modules; JS 2136.15 kB / gzip 534.28 kB),
+`check:boundaries`, and `check:redirect-boundary` all passed. This replaces
+T383 as the latest global runtime cursor. Scores do not move. Browser smoke is
+N/A for this batch. Report:
+`docs/research/2026-07-26-global-checkpoint-after-t406.md`.
+
+Next: DA26-09 RoadmapCursor/v1, then DA26-10/11 source-epoch and authority sync.
+
 ## Current runtime compatibility board - T406 (closed, 2026-07-26)
 
 T406 closes in `07ad9227` (DA26-01..07 / Phase 0 after the post-T405 audit). The
@@ -19,12 +31,8 @@ Projectile/Helper juggle, ModifyHitDef air.juggle, full tick-order parity,
 global gate inheritance from T383, and any score movement.
 
 Verification: focused juggle/combat/HitDef/state-entry/parser/compiler suites
-and the required direct air.juggle trace pass; `pnpm typecheck` exit 0. Full
-Vitest, aggregate traces, build, and boundaries remain DA26-08. Scores stay
-`65 / 36 / 20 / 10-12 / 6-8 / 25`.
-
-Next: DA26-08 global checkpoint on a clean source tree, then DA26-09 cursor /
-source-epoch control work.
+and the required direct air.juggle trace pass; DA26-08 later ran the full global
+gate on `7d9b15f8`. Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
 
 ## Previous runtime compatibility board - T405 (closed, 2026-07-23)
 
