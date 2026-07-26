@@ -1,9 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T23:30:14.968Z",
-  "closedThrough": "DA28-05",
+  "generatedAt": "2026-07-26T23:33:29.827Z",
+  "closedThrough": "DA28-06",
   "nextQueue": [
-    "DA28-06",
     "DA28-07",
     "DA28-08",
     "DA28-09",
@@ -85,11 +84,13 @@
       "DA28-02 global re-gate at 32466c6e with 270/2850 tests and 663 traces",
       "DA28-03 browser subcursors bound DA27-07/08/09 and DA26-13 under T342 parent",
       "DA28-04 corpus v1.2 and DA28-05 score adjudication hold frozen scorecard",
+      "DA28-06 live GlobalProjectileSchedule wired into EffectActorWorld combat order",
       "historical sections may retain old cursors when labeled historical",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
-      "claiming DA28-06..30 live runtime closes from P0 evidence alone",
+      "claiming DA28-07..30 product closes from projectile schedule alone",
+      "full plural projectile parity without live root traces",
       "native Nova/Mira rows raising imported-package coverage",
       "projecting T383 or T342 as current global/product without label",
       "score movement",
@@ -99,6 +100,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "269333c11b8ec6a4b96db210da429c3f958fdd577c6e6e155263cbc83d4a90a8"
+    "value": "9b87257f1b3fa4395440487adb1c68450fa70c4a83b7db4e4f4418499999f320"
   }
 }

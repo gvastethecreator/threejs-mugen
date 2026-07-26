@@ -3,9 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA28-05 closed P0 evidence (subcursors, corpus v1.2, score hold).
-**Next live cut: DA28-06** live projectile schedule into match runtime. Then
-DA28-07…30 per
+DA28-06 wired live projectile schedule into combat order.
+**Next live cut: DA28-07** plural combat oracle on live roots. Then
+DA28-08…30 per
 [audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 Global pin is `32466c6e`. The T287 queue below is historical.
 

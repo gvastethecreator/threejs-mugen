@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## Live projectile schedule - DA28-06 (closed-bounded, 2026-07-26)
+
+- EffectActorWorld combat/clash uses GlobalProjectileSchedule order. Entry 606.
+  Next: **DA28-07**. Scores held.
+
 ## Browser/corpus/scores - DA28-03/04/05 (closed, 2026-07-26)
 
 - Subcursors, corpus v1.2, score adjudication hold. Entry 605. formal/global

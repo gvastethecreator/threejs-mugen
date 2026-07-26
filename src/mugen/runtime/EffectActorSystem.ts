@@ -55,6 +55,11 @@ import {
   type RuntimeProjectileCombatActor,
   type RuntimeProjectileCombatInput,
 } from "./ProjectileCombatSystem";
+import {
+  orderProjectilesForCombat,
+  runLiveGlobalProjectileSchedule,
+  type LiveGlobalProjectileScheduleReport,
+} from "./LiveGlobalProjectileSchedule";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
 
@@ -135,6 +140,7 @@ export class RuntimeEffectActorWorld {
   private readonly projectileCombatWorld: RuntimeProjectileCombatWorld;
   private readonly helperLifecycleObservers = new Set<RuntimeHelperLifecycleObserver>();
   private nextHelperRunOrderId = 3;
+  private lastLiveProjectileSchedule?: LiveGlobalProjectileScheduleReport;
 
   constructor(
     stores: RuntimeEffectActorStores = createRuntimeEffectActorStores(),
@@ -355,13 +361,25 @@ export class RuntimeEffectActorWorld {
     removeRuntimeProjectilesMarkedForRemoval(this.getStore(ownerId));
   }
 
+  /** Compute and retain the live schedule for an owner without resolving combat. */
+  scheduleProjectilesForOwner(ownerId: string, scheduleTick?: number): LiveGlobalProjectileScheduleReport {
+    this.lastLiveProjectileSchedule = runLiveGlobalProjectileSchedule({
+      projectiles: this.projectiles(ownerId),
+      tick: scheduleTick,
+    });
+    return this.lastLiveProjectileSchedule;
+  }
+
   resolveProjectileCombat<TActor extends RuntimeProjectileCombatActor>(
     ownerId: string,
-    input: Omit<RuntimeProjectileCombatInput<TActor>, "projectiles" | "removeProjectilesMarkedForRemoval">,
+    input: Omit<RuntimeProjectileCombatInput<TActor>, "projectiles" | "removeProjectilesMarkedForRemoval"> & {
+      scheduleTick?: number;
+    },
   ): void {
+    const schedule = this.scheduleProjectilesForOwner(ownerId, input.scheduleTick);
     this.projectileCombatWorld.resolveCombat({
       ...input,
-      projectiles: this.projectiles(ownerId),
+      projectiles: schedule.ordered,
       removeProjectilesMarkedForRemoval: () => this.removeProjectilesMarkedForRemoval(ownerId),
     });
   }
@@ -374,17 +392,33 @@ export class RuntimeEffectActorWorld {
       rightLabel: string;
       log: (line: string) => void;
       recordProjectileCancel?: (projectile: RuntimeProjectile) => void;
+      scheduleTick?: number;
     },
   ): void {
+    const leftOrdered = orderProjectilesForCombat(this.projectiles(leftOwnerId), {
+      tick: input.scheduleTick,
+    });
+    const rightOrdered = orderProjectilesForCombat(this.projectiles(rightOwnerId), {
+      tick: input.scheduleTick,
+    });
+    this.lastLiveProjectileSchedule = runLiveGlobalProjectileSchedule({
+      projectiles: [...this.projectiles(leftOwnerId), ...this.projectiles(rightOwnerId)],
+      tick: input.scheduleTick,
+    });
     this.projectileCombatWorld.resolveClashes({
       ...input,
-      leftProjectiles: this.projectiles(leftOwnerId),
-      rightProjectiles: this.projectiles(rightOwnerId),
+      leftProjectiles: leftOrdered,
+      rightProjectiles: rightOrdered,
       removeProjectilesMarkedForRemoval: () => {
         this.removeProjectilesMarkedForRemoval(leftOwnerId);
         this.removeProjectilesMarkedForRemoval(rightOwnerId);
       },
     });
+  }
+
+  /** Last live schedule computed during combat/clash resolution (DA28-06). */
+  getLastLiveProjectileSchedule(): LiveGlobalProjectileScheduleReport | undefined {
+    return this.lastLiveProjectileSchedule;
   }
 
   projectileSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {

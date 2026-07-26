@@ -2,10 +2,9 @@
 
 ## DA28 series (in progress, 2026-07-26)
 
-DA28-01…05 closed (control, global re-gate, browser subcursors, corpus v1.2,
-score hold). Next: **DA28-06** live projectile schedule. Phase order: live
-projectile/Turns/input; MUGEN-lite execution; MUGEN breadth; Studio durability;
-assets/scanner/source/IKEMEN/boundaries. See
+DA28-01…06 closed through live projectile schedule. Next: **DA28-07** plural
+combat oracle live. Phase order: live Turns/input; MUGEN-lite execution; MUGEN
+breadth; Studio durability; assets/scanner/source/IKEMEN/boundaries. See
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 
 ## Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)

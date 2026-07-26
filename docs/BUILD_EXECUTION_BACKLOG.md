@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 606 - DA28-06 live projectile schedule
+
+Closed DA28-06: `LiveGlobalProjectileSchedule/v1` wires
+`GlobalProjectileSchedule` into `RuntimeEffectActorWorld` combat and clash
+resolution with stable multi-owner/helper order. Unit proof for reverse
+insertion and owner schedule retention. Report:
+`docs/research/2026-07-26-da28-06-live-projectile-schedule.md`. formal/global
+stay `32466c6e`. Scores held. Next: **DA28-07** plural combat oracle live.
+
 ## Entry 605 - DA28-03/04/05 browser subcursors, corpus, scores
 
 Closed DA28-03…05: `BrowserSubcursor/v1` materializes DA27-07/08/09 + DA26-13

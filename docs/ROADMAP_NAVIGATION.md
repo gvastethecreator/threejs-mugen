@@ -9,18 +9,18 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA28-05** (browser subcursors + corpus + score hold)
+- `closedThrough`: **DA28-06** (live projectile schedule)
 - formal/global: **`32466c6e`** (Entry 604 / DA28-02 gate)
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb` (DA28-03 subcursors are bounded children)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA28-06** … **DA28-30** (25 open)
+- next queue: **DA28-07** … **DA28-30** (24 open)
 - Scores held (DA28-05 adjudication `movement=none`).
 
-Gate pin is `32466c6e`. Entry 605 closed DA28-03…05. Next live cut is DA28-06.
+Gate pin is `32466c6e`. Entry 606 closed DA28-06. Next live cut is DA28-07.
 Plan source:
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md);
-[P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
+[live projectiles](research/2026-07-26-da28-06-live-projectile-schedule.md).
 
 The T287/T288 selectors below are **historical**.
 

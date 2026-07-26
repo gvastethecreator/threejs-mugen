@@ -10,10 +10,10 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-05). Live next head is **DA28-06**. Formal/global is
-`32466c6e`. Projectile/Helper/ModifyHitDef, live projectile order, live Turns
-transaction, and executed dual-character behavior remain open. Live cuts start
-at DA28-06…18 after P0 browser/corpus/score evidence. See
+(`closedThrough` DA28-06). Live next head is **DA28-07**. Formal/global is
+`32466c6e`. Live projectile order is wired; PluralCombatOracle live roots,
+Turns transaction merge, and executed dual-character behavior remain open.
+Cuts continue DA28-07…18. See
 [AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md),
 [T406](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
 [global](../../../docs/research/2026-07-26-global-checkpoint-da28-02.md).
