@@ -13,8 +13,8 @@ const GATE = "b7d23801bd3ca766ba5b184b3c040bef8165d355";
 function input(overrides: Partial<AuthoritySelectorInput> = {}): AuthoritySelectorInput {
   return {
     generatedAt: "2026-07-26T19:00:00.000Z",
-    closedThrough: "DA27-08",
-    nextQueue: ["DA27-09"],
+    closedThrough: "DA27-09",
+    nextQueue: [],
     scores: {
       sandbox: "65",
       mugenLite: "36",
@@ -51,10 +51,10 @@ describe("AuthoritySelector", () => {
     const first = createAuthoritySelectorDocument(input());
     const second = createAuthoritySelectorDocument({
       ...input(),
-      nextQueue: ["DA27-09"],
+      nextQueue: [],
     });
     expect(first.digest.value).toBe(second.digest.value);
-    expect(first.nextQueue[0]).toBe("DA27-09");
+    expect(first.nextQueue).toEqual([]);
     expect(first.cursors.formal.sha).toBe(GATE);
     expect(first.cursors.global.sha).toBe(GATE);
     expect(parseAuthoritySelectorDocument(first)).toEqual({ errors: [], document: first });
@@ -71,7 +71,7 @@ describe("AuthoritySelector", () => {
     const parsed = parseAuthoritySelectorDocument(JSON.parse(readFileSync(artifactPath, "utf8")));
     expect(parsed.errors).toEqual([]);
     expect(parsed.document?.closedThrough).toMatch(/^DA2[67]-\d{2}$/);
-    expect(parsed.document?.nextQueue[0]).toBe("DA27-09");
+    expect(parsed.document?.nextQueue).toEqual([]);
     expect(parsed.document?.cursors.formal.sha.startsWith("b7d23801")).toBe(true);
     expect(parsed.document?.cursors.global.sha.startsWith("b7d23801")).toBe(true);
   });

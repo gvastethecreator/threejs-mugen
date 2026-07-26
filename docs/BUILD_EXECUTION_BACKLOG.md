@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 601 - Common.Fx + FightScreen browser DA27-09
+
+Closed DA27-09: `CommonFxFightScreenProof/v1` proves Common.Fx/FightFX libraries
+and FightScreen SND play path; browser gate verifies public package + fight.def
+sound edges + runtime shell. Evidence:
+`docs/evidence/da27-09-fightscreen-browser/`. Report:
+`docs/research/2026-07-26-commonfx-fightscreen-da27-09.md`. DA27 ladder empty.
+Scores unchanged.
+
 ## Entry 600 - qa:smoke matrix DA27-08
 
 Closed DA27-08: full `pnpm qa:smoke` passed (runtime desktop/mobile attack

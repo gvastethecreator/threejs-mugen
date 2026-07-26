@@ -3,8 +3,8 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA27-08 full `qa:smoke` closed. **Next live cut: DA27-09** Common.Fx audible +
-FightScreen browser depth. Global pin remains `b7d23801` until a new re-gate.
+DA26 + DA27 ladders drained through DA27-09. **`nextQueue` empty.** Global pin
+remains `b7d23801` until a new re-gate. Follow-on needs a new audit series.
 The T287 queue below is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)

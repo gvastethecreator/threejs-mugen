@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## Common.Fx + FightScreen browser - DA27-09 (closed-bounded, 2026-07-26)
+
+- CommonFxFightScreenProof (libraries + audible SND edges) + browser package
+  gate. Entry 601. `nextQueue` empty. Scores unchanged.
+
 ## qa:smoke matrix - DA27-08 (closed, 2026-07-26)
 
 - Full `pnpm qa:smoke` green after gate-evidence refresh and Nova permission

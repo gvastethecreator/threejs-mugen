@@ -1,0 +1,74 @@
+{
+  "schema": "FightScreenBrowserGate/v1",
+  "id": "DA27-09",
+  "generatedAt": "2026-07-26T22:20:01.198Z",
+  "baseUrl": "http://127.0.0.1:5175/",
+  "packageChecks": [
+    {
+      "path": "data/sandbox-fightscreen/fight.def",
+      "status": 200,
+      "ok": true,
+      "bytes": 2106,
+      "sha256": "2b39490915f31165c1dc42d783ad8f37aeca9887ba60cc2cd5e0dd5e8fbfd1fa"
+    },
+    {
+      "path": "data/sandbox-fightscreen/fightfx.air",
+      "status": 200,
+      "ok": true,
+      "bytes": 93,
+      "sha256": "992023773b367d17a59de46cab0d4a19d3c4147e94b194cd59955c84d8a03cfe"
+    },
+    {
+      "path": "data/sandbox-fightscreen/fightfx.sff",
+      "status": 200,
+      "ok": true,
+      "bytes": 2378,
+      "sha256": "4e4717add2c906787279f56aa5632cbab14013115dda24375a958c5c1e97b852"
+    },
+    {
+      "path": "data/sandbox-fightscreen/fightfx.snd",
+      "status": 200,
+      "ok": true,
+      "bytes": 878,
+      "sha256": "116076abcc70bac02139c25fd78999e3416d5ca7052104f3e1c6f48e67cb87be"
+    },
+    {
+      "path": "data/sandbox-fightscreen/LICENSE.txt",
+      "status": 200,
+      "ok": true,
+      "bytes": 342,
+      "sha256": "a6ba8aae36ea8b205afbe5d06f5e5bc0ef52adb650063c79f3e2e236aa49b7e6"
+    },
+    {
+      "path": "system/sandbox-fightscreen.zip",
+      "status": 200,
+      "ok": true,
+      "bytes": 3073,
+      "sha256": "b09e988145844d24b870a2a009a22165b283c9a11598863f7ff3bf1131a5f07f"
+    }
+  ],
+  "localZipPresent": true,
+  "summary": {
+    "allPackagesOk": true,
+    "fightDefHasSurfaces": true,
+    "hasRuntime": true,
+    "hasConsoleClean": true,
+    "consoleErrorCount": 0,
+    "screenshot": "docs/evidence/da27-09-fightscreen-browser/fightscreen-runtime-desktop-1440x960.png",
+    "screenshotSha256": "7711e503f918ea79f557f86da041f712ff6ce4e8f5228bf8483a5734a134cdb3"
+  },
+  "consoleErrors": [],
+  "claims": {
+    "allowed": [
+      "public Sandbox FightScreen package bytes are HTTP-reachable",
+      "fight.def names fight/ko/round Common.Fx sound edges",
+      "runtime match shell loads with clean console after gesture"
+    ],
+    "blocked": [
+      "full motif visual parity",
+      "hardware audio device measurement outside WebAudio diagnostics",
+      "score movement"
+    ]
+  },
+  "status": "passed"
+}

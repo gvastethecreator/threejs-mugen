@@ -1,9 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## Current Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)
+
+Common.Fx/FightFX libraries + audible SND proof + browser package gate.
+Report: `docs/research/2026-07-26-commonfx-fightscreen-da27-09.md`.
+`nextQueue` empty.
+
 ## Current qa:smoke matrix - DA27-08 (closed, 2026-07-26)
 
 Full `pnpm qa:smoke` green. Report: `docs/research/2026-07-26-qa-smoke-da27-08.md`.
-Next: **DA27-09**.
 
 ## Current Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
 
@@ -51,7 +56,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA27-09** Common.Fx audible + FightScreen browser depth.
+Next queue: empty after DA27-09.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 
