@@ -1,5 +1,12 @@
 # 06 - Roadmap Control And QA Ledger
 
+## 2026-07-26 DA26-09 control override
+
+RoadmapCursor/v1 is live: seven cursors, dirty exclusions, digest, and
+stale/mismatch evaluation. Artifact `docs/evidence/roadmap-cursor-v1.json`.
+Next control cut is DA26-10 SourceAuthorityEpoch/Manifest v1, then DA26-11
+authority sync. Scores do not move.
+
 Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent
 
@@ -7,13 +14,12 @@ Labels: docs, roadmap, ready-for-agent
 
 Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized so future work does not drift into partial claims or stale task lists.
 
-## 2026-07-26 control override
+## 2026-07-26 control override (historical)
 
-Use HEAD `c01d5e70`, Entry 585, focal T405, global T383, visual/product T342,
-source `05b` versus `4aa`, and the dirty exclusion as separate cursors. Scores
-remain unchanged. Next: clean global gate, RoadmapCursor/v1, source epoch and
-one selector shared by control docs and issues. See DA26-08 to DA26-11 in the
-[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+Audit-time cursors were HEAD `c01d5e70`, Entry 585, focal T405, global T383,
+visual/product T342. DA26-08/09 later moved global to post-T406 and introduced
+RoadmapCursor/v1. Historical note only; current selectors live in Entry 587-588
+and `docs/evidence/roadmap-cursor-v1.json`.
 
 ## Current Post-T268 Reconciliation
 

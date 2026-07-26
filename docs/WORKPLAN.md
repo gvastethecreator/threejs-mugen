@@ -1,11 +1,16 @@
 # Workplan
 
+## RoadmapCursor/v1 - DA26-09 (closed, 2026-07-26)
+
+Control cursors are now a typed digest document with freshness evaluation.
+Next: DA26-10 SourceAuthorityEpoch/Manifest v1, then DA26-11 authority sync.
+Full ladder:
+[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## Global checkpoint after T406 - DA26-08 (closed, 2026-07-26)
 
 HEAD `7d9b15f8` full gate is green: TypeScript 7, 242/2768 Vitest, 663 traces,
-build, boundaries. Next workplan items are DA26-09 RoadmapCursor/v1, DA26-10
-SourceAuthorityEpoch/Manifest v1, and DA26-11 authority sync. Full ladder:
-[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+build, boundaries.
 
 ## Runtime StateDef + HitDef active juggle - T406 (closed, 2026-07-26)
 

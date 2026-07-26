@@ -1,5 +1,12 @@
 ﻿# Progress Tracker
 
+## RoadmapCursor/v1 - DA26-09 (closed, 2026-07-26)
+
+- Seven control cursors with SHA/date/artifact/claimLimit, branch, scores,
+  dirty exclusions, digest, and stale/mismatch evaluation.
+- Artifact `docs/evidence/roadmap-cursor-v1.json`; Entry 588.
+- Claim allowed: control state. Scores unchanged.
+
 ## Global checkpoint after T406 - DA26-08 (closed, 2026-07-26)
 
 - HEAD `7d9b15f8`: TypeScript 7, 242 files / 2768 tests, 663/663 traces,

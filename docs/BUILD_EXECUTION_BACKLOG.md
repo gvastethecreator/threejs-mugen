@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 588 - RoadmapCursor/v1 (DA26-09)
+
+Closed DA26-09: RoadmapCursor/v1 control document with seven cursors, branch,
+scores, dirty exclusions, stable digest, and stale/mismatch evaluation.
+Materializer `pnpm materialize:roadmap-cursor` writes
+`docs/evidence/roadmap-cursor-v1.json`. Focused RoadmapCursor tests pass.
+Claim allowed: control state only. No score movement. Report:
+`docs/research/2026-07-26-roadmap-cursor-v1.md`.
+
 ## Entry 587 - Global checkpoint after T406 (DA26-08)
 
 Closed DA26-08 at HEAD `7d9b15f8`. Full gate: TypeScript 7 typecheck, Vitest

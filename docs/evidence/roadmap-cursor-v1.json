@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
+  "generatedAt": "2026-07-26T17:07:07.026Z",
+  "branch": "master",
+  "scores": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "dirtyExclusions": [],
+  "cursors": [
+    {
+      "kind": "head",
+      "sha": "785bc4cb9886ed11724d61cb61e7597cb0f67840",
+      "date": "2026-07-26T14:05:04-03:00",
+      "artifact": "git HEAD",
+      "claimLimit": "committed content only; does not inherit older gates"
+    },
+    {
+      "kind": "formal",
+      "sha": "785bc4cb9886ed11724d61cb61e7597cb0f67840",
+      "date": "2026-07-26T14:05:04-03:00",
+      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
+      "claimLimit": "Entry 587 / DA26-08 formal closeout"
+    },
+    {
+      "kind": "focal",
+      "sha": "07ad9227",
+      "date": "2026-07-26T16:00:00.000Z",
+      "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
+      "claimLimit": "T406 active juggle runtime only"
+    },
+    {
+      "kind": "global",
+      "sha": "785bc4cb9886ed11724d61cb61e7597cb0f67840",
+      "date": "2026-07-26T14:05:04-03:00",
+      "artifact": "docs/research/2026-07-26-global-checkpoint-after-t406.md",
+      "claimLimit": "TypeScript/Vitest/traces/build/boundaries at named SHA only"
+    },
+    {
+      "kind": "visual",
+      "sha": "1085badb",
+      "date": "2026-07-20T00:00:00.000Z",
+      "artifact": "docs/research (T342 visual gate)",
+      "claimLimit": "T342 browser/visual claims only; not HEAD product truth"
+    },
+    {
+      "kind": "product",
+      "sha": "1085badb",
+      "date": "2026-07-20T00:00:00.000Z",
+      "artifact": "docs/research (T342 product gate)",
+      "claimLimit": "T342 local Studio product flows only"
+    },
+    {
+      "kind": "source",
+      "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+      "date": "2026-07-18T13:00:00.000Z",
+      "artifact": "docs/evidence/source-authority-manifest-v0.json",
+      "claimLimit": "normative pin identity; semantic review remains unclassified"
+    }
+  ],
+  "claims": {
+    "allowed": [
+      "control cursors with per-cursor SHA/date/artifact/claimLimit",
+      "stale and mismatch evaluation against observed HEAD"
+    ],
+    "blocked": [
+      "score movement",
+      "semantic source review promotion",
+      "visual or product inheritance from older cursors"
+    ]
+  },
+  "canonicalization": "stable-json/v0",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "053b03fdd8e61d7b1510cd18d6579bfde8b0e089f690ea99f3aa2e2316060849"
+  }
+}
