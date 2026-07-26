@@ -1,5 +1,11 @@
 ﻿# Progress Tracker
 
+## Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
+
+- Team mode selector, Turns HUD projection, KO→handoff unit journey, desktop
+  browser evidence under `docs/evidence/da27-07-turns-browser/`. Entry 599.
+  Next: **DA27-08**. Scores unchanged.
+
 ## Global re-gate - DA27-06 (closed, 2026-07-26)
 
 - Pin `b7d23801`: typecheck, Vitest 268/2845, traces 663/663, build, boundaries,

@@ -3,9 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA27-06 global re-gate closed at `b7d23801` (268/2845 tests, 663 traces).
-**Next live cut: DA27-07** Turns browser HUD. Also open: 08–09. The T287 queue
-below is historical.
+DA27-07 Turns browser HUD closed (unit + desktop browser). **Next live cut:
+DA27-08** `qa:smoke` canvas matrix. Also open: 09. Global pin remains
+`b7d23801` until a new re-gate. The T287 queue below is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

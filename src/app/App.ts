@@ -72,6 +72,8 @@ import type { MugenStagePackage } from "../mugen/model/MugenStagePackage";
 import { CommandBuffer } from "../mugen/runtime/CommandBuffer";
 import { demoFighters, type DemoFighterDefinition } from "../mugen/runtime/demoFighters";
 import { bgCtrlLabStage, rooftopDojoStage, trainingStage } from "../mugen/runtime/demoStage";
+import { projectTurnsBrowserHud, withTurnsHandoffSupport } from "../mugen/runtime/TurnsBrowserHudJourney";
+import type { RuntimeTeamRoundMode } from "../mugen/runtime/RuntimeTeamRoundDecisionSystem";
 import { createFixtureAnimations } from "../mugen/runtime/fixture";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import { MatchWorld, type MatchWorldActorRegistrySnapshot } from "../mugen/runtime/MatchWorld";
@@ -876,6 +878,7 @@ export class App {
   private selectedP1 = demoFighters[0]!.id;
   private selectedP2 = demoFighters[1]!.id;
   private selectedStageId = rooftopDojoStage.id;
+  private selectedTeamMode: RuntimeTeamRoundMode = "single";
   private activeTab: NavigatorTab = "animations";
   private studioTab: StudioTab = "workbench";
   private studioEvidenceFilter: StudioEvidenceFilter = "all";
@@ -1498,6 +1501,16 @@ export class App {
         this.writeUrlState();
         this.updateUi();
       }
+      if (target instanceof HTMLSelectElement && target.dataset.teamModeSelect) {
+        const value = target.value;
+        this.selectedTeamMode = value === "turns" || value === "tag" ? value : "single";
+        this.rebuildMatchRuntime();
+        this.mode = "match";
+        this.snapshot = this.matchRuntime.getSnapshot();
+        this.writeUrlState();
+        this.log(`Team mode set to ${this.selectedTeamMode}`);
+        this.updateUi();
+      }
       if (target instanceof HTMLSelectElement && target.dataset.studioStageSelect) {
         const before = this.captureStudioProjectEditState();
         this.selectedStageId = target.value;
@@ -1730,6 +1743,10 @@ export class App {
     if (stage) {
       this.selectedStageId = stage;
     }
+    const teamMode = params.get("teamMode");
+    if (teamMode === "turns" || teamMode === "tag" || teamMode === "single") {
+      this.selectedTeamMode = teamMode;
+    }
     this.rebuildMatchRuntime();
 
     const tab = params.get("tab");
@@ -1756,6 +1773,9 @@ export class App {
     params.set("p1", this.selectedP1);
     params.set("p2", this.selectedP2);
     params.set("stage", this.selectedStageId);
+    if (this.selectedTeamMode !== "single") {
+      params.set("teamMode", this.selectedTeamMode);
+    }
     if (this.runtimeQaScenario) {
       params.set("scenario", this.runtimeQaScenario);
     }
@@ -12264,6 +12284,14 @@ export class App {
             <span class="list-meta">Stage</span>
             <select data-stage-select="stage">${this.renderStageOptions()}</select>
           </label>
+          <label class="field field-wide">
+            <span class="list-meta">Team mode</span>
+            <select data-team-mode-select="team" aria-label="Team mode">
+              <option value="single" ${this.selectedTeamMode === "single" ? "selected" : ""}>Single</option>
+              <option value="turns" ${this.selectedTeamMode === "turns" ? "selected" : ""}>Turns</option>
+              <option value="tag" ${this.selectedTeamMode === "tag" ? "selected" : ""}>Tag</option>
+            </select>
+          </label>
         </div>
         <div class="match-card">
           <div>
@@ -12877,8 +12905,10 @@ export class App {
 
     const round = renderSnapshot.round;
     const teamRoundLifebar = renderSnapshot.teamRoundLifebar;
+    const turnsHud = teamRoundLifebar ? projectTurnsBrowserHud(renderSnapshot) : undefined;
+    const continuation = round?.turnsContinuation;
     return `
-      <div class="round-hud-panel">
+      <div class="round-hud-panel" data-team-mode="${escapeHtml(this.selectedTeamMode)}" data-turns-hud="${turnsHud ? "true" : "false"}">
         ${teamRoundLifebar
           ? this.renderHudTeamSide(teamRoundLifebar.sides[0], "left", teamRoundLifebar.visible)
           : this.renderHudFighter(p1, "left")}
@@ -12887,6 +12917,10 @@ export class App {
           <strong>${round?.timer ?? 99}</strong>
           ${round?.roundNo ? `<span class="round-number">Round ${round.roundNo}</span>` : ""}
           ${round?.match ? `<span class="round-score" aria-label="Match score">${round.match.wins[1]}-${round.match.wins[2]} / ${round.match.matchWins}</span>` : ""}
+          ${this.selectedTeamMode !== "single" ? `<span class="round-team-mode" data-hud-team-mode="${escapeHtml(this.selectedTeamMode)}">${escapeHtml(this.selectedTeamMode.toUpperCase())}</span>` : ""}
+          ${continuation
+            ? `<span class="round-turns-continuation" data-turns-status="${escapeHtml(continuation.status)}" data-turns-applied="${continuation.applied ? "true" : "false"}" data-turns-incoming="${escapeHtml((continuation.incomingActorIds ?? []).join(","))}">Turns ${escapeHtml(continuation.status)}${continuation.applied ? " applied" : ""}</span>`
+            : ""}
           ${this.snapshot.matchPause ? `<span>${escapeHtml(formatHudMatchPause(this.snapshot.matchPause))}</span>` : ""}
           <span class="round-stage">${escapeHtml(this.snapshot.stage.displayName ?? "Stage")}</span>
         </div>
@@ -13778,6 +13812,7 @@ export class App {
             ${this.renderStageStatusMetric("P1", `${actor?.runtime.life ?? 0} HP`, "ok", "character")}
             ${this.renderStageStatusMetric("CPU", `${opponent?.runtime.life ?? 0} HP`, "ok", "match")}
             ${this.renderStageStatusMetric("Cmd", activeCommands.length ? activeCommands.join(", ") : "idle", activeCommands.length ? "active" : undefined, "tools")}
+            ${this.renderStageStatusMetric("Team", this.selectedTeamMode, this.selectedTeamMode === "turns" ? "active" : undefined, "match")}
             ${this.renderStageStatusMetric("Stage", stageAsset, stageAsset === "geometry" ? undefined : "ok", "stage")}
             ${this.renderStageStatusMetric("Atlas", p1Atlas, p1Atlas === "loaded" ? "ok" : p1Atlas === "fallback" ? "warn" : undefined, "assetAtlas")}
             ${this.renderStageStatusMetric("Walk QA", p1QaLabel, p1Qa?.status === "pass" ? "ok" : p1Qa?.status === "fail" ? "error" : p1Qa?.status === "warn" || p1Qa?.status === "missing" ? "warn" : undefined, "activity")}
@@ -13875,17 +13910,34 @@ export class App {
       this.selectedP2 = p2.id;
     }
     this.syncMatchSpriteOwnerRoutes(p1, p2);
+    if (this.runtimeQaScenario === "ikemen-tag-presentation") {
+      this.matchRuntime = new MatchWorld({
+        p1,
+        p2,
+        stage,
+        runtimeProfile: "ikemen-go",
+        teamMode: "tag",
+        reserveFighters: [p1, p2],
+      });
+      return;
+    }
+    if (this.selectedTeamMode === "turns" || this.selectedTeamMode === "tag") {
+      const reservePool = this.getAvailableFighters().filter((fighter) => fighter.id !== p1.id && fighter.id !== p2.id);
+      const reserves = (reservePool.length > 0 ? reservePool : [p1, p2]).map((fighter) => withTurnsHandoffSupport(fighter));
+      this.matchRuntime = new MatchWorld({
+        p1: withTurnsHandoffSupport(p1),
+        p2: withTurnsHandoffSupport(p2),
+        stage,
+        runtimeProfile: "ikemen-go",
+        teamMode: this.selectedTeamMode,
+        reserveFighters: reserves,
+      });
+      return;
+    }
     this.matchRuntime = new MatchWorld({
       p1,
       p2,
       stage,
-      ...(this.runtimeQaScenario === "ikemen-tag-presentation"
-        ? {
-            runtimeProfile: "ikemen-go" as const,
-            teamMode: "tag" as const,
-            reserveFighters: [p1, p2],
-          }
-        : {}),
     });
   }
 

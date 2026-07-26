@@ -62,8 +62,8 @@ if (!/^DA2[67]-\d{2}$/.test(closed)) {
 if (!Array.isArray(selector.nextQueue)) {
   fail("nextQueue must be an array");
 }
-if (selector.nextQueue?.[0] !== "DA27-07") {
-  fail(`expected next queue head DA27-07 (Turns browser HUD), got ${selector.nextQueue?.[0]}`);
+if (selector.nextQueue?.[0] !== "DA27-08") {
+  fail(`expected next queue head DA27-08 (qa:smoke canvas matrix), got ${selector.nextQueue?.[0]}`);
 }
 const closedNum = Number(closed.slice(5));
 for (const id of selector.nextQueue || []) {
@@ -74,7 +74,7 @@ for (const id of selector.nextQueue || []) {
   if (/^DA26-(0[1-9]|1[0-9]|2[0-9]|30)$/.test(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
-  if (["DA27-01", "DA27-02", "DA27-03", "DA27-04", "DA27-05", "DA27-06"].includes(String(id))) {
+  if (["DA27-01", "DA27-02", "DA27-03", "DA27-04", "DA27-05", "DA27-06", "DA27-07"].includes(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
 }

@@ -9,12 +9,12 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA27-06** (DA26 ladder + DA27 wiring + global re-gate)
+- `closedThrough`: **DA27-07** (through Turns browser HUD)
 - formal/global: **`b7d23801`** (Entry 598 / DA27-06 gate)
 - focal: **T406** `07ad9227`
-- visual/product: **T342** `1085badb` (DA26-13 bounded capture is separate)
+- visual/product: **T342** `1085badb` (DA26-13 / DA27-07 captures separate)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA27-07** Turns browser HUD, then 08–09
+- next queue: **DA27-08** `qa:smoke`, then 09
 - Scores unchanged (adjudicated hold).
 
 The T287/T288 selectors below are **historical**.

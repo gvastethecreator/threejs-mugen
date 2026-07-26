@@ -1,0 +1,30 @@
+{
+  "schema": "TurnsBrowserHudGate/v1",
+  "id": "DA27-07",
+  "generatedAt": "2026-07-26T19:48:48.816Z",
+  "baseUrl": "http://127.0.0.1:5173/?mode=match&teamMode=turns",
+  "summary": {
+    "teamModeSelectValue": "turns",
+    "hasTurnsText": true,
+    "hudPanelCount": 1,
+    "teamLifebarCount": 2,
+    "teamModeBadgeCount": 1,
+    "consoleErrorCount": 0,
+    "screenshot": "docs/evidence/da27-07-turns-browser/turns-hud-desktop-1440x960.png",
+    "screenshotSha256": "b40f60ada61c90971bb5f4b131b2397e101d07deeaf929cd63453533ec41c542"
+  },
+  "consoleErrors": [],
+  "claims": {
+    "allowed": [
+      "URL teamMode=turns selects Turns mode",
+      "round HUD exposes team mode / turns data attributes when lifebar is active",
+      "desktop capture with 0 page console errors"
+    ],
+    "blocked": [
+      "full multi-replacement browser combat matrix",
+      "audible Common.Fx",
+      "score movement"
+    ]
+  },
+  "status": "passed"
+}

@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 599 - Turns browser HUD DA27-07
+
+Closed DA27-07: `TurnsBrowserHudJourney/v1`, App team-mode selector + URL
+`teamMode=turns`, round HUD Turns strip/team lifebar, unit KO→handoff proof,
+desktop browser gate (0 console errors). Evidence:
+`docs/evidence/da27-07-turns-browser/`. Report:
+`docs/research/2026-07-26-turns-browser-hud-da27-07.md`. Next: **DA27-08**.
+Scores unchanged.
+
 ## Entry 598 - Global re-gate DA27-06
 
 Closed DA27-06 at pin `b7d23801`. Measured: TypeScript 7 typecheck, Vitest
