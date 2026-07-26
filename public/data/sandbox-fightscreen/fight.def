@@ -1,0 +1,111 @@
+[Info]
+name = "Sandbox FightScreen"
+author = "mugen-web-sandbox"
+localcoord = 320, 240
+
+[Files]
+fightfx.air = fightfx.air
+fightfx.sff = fightfx.sff
+sff = fightfx.sff
+snd = fightfx.snd
+font1 = font/standard.def
+font1.height = 12
+
+[Round]
+; Reset / over windows
+over.waittime = 12
+over.hittime = 10
+over.wintime = 18
+over.forcewintime = 900
+over.time = 240
+
+; Round display + fallback default
+round.time = 4
+round.sndtime = 2
+round.default.snd = 8, 2
+round.default.anim = 7002
+round.default.text = Round %i
+round.default.font = 1, 0, 0, 255, 255, 255
+round.default.displaytime = 48
+round.default.offset = 160, 80
+round1.snd = 8, 1
+round1.anim = 7002
+round.single.snd = 8, 3
+round.final.snd = 8, 4
+
+; Fight call
+callfight.time = 3
+fight.time = 5
+fight.sndtime = 1
+fight.snd = 7, 1
+fight.anim = 7002
+fight.text = FIGHT
+fight.font = 1, 0, 0, 255, 220, 64
+fight.offset = 160, 100
+
+; KO family
+ko.time = 3
+ko.sndtime = 2
+ko.snd = 7, 2
+ko.anim = 7002
+ko.text = KO
+ko.font = 1, 0, 0, 255, 64, 64
+
+; Double KO + draw
+dko.time = 4
+dko.sndtime = 3
+dko.showdraw = true
+dko.anim = 7002
+dko.text = Double KO
+dko.font = 1, 0, 0, 255, 128, 64
+draw.time = 4
+draw.anim = 7002
+draw.text = Draw
+draw.font = 1, 0, 0, 200, 200, 255
+
+; Time Over
+to.time = 5
+to.sndtime = 4
+to.snd = 8, 3
+to.anim = 7002
+to.text = Time Over
+to.font = 1, 0, 0, 220, 220, 220
+
+; Win family samples
+win.time = 6
+win.anim = 7002
+win.text = You win
+win.font = 1, 0, 0, 255, 255, 128
+win2.text = You win 2
+p1.win.text = P1 win
+p2.win.text = P2 win
+p1.n.text.text = Normal win
+p1.n.text.font = 1, 0, 0, 240, 220, 200
+p1.n.time = 12
+p1.n.displaytime = 18
+p1.n.snd = 7, 2
+p1.n.sndtime = 4
+p1.perfect.text.text = Perfect win
+p1.clutch.text.text = Clutch win
+clutch.threshold = 10
+
+; Intro skip + control handoff
+start.waittime = 12
+ctrl.time = 30
+shutter.time = 15
+shutter.col = 0, 0, 0
+
+; Fade in/out
+fadein.time = 10
+fadein.col = 0, 0, 0
+fadein.anim = 7001
+fadein.snd = 8, 2
+fadeout.time = 16
+fadeout.col = 0, 0, 0
+fadeout.anim = 7001
+fadeout.snd = 7, 1
+
+; Slow-mo residual timing (named, not full parity)
+slow.time = 40
+slow.fadetime = 20
+slow.speed = 0.5

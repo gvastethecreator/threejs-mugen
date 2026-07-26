@@ -3,10 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). DA26-01..11 are closed (T406, global gate, cursor,
-epoch, authority sync). **Next live cut: DA26-12** FightScreen propio/CC0,
-then DA26-13 browser gate. The T287 queue below is historical; do not reopen
-its closed gates. Full ladder:
+(`closedThrough` DA26-12). DA26-01..12 are closed. **Next live cut: DA26-13**
+browser gate (desktop/tablet/mobile). The T287 queue below is historical.
+Full ladder:
 [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)

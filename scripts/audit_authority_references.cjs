@@ -54,11 +54,11 @@ const selector = JSON.parse(fs.readFileSync(selectorPath, "utf8"));
 if (selector.schemaVersion !== "mugen-web-sandbox/authority-selector/v1") {
   fail(`unexpected selector schema: ${selector.schemaVersion}`);
 }
-if (selector.closedThrough !== "DA26-11") {
-  fail(`expected closedThrough DA26-11, got ${selector.closedThrough}`);
+if (selector.closedThrough !== "DA26-12") {
+  fail(`expected closedThrough DA26-12, got ${selector.closedThrough}`);
 }
-if (selector.nextQueue?.[0] !== "DA26-12") {
-  fail(`expected next queue head DA26-12, got ${selector.nextQueue?.[0]}`);
+if (selector.nextQueue?.[0] !== "DA26-13") {
+  fail(`expected next queue head DA26-13, got ${selector.nextQueue?.[0]}`);
 }
 if (!String(selector.cursors?.global?.sha || "").startsWith("7d9b15f8")) {
   fail(`global cursor must pin 7d9b15f8, got ${selector.cursors?.global?.sha}`);

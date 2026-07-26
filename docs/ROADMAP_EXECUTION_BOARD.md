@@ -1,14 +1,21 @@
 ﻿# Roadmap Execution Board
 
+## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
+
+Sandbox FightScreen CC0 package ships as folder + ZIP with license, stable
+hashes, and loader evidence for round/KO/DKO/draw/time-over/win/skip/fade/
+reset/fallback surfaces. Paths: `public/data/sandbox-fightscreen/`,
+`public/system/sandbox-fightscreen.zip`. Report:
+`docs/research/2026-07-26-sandbox-fightscreen-fixture.md`. Scores do not move.
+
+Next queue head: **DA26-13** browser gate.
+
 ## Current authority selector - DA26-11 (closed, 2026-07-26)
 
 Single live selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) and
-`docs/evidence/authority-selector-v1.json` (`closedThrough` DA26-11). formal/
-global remain `7d9b15f8`. Docs and issues 01–07 point at the selector;
-historical overrides stay labeled. Reference auditor:
-`pnpm audit:authority-references`. Scores do not move.
-
-Next queue head: **DA26-12** FightScreen fixture.
+`docs/evidence/authority-selector-v1.json`. formal/global remain `7d9b15f8`.
+Docs and issues 01–07 point at the selector. Reference auditor:
+`pnpm audit:authority-references`.
 
 ## Current source authority - DA26-10 Epoch/Manifest v1 (closed, 2026-07-26)
 

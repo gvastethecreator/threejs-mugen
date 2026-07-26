@@ -1,11 +1,17 @@
 ﻿# Progress Tracker
 
+## Sandbox FightScreen fixture - DA26-12 (closed, 2026-07-26)
+
+- CC0 first-party fight.def + FightFX + FNT package (folder + ZIP + hashes).
+- Loader evidence for round/KO/draw/time-over/win/skip/fade/reset/fallback.
+- Entry 591. Next queue **DA26-13**. Scores unchanged.
+
 ## Authority selector sync - DA26-11 (closed, 2026-07-26)
 
 - Single current selector: `docs/AUTHORITY_SELECTOR.md` +
   `docs/evidence/authority-selector-v1.json`.
 - Docs + issues 01–07 point at it; `pnpm audit:authority-references` is the
-  reference auditor. Next queue **DA26-12**. Entry 590. Scores unchanged.
+  reference auditor. Entry 590. Scores unchanged.
 
 ## SourceAuthorityEpoch/Manifest v1 - DA26-10 (closed, 2026-07-26)
 

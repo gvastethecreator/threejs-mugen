@@ -1,0 +1,10 @@
+[FNT v2]
+fntversion = 2,00
+
+[Def]
+Type = bitmap
+BankType = palette
+Size = 8, 12
+Spacing = 1, 2
+Offset = 0, -1
+File = standard.sff

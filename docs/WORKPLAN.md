@@ -1,10 +1,13 @@
 # Workplan
 
+## Sandbox FightScreen fixture - DA26-12 (closed, 2026-07-26)
+
+CC0 FightScreen system package is live under `public/data/sandbox-fightscreen/`.
+Next: **DA26-13** browser gate on current HEAD.
+
 ## Authority selector sync - DA26-11 (closed, 2026-07-26)
 
 Single selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-`closedThrough` DA26-11; next **DA26-12**. Full ladder:
-[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## SourceAuthorityEpoch/Manifest v1 - DA26-10 (closed, 2026-07-26)
 

@@ -1,0 +1,48 @@
+{
+  "schema": "SandboxFightScreenHashes/v1",
+  "manifest": {
+    "schema": "SandboxFightScreenFixture/v1",
+    "id": "sandbox-fightscreen",
+    "displayName": "Sandbox FightScreen",
+    "license": "CC0-1.0",
+    "licenseFile": "data/sandbox-fightscreen/LICENSE.txt",
+    "provenance": "Repository-authored deterministic FightScreen system fixture",
+    "root": "data/sandbox-fightscreen",
+    "fightDef": "data/sandbox-fightscreen/fight.def",
+    "expectedSurfaces": [
+      "round",
+      "fight",
+      "ko",
+      "dko",
+      "draw",
+      "time-over",
+      "win-type",
+      "intro-skip",
+      "fade-in",
+      "fade-out",
+      "reset-timing",
+      "fallback-display"
+    ],
+    "files": [
+      "data/sandbox-fightscreen/LICENSE.txt",
+      "data/sandbox-fightscreen/README.md",
+      "data/sandbox-fightscreen/fight.def",
+      "data/sandbox-fightscreen/fightfx.air",
+      "data/sandbox-fightscreen/fightfx.sff",
+      "data/sandbox-fightscreen/fightfx.snd",
+      "data/sandbox-fightscreen/font/standard.def",
+      "data/sandbox-fightscreen/font/standard.sff"
+    ]
+  },
+  "hashes": {
+    "data/sandbox-fightscreen/LICENSE.txt": "a6ba8aae36ea8b205afbe5d06f5e5bc0ef52adb650063c79f3e2e236aa49b7e6",
+    "data/sandbox-fightscreen/README.md": "2a665541c5a36eaac92ec11002988b7c81b290cdfa9927bb3cf923e82fd1ccab",
+    "data/sandbox-fightscreen/fight.def": "2b39490915f31165c1dc42d783ad8f37aeca9887ba60cc2cd5e0dd5e8fbfd1fa",
+    "data/sandbox-fightscreen/fightfx.air": "992023773b367d17a59de46cab0d4a19d3c4147e94b194cd59955c84d8a03cfe",
+    "data/sandbox-fightscreen/fightfx.sff": "4e4717add2c906787279f56aa5632cbab14013115dda24375a958c5c1e97b852",
+    "data/sandbox-fightscreen/fightfx.snd": "116076abcc70bac02139c25fd78999e3416d5ca7052104f3e1c6f48e67cb87be",
+    "data/sandbox-fightscreen/font/standard.def": "3a703329c6a40f5409e2ef07a8c35ab72178a3d0506fec7ac2d36741ba26c909",
+    "data/sandbox-fightscreen/font/standard.sff": "b352bc30db17f0a79c94b2c91bb160705209fe95c02d624dc958ffaa2d8387b4"
+  },
+  "zipBytes": 3073
+}

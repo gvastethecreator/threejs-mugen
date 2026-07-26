@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 591 - Sandbox FightScreen fixture (DA26-12)
+
+Closed DA26-12: first-party CC0 FightScreen package (`SandboxFightScreenFixture/v1`)
+with fight.def, FightFX AIR/SFF/SND, FNT, LICENSE, folder under
+`public/data/sandbox-fightscreen/`, ZIP + hash ledger under `public/system/`.
+Real `MugenCharacterLoader` evidence for timing/display surfaces. Tests in
+`src/tests/FightScreenFixture.test.ts`. Claim allowed: named package load.
+Claim blocked: Elecbyte visual parity, browser gate, scores. Report:
+`docs/research/2026-07-26-sandbox-fightscreen-fixture.md`.
+
 ## Entry 590 - Authority selector sync (DA26-11)
 
 Closed DA26-11: single current authority selector across main roadmap docs and
