@@ -1,9 +1,25 @@
 ﻿# Progress Tracker
 
+## DA28-01 series adoption - Entry 603 (control, 2026-07-26)
+
+- Selector nextQueue loads DA28-02…30; closedThrough DA28-01. Next: **DA28-02**
+  global re-gate. Scores and formal/global unchanged.
+
+## Post-DA27-09 roadmap audit - Entry 602 (docs-only, 2026-07-26)
+
+- Proposed DA28-01…30 across control, live runtime/input, MUGEN-lite, MUGEN,
+  Studio, assets, scanner, source, IKEMEN planning, and boundaries. Scores and
+  cursors are unchanged.
+- Static review found model-only or bridge-only gaps in corpus, score,
+  projectiles, Turns transaction, gamepad, Studio persistence, source journal,
+  assets, scanner, common evidence facts, and boundary enforcement.
+
 ## Common.Fx + FightScreen browser - DA27-09 (closed-bounded, 2026-07-26)
 
-- CommonFxFightScreenProof (libraries + audible SND edges) + browser package
-  gate. Entry 601. `nextQueue` empty. Scores unchanged.
+- CommonFxFightScreenProof proves library load and sound dispatch with a fake
+  `AudioContext`; the browser gate proves package, shell, gesture, and console
+  reachability. It does not prove nonzero browser output or heard audio. Entry
+  601. `nextQueue` empty. Scores unchanged.
 
 ## qa:smoke matrix - DA27-08 (closed, 2026-07-26)
 

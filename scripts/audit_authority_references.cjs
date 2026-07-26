@@ -56,29 +56,24 @@ if (selector.schemaVersion !== "mugen-web-sandbox/authority-selector/v1") {
 }
 // closedThrough advances as control/runtime slices land; next queue must not restart closed IDs.
 const closed = String(selector.closedThrough || "");
-if (!/^DA2[67]-\d{2}$/.test(closed)) {
+if (!/^DA2[678]-\d{2}$/.test(closed)) {
   fail(`invalid closedThrough: ${closed}`);
 }
 if (!Array.isArray(selector.nextQueue)) {
   fail("nextQueue must be an array");
 }
-if (!Array.isArray(selector.nextQueue)) {
-  fail("nextQueue must be an array");
+if (selector.nextQueue?.[0] !== "DA28-02") {
+  fail(`expected next queue head DA28-02 (global re-gate), got ${selector.nextQueue?.[0]}`);
 }
-if (selector.nextQueue.length !== 0) {
-  fail(`expected empty next queue after DA27-09, got ${JSON.stringify(selector.nextQueue)}`);
-}
-const closedNum = Number(closed.slice(5));
 for (const id of selector.nextQueue || []) {
-  const n = Number(String(id).replace("DA26-", ""));
-  if (Number.isFinite(n) && n <= 12 && n !== 13) {
-    // 13 may remain open while later control slices close out of order
-  }
   if (/^DA26-(0[1-9]|1[0-9]|2[0-9]|30)$/.test(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
   if (/^DA27-0[1-9]$/.test(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
+  }
+  if (id === "DA28-01") {
+    fail("nextQueue still lists closed id DA28-01");
   }
 }
 if (!String(selector.cursors?.global?.sha || "").startsWith("b7d23801")) {

@@ -1,8 +1,17 @@
 # Workplan
 
+## DA28 series (adopted, 2026-07-26)
+
+DA28-01 control adoption is live. Next: **DA28-02** global re-gate. Phase order:
+control/evidence; live projectile/Turns/input; MUGEN-lite execution; MUGEN
+breadth; Studio durability; assets/scanner/source/IKEMEN/boundaries. See
+`docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
+
 ## Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)
 
-Common.Fx audible edges + FightScreen browser package gate live. DA27 queue empty.
+Common.Fx sound dispatch passes with a fake `AudioContext`; the FightScreen
+browser package, shell, and gesture gate passes. Browser output remains open.
+DA27 queue empty.
 
 ## qa:smoke matrix - DA27-08 (closed, 2026-07-26)
 
@@ -18,7 +27,8 @@ formal/global pin `b7d23801` (268/2845 tests, 663 traces).
 
 ## DA27 product wiring (closed-bounded, 2026-07-26)
 
-Snapshot/journal/facts bridges and dual-character legal journey are live.
+Snapshot/journal/facts bridges and a static dual-character legal journey are
+present. Live product use remains partial and is planned in DA28.
 
 ## DA26 ladder drain (closed-bounded, 2026-07-26)
 

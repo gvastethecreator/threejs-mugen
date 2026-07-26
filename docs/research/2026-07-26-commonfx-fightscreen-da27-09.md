@@ -1,4 +1,4 @@
-# DA27-09 Common.Fx audible + FightScreen browser depth
+# DA27-09 Common.Fx dispatch + FightScreen browser depth
 
 Date: 2026-07-26  
 Type: product depth  
@@ -6,7 +6,7 @@ Status: closed-bounded
 
 ## Deliverable
 
-- `CommonFxFightScreenProof/v1`: loads Sandbox FightScreen package, proves Common.Fx + FightFX animation libraries, unlocks WebAudio (fake in unit), plays fight/ko/round SND edges from FightFX archive
+- `CommonFxFightScreenProof/v1`: loads Sandbox FightScreen package, proves Common.Fx + FightFX animation libraries, unlocks a fake WebAudio context in unit scope, and dispatches fight/ko/round SND edges from the FightFX archive
 - Browser gate: HTTP package reachability + fight.def sound edges + runtime shell, 0 console errors
 - Script: `scripts/qa_browser_gate_da27_09_fightscreen.cjs`
 
@@ -25,13 +25,15 @@ Artifacts: `docs/evidence/da27-09-fightscreen-browser/`
 ## Claim allowed
 
 - Sandbox FightScreen Common.Fx/FightFX libraries load
-- FightScreen/FightFX SND edges are audible through MugenAudioSystem play path
+- FightScreen/FightFX SND edges reach the `MugenAudioSystem` play path in the fake unit context
 - Public package is browser-reachable with named sound surfaces
 
 ## Claim blocked
 
 - Elecbyte motif visual parity
-- Hardware audio device metering outside WebAudio diagnostics
+- Nonzero rendered or post-mix browser signal
+- Live `AudioContext` output state and hardware audio
+- A claim that a human heard the sound
 - Score movement
 
 ## Next

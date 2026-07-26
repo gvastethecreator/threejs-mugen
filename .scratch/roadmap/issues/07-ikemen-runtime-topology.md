@@ -9,10 +9,11 @@ Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 ## 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). T390 ReversalDef topology and T406 active juggle are
-closed at named ceilings. Projectile/Helper juggle and ModifyHitDef air.juggle
-remain blocked. Source epoch records juggle=`same` between 05b/4aa. Live queue
-head **DA26-12**; topology breadth DA26-17/18 later. See
+(`closedThrough` DA27-09). T390 ReversalDef topology and T406 active juggle are
+closed at named ceilings. Projectile/Helper/ModifyHitDef, live team transaction,
+and broader IKEMEN topology remain blocked. Source epoch records juggle=`same`
+between 05b/4aa; other families need review. Proposed cuts are DA28-16…18,
+DA28-27, and DA28-29. See
 [AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md).
 
 ## 2026-07-18 Post-T268 lane override

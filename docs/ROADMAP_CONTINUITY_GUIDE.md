@@ -7,12 +7,12 @@ This guide exists so the project can keep moving without losing the thread. It d
 ## 2026-07-26 continuation checkpoint
 
 **Current authority:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). formal/global gate `7d9b15f8`; focal T406
-`07ad9227`; visual/product T342; source epoch 05b/4aa. Next live cut:
-**DA26-12** FightScreen fixture. DA26-01..11 are closed. See
-[AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
-[daily audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md)
-for the remaining ladder.
+(`closedThrough` DA27-09). Current HEAD is `aa85cb84`; formal/global gate
+`b7d23801`; focal T406 `07ad9227`; visual/product T342 `1085badb`; source epoch
+05b/4aa. DA26 and DA27 are drained and `nextQueue` is empty. Continue by
+adopting the proposed DA28 series, then re-gate current HEAD before promoting
+product or score claims. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## 2026-07-18 T288 continuation checkpoint
 

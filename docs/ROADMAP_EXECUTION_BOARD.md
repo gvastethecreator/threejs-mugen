@@ -1,10 +1,22 @@
 ﻿# Roadmap Execution Board
 
+## Current DA28-01 adoption (control, 2026-07-26)
+
+DA28-02…30 are live in the selector nextQueue. Next: **DA28-02** global re-gate.
+Report:
+`docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
+
+## Current planning audit - proposed DA28 (docs-only, 2026-07-26)
+
+Entry 602 maps the remaining work after DA27-09 into DA28-01…30. Historical
+note: adoption landed in Entry 603.
+
 ## Current Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)
 
-Common.Fx/FightFX libraries + audible SND proof + browser package gate.
+Common.Fx/FightFX libraries + fake-`AudioContext` unit dispatch + browser
+package, shell, and gesture reachability. Nonzero browser output and heard
+hardware audio remain open.
 Report: `docs/research/2026-07-26-commonfx-fightscreen-da27-09.md`.
-`nextQueue` empty.
 
 ## Current qa:smoke matrix - DA27-08 (closed, 2026-07-26)
 
@@ -56,7 +68,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue: empty after DA27-09.
+Next queue head: **DA28-02** (29 DA28 tasks open after adoption).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

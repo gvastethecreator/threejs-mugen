@@ -10,11 +10,11 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 ## 2026-07-26 product evidence override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md).
-No Studio feature or browser gate landed after T342 (visual/product cursor).
-GateEvidence still points to `d69d12a`; Runtime playtest remains a fixed green
-row. Live queue after DA26-11 starts at **DA26-12**; Studio cuts remain
-DA26-22..26 in the
-[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+DA27 added snapshot, journal, evidence, and analysis bridges plus browser
+runtime cuts, but the broad visual/product cursor remains T342. Snapshot
+durability, real pre-write recovery, and live asset/scanner/evidence decisions
+remain open. Proposed cuts are DA28-21…25 in the
+[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

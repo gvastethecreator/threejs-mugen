@@ -11,10 +11,11 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md).
 SourceAuthorityEpoch/v1 is closed (DA26-10): pins 05b/4aa; juggle=`same`.
-PackageAnalysis v1 remains scanner-only for ZSS/Lua/Modules. Next scanner
-depth cuts stay DA26-25/27 after the live queue head **DA26-12**. See
+HitDef and projectile source families remain unreviewed. PackageAnalysis v1
+remains scanner-only for ZSS/Lua/Modules, and the scanner models have no live
+product decision. Proposed cuts are DA28-24 and DA28-27…29. See
 [AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md) and the
-[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## 2026-07-18 Post-Wayfinder-256 source and reanalysis override
 

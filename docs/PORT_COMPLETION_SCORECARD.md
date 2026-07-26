@@ -1,5 +1,14 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-26 post-DA27-09 audit - no score movement
+
+Current HEAD is `aa85cb84`; the last formal/global gate remains `b7d23801`.
+DA27 is drained, but corpus v1.2 and score adjudication still lack current
+material artifacts, and several DA26/DA27 capabilities lack a live consumer.
+DA27-09 does not prove browser audio output. Scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+
 ## 2026-07-26 DA27-06 global + score hold - no score movement
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).

@@ -3,9 +3,10 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA26 + DA27 ladders drained through DA27-09. **`nextQueue` empty.** Global pin
-remains `b7d23801` until a new re-gate. Follow-on needs a new audit series.
-The T287 queue below is historical.
+DA28-01 adopted the post-DA27-09 series. **Next live cut: DA28-02** global
+re-gate at current HEAD. Then DA28-03…30 per
+[audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+Global pin remains `b7d23801` until DA28-02. The T287 queue below is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

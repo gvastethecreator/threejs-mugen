@@ -1,10 +1,26 @@
 # Build Execution Backlog
 
+## Entry 603 - DA28-01 adopt DA28 series (control)
+
+Closed DA28-01: generator, machine artifact, authority selector, and linked
+current docs/issues adopt DA28-02…30 as the live next queue. `closedThrough`
+DA28-01; next head **DA28-02**. Control-only; scores and formal/global
+unchanged. Source proposal:
+`docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
+
+## Entry 602 - Post-DA27-09 roadmap and architecture audit
+
+Docs-only audit at repository HEAD `aa85cb84`. It keeps formal/global at
+`b7d23801`, focal at T406 `07ad9227`, visual/product at T342 `1085badb`, and
+scores at `65 / 36 / 20 / 10-12 / 6-8 / 25`. It proposes DA28-01…30. Report:
+`docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
+
 ## Entry 601 - Common.Fx + FightScreen browser DA27-09
 
 Closed DA27-09: `CommonFxFightScreenProof/v1` proves Common.Fx/FightFX libraries
-and FightScreen SND play path; browser gate verifies public package + fight.def
-sound edges + runtime shell. Evidence:
+and SND dispatch through a fake unit `AudioContext`; the browser gate verifies
+public package + fight.def sound edges + runtime shell + gesture reachability.
+It does not prove nonzero browser output or heard hardware audio. Evidence:
 `docs/evidence/da27-09-fightscreen-browser/`. Report:
 `docs/research/2026-07-26-commonfx-fightscreen-da27-09.md`. DA27 ladder empty.
 Scores unchanged.

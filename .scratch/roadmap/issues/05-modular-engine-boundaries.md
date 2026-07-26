@@ -10,9 +10,10 @@ Prepare the project to become a reusable browser game engine without extracting 
 ## 2026-07-26 boundary override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). Boundary script still skips absent roots; modular
-cuts remain DA26-29/30 after live queue **DA26-12+**. See the
-[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+(`closedThrough` DA27-09). Boundary script still skips absent roots and the
+new manifest has no real command consumer. DA28-30 must load it in the actual
+boundary command and CI before broad extraction. See the
+[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## 2026-07-18 Post-Wayfinder-256 non-vacuous extraction override
 

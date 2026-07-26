@@ -5,12 +5,13 @@ Last updated: 2026-07-26
 ## Latest delivery authority checkpoint
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). Global delivery gate is **`7d9b15f8`** (DA26-08:
-242/2768 tests, 663 traces, build, boundaries). Focal T406 is closed.
-Visual/product remain T342. Corpus/Studio gates stay stale for score purposes.
-Scores unchanged. Next delivery-facing cut after control: **DA26-12**. See
-[AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
-[2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+(`closedThrough` DA27-09). Current HEAD is `aa85cb84`; formal/global delivery
+proof remains **`b7d23801`** (268/2845 tests, 663 traces, build, boundaries).
+Focal T406 and visual/product T342 remain separate cursors. Corpus v1.2,
+Studio, asset, scanner, and broad product gates stay stale for score purposes.
+Scores are unchanged. The proposed delivery order starts with DA28 control,
+current-HEAD proof, and live runtime wiring. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## Historical bounded runtime checkpoint - T288 / Entry 562
 

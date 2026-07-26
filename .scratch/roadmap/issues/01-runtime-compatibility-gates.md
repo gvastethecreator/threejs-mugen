@@ -1,4 +1,4 @@
-﻿# 01 - Runtime Compatibility Gates
+# 01 - Runtime Compatibility Gates
 
 Status: ready-for-agent
 Labels: runtime-trace, mugen-compat, ready-for-agent
@@ -10,11 +10,10 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). T406 + DA26-08 global gate `7d9b15f8` closed.
-Control DA26-09..11 closed. Projectile/Helper juggle and ModifyHitDef
-air.juggle remain blocked. **Next runtime-facing after control: DA26-12+**
-only when the board picks a runtime lane; otherwise stay on the selector queue
-starting at DA26-12. See
+(`closedThrough` DA28-01). Live next head is **DA28-02**. Current HEAD is `aa85cb84`; formal/global remains
+`b7d23801`. Projectile/Helper/ModifyHitDef, live projectile order, live Turns
+transaction, and executed dual-character behavior remain open. Proposed cuts
+are DA28-06…18 after DA28 control and material evidence. See
 [AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md),
 [T406](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
 [global](../../../docs/research/2026-07-26-global-checkpoint-after-t406.md).

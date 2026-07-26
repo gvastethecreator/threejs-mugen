@@ -10,9 +10,11 @@ Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playa
 ## 2026-07-26 asset override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-11). Nova remains the only complete local release-policy
-chain. Live queue head is **DA26-12**; asset policy cuts stay DA26-23/28 in the
-[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+(`closedThrough` DA27-09). Native Nova and Mira fixtures exist, while the real
+binary transform chain and live release-policy decision remain open. Native
+fixtures cannot raise imported-package coverage. Proposed cuts are DA28-23 and
+DA28-26 in the
+[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

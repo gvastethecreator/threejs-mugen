@@ -1,12 +1,14 @@
 ﻿# Roadmap Package Milestones
 
-## Current bounded package override - DA27-06 global + T406
+## Current bounded package override - DA27 drained
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-Focal package T406 (`07ad9227`) remains juggle-only. Global gate is green at
-**`b7d23801`** (268/2845 tests, 663 traces, build, boundaries). DA26 ladder and
-DA27-01…06 are closed under claim ceilings. Scores do not move. Next package
-cut: **DA27-07** Turns browser HUD. See [AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md).
+DA26 and DA27 are drained through DA27-09 at current HEAD `aa85cb84`. Focal
+package T406 (`07ad9227`) remains juggle-only. The formal/global gate remains
+**`b7d23801`** (268/2845 tests, 663 traces, build, boundaries), four commits
+behind HEAD. Scores do not move. The next package series is the proposed DA28
+queue, starting with control adoption and a current-HEAD re-gate. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## Historical bounded runtime package - T288 / Entry 562
 

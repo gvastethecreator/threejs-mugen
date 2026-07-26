@@ -1,8 +1,38 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T22:20:39.358Z",
-  "closedThrough": "DA27-09",
-  "nextQueue": [],
+  "generatedAt": "2026-07-26T23:16:27.155Z",
+  "closedThrough": "DA28-01",
+  "nextQueue": [
+    "DA28-02",
+    "DA28-03",
+    "DA28-04",
+    "DA28-05",
+    "DA28-06",
+    "DA28-07",
+    "DA28-08",
+    "DA28-09",
+    "DA28-10",
+    "DA28-11",
+    "DA28-12",
+    "DA28-13",
+    "DA28-14",
+    "DA28-15",
+    "DA28-16",
+    "DA28-17",
+    "DA28-18",
+    "DA28-19",
+    "DA28-20",
+    "DA28-21",
+    "DA28-22",
+    "DA28-23",
+    "DA28-24",
+    "DA28-25",
+    "DA28-26",
+    "DA28-27",
+    "DA28-28",
+    "DA28-29",
+    "DA28-30"
+  ],
   "scores": {
     "sandbox": "65",
     "mugenLite": "36",
@@ -52,14 +82,16 @@
     "authoritySelectorDoc": "docs/AUTHORITY_SELECTOR.md",
     "roadmapCursor": "docs/evidence/roadmap-cursor-v1.json",
     "sourceEpoch": "docs/evidence/source-authority-epoch-v1.json",
-    "globalCheckpointReport": "docs/research/2026-07-26-global-checkpoint-after-t406.md"
+    "globalCheckpointReport": "docs/research/2026-07-26-global-checkpoint-da27-06.md"
   },
   "claims": {
     "allowed": [
+      "DA28-01 adopts proposed DA28-02..30 into live nextQueue",
       "historical sections may retain old cursors when labeled historical",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
+      "claiming DA28 product/runtime closes from control adoption alone",
       "projecting T383 or T342 as current global/product without label",
       "score movement",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors"
@@ -68,6 +100,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "1fadf32e9fed827f966cbdc3fd97bb19f97887b99b6f88403cc00c4f06f08908"
+    "value": "9a6480e5412dcce8c8386f13dfcd083a1f68764267e07aefcbfd9d6ac4534848"
   }
 }
