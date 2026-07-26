@@ -30,10 +30,11 @@
 
 ## Daily architecture audit - 2026-07-26
 
-- Audit produced DA26-01..30; Phase 0 (DA26-01..07) is now closed by T406.
-- T383 remains the last global gate until DA26-08.
+- Audit produced DA26-01..30; Phase 0 (DA26-01..07) is closed by T406.
+- DA26-08 closed the global gate at `7d9b15f8` (replaces T383 as global cursor).
+- DA26-09 closed RoadmapCursor/v1; formal/global cursors pin `7d9b15f8`.
 - T342 remains the last visual/product gate.
-- Scores remain unchanged. Remaining cuts live in the
+- Scores remain unchanged. Remaining cuts start at DA26-10 in the
   [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## Runtime direct air.juggle report - T405 (closed, 2026-07-23)

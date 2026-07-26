@@ -12,13 +12,13 @@ Next: DA26-10 SourceAuthorityEpoch/Manifest v1, then DA26-11 authority sync.
 
 ## Current global checkpoint - DA26-08 after T406 (closed, 2026-07-26)
 
-Global gate green at HEAD `7d9b15f8` (docs closeout) / materialize updates head
-to the commit that includes this board. TypeScript 7, full Vitest
+Global gate green at **`7d9b15f8`**. TypeScript 7, full Vitest
 (**242 files / 2768 tests**), aggregate traces (**663/663**, 629 required /
 34 optional), production build (332 modules; JS 2136.15 kB / gzip 534.28 kB),
-`check:boundaries`, and `check:redirect-boundary` all passed. This replaces
-T383 as the latest global runtime cursor. Scores do not move. Browser smoke is
-N/A for this batch. Report:
+`check:boundaries`, and `check:redirect-boundary` all passed. RoadmapCursor
+`formal`/`global` pin this SHA and must not track later feature tips. This
+replaces T383 as the latest global runtime cursor. Scores do not move. Browser
+smoke is N/A for this batch. Report:
 `docs/research/2026-07-26-global-checkpoint-after-t406.md`.
 
 ## Current runtime compatibility board - T406 (closed, 2026-07-26)

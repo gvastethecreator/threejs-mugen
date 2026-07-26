@@ -133,8 +133,34 @@ describe("RoadmapCursor", () => {
     expect(parsed.errors).toEqual([]);
     expect(parsed.document?.schemaVersion).toBe("mugen-web-sandbox/roadmap-cursor/v1");
     expect(parsed.document?.cursors).toHaveLength(7);
-    expect(getRoadmapCursor(parsed.document!, "global")?.artifact).toContain("global-checkpoint-after-t406");
+    const formal = getRoadmapCursor(parsed.document!, "formal");
+    const global = getRoadmapCursor(parsed.document!, "global");
+    const head = getRoadmapCursor(parsed.document!, "head");
+    // formal/global must name the audited DA26-08 gate, not a later feature tip.
+    expect(formal?.sha).toBe("7d9b15f828934a7a25f445b44d72e01cd471027e");
+    expect(global?.sha).toBe("7d9b15f828934a7a25f445b44d72e01cd471027e");
+    expect(formal?.claimLimit).toMatch(/Entry 587|DA26-08/);
+    expect(global?.artifact).toContain("global-checkpoint-after-t406");
+    expect(formal?.sha).not.toBe(head?.sha);
+    expect(global?.sha).not.toBe(head?.sha);
     // Canonical form is stable for the committed payload.
     expect(canonicalizeRoadmapCursorDocument(parsed.document!).length).toBeGreaterThan(100);
+  });
+
+  it("reports mismatch when observed HEAD differs from the head cursor", () => {
+    const document = createRoadmapCursorDocument(input({
+      cursors: ROADMAP_CURSOR_KINDS.map((kind) => ({
+        kind,
+        sha: kind === "head" ? HEAD : SHA[kind],
+        date: "2026-07-26T12:00:00.000Z",
+        artifact: `docs/${kind}.md`,
+        claimLimit: kind,
+      })),
+    }));
+    const result = evaluateRoadmapCursorFreshness(document, {
+      observedHeadSha: "c4001285aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      now: "2026-07-26T13:00:00.000Z",
+    });
+    expect(result.status).toBe("mismatch");
   });
 });

@@ -8,6 +8,13 @@ const CANONICALIZATION = "stable-json/v0";
 const DIGEST_ALGORITHM = "sha-256";
 const KINDS = ["head", "formal", "focal", "global", "visual", "product", "source"];
 
+/** Audited DA26-08 global checkpoint SHA. formal/global must pin this, not live tip. */
+const GATE_GLOBAL = "7d9b15f828934a7a25f445b44d72e01cd471027e";
+const GATE_GLOBAL_DATE = "2026-07-26T17:04:00.000Z";
+const FOCAL_T406 = "07ad9227";
+const VISUAL_T342 = "1085badb";
+const SOURCE_NORMATIVE = "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703";
+
 const args = parseArgs(process.argv.slice(2));
 const repoRoot = path.resolve(process.cwd());
 const outputPath = resolveInputPath(args.output ?? "docs/evidence/roadmap-cursor-v1.json");
@@ -18,35 +25,68 @@ try {
   const head = git(["rev-parse", "HEAD"]).trim();
   const headDate = git(["show", "-s", "--format=%cI", head]).trim();
 
-  // Control cursors: keep claim ceilings separate so a green global gate never
-  // silently upgrades visual or product claims from older SHAs.
+  // formal/global stay pinned to the audited gate. Never rewrite them from live HEAD.
+  // --live-head-control is accepted for compatibility and only refreshes `head`.
   const cursors = [
-    cursor("head", head, headDate, "git HEAD", "committed content only; does not inherit older gates"),
-    cursor("formal", "7d9b15f828934a7a25f445b44d72e01cd471027e", "2026-07-26T17:00:00.000Z", "docs/BUILD_EXECUTION_BACKLOG.md#entry-587", "Entry 587 / DA26-08 formal closeout"),
-    cursor("focal", "07ad9227", "2026-07-26T16:00:00.000Z", "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md", "T406 active juggle runtime only"),
-    cursor("global", "7d9b15f828934a7a25f445b44d72e01cd471027e", "2026-07-26T17:04:00.000Z", "docs/research/2026-07-26-global-checkpoint-after-t406.md", "TypeScript/Vitest/traces/build/boundaries at named SHA only"),
-    cursor("visual", "1085badb", "2026-07-20T00:00:00.000Z", "docs/research (T342 visual gate)", "T342 browser/visual claims only; not HEAD product truth"),
-    cursor("product", "1085badb", "2026-07-20T00:00:00.000Z", "docs/research (T342 product gate)", "T342 local Studio product flows only"),
-    cursor("source", "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703", "2026-07-18T13:00:00.000Z", "docs/evidence/source-authority-manifest-v0.json", "normative pin identity; semantic review remains unclassified"),
+    cursor(
+      "head",
+      head,
+      headDate,
+      "git HEAD",
+      "materialize-time tip only; does not inherit formal/global/visual claims",
+    ),
+    cursor(
+      "formal",
+      GATE_GLOBAL,
+      "2026-07-26T17:00:00.000Z",
+      "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
+      "Entry 587 / DA26-08 formal closeout at audited gate SHA only",
+    ),
+    cursor(
+      "focal",
+      FOCAL_T406,
+      "2026-07-26T16:00:00.000Z",
+      "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
+      "T406 active juggle runtime only",
+    ),
+    cursor(
+      "global",
+      GATE_GLOBAL,
+      GATE_GLOBAL_DATE,
+      "docs/research/2026-07-26-global-checkpoint-after-t406.md",
+      "TypeScript/Vitest/traces/build/boundaries at 7d9b15f8 only",
+    ),
+    cursor(
+      "visual",
+      VISUAL_T342,
+      "2026-07-20T00:00:00.000Z",
+      "docs/research (T342 visual gate)",
+      "T342 browser/visual claims only; not HEAD product truth",
+    ),
+    cursor(
+      "product",
+      VISUAL_T342,
+      "2026-07-20T00:00:00.000Z",
+      "docs/research (T342 product gate)",
+      "T342 local Studio product flows only",
+    ),
+    cursor(
+      "source",
+      SOURCE_NORMATIVE,
+      "2026-07-18T13:00:00.000Z",
+      "docs/evidence/source-authority-manifest-v0.json",
+      "normative pin identity; semantic review remains unclassified",
+    ),
   ];
 
-  // When materializing after further commits, prefer live HEAD for head/formal/global
-  // only if the caller passes --live-head-control.
-  if (args["live-head-control"] === true || args["live-head-control"] === "true") {
-    for (const kind of ["head", "formal", "global"]) {
-      const entry = cursors.find((item) => item.kind === kind);
-      if (entry) {
-        entry.sha = head;
-        entry.date = headDate;
-      }
-    }
-  } else {
-    const headEntry = cursors.find((item) => item.kind === "head");
-    if (headEntry) {
-      headEntry.sha = head;
-      headEntry.date = headDate;
-    }
+  // Live tip updates `head` only (default and --live-head-control).
+  const headEntry = cursors.find((item) => item.kind === "head");
+  if (headEntry) {
+    headEntry.sha = head;
+    headEntry.date = headDate;
   }
+
+  assertPinnedCursors(cursors, head);
 
   const document = createDocument({
     generatedAt,
@@ -70,6 +110,7 @@ try {
         "score movement",
         "visual or product inheritance from older cursors",
         "semantic source review promotion",
+        "rewriting formal/global from live HEAD",
       ],
     },
   });
@@ -87,6 +128,26 @@ try {
 } catch (error) {
   process.stderr.write(`Roadmap cursor materialization failed: ${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;
+}
+
+function assertPinnedCursors(cursors, liveHead) {
+  const formal = cursors.find((item) => item.kind === "formal");
+  const global = cursors.find((item) => item.kind === "global");
+  if (!formal || formal.sha !== GATE_GLOBAL) {
+    throw new Error(`formal cursor must pin ${GATE_GLOBAL}, got ${formal?.sha}`);
+  }
+  if (!global || global.sha !== GATE_GLOBAL) {
+    throw new Error(`global cursor must pin ${GATE_GLOBAL}, got ${global?.sha}`);
+  }
+  if (formal.sha === liveHead || global.sha === liveHead) {
+    // Only fails when live tip equals the gate (benign) — keep as no-op check for non-gate tips.
+  }
+  if (args["live-head-control"] === true || args["live-head-control"] === "true") {
+    // Compatibility flag: still must not rewrite formal/global.
+    if (formal.sha !== GATE_GLOBAL || global.sha !== GATE_GLOBAL) {
+      throw new Error("--live-head-control must not rewrite formal/global");
+    }
+  }
 }
 
 function cursor(kind, sha, date, artifact, claimLimit) {
@@ -130,10 +191,10 @@ function normalizeCursors(cursors) {
   return KINDS.map((kind) => byKind.get(kind));
 }
 
-function git(args) {
-  const result = spawnSync("git", args, { encoding: "utf8", cwd: repoRoot });
+function git(gitArgs) {
+  const result = spawnSync("git", gitArgs, { encoding: "utf8", cwd: repoRoot });
   if (result.status !== 0) {
-    throw new Error(result.stderr || `git ${args.join(" ")} failed`);
+    throw new Error(result.stderr || `git ${gitArgs.join(" ")} failed`);
   }
   return result.stdout;
 }

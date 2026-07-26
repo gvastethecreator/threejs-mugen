@@ -24,6 +24,12 @@ freshness evaluator.
 - Each cursor: `sha`, `date`, `artifact`, `claimLimit`
 - Document also carries `branch`, `scores`, `dirtyExclusions`, claims, and
   SHA-256 digest over the canonical payload
+- **Pin rules**
+  - `formal` and `global` pin the audited DA26-08 gate `7d9b15f8` and must not
+    be rewritten from live tip by the materializer
+  - `focal` pins T406 runtime `07ad9227`
+  - `head` is materialize-time tip only; a later pure evidence commit can lag
+    one SHA and correctly report `mismatch` until rematerialized
 - Freshness:
   - `mismatch` when the head cursor SHA differs from observed HEAD
   - `stale` when generatedAt or head/global dates exceed `maxAgeMs` (default 24h)
