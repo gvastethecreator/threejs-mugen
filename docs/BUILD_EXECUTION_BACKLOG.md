@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 600 - qa:smoke matrix DA27-08
+
+Closed DA27-08: full `pnpm qa:smoke` passed (runtime desktop/mobile attack
+canvas, mugen-lite combat/recovery, Studio build package contracts). Fixes:
+rematerialized studio gate evidence; updated Nova `asset-permission.json`
+digests after CNS/AIR expansion. Evidence:
+`docs/evidence/da27-08-qa-smoke/`. Report:
+`docs/research/2026-07-26-qa-smoke-da27-08.md`. Next: **DA27-09**. Scores
+unchanged.
+
 ## Entry 599 - Turns browser HUD DA27-07
 
 Closed DA27-07: `TurnsBrowserHudJourney/v1`, App team-mode selector + URL

@@ -1,0 +1,75 @@
+{
+  "schema": "QaSmokeGateEvidence/v1",
+  "id": "DA27-08",
+  "generatedAt": "2026-07-26T20:09:36.673Z",
+  "status": "passed",
+  "baseUrl": "http://127.0.0.1:5300",
+  "serverMode": "started-vite",
+  "browserPath": "playwright",
+  "consoleIssues": 0,
+  "pageErrors": 0,
+  "runtimeDesktop": {
+    "actors": [
+      {
+        "id": "p1",
+        "label": "Nova Boxer",
+        "stateNo": 200,
+        "animNo": 500,
+        "life": 916,
+        "hitEffects": 0
+      },
+      {
+        "id": "p2",
+        "label": "Mira Volt",
+        "stateNo": 20,
+        "animNo": 20,
+        "life": 1000,
+        "hitEffects": 1
+      }
+    ],
+    "hitSparkSources": {
+      "player": 1
+    }
+  },
+  "runtimeMobile": {
+    "actors": [
+      {
+        "id": "p1",
+        "label": "Nova Boxer",
+        "stateNo": 0,
+        "animNo": 0,
+        "life": 916,
+        "hitEffects": 0
+      },
+      {
+        "id": "p2",
+        "label": "Mira Volt",
+        "stateNo": 20,
+        "animNo": 20,
+        "life": 1000,
+        "hitEffects": 1
+      }
+    ]
+  },
+  "mugenLite": {},
+  "studioBuild": {
+    "importedFixtureLoaded": true,
+    "architectureEvidenceStatus": "ok",
+    "architectureEvidenceCanExport": true,
+    "evidenceEnvelopesCurrent": 2,
+    "assetReleasePolicyReady": 1,
+    "novaCanRelease": true
+  },
+  "claims": {
+    "allowed": [
+      "full pnpm qa:smoke matrix green on current tree",
+      "desktop/mobile attack-canvas paths exercised",
+      "studio build package contracts/evidence including gate and nova release policy"
+    ],
+    "blocked": [
+      "score movement",
+      "replacing formal/global pin without re-gate",
+      "audible Common.Fx exclusive DA27-09 claim"
+    ]
+  }
+}

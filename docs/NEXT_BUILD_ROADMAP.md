@@ -3,9 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA27-07 Turns browser HUD closed (unit + desktop browser). **Next live cut:
-DA27-08** `qa:smoke` canvas matrix. Also open: 09. Global pin remains
-`b7d23801` until a new re-gate. The T287 queue below is historical.
+DA27-08 full `qa:smoke` closed. **Next live cut: DA27-09** Common.Fx audible +
+FightScreen browser depth. Global pin remains `b7d23801` until a new re-gate.
+The T287 queue below is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

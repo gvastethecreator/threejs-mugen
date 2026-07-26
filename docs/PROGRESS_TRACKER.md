@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## qa:smoke matrix - DA27-08 (closed, 2026-07-26)
+
+- Full `pnpm qa:smoke` green after gate-evidence refresh and Nova permission
+  digest sync. Entry 600. Next: **DA27-09**. Scores unchanged.
+
 ## Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
 
 - Team mode selector, Turns HUD projection, KO→handoff unit journey, desktop

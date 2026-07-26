@@ -1,7 +1,7 @@
 {
   "schemaVersion": "mugen-web-sandbox/gate-evidence/v0",
-  "generatedAt": "2026-07-16T18:44:14.146Z",
-  "sourceRevision": "d69d12a4058c5654b99787a23499a60925b9d85c",
+  "generatedAt": "2026-07-26T20:04:13.068Z",
+  "sourceRevision": "990e97001b36b2a7fa7497ab4856e159efa48e80",
   "results": [
     {
       "schemaVersion": "mugen-web-sandbox/gate-evidence/v0",
@@ -15,8 +15,8 @@
         "name": "check_boundaries.cjs",
         "version": "repository-script/v1"
       },
-      "observedAt": "2026-07-16T18:44:14.146Z",
-      "sourceRevision": "d69d12a4058c5654b99787a23499a60925b9d85c",
+      "observedAt": "2026-07-26T20:04:13.068Z",
+      "sourceRevision": "990e97001b36b2a7fa7497ab4856e159efa48e80",
       "target": {
         "kind": "contract",
         "id": "test:architecture-boundaries"
@@ -25,7 +25,7 @@
         "maxAgeMs": 604800000
       },
       "diagnostics": [],
-      "digest": "fnv1a32:c4be5cf8"
+      "digest": "fnv1a32:56da7f71"
     }
   ]
 }

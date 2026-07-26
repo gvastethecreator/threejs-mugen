@@ -1,9 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## Current qa:smoke matrix - DA27-08 (closed, 2026-07-26)
+
+Full `pnpm qa:smoke` green. Report: `docs/research/2026-07-26-qa-smoke-da27-08.md`.
+Next: **DA27-09**.
+
 ## Current Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
 
 Team mode selector, Turns HUD journey, browser evidence.
-Report: `docs/research/2026-07-26-turns-browser-hud-da27-07.md`. Next: **DA27-08**.
+Report: `docs/research/2026-07-26-turns-browser-hud-da27-07.md`.
 
 ## Current global re-gate - DA27-06 (closed, 2026-07-26)
 
@@ -46,7 +51,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA27-08** full `qa:smoke` attack/canvas matrix.
+Next queue head: **DA27-09** Common.Fx audible + FightScreen browser depth.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

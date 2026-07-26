@@ -1,8 +1,12 @@
 # Workplan
 
+## qa:smoke matrix - DA27-08 (closed, 2026-07-26)
+
+Full attack/canvas Studio smoke green. Next: **DA27-09** Common.Fx / FightScreen.
+
 ## Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
 
-Team mode Turns path + HUD evidence live. Next: **DA27-08** `qa:smoke` matrix.
+Team mode Turns path + HUD evidence live.
 
 ## Global re-gate - DA27-06 (closed, 2026-07-26)
 
