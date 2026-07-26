@@ -9,17 +9,18 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA28-01** (DA28 series adopted)
-- formal/global: **`b7d23801`** (Entry 598 / DA27-06 gate until DA28-02)
+- `closedThrough`: **DA28-02** (global re-gate)
+- formal/global: **`32466c6e`** (Entry 604 / DA28-02 gate)
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb` (separate bounded captures exist)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA28-02** … **DA28-30** (29 open)
+- next queue: **DA28-03** … **DA28-30** (28 open)
 - Scores unchanged (adjudicated hold).
 
-Current repository HEAD is `aa85cb84`; Entry 603 adopted DA28 into the selector.
-The formal/global cursor remains `b7d23801` until DA28-02. Plan source:
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+Gate pin is `32466c6e` (270/2850 tests, 663 traces, build, boundaries). Entry 604
+closed DA28-02. Next live cut is DA28-03. Plan source:
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md);
+[global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
 
 The T287/T288 selectors below are **historical**.
 

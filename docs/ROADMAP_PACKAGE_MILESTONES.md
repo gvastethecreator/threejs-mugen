@@ -3,12 +3,12 @@
 ## Current bounded package override - DA27 drained
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA26 and DA27 are drained through DA27-09 at current HEAD `aa85cb84`. Focal
-package T406 (`07ad9227`) remains juggle-only. The formal/global gate remains
-**`b7d23801`** (268/2845 tests, 663 traces, build, boundaries), four commits
-behind HEAD. Scores do not move. The next package series is the proposed DA28
-queue, starting with control adoption and a current-HEAD re-gate. See the
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+DA26, DA27, DA28-01, and DA28-02 are closed. Formal/global gate is
+**`32466c6e`** (270/2850 tests, 663 traces, build, boundaries). Focal package
+T406 (`07ad9227`) remains juggle-only. Scores do not move. Next package cuts
+start at DA28-03 browser subcursors, then corpus/score materialization. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
+and [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
 
 ## Historical bounded runtime package - T288 / Entry 562
 

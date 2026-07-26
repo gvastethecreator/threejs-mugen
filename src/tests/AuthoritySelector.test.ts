@@ -8,13 +8,13 @@ import {
   type AuthoritySelectorInput,
 } from "../mugen/compatibility/AuthoritySelector";
 
-const GATE = "b7d23801bd3ca766ba5b184b3c040bef8165d355";
+const GATE = "32466c6e8bb4ec3f414a0cda032af24ea241e5c6";
 
 function input(overrides: Partial<AuthoritySelectorInput> = {}): AuthoritySelectorInput {
   return {
     generatedAt: "2026-07-26T19:00:00.000Z",
-    closedThrough: "DA28-01",
-    nextQueue: ["DA28-02", "DA28-03"],
+    closedThrough: "DA28-02",
+    nextQueue: ["DA28-03", "DA28-04"],
     scores: {
       sandbox: "65",
       mugenLite: "36",
@@ -51,10 +51,10 @@ describe("AuthoritySelector", () => {
     const first = createAuthoritySelectorDocument(input());
     const second = createAuthoritySelectorDocument({
       ...input(),
-      nextQueue: ["DA28-03", "DA28-02"],
+      nextQueue: ["DA28-04", "DA28-03"],
     });
     expect(first.digest.value).toBe(second.digest.value);
-    expect(first.nextQueue[0]).toBe("DA28-02");
+    expect(first.nextQueue[0]).toBe("DA28-03");
     expect(first.cursors.formal.sha).toBe(GATE);
     expect(first.cursors.global.sha).toBe(GATE);
     expect(parseAuthoritySelectorDocument(first)).toEqual({ errors: [], document: first });
@@ -71,9 +71,9 @@ describe("AuthoritySelector", () => {
     const parsed = parseAuthoritySelectorDocument(JSON.parse(readFileSync(artifactPath, "utf8")));
     expect(parsed.errors).toEqual([]);
     expect(parsed.document?.closedThrough).toMatch(/^DA2[678]-\d{2}$/);
-    expect(parsed.document?.nextQueue[0]).toBe("DA28-02");
-    expect(parsed.document?.cursors.formal.sha.startsWith("b7d23801")).toBe(true);
-    expect(parsed.document?.cursors.global.sha.startsWith("b7d23801")).toBe(true);
+    expect(parsed.document?.nextQueue[0]).toBe("DA28-03");
+    expect(parsed.document?.cursors.formal.sha.startsWith("32466c6e")).toBe(true);
+    expect(parsed.document?.cursors.global.sha.startsWith("32466c6e")).toBe(true);
   });
 
   it("keeps stale-current patterns that the reference auditor relies on", () => {

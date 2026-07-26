@@ -1,10 +1,11 @@
 # Workplan
 
-## DA28 series (adopted, 2026-07-26)
+## DA28 series (in progress, 2026-07-26)
 
-DA28-01 control adoption is live. Next: **DA28-02** global re-gate. Phase order:
-control/evidence; live projectile/Turns/input; MUGEN-lite execution; MUGEN
-breadth; Studio durability; assets/scanner/source/IKEMEN/boundaries. See
+DA28-02 global re-gate closed at `32466c6e`. Next: **DA28-03** browser
+subcursors. Phase order: control/evidence; live projectile/Turns/input;
+MUGEN-lite execution; MUGEN breadth; Studio durability;
+assets/scanner/source/IKEMEN/boundaries. See
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 
 ## Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)
@@ -21,9 +22,13 @@ Full attack/canvas Studio smoke green.
 
 Team mode Turns path + HUD evidence live.
 
-## Global re-gate - DA27-06 (closed, 2026-07-26)
+## Global re-gate - DA28-02 (closed, 2026-07-26)
 
-formal/global pin `b7d23801` (268/2845 tests, 663 traces).
+formal/global pin `32466c6e` (270/2850 tests, 663 traces).
+
+## Historical global re-gate - DA27-06 (closed, 2026-07-26)
+
+formal/global pin was `b7d23801` (268/2845 tests, 663 traces).
 
 ## DA27 product wiring (closed-bounded, 2026-07-26)
 

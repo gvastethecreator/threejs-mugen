@@ -7,12 +7,12 @@ This guide exists so the project can keep moving without losing the thread. It d
 ## 2026-07-26 continuation checkpoint
 
 **Current authority:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA27-09). Current HEAD is `aa85cb84`; formal/global gate
-`b7d23801`; focal T406 `07ad9227`; visual/product T342 `1085badb`; source epoch
-05b/4aa. DA26 and DA27 are drained and `nextQueue` is empty. Continue by
-adopting the proposed DA28 series, then re-gate current HEAD before promoting
-product or score claims. See the
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+(`closedThrough` DA28-02). Formal/global gate `32466c6e` (270/2850, 663 traces);
+focal T406 `07ad9227`; visual/product T342 `1085badb`; source epoch 05b/4aa.
+DA26, DA27, DA28-01, and DA28-02 are closed. Continue at **DA28-03** browser
+subcursors, then corpus/score materialization and live runtime wiring. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
+and [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
 
 ## 2026-07-18 T288 continuation checkpoint
 

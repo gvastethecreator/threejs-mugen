@@ -1,8 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## Current global re-gate - DA28-02 (closed, 2026-07-26)
+
+Pin `32466c6e`: typecheck, 270/2850 Vitest, 663 traces, build, boundaries.
+Next: **DA28-03** browser subcursors.
+Report: `docs/research/2026-07-26-global-checkpoint-da28-02.md`.
+
 ## Current DA28-01 adoption (control, 2026-07-26)
 
-DA28-02…30 are live in the selector nextQueue. Next: **DA28-02** global re-gate.
+DA28-02…30 were adopted into the selector nextQueue. Historical after DA28-02.
 Report:
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 
@@ -27,9 +33,10 @@ Full `pnpm qa:smoke` green. Report: `docs/research/2026-07-26-qa-smoke-da27-08.m
 Team mode selector, Turns HUD journey, browser evidence.
 Report: `docs/research/2026-07-26-turns-browser-hud-da27-07.md`.
 
-## Current global re-gate - DA27-06 (closed, 2026-07-26)
+## Historical global re-gate - DA27-06 (closed, 2026-07-26)
 
 Pin `b7d23801`: typecheck, 268/2845 Vitest, 663 traces, build, boundaries.
+Superseded by DA28-02 pin `32466c6e`.
 Report: `docs/research/2026-07-26-global-checkpoint-da27-06.md`.
 
 ## Current DA27 product wiring (closed-bounded, 2026-07-26)
@@ -68,7 +75,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA28-02** (29 DA28 tasks open after adoption).
+Next queue head: **DA28-03** (28 DA28 tasks open after DA28-02).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

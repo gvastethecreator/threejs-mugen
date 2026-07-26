@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 604 - Global re-gate DA28-02
+
+Closed DA28-02 at pin `32466c6e`. Measured: TypeScript 7 typecheck, Vitest
+270 files / 2850 tests, traces 663/663, production build (340 modules),
+boundaries, redirect-boundary, studio gate-evidence materialize. Boundary fix:
+`CommonFxFightScreenProof` injects audio probe (no `mugen`→`game` import).
+formal/global cursors advance to this pin. Report:
+`docs/research/2026-07-26-global-checkpoint-da28-02.md`. Scores unchanged.
+Next: **DA28-03** browser subcursors.
+
 ## Entry 603 - DA28-01 adopt DA28 series (control)
 
 Closed DA28-01: generator, machine artifact, authority selector, and linked

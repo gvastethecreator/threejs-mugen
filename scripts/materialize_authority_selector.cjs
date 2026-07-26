@@ -6,7 +6,7 @@ const SCHEMA = "mugen-web-sandbox/authority-selector/v1";
 const CANONICALIZATION = "stable-json/v0";
 const DIGEST_ALGORITHM = "sha-256";
 
-const GATE_GLOBAL = "b7d23801bd3ca766ba5b184b3c040bef8165d355";
+const GATE_GLOBAL = "32466c6e8bb4ec3f414a0cda032af24ea241e5c6";
 const FOCAL_T406 = "07ad9227";
 const VISUAL_T342 = "1085badb";
 const SOURCE_NORMATIVE = "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703";
@@ -19,9 +19,8 @@ const generatedAt = args["generated-at"] ?? new Date().toISOString();
 
 const document = createDocument({
   generatedAt,
-  closedThrough: "DA28-01",
+  closedThrough: "DA28-02",
   nextQueue: [
-    "DA28-02",
     "DA28-03",
     "DA28-04",
     "DA28-05",
@@ -60,9 +59,9 @@ const document = createDocument({
     studio: "25",
   },
   cursors: {
-    formal: cursor(GATE_GLOBAL, "docs/BUILD_EXECUTION_BACKLOG.md#entry-598", "Entry 598 formal/global closeout (DA27-06)"),
+    formal: cursor(GATE_GLOBAL, "docs/BUILD_EXECUTION_BACKLOG.md#entry-604", "Entry 604 formal/global closeout (DA28-02)"),
     focal: cursor(FOCAL_T406, "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md", "T406 active juggle runtime only"),
-    global: cursor(GATE_GLOBAL, "docs/research/2026-07-26-global-checkpoint-da27-06.md", "global gate TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only"),
+    global: cursor(GATE_GLOBAL, "docs/research/2026-07-26-global-checkpoint-da28-02.md", "global gate TypeScript/Vitest 270·2850 / traces 663 / build / boundaries at 32466c6e only"),
     visual: cursor(VISUAL_T342, "docs/research (T342 visual gate)", "T342 visual only; not HEAD product truth"),
     product: cursor(VISUAL_T342, "docs/research (T342 product gate)", "T342 product only"),
     sourceNormative: cursor(SOURCE_NORMATIVE, "docs/evidence/source-authority-epoch-v1.json", "normative pin 05b; family provenance in epoch"),
@@ -72,19 +71,19 @@ const document = createDocument({
     authoritySelectorDoc: "docs/AUTHORITY_SELECTOR.md",
     roadmapCursor: "docs/evidence/roadmap-cursor-v1.json",
     sourceEpoch: "docs/evidence/source-authority-epoch-v1.json",
-    globalCheckpointReport: "docs/research/2026-07-26-global-checkpoint-da27-06.md",
+    globalCheckpointReport: "docs/research/2026-07-26-global-checkpoint-da28-02.md",
   },
   claims: {
     allowed: [
       "single current authority selector for docs and issues 01-07",
       "historical sections may retain old cursors when labeled historical",
-      "DA28-01 adopts proposed DA28-02..30 into live nextQueue",
+      "DA28-02 global re-gate at 32466c6e with 270/2850 tests and 663 traces",
     ],
     blocked: [
       "score movement",
       "projecting T383 or T342 as current global/product without label",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors",
-      "claiming DA28 product/runtime closes from control adoption alone",
+      "claiming DA28-03..30 product/runtime closes from DA28-02 re-gate alone",
     ],
   },
 });

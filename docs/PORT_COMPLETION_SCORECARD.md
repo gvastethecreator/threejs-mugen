@@ -1,20 +1,25 @@
 ﻿# Port Completion Scorecard
 
-## 2026-07-26 post-DA27-09 audit - no score movement
-
-Current HEAD is `aa85cb84`; the last formal/global gate remains `b7d23801`.
-DA27 is drained, but corpus v1.2 and score adjudication still lack current
-material artifacts, and several DA26/DA27 capabilities lack a live consumer.
-DA27-09 does not prove browser audio output. Scores stay
-`65 / 36 / 20 / 10-12 / 6-8 / 25`. See the
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
-
-## 2026-07-26 DA27-06 global + score hold - no score movement
+## 2026-07-26 DA28-02 global re-gate - no score movement
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-Global evidence is DA27-06 at **`b7d23801`**: 268 files / 2845 tests / 663
-traces plus build and boundaries. Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`
-(DA26-21 adjudication hold). Focal T406. Visual/product T342. See
+Global evidence is DA28-02 at **`32466c6e`**: 270 files / 2850 tests / 663
+traces plus build and boundaries. Corpus v1.2 and score adjudication still lack
+current material artifacts. Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+See [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
+
+## 2026-07-26 post-DA27-09 audit - no score movement (historical)
+
+Current HEAD was `aa85cb84`; formal/global was still `b7d23801` at audit time.
+DA27 drained; scores held. See the
+[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+
+## 2026-07-26 DA27-06 global + score hold - no score movement (historical)
+
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+Global evidence was DA27-06 at **`b7d23801`**: 268 files / 2845 tests / 663
+traces plus build and boundaries. Superseded by DA28-02. Scores remain
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. See
 [global checkpoint](research/2026-07-26-global-checkpoint-da27-06.md).
 
 ## 2026-07-26 score adjudication hold - no score movement (historical)

@@ -4,14 +4,13 @@ Last updated: 2026-07-26
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
-## Current control override: post-DA27-09 / Entry 602 audit
+## Current control override: DA28-02 global re-gate / Entry 604
 
-Current HEAD is `aa85cb84`; Entry 601 / DA27-09 is the latest implementation
-ledger close. Formal/global remains Entry 598 at `b7d23801`, focal source
-remains T406 at `07ad9227`, and the broad bounded visual/product cursor remains
-T342 at `1085badb`. The selector queue is empty. DA28 is a planning proposal
-until a later code-enabled task updates the generator and machine selector.
-Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. See the
+Formal/global is Entry 604 at `32466c6e` (270/2850 tests, 663 traces, build,
+boundaries). Focal source remains T406 at `07ad9227`. Broad bounded
+visual/product cursor remains T342 at `1085badb`. `closedThrough` is DA28-02;
+next head is DA28-03. Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. See
+[global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md) and the
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## Historical control override: T288 / Entry 562 frontier

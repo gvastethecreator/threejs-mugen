@@ -1,9 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T23:16:27.155Z",
-  "closedThrough": "DA28-01",
+  "generatedAt": "2026-07-26T23:24:34.910Z",
+  "closedThrough": "DA28-02",
   "nextQueue": [
-    "DA28-02",
     "DA28-03",
     "DA28-04",
     "DA28-05",
@@ -43,9 +42,9 @@
   },
   "cursors": {
     "formal": {
-      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
-      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-598",
-      "claimLimit": "Entry 598 formal/global closeout (DA27-06)"
+      "sha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-604",
+      "claimLimit": "Entry 604 formal/global closeout (DA28-02)"
     },
     "focal": {
       "sha": "07ad9227",
@@ -53,9 +52,9 @@
       "claimLimit": "T406 active juggle runtime only"
     },
     "global": {
-      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
-      "artifact": "docs/research/2026-07-26-global-checkpoint-da27-06.md",
-      "claimLimit": "global gate TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only"
+      "sha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+      "artifact": "docs/research/2026-07-26-global-checkpoint-da28-02.md",
+      "claimLimit": "global gate TypeScript/Vitest 270·2850 / traces 663 / build / boundaries at 32466c6e only"
     },
     "visual": {
       "sha": "1085badb",
@@ -82,16 +81,16 @@
     "authoritySelectorDoc": "docs/AUTHORITY_SELECTOR.md",
     "roadmapCursor": "docs/evidence/roadmap-cursor-v1.json",
     "sourceEpoch": "docs/evidence/source-authority-epoch-v1.json",
-    "globalCheckpointReport": "docs/research/2026-07-26-global-checkpoint-da27-06.md"
+    "globalCheckpointReport": "docs/research/2026-07-26-global-checkpoint-da28-02.md"
   },
   "claims": {
     "allowed": [
-      "DA28-01 adopts proposed DA28-02..30 into live nextQueue",
+      "DA28-02 global re-gate at 32466c6e with 270/2850 tests and 663 traces",
       "historical sections may retain old cursors when labeled historical",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
-      "claiming DA28 product/runtime closes from control adoption alone",
+      "claiming DA28-03..30 product/runtime closes from DA28-02 re-gate alone",
       "projecting T383 or T342 as current global/product without label",
       "score movement",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors"
@@ -100,6 +99,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "9a6480e5412dcce8c8386f13dfcd083a1f68764267e07aefcbfd9d6ac4534848"
+    "value": "d46e32bf64fb4bf4119855fa0fa8b0eae6463812d3c03a04b4797cc9c10e13ce"
   }
 }

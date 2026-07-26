@@ -1,9 +1,15 @@
 ﻿# Progress Tracker
 
+## Global re-gate - DA28-02 (closed, 2026-07-26)
+
+- Pin `32466c6e`: typecheck, Vitest 270/2850, traces 663/663, build, boundaries,
+  redirect-boundary, studio gate-evidence. Entry 604. formal/global advanced.
+  Next: **DA28-03**. Scores unchanged.
+
 ## DA28-01 series adoption - Entry 603 (control, 2026-07-26)
 
-- Selector nextQueue loads DA28-02…30; closedThrough DA28-01. Next: **DA28-02**
-  global re-gate. Scores and formal/global unchanged.
+- Selector nextQueue loads DA28-02…30; closedThrough DA28-01. Next was **DA28-02**
+  global re-gate. Scores and formal/global were unchanged at adoption.
 
 ## Post-DA27-09 roadmap audit - Entry 602 (docs-only, 2026-07-26)
 
