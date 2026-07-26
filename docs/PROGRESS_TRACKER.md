@@ -1,14 +1,24 @@
 ﻿# Progress Tracker
 
+## Runtime StateDef + HitDef active juggle - T406 (closed, 2026-07-26)
+
+- Phase 0 DA26-01..07 closed: owned incomplete juggle write-set, pinned official
+  matrix, implemented ActiveJuggleCost presence, profile entry/reset, HitDef
+  arming with T405 preservation, and JuggleTrace fields.
+- Claim allowed: direct `ikemen-go` StateDef/HitDef active cost path with focused
+  evidence. Claim blocked: Projectile/Helper, ModifyHitDef air.juggle, global
+  gate, scores.
+- Focused suites + required air.juggle trace + typecheck pass. DA26-08 global
+  checkpoint remains pending. Scores unchanged.
+- See Entry 586, board T406 section, and
+  `docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md`.
+
 ## Daily architecture audit - 2026-07-26
 
-- No commit landed after the 2026-07-25 automation start.
-- T405 / Entry 585 remains the focal/formal edge.
-- T383 remains the last global gate, 36 commits behind HEAD.
-- T342 remains the last visual/product gate, 144 commits behind HEAD.
-- Six dirty StateDef juggle sources have no ticket, tests or trace and remain
-  outside progress.
-- Scores remain unchanged. The next 30 cuts live in the
+- Audit produced DA26-01..30; Phase 0 (DA26-01..07) is now closed by T406.
+- T383 remains the last global gate until DA26-08.
+- T342 remains the last visual/product gate.
+- Scores remain unchanged. Remaining cuts live in the
   [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## Runtime direct air.juggle report - T405 (closed, 2026-07-23)

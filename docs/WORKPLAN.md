@@ -1,12 +1,13 @@
 # Workplan
 
-## Daily plan override - 2026-07-26
+## Runtime StateDef + HitDef active juggle - T406 (closed, 2026-07-26)
 
-First coordinate the dirty StateDef juggle cut. Preserve field presence,
-connect explicit HitDef updates, prove reset order and retain T405's rejection
-trace. Close the focal ticket, run the accumulated global checkpoint, then
-publish cursor/source authority updates. Visual, corpus, Studio, scanner,
-assets and module work follows in DA26-12 to DA26-30. Full plan:
+Phase 0 DA26-01..07 is closed. Active character juggle cost arms from StateDef
+`juggle` and explicit HitDef `air.juggle`, preserves omitted HitDef identity,
+resets after falling contact and IKEMEN non-A entry, keeps the T405 rejection
+sequence, and exposes JuggleTrace snapshot fields. Next workplan item is
+DA26-08 global checkpoint on a clean tree, then DA26-09..11 control/source
+cursors. Full ladder:
 [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## Runtime direct air.juggle slice - T405 (closed, 2026-07-23)

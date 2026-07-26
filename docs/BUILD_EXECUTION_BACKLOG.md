@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 586 - StateDef + HitDef active juggle (T406 / DA26 Phase 0)
+
+Closed T406 in `07ad9227`: owned the incomplete six-file StateDef juggle
+write-set from `c62eabe5`, pinned the official pin-era matrix, and finished
+ActiveJuggleCost presence, profile entry/reset, HitDef arming, T405 sequence
+preservation, and JuggleTrace fields under explicit `ikemen-go`.
+
+Claim allowed: direct StateDef/HitDef active cost path with focused unit and
+required imported air.juggle evidence. Claim blocked: Projectile/Helper,
+ModifyHitDef air.juggle, full tick-order parity, global gate inheritance, score
+movement.
+
+Verification: focused juggle/combat/HitDef/state-entry/parser/compiler suites
+pass 157 tests; required direct air.juggle trace passes; `pnpm typecheck`
+exit 0. DA26-08 global checkpoint remains queued. No score movement.
+
+Research: `docs/research/2026-07-26-ikemen-juggle-official-matrix.md`,
+`docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md`.
+
 ## Entry 585 - Direct HitDef air.juggle
 
 Closed T405 in `462591ad`: pinned IKEMEN target juggle data now has a bounded

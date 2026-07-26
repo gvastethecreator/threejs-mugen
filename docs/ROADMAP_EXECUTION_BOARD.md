@@ -1,15 +1,32 @@
 ﻿# Roadmap Execution Board
 
-## 2026-07-26 docs-only audit override
+## Current runtime compatibility board - T406 (closed, 2026-07-26)
 
-HEAD remains `c01d5e70`; no commit landed after the 2026-07-25 automation
-start. T405 / Entry 585 stays the focal/formal edge. T383 is the latest global
-gate and sits 36 commits behind HEAD; T342 is the latest visual/product gate
-and sits 144 commits behind. The dirty StateDef juggle cut is reserved and has
-no claim. Next order: source matrix, owner closeout, focused regression, clean
-global checkpoint. See the [daily audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+T406 closes in `07ad9227` (DA26-01..07 / Phase 0 after the post-T405 audit). The
+incomplete StateDef juggle write-set that landed inside `c62eabe5` is owned and
+finished:
+StateDef `juggle` parses and merges, active `runtime.juggle` arms from StateDef
+entry and explicit HitDef `air.juggle` under `ikemen-go`, omitted HitDef fields
+leave the prior cost, IKEMEN non-A entry resets, falling contact zeros cost,
+and JuggleTrace snapshots carry origin plus remaining points. The T405 direct
+rejection sequence still holds. Official pin matrix:
+`docs/research/2026-07-26-ikemen-juggle-official-matrix.md`. Closeout:
+`docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md`.
 
-## Current runtime compatibility board - T405 (closed, 2026-07-23)
+Claim allowed: named StateDef/HitDef direct active-cost path under `ikemen-go`
+with focused tests and the required air.juggle artifact. Claim blocked:
+Projectile/Helper juggle, ModifyHitDef air.juggle, full tick-order parity,
+global gate inheritance from T383, and any score movement.
+
+Verification: focused juggle/combat/HitDef/state-entry/parser/compiler suites
+and the required direct air.juggle trace pass; `pnpm typecheck` exit 0. Full
+Vitest, aggregate traces, build, and boundaries remain DA26-08. Scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+Next: DA26-08 global checkpoint on a clean source tree, then DA26-09 cursor /
+source-epoch control work.
+
+## Previous runtime compatibility board - T405 (closed, 2026-07-23)
 
 T405 closes in `462591ad`. Pinned IKEMEN source stores target juggle points by
 attacker id, defaults the target budget to `data.airjuggle`, and admits an
