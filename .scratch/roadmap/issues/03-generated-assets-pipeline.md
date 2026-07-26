@@ -7,6 +7,15 @@ Labels: generated-assets, visual-qa, ready-for-agent
 
 Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playable without pretending generated/native assets prove imported MUGEN compatibility.
 
+## 2026-07-26 asset override
+
+Nova remains the only complete local release-policy chain. Its result stays
+bounded by its current QA and does not establish catalog readiness. Define the
+project asset closure first, then AssetReleasePolicy/v1 and one independent
+repository-owned or generated asset with observed transforms, QA, collision,
+playtest and reopen evidence. No third-party asset may enter this lane. See
+DA26-23 and DA26-28 in the [audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 
 AssetReleasePolicy/v0 and the explicit SPDX subset are closed at bounded scope.

@@ -1,10 +1,18 @@
 # Roadmap Navigation
 
-Last updated: 2026-07-18
+Last updated: 2026-07-26
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
-Current cursors: implementation HEAD `a12a2672`; maximum current ledger Entry
+## Current navigation override
+
+Use HEAD `c01d5e70`, Entry 585, focal T405, global T383 and visual/product
+T342. Treat the six dirty juggle sources as excluded work. The source manifest
+still fixes `05b7d98`; T389-T405 cite `4aa0ba38`, so the source-family review
+remains open. Scores stay unchanged. The T287/T288 selectors below are
+historical. Full map: [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
+Historical 2026-07-18 cursors: implementation HEAD `a12a2672`; maximum ledger Entry
 562; latest closed lane T288. The latest broad checkpoint remains the T287
 233/233-file, 2484/2484-test, TypeScript 7.0.2, 633/633-trace, and 64-browser
 path result; T288's current focused checkpoint is 5 files / 392 tests plus

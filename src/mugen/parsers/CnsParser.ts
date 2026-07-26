@@ -153,6 +153,11 @@ function applyStateParam(state: MugenStateDef, key: string, value: string): void
     state.anim = parseNumber(value);
   } else if (lower === "ctrl") {
     state.ctrl = parseNumber(value);
+  } else if (lower === "juggle") {
+    const juggle = parseNumber(value);
+    if (juggle !== undefined) {
+      state.juggle = Math.trunc(juggle);
+    }
   } else if (lower === "velset") {
     const parts = value.split(",").map((part) => Number(part.trim()));
     if (parts.length >= 2 && parts.every((part) => Number.isFinite(part))) {

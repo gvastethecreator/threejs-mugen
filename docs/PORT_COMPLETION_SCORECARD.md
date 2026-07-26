@@ -1,6 +1,16 @@
 ﻿# Port Completion Scorecard
 
-## 2026-07-18 T288 bounded FightScreen intro-skip character-reset checkpoint
+## 2026-07-26 audit note - no score movement
+
+Current committed cursors are HEAD `c01d5e70`, Entry 585 and focal T405.
+Global evidence remains T383 at 241 files / 2706 tests / 650 traces plus build
+and boundaries. Visual/product evidence remains T342. The corpus is 383 commits
+behind and 4 of 8 hashes differ. The six dirty juggle sources are excluded.
+Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. Older sections that present
+633 traces or T288 as current are historical. See the
+[audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
+## 2026-07-18 historical T288 bounded FightScreen intro-skip character-reset checkpoint
 
 The current implementation frontier is HEAD `a12a2672`, Entry 562, and
 Wayfinder T288. The source-shaped shutter edge now resets roots before the

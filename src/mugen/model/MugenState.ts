@@ -56,6 +56,7 @@ export type MugenStateDef = {
   physics?: string;
   anim?: number;
   ctrl?: number;
+  juggle?: number;
   velSet?: [number, number];
   hitDefPersist?: boolean;
   moveHitPersist?: boolean;

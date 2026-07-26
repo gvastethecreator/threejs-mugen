@@ -6,6 +6,15 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-26 T405 lane override
+
+Direct root ReversalDef/HitOverride topology is closed by T390. Direct static
+air juggle is closed at focal scope by T405. StateDef juggle, omitted-field
+semantics, reset order, ModifyHitDef, Projectile and Helper inheritance remain
+open. The dirty local cut has no claim. Keep `05b` normative until the family
+epoch review decides the role of `4aa`. See DA26-01 to DA26-10 and DA26-17/18
+in the [audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## 2026-07-18 Post-T268 lane override
 
 Wayfinders 230-256 close redirected ownership, helper/root global states,

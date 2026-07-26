@@ -1,10 +1,19 @@
 # Roadmap Progress System
 
-Last updated: 2026-07-18
+Last updated: 2026-07-26
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
-## Current control override: T288 / Entry 562 frontier
+## Current control override: T405 / Entry 585 audit
+
+Committed HEAD is `c01d5e70`; T405 in `462591ad` is the latest focal close,
+Entry 585 is the formal cursor, T383 in `38d62678` is the latest global gate,
+and T342 in `1085badb` is the latest visual/product gate. The six dirty juggle
+sources have no ticket or evidence and stay excluded. Scores remain
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. Later sections that call T288 current are
+historical. See the [2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
+## Historical control override: T288 / Entry 562 frontier
 
 Implementation HEAD is `a12a2672`; T288 closes the bounded FightScreen
 character-reset event after the T287 shutter edge. The timer-owned signal is

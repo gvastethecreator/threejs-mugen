@@ -1,6 +1,15 @@
 ﻿# Next Build Roadmap
 
-## Current implementation frontier - T287 / Entry 561 (2026-07-18)
+## Current next-build override - 2026-07-26
+
+The immediate cut is the reserved StateDef juggle work, subject to its owner.
+First preserve omitted versus explicit `0`, connect explicit HitDef updates,
+prove the post-contact reset and keep T405's reject sequence. Then close the
+focal ticket and run a clean global checkpoint. RoadmapCursor and source epoch
+follow. The T287 queue below is historical; do not reopen its closed gates.
+See [DA26-01 to DA26-11](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
+
+## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 
 T287 closes a bounded imported FightScreen intro shutter/skip path in
 `4d615c8f`. `shutter.time` and `shutter.col` now populate runtime timing; a
@@ -48,7 +57,7 @@ Exact intro/shutter ordering, timer/input gating, screenpack localcoord
 transforms, motif/dialogue/skip, Common1/ZSS, teams/Turns, rollback/netplay,
 and full parity remain blocked.
 
-## Current cross-lane queue - post-Wayfinder 256
+## Historical cross-lane queue - post-Wayfinder 256
 
 Do not reopen Wayfinders 230-256. Execute the new 30-task chain in dependency
 order: (1) reconcile control/source/evidence authority and Common.Fx browser

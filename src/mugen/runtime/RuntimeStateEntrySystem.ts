@@ -1,5 +1,6 @@
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateDef } from "../model/MugenState";
+import { applyRuntimeStateDefJuggle } from "./RuntimeJuggleSystem";
 import { applyRuntimeStateDefControl } from "./RuntimeResourceSystem";
 import { RuntimeStateClockWorld, type RuntimeStateClockResetOptions } from "./RuntimeStateClockSystem";
 import { RuntimeStateMetadataWorld } from "./RuntimeStateMetadataSystem";
@@ -200,6 +201,7 @@ export class RuntimeStateEntryWorld {
     if (state?.moveType) {
       runtime.moveType = normalizeRuntimeMoveType(state.moveType, runtime.moveType);
     }
+    applyRuntimeStateDefJuggle(runtime, state?.juggle);
     if (state?.physics) {
       runtime.physics = normalizeRuntimePhysics(state.physics, runtime.physics);
     }

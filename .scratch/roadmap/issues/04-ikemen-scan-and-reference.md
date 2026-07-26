@@ -7,6 +7,16 @@ Labels: ikemen-scan, docs, ready-for-agent
 
 Use Ikemen-GO as a reference source for compatibility planning while keeping near-term support to scanner/reporting unless a bounded runtime feature is explicitly gated.
 
+## 2026-07-26 source and scanner override
+
+PackageAnalysis v1 and its first consumers remain closed. The manifest still
+fixes `05b7d98`; T389-T405 cite `4aa0ba38`. Juggle text matches across both
+pins in four source files, while the current wiki and pinned reset condition
+conflict. Next: SourceAuthorityEpoch by family, persisted analysis diff and a
+capability vector with recognized/parsed/lowered/executed/verified facts. ZSS,
+Lua and Modules stay scanner-only. See DA26-10, DA26-25 and DA26-27 in the
+[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## 2026-07-18 Post-Wayfinder-256 source and reanalysis override
 
 PackageAnalysis/v1 and productive Studio/export consumers are closed. Keep

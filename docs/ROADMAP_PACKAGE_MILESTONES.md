@@ -1,6 +1,15 @@
 ﻿# Roadmap Package Milestones
 
-## Current bounded runtime package - T288 / Entry 562
+## Current bounded package override - T405 / Entry 585
+
+HEAD `c01d5e70` closes the focal direct IKEMEN `air.juggle` slice. Its evidence
+is 5 files / 130 tests plus one filtered required trace. Full TypeScript,
+Vitest, aggregate trace, build and boundary gates remain at T383, 36 commits
+behind. The dirty StateDef juggle work is outside the package until it gains a
+ticket, tests and trace. Scores do not move. See the
+[2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
+## Historical bounded runtime package - T288 / Entry 562
 
 HEAD `a12a2672` closes the T288 FightScreen actor-reset boundary after the
 T287 shutter/skip path. The signal is timer-owned and consumed before the

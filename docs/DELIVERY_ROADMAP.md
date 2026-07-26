@@ -1,8 +1,16 @@
 # Delivery Roadmap
 
-Last updated: 2026-07-18
+Last updated: 2026-07-26
 
-## Latest bounded runtime checkpoint - T288 / Entry 562
+## Latest docs-only audit checkpoint
+
+HEAD `c01d5e70` has a focal T405 close and no global or visual promotion.
+T383 remains the global delivery gate; T342 remains the visual/product gate.
+The corpus and Studio gate are stale against HEAD, and the dirty juggle cut has
+no claim. Delivery scores stay unchanged. See the
+[2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
+## Historical bounded runtime checkpoint - T288 / Entry 562
 
 T288 is implemented in `a12a2672`. The imported FightScreen shutter signal
 now resets roots before the active fighter pass: stage position/state `0`,

@@ -7,6 +7,16 @@ Labels: studio, visual-qa, docs, ready-for-agent
 
 Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
 
+## 2026-07-26 product evidence override
+
+No Studio feature or browser gate landed after T342. GateEvidence still points
+to `d69d12a`, while Runtime playtest remains a fixed green row. A new release
+gap is confirmed: Studio copies the full asset library into the project and an
+unused diagnostic asset can block release. Next order: EvidenceSubject,
+RealPlaytestReadiness, ProjectAssetClosure, project snapshots, analysis diff
+and write journal. See DA26-22 to DA26-26 in the
+[audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 
 EvidenceEnvelope/Studio integration, SourceWriteReceipt compensation,

@@ -1,8 +1,16 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-07-18
+Last updated: 2026-07-26
 
 This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
+
+## 2026-07-26 continuation checkpoint
+
+Resume from HEAD `c01d5e70`, Entry 585 and focal T405. Keep global T383,
+visual/product T342 and the dirty juggle exclusion separate. Coordinate with
+the owner of the six modified sources before any edit. Next: source matrix,
+ActiveJuggleCost presence, focused trace, focal closeout, then a global gate on
+a clean SHA. See the [daily audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## 2026-07-18 T288 continuation checkpoint
 

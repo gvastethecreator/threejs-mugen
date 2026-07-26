@@ -122,6 +122,7 @@ function appendNegativeState(current: MugenStateDef, next: MugenStateDef, source
   if (next.physics !== undefined) merged.physics = next.physics;
   if (next.anim !== undefined) merged.anim = next.anim;
   if (next.ctrl !== undefined) merged.ctrl = next.ctrl;
+  if (next.juggle !== undefined) merged.juggle = next.juggle;
   if (next.velSet !== undefined) merged.velSet = next.velSet;
   if (next.hitDefPersist !== undefined) merged.hitDefPersist = next.hitDefPersist;
   if (next.moveHitPersist !== undefined) merged.moveHitPersist = next.moveHitPersist;

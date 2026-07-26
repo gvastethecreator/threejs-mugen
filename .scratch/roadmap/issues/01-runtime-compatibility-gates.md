@@ -7,6 +7,15 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
+## 2026-07-26 T405 runtime override
+
+T405 is the focal edge; T383 is the last global gate. T390 closed the direct
+ReversalDef/HitOverride topology issue. Projectile remains blocked. The six
+dirty StateDef juggle sources have no evidence and stay excluded. Next execute
+DA26-01 to DA26-08: source matrix, presence-aware cost, reset/order tests,
+required trace, focal closeout and clean global checkpoint. See the
+[post-T405 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 
 Wayfinders 230-256 close redirected ownership, helper/global state scheduling,

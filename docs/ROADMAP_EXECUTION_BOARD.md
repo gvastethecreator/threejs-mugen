@@ -1,5 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## 2026-07-26 docs-only audit override
+
+HEAD remains `c01d5e70`; no commit landed after the 2026-07-25 automation
+start. T405 / Entry 585 stays the focal/formal edge. T383 is the latest global
+gate and sits 36 commits behind HEAD; T342 is the latest visual/product gate
+and sits 144 commits behind. The dirty StateDef juggle cut is reserved and has
+no claim. Next order: source matrix, owner closeout, focused regression, clean
+global checkpoint. See the [daily audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## Current runtime compatibility board - T405 (closed, 2026-07-23)
 
 T405 closes in `462591ad`. Pinned IKEMEN source stores target juggle points by
@@ -264,7 +273,7 @@ teams, rollback/netplay, renderer work, and full MUGEN/IKEMEN parity. Typecheck,
 full Vitest, trace aggregate, build, and boundary checks remain deliberately
 queued for the next runtime batch.
 
-## Current implementation board - T288 / Entry 562 (2026-07-18)
+## Historical implementation board - T288 / Entry 562 (2026-07-18)
 
 T288 closes the bounded imported FightScreen character-reset path in
 `a12a2672`: the source-shaped shutter edge is consumed before the active
@@ -298,7 +307,7 @@ CSS budget, and 64 browser capture paths with no console/page errors. The
 existing build warning is non-blocking; scores do not move. Next board item is
 announcement/shutter/skip ownership or independent character breadth.
 
-## Current cross-lane reconciliation - post-T268 (2026-07-18)
+## Historical cross-lane reconciliation - post-T268 (2026-07-18)
 
 Runtime HEAD `b241cc65` closes T266-T268; concurrent working-tree roadmap edits
 still contain open Wayfinder 257 and are not a closeout. Entry 555 and the

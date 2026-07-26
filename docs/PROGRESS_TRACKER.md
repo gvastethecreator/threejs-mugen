@@ -1,5 +1,16 @@
 ﻿# Progress Tracker
 
+## Daily architecture audit - 2026-07-26
+
+- No commit landed after the 2026-07-25 automation start.
+- T405 / Entry 585 remains the focal/formal edge.
+- T383 remains the last global gate, 36 commits behind HEAD.
+- T342 remains the last visual/product gate, 144 commits behind HEAD.
+- Six dirty StateDef juggle sources have no ticket, tests or trace and remain
+  outside progress.
+- Scores remain unchanged. The next 30 cuts live in the
+  [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## Runtime direct air.juggle report - T405 (closed, 2026-07-23)
 
 - Pinned IKEMEN source keeps target juggle points by attacker id, uses target
