@@ -99,7 +99,6 @@ export function runSourceWriteJournal(
   let preimageDigest: string | undefined;
   let writtenDigest: string | undefined;
   let committedDigest: string | undefined;
-  let restoredPreimage = false;
 
   if (input.fault === "permission-revoked") {
     diagnostics.push("permission-revoked");
@@ -152,7 +151,6 @@ export function runSourceWriteJournal(
 
   if (!ok) {
     phases.push("rollback");
-    restoredPreimage = true;
     status = "rolled-back";
     diagnostics.push("restored-preimage");
     return {

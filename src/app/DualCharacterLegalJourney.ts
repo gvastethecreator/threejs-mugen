@@ -141,19 +141,19 @@ function evaluateRoute(
       const passed =
         hasAnimHint(animKeys, character, [/punch|kick|attack|hit/i, /2[0-9]{2}\b/]) ||
         hasCommandHint(character, /a|b|x|y|punch|kick/i) ||
-        character.states.some((state) => state.number >= 200 && state.number < 1300);
+        character.states.some((state) => state.id >= 200 && state.id < 1300);
       return { route, passed, detail: passed ? "hit-route" : "missing-hit" };
     }
     case "guard": {
       const passed =
         hasAnimHint(animKeys, character, [/guard|block|standguard|crouchguard/i, /1[2-3][0-9]\b/]) ||
-        character.states.some((state) => state.number >= 120 && state.number <= 155);
+        character.states.some((state) => state.id >= 120 && state.id <= 155);
       return { route, passed, detail: passed ? "guard-route" : "missing-guard" };
     }
     case "ko": {
       const passed =
         hasAnimHint(animKeys, character, [/die|ko|fall/i, /5[0-1][0-9]0?\b/]) ||
-        character.states.some((state) => state.number >= 5000 && state.number <= 5150);
+        character.states.some((state) => state.id >= 5000 && state.id <= 5150);
       return { route, passed, detail: passed ? "ko-route" : "missing-ko" };
     }
     default: {
@@ -170,7 +170,7 @@ function hasAnimHint(
 ): boolean {
   if (keys.some((key) => patterns.some((pattern) => pattern.test(String(key))))) return true;
   for (const state of character.states) {
-    const label = `${state.number}`;
+    const label = `${state.id}`;
     if (patterns.some((pattern) => pattern.test(label))) return true;
   }
   return false;
@@ -180,7 +180,9 @@ function hasCommandHint(
   character: DualCharacterLoadedPackage["character"],
   pattern: RegExp,
 ): boolean {
-  return character.commands.some((command) => pattern.test(command.name) || pattern.test(command.command));
+  return character.commands.some(
+    (command) => pattern.test(command.name) || pattern.test(command.rawCommand) || pattern.test(command.resolvedCommand),
+  );
 }
 
 function stableStringify(value: unknown): string {

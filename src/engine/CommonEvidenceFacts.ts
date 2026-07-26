@@ -11,7 +11,7 @@ export type CommonEvidenceFactStatus = "passed" | "failed" | "missing" | "unsupp
 export type CommonEvidenceFactFreshness = "current" | "stale" | "missing" | "unknown";
 
 export type CommonEvidenceSubject = {
-  kind: "repository" | "project" | "runtime" | "target" | "tool" | "package" | "asset";
+  kind: "repository" | "project" | "runtime" | "tool" | "package" | "asset" | "gate";
   id: string;
   revision?: string;
 };

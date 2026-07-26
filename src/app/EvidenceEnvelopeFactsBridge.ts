@@ -83,12 +83,12 @@ export function runtimeFactsFromEnvelopeObservation(input: {
 
 function mapSubject(envelope: EvidenceEnvelope): CommonEvidenceSubject {
   const kind = envelope.subject.kind;
-  const mapped: CommonEvidenceSubject["kind"] =
-    kind === "package" || kind === "asset" || kind === "runtime" || kind === "target"
-      ? kind
-      : kind === "gate" || kind === "contract" || kind === "snapshot"
-        ? "tool"
-        : "project";
+  let mapped: CommonEvidenceSubject["kind"] = "project";
+  if (kind === "package" || kind === "asset" || kind === "runtime") {
+    mapped = kind;
+  } else if (kind === "gate" || kind === "contract" || kind === "snapshot" || kind === "artifact") {
+    mapped = "tool";
+  }
   return {
     kind: mapped,
     id: envelope.subject.id,

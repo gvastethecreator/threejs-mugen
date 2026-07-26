@@ -36,7 +36,7 @@ describe("CommonEvidenceFacts", () => {
 
   it("proves two-consumer parity for the same logical observation", () => {
     const parity = twoConsumerCanonicalParity({
-      subject: { kind: "target", id: "gate-1" },
+      subject: { kind: "gate", id: "gate-1" },
       status: "passed",
       freshness: "current",
       observedAt: "2026-07-26T20:00:00.000Z",

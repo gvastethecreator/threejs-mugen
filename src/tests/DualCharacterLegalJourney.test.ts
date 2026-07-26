@@ -5,7 +5,7 @@ import { runDualCharacterLegalJourney } from "../app/DualCharacterLegalJourney";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
 
-function loadPackageFromDir(root: string, packageRoot: string): VirtualFileSystem {
+function loadPackageFromDir(packageRoot: string): VirtualFileSystem {
   const vfs = new VirtualFileSystem();
   const walk = (dir: string): void => {
     for (const entry of readdirSync(dir)) {
@@ -29,7 +29,7 @@ function loadPackageFromDir(root: string, packageRoot: string): VirtualFileSyste
 
 async function loadNamed(id: string, name: string, entry: string, dir: string) {
   const packageRoot = join(process.cwd(), dir);
-  const vfs = loadPackageFromDir(packageRoot, packageRoot);
+  const vfs = loadPackageFromDir(packageRoot);
   const character = await new MugenCharacterLoader().load(entry, vfs);
   const licensePath = join(packageRoot, "LICENSE.txt");
   let licenseVerified = false;
