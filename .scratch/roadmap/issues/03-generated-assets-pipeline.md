@@ -10,7 +10,7 @@ Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playa
 ## 2026-07-26 asset override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-07). Native Nova and Mira fixtures exist, while the real
+(`closedThrough` DA28-08). Native Nova and Mira fixtures exist, while the real
 binary transform chain and live release-policy decision remain open. Native
 fixtures cannot raise imported-package coverage. Proposed cuts are DA28-23 and
 DA28-26 in the

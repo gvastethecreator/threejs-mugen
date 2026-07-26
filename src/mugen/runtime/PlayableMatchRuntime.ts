@@ -237,6 +237,12 @@ import {
   RuntimeTurnsContinuationWorld,
   type RuntimeTurnsContinuationResult,
 } from "./RuntimeTurnsContinuationSystem";
+import {
+  projectLiveTurnsWorld,
+  runLiveRuntimeTurnsBridge,
+  type LiveRuntimeTurnsBridgeReport,
+  type LiveTurnsRootLike,
+} from "./LiveRuntimeTurnsBridge";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
 import {
@@ -648,6 +654,7 @@ export class PlayableMatchRuntime {
   private lastRoundContext: RuntimeRoundContextSnapshot;
   private lastRoundState5900?: RuntimeRoundState5900Snapshot;
   private lastTurnsContinuation?: RuntimeTurnsContinuationResult;
+  private lastLiveTurnsBridge?: LiveRuntimeTurnsBridgeReport;
   private readonly runtimeProfile: RuntimeCompatibilityProfile;
   private readonly socdResolution: RuntimeSocdResolution;
   private readonly socdResolutionAuthority: RuntimeSocdResolutionAuthority;
@@ -1275,6 +1282,29 @@ export class PlayableMatchRuntime {
     this.activeRoots = [next[0], next[1]];
     this.turnsContinuationActive = true;
     return true;
+  }
+
+  /** Project character roots into live Turns transaction subjects (DA28-08). */
+  private projectLiveTurnsRoots(): LiveTurnsRootLike[] {
+    return this.characterRoots().flatMap((root) => {
+      const side = runtimeTeamSide(root);
+      if (side !== 1 && side !== 2) return [];
+      const teamState = root.runtime.teamState;
+      return [{
+        id: root.id,
+        side,
+        life: root.runtime.life,
+        lifeMax: root.runtime.lifeMax ?? 1000,
+        power: root.runtime.power,
+        standby: teamState?.standby === true,
+        overKo: teamState?.overKo === true || root.runtime.life <= 0,
+        stateNo: root.runtime.stateNo,
+      }];
+    });
+  }
+
+  getLastLiveTurnsBridge(): LiveRuntimeTurnsBridgeReport | undefined {
+    return this.lastLiveTurnsBridge;
   }
 
   private teamRoundLifebarActors() {
@@ -3689,6 +3719,7 @@ export class PlayableMatchRuntime {
       return "blocked";
     }
 
+    const preTurnsRoots = this.projectLiveTurnsRoots();
     const handoff = matchRoundWorld.applyTeamRoundHandoff({ actors, decision: plan.decision });
     if (!handoff.applied) {
       const blocked = {
@@ -3700,10 +3731,27 @@ export class PlayableMatchRuntime {
         applied: false,
       } satisfies RuntimeTurnsContinuationResult;
       this.lastTurnsContinuation = blocked;
+      this.lastLiveTurnsBridge = runLiveRuntimeTurnsBridge({
+        tick: this.tick,
+        roundNo: this.round.currentRoundNo,
+        roots: preTurnsRoots,
+        mutate: () => ({ error: "handoff-commit-failed" }),
+      });
       this.playing = false;
       this.logs.unshift(`Turns continuation blocked: ${blocked.diagnostics.join(", ")}`);
       return "blocked";
     }
+    this.lastLiveTurnsBridge = runLiveRuntimeTurnsBridge({
+      tick: this.tick,
+      roundNo: this.round.currentRoundNo,
+      roots: preTurnsRoots,
+      mutate: () =>
+        projectLiveTurnsWorld({
+          tick: this.tick,
+          roundNo: this.round.currentRoundNo,
+          roots: this.projectLiveTurnsRoots(),
+        }),
+    });
     this.logTeamRoundHandoff(handoff);
 
     const desiredTeamStates = new Map(

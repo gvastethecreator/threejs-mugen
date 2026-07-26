@@ -9,18 +9,18 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA28-07** (live plural combat oracle)
+- `closedThrough`: **DA28-08** (live Turns transaction bridge)
 - formal/global: **`32466c6e`** (Entry 604 / DA28-02 gate)
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb` (DA28-03 subcursors are bounded children)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA28-08** … **DA28-30** (23 open)
+- next queue: **DA28-09** … **DA28-30** (22 open)
 - Scores held (DA28-05 adjudication `movement=none`).
 
-Gate pin is `32466c6e`. Entry 607 closed DA28-07. Next live cut is DA28-08.
+Gate pin is `32466c6e`. Entry 608 closed DA28-08. Next live cut is DA28-09.
 Plan source:
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md);
-[live oracle](research/2026-07-26-da28-07-live-plural-oracle.md).
+[live Turns](research/2026-07-26-da28-08-live-turns-bridge.md).
 
 The T287/T288 selectors below are **historical**.
 

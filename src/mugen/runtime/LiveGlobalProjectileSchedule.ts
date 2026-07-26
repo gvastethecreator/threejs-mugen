@@ -110,7 +110,7 @@ export function liveGlobalProjectileScheduleIsStable(
 }
 
 function defaultOwnerSide(ownerId: string): 1 | 2 {
-  const side: RuntimeTeamSide = runtimeTeamSideFromId(ownerId);
+  const side: RuntimeTeamSide | undefined = runtimeTeamSideFromId(ownerId);
   return side === 2 ? 2 : 1;
 }
 

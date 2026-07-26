@@ -75,8 +75,8 @@ export function createBrowserSubcursorDocument(input: BrowserSubcursorInput): Br
   const uniqueIds = new Set(input.routes.map((route) => route.id));
   if (uniqueIds.size !== input.routes.length) diagnostics.push("duplicate-route-id");
 
-  const status = diagnostics.length === 0 ? "passed" : "failed";
-  const payload = {
+  const status: "passed" | "failed" = diagnostics.length === 0 ? "passed" : "failed";
+  const payload: Omit<BrowserSubcursorDocument, "digest"> = {
     schema: BROWSER_SUBCURSOR_SCHEMA,
     generatedAt: input.generatedAt,
     formalSha: input.formalSha.trim(),

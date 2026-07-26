@@ -1,9 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T23:35:24.874Z",
-  "closedThrough": "DA28-07",
+  "generatedAt": "2026-07-26T23:38:25.757Z",
+  "closedThrough": "DA28-08",
   "nextQueue": [
-    "DA28-08",
     "DA28-09",
     "DA28-10",
     "DA28-11",
@@ -85,11 +84,12 @@
       "DA28-04 corpus v1.2 and DA28-05 score adjudication hold frozen scorecard",
       "DA28-06 live GlobalProjectileSchedule wired into EffectActorWorld combat order",
       "DA28-07 LivePluralCombatOracle consumes live roots/helpers with mutation integrity",
+      "DA28-08 LiveRuntimeTurnsBridge projects handoff into RuntimeTurnsTransaction",
       "historical sections may retain old cursors when labeled historical",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
-      "claiming DA28-08..30 product closes from oracle alone",
+      "claiming DA28-09..30 product closes from Turns bridge alone",
       "full plural projectile parity without browser matrix",
       "native Nova/Mira rows raising imported-package coverage",
       "projecting T383 or T342 as current global/product without label",
@@ -100,6 +100,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "721b963be2755c98918c136939a44292d4151df5fe9fa1bdb2cd08d4f06d8054"
+    "value": "23c02f450020610d72ab8e35d43711e6bf7f76928f48b774b1014ac81eda3070"
   }
 }

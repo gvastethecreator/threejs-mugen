@@ -8,16 +8,17 @@ import type { RuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
 import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 
 function projectile(partial: Partial<RuntimeProjectile> & Pick<RuntimeProjectile, "serialId" | "ownerId">): RuntimeProjectile {
+  const { serialId, ownerId, rootId, parentId, age, priority, ...rest } = partial;
   return {
-    serialId: partial.serialId,
+    serialId,
     actorKind: "projectile",
-    ownerId: partial.ownerId,
-    rootId: partial.rootId ?? partial.ownerId,
-    parentId: partial.parentId ?? partial.ownerId,
-    spriteOwnerId: partial.ownerId,
+    ownerId,
+    rootId: rootId ?? ownerId,
+    parentId: parentId ?? ownerId,
+    spriteOwnerId: ownerId,
     spriteOwnerDefinitionId: "def",
-    spriteOwnerLabel: partial.ownerId,
-    action: { number: 0, frames: [], loopStart: 0 } as RuntimeProjectile["action"],
+    spriteOwnerLabel: ownerId,
+    action: { id: 0, number: 0, frames: [], loopStart: 0, rawLines: [] } as RuntimeProjectile["action"],
     animNo: 0,
     pos: { x: 0, y: 0 },
     vel: { x: 0, y: 0 },
@@ -28,11 +29,11 @@ function projectile(partial: Partial<RuntimeProjectile> & Pick<RuntimeProjectile
     terminalActions: {},
     frameIndex: 0,
     frameElapsed: 0,
-    age: partial.age ?? 0,
+    age: age ?? 0,
     removeTime: -1,
     stageBound: 40,
     spritePriority: 0,
-    priority: partial.priority ?? 0,
+    priority: priority ?? 0,
     hitsRemaining: 1,
     missTime: 0,
     missTimeRemaining: 0,
@@ -41,7 +42,7 @@ function projectile(partial: Partial<RuntimeProjectile> & Pick<RuntimeProjectile
     kill: true,
     guardKill: true,
     hitPause: 0,
-    ...partial,
+    ...rest,
   } as RuntimeProjectile;
 }
 

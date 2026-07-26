@@ -3,7 +3,7 @@
 Last updated: 2026-07-26  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA28-07** · next head **DA28-08** (live Turns transaction)
+`closedThrough`: **DA28-08** · next head **DA28-09** (Turns browser matrix)
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -25,8 +25,7 @@ Related:
 
 - Global gate: [`docs/research/2026-07-26-global-checkpoint-da28-02.md`](research/2026-07-26-global-checkpoint-da28-02.md)
 - P0 evidence: [`docs/research/2026-07-26-da28-p0-browser-corpus-scores.md`](research/2026-07-26-da28-p0-browser-corpus-scores.md)
-- Live projectiles: [`docs/research/2026-07-26-da28-06-live-projectile-schedule.md`](research/2026-07-26-da28-06-live-projectile-schedule.md)
-- Live oracle: [`docs/research/2026-07-26-da28-07-live-plural-oracle.md`](research/2026-07-26-da28-07-live-plural-oracle.md)
+- Live Turns: [`docs/research/2026-07-26-da28-08-live-turns-bridge.md`](research/2026-07-26-da28-08-live-turns-bridge.md)
 
 ## Scores
 
@@ -34,23 +33,22 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25** (DA28-05 adjudication `movement=no
 
 ## Closed ladder
 
-DA26-01…30 · DA27-01…09 · DA28-01…**07**
+DA26-01…30 · DA27-01…09 · DA28-01…**08**
 
-## Next queue (DA28 — 23 remaining)
+## Next queue (DA28 — 22 remaining)
 
-**P1 live determinism/input:** DA28-08…10  
+**P1 live determinism/input:** DA28-09…10  
 **P2 MUGEN-lite execution:** DA28-11…17  
 **P3 MUGEN breadth:** DA28-18…20  
 **P4 Studio/product:** DA28-21…25  
 **P5 assets/scanner/source/IKEMEN/boundaries:** DA28-26…30  
 
-Machine next head: **DA28-08** (full queue listed in `authority-selector-v1.json`).
+Machine next head: **DA28-09** (full queue listed in `authority-selector-v1.json`).
 
 ## Anti-patterns
 
-- Claiming DA28 product closes from oracle alone
+- Claiming DA28 browser Turns matrix from bridge alone
 - Score movement without executed denominators
-- Native Nova/Mira rows raising imported-package coverage
 - formal/global tip rewrite without measured gate
 
 ## Audit

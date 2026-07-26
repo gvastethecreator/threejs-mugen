@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## Live Turns bridge - DA28-08 (closed-bounded, 2026-07-26)
+
+- RuntimeTurnsTransaction projected around live handoff. Entry 608. Next:
+  **DA28-09**. Scores held.
+
 ## Live PluralCombatOracle - DA28-07 (closed-bounded, 2026-07-26)
 
 - Live roots/helpers feed oracle with mutation integrity. Entry 607. Next:

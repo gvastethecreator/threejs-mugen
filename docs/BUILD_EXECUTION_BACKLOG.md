@@ -1,5 +1,13 @@
 # Build Execution Backlog
 
+## Entry 608 - DA28-08 live Turns transaction bridge
+
+Closed DA28-08: `LiveRuntimeTurnsBridge/v1` projects live roots into
+`RuntimeTurnsTransaction`; PlayableMatchRuntime records bridge receipts around
+team-round handoff. Report:
+`docs/research/2026-07-26-da28-08-live-turns-bridge.md`. formal/global stay
+`32466c6e`. Scores held. Next: **DA28-09** Turns browser matrix.
+
 ## Entry 607 - DA28-07 live PluralCombatOracle
 
 Closed DA28-07: `LivePluralCombatOracle/v1` feeds PluralCombatOracle from live

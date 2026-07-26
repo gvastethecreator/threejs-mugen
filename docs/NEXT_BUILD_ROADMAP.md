@@ -3,9 +3,8 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA28-07 closed live PluralCombatOracle on roots/helpers.
-**Next live cut: DA28-08** merge RuntimeTurnsTransaction into live handoff.
-Then DA28-09…30 per
+DA28-08 closed live Turns transaction bridge on handoff.
+**Next live cut: DA28-09** Turns browser matrix. Then DA28-10…30 per
 [audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 Global pin is `32466c6e`. The T287 queue below is historical.
 
