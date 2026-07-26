@@ -1,4 +1,5 @@
 import { parseGameProjectManifest, type GameProjectManifest } from "./StudioModel";
+import { snapshotAfterProjectSave } from "./ProjectSnapshotBridge";
 
 export const PROJECT_STORAGE_KEY = "mugen-web-sandbox:projects:v0";
 export const PROJECT_STORAGE_SCHEMA_VERSION = "mugen-web-sandbox/project-index/v1" as const;
@@ -55,7 +56,13 @@ export function loadStoredProjectManifest(storage: StorageLike, id: string): Gam
 export function saveStoredProjectManifest(
   storage: StorageLike,
   manifest: GameProjectManifest,
-  options: { savedAt?: string; maxEntries?: number; expectedRevision?: number } = {},
+  options: {
+    savedAt?: string;
+    maxEntries?: number;
+    expectedRevision?: number;
+    /** When true (default), also write StudioProjectSnapshot for reopen identity. */
+    snapshot?: boolean;
+  } = {},
 ): StoredProjectEntry[] {
   const savedAt = options.savedAt ?? new Date().toISOString();
   const maxEntries = options.maxEntries ?? 8;
@@ -78,6 +85,13 @@ export function saveStoredProjectManifest(
   };
   const entries = [entry, ...index.entries.filter((candidate) => candidate.id !== manifest.id)].slice(0, maxEntries);
   writeIndex(storage, { schemaVersion: PROJECT_STORAGE_SCHEMA_VERSION, entries });
+  if (options.snapshot !== false) {
+    try {
+      snapshotAfterProjectSave({ storage, entry });
+    } catch {
+      // Snapshot is best-effort; project index remains authoritative.
+    }
+  }
   return entries;
 }
 

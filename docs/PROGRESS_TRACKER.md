@@ -1,5 +1,11 @@
 ﻿# Progress Tracker
 
+## DA27 product wiring - 01..05 (closed-bounded, 2026-07-26)
+
+- Snapshot/journal bridges on save/write, envelope→common facts, dual Nova+Mira
+  legal journey, PackageAnalysis revision bridge. Entry 597. Next: **DA27-06**
+  global re-gate. Scores unchanged.
+
 ## DA26 ladder drain - 16/19/20/21 (closed-bounded, 2026-07-26)
 
 - Turns journey, corpus v1.2, second character readiness, score adjudication

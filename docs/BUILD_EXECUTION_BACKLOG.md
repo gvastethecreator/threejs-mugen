@@ -1,5 +1,13 @@
 # Build Execution Backlog
 
+## Entry 597 - DA27 product wiring (01–05)
+
+Wired DA26 modules into product paths: ProjectSnapshotBridge on project save,
+SourceWriteJournalBridge on source write receipts, EvidenceEnvelopeFactsBridge,
+DualCharacterLegalJourney (Nova+Mira loader routes + CC0 licenses),
+PackageAnalysisRevisionBridge. Tests green. Next: **DA27-06** global re-gate.
+Scores unchanged. Report: `docs/research/2026-07-26-da27-product-wiring-batch.md`.
+
 ## Entry 596 - DA26 ladder drain (16/19/20/21)
 
 Closed remaining open DA26 IDs under claim ceilings: RuntimeTurnsJourney

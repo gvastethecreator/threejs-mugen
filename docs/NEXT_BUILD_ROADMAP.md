@@ -3,10 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA26-01…30 closed under claim ceilings (Entries 593–596). **`nextQueue` empty.**
-Follow-on work needs a new audit or global re-gate. The T287 queue below is
-historical. Ladder map:
-[post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
+DA26 ladder drained; DA27-01…05 product wiring closed (Entry 597). **Next live
+cut: DA27-06** global re-gate on current HEAD. Also open: 07–09 product depth.
+The T287 queue below is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

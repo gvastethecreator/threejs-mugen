@@ -119,3 +119,34 @@ Clsn2Default: 1
  Clsn2[0] = -24,-96,24,0
 500,2,0,0,6
 
+
+; stand guard
+[Begin Action 120]
+Loopstart
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+10,0,0,0,5
+
+; crouch guard
+[Begin Action 130]
+Loopstart
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+10,1,0,0,5
+
+; hitstun / ko
+[Begin Action 5000]
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+0,0,0,0,8
+
+[Begin Action 5050]
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+40,1,0,0,8
+
+[Begin Action 5150]
+Loopstart
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+0,2,0,0,12

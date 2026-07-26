@@ -205,6 +205,7 @@ import {
   type SourceWriteReceiptReason,
   type SourceWriteReceiptStatus,
 } from "./StudioSourceWriteReceipt";
+import { journalFromSourceWriteReceipt } from "./SourceWriteJournalBridge";
 import { parseStudioTab, STUDIO_TABS, type StudioTab } from "./StudioTabs";
 import {
   buildGameProjectManifest,
@@ -2130,6 +2131,17 @@ export class App {
       diagnostics: [...new Set(input.diagnostics ?? [])],
     });
     this.studioSourceWriteReceipt = receipt;
+    try {
+      journalFromSourceWriteReceipt({
+        storage: window.localStorage,
+        receipt,
+        projectId: this.getGameProjectManifest().id,
+        preimageBytes: draft.baseSourceFingerprint ?? draft.path,
+        writeBytes: input.committedDigest ?? draft.semanticPreflight?.draftDigest ?? draft.path,
+      });
+    } catch {
+      // Journal is durable audit evidence; receipt remains the primary UI fact.
+    }
     return receipt;
   }
 

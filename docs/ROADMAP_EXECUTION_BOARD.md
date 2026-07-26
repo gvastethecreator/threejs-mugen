@@ -1,9 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Current DA27 product wiring (closed-bounded, 2026-07-26)
+
+DA27-01…05 closed: snapshot/journal bridges, envelope facts, dual character
+legal journey, package analysis revision bridge. Report:
+`docs/research/2026-07-26-da27-product-wiring-batch.md`. Next: **DA27-06**.
+
 ## Current DA26 ladder - drained (closed-bounded, 2026-07-26)
 
 DA26-01…30 closed under claim ceilings. Report:
-`docs/research/2026-07-26-da26-ladder-drain.md`. `nextQueue` empty.
+`docs/research/2026-07-26-da26-ladder-drain.md`.
 
 ## Current browser gate - DA26-13 (closed-bounded, 2026-07-26)
 
@@ -30,7 +36,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue: empty after DA26 ladder drain.
+Next queue head: **DA27-06** global re-gate.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

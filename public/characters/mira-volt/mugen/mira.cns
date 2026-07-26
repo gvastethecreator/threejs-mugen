@@ -56,3 +56,52 @@ type = ChangeState
 trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
+
+[Statedef 20]
+type = S
+movetype = I
+physics = S
+anim = 20
+ctrl = 1
+
+[Statedef 40]
+type = A
+movetype = I
+physics = A
+anim = 40
+ctrl = 0
+
+[Statedef 120]
+type = S
+movetype = I
+physics = S
+anim = 120
+ctrl = 0
+
+[Statedef 130]
+type = S
+movetype = I
+physics = S
+anim = 130
+ctrl = 0
+
+[Statedef 5000]
+type = S
+movetype = H
+physics = S
+anim = 5000
+ctrl = 0
+
+[Statedef 5050]
+type = A
+movetype = H
+physics = N
+anim = 5050
+ctrl = 0
+
+[Statedef 5150]
+type = S
+movetype = H
+physics = S
+anim = 5150
+ctrl = 0

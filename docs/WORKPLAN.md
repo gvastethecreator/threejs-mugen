@@ -1,9 +1,13 @@
 # Workplan
 
+## DA27 product wiring (closed-bounded, 2026-07-26)
+
+Snapshot/journal/facts bridges and dual-character legal journey are live. Next:
+**DA27-06** global re-gate. formal/global remain `7d9b15f8` until then.
+
 ## DA26 ladder drain (closed-bounded, 2026-07-26)
 
-All DA26-01…30 IDs closed under claim ceilings. `nextQueue` empty. formal/global
-remain `7d9b15f8`. Scores held.
+All DA26-01…30 IDs closed under claim ceilings. Scores held.
 
 ## Browser gate - DA26-13 (closed-bounded, 2026-07-26)
 
