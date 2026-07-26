@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-26T17:07:07.026Z",
+  "generatedAt": "2026-07-26T17:08:56.394Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -14,15 +14,15 @@
   "cursors": [
     {
       "kind": "head",
-      "sha": "785bc4cb9886ed11724d61cb61e7597cb0f67840",
-      "date": "2026-07-26T14:05:04-03:00",
+      "sha": "1d3c404a73d18ba7852941bfa77c7bb31805ae6a",
+      "date": "2026-07-26T14:08:44-03:00",
       "artifact": "git HEAD",
       "claimLimit": "committed content only; does not inherit older gates"
     },
     {
       "kind": "formal",
-      "sha": "785bc4cb9886ed11724d61cb61e7597cb0f67840",
-      "date": "2026-07-26T14:05:04-03:00",
+      "sha": "1d3c404a73d18ba7852941bfa77c7bb31805ae6a",
+      "date": "2026-07-26T14:08:44-03:00",
       "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
       "claimLimit": "Entry 587 / DA26-08 formal closeout"
     },
@@ -35,8 +35,8 @@
     },
     {
       "kind": "global",
-      "sha": "785bc4cb9886ed11724d61cb61e7597cb0f67840",
-      "date": "2026-07-26T14:05:04-03:00",
+      "sha": "1d3c404a73d18ba7852941bfa77c7bb31805ae6a",
+      "date": "2026-07-26T14:08:44-03:00",
       "artifact": "docs/research/2026-07-26-global-checkpoint-after-t406.md",
       "claimLimit": "TypeScript/Vitest/traces/build/boundaries at named SHA only"
     },
@@ -76,6 +76,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "053b03fdd8e61d7b1510cd18d6579bfde8b0e089f690ea99f3aa2e2316060849"
+    "value": "748d107ccb667c1b9ba1bf7d1a084cc275659c176030653635f11fd84d17ba2b"
   }
 }
