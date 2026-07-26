@@ -1,11 +1,17 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-26 DA28-05 score adjudication hold - no score movement
+
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+DA28-05 materializes score adjudication from corpus v1.2 and current evidence.
+`movement=none`. Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+See [P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
+
 ## 2026-07-26 DA28-02 global re-gate - no score movement
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
 Global evidence is DA28-02 at **`32466c6e`**: 270 files / 2850 tests / 663
-traces plus build and boundaries. Corpus v1.2 and score adjudication still lack
-current material artifacts. Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+traces plus build and boundaries. Scores stay held after DA28-05.
 See [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
 
 ## 2026-07-26 post-DA27-09 audit - no score movement (historical)

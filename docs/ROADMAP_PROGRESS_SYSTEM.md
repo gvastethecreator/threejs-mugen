@@ -8,9 +8,10 @@ This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO 
 
 Formal/global is Entry 604 at `32466c6e` (270/2850 tests, 663 traces, build,
 boundaries). Focal source remains T406 at `07ad9227`. Broad bounded
-visual/product cursor remains T342 at `1085badb`. `closedThrough` is DA28-02;
-next head is DA28-03. Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. See
-[global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md) and the
+visual/product cursor remains T342 at `1085badb` with DA28-03 subcursors.
+`closedThrough` is DA28-05; next head is DA28-06. Scores remain
+`65 / 36 / 20 / 10-12 / 6-8 / 25` (DA28-05 hold). See
+[P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md) and the
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 
 ## Historical control override: T288 / Entry 562 frontier

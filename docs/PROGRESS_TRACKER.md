@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## Browser/corpus/scores - DA28-03/04/05 (closed, 2026-07-26)
+
+- Subcursors, corpus v1.2, score adjudication hold. Entry 605. formal/global
+  stay `32466c6e`. Scores held (`movement=none`). Next: **DA28-06**.
+
 ## Global re-gate - DA28-02 (closed, 2026-07-26)
 
 - Pin `32466c6e`: typecheck, Vitest 270/2850, traces 663/663, build, boundaries,

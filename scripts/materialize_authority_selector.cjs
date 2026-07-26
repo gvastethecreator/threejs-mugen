@@ -19,11 +19,8 @@ const generatedAt = args["generated-at"] ?? new Date().toISOString();
 
 const document = createDocument({
   generatedAt,
-  closedThrough: "DA28-02",
+  closedThrough: "DA28-05",
   nextQueue: [
-    "DA28-03",
-    "DA28-04",
-    "DA28-05",
     "DA28-06",
     "DA28-07",
     "DA28-08",
@@ -78,12 +75,15 @@ const document = createDocument({
       "single current authority selector for docs and issues 01-07",
       "historical sections may retain old cursors when labeled historical",
       "DA28-02 global re-gate at 32466c6e with 270/2850 tests and 663 traces",
+      "DA28-03 browser subcursors bound DA27-07/08/09 and DA26-13 under T342 parent",
+      "DA28-04 corpus v1.2 and DA28-05 score adjudication hold frozen scorecard",
     ],
     blocked: [
       "score movement",
       "projecting T383 or T342 as current global/product without label",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors",
-      "claiming DA28-03..30 product/runtime closes from DA28-02 re-gate alone",
+      "claiming DA28-06..30 live runtime closes from P0 evidence alone",
+      "native Nova/Mira rows raising imported-package coverage",
     ],
   },
 });

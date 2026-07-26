@@ -1,0 +1,122 @@
+{
+  "schema": "ScoreAdjudication/v1",
+  "status": "passed",
+  "adjudicatedAt": "2026-07-26T23:28:26.995Z",
+  "formalSha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+  "globalSha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+  "corpusRef": {
+    "path": "docs/evidence/compatibility-corpus-v1.2.json",
+    "sha256": "28552bd797b4691feb3a41f830d274ef3126548530640483d571763db6243ef1"
+  },
+  "previousScorecard": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "rows": [
+    {
+      "lane": "ikemen",
+      "score": "6-8",
+      "denominator": "source-epoch-family-review-partial",
+      "evidenceSha": "ec128c6af0826fe34269e284115edfd57640f75279baffe30d3bb8807458b7d6",
+      "evidenceRefs": [
+        "docs/evidence/source-authority-epoch-v1.json"
+      ],
+      "docsOnly": false,
+      "decision": "hold",
+      "rationale": "Hold ikemen; juggle-only focal, other families unreviewed"
+    },
+    {
+      "lane": "mugenFull",
+      "score": "10-12",
+      "denominator": "full-mugen-parity-not-claimed",
+      "evidenceSha": "28552bd797b4691feb3a41f830d274ef3126548530640483d571763db6243ef1",
+      "evidenceRefs": [
+        "docs/evidence/compatibility-corpus-v1.2.json"
+      ],
+      "docsOnly": false,
+      "decision": "hold",
+      "rationale": "Hold mugenFull band; exclusions intact"
+    },
+    {
+      "lane": "mugenLite",
+      "score": "36",
+      "denominator": "mugen-lite-journey-routes-without-imported-breadth",
+      "evidenceSha": "28552bd797b4691feb3a41f830d274ef3126548530640483d571763db6243ef1",
+      "evidenceRefs": [
+        "docs/evidence/compatibility-corpus-v1.2.json",
+        "docs/evidence/da27-08-qa-smoke/qa-smoke-gate-report-v1.json"
+      ],
+      "docsOnly": false,
+      "decision": "hold",
+      "rationale": "Hold mugenLite; native journey evidence only, no import raise"
+    },
+    {
+      "lane": "mugenMvp",
+      "score": "20",
+      "denominator": "controller-and-hitdef-breadth-not-expanded",
+      "evidenceSha": "28552bd797b4691feb3a41f830d274ef3126548530640483d571763db6243ef1",
+      "evidenceRefs": [
+        "docs/evidence/compatibility-corpus-v1.2.json"
+      ],
+      "docsOnly": false,
+      "decision": "hold",
+      "rationale": "Hold mugenMvp; no new controller matrix"
+    },
+    {
+      "lane": "sandbox",
+      "score": "65",
+      "denominator": "playable-sandbox-shell-and-gate-stack",
+      "evidenceSha": "38141cd7e32fb8580d7a5bcf131f14ca918469946cd4e163f9e6bb73e8ee124e",
+      "evidenceRefs": [
+        "docs/evidence/da27-08-qa-smoke/qa-smoke-gate-report-v1.json",
+        "docs/research/2026-07-26-global-checkpoint-da28-02.md"
+      ],
+      "docsOnly": false,
+      "decision": "hold",
+      "rationale": "Hold sandbox at 65 with formal gate + qa smoke evidence"
+    },
+    {
+      "lane": "studio",
+      "score": "25",
+      "denominator": "studio-product-local-flows-not-broad-matrix",
+      "evidenceSha": "34b9ef6f97aaf0b02df03c8c07a4561662884bf5aa0a2eb30a3cd1c2c3c739a2",
+      "evidenceRefs": [
+        "docs/evidence/browser-subcursors-da28-03-v1.json",
+        "docs/evidence/da26-13-browser/browser-gate-report-v1.json"
+      ],
+      "docsOnly": false,
+      "decision": "hold",
+      "rationale": "Hold studio; bounded subcursors do not replace T342 product matrix"
+    }
+  ],
+  "scorecard": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "movement": "none",
+  "diagnostics": [],
+  "claims": {
+    "allowed": [
+      "corpus v1.2 and browser subcursors feed adjudication inputs",
+      "each lane cites denominator, SHA, and evidence refs",
+      "frozen scorecard held with movement=none"
+    ],
+    "blocked": [
+      "docs-only or control closeouts as score movement",
+      "native fixture rows raising imported coverage",
+      "score inflation without independent executed denominators"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "e46f07e1884c2121dfc9d6103af8072af1b5d6cc18b72b9002710c041fcb44b5"
+  }
+}

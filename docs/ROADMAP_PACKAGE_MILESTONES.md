@@ -3,12 +3,12 @@
 ## Current bounded package override - DA27 drained
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA26, DA27, DA28-01, and DA28-02 are closed. Formal/global gate is
+DA26, DA27, and DA28-01…05 are closed. Formal/global gate is
 **`32466c6e`** (270/2850 tests, 663 traces, build, boundaries). Focal package
-T406 (`07ad9227`) remains juggle-only. Scores do not move. Next package cuts
-start at DA28-03 browser subcursors, then corpus/score materialization. See the
+T406 (`07ad9227`) remains juggle-only. Scores held. Next package cuts start at
+DA28-06 live projectile schedule. See the
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
-and [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
+and [P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
 
 ## Historical bounded runtime package - T288 / Entry 562
 

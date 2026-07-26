@@ -5,14 +5,13 @@ Last updated: 2026-07-26
 ## Latest delivery authority checkpoint
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-02). Formal/global delivery proof is **`32466c6e`**
+(`closedThrough` DA28-05). Formal/global delivery proof is **`32466c6e`**
 (270/2850 tests, 663 traces, build, boundaries). Focal T406 and visual/product
-T342 remain separate cursors. Corpus v1.2, Studio, asset, scanner, and broad
-product gates stay stale for score purposes. Scores are unchanged. Next delivery
-cuts are DA28-03 browser subcursors, then corpus/score materialization and live
-runtime wiring. See the
+T342 remain separate cursors. Corpus v1.2 and score adjudication are material
+and hold scores. Next delivery cuts are live projectile/Turns/input (DA28-06…).
+See the
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
-and [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
+and [P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
 
 ## Historical bounded runtime checkpoint - T288 / Entry 562
 

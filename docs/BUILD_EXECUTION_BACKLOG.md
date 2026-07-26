@@ -1,5 +1,17 @@
 # Build Execution Backlog
 
+## Entry 605 - DA28-03/04/05 browser subcursors, corpus, scores
+
+Closed DA28-03…05: `BrowserSubcursor/v1` materializes DA27-07/08/09 + DA26-13
+routes with SHA-256 evidence under T342 parent; `CompatibilityCorpus/v1.2`
+materializes real evidence digests with native/browser/control/source classes
+and excluded import breadth; `ScoreAdjudication/v1` holds frozen scorecard
+(`movement=none`). Artifacts:
+`docs/evidence/browser-subcursors-da28-03-v1.json`,
+`docs/evidence/compatibility-corpus-v1.2.json`,
+`docs/evidence/score-adjudication-v1.json`. formal/global stay `32466c6e`.
+Scores held. Next: **DA28-06** live projectile schedule.
+
 ## Entry 604 - Global re-gate DA28-02
 
 Closed DA28-02 at pin `32466c6e`. Measured: TypeScript 7 typecheck, Vitest

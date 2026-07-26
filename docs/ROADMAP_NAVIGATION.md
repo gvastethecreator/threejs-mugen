@@ -9,18 +9,18 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA28-02** (global re-gate)
+- `closedThrough`: **DA28-05** (browser subcursors + corpus + score hold)
 - formal/global: **`32466c6e`** (Entry 604 / DA28-02 gate)
 - focal: **T406** `07ad9227`
-- visual/product: **T342** `1085badb` (separate bounded captures exist)
+- visual/product: **T342** `1085badb` (DA28-03 subcursors are bounded children)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA28-03** … **DA28-30** (28 open)
-- Scores unchanged (adjudicated hold).
+- next queue: **DA28-06** … **DA28-30** (25 open)
+- Scores held (DA28-05 adjudication `movement=none`).
 
-Gate pin is `32466c6e` (270/2850 tests, 663 traces, build, boundaries). Entry 604
-closed DA28-02. Next live cut is DA28-03. Plan source:
+Gate pin is `32466c6e`. Entry 605 closed DA28-03…05. Next live cut is DA28-06.
+Plan source:
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md);
-[global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
+[P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
 
 The T287/T288 selectors below are **historical**.
 

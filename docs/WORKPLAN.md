@@ -2,9 +2,9 @@
 
 ## DA28 series (in progress, 2026-07-26)
 
-DA28-02 global re-gate closed at `32466c6e`. Next: **DA28-03** browser
-subcursors. Phase order: control/evidence; live projectile/Turns/input;
-MUGEN-lite execution; MUGEN breadth; Studio durability;
+DA28-01…05 closed (control, global re-gate, browser subcursors, corpus v1.2,
+score hold). Next: **DA28-06** live projectile schedule. Phase order: live
+projectile/Turns/input; MUGEN-lite execution; MUGEN breadth; Studio durability;
 assets/scanner/source/IKEMEN/boundaries. See
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 

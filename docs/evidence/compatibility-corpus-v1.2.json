@@ -1,0 +1,216 @@
+{
+  "schema": "CompatibilityCorpus/v1.2",
+  "snapshotId": "compatibility-corpus-v1.2",
+  "status": "passed",
+  "generatedAt": "2026-07-26T23:28:26.836Z",
+  "now": "2026-07-26T23:28:26.836Z",
+  "headSha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+  "tipSha": "98341a61eeed71f8776dc76e62f201fa052dd99a",
+  "expectedHeadSha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+  "ruleset": {
+    "id": "mugen-compatibility",
+    "version": "1.2.0"
+  },
+  "maxAgeHours": 336,
+  "ageHours": 0,
+  "fixtureClasses": {
+    "native": [
+      "compatibility-corpus-snapshot-v1.1",
+      "da27-08-qa-smoke-report"
+    ],
+    "import": [],
+    "browser": [
+      "browser-subcursors-da28-03",
+      "da27-07-turns-browser-report",
+      "da27-08-qa-smoke-report",
+      "da27-09-fightscreen-report",
+      "da26-13-browser-report"
+    ],
+    "control": [
+      "authority-selector",
+      "global-checkpoint-da28-02"
+    ],
+    "source": [
+      "source-authority-epoch"
+    ]
+  },
+  "exclusions": [
+    {
+      "id": "imported-package-breadth",
+      "reason": "No legal imported third-party package corpus row; Nova/Mira are native fixtures only"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "authority-selector",
+      "path": "docs/evidence/authority-selector-v1.json",
+      "checksum": "sha256:5d6773b7f21dccf2d8446a6c873a2cbd7d659fa5fdb348fc642605ab90e21bd6",
+      "required": true,
+      "class": "control",
+      "provenance": "repository-control"
+    },
+    {
+      "id": "browser-subcursors-da28-03",
+      "path": "docs/evidence/browser-subcursors-da28-03-v1.json",
+      "checksum": "sha256:34b9ef6f97aaf0b02df03c8c07a4561662884bf5aa0a2eb30a3cd1c2c3c739a2",
+      "required": true,
+      "class": "browser",
+      "provenance": "bounded-browser-subcursors"
+    },
+    {
+      "id": "compatibility-corpus-snapshot-v1.1",
+      "path": "docs/evidence/compatibility-corpus-snapshot-v1.json",
+      "checksum": "sha256:737726d83daa8a8a0ae8f3d0fee045f8b6d77fd5bc4074f0cc789bac95c5f757",
+      "required": true,
+      "class": "native",
+      "provenance": "repository-fixture-snapshot"
+    },
+    {
+      "id": "da26-13-browser-report",
+      "path": "docs/evidence/da26-13-browser/browser-gate-report-v1.json",
+      "checksum": "sha256:6ce7de8887d70f98bb671b217276eca8a5f8d9f57947dacaf1d8bf013b6fe95e",
+      "required": true,
+      "class": "browser",
+      "provenance": "runtime-shell-matrix"
+    },
+    {
+      "id": "da27-07-turns-browser-report",
+      "path": "docs/evidence/da27-07-turns-browser/turns-browser-gate-report-v1.json",
+      "checksum": "sha256:f8b9eadd7b4a2656e70f9003f23e3f050f5d8cb1809ebc9264e83f273096fd76",
+      "required": true,
+      "class": "browser",
+      "provenance": "turns-hud-route"
+    },
+    {
+      "id": "da27-08-qa-smoke-report",
+      "path": "docs/evidence/da27-08-qa-smoke/qa-smoke-gate-report-v1.json",
+      "checksum": "sha256:96b1875be7484ce6e9a5d63b1de1b8eaaa5850ab7cca18ecd1ccdef97b6dc199",
+      "required": true,
+      "class": "browser",
+      "provenance": "qa-smoke-matrix"
+    },
+    {
+      "id": "da27-09-fightscreen-report",
+      "path": "docs/evidence/da27-09-fightscreen-browser/fightscreen-browser-gate-report-v1.json",
+      "checksum": "sha256:db32a1b03c047581ea0ae6842fec5ec803718b40146358ba880ce7140a8ad029",
+      "required": true,
+      "class": "browser",
+      "provenance": "fightscreen-route"
+    },
+    {
+      "id": "global-checkpoint-da28-02",
+      "path": "docs/research/2026-07-26-global-checkpoint-da28-02.md",
+      "checksum": "sha256:38141cd7e32fb8580d7a5bcf131f14ca918469946cd4e163f9e6bb73e8ee124e",
+      "required": true,
+      "class": "control",
+      "provenance": "formal-global-gate"
+    },
+    {
+      "id": "source-authority-epoch",
+      "path": "docs/evidence/source-authority-epoch-v1.json",
+      "checksum": "sha256:ec128c6af0826fe34269e284115edfd57640f75279baffe30d3bb8807458b7d6",
+      "required": true,
+      "class": "source",
+      "provenance": "source-epoch"
+    }
+  ],
+  "artifactStatuses": [
+    {
+      "id": "authority-selector",
+      "status": "present",
+      "path": "docs/evidence/authority-selector-v1.json",
+      "class": "control",
+      "sha256": "5d6773b7f21dccf2d8446a6c873a2cbd7d659fa5fdb348fc642605ab90e21bd6",
+      "bytes": 3156
+    },
+    {
+      "id": "browser-subcursors-da28-03",
+      "status": "present",
+      "path": "docs/evidence/browser-subcursors-da28-03-v1.json",
+      "class": "browser",
+      "sha256": "34b9ef6f97aaf0b02df03c8c07a4561662884bf5aa0a2eb30a3cd1c2c3c739a2",
+      "bytes": 7896
+    },
+    {
+      "id": "compatibility-corpus-snapshot-v1.1",
+      "status": "present",
+      "path": "docs/evidence/compatibility-corpus-snapshot-v1.json",
+      "class": "native",
+      "sha256": "737726d83daa8a8a0ae8f3d0fee045f8b6d77fd5bc4074f0cc789bac95c5f757",
+      "bytes": 8531
+    },
+    {
+      "id": "da26-13-browser-report",
+      "status": "present",
+      "path": "docs/evidence/da26-13-browser/browser-gate-report-v1.json",
+      "class": "browser",
+      "sha256": "6ce7de8887d70f98bb671b217276eca8a5f8d9f57947dacaf1d8bf013b6fe95e",
+      "bytes": 2962
+    },
+    {
+      "id": "da27-07-turns-browser-report",
+      "status": "present",
+      "path": "docs/evidence/da27-07-turns-browser/turns-browser-gate-report-v1.json",
+      "class": "browser",
+      "sha256": "f8b9eadd7b4a2656e70f9003f23e3f050f5d8cb1809ebc9264e83f273096fd76",
+      "bytes": 936
+    },
+    {
+      "id": "da27-08-qa-smoke-report",
+      "status": "present",
+      "path": "docs/evidence/da27-08-qa-smoke/qa-smoke-gate-report-v1.json",
+      "class": "browser",
+      "sha256": "96b1875be7484ce6e9a5d63b1de1b8eaaa5850ab7cca18ecd1ccdef97b6dc199",
+      "bytes": 1694
+    },
+    {
+      "id": "da27-09-fightscreen-report",
+      "status": "present",
+      "path": "docs/evidence/da27-09-fightscreen-browser/fightscreen-browser-gate-report-v1.json",
+      "class": "browser",
+      "sha256": "db32a1b03c047581ea0ae6842fec5ec803718b40146358ba880ce7140a8ad029",
+      "bytes": 2241
+    },
+    {
+      "id": "global-checkpoint-da28-02",
+      "status": "present",
+      "path": "docs/research/2026-07-26-global-checkpoint-da28-02.md",
+      "class": "control",
+      "sha256": "38141cd7e32fb8580d7a5bcf131f14ca918469946cd4e163f9e6bb73e8ee124e",
+      "bytes": 1473
+    },
+    {
+      "id": "imported-package-breadth",
+      "status": "missing",
+      "path": "docs/evidence/imported-package-breadth-MISSING.json",
+      "class": "import"
+    },
+    {
+      "id": "source-authority-epoch",
+      "status": "present",
+      "path": "docs/evidence/source-authority-epoch-v1.json",
+      "class": "source",
+      "sha256": "ec128c6af0826fe34269e284115edfd57640f75279baffe30d3bb8807458b7d6",
+      "bytes": 4521
+    }
+  ],
+  "diagnostics": [
+    "tip-ahead-of-gate:98341a61->32466c6e"
+  ],
+  "claims": {
+    "allowed": [
+      "materialized corpus v1.2 with SHA-256 artifact digests",
+      "missing optional import breadth excluded without score raise",
+      "native/browser/control/source classes recorded"
+    ],
+    "blocked": [
+      "imported-package coverage from Nova/Mira native fixtures",
+      "score movement",
+      "treating tip-ahead as formal gate inheritance"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "db555ea8fb1819a3476550062cc0de9ad2fe50d6f0d1c39864d64a24a3205a75"
+  }
+}

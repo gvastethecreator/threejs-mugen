@@ -7,12 +7,12 @@ This guide exists so the project can keep moving without losing the thread. It d
 ## 2026-07-26 continuation checkpoint
 
 **Current authority:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-02). Formal/global gate `32466c6e` (270/2850, 663 traces);
+(`closedThrough` DA28-05). Formal/global gate `32466c6e` (270/2850, 663 traces);
 focal T406 `07ad9227`; visual/product T342 `1085badb`; source epoch 05b/4aa.
-DA26, DA27, DA28-01, and DA28-02 are closed. Continue at **DA28-03** browser
-subcursors, then corpus/score materialization and live runtime wiring. See the
+DA26, DA27, and DA28-01…05 are closed. Continue at **DA28-06** live projectile
+schedule and the rest of the live/input ladder. See the
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
-and [global checkpoint](research/2026-07-26-global-checkpoint-da28-02.md).
+and [P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
 
 ## 2026-07-18 T288 continuation checkpoint
 

@@ -3,8 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA28-02 closed global re-gate at pin `32466c6e` (270/2850, 663 traces).
-**Next live cut: DA28-03** browser subcursors. Then DA28-04…30 per
+DA28-05 closed P0 evidence (subcursors, corpus v1.2, score hold).
+**Next live cut: DA28-06** live projectile schedule into match runtime. Then
+DA28-07…30 per
 [audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
 Global pin is `32466c6e`. The T287 queue below is historical.
 

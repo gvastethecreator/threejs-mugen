@@ -3,10 +3,10 @@
 ## 2026-07-26 current authority override (post-DA27-09)
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-02). Live next head is **DA28-03**. Formal/global is
-`32466c6e`; focal T406 and visual/product T342 remain separate. DA28-02 closed
-the current-HEAD global re-gate. Scores do not move. Run
-`pnpm audit:authority-references` after selector materialization.
+(`closedThrough` DA28-05). Live next head is **DA28-06**. Formal/global is
+`32466c6e`; focal T406 and visual/product T342 remain separate. DA28-03…05
+closed browser subcursors, corpus v1.2, and score hold. Scores do not move.
+Run `pnpm audit:authority-references` after selector materialization.
 
 Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent

@@ -1,9 +1,13 @@
 ﻿# Roadmap Execution Board
 
+## Current P0 evidence - DA28-03/04/05 (closed, 2026-07-26)
+
+Browser subcursors, corpus v1.2, score adjudication hold. Next: **DA28-06**.
+Report: `docs/research/2026-07-26-da28-p0-browser-corpus-scores.md`.
+
 ## Current global re-gate - DA28-02 (closed, 2026-07-26)
 
 Pin `32466c6e`: typecheck, 270/2850 Vitest, 663 traces, build, boundaries.
-Next: **DA28-03** browser subcursors.
 Report: `docs/research/2026-07-26-global-checkpoint-da28-02.md`.
 
 ## Current DA28-01 adoption (control, 2026-07-26)
@@ -75,7 +79,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA28-03** (28 DA28 tasks open after DA28-02).
+Next queue head: **DA28-06** (25 DA28 tasks open after DA28-05).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

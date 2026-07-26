@@ -1,0 +1,225 @@
+{
+  "schema": "BrowserSubcursor/v1",
+  "generatedAt": "2026-07-26T23:28:26.729Z",
+  "formalSha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+  "globalSha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
+  "visualParentSha": "1085badb",
+  "productParentSha": "1085badb",
+  "routes": [
+    {
+      "id": "da26-13-runtime-shell",
+      "taskId": "DA26-13",
+      "label": "Runtime multi-viewport shell with reduced-motion capture",
+      "baseUrl": "http://127.0.0.1:5173/",
+      "viewports": [
+        "1440x960",
+        "390x844",
+        "820x1180"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "reducedMotionCaptured": true,
+      "focusOrKeyboardNoted": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/evidence/da26-13-browser/browser-gate-report-v1.json",
+          "role": "report",
+          "sha256": "6ce7de8887d70f98bb671b217276eca8a5f8d9f57947dacaf1d8bf013b6fe95e",
+          "bytes": 2962
+        },
+        {
+          "path": "docs/evidence/da26-13-browser/runtime-desktop-1440x960.png",
+          "role": "screenshot",
+          "sha256": "feb4ef31048d91d1f5a7797815aee9f5dcfe54c3c58b3e278b2395a5c5ba31fc",
+          "bytes": 828244
+        },
+        {
+          "path": "docs/evidence/da26-13-browser/runtime-mobile-390x844.png",
+          "role": "screenshot",
+          "sha256": "82984a9bffd93ac73a86ea3ac7886bf2dcf08bede2cee0e2e0ccddaa5ffa6143",
+          "bytes": 210084
+        },
+        {
+          "path": "docs/evidence/da26-13-browser/runtime-tablet-820x1180.png",
+          "role": "screenshot",
+          "sha256": "208c1a32f59812c659dbd8b89d60505d1927f927511adc01a4fc2dd5b1beef9c",
+          "bytes": 663655
+        }
+      ],
+      "claimsAllowed": [
+        "desktop/tablet/mobile runtime shell loads without page/console errors",
+        "reduced-motion context applied during capture",
+        "screenshots + SHA-256 under docs/evidence/da26-13-browser",
+        "skip-to-runtime link present"
+      ],
+      "claimsBlocked": [
+        "audible Common.Fx proof",
+        "full qa:smoke character attack canvas checksum suite",
+        "replacing T342 visual pin without formal global re-gate",
+        "score movement"
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "da27-07-turns-hud",
+      "taskId": "DA27-07",
+      "label": "Turns HUD desktop browser gate",
+      "baseUrl": "http://127.0.0.1:5173/?mode=match&teamMode=turns",
+      "viewports": [
+        "1440x960"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "reducedMotionCaptured": false,
+      "focusOrKeyboardNoted": false,
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/evidence/da27-07-turns-browser/turns-browser-gate-report-v1.json",
+          "role": "report",
+          "sha256": "f8b9eadd7b4a2656e70f9003f23e3f050f5d8cb1809ebc9264e83f273096fd76",
+          "bytes": 936
+        },
+        {
+          "path": "docs/evidence/da27-07-turns-browser/turns-hud-desktop-1440x960.png",
+          "role": "screenshot",
+          "sha256": "b40f60ada61c90971bb5f4b131b2397e101d07deeaf929cd63453533ec41c542",
+          "bytes": 841419
+        }
+      ],
+      "claimsAllowed": [
+        "URL teamMode=turns selects Turns mode",
+        "desktop capture with 0 page console errors",
+        "round HUD exposes team mode / turns data attributes when lifebar is active"
+      ],
+      "claimsBlocked": [
+        "audible Common.Fx",
+        "full multi-replacement browser combat matrix",
+        "score movement"
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "da27-08-qa-smoke",
+      "taskId": "DA27-08",
+      "label": "Full qa:smoke desktop/mobile attack canvas + studio",
+      "baseUrl": "http://127.0.0.1:5300",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "reducedMotionCaptured": false,
+      "focusOrKeyboardNoted": false,
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/evidence/da27-08-qa-smoke/mugen-lite-runtime-desktop-attack-canvas.png",
+          "role": "screenshot",
+          "sha256": "188de5b5b201fd9c4cc53416b46891e58012f5e00b57daa5a1f44ec29fdcd265",
+          "bytes": 680846
+        },
+        {
+          "path": "docs/evidence/da27-08-qa-smoke/mugen-lite-runtime-mobile-attack-canvas.png",
+          "role": "screenshot",
+          "sha256": "a39fd3ea0364264b91c4136c5a3320e88eb4f1fd21f1fe13c99182202215fba8",
+          "bytes": 171694
+        },
+        {
+          "path": "docs/evidence/da27-08-qa-smoke/qa-smoke-gate-report-v1.json",
+          "role": "report",
+          "sha256": "96b1875be7484ce6e9a5d63b1de1b8eaaa5850ab7cca18ecd1ccdef97b6dc199",
+          "bytes": 1694
+        },
+        {
+          "path": "docs/evidence/da27-08-qa-smoke/runtime-desktop.png",
+          "role": "screenshot",
+          "sha256": "3edad48346db695b89354085f632dbfd72b0f31f4ee2aca98d7a3830b275008c",
+          "bytes": 835522
+        },
+        {
+          "path": "docs/evidence/da27-08-qa-smoke/runtime-mobile.png",
+          "role": "screenshot",
+          "sha256": "e3a9cde35b973f589e47325b9a1c2ec6725e7299d3a3922127dff2272fdf57ac",
+          "bytes": 250682
+        },
+        {
+          "path": "docs/evidence/da27-08-qa-smoke/studio-build.png",
+          "role": "screenshot",
+          "sha256": "7f29127ab9a0cdfebe363705073fb3ab7dc1f545c1ee0b1181344b597d4edefa",
+          "bytes": 403769
+        }
+      ],
+      "claimsAllowed": [
+        "desktop/mobile attack-canvas paths exercised",
+        "full pnpm qa:smoke matrix green on current tree",
+        "studio build package contracts/evidence including gate and nova release policy"
+      ],
+      "claimsBlocked": [
+        "audible Common.Fx exclusive DA27-09 claim",
+        "replacing formal/global pin without re-gate",
+        "score movement"
+      ],
+      "diagnostics": []
+    },
+    {
+      "id": "da27-09-fightscreen",
+      "taskId": "DA27-09",
+      "label": "FightScreen package + shell browser gate",
+      "baseUrl": "http://127.0.0.1:5175/",
+      "viewports": [
+        "1440x960"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "reducedMotionCaptured": false,
+      "focusOrKeyboardNoted": false,
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/evidence/da27-09-fightscreen-browser/fightscreen-browser-gate-report-v1.json",
+          "role": "report",
+          "sha256": "db32a1b03c047581ea0ae6842fec5ec803718b40146358ba880ce7140a8ad029",
+          "bytes": 2241
+        },
+        {
+          "path": "docs/evidence/da27-09-fightscreen-browser/fightscreen-runtime-desktop-1440x960.png",
+          "role": "screenshot",
+          "sha256": "7711e503f918ea79f557f86da041f712ff6ce4e8f5228bf8483a5734a134cdb3",
+          "bytes": 844183
+        }
+      ],
+      "claimsAllowed": [
+        "fight.def names fight/ko/round Common.Fx sound edges",
+        "public Sandbox FightScreen package bytes are HTTP-reachable",
+        "runtime match shell loads with clean console after gesture"
+      ],
+      "claimsBlocked": [
+        "full motif visual parity",
+        "hardware audio device measurement outside WebAudio diagnostics",
+        "score movement"
+      ],
+      "diagnostics": []
+    }
+  ],
+  "status": "passed",
+  "diagnostics": [],
+  "claims": {
+    "allowed": [
+      "T342 remains the broad visual/product parent cursor",
+      "bounded DA27-07/08/09 and DA26-13 routes recorded as subcursors",
+      "each route cites report/screenshot SHA-256 when present"
+    ],
+    "blocked": [
+      "heard hardware audio or nonzero browser audio output",
+      "replacing T342 visual/product matrix from these routes alone",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f52e5179a09480275915949d9a48889f7fde4171e9874f93c4d8f2dade56dd58"
+  }
+}
