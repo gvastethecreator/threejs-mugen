@@ -1,5 +1,13 @@
 # Build Execution Backlog
 
+## Entry 592 - MatchInputPolicySnapshot/v1 (DA26-14 bounded)
+
+Closed DA26-14 at policy scope: two-seat logical snapshots with deadzone,
+default/custom remap, disconnect clear, facing/SOCD fields, and deterministic
+canonical equality. Browser Gamepad API and DA26-13 visual gate remain open.
+Tests: `src/tests/MatchInputPolicySnapshot.test.ts`. No score movement. Report:
+`docs/research/2026-07-26-match-input-policy-snapshot.md`.
+
 ## Entry 591 - Sandbox FightScreen fixture (DA26-12)
 
 Closed DA26-12: first-party CC0 FightScreen package (`SandboxFightScreenFixture/v1`)

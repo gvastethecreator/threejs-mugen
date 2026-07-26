@@ -1,10 +1,16 @@
 ﻿# Progress Tracker
 
+## MatchInputPolicySnapshot - DA26-14 bounded (closed, 2026-07-26)
+
+- Logical two-seat input policy with deadzone/remap/disconnect/determinism.
+- Browser gamepad APIs and visual gate remain open (DA26-13 still next for UI).
+- Entry 592. Scores unchanged.
+
 ## Sandbox FightScreen fixture - DA26-12 (closed, 2026-07-26)
 
 - CC0 first-party fight.def + FightFX + FNT package (folder + ZIP + hashes).
 - Loader evidence for round/KO/draw/time-over/win/skip/fade/reset/fallback.
-- Entry 591. Next queue **DA26-13**. Scores unchanged.
+- Entry 591. Scores unchanged.
 
 ## Authority selector sync - DA26-11 (closed, 2026-07-26)
 

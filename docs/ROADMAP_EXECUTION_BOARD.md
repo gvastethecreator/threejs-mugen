@@ -1,5 +1,13 @@
 ﻿# Roadmap Execution Board
 
+## Current input policy - DA26-14 bounded (closed, 2026-07-26)
+
+MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
+deterministic equality. Browser Gamepad API + DA26-13 visual proof remain open.
+Report: `docs/research/2026-07-26-match-input-policy-snapshot.md`.
+
+Next queue head: **DA26-13** browser gate (still the live UI/product proof).
+
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 
 Sandbox FightScreen CC0 package ships as folder + ZIP with license, stable
@@ -7,8 +15,6 @@ hashes, and loader evidence for round/KO/DKO/draw/time-over/win/skip/fade/
 reset/fallback surfaces. Paths: `public/data/sandbox-fightscreen/`,
 `public/system/sandbox-fightscreen.zip`. Report:
 `docs/research/2026-07-26-sandbox-fightscreen-fixture.md`. Scores do not move.
-
-Next queue head: **DA26-13** browser gate.
 
 ## Current authority selector - DA26-11 (closed, 2026-07-26)
 
