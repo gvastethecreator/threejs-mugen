@@ -1,12 +1,18 @@
 ﻿# Roadmap Execution Board
 
+## Current runtime/control batch (closed, 2026-07-26)
+
+Closed: DA26-15 Turns transaction, DA26-17 projectile schedule, DA26-22
+EvidenceSubject readiness, DA26-23 asset closure, DA26-27 scanner capability
+vector, DA26-29 BoundaryManifest. Report:
+`docs/research/2026-07-26-runtime-control-batch.md`.
+
 ## Current input policy - DA26-14 bounded (closed, 2026-07-26)
 
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
-deterministic equality. Browser Gamepad API + DA26-13 visual proof remain open.
-Report: `docs/research/2026-07-26-match-input-policy-snapshot.md`.
+deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA26-13** browser gate (still the live UI/product proof).
+Next queue head: **DA26-13** browser gate (primary remaining product proof).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

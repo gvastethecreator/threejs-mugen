@@ -2,10 +2,10 @@
 
 ## Current next-build override - 2026-07-26
 
-**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA26-12). DA26-01..12 are closed. **Next live cut: DA26-13**
-browser gate (desktop/tablet/mobile). The T287 queue below is historical.
-Full ladder:
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+Many DA26 control/runtime slices closed (see Entry 593). **Next live cut:
+DA26-13** browser gate. Also open: 16, 18–21, 24–26, 28, 30. The T287 queue
+below is historical. Full ladder:
 [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)

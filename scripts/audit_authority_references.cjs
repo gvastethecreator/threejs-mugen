@@ -54,11 +54,23 @@ const selector = JSON.parse(fs.readFileSync(selectorPath, "utf8"));
 if (selector.schemaVersion !== "mugen-web-sandbox/authority-selector/v1") {
   fail(`unexpected selector schema: ${selector.schemaVersion}`);
 }
-if (selector.closedThrough !== "DA26-12") {
-  fail(`expected closedThrough DA26-12, got ${selector.closedThrough}`);
+// closedThrough advances as control/runtime slices land; next queue must not restart closed IDs.
+const closed = String(selector.closedThrough || "");
+if (!/^DA26-\d{2}$/.test(closed)) {
+  fail(`invalid closedThrough: ${closed}`);
 }
 if (selector.nextQueue?.[0] !== "DA26-13") {
-  fail(`expected next queue head DA26-13, got ${selector.nextQueue?.[0]}`);
+  fail(`expected next queue head DA26-13 (browser gate), got ${selector.nextQueue?.[0]}`);
+}
+const closedNum = Number(closed.slice(5));
+for (const id of selector.nextQueue || []) {
+  const n = Number(String(id).replace("DA26-", ""));
+  if (Number.isFinite(n) && n <= 12 && n !== 13) {
+    // 13 may remain open while later control slices close out of order
+  }
+  if (["DA26-01", "DA26-02", "DA26-03", "DA26-04", "DA26-05", "DA26-06", "DA26-07", "DA26-08", "DA26-09", "DA26-10", "DA26-11", "DA26-12", "DA26-14", "DA26-15", "DA26-17", "DA26-22", "DA26-23", "DA26-27", "DA26-29"].includes(id)) {
+    fail(`nextQueue still lists closed id ${id}`);
+  }
 }
 if (!String(selector.cursors?.global?.sha || "").startsWith("7d9b15f8")) {
   fail(`global cursor must pin 7d9b15f8, got ${selector.cursors?.global?.sha}`);

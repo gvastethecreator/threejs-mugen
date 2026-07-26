@@ -1,5 +1,11 @@
 ﻿# Progress Tracker
 
+## Runtime/control batch - DA26-15/17/22/23/27/29 (closed, 2026-07-26)
+
+- Turns transaction, projectile schedule, EvidenceSubject, asset closure,
+  scanner capability vector, BoundaryManifest — unit-proven, claim-bounded.
+- Entry 593. Live next remains **DA26-13** browser. Scores unchanged.
+
 ## MatchInputPolicySnapshot - DA26-14 bounded (closed, 2026-07-26)
 
 - Logical two-seat input policy with deadzone/remap/disconnect/determinism.

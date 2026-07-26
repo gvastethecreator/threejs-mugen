@@ -3,7 +3,7 @@
 Last updated: 2026-07-26  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA26-12**
+`closedThrough`: **DA26-29** (control/runtime batch; browser DA26-13 still open)
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -34,16 +34,22 @@ IKEMEN **6–8**, Studio **25**. Docs and control work do not move scores.
 
 ## Closed ladder
 
-**DA26-01 … DA26-12** are closed. Do not put them back in the live next queue.
+Closed (do not re-queue): DA26-01…12, **14**, **15**, **17**, **22**, **23**, **27**, **29** (plus earlier control).  
+See [runtime-control batch](research/2026-07-26-runtime-control-batch.md).
 
 ## Next queue
 
 1. **DA26-13** — browser gate actual (desktop/tablet/mobile + console)  
-2. DA26-14 gamepad / MatchInputPolicySnapshot  
-3. DA26-15+ Turns/projectile/corpus per [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md)
+2. DA26-16 Turns journey browser  
+3. DA26-18 plural projectile/reversal/juggle oracle  
+4. DA26-19 corpus v1.2  
+5. DA26-20 second character  
+6. DA26-21 score adjudication  
+7. DA26-24/25/26 Studio snapshot/diff/journal  
+8. DA26-28 second asset  
+9. DA26-30 two-consumer core  
 
-FightScreen fixture: `public/data/sandbox-fightscreen/` +
-`public/system/sandbox-fightscreen.zip` (CC0).
+FightScreen fixture: `public/data/sandbox-fightscreen/` + ZIP (CC0).
 
 ## Anti-patterns (fail the reference auditor)
 
@@ -51,7 +57,7 @@ In **current** sections (not historical):
 
 - Claiming a pre-T406 audit HEAD or pre-DA26-08 global gate as still live
 - Treating reserved incomplete juggle write-sets as open current P0
-- Next queue starting inside the closed DA26-01…12 band
+- Next queue restarting already-closed DA26 IDs
 - Rewriting formal/global cursors to a feature tip (RoadmapCursor materializer forbids this)
 
 ## Audit

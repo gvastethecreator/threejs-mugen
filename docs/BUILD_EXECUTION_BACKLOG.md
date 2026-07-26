@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 593 - Runtime/control batch (DA26-15/17/22/23/27/29)
+
+Closed bounded modules: Turns transaction (prepare/validate/commit/restore),
+global projectile schedule (stable order), EvidenceSubject/playtest readiness,
+ProjectAssetClosure (unused assets do not block), ScannerCapabilityVector
+(five phases, no inference), BoundaryManifest fail-closed evaluation. Unit
+suites green. Browser DA26-13 and remaining product/oracle/corpus slices stay
+open. Scores unchanged. Report:
+`docs/research/2026-07-26-runtime-control-batch.md`.
+
 ## Entry 592 - MatchInputPolicySnapshot/v1 (DA26-14 bounded)
 
 Closed DA26-14 at policy scope: two-seat logical snapshots with deadzone,
