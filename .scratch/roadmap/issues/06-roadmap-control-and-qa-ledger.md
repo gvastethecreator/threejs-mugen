@@ -1,11 +1,12 @@
 # 06 - Roadmap Control And QA Ledger
 
-## 2026-07-26 DA26-09 control override
+## 2026-07-26 DA26-09/10 control override
 
-RoadmapCursor/v1 is live: seven cursors, dirty exclusions, digest, and
-stale/mismatch evaluation. Artifact `docs/evidence/roadmap-cursor-v1.json`.
-Next control cut is DA26-10 SourceAuthorityEpoch/Manifest v1, then DA26-11
-authority sync. Scores do not move.
+RoadmapCursor/v1 is live (formal/global pin `7d9b15f8`). SourceAuthorityEpoch/v1
+and Manifest v1 are live with dual pins and per-family status; juggle=`same`.
+Artifacts: `docs/evidence/roadmap-cursor-v1.json`,
+`docs/evidence/source-authority-epoch-v1.json`. Next: DA26-11 authority sync.
+Scores do not move.
 
 Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent

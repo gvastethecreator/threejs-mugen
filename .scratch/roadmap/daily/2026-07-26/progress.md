@@ -33,7 +33,10 @@ Inicio: 2026-07-26, zona America/Buenos_Aires
 ### DA26-09
 - RoadmapCursor tests: 6 passed (incluye pin formal/global y mismatch de head)
 
+5. DA26-10 SourceAuthorityEpoch/Manifest v1 cerrado:
+   - Pins 05b/4aa; juggle=`same`; hitdef-core/projectile `unreviewed`.
+   - Artifact `docs/evidence/source-authority-epoch-v1.json`; Entry 589; ADR 0054.
+
 ## Estado
 
-DA26-01..09 cerrados. Puntero siguiente: **DA26-10** SourceAuthorityEpoch/Manifest v1
-(no arrancar hasta verificación adversaria de Phase 0 + 08/09).
+DA26-01..10 cerrados. Puntero siguiente: **DA26-11** sync de autoridades.

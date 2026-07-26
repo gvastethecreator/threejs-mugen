@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 589 - SourceAuthorityEpoch/Manifest v1 (DA26-10)
+
+Closed DA26-10: dual-pin epoch (05b / 4aa) with per-family status, missing-file
+tracking, digest tamper detection, and Manifest v1 wrapper. Juggle family
+`same`; hitdef-core and projectile `unreviewed`. PackageAnalysis upstream
+imports the normative pin constant. Artifact
+`docs/evidence/source-authority-epoch-v1.json`. ADR 0054. Claim allowed:
+per-family provenance only. No score movement. Report:
+`docs/research/2026-07-26-source-authority-epoch-v1.md`.
+
 ## Entry 588 - RoadmapCursor/v1 (DA26-09)
 
 Closed DA26-09: RoadmapCursor/v1 control document with seven cursors, branch,

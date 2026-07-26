@@ -1,11 +1,15 @@
 # Workplan
 
+## SourceAuthorityEpoch/Manifest v1 - DA26-10 (closed, 2026-07-26)
+
+Dual-pin per-family provenance is live. Next: DA26-11 authority sync so board,
+issues, and scorecard selectors cite one current control set. Full ladder:
+[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+
 ## RoadmapCursor/v1 - DA26-09 (closed, 2026-07-26)
 
-Control cursors are now a typed digest document with freshness evaluation.
-Next: DA26-10 SourceAuthorityEpoch/Manifest v1, then DA26-11 authority sync.
-Full ladder:
-[audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+Control cursors are a typed digest document with freshness evaluation.
+formal/global pin the DA26-08 gate `7d9b15f8`.
 
 ## Global checkpoint after T406 - DA26-08 (closed, 2026-07-26)
 

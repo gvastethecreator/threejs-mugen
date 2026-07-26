@@ -1,5 +1,12 @@
 ﻿# Progress Tracker
 
+## SourceAuthorityEpoch/Manifest v1 - DA26-10 (closed, 2026-07-26)
+
+- Dual pins 05b/4aa; families juggle=`same`, others `unreviewed`.
+- Manifest v1 wraps epoch; legacy v0 pointer only.
+- Artifact `docs/evidence/source-authority-epoch-v1.json`; Entry 589; ADR 0054.
+- Claim allowed: per-family provenance. Scores unchanged.
+
 ## RoadmapCursor/v1 - DA26-09 (closed, 2026-07-26)
 
 - Seven control cursors with SHA/date/artifact/claimLimit, branch, scores,

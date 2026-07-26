@@ -6,6 +6,7 @@ import { parseDef } from "../parsers/DefParser";
 import { parseMugenConfig } from "../parsers/MugenConfigParser";
 import { parseStageDef } from "../parsers/StageDefParser";
 import { parseKeyValue, parseTextLines, unquote } from "../parsers/text";
+import { SOURCE_AUTHORITY_EPOCH_NORMATIVE_PIN } from "./SourceAuthorityEpoch";
 
 export const PACKAGE_ANALYSIS_SCHEMA = "mugen-web-sandbox/package-analysis/v0" as const;
 export const PACKAGE_ANALYSIS_V1_SCHEMA = "mugen-web-sandbox/package-analysis/v1" as const;
@@ -17,9 +18,11 @@ export const PACKAGE_ANALYSIS_V1_RULESET = {
   id: "mugen-web-sandbox/package-analysis-rules",
   version: "1.0.0",
 } as const;
+
 export const PACKAGE_ANALYSIS_V1_UPSTREAM = {
   project: "ikemen-engine/Ikemen-GO",
-  revision: "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+  /** Normative pin only; family-level provenance lives in SourceAuthorityEpoch/v1. */
+  revision: SOURCE_AUTHORITY_EPOCH_NORMATIVE_PIN,
 } as const;
 
 export type PackageAnalysisFindingStatus = "recognized" | "unsupported" | "unknown";

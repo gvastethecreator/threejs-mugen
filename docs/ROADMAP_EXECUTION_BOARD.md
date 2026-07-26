@@ -1,14 +1,23 @@
 ﻿# Roadmap Execution Board
 
+## Current source authority - DA26-10 Epoch/Manifest v1 (closed, 2026-07-26)
+
+SourceAuthorityEpoch/v1 records pins `05b7d98a` and `4aa0ba38` with per-family
+status. Juggle is `same` under pin-era equality; other families start
+`unreviewed`. Manifest v1 wraps the epoch and points at legacy v0 without
+inheriting its claims. Artifact:
+`docs/evidence/source-authority-epoch-v1.json`. ADR 0054. Report:
+`docs/research/2026-07-26-source-authority-epoch-v1.md`. Scores do not move.
+
+Next: DA26-11 authority sync across board/issues/docs selectors.
+
 ## Current control cursor - DA26-09 RoadmapCursor/v1 (closed, 2026-07-26)
 
 RoadmapCursor/v1 stores the seven control cursors with branch, scores, dirty
 exclusions, and per-cursor SHA/date/artifact/claimLimit. Freshness evaluation
-distinguishes `current`, `stale`, and `mismatch`. Artifact:
-`docs/evidence/roadmap-cursor-v1.json`. Report:
+distinguishes `current`, `stale`, and `mismatch`. formal/global pin DA26-08
+gate `7d9b15f8`. Artifact: `docs/evidence/roadmap-cursor-v1.json`. Report:
 `docs/research/2026-07-26-roadmap-cursor-v1.md`. Scores do not move.
-
-Next: DA26-10 SourceAuthorityEpoch/Manifest v1, then DA26-11 authority sync.
 
 ## Current global checkpoint - DA26-08 after T406 (closed, 2026-07-26)
 

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "mugen-web-sandbox/source-authority-manifest/v1",
+  "generatedAt": "2026-07-26T18:00:00.000Z",
+  "epoch": {
+    "schemaVersion": "mugen-web-sandbox/source-authority-epoch/v1",
+    "generatedAt": "2026-07-26T18:00:00.000Z",
+    "pins": {
+      "normative": {
+        "id": "normative",
+        "revision": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+        "label": "normative pin 05b"
+      },
+      "working": {
+        "id": "working",
+        "revision": "4aa0ba38f851c52549ba182310e9e53361cd472a",
+        "label": "working pin 4aa (T389-T406)"
+      }
+    },
+    "families": [
+      {
+        "id": "hitdef-core",
+        "status": "unreviewed",
+        "files": [
+          {
+            "path": "src/char.go",
+            "workingDigest": "80c90e01e22d31de6e3dfde51a8883528038f733c68014d7bf52b929394e2b35",
+            "status": "missing-normative"
+          },
+          {
+            "path": "src/compiler_functions.go",
+            "workingDigest": "08bbd7c0e65160ea1ffccd1993a79c625433268510ddf6e758e843d5df9059f0",
+            "status": "missing-normative"
+          }
+        ],
+        "notes": [
+          "not reviewed for epoch promotion beyond juggle subset"
+        ],
+        "claimLimit": "unreviewed family"
+      },
+      {
+        "id": "juggle",
+        "status": "same",
+        "files": [
+          {
+            "path": "src/bytecode.go",
+            "normativeDigest": "fa2eb8c180fd277fbc1b61d5a143e5f4feea1c3567ea189a9340dbfb4db0f644",
+            "workingDigest": "fa2eb8c180fd277fbc1b61d5a143e5f4feea1c3567ea189a9340dbfb4db0f644",
+            "status": "same"
+          },
+          {
+            "path": "src/char.go",
+            "normativeDigest": "80c90e01e22d31de6e3dfde51a8883528038f733c68014d7bf52b929394e2b35",
+            "workingDigest": "80c90e01e22d31de6e3dfde51a8883528038f733c68014d7bf52b929394e2b35",
+            "status": "same"
+          },
+          {
+            "path": "src/compiler_functions.go",
+            "normativeDigest": "08bbd7c0e65160ea1ffccd1993a79c625433268510ddf6e758e843d5df9059f0",
+            "workingDigest": "08bbd7c0e65160ea1ffccd1993a79c625433268510ddf6e758e843d5df9059f0",
+            "status": "same"
+          },
+          {
+            "path": "src/compiler.go",
+            "normativeDigest": "2da550de7606217cb00d78c1d3795f9b25b30d2a577852cc83e773b9b1faa55b",
+            "workingDigest": "2da550de7606217cb00d78c1d3795f9b25b30d2a577852cc83e773b9b1faa55b",
+            "status": "same"
+          }
+        ],
+        "notes": [
+          "DA26-02: juggle-bearing lines equal between pins 05b7d98a and 4aa0ba38",
+          "wiki non-A reset wording differs from pin-era ikemenver gate; pin rules claim-allowed"
+        ],
+        "claimLimit": "pin-era juggle file equality only; no global pin promotion"
+      },
+      {
+        "id": "projectile",
+        "status": "unreviewed",
+        "files": [
+          {
+            "path": "src/char.go",
+            "workingDigest": "80c90e01e22d31de6e3dfde51a8883528038f733c68014d7bf52b929394e2b35",
+            "status": "missing-normative"
+          }
+        ],
+        "notes": [
+          "projectile juggle/reversal paths remain claim-blocked"
+        ],
+        "claimLimit": "unreviewed family"
+      }
+    ],
+    "missingFiles": [
+      "src/char.go",
+      "src/compiler_functions.go"
+    ],
+    "claims": {
+      "allowed": [
+        "juggle family same under pin-era equality evidence",
+        "per-family provenance between normative 05b and working 4aa pins"
+      ],
+      "blocked": [
+        "global promotion of either pin",
+        "runtime parity from epoch alone",
+        "score movement",
+        "wiki as pin replacement"
+      ]
+    },
+    "canonicalization": "stable-json/v0",
+    "digest": {
+      "algorithm": "sha-256",
+      "value": "9db5f98eedb75a4ea0656156dab80d053b50a232d2e4f6f3e9192caa925dfaf9"
+    }
+  },
+  "legacyV0": {
+    "artifact": "docs/evidence/source-authority-manifest-v0.json",
+    "digest": "20216fe3f7031af71fd43af8ca1e918037cea9a23eb8a642cb8c2085442ff79b"
+  },
+  "claims": {
+    "allowed": [
+      "legacy v0 pointer without promoting v0 semantics",
+      "source-authority-manifest/v1 wraps epoch v1"
+    ],
+    "blocked": [
+      "global pin promotion",
+      "PackageAnalysis support claims beyond scanner recognition",
+      "score movement"
+    ]
+  },
+  "canonicalization": "stable-json/v0",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "dc20a1bda70de14147e73c05bc839893f96dbf89f21d1068a928e1a3becc31f5"
+  }
+}
