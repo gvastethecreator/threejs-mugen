@@ -1,10 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Current DA26 ladder - drained (closed-bounded, 2026-07-26)
+
+DA26-01…30 closed under claim ceilings. Report:
+`docs/research/2026-07-26-da26-ladder-drain.md`. `nextQueue` empty.
+
 ## Current browser gate - DA26-13 (closed-bounded, 2026-07-26)
 
 Desktop/tablet/mobile runtime shell with clean console, contact log, skip link,
 and screenshot SHA evidence. Report:
-`docs/research/2026-07-26-browser-gate-da26-13.md`. Next: **DA26-16**.
+`docs/research/2026-07-26-browser-gate-da26-13.md`.
 
 ## Current studio/oracle/core batch (closed, 2026-07-26)
 
@@ -25,8 +30,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA26-16** Turns journey browser.
-Also open: DA26-19, 20, 21.
+Next queue: empty after DA26 ladder drain.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

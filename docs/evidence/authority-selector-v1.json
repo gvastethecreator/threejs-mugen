@@ -1,13 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T18:42:54.123Z",
+  "generatedAt": "2026-07-26T18:46:42.816Z",
   "closedThrough": "DA26-30",
-  "nextQueue": [
-    "DA26-16",
-    "DA26-19",
-    "DA26-20",
-    "DA26-21"
-  ],
+  "nextQueue": [],
   "scores": {
     "sandbox": "65",
     "mugenLite": "36",
@@ -73,6 +68,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "06e2a2e29fcea0506c8c0d32ecd4d21783978994dad08ccca1404a34031e167a"
+    "value": "90bddfa5ab1217838b0fa16744205ba72883b057a15419433788beee5f620681"
   }
 }

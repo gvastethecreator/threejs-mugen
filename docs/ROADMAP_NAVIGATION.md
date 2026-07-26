@@ -9,13 +9,13 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA26-30** (see selector for closed ID set)
+- `closedThrough`: **DA26-30** (DA26-01…30 closed, claim-bounded)
 - formal/global: **`7d9b15f8`** (Entry 587 / DA26-08 gate)
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb` (DA26-13 bounded capture is separate)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA26-16** Turns browser, then 19/20/21
-- Scores unchanged. Full audit map remains historical context:
+- next queue: **empty**
+- Scores unchanged (adjudicated hold). Full audit map remains historical context:
   [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 The T287/T288 selectors below are **historical**.

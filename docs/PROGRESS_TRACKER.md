@@ -1,11 +1,15 @@
 ﻿# Progress Tracker
 
+## DA26 ladder drain - 16/19/20/21 (closed-bounded, 2026-07-26)
+
+- Turns journey, corpus v1.2, second character readiness, score adjudication
+  hold. Entry 596. `nextQueue` empty. Scores unchanged (hold).
+
 ## Browser gate - DA26-13 (closed-bounded, 2026-07-26)
 
 - Desktop/tablet/mobile runtime shell, 0 console errors, contact log, skip link,
   no overflow-X, reduced-motion capture. Evidence under
-  `docs/evidence/da26-13-browser/`. Entry 595. Next: **DA26-16** Turns browser.
-  Scores unchanged.
+  `docs/evidence/da26-13-browser/`. Entry 595. Scores unchanged.
 
 ## Studio/oracle/core batch - DA26-18/24/25/26/28/30 (closed, 2026-07-26)
 

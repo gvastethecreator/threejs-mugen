@@ -1,15 +1,23 @@
 ﻿# Port Completion Scorecard
 
-## 2026-07-26 audit note - no score movement
+## 2026-07-26 score adjudication hold - no score movement
+
+**Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+DA26-21 `ScoreAdjudication/v1` holds scores with per-lane denominator/SHA refs.
+Docs-only rows contribute zero. Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+Global evidence remains DA26-08 at **`7d9b15f8`**. Focal T406. Visual/product
+T342 (DA26-13 is a separate bounded capture). See
+[ladder drain](research/2026-07-26-da26-ladder-drain.md).
+
+## 2026-07-26 audit note - no score movement (historical control)
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
 Global evidence is DA26-08 at **`7d9b15f8`**: 242 files / 2768 tests / 663
 traces plus build and boundaries (replaces T383 as global cursor). Focal is
-T406. Visual/product remain T342. Corpus still lags HEAD for score adjudication.
-Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`. Control closeouts DA26-09..11
-do not move scores. Older sections that present 633 traces or T288 as current
-are historical. See [AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
-[audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+T406. Visual/product remain T342. Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+Control closeouts do not move scores. Older sections that present 633 traces or
+T288 as current are historical. See [AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md)
+and the [audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 
 ## 2026-07-18 historical T288 bounded FightScreen intro-skip character-reset checkpoint
 

@@ -1,9 +1,13 @@
 # Workplan
 
+## DA26 ladder drain (closed-bounded, 2026-07-26)
+
+All DA26-01…30 IDs closed under claim ceilings. `nextQueue` empty. formal/global
+remain `7d9b15f8`. Scores held.
+
 ## Browser gate - DA26-13 (closed-bounded, 2026-07-26)
 
 Runtime multi-viewport evidence is live under `docs/evidence/da26-13-browser/`.
-Next: **DA26-16** Turns journey browser.
 
 ## Studio/oracle/core batch - DA26-18/24/25/26/28/30 (closed, 2026-07-26)
 

@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 596 - DA26 ladder drain (16/19/20/21)
+
+Closed remaining open DA26 IDs under claim ceilings: RuntimeTurnsJourney
+(two replacements, residue-free), CompatibilityCorpus/v1.2 freshness fail-closed,
+SecondCharacterReadiness (Nova+Mira independent packages), ScoreAdjudication hold
+with docs-only = 0. Authority `nextQueue` is empty. formal/global stay
+`7d9b15f8`. Scores unchanged. Report:
+`docs/research/2026-07-26-da26-ladder-drain.md`.
+
 ## Entry 595 - Browser gate DA26-13 (bounded)
 
 Closed DA26-13 with Playwright multi-viewport capture against local Vite:

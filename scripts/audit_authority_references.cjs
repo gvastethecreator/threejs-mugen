@@ -59,8 +59,11 @@ const closed = String(selector.closedThrough || "");
 if (!/^DA26-\d{2}$/.test(closed)) {
   fail(`invalid closedThrough: ${closed}`);
 }
-if (selector.nextQueue?.[0] !== "DA26-16") {
-  fail(`expected next queue head DA26-16 (Turns journey browser), got ${selector.nextQueue?.[0]}`);
+if (!Array.isArray(selector.nextQueue)) {
+  fail("nextQueue must be an array");
+}
+if (selector.nextQueue.length !== 0) {
+  fail(`expected empty next queue after DA26 ladder drain, got ${JSON.stringify(selector.nextQueue)}`);
 }
 const closedNum = Number(closed.slice(5));
 for (const id of selector.nextQueue || []) {
@@ -68,7 +71,7 @@ for (const id of selector.nextQueue || []) {
   if (Number.isFinite(n) && n <= 12 && n !== 13) {
     // 13 may remain open while later control slices close out of order
   }
-  if (["DA26-01", "DA26-02", "DA26-03", "DA26-04", "DA26-05", "DA26-06", "DA26-07", "DA26-08", "DA26-09", "DA26-10", "DA26-11", "DA26-12", "DA26-13", "DA26-14", "DA26-15", "DA26-17", "DA26-18", "DA26-22", "DA26-23", "DA26-24", "DA26-25", "DA26-26", "DA26-27", "DA26-28", "DA26-29", "DA26-30"].includes(id)) {
+  if (/^DA26-(0[1-9]|1[0-9]|2[0-9]|30)$/.test(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
 }

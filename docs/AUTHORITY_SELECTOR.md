@@ -3,7 +3,7 @@
 Last updated: 2026-07-26  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA26-30** (DA26-13 browser gate closed-bounded; next Turns browser)
+`closedThrough`: **DA26-30** · `nextQueue`: **empty** (DA26 ladder drained, claim-bounded)
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -23,27 +23,27 @@ when labeled historical / previous / closed.
 
 Related artifacts:
 
-- RoadmapCursor/v1: `docs/evidence/roadmap-cursor-v1.json` (formal/global pin the same gate)
+- RoadmapCursor/v1: `docs/evidence/roadmap-cursor-v1.json`
 - SourceAuthorityEpoch/v1: `docs/evidence/source-authority-epoch-v1.json`
 - Global report: `docs/research/2026-07-26-global-checkpoint-after-t406.md`
 - Browser gate: `docs/evidence/da26-13-browser/browser-gate-report-v1.json`
+- Ladder drain: `docs/research/2026-07-26-da26-ladder-drain.md`
 
 ## Scores
 
-Unchanged: sandbox **65**, MUGEN-lite **36**, MUGEN MVP **20**, full **10–12**,
-IKEMEN **6–8**, Studio **25**. Docs and control work do not move scores.
+Unchanged (adjudicated hold): sandbox **65**, MUGEN-lite **36**, MUGEN MVP **20**,
+full **10–12**, IKEMEN **6–8**, Studio **25**. Docs and control work do not move
+scores (`ScoreAdjudication/v1`).
 
 ## Closed ladder
 
-Closed (do not re-queue): DA26-01…15, **17**, **18**, **22**–**30** (plus earlier
-control). Open product remainders: **16**, **19**, **20**, **21**.
+All DA26-01…30 IDs are closed under their claim ceilings (unit and/or browser).
+Do not re-queue them. See Entries 593–596 and the research reports linked above.
 
 ## Next queue
 
-1. **DA26-16** — Turns journey browser  
-2. DA26-19 corpus v1.2  
-3. DA26-20 second character  
-4. DA26-21 score adjudication  
+Empty. Follow-on work is outside this DA26 series (new audit, product depth, or
+global re-gate). formal/global pins stay until a new global checkpoint.
 
 FightScreen fixture: `public/data/sandbox-fightscreen/` + ZIP (CC0).
 
@@ -55,6 +55,7 @@ In **current** sections (not historical):
 - Treating reserved incomplete juggle write-sets as open current P0
 - Next queue restarting already-closed DA26 IDs
 - Rewriting formal/global cursors to a feature tip (RoadmapCursor materializer forbids this)
+- Score inflation without independent evidence
 
 ## Audit
 
