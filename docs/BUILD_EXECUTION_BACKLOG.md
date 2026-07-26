@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 595 - Browser gate DA26-13 (bounded)
+
+Closed DA26-13 with Playwright multi-viewport capture against local Vite:
+desktop 1440×960, tablet 820×1180, mobile 390×844; reduced motion; 0 page/
+console errors; contact log observed; skip link present; no overflow-X.
+Artifact: `docs/evidence/da26-13-browser/browser-gate-report-v1.json`.
+Script: `scripts/qa_browser_gate_da26_13.cjs`. Claim blocked: full qa:smoke
+canvas matrix, audible Common.Fx, score movement, formal/global pin rewrite.
+Next: **DA26-16**. Report: `docs/research/2026-07-26-browser-gate-da26-13.md`.
+
 ## Entry 594 - Studio/oracle/core batch (DA26-18/24/25/26/28/30)
 
 Closed bounded modules: PluralCombatOracle matrix (projectile/reversal/juggle

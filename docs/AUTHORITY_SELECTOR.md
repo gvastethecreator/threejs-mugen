@@ -3,7 +3,7 @@
 Last updated: 2026-07-26  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA26-30** (studio/oracle/core batch; browser DA26-13 still open)
+`closedThrough`: **DA26-30** (DA26-13 browser gate closed-bounded; next Turns browser)
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -16,7 +16,7 @@ when labeled historical / previous / closed.
 | formal | `7d9b15f8…` Entry 587 | DA26-08 formal closeout only |
 | focal | `07ad9227` T406 | active StateDef/HitDef juggle under `ikemen-go` |
 | global | `7d9b15f8…` | TypeScript / Vitest 242·2768 / traces 663 / build / boundaries |
-| visual | `1085badb` T342 | browser visual gate only |
+| visual | `1085badb` T342 | historical visual pin; DA26-13 bounded capture is separate |
 | product | `1085badb` T342 | local Studio product flows only |
 | source normative | `05b7d98a` | pin identity; family provenance in epoch |
 | source working | `4aa0ba38` | reviewed families only (juggle=`same`) |
@@ -26,6 +26,7 @@ Related artifacts:
 - RoadmapCursor/v1: `docs/evidence/roadmap-cursor-v1.json` (formal/global pin the same gate)
 - SourceAuthorityEpoch/v1: `docs/evidence/source-authority-epoch-v1.json`
 - Global report: `docs/research/2026-07-26-global-checkpoint-after-t406.md`
+- Browser gate: `docs/evidence/da26-13-browser/browser-gate-report-v1.json`
 
 ## Scores
 
@@ -34,18 +35,15 @@ IKEMEN **6–8**, Studio **25**. Docs and control work do not move scores.
 
 ## Closed ladder
 
-Closed (do not re-queue): DA26-01…12, **14**, **15**, **17**, **18**, **22**,
-**23**, **24**, **25**, **26**, **27**, **28**, **29**, **30** (plus earlier
-control). See [studio-oracle-core batch](research/2026-07-26-studio-oracle-core-batch.md)
-and [runtime-control batch](research/2026-07-26-runtime-control-batch.md).
+Closed (do not re-queue): DA26-01…15, **17**, **18**, **22**–**30** (plus earlier
+control). Open product remainders: **16**, **19**, **20**, **21**.
 
 ## Next queue
 
-1. **DA26-13** — browser gate actual (desktop/tablet/mobile + console)
-2. DA26-16 Turns journey browser
-3. DA26-19 corpus v1.2
-4. DA26-20 second character
-5. DA26-21 score adjudication
+1. **DA26-16** — Turns journey browser  
+2. DA26-19 corpus v1.2  
+3. DA26-20 second character  
+4. DA26-21 score adjudication  
 
 FightScreen fixture: `public/data/sandbox-fightscreen/` + ZIP (CC0).
 
@@ -63,4 +61,5 @@ In **current** sections (not historical):
 ```bash
 pnpm materialize:authority-selector
 pnpm audit:authority-references
+node scripts/qa_browser_gate_da26_13.cjs
 ```

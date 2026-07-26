@@ -1,5 +1,11 @@
 ﻿# Roadmap Execution Board
 
+## Current browser gate - DA26-13 (closed-bounded, 2026-07-26)
+
+Desktop/tablet/mobile runtime shell with clean console, contact log, skip link,
+and screenshot SHA evidence. Report:
+`docs/research/2026-07-26-browser-gate-da26-13.md`. Next: **DA26-16**.
+
 ## Current studio/oracle/core batch (closed, 2026-07-26)
 
 Closed: DA26-18 PluralCombatOracle, DA26-24 StudioProjectSnapshot, DA26-25
@@ -19,8 +25,8 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA26-13** browser gate (primary remaining product proof).
-Also open: DA26-16, 19, 20, 21.
+Next queue head: **DA26-16** Turns journey browser.
+Also open: DA26-19, 20, 21.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

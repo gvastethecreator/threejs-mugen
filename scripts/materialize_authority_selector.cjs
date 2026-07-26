@@ -21,7 +21,6 @@ const document = createDocument({
   generatedAt,
   closedThrough: "DA26-30",
   nextQueue: [
-    "DA26-13",
     "DA26-16",
     "DA26-19",
     "DA26-20",

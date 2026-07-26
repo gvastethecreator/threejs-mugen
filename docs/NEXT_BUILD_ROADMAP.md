@@ -3,8 +3,8 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-Many DA26 control/runtime/studio slices closed (see Entries 593–594). **Next
-live cut: DA26-13** browser gate. Also open: 16, 19, 20, 21. The T287 queue
+Many DA26 control/runtime/studio slices closed (see Entries 593–595). **Next
+live cut: DA26-16** Turns journey browser. Also open: 19, 20, 21. The T287 queue
 below is historical. Full ladder:
 [post-T405 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md#pr%C3%B3ximas-30-tareas-listas-para-ejecuci%C3%B3n).
 

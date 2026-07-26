@@ -12,9 +12,9 @@ This is the fast map for agents and humans who need to know where to look, what 
 - `closedThrough`: **DA26-30** (see selector for closed ID set)
 - formal/global: **`7d9b15f8`** (Entry 587 / DA26-08 gate)
 - focal: **T406** `07ad9227`
-- visual/product: **T342** `1085badb`
+- visual/product: **T342** `1085badb` (DA26-13 bounded capture is separate)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA26-13** browser, then 16/19/20/21
+- next queue: **DA26-16** Turns browser, then 19/20/21
 - Scores unchanged. Full audit map remains historical context:
   [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 

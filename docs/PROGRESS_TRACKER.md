@@ -1,11 +1,18 @@
 ﻿# Progress Tracker
 
+## Browser gate - DA26-13 (closed-bounded, 2026-07-26)
+
+- Desktop/tablet/mobile runtime shell, 0 console errors, contact log, skip link,
+  no overflow-X, reduced-motion capture. Evidence under
+  `docs/evidence/da26-13-browser/`. Entry 595. Next: **DA26-16** Turns browser.
+  Scores unchanged.
+
 ## Studio/oracle/core batch - DA26-18/24/25/26/28/30 (closed, 2026-07-26)
 
 - Plural combat oracle matrix, StudioProjectSnapshot, PackageAnalysisRevision
   diff, SourceWriteJournal, dual AssetReleasePolicy chains, CommonEvidenceFacts
   two-consumer core — unit-proven, claim-bounded.
-- Entry 594. Live next remains **DA26-13** browser. Scores unchanged.
+- Entry 594. Scores unchanged.
 
 ## Runtime/control batch - DA26-15/17/22/23/27/29 (closed, 2026-07-26)
 

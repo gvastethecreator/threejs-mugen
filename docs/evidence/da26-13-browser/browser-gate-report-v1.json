@@ -1,0 +1,103 @@
+{
+  "schema": "BrowserGateEvidence/v1",
+  "id": "DA26-13",
+  "generatedAt": "2026-07-26T18:41:57.835Z",
+  "headNote": "local HEAD browser gate against Vite dev server",
+  "baseUrl": "http://127.0.0.1:5173/",
+  "results": [
+    {
+      "viewport": {
+        "id": "desktop",
+        "width": 1440,
+        "height": 960,
+        "mobile": false
+      },
+      "screenshot": "docs/evidence/da26-13-browser/runtime-desktop-1440x960.png",
+      "screenshotSha256": "feb4ef31048d91d1f5a7797815aee9f5dcfe54c3c58b3e278b2395a5c5ba31fc",
+      "screenshotBytes": 828244,
+      "hasRuntime": true,
+      "hasConsoleRegion": true,
+      "contactLog": true,
+      "consoleErrorCount": 0,
+      "consoleWarningCount": 5,
+      "consoleErrors": [],
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": false
+      },
+      "skipLinkCount": 1,
+      "reducedMotion": "reduce"
+    },
+    {
+      "viewport": {
+        "id": "tablet",
+        "width": 820,
+        "height": 1180,
+        "mobile": true
+      },
+      "screenshot": "docs/evidence/da26-13-browser/runtime-tablet-820x1180.png",
+      "screenshotSha256": "208c1a32f59812c659dbd8b89d60505d1927f927511adc01a4fc2dd5b1beef9c",
+      "screenshotBytes": 663655,
+      "hasRuntime": true,
+      "hasConsoleRegion": true,
+      "contactLog": true,
+      "consoleErrorCount": 0,
+      "consoleWarningCount": 0,
+      "consoleErrors": [],
+      "overflow": {
+        "scrollWidth": 820,
+        "clientWidth": 820,
+        "overflowX": false
+      },
+      "skipLinkCount": 1,
+      "reducedMotion": "reduce"
+    },
+    {
+      "viewport": {
+        "id": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "screenshot": "docs/evidence/da26-13-browser/runtime-mobile-390x844.png",
+      "screenshotSha256": "82984a9bffd93ac73a86ea3ac7886bf2dcf08bede2cee0e2e0ccddaa5ffa6143",
+      "screenshotBytes": 210084,
+      "hasRuntime": true,
+      "hasConsoleRegion": true,
+      "contactLog": true,
+      "consoleErrorCount": 0,
+      "consoleWarningCount": 0,
+      "consoleErrors": [],
+      "overflow": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": false
+      },
+      "skipLinkCount": 1,
+      "reducedMotion": "reduce"
+    }
+  ],
+  "summary": {
+    "viewportCount": 3,
+    "allRuntimeVisible": true,
+    "allConsoleClean": true,
+    "anyOverflowX": false,
+    "anyContactLog": true,
+    "skipLinkPresent": true
+  },
+  "claims": {
+    "allowed": [
+      "desktop/tablet/mobile runtime shell loads without page/console errors",
+      "reduced-motion context applied during capture",
+      "skip-to-runtime link present",
+      "screenshots + SHA-256 under docs/evidence/da26-13-browser"
+    ],
+    "blocked": [
+      "full qa:smoke character attack canvas checksum suite",
+      "audible Common.Fx proof",
+      "score movement",
+      "replacing T342 visual pin without formal global re-gate"
+    ]
+  }
+}
