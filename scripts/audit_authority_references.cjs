@@ -68,7 +68,7 @@ for (const id of selector.nextQueue || []) {
   if (Number.isFinite(n) && n <= 12 && n !== 13) {
     // 13 may remain open while later control slices close out of order
   }
-  if (["DA26-01", "DA26-02", "DA26-03", "DA26-04", "DA26-05", "DA26-06", "DA26-07", "DA26-08", "DA26-09", "DA26-10", "DA26-11", "DA26-12", "DA26-14", "DA26-15", "DA26-17", "DA26-22", "DA26-23", "DA26-27", "DA26-29"].includes(id)) {
+  if (["DA26-01", "DA26-02", "DA26-03", "DA26-04", "DA26-05", "DA26-06", "DA26-07", "DA26-08", "DA26-09", "DA26-10", "DA26-11", "DA26-12", "DA26-14", "DA26-15", "DA26-17", "DA26-18", "DA26-22", "DA26-23", "DA26-24", "DA26-25", "DA26-26", "DA26-27", "DA26-28", "DA26-29", "DA26-30"].includes(id)) {
     fail(`nextQueue still lists closed id ${id}`);
   }
 }
