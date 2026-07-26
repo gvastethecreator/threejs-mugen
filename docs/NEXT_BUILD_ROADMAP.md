@@ -3,9 +3,9 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA26 ladder drained; DA27-01…05 product wiring closed (Entry 597). **Next live
-cut: DA27-06** global re-gate on current HEAD. Also open: 07–09 product depth.
-The T287 queue below is historical.
+DA27-06 global re-gate closed at `b7d23801` (268/2845 tests, 663 traces).
+**Next live cut: DA27-07** Turns browser HUD. Also open: 08–09. The T287 queue
+below is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

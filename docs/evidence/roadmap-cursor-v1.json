@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-26T17:21:00.000Z",
+  "generatedAt": "2026-07-26T19:31:13.470Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -14,17 +14,17 @@
   "cursors": [
     {
       "kind": "head",
-      "sha": "de9976eb40826efe23bdd79f7ee7c0aac26d0af5",
-      "date": "2026-07-26T14:20:03-03:00",
+      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
+      "date": "2026-07-26T16:27:30-03:00",
       "artifact": "git HEAD",
       "claimLimit": "materialize-time tip only; does not inherit formal/global/visual claims"
     },
     {
       "kind": "formal",
-      "sha": "7d9b15f828934a7a25f445b44d72e01cd471027e",
-      "date": "2026-07-26T17:00:00.000Z",
-      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
-      "claimLimit": "Entry 587 / DA26-08 formal closeout at audited gate SHA only"
+      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
+      "date": "2026-07-26T19:28:00.000Z",
+      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-598",
+      "claimLimit": "Entry 598 / DA27-06 formal closeout at audited gate SHA only"
     },
     {
       "kind": "focal",
@@ -35,10 +35,10 @@
     },
     {
       "kind": "global",
-      "sha": "7d9b15f828934a7a25f445b44d72e01cd471027e",
-      "date": "2026-07-26T17:04:00.000Z",
-      "artifact": "docs/research/2026-07-26-global-checkpoint-after-t406.md",
-      "claimLimit": "TypeScript/Vitest/traces/build/boundaries at 7d9b15f8 only"
+      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
+      "date": "2026-07-26T19:28:00.000Z",
+      "artifact": "docs/research/2026-07-26-global-checkpoint-da27-06.md",
+      "claimLimit": "TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only"
     },
     {
       "kind": "visual",
@@ -77,6 +77,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "85bd1ffd230ef05879bf4732a43d7284ce5c6c210c2790344044ee27b3b2da1e"
+    "value": "2cf9877836b6bf8c9fbf07a9dd6bf9fe3f5bae2aa9793ed703ea3f2fb03dbb00"
   }
 }

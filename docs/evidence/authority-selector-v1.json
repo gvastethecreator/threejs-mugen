@@ -1,9 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T19:26:14.571Z",
-  "closedThrough": "DA27-05",
+  "generatedAt": "2026-07-26T19:31:12.586Z",
+  "closedThrough": "DA27-06",
   "nextQueue": [
-    "DA27-06",
     "DA27-07",
     "DA27-08",
     "DA27-09"
@@ -18,9 +17,9 @@
   },
   "cursors": {
     "formal": {
-      "sha": "7d9b15f828934a7a25f445b44d72e01cd471027e",
-      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
-      "claimLimit": "Entry 587 formal closeout (DA26-08)"
+      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
+      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-598",
+      "claimLimit": "Entry 598 formal/global closeout (DA27-06)"
     },
     "focal": {
       "sha": "07ad9227",
@@ -28,9 +27,9 @@
       "claimLimit": "T406 active juggle runtime only"
     },
     "global": {
-      "sha": "7d9b15f828934a7a25f445b44d72e01cd471027e",
-      "artifact": "docs/research/2026-07-26-global-checkpoint-after-t406.md",
-      "claimLimit": "global gate TypeScript/Vitest/traces/build/boundaries at 7d9b15f8 only"
+      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
+      "artifact": "docs/research/2026-07-26-global-checkpoint-da27-06.md",
+      "claimLimit": "global gate TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only"
     },
     "visual": {
       "sha": "1085badb",
@@ -73,6 +72,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "aa0de736acf8e270d609bd282b671449f3f0ed65c4f7379bd229040b8eed585a"
+    "value": "4fa9af2a69808b0fa7ae743581ac8de15804797681245631c923e93bca90bad6"
   }
 }

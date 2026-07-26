@@ -6,7 +6,7 @@ const SCHEMA = "mugen-web-sandbox/authority-selector/v1";
 const CANONICALIZATION = "stable-json/v0";
 const DIGEST_ALGORITHM = "sha-256";
 
-const GATE_GLOBAL = "7d9b15f828934a7a25f445b44d72e01cd471027e";
+const GATE_GLOBAL = "b7d23801bd3ca766ba5b184b3c040bef8165d355";
 const FOCAL_T406 = "07ad9227";
 const VISUAL_T342 = "1085badb";
 const SOURCE_NORMATIVE = "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703";
@@ -19,9 +19,8 @@ const generatedAt = args["generated-at"] ?? new Date().toISOString();
 
 const document = createDocument({
   generatedAt,
-  closedThrough: "DA27-05",
+  closedThrough: "DA27-06",
   nextQueue: [
-    "DA27-06",
     "DA27-07",
     "DA27-08",
     "DA27-09",
@@ -35,9 +34,9 @@ const document = createDocument({
     studio: "25",
   },
   cursors: {
-    formal: cursor(GATE_GLOBAL, "docs/BUILD_EXECUTION_BACKLOG.md#entry-587", "Entry 587 formal closeout (DA26-08)"),
+    formal: cursor(GATE_GLOBAL, "docs/BUILD_EXECUTION_BACKLOG.md#entry-598", "Entry 598 formal/global closeout (DA27-06)"),
     focal: cursor(FOCAL_T406, "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md", "T406 active juggle runtime only"),
-    global: cursor(GATE_GLOBAL, "docs/research/2026-07-26-global-checkpoint-after-t406.md", "global gate TypeScript/Vitest/traces/build/boundaries at 7d9b15f8 only"),
+    global: cursor(GATE_GLOBAL, "docs/research/2026-07-26-global-checkpoint-da27-06.md", "global gate TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only"),
     visual: cursor(VISUAL_T342, "docs/research (T342 visual gate)", "T342 visual only; not HEAD product truth"),
     product: cursor(VISUAL_T342, "docs/research (T342 product gate)", "T342 product only"),
     sourceNormative: cursor(SOURCE_NORMATIVE, "docs/evidence/source-authority-epoch-v1.json", "normative pin 05b; family provenance in epoch"),

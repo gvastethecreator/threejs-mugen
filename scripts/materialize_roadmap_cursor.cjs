@@ -8,9 +8,9 @@ const CANONICALIZATION = "stable-json/v0";
 const DIGEST_ALGORITHM = "sha-256";
 const KINDS = ["head", "formal", "focal", "global", "visual", "product", "source"];
 
-/** Audited DA26-08 global checkpoint SHA. formal/global must pin this, not live tip. */
-const GATE_GLOBAL = "7d9b15f828934a7a25f445b44d72e01cd471027e";
-const GATE_GLOBAL_DATE = "2026-07-26T17:04:00.000Z";
+/** Audited DA27-06 global checkpoint SHA. formal/global must pin this, not live tip. */
+const GATE_GLOBAL = "b7d23801bd3ca766ba5b184b3c040bef8165d355";
+const GATE_GLOBAL_DATE = "2026-07-26T19:28:00.000Z";
 const FOCAL_T406 = "07ad9227";
 const VISUAL_T342 = "1085badb";
 const SOURCE_NORMATIVE = "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703";
@@ -38,9 +38,9 @@ try {
     cursor(
       "formal",
       GATE_GLOBAL,
-      "2026-07-26T17:00:00.000Z",
-      "docs/BUILD_EXECUTION_BACKLOG.md#entry-587",
-      "Entry 587 / DA26-08 formal closeout at audited gate SHA only",
+      GATE_GLOBAL_DATE,
+      "docs/BUILD_EXECUTION_BACKLOG.md#entry-598",
+      "Entry 598 / DA27-06 formal closeout at audited gate SHA only",
     ),
     cursor(
       "focal",
@@ -53,8 +53,8 @@ try {
       "global",
       GATE_GLOBAL,
       GATE_GLOBAL_DATE,
-      "docs/research/2026-07-26-global-checkpoint-after-t406.md",
-      "TypeScript/Vitest/traces/build/boundaries at 7d9b15f8 only",
+      "docs/research/2026-07-26-global-checkpoint-da27-06.md",
+      "TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only",
     ),
     cursor(
       "visual",

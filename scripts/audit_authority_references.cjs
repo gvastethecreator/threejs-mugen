@@ -62,8 +62,8 @@ if (!/^DA2[67]-\d{2}$/.test(closed)) {
 if (!Array.isArray(selector.nextQueue)) {
   fail("nextQueue must be an array");
 }
-if (selector.nextQueue?.[0] !== "DA27-06") {
-  fail(`expected next queue head DA27-06 (global re-gate), got ${selector.nextQueue?.[0]}`);
+if (selector.nextQueue?.[0] !== "DA27-07") {
+  fail(`expected next queue head DA27-07 (Turns browser HUD), got ${selector.nextQueue?.[0]}`);
 }
 const closedNum = Number(closed.slice(5));
 for (const id of selector.nextQueue || []) {
@@ -74,15 +74,15 @@ for (const id of selector.nextQueue || []) {
   if (/^DA26-(0[1-9]|1[0-9]|2[0-9]|30)$/.test(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
-  if (["DA27-01", "DA27-02", "DA27-03", "DA27-04", "DA27-05"].includes(String(id))) {
+  if (["DA27-01", "DA27-02", "DA27-03", "DA27-04", "DA27-05", "DA27-06"].includes(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
 }
-if (!String(selector.cursors?.global?.sha || "").startsWith("7d9b15f8")) {
-  fail(`global cursor must pin 7d9b15f8, got ${selector.cursors?.global?.sha}`);
+if (!String(selector.cursors?.global?.sha || "").startsWith("b7d23801")) {
+  fail(`global cursor must pin b7d23801, got ${selector.cursors?.global?.sha}`);
 }
-if (!String(selector.cursors?.formal?.sha || "").startsWith("7d9b15f8")) {
-  fail(`formal cursor must pin 7d9b15f8, got ${selector.cursors?.formal?.sha}`);
+if (!String(selector.cursors?.formal?.sha || "").startsWith("b7d23801")) {
+  fail(`formal cursor must pin b7d23801, got ${selector.cursors?.formal?.sha}`);
 }
 
 const findings = [];

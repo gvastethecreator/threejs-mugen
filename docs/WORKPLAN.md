@@ -1,9 +1,13 @@
 # Workplan
 
+## Global re-gate - DA27-06 (closed, 2026-07-26)
+
+formal/global pin `b7d23801` (268/2845 tests, 663 traces). Next: **DA27-07**
+Turns browser HUD.
+
 ## DA27 product wiring (closed-bounded, 2026-07-26)
 
-Snapshot/journal/facts bridges and dual-character legal journey are live. Next:
-**DA27-06** global re-gate. formal/global remain `7d9b15f8` until then.
+Snapshot/journal/facts bridges and dual-character legal journey are live.
 
 ## DA26 ladder drain (closed-bounded, 2026-07-26)
 

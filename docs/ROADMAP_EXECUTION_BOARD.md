@@ -1,10 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Current global re-gate - DA27-06 (closed, 2026-07-26)
+
+Pin `b7d23801`: typecheck, 268/2845 Vitest, 663 traces, build, boundaries.
+Report: `docs/research/2026-07-26-global-checkpoint-da27-06.md`. Next: **DA27-07**.
+
 ## Current DA27 product wiring (closed-bounded, 2026-07-26)
 
 DA27-01…05 closed: snapshot/journal bridges, envelope facts, dual character
 legal journey, package analysis revision bridge. Report:
-`docs/research/2026-07-26-da27-product-wiring-batch.md`. Next: **DA27-06**.
+`docs/research/2026-07-26-da27-product-wiring-batch.md`.
 
 ## Current DA26 ladder - drained (closed-bounded, 2026-07-26)
 
@@ -36,7 +41,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA27-06** global re-gate.
+Next queue head: **DA27-07** Turns browser HUD.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

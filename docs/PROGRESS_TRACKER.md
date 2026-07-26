@@ -1,10 +1,15 @@
 ﻿# Progress Tracker
 
+## Global re-gate - DA27-06 (closed, 2026-07-26)
+
+- Pin `b7d23801`: typecheck, Vitest 268/2845, traces 663/663, build, boundaries,
+  redirect-boundary. Entry 598. formal/global advanced. Next: **DA27-07**.
+  Scores unchanged.
+
 ## DA27 product wiring - 01..05 (closed-bounded, 2026-07-26)
 
 - Snapshot/journal bridges on save/write, envelope→common facts, dual Nova+Mira
-  legal journey, PackageAnalysis revision bridge. Entry 597. Next: **DA27-06**
-  global re-gate. Scores unchanged.
+  legal journey, PackageAnalysis revision bridge. Entry 597. Scores unchanged.
 
 ## DA26 ladder drain - 16/19/20/21 (closed-bounded, 2026-07-26)
 

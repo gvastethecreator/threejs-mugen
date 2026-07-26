@@ -136,13 +136,17 @@ describe("RoadmapCursor", () => {
     const formal = getRoadmapCursor(parsed.document!, "formal");
     const global = getRoadmapCursor(parsed.document!, "global");
     const head = getRoadmapCursor(parsed.document!, "head");
-    // formal/global must name the audited DA26-08 gate, not a later feature tip.
-    expect(formal?.sha).toBe("7d9b15f828934a7a25f445b44d72e01cd471027e");
-    expect(global?.sha).toBe("7d9b15f828934a7a25f445b44d72e01cd471027e");
-    expect(formal?.claimLimit).toMatch(/Entry 587|DA26-08/);
-    expect(global?.artifact).toContain("global-checkpoint-after-t406");
-    expect(formal?.sha).not.toBe(head?.sha);
-    expect(global?.sha).not.toBe(head?.sha);
+    // formal/global must name the audited DA27-06 gate, not a later feature tip.
+    expect(formal?.sha).toBe("b7d23801bd3ca766ba5b184b3c040bef8165d355");
+    expect(global?.sha).toBe("b7d23801bd3ca766ba5b184b3c040bef8165d355");
+    expect(formal?.claimLimit).toMatch(/Entry 598|DA27-06/);
+    expect(global?.artifact).toContain("global-checkpoint-da27-06");
+    expect(formal?.sha).toBe(global?.sha);
+    // head may equal the gate at materialize-time; later feature tips must not rewrite formal/global.
+    if (head?.sha !== formal?.sha) {
+      expect(formal?.sha).not.toBe(head?.sha);
+      expect(global?.sha).not.toBe(head?.sha);
+    }
     // Canonical form is stable for the committed payload.
     expect(canonicalizeRoadmapCursorDocument(parsed.document!).length).toBeGreaterThan(100);
   });

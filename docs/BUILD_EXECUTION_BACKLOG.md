@@ -1,5 +1,13 @@
 # Build Execution Backlog
 
+## Entry 598 - Global re-gate DA27-06
+
+Closed DA27-06 at pin `b7d23801`. Measured: TypeScript 7 typecheck, Vitest
+268 files / 2845 tests, traces 663/663, production build (337 modules),
+boundaries, redirect-boundary. formal/global cursors advance to this pin.
+Report: `docs/research/2026-07-26-global-checkpoint-da27-06.md`. Scores
+unchanged. Next: **DA27-07** Turns browser HUD.
+
 ## Entry 597 - DA27 product wiring (01–05)
 
 Wired DA26 modules into product paths: ProjectSnapshotBridge on project save,

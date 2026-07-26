@@ -1,15 +1,12 @@
 ﻿# Roadmap Package Milestones
 
-## Current bounded package override - DA26-11 authority + T406
+## Current bounded package override - DA27-06 global + T406
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-Focal package T406 (`07ad9227`) closed StateDef/HitDef active juggle; DA26-08
-global gate is green at **`7d9b15f8`** (242/2768 tests, 663 traces, build,
-boundaries). Control packages DA26-09..11 (RoadmapCursor, SourceAuthorityEpoch,
-authority selector) are closed. Scores do not move. Next package cut after
-control: **DA26-12** FightScreen fixture. See
-[AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md) and the
-[2026-07-26 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
+Focal package T406 (`07ad9227`) remains juggle-only. Global gate is green at
+**`b7d23801`** (268/2845 tests, 663 traces, build, boundaries). DA26 ladder and
+DA27-01…06 are closed under claim ceilings. Scores do not move. Next package
+cut: **DA27-07** Turns browser HUD. See [AUTHORITY_SELECTOR](AUTHORITY_SELECTOR.md).
 
 ## Historical bounded runtime package - T288 / Entry 562
 
