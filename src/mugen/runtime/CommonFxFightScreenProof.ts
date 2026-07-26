@@ -1,9 +1,10 @@
 /**
  * CommonFxFightScreenProof/v1 (DA27-09).
  * Proves Sandbox FightScreen Common.Fx / FightFX libraries + audible SND edges.
+ *
+ * Audio playback stays behind an injected probe so mugen/* never imports game/*.
  */
 
-import { MugenAudioSystem } from "../../game/audio/MugenAudioSystem";
 import { MugenCharacterLoader } from "../loader/MugenCharacterLoader";
 import type { SndArchive } from "../model/MugenSound";
 import type { MugenSnapshot } from "./types";
@@ -13,6 +14,23 @@ import {
 } from "./FightScreenFixture";
 
 export const COMMON_FX_FIGHTSCREEN_PROOF_SCHEMA = "CommonFxFightScreenProof/v1" as const;
+
+/** Minimal audio surface for FightScreen SND edge proof (adapter lives outside mugen/). */
+export type CommonFxAudioProbe = {
+  setArchive(
+    archive: SndArchive | undefined,
+    prefixedArchives?: Record<string, SndArchive | undefined>,
+  ): void;
+  unlock(): Promise<void>;
+  processSnapshot(snapshot: MugenSnapshot): void;
+  getDiagnostics(): {
+    available: boolean;
+    unlocked: boolean;
+    played: number;
+    missing: number;
+    errors: string[];
+  };
+};
 
 export type CommonFxFightScreenProofReport = {
   schema: typeof COMMON_FX_FIGHTSCREEN_PROOF_SCHEMA;
@@ -47,6 +65,8 @@ export type CommonFxFightScreenProofReport = {
 
 export async function runCommonFxFightScreenProof(options: {
   AudioContextImpl?: typeof AudioContext;
+  /** Required for audible SND edges; typically `() => new MugenAudioSystem()` from game/. */
+  createAudioSystem?: () => CommonFxAudioProbe;
 } = {}): Promise<CommonFxFightScreenProofReport> {
   const diagnostics: string[] = [];
   const vfs = createSandboxFightScreenWithProbeCharacterVfs();
@@ -77,6 +97,7 @@ export async function runCommonFxFightScreenProof(options: {
     fightfxArchive: fightfx?.soundArchive,
     fightScreenArchive: fightScreen?.soundArchive,
     AudioContextImpl: options.AudioContextImpl,
+    createAudioSystem: options.createAudioSystem,
   });
   diagnostics.push(...audioReport.diagnostics);
 
@@ -115,7 +136,7 @@ export async function runCommonFxFightScreenProof(options: {
     claims: {
       allowed: [
         "Sandbox FightScreen loads Common.Fx + FightFX animation libraries",
-        "FightFX/FightScreen SND catalog is audible through MugenAudioSystem unlock+play",
+        "FightFX/FightScreen SND catalog is audible through injected audio probe unlock+play",
         "named fight/ko/round announcement sound edges fire at least once",
       ],
       blocked: [
@@ -136,6 +157,7 @@ async function proveAudibleFightFxEdges(input: {
   fightfxArchive?: SndArchive;
   fightScreenArchive?: SndArchive;
   AudioContextImpl?: typeof AudioContext;
+  createAudioSystem?: () => CommonFxAudioProbe;
 }): Promise<{
   unlocked: boolean;
   available: boolean;
@@ -146,6 +168,19 @@ async function proveAudibleFightFxEdges(input: {
   diagnostics: string[];
 }> {
   const diagnostics: string[] = [];
+  if (!input.createAudioSystem) {
+    diagnostics.push("audio-probe-not-injected");
+    return {
+      unlocked: false,
+      available: false,
+      played: 0,
+      missing: 0,
+      errors: [],
+      edges: [],
+      diagnostics,
+    };
+  }
+
   const AudioContextCtor = input.AudioContextImpl ?? (globalThis as { AudioContext?: typeof AudioContext }).AudioContext;
   if (!AudioContextCtor && !(globalThis as { AudioContext?: unknown }).AudioContext) {
     // Provide a minimal fake when none exists (node test without stub).
@@ -154,7 +189,7 @@ async function proveAudibleFightFxEdges(input: {
     (globalThis as { AudioContext: typeof AudioContext }).AudioContext = input.AudioContextImpl;
   }
 
-  const system = new MugenAudioSystem();
+  const system = input.createAudioSystem();
   const prefixed: Record<string, SndArchive | undefined> = {
     f: input.fightfxArchive,
     fs: input.fightScreenArchive ?? input.fightfxArchive,
@@ -336,7 +371,7 @@ function installMinimalFakeAudioContext(): void {
   } as unknown as typeof AudioContext;
 }
 
-async function waitForPlayed(system: MugenAudioSystem, min: number, timeoutMs: number): Promise<void> {
+async function waitForPlayed(system: CommonFxAudioProbe, min: number, timeoutMs: number): Promise<void> {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     if (system.getDiagnostics().played >= min) return;

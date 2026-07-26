@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { runCommonFxFightScreenProof } from "../mugen/runtime/CommonFxFightScreenProof";
 import { SANDBOX_FIGHTSCREEN_MANIFEST } from "../mugen/runtime/FightScreenFixture";
 
 describe("CommonFxFightScreenProof", () => {
   it("loads Common.Fx / FightFX libraries and plays FightScreen SND edges", async () => {
-    const report = await runCommonFxFightScreenProof();
+    const report = await runCommonFxFightScreenProof({
+      createAudioSystem: () => new MugenAudioSystem(),
+    });
     expect(report.schema).toBe("CommonFxFightScreenProof/v1");
     expect(report.packageId).toBe(SANDBOX_FIGHTSCREEN_MANIFEST.id);
     expect(report.libraries.commonHas7002).toBe(true);
@@ -19,5 +22,12 @@ describe("CommonFxFightScreenProof", () => {
     expect(report.passed).toBe(true);
     expect(report.diagnostics).toEqual([]);
     expect(report.checksum).toMatch(/^[0-9a-f]{8}$/);
+  });
+
+  it("fails closed when audio probe is not injected", async () => {
+    const report = await runCommonFxFightScreenProof();
+    expect(report.passed).toBe(false);
+    expect(report.diagnostics).toContain("audio-probe-not-injected");
+    expect(report.audio.played).toBe(0);
   });
 });
