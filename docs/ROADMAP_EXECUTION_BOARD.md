@@ -1,10 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Current live plural oracle - DA28-07 (closed-bounded, 2026-07-26)
+
+Live roots/helpers feed PluralCombatOracle with mutation integrity.
+Next: **DA28-08**. Report:
+`docs/research/2026-07-26-da28-07-live-plural-oracle.md`.
+
 ## Current live projectiles - DA28-06 (closed-bounded, 2026-07-26)
 
 GlobalProjectileSchedule ordered through EffectActorWorld combat/clash.
-Next: **DA28-07**. Report:
-`docs/research/2026-07-26-da28-06-live-projectile-schedule.md`.
+Report: `docs/research/2026-07-26-da28-06-live-projectile-schedule.md`.
 
 ## Current P0 evidence - DA28-03/04/05 (closed, 2026-07-26)
 
@@ -85,7 +90,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA28-07** (24 DA28 tasks open after DA28-06).
+Next queue head: **DA28-08** (23 DA28 tasks open after DA28-07).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

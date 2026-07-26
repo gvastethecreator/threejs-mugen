@@ -3,7 +3,7 @@
 Last updated: 2026-07-26  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA28-06** · next head **DA28-07** (plural combat oracle live)
+`closedThrough`: **DA28-07** · next head **DA28-08** (live Turns transaction)
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -26,9 +26,7 @@ Related:
 - Global gate: [`docs/research/2026-07-26-global-checkpoint-da28-02.md`](research/2026-07-26-global-checkpoint-da28-02.md)
 - P0 evidence: [`docs/research/2026-07-26-da28-p0-browser-corpus-scores.md`](research/2026-07-26-da28-p0-browser-corpus-scores.md)
 - Live projectiles: [`docs/research/2026-07-26-da28-06-live-projectile-schedule.md`](research/2026-07-26-da28-06-live-projectile-schedule.md)
-- Browser subcursors: [`docs/evidence/browser-subcursors-da28-03-v1.json`](evidence/browser-subcursors-da28-03-v1.json)
-- Corpus v1.2: [`docs/evidence/compatibility-corpus-v1.2.json`](evidence/compatibility-corpus-v1.2.json)
-- Score adjudication: [`docs/evidence/score-adjudication-v1.json`](evidence/score-adjudication-v1.json)
+- Live oracle: [`docs/research/2026-07-26-da28-07-live-plural-oracle.md`](research/2026-07-26-da28-07-live-plural-oracle.md)
 
 ## Scores
 
@@ -36,24 +34,23 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25** (DA28-05 adjudication `movement=no
 
 ## Closed ladder
 
-DA26-01…30 · DA27-01…09 · DA28-01…**06**
+DA26-01…30 · DA27-01…09 · DA28-01…**07**
 
-## Next queue (DA28 — 24 remaining)
+## Next queue (DA28 — 23 remaining)
 
-**P1 live determinism/input:** DA28-07…10  
+**P1 live determinism/input:** DA28-08…10  
 **P2 MUGEN-lite execution:** DA28-11…17  
 **P3 MUGEN breadth:** DA28-18…20  
 **P4 Studio/product:** DA28-21…25  
 **P5 assets/scanner/source/IKEMEN/boundaries:** DA28-26…30  
 
-Machine next head: **DA28-07** (full queue listed in `authority-selector-v1.json`).
+Machine next head: **DA28-08** (full queue listed in `authority-selector-v1.json`).
 
 ## Anti-patterns
 
-- Claiming DA28 product closes from projectile schedule alone
+- Claiming DA28 product closes from oracle alone
 - Score movement without executed denominators
 - Native Nova/Mira rows raising imported-package coverage
-- Replacing T342 visual/product matrix from DA28-03 subcursors alone
 - formal/global tip rewrite without measured gate
 
 ## Audit

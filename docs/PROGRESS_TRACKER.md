@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## Live PluralCombatOracle - DA28-07 (closed-bounded, 2026-07-26)
+
+- Live roots/helpers feed oracle with mutation integrity. Entry 607. Next:
+  **DA28-08**. Scores held.
+
 ## Live projectile schedule - DA28-06 (closed-bounded, 2026-07-26)
 
 - EffectActorWorld combat/clash uses GlobalProjectileSchedule order. Entry 606.

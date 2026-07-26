@@ -1,5 +1,12 @@
 # Build Execution Backlog
 
+## Entry 607 - DA28-07 live PluralCombatOracle
+
+Closed DA28-07: `LivePluralCombatOracle/v1` feeds PluralCombatOracle from live
+projectile roots/helpers and fails integrity on reorder/missing subjects.
+Report: `docs/research/2026-07-26-da28-07-live-plural-oracle.md`. formal/global
+stay `32466c6e`. Scores held. Next: **DA28-08** live Turns transaction merge.
+
 ## Entry 606 - DA28-06 live projectile schedule
 
 Closed DA28-06: `LiveGlobalProjectileSchedule/v1` wires

@@ -2,8 +2,8 @@
 
 ## DA28 series (in progress, 2026-07-26)
 
-DA28-01…06 closed through live projectile schedule. Next: **DA28-07** plural
-combat oracle live. Phase order: live Turns/input; MUGEN-lite execution; MUGEN
+DA28-01…07 closed through live plural oracle. Next: **DA28-08** live Turns
+transaction merge. Phase order: live Turns/input; MUGEN-lite execution; MUGEN
 breadth; Studio durability; assets/scanner/source/IKEMEN/boundaries. See
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 

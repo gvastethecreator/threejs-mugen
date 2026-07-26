@@ -19,9 +19,8 @@ const generatedAt = args["generated-at"] ?? new Date().toISOString();
 
 const document = createDocument({
   generatedAt,
-  closedThrough: "DA28-06",
+  closedThrough: "DA28-07",
   nextQueue: [
-    "DA28-07",
     "DA28-08",
     "DA28-09",
     "DA28-10",
@@ -77,14 +76,15 @@ const document = createDocument({
       "DA28-03 browser subcursors bound DA27-07/08/09 and DA26-13 under T342 parent",
       "DA28-04 corpus v1.2 and DA28-05 score adjudication hold frozen scorecard",
       "DA28-06 live GlobalProjectileSchedule wired into EffectActorWorld combat order",
+      "DA28-07 LivePluralCombatOracle consumes live roots/helpers with mutation integrity",
     ],
     blocked: [
       "score movement",
       "projecting T383 or T342 as current global/product without label",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors",
-      "claiming DA28-07..30 product closes from projectile schedule alone",
+      "claiming DA28-08..30 product closes from oracle alone",
       "native Nova/Mira rows raising imported-package coverage",
-      "full plural projectile parity without live root traces",
+      "full plural projectile parity without browser matrix",
     ],
   },
 });
