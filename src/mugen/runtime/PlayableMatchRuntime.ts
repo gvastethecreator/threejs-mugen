@@ -383,6 +383,8 @@ const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
 const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
 const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
+/** Active match profile for free helpers that cannot close over the instance. */
+let activeMatchRuntimeProfile: RuntimeCompatibilityProfile = "unknown";
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
@@ -678,6 +680,7 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.runtimeProfile = options.runtimeProfile ?? "unknown";
+    activeMatchRuntimeProfile = this.runtimeProfile;
     this.socdResolutionAuthority = resolveRuntimeSocdResolution({
       profile: this.runtimeProfile,
       runtimeOption: options.socdResolution,
@@ -4690,13 +4693,22 @@ function changeAction(
 }
 
 function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove, options: EnterStateOptions = {}): void {
-  stateEntryWorld.enterState(fighter, stateId, move, options, {
-    recordStateExecution: (actor, executedStateId, owner) =>
-      compatibilityTelemetryWorld.recordStateExecution(actor, executedStateId, owner),
-    resetContactState,
-    changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
-      changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
-  });
+  stateEntryWorld.enterState(
+    fighter,
+    stateId,
+    move,
+    {
+      ...options,
+      runtimeProfile: options.runtimeProfile ?? activeMatchRuntimeProfile,
+    },
+    {
+      recordStateExecution: (actor, executedStateId, owner) =>
+        compatibilityTelemetryWorld.recordStateExecution(actor, executedStateId, owner),
+      resetContactState,
+      changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
+        changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
+    },
+  );
 }
 
 function runHitPauseIgnoredControllers(
@@ -4861,6 +4873,7 @@ function runActiveStateControllers(
         controller,
         frame: getCurrentCollisionFrame(target),
         constants: target.definition.constants,
+        runtimeProfile: activeMatchRuntimeProfile,
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });

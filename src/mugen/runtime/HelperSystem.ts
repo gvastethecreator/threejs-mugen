@@ -1238,7 +1238,8 @@ export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
   controller: ControllerIr,
   hitDefWorld: RuntimeHitDefControllerDispatchWorld = helperHitDefWorld,
-  options?: Parameters<typeof resolveHelperNumber>[3] & Pick<RuntimeHelperAdvanceOptions, "constants" | "defaultHitFlag">,
+  options?: Parameters<typeof resolveHelperNumber>[3] &
+    Pick<RuntimeHelperAdvanceOptions, "constants" | "defaultHitFlag" | "runtimeProfile">,
 ): boolean {
   const runtime = helperRuntimeState(helper);
   const frame = helper.action.frames[helper.frameIndex];
@@ -1264,6 +1265,7 @@ export function activateRuntimeHelperHitDef(
     controller,
     defaultHitFlag: options?.defaultHitFlag,
     frame: collisionFrame,
+    runtimeProfile: options?.runtimeProfile,
     resolveSoundValue: options
       ? (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options)
       : undefined,

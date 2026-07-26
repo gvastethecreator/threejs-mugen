@@ -13,7 +13,9 @@ import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
+import { applyRuntimeHitDefJuggle } from "./RuntimeJuggleSystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeResolvedSoundRef } from "./types";
@@ -38,6 +40,8 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   defaultHitFlag?: string;
   frame?: MugenAnimationFrame;
   constants?: RuntimeResourceConstants;
+  /** When `ikemen-go`, an explicit HitDef `air.juggle` arms the active character juggle cost. */
+  runtimeProfile?: RuntimeCompatibilityProfile;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: HitDefControllerOp) => void;
@@ -74,6 +78,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     defaultHitFlag,
     frame,
     constants,
+    runtimeProfile,
     resolveSoundValue,
     recordController,
     recordOperation,
@@ -112,7 +117,11 @@ export class RuntimeHitDefControllerDispatchWorld {
     const kill = operation?.kill ?? booleanHitDefParam(source, "kill") ?? existing?.kill ?? true;
     const guardKill = operation?.guardKill ?? booleanHitDefParam(source, "guard.kill") ?? existing?.guardKill ?? true;
     const hitOnce = operation?.hitOnce ?? booleanHitDefParam(source, "hitonce") ?? existing?.hitOnce ?? false;
-    const airJuggle = operation?.airJuggle ?? firstNumber(findParam(source, "air.juggle")) ?? 0;
+    // Presence matters: omitted leaves active `c.juggle`; explicit 0 updates it under IKEMEN.
+    const airJuggleParam = operation?.airJuggle ?? firstNumber(findParam(source, "air.juggle"));
+    const airJugglePresent = airJuggleParam !== undefined;
+    // Field default after setup matches pin `ifierrset` to 0 when omitted.
+    const airJuggle = airJuggleParam ?? 0;
     const hitFlag =
       operation?.hitFlag ??
       stripMugenString(findParam(source, "hitflag")) ??
@@ -204,7 +213,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       ...(guardRedLife === undefined ? {} : { guardRedLife }),
       kill,
       hitOnce,
-      ...(airJuggle === undefined ? {} : { airJuggle }),
+      airJuggle,
       ...(hitFlag === undefined ? {} : { hitFlag }),
       ...(affectTeam === undefined ? {} : { affectTeam }),
       ...(teamSide === undefined ? {} : { teamSide }),
@@ -270,6 +279,10 @@ export class RuntimeHitDefControllerDispatchWorld {
     actor.runtime.reversal = undefined;
     actor.runtime.moveType = "A";
     applyRuntimeControl(actor.runtime, false);
+    // Pin: only an explicit HitDef air.juggle arms c.juggle under IKEMEN; omitted keeps prior cost.
+    if (airJugglePresent) {
+      applyRuntimeHitDefJuggle(actor.runtime, airJuggle, { profile: runtimeProfile });
+    }
 
     return {
       activated: true,

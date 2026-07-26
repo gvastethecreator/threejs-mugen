@@ -19,6 +19,7 @@ describe("RuntimeStateEntrySystem", () => {
       physics: "A",
       anim: 205,
       ctrl: 0,
+      juggle: 6,
       velSet: [3, -6],
       moveHitPersist: true,
       hitCountPersist: true,
@@ -38,7 +39,11 @@ describe("RuntimeStateEntrySystem", () => {
     const resetContactState = vi.fn();
     const changeAction = vi.fn(() => true);
 
-    const result = world.enterState(actor, 200, undefined, {}, { recordStateExecution, resetContactState, changeAction });
+    const result = world.enterState(actor, 200, undefined, { runtimeProfile: "ikemen-go" }, {
+      recordStateExecution,
+      resetContactState,
+      changeAction,
+    });
 
     expect(result).toMatchObject({ actionId: 205, animationChanged: true });
     expect(actor.runtime).toMatchObject({
@@ -47,6 +52,8 @@ describe("RuntimeStateEntrySystem", () => {
       moveType: "A",
       physics: "A",
       ctrl: false,
+      juggle: 6,
+      juggleOrigin: "statedef",
       vel: { x: 3, y: -6 },
     });
     expect(actor.stateElapsed).toBe(-1);
@@ -99,6 +106,33 @@ describe("RuntimeStateEntrySystem", () => {
     expect(actor.moveTick).toBe(0);
     expect(actor.hasHit).toBe(false);
     expect(actor.runtime.reversal).toBeUndefined();
+  });
+
+  it("inherits attack-state juggle when StateDef omits it and resets non-A under IKEMEN", () => {
+    const world = new RuntimeStateEntryWorld();
+    const attackOmit = state(210, { moveType: "A", anim: 210 });
+    const idleOmit = state(0, { moveType: "I", anim: 0 });
+    const actor = entryActor({
+      states: [attackOmit, idleOmit],
+      animations: [210, 0],
+      runtime: {
+        stateNo: 0,
+        animNo: 0,
+        ctrl: true,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        juggle: 9,
+        juggleOrigin: "hitdef",
+      },
+    });
+
+    world.enterState(actor, 210, undefined, { runtimeProfile: "ikemen-go" });
+    expect(actor.runtime.juggle).toBe(9);
+
+    world.enterState(actor, 0, undefined, { runtimeProfile: "ikemen-go" });
+    expect(actor.runtime.juggle).toBe(0);
+    expect(actor.runtime.juggleOrigin).toBe("reset");
   });
 
   it("enters owner-backed custom states with state-owner animation source", () => {

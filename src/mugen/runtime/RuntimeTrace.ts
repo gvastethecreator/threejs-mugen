@@ -116,6 +116,10 @@ export type RuntimeTraceActor = {
   assertSpecialGlobalFlags?: string[];
   hitFall?: RuntimeTraceHitFallSummary;
   airJugglePoints?: Record<string, number>;
+  /** Active character juggle cost (`c.juggle`) when armed. */
+  juggle?: number;
+  /** Provenance of the active juggle cost. */
+  juggleOrigin?: "statedef" | "hitdef" | "reset" | "default";
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   soundEvents?: NonNullable<ActorSnapshot["soundEvents"]>;
@@ -4075,6 +4079,8 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       : undefined,
     hitFall: actor.runtime.hitFall ? cloneTraceHitFall(actor.runtime.hitFall) : undefined,
     airJugglePoints: actor.runtime.airJugglePoints ? { ...actor.runtime.airJugglePoints } : undefined,
+    ...(actor.runtime.juggle !== undefined ? { juggle: actor.runtime.juggle } : {}),
+    ...(actor.runtime.juggleOrigin !== undefined ? { juggleOrigin: actor.runtime.juggleOrigin } : {}),
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),

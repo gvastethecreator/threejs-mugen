@@ -52,8 +52,13 @@ export type CharacterRuntimeState = {
   hitFall?: RuntimeHitFall;
   /** Remaining IKEMEN air-juggle points, keyed by the direct attacking actor id. */
   airJugglePoints?: Record<string, number>;
-  /** Current source `juggle` cost for direct IKEMEN contacts. */
+  /**
+   * Active character juggle cost (`c.juggle`) for direct IKEMEN contacts.
+   * `undefined` means never armed this life/path; `0` is an explicit armed/reset value.
+   */
   juggle?: number;
+  /** Provenance of the current active juggle cost when present. */
+  juggleOrigin?: "statedef" | "hitdef" | "reset" | "default";
   targetCount?: number;
   targetRefs?: RuntimeTargetSnapshot[];
   targetBindings?: RuntimeTargetBindingSnapshot[];

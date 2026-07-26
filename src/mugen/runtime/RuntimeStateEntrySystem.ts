@@ -1,5 +1,6 @@
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateDef } from "../model/MugenState";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { applyRuntimeStateDefJuggle } from "./RuntimeJuggleSystem";
 import { applyRuntimeStateDefControl } from "./RuntimeResourceSystem";
 import { RuntimeStateClockWorld, type RuntimeStateClockResetOptions } from "./RuntimeStateClockSystem";
@@ -44,6 +45,8 @@ export type RuntimeStateEntryOptions<TActor extends RuntimeStateEntryActor> = {
   animOverride?: number;
   preserveAnimationWhenMissing?: boolean;
   animationElement?: RuntimeStateEntryAnimationElementOptions;
+  /** Gates IKEMEN non-attack juggle reset when StateDef omits `juggle`. */
+  runtimeProfile?: RuntimeCompatibilityProfile;
 };
 
 export type RuntimeStateEntryHooks<TActor extends RuntimeStateEntryActor> = {
@@ -124,7 +127,7 @@ export class RuntimeStateEntryWorld {
     this.setStateNo(actor, stateId, { resetElapsed: true });
     actor.firedHitDefs.clear();
     hooks.resetContactState?.(actor, state);
-    this.applyStateDefMetadata(actor.runtime, state);
+    this.applyStateDefMetadata(actor.runtime, state, options.runtimeProfile);
 
     const animationChanged =
       actionId !== undefined
@@ -194,14 +197,18 @@ export class RuntimeStateEntryWorld {
     actor.runtime.customState = undefined;
   }
 
-  private applyStateDefMetadata(runtime: CharacterRuntimeState, state: MugenStateDef | undefined): void {
+  private applyStateDefMetadata(
+    runtime: CharacterRuntimeState,
+    state: MugenStateDef | undefined,
+    runtimeProfile?: RuntimeCompatibilityProfile,
+  ): void {
     if (state?.type) {
       runtime.stateType = normalizeRuntimeStateType(state.type, runtime.stateType);
     }
     if (state?.moveType) {
       runtime.moveType = normalizeRuntimeMoveType(state.moveType, runtime.moveType);
     }
-    applyRuntimeStateDefJuggle(runtime, state?.juggle);
+    applyRuntimeStateDefJuggle(runtime, state?.juggle, runtimeProfile);
     if (state?.physics) {
       runtime.physics = normalizeRuntimePhysics(state.physics, runtime.physics);
     }

@@ -161,6 +161,7 @@ movetype = A
 physics = S
 anim = 200
 ctrl = 0
+juggle = 8
 velset = 0,0
 hitdefpersist = 1
 movehitpersist = 1
@@ -174,12 +175,29 @@ damage = 30
 
     expect(parsed.states[0]?.id).toBe(200);
     expect(parsed.states[0]?.anim).toBe(200);
+    expect(parsed.states[0]?.juggle).toBe(8);
     expect(parsed.states[0]?.velSet).toEqual([0, 0]);
     expect(parsed.states[0]?.hitDefPersist).toBe(true);
     expect(parsed.states[0]?.moveHitPersist).toBe(true);
     expect(parsed.states[0]?.hitCountPersist).toBe(true);
     expect(parsed.controllers[0]?.type).toBe("HitDef");
     expect(parsed.controllers[0]?.triggers[0]?.expression).toBe("AnimElem = 3");
+  });
+
+  it("keeps StateDef juggle omitted distinct from an explicit zero", () => {
+    const omitted = parseCns(`
+[Statedef 201]
+type = S
+movetype = A
+`);
+    const zero = parseCns(`
+[Statedef 202]
+type = S
+movetype = A
+juggle = 0
+`);
+    expect(omitted.states[0]?.juggle).toBeUndefined();
+    expect(zero.states[0]?.juggle).toBe(0);
   });
 
   it("keeps IKEMEN State +1 distinct from numeric State 1", () => {

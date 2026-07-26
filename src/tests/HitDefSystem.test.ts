@@ -7,6 +7,7 @@ import {
   type RuntimeHitDefControllerDispatchActor,
 } from "../mugen/runtime/HitDefSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
+import { applyRuntimeHitDefJuggle } from "../mugen/runtime/RuntimeJuggleSystem";
 
 describe("RuntimeHitDefControllerDispatchWorld", () => {
   it("activates a typed HitDef payload with raw fallbacks and frame hitbox handoff", () => {
@@ -176,9 +177,11 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.ignoreReversalDef).toBe(false);
   });
 
-  it("defaults a new HitDef air.juggle to zero instead of inheriting the prior move", () => {
+  it("defaults a new HitDef air.juggle field to zero without changing the active cost when omitted", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
+    actor.runtime.juggle = 7;
+    actor.runtime.juggleOrigin = "hitdef";
     actor.currentMove = {
       actionId: 200,
       startup: 0,
@@ -196,10 +199,62 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     world.apply({
       actor,
       controller: compileControllerIr(controller("HitDef", { damage: "30" })),
+      runtimeProfile: "ikemen-go",
       frame: activeFrame(),
     });
 
+    // Field defaults to 0 after setup; omitted source must not rewrite c.juggle.
     expect(actor.currentMove?.airJuggle).toBe(0);
+    expect(actor.runtime.juggle).toBe(7);
+    expect(actor.runtime.juggleOrigin).toBe("hitdef");
+  });
+
+  it("arms the active juggle cost from an explicit HitDef air.juggle under IKEMEN", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.juggle = 0;
+    actor.runtime.juggleOrigin = "reset";
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30", "air.juggle": "3" })),
+      runtimeProfile: "ikemen-go",
+      frame: activeFrame(),
+    });
+
+    expect(actor.currentMove?.airJuggle).toBe(3);
+    expect(actor.runtime.juggle).toBe(3);
+    expect(actor.runtime.juggleOrigin).toBe("hitdef");
+  });
+
+  it("arms explicit air.juggle 0 while treating omitted as non-update", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const omitted = hitDefActor();
+    omitted.runtime.juggle = 5;
+    world.apply({
+      actor: omitted,
+      controller: compileControllerIr(controller("HitDef", { damage: "10" })),
+      runtimeProfile: "ikemen-go",
+      frame: activeFrame(),
+    });
+    expect(omitted.runtime.juggle).toBe(5);
+
+    const explicitZero = hitDefActor();
+    explicitZero.runtime.juggle = 5;
+    world.apply({
+      actor: explicitZero,
+      controller: compileControllerIr(controller("HitDef", { damage: "10", "air.juggle": "0" })),
+      runtimeProfile: "ikemen-go",
+      frame: activeFrame(),
+    });
+    expect(explicitZero.runtime.juggle).toBe(0);
+    expect(explicitZero.runtime.juggleOrigin).toBe("hitdef");
+  });
+
+  it("keeps applyRuntimeHitDefJuggle available for direct arming paths", () => {
+    const state = { juggle: undefined as number | undefined };
+    applyRuntimeHitDefJuggle(state, 4, { profile: "ikemen-go" });
+    expect(state.juggle).toBe(4);
   });
 
   it("uses an imported source default only when HitDef omits hitflag", () => {

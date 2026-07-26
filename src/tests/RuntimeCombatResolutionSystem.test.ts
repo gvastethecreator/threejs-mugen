@@ -118,7 +118,7 @@ describe("RuntimeCombatResolutionSystem", () => {
         hitFall: { falling: true, damage: 0, velocity: { y: -4 } },
       }),
     });
-    defender.definition.constants["data.airjuggle"] = 4;
+    defender.definition.constants = { ...(defender.definition.constants ?? {}), "data.airjuggle": 4 };
     const base = { ...directInputBase(contactWorld, directCombatWorld, logs), runtimeProfile: "ikemen-go" as const };
 
     expect(world.resolveDirect({ attacker, defender, ...base })).toMatchObject({ kind: "hit", damage: 17 });
@@ -1671,6 +1671,12 @@ function rearmHitDef(actor: TestActor, currentMove: DemoMove): void {
   actor.hasHit = false;
   actor.hitDefTargets = [];
   actor.pendingHitDefTargets = [];
+  // Mirror HitDef activation: attack move type + explicit air.juggle re-arms c.juggle.
+  actor.runtime.moveType = "A";
+  if (currentMove.airJuggle !== undefined) {
+    actor.runtime.juggle = currentMove.airJuggle;
+    actor.runtime.juggleOrigin = "hitdef";
+  }
 }
 
 function move(overrides: Partial<DemoMove> = {}): DemoMove {
