@@ -1,5 +1,15 @@
 # Build Execution Backlog
 
+## Entry 594 - Studio/oracle/core batch (DA26-18/24/25/26/28/30)
+
+Closed bounded modules: PluralCombatOracle matrix (projectile/reversal/juggle
+cells), StudioProjectSnapshot identity/history, PackageAnalysisRevision diff
+(add/remove/change/downgrade), SourceWriteJournal intent/preimage/rollback/
+replay, AssetReleasePolicy dual independent chains, CommonEvidenceFacts core
+with two consumers producing equal canonical bytes. Unit suites green. Browser
+DA26-13 and DA26-16/19/20/21 remain open. Scores unchanged. Report:
+`docs/research/2026-07-26-studio-oracle-core-batch.md`.
+
 ## Entry 593 - Runtime/control batch (DA26-15/17/22/23/27/29)
 
 Closed bounded modules: Turns transaction (prepare/validate/commit/restore),

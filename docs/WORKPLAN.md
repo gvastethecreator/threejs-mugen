@@ -1,9 +1,13 @@
 # Workplan
 
+## Studio/oracle/core batch - DA26-18/24/25/26/28/30 (closed, 2026-07-26)
+
+Unit-bounded oracle, snapshot, journal, dual asset policy, and two-consumer
+core facts are live. Next: **DA26-13** browser gate on current HEAD.
+
 ## Sandbox FightScreen fixture - DA26-12 (closed, 2026-07-26)
 
 CC0 FightScreen system package is live under `public/data/sandbox-fightscreen/`.
-Next: **DA26-13** browser gate on current HEAD.
 
 ## Authority selector sync - DA26-11 (closed, 2026-07-26)
 

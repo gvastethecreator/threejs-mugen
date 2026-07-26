@@ -1,5 +1,12 @@
 ﻿# Roadmap Execution Board
 
+## Current studio/oracle/core batch (closed, 2026-07-26)
+
+Closed: DA26-18 PluralCombatOracle, DA26-24 StudioProjectSnapshot, DA26-25
+PackageAnalysisRevision diff, DA26-26 SourceWriteJournal, DA26-28 dual
+AssetReleasePolicy chains, DA26-30 CommonEvidenceFacts. Report:
+`docs/research/2026-07-26-studio-oracle-core-batch.md`.
+
 ## Current runtime/control batch (closed, 2026-07-26)
 
 Closed: DA26-15 Turns transaction, DA26-17 projectile schedule, DA26-22
@@ -13,6 +20,7 @@ MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
 Next queue head: **DA26-13** browser gate (primary remaining product proof).
+Also open: DA26-16, 19, 20, 21.
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

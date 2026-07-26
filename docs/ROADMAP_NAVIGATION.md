@@ -9,12 +9,12 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA26-29** (see selector for closed ID set)
+- `closedThrough`: **DA26-30** (see selector for closed ID set)
 - formal/global: **`7d9b15f8`** (Entry 587 / DA26-08 gate)
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb`
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA26-13** browser, then 16/18/19/20/21/24–26/28/30
+- next queue: **DA26-13** browser, then 16/19/20/21
 - Scores unchanged. Full audit map remains historical context:
   [audit post-T405](research/2026-07-26-daily-roadmap-architecture-audit-post-t405.md).
 

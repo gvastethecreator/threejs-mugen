@@ -19,19 +19,13 @@ const generatedAt = args["generated-at"] ?? new Date().toISOString();
 
 const document = createDocument({
   generatedAt,
-  closedThrough: "DA26-29",
+  closedThrough: "DA26-30",
   nextQueue: [
     "DA26-13",
     "DA26-16",
-    "DA26-18",
     "DA26-19",
     "DA26-20",
     "DA26-21",
-    "DA26-24",
-    "DA26-25",
-    "DA26-26",
-    "DA26-28",
-    "DA26-30",
   ],
   scores: {
     sandbox: "65",

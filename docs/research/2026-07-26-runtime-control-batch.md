@@ -15,17 +15,11 @@ Status: closed-bounded
 | DA26-27 | `ScannerCapabilityVector/v1` | five phases; no inference; select.def negative execution | full scanner product matrix |
 | DA26-29 | `BoundaryManifest/v1` | required missing / allowlist total / forbidden hits fail closed | replacing legacy `check_boundaries` skip-missing behavior without migration |
 
-## Still open (live next)
+## Still open after this batch (historical note)
 
-- **DA26-13** browser gate (primary product proof)
-- DA26-16 Turns journey browser
-- DA26-18 projectile/reversal/juggle plural oracle
-- DA26-19 corpus v1.2
-- DA26-20 second character
-- DA26-21 score adjudication
-- DA26-24/25/26 Studio snapshot/diff/journal
-- DA26-28 second asset policy
-- DA26-30 two-consumer core extraction
+At batch close: DA26-13/16/18/19/20/21/24–26/28/30 were still open. Entry 594
+later closed 18/24/25/26/28/30. Live next after Entry 594: **DA26-13** browser,
+then 16/19/20/21. See `docs/research/2026-07-26-studio-oracle-core-batch.md`.
 
 ## Evidence
 
