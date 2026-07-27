@@ -5,6 +5,7 @@ import {
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
   findRuntimeHitOverride,
+  parseHitAttribute,
   resolveRuntimeCombatHit,
   runtimeHitFlagRejectionReason,
   runtimeWorldBox,
@@ -122,6 +123,7 @@ export class RuntimeProjectileCombatWorld {
     input: RuntimeProjectileCombatInput<TActor>,
   ): void {
     const { attacker, defender, hurtBoxes, log } = input;
+    let apProjectileContacted = false;
     if (input.projectileDefense) {
       for (const projectile of input.projectiles) {
         if (!canRuntimeProjectileContact(projectile)) {
@@ -181,6 +183,11 @@ export class RuntimeProjectileCombatWorld {
         log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via SuperPause unhittable`);
         continue;
       }
+      const projectileIsAp = isRuntimeProjectileAttackAttribute(projectile.attr ?? "S,SP");
+      if (projectileIsAp && apProjectileContacted) {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via same-frame AP projectile contact`);
+        continue;
+      }
       const hitFlagReason = runtimeHitFlagRejectionReason({
         attacker: attacker.runtime,
         defender: defender.runtime,
@@ -215,6 +222,7 @@ export class RuntimeProjectileCombatWorld {
           continue;
         }
         recordRuntimeProjectileContact(projectile);
+        if (projectileIsAp) apProjectileContacted = true;
         input.rememberTarget(attacker, defender, projectile.targetId, projectile);
         input.applyHitOverride(attacker, defender, override, projectile.hitPause, log);
         continue;
@@ -251,6 +259,7 @@ export class RuntimeProjectileCombatWorld {
         holdingBack: input.holdingBack,
       });
       recordRuntimeProjectileContact(projectile, result.kind);
+      if (projectileIsAp) apProjectileContacted = true;
       input.rememberTarget(attacker, defender, projectile.targetId, projectile);
       const source = resolveRuntimeProjectileHitSource(input, attacker, projectile);
       const lifeBefore = defender.runtime.life;
@@ -404,6 +413,10 @@ function projectileJuggleActor(actor: RuntimeProjectileCombatActor) {
     definition: actor.definition ?? {},
     runtime: actor.runtime,
   };
+}
+
+function isRuntimeProjectileAttackAttribute(attr: string): boolean {
+  return [...parseHitAttribute(attr).types].some((type) => type.length === 2 && type[1] === "P");
 }
 
 const defaultProjectileCombatWorld = new RuntimeProjectileCombatWorld();

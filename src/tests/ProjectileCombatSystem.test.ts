@@ -151,6 +151,69 @@ describe("ProjectileCombatSystem", () => {
     expect(attacker.runtime.roundWinType).toBe("special");
   });
 
+  it("blocks a later AP projectile in the same owner pass and resets on the next pass", () => {
+    let projectiles = [
+      projectile({ serialId: "ap-first", damage: 10, removeOnHit: false }),
+      projectile({ serialId: "ap-second", damage: 20, removeOnHit: false }),
+    ];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 100 }));
+    const logs: string[] = [];
+    const resolve = () => new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: (line) => logs.push(line),
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => undefined,
+    });
+
+    resolve();
+    expect(defender.runtime.life).toBe(90);
+    expect(projectiles).toMatchObject([
+      { serialId: "ap-first", hasHit: true },
+      { serialId: "ap-second", hasHit: false, hitsRemaining: 1 },
+    ]);
+    expect(logs).toContain("P2 rejected P1 projectile S,SP via same-frame AP projectile contact");
+
+    resolve();
+    expect(defender.runtime.life).toBe(70);
+    expect(projectiles).toMatchObject([
+      { serialId: "ap-first", hasHit: true },
+      { serialId: "ap-second", hasHit: true },
+    ]);
+  });
+
+  it("keeps a non-AP projectile eligible after an AP contact", () => {
+    let projectiles = [
+      projectile({ serialId: "ap-first", damage: 10, removeOnHit: false }),
+      projectile({ serialId: "normal-second", attr: "S,NA", damage: 20, removeOnHit: false }),
+    ];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 100 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => undefined,
+    });
+
+    expect(defender.runtime.life).toBe(70);
+    expect(projectiles).toMatchObject([
+      { serialId: "ap-first", hasHit: true },
+      { serialId: "normal-second", hasHit: true },
+    ]);
+  });
+
   it("does not promote a helper-owned projectile to a root win cause", () => {
     let projectiles = [projectile({ attr: "S,HA", damage: 31, parentId: "p1-helper-0", rootId: "p1" })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));

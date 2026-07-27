@@ -13338,6 +13338,86 @@ export function createSyntheticImportedIkemenHelperProjectileAirJuggleTraceArtif
   });
 }
 
+export function createSyntheticImportedIkemenProjectileSameFrameApContactTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const firstProjectileDamage = 17;
+  const firstProjectileId = 407;
+  const secondProjectileId = 408;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "two AP projectiles spawn and overlap", frames: 4, p1: ["x"], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-ap-attacker",
+    displayName: "Synthetic Imported IKEMEN Projectile AP Attacker",
+    ikemenVersion: "0.99",
+    withProjectile: true,
+    projectileTriggerTime: 2,
+    projectileOffset: [62, -45],
+    projectileVelocity: [0, 0],
+    projectileDamage: [firstProjectileDamage, 0],
+    projectileHits: 1,
+    projectileMissTime: 0,
+    projectileRemoveOnHit: true,
+    projectileId: firstProjectileId,
+    withHitDef: false,
+    secondaryProjectile: {
+      triggerTime: 2,
+      id: secondProjectileId,
+      offset: [62, -45],
+      velocity: [0, 0],
+      hits: 1,
+      missTime: 0,
+      removeOnHit: true,
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-ap-defender",
+    displayName: "Synthetic Imported IKEMEN Projectile AP Defender",
+    ikemenVersion: "0.99",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-projectile-same-frame-ap-contact-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-projectile-same-frame-ap-contact-golden",
+      label: "Synthetic imported IKEMEN Projectile same-frame AP contact",
+      source: "mixed",
+      notes: [
+        "Bounded IKEMEN trace proves two overlapping AP projectiles from one owner resolve one contact in the same frame: the first applies damage, the second is rejected by the same-frame guard and remains active. It does not claim pause persistence, exact hittmp or acttmp timing, MUGEN behavior, teams, clashes, or full projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-projectile-same-frame-ap-contact-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredExecutedControllers: ["Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["same-frame AP projectile contact"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-projectile-1", kind: "projectile", ownerId: "p1", effectId: secondProjectileId, hasHit: false, minHitsRemaining: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 - firstProjectileDamage },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
