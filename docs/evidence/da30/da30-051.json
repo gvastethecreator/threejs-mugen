@@ -1,0 +1,28 @@
+{
+  "launch": {
+    "ok": true,
+    "ids": [
+      "nova-boxer@1",
+      "mira-volt@1",
+      "rooftop-dojo@1"
+    ]
+  },
+  "st": {
+    "schema": "Da30SelectionState/v1",
+    "seats": {
+      "p1": {
+        "packageId": "nova-boxer",
+        "revision": "1",
+        "legal": true,
+        "palette": 1
+      },
+      "p2": {
+        "packageId": "mira-volt",
+        "revision": "1",
+        "legal": true
+      }
+    },
+    "stageId": "rooftop-dojo",
+    "stageRevision": "1"
+  }
+}

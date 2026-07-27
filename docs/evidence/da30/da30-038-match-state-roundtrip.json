@@ -1,0 +1,68 @@
+{
+  "schema": "Da30MatchState/v1",
+  "id": "DA30-038",
+  "version": 1,
+  "state": {
+    "tick": 120,
+    "roots": [
+      {
+        "id": "p1",
+        "stateNo": 200,
+        "life": 980,
+        "power": 100,
+        "posX": -40,
+        "posY": 0
+      },
+      {
+        "id": "p2",
+        "stateNo": 0,
+        "life": 1000,
+        "power": 0,
+        "posX": 40,
+        "posY": 0
+      }
+    ],
+    "helpers": [
+      {
+        "id": "p1-h0",
+        "ownerId": "p1",
+        "stateNo": 1000
+      }
+    ],
+    "projectiles": [
+      {
+        "id": "proj-1",
+        "ownerId": "p1",
+        "spawnTick": 100
+      }
+    ],
+    "inputs": {
+      "p1Buttons": [
+        "a"
+      ],
+      "p2Buttons": []
+    },
+    "clocks": {
+      "hitPause": 0,
+      "superPause": 0,
+      "roundTime": 99
+    },
+    "rng": {
+      "gameplaySeed": 42,
+      "streamCursor": 7
+    },
+    "team": {
+      "p1Wins": 0,
+      "p2Wins": 0,
+      "mode": "versus"
+    },
+    "round": {
+      "phase": "fight",
+      "number": 1
+    }
+  },
+  "checksum": "7e27985f",
+  "roundtrip": true,
+  "claimCeiling": "named pure snapshot subset only",
+  "module": "src/mugen/da30/MatchStateRoundtrip.ts"
+}

@@ -1,0 +1,47 @@
+{
+  "sample": {
+    "schema": "Da30MatchStateSnapshot/v1",
+    "version": 1,
+    "roots": [
+      {
+        "id": "p1",
+        "life": 1000,
+        "stateNo": 0,
+        "pos": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      {
+        "id": "p2",
+        "life": 980,
+        "stateNo": 5000,
+        "pos": {
+          "x": 200,
+          "y": 0
+        }
+      }
+    ],
+    "helpers": [],
+    "projectiles": [],
+    "inputs": {
+      "p1": [
+        "a"
+      ],
+      "p2": []
+    },
+    "clocks": {
+      "matchTime": 120,
+      "roundTime": 60
+    },
+    "rng": {
+      "gameplay": 1,
+      "visual": 2
+    },
+    "round": {
+      "number": 1,
+      "phase": "fight"
+    }
+  },
+  "bytesDigest": 349
+}

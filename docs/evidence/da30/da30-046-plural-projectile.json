@@ -1,0 +1,15 @@
+{
+  "schema": "Da30PluralProjectileHook/v1",
+  "id": "DA30-046",
+  "cases": [
+    "three-owners-stable-order",
+    "same-side-tie-break-by-id",
+    "reject-stale-owner-empty"
+  ],
+  "anchors": [
+    "src/mugen/runtime/GlobalProjectileSchedule.ts",
+    "src/mugen/da30/PluralProjectileTestHook.ts"
+  ],
+  "claimCeiling": "schedule order matrix only",
+  "module": "src/mugen/da30/PluralProjectileTestHook.ts"
+}

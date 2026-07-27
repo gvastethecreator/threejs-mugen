@@ -1,0 +1,26 @@
+{
+  "schema": "Da30SelectionState/v1",
+  "id": "DA30-051",
+  "seats": {
+    "p1": {
+      "packageId": "nova-boxer",
+      "revision": "r1",
+      "legal": true,
+      "palette": 1
+    },
+    "p2": {
+      "packageId": "mira-volt",
+      "revision": "r1",
+      "legal": true
+    }
+  },
+  "stageId": "rooftop-dojo",
+  "stageRevision": "r1",
+  "launchIds": [
+    "nova-boxer@r1",
+    "mira-volt@r1",
+    "rooftop-dojo@r1"
+  ],
+  "claimCeiling": "selection model only",
+  "module": "src/mugen/da30/SelectionStateModel.ts"
+}

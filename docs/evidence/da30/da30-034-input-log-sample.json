@@ -1,0 +1,38 @@
+{
+  "schema": "Da30CanonicalInputLog/v1",
+  "id": "DA30-034",
+  "matchSeed": "seed-da30-034",
+  "policyRevision": "v1",
+  "frames": [
+    {
+      "tick": 1,
+      "seat": 1,
+      "buttons": [
+        "right"
+      ],
+      "edges": [
+        "right+"
+      ],
+      "deviceClass": "keyboard",
+      "focus": true,
+      "policyRevision": "v1"
+    },
+    {
+      "tick": 2,
+      "seat": 2,
+      "buttons": [
+        "a",
+        "b"
+      ],
+      "edges": [
+        "a+"
+      ],
+      "deviceClass": "keyboard",
+      "focus": true,
+      "policyRevision": "v1"
+    }
+  ],
+  "checksum": "034680cf",
+  "claimCeiling": "input-log determinism only",
+  "module": "src/mugen/da30/CanonicalInputLog.ts"
+}

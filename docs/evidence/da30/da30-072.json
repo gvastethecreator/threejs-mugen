@@ -1,0 +1,16 @@
+{
+  "schema": "Da30ProjectEnvelope/v1",
+  "projectId": "p1",
+  "revision": 2,
+  "sourceGraphDigest": "abc",
+  "edits": [
+    "edit-1"
+  ],
+  "assets": [],
+  "scannerFactsDigest": null,
+  "profile": "ikemen-go",
+  "toolChain": "mugen-web-sandbox",
+  "evidenceDigests": [],
+  "createdAt": "2026-07-27T06:22:41.170Z",
+  "updatedAt": "2026-07-27T06:22:41.173Z"
+}

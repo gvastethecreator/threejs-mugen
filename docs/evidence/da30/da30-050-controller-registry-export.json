@@ -1,0 +1,137 @@
+{
+  "schema": "Da30ControllerRegistryExport/v1",
+  "id": "DA30-050",
+  "sourcePath": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+  "rowCount": 338,
+  "sampleNames": [
+    "ActParser",
+    "AfterImage",
+    "AfterImageTime",
+    "angle",
+    "AngleAdd",
+    "AngleDraw",
+    "AngleMul",
+    "AngleSet",
+    "Anim",
+    "AnimationControllerSystem",
+    "AnimTime",
+    "AppendToClipboard",
+    "assertspecial",
+    "AssertSpecial",
+    "AssertSpecial GlobalNoShadow",
+    "AssertSpecial NoFallCount",
+    "AssertSpecial NoFallDefenceUp",
+    "AssertSpecial NoFastRecoverFromLieDown",
+    "AssertSpecial NoKO",
+    "AssertSpecial NoKOSnd",
+    "AssertSpecial nowalk",
+    "assertSpecialFlags",
+    "assertSpecialGlobalFlags",
+    "AttackMulSet",
+    "AudioEventSystem"
+  ],
+  "sampleStates": [
+    {
+      "name": "ActParser",
+      "states": [
+        "execute",
+        "compile",
+        "parse",
+        "trace",
+        "failure"
+      ]
+    },
+    {
+      "name": "AfterImage",
+      "states": [
+        "execute",
+        "trace",
+        "source-review",
+        "unsupported",
+        "compile",
+        "parse",
+        "noop",
+        "browser"
+      ]
+    },
+    {
+      "name": "AfterImageTime",
+      "states": [
+        "execute",
+        "trace",
+        "source-review",
+        "compile",
+        "parse",
+        "unsupported",
+        "noop",
+        "browser"
+      ]
+    },
+    {
+      "name": "angle",
+      "states": [
+        "trace",
+        "profile"
+      ]
+    },
+    {
+      "name": "AngleAdd",
+      "states": [
+        "execute",
+        "trace",
+        "source-review",
+        "compile",
+        "parse"
+      ]
+    },
+    {
+      "name": "AngleDraw",
+      "states": [
+        "execute",
+        "trace",
+        "source-review",
+        "compile",
+        "parse"
+      ]
+    },
+    {
+      "name": "AngleMul",
+      "states": [
+        "execute",
+        "trace",
+        "source-review",
+        "compile",
+        "parse"
+      ]
+    },
+    {
+      "name": "AngleSet",
+      "states": [
+        "execute",
+        "trace",
+        "source-review",
+        "compile",
+        "parse"
+      ]
+    },
+    {
+      "name": "Anim",
+      "states": [
+        "execute",
+        "compile"
+      ]
+    },
+    {
+      "name": "AnimationControllerSystem",
+      "states": [
+        "execute",
+        "compile",
+        "parse",
+        "trace"
+      ]
+    }
+  ],
+  "note": "export from registry text; name presence alone is not support",
+  "claimCeiling": "registry export facts only",
+  "module": "src/mugen/da30/ControllerSupportProofRegistry.ts"
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "Da30ReleaseDecision/v1",
+  "id": "DA30-080",
+  "samples": [
+    {
+      "input": {
+        "projectRevision": 3,
+        "evidenceFresh": true,
+        "scannerOk": true,
+        "assetsBlocked": [],
+        "tampered": false,
+        "missingEvidence": false
+      },
+      "decision": {
+        "allow": true,
+        "code": "ready"
+      }
+    },
+    {
+      "input": {
+        "projectRevision": 3,
+        "evidenceFresh": false,
+        "scannerOk": true,
+        "assetsBlocked": [],
+        "tampered": false,
+        "missingEvidence": false
+      },
+      "decision": {
+        "allow": false,
+        "code": "stale"
+      }
+    },
+    {
+      "input": {
+        "projectRevision": 3,
+        "evidenceFresh": true,
+        "scannerOk": true,
+        "assetsBlocked": [
+          "evil.png"
+        ],
+        "tampered": false,
+        "missingEvidence": false
+      },
+      "decision": {
+        "allow": false,
+        "code": "blocked-asset"
+      }
+    }
+  ],
+  "claimCeiling": "pure decision flow only",
+  "module": "src/mugen/da30/ReleaseDecisionGate.ts"
+}

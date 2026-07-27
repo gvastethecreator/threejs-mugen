@@ -1,0 +1,7 @@
+{
+  "schema": "Da30FrameGapReport/v1",
+  "id": "DA30-027",
+  "note": "harness module unit shape; live device samples still open",
+  "module": "src/mugen/da30/FrameGapHarness.ts",
+  "claimCeiling": "harness types + unit sample only"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "Da30CanonicalInputLog/v1",
+  "matchSeed": "s",
+  "policyRevision": "v1",
+  "frames": [
+    {
+      "tick": 1,
+      "seat": 1,
+      "buttons": [
+        "a"
+      ],
+      "edges": [],
+      "deviceClass": "keyboard",
+      "focus": true,
+      "policyRevision": "v1"
+    },
+    {
+      "tick": 2,
+      "seat": 2,
+      "buttons": [
+        "a",
+        "b"
+      ],
+      "edges": [
+        "a+"
+      ],
+      "deviceClass": "keyboard",
+      "focus": true,
+      "policyRevision": "v1"
+    }
+  ],
+  "checksum": "b6a9ec32"
+}

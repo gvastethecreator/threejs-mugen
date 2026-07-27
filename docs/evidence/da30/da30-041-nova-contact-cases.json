@@ -1,0 +1,28 @@
+{
+  "schema": "Da30NovaContactCases/v1",
+  "id": "DA30-041",
+  "packageHint": "nova-boxer combat surface via CombatResolver",
+  "cases": [
+    {
+      "id": "hit",
+      "kind": "hit",
+      "note": "holdingBack false + box contact"
+    },
+    {
+      "id": "guard",
+      "kind": "guard",
+      "note": "holdingBack true + guardFlag MA"
+    },
+    {
+      "id": "miss",
+      "kind": "miss",
+      "note": "defender out of range, contact false"
+    }
+  ],
+  "anchors": [
+    "src/mugen/runtime/CombatResolver.ts",
+    "src/mugen/da30/CombatJourneyRevalidation.ts"
+  ],
+  "claimCeiling": "CombatResolver hit/guard/miss matrix only",
+  "module": "src/mugen/da30/CombatJourneyRevalidation.ts"
+}

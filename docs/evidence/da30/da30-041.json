@@ -1,0 +1,27 @@
+{
+  "cases": [
+    {
+      "id": "hit",
+      "kind": "hit",
+      "damage": 40,
+      "pause": 8,
+      "contact": true
+    },
+    {
+      "id": "guard",
+      "kind": "guard",
+      "damage": 5,
+      "pause": 4,
+      "contact": true
+    },
+    {
+      "id": "miss",
+      "kind": "miss",
+      "damage": 0,
+      "pause": 0,
+      "contact": false
+    }
+  ],
+  "ok": true,
+  "packageHint": "nova-boxer combat surface via CombatResolver"
+}

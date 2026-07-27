@@ -1,0 +1,18 @@
+{
+  "schema": "Da30FrameGapReport/v1",
+  "routeId": "play-match",
+  "p50": 18,
+  "p95": 20,
+  "p99": 20,
+  "max": 20,
+  "fpsEstimate": 55.55555555555556,
+  "longTasksOver50ms": 0,
+  "seed": 1,
+  "sampleCount": 100,
+  "thresholds": {
+    "p95Ms": 33,
+    "maxMs": 100
+  },
+  "breach": false,
+  "breachOwner": null
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "Da30ProjectEnvelope/v1",
+  "id": "DA30-072",
+  "projectId": "demo-project",
+  "revision": 1,
+  "sourceGraphDigest": "sample",
+  "edits": [],
+  "assets": [],
+  "scannerFactsDigest": null,
+  "profile": "ikemen-go",
+  "toolChain": "mugen-web-sandbox",
+  "evidenceDigests": [],
+  "createdAt": "2026-07-27T00:00:00.000Z",
+  "updatedAt": "2026-07-27T00:00:00.000Z",
+  "claimCeiling": "project schema only",
+  "module": "src/mugen/da30/ProjectEnvelope.ts"
+}

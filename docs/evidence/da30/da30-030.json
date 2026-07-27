@@ -1,0 +1,86 @@
+{
+  "schema": "Da30SecurityTrustBaseline/v1",
+  "id": "DA30-030",
+  "probes": [
+    {
+      "id": "zip-traversal",
+      "surface": "archive import",
+      "risk": "path traversal via ../ entries",
+      "negativeCase": "entry with .. must fail closed",
+      "status": "mitigated"
+    },
+    {
+      "id": "blob-url",
+      "surface": "object URLs",
+      "risk": "leaked blob URLs after revoke",
+      "negativeCase": "revoke before drop",
+      "status": "documented"
+    },
+    {
+      "id": "file-handle",
+      "surface": "File System Access",
+      "risk": "stale permission after revoke",
+      "negativeCase": "permission loss surfaces trust UI",
+      "status": "documented"
+    },
+    {
+      "id": "storage-quota",
+      "surface": "IndexedDB",
+      "risk": "quota exceeded mid-write",
+      "negativeCase": "transaction rolls back",
+      "status": "documented"
+    },
+    {
+      "id": "unsafe-eval",
+      "surface": "expression compiler",
+      "risk": "eval of untrusted package code",
+      "negativeCase": "no eval on imported sources",
+      "status": "mitigated"
+    },
+    {
+      "id": "worker-message",
+      "surface": "scanner worker",
+      "risk": "unvalidated postMessage",
+      "negativeCase": "schema reject malformed",
+      "status": "documented"
+    },
+    {
+      "id": "export-path",
+      "surface": "local export",
+      "risk": "absolute path escape",
+      "negativeCase": "sanitize to package root",
+      "status": "mitigated"
+    },
+    {
+      "id": "secrets",
+      "surface": "browser bundle",
+      "risk": "API keys in client",
+      "negativeCase": "no secret env in Vite public",
+      "status": "mitigated"
+    },
+    {
+      "id": "dependency-scripts",
+      "surface": "pnpm install",
+      "risk": "postinstall network",
+      "negativeCase": "review new deps",
+      "status": "open"
+    },
+    {
+      "id": "csp-needs",
+      "surface": "headers",
+      "risk": "inline script without CSP",
+      "negativeCase": "document CSP requirements",
+      "status": "documented"
+    }
+  ],
+  "blockedClaims": [
+    "hosted multi-tenant security",
+    "remote package execution"
+  ],
+  "pathProbe": {
+    "rejectedCount": 7,
+    "acceptedCount": 3,
+    "allNegativesRejected": true,
+    "allPositivesAccepted": true
+  }
+}

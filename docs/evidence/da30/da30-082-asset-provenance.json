@@ -1,0 +1,32 @@
+{
+  "schema": "Da30AssetProvenance/v1",
+  "id": "DA30-082",
+  "edges": [
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.cns",
+      "status": "repository-authored",
+      "license": "CC0-1.0",
+      "include": true
+    },
+    {
+      "path": "public/stages/rooftop-dojo/rooftop-dojo.png",
+      "status": "repository-authored",
+      "license": "CC0-1.0",
+      "include": true
+    },
+    {
+      "path": "external/commercial-char.zip",
+      "status": "forbidden",
+      "license": "unknown",
+      "include": false
+    },
+    {
+      "path": "mystery/asset.png",
+      "status": "unknown",
+      "license": "",
+      "include": false
+    }
+  ],
+  "claimCeiling": "listed asset permissions only",
+  "module": "src/mugen/da30/AssetProvenanceEdge.ts"
+}

@@ -2,13 +2,58 @@
   "schema": "Da30WarningPolicy/v1",
   "id": "DA30-022",
   "lanes": [
-    { "lane": "compiler", "fatal": true, "owner": "typecheck", "quarantine": false, "retry": 0 },
-    { "lane": "test", "fatal": true, "owner": "vitest", "quarantine": true, "retry": 1, "expiryDays": 14 },
-    { "lane": "build", "fatal": true, "owner": "vite", "quarantine": false, "retry": 0 },
-    { "lane": "browser", "fatal": false, "owner": "playwright", "quarantine": true, "retry": 1, "expiryDays": 7 },
-    { "lane": "WebGL", "fatal": false, "owner": "renderer", "quarantine": true, "retry": 0 },
-    { "lane": "accessibility", "fatal": false, "owner": "a11y", "quarantine": true, "retry": 0 },
-    { "lane": "deprecation", "fatal": false, "owner": "deps", "quarantine": true, "retry": 0, "expiryDays": 30 }
+    {
+      "lane": "compiler",
+      "fatal": true,
+      "owner": "typecheck",
+      "quarantine": false,
+      "retry": 0
+    },
+    {
+      "lane": "test",
+      "fatal": true,
+      "owner": "vitest",
+      "quarantine": true,
+      "retry": 1,
+      "expiryDays": 14
+    },
+    {
+      "lane": "build",
+      "fatal": true,
+      "owner": "vite",
+      "quarantine": false,
+      "retry": 0
+    },
+    {
+      "lane": "browser",
+      "fatal": false,
+      "owner": "playwright",
+      "quarantine": true,
+      "retry": 1,
+      "expiryDays": 7
+    },
+    {
+      "lane": "WebGL",
+      "fatal": false,
+      "owner": "renderer",
+      "quarantine": true,
+      "retry": 0
+    },
+    {
+      "lane": "accessibility",
+      "fatal": false,
+      "owner": "a11y",
+      "quarantine": true,
+      "retry": 0
+    },
+    {
+      "lane": "deprecation",
+      "fatal": false,
+      "owner": "deps",
+      "quarantine": true,
+      "retry": 0,
+      "expiryDays": 30
+    }
   ],
   "claimCeiling": "policy only"
 }

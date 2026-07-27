@@ -1,0 +1,113 @@
+{
+  "rowCount": 32,
+  "sample": [
+    {
+      "name": "State",
+      "states": [
+        "unknown"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "recognized",
+      "states": [
+        "unknown"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "compiled",
+      "states": [
+        "compile"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "executed-partial",
+      "states": [
+        "execute"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "executed-parity",
+      "states": [
+        "execute"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "noop",
+      "states": [
+        "unknown"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "unsupported",
+      "states": [
+        "execute"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "unknown",
+      "states": [
+        "unknown"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "HitDef",
+      "states": [
+        "parse",
+        "compile",
+        "execute",
+        "branch",
+        "trace"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    },
+    {
+      "name": "AssertSpecial",
+      "states": [
+        "parse",
+        "compile",
+        "execute",
+        "trace"
+      ],
+      "evidence": [
+        "CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "note": "row derived from registry text; name presence alone is not support"
+    }
+  ],
+  "sourcePath": "D:\\DEV\\threejs-mugen\\mugen-web-sandbox\\docs\\CONTROLLER_SUPPORT_REGISTRY.md"
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "Da30RendererLifecycleChecklist/v1",
+  "id": "DA30-029",
+  "caseCount": 7,
+  "module": "src/mugen/da30/RendererLifecycleChecklist.ts",
+  "claimCeiling": "checklist shape only; live browser lifecycle open"
+}

@@ -1,0 +1,26 @@
+{
+  "digest": "5489844c",
+  "manifest": {
+    "schema": "Da30LocalExportManifest/v1",
+    "projectId": "p",
+    "revision": 1,
+    "toolChain": "sandbox",
+    "files": [
+      {
+        "path": "a.txt",
+        "digest": "e40c292c"
+      },
+      {
+        "path": "b.txt",
+        "digest": "e70c2de5"
+      }
+    ],
+    "evidenceDigests": [
+      "e1",
+      "e2"
+    ],
+    "claimSheet": [
+      "held-scores"
+    ]
+  }
+}

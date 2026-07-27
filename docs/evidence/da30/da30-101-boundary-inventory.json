@@ -1,0 +1,6 @@
+{
+  "schema": "Da30BoundaryInventory/v1",
+  "id": "DA30-101",
+  "module": "src/mugen/da30/BoundaryImportInventory.ts",
+  "claimCeiling": "boundary inventory only"
+}

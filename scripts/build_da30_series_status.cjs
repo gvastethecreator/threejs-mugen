@@ -1,16 +1,13 @@
 /**
  * Build DA30-001…120 series status from recovery roadmap + evidence on disk.
  * Only tasks with required proof files are accepted; others stay open/candidate.
+ * Design-only ADRs stay partial. Missing artifacts demote PROOF entries to open.
  */
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
 const repoRoot = path.resolve(process.cwd());
-
-function exists(rel) {
-  return fs.existsSync(path.join(repoRoot, ...rel.split("/")));
-}
 
 /** Proof map: id -> { status, evidenceClass, artifacts, note } */
 const PROOF = {
@@ -34,24 +31,146 @@ const PROOF = {
   "DA30-018": { status: "accepted", artifacts: ["docs/evidence/da30/manifests/"], note: "expectedFailure on pilot manifests" },
   "DA30-019": { status: "accepted", artifacts: ["src/mugen/da30/ClaimCompiler.ts"], note: "claim compiler" },
   "DA30-020": { status: "accepted", artifacts: ["docs/evidence/da30/da30-020-pilot-revalidation.json"], note: "pilot revalidation 4 tasks" },
+
+  // Waves 2–11: accepted only with module + evidence on disk + unit coverage
+  "DA30-022": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-022-warning-policy.json", "src/mugen/da30/WarningPolicy.ts"],
+    note: "warning policy matrix + validator",
+  },
+  "DA30-023": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-023-product-routes.json", "src/mugen/da30/ProductRouteInventory.ts"],
+    note: "product route inventory",
+  },
+  "DA30-030": {
+    status: "accepted",
+    artifacts: [
+      "docs/evidence/da30/da30-030-security-baseline.json",
+      "src/mugen/da30/SecurityTrustBaseline.ts",
+      "src/mugen/da30/ArchivePathPolicy.ts",
+    ],
+    note: "local security baseline + path probes",
+  },
+  "DA30-034": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-034-input-log-sample.json", "src/mugen/da30/CanonicalInputLog.ts"],
+    note: "canonical input log determinism",
+  },
+  "DA30-038": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-038-match-state-roundtrip.json", "src/mugen/da30/MatchStateRoundTrip.ts"],
+    note: "match state serialize roundtrip subset",
+  },
+  "DA30-041": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-041-nova-contact-cases.json", "src/mugen/da30/CombatJourneyRevalidation.ts"],
+    note: "Nova hit/guard/miss via CombatResolver",
+  },
+  "DA30-046": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-046-plural-projectile.json", "src/mugen/da30/PluralProjectileTestHook.ts"],
+    note: "plural projectile schedule matrix",
+  },
+  "DA30-050": {
+    status: "accepted",
+    artifacts: [
+      "docs/evidence/da30/da30-050-controller-registry-export.json",
+      "src/mugen/da30/ControllerSupportProofRegistry.ts",
+      "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+    ],
+    note: "controller support registry export",
+  },
+  "DA30-051": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-051-selection-state.json", "src/mugen/da30/SelectionStateModel.ts"],
+    note: "selection state model",
+  },
+  "DA30-053": {
+    status: "accepted",
+    artifacts: ["docs/adr/0063-da30-mode-state-machine.md", "src/mugen/da30/ModeStateMachine.ts"],
+    note: "mode SM ADR + pure transitions",
+  },
+  "DA30-072": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-072-project-envelope.json", "src/mugen/da30/ProjectEnvelope.ts"],
+    note: "project envelope schema",
+  },
+  "DA30-079": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-079.json", "src/mugen/da30/LocalExportBundle.ts"],
+    note: "deterministic local export manifest",
+  },
+  "DA30-080": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-080-release-decision.json", "src/mugen/da30/ReleaseDecisionGate.ts"],
+    note: "release decision pure gate",
+  },
+  "DA30-082": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-082-asset-provenance.json", "src/mugen/da30/AssetProvenanceEdge.ts"],
+    note: "asset provenance include/exclude",
+  },
+  "DA30-086": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-086.json", "src/mugen/da30/ScannerSafetyLimits.ts"],
+    note: "scanner archive/path limits",
+  },
 };
 
-// Wave 2+ partial: design inventories that are real files; gates remain open until run
+// Partial: design ADRs, harnesses without live gates, failed/open formal work
 const PARTIAL = {
-  "DA30-022": { artifacts: ["docs/evidence/da30/da30-022-warning-policy.json"], note: "warning policy matrix" },
-  "DA30-023": { artifacts: ["docs/evidence/da30/da30-023-product-routes.json"], note: "route inventory" },
+  "DA30-021": {
+    artifacts: ["docs/evidence/da30/da30-021-formal-gate.json"],
+    note: "formal gate recorded; ok=false until full suite green",
+  },
+  "DA30-024": {
+    artifacts: ["src/mugen/da30/BrowserRouteFactWriter.ts", "docs/evidence/da30/da30-023-product-routes.json"],
+    note: "browser fact writer; live Play journey open",
+  },
+  "DA30-025": {
+    artifacts: ["src/mugen/da30/BrowserRouteFactWriter.ts"],
+    note: "Studio/Inspect fact writer; live journey open",
+  },
+  "DA30-027": {
+    artifacts: ["docs/evidence/da30/da30-027-frame-gap-harness.json", "src/mugen/da30/FrameGapHarness.ts"],
+    note: "frame-gap harness types; live device samples open",
+  },
+  "DA30-028": {
+    artifacts: ["src/game/render/RendererInfoBaseline.ts", "src/tests/RendererInfoBaseline.test.ts"],
+    note: "renderer resource baseline shape; live multi-route open",
+  },
+  "DA30-029": {
+    artifacts: [
+      "docs/evidence/da30/da30-029-renderer-lifecycle-checklist.json",
+      "src/mugen/da30/RendererLifecycleChecklist.ts",
+    ],
+    note: "lifecycle checklist; live browser open",
+  },
   "DA30-031": { artifacts: ["docs/adr/0060-da30-input-authority.md"], note: "input authority ADR" },
   "DA30-035": { artifacts: ["docs/adr/0061-da30-rng-streams.md"], note: "RNG streams ADR" },
   "DA30-037": { artifacts: ["docs/adr/0062-da30-match-state-serialization.md"], note: "match state schema ADR" },
-  "DA30-053": { artifacts: ["docs/adr/0063-da30-mode-state-machine.md"], note: "mode SM ADR" },
-  "DA30-064": { artifacts: ["docs/adr/0064-da30-archive-package-policy.md"], note: "archive policy ADR" },
+  "DA30-064": {
+    artifacts: ["docs/adr/0064-da30-archive-package-policy.md", "src/mugen/da30/ArchivePathPolicy.ts"],
+    note: "archive policy ADR + path probes",
+  },
   "DA30-071": { artifacts: ["docs/adr/0065-da30-studio-storage.md"], note: "studio storage ADR" },
-  "DA30-081": { artifacts: ["docs/adr/0066-da30-asset-provenance-graph.md"], note: "provenance ADR" },
+  "DA30-081": {
+    artifacts: ["docs/adr/0066-da30-asset-provenance-graph.md", "src/mugen/da30/AssetProvenanceGraph.ts"],
+    note: "provenance ADR + graph helpers",
+  },
   "DA30-092": { artifacts: ["docs/adr/0067-da30-ikemen-lanes.md"], note: "IKEMEN lanes ADR" },
   "DA30-093": { artifacts: ["docs/evidence/da30/da30-093-zss-capability-registry.json"], note: "ZSS registry design" },
   "DA30-096": { artifacts: ["docs/adr/0068-da30-module-packaging.md"], note: "module packaging ADR" },
   "DA30-099": { artifacts: ["docs/adr/0069-da30-replay-network-boundary.md"], note: "replay/network design" },
-  "DA30-101": { artifacts: ["docs/adr/0070-da30-shared-engine-boundaries.md"], note: "shared engine ADR" },
+  "DA30-101": {
+    artifacts: [
+      "docs/adr/0070-da30-shared-engine-boundaries.md",
+      "docs/evidence/da30/da30-101-boundary-inventory.json",
+      "src/mugen/da30/BoundaryImportInventory.ts",
+    ],
+    note: "shared engine ADR + boundary inventory",
+  },
 };
 
 function pad(n) {
@@ -72,7 +191,6 @@ for (let n = 1; n <= 120; n += 1) {
     evidenceClass = "gate-report";
     artifacts = p.artifacts;
     note = p.note;
-    // verify artifacts exist (dirs ok)
     const missing = artifacts.filter((a) => {
       const abs = path.join(repoRoot, ...a.split("/"));
       return !fs.existsSync(abs);
@@ -87,6 +205,15 @@ for (let n = 1; n <= 120; n += 1) {
     evidenceClass = "architecture-design";
     artifacts = PARTIAL[id].artifacts;
     note = PARTIAL[id].note;
+    const missing = artifacts.filter((a) => {
+      const abs = path.join(repoRoot, ...a.split("/"));
+      return !fs.existsSync(abs);
+    });
+    if (missing.length) {
+      status = "open";
+      evidenceClass = "unproven";
+      note = `partial missing ${missing.join(",")}`;
+    }
   }
   records.push({ id, wave, status, evidenceClass, artifacts, note, kind: n <= 10 ? "control" : "recovery" });
 }

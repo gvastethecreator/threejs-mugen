@@ -1,0 +1,18 @@
+{
+  "schema": "Da30ScannerSafetyLimits/v1",
+  "id": "DA30-086",
+  "cfg": {
+    "maxEntries": 10,
+    "maxFileBytes": 1000,
+    "maxDepth": 3
+  },
+  "negatives": [
+    { "path": "../evil.cns", "size": 1, "reason": "traversal" },
+    { "path": "/abs.cns", "size": 1, "reason": "absolute" },
+    { "path": "big.bin", "size": 9999, "reason": "file-too-large" },
+    { "path": "a/b/c/d/e.cns", "size": 1, "reason": "depth" }
+  ],
+  "positives": [{ "path": "chars/nova/nova.cns", "size": 120 }],
+  "module": "src/mugen/da30/ScannerSafetyLimits.ts",
+  "claimCeiling": "tested scanner safety only"
+}
