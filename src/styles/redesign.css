@@ -2311,3 +2311,45 @@ button[data-studio-tab][aria-current="page"] {
   }
 }
 
+/* Keep the shell stackable when the base Studio grid is more specific. */
+@media (max-width: 1160px) {
+  .app-shell,
+  .app-shell.mode-match,
+  .app-shell.mode-inspect,
+  .app-shell.mode-studio {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(42vh, 1fr) auto auto var(--console-reserved-height);
+    grid-template-areas:
+      "chrome"
+      "stage"
+      "left"
+      "right"
+      "console";
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+
+  .app-shell.mode-studio {
+    --left-rail: minmax(0, 1fr);
+    --right-rail: minmax(0, 1fr);
+  }
+
+  .app-shell > #left-pane,
+  .app-shell > #stage,
+  .app-shell > #right-pane,
+  .app-shell > #console {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .app-shell > #left-pane,
+  .app-shell > #right-pane {
+    max-height: 36vh;
+  }
+}
+
+/* The empty mount must not become a sixth layout column or row. */
+#command-palette-root {
+  display: contents;
+}

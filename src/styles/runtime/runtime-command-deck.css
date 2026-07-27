@@ -344,7 +344,12 @@
     left: 14px;
     bottom: 14px;
     width: min(430px, calc(58% - 16px));
+    max-width: min(430px, calc(58% - 16px));
     max-height: 148px;
+  }
+
+  .app-shell.mode-match .stage-status {
+    bottom: 126px;
   }
 
   .app-shell.mode-match .stage-status-card,
@@ -367,6 +372,7 @@
 
   .app-shell.mode-match .stage-status-grid,
   .app-shell.mode-inspect .stage-status-grid {
+    display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0;
     overflow: hidden;
@@ -377,6 +383,9 @@
 
   .app-shell.mode-match .stage-status-metric,
   .app-shell.mode-inspect .stage-status-metric {
+    grid-template-columns: 18px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
     min-height: 31px;
     padding: 5px 6px;
     border: 0;
@@ -385,6 +394,13 @@
     border-radius: 0;
     background: transparent;
     box-shadow: none;
+  }
+
+  .app-shell.mode-match .stage-status-icon,
+  .app-shell.mode-inspect .stage-status-icon {
+    grid-row: 1 / -1;
+    width: 16px;
+    height: 16px;
   }
 
   .app-shell.mode-match .stage-status-metric:nth-child(4n),
@@ -418,7 +434,9 @@
     --stage-toolbar-muted: color-mix(in srgb, var(--muted) 76%, var(--legacy-accent));
     --stage-toolbar-icon: color-mix(in srgb, var(--legacy-task-accent) 72%, #dce3ea);
     --stage-toolbar-select-bg: #05070a;
+    top: auto;
     right: 12px;
     bottom: 12px;
+    height: max-content;
   }
 }
