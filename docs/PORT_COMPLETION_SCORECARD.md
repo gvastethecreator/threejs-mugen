@@ -1,6 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-07-27 post-DA30-025 audit — no score movement
+## 2026-07-27 post-DA30-120 audit — no score movement
+
+Machine rows reach DA30-120. The first open consecutive written-clause gate is
+DA30-021, so the proposed human cursor remains DA30-020 pending DA31-007.
+Model-only tasks, generated records, native fixtures, and docs add no imported
+compatibility, product, visual, SDK, or release credit.
+
+Scores remain: sandbox **65**, MUGEN-lite **36**, MUGEN MVP **20**, full MUGEN
+**10-12**, IKEMEN **6-8**, Studio **25**. See the
+[audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
+
+## Historical 2026-07-27 post-DA30-025 audit — no score movement
 
 Current machine control records DA30-025. Written acceptance remains partial
 for the current formal, Play, and Studio/Inspect gates. Their narrow facts add

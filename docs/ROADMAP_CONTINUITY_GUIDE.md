@@ -1,8 +1,19 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
-## 2026-07-27 post-DA30-025 continuation checkpoint
+## 2026-07-27 post-DA30-120 continuation checkpoint
+
+Resume from HEAD `67481fbc`, Entry 615, machine record DA30-120, proposed human
+cursor DA30-020, formal/global `ee23122f`, focal T406, visual/product T342, and
+source 05b/4aa. Start DA31-002. Do not edit generated selectors by hand.
+Preserve later DA30 rows as bounded inputs while DA31-007 reviews their
+original clauses. Scores remain held.
+
+Audit: `docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md`.
+Plan: `docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md`.
+
+## Historical 2026-07-27 post-DA30-025 continuation checkpoint
 
 Resume from HEAD `c2245fe8`, Entry 613, machine watermark DA30-025, partial
 formal observation `27b88f0a`, browser observation `c47cfa4e`, focal T406,

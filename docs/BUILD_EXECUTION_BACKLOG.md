@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 615 - Post-DA30-120 evidence adoption audit
+
+Docs-only audit at HEAD `67481fbc` separates the DA30-120 machine record from
+the proposed consecutive human cursor DA30-020. DA30-021 has useful formal
+facts at `ee23122f`, but it leaves part of its original current-product gate
+open. Later browser reports have subject mismatch, Studio mobile overflow, and
+incomplete original routes. Most DA30-031…120 models run only in their test
+island and cannot prove live product, SDK, CLI, CI, second-consumer, or release
+use. Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+DA31-001 records this hold. DA31-002…040 define immutable task contracts,
+separate watermarks, computed verdicts, exact evidence promotion, current
+product gates, deterministic runtime, lawful corpus, Studio transactions,
+asset and scanner adoption, source-bound IKEMEN work, a real second consumer,
+package proof, and local release review. Reports:
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md` and
+`docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md`.
+
 ## Entry 614 - Post-DA30-025 roadmap and acceptance audit
 
 Docs-only audit at HEAD `c2245fe8` keeps scores at

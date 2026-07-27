@@ -1,6 +1,19 @@
 ﻿# Roadmap Package Milestones
 
-## Current package override — post-DA30-025 audit
+## Current package override — post-DA30-120 audit
+
+DA30-001…120 are recorded machine rows. Package milestones consume only
+adjudicated clauses; the safe consecutive human ceiling is DA30-020 pending
+DA31-002…007. Formal/global remains `ee23122f`, current broad visual/product
+proof remains open, and scores stay held.
+
+DA31-009…024 own playable and MUGEN evidence. DA31-025…032 own Studio, assets,
+and scanner adoption. DA31-033…040 own IKEMEN, a real second consumer, package,
+CLI/CI, and local release proof. See the
+[audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
+
+## Historical package override — post-DA30-025 audit
 
 DA30-001…020 contain bounded control and semantic-evidence work. Generated
 control then advances through DA30-025. Audit at `c2245fe8` keeps DA30-021,

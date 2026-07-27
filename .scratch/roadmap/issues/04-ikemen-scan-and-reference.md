@@ -7,7 +7,14 @@ Labels: ikemen-scan, docs, ready-for-agent
 
 Use Ikemen-GO as a reference source for compatibility planning while keeping near-term support to scanner/reporting unless a bounded runtime feature is explicitly gated.
 
-## 2026-07-27 post-DA30-025 scanner override
+## 2026-07-27 post-DA30-120 scanner override
+
+DA31-031/032 own one real scanner core across Studio worker and executable CLI,
+hostile corpus limits, stable receipts, and revision-bound incremental
+reanalysis. DA31-033/034 then review exact Ikemen source families and one real
+ZSS subset. Model parity and fixed source tables remain design inputs.
+
+## Historical 2026-07-27 post-DA30-025 scanner override
 
 Current gate work adds no scanner or IKEMEN execution claim. AUD27-25 requires
 browser/CLI scanner parity on a mutation corpus; AUD27-26 then adjudicates

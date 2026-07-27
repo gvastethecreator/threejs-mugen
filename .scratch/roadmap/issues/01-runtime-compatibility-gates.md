@@ -7,7 +7,14 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## 2026-07-27 post-DA30-025 runtime override
+## 2026-07-27 post-DA30-120 runtime override
+
+Preserve DA30 runtime models as inputs. Current work starts with DA31-017…024:
+live input logs, full state restore, real round replay, Helper/Projectile/throw
+causality, evidence-derived support rows, lawful corpus, parser mutations, and
+independent score review. DA30-120 is recorded; human adjudication is DA30-020.
+
+## Historical 2026-07-27 post-DA30-025 runtime override
 
 Repair DA30-021 and DA30-024 before new runtime breadth. The current Play gate
 proves load/key dispatch only; movement, contact, damage, and round reset need

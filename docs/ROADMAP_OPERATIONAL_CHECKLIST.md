@@ -1,8 +1,20 @@
 # Roadmap Operational Checklist
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
-## Current post-DA30-025 start
+## Current post-DA30-120 start
+
+Treat DA30-120 as a machine record and DA30-020 as the proposed consecutive
+human ceiling. Before product or runtime work, execute DA31-002…008: freeze
+original contracts, split watermarks, compute verdicts, separate tests from
+evidence promotion, bind exact subjects, review all 120 rows, and gate one
+clean SHA. Do not use file presence or fixed success data as acceptance.
+
+Then select the next task only from
+`docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md`. Keep every claim at its named route,
+profile, source pin, environment, failure set, and revision.
+
+## Historical post-DA30-025 start
 
 Before new implementation, adjudicate DA30-021/024/025 against their written
 clauses. A green command exit, route load, key dispatch, text match, or

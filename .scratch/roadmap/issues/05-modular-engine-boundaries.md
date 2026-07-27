@@ -7,7 +7,14 @@ Labels: docs, module-boundary, ready-for-agent
 
 Prepare the project to become a reusable browser game engine without extracting shared core too early from unstable fighting-specific behavior.
 
-## 2026-07-27 post-DA30-025 modular override
+## 2026-07-27 post-DA30-120 modular override
+
+DA31-037 adds a real non-fighting browser route. DA31-038 extracts one port
+used by both products with deletion and forbidden-import proof. DA31-039 then
+packs and installs it in clean consumers. Current DA30 models do not supply a
+live second consumer, executable CLI, SDK package, or CI workflow.
+
+## Historical 2026-07-27 post-DA30-025 modular override
 
 Accepted boundary ADRs and inventories remain design inputs. Reuse credit stays
 blocked until AUD27-27 proves one repository-owned non-fighting playable route

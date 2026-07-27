@@ -4,9 +4,22 @@ Last updated: 2026-07-27
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
-## Current control override: DA29 audit hold and DA30 recovery
+## Current control override: post-DA30-120 audit hold
 
-### 2026-07-27 post-DA30-025 audit override
+At audit HEAD `67481fbc`, machine control records
+`recordedThrough = DA30-120`. Written-clause review finds its first consecutive
+gap at DA30-021, so the safe proposed human cursor is
+`adjudicatedThrough = DA30-020` until DA31-002…007 complete. Formal/global
+`ee23122f`, focal T406, visual/product T342, source 05b/4aa, Entry 615, and HEAD
+remain separate. Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+Use the [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md). Generated selectors
+remain machine records until a code-enabled control migration lands.
+
+## Historical control override: DA29 audit hold and DA30 recovery
+
+### Historical 2026-07-27 post-DA30-025 audit override
 
 At audit HEAD `c2245fe8`, generated control records `closedThrough:
 DA30-025` and next DA30-026. Written-clause review keeps DA30-021/024/025
@@ -250,7 +263,7 @@ Do not mark runtime compatibility done from parser counts alone. Do not mark UI/
 | Horizon | Current band | Next exit criteria |
 | --- | --- | --- |
 | Private playable sandbox | 65 / 100 | Native/generated match stays stable while imported-runtime work continues; smoke evidence remains green. |
-| MUGEN-lite imported MVP | 35 / 100 practical compatibility, 20 / 100 MVP port | KFM/Common1-style fixture can run idle, walk, crouch, jump, attack, guard, get-hit, fall, and recovery with trace/report gaps visible. |
+| MUGEN-lite imported MVP | 36 / 100 practical compatibility, 20 / 100 MVP port | KFM/Common1-style fixture can run idle, walk, crouch, jump, attack, guard, get-hit, fall, and recovery with trace/report gaps visible. |
 | Broad MUGEN subset | Future 45-55+ | Multiple local character/stage packages load without hardcoded patches; unsupported controllers/triggers remain reportable instead of fatal. |
 | IKEMEN scanner-plus | Scanner/reporting lane | More Ikemen-GO source signals map into recognized/unsupported/unknown findings; scanner evidence never implies execution. |
 | IKEMEN bounded runtime | 6-8 / 100 full-port horizon | Explicit-profile root/helper RunOrder, Pause/SuperPause, team topology/eligibility/registry/state, and inert P3-P8 ownership have bounded evidence. Next exit is a versioned root-participation read model and then a separate activation contract; tag gameplay remains blocked. |

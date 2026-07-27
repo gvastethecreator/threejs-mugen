@@ -4,7 +4,20 @@ Last updated: 2026-07-27
 
 ## Latest delivery authority checkpoint
 
-### Post-DA30-025 audit override
+### Post-DA30-120 audit override
+
+Machine evidence records DA30-120. Delivery authority stops at the proposed
+human cursor DA30-020 until DA31 reconstructs original clauses, exact subjects,
+failures, and live consumers. Current HEAD `67481fbc` has no whole-HEAD formal
+or broad visual gate. Formal/global remains `ee23122f`; `qa:smoke` remains
+open; scores stay held.
+
+Delivery work follows DA31-002…040. Package, SDK, CLI, CI, Studio, score, and
+release claims remain blocked until their named gates pass. See the
+[audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
+
+### Historical post-DA30-025 audit override
 
 Current HEAD `c2245fe8` has no whole-HEAD formal gate. DA30-021 is a partial
 formal observation at `27b88f0a`; DA30-024/025 are narrow browser observations

@@ -6,7 +6,14 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
-## 2026-07-27 post-DA30-025 IKEMEN runtime override
+## 2026-07-27 post-DA30-120 IKEMEN runtime override
+
+DA31-033…036 own family-scoped source review, one real ZSS slice, live team
+topology/consumers, and independent IKEMEN adjudication. Preserve T390/T406 and
+prior source artifacts at their exact ceilings. Fixed topology and exercised
+flags do not widen runtime claims.
+
+## Historical 2026-07-27 post-DA30-025 IKEMEN runtime override
 
 Current DA30 formal/browser observations do not widen T406 or other bounded
 IKEMEN claims. Deterministic input/state/replay must land before source-family

@@ -7,7 +7,14 @@ Labels: studio, visual-qa, docs, ready-for-agent
 
 Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
 
-## 2026-07-27 post-DA30-025 Studio override
+## 2026-07-27 post-DA30-120 Studio override
+
+DA31-010/011 close the original Studio/Inspect process and mobile reflow.
+DA31-025…029 then choose storage authority and prove transactions, conflicts,
+recovery, real views, preview, and export revision fidelity. Current proof is
+single-tab and its 390-pixel mobile route has horizontal overflow.
+
+## Historical 2026-07-27 post-DA30-025 Studio override
 
 DA30-025 proves shell and mode load at `c47cfa4e`. Real project open/edit,
 preview, invalid/valid save, reload/reopen, Inspect package analysis, recovery,

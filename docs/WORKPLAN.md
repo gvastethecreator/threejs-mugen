@@ -1,6 +1,19 @@
 # Workplan
 
-## Post-DA30-025 execution authority (2026-07-27)
+## Post-DA30-120 execution authority (2026-07-27)
+
+Use DA31-002…040 from
+`docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md`. The first chain is immutable task
+contracts -> separate watermarks -> computed verdicts -> hermetic promotion ->
+exact subject revisions -> 120-row clause ledger -> current clean gate. Then
+follow product/browser, determinism/MUGEN, Studio/assets/scanner, and
+IKEMEN/shared/release phases. Machine rows reach DA30-120; proposed human
+adjudication stays DA30-020; scores remain held.
+
+Audit:
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md`.
+
+## Historical post-DA30-025 execution authority (2026-07-27)
 
 Use AUD27-01…28 from
 `docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.

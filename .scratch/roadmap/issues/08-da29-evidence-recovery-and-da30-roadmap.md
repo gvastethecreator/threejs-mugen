@@ -5,7 +5,15 @@ Labels: roadmap, evidence, control, closed-bounded
 
 ## Objective
 
-### Current authority
+### Current authority — post-DA30-120 audit
+
+Machine rows reach **DA30-120**. Proposed consecutive human adjudication stops
+at **DA30-020** pending DA31-007 because DA30-021 leaves part of its original
+gate open. Audit HEAD `67481fbc`, formal/global `ee23122f`, focal T406, broad
+visual/product T342, source 05b/4aa, and Entry 615 remain separate. Scores stay
+held. Continue with DA31-002 from `docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md`.
+
+### Historical machine-selector authority
 
 Machine watermark **DA30-120** with empty `nextQueue`. Authority:
 `docs/AUTHORITY_SELECTOR.md` and `docs/evidence/authority-selector-v1.json`.

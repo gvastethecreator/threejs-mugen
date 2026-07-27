@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Current audit queue — repair gates before DA30-026
+## Current audit queue — DA31 evidence adoption
+
+Machine rows exist through DA30-120. Human review stops its consecutive
+written-clause cursor at DA30-020 because DA30-021 is the first incomplete
+original gate. Execute DA31-002…008 first: immutable task contracts, separate
+watermarks, computed verdicts, hermetic evidence promotion, exact subject
+revisions, a 120-row ledger, and one clean current gate. Keep scores held.
+
+Then execute DA31-009…040 in dependency order across product/browser,
+determinism/MUGEN, Studio/assets/scanner, IKEMEN, the second consumer, package,
+and local release review. Authority:
+[post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
+
+## Historical audit queue — repair gates before DA30-026
 
 Machine control records DA30-025 at HEAD `c2245fe8`. The written DA30 roadmap
 still has open clauses in DA30-021, DA30-024, and DA30-025. First adjudicate

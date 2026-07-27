@@ -1,6 +1,14 @@
 # 06 - Roadmap Control And QA Ledger
 
-## 2026-07-27 post-DA30-025 acceptance override
+## 2026-07-27 post-DA30-120 acceptance override
+
+Machine rows reach DA30-120; proposed consecutive human adjudication stops at
+DA30-020. DA31-002…008 own immutable original contracts, separate recorded,
+reviewed, and adjudicated watermarks, computed clause verdicts, hermetic
+promotion, clean subjects, the 120-row ledger, and a current gate. Entry 615
+owns the docs-only hold. Scores remain held.
+
+## Historical 2026-07-27 post-DA30-025 acceptance override
 
 Machine control records DA30-025. Current audit keeps DA30-021/024/025 partial
 against written clauses and proposes separate recorded/adjudicated watermarks.
