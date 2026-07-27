@@ -1,7 +1,7 @@
 {
   "schema": "TurnsBrowserMatrixGate/v1",
   "id": "DA28-09",
-  "generatedAt": "2026-07-27T00:15:47.105Z",
+  "generatedAt": "2026-07-27T01:23:44.082Z",
   "serverMode": "started-vite",
   "status": "passed",
   "consoleErrorTotal": 0,
@@ -25,8 +25,8 @@
       "consoleErrorCount": 0,
       "consoleErrors": [],
       "screenshot": "docs/evidence/da28-09-turns-browser/turns-matrix-desktop-1440x960.png",
-      "screenshotSha256": "ab6f7164df23bfda18be9f6da57152c9ffc79163b2972259c7db8c1f02590d8b",
-      "screenshotBytes": 843622
+      "screenshotSha256": "b43d878a3a576c92fb78290fdb31a4e1266a855d9f69ebacdfc255e781680c74",
+      "screenshotBytes": 558504
     },
     {
       "viewport": {
@@ -47,8 +47,8 @@
       "consoleErrorCount": 0,
       "consoleErrors": [],
       "screenshot": "docs/evidence/da28-09-turns-browser/turns-matrix-mobile-390x844.png",
-      "screenshotSha256": "86dcbccdc5a7b3ce5417767c853496b338f6ade3ea239bb3acf363339fad2c8c",
-      "screenshotBytes": 52428
+      "screenshotSha256": "f5e7f2f1433d9f86e955eec7858e53d37f6be6f40bb80162821032e05d7441f4",
+      "screenshotBytes": 164574
     }
   ],
   "claims": {
