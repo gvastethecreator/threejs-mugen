@@ -5,13 +5,13 @@
   "wave": 17,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Create the Lua threat model and capability decision. Depends on DA29-089, DA29-126, and DA29-171.",
   "acceptance": "Review covers file/network/time/randomness, host APIs, memory/CPU, infinite loops, modules, persistence, user trust, CSP, browser worker limits, and default deny policy.",
   "risk": "Arbitrary script execution is high risk. Allows threat model only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "fb32c5dbcba02b4637bfd69d331cf5449f4aac4db456496e97ce53b36c969609"
+    "value": "c4eed64e5578c7f0cc0df205d6704b4b0eeb49c6003866b4fd26893fae2d8141"
   }
 }

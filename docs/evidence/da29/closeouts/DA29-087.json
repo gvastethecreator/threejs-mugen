@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Replace hard-coded scanner `passed` phases with executed modules. Depends on DA29-013, DA29-082…086.",
   "acceptance": "Scanner runs each phase, records time/input/output/ruleset/digest, propagates errors, supports cancellation, and cannot materialize green text without execution.",
   "risk": "Static green masks broken analyzers. Allows executed scanner facts only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,8 @@
   "claims": {
     "allowed": [
       "DA29-087 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-087; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-087; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -49,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "eeb1c348e98caf6ab105d447885b25fd1e886ac405d65fcc095d4ca4f83e91ed"
+    "value": "b76512eaedec31c5ad2b0466fa993890f9b83ae4684815fc141fc937a52895fd"
   }
 }

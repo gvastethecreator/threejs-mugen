@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Adjudicate scores from corpus v1.3. Depends on DA29-004. Systems: scorecard and denominator ledger.",
   "acceptance": "Each lane records denominator, eligible evidence, rejected evidence, movement, and reviewer rationale. Docs-only work contributes zero.",
   "risk": "Score inflation. Allows only recorded score movement; blocks parity or release claims.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8aa2240f4fdff2dadc99c9885388f384db1791700d4a982158642425156ece01"
+    "value": "16b87217120728bf3c671bdc172b13b6efac4de845a1c8ec7828b9ba7d1fce4d"
   }
 }

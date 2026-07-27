@@ -10,6 +10,9 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const {
+  assertMeasuredMatchesAcceptance,
+} = require("./lib/assert_measured_matches_acceptance.cjs");
 
 const repoRoot = path.resolve(process.cwd());
 const args = parseArgs(process.argv.slice(2));
@@ -177,14 +180,21 @@ function evaluateTask(task) {
     inputs.push(...(probe.entryPoints || []));
 
     const measured = loadMeasuredEvidence(id, { requireExecuted: true });
-    if (measured?.ok && measured.acceptanceExecuted) {
+    const checker = assertMeasuredMatchesAcceptance({
+      id,
+      kind,
+      acceptance: task.acceptance,
+      cut: task.cut,
+      measured: measured?.doc ?? null,
+    });
+    if (measured?.ok && measured.acceptanceExecuted && checker.ok) {
       status = "closed";
       evidenceClass = "implementation-probe";
       hasMeasuredAcceptance = true;
       artifacts.push(measured.path, ...(measured.anchors || []));
       inputs.push(...(measured.anchors || []));
       commands = [measured.command || `measured evidence ${id}`];
-      extraAllowed = [measured.claimCeiling || "acceptance-executed unit evidence"];
+      extraAllowed = [measured.claimCeiling || "acceptance-executed unit evidence", `checker:${checker.class}`];
       extraBlocked = ["product/runtime parity beyond written claim ceiling", "path-exists probe as closeout"];
     } else {
       status = "open";
@@ -192,20 +202,28 @@ function evaluateTask(task) {
       commands = [`implementation probe ${id} (diagnostic only)`];
       extraBlocked = [
         probe.error || "no acceptance-executed measured evidence",
+        checker.ok ? null : checker.reason,
         "path-exists / directory probes do not close [I] cuts",
-      ];
+      ].filter(Boolean);
     }
   } else if (kind === "G") {
-    // Measured G evidence must be acceptance-executed and ID-scoped (no PNG reuse theater).
+    // Measured G evidence must pass acceptance checker (no PNG reuse / circular ledger theater).
     const measured = loadMeasuredEvidence(id, { requireExecuted: true });
-    if (measured?.ok && measured.acceptanceExecuted && id !== "DA29-002") {
+    const checker = assertMeasuredMatchesAcceptance({
+      id,
+      kind,
+      acceptance: task.acceptance,
+      cut: task.cut,
+      measured: measured?.doc ?? null,
+    });
+    if (measured?.ok && measured.acceptanceExecuted && id !== "DA29-002" && checker.ok) {
       status = "closed";
       evidenceClass = measured.browser ? "browser-matrix" : "gate-report";
       hasMeasuredAcceptance = true;
       artifacts.push(measured.path, ...(measured.anchors || []));
       inputs.push(...(measured.anchors || []));
       commands = [measured.command || `measured evidence ${id}`];
-      extraAllowed = [measured.claimCeiling || "acceptance-executed gate evidence"];
+      extraAllowed = [measured.claimCeiling || "acceptance-executed gate evidence", `checker:${checker.class}`];
       extraBlocked = ["formal/global tip rewrite without measured full stack", "score movement"];
       const gateReportRel = `docs/evidence/da29/gates/${id.toLowerCase()}.json`;
       writeJson(
@@ -341,6 +359,7 @@ function loadMeasuredEvidence(id, opts = {}) {
       claimCeiling: doc.claimCeiling || null,
       anchors,
       browser: Boolean(doc.browser),
+      doc,
     };
   } catch {
     return null;

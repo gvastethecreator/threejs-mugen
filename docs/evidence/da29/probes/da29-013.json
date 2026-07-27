@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-013",
-  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "generatedAt": "2026-07-27T05:11:14.883Z",
   "ok": true,
   "entryPoints": [
     "docs/CONTROLLER_SUPPORT_REGISTRY.md",
@@ -16,6 +16,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6901f152ef1b0639a243518a99b0f9d29a0ebd84d2b7006af9969ff7b5cad24b"
+    "value": "e3cef2f2e2199aec72e66aa19e2cdbd00e7c2be070a4bae55f916f2f9c787c26"
   }
 }

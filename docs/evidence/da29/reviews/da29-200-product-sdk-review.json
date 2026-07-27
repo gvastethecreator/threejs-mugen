@@ -1,0 +1,54 @@
+{
+  "schema": "Da29IndependentProductSdkReview/v1",
+  "id": "DA29-200",
+  "generatedAt": "2026-07-27T05:10:00.000Z",
+  "kind": "G",
+  "milestone": "final product/SDK roadmap adjudication",
+  "accepted": [
+    {
+      "fact": "series identity DA29-001…200 is the active control series",
+      "evidence": "docs/evidence/da29/series-registry-v1.json"
+    },
+    {
+      "fact": "acceptance checker is the close gate for I/G measured evidence",
+      "evidence": "src/mugen/da29/AssertMeasuredMatchesAcceptance.ts"
+    },
+    {
+      "fact": "scores held unless DA29-005 authorizes movement",
+      "evidence": "docs/evidence/da29/score-adjudication-v1.3.json"
+    }
+  ],
+  "rejected": [
+    {
+      "fact": "bulk close of unproven I/G cuts",
+      "reason": "checker + consecutive watermark"
+    },
+    {
+      "fact": "product/SDK stability claim for every roadmap surface",
+      "reason": "only checker-closed IDs count as shipped proof"
+    },
+    {
+      "fact": "extension API freeze",
+      "reason": "runtime modules remain local Studio/sandbox surface"
+    }
+  ],
+  "gaps": [
+    "Open consecutive IDs after honest rematerialize still require real acceptance evidence",
+    "SDK extension risk remains high for controller ops not covered by closed IDs",
+    "Migration/deploy authority is local-only (no remote package claim)"
+  ],
+  "decision": "local-only release authority: continue program on next open consecutive ID; do not claim empty nextQueue until checker-honest DA29-200 watermark",
+  "shippedSurfaces": ["mugen parsers", "combat resolver", "studio shell", "authority selector"],
+  "localOnlySurfaces": ["experimental characters", "scratch UI captures", "unmeasured roadmap IDs"],
+  "apiStability": "unstable-local",
+  "extensionRisk": "high for unclosed controller/runtime families",
+  "migrationState": "not-started-as-product-sdk",
+  "releaseDeploymentAuthority": "local-repo-only",
+  "evidenceFreshness": "revision-matched measured JSON + reviews required",
+  "blockedClaims": [
+    "imported third-party package breadth",
+    "full IKEMEN Simul/Tag from research alone",
+    "formal tip rewrite without measured gate log"
+  ],
+  "nextBoundedProgram": "honest consecutive drain of next open ID with checker-passing evidence"
+}

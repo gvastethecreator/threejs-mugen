@@ -5,13 +5,13 @@
   "wave": 11,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Make Studio trust failures actionable. Depends on DA29-093, DA29-097, DA29-098, and DA29-100.",
   "acceptance": "Quota, permission, stale evidence, scanner failure, blocked asset, save conflict, and recovery states show cause, affected item, safe action, retry, and retained work.",
   "risk": "Generic errors hide data risk. Allows named product states only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,7 +39,8 @@
   "claims": {
     "allowed": [
       "DA29-119 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-119; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-119; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -53,6 +54,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "628e8f0318128a9b3372d7fd2ca99c4fa6a3f10f7609fa7b7a459e45be8404ab"
+    "value": "c98b457230e274f562fa17dafe49966845a04480c686b95c64b17b84ce028070"
   }
 }

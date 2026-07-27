@@ -1,7 +1,7 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-200",
-  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "generatedAt": "2026-07-27T05:11:14.883Z",
   "status": "closed",
   "evidenceClass": "gate-report",
   "measuredGate": false,
@@ -11,12 +11,12 @@
   "relatedArtifacts": [
     "docs/evidence/da29/closeouts/DA29-200.json",
     "docs/evidence/da29/measured/DA29-200.json",
+    "docs/evidence/da29/reviews/da29-200-product-sdk-review.json",
     "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/da29/closeout-status-v1.json",
     "docs/MASTER_REVIEW_ROADMAP.md"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "c22cc36d24181b254c9a21c1af68782324fdc23826f8d52400623dc76870b575"
+    "value": "07f696334b5cad33d1cdd1d4858df44aec99cb6937f5f2dd8e0c6aac6baca478"
   }
 }

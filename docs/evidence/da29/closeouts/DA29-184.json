@@ -5,13 +5,13 @@
   "wave": 18,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Add source diff, external-change, and merge workflow. Depends on DA29-090, DA29-097, DA29-098, and DA29-182.",
   "acceptance": "Base/local/external revisions show semantic and text changes, conflicts, safe choices, stale evidence, byte result, undo, and reopened integrity.",
   "risk": "Automatic merge can corrupt syntax. Allows tested merge cases only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,8 @@
   "claims": {
     "allowed": [
       "DA29-184 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-184; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-184; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -49,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f51ed4c1924d9b004b5b1e4e332133bd93dc4dc0c592a036b24276bc60c3c43"
+    "value": "1e19baea93978825d6e873b0e4aa34bcf973d4d8098991f673a311e0798f0680"
   }
 }

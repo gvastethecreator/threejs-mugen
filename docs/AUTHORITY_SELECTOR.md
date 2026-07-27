@@ -36,8 +36,8 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 DA26-01…30 · DA27-01…09 · DA28-01…30 · **DA29-001…DA29-200** (consecutive watermark)
 
-Non-consecutive closed IDs may exist in closeouts but do **not** advance `closedThrough` past the first open ID. Series complete: open count 0.
+Non-consecutive closed IDs may exist in closeouts but do **not** advance `closedThrough` past the first open ID. Checker (`assertMeasuredMatchesAcceptance`) rejects parse-only combat theater and circular ledger adjudication; series complete when open count is 0 under that rule.
 
 ## Next queue
 
-Empty. DA29 series consecutive watermark closed through **DA29-200**. Path-exists probes and shared inventory digests still do not close I/G cuts on re-materialize without acceptance-executed measured evidence.
+Empty under checker-honest rematerialize. Path-exists probes, HitDef-count-only, and authority/closeout re-reads do not close I/G cuts.

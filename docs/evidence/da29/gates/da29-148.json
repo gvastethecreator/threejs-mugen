@@ -1,7 +1,7 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-148",
-  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "generatedAt": "2026-07-27T05:11:14.883Z",
   "status": "closed",
   "evidenceClass": "gate-report",
   "measuredGate": false,
@@ -12,11 +12,17 @@
     "docs/evidence/da29/closeouts/DA29-148.json",
     "docs/evidence/da29/measured/DA29-148.json",
     "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/da29/closeout-status-v1.json"
+    "docs/evidence/da29/score-adjudication-v1.3.json",
+    "docs/evidence/da29/compatibility-corpus-v1.3.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/da29-002-gate.log",
+    "docs/evidence/source-authority-epoch-v1.json",
+    "docs/evidence/da29/score-adjudication-v1.3.json",
+    "docs/evidence/da29/compatibility-corpus-v1.3.json",
+    "docs/evidence/native-asset-provenance-v1.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "325081b61cbe8f5e0642c86c9b38c2ebe471ff36e8f4b0283060c474e9d4a827"
+    "value": "46dd59af565c2c055b67ea58bbbc213cec442d94a5a4d0a9ac443491036de7c3"
   }
 }

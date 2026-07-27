@@ -5,13 +5,13 @@
   "wave": 18,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Define install/offline cache and update recovery. Depends on DA29-123, DA29-181, and DA29-188.",
   "acceptance": "ADR/prototype covers service worker scope, immutable app assets, user projects, storage estimates, update prompt, old-version rollback, offline import/play limits, and cache purge.",
   "risk": "Stale app code can open new project data. Allows offline architecture/prototype only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2ecb2b10f1d23c6f9254a7db649d2cb9428053f433a0aa1ce35ad67452ae9436"
+    "value": "390296539c98ae0037d1f63f06196862b7bfbd08a08a685ab47602d4d607c1a6"
   }
 }

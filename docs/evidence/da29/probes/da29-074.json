@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-074",
-  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "generatedAt": "2026-07-27T05:11:14.883Z",
   "ok": true,
   "entryPoints": [
     "public/stages/rooftop-dojo/rooftop-dojo.png"
@@ -14,6 +14,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4d06afe05ba8abf4383f5fa79e4f67cd33674cf028c97b628ab02d6f4bbc8767"
+    "value": "7027029c624583e0adea38bb14e184dffaf521e96e5b4a2d602d74825dee8cab"
   }
 }

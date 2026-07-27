@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Add a headless import/analyze/build CLI over shared ports. Depends on DA29-087, DA29-136, DA29-188, and DA29-192.",
   "acceptance": "CLI has stable exit codes, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser-only globals, and parity fixtures with Studio.",
   "risk": "Headless and product paths can diverge. Allows named commands only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,8 @@
   "claims": {
     "allowed": [
       "DA29-194 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-194; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-194; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -49,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4c6f187f908f297a352176cf04fa1a2eddd531a6321292edfc2644d407339204"
+    "value": "77df3f572d72f3a973400c387277955c739e48194e681ecf5a018b3de07cd6d6"
   }
 }

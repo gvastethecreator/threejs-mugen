@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-047",
   "kind": "I",
-  "generatedAt": "2026-07-27T04:50:27.581Z",
+  "generatedAt": "2026-07-27T05:11:40.020Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-047",
@@ -23,6 +23,16 @@
       "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
     },
     {
+      "path": "src/mugen/runtime/CombatResolver.ts",
+      "bytes": 19532,
+      "sha256": "914ae6cd0c1228f2d6fd6fa2bda10de2715aa067dbf756b2fd5440827cd8be56"
+    },
+    {
+      "path": "src/mugen/runtime/ContactMemorySystem.ts",
+      "bytes": 19060,
+      "sha256": "18b4f5791c16bea55c66a433decde3e4a7ffdc9279c6d801ae8fb75ec0e72b22"
+    },
+    {
       "path": "public/characters/mira-volt/mugen/mira.cns",
       "bytes": 1345,
       "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
@@ -31,12 +41,44 @@
       "path": "public/characters/mira-volt/mugen/mira.air",
       "bytes": 2484,
       "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+    },
+    {
+      "path": "public/characters/mira-volt/mugen/mira.cmd",
+      "bytes": 428,
+      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
     }
   ],
   "functionResults": {
-    "novaHitDefs": 2,
-    "miraHitDefs": 2,
-    "cut": "DA29-047"
+    "command": "x",
+    "stateEntry": 200,
+    "collision": true,
+    "hitDefAdmission": true,
+    "hitDef": {
+      "line": 16,
+      "type": "HitDef",
+      "count": 2
+    },
+    "contact": true,
+    "damage": 42,
+    "hitpause": 7,
+    "targetState": 5000,
+    "checksum": "c69c168788d2a8b7",
+    "telemetry": {
+      "package": "nova-boxer",
+      "command": "x",
+      "stateEntry": 200,
+      "hitDefLine": 16,
+      "hitKind": "hit",
+      "damage": 42,
+      "hitpause": 7,
+      "contact": true,
+      "damageRecorded": 42
+    },
+    "package": "nova-boxer",
+    "cut": "DA29-047",
+    "secondaryPackage": "mira-volt",
+    "secondaryDamage": 42,
+    "secondaryChecksum": "884be4f5c2bf61a5"
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-047; broader product claims remain blocked"
 }

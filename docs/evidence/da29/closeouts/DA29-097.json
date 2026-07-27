@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Revalidate file-handle permissions on reopen and write. Depends on DA29-091 and DA29-094.",
   "acceptance": "Granted, prompt, denied, revoked, missing handle, moved file, read-only, and user-cancel routes produce clear product state and no silent data loss.",
   "risk": "Browser permission state changes. Allows tested browser routes only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,8 @@
   "claims": {
     "allowed": [
       "DA29-097 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-097; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-097; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -49,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "fdae6f2b55f14057905cea96aa4f7a5c94e3d90c8230466a79c20b2f1bfbe2de"
+    "value": "5cc9b7b9ec1923e882fa28987f48743aa4605f7f09e3c7f513ce0db7e6596b7f"
   }
 }

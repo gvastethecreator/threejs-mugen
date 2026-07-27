@@ -5,13 +5,13 @@
   "wave": 10,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Define generated audio provenance and safety. Depends on DA29-101 and DA29-079.",
   "acceptance": "Schema and policy cover source/permission, model/tool/version, prompt, seed, duration, sample rate, loudness, peak, trims, transforms, and output digest.",
   "risk": "Audio source rights and unsafe peaks. Allows policy only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7b2ae3c2eeb7fd9b9c1bff814eb9d59c2d3059dcd9b887774547923870f65743"
+    "value": "092f19eb3817e1e6292094959bceb350d376358afe1d42bd7e74e455059d2f6f"
   }
 }

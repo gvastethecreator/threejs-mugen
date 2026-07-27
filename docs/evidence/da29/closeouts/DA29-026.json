@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Replay the canonical input log. Depends on DA29-025 and DA29-029.",
   "acceptance": "Record/replay tests compare periodic and final state checksums, controller telemetry, winner, and frame count; mismatch reports first divergent owner.",
   "risk": "Matching end state can hide drift. Allows listed deterministic journey only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -37,7 +37,8 @@
   "claims": {
     "allowed": [
       "DA29-026 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-026; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-026; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -51,6 +52,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "fb909948825cf0afd70a75271c5dc0797953a7aa229d67a234abce5de96ea3a1"
+    "value": "e1ea738493034d7e354c0ef79a58e31c36ec665249b4f7c19cb352492cead479"
   }
 }

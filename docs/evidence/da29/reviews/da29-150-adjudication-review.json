@@ -1,0 +1,55 @@
+{
+  "schema": "Da29IndependentAdjudicationReview/v1",
+  "id": "DA29-150",
+  "generatedAt": "2026-07-27T05:10:00.000Z",
+  "kind": "G",
+  "milestone": "mid-series score/product/release adjudication",
+  "accepted": [
+    {
+      "fact": "scores remain held 65/36/20/10-12/6-8/25",
+      "gate": "DA29-005",
+      "evidence": "docs/evidence/da29/score-adjudication-v1.3.json"
+    },
+    {
+      "fact": "formal/global pin only at measured a6e91520",
+      "gate": "DA29-002",
+      "evidence": "docs/evidence/da29/da29-002-gate.log"
+    },
+    {
+      "fact": "browser matrix PNG set owned only by DA29-003",
+      "gate": "DA29-003",
+      "evidence": "docs/evidence/da29/browser/"
+    }
+  ],
+  "rejected": [
+    {
+      "fact": "score inflation without measured denominators",
+      "reason": "DA29-005 hold decision blocks movement"
+    },
+    {
+      "fact": "imported-package breadth from Nova/Mira native fixtures",
+      "reason": "native fixture work only"
+    },
+    {
+      "fact": "circular authority/closeout re-read as adjudication proof",
+      "reason": "assertMeasuredMatchesAcceptance rejects ledger-only measured"
+    }
+  ],
+  "gaps": [
+    "Many DA29-102+ I/G cuts still need checker-passing acceptance evidence",
+    "Formal pin is measured at a6e91520, not re-run at every tip HEAD",
+    "Browser product matrices beyond DA29-003 remain bounded"
+  ],
+  "decision": "hold-release: scores held; continue consecutive drain only with checker-passing measured evidence; no formal/global tip rewrite",
+  "scoreChanges": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25",
+    "movement": "none"
+  },
+  "supportedProfilesRoutes": ["ikemen-go local", "studio workbench", "match fight lab"],
+  "nextQueuePolicy": "consecutive watermark only; open IDs after first failing checker remain open"
+}

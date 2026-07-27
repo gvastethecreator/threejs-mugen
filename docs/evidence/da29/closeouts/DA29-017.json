@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
   "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
   "risk": "Automation may miss human usability. Allows runner-observed facts only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -38,7 +38,8 @@
   "claims": {
     "allowed": [
       "DA29-017 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-017; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-017; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -52,6 +53,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f1198c3a1a94f79babea090a05c3cae7b563d8f8c7c1e59df722f80a4a7cc6b4"
+    "value": "cab0a67fe0c6192b6d56450ccace955e6b5fba9de9b3ae16e0cd6ee045691732"
   }
 }

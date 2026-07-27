@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-041",
   "kind": "I",
-  "generatedAt": "2026-07-27T04:50:27.489Z",
+  "generatedAt": "2026-07-27T05:11:39.831Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-041",
@@ -21,15 +21,45 @@
       "path": "public/characters/nova-boxer/mugen/nova.cmd",
       "bytes": 428,
       "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+    },
+    {
+      "path": "src/mugen/runtime/CombatResolver.ts",
+      "bytes": 19532,
+      "sha256": "914ae6cd0c1228f2d6fd6fa2bda10de2715aa067dbf756b2fd5440827cd8be56"
+    },
+    {
+      "path": "src/mugen/runtime/ContactMemorySystem.ts",
+      "bytes": 19060,
+      "sha256": "18b4f5791c16bea55c66a433decde3e4a7ffdc9279c6d801ae8fb75ec0e72b22"
     }
   ],
   "functionResults": {
-    "hitDefCount": 2,
-    "states": 10,
-    "sampleHitDefLines": [
-      16,
-      42
-    ]
+    "command": "x",
+    "stateEntry": 200,
+    "collision": true,
+    "hitDefAdmission": true,
+    "hitDef": {
+      "line": 16,
+      "type": "HitDef",
+      "count": 2
+    },
+    "contact": true,
+    "damage": 42,
+    "hitpause": 7,
+    "targetState": 5000,
+    "checksum": "c69c168788d2a8b7",
+    "telemetry": {
+      "package": "nova-boxer",
+      "command": "x",
+      "stateEntry": 200,
+      "hitDefLine": 16,
+      "hitKind": "hit",
+      "damage": 42,
+      "hitpause": 7,
+      "contact": true,
+      "damageRecorded": 42
+    },
+    "package": "nova-boxer"
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-041; broader product claims remain blocked"
 }

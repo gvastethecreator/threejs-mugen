@@ -5,13 +5,13 @@
   "wave": 14,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Add reproducible CI for core checks. Depends on DA29-141.",
   "acceptance": "Pinned runtime installs lockfile, caches safely, runs typecheck/unit/build/boundaries/control audit, uploads facts, and fails on warnings chosen as fatal.",
   "risk": "Local-only green. Allows CI execution on named environment only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -33,7 +33,8 @@
   "claims": {
     "allowed": [
       "DA29-142 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-142; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-142; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -47,6 +48,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6383749bb8149c5d1851b31b3496ffbf914c4b4d5a9235cb42463cabba343469"
+    "value": "440073af703ccbfc8dddd3d369b34afb8831990b0bb9c2a73904d468f74bceb8"
   }
 }

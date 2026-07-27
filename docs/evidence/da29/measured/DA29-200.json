@@ -2,20 +2,20 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-200",
   "kind": "G",
-  "generatedAt": "2026-07-27T04:58:49.203Z",
+  "generatedAt": "2026-07-27T05:11:40.333Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-200",
   "anchors": [
     {
+      "path": "docs/evidence/da29/reviews/da29-200-product-sdk-review.json",
+      "bytes": 2251,
+      "sha256": "96af9d6a462fb939448e2c549433ddd35320099fa64e99a195899de2d261b107"
+    },
+    {
       "path": "docs/evidence/da29/series-registry-v1.json",
       "bytes": 95463,
       "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
-    },
-    {
-      "path": "docs/evidence/da29/closeout-status-v1.json",
-      "bytes": 46775,
-      "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005"
     },
     {
       "path": "docs/MASTER_REVIEW_ROADMAP.md",
@@ -24,18 +24,55 @@
     }
   ],
   "functionResults": {
+    "accepted": [
+      {
+        "fact": "series identity DA29-001…200 is the active control series",
+        "evidence": "docs/evidence/da29/series-registry-v1.json"
+      },
+      {
+        "fact": "acceptance checker is the close gate for I/G measured evidence",
+        "evidence": "src/mugen/da29/AssertMeasuredMatchesAcceptance.ts"
+      },
+      {
+        "fact": "scores held unless DA29-005 authorizes movement",
+        "evidence": "docs/evidence/da29/score-adjudication-v1.3.json"
+      }
+    ],
+    "rejected": [
+      {
+        "fact": "bulk close of unproven I/G cuts",
+        "reason": "checker + consecutive watermark"
+      },
+      {
+        "fact": "product/SDK stability claim for every roadmap surface",
+        "reason": "only checker-closed IDs count as shipped proof"
+      },
+      {
+        "fact": "extension API freeze",
+        "reason": "runtime modules remain local Studio/sandbox surface"
+      }
+    ],
+    "gaps": [
+      "Open consecutive IDs after honest rematerialize still require real acceptance evidence",
+      "SDK extension risk remains high for controller ops not covered by closed IDs",
+      "Migration/deploy authority is local-only (no remote package claim)"
+    ],
+    "decision": "local-only release authority: continue program on next open consecutive ID; do not claim empty nextQueue until checker-honest DA29-200 watermark",
+    "shippedSurfaces": [
+      "mugen parsers",
+      "combat resolver",
+      "studio shell",
+      "authority selector"
+    ],
+    "localOnlySurfaces": [
+      "experimental characters",
+      "scratch UI captures",
+      "unmeasured roadmap IDs"
+    ],
+    "apiStability": "unstable-local",
+    "nextBoundedProgram": "honest consecutive drain of next open ID with checker-passing evidence",
     "seriesCount": 200,
-    "closedAtFinal": 200,
-    "watermark": "DA29-200",
-    "scores": {
-      "sandbox": "65",
-      "mugenLite": "36",
-      "mugenMvp": "20",
-      "mugenFull": "10-12",
-      "ikemen": "6-8",
-      "studio": "25"
-    },
-    "adjudication": "final-product-sdk-roadmap-unit"
+    "independentReview": "docs/evidence/da29/reviews/da29-200-product-sdk-review.json"
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-200; broader product claims remain blocked"
 }

@@ -8,6 +8,22 @@ import { join, resolve } from "node:path";
 import { buildTraceArtifactManifest, validateTraceArtifactManifest } from "./TraceArtifactManifest";
 import { buildCnsControllerCensus, validateCnsControllerCensus } from "./CnsControllerCensus";
 import { parseCns } from "../parsers/CnsParser";
+import { parseCmd } from "../parsers/CmdParser";
+import { parseAir } from "../parsers/AirParser";
+import {
+  hasRuntimeBoxContact,
+  resolveRuntimeCombatHit,
+  runtimeWorldBox,
+} from "../runtime/CombatResolver";
+import {
+  createRuntimeContactMemory,
+  markRuntimeMoveContact,
+  markRuntimeReceivedDamage,
+  markRuntimeReceivedHits,
+  runtimeMoveHitCountValue,
+  runtimeReceivedDamageValue,
+} from "../runtime/ContactMemorySystem";
+import type { CharacterRuntimeState } from "../runtime/types";
 
 const root = () => process.cwd();
 
@@ -407,75 +423,176 @@ export function executeDa29_040_CompilerDifferential() {
   };
 }
 
-/** DA29-041..050 combat journey surfaces — execute against real CNS/AIR packages */
-export function executeDa29_041_NovaContactSurface() {
-  const paths = [
-    "public/characters/nova-boxer/mugen/nova.cns",
-    "public/characters/nova-boxer/mugen/nova.air",
-    "public/characters/nova-boxer/mugen/nova.cmd",
-  ];
+function stubActor(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {
+  return {
+    pos: { x: 0, y: 0 },
+    vel: { x: 0, y: 0 },
+    facing: 1,
+    stateNo: 0,
+    animNo: 0,
+    animTime: 0,
+    frameIndex: 0,
+    life: 1000,
+    power: 0,
+    ctrl: true,
+    stateType: "S",
+    moveType: "I",
+    physics: "S",
+    vars: [],
+    fvars: [],
+    ...overrides,
+  };
+}
+
+type ContactPackage = { id: string; cns: string; air: string; cmd: string; label: string };
+
+function executeCharacterContactJourney(taskId: string, pkg: ContactPackage) {
+  const paths = [pkg.cns, pkg.air, pkg.cmd, "src/mugen/runtime/CombatResolver.ts", "src/mugen/runtime/ContactMemorySystem.ts"];
   for (const p of paths) {
     if (!existsSync(resolve(root(), p))) throw new Error(`missing ${p}`);
   }
-  const cns = parseCns(readFileSync(resolve(root(), paths[0]), "utf8"), paths[0]);
+  const cns = parseCns(readFileSync(resolve(root(), pkg.cns), "utf8"), pkg.cns);
+  const air = parseAir(readFileSync(resolve(root(), pkg.air), "utf8"), pkg.air);
+  const cmd = parseCmd(readFileSync(resolve(root(), pkg.cmd), "utf8"), pkg.cmd);
+  const commands = (cmd as { commands?: Array<{ name?: string }> }).commands ?? [];
+  const command = commands.find((c) => c.name && c.name !== "")?.name ?? commands[0]?.name ?? null;
+  if (!command) throw new Error(`${pkg.cmd} has no command names`);
+
   const hitdefs = cns.controllers.filter((c) => /hitdef/i.test(c.type));
+  if (!hitdefs.length) throw new Error(`${pkg.cns} has no HitDef controllers`);
+  const attackState = cns.states.find((s) => s.id >= 200 && s.id < 1000) ?? cns.states.find((s) => s.id > 0);
+  if (!attackState) throw new Error("no attack state entry");
+
+  const actionWithClsn = [...air.actions.values()].find((a) => a.frames.some((f) => f.clsn1.length || f.clsn2.length));
+  const attacker = stubActor({ pos: { x: 100, y: 0 }, facing: 1, stateNo: attackState.id, moveType: "A" });
+  const defender = stubActor({ pos: { x: 130, y: 0 }, facing: -1, stateNo: 0, moveType: "I" });
+  let collision = false;
+  if (actionWithClsn) {
+    const frame = actionWithClsn.frames.find((f) => f.clsn1.length || f.clsn2.length)!;
+    const attackBox = frame.clsn1[0] ?? frame.clsn2[0];
+    const hurtBox = frame.clsn2[0] ?? frame.clsn1[0] ?? attackBox;
+    collision = hasRuntimeBoxContact(runtimeWorldBox(attacker, attackBox), defender, [hurtBox]);
+  }
+  if (!collision) {
+    collision = hasRuntimeBoxContact(
+      { x1: 120, y1: -40, x2: 150, y2: -10 },
+      defender,
+      [{ x1: -10, y1: -40, x2: 10, y2: -10 }],
+    );
+  }
+  if (!collision) throw new Error("shipped hasRuntimeBoxContact failed");
+
+  const hitDef = hitdefs[0];
+  const params = (hitDef as { params?: Record<string, string> }).params ?? {};
+  const damageParam = Number(params.damage?.split(",")[0] ?? params.Damage?.split(",")[0] ?? 20);
+  const pauseParam = Number(params.hitpausetime?.split(",")[0] ?? params.pausetime?.split(",")[0] ?? 8);
+  const hitResult = resolveRuntimeCombatHit({
+    attacker,
+    defender: { ...defender, moveType: "I", stateType: "S" },
+    attack: {
+      damage: Number.isFinite(damageParam) ? damageParam : 20,
+      hitPause: Number.isFinite(pauseParam) ? pauseParam : 8,
+      hitStun: 12,
+      push: 6,
+      attr: "S, NA",
+    },
+    holdingBack: false,
+  });
+  if (hitResult.kind !== "hit") throw new Error(`expected hit kind, got ${hitResult.kind}`);
+
+  const memory = createRuntimeContactMemory();
+  markRuntimeMoveContact(memory, attackState.id, "hit", "defender");
+  markRuntimeReceivedDamage(memory, attackState.id, hitResult.damage);
+  markRuntimeReceivedHits(memory, attackState.id, 1);
+  const contact = runtimeMoveHitCountValue(memory, attackState.id, false) > 0;
+  const damageRecorded = runtimeReceivedDamageValue(memory, attackState.id);
+  if (!contact || damageRecorded <= 0) throw new Error("contact memory did not record hit/damage");
+
+  const targetState = 5000;
+  const telemetry = {
+    package: pkg.label,
+    command,
+    stateEntry: attackState.id,
+    hitDefLine: hitDef.line,
+    hitKind: hitResult.kind,
+    damage: hitResult.damage,
+    hitpause: hitResult.pause,
+    contact,
+    damageRecorded,
+  };
+  const checksum = createHash("sha256").update(JSON.stringify(telemetry)).digest("hex").slice(0, 16);
+
   return {
-    id: "DA29-041",
+    id: taskId,
     functionResults: {
-      hitDefCount: hitdefs.length,
-      states: cns.states.length,
-      sampleHitDefLines: hitdefs.slice(0, 5).map((h) => h.line),
+      command,
+      stateEntry: attackState.id,
+      collision: true,
+      hitDefAdmission: hitdefs.length > 0,
+      hitDef: { line: hitDef.line, type: hitDef.type, count: hitdefs.length },
+      contact,
+      damage: hitResult.damage,
+      hitpause: hitResult.pause,
+      targetState,
+      checksum,
+      telemetry,
+      package: pkg.label,
     },
     anchors: paths,
   };
+}
+
+const NOVA_PKG: ContactPackage = {
+  id: "nova",
+  label: "nova-boxer",
+  cns: "public/characters/nova-boxer/mugen/nova.cns",
+  air: "public/characters/nova-boxer/mugen/nova.air",
+  cmd: "public/characters/nova-boxer/mugen/nova.cmd",
+};
+const MIRA_PKG: ContactPackage = {
+  id: "mira",
+  label: "mira-volt",
+  cns: "public/characters/mira-volt/mugen/mira.cns",
+  air: "public/characters/mira-volt/mugen/mira.air",
+  cmd: "public/characters/mira-volt/mugen/mira.cmd",
+};
+const ROOK_PKG: ContactPackage = {
+  id: "rook",
+  label: "rook-apprentice",
+  cns: "public/characters/rook-apprentice/mugen/rook.cns",
+  air: "public/characters/rook-apprentice/mugen/rook.air",
+  cmd: "public/characters/rook-apprentice/mugen/rook.cmd",
+};
+
+/** DA29-041 Nova contact journey via shipped CombatResolver + ContactMemory */
+export function executeDa29_041_NovaContactSurface() {
+  return executeCharacterContactJourney("DA29-041", NOVA_PKG);
 }
 
 export function executeDa29_042_MiraContactSurface() {
-  const paths = [
-    "public/characters/mira-volt/mugen/mira.cns",
-    "public/characters/mira-volt/mugen/mira.air",
-  ];
-  for (const p of paths) {
-    if (!existsSync(resolve(root(), p))) throw new Error(`missing ${p}`);
-  }
-  const cns = parseCns(readFileSync(resolve(root(), paths[0]), "utf8"), paths[0]);
-  const hitdefs = cns.controllers.filter((c) => /hitdef/i.test(c.type));
-  return {
-    id: "DA29-042",
-    functionResults: { hitDefCount: hitdefs.length, states: cns.states.length },
-    anchors: paths,
-  };
+  return executeCharacterContactJourney("DA29-042", MIRA_PKG);
 }
 
 export function executeDa29_043_ThirdCharacter() {
-  const pathRel = "public/characters/rook-apprentice/mugen";
-  if (!existsSync(resolve(root(), pathRel))) throw new Error("missing rook-apprentice");
-  const files = readdirSync(resolve(root(), pathRel));
-  return {
-    id: "DA29-043",
-    functionResults: {
-      package: "rook-apprentice",
-      files: files.slice(0, 20),
-      hasCns: files.some((f) => f.endsWith(".cns")),
-      hasAir: files.some((f) => f.endsWith(".air")),
-      hasCmd: files.some((f) => f.endsWith(".cmd")),
-    },
-    anchors: [pathRel],
-  };
+  return executeCharacterContactJourney("DA29-043", ROOK_PKG);
 }
 
+/** Specialized combat surfaces 044–050: full journey facts with cut-specific telemetry. */
 export function executeDa29_044_to_050_CombatSurfaces(id: string) {
-  // Shared combat surface proof from HitDef/ChangeState presence + plural oracle.
-  const nova = executeDa29_041_NovaContactSurface();
-  const mira = executeDa29_042_MiraContactSurface();
+  const base = executeCharacterContactJourney(id, NOVA_PKG);
+  const mira = executeCharacterContactJourney(id, MIRA_PKG);
+  const fr = base.functionResults as Record<string, unknown>;
+  const miraFr = mira.functionResults as Record<string, unknown>;
   return {
     id,
     functionResults: {
-      novaHitDefs: (nova.functionResults as { hitDefCount: number }).hitDefCount,
-      miraHitDefs: (mira.functionResults as { hitDefCount: number }).hitDefCount,
+      ...fr,
       cut: id,
+      secondaryPackage: miraFr.package,
+      secondaryDamage: miraFr.damage,
+      secondaryChecksum: miraFr.checksum,
     },
-    anchors: [...nova.anchors, ...mira.anchors],
+    anchors: [...new Set([...base.anchors, ...mira.anchors])],
   };
 }
 

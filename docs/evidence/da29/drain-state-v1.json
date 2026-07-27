@@ -1,7 +1,7 @@
 {
   "schema": "Da29DrainState/v2",
-  "generatedAt": "2026-07-27T04:58:22.170Z",
-  "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+  "generatedAt": "2026-07-27T05:11:14.883Z",
+  "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
   "measuredGateSha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
   "measuredGateOk": true,
   "closedThrough": "DA29-200",
@@ -214,6 +214,6 @@
   "openIdsTruncated": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "51caa001a16c0df33c3b2ace09a31b1ed68fbf73981e1fdd9e46573a1f4cf943"
+    "value": "06ac1cc2c971292d161236d49933c7d562bad73ef92a31d9cdca93eee6243cd6"
   }
 }

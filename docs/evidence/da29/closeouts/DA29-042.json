@@ -5,13 +5,13 @@
   "wave": 4,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Add a reciprocal Mira contact/guard journey. Depends on DA29-041.",
   "acceptance": "Distinct input path proves Mira attack plus Nova guard or hit, with authored frames, damage/guard values, failure route, and browser correlation.",
   "risk": "Shared CNS/AIR limits syntax breadth. Allows reciprocal package route only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -20,7 +20,10 @@
     "src/mugen",
     "src/game",
     "public/characters/mira-volt/mugen/mira.cns",
-    "public/characters/mira-volt/mugen/mira.air"
+    "public/characters/mira-volt/mugen/mira.air",
+    "public/characters/mira-volt/mugen/mira.cmd",
+    "src/mugen/runtime/CombatResolver.ts",
+    "src/mugen/runtime/ContactMemorySystem.ts"
   ],
   "commands": [
     "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-042"
@@ -32,12 +35,16 @@
     "docs/evidence/da29/probes/da29-042.json",
     "docs/evidence/da29/measured/DA29-042.json",
     "public/characters/mira-volt/mugen/mira.cns",
-    "public/characters/mira-volt/mugen/mira.air"
+    "public/characters/mira-volt/mugen/mira.air",
+    "public/characters/mira-volt/mugen/mira.cmd",
+    "src/mugen/runtime/CombatResolver.ts",
+    "src/mugen/runtime/ContactMemorySystem.ts"
   ],
   "claims": {
     "allowed": [
       "DA29-042 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-042; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-042; broader product claims remain blocked",
+      "checker:combat-journey"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -51,6 +58,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f33c3f753aee9b445f010b2a5260253ffc1d1f6c9f2e903c1e53a5ca3dce09d"
+    "value": "e072c5f36158110a4ac9f39d7b227af480048d4510e2f545e8f3d464d3af1bdc"
   }
 }

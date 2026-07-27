@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Run a local rollback feasibility spike. Depends on DA29-026, DA29-027, and DA29-029.",
   "acceptance": "One offline rewind/resim route measures snapshot size, restore time, divergence, unsupported owners, and memory cost.",
   "risk": "A spike can be mistaken for netplay. Allows feasibility data only; blocks networking and rollback-readiness claims.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8710e304e16fea1f41a63b73457ae337c19d40530b1b6e06492125f9a942ad8e"
+    "value": "39f680f9e9b62233bd9ca9390a1319365406abe88c0962a6173add3f20feb9c5"
   }
 }

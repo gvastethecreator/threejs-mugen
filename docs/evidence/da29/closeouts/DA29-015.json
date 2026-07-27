@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Define occurrence, fixture, branch, and trigger coverage denominators. Depends on DA29-014.",
   "acceptance": "Coverage report separates unique names, authored occurrences, compiled ops, live executions, failure routes, and source families; each percentage names its denominator.",
   "risk": "One easy fixture may dominate counts. Allows named coverage metrics only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,8 @@
   "claims": {
     "allowed": [
       "DA29-015 closed as gate-report",
-      "acceptance-executed unit evidence for DA29-015; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-015; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -49,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0fedcd955dd61ed6fc23cff2415d03d7ea0976950b67678f5e3c616f00524ea9"
+    "value": "7f4c5745e1cbccec34d989bf433145cc554ac434470a02c97956ca7cf12aa545"
   }
 }

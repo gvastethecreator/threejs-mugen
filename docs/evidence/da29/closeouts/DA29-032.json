@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Build a pinned Elecbyte trigger and redirection census. Depends on DA29-016.",
   "acceptance": "Trigger types, return/coercion rules, redirections, timing sensitivity, and source locations are catalogued; Ikemen-only rows stay separate.",
   "risk": "Name matching can hide semantic gaps. Allows source census only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "08dd1e79bbeb662d989591ec9aa9d08f42c929e96bb54040d9788672f8955584"
+    "value": "9d4c42141de020a123e2a4ce92f4be46814f16ea138565b1a6a74d55034e10c2"
   }
 }

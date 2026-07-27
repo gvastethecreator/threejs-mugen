@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Generate API and format support references. Depends on DA29-034, DA29-035, DA29-090, DA29-168, and DA29-192.",
   "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
   "risk": "Generated docs can look like full support. Allows documented registry state only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -34,7 +34,8 @@
   "claims": {
     "allowed": [
       "DA29-196 closed as gate-report",
-      "acceptance-executed unit evidence for DA29-196; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-196; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -48,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3447684d854ea40c564ec9b596239b9b2f95e58d0ea507006f8e5acf8022c3c3"
+    "value": "3f7b2e08f63c6846ec124ac4a3d7cb0c18996bdf8de02fc61858422aa463e97a"
   }
 }

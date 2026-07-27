@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Add a bounded Simul spawn/input route. Depends on DA29-061, DA29-021, and DA29-043.",
   "acceptance": "Two-versus-two route proves authored positions, facing, input ownership, collision participation, camera framing, and reset.",
   "risk": "Four actors stress geometry. Allows one Simul route only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -37,7 +37,8 @@
   "claims": {
     "allowed": [
       "DA29-062 closed as implementation-probe",
-      "acceptance-executed unit evidence for DA29-062; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-062; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -51,6 +52,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ea80daf385876da36472a8a5424644a166dd47b20058db7d202cfa27c6c32760"
+    "value": "dda121f9769fee4305a21af795ce1b7377a3ccb205ab4da14952d05b9d42136c"
   }
 }

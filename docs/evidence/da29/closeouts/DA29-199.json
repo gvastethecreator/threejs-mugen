@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Define telemetry, crash evidence, and privacy policy. Depends on DA29-008, DA29-144, DA29-190, and DA29-198.",
   "acceptance": "Decision covers opt-in, data minimization, local logs, redaction, retention, user export/delete, crash envelope, performance sampling, consent, and production authority.",
   "risk": "Diagnostics can expose project/user data. Allows policy only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0c5476a0b2ad4898524af694a569ebc2aa30911af292fb0129092d3af2197d22"
+    "value": "fd675e34b6d9e207b8f031045f4ab01ed2f8a3ba10a861f0a2d971c961c8482f"
   }
 }

@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-150",
   "kind": "G",
-  "generatedAt": "2026-07-27T04:58:48.891Z",
+  "generatedAt": "2026-07-27T05:11:39.979Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-150",
   "anchors": [
     {
-      "path": "docs/evidence/authority-selector-v1.json",
-      "bytes": 3388,
-      "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3"
+      "path": "docs/evidence/da29/reviews/da29-150-adjudication-review.json",
+      "bytes": 1885,
+      "sha256": "2b1d93edcc8845bae0a609b9577e930299c5f915ebfc7389a6efeced9a541a51"
     },
     {
       "path": "docs/evidence/da29/score-adjudication-v1.3.json",
@@ -18,23 +18,60 @@
       "sha256": "d2ef49ecbcd0237c3599096dcbaed743faef69aaa70e7efa86871a1e1d898be9"
     },
     {
-      "path": "docs/evidence/da29/closeout-status-v1.json",
-      "bytes": 46775,
-      "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005"
+      "path": "docs/MASTER_REVIEW_ROADMAP.md",
+      "bytes": 75875,
+      "sha256": "8ddc3bc3593d5151d26a0146bb0314df3a6938c8a592828c87e8190d60145268"
     }
   ],
   "functionResults": {
-    "scores": {
+    "accepted": [
+      {
+        "fact": "scores remain held 65/36/20/10-12/6-8/25",
+        "gate": "DA29-005",
+        "evidence": "docs/evidence/da29/score-adjudication-v1.3.json"
+      },
+      {
+        "fact": "formal/global pin only at measured a6e91520",
+        "gate": "DA29-002",
+        "evidence": "docs/evidence/da29/da29-002-gate.log"
+      },
+      {
+        "fact": "browser matrix PNG set owned only by DA29-003",
+        "gate": "DA29-003",
+        "evidence": "docs/evidence/da29/browser/"
+      }
+    ],
+    "rejected": [
+      {
+        "fact": "score inflation without measured denominators",
+        "reason": "DA29-005 hold decision blocks movement"
+      },
+      {
+        "fact": "imported-package breadth from Nova/Mira native fixtures",
+        "reason": "native fixture work only"
+      },
+      {
+        "fact": "circular authority/closeout re-read as adjudication proof",
+        "reason": "assertMeasuredMatchesAcceptance rejects ledger-only measured"
+      }
+    ],
+    "gaps": [
+      "Many DA29-102+ I/G cuts still need checker-passing acceptance evidence",
+      "Formal pin is measured at a6e91520, not re-run at every tip HEAD",
+      "Browser product matrices beyond DA29-003 remain bounded"
+    ],
+    "decision": "hold-release: scores held; continue consecutive drain only with checker-passing measured evidence; no formal/global tip rewrite",
+    "scoreChanges": {
       "sandbox": "65",
       "mugenLite": "36",
       "mugenMvp": "20",
       "mugenFull": "10-12",
       "ikemen": "6-8",
-      "studio": "25"
+      "studio": "25",
+      "movement": "none"
     },
-    "held": true,
-    "closedThroughAtAdjudication": "DA29-200",
-    "closedCount": 200
+    "scoreHoldVerified": true,
+    "independentReview": "docs/evidence/da29/reviews/da29-150-adjudication-review.json"
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-150; broader product claims remain blocked"
 }

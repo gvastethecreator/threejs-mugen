@@ -7,6 +7,7 @@ import {
   mayClose,
   type Da29CloseoutRecord,
 } from "../mugen/da29/Da29SeriesLedger";
+import { assertMeasuredMatchesAcceptance } from "../mugen/da29/AssertMeasuredMatchesAcceptance";
 import { runDa29ImplementationProbe } from "../mugen/da29/Da29ImplementationProbes";
 
 const root = process.cwd();
@@ -81,18 +82,32 @@ describe("DA29 series closeouts (honest)", () => {
           }),
         ).toBe(true);
 
-        if (rec.kind === "I") {
-          expect(rec.hasMeasuredAcceptance).toBe(true);
+        if (rec.kind === "I" || (rec.kind === "G" && rec.hasMeasuredAcceptance)) {
+          if (rec.kind === "I") expect(rec.hasMeasuredAcceptance).toBe(true);
           const measuredPath = `docs/evidence/da29/measured/${rec.id}.json`;
           expect(existsSync(resolve(root, measuredPath))).toBe(true);
           const measured = readJson<{
+            id?: string;
             ok: boolean;
             acceptanceExecuted?: boolean;
+            liveRenderer?: boolean;
             functionResults?: Record<string, unknown>;
+            anchors?: Array<string | { path?: string }>;
           }>(measuredPath);
           expect(measured.ok).toBe(true);
-          expect(measured.acceptanceExecuted).toBe(true);
-          expect(measured.functionResults && Object.keys(measured.functionResults).length).toBeGreaterThan(0);
+          expect(measured.acceptanceExecuted || measured.liveRenderer).toBeTruthy();
+          const registryTask = readJson<{
+            tasks: Array<{ id: string; kind: string; acceptance: string; cut: string }>;
+          }>("docs/evidence/da29/series-registry-v1.json").tasks.find((t) => t.id === rec.id);
+          expect(registryTask).toBeTruthy();
+          const check = assertMeasuredMatchesAcceptance({
+            id: rec.id,
+            kind: rec.kind as "I" | "G",
+            acceptance: registryTask!.acceptance,
+            cut: registryTask!.cut,
+            measured,
+          });
+          expect(check.ok, `${rec.id}: ${check.reason}`).toBe(true);
         }
 
         if (rec.kind === "G" && rec.id === "DA29-002") {

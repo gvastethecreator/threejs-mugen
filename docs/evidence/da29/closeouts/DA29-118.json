@@ -5,13 +5,13 @@
   "wave": 11,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Define screen-reader semantics for live combat and diagnostics. Depends on DA29-111 and DA29-117.",
   "acceptance": "ADR separates high-rate visual state from concise announcements, names pause/verbosity controls, and prototypes round/KO/error output without flooding.",
   "risk": "Live regions can overwhelm users. Allows semantics design only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "643581f16e7dda679496f1fb39416e8f1975edd5c312c8ffa0738a1b7b65a26d"
+    "value": "ca1a5ffc82d494138c413ea3ba58cd6ca55d0d964062ce1db989a2e5a6ba1687"
   }
 }

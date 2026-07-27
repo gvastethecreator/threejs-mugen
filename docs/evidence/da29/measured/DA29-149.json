@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-149",
   "kind": "I",
-  "generatedAt": "2026-07-27T04:58:48.878Z",
+  "generatedAt": "2026-07-27T05:11:39.971Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-149",
   "anchors": [
     {
       "path": "docs/AUTHORITY_SELECTOR.md",
-      "bytes": 2000,
-      "sha256": "161808a6650fd63d369fec48d35f0e6d7b4bac85a1d830f1c41c0810ff1387cf"
+      "bytes": 2133,
+      "sha256": "35b4a7faf99e1ffab7ff4adda3ff2e6d4807ee4fc3bb7ec1a02d79b5d810bf0a"
     },
     {
       "path": "docs/MASTER_REVIEW_ROADMAP.md",
@@ -18,28 +18,51 @@
       "sha256": "8ddc3bc3593d5151d26a0146bb0314df3a6938c8a592828c87e8190d60145268"
     },
     {
-      "path": "docs/evidence/authority-selector-v1.json",
-      "bytes": 3388,
-      "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3"
+      "path": "docs/evidence/da29/series-registry-v1.json",
+      "bytes": 95463,
+      "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
+    },
+    {
+      "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+      "bytes": 344730,
+      "sha256": "ef36716587389941d9e182e6347697944b00fa289b0222248d1272e1e8561f32"
     }
   ],
   "functionResults": {
     "docs": [
       {
         "path": "docs/AUTHORITY_SELECTOR.md",
-        "bytes": 2000,
-        "sha256": "161808a6650f"
+        "bytes": 2133,
+        "sha256": "35b4a7faf99e1ffab7ff4adda3ff2e6d4807ee4fc3bb7ec1a02d79b5d810bf0a",
+        "role": "current-selector-doc"
       },
       {
         "path": "docs/MASTER_REVIEW_ROADMAP.md",
         "bytes": 75875,
-        "sha256": "8ddc3bc3593d"
+        "sha256": "8ddc3bc3593d5151d26a0146bb0314df3a6938c8a592828c87e8190d60145268",
+        "role": "roadmap"
       },
       {
-        "path": "docs/evidence/authority-selector-v1.json",
-        "bytes": 3388,
-        "sha256": "467e010e742e"
+        "path": "docs/evidence/da29/series-registry-v1.json",
+        "bytes": 95463,
+        "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0",
+        "role": "registry"
+      },
+      {
+        "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+        "bytes": 344730,
+        "sha256": "ef36716587389941d9e182e6347697944b00fa289b0222248d1272e1e8561f32",
+        "role": "roadmap"
       }
+    ],
+    "historyNoteCount": 61,
+    "sizeOk": true,
+    "appendOnlyHistory": true,
+    "searchKeys": [
+      "docs/AUTHORITY_SELECTOR.md",
+      "docs/MASTER_REVIEW_ROADMAP.md",
+      "docs/evidence/da29/series-registry-v1.json",
+      "docs/CONTROLLER_SUPPORT_REGISTRY.md"
     ]
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-149; broader product claims remain blocked"

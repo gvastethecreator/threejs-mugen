@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:58:22.170Z",
+  "closedAt": "2026-07-27T05:11:14.883Z",
   "cut": "Add a compiler differential artifact over the lawful corpus. Depends on DA29-033, DA29-034, and DA29-035.",
   "acceptance": "For each fixture, artifact lists parsed blocks, compiled ops, dropped/unknown fields, diagnostics, canonical digest, and revision; changes require review.",
   "risk": "Matching compiler output does not prove runtime. Allows compiler-delta claims only.",
   "revision": {
-    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
-    "headShort": "d02e7db19590",
+    "head": "0b9180e6831fac67531fc5d98da5cc6a1736b5f3",
+    "headShort": "0b9180e6831f",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,8 @@
   "claims": {
     "allowed": [
       "DA29-040 closed as gate-report",
-      "acceptance-executed unit evidence for DA29-040; broader product claims remain blocked"
+      "acceptance-executed unit evidence for DA29-040; broader product claims remain blocked",
+      "checker:generic-executed"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -49,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "afab06c37996b99afa9a2eb2e56a118dee9073516776a2fc2c66dc9a1c00eedd"
+    "value": "85059b7da654bb2190c6dd89f3dd6889a0935bb3c59c5bbeb0ba1b3f637fe121"
   }
 }

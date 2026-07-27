@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-148",
   "kind": "G",
-  "generatedAt": "2026-07-27T04:58:48.865Z",
+  "generatedAt": "2026-07-27T05:11:39.954Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-148",
@@ -13,37 +13,61 @@
       "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
     },
     {
-      "path": "docs/evidence/authority-selector-v1.json",
-      "bytes": 3388,
-      "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3"
+      "path": "docs/evidence/da29/score-adjudication-v1.3.json",
+      "bytes": 2080,
+      "sha256": "d2ef49ecbcd0237c3599096dcbaed743faef69aaa70e7efa86871a1e1d898be9"
     },
     {
-      "path": "docs/evidence/da29/closeout-status-v1.json",
-      "bytes": 46775,
-      "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005"
+      "path": "docs/evidence/da29/compatibility-corpus-v1.3.json",
+      "bytes": 1248,
+      "sha256": "3c014a64a0af696117f8cce3338762885e304d7370aeb34070cae3cb77b49edb"
+    },
+    {
+      "path": "docs/evidence/da29/browser/match-desktop.png",
+      "bytes": 490592,
+      "sha256": "250b5b727700c8cdaf2c9499e279d9c308383c77fffe286127a52770beb4cd0d"
+    },
+    {
+      "path": "docs/evidence/da29/da29-002-gate.log",
+      "bytes": 534,
+      "sha256": "dfb640caf8bdd1d858ffe049b7c40de7fdbf798771c0e3e88d991b025dccfa00"
+    },
+    {
+      "path": "docs/evidence/source-authority-epoch-v1.json",
+      "bytes": 4521,
+      "sha256": "ec128c6af0826fe34269e284115edfd57640f75279baffe30d3bb8807458b7d6"
+    },
+    {
+      "path": "docs/evidence/da29/score-adjudication-v1.3.json",
+      "bytes": 2080,
+      "sha256": "d2ef49ecbcd0237c3599096dcbaed743faef69aaa70e7efa86871a1e1d898be9"
+    },
+    {
+      "path": "docs/evidence/da29/compatibility-corpus-v1.3.json",
+      "bytes": 1248,
+      "sha256": "3c014a64a0af696117f8cce3338762885e304d7370aeb34070cae3cb77b49edb"
+    },
+    {
+      "path": "docs/evidence/native-asset-provenance-v1.json",
+      "bytes": 2843,
+      "sha256": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
     }
   ],
   "functionResults": {
-    "bundle": {
-      "artifacts": [
-        {
-          "path": "docs/evidence/da29/series-registry-v1.json",
-          "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0",
-          "bytes": 95463
-        },
-        {
-          "path": "docs/evidence/authority-selector-v1.json",
-          "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3",
-          "bytes": 3388
-        },
-        {
-          "path": "docs/evidence/da29/closeout-status-v1.json",
-          "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005",
-          "bytes": 46775
-        }
-      ]
+    "releaseDigest": "0fac14f6b089c00f",
+    "claimSheet": {
+      "scoresHeld": true,
+      "ciBundleDigest": "7d9603ae558abe5f",
+      "scoreSha": "d2ef49ecbcd0237c",
+      "corpusSha": "3c014a64a0af6961",
+      "provenance": {
+        "path": "docs/evidence/native-asset-provenance-v1.json",
+        "sha256": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e",
+        "bytes": 2843
+      }
     },
-    "deterministic": true
+    "deterministic": true,
+    "artifactCount": 6
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-148; broader product claims remain blocked"
 }

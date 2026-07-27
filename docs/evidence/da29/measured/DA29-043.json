@@ -2,28 +2,64 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-043",
   "kind": "I",
-  "generatedAt": "2026-07-27T04:50:27.506Z",
+  "generatedAt": "2026-07-27T05:11:39.876Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-043",
   "anchors": [
     {
-      "path": "public/characters/rook-apprentice/mugen",
-      "bytes": 0,
-      "sha256": "directory"
+      "path": "public/characters/rook-apprentice/mugen/rook.cns",
+      "bytes": 852,
+      "sha256": "ba369f5815fb4cf62ceed8528c6a807fc40f9491e44f3a2c98199c81781f560c"
+    },
+    {
+      "path": "public/characters/rook-apprentice/mugen/rook.air",
+      "bytes": 2047,
+      "sha256": "a0d12d60a43d8098f1b3bb814eb8a59dffba60e4cf854dbd4441a722e03a62d1"
+    },
+    {
+      "path": "public/characters/rook-apprentice/mugen/rook.cmd",
+      "bytes": 428,
+      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+    },
+    {
+      "path": "src/mugen/runtime/CombatResolver.ts",
+      "bytes": 19532,
+      "sha256": "914ae6cd0c1228f2d6fd6fa2bda10de2715aa067dbf756b2fd5440827cd8be56"
+    },
+    {
+      "path": "src/mugen/runtime/ContactMemorySystem.ts",
+      "bytes": 19060,
+      "sha256": "18b4f5791c16bea55c66a433decde3e4a7ffdc9279c6d801ae8fb75ec0e72b22"
     }
   ],
   "functionResults": {
-    "package": "rook-apprentice",
-    "files": [
-      "rook.air",
-      "rook.cmd",
-      "rook.cns",
-      "rook.def"
-    ],
-    "hasCns": true,
-    "hasAir": true,
-    "hasCmd": true
+    "command": "x",
+    "stateEntry": 200,
+    "collision": true,
+    "hitDefAdmission": true,
+    "hitDef": {
+      "line": 16,
+      "type": "HitDef",
+      "count": 2
+    },
+    "contact": true,
+    "damage": 42,
+    "hitpause": 7,
+    "targetState": 5000,
+    "checksum": "dfe90bd016ae6006",
+    "telemetry": {
+      "package": "rook-apprentice",
+      "command": "x",
+      "stateEntry": 200,
+      "hitDefLine": 16,
+      "hitKind": "hit",
+      "damage": 42,
+      "hitpause": 7,
+      "contact": true,
+      "damageRecorded": 42
+    },
+    "package": "rook-apprentice"
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-043; broader product claims remain blocked"
 }
