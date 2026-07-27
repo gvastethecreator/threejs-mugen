@@ -1,51 +1,89 @@
+/* Frame Ledger — single token authority (DA UI redesign) */
 :root {
-  --bg: #050607;
-  --panel-2: #101318;
-  --panel-3: #07090c;
-  --surface: #0b0d10;
-  --surface-hover: #191d24;
-  --surface-flat: #0a0c10;
-  --surface-flat-raised: #11141a;
-  --surface-flat-strong: #171a21;
-  --surface-flat-recessed: #050607;
-  --surface-chip: #0d1015;
-  --surface-meter: #0b0d11;
-  --scrollbar-track: #090a0d;
-  --scrollbar-thumb: #343b44;
-  --scrollbar-thumb-hover: #46505a;
-  --meter-life-fill: #8f985d;
-  --meter-power-fill: #7e92ad;
-  --text-warm: #fff9e8;
+  /* Chassis */
+  --bg: #090b0d;
+  --panel-2: #15191d;
+  --panel-3: #0d1013;
+  --surface: #111519;
+  --surface-hover: #1a2025;
+  --surface-flat: #0d1013;
+  --surface-flat-raised: #151a1f;
+  --surface-flat-strong: #1b2127;
+  --surface-flat-recessed: #080a0c;
+  --surface-chip: #13181c;
+  --surface-meter: #07090b;
+  --row-bg: #101419;
+  --row-bg-hover: #171d22;
   --recess-2: #080a0d;
-  --text: #f2f3f4;
-  --muted: #a7adb5;
-  --subtle: #777f8a;
-  --border: rgba(255, 255, 255, 0.105);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --panel-border: rgba(255, 255, 255, 0.11);
-  --control-border: rgba(255, 255, 255, 0.16);
-  --surface-border: rgba(255, 255, 255, 0.09);
-  --surface-border-strong: rgba(255, 255, 255, 0.145);
-  --tool-line-strong: rgba(255, 255, 255, 0.16);
-  --row-bg: #0d1117;
-  --row-bg-hover: #141a22;
-  --accent: #8e9aa6;
-  --accent-2: #9a8fb2;
+
+  /* Ink */
+  --text: #f4f0e8;
+  --text-warm: #fff7df;
+  --muted: #aaa9a4;
+  --subtle: #797d7e;
+
+  /* Borders */
+  --border: rgba(244, 240, 232, 0.12);
+  --border-strong: rgba(244, 240, 232, 0.22);
+  --panel-border: rgba(244, 240, 232, 0.13);
+  --control-border: rgba(244, 240, 232, 0.2);
+  --surface-border: rgba(244, 240, 232, 0.1);
+  --surface-border-strong: rgba(244, 240, 232, 0.18);
+  --tool-line-strong: rgba(244, 240, 232, 0.2);
+
+  /* Semantic — one accent family */
+  --accent: #f1ad53;
+  --accent-2: #f1ad53;
   --surface-accent: var(--accent);
-  --danger: #c46a63;
-  --warn: #aa7484;
-  --ok: #81a37a;
-  --shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 -1px 0 rgba(0, 0, 0, 0.78);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.045), inset 0 -1px 0 rgba(0, 0, 0, 0.52);
-  --shadow-recessed: inset 0 1px 2px rgba(0, 0, 0, 0.72), inset 0 -1px 0 rgba(255, 255, 255, 0.045);
-  --shadow-chassis: inset 0 1px 0 rgba(255, 255, 255, 0.075), inset 0 -1px 0 rgba(0, 0, 0, 0.86), inset 1px 0 0 rgba(255, 255, 255, 0.028), inset -1px 0 0 rgba(0, 0, 0, 0.52);
-  --shadow-selected: inset 0 1px 0 rgba(255, 255, 255, 0.055), inset 0 -1px 0 rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(142, 154, 166, 0.2);
-  --focus-ring: 0 0 0 2px rgba(142, 154, 166, 0.28);
-  --motion-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --studio-row-transition: background-color 140ms var(--motion-out), color 140ms var(--motion-out), outline-color 140ms var(--motion-out), box-shadow 140ms var(--motion-out);
-  --display: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI", sans-serif;
-  --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  --focus: #72d5ca;
+  --danger: #ff6b6b;
+  --warn: #f1ad53;
+  --ok: #8ecf79;
+  --meter-life-fill: #c9dc75;
+  --meter-power-fill: #72d5ca;
+
+  /* Scroll */
+  --scrollbar-track: #0b0e10;
+  --scrollbar-thumb: #3b4246;
+  --scrollbar-thumb-hover: #535c61;
+
+  /* Type */
+  --display: "Bahnschrift", "Arial Narrow", "Segoe UI Variable Display", "Segoe UI", sans-serif;
   --sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* Space + radius */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* Depth */
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 32px rgba(0, 0, 0, 0.22);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-recessed: inset 0 1px 2px rgba(0, 0, 0, 0.62);
+  --shadow-chassis: 0 1px 0 rgba(255, 255, 255, 0.035);
+  --shadow-selected: inset 3px 0 0 var(--accent), 0 0 0 1px rgba(241, 173, 83, 0.18);
+  --focus-ring: 0 0 0 3px rgba(114, 213, 202, 0.22);
+  --frame-line: linear-gradient(90deg, var(--accent) 0 22%, rgba(241, 173, 83, 0.2) 22% 100%);
+
+  /* Motion */
+  --motion-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --studio-row-transition: background-color 140ms var(--motion-out), color 140ms var(--motion-out),
+    outline-color 140ms var(--motion-out), box-shadow 140ms var(--motion-out);
+
+  /* Z */
+  --z-stage: 1;
+  --z-pane: 2;
+  --z-chrome: 10;
+  --z-console: 12;
+  --z-hud: 20;
+  --z-palette: 50;
 
   color-scheme: dark;
   color: var(--text);
@@ -59,4 +97,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-reduced-motion: reduce) { :root { --studio-row-transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --studio-row-transition: none;
+  }
+}

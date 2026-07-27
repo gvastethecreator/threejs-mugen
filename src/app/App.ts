@@ -1016,24 +1016,24 @@ export class App {
   private template(): string {
     return `
       <a class="skip-link" href="#stage">Skip to runtime viewport</a>
-      <main class="app-shell mode-match" aria-label="MUGEN Web Sandbox workspace">
+      <main class="app-shell mode-match" data-mode="match" data-studio-tab="" aria-label="MUGEN Web Sandbox workspace">
         <section class="studio-chrome" id="studio-chrome" aria-label="Studio command bar"></section>
         <aside class="pane" id="left-pane" aria-label="Project navigation">
           <div class="section workspace-header">
             <div class="workspace-brand" id="workspace-brand"></div>
-            <div id="mode-controls"></div>
+            <div id="mode-controls" class="mode-controls"></div>
             <div id="workspace-summary"></div>
           </div>
           <div id="workspace-actions"></div>
           <div class="section file-loader-section">
             <div class="drop-zone" id="drop-zone">
               <div>
-                <strong>Load MUGEN package</strong>
-                <p>Drop a character ZIP or choose a local folder with a .def file. Files stay in this browser session.</p>
+                <strong>Load package</strong>
+                <p>Drop a character ZIP or choose a folder with a .def. Files stay in this browser session.</p>
               </div>
               <div class="file-actions">
                 <button type="button" data-open-zip>Choose ZIP</button>
-                <button type="button" data-open-folder>Choose Folder</button>
+                <button type="button" data-open-folder>Choose folder</button>
               </div>
               <input id="zip-input" type="file" accept=".zip,application/zip" aria-label="Choose character ZIP" />
               <input id="folder-input" type="file" webkitdirectory multiple aria-label="Choose character folder" />
@@ -1043,6 +1043,10 @@ export class App {
           <div id="navigator"></div>
         </aside>
         <section class="stage" id="stage" aria-label="Runtime viewport">
+          <div class="frame-rail" id="frame-rail" aria-hidden="true">
+            <span class="frame-rail-tick" id="frame-rail-tick">F 0</span>
+            <span class="frame-rail-phase" id="frame-rail-phase">idle</span>
+          </div>
           <div class="stage-toolbar" aria-label="Runtime controls">
             <div class="toolbar-group toolbar-run-group">
               <span class="toolbar-label">Run</span>
@@ -3193,12 +3197,26 @@ export class App {
     shell?.classList.toggle("mode-match", this.mode === "match");
     shell?.classList.toggle("mode-inspect", this.mode === "inspect");
     shell?.classList.toggle("mode-studio", this.mode === "studio");
+    shell?.setAttribute("data-mode", this.mode);
     shell?.setAttribute("data-surface", this.mode);
     shell?.setAttribute("data-studio-tab", this.mode === "studio" ? this.studioTab : "");
     shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
     shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
     shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
     this.applyStudioViewportDefaults();
+    this.updateFrameRail();
+  }
+
+  /** Frame Ledger signature: bind stage rail to live tick + round phase. */
+  private updateFrameRail(): void {
+    const tickEl = this.root.querySelector<HTMLElement>("#frame-rail-tick");
+    const phaseEl = this.root.querySelector<HTMLElement>("#frame-rail-phase");
+    if (!tickEl && !phaseEl) return;
+    const tick = Math.max(0, Math.trunc(this.snapshot.tick ?? 0));
+    const phase = this.snapshot.round?.state
+      ?? (this.snapshot.playing ? "play" : "pause");
+    if (tickEl) tickEl.textContent = `F ${tick}`;
+    if (phaseEl) phaseEl.textContent = String(phase);
   }
 
   private applyStudioViewportDefaults(): void {
@@ -3223,6 +3241,7 @@ export class App {
     this.setHtml("#stage-status", this.renderStageStatus());
     this.setHtml("#round-hud", this.renderRoundHud());
     this.setHtml("#studio-stage-deck", this.renderStudioStageDeck());
+    this.updateFrameRail();
     this.syncRuntimeControls();
   }
 
@@ -3419,7 +3438,7 @@ export class App {
           ${tablerIcon("search", "ui-icon command-launcher-icon")}
           <span>
             <strong>Command</strong>
-            <small>Modes, loaders, build</small>
+            <small>Jump to any action</small>
           </span>
           <span class="badge">${this.getCommandPaletteActions().length}</span>
         </button>
@@ -3440,8 +3459,8 @@ export class App {
         <div class="command-palette-panel">
           <div class="command-palette-header">
             <div class="command-palette-title-block">
-              <span class="panel-kicker">Command center</span>
-              <h2 id="command-palette-title">Action index</h2>
+              <span class="panel-kicker">Frame Ledger</span>
+              <h2 id="command-palette-title">Commands</h2>
             </div>
             <span class="command-palette-count">${actions.length}/${actionTotal}</span>
             <button type="button" class="command-palette-close" data-action="close-command-palette" aria-label="Close command palette" title="Close">
@@ -4346,14 +4365,14 @@ export class App {
         ? studioSurfaces[this.studioTab]
         : this.mode === "inspect"
           ? {
-              eyebrow: "MUGEN inspector",
-              title: "Character Intake",
-              description: "Resolve DEF paths, inspect AIR/CNS/CMD data, and expose unsupported features.",
+              eyebrow: "Frame Ledger",
+              title: "Character intake",
+              description: "Resolve DEF paths, inspect AIR/CNS/CMD data, and surface unsupported features.",
             }
           : {
-              eyebrow: "Match lab",
-              title: "Runtime Console",
-              description: "Playtest roster, inspect collision/debug signals, then route fixes into Studio.",
+              eyebrow: "Frame Ledger",
+              title: "Match lab",
+              description: "Playtest the fight frame, read meters and gates, then fix packages in Studio.",
             };
     return `
       <span class="workspace-eyebrow">${escapeHtml(surface.eyebrow)}</span>
