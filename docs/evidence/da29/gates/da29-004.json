@@ -1,21 +1,24 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-004",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "status": "closed",
-  "evidenceClass": "browser-matrix",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Rebuild evidence corpus v1.3. Depends on DA29-002 and DA29-003. Systems: evidence envelope, trace/browser/source indices.",
   "acceptance": "Corpus imports all current artifacts with subject, producer, revision, digest type, target, route, and freshness; stale rows fail closed.",
   "relatedArtifacts": [
+    "docs/evidence/da29/compatibility-corpus-v1.3.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/da29/score-adjudication-v1.3.json",
     "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/da29/browser/match-desktop.png",
-    "docs/evidence/da29/browser/match-mobile.png",
-    "docs/evidence/da29/browser/studio-workbench-desktop.png"
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "b4567311c332a9be637e68636f6b95db03ca3014f545ce70f448a209bbd7786a"
+    "value": "ba6e8f521855c344b884abf3da1b42ac130076aac46d24958a364ea42f4e349e"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "browser-matrix",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Run a current full product/browser matrix. Depends on DA29-002. Systems: Play, Studio, Inspect, import, source write, desktop/mobile, console and page errors.",
   "acceptance": "Route manifest, browser/device facts, screenshots, keyboard/focus log, and error-free result at one commit.",
   "risk": "Screenshots can hide broken flows. Allows named route/view claims only; blocks broad usability until DA29-111…120.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,18 +35,20 @@
   "claims": {
     "allowed": [
       "DA29-003 closed as browser-matrix",
-      "named route/view browser captures only"
+      "DA29-003 named route/view captures only"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
+      "reusing these PNGs to close other browser G IDs",
       "broad usability until DA29-111…120"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2b4abf745a7aa13581293512438b1c8a808e8e9371fbaa90ba8a05cbd4d28162"
+    "value": "7e5a6b9e42d671bd1eb36afa28963770a331be213978707964bef501aa6af74f"
   }
 }

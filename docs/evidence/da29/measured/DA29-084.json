@@ -1,9 +1,10 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-084",
-  "generatedAt": "2026-07-27T04:27:24.743Z",
-  "ok": true,
+  "generatedAt": "2026-07-27T04:35:46.264Z",
   "kind": "G",
+  "ok": true,
+  "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-084",
   "anchors": [
     {
@@ -17,11 +18,17 @@
       "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
     }
   ],
-  "facts": {
+  "functionResults": {
     "actionCount": 12,
     "diagnosticCount": 0,
     "malformedDiagnostics": 2,
-    "source": "public/characters/nova-boxer/mugen/nova.air"
+    "sampleActionIds": [
+      0,
+      20,
+      10,
+      40,
+      200
+    ]
   },
-  "claimCeiling": "AIR parse of repository nova.air + malformed path surface; not full AIR corpus matrix"
+  "claimCeiling": "AIR parse executed on repository nova.air + malformed path; not full AIR corpus matrix"
 }

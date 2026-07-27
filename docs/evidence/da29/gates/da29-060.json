@@ -1,7 +1,7 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-060",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "status": "closed",
   "evidenceClass": "gate-report",
   "measuredGate": false,
@@ -9,14 +9,13 @@
   "cut": "Add a plural-combat deterministic stress journey. Depends on DA29-052…059 and DA29-026.",
   "acceptance": "Fixed-seed route runs roots, nested helpers, three-plus projectiles, effects, clashes, KO, and reset; record/replay checks periodic state and resource counts.",
   "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-060-report.json",
-    "src/mugen/runtime/LivePluralCombatOracle.ts",
+    "docs/evidence/da29/closeouts/DA29-060.json",
+    "docs/evidence/da29/measured/DA29-060.json",
     "src/mugen/runtime/PluralCombatOracle.ts",
-    "src/tests/LivePluralCombatOracle.test.ts",
-    "src/tests/PluralCombatOracle.test.ts"
+    "src/mugen/runtime/LivePluralCombatOracle.ts"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "36de558661f893bfbac46df6b1e2230763612213d7167f8ea1261921e72e79fa"
+    "value": "d0f183e7ffe5deeb3491edd551e2aab56b2a5822a7ab1c8e17c6d1320590e430"
   }
 }

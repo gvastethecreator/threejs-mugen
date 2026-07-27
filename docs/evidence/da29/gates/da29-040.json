@@ -1,24 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-040",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add a compiler differential artifact over the lawful corpus. Depends on DA29-033, DA29-034, and DA29-035.",
   "acceptance": "For each fixture, artifact lists parsed blocks, compiled ops, dropped/unknown fields, diagnostics, canonical digest, and revision; changes require review.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/compatibility-corpus-v1.3.json",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/da29/score-adjudication-v1.3.json",
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "ada940f6ac47fcb783fdc918cee24741c96a1b13a7994a2c5d1538eeb9871bd5"
+    "value": "529b906aa63ef944e780909ce43db7c8e0260f0227b2fc2b25b4883ed71cc91d"
   }
 }

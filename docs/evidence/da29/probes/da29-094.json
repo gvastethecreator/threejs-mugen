@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-094",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Journal source-write intent before mutation using actual bytes. Depends on DA29-091 and DA29-008.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8ab01a4382c7d5a785febecc11ea32057416364e14b75df2db68c6294b4dba38"
+    "value": "8675b907204065888bd9e1717b35b59b34c3761b9d3d41fd98574d6f66fb3b29"
   }
 }

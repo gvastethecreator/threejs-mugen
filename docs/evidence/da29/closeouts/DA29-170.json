@@ -3,57 +3,44 @@
   "id": "DA29-170",
   "kind": "G",
   "wave": 16,
-  "status": "closed",
-  "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Run an adversarial practical-MUGEN milestone review. Depends on the chosen MUGEN tasks, especially DA29-150, DA29-160, and DA29-169.",
   "acceptance": "Review samples unsupported-heavy packages, mutation corpus, profile boundaries, user flows, performance, and failure clarity; accepted/rejected claims and next denominator are signed.",
   "risk": "Friendly fixtures inflate readiness. Allows the reviewed practical-MUGEN milestone only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/da29/score-adjudication-v1.3.json",
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
-  "commands": [
-    "corpus import verify"
-  ],
+  "commands": [],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-170.json",
-    "docs/evidence/da29/compatibility-corpus-v1.3.json",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/da29/score-adjudication-v1.3.json",
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/da29/gates/da29-170.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-170 closed as gate-report",
-      "corpus completeness for listed imports"
+      "DA29-170 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "mixed-revision proof inflation"
+      "no acceptance-executed measured evidence for this G id",
+      "shared inventory digests do not close unrelated gates"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "d552269319ef36350f9473e2a8ad1184952d644406ba17986aac4aeac3159ee6"
+    "value": "763aaefb56d39bcc215fb7270d3716b2940535c5b78427001c8fbcfde0b66131"
   }
 }

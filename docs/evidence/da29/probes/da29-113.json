@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-113",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Fix mobile overlay, clipping, reflow, and scroll ownership. Depends on DA29-111 and DA29-112.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f3bc7acd29658f00172324b5adaf6b8a039f2bc86533f21a93457e6e95bb0ca4"
+    "value": "4183e4c066303b50dc379777ac168757ebc28d40685b05bd13cbac860583b2d7"
   }
 }

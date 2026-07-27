@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-145",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Enforce build, bundle, and runtime budgets. Depends on DA29-018, DA29-121, DA29-122, and DA29-143.",
   "acceptance": "Approved thresholds gate chunk/load, frame gaps, memory trend, draw/resource counts, scanner latency, and evidence size with explicit waiver expiry.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-145-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "5773c7c151ad8d0820752115ed455f18e375fd70373ab77d80e92ef773348323"
+    "value": "3ec61ac8475558b876e2fe468e3c7fb692261dabc27c32e3e59e4c5a928bd218"
   }
 }

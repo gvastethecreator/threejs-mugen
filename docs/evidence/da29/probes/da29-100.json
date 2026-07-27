@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-100",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Make ProjectReleaseDecision a live product gate. Depends on DA29-098, DA29-108, and DA29-109.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "48e66cbe1cbd85903ff261ab0541881bdc0a391563456426c36dc3850987373f"
+    "value": "7d2d11dd30395baa0b2d8b9032affa202c4cc965fae597fdeba83269a938007d"
   }
 }

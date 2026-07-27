@@ -3,15 +3,15 @@
   "id": "DA29-109",
   "kind": "I",
   "wave": 10,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Make ProjectAssetClosure traverse real project dependencies. Depends on DA29-108 and DA29-088.",
   "acceptance": "Character, stage, screenpack, system, audio, generated, and derived assets are found from the saved project; missing/cycle/stale/extra cases fail or warn by policy.",
   "risk": "Hidden reference escapes release scan. Allows tested graph closure only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -21,7 +21,7 @@
     "src/app/App.ts"
   ],
   "commands": [
-    "implementation probe DA29-109"
+    "implementation probe DA29-109 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -31,19 +31,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-109 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-109 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4d4d60ff7cd00212932b487a59df09e64b5f40bad43ea234849db8c053d31a5c"
+    "value": "2631fe627202239900283cd65a9811d6d0813a97dd6e4dc12d36d49fcd16010f"
   }
 }

@@ -21,6 +21,8 @@ export type Da29CloseoutRecord = {
     | "gate-report"
     | "browser-matrix"
     | "unproven";
+  /** Required for closed [I] implementation-probe rows. */
+  hasMeasuredAcceptance?: boolean;
 };
 
 export function padDa29(n: number): string {
@@ -50,19 +52,14 @@ export function computeSeriesCursor(records: Da29CloseoutRecord[]): {
     const rec = byId.get(id);
     if (!rec) {
       openIds.push(id);
-      if (waterMark === n - 1) {
-        // first gap stops consecutive watermark
-      }
       continue;
     }
-    if (rec.status === "closed" && rec.evidenceClass !== "unproven") {
-      if (waterMark === n - 1) {
-        waterMark = n;
-        closedIds.push(id);
-      } else {
-        // non-consecutive closed still recorded but does not advance watermark
-        closedIds.push(id);
-      }
+    const closed = rec.status === "closed" && mayClose(rec);
+    if (closed && waterMark === n - 1) {
+      waterMark = n;
+      closedIds.push(id);
+    } else if (closed) {
+      closedIds.push(id);
     } else {
       openIds.push(id);
     }
@@ -78,7 +75,12 @@ export function computeSeriesCursor(records: Da29CloseoutRecord[]): {
 }
 
 /** Kind rules for whether a closeout may be closed without being unproven theater. */
-export function mayClose(record: Pick<Da29CloseoutRecord, "kind" | "evidenceClass" | "measuredGate" | "status">): boolean {
+export function mayClose(
+  record: Pick<
+    Da29CloseoutRecord,
+    "kind" | "evidenceClass" | "measuredGate" | "status" | "hasMeasuredAcceptance" | "id"
+  >,
+): boolean {
   if (record.status !== "closed") return false;
   switch (record.evidenceClass) {
     case "unproven":
@@ -88,10 +90,15 @@ export function mayClose(record: Pick<Da29CloseoutRecord, "kind" | "evidenceClas
     case "control-adoption":
     case "research-inventory":
     case "architecture-design":
-    case "implementation-probe":
-    case "gate-report":
-    case "browser-matrix":
       return true;
+    case "implementation-probe":
+      // Path-exists probes never count; need acceptance-executed measured artifact.
+      return record.hasMeasuredAcceptance === true;
+    case "gate-report":
+      return true;
+    case "browser-matrix":
+      // Only DA29-003 owns the shared capture set.
+      return record.id === "DA29-003" || record.hasMeasuredAcceptance === true;
     default:
       return false;
   }
@@ -100,17 +107,23 @@ export function mayClose(record: Pick<Da29CloseoutRecord, "kind" | "evidenceClas
 export function evidenceClassForKind(
   kind: Da29CloseoutRecord["kind"],
   id: string,
-  opts: { measuredGate?: boolean; hasBrowserArtifacts?: boolean; hasProbe?: boolean },
+  opts: {
+    measuredGate?: boolean;
+    hasBrowserArtifacts?: boolean;
+    hasProbe?: boolean;
+    hasMeasuredAcceptance?: boolean;
+  },
 ): Da29CloseoutRecord["evidenceClass"] {
   if (id === "DA29-001") return "control-adoption";
   if (id === "DA29-002") return opts.measuredGate ? "measured-global-gate" : "unproven";
   if (kind === "R") return "research-inventory";
   if (kind === "A") return "architecture-design";
-  if (kind === "I") return opts.hasProbe ? "implementation-probe" : "unproven";
+  if (kind === "I") return opts.hasMeasuredAcceptance ? "implementation-probe" : "unproven";
   if (kind === "G") {
-    if (opts.hasBrowserArtifacts) return "browser-matrix";
+    if (id === "DA29-003" && opts.hasBrowserArtifacts) return "browser-matrix";
     if (opts.measuredGate) return "measured-global-gate";
-    return "gate-report";
+    if (opts.hasMeasuredAcceptance) return "gate-report";
+    return "unproven";
   }
   return "unproven";
 }

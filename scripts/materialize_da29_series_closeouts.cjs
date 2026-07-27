@@ -76,6 +76,7 @@ writeJson(
       evidenceClass: r.evidenceClass,
       measuredGate: r.measuredGate,
       gateSha: r.gateSha,
+      hasMeasuredAcceptance: r.hasMeasuredAcceptance === true,
     })),
     cursor,
   }),
@@ -108,6 +109,7 @@ function evaluateTask(task) {
   let evidenceClass = "unproven";
   let measuredGateFlag = false;
   let gateSha = null;
+  let hasMeasuredAcceptance = false;
   let artifacts = [`docs/evidence/da29/closeouts/${id}.json`];
   let commands = [];
   let extraAllowed = [];
@@ -167,42 +169,43 @@ function evaluateTask(task) {
       extraAllowed = ["architecture/control design only"];
     }
   } else if (kind === "I") {
-    const measured = loadMeasuredEvidence(id);
-    if (measured?.ok) {
+    // Path-exists probes are diagnostic only — never sufficient to close an [I] cut.
+    const probe = runImplementationProbe(id, task.cut);
+    const probeRel = `docs/evidence/da29/probes/${id.toLowerCase()}.json`;
+    writeJson(path.join(repoRoot, ...probeRel.split("/")), withDigest({ ...probe, closesCut: false }));
+    artifacts.push(probeRel);
+    inputs.push(...(probe.entryPoints || []));
+
+    const measured = loadMeasuredEvidence(id, { requireExecuted: true });
+    if (measured?.ok && measured.acceptanceExecuted) {
       status = "closed";
       evidenceClass = "implementation-probe";
+      hasMeasuredAcceptance = true;
       artifacts.push(measured.path, ...(measured.anchors || []));
       inputs.push(...(measured.anchors || []));
       commands = [measured.command || `measured evidence ${id}`];
-      extraAllowed = [measured.claimCeiling || "measured implementation evidence"];
-      extraBlocked = ["product/runtime parity beyond written claim ceiling"];
+      extraAllowed = [measured.claimCeiling || "acceptance-executed unit evidence"];
+      extraBlocked = ["product/runtime parity beyond written claim ceiling", "path-exists probe as closeout"];
     } else {
-      const probe = runImplementationProbe(id, task.cut);
-      const probeRel = `docs/evidence/da29/probes/${id.toLowerCase()}.json`;
-      writeJson(path.join(repoRoot, ...probeRel.split("/")), withDigest(probe));
-      artifacts.push(probeRel);
-      inputs.push(...probe.entryPoints);
-      commands = [`implementation probe ${id}`];
-      if (probe.ok && probe.entryPoints.length > 0) {
-        status = "closed";
-        evidenceClass = "implementation-probe";
-        extraAllowed = ["unit/static implementation probe against shipped entry points"];
-        extraBlocked = ["product/runtime parity beyond named entry points"];
-      } else {
-        status = "open";
-        evidenceClass = "unproven";
-        extraBlocked = [probe.error || "implementation probe failed"];
-      }
+      status = "open";
+      evidenceClass = "unproven";
+      commands = [`implementation probe ${id} (diagnostic only)`];
+      extraBlocked = [
+        probe.error || "no acceptance-executed measured evidence",
+        "path-exists / directory probes do not close [I] cuts",
+      ];
     }
   } else if (kind === "G") {
-    const measured = loadMeasuredEvidence(id);
-    if (measured?.ok && id !== "DA29-002") {
+    // Measured G evidence must be acceptance-executed and ID-scoped (no PNG reuse theater).
+    const measured = loadMeasuredEvidence(id, { requireExecuted: true });
+    if (measured?.ok && measured.acceptanceExecuted && id !== "DA29-002") {
       status = "closed";
       evidenceClass = measured.browser ? "browser-matrix" : "gate-report";
+      hasMeasuredAcceptance = true;
       artifacts.push(measured.path, ...(measured.anchors || []));
       inputs.push(...(measured.anchors || []));
       commands = [measured.command || `measured evidence ${id}`];
-      extraAllowed = [measured.claimCeiling || "measured gate evidence"];
+      extraAllowed = [measured.claimCeiling || "acceptance-executed gate evidence"];
       extraBlocked = ["formal/global tip rewrite without measured full stack", "score movement"];
       const gateReportRel = `docs/evidence/da29/gates/${id.toLowerCase()}.json`;
       writeJson(
@@ -222,40 +225,40 @@ function evaluateTask(task) {
       );
       artifacts.push(gateReportRel);
     } else {
-    const gateEval = evaluateGate(id, task);
-    artifacts.push(...gateEval.artifacts);
-    commands = gateEval.commands;
-    inputs.push(...gateEval.inputs);
-    if (gateEval.closed) {
-      status = "closed";
-      evidenceClass = gateEval.evidenceClass;
-      measuredGateFlag = gateEval.measuredGate;
-      gateSha = gateEval.gateSha;
-      extraAllowed = gateEval.extraAllowed;
-      extraBlocked = gateEval.extraBlocked;
-    } else {
-      status = "open";
-      evidenceClass = "unproven";
-      extraBlocked = gateEval.extraBlocked;
+      const gateEval = evaluateGate(id, task);
+      artifacts.push(...gateEval.artifacts);
+      commands = gateEval.commands;
+      inputs.push(...gateEval.inputs);
+      if (gateEval.closed) {
+        status = "closed";
+        evidenceClass = gateEval.evidenceClass;
+        measuredGateFlag = gateEval.measuredGate;
+        gateSha = gateEval.gateSha;
+        extraAllowed = gateEval.extraAllowed;
+        extraBlocked = gateEval.extraBlocked;
+      } else {
+        status = "open";
+        evidenceClass = "unproven";
+        extraBlocked = gateEval.extraBlocked;
+      }
+      const gateReportRel = `docs/evidence/da29/gates/${id.toLowerCase()}.json`;
+      writeJson(
+        path.join(repoRoot, ...gateReportRel.split("/")),
+        withDigest({
+          schema: "Da29GateEvidence/v2",
+          id,
+          generatedAt,
+          status,
+          evidenceClass,
+          measuredGate: measuredGateFlag,
+          gateSha,
+          cut: task.cut,
+          acceptance: task.acceptance,
+          relatedArtifacts: gateEval.artifacts,
+        }),
+      );
+      artifacts.push(gateReportRel);
     }
-    const gateReportRel = `docs/evidence/da29/gates/${id.toLowerCase()}.json`;
-    writeJson(
-      path.join(repoRoot, ...gateReportRel.split("/")),
-      withDigest({
-        schema: "Da29GateEvidence/v2",
-        id,
-        generatedAt,
-        status,
-        evidenceClass,
-        measuredGate: measuredGateFlag,
-        gateSha,
-        cut: task.cut,
-        acceptance: task.acceptance,
-        relatedArtifacts: gateEval.artifacts,
-      }),
-    );
-    artifacts.push(gateReportRel);
-    } // end else measured gate
   }
 
   const closeout = {
@@ -297,17 +300,34 @@ function evaluateTask(task) {
     evidenceClass,
     measuredGate: measuredGateFlag,
     gateSha,
-    closeout,
+    hasMeasuredAcceptance,
+    closeout: {
+      ...closeout,
+      hasMeasuredAcceptance,
+    },
   };
 }
 
-function loadMeasuredEvidence(id) {
+function loadMeasuredEvidence(id, opts = {}) {
+  const requireExecuted = Boolean(opts.requireExecuted);
   const rel = `docs/evidence/da29/measured/${id}.json`;
   const abs = path.join(repoRoot, ...rel.split("/"));
   if (!fs.existsSync(abs)) return null;
   try {
     const doc = JSON.parse(fs.readFileSync(abs, "utf8"));
     if (!doc || doc.ok !== true || doc.id !== id) return null;
+    // Reject synthetic / path-only theater when closing cuts.
+    const acceptanceExecuted = doc.acceptanceExecuted === true;
+    const liveRenderer = doc.liveRenderer === true;
+    const hasFunctionResults =
+      doc.functionResults != null &&
+      (typeof doc.functionResults === "object") &&
+      Object.keys(doc.functionResults).length > 0;
+    if (requireExecuted && !(acceptanceExecuted && (hasFunctionResults || liveRenderer))) {
+      return null;
+    }
+    // DA29-072 must be live renderer metrics, not seed data.
+    if (id === "DA29-072" && !liveRenderer) return null;
     const anchors = Array.isArray(doc.anchors)
       ? doc.anchors.map((a) => (typeof a === "string" ? a : a.path)).filter(Boolean)
       : Array.isArray(doc.sourceAnchors)
@@ -316,14 +336,11 @@ function loadMeasuredEvidence(id) {
     return {
       path: rel,
       ok: true,
+      acceptanceExecuted,
       command: doc.command || null,
       claimCeiling: doc.claimCeiling || null,
       anchors,
-      browser: Boolean(
-        doc.browser ||
-          (Array.isArray(doc.anchors) &&
-            doc.anchors.some((a) => String(typeof a === "string" ? a : a?.path || "").endsWith(".png"))),
-      ),
+      browser: Boolean(doc.browser),
     };
   } catch {
     return null;
@@ -338,8 +355,8 @@ function evaluateGate(id, task) {
   const extraAllowed = [];
   const extraBlocked = [];
 
-  // Browser matrix IDs need real PNG evidence
-  if (/browser|screenshot|viewport|route manifest|playwright/.test(text) || id === "DA29-003") {
+  // Browser matrix: ONLY DA29-003 may close on the DA29-003 PNG set (no reuse).
+  if (id === "DA29-003") {
     const shots = [
       "docs/evidence/da29/browser/match-desktop.png",
       "docs/evidence/da29/browser/match-mobile.png",
@@ -362,8 +379,8 @@ function evaluateGate(id, task) {
         artifacts,
         inputs,
         commands,
-        extraAllowed: ["named route/view browser captures only"],
-        extraBlocked: ["broad usability until DA29-111…120"],
+        extraAllowed: ["DA29-003 named route/view captures only"],
+        extraBlocked: ["reusing these PNGs to close other browser G IDs", "broad usability until DA29-111…120"],
       };
     }
     return {
@@ -375,12 +392,12 @@ function evaluateGate(id, task) {
       inputs,
       commands,
       extraAllowed: [],
-      extraBlocked: ["browser matrix screenshots missing"],
+      extraBlocked: ["browser matrix screenshots missing for DA29-003"],
     };
   }
 
-  // Score adjudication
-  if (id === "DA29-005" || /score|adjudic/.test(text)) {
+  // Score adjudication: ONLY DA29-005
+  if (id === "DA29-005") {
     const p = "docs/evidence/da29/score-adjudication-v1.3.json";
     if (fs.existsSync(path.join(repoRoot, ...p.split("/")))) {
       const j = JSON.parse(fs.readFileSync(path.join(repoRoot, ...p.split("/")), "utf8"));
@@ -394,19 +411,19 @@ function evaluateGate(id, task) {
           artifacts: [p],
           inputs: [p],
           commands: ["score adjudication hold"],
-          extraAllowed: ["score hold decision only"],
-          extraBlocked: ["score inflation"],
+          extraAllowed: ["score hold decision only for DA29-005"],
+          extraBlocked: ["score inflation", "reusing score hold for other G IDs"],
         };
       }
     }
   }
 
-  // Corpus
-  if (id === "DA29-004" || /corpus/.test(text)) {
+  // Corpus: ONLY DA29-004
+  if (id === "DA29-004") {
     const p = "docs/evidence/da29/compatibility-corpus-v1.3.json";
     if (fs.existsSync(path.join(repoRoot, ...p.split("/")))) {
       const j = JSON.parse(fs.readFileSync(path.join(repoRoot, ...p.split("/")), "utf8"));
-      if (Array.isArray(j.imports) && j.imports.length >= 3) {
+      if (j.id === "DA29-004" && Array.isArray(j.imports) && j.imports.length >= 3) {
         const missing = j.imports.filter((i) => !fs.existsSync(path.join(repoRoot, ...String(i.path).split("/"))));
         if (missing.length === 0) {
           return {
@@ -418,15 +435,15 @@ function evaluateGate(id, task) {
             inputs: j.imports.map((i) => i.path),
             commands: ["corpus import verify"],
             extraAllowed: ["corpus completeness for listed imports"],
-            extraBlocked: ["mixed-revision proof inflation"],
+            extraBlocked: ["mixed-revision proof inflation", "reusing corpus for other G IDs"],
           };
         }
       }
     }
   }
 
-  // Authority audit expansion
-  if (id === "DA29-007" || /authority-reference audit|authority reference/.test(text)) {
+  // Authority audit expansion: ONLY DA29-007
+  if (id === "DA29-007") {
     const p = "scripts/audit_authority_references.cjs";
     if (fs.existsSync(path.join(repoRoot, p))) {
       return {
@@ -443,84 +460,22 @@ function evaluateGate(id, task) {
     }
   }
 
-  // Plural combat / deterministic stress — require shipped oracle + test
-  if (id === "DA29-060" || /plural-combat|plural combat|deterministic stress/.test(text)) {
-    const paths = [
-      "src/mugen/runtime/LivePluralCombatOracle.ts",
-      "src/mugen/runtime/PluralCombatOracle.ts",
-      "src/tests/LivePluralCombatOracle.test.ts",
-      "src/tests/PluralCombatOracle.test.ts",
-    ];
-    const present = paths.filter((p) => fs.existsSync(path.join(repoRoot, ...p.split("/"))));
-    if (present.length === paths.length) {
-      const reportRel = `docs/evidence/da29/gates/${id.toLowerCase()}-report.json`;
-      const report = {
-        schema: "Da29GeneratedGateReport/v1",
-        id,
-        generatedAt,
-        files: present.map((p) => ({
-          path: p,
-          bytes: fs.statSync(path.join(repoRoot, ...p.split("/"))).size,
-          sha256: sha256File(path.join(repoRoot, ...p.split("/"))),
-        })),
-        claimCeiling: "plural oracle unit evidence only; not full browser stress matrix",
-      };
-      writeJson(path.join(repoRoot, ...reportRel.split("/")), withDigest(report));
-      return {
-        closed: true,
-        evidenceClass: "gate-report",
-        measuredGate: false,
-        gateSha: null,
-        artifacts: [reportRel, ...present],
-        inputs: present,
-        commands: ["pnpm exec vitest run src/tests/LivePluralCombatOracle.test.ts"],
-        extraAllowed: ["plural combat oracle unit evidence only"],
-        extraBlocked: ["full multi-device stress as product claim"],
-      };
-    }
-  }
-
-  // Report-style G with existing evidence files named in cut
-  const candidates = [
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json",
-    "docs/evidence/browser-subcursors-da28-03-v1.json",
-    "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-    "scripts/check_boundaries.cjs",
-    "scripts/qa_traces.cjs",
-  ];
-  const present = candidates.filter((c) => fs.existsSync(path.join(repoRoot, ...c.split("/"))));
-  if (present.length >= 2 && /report|audit|coverage|budget|denomin|matrix|registry|gate taxonomy|fingerprint|bundle|performance harness/.test(text)) {
-    // Generate a real report digesting present files
-    const reportRel = `docs/evidence/da29/gates/${id.toLowerCase()}-report.json`;
-    const report = {
-      schema: "Da29GeneratedGateReport/v1",
-      id,
-      generatedAt,
-      files: present.map((p) => ({
-        path: p,
-        bytes: fs.statSync(path.join(repoRoot, ...p.split("/"))).size,
-        sha256: sha256File(path.join(repoRoot, ...p.split("/"))),
-      })),
-      claimCeiling: "gate report inventory at static ceiling; not formal/global pin",
-    };
-    writeJson(path.join(repoRoot, ...reportRel.split("/")), withDigest(report));
+  // Plural combat stress: only with acceptance-executed measured evidence (not path inventory).
+  if (id === "DA29-060") {
     return {
-      closed: true,
-      evidenceClass: "gate-report",
+      closed: false,
+      evidenceClass: "unproven",
       measuredGate: false,
       gateSha: null,
-      artifacts: [reportRel, ...present.slice(0, 4)],
-      inputs: present.slice(0, 4),
-      commands: [`gate report materialize ${id}`],
-      extraAllowed: ["static gate report inventory only"],
-      extraBlocked: ["formal/global tip rewrite", "score movement", "broad usability"],
+      artifacts: [],
+      inputs: [],
+      commands: ["pnpm exec vitest run src/tests/LivePluralCombatOracle.test.ts"],
+      extraAllowed: [],
+      extraBlocked: ["DA29-060 requires acceptance-executed stress journey, not source inventory"],
     };
   }
 
+  // No shared-inventory bulk close. Remaining G cuts stay open until ID-specific measured evidence.
   return {
     closed: false,
     evidenceClass: "unproven",
@@ -530,7 +485,10 @@ function evaluateGate(id, task) {
     inputs: [],
     commands: [],
     extraAllowed: [],
-    extraBlocked: ["no measured or report evidence meeting acceptance"],
+    extraBlocked: [
+      "no acceptance-executed measured evidence for this G id",
+      "shared inventory digests do not close unrelated gates",
+    ],
   };
 }
 
@@ -617,7 +575,14 @@ function computeCursor(records) {
   for (let n = 1; n <= 200; n += 1) {
     const id = pad(n);
     const rec = byId.get(id);
-    const closed = rec && rec.status === "closed" && rec.evidenceClass !== "unproven";
+    const closed =
+      rec &&
+      rec.status === "closed" &&
+      rec.evidenceClass !== "unproven" &&
+      // [I] must have acceptance-executed measured evidence
+      (rec.kind !== "I" || rec.hasMeasuredAcceptance === true) &&
+      // browser-matrix only DA29-003 without extra measured acceptance
+      (rec.evidenceClass !== "browser-matrix" || rec.id === "DA29-003" || rec.hasMeasuredAcceptance === true);
     if (closed && waterMark === n - 1) {
       waterMark = n;
       closedIds.push(id);

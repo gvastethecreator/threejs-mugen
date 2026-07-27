@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-058",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Differential-test collision proxy and transform order. Depends on DA29-052, DA29-054, and DA29-057.",
   "acceptance": "Authored fixtures vary scale, facing, angle, localcoord, override boxes, Helper proxies, and insertion order; artifact reports first geometric divergence.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-058-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "dfc4939c840da81b35867a0420c5c5466eed0688acf688af3ca9424f3e1d5662"
+    "value": "26e76549e32716a0b0634dbd980deccbfd2b5b759407b7f2de83aa7f2071dfd7"
   }
 }

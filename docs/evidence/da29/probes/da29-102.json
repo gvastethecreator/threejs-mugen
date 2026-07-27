@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-102",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Capture tool, model/version, prompt, inputs, command, seed, and transforms. Depends on DA29-101.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0d518f5330d70eb41c165d4e8fbc70d74967ba6191ea6e817367745e1e4194ba"
+    "value": "192c16fb534b15760c21c7f0acf50f7a20f730bf3c4ac6ec46b531951c350278"
   }
 }

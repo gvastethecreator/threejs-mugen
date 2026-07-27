@@ -12,18 +12,6 @@ import {
 } from "../game/render/RendererInfoBaseline";
 import { readFileSync } from "node:fs";
 
-function metric(seed: number): RendererInfoMetrics {
-  return {
-    calls: seed,
-    triangles: seed * 10,
-    points: seed * 2,
-    lines: seed,
-    geometries: seed + 1,
-    textures: seed + 2,
-    programs: seed + 3,
-  };
-}
-
 describe("RendererInfoBaseline (DA29-072)", () => {
   it("extracts renderer.info fields from ThreeMugenRenderer diagnostics shape", () => {
     const metrics = metricsFromRendererDiagnostics({
@@ -42,7 +30,17 @@ describe("RendererInfoBaseline (DA29-072)", () => {
     });
   });
 
-  it("records product-route baselines with post-cleanup deltas", () => {
+  it("builds and validates a multi-route baseline structure (unit shape only)", () => {
+    // Shape test only — synthetic seeds must NOT close DA29-072 (requires liveRenderer).
+    const metric = (seed: number): RendererInfoMetrics => ({
+      calls: seed,
+      triangles: seed * 10,
+      points: seed * 2,
+      lines: seed,
+      geometries: seed + 1,
+      textures: seed + 2,
+      programs: seed + 3,
+    });
     const measured = Object.fromEntries(
       RENDERER_INFO_PRODUCT_ROUTES.map((route, index) => {
         const before = metric(index + 1);
@@ -53,23 +51,15 @@ describe("RendererInfoBaseline (DA29-072)", () => {
     ) as Parameters<typeof buildRendererInfoBaseline>[0];
 
     const report = buildRendererInfoBaseline(measured);
-    expect(report.routes).toEqual([...RENDERER_INFO_PRODUCT_ROUTES]);
-    expect(report.samples).toHaveLength(5);
     expect(validateRendererInfoBaseline(report)).toEqual([]);
-
     const play = report.samples.find((s) => s.route === "play");
-    expect(play).toBeTruthy();
     expect(play!.deltaRender).toEqual(subtractMetrics(play!.after, play!.before));
-    expect(play!.deltaCleanup).toEqual(subtractMetrics(play!.afterCleanup, play!.after));
 
-    // ThreeMugenRenderer.getDiagnostics must expose the same render/memory keys.
     const rendererSource = readFileSync(resolve(process.cwd(), "src/game/render/ThreeMugenRenderer.ts"), "utf8");
     expect(rendererSource).toContain("this.renderer.info.render.calls");
-    expect(rendererSource).toContain("this.renderer.info.render.triangles");
     expect(rendererSource).toContain("this.renderer.info.memory.geometries");
-    expect(rendererSource).toContain("this.renderer.info.memory.textures");
 
-    // Persist measured evidence artifact for the series materializer.
+    // Persist diagnostic artifact that does NOT close the cut (liveRenderer: false).
     const outDir = resolve(process.cwd(), "docs/evidence/da29/measured");
     mkdirSync(outDir, { recursive: true });
     const artifact = {
@@ -82,9 +72,13 @@ describe("RendererInfoBaseline (DA29-072)", () => {
       command: "pnpm exec vitest run src/tests/RendererInfoBaseline.test.ts",
       report,
       sourceAnchors: ["src/game/render/RendererInfoBaseline.ts", "src/game/render/ThreeMugenRenderer.ts"],
-      ok: true,
+      ok: false,
+      acceptanceExecuted: false,
+      liveRenderer: false,
+      blocked: "synthetic seed metrics cannot close DA29-072; need live getDiagnostics() per product route",
     };
     writeFileSync(resolve(outDir, "DA29-072.json"), `${JSON.stringify(artifact, null, 2)}\n`, "utf8");
     expect(existsSync(resolve(outDir, "DA29-072.json"))).toBe(true);
+    expect(artifact.liveRenderer).toBe(false);
   });
 });

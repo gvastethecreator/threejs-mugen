@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Choose the authoritative Studio storage model. Depends on DA29-008, DA29-009, and the IDB audit.",
   "acceptance": "ADR compares IndexedDB authority, file authority, and port-backed hybrid; it names consistency, offline, recovery, quota, migration, and permission tradeoffs.",
   "risk": "Dual authority can diverge. Allows storage decision only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3d725f46e3a3709ae808cae9905ec72ba3f52acfdd395d4450149f5eb799fea2"
+    "value": "f8f420381daa4b58702a1e5f8ae4ecca566454f76a7b1340253fc0c079bf9244"
   }
 }

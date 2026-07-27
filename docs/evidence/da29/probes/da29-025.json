@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-025",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Record a canonical per-frame input log. Depends on DA29-021 and DA29-020.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "99a3c11b3d20e18440813534325a15e50a5f8c25e2830fd9b35a5536e61b8ae0"
+    "value": "d7b5c4f6b4fae33b8046d355dfe83d2c43ab049692a337e67830bf1aa7f86651"
   }
 }

@@ -3,7 +3,7 @@
 Last updated: 2026-07-27  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA29-200** · next head **(empty)**
+`closedThrough`: **DA29-011** · next head **DA29-012**
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -25,7 +25,7 @@ Related:
 
 - Series registry: [`docs/evidence/da29/series-registry-v1.json`](evidence/da29/series-registry-v1.json)
 - Closeout status: [`docs/evidence/da29/closeout-status-v1.json`](evidence/da29/closeout-status-v1.json)
-- Measured evidence: [`docs/evidence/da29/measured/`](evidence/da29/measured/)
+- Measured evidence (acceptance-executed only closes cuts): [`docs/evidence/da29/measured/`](evidence/da29/measured/)
 - Master roadmap: [`docs/MASTER_REVIEW_ROADMAP.md`](MASTER_REVIEW_ROADMAP.md)
 
 ## Scores
@@ -34,8 +34,10 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 ## Closed ladder
 
-DA26-01…30 · DA27-01…09 · DA28-01…30 · **DA29-001…DA29-200**
+DA26-01…30 · DA27-01…09 · DA28-01…30 · **DA29-001…DA29-011** (consecutive watermark)
+
+Non-consecutive closed IDs (e.g. measured AIR/oracle later in the series) may exist in closeouts but do **not** advance `closedThrough` past the first open ID.
 
 ## Next queue
 
-Empty after full DA29 series drain. Per-ID closeouts and measured evidence remain under `docs/evidence/da29/`.
+Head: **DA29-012**. Remainder: DA29-013…DA29-200 until each has acceptance-executed evidence. Path-exists probes and shared inventory digests do not close I/G cuts.

@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-169",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add fourth and fifth independent lawful packages. Depends on DA29-081, DA29-158, and DA29-168.",
   "acceptance": "At least one character-centered and one stage/screenpack-centered package add distinct syntax/asset digests, real journeys, malformed variants, provenance, and coverage delta.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-169-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f1bc1d886a00c2a72c552c47b5ae6b4faecc27b5f70d10578bd767023d47942"
+    "value": "ea03fef1dd5dc7125134e13554b98c5fe4da23835cb0e79bc46cd6200f039a90"
   }
 }

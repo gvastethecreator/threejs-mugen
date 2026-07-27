@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-140",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove extraction by deletion and forbidden-import tests. Depends on DA29-139.",
   "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-140-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "c62d728ede05d087cb20cbddced462ad75b58bf008966a6fb87229f584d48f4c"
+    "value": "4c14f02affc681b31eaa564a18c7704f7d4fbf2b6aebc81b6099a2ec85d7aa47"
   }
 }

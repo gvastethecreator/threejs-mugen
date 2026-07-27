@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-188",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Export a deterministic playable project bundle. Depends on DA29-100, DA29-109, DA29-110, DA29-148, and DA29-181.",
   "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, and a local play smoke; blocked facts stop export.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-188-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "910fc4afe42b02ea47bd37fe0a2c15cf85dccaece208f51595dc2269242c7e22"
+    "value": "22ea475c3ba8995d534f56f7ee12051b09213c242c4c44394a994d16056ff1bf"
   }
 }

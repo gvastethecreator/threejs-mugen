@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-015",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Define occurrence, fixture, branch, and trigger coverage denominators. Depends on DA29-014.",
   "acceptance": "Coverage report separates unique names, authored occurrences, compiled ops, live executions, failure routes, and source families; each percentage names its denominator.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-015-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "fe0db221f101f14017fc6261c9ea9659e4c170f172a7c1e6320933c652dfcf11"
+    "value": "eeadbb074a3dc34eab454c44222ac20312f409c13180cd3ffccb1054d1e489ef"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define the netplay and rollback claim fence. Depends on DA29-030 and DA29-061.",
   "acceptance": "ADR lists deterministic blockers, transport/auth out of scope, snapshot cadence, desync facts, spectator/reconnect questions, and gates before any network work.",
   "risk": "Premature netplay promise. Allows architecture boundary only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f2dddc75fdb1672a32ec1e1eb3f13df3e5e3dad9bb437777f15aa8b752a2598a"
+    "value": "688306084b57d964523a8e0d4eacf96f5a4ef01da1c50bd3173ac9d3c7dc84c7"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "measured-global-gate",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Re-gate current HEAD after the Frame Ledger redesign. Depends on DA29-001. Systems: typecheck, full Vitest, traces, build, both boundary guards.",
   "acceptance": "One immutable report records commit, commands, counts, versions, duration, warnings, and failures; no result is inherited from `32466c6e`.",
   "risk": "A green old pin may hide current regressions. Allows a current formal/global pin only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,8 +44,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9cbde8f074f327ad3441a1d5140dacae5c20034777cc060311949a968a0f7374"
+    "value": "914b5fe7fc7cd53066654ea88187e2da4b65b27a68b08ed04e5410badf9744a0"
   }
 }

@@ -3,15 +3,15 @@
   "id": "DA29-017",
   "kind": "I",
   "wave": 1,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
   "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
   "risk": "Automation may miss human usability. Allows runner-observed facts only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -20,7 +20,7 @@
     "scripts/qa_smoke.cjs"
   ],
   "commands": [
-    "implementation probe DA29-017"
+    "implementation probe DA29-017 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -30,19 +30,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-017 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-017 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "76e70759b90199d0f38d0ae9c1b1a05ae1a856db4edc485251f7cf4167afcaf6"
+    "value": "7fdd4d7db85ba7ef14a53621ed4572b690b147d280011249992bb12bf954e3ce"
   }
 }

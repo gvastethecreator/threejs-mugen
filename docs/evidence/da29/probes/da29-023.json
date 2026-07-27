@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-023",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Add mapping, deadzone, calibration, and unsupported-pad diagnostics. Depends on DA29-021.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b31b3b2a1da4715c01c48b85619da846fb05b518ce2a77b1254124ff6e93b6d7"
+    "value": "ec4f77004196348efa19c20982af96cad180233d4faec32c6c07709045992d9a"
   }
 }

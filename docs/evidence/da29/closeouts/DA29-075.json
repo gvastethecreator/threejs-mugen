@@ -3,15 +3,15 @@
   "id": "DA29-075",
   "kind": "I",
   "wave": 7,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
   "acceptance": "Source-backed fixture covers shadow color/intensity/scale/fade and reflection or explicit unsupported diagnostics; capture and cleanup pass.",
   "risk": "Effects can distort sprite fidelity. Allows named subset only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -20,7 +20,7 @@
     "public/stages/rooftop-dojo/rooftop-dojo.png"
   ],
   "commands": [
-    "implementation probe DA29-075"
+    "implementation probe DA29-075 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -30,19 +30,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-075 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-075 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c101124f42fdb80474f78a538187b193bbbe6a37334920066da98ec3db8f9d9e"
+    "value": "3020d23bed3b35f431f37b88cc5918e6e2801fd43ea483dc0ea8d8f68e265429"
   }
 }

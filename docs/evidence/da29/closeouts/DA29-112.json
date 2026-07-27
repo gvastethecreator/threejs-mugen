@@ -5,13 +5,13 @@
   "wave": 11,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Review Frame Ledger desktop information priority. Depends on DA29-111 and DA29-065.",
   "acceptance": "Wire-level decision sets stage minimum, panel collapse, HUD/control hierarchy, runtime diagnostics, and task flows at 1280/1440 widths with measured geometry.",
   "risk": "Dense panels can obscure play. Allows layout decision only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b0a2fbe94208a52696c0ad882e1cea502663ac2524aecc8aaa6f0deddd69bd40"
+    "value": "90bb08a1916269db0f8113d2e4ccaf946d9919c5299e88eec54c845bd8bfcf5a"
   }
 }

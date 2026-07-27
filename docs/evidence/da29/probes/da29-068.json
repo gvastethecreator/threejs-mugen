@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-068",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Load and render team-aware lifebar metadata. Depends on DA29-062, DA29-064, DA29-066, and DA29-076.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5d22d24a1c365aa8d0919ae7feaf10d40de2ad1011c0971b772f5153a2da442b"
+    "value": "175aca58257cd24c498396d4cfbe7b5c5b54fcf6f85aa0526fce1c1a3b4ba11a"
   }
 }

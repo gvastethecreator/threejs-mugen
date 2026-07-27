@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-182",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Add transactional undo/redo for source and project edits. Depends on DA29-095, DA29-096, and DA29-181.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2ecf142e82a9790005b188974e6c2a07131f72ddc17d7cf2975afeb6f690816c"
+    "value": "576c440f67fc52f1f0a03348eee9249c51cde93ec81b0013c962f1bb904c654e"
   }
 }

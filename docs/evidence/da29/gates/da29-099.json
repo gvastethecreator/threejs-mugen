@@ -1,21 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-099",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "browser-matrix",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove crash/reopen and multi-tab concurrency. Depends on DA29-092…098.",
   "acceptance": "Browser matrix covers reload, process-like crash injection, two tabs, stale writer, lock loss, conflict resolution, and final byte/revision integrity.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/da29/browser/match-desktop.png",
-    "docs/evidence/da29/browser/match-mobile.png",
-    "docs/evidence/da29/browser/studio-workbench-desktop.png"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "2761d05d9832b2e448575c6b399d988f998f51db2696557a43563c9ef2398fe9"
+    "value": "4e6378d51393d4ebd3f39453c4b211d23b363ef14b0a1b1885b3cc42b8909bd9"
   }
 }

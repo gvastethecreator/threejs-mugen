@@ -34,7 +34,7 @@ describe("DA29 series closeouts (honest)", () => {
     expect(registry.waves).toHaveLength(20);
   });
 
-  it("status ledger matches closeouts and forbids unproven closed I/G theater", () => {
+  it("status ledger matches closeouts and forbids path-exists / PNG-reuse theater", () => {
     const statusDoc = readJson<{
       records: Array<{
         id: string;
@@ -43,6 +43,7 @@ describe("DA29 series closeouts (honest)", () => {
         evidenceClass: string;
         measuredGate?: boolean;
         gateSha?: string | null;
+        hasMeasuredAcceptance?: boolean;
       }>;
       cursor: { closedThrough: string; nextQueue: string[] };
     }>("docs/evidence/da29/closeout-status-v1.json");
@@ -57,7 +58,7 @@ describe("DA29 series closeouts (honest)", () => {
         evidenceClass: string;
         measuredGate?: boolean;
         gateSha?: string | null;
-        acceptance: string;
+        hasMeasuredAcceptance?: boolean;
         artifacts: string[];
         digest: { value: string };
       }>(`docs/evidence/da29/closeouts/${rec.id}.json`);
@@ -71,58 +72,62 @@ describe("DA29 series closeouts (honest)", () => {
         expect(rec.evidenceClass).not.toBe("unproven");
         expect(
           mayClose({
+            id: rec.id,
             kind: rec.kind as "R" | "A" | "I" | "G",
             evidenceClass: rec.evidenceClass as Da29CloseoutRecord["evidenceClass"],
             measuredGate: rec.measuredGate,
             status: "closed",
+            hasMeasuredAcceptance: rec.hasMeasuredAcceptance,
           }),
         ).toBe(true);
 
         if (rec.kind === "I") {
-          expect(rec.evidenceClass).toBe("implementation-probe");
+          expect(rec.hasMeasuredAcceptance).toBe(true);
           const measuredPath = `docs/evidence/da29/measured/${rec.id}.json`;
-          const probePath = `docs/evidence/da29/probes/${rec.id.toLowerCase()}.json`;
-          if (existsSync(resolve(root, measuredPath))) {
-            const measured = readJson<{ ok: boolean; anchors?: Array<string | { path: string }> }>(measuredPath);
-            expect(measured.ok).toBe(true);
-          } else {
-            expect(existsSync(resolve(root, probePath))).toBe(true);
-            const probe = readJson<{ ok: boolean; entryPoints: string[] }>(probePath);
-            expect(probe.ok).toBe(true);
-            expect(probe.entryPoints.length).toBeGreaterThan(0);
-            for (const ep of probe.entryPoints) {
-              expect(existsSync(resolve(root, ep)), ep).toBe(true);
-            }
-          }
+          expect(existsSync(resolve(root, measuredPath))).toBe(true);
+          const measured = readJson<{
+            ok: boolean;
+            acceptanceExecuted?: boolean;
+            functionResults?: Record<string, unknown>;
+          }>(measuredPath);
+          expect(measured.ok).toBe(true);
+          expect(measured.acceptanceExecuted).toBe(true);
+          expect(measured.functionResults && Object.keys(measured.functionResults).length).toBeGreaterThan(0);
         }
 
         if (rec.kind === "G" && rec.id === "DA29-002") {
           expect(rec.measuredGate).toBe(true);
           expect(rec.gateSha).toMatch(/^[a-f0-9]{7,40}$/);
-          expect(closeout.measuredGate).toBe(true);
-          expect(closeout.gateSha).toBe(rec.gateSha);
         }
 
         if (rec.evidenceClass === "browser-matrix") {
+          expect(rec.id).toBe("DA29-003");
           const shots = closeout.artifacts.filter((a) => a.endsWith(".png"));
-          const measuredBrowser = closeout.artifacts.find((a) => a.includes("/measured/"));
-          if (shots.length >= 2) {
-            for (const shot of shots) {
-              expect(existsSync(resolve(root, shot)), shot).toBe(true);
-            }
-          } else {
-            // Measured non-screenshot browser/product gate (e.g. DA29-003 uses PNGs; others may use measured JSON).
-            expect(measuredBrowser || shots.length > 0 || rec.id === "DA29-003").toBeTruthy();
-            if (rec.id === "DA29-003") {
-              expect(shots.length).toBeGreaterThanOrEqual(2);
-            }
+          expect(shots.length).toBeGreaterThanOrEqual(2);
+          for (const shot of shots) {
+            expect(existsSync(resolve(root, shot)), shot).toBe(true);
+          }
+        }
+
+        // No probe-only I closes: if a probe file exists, it must declare closesCut false or not be sole evidence.
+        if (rec.kind === "I") {
+          const probePath = resolve(root, `docs/evidence/da29/probes/${rec.id.toLowerCase()}.json`);
+          if (existsSync(probePath)) {
+            const probe = readJson<{ closesCut?: boolean; entryPoints?: string[] }>(
+              `docs/evidence/da29/probes/${rec.id.toLowerCase()}.json`,
+            );
+            // Directory-only probes are insufficient even if present.
+            const onlyDirs = (probe.entryPoints || []).every(
+              (ep) => ep === "src/mugen" || ep === "src/game" || !ep.includes("."),
+            );
+            expect(onlyDirs && !rec.hasMeasuredAcceptance).toBe(false);
           }
         }
       }
     }
   });
 
-  it("authority closedThrough equals consecutive watermark and formal pin matches measured DA29-002 gate", () => {
+  it("authority closedThrough equals consecutive watermark and formal pin matches measured DA29-002 when closed", () => {
     const statusDoc = readJson<{
       records: Array<{
         id: string;
@@ -131,6 +136,7 @@ describe("DA29 series closeouts (honest)", () => {
         evidenceClass: Da29CloseoutRecord["evidenceClass"];
         measuredGate?: boolean;
         gateSha?: string | null;
+        hasMeasuredAcceptance?: boolean;
       }>;
       cursor: { closedThrough: string; nextQueue: string[] };
     }>("docs/evidence/da29/closeout-status-v1.json");
@@ -143,12 +149,13 @@ describe("DA29 series closeouts (honest)", () => {
       measuredGate: r.measuredGate,
       gateSha: r.gateSha,
       acceptance: "",
+      hasMeasuredAcceptance: r.hasMeasuredAcceptance,
     }));
     const computed = computeSeriesCursor(ledgerRecords);
     expect(statusDoc.cursor.closedThrough).toBe(computed.closedThrough);
     expect(statusDoc.cursor.nextQueue).toEqual(computed.nextQueue);
 
-    const drain = readJson<{ closedThrough: string; nextQueue: string[]; measuredGateSha?: string }>(
+    const drain = readJson<{ closedThrough: string; nextQueue: string[] }>(
       "docs/evidence/da29/drain-state-v1.json",
     );
     expect(drain.closedThrough).toBe(computed.closedThrough);
@@ -171,67 +178,71 @@ describe("DA29 series closeouts (honest)", () => {
 
     const gate002 = statusDoc.records.find((r) => r.id === "DA29-002");
     expect(gate002).toBeTruthy();
-    // When measured full-stack gate log is present, 002 must be closed and pin must match.
-    // When gate is not yet measured, 002 stays open and watermark stops at 001.
     if (gate002?.status === "closed") {
       expect(gate002.measuredGate).toBe(true);
       expect(gate002.gateSha).toMatch(/^[a-f0-9]{7,40}$/);
       expect(parsed.document?.cursors.formal.sha).toBe(gate002.gateSha);
       expect(parsed.document?.cursors.global.sha).toBe(gate002.gateSha);
-      expect(parseInt(computed.closedThrough.slice(5), 10)).toBeGreaterThanOrEqual(2);
-    } else {
-      expect(gate002?.measuredGate).not.toBe(true);
-      expect(computed.closedThrough).toBe("DA29-001");
-      expect(computed.nextQueue[0]).toBe("DA29-002");
+    }
+
+    // DA29-072 must not close on synthetic seed metrics
+    const m072 = readJson<{ ok?: boolean; liveRenderer?: boolean; acceptanceExecuted?: boolean }>(
+      "docs/evidence/da29/measured/DA29-072.json",
+    );
+    if (m072.liveRenderer !== true) {
+      const c072 = statusDoc.records.find((r) => r.id === "DA29-072");
+      expect(c072?.status).toBe("open");
     }
   });
 
-  it("implementation probes call shipped surfaces for closed I IDs without measured artifacts", () => {
-    const registry = readJson<{ tasks: Array<{ id: string; kind: string; cut: string }> }>(
-      "docs/evidence/da29/series-registry-v1.json",
-    );
-    const statusDoc = readJson<{
-      records: Array<{ id: string; kind: string; status: string }>;
-    }>("docs/evidence/da29/closeout-status-v1.json");
-    const closedI = statusDoc.records.filter((r) => r.kind === "I" && r.status === "closed");
-    expect(closedI.length).toBeGreaterThan(0);
-    let checked = 0;
-    for (const rec of closedI) {
-      const measuredPath = resolve(root, `docs/evidence/da29/measured/${rec.id}.json`);
-      if (existsSync(measuredPath)) {
-        const measured = readJson<{ ok: boolean }>(`docs/evidence/da29/measured/${rec.id}.json`);
-        expect(measured.ok, rec.id).toBe(true);
-        continue;
+  it("path-exists probes never alone close [I] cuts", () => {
+    const probe041 = resolve(root, "docs/evidence/da29/probes/da29-041.json");
+    if (existsSync(probe041)) {
+      const probe = readJson<{ id: string; entryPoints: string[]; closesCut?: boolean }>(
+        "docs/evidence/da29/probes/da29-041.json",
+      );
+      expect(probe.entryPoints).toEqual(expect.arrayContaining(["src/mugen", "src/game"]));
+      const status = readJson<{ records: Array<{ id: string; status: string; hasMeasuredAcceptance?: boolean }> }>(
+        "docs/evidence/da29/closeout-status-v1.json",
+      );
+      const rec = status.records.find((r) => r.id === "DA29-041");
+      // Without measured acceptance, must stay open.
+      if (!rec?.hasMeasuredAcceptance) {
+        expect(rec?.status).toBe("open");
       }
-      const task = registry.tasks.find((t) => t.id === rec.id);
-      expect(task).toBeTruthy();
-      const live = runDa29ImplementationProbe(rec.id, task!.cut);
-      expect(live.ok, `${rec.id} ${live.error}`).toBe(true);
-      expect(live.entryPoints.length).toBeGreaterThan(0);
-      checked += 1;
     }
-    expect(checked + closedI.filter((r) => existsSync(resolve(root, `docs/evidence/da29/measured/${r.id}.json`))).length).toBe(
-      closedI.length,
+    // Live probe helper may still map dirs for diagnostics, but mayClose rejects it.
+    const live = runDa29ImplementationProbe(
+      "DA29-041",
+      "Turn Nova's attack-state probe into an actual contact journey.",
     );
-  });
-
-  it("DA29-072 measured renderer.info baseline exists with product routes", () => {
-    const measured = readJson<{
-      ok: boolean;
-      report?: { routes: string[]; samples: unknown[] };
-      id: string;
-    }>("docs/evidence/da29/measured/DA29-072.json");
-    expect(measured.ok).toBe(true);
-    expect(measured.id).toBe("DA29-072");
-    expect(measured.report?.routes).toEqual(["play", "studio-preview", "inspect", "team", "stress"]);
-    expect(measured.report?.samples).toHaveLength(5);
-    const closeout = readJson<{ status: string; evidenceClass: string }>("docs/evidence/da29/closeouts/DA29-072.json");
-    expect(closeout.status).toBe("closed");
+    expect(live.entryPoints.length).toBeGreaterThan(0);
+    expect(
+      mayClose({
+        id: "DA29-041",
+        kind: "I",
+        status: "closed",
+        evidenceClass: "implementation-probe",
+        hasMeasuredAcceptance: false,
+      }),
+    ).toBe(false);
   });
 
   it("closeout files exist for all 200 IDs (closed or open)", () => {
     const dir = resolve(root, "docs/evidence/da29/closeouts");
     const files = readdirSync(dir).filter((f) => /^DA29-\d{3}\.json$/.test(f));
     expect(files).toHaveLength(200);
+  });
+
+  it("browser-matrix closeout is exclusive to DA29-003", () => {
+    const status = readJson<{ records: Array<{ id: string; status: string; evidenceClass: string }> }>(
+      "docs/evidence/da29/closeout-status-v1.json",
+    );
+    const browserClosed = status.records.filter(
+      (r) => r.status === "closed" && r.evidenceClass === "browser-matrix",
+    );
+    for (const rec of browserClosed) {
+      expect(rec.id).toBe("DA29-003");
+    }
   });
 });

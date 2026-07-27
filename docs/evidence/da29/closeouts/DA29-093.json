@@ -3,15 +3,15 @@
   "id": "DA29-093",
   "kind": "I",
   "wave": 9,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
   "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
   "risk": "Fail-open data loss. Allows error handling routes only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -21,7 +21,7 @@
     "src/mugen"
   ],
   "commands": [
-    "implementation probe DA29-093"
+    "implementation probe DA29-093 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -31,19 +31,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-093 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-093 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c88964a898a01a6f09e23a7052d2c5262a173b9feaf911d047d002bfa2c90329"
+    "value": "f69d8f65b2475c7cf69c0d6686ae1c179b7b1a54765688d51926dd2c529ec7c3"
   }
 }

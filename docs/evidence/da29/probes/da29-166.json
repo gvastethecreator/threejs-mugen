@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-166",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Close continue, winquote, intro, and ending flow for one arcade route. Depends on DA29-160, DA29-163…165.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0c7c8a82cf14874aab078318956a5fc9d6745929f1adc70312cc4d085c87c570"
+    "value": "4c3b34e64b1ff47f7f36dfe3f66af754e0f6c8b3ec85340a9cb373d5bd2e1291"
   }
 }

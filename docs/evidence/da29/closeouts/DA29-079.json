@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define audio decode, cache, voice, and lifecycle policy. Depends on DA29-071 and DA29-083.",
   "acceptance": "ADR covers AudioContext creation/resume/close, buffers, voice stealing, pan/volume, pause, reset, errors, cache caps, and deterministic telemetry.",
   "risk": "Browser gesture and leaks. Allows architecture only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2fe5f477a7f8ac785f8636c326864638e21fd5122ebacc97babc527e4287681a"
+    "value": "8cb42c09dfee6be96eeeaddfcb07022e731ba9cb5a6477cb92c339ce60eea9b2"
   }
 }

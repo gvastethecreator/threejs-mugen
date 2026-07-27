@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-146",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add dependency, license, secret, and public-bundle review. Depends on DA29-110 and DA29-143.",
   "acceptance": "Lockfile/dependency policy, license allowlist, known-vulnerability review, secret-like scan, source map/public path scan, and third-party asset rejection produce signed facts.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-146-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "86e41ef176e08bc75322a3770d8176e7b591d231bf268c4c1dc72045f951bf21"
+    "value": "b90f2e131952e1962adb4741c02f43bfcc45de696ec49cb8ee3f55c616664a1d"
   }
 }

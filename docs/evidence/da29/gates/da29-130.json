@@ -1,21 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-130",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "browser-matrix",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Run a long deterministic soak. Depends on DA29-121…129.",
   "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/da29/browser/match-desktop.png",
-    "docs/evidence/da29/browser/match-mobile.png",
-    "docs/evidence/da29/browser/studio-workbench-desktop.png"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "685d468a7f75015f48671472d454b9a07eae160c8b934b83d4e5424c322458be"
+    "value": "0d3001d5061468168fe5b95d72636d8e8f3db4ee482027f0eeb317e0a1ee39d9"
   }
 }

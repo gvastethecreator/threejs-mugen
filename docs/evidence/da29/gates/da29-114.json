@@ -1,21 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-114",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove full keyboard operation and focus order. Depends on DA29-111.",
   "acceptance": "Import, play controls, panels, dialogs, Studio actions, and errors work without pointer; focus order follows task flow and escape/return behavior is stable.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/closeouts/DA29-114.json",
-    "docs/evidence/da29/measured/DA29-114.json",
-    "src/app/App.ts",
-    "src/styles/redesign.css"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "7d00b3e97a8197f3595f3119d6ee4abb9176eda8336fe2d623346e1e538eaffa"
+    "value": "a64be8bc9b6a16d9d07b9ea672e3510550d67798fdcd973b15624bcf2ad58a24"
   }
 }

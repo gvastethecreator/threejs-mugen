@@ -3,15 +3,15 @@
   "id": "DA29-024",
   "kind": "I",
   "wave": 2,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Persist per-seat SOCD and input profile ownership. Depends on DA29-021 and DA29-023.",
   "acceptance": "Reopen and seat-swap tests prove profile identity, version migration, reset, and deterministic resolution; match snapshots expose the chosen policy.",
   "risk": "Settings can alter replay. Allows versioned profile behavior only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -21,7 +21,7 @@
     "src/mugen"
   ],
   "commands": [
-    "implementation probe DA29-024"
+    "implementation probe DA29-024 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -31,19 +31,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-024 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-024 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "539d64b7938c3f823d2245f8456d7a143847284ff221ca2f13312bc12563bdf1"
+    "value": "9e93dd68760e5ff2683c26926a0dfa282f5b02a779a700d1b0eddbac473b3b98"
   }
 }

@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-196",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Generate API and format support references. Depends on DA29-034, DA29-035, DA29-090, DA29-168, and DA29-192.",
   "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-196-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "e73552469afb5d756863de6d97c9747a574940b0db5b17eb468939e300b78940"
+    "value": "fc3925504715d470cb9a59754512dfd4a6575c718a97917c81391958d35fbb0d"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-194",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "package.json"
@@ -11,8 +11,9 @@
   },
   "error": null,
   "cut": "Add a headless import/analyze/build CLI over shared ports. Depends on DA29-087, DA29-136, DA29-188, and DA29-192.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "87d9430631533ad2f0d8bca9f78ae4706bcb1e4b21b0b87882baa239c897c10a"
+    "value": "a211cdd37def1048531adad60a4929d1325b2390c4390097429bedb9d85d26a5"
   }
 }

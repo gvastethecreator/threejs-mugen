@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-041",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Turn Nova's attack-state probe into an actual contact journey. Depends on DA29-002, DA29-020, and DA29-040.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8b4a6f27f81c6a656f2d3e5dbf66ece3f5125d542cafd6adc157f3783aa460bd"
+    "value": "23d71d160efa6a19c78ba05f4406a57ab775a3ef68131101b902b80075d68b52"
   }
 }

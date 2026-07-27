@@ -1,25 +1,22 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-134",
-  "generatedAt": "2026-07-27T04:27:24.889Z",
-  "ok": true,
+  "generatedAt": "2026-07-27T04:35:46.277Z",
   "kind": "I",
+  "ok": true,
+  "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-134",
   "anchors": [
     {
       "path": "src/mugen/compatibility/AuthoritySelector.ts",
       "bytes": 14652,
       "sha256": "eb85d4355695e13639eea5f2b706ec84cfcb2d4efed50c31da5932e38be005fb"
-    },
-    {
-      "path": "src/engine/CommonEvidenceFacts.ts",
-      "bytes": 6740,
-      "sha256": "4411e8c0a38c52bf6d0949fe0c4315b44b736058ebff6740fbf7809ecf2a6544"
     }
   ],
-  "facts": {
-    "digest": "fcf01ccb68cae50f",
-    "algorithm": "sha-256"
+  "functionResults": {
+    "digestPrefix": "e14cce6257f256d8",
+    "closedThrough": "DA29-002",
+    "nextHead": "DA29-003"
   },
-  "claimCeiling": "SHA-256 digest adapter via authority selector"
+  "claimCeiling": "SHA-256 digest adapter via createAuthoritySelectorDocument"
 }

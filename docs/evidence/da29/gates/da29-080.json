@@ -1,21 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-080",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "browser-matrix",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove Common.Fx and character audio output in browsers. Depends on DA29-079 and DA29-003.",
   "acceptance": "Gesture-gated Chromium route verifies decoded repository-owned samples, graph connection, non-zero post-mixer signal, pan/volume, overlap, stop/reset, errors, and context close.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/da29/browser/match-desktop.png",
-    "docs/evidence/da29/browser/match-mobile.png",
-    "docs/evidence/da29/browser/studio-workbench-desktop.png"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "65f21e4b2d9a05b778cca204b0605c7f0522fd3c9a0b7d0edceb4b91ddea2366"
+    "value": "2294b06673cc96b067f025969a438efca794a15accab9bed749f92e457ec875c"
   }
 }

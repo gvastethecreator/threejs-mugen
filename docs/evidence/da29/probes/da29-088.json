@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-088",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "package.json"
@@ -11,8 +11,9 @@
   },
   "error": null,
   "cut": "Add a live PackageAnalysis revision consumer. Depends on DA29-087 and DA29-091.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "adb2aff8dbcbe112bb3fe4ead6ad0ab7e2e1254daa7ec0854eb31f1e9f89cd25"
+    "value": "ead255701d78840c31fea65e51a6d896ebf2029d457cc9b7640b95e7908d68b3"
   }
 }

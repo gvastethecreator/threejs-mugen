@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-131",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "scripts/check_boundaries.cjs",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Make BoundaryManifest the only required-root source. Depends on DA29-006 and current DA28-30 work.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5ac561265c410dab8cfc1dcf52cb6d78f74accbde94f8d766df56bf8eca2b572"
+    "value": "d81115cd242f24215884df2c3e9c6b78f9883293617a193d0d09b59ad5b5aaa9"
   }
 }

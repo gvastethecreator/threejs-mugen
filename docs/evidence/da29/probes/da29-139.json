@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-139",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Add a minimal non-fighting second consumer. Depends on DA29-132 and DA29-134…138.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c83fce9fcea34e37fbfc6d8271b77a4974af0a5c740e466ce3102e033e23fdae"
+    "value": "54e4b9401719ad5482ece420af03c52d432cae97e0f92fd4d19997589caa4ae3"
   }
 }

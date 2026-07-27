@@ -3,15 +3,15 @@
   "id": "DA29-187",
   "kind": "I",
   "wave": 18,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Add project-wide diagnostics search and navigation. Depends on DA29-087, DA29-183, and DA29-185.",
   "acceptance": "Filter/group by file, severity, capability, source rule, stale state, and owner; keyboard navigation opens exact range; large result sets stay responsive.",
   "risk": "Search indices can stale. Allows displayed current revision only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -21,7 +21,7 @@
     "src/app/App.ts"
   ],
   "commands": [
-    "implementation probe DA29-187"
+    "implementation probe DA29-187 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -31,19 +31,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-187 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-187 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd1ccd70255f4ab59b49b780e8305ffb8b3b481f001b281904c3ab3d4a458bc9"
+    "value": "d6f870661557357030dad1bd50bf60fae4850a8341618c0df410ea0de80819e7"
   }
 }

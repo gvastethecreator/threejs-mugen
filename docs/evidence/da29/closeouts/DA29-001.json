@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "control-adoption",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Adopt the DA29 series from this audit. Depends on this document. Systems: authority selector, roadmap cursor, execution board, linked issues.",
   "acceptance": "Generated selector and cursor agree on `closedThrough`, first queue, all independent pins, and held scores; authority audit passes.",
   "risk": "Control drift. Allows only queue adoption; blocks runtime, product, visual, and score claims.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a3d83022f1115700df7ded10ab14139764c865cb62b15eced064cd84c4d1f935"
+    "value": "d044f2091d6207480564da377b0954f10ef03a99ee311e1bba89ba191b52344d"
   }
 }

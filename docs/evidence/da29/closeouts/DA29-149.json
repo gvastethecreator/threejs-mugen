@@ -3,51 +3,46 @@
   "id": "DA29-149",
   "kind": "I",
   "wave": 14,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Generate current docs and archive historical views. Depends on DA29-010, DA29-007, and DA29-148.",
   "acceptance": "Current summaries derive from selector/registries/corpus; append-only history retains stable links; size/search checks pass; manual stale overrides fail audit.",
   "risk": "Generation can erase context. Allows synchronized docs only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "docs/AUTHORITY_SELECTOR.md",
-    "docs/evidence/authority-selector-v1.json"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
   "commands": [
-    "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-149"
+    "implementation probe DA29-149 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-149.json",
-    "docs/evidence/da29/measured/DA29-149.json",
-    "docs/AUTHORITY_SELECTOR.md",
-    "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/probes/da29-149.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-149 closed as implementation-probe",
-      "current control docs + series registry present"
+      "DA29-149 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond written claim ceiling"
+      "no shipped probe mapping for cut",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1db01058bbb60b2ca853e744d77d2f146ddebf4a133a6ed921228869b67495cb"
+    "value": "446b6d30070f39fc6cd89e758186da9ff6aa3f6ec9bcb89fad84743900eb8d6f"
   }
 }

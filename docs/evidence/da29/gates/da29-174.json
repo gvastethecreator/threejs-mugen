@@ -1,20 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-174",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prototype a bounded Lua sandbox offline. Depends on DA29-125 and DA29-173.",
   "acceptance": "Repository-owned scripts test allowlisted APIs, deterministic clock/RNG, memory/instruction/time caps, cancellation, errors, no file/network/DOM access, and worker termination.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/closeouts/DA29-174.json",
-    "docs/evidence/da29/measured/DA29-174.json",
-    "docs/IKEMEN_GO_REFERENCE.md"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "a2c289aa7a3e9d013a51ecbf59ebd05bebf364e0018d554a427ab2eb015c53c9"
+    "value": "216327c0e6206d253fa05d36d0cc61e2e11fce4b8bd07ca6abf89d73d4c4ae52"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 16,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define UI text, motif strings, and localization ownership. Depends on DA29-161, DA29-162, and DA29-116.",
   "acceptance": "ADR distinguishes authored motif text, engine copy, locale selection, fallback, encoding, bidi, truncation, accessible names, and evidence snapshots.",
   "risk": "Localization can alter layout and authored meaning. Allows architecture only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "09b9bf9bb2d2b3c5f295ab5d148fb36a88bc61d15cf17e5505c0fefca12a92d4"
+    "value": "29783d557e30fe1274ef37b7c823ce2920d2bec4da54decdb7381e1441404fb2"
   }
 }

@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-083",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Audit and extend SND parsing breadth. Depends on DA29-081.",
   "acceptance": "Fixtures cover groups/samples, format metadata, decode outcomes, corrupt/truncated data, duplicate IDs, caps, deterministic digests, and audio handoff.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-083-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "c92d53811f03513c5b1d7d68ecfdd58ece5c177615854117146fc78bfc59abdf"
+    "value": "a766b7d66155afa7545c70b0219f37a51aaa54d077b3005fda351ca9da09b4f0"
   }
 }

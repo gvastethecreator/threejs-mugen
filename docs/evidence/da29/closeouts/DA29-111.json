@@ -5,13 +5,13 @@
   "wave": 11,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Inventory current user routes and viewport states. Depends on DA29-003.",
   "acceptance": "Route map covers first run, import, play, pause, inspect, Studio edit/save/reopen, evidence, build/export, errors, empty/loading, mobile/desktop, and ownership.",
   "risk": "Missing states hide UX debt. Allows inventory only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,8 +39,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "41e4c8e3bbd4ff32f0d8fd6287f5cc981addfe806da2b2ef751c68b8468ca454"
+    "value": "45c81f58e17865a5a0795413215ffd794e265f0c08f53e87ec0189ffcca51beb"
   }
 }

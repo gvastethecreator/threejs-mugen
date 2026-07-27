@@ -3,15 +3,15 @@
   "id": "DA29-062",
   "kind": "I",
   "wave": 6,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Add a bounded Simul spawn/input route. Depends on DA29-061, DA29-021, and DA29-043.",
   "acceptance": "Two-versus-two route proves authored positions, facing, input ownership, collision participation, camera framing, and reset.",
   "risk": "Four actors stress geometry. Allows one Simul route only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -21,7 +21,7 @@
     "src/mugen"
   ],
   "commands": [
-    "implementation probe DA29-062"
+    "implementation probe DA29-062 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -31,19 +31,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-062 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-062 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd214ec789d93dfed1ecede3135d400a4007300cba73b3b146849733d2750ffc"
+    "value": "47f4314c68aad15ad8137fe2d5f412d9a63af418abbcc5130aa24d82bb553caa"
   }
 }

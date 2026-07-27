@@ -3,51 +3,46 @@
   "id": "DA29-097",
   "kind": "I",
   "wave": 9,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Revalidate file-handle permissions on reopen and write. Depends on DA29-091 and DA29-094.",
   "acceptance": "Granted, prompt, denied, revoked, missing handle, moved file, read-only, and user-cancel routes produce clear product state and no silent data loss.",
   "risk": "Browser permission state changes. Allows tested browser routes only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "src/app/SourceWriteJournal.ts",
-    "src/app/StudioSourceWrite.ts",
-    "src/app/StudioSourceWriteReceipt.ts"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
   "commands": [
-    "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-097"
+    "implementation probe DA29-097 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-097.json",
-    "docs/evidence/da29/measured/DA29-097.json",
-    "src/app/SourceWriteJournal.ts",
-    "src/app/StudioSourceWrite.ts",
-    "src/app/StudioSourceWriteReceipt.ts"
+    "docs/evidence/da29/probes/da29-097.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-097 closed as implementation-probe",
-      "source-write modules present; full handle reopen matrix broader"
+      "DA29-097 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond written claim ceiling"
+      "no shipped probe mapping for cut",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9310c5ef8a6fb3ffd8061171bc3ed7f867973de5b4906cdecff536085f5599c4"
+    "value": "c7d736a9def743f442c0d3e3ce4648efb25396a776dce0e75d34bdf8972ae398"
   }
 }

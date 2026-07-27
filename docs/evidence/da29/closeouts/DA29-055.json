@@ -3,15 +3,15 @@
   "id": "DA29-055",
   "kind": "I",
   "wave": 5,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Audit and prove effect lifecycle under pause/reset. Depends on DA29-027, DA29-050, and DA29-053.",
   "acceptance": "Explods, sounds, afterimages, shakes, and transient overlays list owner, clock, pause, cleanup, and resource disposal; two imported routes pass.",
   "risk": "Visual effects can retain runtime resources. Allows listed effects only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -21,7 +21,7 @@
     "src/game"
   ],
   "commands": [
-    "implementation probe DA29-055"
+    "implementation probe DA29-055 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
@@ -31,19 +31,20 @@
   ],
   "claims": {
     "allowed": [
-      "DA29-055 closed as implementation-probe",
-      "unit/static implementation probe against shipped entry points"
+      "DA29-055 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond named entry points"
+      "no acceptance-executed measured evidence",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "859ebb46a1bd0ac5c1656ef0da1a183675fb20cd41b3b11cf14b70f0404bc82b"
+    "value": "4e2bc8d446d3bbef15076480e38ff78ae8492e669dbf6bc3d60b59f04ca52d6b"
   }
 }

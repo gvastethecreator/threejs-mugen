@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-108",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Make AssetReleasePolicy consume live project records. Depends on DA29-103…107.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "79bfc4a635758b91a3c337ca3e1491524cdfa561e39ba2ac10bfad96d47b8f93"
+    "value": "24a9009da84f2a9c52a75682c279e3126158c2e2e91bcba92ec8651a3135d89c"
   }
 }

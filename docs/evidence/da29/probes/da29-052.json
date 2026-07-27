@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-052",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Prove one nested Helper command/state journey. Depends on DA29-051 and DA29-037.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "fb706dc8f7fff2ae4c63c6d6dfc185517908b62d029f99b7b9252a199da096ab"
+    "value": "69376d58117a3c57d6c8bf62a278842c435120722ebf6c31706c6faf0a294be0"
   }
 }

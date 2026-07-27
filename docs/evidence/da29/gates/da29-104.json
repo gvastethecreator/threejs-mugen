@@ -1,21 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-104",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "browser-matrix",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove sprite-atlas transform reproducibility. Depends on DA29-102 and DA29-103.",
   "acceptance": "Given recorded inputs/version/options, atlas metadata and pixels match digest or approved tolerance; trim, pivot, scale, padding, order, and failure cases are tested.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/closeouts/DA29-104.json",
-    "docs/evidence/da29/measured/DA29-104.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "public/characters/nova-boxer/sprite-sheet-alpha.png"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "44d7dbade5c27f2b94fcd450298be72c10cdd255cd9853967ffb2057b311d7cc"
+    "value": "94608f7ee428fa2e48cec5767e39aeeb41a8f052097544a47a6fa5a76a3db9a4"
   }
 }

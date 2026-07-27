@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-050",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove round-reset combat cleanup. Depends on DA29-045…049.",
   "acceptance": "Matrix lists which hits, targets, binds, pauses, projectiles, helpers, effects, inputs, power, vars, and team state clear or persist across round/reset paths.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-050-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "6c456d59afc4a145ed31461f0195fa883ea229301d3f8f86ea648db2ce5179e8"
+    "value": "267411aeb132d65255366d0cbe19610b18767ac95298ab4ec782488ff42b3fb6"
   }
 }

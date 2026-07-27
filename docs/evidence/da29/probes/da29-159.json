@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-159",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Build a real character/stage select journey. Depends on DA29-158, DA29-113…117, and DA29-074.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b7837986dc26996cec1d229acd278a6691991be0103c1aba8aa514d681861799"
+    "value": "1db249735582e706112c233bb6a23b43dd79521660001ab553c78a836a3a9d15"
   }
 }

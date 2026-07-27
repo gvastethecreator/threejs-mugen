@@ -5,13 +5,13 @@
   "wave": 17,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define IKEMEN module packaging and capability permissions. Depends on DA29-172…174.",
   "acceptance": "ADR covers manifest, identity, version, dependencies, requested capabilities, signatures/digests, trust, updates, isolation, diagnostics, and uninstall cleanup.",
   "risk": "Extension power expands attack surface. Allows package design only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "61e13cf34abcc2d07f5cae56102b441513e10fbbff69964fb78fd18502db2db9"
+    "value": "b4d6a9bbfc777939e5e00574a2487f4ba65ad4c525c9b066601aab9810cd2cc1"
   }
 }

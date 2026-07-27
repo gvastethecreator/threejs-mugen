@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-075",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "public/stages/rooftop-dojo/rooftop-dojo.png"
@@ -11,8 +11,9 @@
   },
   "error": null,
   "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "21033442eaf694a7c4915d103f82296dfaf807ae3adbdae479a135399a546fcf"
+    "value": "3ed52f99a180e077f78f31a30b923b6544b20b8f113401ab95cdccfd5b9af141"
   }
 }

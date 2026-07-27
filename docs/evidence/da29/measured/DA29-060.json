@@ -1,0 +1,28 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-060",
+  "generatedAt": "2026-07-27T04:35:46.288Z",
+  "kind": "G",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-060",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/PluralCombatOracle.ts",
+      "bytes": 6514,
+      "sha256": "5e0f4e781324bea1a467c074a3ccf31a4a82745816977301342d78af200595b6"
+    },
+    {
+      "path": "src/mugen/runtime/LivePluralCombatOracle.ts",
+      "bytes": 6891,
+      "sha256": "f008cf00a2792192a7aefd5d444aac58e5a9396ae065524ce593ea653e1174f6"
+    }
+  ],
+  "functionResults": {
+    "schema": "PluralCombatOracle/v1",
+    "cellCount": 2,
+    "admittedCount": 1,
+    "checksum": "af5986bf"
+  },
+  "claimCeiling": "plural combat oracle unit execution only; not full multi-device stress matrix"
+}

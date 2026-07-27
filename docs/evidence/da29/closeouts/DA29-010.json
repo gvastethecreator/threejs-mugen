@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Plan control-doc compaction and generated current views. Depends on DA29-006 and DA29-007. Systems: backlog, workplan, tracker, package milestones, supported features.",
   "acceptance": "Ownership map selects append-only ledgers versus generated current summaries, archive rules, stable anchors, and migration checks.",
   "risk": "A rewrite could lose history. Allows an approved migration plan only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "d095989cca949f1ca8e1f12be5ffc2ca993619eca8d12f1eb4c42cdbebd4af27"
+    "value": "96d300ac8f8d9ccd5f0a2b13bf346734eb7d401f0285df4d8e8b09e9b569bf21"
   }
 }

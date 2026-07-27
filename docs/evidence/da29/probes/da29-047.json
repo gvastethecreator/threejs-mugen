@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-047",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Extend active juggle to a real multi-hit route. Depends on DA29-041, DA29-046, and focal T406.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ccf0dde11d6067d18fccbcba1496bac96d1d6c57d1e560ab5c1439d53e89a3d0"
+    "value": "b4f2a2502418fd678adbc164849ba18425cb80190c9443f5ef96b25ccd27c810"
   }
 }

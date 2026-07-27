@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-176",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Execute one source-reviewed ZSS extension subset. Depends on DA29-172, DA29-175, and a dedicated capability registry.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5782da6fb1029111d1d91b5dc1e6b8c10631a8982589cd6e4f9882c3a33e9ace"
+    "value": "222dbfff0c95acaf834fed8b736d1b72613bde0ff383d88166025b38f6a1b419"
   }
 }

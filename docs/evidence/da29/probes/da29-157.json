@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-157",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/app/App.ts",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Add bounded training-mode controls. Depends on DA29-021, DA29-026, DA29-050, and DA29-119.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "97f6299c2ba1f480fe5b3f23229b36f5156107be5eb30b3f1e3ed320337923e5"
+    "value": "39c0e4a417651c8670674b5c83d443166ce91258620c8fe3959ace3142f97c5f"
   }
 }

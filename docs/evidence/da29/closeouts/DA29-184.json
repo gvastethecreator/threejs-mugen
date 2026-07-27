@@ -3,49 +3,46 @@
   "id": "DA29-184",
   "kind": "I",
   "wave": 18,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Add source diff, external-change, and merge workflow. Depends on DA29-090, DA29-097, DA29-098, and DA29-182.",
   "acceptance": "Base/local/external revisions show semantic and text changes, conflicts, safe choices, stale evidence, byte result, undo, and reopened integrity.",
   "risk": "Automatic merge can corrupt syntax. Allows tested merge cases only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "src/app/StudioSourceWrite.ts",
-    "src/app/StudioEditHistory.ts"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
   "commands": [
-    "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-184"
+    "implementation probe DA29-184 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-184.json",
-    "docs/evidence/da29/measured/DA29-184.json",
-    "src/app/StudioSourceWrite.ts",
-    "src/app/StudioEditHistory.ts"
+    "docs/evidence/da29/probes/da29-184.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-184 closed as implementation-probe",
-      "studio source write/history surfaces"
+      "DA29-184 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond written claim ceiling"
+      "no shipped probe mapping for cut",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "eb9aba2b64ca9fb88eea059f736a0849faafa37baa404ab5b42de76e556041a9"
+    "value": "b0b67cee19c38cb27daa04f42bf6d2b06b3eb936148f5671e0fe034719799f7b"
   }
 }

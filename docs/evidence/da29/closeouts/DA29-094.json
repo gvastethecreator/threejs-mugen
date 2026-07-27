@@ -3,51 +3,46 @@
   "id": "DA29-094",
   "kind": "I",
   "wave": 9,
-  "status": "closed",
-  "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Journal source-write intent before mutation using actual bytes. Depends on DA29-091 and DA29-008.",
   "acceptance": "Preimage bytes/digest, intended bytes/digest, handle/path identity, project revision, timestamp, and intent state persist before the writable opens; failure blocks write.",
   "risk": "Post-write journal cannot recover crash. Allows one-file intent durability only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "src/app/SourceWriteJournal.ts",
-    "src/app/StudioSourceWrite.ts",
-    "src/app/StudioSourceWriteReceipt.ts"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
   "commands": [
-    "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-094"
+    "implementation probe DA29-094 (diagnostic only)"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-094.json",
-    "docs/evidence/da29/measured/DA29-094.json",
-    "src/app/SourceWriteJournal.ts",
-    "src/app/StudioSourceWrite.ts",
-    "src/app/StudioSourceWriteReceipt.ts"
+    "docs/evidence/da29/probes/da29-094.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-094 closed as implementation-probe",
-      "source-write journal modules present; full FS permission matrix broader"
+      "DA29-094 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "product/runtime parity beyond written claim ceiling"
+      "no shipped probe mapping for cut",
+      "path-exists / directory probes do not close [I] cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "25d11cfce9b59e2698cfc0b97b749378f8fdb559fab80d2952d4df0bf0c0729c"
+    "value": "ca36ce4bcd305f9782461c383315457d41a996e5dcc7c770bd5c4713b213d6bc"
   }
 }

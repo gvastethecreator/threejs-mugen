@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-022",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "583c41b980ba8baaeb3245ce392437ae7d3362ac7f246c30d00ba68e4cf76025"
+    "value": "8ee2f96e90cc164f70192d58e1dee67ed89e2948b401aa4157b17ac6e86c147c"
   }
 }

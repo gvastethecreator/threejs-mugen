@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define semantic versioning, migration, and deprecation policy. Depends on DA29-181, DA29-192, and DA29-196.",
   "acceptance": "Policy separates project schema, evidence, source/profile, public API, plugin, asset, and runtime compatibility versions with support windows and migration gates.",
   "risk": "One version cannot express all contracts. Allows policy only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "70f31014707ce3db275ff54d1cb0123875b8d0c86b4a1cd1ebfda1ca3f0ca0c3"
+    "value": "fa555a88eca47bfab77dca6075c0c9621a0f319b49a2f7b2ef22f00f16a9c2b6"
   }
 }

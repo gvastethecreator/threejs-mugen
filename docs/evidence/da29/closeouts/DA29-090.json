@@ -3,53 +3,44 @@
   "id": "DA29-090",
   "kind": "G",
   "wave": 8,
-  "status": "closed",
-  "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Prove deterministic scanner reanalysis and semantic diff. Depends on DA29-087 and DA29-088.",
   "acceptance": "Source, ruleset, analyzer, and upstream revisions each trigger a deterministic diff with added/removed/changed findings and stable unchanged rows.",
   "risk": "Timestamp noise obscures meaning. Allows semantic-diff claims only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "src/mugen/compatibility/IkemenFeatureScanner.ts",
-    "src/mugen/compatibility/ScannerCapabilityVector.ts",
-    "docs/evidence/scanner-capability-artifact-v1.json"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
-  "commands": [
-    "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-090"
-  ],
+  "commands": [],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-090.json",
-    "docs/evidence/da29/measured/DA29-090.json",
-    "src/mugen/compatibility/IkemenFeatureScanner.ts",
-    "src/mugen/compatibility/ScannerCapabilityVector.ts",
-    "docs/evidence/scanner-capability-artifact-v1.json",
     "docs/evidence/da29/gates/da29-090.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-090 closed as gate-report",
-      "deterministic digest of analyzer inputs; full semantic diff matrix broader"
+      "DA29-090 remains open"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "formal/global tip rewrite without measured full stack",
-      "score movement"
+      "no acceptance-executed measured evidence for this G id",
+      "shared inventory digests do not close unrelated gates"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "e0d1550fd83d181ddca8b11692da7db961bfbce2482ecf9652a647bc0820ce4c"
+    "value": "1aff3cb045b1a375541f4bbc57f110b1cd8f72ee56ffe4920dc04490a96b5a35"
   }
 }

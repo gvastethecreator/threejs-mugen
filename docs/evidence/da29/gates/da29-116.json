@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-116",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Audit labels, names, states, and target sizes. Depends on DA29-113 and DA29-114.",
   "acceptance": "All icon/short controls expose stable accessible names and states; touch targets meet chosen WCAG policy or record justified exceptions with alternatives.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-116-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "b541b529b039c46e334c5dab11c2a1d9ffc93128128cefa797423bf11a6d9f0a"
+    "value": "d1546e2c9e75d41ff64bae12f031ae90641fc35983c0bc4d06b327bebb051118"
   }
 }

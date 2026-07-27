@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-095",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Implement committed, aborted, and indeterminate recovery. Depends on DA29-094.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5f925ea60d710a10aff76c0efba2fcf7836fb09916c5209186925ac122fe322b"
+    "value": "d52688947eaa966a8c7659d99f3426be20a8e0b41b23ab9dd5d9e213acbaff06"
   }
 }

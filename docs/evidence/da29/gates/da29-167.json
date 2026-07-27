@@ -1,21 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-167",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "browser-matrix",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Reconcile Common1, FightFX, and shared resource dependency closure. Depends on DA29-016, DA29-080, DA29-109, and DA29-164.",
   "acceptance": "Source/package graph records precedence, shadowing, append rules, profile, paths, digests, missing/ambiguous cases, runtime consumers, and browser output.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/da29/browser/match-desktop.png",
-    "docs/evidence/da29/browser/match-mobile.png",
-    "docs/evidence/da29/browser/studio-workbench-desktop.png"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "592dd045ab5c977db5dcd887e421335dc9199c1bc025c8a58c8874e090bfb9f4"
+    "value": "95d967718484533f09c94b45007fe03c2e9cc4b64ce5c9c2230fa5b6f499d822"
   }
 }

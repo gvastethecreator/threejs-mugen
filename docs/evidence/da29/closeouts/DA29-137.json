@@ -5,13 +5,13 @@
   "wave": 13,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define a renderer/resource port. Depends on DA29-071…075 and DA29-123.",
   "acceptance": "Port separates scene facts, camera, resources, lifecycle, metrics, and capture from MUGEN sprites/stages; Three.js adapter passes ownership tests.",
   "risk": "Abstraction can hurt performance. Allows renderer port only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ce8c37bdc493fca2a72529eb3fdd3ec9fa52a9036236c664e1e20f3ac2dad58c"
+    "value": "31bde683d6c906713615d982ce00b915085a8a239febbf1a531928a280f8bea7"
   }
 }

@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-164",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Widen lifebar and `fight.def` rendering. Depends on DA29-068, DA29-076, DA29-161, and DA29-162.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b8f3bdab294826907fdf0a1705b793a9bcdebcd22a6fd34a1c458d2a3911e603"
+    "value": "06ecc9039e15589b6999e4b681a2e75a6032d303b81d1281fb567a9a0ef0ce2c"
   }
 }

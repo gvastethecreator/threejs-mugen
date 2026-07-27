@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-072",
   "kind": "G",
-  "generatedAt": "2026-07-27T04:27:33.526Z",
+  "generatedAt": "2026-07-27T04:35:51.989Z",
   "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
   "command": "pnpm exec vitest run src/tests/RendererInfoBaseline.test.ts",
   "report": {
@@ -270,5 +270,8 @@
     "src/game/render/RendererInfoBaseline.ts",
     "src/game/render/ThreeMugenRenderer.ts"
   ],
-  "ok": true
+  "ok": false,
+  "acceptanceExecuted": false,
+  "liveRenderer": false,
+  "blocked": "synthetic seed metrics cannot close DA29-072; need live getDiagnostics() per product route"
 }

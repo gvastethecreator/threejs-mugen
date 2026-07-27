@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-121",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Measure the actual worst fight routes. Depends on DA29-019, DA29-060, and DA29-068.",
   "acceptance": "Single, Simul/Turns, plural stress, UI-open, and mobile routes report p95/p99/max frame gaps and renderer facts on named devices; breaches have owners.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-121-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "dc9e2863c42550ae0de82bd1bf845b69c758626fc86db6ab0d60634d60eb679a"
+    "value": "21eaaf96636e75304678fbb70e84ac52c17daa14ba6b0e3336fce484dbd8a9d7"
   }
 }

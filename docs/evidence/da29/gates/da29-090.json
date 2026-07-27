@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-090",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove deterministic scanner reanalysis and semantic diff. Depends on DA29-087 and DA29-088.",
   "acceptance": "Source, ruleset, analyzer, and upstream revisions each trigger a deterministic diff with added/removed/changed findings and stable unchanged rows.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/closeouts/DA29-090.json",
-    "docs/evidence/da29/measured/DA29-090.json",
-    "src/mugen/compatibility/IkemenFeatureScanner.ts",
-    "src/mugen/compatibility/ScannerCapabilityVector.ts",
-    "docs/evidence/scanner-capability-artifact-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "1fab625c387ef6359a9a81a25fbb2f7a7385d6e52c50d957728f5d74540f701c"
+    "value": "ff9184bbdbbf92017f139670265f6aa881b2aa56ed8a0d41cc4d235069bad082"
   }
 }

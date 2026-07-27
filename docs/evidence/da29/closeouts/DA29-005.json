@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Adjudicate scores from corpus v1.3. Depends on DA29-004. Systems: scorecard and denominator ledger.",
   "acceptance": "Each lane records denominator, eligible evidence, rejected evidence, movement, and reviewer rationale. Docs-only work contributes zero.",
   "risk": "Score inflation. Allows only recorded score movement; blocks parity or release claims.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -32,18 +32,20 @@
   "claims": {
     "allowed": [
       "DA29-005 closed as gate-report",
-      "score hold decision only"
+      "score hold decision only for DA29-005"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "score inflation"
+      "score inflation",
+      "reusing score hold for other G IDs"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ab88d7bb6fe503f34ab4a9edac77e99ad6c07ce7ff9c258b942703cb4a42cccb"
+    "value": "c1de5cd09906851a8d0d490c435cbc7b56dcd2b2bd6cbb103a68e16675d3dfc8"
   }
 }

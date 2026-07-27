@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Design multi-file project transactions. Depends on DA29-095.",
   "acceptance": "ADR defines write set, preimages, staging, commit marker, compensation order, partial external failures, concurrency, and user choice; prototype evidence measures cost.",
   "risk": "File APIs lack cross-file atomicity. Allows architecture/prototype only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5fec023d15d170cf2b135eaa0fadc9fba0f283501b14ee7bbbca9c8d7fae2703"
+    "value": "4caccff2d5803264316e933022906b40e2f38094037b48323bd1183f3fc249d7"
   }
 }

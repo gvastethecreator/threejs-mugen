@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Harden AIR parsing and located diagnostics. Depends on DA29-081.",
   "acceptance": "Valid/malformed fixtures cover actions, elements, loopstart, collision boxes, timing, flips, alpha, whitespace/comments, duplicate actions, and exact locations.",
   "risk": "Recovery may accept bad syntax. Allows parsed AIR subset only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -35,7 +35,7 @@
   "claims": {
     "allowed": [
       "DA29-084 closed as gate-report",
-      "AIR parse of repository nova.air + malformed path surface; not full AIR corpus matrix"
+      "AIR parse executed on repository nova.air + malformed path; not full AIR corpus matrix"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
@@ -46,8 +46,9 @@
       "score movement"
     ]
   },
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a5e4397e565c4bd22208e35195d3937c02724c7a22f7e509093c14ce4d1f0b8a"
+    "value": "34148cd6c01614e76037ea45e8b31617bca854e72baa2e7c121048c7015df9fc"
   }
 }

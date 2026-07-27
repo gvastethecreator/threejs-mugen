@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-149",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Generate current docs and archive historical views. Depends on DA29-010, DA29-007, and DA29-148.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "56299587466735f1ba2403e76cf8140b1d71e1422e30639c439c7d955010cac0"
+    "value": "183bfc4a68a08d6f39e0e98842f37a0aaab9d33f8df3acc4b9013b2fbf44cdbc"
   }
 }

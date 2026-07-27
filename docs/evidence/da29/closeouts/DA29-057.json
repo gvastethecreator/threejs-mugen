@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Reconcile plural target selection and redirection. Depends on DA29-032, DA29-051, and DA29-054.",
   "acceptance": "Matrix maps Target, Enemy, Partner, Parent, Root, Helper, PlayerID, and target lists across one/many/removed entities.",
   "risk": "Wrong selector mutates another actor. Allows source/local delta only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,8 +39,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "14ed8d882e513829026c7466675d6e282ead4a3f1e8ddd729b762781b687a125"
+    "value": "b51306b06bbec3484cb72200cdd8c71a8c99fa1980743b8cf33147731f514f97"
   }
 }

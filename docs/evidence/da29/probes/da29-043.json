@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-043",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "public/characters/nova-boxer/mugen/nova.def",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Add a third independent repository-authored character fixture. Depends on DA29-031…040.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0a2a5e9bdaf4d5ca476d946eea93e5f30a440bf171882612a37e71e4387fb46a"
+    "value": "34978924659e356151b4ca310214acff7ddf30de21f3a4d2e8615d0333bbe994"
   }
 }

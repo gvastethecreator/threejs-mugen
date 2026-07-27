@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-054",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Prove projectile clash and contact tie-breaks. Depends on DA29-053 and DA29-045.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "239730a39fac1739b9a90ae15d5343d77d34d40308b196835c0c857b91327396"
+    "value": "7144b0f2049c723f79de2fd833985f1ed405ea6a05a97538dea765f2a0e34fc4"
   }
 }

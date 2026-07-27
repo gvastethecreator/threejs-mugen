@@ -5,13 +5,13 @@
   "wave": 14,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Define the release-candidate checklist and claim sheet. Depends on DA29-100, DA29-130, DA29-140, and DA29-146.",
   "acceptance": "Candidate names commit, profiles, browsers/devices, fixtures, scores, gates, known gaps, blocked claims, recovery path, artifact retention, and approval roles.",
   "risk": "Checklist can become ceremonial. Allows candidate definition only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "28f97db6e1c2b71a674231453ad258415c41b3d1eb8c73a8a1e2fdf550888c3b"
+    "value": "482ebaf82617067b3baa827e014c35e64d5acc8163b0c0e8319007d61664572f"
   }
 }

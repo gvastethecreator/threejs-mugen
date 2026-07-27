@@ -1,22 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-110",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Enforce public-path hygiene and evidence redaction. Depends on DA29-101 and DA29-109.",
   "acceptance": "Build/evidence scans reject absolute, traversal, temp, user, secret-like, commercial, and unapproved files; exported bundle uses safe relative paths and stable subject IDs.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/gates/da29-110-report.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "12c2448542c34f50e678e90f4660d65975db548dfa1e7d7ac71564bdf13796eb"
+    "value": "45ee9e92cf8ad12506f7a624c245ec635d1dd8bdc48b9f984ed46e6ecd52c3e1"
   }
 }

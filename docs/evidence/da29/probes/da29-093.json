@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-093",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/app/App.ts",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f7b965cb1ee878a1ad4861e80e9fe7c3998d4d9c32f1cdcf64696ff1e102bd6e"
+    "value": "927b5d3512098053dff2cac989603d160335b33ca5088af2744a50701979bd0e"
   }
 }

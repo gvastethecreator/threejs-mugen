@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-074",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "public/stages/rooftop-dojo/rooftop-dojo.png"
@@ -11,8 +11,9 @@
   },
   "error": null,
   "cut": "Load and render bounded stage layers/parallax. Depends on DA29-073 and DA29-083.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6575cf3d413759d3a942d6a5ca403bf3d4ebfcf1bebb5bd5f6e5a1d3e96c2b96"
+    "value": "6c3135840cb8e8b0c11aa5d0f3c49ba19b176e1c95ca16361b4202cdeaa4ed1a"
   }
 }

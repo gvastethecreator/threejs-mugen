@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-135",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "docs/evidence/score-adjudication-v1.json",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Extract EvidenceEnvelope only after two productive consumers. Depends on DA29-098, DA29-108, and DA29-134.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "56e83378a1f721403c9757706f13c16bd0cc383fd84f7d65de667c18860a8f26"
+    "value": "c0a13ab1b2f7b34147978971ad562c04be8ea0921710a72d0972c3c22498fc29"
   }
 }

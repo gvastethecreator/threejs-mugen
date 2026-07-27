@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Reconcile FightScreen timing and transform ownership. Depends on DA29-016 and current T287/T288 work.",
   "acceptance": "Source/local map covers intro, shutter, round/fight/KO/win/time, motif transforms, dialogue, layer order, skip, reset, and open screenpack fields.",
   "risk": "UI shell can hide timing gaps. Allows design and priority only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,8 +39,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3a583a0b93454259542755d5ba9738a3fb1986459091d446bd456e12b0004698"
+    "value": "2a18f7486edafac96cfb49be412c339dd6934f00cd2e1679abf3fbc6b6202bf3"
   }
 }

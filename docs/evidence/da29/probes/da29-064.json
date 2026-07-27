@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-064",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Make Turns handoff one atomic live transaction. Depends on DA29-061, DA29-029, and current Turns bridge.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "72384108056c5c3d7b78b6df693f85cfc1b982a89f58ba5dba88a3932ddbd399"
+    "value": "537d9d9e73dbd3ea4c6a142c0a1db4f6bdeddfd9850b1693d845415ef73c5747"
   }
 }

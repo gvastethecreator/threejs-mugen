@@ -1,18 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-200",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Run final product/SDK roadmap adjudication. Depends on the chosen product target and DA29-180…199.",
   "acceptance": "Review records shipped/local-only surfaces, API stability, extension risk, migration state, release/deployment authority, evidence freshness, scores, blocked claims, and the next bounded program.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/score-adjudication-v1.3.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "75c4baf08ebc8ee7c8ed62f8c09c191ce130063de3a678e527c2b0d51a490c21"
+    "value": "ef2799f7744dfeee897737b4cf0ee0b0b15cb8e7cd36474f1a63a45b009bd9c1"
   }
 }

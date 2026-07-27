@@ -1,24 +1,16 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-085",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
-  "status": "closed",
-  "evidenceClass": "gate-report",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "status": "open",
+  "evidenceClass": "unproven",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Harden CNS/CMD recovery and diagnostic limits. Depends on DA29-033 and DA29-081.",
   "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
-  "relatedArtifacts": [
-    "docs/evidence/da29/compatibility-corpus-v1.3.json",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/da29/score-adjudication-v1.3.json",
-    "docs/evidence/da29/product-browser-matrix-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "65ffce0931e897c3670b3ffc19967784581a61f170e4cb9c03ff7a0bcb83cf19"
+    "value": "b8fb5e6ccf60992383eb586d825584cf326e43bc3c66c7fe782275d275761c15"
   }
 }

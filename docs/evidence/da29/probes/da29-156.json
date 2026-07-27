@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-156",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Add one deterministic AI-versus-AI route. Depends on DA29-155, DA29-026, and DA29-041.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "eedad35eeee636697be576e06c8bffd7a005268d15c721dc293bd433f6a9f92f"
+    "value": "0d01726ef220a392e31dc7452b64904c92ed5db9c8c197d6c1b13457d4f1de28"
   }
 }

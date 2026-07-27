@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Replace split selector/cursor constants with one materialization input. Depends on DA29-001. Systems: materializers and evidence JSON.",
   "acceptance": "One checked schema generates both artifacts; changing a pin in a fixture changes both; stale DA27 constants are removed.",
   "risk": "Generator forks can recur. Allows synchronized control artifacts only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,8 +41,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0612243f9b7daefcba34708ffe5c4a107ce782df6b8d6c7a2c1f7d17acaa9f91"
+    "value": "508c186308c459024a8e3529042e781b217e0acc2e9f03103d88580520b6aba9"
   }
 }

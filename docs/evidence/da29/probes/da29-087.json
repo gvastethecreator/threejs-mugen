@@ -1,14 +1,15 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-087",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": false,
   "entryPoints": [],
   "facts": {},
   "error": "no shipped probe mapping for cut",
   "cut": "Replace hard-coded scanner `passed` phases with executed modules. Depends on DA29-013, DA29-082…086.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "77ee2fb1691f41dd36e1166eac4d3fa3c4a8bddfb8f7d6fb120173bd96f2b807"
+    "value": "43ba3fb9df595e18878c88fc1160234df32b9b8cb2efb36084cd161d91481bd4"
   }
 }

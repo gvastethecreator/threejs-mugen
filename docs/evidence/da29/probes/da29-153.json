@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-153",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Prove charge, hold, release, and repeated-button semantics. Depends on DA29-152 and DA29-025.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "90aece012c2913dbb6136dbc83263037e3d7860f75cd141f12c4983e68d00eb1"
+    "value": "b82d07ef1a2bede36b6a051d932faa9c5cf5e2ccfac0ebf2ad40b2d511add8df"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 13,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:27:18.114Z",
+  "closedAt": "2026-07-27T04:35:26.599Z",
   "cut": "Generate an actual dependency/ownership graph. Depends on DA29-131 and DA29-011.",
   "acceptance": "Graph covers source and selected dynamic owners across app, mugen, game, engine, scripts; cycles, large hubs, adapters, and candidate seams are reviewed.",
   "risk": "Static imports miss runtime coupling. Allows architecture inventory only.",
   "revision": {
-    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
-    "headShort": "251c4c9e9171",
+    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
+    "headShort": "a5d78499bc90",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,8 +39,9 @@
       "bulk-closing unproven I/G cuts"
     ]
   },
+  "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b769d75906d2d5d1cbd344de1f5f7a43bf25796c679127620276286392fe0b5b"
+    "value": "42e94f7ee8aa46537d94b17cc2016f55de651fa6e6deac18b4140ba615e57455"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-046",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Prove fall, recovery, bounce, and landing transitions. Depends on DA29-041 and DA29-037.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9cab80254e6e4add3ada747cafb4f29dd8fb5986b36b8e0af1e74cbcadd41908"
+    "value": "6691cd64131755e815811329189b675d11208069285aef4ec7a2fc48adfec0b6"
   }
 }

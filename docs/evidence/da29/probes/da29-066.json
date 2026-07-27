@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-066",
-  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "generatedAt": "2026-07-27T04:35:26.599Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -13,8 +13,9 @@
   },
   "error": null,
   "cut": "Prove bounded Tag selection and team-order consumption. Depends on DA29-061 and existing Tag order model.",
+  "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7f7e85e1f7e93d022ea2c848f9a60529157e8e29793c7525837a655d0827d896"
+    "value": "cc722afa6cdcf71d8fdb1ace03522bd8572bbf8487b3925ae8e06cfc1e62f8bd"
   }
 }
