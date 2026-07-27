@@ -14,7 +14,28 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T407 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T408 (closed bounded, 2026-07-27)
+
+T408 closes in `0f9dd991`. The T407 Projectile `air.juggle` path now resolves
+the budget owner from `RuntimeProjectile.ownerId` for a root-owned
+`ownprojectile` Helper. The matching Helper contributes its own
+`NoJuggleCheck`; root-owned Helper-parented projectiles continue to use the
+root fighter key. Missing Helper records fall back to the root actor.
+
+Required imported trace:
+`synthetic-imported-ikemen-helper-projectile-air-juggle-golden` proves the
+Helper owner lifecycle, `3`-point spend from `data.airjuggle = 4`, rejection
+before HitOverride, active projectile retention, and owner/helper target links.
+Focused closure passed 6 files / 255 tests with 582 filtered, the named trace,
+`node --check scripts/qa_traces.cjs`, and diff hygiene. `pnpm typecheck` stays
+blocked by the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: exact
+`hittmp`/`acttmp`, `inheritJuggle`, nested/destroyed owners, MUGEN,
+teams/clashes, ModifyHitDef, global checkpoint, score movement, and full
+parity. Scores stay unchanged. Research:
+`docs/research/2026-07-27-ikemen-helper-projectile-air-juggle.md`.
+
+## Previous runtime compatibility board - T407 (closed bounded, 2026-07-27)
 
 T407 closes in `1899eb97`. Root-owned CNS Projectiles now carry optional
 `air.juggle` from compiler through runtime spawn and effect snapshots. Under

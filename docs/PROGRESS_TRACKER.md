@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T407 `1899eb97`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T408 `0f9dd991`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,31 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime Helper-owned Projectile air.juggle - T408 (closed bounded, 2026-07-27)
+
+- `0f9dd991` extends the T407 IKEMEN Projectile `air.juggle` path to
+  `ownprojectile` Helpers. Projectile root ownership remains the admission
+  boundary; `ownerId` selects the target budget key and the matching Helper
+  provides `NoJuggleCheck`.
+- Root-owned Helper-parented projectiles retain the root key. A missing Helper
+  owner falls back to the root actor. MUGEN and unknown profiles retain their
+  prior behavior.
+- Required trace
+  `synthetic-imported-ikemen-helper-projectile-air-juggle-golden` proves
+  `data.airjuggle = 4`, Helper cost `3`, a later rejection before HitOverride,
+  active projectile retention, owner/helper target links, and the final
+  `{ p1: 4, p1-helper-0: 1 }` budget map.
+- Focal closure: 6 files / 255 tests passed, 582 skipped by the filter; the
+  named trace test, `node --check scripts/qa_traces.cjs`, and `git diff --check`
+  passed.
+- `pnpm typecheck` remains blocked by the unrelated pre-existing unused
+  `advanced` at `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact `hittmp`/`acttmp`, `inheritJuggle`, nested/destroyed
+  owners, MUGEN, teams/clashes, ModifyHitDef, global gate inheritance, scores,
+  and full parity. Scores unchanged.
+
+Research: [Helper Projectile air.juggle](research/2026-07-27-ikemen-helper-projectile-air-juggle.md).
 
 ## Runtime Projectile air.juggle - T407 (closed bounded, 2026-07-27)
 

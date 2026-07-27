@@ -1,6 +1,27 @@
 # Workplan
 
-## Current bounded runtime cut - T407 (2026-07-27)
+## Current bounded runtime cut - T408 (2026-07-27)
+
+T408 closes the Helper-owned IKEMEN Projectile `air.juggle` slice in
+`0f9dd991`. `RuntimeProjectile.ownerId` now selects the juggle budget key when
+the projectile root belongs to the active fighter; a matching Helper supplies
+its own `NoJuggleCheck` state, while root-owned Helper-parented projectiles
+keep the root key. The required imported trace proves a Helper `ownprojectile`
+spends `3` from `data.airjuggle = 4`, rejects a later contact before
+HitOverride, and remains active with one hit available.
+
+Research: `docs/research/2026-07-27-ikemen-helper-projectile-air-juggle.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/408-helper-projectile-air-juggle.md`.
+Focused closure passed 6 files / 255 tests, the named trace, `node --check
+scripts/qa_traces.cjs`, and `git diff --check`. Global typecheck remains
+blocked by the pre-existing unused `advanced` in
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim blocked: exact `hittmp`/`acttmp`, `inheritJuggle`, nested or destroyed
+Helper owners, MUGEN, teams/clashes, ModifyHitDef, global checkpoint, scores,
+and full parity.
+
+## Previous bounded runtime cut - T407 (2026-07-27)
 
 T407 closes the root-owned IKEMEN Projectile `air.juggle` slice in
 `1899eb97`. CNS/compiler data reaches `RuntimeProjectile` and snapshots;

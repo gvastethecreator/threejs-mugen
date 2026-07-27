@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 617 - Helper-owned Projectile air.juggle (T408)
+
+Closed T408 in `0f9dd991`: the T407 IKEMEN Projectile `air.juggle` path now
+uses `RuntimeProjectile.ownerId` to select the budget owner for root-owned
+`ownprojectile` Helpers. The matching Helper supplies `NoJuggleCheck`; a
+root-owned Helper-parented Projectile keeps the root fighter key, and an
+unresolved Helper owner falls back to root. The required imported trace proves
+the `3`-point spend from `data.airjuggle = 4`, later rejection before
+HitOverride, active Projectile retention, and owner/helper target links.
+
+Focused closure passed 6 files / 255 tests with 582 filtered, the named trace,
+`node --check scripts/qa_traces.cjs`, and `git diff --check`. `pnpm typecheck`
+remains blocked by the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded IKEMEN root-owned Helper `ownprojectile` owner routing.
+Claim blocked: exact `hittmp`/`acttmp`, `inheritJuggle`, nested/destroyed
+owners, MUGEN, teams/clashes, ModifyHitDef, global checkpoint, score movement,
+and full parity. Research:
+`docs/research/2026-07-27-ikemen-helper-projectile-air-juggle.md`.
+
 ## Entry 616 - Projectile air.juggle (T407)
 
 Closed T407 in `1899eb97`: `Projectile air.juggle` now has a typed compiler
