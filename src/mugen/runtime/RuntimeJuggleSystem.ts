@@ -117,6 +117,9 @@ export function applyRuntimeDirectAirJuggleHit(input: {
   const remainingBefore = runtimeAirJuggleRemaining(input.defender, input.attacker.id);
   const bypassed = input.attacker.runtime.assertSpecial?.noJuggleCheck === true;
   const fallingContact = input.targetWasFalling
+    // The contact has just installed this HitDef's fall data; hittmp can still
+    // carry the pre-contact idle value until the next fighter advance.
+    || input.move.fall?.enabled === true
     || (input.defender.runtime.hitTmp === undefined && input.defender.runtime.hitFall?.falling === true)
     || runtimeHitTmpValue(input.defender.runtime) >= 2;
   const charged = !bypassed && fallingContact;
@@ -213,6 +216,7 @@ export function buildRuntimeJuggleTrace(input: {
   const fallingContact =
     input.hitResult?.fallingContact ??
     (input.targetWasFalling === true
+      || input.move.fall?.enabled === true
       || (input.defender.runtime.hitTmp === undefined && input.defender.runtime.hitFall?.falling === true)
       || runtimeHitTmpValue(input.defender.runtime) >= 2);
   const admitted = canRuntimeDirectAirJuggle({

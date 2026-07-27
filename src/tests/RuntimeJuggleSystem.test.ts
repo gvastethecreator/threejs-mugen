@@ -169,6 +169,26 @@ describe("RuntimeJuggleSystem", () => {
     })).toBe(false);
   });
 
+  it("charges a newly installed falling HitDef when hittmp still has the pre-contact value", () => {
+    const attacker = actor("p1", { moveType: "A", juggle: 3, juggleOrigin: "hitdef" });
+    const defender = actor("p2", { hitTmp: 0 }, { constants: { "data.airjuggle": 4 } });
+    const hit = move({ airJuggle: 3, fall: { enabled: true } });
+
+    expect(applyRuntimeDirectAirJuggleHit({
+      profile: "ikemen-go",
+      attacker,
+      defender,
+      move: hit,
+      targetWasFalling: false,
+    })).toMatchObject({
+      cost: 3,
+      remainingBefore: 4,
+      remainingAfter: 1,
+      charged: true,
+      fallingContact: true,
+    });
+  });
+
   it("separates explicit HitDef air.juggle 0 from an omitted field", () => {
     const state = { juggle: 5 as number | undefined, juggleOrigin: "statedef" as const };
 
