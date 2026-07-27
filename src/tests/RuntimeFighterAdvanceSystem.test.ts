@@ -63,6 +63,25 @@ describe("RuntimeFighterAdvanceWorld", () => {
     expect(synced).toEqual(["2"]);
     expect(actor.runtime.hitTmp).toBe(2);
   });
+
+  it("keeps acttmp preparation and finish around the fighter mutation hooks", () => {
+    const calls: string[] = [];
+    const actor = advanceActor({ x: 0, y: 0 });
+
+    new RuntimeFighterAdvanceWorld().advance({
+      actor,
+      hooks: {
+        ...orderedHooks(calls),
+        prepareActTmp: () => calls.push("acttmp-prepare"),
+        finishActTmp: () => calls.push("acttmp-finish"),
+        syncHitTmp: () => calls.push("hittmp-sync"),
+      },
+    });
+
+    expect(calls[0]).toBe("acttmp-prepare");
+    expect(calls.at(-2)).toBe("acttmp-finish");
+    expect(calls.at(-1)).toBe("hittmp-sync");
+  });
 });
 
 type AdvanceActor = RuntimeFighterAdvanceActor & {

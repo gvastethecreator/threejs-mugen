@@ -11,6 +11,7 @@ export class RuntimeFighterAdvanceHookSetWorld {
     input: RuntimeFighterAdvanceHookSetInput<TActor>,
   ): RuntimeFighterAdvanceHooks<TActor> {
     return {
+      prepareActTmp: input.prepareActTmp,
       tickSpriteEffects: input.tickSpriteEffects,
       tickHitBySlots: input.tickHitBySlots,
       tickHitOverrideSlots: input.tickHitOverrideSlots,
@@ -28,6 +29,7 @@ export class RuntimeFighterAdvanceHookSetWorld {
       advanceImportedGroundRecoveryLanding: input.advanceImportedGroundRecoveryLanding,
       advanceCommon1LieDownRecovery: input.advanceCommon1LieDownRecovery,
       preserveFrozenPosition: input.preserveFrozenPosition,
+      finishActTmp: input.finishActTmp,
       syncHitTmp: input.syncHitTmp,
     };
   }

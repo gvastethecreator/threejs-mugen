@@ -3,11 +3,12 @@ import type { CharacterRuntimeState } from "./types";
 export type RuntimeFighterAdvanceActor = {
   runtime: Pick<
     CharacterRuntimeState,
-    "combatDepth" | "hitFall" | "hitTmp" | "pos" | "renderAngle" | "renderScale" | "clsnScaleMultiplier" | "clsnAngle"
+    "actTmp" | "combatDepth" | "hitFall" | "hitTmp" | "pos" | "renderAngle" | "renderScale" | "clsnScaleMultiplier" | "clsnAngle"
   > & Partial<Pick<CharacterRuntimeState, "moveType">>;
 };
 
 export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor> = {
+  prepareActTmp?: (actor: TActor) => void;
   tickSpriteEffects: (actor: TActor) => void;
   tickHitBySlots: (actor: TActor) => void;
   tickHitOverrideSlots: (actor: TActor) => void;
@@ -25,6 +26,7 @@ export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor
   advanceImportedGroundRecoveryLanding: (actor: TActor) => void;
   advanceCommon1LieDownRecovery: (actor: TActor) => void;
   preserveFrozenPosition: (actor: TActor, tickStartPos: { x: number; y: number; z: number }) => void;
+  finishActTmp?: (actor: TActor) => void;
   syncHitTmp?: (actor: TActor) => void;
 };
 
@@ -44,6 +46,7 @@ export class RuntimeFighterAdvanceWorld {
   ): RuntimeFighterAdvanceResult {
     const { actor, hooks } = input;
 
+    hooks.prepareActTmp?.(actor);
     hooks.tickSpriteEffects(actor);
     hooks.tickHitBySlots(actor);
     hooks.tickHitOverrideSlots(actor);
@@ -68,6 +71,7 @@ export class RuntimeFighterAdvanceWorld {
     hooks.advanceImportedGroundRecoveryLanding(actor);
     hooks.advanceCommon1LieDownRecovery(actor);
     hooks.preserveFrozenPosition(actor, tickStartPos);
+    hooks.finishActTmp?.(actor);
     hooks.syncHitTmp?.(actor);
 
     return { tickStartPos, preserveImportedStateMoveType };

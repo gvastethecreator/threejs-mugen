@@ -284,6 +284,7 @@ import type {
 } from "./RuntimeTeamRoundHandoffSystem";
 import { RuntimeFighterAdvanceHookSetWorld } from "./RuntimeFighterAdvanceHookSetSystem";
 import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
+import { RuntimeActTmpWorld } from "./RuntimeActTmpSystem";
 import { RuntimeHitTmpWorld } from "./RuntimeHitTmpSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
 import {
@@ -396,6 +397,7 @@ const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
+const actTmpWorld = new RuntimeActTmpWorld();
 const hitTmpWorld = new RuntimeHitTmpWorld();
 const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
@@ -2021,6 +2023,7 @@ export class PlayableMatchRuntime {
                 this.round.roundNoDamage,
                 (actor) => this.markRootConstraintReset(actor),
                 (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
+                () => this.pauseWorld.current() !== undefined,
               );
             },
             advanceHelper: (helper) => {
@@ -2126,6 +2129,7 @@ export class PlayableMatchRuntime {
               this.round.roundNoDamage,
               (actor) => this.markRootConstraintReset(actor),
               (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
+              () => this.pauseWorld.current() !== undefined,
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -2448,6 +2452,9 @@ export class PlayableMatchRuntime {
           this.characterRoots(),
           this.rootInputControlRunner(actor),
           this.round.roundNoDamage,
+          undefined,
+          undefined,
+          () => this.pauseWorld.current() !== undefined,
         ),
     });
   }
@@ -2554,6 +2561,9 @@ export class PlayableMatchRuntime {
             this.characterRoots(),
             this.rootInputControlRunner(fighter),
             this.round.roundNoDamage,
+            undefined,
+            undefined,
+            () => this.pauseWorld.current() !== undefined,
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -4616,8 +4626,10 @@ function advanceFighter(
   roundNoDamage = false,
   onFrameConstraintReset?: (fighter: FighterMatchState) => void,
   deferRootConstraintRedirect?: RootConstraintRedirectDeferralHandler,
+  isMatchPaused: () => boolean = () => false,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
+    prepareActTmp: (actor) => actTmpWorld.prepare(actor.runtime, isMatchPaused()),
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
     tickHitBySlots: (actor) => hitEligibilityWorld.tickHitBySlots(actor.runtime),
     tickHitOverrideSlots: (actor) => hitOverrideWorld.tickSlots(actor.runtime),
@@ -4707,6 +4719,10 @@ function advanceFighter(
     },
     preserveFrozenPosition: (actor, tickStartPos) =>
       actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos),
+    finishActTmp: (actor) => actTmpWorld.finish(actor.runtime, {
+      matchPaused: isMatchPaused(),
+      hitPaused: actor.hitPause > 0,
+    }),
     syncHitTmp: (actor) => hitTmpWorld.sync(actor.runtime),
   });
 
