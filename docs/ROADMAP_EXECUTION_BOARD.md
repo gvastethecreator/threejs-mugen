@@ -14,7 +14,29 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T409 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T410 (closed bounded, 2026-07-27)
+
+T410 closes in `1ae8a98e`. Helper `inheritjuggle` values `0|1|2` now have
+typed compiler and spawn support under `ikemen-go`, with scalar expressions
+resolved before the Helper enters the effect world. Direct Helper and
+Helper-owned Projectile admission initializes a missing target budget from the
+Parent or Root and preserves the already-spent value on later contacts.
+MUGEN and unknown profiles strip this field.
+
+Required imported trace:
+`synthetic-imported-ikemen-helper-inherit-juggle-golden` proves the root leaves
+one point, the Helper Projectile spends that inherited point, a later contact
+rejects through `air.juggle`, the Projectile stays active, and final P2 has
+`{ p1: 1, p1-helper-0: 0 }` with life `946`. Focused closure passed 7 files /
+843 tests, the named trace, `node --check scripts/qa_traces.cjs`, and diff
+hygiene. `pnpm typecheck` reaches only the unrelated pre-existing unused
+`advanced` at `src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked:
+exact source target-list transfer, live Root mode trace, nested/destroyed
+owners, `hittmp`/`acttmp`, MUGEN, teams/clashes, global checkpoint, score
+movement, and full parity. Scores stay unchanged. Research:
+`docs/research/2026-07-27-ikemen-helper-inherit-juggle.md`.
+
+## Previous runtime compatibility board - T409 (closed bounded, 2026-07-27)
 
 T409 closes in `4395f2dd`. The ordered projectile combat pass now keeps a
 pass-local `AP` contact mark for each owner/defender pass. The first accepted

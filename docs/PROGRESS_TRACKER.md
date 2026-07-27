@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T409 `4395f2dd`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T410 `1ae8a98e`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,32 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime Helper `inheritJuggle` budget - T410 (closed bounded, 2026-07-27)
+
+- `1ae8a98e` adds typed Helper `inheritjuggle` compiler support for static
+  values `0|1|2` and scalar expressions. IKEMEN spawn resolves the expression
+  once and stores the value on the Helper; MUGEN and unknown profiles strip the
+  field.
+- Direct Helper combat and root-owned Helper Projectile combat now copy an
+  existing target budget from the Parent for mode `1` or Root for mode `2`
+  before admission. Existing Helper entries stay untouched on later contacts,
+  which preserves spent points.
+- Required trace
+  `synthetic-imported-ikemen-helper-inherit-juggle-golden` proves a root
+  HitDef leaves `{ p1: 1 }`, the Helper Projectile spends the copied point,
+  the later contact rejects through `air.juggle`, the Projectile remains
+  active, and final P2 state is `{ p1: 1, p1-helper-0: 0 }` with life `946`.
+- Focal closure: 7 files / 843 tests passed, including the named trace,
+  `node --check scripts/qa_traces.cjs`, and `git diff --check`.
+- `pnpm typecheck` was run after the batch. The only remaining error is the
+  unrelated pre-existing unused `advanced` at
+  `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact source target-list transfer after contact, live Root
+  mode trace, nested/destroyed owners, `hittmp`/`acttmp`, MUGEN, teams/clashes,
+  global gate, scores, and full parity. Scores unchanged.
+
+Research: [Helper inheritJuggle](research/2026-07-27-ikemen-helper-inherit-juggle.md).
 
 ## Runtime Projectile same-frame AP contact - T409 (closed bounded, 2026-07-27)
 

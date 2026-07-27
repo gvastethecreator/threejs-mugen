@@ -1,6 +1,27 @@
 # Workplan
 
-## Current bounded runtime cut - T409 (2026-07-27)
+## Current bounded runtime cut - T410 (2026-07-27)
+
+T410 closes the first source-backed IKEMEN `inheritJuggle` slice in
+`1ae8a98e`. Helper controller values `0`, `1`, and `2` now compile as typed
+static or expression-backed data. Under `ikemen-go`, the runtime resolves the
+value at Helper spawn, keeps the Helper's active juggle state, and initializes
+its target air-juggle budget from the Parent (`1`) or Root (`2`) before direct
+Helper or Helper-owned Projectile admission. The initialization is idempotent,
+so a later contact cannot restore points already spent by that Helper.
+
+Research: `docs/research/2026-07-27-ikemen-helper-inherit-juggle.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/410-helper-inherit-juggle.md`.
+Focused closure passed 7 files / 843 tests, the required imported trace,
+`node --check scripts/qa_traces.cjs`, and `git diff --check`. `pnpm typecheck`
+reaches only the pre-existing unused `advanced` in
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim blocked: exact source target-list transfer after contact, Root mode in a
+live trace, nested or destroyed owners, `hittmp`/`acttmp`, MUGEN branch,
+teams/clashes, global checkpoint, scores, and full parity.
+
+## Previous bounded runtime cut - T409 (2026-07-27)
 
 T409 closes the same-frame IKEMEN Projectile `AP` admission slice in
 `4395f2dd`. During one ordered owner/defender combat pass, the first accepted
@@ -18,8 +39,7 @@ typecheck remains blocked by the pre-existing unused `advanced` in
 `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
 
 Claim blocked: exact `hittmp`/`acttmp`, pause persistence, MUGEN branch,
-teams/clashes, helper ancestry, `inheritJuggle`, global checkpoint, scores,
-and full parity.
+teams/clashes, helper ancestry, global checkpoint, scores, and full parity.
 
 ## Previous bounded runtime cut - T408 (2026-07-27)
 

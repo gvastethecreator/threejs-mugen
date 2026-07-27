@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 619 - Helper inheritJuggle budget (T410)
+
+Closed T410 in `1ae8a98e`: typed Helper `inheritjuggle` values `0|1|2` and
+scalar expressions now resolve at IKEMEN spawn. Direct Helper and root-owned
+Helper Projectile combat initialize a missing target budget from the Parent or
+Root before air-juggle admission, and later contacts retain the spent value.
+MUGEN and unknown profiles strip the field. The required imported trace proves
+the root leaves one point, the Helper Projectile spends the copied point, a
+later contact rejects before damage, and the active Projectile remains with
+final P2 budget `{ p1: 1, p1-helper-0: 0 }`.
+
+Focused closure passed 7 files / 843 tests, the named trace,
+`node --check scripts/qa_traces.cjs`, and `git diff --check`. `pnpm typecheck`
+reaches only the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded IKEMEN Helper Parent inheritance before direct and
+Helper Projectile air-juggle admission. Claim blocked: exact source target-list
+transfer after contact, live Root mode trace, nested/destroyed owners,
+`hittmp`/`acttmp`, MUGEN, teams/clashes, global checkpoint, score movement, and
+full parity. Research: `docs/research/2026-07-27-ikemen-helper-inherit-juggle.md`.
+
 ## Entry 618 - Projectile same-frame AP contact (T409)
 
 Closed T409 in `4395f2dd`: the ordered projectile combat pass now applies the
