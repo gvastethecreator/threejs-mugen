@@ -1,0 +1,38 @@
+{
+  "schema": "Da30OptionalMatrixStatus/v1",
+  "generatedAt": "2026-07-27T16:12:00.000Z",
+  "closedThrough": "DA30-120",
+  "scoresHeld": true,
+  "items": [
+    {
+      "id": "authority-audit",
+      "command": "node scripts/audit_authority_references.cjs",
+      "status": "passed",
+      "note": "Accepts DA30-### closedThrough and empty nextQueue at DA30-120"
+    },
+    {
+      "id": "studio-save-recovery",
+      "command": "node scripts/qa_browser_gate_da30_studio_save_recovery.cjs",
+      "status": "passed",
+      "evidence": "docs/evidence/da30/da30-studio-save-recovery-gate.json",
+      "note": "save-project-local, localStorage keys, reload retention, conflict probe"
+    },
+    {
+      "id": "qa-smoke",
+      "command": "pnpm qa:smoke",
+      "status": "open",
+      "note": "Hardening in progress: recovery/guard keyboard paths, DOM clicks, overlay intercepts, multi-tab conflict soft-skip. Full assertSmoke still fails hit-spark/mugen-lite crop proofs and some Studio surface checks under current headless layout. Not formal-required."
+    }
+  ],
+  "claims": {
+    "allowed": [
+      "authority audit green for DA30-120",
+      "single-tab Studio save recovery gate green"
+    ],
+    "blocked": [
+      "qa-smoke as formal required step",
+      "score movement",
+      "multi-tab storage conflict product complete"
+    ]
+  }
+}

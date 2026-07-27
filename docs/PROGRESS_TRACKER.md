@@ -1,6 +1,31 @@
 ﻿# Progress Tracker
 
-## DA29 completion audit and DA30 recovery plan (docs-only, 2026-07-27)
+## Current authority (2026-07-27)
+
+- Selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) /
+  `docs/evidence/authority-selector-v1.json`.
+- Machine watermark: **DA30-120** (`closedThrough`), `nextQueue` empty.
+- Formal/global: `ee23122f` DA30-021 required matrix (raw logs + exact counts).
+- Clause repairs: DA30-021/024/025 manifests +
+  `docs/evidence/da30/da30-021-024-025-clause-repair-v1.json`.
+- Play semantic movement/damage and Studio save/focus/geometry measured.
+- Scores held: `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+- Next program: optional smoke/authority green, Studio save reopen recovery,
+  independent score adjudication — not automatic score movement.
+- DA29-001…200 remain unadjudicated candidates.
+
+## Historical post-DA30-025 audit (docs-only, 2026-07-27)
+
+- Audited HEAD `c2245fe8`, Entry 613, DA30 control/status, three current gate
+  producers, their reports, and five browser captures.
+- Preserved the generated DA30-025 machine watermark. Written task acceptance
+  remained partial for DA30-021/024/025 at that time.
+- Formal observation then: six green commands at `27b88f0a`. Browser observations:
+  native Play and Studio/Inspect shell load at `c47cfa4e`.
+- Superseded by clause repair at formal `ee23122f` and series close DA30-120.
+- Audit: [post-DA30-025](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
+
+## Historical DA29 completion audit and DA30 recovery plan (docs-only, 2026-07-27)
 
 - Audited HEAD `fd7a9b9a` and all DA29 closeout mechanisms. Rejected the
   DA29-200 watermark: selector/cursor disagree; 61 R/A cuts close from template

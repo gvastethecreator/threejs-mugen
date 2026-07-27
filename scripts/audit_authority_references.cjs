@@ -26,6 +26,7 @@ const CURRENT_SURFACES = [
   ".scratch/roadmap/issues/05-modular-engine-boundaries.md",
   ".scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md",
   ".scratch/roadmap/issues/07-ikemen-runtime-topology.md",
+  ".scratch/roadmap/issues/08-da29-evidence-recovery-and-da30-roadmap.md",
 ];
 
 const REQUIRED_MARKERS = [
@@ -58,31 +59,41 @@ if (selector.schemaVersion !== "mugen-web-sandbox/authority-selector/v1") {
 const closed = String(selector.closedThrough || "");
 const closedOk =
   /^DA2[678]-\d{2}$/.test(closed) ||
-  /^DA29-\d{3}$/.test(closed);
+  /^DA29-\d{3}$/.test(closed) ||
+  /^DA30-\d{3}$/.test(closed);
 if (!closedOk) {
   fail(`invalid closedThrough: ${closed}`);
 }
 if (!Array.isArray(selector.nextQueue)) {
   fail("nextQueue must be an array");
 }
-// End state after full DA29 drain: closedThrough DA29-200 and empty nextQueue.
-// Mid-series adoption may expose a non-empty DA29 nextQueue.
+// End states: DA28-30, DA29-200, DA30-120 expect empty nextQueue.
+// Mid-series may expose a non-empty consecutive nextQueue for that series only.
 const isDa29Final = closed === "DA29-200";
 const isDa28Final = closed === "DA28-30";
-if (isDa29Final) {
+const isDa30Final = closed === "DA30-120";
+if (isDa29Final || isDa28Final || isDa30Final) {
   if (selector.nextQueue.length !== 0) {
-    fail(`expected empty nextQueue after DA29-200, got ${JSON.stringify(selector.nextQueue)}`);
-  }
-} else if (isDa28Final) {
-  // Pre-DA29 adoption still valid for historical pin.
-  if (selector.nextQueue.length !== 0) {
-    fail(`expected empty nextQueue after DA28 drain, got ${JSON.stringify(selector.nextQueue)}`);
+    fail(`expected empty nextQueue after ${closed}, got ${JSON.stringify(selector.nextQueue)}`);
   }
 } else if (/^DA29-/.test(closed)) {
-  // Mid-series: next head must be the next consecutive DA29 id when queue non-empty.
   for (const id of selector.nextQueue) {
     if (!/^DA29-\d{3}$/.test(String(id))) {
       fail(`nextQueue contains non-DA29 id ${id}`);
+    }
+  }
+} else if (/^DA30-/.test(closed)) {
+  for (const id of selector.nextQueue) {
+    if (!/^DA30-\d{3}$/.test(String(id))) {
+      fail(`nextQueue contains non-DA30 id ${id}`);
+    }
+  }
+} else if (/^DA2[678]-/.test(closed)) {
+  // Historical mid-series DA26–28: allow only same-series remaining ids.
+  const series = closed.slice(0, 4);
+  for (const id of selector.nextQueue) {
+    if (!String(id).startsWith(series)) {
+      fail(`nextQueue id ${id} outside series ${series}`);
     }
   }
 } else {

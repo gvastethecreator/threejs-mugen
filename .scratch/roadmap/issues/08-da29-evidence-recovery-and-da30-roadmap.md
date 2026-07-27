@@ -1,24 +1,39 @@
 # 08 - DA29 evidence recovery and DA30 roadmap
 
-Status: ready-for-agent
-Labels: roadmap, evidence, control, ready-for-agent
+Status: closed-bounded
+Labels: roadmap, evidence, control, closed-bounded
 
 ## Objective
+
+### Current authority
+
+Machine watermark **DA30-120** with empty `nextQueue`. Authority:
+`docs/AUTHORITY_SELECTOR.md` and `docs/evidence/authority-selector-v1.json`.
+Formal/global pin `ee23122f` (DA30-021 required matrix). DA30-021/024/025
+clause repairs and manifests are on disk. Scores held. DA29-001…200 remain
+unadjudicated candidates.
+
+### Historical post-DA30-025 audit override
+
+Generated control once recorded DA30-025 and next DA30-026. The 2026-07-27
+acceptance audit disputed written completion for DA30-021/024/025. Those
+clauses were later repaired. See
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`
+and `docs/evidence/da30/da30-021-024-025-clause-repair-v1.json`.
 
 Replace the rejected DA29 completion watermark with clause-level verdicts and
 one coherent current-control source, then adopt the DA30 recovery queue without
 discarding useful bounded artifacts.
 
-## Current authority
+## Current authority (detail)
 
-- Audit HEAD: `fd7a9b9a16b2acd116df1e6dba69f0d451cc37ed`.
-- Accepted historical ladder ends at DA28-30 at written ceilings.
-- DA29-001…200 are unadjudicated candidate artifacts.
-- Formal/global `a6e91520`, focal T406 `07ad9227`, visual/product T342
-  `1085badb`, and source pins 05b/4aa remain separate.
-- Current HEAD formal/global and visual health are unverified.
+- Closed through: DA30-120.
+- Formal/global: `ee23122f` DA30-021 required matrix.
+- Focal T406 `07ad9227`, visual T342 `1085badb`, source pins 05b/4aa remain
+  separate.
 - Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
-- Proposed first batch: DA30-001…010.
+- Next: smoke/authority optional green, Studio save reopen recovery, independent
+  score adjudication only.
 
 ## First executable sequence
 

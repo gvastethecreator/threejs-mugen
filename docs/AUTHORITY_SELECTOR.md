@@ -71,6 +71,9 @@ public release.
 
 ## Next queue
 
-Empty under consecutive watermark **DA30-120**. Next program is post-DA30 depth
-(browser product clauses, independent score movement) — not automatic score change.
+Empty under consecutive watermark **DA30-120**. Next program is post-DA30 depth:
+authority audit is green for DA30; Studio single-tab save recovery gate green;
+`pnpm qa:smoke` remains open (headless hit-spark / mugen-lite crop / multi-tab
+conflict). Independent score adjudication only — not automatic score change.
 Only `accepted` advances consecutive watermark (DA30-006).
+See `docs/evidence/da30/da30-optional-matrix-status-v1.json`.

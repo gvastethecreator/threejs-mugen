@@ -1,6 +1,35 @@
 ﻿# Next Build Roadmap
 
-## Current next-build override — DA30 recovery, 2026-07-27
+## Current next-build — post-DA30-120
+
+Authority: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
+Machine watermark **DA30-120**, scores held.
+
+1. Keep `qa:smoke` and `audit_authority_references` green under DA30 closedThrough.
+2. Deepen Studio save → reopen → conflict recovery beyond first local save.
+3. Mobile geometry polish only where measured overflow blocks real routes.
+4. Independent score adjudication only with separate provenance (no auto move).
+5. Optional: optional formal matrix (smoke/authority) may later join required
+   steps after green.
+
+DA30-001…120 recovery series is accepted at machine watermark. Further work is
+depth and product quality, not reopening the consecutive ladder without cause.
+
+## Historical next-build override — post-DA30-025 repair
+
+1. AUD27-01/02: adjudicate DA30-021/024/025 and materialize clause manifests.
+2. AUD27-03/04: define and run the complete formal command set with raw logs
+   and exact parsed facts at one clean SHA.
+3. AUD27-05: sync recorded/adjudicated watermarks and all independent cursors.
+4. AUD27-06/07: prove Play movement, contact, damage, reset, and mobile geometry.
+5. AUD27-08/09/10: prove Studio project, Inspect package, focus, access, and
+   reduced-motion journeys.
+6. AUD27-11…14: execute DA30-026 device, seat, focus, touch, and input-log work.
+
+Superseded by clause repair and DA30-120 close. See
+[post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
+
+## Historical next-build override — DA30 recovery, 2026-07-27
 
 The DA29-200 watermark failed its completion audit. Treat all DA29 artifacts
 as candidate evidence and preserve their narrow facts. Start with

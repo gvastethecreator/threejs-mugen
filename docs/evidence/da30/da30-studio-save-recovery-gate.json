@@ -1,0 +1,135 @@
+{
+  "schema": "Da30StudioSaveRecoveryGate/v1",
+  "id": "DA30-studio-save-recovery",
+  "generatedAt": "2026-07-27T16:13:16.072Z",
+  "headSha": "25955ee508f699ae7cd08614c1455cc32990d1ac",
+  "ok": true,
+  "probes": {
+    "before": {
+      "available": true,
+      "mode": "studio",
+      "dirty": false,
+      "storedProjectCount": 0,
+      "storedProjects": []
+    },
+    "afterSave": {
+      "available": true,
+      "mode": "studio",
+      "dirty": false,
+      "storedProjectCount": 1,
+      "projectRevision": 1,
+      "storedProjects": [
+        {
+          "id": "local-fighting-project",
+          "revision": 1,
+          "name": "Local Fighting Project"
+        }
+      ]
+    },
+    "dirtyProbe": {
+      "available": true,
+      "mode": "studio",
+      "dirty": true,
+      "storedProjectCount": 1,
+      "projectRevision": 1,
+      "storedProjects": [
+        {
+          "id": "local-fighting-project",
+          "revision": 1,
+          "name": "Local Fighting Project"
+        }
+      ]
+    },
+    "afterSecondSave": {
+      "available": true,
+      "mode": "studio",
+      "dirty": false,
+      "storedProjectCount": 1,
+      "projectRevision": 2,
+      "storedProjects": [
+        {
+          "id": "local-fighting-project",
+          "revision": 2,
+          "name": "Local Fighting Project"
+        }
+      ]
+    },
+    "afterReload": {
+      "available": true,
+      "mode": "studio",
+      "dirty": false,
+      "storedProjectCount": 1,
+      "storedProjects": [
+        {
+          "id": "local-fighting-project",
+          "revision": 2,
+          "name": "Local Fighting Project"
+        }
+      ]
+    },
+    "afterConflict": {
+      "available": true,
+      "mode": "studio",
+      "dirty": false,
+      "storedProjectCount": 1,
+      "storedProjects": [
+        {
+          "id": "local-fighting-project",
+          "revision": 2,
+          "name": "Local Fighting Project"
+        }
+      ]
+    }
+  },
+  "storageAfterSave": {
+    "keys": [
+      "mugen-web-sandbox:project-snapshots:v1",
+      "mugen-web-sandbox:projects:v0"
+    ],
+    "sample": [
+      {
+        "k": "mugen-web-sandbox:project-snapshots:v1",
+        "len": 708
+      },
+      {
+        "k": "mugen-web-sandbox:projects:v0",
+        "len": 7275
+      }
+    ]
+  },
+  "storageAfterReload": {
+    "keys": [
+      "mugen-web-sandbox:project-snapshots:v1",
+      "mugen-web-sandbox:projects:v0"
+    ],
+    "count": 2
+  },
+  "conflict": {
+    "simulated": true,
+    "key": "mugen-web-sandbox:project-snapshots:v1",
+    "restored": false
+  },
+  "dirtyObserved": true,
+  "saveWorked": true,
+  "reopenWorked": true,
+  "screenshot": "docs/evidence/da30/browser/studio-save-recovery.png",
+  "unexpectedConsole": [],
+  "claimCeiling": "Studio local save + reload retention facts only; not multi-tab conflict product",
+  "claims": {
+    "allowed": [
+      "save-project-local",
+      "localStorage project keys",
+      "reload retains storage",
+      "conflict probe recorded"
+    ],
+    "blocked": [
+      "multi-tab merge UX complete",
+      "quota matrix",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "bd35d5f237d1c66f45a4a6408d22a10d120a6228d74e41fde571dbf5312b8409"
+  }
+}
