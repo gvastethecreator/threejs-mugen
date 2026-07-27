@@ -1,6 +1,6 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T06:27:35.032Z",
+  "generatedAt": "2026-07-27T06:28:19.753Z",
   "count": 120,
   "closedThrough": "DA30-020",
   "nextQueue": [
@@ -1335,6 +1335,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "123346fa09a088c2bccca21ee1c92db544ab943cc6dc442810c72e9feead3c39"
+    "value": "1faadd4d6dfc6081e32b0023a3eba7cc263425b9328f77a21fc1de6dd8d3f0a6"
   }
 }
