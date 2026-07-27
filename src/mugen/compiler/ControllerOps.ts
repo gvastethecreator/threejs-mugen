@@ -306,6 +306,8 @@ export type HelperControllerOp = {
   standbyExpression?: string;
   ownProjectile?: boolean;
   ownProjectileExpression?: string;
+  inheritJuggle?: 0 | 1 | 2;
+  inheritJuggleExpression?: string;
   ownPalette?: boolean;
   ownPaletteExpression?: string;
   preserve?: boolean;
@@ -2525,6 +2527,27 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
       ownProjectileExpression = compiledOwnProjectile.normalized;
     }
   }
+  const inheritJuggleRaw = findParam(controller, "inheritjuggle");
+  let inheritJuggle: 0 | 1 | 2 | undefined;
+  let inheritJuggleExpression: string | undefined;
+  if (inheritJuggleRaw !== undefined) {
+    const trimmedInheritJuggle = inheritJuggleRaw.trim();
+    if (!trimmedInheritJuggle) return undefined;
+    const staticInheritJuggle = Number(trimmedInheritJuggle);
+    if (Number.isFinite(staticInheritJuggle)) {
+      const normalizedInheritJuggle = Math.trunc(staticInheritJuggle);
+      if (!Number.isInteger(staticInheritJuggle) || (normalizedInheritJuggle !== 0 && normalizedInheritJuggle !== 1 && normalizedInheritJuggle !== 2)) {
+        return undefined;
+      }
+      inheritJuggle = normalizedInheritJuggle;
+    } else {
+      if (!hasValidScalarExpressionStructure(inheritJuggleRaw)) return undefined;
+      const compiledInheritJuggle = compileExpression(inheritJuggleRaw);
+      if (compiledInheritJuggle.supportLevel === "unsupported") return undefined;
+      inheritJuggle = 0;
+      inheritJuggleExpression = compiledInheritJuggle.normalized;
+    }
+  }
   const ownPaletteRaw = findParam(controller, "ownpal");
   let ownPalette: boolean | undefined;
   let ownPaletteExpression: string | undefined;
@@ -2601,6 +2624,8 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     standbyExpression,
     ownProjectile,
     ownProjectileExpression,
+    inheritJuggle,
+    inheritJuggleExpression,
     ownPalette,
     ownPaletteExpression,
     preserve,

@@ -160,6 +160,7 @@ export type RuntimeHelper = {
   keyCtrl?: boolean;
   ownPalette?: boolean;
   ownProjectile?: boolean;
+  inheritJuggle?: 0 | 1 | 2;
   preserve?: boolean;
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
@@ -172,6 +173,9 @@ export type RuntimeHelper = {
   guardPoints?: number;
   dizzyPointsMax?: number;
   dizzyPoints?: number;
+  airJugglePoints?: CharacterRuntimeState["airJugglePoints"];
+  juggle?: CharacterRuntimeState["juggle"];
+  juggleOrigin?: CharacterRuntimeState["juggleOrigin"];
   redLife?: number;
   superPauseDefenseMultiplier?: number;
   powerMax: number;
@@ -362,6 +366,7 @@ export type RuntimeHelperSpawnInput = {
   animNo: number;
   ownPalette?: boolean;
   ownProjectile?: boolean;
+  inheritJuggle?: 0 | 1 | 2;
   preserve?: boolean;
   ownClsnScale?: boolean;
   clsnProxy?: boolean;
@@ -439,6 +444,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     keyCtrl,
     ownPalette: input.ownPalette ?? operation?.ownPalette,
     ownProjectile: input.ownProjectile ?? operation?.ownProjectile,
+    inheritJuggle: input.inheritJuggle ?? operation?.inheritJuggle,
     preserve: input.preserve ?? operation?.preserve,
     ownClsnScale: input.ownClsnScale ?? operation?.ownClsnScale,
     clsnProxy: input.clsnProxy ?? operation?.clsnProxy,
@@ -453,6 +459,9 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     guardPoints: 1000,
     dizzyPointsMax: 1000,
     dizzyPoints: 1000,
+    airJugglePoints: undefined,
+    juggle: undefined,
+    juggleOrigin: undefined,
     redLife: 0,
     powerMax: 3000,
     power: 0,
@@ -2268,6 +2277,9 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     guardPoints: helper.guardPoints,
     dizzyPointsMax: helper.dizzyPointsMax,
     dizzyPoints: helper.dizzyPoints,
+    ...(helper.airJugglePoints === undefined ? {} : { airJugglePoints: { ...helper.airJugglePoints } }),
+    ...(helper.juggle === undefined ? {} : { juggle: helper.juggle }),
+    ...(helper.juggleOrigin === undefined ? {} : { juggleOrigin: helper.juggleOrigin }),
     ...(helper.redLife === undefined ? {} : { redLife: helper.redLife }),
     ...(helper.superPauseDefenseMultiplier === undefined
       ? {}
@@ -2363,6 +2375,9 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.guardPoints = runtime.guardPoints ?? helper.guardPoints;
   helper.dizzyPointsMax = runtime.dizzyPointsMax ?? helper.dizzyPointsMax;
   helper.dizzyPoints = runtime.dizzyPoints ?? helper.dizzyPoints;
+  helper.airJugglePoints = runtime.airJugglePoints === undefined ? undefined : { ...runtime.airJugglePoints };
+  helper.juggle = runtime.juggle;
+  helper.juggleOrigin = runtime.juggleOrigin;
   helper.redLife = runtime.redLife ?? helper.redLife;
   helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;

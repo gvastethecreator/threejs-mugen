@@ -16,6 +16,9 @@ export type RuntimeDirectJuggleActor = {
       "airJugglePoints" | "assertSpecial" | "hitFall" | "juggle" | "juggleOrigin" | "moveType"
     >
   >;
+  inheritJuggle?: 1 | 2;
+  juggleParent?: RuntimeDirectJuggleActor;
+  juggleRoot?: RuntimeDirectJuggleActor;
 };
 
 export type RuntimeDirectAirJuggleHitResult = {
@@ -37,6 +40,35 @@ export type RuntimeProjectileAirJuggleHitResult = {
   bypassed: boolean;
   fallingContact: boolean;
 };
+
+/** Copy an existing Parent/Root target budget to a Helper before admission. */
+export function prepareRuntimeInheritedJugglePoints(input: {
+  profile?: RuntimeCompatibilityProfile;
+  attacker: RuntimeDirectJuggleActor;
+  defender: RuntimeDirectJuggleActor;
+}): boolean {
+  if (input.profile !== "ikemen-go" || input.attacker.inheritJuggle === undefined) {
+    return false;
+  }
+  if (input.defender.runtime.airJugglePoints?.[input.attacker.id] !== undefined) {
+    return false;
+  }
+  const origin = input.attacker.inheritJuggle === 1
+    ? input.attacker.juggleParent
+    : input.attacker.juggleRoot;
+  if (!origin) {
+    return false;
+  }
+  const inherited = input.defender.runtime.airJugglePoints?.[origin.id];
+  if (inherited === undefined) {
+    return false;
+  }
+  input.defender.runtime.airJugglePoints = {
+    ...input.defender.runtime.airJugglePoints,
+    [input.attacker.id]: inherited,
+  };
+  return true;
+}
 
 /** Causal snapshot for one direct juggle admission or spend decision. */
 export type RuntimeJuggleTrace = {

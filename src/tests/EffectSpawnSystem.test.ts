@@ -326,6 +326,42 @@ describe("EffectSpawnSystem", () => {
     expect(effectActorWorld.helpers("p1")[0]?.ownProjectile).toBeUndefined();
   });
 
+  it("resolves Helper inheritjuggle only for IKEMEN and fails closed for dynamic values", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const fighter = actor("p1", effectActorWorld, {}, definition("p1", [baseAction, helperAction], [state(301, 920)]));
+    fighter.runtimeProgram = { states: [compileStateProgram(state(301, 920))] };
+    const opponent = actor("p2", effectActorWorld);
+    const dispatch = (
+      runtimeProfile: "mugen-1.1" | "ikemen-go" | "unknown",
+      inheritJuggle: string | undefined,
+      resolve?: () => 0 | 1 | 2 | undefined,
+    ) =>
+      dispatchWorld.apply({
+        actor: fighter,
+        opponent,
+        controller: compileControllerIr(controller("Helper", {
+          stateno: "301",
+          ...(inheritJuggle === undefined ? {} : { inheritjuggle: inheritJuggle }),
+        })),
+        effect: "helper",
+        effectSpawnWorld: spawnWorld,
+        runtimeProfile,
+        resolveHelperInheritJuggle: resolve,
+      });
+
+    expect(dispatch("ikemen-go", "1").changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.inheritJuggle).toBe(1);
+
+    expect(dispatch("ikemen-go", "var(0)", () => 2).changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.inheritJuggle).toBe(2);
+
+    expect(dispatch("ikemen-go", "var(0)").changed).toBe(false);
+    expect(dispatch("mugen-1.1", "1").changed).toBe(true);
+    expect(effectActorWorld.helpers("p1")[0]?.inheritJuggle).toBeUndefined();
+  });
+
   it("resolves Helper ownpal only for IKEMEN and fails closed for dynamic values", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

@@ -34,6 +34,7 @@ import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import {
   applyRuntimeProjectileAirJuggleHit,
   canRuntimeProjectileAirJuggle,
+  prepareRuntimeInheritedJugglePoints,
   type RuntimeDirectJuggleActor,
 } from "./RuntimeJuggleSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
@@ -205,6 +206,13 @@ export class RuntimeProjectileCombatWorld {
       const projectileJuggleOwner = projectile.rootId === attacker.id
         ? input.getProjectileJuggleActor?.(attacker, projectile) ?? projectileJuggleActor(attacker)
         : undefined;
+      if (projectileJuggleOwner) {
+        prepareRuntimeInheritedJugglePoints({
+          profile: input.runtimeProfile,
+          attacker: projectileJuggleOwner,
+          defender: projectileJuggleActor(defender),
+        });
+      }
       if (projectileJuggleOwner && !canRuntimeProjectileAirJuggle({
         profile: input.runtimeProfile,
         attacker: projectileJuggleOwner,

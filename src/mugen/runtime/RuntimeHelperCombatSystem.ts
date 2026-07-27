@@ -13,13 +13,20 @@ import {
   runtimeHelperCanDirectlyInteract,
   type RuntimeHelper,
 } from "./HelperSystem";
+import {
+  applyRuntimeDirectAirJuggleHit,
+  canRuntimeDirectAirJuggle,
+  prepareRuntimeInheritedJugglePoints,
+  type RuntimeDirectJuggleActor,
+} from "./RuntimeJuggleSystem";
 import type { RuntimeContactPresentationActor } from "./RuntimeContactPresentationSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeTargetWorld } from "./TargetSystem";
 import { scaleRuntimeCollisionBoxes } from "./RuntimeCollisionTransformSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
-import type { RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import type { CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
@@ -39,6 +46,7 @@ type RuntimeHelperCombatDefinition = Pick<
 export type RuntimeHelperCombatOwner = {
   id: string;
   definition: RuntimeHelperCombatDefinition;
+  runtime: CharacterRuntimeState;
   effectActorWorld: Pick<RuntimeEffectActorWorld, "helpers" | "removeExplodsOnGetHit">;
   audioWorld: RuntimeHelperDirectCombatActor["audioWorld"];
   hitEffectWorld: RuntimeHelperDirectCombatActor["hitEffectWorld"];
@@ -64,6 +72,7 @@ export type RuntimeHelperRootOwnershipResolver = (helper: RuntimeHelper, ownerId
 export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefender = RuntimeHelperCombatDefender> = {
   owner: RuntimeHelperCombatOwner;
   defender: TDefender;
+  runtimeProfile?: RuntimeCompatibilityProfile;
   directCombatWorld: RuntimeDirectCombatWorld;
   reversalWorld: RuntimeReversalWorld;
   guardWorld: RuntimeGuardWorld;
@@ -81,7 +90,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   log?: (line: string) => void;
 };
 
-type RuntimeHelperDirectCombatActor = RuntimeDirectCombatActor &
+type RuntimeHelperDirectCombatActor = RuntimeDirectCombatActor & RuntimeDirectJuggleActor &
   RuntimeContactPresentationActor & {
     definition: RuntimeHelperCombatDefinition;
     stateElapsed: number;
@@ -152,6 +161,26 @@ export class RuntimeHelperCombatWorld {
         input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`);
         continue;
       }
+      const defenderJuggleActor: RuntimeDirectJuggleActor = {
+        id: input.defender.id,
+        definition: input.defender.definition,
+        runtime: input.defender.runtime,
+      };
+      prepareRuntimeInheritedJugglePoints({
+        profile: input.runtimeProfile,
+        attacker,
+        defender: defenderJuggleActor,
+      });
+      const targetWasFalling = input.defender.runtime.moveType === "H" && input.defender.runtime.hitFall?.falling === true;
+      if (!canRuntimeDirectAirJuggle({
+        profile: input.runtimeProfile,
+        attacker,
+        defender: defenderJuggleActor,
+        move,
+      })) {
+        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via air.juggle`);
+        continue;
+      }
       const result = resolveRuntimeCombatHit({
         attacker: attacker.runtime,
         defender: input.defender.runtime,
@@ -173,6 +202,15 @@ export class RuntimeHelperCombatWorld {
           hitDefPriorityProfile: input.owner.definition.hitDefPriorityProfile,
         },
       );
+      if (outcome.kind === "hit") {
+        applyRuntimeDirectAirJuggleHit({
+          profile: input.runtimeProfile,
+          attacker,
+          defender: defenderJuggleActor,
+          move,
+          targetWasFalling,
+        });
+      }
       if (move.targetId !== undefined) {
         rememberRuntimeHelperTarget(helper, input.defender.id, move.targetId, input.targetWorld);
       }
@@ -209,6 +247,9 @@ function helperDirectCombatActor(
     label: `Helper ${helper.name ?? helper.helperId ?? helper.stateNo ?? helper.animNo}`,
     definition: owner.definition,
     stateOwner: { definition: owner.definition },
+    inheritJuggle: helper.inheritJuggle === 1 || helper.inheritJuggle === 2 ? helper.inheritJuggle : undefined,
+    juggleParent: resolveHelperJuggleOrigin(helper, owner, 1),
+    juggleRoot: resolveHelperJuggleOrigin(helper, owner, 2),
     runtime: helperRuntimeState(helper),
     currentMove: helper.currentMove,
     currentMoveLabel: helper.currentMoveLabel,
@@ -223,6 +264,27 @@ function helperDirectCombatActor(
     hitEffectEvents: helper.hitEffectEvents,
     audioWorld: owner.audioWorld,
     hitEffectWorld: owner.hitEffectWorld,
+  };
+}
+
+function resolveHelperJuggleOrigin(
+  helper: RuntimeHelper,
+  owner: RuntimeHelperCombatOwner,
+  mode: 1 | 2,
+): RuntimeDirectJuggleActor | undefined {
+  const originId = mode === 1 ? helper.parentId : helper.rootId;
+  if (originId === owner.id) {
+    return {
+      id: owner.id,
+      definition: owner.definition,
+      runtime: owner.runtime,
+    };
+  }
+  const origin = owner.effectActorWorld.helpers(owner.id).find((candidate) => candidate.serialId === originId);
+  return origin === undefined ? undefined : {
+    id: origin.serialId,
+    definition: owner.definition,
+    runtime: helperRuntimeState(origin),
   };
 }
 

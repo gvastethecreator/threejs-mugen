@@ -65,6 +65,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveHelperStandby?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperOwnPalette?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperOwnProjectile?: (operation: HelperControllerOp) => boolean | undefined;
+  resolveHelperInheritJuggle?: (operation: HelperControllerOp) => 0 | 1 | 2 | undefined;
   resolveHelperPreserve?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperOwnClsnScale?: (operation: HelperControllerOp) => boolean | undefined;
   resolveHelperClsnProxy?: (operation: HelperControllerOp) => boolean | undefined;
@@ -155,6 +156,7 @@ export class RuntimeEffectSpawnWorld {
     operation?: HelperControllerOp,
     initialStandby = false,
     initialOwnProjectile?: boolean,
+    initialInheritJuggle?: 0 | 1 | 2,
     initialOwnPalette?: boolean,
     initialPreserve?: boolean,
     initialOwnClsnScale?: boolean,
@@ -190,6 +192,7 @@ export class RuntimeEffectSpawnWorld {
       animNo,
       ownPalette: initialOwnPalette,
       ownProjectile: initialOwnProjectile,
+      inheritJuggle: initialInheritJuggle,
       preserve: initialPreserve,
       ownClsnScale: initialOwnClsnScale,
       clsnProxy: initialClsnProxy,
@@ -490,6 +493,8 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
       if (initialStandby === "blocked") return 0;
       const initialOwnProjectile = resolveInitialHelperOwnProjectile(options, helperOperation);
       if (initialOwnProjectile === "blocked") return 0;
+      const initialInheritJuggle = resolveInitialHelperInheritJuggle(options, helperOperation);
+      if (initialInheritJuggle === "blocked") return 0;
       const initialOwnPalette = resolveInitialHelperOwnPalette(options, helperOperation);
       if (initialOwnPalette === "blocked") return 0;
       const initialPreserve = resolveInitialHelperPreserve(options, helperOperation);
@@ -508,6 +513,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         operationForSpawn,
         initialStandby,
         initialOwnProjectile,
+        initialInheritJuggle,
         initialOwnPalette,
         initialPreserve,
         initialOwnClsnScale,
@@ -566,6 +572,22 @@ function resolveInitialHelperOwnProjectile<TActor extends RuntimeEffectSpawnActo
     return options.resolveHelperOwnProjectile?.(operation) ?? "blocked";
   }
   return operation.ownProjectile;
+}
+
+function resolveInitialHelperInheritJuggle<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: HelperControllerOp | undefined,
+): 0 | 1 | 2 | undefined | "blocked" {
+  if (options.runtimeProfile !== "ikemen-go") return undefined;
+  const authored = operation?.inheritJuggle !== undefined ||
+    operation?.inheritJuggleExpression !== undefined ||
+    findParam(options.controller.source, "inheritjuggle") !== undefined;
+  if (!authored) return undefined;
+  if (!operation) return "blocked";
+  if (operation.inheritJuggleExpression !== undefined) {
+    return options.resolveHelperInheritJuggle?.(operation) ?? "blocked";
+  }
+  return operation.inheritJuggle;
 }
 
 function resolveInitialHelperOwnPalette<TActor extends RuntimeEffectSpawnActor>(
@@ -645,6 +667,19 @@ function stripHelperOwnProjectileOperation(
   return withoutOwnProjectile;
 }
 
+function stripHelperInheritJuggleOperation(
+  controller: MugenStateController,
+  operation: HelperControllerOp | undefined,
+): HelperControllerOp | undefined {
+  if (!operation || findParam(controller, "inheritjuggle") === undefined) return operation;
+  const {
+    inheritJuggle: _inheritJuggle,
+    inheritJuggleExpression: _inheritJuggleExpression,
+    ...withoutInheritJuggle
+  } = operation;
+  return withoutInheritJuggle;
+}
+
 function stripIkemenHelperOperation(
   controller: MugenStateController,
   operation: HelperControllerOp | undefined,
@@ -657,7 +692,10 @@ function stripIkemenHelperOperation(
         controller,
         stripHelperOwnPaletteOperation(
           controller,
-          stripHelperOwnProjectileOperation(controller, stripHelperTypeOperation(controller, operation)),
+          stripHelperOwnProjectileOperation(
+            controller,
+            stripHelperInheritJuggleOperation(controller, stripHelperTypeOperation(controller, operation)),
+          ),
         ),
       ),
     ),

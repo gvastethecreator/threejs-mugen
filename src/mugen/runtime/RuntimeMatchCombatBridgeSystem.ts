@@ -171,6 +171,7 @@ export class RuntimeMatchCombatBridgeWorld {
           contactPresentationWorld: input.contactPresentationWorld,
           targetWorld: input.targetWorld,
           runtimeTick: input.runtimeTick,
+          runtimeProfile: input.runtimeProfile,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,

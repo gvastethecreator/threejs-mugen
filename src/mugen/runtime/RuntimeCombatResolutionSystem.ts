@@ -19,6 +19,7 @@ import {
   type RuntimeDirectCombatOutcome,
   type RuntimeDirectCombatWorld,
 } from "./DirectCombatSystem";
+import { helperRuntimeState, type RuntimeHelper } from "./HelperSystem";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeDizzyStateWorld } from "./DizzyStateSystem";
@@ -1139,12 +1140,50 @@ function runtimeProjectileJuggleActor<TActor extends RuntimeCombatResolutionActo
       runtime: attacker.runtime,
     };
   }
+  return runtimeHelperJuggleActor(attacker, helper);
+}
+
+function runtimeHelperJuggleActor<TActor extends RuntimeCombatResolutionActor>(
+  attacker: TActor,
+  helper: RuntimeHelper,
+): RuntimeDirectJuggleActor {
+  const inheritJuggle = helper.inheritJuggle === 1 || helper.inheritJuggle === 2
+    ? helper.inheritJuggle
+    : undefined;
   return {
     id: helper.serialId,
     definition: attacker.definition,
-    runtime: {
-      assertSpecial: helper.assertSpecial,
-      moveType: helper.moveType,
-    },
+    runtime: helperRuntimeState(helper),
+    inheritJuggle,
+    ...(inheritJuggle === 1
+      ? { juggleParent: runtimeHelperJuggleOrigin(attacker, helper.parentId) }
+      : {}),
+    ...(inheritJuggle === 2
+      ? { juggleRoot: runtimeHelperJuggleOrigin(attacker, helper.rootId) }
+      : {}),
   };
+}
+
+function runtimeHelperJuggleOrigin<TActor extends RuntimeCombatResolutionActor>(
+  attacker: TActor,
+  originId: string | undefined,
+): RuntimeDirectJuggleActor | undefined {
+  if (originId === undefined) {
+    return undefined;
+  }
+  if (originId === attacker.id) {
+    return {
+      id: attacker.id,
+      definition: attacker.definition,
+      runtime: attacker.runtime,
+    };
+  }
+  const origin = attacker.effectActorWorld.helpers(attacker.id).find((candidate) => candidate.serialId === originId);
+  return origin === undefined
+    ? undefined
+    : {
+        id: origin.serialId,
+        definition: attacker.definition,
+        runtime: helperRuntimeState(origin),
+      };
 }

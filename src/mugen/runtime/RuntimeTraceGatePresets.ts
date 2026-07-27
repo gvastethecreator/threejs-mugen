@@ -13338,6 +13338,114 @@ export function createSyntheticImportedIkemenHelperProjectileAirJuggleTraceArtif
   });
 }
 
+export function createSyntheticImportedIkemenHelperInheritJuggleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const directDamage = 37;
+  const projectileDamage = 17;
+  const targetId = 410;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "root fall contact leaves one inherited point", frames: 2, p1: ["x"], p2: [] },
+    { label: "inheritJuggle Helper spends the copied point", frames: 4, p1: [], p2: [] },
+    { label: "inherited Helper projectile remains active after rejection", frames: 8, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-inherit-juggle-attacker",
+    displayName: "Synthetic Imported IKEMEN Helper Inherit Juggle Attacker",
+    ikemenVersion: "0.99",
+    hitDefDamage: directDamage,
+    hitDefAirJuggle: 3,
+    groundVelocity: [0, 0],
+    fall: { enabled: true, velocity: { y: -4 } },
+    withHelper: true,
+    helperOwnProjectile: true,
+    helperInheritJuggle: 1,
+    helperTriggerTime: 2,
+    helperProjHitRoute: {
+      waitStateNo: 1215,
+      waitAnimNo: 935,
+      branchStateNo: 1216,
+      branchAnimNo: 936,
+      projectileAnimNo: 944,
+      projectileId: targetId,
+      projectileHits: 2,
+      projectileMissTime: 0,
+      projectileRemoveOnHit: false,
+      projectileAirJuggle: 1,
+      pos: [100, -17],
+      velocity: [0, 0],
+      damage: [projectileDamage, 0],
+      hitTime: 11,
+      groundVelocity: [0, 0],
+    },
+    withHitDef: true,
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-helper-inherit-juggle-defender",
+    displayName: "Synthetic Imported IKEMEN Helper Inherit Juggle Defender",
+    ikemenVersion: "0.99",
+    withHitDef: false,
+    dataStats: { airjuggle: 4 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-helper-inherit-juggle-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-helper-inherit-juggle-golden",
+      label: "Synthetic imported IKEMEN Helper inheritJuggle",
+      source: "mixed",
+      notes: [
+        "Bounded IKEMEN trace proves a Helper with inheritjuggle = 1 copies the Parent target budget before its own Projectile air.juggle admission: the root HitDef leaves one of four points, the Helper spends that copied point, and a later contact is rejected while the Projectile remains active. Exact post-hit target-list propagation, Root mode, nested or destroyed owners, teams, MUGEN, hittmp/acttmp timing, and full parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-helper-inherit-juggle-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via air.juggle"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1-helper-0", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1-helper-0", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1216, minAge: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1-helper-0",
+            parentId: "p1-helper-0",
+            effectId: targetId,
+            airJuggle: 1,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 - directDamage - projectileDamage, airJugglePoints: { p1: 1, "p1-helper-0": 0 } },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenProjectileSameFrameApContactTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -50103,6 +50211,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefHitFlag?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
+  hitDefAirJuggle?: number;
   hitDefGuardPoints?: number;
   hitDefDizzyPoints?: number;
   dizzyPointMultipliers?: { default?: number; super?: number };
@@ -50657,6 +50766,7 @@ export type SyntheticImportedTraceFighterOptions = {
   resourceMaxEntry?: { lifeMax: number; powerMax: number; stateNo: number };
   withHelper?: boolean;
   helperOwnProjectile?: boolean;
+  helperInheritJuggle?: 0 | 1 | 2;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
   helperPauseMoveTime?: number;
@@ -51364,6 +51474,7 @@ ${cornerPushLines}
 `;
   const guardDistanceLine = options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`;
   const fallLine = options.fall ? fallHitDefBlock(options.fall) : "";
+  const hitDefAirJuggleLine = options.hitDefAirJuggle === undefined ? "" : `air.juggle = ${options.hitDefAirJuggle}`;
   const customStateLine = options.customStateRoute
     ? `
 p2stateno = ${options.customStateRoute.startStateNo}
@@ -51408,6 +51519,7 @@ ${options.hitDefMissOnOverride === undefined ? "" : `missonoverride = ${options.
 ${guardLine}
 ${guardDistanceLine}
 ${fallLine}
+${hitDefAirJuggleLine}
 ${customStateLine || getHitStateLine}
 `
     : "";
@@ -51674,6 +51786,7 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   keyCtrl: options.helperVarRoute?.keyCtrl,
   ownPalette: options.helperVarRoute?.ownPalette,
   ownProjectile: options.helperOwnProjectile ?? options.helperVarRoute?.ownProjectile,
+  inheritJuggle: options.helperInheritJuggle,
   preserve: options.helperVarRoute?.preserve,
   ownClsnScale: options.helperVarRoute?.ownClsnScale,
   clsnProxy: options.helperVarRoute?.clsnProxy,
@@ -57762,6 +57875,7 @@ function helperControllerBlock(
     keyCtrl?: boolean;
     ownPalette?: boolean;
     ownProjectile?: boolean;
+    inheritJuggle?: 0 | 1 | 2;
     preserve?: boolean;
     ownClsnScale?: boolean;
     clsnProxy?: boolean;
@@ -57779,6 +57893,7 @@ function helperControllerBlock(
   const keyCtrlLine = pause?.keyCtrl === undefined ? "" : `keyctrl = ${pause.keyCtrl ? 1 : 0}`;
   const ownPaletteLine = pause?.ownPalette === undefined ? "" : `ownpal = ${pause.ownPalette ? 1 : 0}`;
   const ownProjectileLine = pause?.ownProjectile === undefined ? "" : `ownprojectile = ${pause.ownProjectile ? 1 : 0}`;
+  const inheritJuggleLine = pause?.inheritJuggle === undefined ? "" : `inheritjuggle = ${pause.inheritJuggle}`;
   const preserveLine = pause?.preserve === undefined ? "" : `preserve = ${pause.preserve ? 1 : 0}`;
   const ownClsnScaleLine = pause?.ownClsnScale === undefined ? "" : `ownclsnscale = ${pause.ownClsnScale ? 1 : 0}`;
   const clsnProxyLine = pause?.clsnProxy === undefined ? "" : `clsnproxy = ${pause.clsnProxy ? 1 : 0}`;
@@ -57804,6 +57919,7 @@ ${ignoreHitPauseLine}
 ${keyCtrlLine}
 ${ownPaletteLine}
 ${ownProjectileLine}
+${inheritJuggleLine}
 ${preserveLine}
 ${ownClsnScaleLine}
 ${clsnProxyLine}

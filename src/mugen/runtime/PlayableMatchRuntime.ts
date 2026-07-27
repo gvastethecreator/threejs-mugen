@@ -5354,6 +5354,24 @@ function runActiveStateControllers(
                     createPlayerIdTarget(actor),
                   )
               : undefined,
+          resolveHelperInheritJuggle:
+            effect === "helper" && options.runtimeProfile === "ikemen-go"
+              ? (operation) => {
+                  const value = resolveDispatchNumber(
+                    operation.inheritJuggle,
+                    operation.inheritJuggleExpression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return value === 0 || value === 1 || value === 2 ? value : undefined;
+                }
+              : undefined,
           resolveHelperOwnPalette:
             effect === "helper" && options.runtimeProfile === "ikemen-go"
               ? (operation) =>

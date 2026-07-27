@@ -6,6 +6,7 @@ import {
   applyRuntimeStateDefJuggle,
   buildRuntimeJuggleTrace,
   canRuntimeDirectAirJuggle,
+  prepareRuntimeInheritedJugglePoints,
   runtimeAirJuggleBudget,
   runtimeAirJuggleCost,
   runtimeAirJuggleRemaining,
@@ -14,6 +15,37 @@ import {
 } from "../mugen/runtime/RuntimeJuggleSystem";
 
 describe("RuntimeJuggleSystem", () => {
+  it("copies an existing Parent or Root budget to a Helper in IKEMEN mode", () => {
+    const parent = actor("p1");
+    const parentHelper = actor("p1-parent");
+    const helper = actor("p1-helper-0");
+    const defender = actor("p2", { airJugglePoints: { p1: 3, "p1-parent": 2 } });
+
+    helper.inheritJuggle = 1;
+    helper.juggleParent = parent;
+    expect(prepareRuntimeInheritedJugglePoints({ profile: "ikemen-go", attacker: helper, defender })).toBe(true);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 3, "p1-parent": 2, "p1-helper-0": 3 });
+    expect(prepareRuntimeInheritedJugglePoints({ profile: "ikemen-go", attacker: helper, defender })).toBe(false);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 3, "p1-parent": 2, "p1-helper-0": 3 });
+
+    const rootHelper = actor("p1-root-helper");
+    rootHelper.inheritJuggle = 2;
+    rootHelper.juggleRoot = parentHelper;
+    expect(prepareRuntimeInheritedJugglePoints({ profile: "ikemen-go", attacker: rootHelper, defender })).toBe(true);
+    expect(defender.runtime.airJugglePoints).toEqual({
+      p1: 3,
+      "p1-parent": 2,
+      "p1-helper-0": 3,
+      "p1-root-helper": 2,
+    });
+
+    const mugenHelper = actor("p1-mugen-helper");
+    mugenHelper.inheritJuggle = 1;
+    mugenHelper.juggleParent = parent;
+    expect(prepareRuntimeInheritedJugglePoints({ profile: "mugen-1.1", attacker: mugenHelper, defender })).toBe(false);
+    expect(defender.runtime.airJugglePoints).not.toHaveProperty("p1-mugen-helper");
+  });
+
   it("uses target data.airjuggle and charges a direct hit that leaves the target falling", () => {
     const attacker = actor("p1");
     const defender = actor("p2", {}, { constants: { "data.airjuggle": 4 } });

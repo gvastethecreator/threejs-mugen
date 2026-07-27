@@ -319,6 +319,18 @@ value = 1
       clsnProxy: false,
       clsnProxyExpression: "var(0)",
     });
+    expect(compileControllerIr(controller(200, "Helper", [], { inheritjuggle: "1" })).operation).toMatchObject({
+      kind: "helper",
+      inheritJuggle: 1,
+    });
+    expect(compileControllerIr(controller(200, "Helper", [], { inheritjuggle: "var(0)" })).operation).toMatchObject({
+      kind: "helper",
+      inheritJuggle: 0,
+      inheritJuggleExpression: "var(0)",
+    });
+    for (const value of ["", "1.5", "3"]) {
+      expect(compileControllerIr(controller(200, "Helper", [], { inheritjuggle: value })).operation).toBeUndefined();
+    }
   });
 
   it("compiles accepted no-op controllers into typed operations", () => {

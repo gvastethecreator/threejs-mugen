@@ -137,6 +137,44 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(defender.runtime.life).toBe(100);
   });
 
+  it("copies the Parent air-juggle budget before a falling Helper contact", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "49", name: '"Inherited Assist"' }));
+    helper.inheritJuggle = 1;
+    helper.currentMove = move({ airJuggle: 1, damage: 25 });
+    helper.moveTick = 1;
+    const defender = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({
+        pos: { x: 18, y: 0 },
+        moveType: "H",
+        hitFall: { falling: true, damage: 0, velocity: { y: -1 } },
+        airJugglePoints: { p1: 1 },
+        life: 100,
+      }),
+    });
+
+    new RuntimeHelperCombatWorld().resolveDirect({
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1")),
+      defender,
+      runtimeProfile: "ikemen-go",
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld: new RuntimeTargetWorld(),
+      runtimeTick: 34,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: stateHooks([], [5000]),
+    });
+
+    expect(defender.runtime.life).toBe(75);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 1, "p1-helper-0": 0 });
+    expect(helper.airJugglePoints).toBeUndefined();
+  });
+
   it("admits nested Helper direct HitDef source identity through verified ancestry", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();
@@ -568,6 +606,7 @@ function owner(
   return {
     id,
     definition,
+    runtime: runtimeState(),
     effectActorWorld,
     audioWorld: new RuntimeAudioWorld(),
     hitEffectWorld: new RuntimeHitEffectWorld(),
